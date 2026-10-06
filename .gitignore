@@ -1,0 +1,27 @@
+*.egg-info/
+*.py[cod]
+.DS_Store
+.Python
+.env
+.pytest_cache/
+.venv/
+__pycache__/
+venv/
+
+# Scroll data, renders, ink maps and checkpoints never go in Git.
+# They are large, and a positive result must stay private until the prize is announced.
+/work/
+/ink-dataset/
+/volume-cache/
+/checkpoints/
+/predictions/
+*.zarr/
+*.tifxyz/
+*.tif
+*.tiff
+*.pth
+*.ckpt
+
+# Experiment records are local by default. See docs/WORKFLOW.md.
+/experiments/*
+!/experiments/README.md

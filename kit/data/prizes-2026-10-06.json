@@ -1,0 +1,283 @@
+{
+  "checked": "2026-10-06",
+  "source": "https://scrollprize.org/prizes",
+  "source_repo_file": "https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/src/data/prizeEligibility.json",
+  "source_commit": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+  "note": "Snapshot. The live page wins if it disagrees. Re-check before starting work on a prize.",
+  "prizes": [
+    {
+      "id": "grand-prize-2027",
+      "title": "2027 Grand Prize",
+      "total_usd": 1000000,
+      "tiers_usd": {
+        "1st": 800000,
+        "2nd": 100000,
+        "3rd": 50000,
+        "4th": 50000
+      },
+      "deadline": "2027-06-25T23:59:00-07:00",
+      "goal": "Fully unroll one eligible sealed scroll and make it readable: 100% of the recto surface meshed, at least 70% of each counted column's preserved characters legible.",
+      "submit": "grandprize@scrollprize.org",
+      "eligible": [
+        {
+          "scroll": "PHerc0125",
+          "volume": "20250821151825",
+          "zarr": "20250821151825-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0191",
+          "volume": "20250821151635",
+          "zarr": "20250821151635-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0211",
+          "volume": "20250821151803",
+          "zarr": "20250821151803-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0257",
+          "volume": "20250821151750",
+          "zarr": "20250821151750-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0268",
+          "volume": "20251110183117",
+          "zarr": "20251110183117-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0358",
+          "volume": "20250821151737",
+          "zarr": "20250821151737-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0800",
+          "volume": "20250521135224",
+          "zarr": "20250521135224-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0813",
+          "volume": "20250821151723",
+          "zarr": "20250821151723-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0826",
+          "volume": "20250821151701",
+          "zarr": "20250821151701-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc1203",
+          "volume": "20250820131727",
+          "zarr": "20250820131727-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc1218",
+          "volume": "20250521120456",
+          "zarr": "20250521120456-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc1447",
+          "volume": "20250521151220",
+          "zarr": "20250521151220-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc1545",
+          "volume": "20250821151648",
+          "zarr": "20250821151648-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        }
+      ]
+    },
+    {
+      "id": "first-letters-2027",
+      "title": "First Letters",
+      "total_usd": 500000,
+      "per_scroll_usd": 50000,
+      "max_scrolls": 10,
+      "deadline": "2027-06-25T23:59:00-07:00",
+      "goal": "First team to show 10 legible letters within a single 4 cm2 area of an eligible scroll.",
+      "submit": "https://forms.gle/TM5ao8GwC2mDrdLk9",
+      "eligible": [
+        {
+          "scroll": "PHerc0125",
+          "volume": "20250821151825",
+          "zarr": "20250821151825-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0175A",
+          "volume": "20250521115057",
+          "zarr": "20250521115057-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0175B",
+          "volume": "20250521125822",
+          "zarr": "20250521125822-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0191",
+          "volume": "20250821151635",
+          "zarr": "20250821151635-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0211",
+          "volume": "20250821151803",
+          "zarr": "20250821151803-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0257",
+          "volume": "20250821151750",
+          "zarr": "20250821151750-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0268",
+          "volume": "20251110183117",
+          "zarr": "20251110183117-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0306B",
+          "volume": "20250521133212",
+          "zarr": "20250521133212-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0343",
+          "volume": "20250521140437",
+          "zarr": "20250521140437-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0358",
+          "volume": "20250821151737",
+          "zarr": "20250821151737-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0483A",
+          "volume": "20250521140913",
+          "zarr": "20250521140913-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0483B",
+          "volume": "20251124083638",
+          "zarr": "20251124083638-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0490A",
+          "volume": "20250521151210",
+          "zarr": "20250521151210-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0490B",
+          "volume": "20250521151215",
+          "zarr": "20250521151215-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0800",
+          "volume": "20250521135224",
+          "zarr": "20250521135224-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc0813",
+          "volume": "20250821151723",
+          "zarr": "20250821151723-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0826",
+          "volume": "20250821151701",
+          "zarr": "20250821151701-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0846A",
+          "volume": "20250728152254",
+          "zarr": "20250728152254-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc0846B",
+          "volume": "20250804142305",
+          "zarr": "20250804142305-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc1203",
+          "volume": "20250820131727",
+          "zarr": "20250820131727-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        },
+        {
+          "scroll": "PHerc1218",
+          "volume": "20250521120456",
+          "zarr": "20250521120456-8.640um-1.2m-116keV-masked.zarr",
+          "voxel_um": 8.64
+        },
+        {
+          "scroll": "PHerc1545",
+          "volume": "20250821151648",
+          "zarr": "20250821151648-9.362um-1.2m-113keV-masked.zarr",
+          "voxel_um": 9.362
+        }
+      ]
+    },
+    {
+      "id": "first-title",
+      "title": "PHerc. Paris 4 title",
+      "total_usd": 50000,
+      "deadline": "2027-06-25T23:59:00-07:00",
+      "goal": "First team to produce a papyrologist-readable image of the title of PHerc. Paris 4 (Scroll 1), any of its scans.",
+      "submit": "https://forms.gle/4zeVPPBtNdSCAQa88",
+      "eligible": [
+        {
+          "scroll": "PHercParis4",
+          "volume": "any"
+        }
+      ]
+    },
+    {
+      "id": "progress-prizes",
+      "title": "Progress Prizes",
+      "total_usd_per_year": 590000,
+      "monthly_best_usd": 20000,
+      "typical_tiers_usd": [
+        20000,
+        10000,
+        5000,
+        2500,
+        1000,
+        500,
+        250
+      ],
+      "deadline": "2026-10-31T23:59:00-07:00",
+      "deadline_note": "Monthly. This is the next deadline at the check date.",
+      "goal": "Open source contributions that help read the scrolls (tools, models, datasets, bug fixes, documentation).",
+      "submit": "https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform",
+      "eligible": []
+    }
+  ],
+  "bucket": "s3://vesuvius-challenge-open-data",
+  "bucket_checked": "2026-10-06"
+}

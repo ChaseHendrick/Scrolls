@@ -1,0 +1,46 @@
+# Testing
+
+A passing run means the prize snapshot is internally consistent, the planner prints the official commands with the right volume paths, the doctor's thresholds behave, and the ledger enforces its rules. It does not mean the GPU pipeline runs on your machine, or that any scroll contains ink.
+
+## What "ALL PASS" means
+
+The standard-library runner does **not** print the words `ALL PASS`. A clean run ends like this:
+
+```text
+----------------------------------------------------------------------
+Ran N tests in …s
+
+OK
+```
+
+**ALL PASS** in a checklist means all three:
+
+1. The process exit status is **0**.
+2. The last line is `OK`, not `FAILED (failures=…)` or `FAILED (errors=…)`.
+3. The `Ran N tests` line matches the tests you think you ran. Say which command you ran.
+
+## Commands
+
+From the repository root, Python 3.10 or newer, no dependencies:
+
+```bash
+python -m unittest discover -s tests -v
+python -m kit prizes
+python -m kit doctor        # exit 1 when a check fails (e.g. no GPU); that is a report, not a test failure
+```
+
+CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the tests on Python 3.10 and 3.13 and smoke-runs `prizes` and `plan`.
+
+## What the tests pin
+
+| Test | Pins |
+| --- | --- |
+| `PrizeSnapshotTest` | Totals and tiers, 13 Grand Prize and 22 First Letters volumes, PHerc1447 moved off First Letters, every volume resolved to an S3 Zarr name, scroll-name normalization, deadline arithmetic |
+| `DoctorTest` | `nvidia-smi` parsing, the 12 GB threshold, villa checkout detection |
+| `PlanTest` | Control segment present, resolved target path, `--direction both`, privacy instruction, 8.64 µm resampling note, rejection of ineligible scrolls, cost arithmetic against bnleft's published A10 figure |
+| `LedgerTest` | Readout hash and tamper detection, legal transitions, candidate cannot go public before `--announced`, null can, costs, slug safety |
+| `CliTest` | End-to-end CLI for `prizes`, `plan` and `run` |
+
+## When the snapshot changes
+
+Add a new `kit/data/prizes-YYYY-MM-DD.json`, point `prizes.SNAPSHOT` at it, and update the counts in the tests in the same commit. Keep the old snapshot for history.
