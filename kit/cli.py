@@ -1,11 +1,11 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,layers,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,layers,provenance,run}."""
 
 import argparse
 import json
 import sys
 from datetime import date
 
-from . import auc, doctor, fetch, layers, ledger, plan, prizes, rowscore, verify
+from . import auc, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -85,6 +85,28 @@ def cmd_auc(args):
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2) if args.json else auc.format_result(result))
+    return 0
+
+
+def cmd_provenance(args):
+    try:
+        if args.action == "write":
+            record = provenance.build(args.run, args.repo, started=args.started, inputs=args.input,
+                                      models=args.model, outputs=args.output, extra_code=args.code_repo,
+                                      note=args.note)
+            path = provenance.write(record, args.path)
+            print(f"{path}: digest {record['digest']}")
+            return 0
+        record = json.loads(open(args.path, encoding="utf-8").read())
+        problems = provenance.verify(record, recheck_files=args.files)
+    except (OSError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    for problem in problems:
+        print(f"problem: {problem}")
+    if problems:
+        return 1
+    print(f"{args.path}: ok (digest {record['digest']}{', files unchanged' if args.files else ''})")
     return 0
 
 
@@ -204,6 +226,23 @@ def build_parser():
     p.add_argument("--name", default="label-auc")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_auc)
+
+    p = sub.add_parser("provenance", help="who ran what, when, from which inputs: a record and one digest")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("write", help="hash models, inputs and outputs into a provenance record")
+    a.add_argument("path", help="where to write the JSON record")
+    a.add_argument("--run", required=True, help="run name")
+    a.add_argument("--repo", default=".", help="the Scrolls checkout (operator and commit come from it)")
+    a.add_argument("--code-repo", action="append", default=[], help="another git repo used, e.g. villa")
+    a.add_argument("--model", action="append", default=[], help="checkpoint file or directory; repeatable")
+    a.add_argument("--input", action="append", default=[], help="input file or store; repeatable")
+    a.add_argument("--output", action="append", default=[], help="output file; repeatable")
+    a.add_argument("--started", help="UTC start time, e.g. 2026-10-07T08:00:00Z")
+    a.add_argument("--note")
+    a = actions.add_parser("check", help="recompute the digest; --files also rehashes every file")
+    a.add_argument("path")
+    a.add_argument("--files", action="store_true")
+    p.set_defaults(func=cmd_provenance)
 
     p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
     p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")
