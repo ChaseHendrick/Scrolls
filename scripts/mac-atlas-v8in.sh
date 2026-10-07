@@ -57,6 +57,22 @@ else BATCH=16; fi
 FLAGS=(--batch-size "$BATCH")
 [[ "${V8IN_FP16:-0}" == "1" && "$V8IN_DEVICE" == "mps" ]] && FLAGS+=(--fp16)
 mkdir -p "$OUT"
+# One GPU job at a time: two v8in runs at once do not fit in 16 GB and swap (seen 2026-10-07:
+# 56 s per tile instead of 1.3). Both Mac scripts share this lock; a lock whose process is gone
+# is taken over.
+LOCK="$WORK/.gpu-job.lock"
+mkdir -p "$WORK"
+if ! mkdir "$LOCK" 2>/dev/null; then
+  other="$(cat "$LOCK/pid" 2>/dev/null || true)"
+  if [[ -n "$other" ]] && kill -0 "$other" 2>/dev/null; then
+    echo "Another run is using the GPU (pid $other: $(ps -o command= -p "$other" 2>/dev/null | cut -c1-80))." >&2
+    echo "Wait for it, or stop it: kill $other" >&2
+    exit 3
+  fi
+  echo "Taking over a stale lock left by pid ${other:-unknown}."
+fi
+echo $$ > "$LOCK/pid"
+trap 'rm -rf "$LOCK"' EXIT
 cd "$SCROLLS"
 
 say "1/4 preregistration: $PREREG"
