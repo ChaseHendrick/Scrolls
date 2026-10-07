@@ -28,6 +28,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 - Inference on a full segment takes "on the order of an hour on a single GPU" ([tutorial](https://scrollprize.org/tutorial5)).
 - Data is streamed from the public bucket, so you do not need to download whole scrolls. The bucket is part of AWS Open Data ([ScrollPrize/open-data](https://github.com/ScrollPrize/open-data)) and reads anonymously with `--no-sign-request`.
 - `python -m kit cost --gpu-hours H --rate R` and `python -m kit run cost` keep your own tally.
+- Modal rates, limits, budgets and per-job cost estimates (checked 2026-10-07): [`compute/modal-pricing.md`](compute/modal-pricing.md), with a calculator in `kit/cloudcost.py`.
 
 ## Where extra GPU hours help
 
