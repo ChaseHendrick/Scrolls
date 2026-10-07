@@ -58,8 +58,9 @@ villa() {  # villa NAME CKPT: both directions on the crop zarr
 # Cheapest first, so a reclaimed container loses the least.
 villa ink9um_s42 "$INK42"
 villa d9v2 "$D9V2"
+# Budget cut from the coordinating session (2026-10-07): forward s42 is the main map,
+# reverse and shuffled at s64, no s21 run.
 v8in v8in_s42 "$J/layers" 42
-v8in v8in_s42_reverse "$J/layers" 42 --reverse
-v8in v8in_shuf_s42 "$J/layers_shuf" 42
-v8in v8in_s21 "$J/layers" 21
+v8in v8in_s64_reverse "$J/layers" 64 --reverse
+v8in v8in_shuf_s64 "$J/layers_shuf" 64
 say "all maps done"

@@ -92,19 +92,18 @@ def main():
     add("d9v2", f"TAUIL v1.0 d9v2_ft-012000 (sha256 {D9V2_SHA}), {villa}", maps / "d9v2.tif",
         maps / "d9v2_reverse.tif", seconds(logs / "d9v2.log"), "seconds cover both directions")
     v8set = f"YoussefMoNader/ink-8um-v8in {V8IN_REV}, central 24 of 28 layers, batch 4, fp32"
-    shuf = v8("v8in_shuf_s42")
+    shuf = v8("v8in_shuf_s64")
     shuf_auc = kit(py, "auc", str(shuf), *common)["forward"]["auc"] if shuf.exists() else None
-    for name, stride in (("v8in_s21", 21), ("v8in_s42", 42)):
-        add("v8in", f"{v8set}, forward stride {stride}, reverse stride 42", v8(name), v8("v8in_s42_reverse"),
-            seconds(logs / f"{name}.log"), "seconds: forward pass only; reverse at stride 42",
-            {"auc_shuffled": shuf_auc})
-    add("v8in depth-shuffled", f"{v8set}, kit layers --shuffle 20261007, forward stride 42", shuf, None,
-        seconds(logs / "v8in_shuf_s42.log"), "auc_as_stored here is the shuffled map's AUC (control row)")
+    add("v8in", f"{v8set}, forward stride 42, reverse stride 64, shuffled stride 64", v8("v8in_s42"),
+        v8("v8in_s64_reverse"), seconds(logs / "v8in_s42.log"),
+        "seconds: forward pass only; reverse and shuffled at stride 64", {"auc_shuffled": shuf_auc})
+    add("v8in depth-shuffled", f"{v8set}, kit layers --shuffle 20261007, forward stride 64", shuf, None,
+        seconds(logs / "v8in_shuf_s64.log"), "auc_as_stored here is the shuffled map's AUC (control row)")
 
-    # Ensembles: v8in forward s21 (reverse s42), ink_9um s42, d9v2; reverses ensembled the same way.
+    # Ensembles: v8in forward s42 (reverse s64), ink_9um s42, d9v2; reverses ensembled the same way.
     ens = j / "ensembles"
     ens.mkdir(exist_ok=True)
-    parts = {"v8in": (v8("v8in_s21"), v8("v8in_s42_reverse")),
+    parts = {"v8in": (v8("v8in_s42"), v8("v8in_s64_reverse")),
              "ink9um": (maps / "ink9um_s42.tif", maps / "ink9um_s42_reverse.tif"),
              "d9v2": (maps / "d9v2.tif", maps / "d9v2_reverse.tif")}
     for combo in (("v8in", "d9v2"), ("v8in", "ink9um"), ("v8in", "ink9um", "d9v2")):
@@ -117,7 +116,7 @@ def main():
                 if not out.exists():
                     kit(py, "ensemble", str(out), *[str(parts[c][k]) for c in combo], "--method", method, "--json")
             add(" + ".join(combo).replace("ink9um", "ink_9um seed42"),
-                f"ensemble {method}, equal weights; v8in forward stride 21; reverse maps ensembled the same way",
+                f"ensemble {method}, equal weights; v8in forward stride 42 (reverse 64); reverse maps ensembled the same way",
                 out_f, out_r, None)
 
     (HERE / "results.json").write_text(json.dumps(rows, indent=1) + "\n")
