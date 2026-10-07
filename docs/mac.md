@@ -71,6 +71,37 @@ bash scripts/mac-w045.sh
 
 The harder test: `SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh` runs the same comparison on PHerc0841, a scroll in neither model's training set, where the team traced three segments with labelled text (`0841-w00`, `0841-ag896`, `0841-ag405`; Bullo27's unseen-scroll calibration). Short on time? `QUICK=1 bash scripts/mac-w045.sh` stops after the crop: v8in at full density on the 640 px patch of densest labelled text, and `ink_9um` scored on that same patch, so the models are compared on one test in well under an hour. Knobs: `V8IN_FP16=1` (half precision on MPS; kept only if the crop check still passes), `V8IN_STRIDE`, `V8IN_BATCH`, `V8IN_REGION=full`. What to expect from the AUC: Bullo27 reports 0.74 to 0.81 for `ink_9um` on another scroll it never saw; about 0.5 means the model reads nothing. A forward AUC close to the reverse AUC means it reads brightness, not ink.
 
+## Watching a run
+
+Both scripts print a header as each stage starts (`== 1/7 ...` to `== 7/7 ...`). Long silences between headers are normal; a problem stops the script with a message and returns you to the prompt without the final summary block. If that happens, paste the last 20 lines.
+
+**Is the GPU working?** Activity Monitor, Window, GPU History (⌘4). It should be busy during the inference steps. During `ink_9um` the script also checks the log for `Using MPS device` and stops if it is missing, so it never quietly finishes on the CPU.
+
+**Where each step logs** (`<seg>` is `w045`, `0841-w00`, `0841-ag896` or `0841-ag405`):
+
+```bash
+ls -lt ~/scrolls-work/logs/ | head                       # newest log = current step
+tail -f ~/scrolls-work/logs/<seg>_ink9um_s42.log         # step 3, ink_9um (then _s43)
+tail -1 ~/scrolls-work/logs/<seg>_crop_cpu.log           # step 5, CPU side of the device check
+grep -h "done in" ~/scrolls-work/logs/<seg>_crop_gpu*.log   # step 5, MPS side, with times
+tail -1 ~/scrolls-work/logs/<seg>_v8in_quick.log         # step 6 with QUICK=1 (then _v8in_quick_reverse)
+tail -1 ~/scrolls-work/logs/<seg>_v8in.log               # step 6 without QUICK (then _v8in_reverse)
+ls -lt ~/scrolls-work/<seg>/maps/                        # new .tif files = finished passes
+```
+
+v8in logs print `N/total tiles (Xs)` every 30 s and end with a line like `device=mps fp16=False reverse=False stride=21 tiles=784 done in 859s`. Time left in a v8in pass is about (total − N) × X / N seconds.
+
+**What to expect on an M1 Pro** (measured 2026-10-07, fp32, batch 4):
+
+| Step | Time |
+| --- | --- |
+| `ink_9um`, both seeds, both directions, all of w045 | about 11 min per seed (649 s and 679 s); PHerc0841 segments are smaller |
+| v8in device check, CPU side (100 tiles) | about 41 min (25 s per tile); runs once, on w045, and other segments reuse its pass |
+| v8in device check, MPS side (100 tiles each way) | 396 s for the first (includes warm-up), then 132 s |
+| v8in on the 640 px crop at stride 21 (784 tiles each way) | about 15 min per direction (1.1 to 1.2 s per tile) |
+
+Reruns skip finished passes (they print `finished in an earlier run, reused`). `FRESH=1` redoes everything; `DEVICE_CHECK=1` redoes the device check on a non-w045 segment.
+
 ## First Letters target run: v8in on the public meshes of PHerc0813, 0358 and 0826
 
 ```bash
