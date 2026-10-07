@@ -11,7 +11,7 @@ The strokes are not letters of any script. A score on a phantom says nothing abo
 ```bash
 python3 -m kit phantom make OUT --shape 256 256 --depth 16 --seed 7 --letter-px 64   # volume.npy ink.npy mask.npy meta.json
 python3 -m kit phantom stress --n 4 --shape 256 256 --depth 16 --letter-px 64          # baseline detector, forward and depth-reversed
-python3 -m kit phantom calibrate --n 10 --shape 256 256 --letter-px 64 --quality 1.0  # AUC spread between phantoms vs block bootstrap
+python3 -m kit phantom calibrate --n 10 --shape 256 256 --letter-px 64 --quality 0.3 --block-px 32  # AUC spread between phantoms vs block bootstrap
 ```
 
 - `stress` runs `surface_detector`, a transparent baseline (top-surface band minus sheet interior). On the depth-reversed volume it should fall to or below 0.5: the same control rule as `kit auc`. Plug any detector in by scoring its map on `ink.npy` and `mask.npy` with `kit.auc.score_array`.

@@ -8,7 +8,7 @@ LOG="$OUT/commands.log"
 run() { echo "\$ $*" >> "$LOG"; "$@" | tee -a "$LOG"; }
 run python3 -m kit phantom make "$OUT/ph" --shape 256 256 --depth 16 --seed 7 --letter-px 64
 run python3 -m kit phantom stress --shape 256 256 --depth 16 --seed 0 --n 4 --letter-px 64 --save-maps "$OUT/maps"
-run python3 -m kit phantom calibrate --shape 256 256 --letter-px 64 --n 10 --quality 1.0 --draws 200 --block-px 107
+run python3 -m kit phantom calibrate --shape 256 256 --letter-px 64 --n 10 --quality 0.3 --draws 200 --block-px 32
 run python3 - "$OUT" <<'PY'
 import sys, numpy as np
 from kit import phantom
