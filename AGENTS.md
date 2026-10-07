@@ -79,7 +79,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 ## Commands
 
 ```bash
-python -m unittest discover -s tests -v        # all tests (185; map tests skip without their numerical dependencies)
+python -m unittest discover -s tests -v        # all tests (193; map tests skip without their numerical dependencies)
 python -m kit prizes                            # open prizes from the snapshot
 python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr \
     [--crop Y0 Y1 X0 X1 --surface-shape H W] [--inner 64] [--json]

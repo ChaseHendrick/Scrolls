@@ -1,0 +1,69 @@
+test_part1_holds_out_the_sheet_and_uses_the_fixed_primary_trace (test_analyze.CalibrationTests.test_part1_holds_out_the_sheet_and_uses_the_fixed_primary_trace) ... ok
+test_split_rejects_a_duplicate_trace_of_the_held_out_sheet (test_analyze.CalibrationTests.test_split_rejects_a_duplicate_trace_of_the_held_out_sheet) ... ok
+test_split_rejects_pooling_the_selection_sheet_twice (test_analyze.CalibrationTests.test_split_rejects_pooling_the_selection_sheet_twice) ... ok
+test_uint8_cutoff_matches_float32_comparison_for_all_bins (test_analyze.CalibrationTests.test_uint8_cutoff_matches_float32_comparison_for_all_bins) ... ok
+test_empty_surface_has_undefined_valid_coverage (test_analyze.CoverageTests.test_empty_surface_has_undefined_valid_coverage) ... ok
+test_low_valid_sites_are_accounted_for (test_analyze.CoverageTests.test_low_valid_sites_are_accounted_for) ... ok
+test_padded_boundary_has_no_artificial_evidence_and_reports_coverage (test_analyze.CoverageTests.test_padded_boundary_has_no_artificial_evidence_and_reports_coverage) ... ok
+test_remainder_footprints_cover_each_pixel_once (test_analyze.CoverageTests.test_remainder_footprints_cover_each_pixel_once) ... ok
+test_paired_counts_come_from_unchanged_saved_windows (test_analyze.HistoricalRecordsTests.test_paired_counts_come_from_unchanged_saved_windows) ... ok
+test_three_candidate_rules_keep_historical_counts_and_add_label_evidence (test_analyze.LabelEvidenceTests.test_three_candidate_rules_keep_historical_counts_and_add_label_evidence) ... ok
+test_unknown_is_not_background_and_precision_is_undefined_without_labels (test_analyze.LabelEvidenceTests.test_unknown_is_not_background_and_precision_is_undefined_without_labels) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.026s
+
+OK
+test_preserves_saved_scores_and_labels_correlated_aggregation (test_collect.CollectorRegression.test_preserves_saved_scores_and_labels_correlated_aggregation) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.021s
+
+OK
+test_actual_archived_baseline_is_partial_and_unchanged (test_results.ResultsTests.test_actual_archived_baseline_is_partial_and_unchanged) ... ok
+test_collection_cli_leaves_archive_untouched_and_reports_partial (test_results.ResultsTests.test_collection_cli_leaves_archive_untouched_and_reports_partial) ... ok
+test_matched_provisional_missing_and_unverified (test_results.ResultsTests.test_matched_provisional_missing_and_unverified) ... ok
+test_primary_complete_with_optional_s21_missing (test_results.ResultsTests.test_primary_complete_with_optional_s21_missing) ... ok
+test_reverse_selection_cli_prefers_matched_and_preserves_legacy (test_results.ResultsTests.test_reverse_selection_cli_prefers_matched_and_preserves_legacy) ... ok
+test_s21_is_provisional_and_missing_ensemble_member_is_missing (test_results.ResultsTests.test_s21_is_provisional_and_missing_ensemble_member_is_missing) ... ok
+test_single_score_file_does_not_mark_row_completed (test_results.ResultsTests.test_single_score_file_does_not_mark_row_completed) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.093s
+
+OK
+test_legacy_is_provisional_and_missing_is_explicit (test_controls.ReverseSelectionTests.test_legacy_is_provisional_and_missing_is_explicit) ... ok
+test_matching_preferred_without_relabelling_legacy (test_controls.ReverseSelectionTests.test_matching_preferred_without_relabelling_legacy) ... ok
+test_legacy_control_remains_provisional (test_controls.ScorerReportingTests.test_legacy_control_remains_provisional) ... ok
+test_missing_control_has_no_reverse_metrics (test_controls.ScorerReportingTests.test_missing_control_has_no_reverse_metrics) ... ok
+test_missing_ensemble_member_cannot_claim_matched_control (test_controls.ScorerReportingTests.test_missing_ensemble_member_cannot_claim_matched_control) ... ok
+test_new_control_is_selected_for_model_and_ensembles (test_controls.ScorerReportingTests.test_new_control_is_selected_for_model_and_ensembles) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.010s
+
+OK
+test_legacy_is_provisional_and_missing_is_explicit (test_controls.ReverseSelectionTests.test_legacy_is_provisional_and_missing_is_explicit) ... ok
+test_matching_preferred_without_relabelling_legacy (test_controls.ReverseSelectionTests.test_matching_preferred_without_relabelling_legacy) ... ok
+test_legacy_control_remains_provisional (test_controls.ScorerReportingTests.test_legacy_control_remains_provisional) ... ok
+test_missing_control_has_no_reverse_metrics (test_controls.ScorerReportingTests.test_missing_control_has_no_reverse_metrics) ... ok
+test_missing_ensemble_member_cannot_claim_matched_control (test_controls.ScorerReportingTests.test_missing_ensemble_member_cannot_claim_matched_control) ... ok
+test_new_control_is_selected_for_model_and_ensembles (test_controls.ScorerReportingTests.test_new_control_is_selected_for_model_and_ensembles) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.011s
+
+OK
+test_constant_map_has_no_pixel_position_signal (test_texture.RankFusionTests.test_constant_map_has_no_pixel_position_signal) ... ok
+test_equal_values_have_average_ranks (test_texture.RankFusionTests.test_equal_values_have_average_ranks) ... ok
+test_invalid_fusion_weight_or_grid_rejected (test_texture.RankFusionTests.test_invalid_fusion_weight_or_grid_rejected) ... ok
+test_invalid_rank_inputs_rejected (test_texture.RankFusionTests.test_invalid_rank_inputs_rejected) ... ok
+test_pixel_permutation_preserves_equal_value_scores (test_texture.RankFusionTests.test_pixel_permutation_preserves_equal_value_scores) ... ok
+test_rank_fusion_does_not_clip_extreme_distinct_values (test_texture.RankFusionTests.test_rank_fusion_does_not_clip_extreme_distinct_values) ... ok
+test_reference_zero_policy_is_common_to_both_maps (test_texture.RankFusionTests.test_reference_zero_policy_is_common_to_both_maps) ... ok
+test_uint8_reference_auc_preserved_on_common_support (test_texture.RankFusionTests.test_uint8_reference_auc_preserved_on_common_support) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.012s
+
+OK

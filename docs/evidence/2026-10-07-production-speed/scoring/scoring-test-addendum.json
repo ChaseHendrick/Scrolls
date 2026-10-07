@@ -1,0 +1,7 @@
+{
+  "created_utc": "2026-10-07T15:55:34.364394+00:00",
+  "reason": "Parent requested explicit other=None pixel-oracle regression after comparative timings. Only the test file changes; production code and measured outputs remain unchanged. Run after geometry quiet benchmark.",
+  "test_previous_sha256": "c81d36aba86ba718cc38bbaeeba2a0d16b92a04d448746fa85503ce059e505f6",
+  "test_current_sha256": "b183214da00a2a46b48cb1b29a346d88f229ddcc6fd9212ab4478d8bc2a3f709",
+  "production_sha256_unchanged": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa"
+}

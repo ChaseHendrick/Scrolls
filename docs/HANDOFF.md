@@ -2,6 +2,16 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026: implemented and measured CPU speedups
+
+The user asked to solve production speedups now. The [new benchmark log](logs/2026-10-07-production-speed.md) records an implemented 2.0744x median speedup for the complete continuous-correction process: 5.2913 to 2.5508 seconds on the cached public PHerc0841 crop, including startup/imports/I/O/output writes. Five alternating pairs and controls matched every report field, projection array and output hash. The change batches four subdivision child-bound calculations and retains all physical distance, uniqueness, ambiguity, heap, tie and budget rules. It still accepts zero edits and flags 16 regions on this input. Legacy schema 1 remains unchanged and showed no speedup. This is not a flattening, inference or whole-scroll throughput claim.
+
+`kit auc` also uses exact counting and safe empty-bin compaction: fresh CLI 1.25x faster, warm full AUC file operation 2.62x faster, six alternating pairs with identical results. Sparse huge grids and unsafe large populations retain conservative paths. Nonfinite invalid maps can raise a different underlying NumPy exception; peak memory improvement was not measured. The inherited unsupported 14x layer-export claim was removed without changing export behavior. The integrated suite passes 193 tests plus 39 experiment regressions. The actual surfacefix CLI emits byte-identical stdout/output files and preserves its expected abstention exit code 1.
+
+The implementation branch is `codex/production-cpu-speedup`; inspect Git/PR status for its merge. Earlier PRs #6-19 are merged. The [new archive](evidence/2026-10-07-production-speed/README.md) holds fixed rules/amendments, raw timings, source/input fingerprints and independent reviews. Existing raw data, model maps and historical evidence remain outside this change. Prior provenance seals refer to their historical documentation; preserve those bytes instead of updating old hashes. The draft submission names Chase Hendrick and now includes the measured speedups; it remains unsubmitted.
+
+Next useful performance work is a separately frozen larger-surface benchmark to establish scaling and peak memory. The upstream Paris4 flattening comparison still needs pinned Lasagna code/runtime and original spacing-5 working grids/tracks; current native20 PHerc0841 geometry cannot reproduce it. Input preloading saved only 0.71 seconds across three cached-crop maps and was not shipped. Existing CPU-only/no-paid-compute limits continue; no Mac/GPU run, training, target publication or external submission was performed.
+
 ## Session 7 October 2026: all PRs reviewed and merged; adaptive geometry
 
 The user authorized merging all PRs including Grok's, continued research, subagents and existing cloud CPUs. PRs #6 through #18 are merged after review and passing CI, including all seven Grok lanes. PR #18 was created for the completed lane C branch that had no PR. See [merge receipts and review fixes](evidence/2026-10-07-merge-review/README.md). The follow-up branch is `codex/merge-review-followup`; inspect current Git history and PR state for its final documentation/CI merge. GitHub API access now works; earlier access-denied and unmerged-status entries below are historical.

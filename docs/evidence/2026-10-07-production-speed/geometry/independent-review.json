@@ -1,0 +1,31 @@
+{
+  "code_hashes": {
+    "/workspace/scrolls-env/production-speed/geometry/baseline/kit/_surface_geometry.py": "75457b1629e914480cca0be63847f9fc3b004cc5e0c3635a86dde7b42aaae393",
+    "/workspace/scrolls-env/production-speed/geometry/optimized/kit/_surface_geometry.py": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa"
+  },
+  "unchanged_functions_ast": [
+    "_cell_bounds",
+    "_triangle_closest",
+    "_unique_minimum",
+    "bilinear",
+    "project",
+    "quad_mask",
+    "sample_geometry"
+  ],
+  "exact_batched_bound_groups": 120,
+  "exact_scalar_child_bounds": 480,
+  "closest_quad_cases": 224,
+  "exact_heap_events": 2082,
+  "budget_abstention_cases": 138,
+  "exact_project_cases": 28,
+  "project_flag_counts": {
+    "valid": 13,
+    "ambiguous": 4,
+    "unresolved": 1
+  },
+  "certificates_or_thresholds_changed": false,
+  "input_mutation_detected": false,
+  "defects": [],
+  "elapsed_seconds": 1.2588186369994219,
+  "script_sha256": "1a67bb8d8700e285b4b759a8ef4ef44ad28d06ce416bca3b2cd8d890945f133f"
+}

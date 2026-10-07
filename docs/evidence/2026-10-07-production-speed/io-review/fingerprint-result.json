@@ -1,0 +1,40 @@
+{
+  "source_render": {
+    "files": 49,
+    "bytes": 12377951,
+    "runs": [
+      {
+        "seconds": 0.009195782999995572,
+        "aggregate_sha256": "029ffabf5255c61f482df9fa8393db9231427e01c2fc6546f644b8b1cb2e23a6"
+      },
+      {
+        "seconds": 0.009078658999897016,
+        "aggregate_sha256": "029ffabf5255c61f482df9fa8393db9231427e01c2fc6546f644b8b1cb2e23a6"
+      },
+      {
+        "seconds": 0.009039370999744278,
+        "aggregate_sha256": "029ffabf5255c61f482df9fa8393db9231427e01c2fc6546f644b8b1cb2e23a6"
+      }
+    ],
+    "median_seconds": 0.009078658999897016
+  },
+  "existing_tiffs": {
+    "files": 28,
+    "bytes": 7859736,
+    "runs": [
+      {
+        "seconds": 0.023166648000369605,
+        "aggregate_sha256": "24f9c82b27f90f134ab5af74e3226c6234b443b4035bd639689faa4442ce8e3b"
+      },
+      {
+        "seconds": 0.005668634999892674,
+        "aggregate_sha256": "24f9c82b27f90f134ab5af74e3226c6234b443b4035bd639689faa4442ce8e3b"
+      },
+      {
+        "seconds": 0.005777336000392097,
+        "aggregate_sha256": "24f9c82b27f90f134ab5af74e3226c6234b443b4035bd639689faa4442ce8e3b"
+      }
+    ],
+    "median_seconds": 0.005777336000392097
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "files": {
+    "flatten-feasibility.json": "c1dbe96ffa2ed055dab893911ead645827d7ba7063f12a9bd68f87e6d9fe505d",
+    "flatten-feasibility.md": "a2b2b7a5a5dcfbab3fcdc9516a28704a916510541667c81d76b60fc15240afe3",
+    "ink-surface-support/docs/REPRODUCE.md": "1a8fd9cdbe3cb59aa40e78ef7d7416e823832459fbf4d3ebb081caf0aade16ac",
+    "ink-surface-support/reproduction/flatten-source-lock.json": "e8426508c7f64fb8d6f9be2a9cd31fc428f32f17cf5dec2373078278de0051ca",
+    "ink-surface-support/reproduction/runtime-observations.json": "67dcb60fa17e45988204d5415a56ede3d57619a2e26c958794838dab466f0057",
+    "ink-surface-support/tools/flatten.py": "ed6fe11389d81ce9291212503f5f107587c86968731a8f513a261a48c33c1cf4",
+    "ink-surface-support-source-tree.json": "1c57aa442c8e44b39e2bf3a10b098bc32658537f3ce6608ed168cdceaa8fd7d6",
+    "villa/lasagna/README.md": "efaacb922af3cbdf72b6837d322461016a1626fda0c2a2aad7ebb4a5aebd5b4c",
+    "villa/lasagna/cli_opt.py": "07d47e50b358812648c1add11c51f511a122e495ec84b686ee232c784dd2b06c",
+    "villa/lasagna/clis": "b6531d4df99c7a2613ef2003825379205eff5036c29bc2a1d741e81aa61d36f6",
+    "villa/lasagna/docs/cli.md": "58b0108a7d745e74f61bb6947b63806e2149d0612118d6a0fcad8cf6dcc2924e",
+    "villa/lasagna/docs/flatten.md": "61b7b3717d1baff48f1e00bad974c0bd02029acf8f7f2e9116f81df681183937",
+    "villa/lasagna/docs/flattening.md": "9e9bae6e7df7e62eb45839e84cde7f3bdd8d180c7e08d95bee9e2a5b601b6105",
+    "villa/lasagna/fit.py": "f831bde66030d97bf45e2d48264a8f996b0b2747da5f9da20f1dd1f66935eb9e",
+    "villa/lasagna/setup.py": "48e0ee7eecfe136f5d6fba628b736073e7bd7c84172696a7490370e6f09bb86e",
+    "villa-source-tree.json": "3e296e37bfb3c9cabd5f0b1548ef93905c7b37ae29184c559b8f632af2771af4"
+  }
+}

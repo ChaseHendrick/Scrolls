@@ -1,0 +1,1331 @@
+{
+  "surface_arrays": [
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps/selected_layers.zarr/0",
+      "shape": [
+        17,
+        128,
+        128
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        128,
+        128
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps-retry/selected_layers.zarr/0",
+      "shape": [
+        17,
+        128,
+        128
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps-retry/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        128,
+        128
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/ct-cache.zarr/0",
+      "shape": [
+        19400,
+        7703,
+        7703
+      ],
+      "chunks": [
+        128,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": null
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-baseline/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-baseline/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-minus1/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-minus1/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-plus1/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-plus1/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-reference/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-reference/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1",
+      "shape": [
+        28,
+        320,
+        320
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/2",
+      "shape": [
+        28,
+        160,
+        160
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/3",
+      "shape": [
+        28,
+        80,
+        80
+      ],
+      "chunks": [
+        28,
+        80,
+        80
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/4",
+      "shape": [
+        28,
+        40,
+        40
+      ],
+      "chunks": [
+        28,
+        40,
+        40
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/5",
+      "shape": [
+        28,
+        20,
+        20
+      ],
+      "chunks": [
+        28,
+        20,
+        20
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-minus1.zarr/0",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-minus1.zarr/1",
+      "shape": [
+        28,
+        320,
+        320
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-minus1.zarr/2",
+      "shape": [
+        28,
+        160,
+        160
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-minus1.zarr/3",
+      "shape": [
+        28,
+        80,
+        80
+      ],
+      "chunks": [
+        28,
+        80,
+        80
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-minus1.zarr/4",
+      "shape": [
+        28,
+        40,
+        40
+      ],
+      "chunks": [
+        28,
+        40,
+        40
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-minus1.zarr/5",
+      "shape": [
+        28,
+        20,
+        20
+      ],
+      "chunks": [
+        28,
+        20,
+        20
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-plus1.zarr/0",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-plus1.zarr/1",
+      "shape": [
+        28,
+        320,
+        320
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-plus1.zarr/2",
+      "shape": [
+        28,
+        160,
+        160
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-plus1.zarr/3",
+      "shape": [
+        28,
+        80,
+        80
+      ],
+      "chunks": [
+        28,
+        80,
+        80
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-plus1.zarr/4",
+      "shape": [
+        28,
+        40,
+        40
+      ],
+      "chunks": [
+        28,
+        40,
+        40
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-plus1.zarr/5",
+      "shape": [
+        28,
+        20,
+        20
+      ],
+      "chunks": [
+        28,
+        20,
+        20
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-reference.zarr/0",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-reference.zarr/1",
+      "shape": [
+        28,
+        320,
+        320
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-reference.zarr/2",
+      "shape": [
+        28,
+        160,
+        160
+      ],
+      "chunks": [
+        28,
+        128,
+        128
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-reference.zarr/3",
+      "shape": [
+        28,
+        80,
+        80
+      ],
+      "chunks": [
+        28,
+        80,
+        80
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-reference.zarr/4",
+      "shape": [
+        28,
+        40,
+        40
+      ],
+      "chunks": [
+        28,
+        40,
+        40
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/render-reference.zarr/5",
+      "shape": [
+        28,
+        20,
+        20
+      ],
+      "chunks": [
+        28,
+        20,
+        20
+      ],
+      "dtype": "<u1",
+      "compressor": {
+        "id": "blosc",
+        "clevel": 3
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-original/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-original/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/render-followup/original-cache.zarr/0",
+      "shape": [
+        20974,
+        6621,
+        6621
+      ],
+      "chunks": [
+        128,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": null
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/ct-cache.zarr/0",
+      "shape": [
+        19400,
+        7703,
+        7703
+      ],
+      "chunks": [
+        128,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": null
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-minus1/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-minus1/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-plus1/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-plus1/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-reference/selected_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-reference/shuffled_layers.zarr/0",
+      "shape": [
+        17,
+        640,
+        640
+      ],
+      "chunks": [
+        17,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "compressor": {
+        "id": "blosc",
+        "cname": "lz4",
+        "clevel": 5,
+        "shuffle": 1,
+        "blocksize": 0
+      }
+    }
+  ],
+  "image_folders": {
+    "/workspace/scrolls-env/adapter-smoke/layers": {
+      "count": 28,
+      "bytes": 465920
+    },
+    "/workspace/scrolls-env/adapter-smoke/maps": {
+      "count": 1,
+      "bytes": 16
+    },
+    "/workspace/scrolls-env/adapter-smoke/maps-retry": {
+      "count": 3,
+      "bytes": 25127
+    },
+    "/workspace/scrolls-env/geometry-validation": {
+      "count": 2,
+      "bytes": 819456
+    },
+    "/workspace/scrolls-env/geometry-validation/actual-apply/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/ag896-crop.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz": {
+      "count": 3,
+      "bytes": 657426
+    },
+    "/workspace/scrolls-env/geometry-validation/layers-baseline": {
+      "count": 28,
+      "bytes": 7859736
+    },
+    "/workspace/scrolls-env/geometry-validation/layers-minus1": {
+      "count": 28,
+      "bytes": 7867446
+    },
+    "/workspace/scrolls-env/geometry-validation/layers-plus1": {
+      "count": 28,
+      "bytes": 7852512
+    },
+    "/workspace/scrolls-env/geometry-validation/layers-reference": {
+      "count": 28,
+      "bytes": 7823404
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis0-shift-150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis0-shift-300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis0-shift150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis0-shift300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis1-shift-150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis1-shift-300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis1-shift150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-apply-axis1-shift300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis0-shift-150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis0-shift-300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis0-shift150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis0-shift300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis1-shift-150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis1-shift-300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis1-shift150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/null-axis1-shift300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/geometry-validation/published-render-check": {
+      "count": 1,
+      "bytes": 11468928
+    },
+    "/workspace/scrolls-env/geometry-validation/reader-baseline": {
+      "count": 3,
+      "bytes": 501098
+    },
+    "/workspace/scrolls-env/geometry-validation/reader-minus1": {
+      "count": 3,
+      "bytes": 510906
+    },
+    "/workspace/scrolls-env/geometry-validation/reader-plus1": {
+      "count": 3,
+      "bytes": 497684
+    },
+    "/workspace/scrolls-env/geometry-validation/reader-reference": {
+      "count": 3,
+      "bytes": 496518
+    },
+    "/workspace/scrolls-env/geometry-validation/tangential-candidate.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/tif-baseline": {
+      "count": 28,
+      "bytes": 7859736
+    },
+    "/workspace/scrolls-env/geometry-validation/tif-minus1": {
+      "count": 28,
+      "bytes": 7867446
+    },
+    "/workspace/scrolls-env/geometry-validation/tif-plus1": {
+      "count": 28,
+      "bytes": 7852512
+    },
+    "/workspace/scrolls-env/geometry-validation/tif-reference": {
+      "count": 28,
+      "bytes": 7823404
+    },
+    "/workspace/scrolls-env/geometry-validation/w00-crop-candidates/offset-000.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/w00-crop-candidates/offset-001.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/w00-crop.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz": {
+      "count": 3,
+      "bytes": 603018
+    },
+    "/workspace/scrolls-env/phase-reconstruction": {
+      "count": 2,
+      "bytes": 819456
+    },
+    "/workspace/scrolls-env/phase-reconstruction/published-baseline-layers": {
+      "count": 28,
+      "bytes": 11475968
+    },
+    "/workspace/scrolls-env/phase-reconstruction/published-render-check": {
+      "count": 1,
+      "bytes": 11468928
+    },
+    "/workspace/scrolls-env/phase-reconstruction/reader-original": {
+      "count": 3,
+      "bytes": 547094
+    },
+    "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline": {
+      "count": 3,
+      "bytes": 546877
+    },
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/layers-original": {
+      "count": 28,
+      "bytes": 7978894
+    },
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original": {
+      "count": 28,
+      "bytes": 7978894
+    },
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original-identity-affine": {
+      "count": 28,
+      "bytes": 7978884
+    },
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz": {
+      "count": 3,
+      "bytes": 1478658
+    },
+    "/workspace/scrolls-env/supervised-surfacefix": {
+      "count": 4,
+      "bytes": 23757312
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/actual-apply/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/ag896-crop.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/layers-baseline": {
+      "count": 28,
+      "bytes": 8638732
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/layers-minus1": {
+      "count": 28,
+      "bytes": 8642734
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/layers-plus1": {
+      "count": 28,
+      "bytes": 8636228
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/layers-reference": {
+      "count": 28,
+      "bytes": 8646798
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis0-shift-150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis0-shift-300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis0-shift150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis0-shift300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis1-shift-150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis1-shift-300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis1-shift150/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-apply-axis1-shift300/corrected.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift150": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift300": {
+      "count": 3,
+      "bytes": 1229568
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline": {
+      "count": 3,
+      "bytes": 528442
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/reader-minus1": {
+      "count": 3,
+      "bytes": 526905
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/reader-plus1": {
+      "count": 3,
+      "bytes": 527407
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/reader-reference": {
+      "count": 3,
+      "bytes": 524361
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/tangential-candidate.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/tif-baseline": {
+      "count": 28,
+      "bytes": 8638732
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/tif-minus1": {
+      "count": 28,
+      "bytes": 8642734
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/tif-plus1": {
+      "count": 28,
+      "bytes": 8636228
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/tif-reference": {
+      "count": 28,
+      "bytes": 8646798
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/w00-crop-candidates/offset-000.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/w00-crop-candidates/offset-001.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/supervised-surfacefix/w00-crop.tifxyz": {
+      "count": 3,
+      "bytes": 13104
+    },
+    "/workspace/scrolls-env/adaptive-resolution/ag405.tifxyz": {
+      "count": 3,
+      "bytes": 553122
+    }
+  }
+}

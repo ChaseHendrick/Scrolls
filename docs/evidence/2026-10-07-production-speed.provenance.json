@@ -1,0 +1,115 @@
+{
+  "code": [
+    {
+      "branch": "codex/production-cpu-speedup",
+      "commit": "e2fd0c0afb5b3bb4e9f956f8cba648e674299949",
+      "repo": "/workspace/Scrolls",
+      "uncommitted_changes": true
+    }
+  ],
+  "digest": "eaa4db438164ec502cef7abf37c8ad77c679cce911acdd33f315512ee109ab5f",
+  "finished_utc": "2026-10-07T16:02:48Z",
+  "inputs": [
+    {
+      "bytes": 11410,
+      "kind": "file",
+      "path": "kit/_surface_geometry.py",
+      "sha256": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa"
+    },
+    {
+      "bytes": 15287,
+      "kind": "file",
+      "path": "kit/auc.py",
+      "sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa"
+    },
+    {
+      "bytes": 6551,
+      "kind": "file",
+      "path": "kit/layers.py",
+      "sha256": "d8afa0ffacedb6ab57e2760924f55770ccaafac0d6c11fa7e919f158f52707b9"
+    },
+    {
+      "bytes": 8467,
+      "kind": "file",
+      "path": "tests/test_surface_geometry.py",
+      "sha256": "5b9c5ebd1156355d3082acab481cc0d5727f0a6ffc422fdf628b426b2a05f19e"
+    },
+    {
+      "bytes": 7515,
+      "kind": "file",
+      "path": "tests/test_auc_bootstrap_exact.py",
+      "sha256": "b183214da00a2a46b48cb1b29a346d88f229ddcc6fd9212ab4478d8bc2a3f709"
+    },
+    {
+      "bytes": 9881,
+      "kind": "file",
+      "path": "AGENTS.md",
+      "sha256": "b0209c4d5c3212f546f45d1196d10b679605a35e5f50913a4334256e70235624"
+    },
+    {
+      "bytes": 19780,
+      "kind": "file",
+      "path": "README.md",
+      "sha256": "36d8c6a87dd4839cf4c8f5235b12e212f9f292e81b8cc9e8fc49eeb91abf4626"
+    },
+    {
+      "bytes": 41355,
+      "kind": "file",
+      "path": "docs/HANDOFF.md",
+      "sha256": "a1608d7af00c29a7f42609dbf061e9420e2f91010fedb1fb9b25b86ead0a8df4"
+    },
+    {
+      "bytes": 3431,
+      "kind": "file",
+      "path": "docs/TESTING.md",
+      "sha256": "85ede8c6d5f4cb0dcb6b43e7ab4b641674bbdb587bf07b508477f6b2de8185a4"
+    },
+    {
+      "bytes": 128698,
+      "kind": "file",
+      "path": "docs/results.json",
+      "sha256": "99753839be3069b538c4a5510eca3e533610f389650aed178eac52e7edcb0a1c"
+    },
+    {
+      "bytes": 26474,
+      "kind": "file",
+      "path": "docs/scan-status.md",
+      "sha256": "fd7ebc8c5bd4f4a5bc7e9f433b40764b661cf053fac13d45058282ae2f42b7c3"
+    },
+    {
+      "bytes": 20181,
+      "kind": "file",
+      "path": "docs/contrib/progress-prize-2026-10-draft.md",
+      "sha256": "36b78627180bd77e443fd8160e02a837f371b7932381a8d0589eca1d65f28712"
+    },
+    {
+      "bytes": 7293,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-production-speed.md",
+      "sha256": "512bbdd0f0129b81502bc236a190cd30e9b2b4903d44437efdf4b5ac675b0102"
+    },
+    {
+      "bytes": 556158,
+      "files": 74,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-production-speed",
+      "sha256": "9e67bc461fb76308f86678618d69e86a21505adec539544c55549af81484acf6"
+    }
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "release": "6.18.44",
+    "system": "Linux"
+  },
+  "models": [],
+  "note": "Post-run integrity seal. Preserved local pre-timing rules/amendments do not establish external preregistration timestamps. Measured cached-crop CPU correction/scoring operations only; no whole-scroll, inference, flattening or ink-quality gain claimed. Old seals preserved at historical commits.",
+  "operator": {
+    "login": "agent",
+    "name": "Chase Hendrick"
+  },
+  "outputs": [],
+  "run": "2026-10-07-exact-production-cpu-speedups",
+  "schema": 1,
+  "started_utc": null
+}

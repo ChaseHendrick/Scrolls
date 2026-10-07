@@ -1,0 +1,677 @@
+[
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/.zattrs",
+    "bytes": 2,
+    "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/.zgroup",
+    "bytes": 22,
+    "sha256": "7c578b275a7ccb234a2427d173bed71c9e7dc5d413052265b68ab5f9b2812ff3"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/.zarray",
+    "bytes": 327,
+    "sha256": "c179d66bc4dd35b9116bb404dd90428a3e6b4dab5c2479646d6948429a1cdd27"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/.zattrs",
+    "bytes": 2,
+    "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.0.0",
+    "bytes": 246287,
+    "sha256": "322a4182874817bbf2d9337015b81f9ffc9895a73471e6aefee1c8a0ab54d4b9"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.0.1",
+    "bytes": 258007,
+    "sha256": "1056327a502fb3715b2609448aa4b5add46b6c1defad9cd90b2a0e88aa7cdc1d"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.0.2",
+    "bytes": 258096,
+    "sha256": "d4c2d12bb32a3516d5f49a6f9d17daa64c72377aed54cd131aeef1641d3c657d"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.0.3",
+    "bytes": 258061,
+    "sha256": "584531bc30bc494c2150d5fe687870d39eca07b211f848df9ee42ae5fc1d407e"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.0.4",
+    "bytes": 207475,
+    "sha256": "8dcd60d285c0341ea19ed7b0d62ad3a3d55a4f9972a302c60b28b13ca3c753c4"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.1.0",
+    "bytes": 267718,
+    "sha256": "36bbf2ed9e6c0479ee753cf6cda8cbec317f63c11159e3dd7134de92ef63dca1"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.1.1",
+    "bytes": 278544,
+    "sha256": "744afce8aa16ada7093812ba4d5637a1e573d2aea2e2981e35df003527bfc056"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.1.2",
+    "bytes": 278544,
+    "sha256": "9a78aa6960515a954bfca951a5042331d7bbd4df0afe7a3b412f89c61a3b92df"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.1.3",
+    "bytes": 278544,
+    "sha256": "1bd378d2e6fcf47b6ff405b78e7c7ceb28df8ec35ce2642a50a83d34ff1242a5"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.1.4",
+    "bytes": 225591,
+    "sha256": "2f3352be76c081cf526327a573f396e6f1f0480c375f462211f6e53950f2360d"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.2.0",
+    "bytes": 267384,
+    "sha256": "d77bcbd6344f78d52b795bc5cd51266f21b594c71262467fecf5e61995ab53f1"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.2.1",
+    "bytes": 278544,
+    "sha256": "401e5b5e0c2c8ed7e8e17fed6545cff36e43359624df3811f20b9b9570c75953"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.2.2",
+    "bytes": 278544,
+    "sha256": "45ae6be51f44066fde97e73feade64b572c754d46d43a8d7aacd0d837059e1df"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.2.3",
+    "bytes": 278544,
+    "sha256": "4a79c374e693df16e4c85361cd4f2d3aa8cda4785c2c3b3d4c8723dd0184a159"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.2.4",
+    "bytes": 225395,
+    "sha256": "f0a5760ef9cd0a3d1901c31afaf97654c4eda321fbd24f4fc8fdf3299c165a75"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.3.0",
+    "bytes": 267486,
+    "sha256": "d8130a0cf0ab3de162d1924f9b69c02e70830da90c0d55e753f4487b31209291"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.3.1",
+    "bytes": 278544,
+    "sha256": "0d6738c3c600409880e7d63710205514750864cb6b7bab7d81c664e27038a5e4"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.3.2",
+    "bytes": 278544,
+    "sha256": "872f112633427d9fae282ee8c5cfb1a4c9cb10b84c9a14b862ff922cd797de06"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.3.3",
+    "bytes": 278544,
+    "sha256": "b0c592128dad75df3227e80f31390475d7fffcb7017d21d94e5d00a5ceacb10d"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.3.4",
+    "bytes": 225154,
+    "sha256": "8d0c2304495d0781d39ef0d976c4577409b5691c58d5b1d435803e7588bcc004"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.4.0",
+    "bytes": 204734,
+    "sha256": "25a1a482f6e965f705e409fb6371752ea08d09fff5a6eec20b867c56572f8189"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.4.1",
+    "bytes": 214295,
+    "sha256": "ef1773d565be1411f8ef9a33e43c335919ccc6adcc734109b015b6d2c7bb4f18"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.4.2",
+    "bytes": 214604,
+    "sha256": "2c9dc55bb50a6fd15d9ae03b1a1247a90a1327ac01d0dedd5ca90c22f03e40aa"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.4.3",
+    "bytes": 214649,
+    "sha256": "8cc8f36ab5e95f7891caf4b06f0170e34b1d99a239334a2fca6f49bd0fb6f1f0"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr/0/0.4.4",
+    "bytes": 172109,
+    "sha256": "37d120a6cd5dbe43c063bc039bd353c514ca8a77b2b56a1e216d34f246e333a5"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/.zattrs",
+    "bytes": 2,
+    "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/.zgroup",
+    "bytes": 22,
+    "sha256": "7c578b275a7ccb234a2427d173bed71c9e7dc5d413052265b68ab5f9b2812ff3"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/.zarray",
+    "bytes": 327,
+    "sha256": "c179d66bc4dd35b9116bb404dd90428a3e6b4dab5c2479646d6948429a1cdd27"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/.zattrs",
+    "bytes": 2,
+    "sha256": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.0.0",
+    "bytes": 246421,
+    "sha256": "b5ff8971347b63c93d2a5193e5960fe98139c9f0fea586f121163ec209521515"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.0.1",
+    "bytes": 258065,
+    "sha256": "79f5b5b9eac61121a2644fd209aa86628234268c9f7368320e244cc0cf1088f9"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.0.2",
+    "bytes": 258104,
+    "sha256": "5ddbede41a3bd2e260b461dffdf0489f7bf4baba0c6c4e4952709e3a079c6ac6"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.0.3",
+    "bytes": 258040,
+    "sha256": "7adec91add245179fde7972cddb3a230bc13e1b10a97442a5a75735564e1000f"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.0.4",
+    "bytes": 207495,
+    "sha256": "c4091f5c549d57ec2d03d8354ff2c72e504ec3bcd4a083a1cfb2d915e2c10354"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.1.0",
+    "bytes": 267872,
+    "sha256": "0188859f51547a219d1d5439720667bca34069924e1ca4a70f45eaca195ca5b6"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.1.1",
+    "bytes": 278544,
+    "sha256": "60be019b4bc6464000504dc0222e64362c55b0cff00a1c8d3f57c67fcef6f629"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.1.2",
+    "bytes": 278544,
+    "sha256": "f2b8ed9d9632c1c2355191daf7c061a47cab6d0d6e7d476b3a1f52a69b026dd1"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.1.3",
+    "bytes": 278544,
+    "sha256": "9f24e2c5d272fa3228c86848b7c866d9c76a0716f201343385e5cb3d3f16493a"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.1.4",
+    "bytes": 225279,
+    "sha256": "99b274c02f999f77b7d8649eba537e8c1ca1b58fd1178eeb2952df0eb9eb64ec"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.2.0",
+    "bytes": 267455,
+    "sha256": "ce8aa4c5bbc118c6c6caf64fefb3a384760ecce7f56f84e49bc7aae6f719fbec"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.2.1",
+    "bytes": 278544,
+    "sha256": "4581a78bc6a77db52d7764743b76acd8d7d23db0bce2f8752e735dfed014e7d5"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.2.2",
+    "bytes": 278544,
+    "sha256": "632a97de330e2f2ac01973e43afa2db00e9f6937d04be62b5b3adf619a607eb7"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.2.3",
+    "bytes": 278544,
+    "sha256": "3f8db06789f6bae5a3a7e67b3716c6774eee6c8693e83c5bc9965bbc3119f7b3"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.2.4",
+    "bytes": 225552,
+    "sha256": "cd5e607682fc354f24467eac146f9700d08e246a5d8cce54f4410060dd9647e2"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.3.0",
+    "bytes": 267508,
+    "sha256": "27fc038452533a7d8efe5a0c7a329095c0e3e55a8fc52a89b48c6b8ec896a4d7"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.3.1",
+    "bytes": 278544,
+    "sha256": "2d7216f97b4d917eb951ee4e7222b970676d101061b72490c70d514ce469ed86"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.3.2",
+    "bytes": 278544,
+    "sha256": "287b2a6cee13c6797c167e3eccc600441fbe44159a8261ac490db7e1d6f7e9ad"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.3.3",
+    "bytes": 278544,
+    "sha256": "766b91a80a6495df7130bf9be937083e369b9a890103b24e42cec41165f38611"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.3.4",
+    "bytes": 225218,
+    "sha256": "6a3da91fd0a3413c3ab538526ddc42edf9750c156a604844f82233c18c9c8c33"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.4.0",
+    "bytes": 204558,
+    "sha256": "71964afdfab04e863b02b7f2b474861fa636c0d5cb79ab8ccdce3ee0a11bb72e"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.4.1",
+    "bytes": 214282,
+    "sha256": "82eccda7af2d8f62a9110a7c7bcfcb4a667685b7bb3c2e54ac29832ac1aa0d10"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.4.2",
+    "bytes": 214631,
+    "sha256": "3c8a95d70c4716c717481219ad7337972719f0bfd3fd7cc97738df99120c1014"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.4.3",
+    "bytes": 214626,
+    "sha256": "7f6b05f44ee178e746420c8efd03918dbdaac557d774b691acbdd9952e4f3242"
+  },
+  {
+    "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffled_layers.zarr/0/0.4.4",
+    "bytes": 172233,
+    "sha256": "78bbf085dc4812e7c17c6d08cd0a333f215aefa851fc737e1b7d77f88a5ce904"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/.zattrs",
+    "bytes": 3390,
+    "sha256": "31c18f8c5476b910e8ef7696ec30e0b688fdae5b839a49e16cb743acb708a46a"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/.zgroup",
+    "bytes": 19,
+    "sha256": "2b31f1f542fb152b20ff3afe0da0ed76e15b34cd4320854e2d1e6d8671b29d85"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/.zarray",
+    "bytes": 226,
+    "sha256": "dd87c43d92c2e20dc5fda314a37089b62ba134c62d2bf2b7f5faf0355858efac"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.0.0",
+    "bytes": 324238,
+    "sha256": "e75883c1303c3777e0bd1182942ef51b0dd832b747784cd7cc93121c6c89ffa8"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.0.1",
+    "bytes": 324238,
+    "sha256": "e75883c1303c3777e0bd1182942ef51b0dd832b747784cd7cc93121c6c89ffa8"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.0.2",
+    "bytes": 324238,
+    "sha256": "e75883c1303c3777e0bd1182942ef51b0dd832b747784cd7cc93121c6c89ffa8"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.0.3",
+    "bytes": 324238,
+    "sha256": "e75883c1303c3777e0bd1182942ef51b0dd832b747784cd7cc93121c6c89ffa8"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.0.4",
+    "bytes": 341268,
+    "sha256": "76c147ea8bccbba543895b1dda682d471ac5e420b67b9c2a430c5a7ce575bbd2"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.1.0",
+    "bytes": 457210,
+    "sha256": "504e7b72b9e7c164ef193c4289069887dcbf5965ec6c04219464e875db7783f0"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.1.1",
+    "bytes": 458768,
+    "sha256": "31234c0e2ba77264ed35dd53adff221158a2b95e93acca5b17d2c18c7bf27999"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.1.2",
+    "bytes": 458768,
+    "sha256": "df9df3c0dfae70b48c1c3845676f6cbc70ecb97c8070221bd21918492296567c"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.1.3",
+    "bytes": 458768,
+    "sha256": "9794b6fc1ba7a505baa1d8b2ae4f776b160f5cb937be7fd1cc455bf81d8bad09"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.1.4",
+    "bytes": 370265,
+    "sha256": "34fafe376eb0fa614e0caf9512852dc1acaead33c43d72db8f5a41a51f4caa2c"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.2.0",
+    "bytes": 356792,
+    "sha256": "cb79acab593a4d871d989c27f714b6e6829ecbe28ea97513f4a47ea2620f3c5e"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.2.1",
+    "bytes": 439034,
+    "sha256": "c53caae58e4b40eb63559b146d2bcfde74ebdc4ee6a590cd126ecbfa5cf1be65"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.2.2",
+    "bytes": 438083,
+    "sha256": "e29c604c74b4a4858c80fc7620796d5952b64850fe97c9fcbc64c6174d099946"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.2.3",
+    "bytes": 458768,
+    "sha256": "9bf67dabd4a25dbcc3fe7e546a994cb57cbcc13ef27491a186a4230ffecef4bb"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.2.4",
+    "bytes": 370050,
+    "sha256": "10b1356add9b9ae9f454c0f5543da8780f50b2ad47c4e2fc7109f8d6f3868542"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.3.0",
+    "bytes": 381525,
+    "sha256": "c20033800a80ed8d73096ab8fe7075db25405acd2d9672be0a38638d3770505f"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.3.1",
+    "bytes": 458768,
+    "sha256": "47fc364e66d9bd2403322a20a3cd5fe184f2f93d6ff19c5dbf7c8cb259276bf2"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.3.2",
+    "bytes": 458768,
+    "sha256": "3d6cc794208fbc52f2795760e1bfb329372964a327c35cb13716e86854c0cb80"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.3.3",
+    "bytes": 421193,
+    "sha256": "628aeee99124808db2ef33c3b14619fd307b80bf7c71c73693d64ebbf5802ed3"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.3.4",
+    "bytes": 370241,
+    "sha256": "c3df0e2ac79f525b5a6245bf7d7b03d12a507d608a9984506fbd6d1f12bdf632"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.4.0",
+    "bytes": 247295,
+    "sha256": "fb43479f38c3721bd0c42dd41dad67173302b1534849af2a1a2b35fbe981d8da"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.4.1",
+    "bytes": 247295,
+    "sha256": "fb43479f38c3721bd0c42dd41dad67173302b1534849af2a1a2b35fbe981d8da"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.4.2",
+    "bytes": 247295,
+    "sha256": "fb43479f38c3721bd0c42dd41dad67173302b1534849af2a1a2b35fbe981d8da"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.4.3",
+    "bytes": 353398,
+    "sha256": "9512f79e1316a1c8b42f9fe44ee6de98d401d40b7caea4caba0fd169c802466f"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/0/0.4.4",
+    "bytes": 283611,
+    "sha256": "ca933c9ac4dbc41758a3d873001e1f7f339d53701eb5e5ef5278e061878e15fe"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/.zarray",
+    "bytes": 226,
+    "sha256": "73ba0f68ec250b1b7e7e465cf3816162bb603b90a80343d0140f17f6a0e2d97d"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.0.0",
+    "bytes": 343839,
+    "sha256": "a52d4f37ba7f7cc8b28eac77a9c7ea3cf655b03f2758994c1e609d08fd681221"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.0.1",
+    "bytes": 369192,
+    "sha256": "206027285d556c9747057e838ad8bba71113ddeb8330001a2b5d25e6193d23de"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.0.2",
+    "bytes": 188483,
+    "sha256": "e2f6456759bb561979c8394c7988d969f7f1e6c3cca1333450c3688a9501cc57"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.1.0",
+    "bytes": 417209,
+    "sha256": "1290851a68763d8ed867cd5971d88e8adfa6f3ec87ae9d51340dd744137e1550"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.1.1",
+    "bytes": 447846,
+    "sha256": "4fb243d203e292a6c7000173e8421170d0eef1fde360f54862d9a6baa695a984"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.1.2",
+    "bytes": 203321,
+    "sha256": "13fd1df5875046ca67e5aa475abaec260f6968647dcfcf211939b985b1b4f6d4"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.2.0",
+    "bytes": 73318,
+    "sha256": "ce7958aa0c06a0534037820b17f8577b4e38e95d65854863020c0b4a5d6af5cc"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.2.1",
+    "bytes": 154155,
+    "sha256": "1b104b613e1cd9816bd92411468872d64334ec32638816819c1c3e60caf784ba"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/1/0.2.2",
+    "bytes": 76266,
+    "sha256": "ea09806be0de5e368928e38aea5048d23f2951e00efd10290e2e23105327ec8a"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/2/.zarray",
+    "bytes": 226,
+    "sha256": "a58b661a825339b9eb645af8caff90cf7bb04ede38e96d94d8047566ad610e2e"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/2/0.0.0",
+    "bytes": 340133,
+    "sha256": "fbdc90637d5c80d0bfd074e978fbfea83a3452a239facdfcdbf8761dead982d6"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/2/0.0.1",
+    "bytes": 108034,
+    "sha256": "3716bcfad545c232efe391a40b4c9db800186b63e946165bb43f5b65fd3fab76"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/2/0.1.0",
+    "bytes": 49660,
+    "sha256": "ea40657d2ee7999dafdb8c4460684dc7a1f65f70c54657b0bb580b3d20825978"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/2/0.1.1",
+    "bytes": 23007,
+    "sha256": "39fa335232fcd8fbe1f46976eef904a9d80e2f7e9280c6aeb634710d4e1ba5b5"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/3/.zarray",
+    "bytes": 222,
+    "sha256": "f3984cced133b5e08336c556792b6806276082c5a0b6366e77acf683cf48c9b2"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/3/0.0.0",
+    "bytes": 150725,
+    "sha256": "7ab96f30e6180d5d2158e3e911db0c48f02afc86e825e6c92ae8c80903ca2092"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/4/.zarray",
+    "bytes": 222,
+    "sha256": "542ccf49721a83caef907d284bda1e0edf69bf8ae7d332bad990141722671d98"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/4/0.0.0",
+    "bytes": 42757,
+    "sha256": "3293533728fe3d406c94140bb64d2378970ae91e0df6006210962b5540b51e9b"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/5/.zarray",
+    "bytes": 222,
+    "sha256": "9f9531cff067099cbe3b97785c7cdcdb4faf9d86861ba143b04b3b60241b2771"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/render-baseline.zarr/5/0.0.0",
+    "bytes": 11138,
+    "sha256": "697a903d28297601d34f72c78eb8a10456fba5247dfcfad7f5200bdb3c4df93b"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/00.tif",
+    "bytes": 284272,
+    "sha256": "fcdf437268cbf2074f111f0506285a48fafaf30c2fc48c92ad27a9582c6bb54f"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/01.tif",
+    "bytes": 283994,
+    "sha256": "be9dd6111f8330cc793b9cb037ceae8ff79e087720f1c0e642dd20a590e1505c"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/02.tif",
+    "bytes": 283512,
+    "sha256": "58f04af2d19b3b29985622045b3f699c229e5782c263debdc55f0d7d33610a94"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/03.tif",
+    "bytes": 283520,
+    "sha256": "6421e6d4d1a7fe662928e776f03150db8e844130617e20fdf9a4bc122615d1ad"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/04.tif",
+    "bytes": 283960,
+    "sha256": "c40ef6da343b74a997af7aa21dec0b6a3f7ef28db7705f80efbb0446e1ed46ea"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/05.tif",
+    "bytes": 283942,
+    "sha256": "f989d4c13966749a94c4b54c436f5fc5bcc416f9b82f5f3e9863a12f2dc14559"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/06.tif",
+    "bytes": 283284,
+    "sha256": "4e0c3e9fd66e965b5d90fcca460660abe1230a083371b25c458fb623e0715b7b"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/07.tif",
+    "bytes": 281834,
+    "sha256": "83665f9b3adeb03921cd678ebd47c11184c118bc0244210e1a27afb1c2ee66ca"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/08.tif",
+    "bytes": 281194,
+    "sha256": "1e09973824ed264f4f3bb1b325238a96291da0973e25958e1d24d0bff4023c20"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/09.tif",
+    "bytes": 279932,
+    "sha256": "8be71fd5f35b024731a0750d8661a83e6c92522a8e2284c45f2f3ddaa382fe61"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/10.tif",
+    "bytes": 279202,
+    "sha256": "82cf19054c77a12e27accc4996871bd8ed585420ac9d1beca7b2a02b1844c8d4"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/11.tif",
+    "bytes": 277994,
+    "sha256": "9bfb76e53560360441466ce260b4fa5e6456bcacebc0bfc47857141a709d773b"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/12.tif",
+    "bytes": 276636,
+    "sha256": "c13ecd2cb0d9779c54c9616d491fd43f0697426ba821794554dccdc110b3e178"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/13.tif",
+    "bytes": 275652,
+    "sha256": "70d14d1569a6ea097d44201b25e08d0f7d8f9e2c5120387c60ee7f8a70bdb925"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/14.tif",
+    "bytes": 275066,
+    "sha256": "0bf13ed3aafed322956956b29c4f49cdcc562232b735c220170fec2fa1bb6287"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/15.tif",
+    "bytes": 275278,
+    "sha256": "9aebc12b6270bfe9c765e6e0d2eb8dbe85ea1bff6227f2e49066d419d6f5fdc3"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/16.tif",
+    "bytes": 276086,
+    "sha256": "6f7fde8800e9e1fde1b449f2044bbf7c8725e9960af800ddd81a011098f209f3"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/17.tif",
+    "bytes": 277640,
+    "sha256": "87979428efbac8839edb25073a3e517ba5ec86393ff6e7734f2548f72601ebca"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/18.tif",
+    "bytes": 278620,
+    "sha256": "3dc096ff3546c87151d6926dfb12de25327355c17832eb62ac1c6b7faf510821"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/19.tif",
+    "bytes": 279774,
+    "sha256": "780b131d8661930b2d209ad1b1b40aa45180b0e6a9b4016aab3921d2a063adcd"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/20.tif",
+    "bytes": 280666,
+    "sha256": "e6ff47730bdbbb1172905b89aa97ced4bda38b8b382d415a80fa60116d51b78c"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/21.tif",
+    "bytes": 281042,
+    "sha256": "b55582e02fd34889e984da7601128809bc09c0040a95923f89e902e87296dbee"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/22.tif",
+    "bytes": 281676,
+    "sha256": "48435deebc6185125a8719ab0d548653dc427ef2338b5099ca18007f9306809d"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/23.tif",
+    "bytes": 282092,
+    "sha256": "bd44878a1ab16cb8beae407a6c62c058cae0c9f9f657c8d7f156cf8897411a1f"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/24.tif",
+    "bytes": 282234,
+    "sha256": "b69eae1e0808acf968b03578c6f7982c796f73ed0eeeb27bc0d619896f9f8697"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/25.tif",
+    "bytes": 283102,
+    "sha256": "af92e11704e34ad81c6e16d232248abbb12fa3c39c429f473b2f76a8fce0425f"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/26.tif",
+    "bytes": 283442,
+    "sha256": "e9f943609dd740be0f9eda2728f948541b124d4404f1f9b53a8cb11d3ba2e6e9"
+  },
+  {
+    "path": "/workspace/scrolls-env/geometry-validation/layers-baseline/27.tif",
+    "bytes": 284090,
+    "sha256": "591429582af72aefa09569e8c5a9e7831fe1cbfdde9efaf10e8d2ac2d42af3f0"
+  }
+]

@@ -1,0 +1,14 @@
+[
+  {
+    "target": "kit/_surface_geometry.py",
+    "baseline_sha256": "75457b1629e914480cca0be63847f9fc3b004cc5e0c3635a86dde7b42aaae393",
+    "candidate_sha256": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa",
+    "candidate": "/workspace/scrolls-env/production-speed/geometry/optimized/kit/_surface_geometry.py"
+  },
+  {
+    "target": "tests/test_surface_geometry.py",
+    "baseline_sha256": "9ce1aa17574a1aae342d9e5309f143cbee8e055f005eeea07dd605c45ab8cd0c",
+    "candidate_sha256": "5b9c5ebd1156355d3082acab481cc0d5727f0a6ffc422fdf628b426b2a05f19e",
+    "candidate": "/workspace/scrolls-env/production-speed/geometry/optimized/tests/test_surface_geometry.py"
+  }
+]

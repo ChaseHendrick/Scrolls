@@ -10,6 +10,7 @@ The evidence is [`results.json`](results.json), dated logs, the [Mac Phase 0 que
 
 | Volume or segment | Model or task | Device | Recorded status | Evidence and remaining scope |
 | --- | --- | --- | --- | --- |
+| PHerc0841 supervised correction crop; w00 scoring crop | Exact CPU performance optimization | Cloud CPU | Done: repeated full-operation timing and output parity | [Speedup log](logs/2026-10-07-production-speed.md): correction process 2.07x, fresh AUC CLI 1.25x; identical results. Larger surfaces, peak memory and total pipeline throughput remain unmeasured. |
 | PHerc0841 w00/ag896/ag405 | Adaptive bilinear geometry screen | Cloud CPU | Done: local geometry experiment; original primary failed | [Rules, results and independent audit](logs/2026-10-07-adaptive-resolution.md). Hypothetical primitive counts only; conforming export, global geometry and reader checks remain unrun. |
 | Public labelled benchmarks; synthetic controls | Grok lanes A-G review | Cloud CPU review; archived contributed runs | Done: source review and regression checks | [Merge review](evidence/2026-10-07-merge-review/README.md). Preserved historical records carry corrected interpretations; prospective source fixes do not imply fresh inference. |
 | PHerc0139 w035, `20260317000000-w035_2026031718` | `ink_9um` seed42; forward/reverse; CPU vs MPS | Linux CPU; user's M1 Pro CPU/MPS | Done: pipeline and device control | [w035 log](logs/2026-10-07-w035-cpu.md). Training segment; this establishes pipeline reproduction, not generalization. |

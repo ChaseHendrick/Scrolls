@@ -1,0 +1,84 @@
+{
+  "prior_record": "docs/evidence/2026-10-07-merge-review.provenance.json",
+  "digest": "c0fae6f429183f8652d0df40af4857578fa0e5d4121c138bf16ebe83710d1e3b",
+  "historical_commit": "e2fd0c0afb5b3bb4e9f956f8cba648e674299949",
+  "digest_valid": true,
+  "checks": [
+    {
+      "path": ".github/workflows/check.yml",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "AGENTS.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "README.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "docs/HANDOFF.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "docs/TESTING.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "docs/results.json",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "docs/scan-status.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "docs/contrib/progress-prize-2026-10-draft.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": false
+    },
+    {
+      "path": "docs/logs/2026-10-07-adaptive-resolution.md",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "kit/surfacefix.py",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "kit/fibertensor.py",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "kit/viewer.py",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "docs/evidence/2026-10-07-adaptive-resolution",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "docs/evidence/2026-10-07-adaptive-margin",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    },
+    {
+      "path": "docs/evidence/2026-10-07-merge-review",
+      "historical_sha256_matches": true,
+      "current_unchanged": true
+    }
+  ],
+  "scope": "Historical file blobs rehashed from Git. Previously sealed evidence directories rehashed unchanged in current checkout. Old seal and directory bytes not modified."
+}

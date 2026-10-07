@@ -1,0 +1,9 @@
+{
+  "frozen_utc": "2026-10-07T15:53:33.875407+00:00",
+  "root_rule_sha256": "4592e4582849ffd60880758ba6d7341ccd82ccd97939de18ac6f543a0cad912a",
+  "scope": "Parent requests full process wall timing before first comparative timing. Keep original function-level timings and add one fresh AUC CLI subprocess per variant per pair. Parent wall clock covers interpreter startup, imports, actual unchanged kit.cli entrypoint, file reads, scores, bootstrap, JSON output and subprocess shutdown. Wrapper only enforces the same single-core/thread reader settings. No warmup inside the CLI process. Benchmark worker process wall is separately labelled and includes warmup plus multiple operations, not called CLI latency.",
+  "cli_wrapper_sha256": "5661b974bae4e246000f5ab03d0141eba83f2708ae967258a383613a507fb808",
+  "pairs": 6,
+  "orders": "AB,BA,AB,BA,AB,BA",
+  "correctness": "Every parsed CLI field must exactly equal frozen baseline operation output; full function operation dictionaries also exact."
+}

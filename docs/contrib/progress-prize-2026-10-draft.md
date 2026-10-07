@@ -4,7 +4,7 @@ Status: draft, not submitted. Author: **Chase Hendrick**, GitHub **[@ChaseHendri
 
 ## Title
 
-Continuous surface matching and controlled reader validation on public labelled papyrus
+Faster certified surface matching and controlled validation on public labelled papyrus
 
 ## Problem and community fit
 
@@ -52,7 +52,7 @@ The PHerc1447 fine-tune and tricks branches remain partial records. PR #9's hist
 
 ## Software checks and pending real-data validation
 
-The combined repository passed **185 tests**, plus **39 experiment regression tests** in six directories now covered by CI. The surfacefix tests cover recovery and rejection, controls, coverage, provenance, geometry constraints and ambiguous curved-patch matches. Reviews corrected tied ranks, supervision/geometry masking, depth and sign controls, viewer safety and incomplete-run handling. Historical numbers remain qualified rather than silently recomputed. See the [review and research record](../logs/2026-10-07-adaptive-resolution.md) and [merge receipts](../evidence/2026-10-07-merge-review/README.md). Passing software tests does not establish real-scroll correction accuracy.
+The combined repository passed **193 tests**, plus **39 experiment regression tests** in six directories now covered by CI. The surfacefix tests cover recovery and rejection, controls, coverage, provenance, geometry constraints and ambiguous curved-patch matches. Reviews corrected tied ranks, supervision/geometry masking, depth and sign controls, viewer safety and incomplete-run handling. Historical numbers remain qualified rather than silently recomputed. See the [review and research record](../logs/2026-10-07-adaptive-resolution.md) and [merge receipts](../evidence/2026-10-07-merge-review/README.md). Passing software tests does not establish real-scroll correction accuracy.
 
 **Completed real-input validation.** [The PHerc0841 test](../logs/2026-10-07-real-surfacefix-validation.md) rendered four actual meshes with official `vc_render_tifxyz` revision `1e3f4c021f4e` and produced twelve d9v2 maps with matched stride-42 controls. Four regions were evaluable; zero corrections passed and 16 regions were flagged. Eight complete misregistered-reference searches also accepted zero corrections, with two to four evaluable regions each. Excessive and tangential edits were rejected; sources and output coordinates were unchanged. The frozen patch contained zero supervised pixels, so no accuracy or successful correction claim is made. A [separate raw-CT reconstruction test](../logs/2026-10-07-reconstruction-tests.md) passed four known-shift controls but failed its held-back integer-grid translation check for both phase recipes. The two-voxel peak discrepancy is not a precise measurement of physical distortion. Phase ink comparisons remain unrun. These are bounded failure tests, not superiority to Lasagna or calibrated false-positive rates. Further work is CPU-only; GPU training is outside this plan.
 
@@ -65,6 +65,12 @@ The combined repository passed **185 tests**, plus **39 experiment regression te
 **[ATLAS PENDING.]** The [preregistered atlas run](../prereg/2026-10-07-v8in-atlas.md) has no result added here. If it completes as a null, report completed mesh count, coverage, settings and costs, with the scope limited to that reader and those automatic surfaces. A candidate must stay private under [the workflow](../WORKFLOW.md); it must not be described in this draft.
 
 **Relevant upstream work.** [villa PR #1996](https://github.com/ScrollPrize/villa/pull/1996) adds optional support-aware coarse masking. Its public study reports a useful flattening cost/coverage tradeoff. We passed its 12 tests and separately checked the exact helper on cached PHerc0841 meshes: support retained more valid working cells, but some retained quads still failed geometry certification. This is upstream work, with our validation recorded separately; it does not establish improved reader accuracy. [Review and measurements](../logs/2026-10-07-coarse-support-mask.md).
+
+## Measured software throughput
+
+The complete certified surface-correction process improved from 5.2913 to 2.5508 seconds median on the public PHerc0841 test crop: **2.0744x faster**, including interpreter startup, imports, I/O and output writes. Five alternating before/after pairs and control cases preserved every report field, geometry projection and output-file hash. The implementation batches four subdivision children while retaining the original physical thresholds, certificates, ambiguity handling and search budget. This establishes faster execution of the named operation, not better correction accuracy or a full-scroll throughput result. The legacy path remained unchanged in behavior and timing.
+
+Exact block-bootstrap scoring also improved: fresh AUC CLI median 372.00 to 298.12 ms (**1.25x**), with every output field matching in six alternating pairs. The warm full AUC file operation was 2.62x faster. Mathematical regressions, independent review and raw timings are archived in the [performance evidence](../logs/2026-10-07-production-speed.md). Historical layer-export timing claims were corrected, and small input-preloading gains were not presented as inference acceleration. These results used existing cloud CPUs only.
 
 ## Adaptive geometry experiment
 

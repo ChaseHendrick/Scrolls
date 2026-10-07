@@ -1,0 +1,81 @@
+{
+  "timestamp_utc": "2026-10-07T15:49:47.940603+00:00",
+  "official_mask_revision": "d651f04d2f5c73fc5ba46c5f859392391cc59b43",
+  "public_study_revision": "e8623546a3e147e656f3059cf5c8d78db2fe7473",
+  "production_flatten_revision": "fb8c2c4c2705746eefb42e9bb359560906f391e2",
+  "flatten_source_lock_files": 94,
+  "flatten_executable_installed": false,
+  "complete_flatten_source_present": false,
+  "prediction_tracks_cleaned_working_grids_present": false,
+  "cached_meshes": [
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/w00.tifxyz",
+      "scale": [
+        0.05,
+        0.05
+      ],
+      "native_spacing_vox": 20.0,
+      "files": {
+        "meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+        "x.tif": "e9ecdbe1481d9d50303cefe51d83e65dfa129f32e9921a4d28adc5b689326b9e",
+        "y.tif": "ba2567e70adfa7a12b72448aa3b39f176a4156896085b429938e491507eff97f",
+        "z.tif": "14a84cadd3a2216b0a32b3d3cc3852877f17a73c3564041779b95d5496c50762"
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/ag896.tifxyz",
+      "scale": [
+        0.05,
+        0.05
+      ],
+      "native_spacing_vox": 20.0,
+      "files": {
+        "meta.json": "30d5863f2dac76c52ea32141f69dd4303e92324dd3de3d86c7588d9612e44e68",
+        "x.tif": "6da341cd503cc3ceaf96f6f559d7e3c7bc2ef23ddafce6fd60551fb9d070b942",
+        "y.tif": "44006942ed2c9529369a861c34ce2343be62d2743329ccee702a1b6db4e79d8b",
+        "z.tif": "35bcd9970826808800fefe0a62db0e49f0fa4a6f04a1272ca74ef3eae845dfee"
+      }
+    },
+    {
+      "path": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz",
+      "scale": [
+        0.05,
+        0.05
+      ],
+      "native_spacing_vox": 20.0,
+      "files": {
+        "z.tif": "5fcf84a80ba590b3ab218da5aeb7780e4da8763cf45f4c9f7dee73bbfc6a1cb2",
+        "meta.json": "b597fd8d7b08acc38c8ef1bb78d8596fa4b2797610e0923b499932d23d6c8bc0",
+        "x.tif": "912895f58e1572f2b3ee43704e71f1b2e055af7b70f2d904168182a7e7b68e97",
+        "y.tif": "49db4ef0e1fd68b107f12b940840afddbeb367fde1bffdbce99488fd84d86df0"
+      }
+    }
+  ],
+  "cpu_python": "/workspace/scrolls-env/inference-venv/bin/python",
+  "authoritative_cpu_command": [
+    "/workspace/scrolls-env/inference-venv/bin/python",
+    "VILLA_FB8/lasagna/fit.py",
+    "VILLA_FB8/lasagna/configs/flatten_fast.json",
+    "INPUT.json",
+    "--device",
+    "cpu",
+    "--out-dir",
+    "NEW_OUTPUT"
+  ],
+  "required_environment": {
+    "LASAGNA_MAX_PRECISION_FLOAT": "32",
+    "LASAGNA_COMPILE_FLATTEN": "0",
+    "LASAGNA_FUSED_FLATTEN_ADAM_CLAMP": "0",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1"
+  },
+  "blockers": [
+    "Pinned production Lasagna tree and full import/dependency environment absent.",
+    "Published wrapper accepts only source spacing2.5/5/10 at9.6um, refusing cached native20 spacing PHerc0841 meshes.",
+    "Original prediction/track/cleaned working-grid intermediates are not bundled in public study.",
+    "Full V3 regeneration requires192028302bytes of compressed predictions plus189376954bytes of reference XYZ/meta, CPU skeletonization/growth, and >3.375GiB decoded prediction array before copies."
+  ],
+  "available_exact_surfacefix_optimization": "Vectorize per-candidate AABB rejection with identical bounds/threshold and sorted surviving indices before calling unchanged closest_quad/uniqueness/ambiguity checks. Requires equivalence tests and repeated real-input timing before speedup claim.",
+  "heavy_compute_or_payload_download_performed": false
+}

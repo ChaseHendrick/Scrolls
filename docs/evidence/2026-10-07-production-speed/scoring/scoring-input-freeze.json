@@ -1,0 +1,54 @@
+{
+  "baseline_commit": "e2fd0c0afb5b3bb4e9f956f8cba648e674299949",
+  "sources": {
+    "kit/auc.py": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "kit/hpscore.py": "36da84d7421a3cb05eaae09693377ca355a6da1a10110fc5985aca1ecad47e58",
+    "kit/rowscore.py": "b94fc1c1cd7467d950fb4c9ab4bf89c666cd01e520fe7f3e9b7d97de9523f67b"
+  },
+  "inputs": [
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif",
+      "kind": "file",
+      "bytes": 203366,
+      "sha256": "5482eada009b0df000d2d34b3e9c5e8e35091abd5ade8c884aecffc4fa721a12"
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+      "kind": "file",
+      "bytes": 160914,
+      "sha256": "579c7d0fd214048bb742e1092a0bf7343d89fcc629592bc8f1a6e1269f828ea6"
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+      "kind": "directory",
+      "files": 3,
+      "bytes": 14504,
+      "sha256": "c2b9ee91824ff9fd011f0e1b8cbfdcfb5d80dff18dd8d7f2a0c309c719b55b12"
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+      "kind": "directory",
+      "files": 3,
+      "bytes": 12772,
+      "sha256": "24a932f74e3945d993f9ea960cc236348d8a629d753dd534fc16cd7f751009d8"
+    }
+  ],
+  "crop": [
+    2720,
+    3360,
+    2720,
+    3360
+  ],
+  "surface_shape": [
+    4220,
+    4760
+  ],
+  "inner": 64,
+  "bootstrap_draws": 1000,
+  "block_px": 107,
+  "seed": 20261007,
+  "keep_zero": true,
+  "cpu_affinity": [
+    0
+  ]
+}
