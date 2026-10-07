@@ -2,6 +2,30 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (end of day): read this first
+
+**The user had about 8 % of weekly usage left when this was written. Keep the next session small: one task at a time, no fleets of agents, no multi-hour jobs without asking.**
+
+Done today (all on branch `claude/gallant-pasteur-b1y2si`, not yet merged; open a PR to `main` when the user says so):
+
+- README findings 5 to 9 (new): PHerc0841 w00 and ag896 are one sheet traced twice; raw CT brightness is not ink (AUC at most 0.58 per layer); ink readings of one sheet agree only within about 50 um of trace offset; the PHerc0841 benchmark is 3.4 cm² with +-0.01 to +-0.04 AUC sampling noise; collation of two traces as a label-free check. Log: [`logs/2026-10-07-overlap-and-baseline.md`](logs/2026-10-07-overlap-and-baseline.md).
+- New checks in `kit` (tested in `tests/test_overlap.py`): `kit overlap MESH_A MESH_B --voxel-um 9.366 [--labels-a DIR --labels-b DIR]` (same sheet?), `kit collate MESH_A MESH_B MAP_A MAP_B --voxel-um 9.366 [--control-a C --control-b C] [--box Y0 Y1 X0 X1]` (do two traces' maps agree, against a control?), `kit auc ... --bootstrap 300 [--compare MAP2]` (95 % interval, paired difference). Checked on the real PHerc0841 data: they reproduce the log's numbers.
+- Progress Prize draft rewritten to lead with these findings ([`contrib/progress-prize-2026-10-draft.md`](contrib/progress-prize-2026-10-draft.md)). Still: submit near 31 Oct, only with the user's go-ahead.
+- Name removed from the README findings heading (user request).
+
+Still running or unfinished:
+
+- Cloud jobs `v8in1447-w00/ag896/ag405`, `tricks`, `thresholds` may have pushed results to `origin/claude/gallant-pasteur-b1y2si-<job>` (`scripts/experiments/2026-10-07-cloud/<job>/results.json` and `notes.md`). `git fetch origin` and look; fold any results into `docs/results.json`, `docs/tricks.md` and the README (v8in-1447 on PHerc0841 is unpublished). `finetune` finished without running the smoke test (permission denied for Hub code); its notes say w062 has no public labels and most of the 385 GB pre-training set is target scrolls: update `plans/2026-10-07-training.md` from them.
+- w045's raw-brightness baseline ran out of memory; not redone.
+
+What to do next, in order (cheapest first):
+
+1. Merge this branch (PR) so `main` has findings 5 to 9 and the new checks.
+2. Fold the cloud job results (above). No new compute.
+3. On the Mac, when the user wants: `bash scripts/mac-phase0.sh` (now a reproduction of Bullo27 plus the device check), then the preregistered atlas run `scripts/mac-atlas-v8in.sh`. Target outputs stay private.
+4. Use `kit collate` on overlapping automatic meshes of a target scroll as a candidate filter (private outputs); preregister the rule first (`docs/prereg/`).
+5. Before 31 Oct: finish the Progress Prize draft; ask the user about a small villa PR upstreaming `kit auc --bootstrap/--compare` and `kit overlap`.
+
 ## Session 7 October 2026 (afternoon): cloud jobs, two new findings, prior work found
 
 **The user is short on usage (weekly limit warning).** Keep runs short and agents few; ask before starting anything that takes hours.

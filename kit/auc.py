@@ -19,6 +19,14 @@ reads ink, not just brightness.
 
 Pixels where the map is exactly 0 are left out by default: villa and v8in write 0 where
 they made no prediction (outside the surface). The count is reported.
+
+Sampling noise: a segment's labels cover about 1 cm2 (PHerc0841: 0.9 to 1.4 cm2 each), and
+neighbouring pixels are not independent, so an AUC carries more noise than its pixel count
+suggests. `bootstrap` resamples square blocks (default 107 px, 1 mm at 9.366 um) with
+replacement and reports a 95 % interval; `compare` scores a second map on the same pixels
+with the same draws and reports the difference, its interval, and the share of draws in
+which the first map is not ahead. On PHerc0841 a strong map's interval is +-0.01 to +-0.04,
+so a ranking by a smaller margin on one segment is noise (docs/logs/2026-10-07-overlap-and-baseline.md).
 """
 
 from .layers import _zarr
@@ -26,6 +34,8 @@ from .verify import VerifyError, _numpy, load_map
 
 DEFAULT_LEVEL = "2"
 MAX_AXIS_MISMATCH = 0.005
+BLOCK_PX = 107          # 1 mm at 9.366 um
+BOOT_BINS = 1024        # score bins for the resampled AUCs (the point estimate stays exact)
 
 
 def _load(path):
@@ -137,8 +147,76 @@ def score_array(prediction, ink, mask, keep_zero=False, inner=0):
     return result
 
 
+def _edge_mask(np, mask, inner):
+    if inner:
+        mask = mask.copy()
+        mask[:inner] = mask[-inner:] = False
+        mask[:, :inner] = mask[:, -inner:] = False
+    return mask
+
+
+def _auc_hist(np, a, b):
+    """AUC from per-bin counts of ink (a) and background (b), ties half; works on stacks."""
+    below = np.cumsum(b, axis=-1) - b
+    return ((a * below).sum(-1) + 0.5 * (a * b).sum(-1)) / (a.sum(-1) * b.sum(-1))
+
+
+def block_bootstrap(prediction, ink, mask, draws=300, block_px=BLOCK_PX, seed=0, other=None,
+                    keep_zero=False, inner=0):
+    """Block-bootstrap interval of the AUC, and of the difference to `other` (same pixels, same draws)."""
+    np = _numpy()
+    if draws < 20:
+        raise VerifyError("use at least 20 bootstrap draws")
+    if block_px < 1:
+        raise VerifyError("block size must be at least 1 px")
+    mask = _edge_mask(np, mask, inner)
+    use = mask & (np.ones_like(mask) if keep_zero else prediction != 0)
+    maps = [prediction]
+    if other is not None:
+        if other.shape != prediction.shape:
+            raise VerifyError(f"compared map shape {other.shape} differs from the map's {prediction.shape}")
+        use &= (np.ones_like(mask) if keep_zero else other != 0)
+        maps.append(other)
+    ys, xs = np.nonzero(use)
+    if len(ys) == 0:
+        raise VerifyError("no supervised pixels to resample")
+    keys = (ys // block_px) * (prediction.shape[1] // block_px + 1) + xs // block_px
+    blocks, inv = np.unique(keys, return_inverse=True)
+    lab = ink[ys, xs]
+    if lab.all() or not lab.any():
+        raise VerifyError("the mask holds only one class; no AUC to resample")
+    hists = []
+    for m in maps:
+        q, _ = _quantize(np, m)
+        top = 255 if m.dtype == np.uint8 else 65535   # _quantize keeps uint8 as 0..255
+        qb = q[ys, xs] * (BOOT_BINS - 1) // top
+        hi = np.zeros((len(blocks), BOOT_BINS)); hb = np.zeros((len(blocks), BOOT_BINS))
+        np.add.at(hi, (inv[lab], qb[lab]), 1)
+        np.add.at(hb, (inv[~lab], qb[~lab]), 1)
+        hists.append((hi, hb))
+    rng = np.random.default_rng(seed)
+    w = np.stack([np.bincount(rng.integers(0, len(blocks), len(blocks)), minlength=len(blocks))
+                  for _ in range(draws)]).astype(np.float64)
+    stats = [_auc_hist(np, w @ hi, w @ hb) for hi, hb in hists]
+    lo, hi_ = np.percentile(stats[0], [2.5, 97.5])
+    result = {"draws": draws, "block_px": block_px, "blocks": int(len(blocks)), "seed": seed,
+              "ci95": [round(float(lo), 4), round(float(hi_), 4)], "half_width": round(float(hi_ - lo) / 2, 4)}
+    if other is not None:
+        full = [float(_auc_hist(np, hi.sum(0), hb.sum(0))) for hi, hb in hists]
+        diff = stats[0] - stats[1]
+        dlo, dhi = np.percentile(diff, [2.5, 97.5])
+        result["compare"] = {
+            "auc_map": round(full[0], 4), "auc_other": round(full[1], 4), "difference": round(full[0] - full[1], 4),
+            "ci95": [round(float(dlo), 4), round(float(dhi), 4)],
+            "share_draws_map_not_ahead": round(float((diff <= 0).mean()), 4),
+            "pixels": int(len(ys)),
+        }
+    return result
+
+
 def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None,
-                surface_shape=None, keep_zero=False, inner=0):
+                surface_shape=None, keep_zero=False, inner=0, bootstrap=0, block_px=BLOCK_PX,
+                compare=None, seed=0):
     np = _numpy()
     pred = np.squeeze(_load(prediction))
     if pred.ndim != 2:
@@ -157,6 +235,13 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
         if ctrl.shape != pred.shape:
             raise VerifyError(f"control shape {ctrl.shape} differs from the map's {pred.shape}")
         result["control"] = score_array(ctrl, ink, supervised, keep_zero, inner)
+    if bootstrap or compare is not None:
+        other = None
+        if compare is not None:
+            other = np.squeeze(_load(compare))
+            result["files"]["compare"] = str(compare)
+        result["bootstrap"] = block_bootstrap(pred, ink, supervised, bootstrap or 300, block_px, seed, other,
+                                              keep_zero, inner)
     return result
 
 
@@ -178,4 +263,14 @@ def format_result(result):
         f, c = result["forward"]["auc"], result["control"]["auc"]
         if f is not None and c is not None:
             rows.append(f"map minus control: {f - c:+.4f} (near 0 means the model is not reading ink in this direction)")
+    b = result.get("bootstrap")
+    if b:
+        rows.append(f"map AUC 95 % interval {b['ci95'][0]:.4f} to {b['ci95'][1]:.4f} ({b['draws']} draws of "
+                    f"{b['blocks']} blocks of {b['block_px']} px)")
+        c = b.get("compare")
+        if c:
+            verdict = ("ahead beyond sampling noise" if c["ci95"][0] > 0 else
+                       "behind beyond sampling noise" if c["ci95"][1] < 0 else "not distinguishable from noise")
+            rows.append(f"map minus compared map: {c['difference']:+.4f}, 95 % interval {c['ci95'][0]:+.4f} to "
+                        f"{c['ci95'][1]:+.4f} on {c['pixels']} shared px: {verdict}")
     return "\n".join(rows)
