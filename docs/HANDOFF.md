@@ -2,6 +2,20 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Next steps (set 7 October 2026)
+
+Done: the M1 Pro runs villa ink inference on MPS via PR #1865, verified against CPU (see [`logs/2026-10-07-w035-cpu.md`](logs/2026-10-07-w035-cpu.md)). The draft #1865 comment is in [`contrib/villa-1865-m1pro-comment.md`](contrib/villa-1865-m1pro-comment.md); the user posts it.
+
+Next 2 to 3 weeks, the real attempt:
+
+1. **Generalization test.** Run the model on held-out segment PHerc0139 w045 instead of w035. If text rows are readable there, the model finds ink it was not trained on. That is the honest baseline the w035 run could not give (w035's letters are memorized training labels).
+2. **One real First Letters attempt** on PHerc0826, 0358, 0813 or 1545 (the scan atlas ranks these most like scrolls where ink was found).
+   - The step that matters is tracing the papyrus surface in VC3D and **fixing sheet jumps by hand**. Every published null used automatic surfaces that wander between layers; hand-fixed surfaces are the gap nobody has filled.
+   - Write down what counts as ink before looking (`python -m kit run init`), then run both seeds and both directions.
+   - If letters appear: tell no one publicly and follow [`WORKFLOW.md`](WORKFLOW.md).
+
+By 31 Oct: submit to the October Progress Prize (the #1865 verification, `scripts/mac-verify.sh`, and the First Letters write-up, null or not).
+
 ## Session 7 October 2026 (later): kit verify and the Mac runbook
 
 Added `kit verify` (two ink maps, tolerance, a control that must be caught, verdicts pass / pass-uncontrolled / fail / control-not-caught), `kit run record` (command lines and SHA-256), and a CI job with numpy, tifffile and imagecodecs. 35 tests. `kit verify` was run on the real published w035 2.4 µm ink map (462 Mpx): correct verdicts, 36 s, 2.25 GB peak.
