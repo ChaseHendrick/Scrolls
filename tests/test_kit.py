@@ -6,7 +6,7 @@ import unittest
 from datetime import date
 from pathlib import Path
 
-from kit import cli, doctor, ledger, plan, prizes
+from kit import cli, doctor, fetch, ledger, plan, prizes
 
 
 class PrizeSnapshotTest(unittest.TestCase):
@@ -191,3 +191,39 @@ class CliTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FetchTest(unittest.TestCase):
+    PAGE1 = ("<ListBucketResult><Contents><Key>p/a.zarr/.zarray</Key><LastModified>x</LastModified>"
+             "<Size>3</Size></Contents><Contents><Key>p/a.zarr/0/0</Key><Size>5</Size></Contents>"
+             "<NextContinuationToken>tok/1</NextContinuationToken></ListBucketResult>")
+    PAGE2 = "<ListBucketResult><Contents><Key>p/a.zarr/0/1</Key><Size>2</Size></Contents></ListBucketResult>"
+    BODIES = {"p/a.zarr/.zarray": b"abc", "p/a.zarr/0/0": b"12345", "p/a.zarr/0/1": b"xy"}
+
+    def opener(self, url, timeout=None):
+        self.calls.append(url)
+        if "list-type=2" in url:
+            body = self.PAGE2 if "continuation-token=tok%2F1" in url else self.PAGE1
+            return io.BytesIO(body.encode())
+        key = url.split(".com/", 1)[1].replace("%2F", "/")
+        return io.BytesIO(self.BODIES[key])
+
+    def test_paged_listing_download_and_resume(self):
+        self.calls = []
+        with tempfile.TemporaryDirectory() as tmp:
+            objects, fetched, total = fetch.fetch_prefix("p/a.zarr", tmp, workers=2, opener=self.opener,
+                                                         base="https://bucket.example.com")
+            self.assertEqual((objects, fetched, total), (3, 10, 10))
+            self.assertEqual((Path(tmp) / "0" / "0").read_bytes(), b"12345")
+            again = fetch.fetch_prefix("p/a.zarr", tmp, opener=self.opener, base="https://bucket.example.com")
+            self.assertEqual(again[1], 0)
+
+    def test_short_read_is_an_error(self):
+        self.calls = []
+        self.BODIES = dict(self.BODIES, **{"p/a.zarr/0/0": b"123"})
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaises(fetch.FetchError):
+            fetch.fetch_prefix("p/a.zarr", tmp, opener=self.opener, base="https://bucket.example.com")
+
+    def test_unsafe_keys_refused(self):
+        with self.assertRaises(fetch.FetchError):
+            fetch.local_path("/tmp/x", "p/", "p/../../etc/passwd")

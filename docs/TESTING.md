@@ -42,6 +42,7 @@ CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the te
 | `LedgerTest` | Readout hash and tamper detection, legal transitions, candidate cannot go public before `--announced`, null can, costs, slug safety |
 | `CliTest` | End-to-end CLI for `prizes`, `plan` and `run` |
 | `VerifyArraysTest`, `VerifyFilesTest` | Verdict logic (a control that agrees invalidates the check), block statistics equal whole-array numpy, villa-style tiled LZW BigTIFF reading, exit codes, results attached to the ledger. Skipped without numpy and tifffile |
+| `FetchTest` | Paged listing with a `/` in the continuation token, resume by size, short reads rejected, unsafe keys refused |
 | `ProvenanceTest` | SHA-256 of recorded files, missing files refused |
 
 ## When the snapshot changes

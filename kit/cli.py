@@ -5,7 +5,7 @@ import json
 import sys
 from datetime import date
 
-from . import doctor, ledger, plan, prizes, verify
+from . import doctor, fetch, ledger, plan, prizes, verify
 
 
 def cmd_prizes(args):
@@ -36,6 +36,17 @@ def cmd_plan(args):
 def cmd_cost(args):
     total = plan.cost(args.gpu_hours, args.rate, args.cpu_hours, args.cpu_rate, args.storage)
     print(f"${total:.2f}")
+    return 0
+
+
+def cmd_fetch(args):
+    prefix = fetch.W035_9UM if args.prefix == "w035" else args.prefix
+    try:
+        objects, fetched, total = fetch.fetch_prefix(prefix, args.dest, workers=args.workers)
+    except (fetch.FetchError, OSError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(f"{objects} objects, {total / 1e6:.1f} MB total, {fetched / 1e6:.1f} MB downloaded -> {args.dest}")
     return 0
 
 
@@ -110,6 +121,12 @@ def build_parser():
     p.add_argument("--cpu-rate", type=float, default=0.0)
     p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
     p.set_defaults(func=cmd_cost)
+
+    p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
+    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' for the control surface volume")
+    p.add_argument("dest", help="local directory")
+    p.add_argument("--workers", type=int, default=16)
+    p.set_defaults(func=cmd_fetch)
 
     p = sub.add_parser("verify", help="compare two ink maps (e.g. CPU vs MPS) with a control")
     p.add_argument("reference", help="reference map, e.g. the CPU run")

@@ -38,6 +38,8 @@ python -m kit run cost p0826-a --usd 7.15 --what "A10, 6.5 h"
 python -m kit run status p0826-a running
 python -m kit run check p0826-a
 python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif   # needs numpy + tifffile (villa's env)
+python -m kit fetch w035 data/w035_9um.zarr   # mirror a public bucket prefix over HTTPS, resumable
+bash scripts/mac-verify.sh                    # Apple Silicon: CPU vs MPS on the control, one command
 python -m unittest discover -s tests -v
 ```
 
@@ -103,6 +105,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `doctor.py` | `nvidia-smi` or Apple Silicon, memory, disk, tools, `VILLA` and `VC_BIN` checks with sourced thresholds |
 | `plan.py` | Official command templates filled per scroll; cost arithmetic |
 | `ledger.py` | `run.json` records, readout hash, legal status transitions, privacy gate, provenance hashes, attached checks |
+| `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `cli.py` | `python -m kit` entry point |
 

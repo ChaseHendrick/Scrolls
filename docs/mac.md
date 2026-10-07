@@ -44,7 +44,20 @@ git fetch origin pull/1865/head:pr-1865 && git checkout pr-1865
 
 Record the PR and commit in your ledger (`--villa-commit`). Before trusting MPS output, run the PHerc0139 w035 control on the CPU and on MPS and compare the two maps. If they differ by more than a few grey levels, use the CPU result and report the difference on the PR.
 
+## One command
+
+```bash
+git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
+git checkout claude/youthful-heisenberg-gdjttc   # until merged
+brew install uv
+bash scripts/mac-verify.sh
+```
+
+[`scripts/mac-verify.sh`](../scripts/mac-verify.sh) does the whole runbook below: clones villa, builds a Python 3.14 environment with villa's models stack (without its C++ `volume-cartographer` package, which inference does not need), downloads the published w035 surface volume (`kit fetch`, about 1 GB, no AWS CLI) and the seed42 checkpoint, runs the CPU reference on `main` (both directions), runs PR #1865 twice, checks the logs say `Using MPS device` (no silent CPU fallback), runs both `kit verify` comparisons, and prints a summary to paste. Everything lives in `~/scrolls-work` (override with `WORK=`); nothing is uploaded.
+
 ## Runbook: verify MPS against CPU on the control segment
+
+The script above runs exactly this. The published w035 surface volume can replace the render step: `python -m kit fetch w035 ink-dataset/pherc0139/w035/w035_9um.zarr`.
 
 Prerequisite: the PHerc0139 w035 render from `python -m kit plan PHerc0826 --mac`, step 1, at `ink-dataset/pherc0139/w035/w035_9um.zarr` under `villa/vesuvius`. Run everything from `villa/vesuvius` unless noted. `--no-compile` on every run keeps `torch.compile` out of the comparison.
 
