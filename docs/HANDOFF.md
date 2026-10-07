@@ -12,7 +12,7 @@ What changed the plan:
 - PHerc0139 **w045 is held out from both** models (`kit fetch w045`). Run it first with both models; that is the generalization baseline.
 - The organizers stopped asking for sheet-switch detectors (#1937, 2026-09-30). Do not build another checker for a Progress Prize; a hand-fixed surface or tracing that avoids switches is what they want.
 
-Added: `kit rowscore` (Bullo27's score, matches the original to float rounding), `kit plan` step 1b (w045), surface QA (windcheck, tifxyz-doctor), v8in commands, `--flip-normals` on the target render. 52 tests.
+Added: `kit rowscore` (Bullo27's score, matches the original to float rounding), `kit plan` step 1b (w045), surface QA (windcheck, tifxyz-doctor), v8in commands, `--flip-normals` on the target render. 51 tests.
 
 Next, in order:
 
