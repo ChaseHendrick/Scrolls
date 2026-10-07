@@ -15,7 +15,9 @@ class LocalCostTest(unittest.TestCase):
         self.root = Path(self.tmp.name) / "experiments"
         rec = {"slug": "t1", "status": "planned", "history": [], "costs": [], "scroll": "s"}
         ledger.save(rec, self.root)
-        self.env = mock.patch.dict(os.environ, {localcost.ENV_CONFIG: str(Path(self.tmp.name) / "none.json")})
+        config = Path(self.tmp.name) / "config.json"
+        config.write_text("{}")
+        self.env = mock.patch.dict(os.environ, {localcost.ENV_CONFIG: str(config)})
         self.env.start()
         os.environ.pop(localcost.ENV_RATE, None)
 

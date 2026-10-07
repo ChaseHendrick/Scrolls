@@ -271,18 +271,22 @@ def cmd_run(args):
             cmd = args.cmd[1:] if args.cmd[:1] == ["--"] else args.cmd
             code, item = localcost.run(args.slug, cmd, root=root, device=args.device,
                                        watts=args.watts, rate=args.rate)
-            print(f"{args.slug}: {item['wall_s']:.1f} s wall, {item['cpu_s']:.1f} s CPU, "
+            cpu = "unavailable" if item["cpu_s"] is None else f"{item['cpu_s']:.1f} s"
+            print(f"{args.slug}: {item['wall_s']:.1f} s wall, {cpu} CPU, "
                   f"{item['kwh']:.4f} kWh, ${item['usd_exact']:.4f} (exit {code})", file=sys.stderr)
             return code
         elif args.action == "backfill":
-            with open(args.file, encoding="utf-8") as fh:
-                items = json.load(fh)
+            try:
+                with open(args.file, encoding="utf-8") as fh:
+                    items = json.load(fh)
+            except (OSError, ValueError) as exc:
+                raise localcost.CostError(f"cannot read backfill {args.file}: {exc}") from exc
             hours, usd = localcost.backfill(args.slug, items, root=root, rate=args.rate)
             print(f"{args.slug}: backfilled {len(items)} entries, {hours:.3f} h, ${usd:.4f} (estimated from logs)")
         elif args.action == "list":
             for record in ledger.list_runs(root):
                 print(f"{record['slug']:<28} {record['scroll']:<12} {record['status']:<10} ${ledger.total_cost(record):.2f}")
-    except (ledger.LedgerError, localcost.CostError) as exc:
+    except (ledger.LedgerError, localcost.CostError, OSError) as exc:
         print(exc, file=sys.stderr)
         return 2
     return 0
@@ -653,5 +657,17 @@ def build_parser():
 
 
 def main(argv=None):
-    args = build_parser().parse_args(argv)
+    argv = list(sys.argv[1:] if argv is None else argv)
+    parser = build_parser()
+    # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
+    # Parse the wrapper separately, leaving every child flag and literal intact.
+    if argv[:1] == ["run"] and "--" in argv:
+        split = argv.index("--")
+        args = parser.parse_args(argv[:split])
+        if args.action == "local":
+            args.cmd.extend(argv[split + 1:])
+        else:
+            args = parser.parse_args(argv)
+    else:
+        args = parser.parse_args(argv)
     return args.func(args)
