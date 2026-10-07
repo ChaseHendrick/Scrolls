@@ -45,8 +45,9 @@ villa() {  # NAME CKPT
 
 villa ink9um_s42 "$INK"
 villa d9v2 "$D9V2"
+# Budget cut by the coordinating session (about one hour): forward stride 42 is the main map,
+# reverse and depth-shuffled controls at stride 64; no stride-21 run.
 v8in v8in_s42 "$O/layers" 42
-v8in v8in_s42_reverse "$O/layers" 42 --reverse
-v8in v8in_shuf_s42 "$O/layers_shuf" 42
-v8in v8in_s21 "$O/layers" 21
+v8in v8in_s64_reverse "$O/layers" 64 --reverse
+v8in v8in_shuf_s64 "$O/layers_shuf" 64
 echo "all maps done"

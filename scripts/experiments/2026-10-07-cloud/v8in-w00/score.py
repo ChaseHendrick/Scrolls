@@ -63,18 +63,15 @@ for name, label, settings in (("ink9um_s42", "ink_9um seed 42", IK), ("d9v2", "d
     if p(name) and p(name + "_reverse"):
         rows.append(row(label, settings, p(name), p(name + "_reverse"), seconds=TIMES.get(name),
                         notes="seconds cover both directions"))
-rev42, shuf42 = p("v8in_s42_reverse"), p("v8in_shuf_s42")
-if p("v8in_s21"):
-    rows.append(row("v8in", f"{V8}, forward stride 21, reverse stride 42, batch 4", p("v8in_s21"), rev42, shuf42,
-                    seconds=TIMES.get("v8in_s21"),
-                    notes="seconds: forward pass only; shuffled: depth-shuffled layers (kit layers --shuffle 20261007) forward at stride 42"))
+rev42, shuf42 = p("v8in_s64_reverse"), p("v8in_shuf_s64")   # names kept short: controls are stride 64
 if p("v8in_s42"):
-    rows.append(row("v8in (stride 42 reference)", f"{V8}, forward stride 42, reverse stride 42, batch 4", p("v8in_s42"), rev42, shuf42,
-                    seconds=TIMES.get("v8in_s42"), notes="seconds: forward pass only"))
+    rows.append(row("v8in", f"{V8}, forward stride 42, reverse stride 64, batch 4", p("v8in_s42"), rev42, shuf42,
+                    seconds=TIMES.get("v8in_s42"),
+                    notes="seconds: forward pass only; shuffled: depth-shuffled layers (kit layers --shuffle 20261007) forward at stride 64"))
 if shuf42:
-    rows.append(row("v8in depth-shuffled", f"{V8}, layers shuffled with seed 20261007, forward stride 42, batch 4", shuf42,
-                    seconds=TIMES.get("v8in_shuf_s42"), notes="the shuffle control scored as a map on its own"))
-v8f = p("v8in_s21")
+    rows.append(row("v8in depth-shuffled", f"{V8}, layers shuffled with seed 20261007, forward stride 64, batch 4", shuf42,
+                    seconds=TIMES.get("v8in_shuf_s64"), notes="the shuffle control scored as a map on its own"))
+v8f = p("v8in_s42")
 ens = {"v8in + d9v2": ["d9v2"], "v8in + ink_9um": ["ink9um_s42"], "v8in + d9v2 + ink_9um": ["d9v2", "ink9um_s42"]}
 os.makedirs(f"{O}/ens", exist_ok=True)
 for label, others in ens.items():
@@ -84,7 +81,7 @@ for label, others in ens.items():
         tag = "+".join(["v8in"] + others) + "_" + method
         f = ensemble.ensemble_files(f"{O}/ens/{tag}.npy", [v8f] + [p(o) for o in others], method)["out"]
         r = ensemble.ensemble_files(f"{O}/ens/{tag}_reverse.npy", [rev42] + [p(o + "_reverse") for o in others], method)["out"]
-        rows.append(row(f"{label} ({method})", f"kit ensemble --method {method}; v8in forward stride 21, reverse stride 42; villa maps both directions",
+        rows.append(row(f"{label} ({method})", f"kit ensemble --method {method}; v8in forward stride 42, reverse stride 64; villa maps both directions",
                         f, r, notes="reverse maps ensembled the same way as the control"))
 json.dump(rows, open(os.path.join(HERE, "results.json"), "w"), indent=1)
-print(f"{len(rows)} rows -> results.json; reverse v8in s42 took {TIMES.get('v8in_s42_reverse')} s")
+print(f"{len(rows)} rows -> results.json; reverse v8in s64 took {TIMES.get('v8in_s64_reverse')} s")
