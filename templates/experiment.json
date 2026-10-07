@@ -1,0 +1,16 @@
+{
+  "slug": "p0826-a",
+  "created": "2026-10-06T00:00:00+00:00",
+  "scroll": "PHerc0826",
+  "first_letters_volume": "20250821151701",
+  "prize_snapshot": "2026-10-06",
+  "question": "Does ink_9um show rows on a hand-refined GrowPatch surface near the outer wraps?",
+  "readout_rule": "Threshold = median prediction on PHerc0139 w035 labelled ink. Count components >= 0.5 mm in forward depth. Candidate only if components align in rows 2-4 mm tall, absent in reverse depth, on both seeds.",
+  "readout_rule_sha256": "filled in by kit run init",
+  "villa_commit": "git rev-parse HEAD of your villa checkout",
+  "status": "planned",
+  "history": [
+    {"at": "2026-10-06T00:00:00+00:00", "status": "planned", "note": "created"}
+  ],
+  "costs": []
+}

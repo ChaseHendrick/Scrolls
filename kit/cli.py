@@ -1,0 +1,175 @@
+"""Command line: python -m kit {prizes,doctor,plan,cost,run}."""
+
+import argparse
+import json
+import sys
+from datetime import date
+
+from . import doctor, fetch, ledger, plan, prizes, verify
+
+
+def cmd_prizes(args):
+    snapshot = prizes.load()
+    if args.json:
+        print(json.dumps(snapshot, indent=2))
+    else:
+        today = date.fromisoformat(args.today) if args.today else None
+        print(prizes.format_table(snapshot, today))
+    return 0
+
+
+def cmd_doctor(args):
+    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk))
+    print(report)
+    return 1 if worst == doctor.FAIL else 0
+
+
+def cmd_plan(args):
+    try:
+        print(plan.first_letters(args.scroll, batch=args.batch, mac=args.mac))
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
+
+
+def cmd_cost(args):
+    total = plan.cost(args.gpu_hours, args.rate, args.cpu_hours, args.cpu_rate, args.storage)
+    print(f"${total:.2f}")
+    return 0
+
+
+def cmd_fetch(args):
+    prefix = fetch.W035_9UM if args.prefix == "w035" else args.prefix
+    try:
+        objects, fetched, total = fetch.fetch_prefix(prefix, args.dest, workers=args.workers)
+    except (fetch.FetchError, OSError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(f"{objects} objects, {total / 1e6:.1f} MB total, {fetched / 1e6:.1f} MB downloaded -> {args.dest}")
+    return 0
+
+
+def cmd_verify(args):
+    try:
+        result = verify.verify_files(args.reference, args.candidate, args.control,
+                                     args.tolerance, args.max_fraction)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else verify.format_result(result))
+    return {verify.PASS: 0, verify.PASS_UNCONTROLLED: 3}.get(result["verdict"], 1)
+
+
+def cmd_run(args):
+    root = args.root
+    try:
+        if args.action == "init":
+            path, _ = ledger.init(args.slug, args.scroll, args.question, args.readout,
+                                  root=root, villa_commit=args.villa_commit)
+            print(f"created {path} (status planned, readout rule hashed)")
+        elif args.action == "status":
+            record = ledger.set_status(args.slug, args.status, args.note, args.announced, root=root)
+            print(f"{record['slug']}: {record['status']}")
+        elif args.action == "cost":
+            record = ledger.add_cost(args.slug, args.usd, args.what, root=root)
+            print(f"{record['slug']}: total ${ledger.total_cost(record):.2f}")
+        elif args.action == "record":
+            record = ledger.add_provenance(args.slug, args.command, args.file, root=root)
+            print(f"{record['slug']}: recorded command and {len(args.file)} file hash(es)")
+        elif args.action == "check":
+            problems = ledger.check(args.slug, root=root)
+            for problem in problems:
+                print(f"problem: {problem}")
+            if problems:
+                return 1
+            print(f"{args.slug}: ok")
+        elif args.action == "list":
+            for record in ledger.list_runs(root):
+                print(f"{record['slug']:<28} {record['scroll']:<12} {record['status']:<10} ${ledger.total_cost(record):.2f}")
+    except ledger.LedgerError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
+
+
+def build_parser():
+    parser = argparse.ArgumentParser(prog="python -m kit", description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser("prizes", help="open prizes from the dated snapshot")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--today", help="override today's date (YYYY-MM-DD)")
+    p.set_defaults(func=cmd_prizes)
+
+    p = sub.add_parser("doctor", help="check GPU, disk, tools and villa paths")
+    p.add_argument("--disk", default=".", help="path whose free space to check")
+    p.set_defaults(func=cmd_doctor)
+
+    p = sub.add_parser("plan", help="print a First Letters run plan for an eligible scroll")
+    p.add_argument("scroll", help="e.g. PHerc0826")
+    p.add_argument("--batch", type=int, help="inference batch size (default 4, or 1 with --mac)")
+    p.add_argument("--mac", action="store_true", help="Apple Silicon setup: VC3D.app tools, CPU or MPS inference")
+    p.set_defaults(func=cmd_plan)
+
+    p = sub.add_parser("cost", help="estimate run cost in USD")
+    p.add_argument("--gpu-hours", type=float, required=True)
+    p.add_argument("--rate", type=float, required=True, help="USD per GPU hour")
+    p.add_argument("--cpu-hours", type=float, default=0.0)
+    p.add_argument("--cpu-rate", type=float, default=0.0)
+    p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
+    p.set_defaults(func=cmd_cost)
+
+    p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
+    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' for the control surface volume")
+    p.add_argument("dest", help="local directory")
+    p.add_argument("--workers", type=int, default=16)
+    p.set_defaults(func=cmd_fetch)
+
+    p = sub.add_parser("verify", help="compare two ink maps (e.g. CPU vs MPS) with a control")
+    p.add_argument("reference", help="reference map, e.g. the CPU run")
+    p.add_argument("candidate", help="map to check, e.g. the MPS run")
+    p.add_argument("--control", help="a map that must NOT agree, e.g. the reverse-direction output")
+    p.add_argument("--tolerance", type=float, default=verify.DEFAULT_TOLERANCE, help="grey levels (0-255)")
+    p.add_argument("--max-fraction", type=float, default=verify.DEFAULT_MAX_FRACTION,
+                   help="largest fraction of pixels allowed beyond the tolerance")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug", help="attach the result to this experiment")
+    p.add_argument("--name", default="device-agreement")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_verify)
+
+    p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("init")
+    a.add_argument("slug")
+    a.add_argument("--scroll", required=True)
+    a.add_argument("--question", required=True)
+    a.add_argument("--readout", required=True, help="what will count as ink, written before looking")
+    a.add_argument("--villa-commit")
+    a = actions.add_parser("status")
+    a.add_argument("slug")
+    a.add_argument("status", choices=ledger.STATUSES)
+    a.add_argument("--note", default="")
+    a.add_argument("--announced", action="store_true", help="the prize result was officially announced")
+    a = actions.add_parser("cost")
+    a.add_argument("slug")
+    a.add_argument("--usd", type=float, required=True)
+    a.add_argument("--what", required=True)
+    a = actions.add_parser("record", help="store a command line and SHA-256 of its files")
+    a.add_argument("slug")
+    a.add_argument("--command", required=True)
+    a.add_argument("--file", action="append", default=[], help="checkpoint or output to hash; repeatable")
+    a = actions.add_parser("check")
+    a.add_argument("slug")
+    actions.add_parser("list")
+    p.set_defaults(func=cmd_run)
+    return parser
+
+
+def main(argv=None):
+    args = build_parser().parse_args(argv)
+    return args.func(args)
