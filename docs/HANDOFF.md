@@ -15,6 +15,8 @@ Done today (all on branch `claude/gallant-pasteur-b1y2si`, not yet merged; open 
 
 Still running or unfinished:
 
+- Partial cloud results (w00 only) are in [`logs/2026-10-07-cloud-partial.md`](logs/2026-10-07-cloud-partial.md): Reader v2 has by far the highest reverse (0.729) and shuffle (0.568) controls, so much of its lead is not depth-ordered ink; check on ag405 first. v8in-1447 equals base v8in on w00 (0.838).
+
 - Cloud jobs `v8in1447-w00/ag896/ag405`, `tricks`, `thresholds` may have pushed results to `origin/claude/gallant-pasteur-b1y2si-<job>` (`scripts/experiments/2026-10-07-cloud/<job>/results.json` and `notes.md`). `git fetch origin` and look; fold any results into `docs/results.json`, `docs/tricks.md` and the README (v8in-1447 on PHerc0841 is unpublished). `finetune` finished without running the smoke test (permission denied for Hub code); its notes say w062 has no public labels and most of the 385 GB pre-training set is target scrolls: update `plans/2026-10-07-training.md` from them.
 - w045's raw-brightness baseline ran out of memory; not redone.
 
