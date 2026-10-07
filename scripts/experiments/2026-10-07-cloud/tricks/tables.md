@@ -1,5 +1,7 @@
 Forward AUC (reversed AUC in brackets) / `hp_r` (letter-scale r). Shuffle rows are forward only. Mean: over the three PHerc0841 crops, forward AUC / `hp_r`.
 
+Descriptive crop averages: w00 and ag896 are different patches of one shared sheet. Related readers and these crops are not independent replications; a three-crop mean weights that sheet twice.
+
 | Map | 0841 w00 | 0841 ag896 | 0841 ag405 | w045 | Mean 0841 AUC / hp_r |
 | --- | --- | --- | --- | --- | --- |
 | s42 | 0.8061 (0.536) / +0.029 | 0.6594 (0.558) / -0.004 |  |  |  |
@@ -48,4 +50,4 @@ Lead (d): default window, 4-window mean, best single window chosen with the labe
 | d9v2 | 0841-w00 | 0.8994 / +0.015 | 0.9198 / +0.019 | z8-27 0.9280 | z3-23 +0.019 | +0.0204, +0.003 | -0.0082, -0.000 |
 | d9v2 | 0841-ag896 | 0.8230 / +0.017 | 0.8317 / +0.017 | z5-25 0.8447 | z3-23 +0.021 | +0.0087, -0.000 | -0.0130, -0.004 |
 
-Over 6 reader-crop cases on PHerc0841: default 0.7821 / +0.0150; 4-window mean 0.8199 / +0.0166; best window by AUC 0.8268; best window by hp_r +0.0238. hp_r: mean above default in 4 of 6, at or above the best window in 1 of 6.
+Over 6 reader-crop cases on PHerc0841: default 0.7821 / +0.0150; 4-window mean 0.8199 / +0.0166; best window by AUC 0.8268; best window by hp_r +0.0238. hp_r: mean above default in 4 of 6, at or above the best window in 1 of 6. These are correlated descriptive measurements, not independent replications or a significance test; uncertainty in the differences was not measured.

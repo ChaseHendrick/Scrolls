@@ -106,6 +106,8 @@ def mean(name, i):
 
 out = ["Forward AUC (reversed AUC in brackets) / `hp_r` (letter-scale r). Shuffle rows are forward only. "
        "Mean: over the three PHerc0841 crops, forward AUC / `hp_r`.", "",
+       "Descriptive crop averages: w00 and ag896 are different patches of one shared sheet. "
+       "Related readers and these crops are not independent replications; a three-crop mean weights that sheet twice.", "",
        "| Map | 0841 w00 | 0841 ag896 | 0841 ag405 | w045 | Mean 0841 AUC / hp_r |", "| --- | --- | --- | --- | --- | --- |"]
 for name in scores:
     ma, mh = mean(name, 0), mean(name, 2)
@@ -134,6 +136,7 @@ if agg.get("all"):
     out += ["", f"Over {n} reader-crop cases on PHerc0841: default {f([a[0][0] for a in L]):.4f} / {f([a[0][2] for a in L]):+.4f}; "
             f"4-window mean {f([a[1][0] for a in L]):.4f} / {f([a[1][2] for a in L]):+.4f}; "
             f"best window by AUC {f([a[2][0] for a in L]):.4f}; best window by hp_r {f([a[3][2] for a in L]):+.4f}. "
-            f"hp_r: mean above default in {sum(a[1][2] > a[0][2] for a in L)} of {n}, at or above the best window in {sum(a[1][2] >= a[3][2] for a in L)} of {n}."]
+            f"hp_r: mean above default in {sum(a[1][2] > a[0][2] for a in L)} of {n}, at or above the best window in {sum(a[1][2] >= a[3][2] for a in L)} of {n}. "
+            "These are correlated descriptive measurements, not independent replications or a significance test; uncertainty in the differences was not measured."]
 open(os.path.join(HERE, "tables.md"), "w").write("\n".join(out) + "\n")
 print("\n".join(out))
