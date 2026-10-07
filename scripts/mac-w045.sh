@@ -229,6 +229,18 @@ EOF
   printf -v "T_$name" %s "$(( SECONDS - start ))"
 }
 
+CROP_LOG="$WORK/logs/${NAME}_crop_gpu.log"   # per-tile speed for the stride estimate
+W045_DEVICE="$WORK/w045/results/v8in_device.json"
+# The device check answers one question (does v8in on this Mac's GPU match its CPU?), so other
+# segments reuse w045's pass rather than spend another CPU pass (40 min on an M1 Pro) on it.
+# DEVICE_CHECK=1 forces it; fp16 always gets its own check.
+if [[ "$SEGMENT" != w045 && "${DEVICE_CHECK:-0}" != 1 && "$FRESH" != 1 && "${V8IN_FP16:-0}" != 1 && "$SMOKE" != 1 ]] \
+   && "$PY" -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))["verdict"] == "pass" else 1)' "$W045_DEVICE" 2>/dev/null; then
+  say "5/7 v8in device check: reusing the pass from w045 (DEVICE_CHECK=1 to redo it here)"
+  cp "$W045_DEVICE" "$OUT/results/v8in_device.json"
+  CROP_LOG="$WORK/logs/w045_crop_gpu.log"
+  T_crop_cpu="w045"; T_crop_gpu="w045"
+else
 say "5/7 v8in device check on a crop ($(( CROP[1] - CROP[0] )) px): CPU vs $V8IN_DEVICE, reverse as the control"
 v8in crop_cpu "$OUT/crop_layers" cpu 64 fwd --batch-size "$BATCH"
 v8in crop_gpu "$OUT/crop_layers" "$V8IN_DEVICE" 64 fwd "${FP16[@]}"
@@ -239,6 +251,7 @@ set +e
 set -e
 [[ "$VDEV" == 0 || "$EXPECT_GPU" != "mps" ]] || { echo "v8in on MPS does not match the CPU${V8IN_FP16:+ (fp16 on: try again without V8IN_FP16)}; stopping before the full run" >&2; exit 1; }
 echo "crop: cpu ${T_crop_cpu}s, $V8IN_DEVICE ${T_crop_gpu}s"
+fi
 
 V8IN_MAP=v8in
 INK_AUC=("${AUC_CROP[@]}")   # where ink_9um maps are scored; QUICK narrows it to the crop
@@ -269,7 +282,7 @@ say "6/7 v8in over the segment on $V8IN_DEVICE, both directions"
 if [[ -z "$STRIDE" && "$SMOKE" == "1" ]]; then
   STRIDE=64
 elif [[ -z "$STRIDE" ]]; then   # pick the finest stride whose estimate fits V8IN_HOURS, from the measured speed
-  STRIDE="$("$PY" - "$OUT/layers" "$WORK/logs/${NAME}_crop_gpu.log" "${V8IN_HOURS:-4}" "$V8IN" <<'EOF'
+  STRIDE="$("$PY" - "$OUT/layers" "$CROP_LOG" "${V8IN_HOURS:-4}" "$V8IN" <<'EOF'
 import re, sys
 sys.path.insert(0, sys.argv[4])
 import numpy as np, tifffile

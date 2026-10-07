@@ -42,11 +42,14 @@ Mac (Apple M1 Pro, MPS):
 
 | | AUC as stored | AUC reversed |
 | --- | --- | --- |
-| `ink_9um` seed 42 via villa PR #1865, crop | **[MAC]** | **[MAC]** |
-| v8in, crop, stride 21 | **[MAC]** | **[MAC]** |
+| `ink_9um` seed 42 via villa PR #1865, w045 crop | 0.9136 | 0.3704 |
+| `ink_9um` seed 43 via villa PR #1865, w045 crop | 0.9098 | 0.4347 |
+| v8in, w045 crop, stride 21 | 0.7382 | 0.3269 |
 | v8in, PHerc0841 crops (w00, ag896, ag405) | **[MAC]** | **[MAC]** |
-| v8in CPU vs MPS (`kit verify`, reverse as control; a second-chip confirmation of afraazali42's M3 Max result) | **[MAC]** verdict, max diff, Pearson | |
-| Time, M1 Pro | **[MAC]** | |
+| v8in CPU vs MPS (`kit verify`, reverse as control; a second-chip confirmation of afraazali42's M3 Max result) | pass, max diff 1, Pearson 0.99999998 | |
+| Time, M1 Pro | `ink_9um` about 11 min per seed (whole segment, both directions); v8in about 1.1 s per tile on MPS, 25 s on CPU | |
+
+MPS `ink_9um` equals the CPU reference to four decimals. On w045, a segment of a main `ink_9um` training scroll, v8in reads ink but scores well below `ink_9um`; v8in saw about 1 % of its training patches from PHerc0139.
 
 **[ATLAS]** If the preregistered v8in run over the 81 public automatic meshes of PHerc0813, 0358 and 0826 ([preregistration](../prereg/2026-10-07-v8in-atlas.md)) is a null: a short paragraph with the count, the meshes inspected, stride, time, and the statement that it is a null for v8in on automatic surfaces only.
 

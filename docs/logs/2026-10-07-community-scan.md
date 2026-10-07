@@ -113,3 +113,20 @@ A web search (GitHub's search API is blocked from this session) found work the f
 - Also: [ibarapascal/ink-disagree](https://github.com/ibarapascal/ink-disagree) (model disagreement against the 20260918 labels; notes PHerc0841's validation masks cover 66 to 74 % of the canvas), [TAUIL-Abd-Elilah/corpus-ink-survey](https://github.com/TAUIL-Abd-Elilah/corpus-ink-survey) (237 cm² of public First Letters surface, no text), [MasterLaplace/LplVesuvius](https://github.com/MasterLaplace/LplVesuvius) (PHerc0358 issues), [Svyable/scrollq](https://github.com/Svyable/scrollq/issues/172) (v8in reproduction on PHerc1447, open), [Ritwik-Gaur/vesuvius-energy-transfer](https://github.com/Ritwik-Gaur/vesuvius-energy-transfer).
 
 What is still unpublished, as far as these searches reach: v8in scored against labels on PHerc0841 (or w045), and v8in on the eligible scrolls' meshes.
+
+## First Mac result: v8in vs ink_9um on the w045 crop (Sourced fact: the user's run)
+
+`QUICK=1 bash scripts/mac-w045.sh` on the user's Apple M1 Pro (macOS 27.0, torch 2.14.1, MPS), villa PR #1865 at `6723ad158`, v8in `d89166b` (model.safetensors sha256 `3b94548d…88c4cd`), batch 4, fp32. All AUCs on the 640 px crop (rows 3840 to 4480, columns 2560 to 3200):
+
+| Map | AUC as stored | AUC reversed | Ink / background px |
+| --- | --- | --- | --- |
+| `ink_9um` seed 42 (MPS) | 0.9136 | 0.3704 | 78,047 / 157,531 |
+| `ink_9um` seed 43 (MPS) | 0.9098 | 0.4347 | 78,047 / 157,531 |
+| v8in, stride 21 (MPS) | 0.7382 | 0.3269 | 73,200 / 155,629 |
+
+- MPS `ink_9um` equals the CPU reference to four decimals on both seeds; PR #1865 is exact on this input.
+- v8in CPU vs MPS on the crop (stride 64): pass, max |diff| 1, Pearson 0.99999998. A second-chip confirmation of afraazali42's M3 Max result.
+- Times: `ink_9um` 649 s and 679 s for both directions over the whole segment; v8in 862 s and 926 s for 784 tiles each (about 1.1 to 1.2 s per tile); v8in on the M1 Pro's CPU 2,497 s for 100 tiles (25 s per tile).
+- v8in leaves the outer few pixels of the crop unpredicted (tiles must lie fully inside), hence its slightly smaller pixel counts.
+
+Reading (Interpretation): v8in reads ink on w045 (above chance as stored, below it reversed) but well below `ink_9um` (0.74 against 0.91). This test favours `ink_9um`: PHerc0139 is a main `ink_9um` training scroll, while v8in saw four small PHerc0139 segments (about 5,600 of its 508,000 training patches). The fair test is PHerc0841, which neither model saw.

@@ -26,7 +26,9 @@ Ways to contribute, cheapest first (propose each to the user; do none unasked):
 - **Upstream the scoring tool:** villa has no simple command that scores an ink map against a segment's labels with a reverse control. A small tested PR there is the most "used by others" piece.
 - **Progress Prize write-up** at the deadline.
 
-Next: the user's `QUICK=1` w045 run (in progress at the time of writing) prints a summary to compare with the CPU reference (crop 0.914 / 0.910). Then the PHerc0841 quick runs. The user must `git pull` first: the Mac checkout predates `SEGMENT=` and resumable reruns.
+**w045 result (user's M1 Pro, 2026-10-07):** on the crop, `ink_9um` 0.9136 / 0.9098 (equal to the CPU reference), v8in 0.7382 (reversed 0.3269). v8in reads ink but trails `ink_9um` on this seen-scroll test, which favours `ink_9um`. Details in the log.
+
+Next: `git pull`, then `SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh`, then `0841-ag896` and `0841-ag405`. Other segments reuse w045's device check, so each run is about 20 min of `ink_9um` plus about 30 min of v8in. That decides whether v8in is the better reader on an unseen scroll, and therefore whether the atlas run should use it.
 
 ## Session 7 October 2026 (late night): first target run, preregistered
 
