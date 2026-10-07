@@ -1,0 +1,10 @@
+test_docs_json_parses (test_repo.RepoTest.test_docs_json_parses) ... ok
+test_documented_kit_commands_exist (test_repo.RepoTest.test_documented_kit_commands_exist) ... ok
+test_mac_scripts_are_bash_32 (test_repo.RepoTest.test_mac_scripts_are_bash_32) ... ok
+test_no_long_dashes (test_repo.RepoTest.test_no_long_dashes) ... ok
+test_shell_scripts_parse (test_repo.RepoTest.test_shell_scripts_parse) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.070s
+
+OK

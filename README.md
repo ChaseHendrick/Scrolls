@@ -136,6 +136,8 @@ Further controlled tests repaired a continuous-surface matching defect and compl
 
 Partial results: the PHerc1447 fine-tune on w00 is recorded in [PR #7](https://github.com/ChaseHendrick/Scrolls/pull/7), and the two-crop tricks table in [PR #8](https://github.com/ChaseHendrick/Scrolls/pull/8). Matched controls and the complete ag405 independent-surface comparison remain pending. v8in itself on PHerc0841 is published: Bullo27, [v8in-12gb](https://github.com/Bullo27/v8in-12gb) (2026-10-01), AUC 0.837, 0.807 and 0.810 on w00, ag896 and ag405, ahead of `ink_9um` there; the Mac run reproduces it.
 
+A [further adaptive-geometry experiment and PR review](docs/logs/2026-10-07-adaptive-resolution.md) preserves a failed primary retention test alongside promising local coarsening results. Frozen evidence and an independent hash audit accompany it.
+
 ## Guidelines
 
 - [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): cite URLs; no claimed letters; candidates stay private; tools need tests.

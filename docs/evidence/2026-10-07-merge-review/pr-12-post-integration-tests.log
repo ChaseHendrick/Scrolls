@@ -1,0 +1,76 @@
+test_autocorr_finds_period (test_laneb.LaneB.test_autocorr_finds_period) ... ok
+test_axial_diff (test_laneb.LaneB.test_axial_diff) ... ok
+test_constant_correlation_null_is_unavailable (test_laneb.LaneB.test_constant_correlation_null_is_unavailable) ... ok
+test_empty_and_constant_autocorrelation_abstain (test_laneb.LaneB.test_empty_and_constant_autocorrelation_abstain) ... ok
+test_hole_invalidates_neighbor_differential_stencils (test_laneb.LaneB.test_hole_invalidates_neighbor_differential_stencils) ... ok
+test_known_high_pass_ignores_unknown_values_and_requires_support (test_laneb.LaneB.test_known_high_pass_ignores_unknown_values_and_requires_support) ... ok
+test_normals_of_plane (test_laneb.LaneB.test_normals_of_plane) ... ok
+test_orientation_of_stripes (test_laneb.LaneB.test_orientation_of_stripes) ... ok
+test_otsu_splits_two_modes (test_laneb.LaneB.test_otsu_splits_two_modes) ... ok
+test_shift_null_breaks_correlation (test_laneb.LaneB.test_shift_null_breaks_correlation) ... ok
+test_streamed_digest_includes_short_last_chunk_and_empty_file (test_laneb.LaneB.test_streamed_digest_includes_short_last_chunk_and_empty_file) ... ok
+test_stroke_width_of_bars (test_laneb.LaneB.test_stroke_width_of_bars) ... ok
+test_stroke_width_survives_when_background_is_known (test_laneb.LaneB.test_stroke_width_survives_when_background_is_known) ... ok
+test_unavailable_statistics_are_strict_json_null (test_laneb.LaneB.test_unavailable_statistics_are_strict_json_null) ... ok
+test_unknown_annotation_border_cannot_create_label_orientation (test_laneb.LaneB.test_unknown_annotation_border_cannot_create_label_orientation) ... ok
+test_unknown_background_cannot_determine_stroke_width (test_laneb.LaneB.test_unknown_background_cannot_determine_stroke_width) ... ok
+
+----------------------------------------------------------------------
+Ran 16 tests in 0.192s
+
+OK
+test_docs_json_parses (test_repo.RepoTest.test_docs_json_parses) ... ok
+test_documented_kit_commands_exist (test_repo.RepoTest.test_documented_kit_commands_exist) ... ok
+test_mac_scripts_are_bash_32 (test_repo.RepoTest.test_mac_scripts_are_bash_32) ... ok
+test_no_long_dashes (test_repo.RepoTest.test_no_long_dashes) ... ok
+test_shell_scripts_parse (test_repo.RepoTest.test_shell_scripts_parse) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.053s
+
+OK
+usage: python -m kit [-h]
+                     {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,run}
+                     ...
+
+Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc
+,hpscore,overlap,collate,surfacefix,ensemble,gate,layers,shuffle,provenance,co
+mpute,run}.
+
+positional arguments:
+  {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,run}
+    prizes              open prizes from the dated snapshot
+    doctor              check GPU, disk, tools and villa paths
+    plan                print a First Letters run plan for an eligible scroll
+    cost                estimate run cost in USD
+    fetch               mirror a public bucket prefix over HTTPS (no AWS CLI
+                        needed)
+    verify              compare two ink maps (e.g. CPU vs MPS) with a control
+    rowscore            text-row periodicity triage score for ink maps
+                        (Bullo27's method)
+    auc                 pixel AUC of an ink map against a segment's published
+                        labels
+    hpscore             letter-scale score: 48 um high-passed correlation with
+                        the labels (Scheirer)
+    overlap             do two segments trace the same papyrus? mesh gaps and
+                        label agreement
+    collate             two traces of one sheet as two copies: do their ink
+                        maps agree, against a control?
+    surfacefix          experimental region flags and bounded, controlled
+                        surface corrections
+    provenance          who ran what, when, from which inputs: a record and
+                        one digest
+    compute             machine time per run, from provenance records
+                        (GENChase-style ledger)
+    ensemble            average several ink maps of one surface (mean, or rank
+                        mean across models)
+    gate                Gate A: rank readers on PHerc0841's three crops by the
+                        roadmap's rule
+    layers              export a surface-volume zarr to 00.tif, 01.tif, ...
+                        (v8in's input)
+    shuffle             depth-shuffle control: copy a surface volume with its
+                        layers in a fixed random order
+    run                 local experiment ledger (experiments/, gitignored)
+
+options:
+  -h, --help            show this help message and exit

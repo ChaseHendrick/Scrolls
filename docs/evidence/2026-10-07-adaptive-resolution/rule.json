@@ -1,0 +1,44 @@
+{
+  "schema": 1,
+  "scope": "Same-sheet PHerc0841 w00/ag896 cross-trace/query geometry diagnostic; no independent sheet, reader, ink, flattening or exported topology claim",
+  "input_hashes": {
+    "/workspace/scrolls-env/adaptive-resolution/audit.py": "4d6f25a9a200991ced2a1ad7772457ba7b42e774a8f660c54f50fd4ef760493b",
+    "/workspace/scrolls-env/adaptive-resolution/geometry_snapshot.py": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/x.tif": "e9ecdbe1481d9d50303cefe51d83e65dfa129f32e9921a4d28adc5b689326b9e",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/y.tif": "ba2567e70adfa7a12b72448aa3b39f176a4156896085b429938e491507eff97f",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/z.tif": "14a84cadd3a2216b0a32b3d3cc3852877f17a73c3564041779b95d5496c50762",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/x.tif": "6da341cd503cc3ceaf96f6f559d7e3c7bc2ef23ddafce6fd60551fb9d070b942",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/y.tif": "44006942ed2c9529369a861c34ce2343be62d2743329ccee702a1b6db4e79d8b",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/z.tif": "35bcd9970826808800fefe0a62db0e49f0fa4a6f04a1272ca74ef3eae845dfee",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/meta.json": "30d5863f2dac76c52ea32141f69dd4303e92324dd3de3d86c7588d9612e44e68"
+  },
+  "native_voxel_um": 9.366,
+  "patch": "Disjoint 2x2 fine cells/3x3 native vertices, starts even row/col; incomplete boundary strips retain native representation",
+  "selection": "All four fine quads and coarse quad pass frozen Jacobian certificate; all nine corners valid; maximum same-UV corner discrepancy <=25um",
+  "certificate": "Coarse-minus-fine is bilinear on each fine cell; norm bounded by max of its four vertex discrepancies by convexity",
+  "max_error_um": 25,
+  "correspondence_limit_um": 50,
+  "minimum_primitive_reduction": 0.2,
+  "minimum_local_correspondence_retention": 0.95,
+  "query": "40 fresh seeded complete fine patches per trace; UV=(.37,.41) coarse coordinates; 0,+40,-40um along native local normal. Same source points for native/adaptive/uniform2/random-count-matched masks. No prior48 vertex query overlap.",
+  "query_seed": 2041508,
+  "random_mask_seed": 971142,
+  "dense_seed": 616895,
+  "dense": "Up to64 selected and64 unselected complete patches per trace, independent17x17UV samples; error may not exceed maxcorner bound plus1e-7um",
+  "controls": [
+    "uniformtranslation plane",
+    "nonplanar bilinear exact representation",
+    "saddle zero representation error but correspondence must abstain",
+    "bowed center error exclusion",
+    "missing middle vertex exclusion"
+  ],
+  "failure": "Primary diagnostic fails if ag896 primitive reduction<20%, or local retained correspondence<95%, any dense bound violation, or any synthetic control failure. Keep failed hypotheses. No parameter retuning.",
+  "limitations": "ag405 XYZ not cached; w00/ag896 are same physical sheet and have been measured previously. Fresh prospective queries not an untouched-scan holdout. Primitive reduction ignores conformity/hanging-edge transitions; no manifold or runtime saving inferred.",
+  "resources": {
+    "threads": 1,
+    "max_seconds": 300,
+    "max_peak_rss_bytes": 536870912,
+    "network_bytes": 0
+  }
+}

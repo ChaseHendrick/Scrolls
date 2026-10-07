@@ -1,0 +1,132 @@
+[
+  {
+    "archive_path": "pr-inventory.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-inventory.json",
+    "sha256": "2d6f5c8c986ab7d524c0d892bb7f3c9e050d48bb3a70151eba40a0c056ac4ef4"
+  },
+  {
+    "archive_path": "legacy-review.md",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/legacy-review.md",
+    "sha256": "c5460546d417978498273d5851efda83e606d6af8880251fc1c11dce9bc34388"
+  },
+  {
+    "archive_path": "synthesis-review.md",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/synthesis-review.md",
+    "sha256": "06299b3f9bdf1a58429c1f1234e6089b55a1726fddbfb2a4f89d540d0e0e183b"
+  },
+  {
+    "archive_path": "synthesis-fix-validation.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/synthesis-fix-validation.json",
+    "sha256": "62a77ef79d0916ce165ca378cbbf946bd9e86118109c14f79cdb0dcadf2b78f1"
+  },
+  {
+    "archive_path": "model-audit-summary.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/model-audit-summary.json",
+    "sha256": "1f812575f05ab5b018091fd6e3bac33840b4da7836d2bc1ac96bb507eb0e89b5"
+  },
+  {
+    "archive_path": "model-audit-change-list.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/model-audit-change-list.json",
+    "sha256": "4314815bbc17b0db8c1eeb0c9cab8053cc049c38d8c5d590558507f16977e0f4"
+  },
+  {
+    "archive_path": "laneC-review.md",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/laneC-review.md",
+    "sha256": "f402221756eee61b8e4cf70b6c48c1bf4a6bd62f7e2ec8e2daa5617b5fddfb88"
+  },
+  {
+    "archive_path": "laneC-review-receipt.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/laneC-review-receipt.json",
+    "sha256": "0065086bbcf1b96431275f13c4d956153848c54e214f1bff741824a6146744a2"
+  },
+  {
+    "archive_path": "combined-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/combined-tests.log",
+    "sha256": "691b02b70838527964ac48a08b3bef73e260e466ac7f3f0f082a91f2b6b8af39"
+  },
+  {
+    "archive_path": "experiment-regressions.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/experiment-regressions.log",
+    "sha256": "078ce4fb54c3b3c222a0a30d57447229c1715fdcfd1f331b306dd15f7b78660d"
+  },
+  {
+    "archive_path": "laneD-cli-integration.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/laneD-cli-integration.log",
+    "sha256": "7d9c7cd7d1d7a893def9e284715bb3171ba08e22c0ac4c4089a4784418ef2d94"
+  },
+  {
+    "archive_path": "pr-11-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-11-post-integration-tests.log",
+    "sha256": "0fd3fbeaaec0e61606d1b7957b3e8dff2cc8a1979c2ac26575463b2742994a74"
+  },
+  {
+    "archive_path": "pr-12-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-12-post-integration-tests.log",
+    "sha256": "e9d17e48a2fc1ef21b5d8dccc9a2cc53f4f990b895048fc1da4e9d99eb29f561"
+  },
+  {
+    "archive_path": "pr-13-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-13-post-integration-tests.log",
+    "sha256": "d77dc47b8a446b72bb7343fc2b7ec23a7f4e82c3fb0cdd71e88bda22a90899cc"
+  },
+  {
+    "archive_path": "pr-14-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-14-post-integration-tests.log",
+    "sha256": "79afd797eeb333dc89f843af1c3398d0dd5a33689644a2818d9563b840002b23"
+  },
+  {
+    "archive_path": "pr-15-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-15-post-integration-tests.log",
+    "sha256": "863da2b9e2196ddc0fe7f52d46fe570032c4fd8f31681c7045431d64ecbd7f3e"
+  },
+  {
+    "archive_path": "pr-16-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-16-post-integration-tests.log",
+    "sha256": "9ce734b78bfe5b1bbbd463c701494655517ea31a4b14c546c8012c837d1c1334"
+  },
+  {
+    "archive_path": "pr-18-post-integration-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr-18-post-integration-tests.log",
+    "sha256": "63bc9dadffe956b47030c91ca5499a22ca1f367ffa696e14c797683c6874a20b"
+  },
+  {
+    "archive_path": "pr14-99c71f3/dispatch-check.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr14-99c71f3/dispatch-check.json",
+    "sha256": "b20917eb27a7cb3aa8eb96b853a1caebe3a73decc13a4c94010f82b2d4546333"
+  },
+  {
+    "archive_path": "pr14-ca9c8c4/review.md",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr14-ca9c8c4/review.md",
+    "sha256": "1131834c3d9ac9cda030b070a0058582d527aa00a80dd85c4cff7a70d4cc228b"
+  },
+  {
+    "archive_path": "pr14-ca9c8c4/review-checks.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr14-ca9c8c4/review-checks.json",
+    "sha256": "8fba21f98f4b43189d992cad67b2cc74e46f67d9b54751ef9cd9e2848f829d2f"
+  },
+  {
+    "archive_path": "pr14-ca9c8c4/remove-appledouble-paths.txt",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/pr14-ca9c8c4/remove-appledouble-paths.txt",
+    "sha256": "30f974f14746a3f8e356ef3a104a3ca78d0f81a3a176dfefde4a994e643c621d"
+  },
+  {
+    "archive_path": "merge-actions.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/merge-actions.json",
+    "sha256": "69326272f68393d4be1606e83d6bf193aebf28d157c3f22bc4b5e17ed82fe8a7"
+  },
+  {
+    "archive_path": "repaired-heads.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/repaired-heads.json",
+    "sha256": "7b386a5e470d13a0249edebb3f5c7afa69b8547fe077f23600ca86c9658b6195"
+  },
+  {
+    "archive_path": "historical-provenance-check.json",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/historical-provenance-check.json",
+    "sha256": "526618808631b087aa7240d3d4e9164da41a84041d96c1b92e5e40e875070ca8"
+  },
+  {
+    "archive_path": "final-repo-tests.log",
+    "source_path": "/workspace/scrolls-env/pr-merge-review/final-repo-tests.log",
+    "sha256": "0bd734a82280bc1008073f6304ce74bb76ee047c33d3b068408b6cd4d3db1e16"
+  }
+]

@@ -1,0 +1,43 @@
+{
+  "reviewed_head": "ca9c8c43fc94bdebe8d1fb49ee014d2b9e2922ca",
+  "compared_base": "99c71f3d4de10e08316ebe5ee81515db88da2548",
+  "changed_paths": 32,
+  "valid_raw_json_files": 15,
+  "score_json_files": 9,
+  "appledouble_removal_paths": [
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00_to_w045_vs_ink9um.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00_to_w045_vs_raw.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00train_to_w00_vs_ink9um.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00train_to_w00_vs_raw.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w045_to_w00_vs_ink9um.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w045_to_w00_vs_raw.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_raw_w00_to_w045.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_raw_w00train_to_w00.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._auc_raw_w045_to_w00.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._model_fibre_w00.npz.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._model_fibre_w00train.npz.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._model_fibre_w045.npz.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._model_raw_w00.npz.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._model_raw_w00train.npz.json",
+    "scripts/experiments/2026-10-07-grok-laneD/results/._model_raw_w045.npz.json"
+  ],
+  "raw_json_sha256": {
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_fibre_w00_to_w045_vs_ink9um.json": "587fe8cfe3e66294b30160184330ac43a4797a679f87f28bd15a63e8e6cd3080",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_fibre_w00_to_w045_vs_raw.json": "3dc07000acf95b41431f126cacffe10aa34f5fe04d3200ec219d2c101a20b837",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_fibre_w00train_to_w00_vs_ink9um.json": "3bc487c0cb6715dfdaac78de49338f401b9a3749a9e3b6b82c2e393cdda0d9f9",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_fibre_w00train_to_w00_vs_raw.json": "12c777dc74efd3cbba9e4732fe9372a341182c0d9a5d01b6b355778969c36312",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_fibre_w045_to_w00_vs_ink9um.json": "014563387001a58f2e36370a5da1adb74befd461ab237cb8dac7de95597e2731",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_fibre_w045_to_w00_vs_raw.json": "e12008c9004b30474e1f0087c7ef3a4122b17c6d477ddb9b60e6ee4c1bcde78b",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_raw_w00_to_w045.json": "1421242b0dff33caf8fb654ef86cce61fbf1e209f535f7a55e78f7ba75e4d703",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_raw_w00train_to_w00.json": "cc4c6df6d7965540af0056beda2807fffd26ca28379b8d4bb0b735fa30789902",
+    "scripts/experiments/2026-10-07-grok-laneD/results/auc_raw_w045_to_w00.json": "e1a962c17dd2e21dec89646547b21fd6b5ebad88dddac6520e9d831eddff7977",
+    "scripts/experiments/2026-10-07-grok-laneD/results/model_fibre_w00.npz.json": "540da9df1c7f1e83a1c1118fd8a2bbd5f061c3a4380c4f14c6f0a01fd3fcbe97",
+    "scripts/experiments/2026-10-07-grok-laneD/results/model_fibre_w00train.npz.json": "2ec5054899619c3166cb4d455c5167146112de242e942675de38d4bad30207a4",
+    "scripts/experiments/2026-10-07-grok-laneD/results/model_fibre_w045.npz.json": "f93ecc66d9282878fae1fbc91648176f3beaf1d734fc96695960889af03b6527",
+    "scripts/experiments/2026-10-07-grok-laneD/results/model_raw_w00.npz.json": "c255426b24a5187fc7678d564bf420e79af9618700dd5b8e8de57cbf75425c1e",
+    "scripts/experiments/2026-10-07-grok-laneD/results/model_raw_w00train.npz.json": "ec3950a662e7bc9808d44a93aab6d9bbedd052987059edd78a0b59c5e2a1022a",
+    "scripts/experiments/2026-10-07-grok-laneD/results/model_raw_w045.npz.json": "fe05311581e6f490a4fdf4e14bee9c884aefab3627de185af5a894ef29ec3fe7"
+  },
+  "cross_result_consistency": "pass",
+  "reran_mac_experiment": false
+}

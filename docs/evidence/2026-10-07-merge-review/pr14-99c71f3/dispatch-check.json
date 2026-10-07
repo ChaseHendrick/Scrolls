@@ -1,0 +1,23 @@
+{
+  "head": "99c71f3d4de10e08316ebe5ee81515db88da2548",
+  "bash_n": "pass",
+  "default_train_calls": 6,
+  "default_predict_calls": 12,
+  "default_score_calls": 9,
+  "new_train_crop": [
+    1792,
+    2432,
+    2944,
+    3584
+  ],
+  "test_crop": [
+    2624,
+    3264,
+    2688,
+    3328
+  ],
+  "label_crop_gap_px": 192,
+  "full_context_gap_px": 128,
+  "control_and_bootstrap_arguments": "pass",
+  "note": "Stub validates actual shell dispatch only; no Mac dataset or model performance evaluation."
+}

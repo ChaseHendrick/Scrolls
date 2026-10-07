@@ -1,0 +1,123 @@
+{
+  "code": [
+    {
+      "branch": "codex/merge-review-followup",
+      "commit": "f422aaee06dd0b93658052a601b97d89e227b093",
+      "repo": "/workspace/Scrolls",
+      "uncommitted_changes": true
+    }
+  ],
+  "digest": "c0fae6f429183f8652d0df40af4857578fa0e5d4121c138bf16ebe83710d1e3b",
+  "finished_utc": "2026-10-07T14:35:50Z",
+  "inputs": [
+    {
+      "bytes": 1668,
+      "kind": "file",
+      "path": ".github/workflows/check.yml",
+      "sha256": "34972fd2a7406251787c19bcce2f79850020b524af3056a8652c66e73bb7da73"
+    },
+    {
+      "bytes": 9881,
+      "kind": "file",
+      "path": "AGENTS.md",
+      "sha256": "e9b4bf03b2d2523c7445b0c3063ae73749e036f6866fc3a292529d765ee84e46"
+    },
+    {
+      "bytes": 19482,
+      "kind": "file",
+      "path": "README.md",
+      "sha256": "7b394849058a3a46e5503e165e66451685135762f025a04d7f9ad75e663801cc"
+    },
+    {
+      "bytes": 38769,
+      "kind": "file",
+      "path": "docs/HANDOFF.md",
+      "sha256": "221867a06ea77f38aecdd5a959766e969289c41d116d45fbe6ebb71b8171b3b4"
+    },
+    {
+      "bytes": 3431,
+      "kind": "file",
+      "path": "docs/TESTING.md",
+      "sha256": "6642ef52b0e66c908d5a151c13350da8c305a37ba6eb87a6672ab8aa0f30a8ad"
+    },
+    {
+      "bytes": 124299,
+      "kind": "file",
+      "path": "docs/results.json",
+      "sha256": "a76a7e412d3445ed2b0e1669ca6ddf609f0f89435964d2bebc70743c5d42389c"
+    },
+    {
+      "bytes": 26111,
+      "kind": "file",
+      "path": "docs/scan-status.md",
+      "sha256": "20928afe759be9261a72aeccfdb5901b16c2b62aa01671520f2e8208ea0ad530"
+    },
+    {
+      "bytes": 18936,
+      "kind": "file",
+      "path": "docs/contrib/progress-prize-2026-10-draft.md",
+      "sha256": "049909fa444584ba4aa9b4ad54a407d0bcbbf1a7e515b05ee7a322092f2d8bff"
+    },
+    {
+      "bytes": 9052,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-adaptive-resolution.md",
+      "sha256": "c8fca801a1d3f49525d33ce7e6c2c5d59409cd3e9d67316a32c2fbded728046b"
+    },
+    {
+      "bytes": 34481,
+      "kind": "file",
+      "path": "kit/surfacefix.py",
+      "sha256": "c44e8fb21be1381a0788ab7add7dfc23f3db52c2a90852d147b7d8d8fe989117"
+    },
+    {
+      "bytes": 10918,
+      "kind": "file",
+      "path": "kit/fibertensor.py",
+      "sha256": "711d21f5605ac075443735f00de9eb5d32a8ae2ea12b8557a83bdfa39bb5a028"
+    },
+    {
+      "bytes": 10861,
+      "kind": "file",
+      "path": "kit/viewer.py",
+      "sha256": "39281d8282e7bc2fc0af82640a5debb6796291e117215eb54d2df940344da125"
+    },
+    {
+      "bytes": 454673,
+      "files": 23,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-adaptive-resolution",
+      "sha256": "708da14a0fcd486041ae8bb89f40dd88953cfa288e9b13dc34f7b22b270ae418"
+    },
+    {
+      "bytes": 425362,
+      "files": 15,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-adaptive-margin",
+      "sha256": "b7166b8bd9ebed06de18504f80c3768ab195c0d9c9825c5b33cd2ba371b4ad3d"
+    },
+    {
+      "bytes": 128310,
+      "files": 29,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-merge-review",
+      "sha256": "3cb2d4666cc62a13157d68a524a4669f15875645d75fb587fc8bfe95dc869d11"
+    }
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "release": "6.18.44",
+    "system": "Linux"
+  },
+  "models": [],
+  "note": "Post-run integrity record. Archived pre-run rules retained unchanged; this seal does not establish external preregistration timestamps or scientific novelty. Earlier provenance records refer to their historical commits. No raw scan data, maps or weights included. Current branch contains final documentation and CI edits awaiting its own review merge.",
+  "operator": {
+    "login": "agent",
+    "name": "Chase Hendrick"
+  },
+  "outputs": [],
+  "run": "2026-10-07-reviewed-merges-and-adaptive-geometry",
+  "schema": 1,
+  "started_utc": null
+}

@@ -1,0 +1,94 @@
+{
+  "checked_utc": "2026-10-07T14:34:23.288980+00:00",
+  "status": "passed",
+  "scope": "Historical commit exports and tracked evidence manifests only. Original record bytes and canonical digests were preserved. Relative paths were resolved by setting each verifier working directory to its export; no record path rewrite or digest rotation occurred. Raw external CT, labels, model weights and referenced external source repositories were not rechecked; none is a direct fingerprinted input/model/output of these two seals. Integrity validation does not validate scientific conclusions or establish an external pre-run timestamp.",
+  "current_head": "71c7192422e82aa424af0ef5bcbf04ef40922f9d",
+  "records": [
+    {
+      "commit": "4af30e8701bc1cb078f3dd2e1eacc1eaf86b09dd",
+      "export": "/workspace/scrolls-env/pr-merge-review/historical-provenance/4af30e8",
+      "record_path": "docs/evidence/2026-10-07-followup.provenance.json",
+      "record_sha256": "b74bfd021ebe64791c162f694f91d33c7700186230a2ad397abfc14b71670e59",
+      "record_digest": "de72805894066f9459c7f8c57248f232e3994f1287a495172199cc015178d784",
+      "record_digest_valid": true,
+      "direct_fingerprints_checked": 16,
+      "models": 0,
+      "outputs": 0,
+      "historical_file_verification_problems": [],
+      "cli": {
+        "exit_code": 0,
+        "stdout": "docs/evidence/2026-10-07-followup.provenance.json: ok (digest de72805894066f9459c7f8c57248f232e3994f1287a495172199cc015178d784, files unchanged)"
+      },
+      "current_record_bytes_unchanged": true,
+      "current_document_inputs_changed_since_seal": [
+        "AGENTS.md",
+        "README.md",
+        "docs/HANDOFF.md",
+        "docs/results.json",
+        "docs/scan-status.md",
+        "docs/contrib/progress-prize-2026-10-draft.md"
+      ],
+      "archive_directories": [
+        {
+          "path": "docs/evidence/2026-10-07-followup",
+          "files": 113,
+          "bytes": 1021003,
+          "expected_sha256": "f50c9474f6732ffde3fe85d8225b90675e6681e7846f4f37ce15466870854574",
+          "current_unchanged": true
+        }
+      ],
+      "checksum_manifests": [
+        {
+          "path": "docs/evidence/2026-10-07-followup/SHA256SUMS",
+          "entries_verified": 112,
+          "sha256": "253b9af4c06248b9c25b315a41303fcab6dd090ca2dcc53cc29dbdbb7f23b97b",
+          "check_exit_code": 0,
+          "current_bytes_unchanged": true
+        }
+      ]
+    },
+    {
+      "commit": "2fceb61dac68657a9b1d1fb29fb941369e861685",
+      "export": "/workspace/scrolls-env/pr-merge-review/historical-provenance/2fceb61",
+      "record_path": "docs/evidence/2026-10-07-ufsm.provenance.json",
+      "record_sha256": "986013ef6ed94d2359ec3bf22e57abc49631a65976e76b9a64ed0f11fd8ecf28",
+      "record_digest": "4384a62795ab49b33aaeba3ba6a926b56abbad288658bcebd81ee0d9960ab931",
+      "record_digest_valid": true,
+      "direct_fingerprints_checked": 2,
+      "models": 0,
+      "outputs": 0,
+      "historical_file_verification_problems": [],
+      "cli": {
+        "exit_code": 0,
+        "stdout": "docs/evidence/2026-10-07-ufsm.provenance.json: ok (digest 4384a62795ab49b33aaeba3ba6a926b56abbad288658bcebd81ee0d9960ab931, files unchanged)"
+      },
+      "current_record_bytes_unchanged": true,
+      "current_document_inputs_changed_since_seal": [],
+      "archive_directories": [
+        {
+          "path": "docs/evidence/2026-10-07-ufsm",
+          "files": 15,
+          "bytes": 50186,
+          "expected_sha256": "2baff79e8e6ef898ab3b96a1646837388c92707e5df70f2def29a395fe49cd9b",
+          "current_unchanged": true
+        }
+      ],
+      "checksum_manifests": [
+        {
+          "path": "docs/evidence/2026-10-07-ufsm/SHA256SUMS",
+          "entries_verified": 14,
+          "sha256": "aee61b3d8b0a6c1855f2790e6e84efe71edd6f6e442560cc91f2c7bd56a3af7f",
+          "check_exit_code": 0,
+          "current_bytes_unchanged": true
+        },
+        {
+          "path": "docs/evidence/2026-10-07-ufsm/geometry-audit/SHA256SUMS",
+          "entries_verified": 5,
+          "sha256": "0cc154ce3953d49dc5cad4204cb6d1c85657333482f58d50cc2e511114ad6987",
+          "check_exit_code": 0,
+          "current_bytes_unchanged": true
+        }
+      ]
+    }
+  ]
+}

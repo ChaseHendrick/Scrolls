@@ -1,0 +1,49 @@
+{
+  "laneA-fixed": {
+    "baseline_head": "84a9ef20f0e0a02f87b7b4c76bc8372a36181e45",
+    "changed_files": [
+      "docs/logs/2026-10-07-grok-laneA.md",
+      "scripts/experiments/2026-10-07-grok-laneA/synth.py",
+      "tests/test_grok_synthesis.py"
+    ],
+    "sha256": {
+      "docs/logs/2026-10-07-grok-laneA.md": "f3d6b035531f19a3f72135c96cd3fd9d216a2499ab7c52265d9b7166dc94a203",
+      "scripts/experiments/2026-10-07-grok-laneA/synth.py": "181e41e583ab9e98d1a23765f1be088db125f70026ccae18d0d6a62cdd9282cd",
+      "tests/test_grok_synthesis.py": "b64291ef8d8be82b27154982affcc4ee3589c4146a5f833b848a624fcc831868"
+    },
+    "historical_unchanged": {
+      "scripts/experiments/2026-10-07-grok-laneA/synth.json": {
+        "equal": true,
+        "sha256": "6919a0d7e4c53d9498778cecc5e2215856fda0d1585464502850b99dabd76a18"
+      },
+      "scripts/experiments/2026-10-07-grok-laneA/synth.out": {
+        "equal": true,
+        "sha256": "77de79aeb442028f8072ec912f7ff2843dce7ad7e75f9fc2141dcadb78f67d64"
+      }
+    },
+    "regenerated_descriptive_summary": {
+      "kendall_tau": 0.5507246376811594,
+      "discordant_pairs": 62,
+      "window_cases": 6,
+      "comparison_cases": 14,
+      "provisional_controls": 3
+    },
+    "focused_tests": 5
+  },
+  "laneB-fixed": {
+    "baseline_head": "487540845054573a650e3cb1d1c7b7c6c28da8b5",
+    "changed_files": [
+      "scripts/experiments/2026-10-07-grok-laneB/checks.py",
+      "scripts/experiments/2026-10-07-grok-laneB/laneb.py",
+      "tests/test_laneb.py",
+      "docs/logs/2026-10-07-grok-laneB.md"
+    ],
+    "sha256": {
+      "scripts/experiments/2026-10-07-grok-laneB/checks.py": "7b65002bcadaf1e47ff625972c6195dfef587ec0409c5ade5dbb7833bfba8787",
+      "scripts/experiments/2026-10-07-grok-laneB/laneb.py": "b354db62dd4bd90c31936d3250f0ec33a6b68a4401ae2e895d026c34e3c73e38",
+      "tests/test_laneb.py": "de98f03cb08cb42a17fa268a322f8db2e98416972cfe9f9843f21bbb3a720257",
+      "docs/logs/2026-10-07-grok-laneB.md": "9185f6be66b69f9a4e3ffcc02e80ac78b2f824035a373be5ee25ce3db9dbf254"
+    },
+    "focused_tests": 16
+  }
+}

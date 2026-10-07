@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "timestamp_utc": "2026-10-07T14:20:07.690628+00:00",
+  "baseline_sha": "d3074de09b36e8717108d2ac073de7943657af9d",
+  "changed_files": [
+    "docs/logs/2026-10-07-grok-laneC.md",
+    "scripts/experiments/2026-10-07-grok-laneC/results.json",
+    "scripts/experiments/2026-10-07-grok-laneC/texture.py",
+    "scripts/experiments/2026-10-07-grok-laneC/test_texture.py"
+  ],
+  "original_source_sha256": {
+    "docs/logs/2026-10-07-grok-laneC.md": "cddff35b1a74fdbc6ac08ba47e37d352c77f3ca6cc6a6c14da4f7788f2adc007",
+    "scripts/experiments/2026-10-07-grok-laneC/results.json": "3707a968ae97c71a3f3a6aa336bd85005015bb85b15de7f1bf76247546055955",
+    "scripts/experiments/2026-10-07-grok-laneC/texture.py": "4d59d28a9174bf603b9ef0ed737e6287132c016fcbdcb71b08cf0317f414c7b8"
+  },
+  "fixed_sha256": {
+    "docs/logs/2026-10-07-grok-laneC.md": "be8e3548e24a7763b147d0319b4469072379a6cced89e46b68dd941dacd667e3",
+    "scripts/experiments/2026-10-07-grok-laneC/results.json": "c6595e39379c0d53e28d01f392674d8051290652b85a05d90c09cd64c2d89ed6",
+    "scripts/experiments/2026-10-07-grok-laneC/texture.py": "94790aa49839c1a137cf0a62b515ee6f1e642e60a95d7efd56d701bf0a428814",
+    "scripts/experiments/2026-10-07-grok-laneC/test_texture.py": "a761c6057f3d68bf0c256826f8f5d4949185f0d39f37beb044a59388208f7808"
+  },
+  "historical_original_values_equal": true,
+  "historical_fusion_inference_deprecated": true,
+  "tests": {
+    "command": [
+      "/workspace/Scrolls/.venv/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/workspace/scrolls-env/pr-merge-review/laneC-fixed/scripts/experiments/2026-10-07-grok-laneC",
+      "-p",
+      "test_texture.py",
+      "-v"
+    ],
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "exitcode": 0,
+    "log_sha256": "35634a0a09f67009d313743d8ca8552e5e5e545d13b84ae6e0439f3592e9f6b0"
+  },
+  "git_apply_check": {
+    "exitcode": 0,
+    "baseline_export": "/workspace/scrolls-env/pr-merge-review/laneC-baseline"
+  },
+  "patch_sha256": "2ee3c884f3817d84ed4f6c9087fe2b608697359232b477defa3ac84a3ff61ed6",
+  "limitations": [
+    "No source data, labels, model outputs or scientific experiments rerun.",
+    "Feature measurements remain historical descriptive outputs.",
+    "Corrected future fusion needs matched reverse-depth reader controls and a frozen paired uncertainty plan.",
+    "Average ranks preserve equal values; kit float AUC still uses documented 16-bit score quantization."
+  ],
+  "shared_repo_modified": false
+}

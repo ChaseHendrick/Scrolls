@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "scope": "Primary ag405 separate published PHerc0841 surface geometry diagnostic; same acquisition, no statistical scan independence, reader, ink, flattening or exported topology claim",
+  "input_hashes": {
+    "/workspace/scrolls-env/adaptive-resolution/ag405-primary/audit.py": "656f6f66c05287f16e965a710cbf42f11f87dda949f0102e70451b2c6226a5de",
+    "/workspace/scrolls-env/adaptive-resolution/ag405-primary/geometry_snapshot.py": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898",
+    "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/x.tif": "912895f58e1572f2b3ee43704e71f1b2e055af7b70f2d904168182a7e7b68e97",
+    "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/y.tif": "49db4ef0e1fd68b107f12b940840afddbeb367fde1bffdbce99488fd84d86df0",
+    "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/z.tif": "5fcf84a80ba590b3ab218da5aeb7780e4da8763cf45f4c9f7dee73bbfc6a1cb2",
+    "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/meta.json": "b597fd8d7b08acc38c8ef1bb78d8596fa4b2797610e0923b499932d23d6c8bc0"
+  },
+  "native_voxel_um": 9.366,
+  "patch": "Disjoint 2x2 fine cells/3x3 native vertices, starts even row/col; incomplete boundary strips retain native representation",
+  "selection": "All four fine quads and coarse quad pass frozen Jacobian certificate; all nine corners valid; maximum same-UV corner discrepancy <=25um",
+  "certificate": "Coarse-minus-fine is bilinear on each fine cell; norm bounded by max of its four vertex discrepancies by convexity",
+  "max_error_um": 25,
+  "correspondence_limit_um": 50,
+  "minimum_primitive_reduction": 0.2,
+  "minimum_local_correspondence_retention": 0.95,
+  "query": "40 fresh seeded complete fine patches per trace; UV=(.37,.41) coarse coordinates; 0,+40,-40um along native local normal. Same source points for native/adaptive/uniform2/random-count-matched masks. No prior48 vertex query overlap.",
+  "query_seed": 2041508,
+  "random_mask_seed": 971142,
+  "dense_seed": 616895,
+  "dense": "Up to64 selected and64 unselected complete patches per trace, independent17x17UV samples; error may not exceed maxcorner bound plus1e-7um",
+  "controls": [
+    "uniformtranslation plane",
+    "nonplanar bilinear exact representation",
+    "saddle zero representation error but correspondence must abstain",
+    "bowed center error exclusion",
+    "missing middle vertex exclusion"
+  ],
+  "failure": "Primary diagnostic fails if ag405 primitive reduction<20%, or local retained correspondence<95%, any dense bound violation, or any synthetic control failure. Keep failed hypotheses. No parameter retuning.",
+  "limitations": "Official ag405 XYZ fetched before outcomes and frozen as primary separate-surface audit. Same PHerc0841 scan; physical material independence is not certified. No untouched-scan claim. Primitive reduction ignores conformity/hanging-edge transitions; no manifold or runtime saving inferred.",
+  "resources": {
+    "threads": 1,
+    "max_seconds": 300,
+    "max_peak_rss_bytes": 536870912,
+    "network_bytes": 0
+  }
+}

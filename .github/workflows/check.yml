@@ -41,3 +41,17 @@ jobs:
         run: python -m pip install numpy tifffile imagecodecs scipy zarr
       - name: Unit tests including kit verify
         run: python -m unittest discover -s tests -v
+      - name: Experiment regression tests
+        run: |
+          python - <<'PYTHON'
+          from pathlib import Path
+          import subprocess
+          import sys
+
+          directories = sorted({p.parent for p in Path("scripts/experiments").rglob("test_*.py")})
+          if not directories:
+              raise SystemExit("No experiment regression tests found")
+          for directory in directories:
+              subprocess.run([sys.executable, "-m", "unittest", "discover",
+                              "-s", str(directory), "-p", "test_*.py", "-v"], check=True)
+          PYTHON
