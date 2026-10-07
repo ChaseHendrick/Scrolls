@@ -1,0 +1,91 @@
+verify	Experiment regression tests	﻿2026-10-07T17:11:20.7244014Z ##[group]Run python - <<'PYTHON'
+verify	Experiment regression tests	2026-10-07T17:11:20.7244384Z [36;1mpython - <<'PYTHON'[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7244658Z [36;1mfrom pathlib import Path[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7244937Z [36;1mimport subprocess[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7245179Z [36;1mimport sys[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7245390Z [36;1m[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7245804Z [36;1mdirectories = sorted({p.parent for p in Path("scripts/experiments").rglob("test_*.py")})[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7246303Z [36;1mif not directories:[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7246667Z [36;1m    raise SystemExit("No experiment regression tests found")[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7247069Z [36;1mfor directory in directories:[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7248344Z [36;1m    subprocess.run([sys.executable, "-m", "unittest", "discover",[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7248869Z [36;1m                    "-s", str(directory), "-p", "test_*.py", "-v"], check=True)[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7249261Z [36;1mPYTHON[0m
+verify	Experiment regression tests	2026-10-07T17:11:20.7312990Z shell: /usr/bin/bash -e {0}
+verify	Experiment regression tests	2026-10-07T17:11:20.7313301Z env:
+verify	Experiment regression tests	2026-10-07T17:11:20.7313578Z   pythonLocation: /opt/hostedtoolcache/Python/3.13.15/x64
+verify	Experiment regression tests	2026-10-07T17:11:20.7314043Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib/pkgconfig
+verify	Experiment regression tests	2026-10-07T17:11:20.7314502Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+verify	Experiment regression tests	2026-10-07T17:11:20.7314906Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+verify	Experiment regression tests	2026-10-07T17:11:20.7315319Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.13.15/x64
+verify	Experiment regression tests	2026-10-07T17:11:20.7315743Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.13.15/x64/lib
+verify	Experiment regression tests	2026-10-07T17:11:20.7316089Z ##[endgroup]
+verify	Experiment regression tests	2026-10-07T17:11:21.3216672Z test_part1_holds_out_the_sheet_and_uses_the_fixed_primary_trace (test_analyze.CalibrationTests.test_part1_holds_out_the_sheet_and_uses_the_fixed_primary_trace) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3219564Z test_split_rejects_a_duplicate_trace_of_the_held_out_sheet (test_analyze.CalibrationTests.test_split_rejects_a_duplicate_trace_of_the_held_out_sheet) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3221848Z test_split_rejects_pooling_the_selection_sheet_twice (test_analyze.CalibrationTests.test_split_rejects_pooling_the_selection_sheet_twice) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3240228Z test_uint8_cutoff_matches_float32_comparison_for_all_bins (test_analyze.CalibrationTests.test_uint8_cutoff_matches_float32_comparison_for_all_bins) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3243442Z test_empty_surface_has_undefined_valid_coverage (test_analyze.CoverageTests.test_empty_surface_has_undefined_valid_coverage) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3258000Z test_low_valid_sites_are_accounted_for (test_analyze.CoverageTests.test_low_valid_sites_are_accounted_for) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3278418Z test_padded_boundary_has_no_artificial_evidence_and_reports_coverage (test_analyze.CoverageTests.test_padded_boundary_has_no_artificial_evidence_and_reports_coverage) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3280551Z test_remainder_footprints_cover_each_pixel_once (test_analyze.CoverageTests.test_remainder_footprints_cover_each_pixel_once) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3297559Z test_paired_counts_come_from_unchanged_saved_windows (test_analyze.HistoricalRecordsTests.test_paired_counts_come_from_unchanged_saved_windows) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3384101Z test_three_candidate_rules_keep_historical_counts_and_add_label_evidence (test_analyze.LabelEvidenceTests.test_three_candidate_rules_keep_historical_counts_and_add_label_evidence) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3386341Z test_unknown_is_not_background_and_precision_is_undefined_without_labels (test_analyze.LabelEvidenceTests.test_unknown_is_not_background_and_precision_is_undefined_without_labels) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.3387745Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.3388020Z ----------------------------------------------------------------------
+verify	Experiment regression tests	2026-10-07T17:11:21.3388523Z Ran 11 tests in 0.018s
+verify	Experiment regression tests	2026-10-07T17:11:21.3388722Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.3388834Z OK
+verify	Experiment regression tests	2026-10-07T17:11:21.4902134Z test_preserves_saved_scores_and_labels_correlated_aggregation (test_collect.CollectorRegression.test_preserves_saved_scores_and_labels_correlated_aggregation) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.4903734Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.4904008Z ----------------------------------------------------------------------
+verify	Experiment regression tests	2026-10-07T17:11:21.4904607Z Ran 1 test in 0.033s
+verify	Experiment regression tests	2026-10-07T17:11:21.4904836Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.4904979Z OK
+verify	Experiment regression tests	2026-10-07T17:11:21.5698967Z test_actual_archived_baseline_is_partial_and_unchanged (test_results.ResultsTests.test_actual_archived_baseline_is_partial_and_unchanged) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6061698Z test_collection_cli_leaves_archive_untouched_and_reports_partial (test_results.ResultsTests.test_collection_cli_leaves_archive_untouched_and_reports_partial) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6096267Z test_matched_provisional_missing_and_unverified (test_results.ResultsTests.test_matched_provisional_missing_and_unverified) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6127013Z test_primary_complete_with_optional_s21_missing (test_results.ResultsTests.test_primary_complete_with_optional_s21_missing) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6867718Z test_reverse_selection_cli_prefers_matched_and_preserves_legacy (test_results.ResultsTests.test_reverse_selection_cli_prefers_matched_and_preserves_legacy) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6880051Z test_s21_is_provisional_and_missing_ensemble_member_is_missing (test_results.ResultsTests.test_s21_is_provisional_and_missing_ensemble_member_is_missing) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6887124Z test_single_score_file_does_not_mark_row_completed (test_results.ResultsTests.test_single_score_file_does_not_mark_row_completed) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.6888210Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.6888514Z ----------------------------------------------------------------------
+verify	Experiment regression tests	2026-10-07T17:11:21.6889202Z Ran 7 tests in 0.120s
+verify	Experiment regression tests	2026-10-07T17:11:21.6889471Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.6889638Z OK
+verify	Experiment regression tests	2026-10-07T17:11:21.7807046Z test_legacy_is_provisional_and_missing_is_explicit (test_controls.ReverseSelectionTests.test_legacy_is_provisional_and_missing_is_explicit) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.7809343Z test_matching_preferred_without_relabelling_legacy (test_controls.ReverseSelectionTests.test_matching_preferred_without_relabelling_legacy) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.7870844Z test_legacy_control_remains_provisional (test_controls.ScorerReportingTests.test_legacy_control_remains_provisional) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.7912633Z test_missing_control_has_no_reverse_metrics (test_controls.ScorerReportingTests.test_missing_control_has_no_reverse_metrics) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.7952751Z test_missing_ensemble_member_cannot_claim_matched_control (test_controls.ScorerReportingTests.test_missing_ensemble_member_cannot_claim_matched_control) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.7995159Z test_new_control_is_selected_for_model_and_ensembles (test_controls.ScorerReportingTests.test_new_control_is_selected_for_model_and_ensembles) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.7996212Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.7996460Z ----------------------------------------------------------------------
+verify	Experiment regression tests	2026-10-07T17:11:21.7997011Z Ran 6 tests in 0.019s
+verify	Experiment regression tests	2026-10-07T17:11:21.7997232Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.7997631Z OK
+verify	Experiment regression tests	2026-10-07T17:11:21.8979646Z test_legacy_is_provisional_and_missing_is_explicit (test_controls.ReverseSelectionTests.test_legacy_is_provisional_and_missing_is_explicit) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.8981838Z test_matching_preferred_without_relabelling_legacy (test_controls.ReverseSelectionTests.test_matching_preferred_without_relabelling_legacy) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.9048041Z test_legacy_control_remains_provisional (test_controls.ScorerReportingTests.test_legacy_control_remains_provisional) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.9092505Z test_missing_control_has_no_reverse_metrics (test_controls.ScorerReportingTests.test_missing_control_has_no_reverse_metrics) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.9135059Z test_missing_ensemble_member_cannot_claim_matched_control (test_controls.ScorerReportingTests.test_missing_ensemble_member_cannot_claim_matched_control) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.9179839Z test_new_control_is_selected_for_model_and_ensembles (test_controls.ScorerReportingTests.test_new_control_is_selected_for_model_and_ensembles) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:21.9180887Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.9181122Z ----------------------------------------------------------------------
+verify	Experiment regression tests	2026-10-07T17:11:21.9182000Z Ran 6 tests in 0.020s
+verify	Experiment regression tests	2026-10-07T17:11:21.9182213Z 
+verify	Experiment regression tests	2026-10-07T17:11:21.9182331Z OK
+verify	Experiment regression tests	2026-10-07T17:11:22.7243600Z test_constant_map_has_no_pixel_position_signal (test_texture.RankFusionTests.test_constant_map_has_no_pixel_position_signal) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7246870Z test_equal_values_have_average_ranks (test_texture.RankFusionTests.test_equal_values_have_average_ranks) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7249104Z test_invalid_fusion_weight_or_grid_rejected (test_texture.RankFusionTests.test_invalid_fusion_weight_or_grid_rejected) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7250276Z test_invalid_rank_inputs_rejected (test_texture.RankFusionTests.test_invalid_rank_inputs_rejected) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7253863Z test_pixel_permutation_preserves_equal_value_scores (test_texture.RankFusionTests.test_pixel_permutation_preserves_equal_value_scores) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7291633Z test_rank_fusion_does_not_clip_extreme_distinct_values (test_texture.RankFusionTests.test_rank_fusion_does_not_clip_extreme_distinct_values) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7328156Z test_reference_zero_policy_is_common_to_both_maps (test_texture.RankFusionTests.test_reference_zero_policy_is_common_to_both_maps) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7381770Z test_uint8_reference_auc_preserved_on_common_support (test_texture.RankFusionTests.test_uint8_reference_auc_preserved_on_common_support) ... ok
+verify	Experiment regression tests	2026-10-07T17:11:22.7382835Z 
+verify	Experiment regression tests	2026-10-07T17:11:22.7383101Z ----------------------------------------------------------------------
+verify	Experiment regression tests	2026-10-07T17:11:22.7383553Z Ran 8 tests in 0.018s
+verify	Experiment regression tests	2026-10-07T17:11:22.7383737Z 
+verify	Experiment regression tests	2026-10-07T17:11:22.7383836Z OK

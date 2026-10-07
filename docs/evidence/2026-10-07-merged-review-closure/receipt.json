@@ -1,0 +1,46 @@
+{
+  "schema": 1,
+  "checked_commit": "25dd450dda3a3da69b02374198fe28055c3b66cc",
+  "merged_prs": {
+    "25": "25dd450dda3a3da69b02374198fe28055c3b66cc",
+    "26": "55b9b8aa319b49330c194c0c9a2a49d93d6d4156",
+    "27": "2a52c9043973aae8e4543bad1fdf4cf0feea9503"
+  },
+  "unit_tests": {
+    "run": 253,
+    "passed": 252,
+    "skipped": 1,
+    "skip": "CPU Torch dependency absent from numerical test environment; covered by the focused runtime"
+  },
+  "focused_cpu_torch": {
+    "run": 17,
+    "passed": 17
+  },
+  "combined_main_ci": {
+    "run": 37657023237,
+    "url": "https://github.com/ChaseHendrick/Scrolls/actions/runs/37657023237",
+    "checks": "all three succeeded",
+    "experiment_suite_counts": [
+      11,
+      1,
+      7,
+      6,
+      6,
+      8
+    ],
+    "experiment_total": 39
+  },
+  "historical_provenance": {
+    "commit": "047ee0688d5a00ac7d62bf91686bd61dd48e44ad",
+    "record": "docs/evidence/2026-10-07-production-scaling.provenance.json",
+    "digest": "5cbdada673f3c970803a0555db36b1a2fcf60cc85bd8c23094f1bb952cd288cb",
+    "result": "verified with all file fingerprints in a historical export",
+    "existing_evidence_tree": "unchanged between the historical and combined commits"
+  },
+  "scope": "Documentation and validation closure. No training, inference, data downloads, paid compute or new performance measurements.",
+  "documentation_checks": {
+    "run": 5,
+    "passed": 5,
+    "scope": "final documentation and staged repository structure"
+  }
+}

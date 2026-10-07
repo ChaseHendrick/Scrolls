@@ -1,0 +1,22 @@
+test_base_phase_checks_crop_binding_before_gpu_or_inference (test_laneh_job.CropTests.test_base_phase_checks_crop_binding_before_gpu_or_inference) ... ok
+test_crop_recipe_and_output_are_bound_and_partial_refused (test_laneh_job.CropTests.test_crop_recipe_and_output_are_bound_and_partial_refused) ... ok
+test_missing_and_receipt_only_crops_are_not_created_during_verification (test_laneh_job.CropTests.test_missing_and_receipt_only_crops_are_not_created_during_verification) ... ok
+test_shuffled_crop_preserves_frozen_depth_permutation (test_laneh_job.CropTests.test_shuffled_crop_preserves_frozen_depth_permutation) ... ok
+test_excluded_weights_do_not_mutate_original (test_laneh_job.MaskTests.test_excluded_weights_do_not_mutate_original) ... ok
+test_invalid_exclusions_fail_closed (test_laneh_job.MaskTests.test_invalid_exclusions_fail_closed) ... ok
+test_invalid_probabilities_and_thresholds_refused (test_laneh_job.MaskTests.test_invalid_probabilities_and_thresholds_refused) ... ok
+test_patch_exclusion_matches_geometric_oracle (test_laneh_job.MaskTests.test_patch_exclusion_matches_geometric_oracle) ... ok
+test_uint8_quantization_and_zero_unknown (test_laneh_job.MaskTests.test_uint8_quantization_and_zero_unknown) ... ok
+test_cache_receipt_binds_bytes_and_settings (test_laneh_job.SafetyTests.test_cache_receipt_binds_bytes_and_settings) ... ok
+test_collector_empty_and_partial_remain_descriptive (test_laneh_job.SafetyTests.test_collector_empty_and_partial_remain_descriptive) ... ok
+test_collector_missing_controls_and_unknown_scores_refused (test_laneh_job.SafetyTests.test_collector_missing_controls_and_unknown_scores_refused) ... ok
+test_collector_refuses_historical_output_overwrite (test_laneh_job.SafetyTests.test_collector_refuses_historical_output_overwrite) ... ok
+test_modal_default_refuses_before_remote_call (test_laneh_job.SafetyTests.test_modal_default_refuses_before_remote_call) ... ok
+test_shell_default_is_no_op (test_laneh_job.SafetyTests.test_shell_default_is_no_op) ... ok
+test_shell_execution_and_gpu_need_separate_opt_in (test_laneh_job.SafetyTests.test_shell_execution_and_gpu_need_separate_opt_in) ... ok
+test_unknown_values_cannot_change_pooled_supervised_target (test_laneh_job.TensorTests.test_unknown_values_cannot_change_pooled_supervised_target) ... ok
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.220s
+
+OK
