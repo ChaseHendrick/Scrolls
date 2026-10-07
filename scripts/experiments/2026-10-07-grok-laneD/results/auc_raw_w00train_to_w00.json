@@ -1,0 +1,42 @@
+{
+  "forward": {
+    "auc": 0.4985,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "files": {
+    "prediction": "~/scrolls-work/laneD/out/map_raw_w00train_to_w00_fwd.tif",
+    "labels": "~/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "~/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "~/scrolls-work/laneD/out/map_raw_w00train_to_w00_rev.tif"
+  },
+  "level": "2",
+  "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+  ],
+  "control": {
+    "auc": 0.4776,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 0,
+    "ci95": [
+      0.4049,
+      0.5752
+    ],
+    "half_width": 0.0852
+  }
+}

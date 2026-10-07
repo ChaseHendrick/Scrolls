@@ -53,6 +53,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 | `kit/rowscore.py` | Text-row periodicity triage score (port of Bullo27's); a reading order, not a verdict |
 | `kit/provenance.py` | Who ran what, when, on which machine, from which inputs; one digest over the record |
 | `kit/ensemble.py` | Average maps of one surface (`python -m kit ensemble OUT MAP MAP ... [--method rank]`); map-level, never cross-seed weights |
+| `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fibre orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](docs/logs/2026-10-07-grok-laneD.md)) |
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
 | `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |

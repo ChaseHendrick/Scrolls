@@ -1,0 +1,54 @@
+{
+  "forward": {
+    "auc": 0.4223,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "files": {
+    "prediction": "~/scrolls-work/laneD/out/map_fibre_w00_to_w045_fwd.tif",
+    "labels": "~/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "~/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "~/scrolls-work/laneD/out/map_fibre_w00_to_w045_rev.tif",
+    "compare": "~/scrolls-work/laneD/out/map_raw_w00_to_w045_fwd.tif"
+  },
+  "level": "2",
+  "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+  ],
+  "control": {
+    "auc": 0.5711,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 0,
+    "ci95": [
+      0.333,
+      0.5369
+    ],
+    "half_width": 0.1019,
+    "compare": {
+      "auc_map": 0.438,
+      "auc_other": 0.5096,
+      "difference": -0.0717,
+      "ci95": [
+        -0.2214,
+        0.0891
+      ],
+      "share_draws_map_not_ahead": 0.82,
+      "pixels": 170666
+    }
+  }
+}

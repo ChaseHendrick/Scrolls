@@ -1,0 +1,22 @@
+{
+  "kind": "raw",
+  "model": "mlp",
+  "seed": 0,
+  "train_volume": "~/scrolls-work/data/0841-w00_9um.zarr",
+  "crop": [
+    1792,
+    2432,
+    2944,
+    3584
+  ],
+  "train_axes": [],
+  "bands": 5,
+  "rho": [
+    2.0,
+    4.0,
+    8.0
+  ],
+  "features": 10,
+  "train_loss": 0.598893814844145,
+  "train_pixels": 60000
+}
