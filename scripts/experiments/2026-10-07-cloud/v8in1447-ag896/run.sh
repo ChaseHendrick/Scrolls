@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Job v8in1447-ag896 (scripts/experiments/2026-10-07-cloud/README.md): v8in-1447 on the PHerc0841
-# ag896 crop (forward s42, reverse s64; cut from s21/s42/s42 by the coordinator to save compute), d9v2 on the same crop (villa, both
+# ag896 crop (forward and reverse s42), d9v2 on the same crop (villa, both
 # directions), then ensembles v8in-1447 + d9v2 (mean and rank). Resumable: finished outputs are
 # skipped. Needs the SMOKE setup of the README first (venv, villa pr-1865, checkpoints, data).
+# Historical reverse s64 maps are preserved and scored as provisional.
 #   nohup bash run.sh > $W/job.log 2>&1 &
 set -euo pipefail
 HERE="$(cd "$(dirname "$0")" && pwd)"
@@ -36,6 +37,11 @@ v8() {  # v8 NAME STRIDE fwd|rev
   tail -1 $J/logs/$name.log
 }
 
+score_results() {
+  "$PY" "$HERE/score.py" "$J" > "$HERE/results.json.tmp"
+  mv "$HERE/results.json.tmp" "$HERE/results.json"
+}
+
 # d9v2 first (minutes), so the pipeline is checked against the bar before the long v8in runs.
 if [[ ! -d $J/crop.zarr ]]; then
   $PY - $ZARR $J/crop.zarr "${CROP[@]}" <<'PYEOF'
@@ -52,15 +58,15 @@ if [[ ! -f $J/maps/d9v2_reverse.tif ]]; then
      --overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both) > $J/logs/d9v2.log 2>&1
   echo "d9v2 done in $((SECONDS - t))s" | tee -a $J/logs/d9v2.log
 fi
-$PY "$HERE/score.py" $J > "$HERE/results.json" || true
+score_results
 
 v8 v8in1447_fwd_s42 42 fwd
-$PY "$HERE/score.py" $J > "$HERE/results.json" || true
-v8 v8in1447_rev_s64 64 rev
+score_results
+v8 v8in1447_rev_s42 42 rev
 
 for m in mean rank; do
   $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_$m.npy $J/maps/v8in1447_fwd_s42.npy $J/maps/d9v2.tif --method $m
-  $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_${m}_reverse.npy $J/maps/v8in1447_rev_s64.npy $J/maps/d9v2_reverse.tif --method $m
+  $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_${m}_reverse_s42.npy $J/maps/v8in1447_rev_s42.npy $J/maps/d9v2_reverse.tif --method $m
 done
-$PY "$HERE/score.py" $J > "$HERE/results.json"
+score_results
 echo "all done $(date -u +%H:%M:%S)"

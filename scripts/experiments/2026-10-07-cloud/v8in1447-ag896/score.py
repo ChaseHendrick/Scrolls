@@ -11,7 +11,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
-from kit import auc as kauc, hpscore  # noqa: E402
+from kit import auc as kauc, ensemble, hpscore  # noqa: E402
+from controls import choose_reverse
 
 J = Path(sys.argv[1])
 W = J.parent
@@ -36,25 +37,50 @@ def seconds(name):
     return int(m[-1]) if m else None
 
 
+def resolve(name):
+    path = J / "maps" / name
+    return str(path) if path.exists() else None
+
+
+reverse_name, reverse_path, reverse_stride, control_status, control_note = choose_reverse(
+    resolve, "v8in1447_rev_s42.npy", "v8in1447_rev_s64.npy")
+
+
+def ens(name, members, method):
+    paths = [resolve(member) for member in members]
+    if None in paths:
+        return None
+    ensemble.ensemble_files(str(J / "maps" / name), paths, method)
+    return name
+
+
 # (reader, map, control, settings, seconds log, notes)
 ROWS = [
     ("d9v2", "d9v2.tif", "d9v2_reverse.tif", D9, "d9v2", "pipeline check; bar 0.8230"),
-    ("v8in-1447", "v8in1447_fwd_s42.npy", "v8in1447_rev_s64.npy", {**V8, "stride": 42, "control stride": 64},
-     "v8in1447_fwd_s42", "main run (stride 42 by the coordinator's budget cut); control is the stride 64 reverse map"),
-    ("v8in-1447 + d9v2", "ens_v8in1447_d9v2_mean.npy", "ens_v8in1447_d9v2_mean_reverse.npy",
-     {"ensemble method": "mean", "members": ["v8in1447_fwd_s42", "d9v2"], "control members": ["v8in1447_rev_s64", "d9v2_reverse"]},
-     None, "kit ensemble"),
-    ("v8in-1447 + d9v2", "ens_v8in1447_d9v2_rank.npy", "ens_v8in1447_d9v2_rank_reverse.npy",
-     {"ensemble method": "rank", "members": ["v8in1447_fwd_s42", "d9v2"], "control members": ["v8in1447_rev_s64", "d9v2_reverse"]},
-     None, "kit ensemble"),
+    ("v8in-1447", "v8in1447_fwd_s42.npy", reverse_name,
+     {**V8, "stride": 42, "control stride": reverse_stride},
+     "v8in1447_fwd_s42", control_note),
 ]
+for method in ("mean", "rank"):
+    forward = ens(f"ens_v8in1447_d9v2_{method}.npy", ["v8in1447_fwd_s42.npy", "d9v2.tif"], method)
+    # Preserve historical reverse ensembles; matched controls get new names.
+    suffix = "_s42" if reverse_stride == 42 else ""
+    reverse = ens(f"ens_v8in1447_d9v2_{method}_reverse{suffix}.npy",
+                  [reverse_name, "d9v2_reverse.tif"], method) if reverse_name else None
+    ROWS.append(("v8in-1447 + d9v2", forward, reverse,
+                 {"ensemble method": method, "members": ["v8in1447_fwd_s42", "d9v2"],
+                  "control members": [reverse_name, "d9v2_reverse.tif"],
+                  "v8in1447_stride": 42, "reverse_stride": reverse_stride}, None, "kit ensemble"))
 
 out = []
 for reader, m, c, settings, log, notes in ROWS:
-    mp, cp = J / "maps" / m, J / "maps" / c
+    if m is None:
+        continue
+    mp = J / "maps" / m
+    cp = J / "maps" / c if c else None
     if not mp.exists():
         continue
-    ctrl = str(cp) if cp.exists() else None
+    ctrl = str(cp) if cp and cp.exists() else None
     a = kauc.score_files(str(mp), str(LAB / "inklabels.zarr"), str(LAB / "supervision.zarr"), control=ctrl,
                          level="2", crop=CROP, surface_shape=SURFACE, inner=64)
     h = hpscore.score_files(str(mp), str(LAB / "inklabels.zarr"), str(LAB / "supervision.zarr"), VOXEL, control=ctrl,
@@ -69,6 +95,11 @@ for reader, m, c, settings, log, notes in ROWS:
     s = seconds(log) if log else None
     if s is not None:
         row["seconds"] = s
+    if reader.startswith("v8in-1447"):
+        row["control_status"] = control_status if ctrl else "missing"
+        row["control_note"] = control_note if ctrl else "One or more reverse control members are missing."
+        if ctrl:
+            row["control_map"] = c
     row["notes"] = notes
     out.append(row)
 print(json.dumps(out, indent=1))
