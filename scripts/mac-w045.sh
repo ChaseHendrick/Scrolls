@@ -10,6 +10,8 @@
 # kit rowscore. Paste the summary it prints. See docs/mac.md.
 #
 #   bash scripts/mac-w045.sh                   # from the Scrolls checkout
+#   SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh   # the same test on PHerc0841, a scroll neither
+#                                              # model saw (also 0841-ag896, 0841-ag405)
 #   QUICK=1 bash scripts/mac-w045.sh           # under an hour: v8in on the 640 px crop only (densest
 #                                              # labelled text), every model scored on that same crop
 #   V8IN_HOURS=2 bash scripts/mac-w045.sh      # time budget for the full v8in pass (picks the stride)
@@ -37,13 +39,34 @@ PR=1865
 V8IN_REPO=YoussefMoNader/ink-8um-v8in
 V8IN_REV=d89166b41a3f5fad7749b3d7c0fdd1bd3695d844   # 2026-09-28 release
 V8IN="$WORK/checkpoints/ink-8um-v8in"
-SEG=PHerc0139/segments/20260126000000-w045_2026012619
-LABELS="$SEG/ink-labels/2.399um-volume-20260102150214/20260918"
-ZARR="$WORK/data/w045_9um.zarr"
-LAB="$WORK/data/w045_labels"
-OUT="$WORK/w045"
-CROP=(3840 4480 2560 3200)   # 640 px fully on the surface, densest labelled ink (y0 y1 x0 x1)
-SURFACE=(5980 8240)
+# SEGMENT picks the labelled test segment. CROP: 640 px fully on the surface with the densest
+# labelled ink (y0 y1 x0 x1), found on the published labels. PHerc0841 is in neither model's
+# training set (Bullo27's unseen-scroll calibration), so it is the harder test.
+SEGMENT="${SEGMENT:-w045}"
+case "$SEGMENT" in
+  w045)
+    SEG=PHerc0139/segments/20260126000000-w045_2026012619
+    LABELS="$SEG/ink-labels/2.399um-volume-20260102150214/20260918"
+    SV=w045; CROP=(3840 4480 2560 3200); SURFACE=(5980 8240); VOXEL=9.362 ;;
+  0841-w00)
+    SEG=PHerc0841/segments/20260220213127-w00
+    CROP=(2624 3264 2688 3328); SURFACE=(4220 4760) ;;
+  0841-ag896)
+    SEG=PHerc0841/segments/20260220214732-auto_grown_20260220144552896
+    CROP=(2496 3136 1600 2240); SURFACE=(4640 4720) ;;
+  0841-ag405)
+    SEG=PHerc0841/segments/20260221022814-auto_grown_20260220174252405
+    CROP=(1024 1664 2496 3136); SURFACE=(3760 4900) ;;
+  *) echo "SEGMENT must be w045, 0841-w00, 0841-ag896 or 0841-ag405" >&2; exit 2 ;;
+esac
+if [[ "$SEGMENT" == 0841-* ]]; then
+  LABELS="$SEG/ink-labels/2.403um-volume-20260319124803/20260918"
+  SV="$SEG/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr"; VOXEL=9.366
+fi
+NAME="$SEGMENT"
+ZARR="$WORK/data/${NAME}_9um.zarr"
+LAB="$WORK/data/${NAME}_labels"
+OUT="$WORK/$NAME"
 
 say() { printf '\n== %s\n' "$*"; }
 sha() { local s; s="$(shasum -a 256 "$1" 2>/dev/null || sha256sum "$1")"; echo "${s%% *}"; }
@@ -86,8 +109,8 @@ FP16=(--batch-size "$BATCH")   # never empty, as AUC_CROP below
 [[ "${V8IN_FP16:-0}" == "1" && "$V8IN_DEVICE" == "mps" ]] && FP16+=(--fp16)
 echo "memory ${MEM_GB} GB: v8in batch $BATCH${V8IN_FP16:+, fp16 $V8IN_FP16}"
 
-say "2/7 data: w045 surface volume (1.7 GB), its labels, three checkpoints"
-(cd "$SCROLLS" && "$PY" -m kit fetch w045 "$ZARR")
+say "2/7 data: $SEGMENT surface volume (0.6 to 1.7 GB), its labels, three checkpoints"
+(cd "$SCROLLS" && "$PY" -m kit fetch "$SV" "$ZARR")
 for z in inklabels supervision; do
   (cd "$SCROLLS" && "$PY" -m kit fetch "$LABELS/$z.zarr" "$LAB/$z.zarr" --workers 8)
 done
@@ -108,8 +131,8 @@ SHAV8="$(sha "$V8IN/model.safetensors")"
 INPUT="$ZARR"
 AUC_CROP=(--level 2)   # never empty: bash 3.2 (macOS) treats an empty array as unset under set -u
 if [[ "$SMOKE" == "1" ]]; then   # one small window only, to test the script end to end on any machine
-  CROP=(4000 4256 2700 2956)
-  INPUT="$WORK/data/w045_crop.zarr"
+  CROP=($(( CROP[0] + 160 )) $(( CROP[0] + 416 )) $(( CROP[2] + 140 )) $(( CROP[2] + 396 )))   # 256 px inside the crop
+  INPUT="$WORK/data/${NAME}_crop.zarr"
   "$PY" - "$ZARR" "$INPUT" "${CROP[@]}" <<'EOF'
 import sys, zarr
 src, dst, y0, y1, x0, x1 = sys.argv[1], sys.argv[2], *map(int, sys.argv[3:])
@@ -141,7 +164,7 @@ fi
 say "3/7 ink_9um on $EXPECT_GPU (PR #$PR, $PR_SHA): seeds 42 and 43, both directions"
 git -C "$VILLA" checkout -q --detach "pr-$PR"
 for seed in 42 43; do
-  log="$WORK/logs/w045_ink9um_s$seed.log"
+  log="$WORK/logs/${NAME}_ink9um_s$seed.log"
   start=$SECONDS
   (cd "$WORK" && "$PY" -m vesuvius.ink_detection.inference.infer "$INPUT" \
      "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed$seed/step-075000.pth" "$OUT/maps/ink9um_s$seed.tif" \
@@ -176,8 +199,8 @@ v8in() {  # v8in NAME LAYERS DEVICE STRIDE fwd|rev [extra args]
   local flags=(--stride "$stride" "$@")
   [[ "$dir" == "rev" ]] && flags+=(--reverse)
   "$PY" "$SCROLLS/scripts/v8in_run.py" --model-dir "$V8IN" --layers "$layers" --output "$OUT/maps/$name.npy" \
-    --device "$device" "${flags[@]}" > "$WORK/logs/w045_$name.log" 2>&1 \
-    || { echo "v8in $name failed, see $WORK/logs/w045_$name.log" >&2; tail -20 "$WORK/logs/w045_$name.log" >&2; exit 1; }
+    --device "$device" "${flags[@]}" > "$WORK/logs/${NAME}_$name.log" 2>&1 \
+    || { echo "v8in $name failed, see $WORK/logs/${NAME}_$name.log" >&2; tail -20 "$WORK/logs/${NAME}_$name.log" >&2; exit 1; }
   "$PY" - "$OUT/maps/$name.npy" "$OUT/maps/$name.tif" <<'EOF'
 import sys, numpy as np, tifffile
 p = np.load(sys.argv[1])
@@ -223,7 +246,7 @@ say "6/7 v8in over the segment on $V8IN_DEVICE, both directions"
 if [[ -z "$STRIDE" && "$SMOKE" == "1" ]]; then
   STRIDE=64
 elif [[ -z "$STRIDE" ]]; then   # pick the finest stride whose estimate fits V8IN_HOURS, from the measured speed
-  STRIDE="$("$PY" - "$OUT/layers" "$WORK/logs/w045_crop_gpu.log" "${V8IN_HOURS:-4}" "$V8IN" <<'EOF'
+  STRIDE="$("$PY" - "$OUT/layers" "$WORK/logs/${NAME}_crop_gpu.log" "${V8IN_HOURS:-4}" "$V8IN" <<'EOF'
 import re, sys
 sys.path.insert(0, sys.argv[4])
 import numpy as np, tifffile
@@ -257,7 +280,7 @@ auc() {  # auc MAP CONTROL [crop args]
   local map="$1" control="$2"; shift 2
   "$PY" -m kit auc "$map" --control "$control" --labels "$LAB/inklabels.zarr" --mask "$LAB/supervision.zarr" "$@" --json
 }
-rows() { "$PY" -m kit rowscore "$@" --voxel-um 9.362 --json; }
+rows() { "$PY" -m kit rowscore "$@" --voxel-um "$VOXEL" --json; }
 M="$OUT/maps"
 for seed in 42 43; do
   auc "$M/ink9um_s$seed$INK_TAG.tif" "$M/ink9um_s${seed}_reverse$INK_TAG.tif" "${INK_AUC[@]}" > "$OUT/results/auc_ink9um_s$seed.json"
@@ -273,7 +296,7 @@ OS="$(sw_vers -productVersion 2>/dev/null || uname -sr)"
 import json, sys, pathlib
 r = pathlib.Path(sys.argv[1])
 j = lambda n: json.loads((r / f"{n}.json").read_text())
-print("kit mac-w045 summary (paste this)")
+print("kit mac-w045 summary for $SEGMENT (paste this)")
 print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE | quick: $QUICK")
 if "$QUICK" == "1":
     print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns), so the models face the same test")
