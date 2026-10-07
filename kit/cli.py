@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,gate,layers,shuffle,provenance,compute,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run}."""
 
 import argparse
 import json
@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify
+from . import auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -87,6 +87,21 @@ def cmd_auc(args):
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2) if args.json else auc.format_result(result))
+    return 0
+
+
+def cmd_fibertensor(args):
+    try:
+        if args.action == "train":
+            result = fibertensor.train_files(args.volume, args.labels, args.crop, args.surface_shape, args.output,
+                                             kind=args.kind, model=args.model, seed=args.seed,
+                                             samples=args.samples, epochs=args.epochs, reverse=args.reverse)
+        else:
+            result = fibertensor.predict_files(args.model_file, args.volume, args.crop, args.output, args.reverse)
+    except verify.VerifyError as exc:
+        print(f"error: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2))
     return 0
 
 
@@ -318,6 +333,28 @@ def build_parser():
     p.add_argument("--name", default="label-auc")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_auc)
+
+    p = sub.add_parser("fibertensor", help="fibre-orientation (structure tensor) features and a tiny CPU ink reader")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("train", help="fit on one labelled segment window")
+    a.add_argument("volume", help="surface volume zarr (9 um)")
+    a.add_argument("labels", help="label folder with inklabels.zarr and supervision.zarr")
+    a.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    a.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"), required=True)
+    a.add_argument("--kind", choices=["fibre", "raw"], default="fibre", help="raw: brightness-only baseline")
+    a.add_argument("--model", choices=["mlp", "logreg"], default="mlp")
+    a.add_argument("--samples", type=int, default=60000)
+    a.add_argument("--epochs", type=int, default=200)
+    a.add_argument("--seed", type=int, default=0)
+    a.add_argument("--reverse", action="store_true", help="reverse the depth order (control)")
+    a.add_argument("-o", "--output", required=True, help="model .npz")
+    a = actions.add_parser("predict", help="write an ink map for a window")
+    a.add_argument("model_file", help="model .npz from train")
+    a.add_argument("volume")
+    a.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    a.add_argument("--reverse", action="store_true", help="reverse the depth order (the control map)")
+    a.add_argument("-o", "--output", required=True, help="map .tif")
+    p.set_defaults(func=cmd_fibertensor)
 
     p = sub.add_parser("hpscore", help="letter-scale score: 48 um high-passed correlation with the labels (Scheirer)")
     p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
