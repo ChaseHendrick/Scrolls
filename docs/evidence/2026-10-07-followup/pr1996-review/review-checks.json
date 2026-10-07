@@ -1,0 +1,1935 @@
+{
+  "cases": [
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 0.8,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 1.0005,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 2.5,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "plane",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    },
+    {
+      "factor": 4.0,
+      "kind": "bent",
+      "default_byte_equal": true,
+      "linked_byte_equal": true,
+      "retained_finite": true,
+      "supported": true
+    }
+  ],
+  "summary": {
+    "default_byte_equal": 240,
+    "linked_byte_equal": 240,
+    "retained_finite": 240,
+    "supported": 240
+  },
+  "bow_tie": {
+    "all_vertices_kept": true,
+    "center_jacobian_area": 0.0
+  },
+  "limitations": "Synthetic algorithm equivalence and invariant checks only; not a real-data coverage or performance reproduction."
+}

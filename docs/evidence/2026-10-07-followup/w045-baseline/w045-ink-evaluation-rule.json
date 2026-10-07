@@ -1,0 +1,144 @@
+{
+  "schema": 2,
+  "scope": "Public PHerc0139 w045 fixed held-out crop reconstruction comparison; no target scrolls or legibility claims",
+  "status": "frozen_followup_registration_and_orientation_pending",
+  "created_utc": "2026-10-07T13:26:29.989523+00:00",
+  "supersedes_stopped_recipe": {
+    "path": "/workspace/scrolls-env/phase-reconstruction/phase-experiment-recipe.json",
+    "sha256": "ed33041a63704f08b5d0ba987798707661025effcab1077e0e8272fcbc9eb7d1",
+    "reason": "Translation-only structural registration failed before candidate ink maps. New affine followup has its own independent heldback gate; old record remains unchanged."
+  },
+  "source_mesh": "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz",
+  "source_surface_shape": [
+    5980,
+    8240
+  ],
+  "source_native_shape": [
+    299,
+    412
+  ],
+  "surface_crop_yx": [
+    3840,
+    4480,
+    2560,
+    3200
+  ],
+  "native_crop_yx": [
+    192,
+    224,
+    128,
+    160
+  ],
+  "recipes": [
+    "original",
+    "pag0",
+    "pag50"
+  ],
+  "render": {
+    "official_source": "1e3f4c021f4e53bea3867772ed05f51a7e586a9c",
+    "binary_sha256": "fd1d5118e8f7e38c2c482d9cd5473eb5631f82546b896f088ef85ee4fe615a6a",
+    "voxel_um": 9.362,
+    "voxel_unit": "micrometer",
+    "group": 0,
+    "scale": 1,
+    "planes": 28,
+    "step_vox": 1,
+    "accumulation": false,
+    "canonical_depth": "Pending label-independent w045 structural comparison against official published28-layer crop; never choose using ink labels or prediction maps.",
+    "transform": "OriginalXYZ-to-recipeXYZ must pass rawCT-only heldback validation before mesh transform/cache bbox",
+    "use_helper": "Adapt separately; PHerc0841-only render_canonical.py cannot be reused blindly",
+    "source_mesh_policy": "Render from full source mesh with exact source-pixel crop, not a newly rescaled native submesh.",
+    "orientation_gate": {
+      "published_crop": "/workspace/scrolls-env/phase-reconstruction/published-render-check/official-published-crop.npy",
+      "compare": "Official original raw+N output and its depth reversal, excluding64px spatial edge; report both without additional translations or depth shifts.",
+      "minimum_pearson": 0.98,
+      "maximum_mae_uint8": 3.0,
+      "failure": "Stop reader inference if no orientation passes or ambiguity remains."
+    },
+    "affine_scale_policy": "For sourceXYZ\u2192recipeXYZ affine A, official renderer uses sA=cuberoot(detA); require detA>0 and set --scale=1/sA so effective generation scale and640 sourceu/v canvas remain1.",
+    "normal_transform": "Official inverse transpose A^-T, normal renormalization; source-plane voxel spacing9.362 micrometers.",
+    "raw_plus_normal_stack": "Retain official raw+N export as a hashed structural artifact; create separately named reader-order layers after orientation gate passes."
+  },
+  "registration_gate": {
+    "rule": "/workspace/scrolls-env/phase-reconstruction/affine-followup/rule.json",
+    "rule_sha256": "ce191e0a381fd94609f6b84730d40b7d7941ed9feba968e6d75da015c88a9e64",
+    "required": "Independent-reviewed frozen affine rule must pass all heldback structural checks before pag0/pag50 reader maps; no fitting from labels or ink maps.",
+    "mapping": "4x4 originalXYZvoxels\u2192recipeXYZvoxels, not the sampling inverse.",
+    "original_baseline": "Identity rendering may proceed independently, but reader waits for original structural orientation check."
+  },
+  "reader": {
+    "name": "d9v2",
+    "release": "v1.0",
+    "checkpoint_sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+    "villa_revision": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+    "adapter": "/workspace/scrolls-env/infer_layers_cpu.py",
+    "central_planes": 17,
+    "stride": 42,
+    "batch": 1,
+    "blend": "hann",
+    "precision": "fp32",
+    "mirror_tta": false,
+    "directions": "Forward in structurally validated published order, reverse same selected17 planes, shuffled same selected17 planes; all stride42.",
+    "shuffle_seed": 20261007,
+    "matched_selection": "Reverse/shuffle exactly selected forward plane voxels",
+    "adapter_sha256": "1357601e51ff49d5487465ddd14a77de642d1fad325d51814e702b8087e30495"
+  },
+  "labels": {
+    "directory": "/workspace/scrolls-env/phase-reconstruction/labels-w045",
+    "level": "2",
+    "source_volume": "2.399um-volume-20260102150214/20260918",
+    "mapping": "Existing kit.auc.labels_on_map nearest-center source-canvas scaling; same frozen640crop for every recipe.",
+    "ink": "/workspace/scrolls-env/phase-reconstruction/w045-crop-ink.npy",
+    "supervision": "/workspace/scrolls-env/phase-reconstruction/w045-crop-supervision.npy",
+    "coverage_report": "/workspace/scrolls-env/phase-reconstruction/w045-label-coverage.json",
+    "selection": "Previously documented w045 crop; no search or recipe selection from new maps."
+  },
+  "evaluation": {
+    "inner_px": 64,
+    "primary_mask": "Source supervision with64px spatial edge excluded; include prediction zeros for AUC, identical fixed mask for every recipe and control.",
+    "primary_metric": "Pixel AUC; always report all9 forward/reverse/shuffle maps, source class counts, and zero-prediction coverage.",
+    "depth_controls": "For each recipe report forward-minus-reverse and forward-minus-shuffle AUC andHP; simultaneous95% maximum absolute centered-bootstrap-deviation intervals across all6 depth contrasts.",
+    "hp_metric": "kit.hpscore48um high-pass label correlation on common positive prediction coverage across all9 maps, intersected with source supervision and inner64. Set values outside this common mask to0 before every HP computation so all smoothed coverage is identical.",
+    "hp_displaced_null": "Existing rolled-label null along rows at150,300,-300 pixels at9.362um, with overlapping common coverage; report max absolute null and insufficient-null cases.",
+    "paired_bootstrap": {
+      "draws": 1000,
+      "seed": 20261007,
+      "block_px": 107,
+      "sampling": "Resample source-grid spatial blocks with replacement. Same weights across every recipe/control and both AUC andHP sufficient statistics.",
+      "family": "Simultaneous95% max absolute centered-deviation intervals across pag0-original andpag50-original; separate AUC andHP families. Pag0-pag50 is descriptive secondary comparison.",
+      "invalid_draws": "Report nonfinite/one-class draws; abstain from an improvement verdict if fewer than99% of draws are usable."
+    },
+    "spatial_split": {
+      "boundary_local_row": 320,
+      "minimum_class_pixels_per_half": 1000,
+      "minimum_blocks_per_half": 8,
+      "policy": "Upper and lower halves are fixed spatial robustness checks, not tuning folds. All recipes evaluated on both. Improvement requires positive paired forward AUC difference in both halves; do not move boundary or choose a winning recipe from one half."
+    },
+    "coverage_gate": "Report prediction-zero fractions on the fixed primary mask. Abstain from recipe-improvement verdict if any map is missing, shape/grid differs, frame gate fails, or candidate coverage differs from original by>1percentage point.",
+    "pixel_ranking_improvement": "Paired forward AUC gain>=0.01, simultaneous CI lower bound>0, positive gain on both eligible spatial halves, and forward beats both matched controls with simultaneous CI lower bounds>0. No generalization/legibility claim.",
+    "ink_detail_improvement": "Requires pixel-ranking gate plus positive paired HP change with simultaneous CI lower bound>0, forwardHP greater than displaced-label null and both matched depth controls; otherwise report metric-specific outcome only.",
+    "interpretation": "One fixed crop on one held-out segment of a previously seen scroll. These are recipe effects including phase-processing and resampling differences, not an isolated Paganin causal effect or a reading."
+  },
+  "budget": {
+    "reader_threads_initial": 1,
+    "reader_threads_after_root_approval": 2,
+    "models": "One fixed released d9v2 checkpoint, no tuning or training",
+    "new_inference": "Only after source structural orientation gate and, for candidates, registration gate pass."
+  },
+  "input_sha256": {
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/meta.json": "5ddaa7d7de1c6b14b6194bb4deef8964e8db44fbd5dd87cff30370a3206da82c",
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/x.tif": "152250af01f4997f3e49ccc2ec21a865e34d44a1b7cbff91f610cce3e400bdc5",
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/y.tif": "7b05ff73132afdad9a3c03d3de53a5fb8741f8be1c8a398cd7b49901dff27b9f",
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/z.tif": "c29c270be3daec9ed8d108d7df348daeb32d7ab867072feba028d1309633a58e",
+    "/workspace/scrolls-env/phase-reconstruction/w045-crop-ink.npy": "3f569b4d7cf6ae6ac5084a948e06522aa631dee6c77cc7a57a2f9be3afc8493f",
+    "/workspace/scrolls-env/phase-reconstruction/w045-crop-supervision.npy": "91e3ac278c53aca6754e0bc5258b707ffb2f1908f1a2f7e21f70452ab3ba1249",
+    "/workspace/scrolls-env/phase-reconstruction/w045-label-coverage.json": "d06ceeed912f5559a72b193ec96cf3cef63d8d0395bd462d59ea6676f5ff1963",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/download-receipt.json": "1ce4cc7320bcd3192054186951b6afa34be1e5de096415b7b9b5d01ab5789d78",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/supervision.zarr/zarr.json": "f96d2694db84a0bd01c2d260e05635a64d31f7edfb787219f7a9e0cd07d21bbd",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/inklabels.zarr/zarr.json": "5e6d748e6f7322b80fdf49492f00c3be3306ce1754b1ba949b17ee1a69ee11b4",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/supervision.zarr/2/zarr.json": "70728c58b611172a6f32fd1d73a599e304ddc29cd1f1c65f195431737bbdd4c2",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/supervision.zarr/2/c/0/0": "af8e0ce57106e7619af42a1a1936dbcfa039dd72a238ec3460bae3a00a84c839",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/inklabels.zarr/2/zarr.json": "70728c58b611172a6f32fd1d73a599e304ddc29cd1f1c65f195431737bbdd4c2",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/inklabels.zarr/2/c/0/0": "43ca1cc9cccce3ed57316d7b0397d14fbb352dbc6357f90000658d310173251a"
+  }
+}

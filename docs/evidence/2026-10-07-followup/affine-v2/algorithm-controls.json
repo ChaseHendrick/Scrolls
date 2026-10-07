@@ -1,0 +1,422 @@
+[
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.01781515758244024,
+        -0.03378773519965352,
+        -0.010231970851091142
+      ],
+      "ncc": 0.9999995695456397,
+      "margin": 0.21161636102686487,
+      "competing_ncc": 0.7883832085187749,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.039543445943754855,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.008761772429173777,
+        -0.013249488336246689,
+        -0.008880485323477905
+      ],
+      "ncc": 1.0000007087635323,
+      "margin": 0.16879384568667766,
+      "competing_ncc": 0.8312068630768547,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.01819836852175143,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        3.0178150020741206,
+        -4.033788228873377,
+        4.989768024039355
+      ],
+      "ncc": 0.9999996960720139,
+      "margin": 0.21161648755323903,
+      "competing_ncc": 0.7883832085187749,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.03954379902538217,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        3.0087614346530493,
+        -4.013249525718723,
+        4.991119555083712
+      ],
+      "ncc": 1.0000007087635323,
+      "margin": 0.1687937712495644,
+      "competing_ncc": 0.8312069375139679,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.018198213397528393,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        1,
+        -1,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9565976114462643,
+      "margin": 0.10861854159421525,
+      "competing_ncc": 0.8479790698520491,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        1,
+        0,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9709418506939486,
+      "margin": 0.10065253217739611,
+      "competing_ncc": 0.8702893185165524,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9733379846703814,
+      "margin": 0.15727457072203377,
+      "competing_ncc": 0.8160634139483476,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9831266402004422,
+      "margin": 0.12583314422131275,
+      "competing_ncc": 0.8572934959791294,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.032535844078940175,
+        0.013681845248974105,
+        -0.0147306657171002
+      ],
+      "ncc": 0.9999996762333515,
+      "margin": 0.13255914546140146,
+      "competing_ncc": 0.86744053077195,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.03824613120061862,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.010202307872980295,
+        0.0037576501002064967,
+        -0.004647328405867994
+      ],
+      "ncc": 0.9999999966478278,
+      "margin": 0.09870172029394919,
+      "competing_ncc": 0.9012982763538786,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.01182390297332675,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        3.0325356732049493,
+        -3.986318888946053,
+        4.98526965125798
+      ],
+      "ncc": 0.9999996762333491,
+      "margin": 0.13255914546139902,
+      "competing_ncc": 0.86744053077195,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.03824560111478477,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        3.0102025656858853,
+        -3.9962427782560743,
+        4.995352726042864
+      ],
+      "ncc": 0.9999999273277793,
+      "margin": 0.09870165097390071,
+      "competing_ncc": 0.9012982763538786,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.011823967905931997,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        1,
+        0,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9805691757423648,
+      "margin": 0.06856430948622927,
+      "competing_ncc": 0.9120048662561355,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.23208533869405373,
+        -0.40147374256389934,
+        0.4170871404523452
+      ],
+      "ncc": 0.9851188027710025,
+      "margin": 0.07112694943367392,
+      "competing_ncc": 0.9139918533373286,
+      "refinement_error": null,
+      "boundary": false
+    },
+    "error_vox": 0.05711787489113652,
+    "pass": false
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9876768332571997,
+      "margin": 0.08494287717780558,
+      "competing_ncc": 0.9027339560793941,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9909431701840109,
+      "margin": 0.06804648406549885,
+      "competing_ncc": 0.922896686118512,
+      "refinement_error": "quadratic_offset_outside_halfvoxel",
+      "boundary": false
+    },
+    "error_vox": Infinity,
+    "pass": false
+  }
+]

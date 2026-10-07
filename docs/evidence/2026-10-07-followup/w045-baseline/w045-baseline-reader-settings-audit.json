@@ -1,0 +1,97 @@
+{
+  "status": "passed",
+  "rule_sha256": "688e6c97637f151e1d444ce3a54e3a6c988707d2ed296deb948a6a45e3034ec0",
+  "script_sha256": "80460ae255c91ebc8989f2ca0aee1010c4e62c8fc449fd5e3b4696dc7a3c1011",
+  "primary_evaluator_unchanged_sha256": "a95e703eb73dcfe02a97b48184cbf1ef965ef1872219a3d0774780b7b9d4e72c",
+  "expected": {
+    "status": "inference_completed_scoring_pending",
+    "reader": "d9v2",
+    "device": "cpu",
+    "villa_revision": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+    "checkpoint_sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+    "checkpoint_state": "ema_model",
+    "exported_layer_count": 28,
+    "input_shape": [
+      17,
+      640,
+      640
+    ],
+    "selected_source_layers": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "reverse_source_layers": [
+      22,
+      21,
+      20,
+      19,
+      18,
+      17,
+      16,
+      15,
+      14,
+      13,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7,
+      6
+    ],
+    "shuffle_seed": 20261007,
+    "stride": 42,
+    "batch_size": 1,
+    "blend_mode": "hann",
+    "amp": "disabled",
+    "mirror_tta": false,
+    "preprocessing": "tifxyz_robust",
+    "shuffle_source_layers": [
+      6,
+      21,
+      9,
+      16,
+      15,
+      12,
+      14,
+      19,
+      17,
+      10,
+      11,
+      8,
+      22,
+      7,
+      13,
+      20,
+      18
+    ]
+  },
+  "folders": {
+    "/workspace/scrolls-env/phase-reconstruction/reader-original": {
+      "manifest_sha256": "25be9b44bb9deb682d9abce1f7de75fc68654ecabcf79f3dcd9c025180d75f3b",
+      "all_authoritative_settings_match": true,
+      "all_output_hashes_verified": true
+    },
+    "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline": {
+      "manifest_sha256": "33e9f2161514ab6cc5fbb0d4e542077040762803261247fcc2d0d5ddfaffabde",
+      "all_authoritative_settings_match": true,
+      "all_output_hashes_verified": true
+    }
+  },
+  "scope": "External authoritative settings verification of listed folders only; no registration approval or score-based depth selection."
+}

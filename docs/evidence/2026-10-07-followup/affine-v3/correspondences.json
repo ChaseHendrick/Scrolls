@@ -1,0 +1,1778 @@
+[
+  {
+    "point": 0,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4409,
+      3516,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999866040809328,
+      "std": 38.073260594741214,
+      "clip255_fraction": 0.0004956490054869684
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9056282439446367,
+      "std": 43.396588056136835,
+      "clip255_fraction": 0.0008650519031141869
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.20872415580719203,
+          0.39373158826173765,
+          0.28130666790723974
+        ],
+        "ncc": 0.9315846269959195,
+        "integer_grid_ncc": 0.9127260303866486,
+        "margin": 0.16190467234814787,
+        "competing_ncc": 0.7508213580385007,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 155,
+        "continuous_Hessian_eigenvalues": [
+          -0.8383854550759496,
+          -0.1513003286310199,
+          -0.0949538525603675
+        ],
+        "continuous_Hessian_condition": 8.82939904458264
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.3940739737798645,
+          0.4290170286998039,
+          0.33667691930058136
+        ],
+        "ncc": 0.8686242821209509,
+        "integer_grid_ncc": 0.7992109526407121,
+        "margin": 0.18885683906798634,
+        "competing_ncc": 0.6103541135727257,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 119,
+        "continuous_Hessian_eigenvalues": [
+          -0.8084839249227398,
+          -0.2916796780743663,
+          -0.27175474416204454
+        ],
+        "continuous_Hessian_condition": 2.9750499017623375
+      }
+    }
+  },
+  {
+    "point": 0,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4409,
+      3516,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999866040809328,
+      "std": 38.073260594741214,
+      "clip255_fraction": 0.0004956490054869684
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8863752735090576,
+      "std": 40.2270686907663,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.20643177508122032,
+          0.3966372716372484,
+          0.2867648182523796
+        ],
+        "ncc": 0.8900083379274667,
+        "integer_grid_ncc": 0.8710238464918004,
+        "margin": 0.15210084531413215,
+        "competing_ncc": 0.7189230011776683,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 156,
+        "continuous_Hessian_eigenvalues": [
+          -0.8084670067868931,
+          -0.15100293270194046,
+          -0.09435016817041988
+        ],
+        "continuous_Hessian_condition": 8.568792429989108
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.3760812460609605,
+          0.4215683860620618,
+          0.3288547291368673
+        ],
+        "ncc": 0.7962816720603917,
+        "integer_grid_ncc": 0.7378236570062069,
+        "margin": 0.19681922474443636,
+        "competing_ncc": 0.5410044322617705,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 114,
+        "continuous_Hessian_eigenvalues": [
+          -0.8174708829608939,
+          -0.29012163769552884,
+          -0.23436497898305594
+        ],
+        "continuous_Hessian_condition": 3.4880249024748498
+      }
+    }
+  },
+  {
+    "point": 1,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4409,
+      3516,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9997776277434842,
+      "std": 42.09387437017383,
+      "clip255_fraction": 0.0005706661522633745
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8926747277630775,
+      "std": 45.23169798503909,
+      "clip255_fraction": 0.0012089259362914717
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.6811933333925492,
+          -0.3874369952368338,
+          -0.23088615851625746
+        ],
+        "ncc": 0.9109775796542119,
+        "integer_grid_ncc": 0.8920894534194106,
+        "margin": 0.1215222994513846,
+        "competing_ncc": 0.770567153968026,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 151,
+        "continuous_Hessian_eigenvalues": [
+          -0.7829566152291316,
+          -0.11023774906225557,
+          -0.08505195291483389
+        ],
+        "continuous_Hessian_condition": 9.205627718074142
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5609429604605307,
+          -0.4412818784940785,
+          -0.31797741252732287
+        ],
+        "ncc": 0.8668643066704533,
+        "integer_grid_ncc": 0.794868978590563,
+        "margin": 0.1292957624127017,
+        "competing_ncc": 0.6655732161778614,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 121,
+        "continuous_Hessian_eigenvalues": [
+          -0.8137893729852799,
+          -0.2500011550665189,
+          -0.21418165308893064
+        ],
+        "continuous_Hessian_condition": 3.7995288636948996
+      }
+    }
+  },
+  {
+    "point": 1,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4409,
+      3516,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9997776277434842,
+      "std": 42.09387437017383,
+      "clip255_fraction": 0.0005706661522633745
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8753510297934053,
+      "std": 41.85363319957566,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.680893447740506,
+          -0.3936951779179062,
+          -0.2330553314193438
+        ],
+        "ncc": 0.857238236302667,
+        "integer_grid_ncc": 0.8394856132021449,
+        "margin": 0.11158875776711141,
+        "competing_ncc": 0.7278968554350335,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 153,
+        "continuous_Hessian_eigenvalues": [
+          -0.7258322344368044,
+          -0.10571986150170169,
+          -0.08211292009372163
+        ],
+        "continuous_Hessian_condition": 8.839440049243867
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5724648448382266,
+          -0.4360424281012568,
+          -0.31088925016563307
+        ],
+        "ncc": 0.7789229504378624,
+        "integer_grid_ncc": 0.7160503102828722,
+        "margin": 0.13761589010428987,
+        "competing_ncc": 0.5784344201785824,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 127,
+        "continuous_Hessian_eigenvalues": [
+          -0.8391538531883517,
+          -0.2362988547500125,
+          -0.20776430292679235
+        ],
+        "continuous_Hessian_condition": 4.038970320536898
+      }
+    }
+  },
+  {
+    "point": 2,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4409,
+      4140,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999330204046639,
+      "std": 40.8455736350424,
+      "clip255_fraction": 0.0004447445130315501
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8764883981274171,
+      "std": 47.65564830119168,
+      "clip255_fraction": 0.000704444840219825
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.4095424922345748,
+          0.38002466507306853,
+          -0.3185010828912162
+        ],
+        "ncc": 0.8784873695456284,
+        "integer_grid_ncc": 0.841048953893131,
+        "margin": 0.1797572890619027,
+        "competing_ncc": 0.6612916648312283,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 101,
+        "continuous_Hessian_eigenvalues": [
+          -1.1863076063647078,
+          -0.22870722228407608,
+          -0.11830225058119484
+        ],
+        "continuous_Hessian_condition": 10.02776870716001
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.45905900413821776,
+          0.3993839557437548,
+          -0.3662814869805717
+        ],
+        "ncc": 0.8662146162139432,
+        "integer_grid_ncc": 0.7977572802071058,
+        "margin": 0.18592405963107794,
+        "competing_ncc": 0.6118332205760278,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 116,
+        "continuous_Hessian_eigenvalues": [
+          -0.7435174906124474,
+          -0.3033423603943687,
+          -0.23763241000688656
+        ],
+        "continuous_Hessian_condition": 3.128855573997252
+      }
+    }
+  },
+  {
+    "point": 2,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4409,
+      4140,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999330204046639,
+      "std": 40.8455736350424,
+      "clip255_fraction": 0.0004447445130315501
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.852568679396499,
+      "std": 44.46000078388132,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.4098282287129536,
+          0.3859486602523734,
+          -0.32841177215747724
+        ],
+        "ncc": 0.8157211058541298,
+        "integer_grid_ncc": 0.7789064498517756,
+        "margin": 0.16805350157555698,
+        "competing_ncc": 0.6108529482762186,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 106,
+        "continuous_Hessian_eigenvalues": [
+          -1.1393481611040914,
+          -0.2263633057090804,
+          -0.11418036390115807
+        ],
+        "continuous_Hessian_condition": 9.9784947444237
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.45097365062245565,
+          0.39520882053716183,
+          -0.36266921041394595
+        ],
+        "ncc": 0.7962274943740975,
+        "integer_grid_ncc": 0.7347741470905128,
+        "margin": 0.192801783310929,
+        "competing_ncc": 0.5419723637795838,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 115,
+        "continuous_Hessian_eigenvalues": [
+          -0.7610192058931808,
+          -0.3039964380228795,
+          -0.21069236386093823
+        ],
+        "continuous_Hessian_condition": 3.6119923472664195
+      }
+    }
+  },
+  {
+    "point": 3,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4409,
+      4140,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999946416323731,
+      "std": 39.93251322955661,
+      "clip255_fraction": 0.00017950531550068588
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.902519861210055,
+      "std": 44.319141634642754,
+      "clip255_fraction": 0.0003943618970079381
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.4208408937137372,
+          0.3171373262260883,
+          -0.1715408388737582
+        ],
+        "ncc": 0.8667120706278413,
+        "integer_grid_ncc": 0.8342072088243523,
+        "margin": 0.24402818360337952,
+        "competing_ncc": 0.5901790252209728,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 86,
+        "continuous_Hessian_eigenvalues": [
+          -1.0523790345674011,
+          -0.25404947007025025,
+          -0.1725625107630812
+        ],
+        "continuous_Hessian_condition": 6.098538030732871
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.44381265181680757,
+          0.3550911757485459,
+          -0.2586087529501457
+        ],
+        "ncc": 0.8648740946463302,
+        "integer_grid_ncc": 0.8096545323409838,
+        "margin": 0.22213224622870287,
+        "competing_ncc": 0.587522286112281,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 89,
+        "continuous_Hessian_eigenvalues": [
+          -0.638186430312708,
+          -0.30884240931923523,
+          -0.27601421889328676
+        ],
+        "continuous_Hessian_condition": 2.312150558299481
+      }
+    }
+  },
+  {
+    "point": 3,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4409,
+      4140,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999946416323731,
+      "std": 39.93251322955661,
+      "clip255_fraction": 0.00017950531550068588
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8800770118817424,
+      "std": 41.11075305825468,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.41564824388560107,
+          0.3243686788999379,
+          -0.18127454584403568
+        ],
+        "ncc": 0.7997734896498433,
+        "integer_grid_ncc": 0.7674061009689255,
+        "margin": 0.2312026778076134,
+        "competing_ncc": 0.5362034231613121,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 89,
+        "continuous_Hessian_eigenvalues": [
+          -1.0180244811108303,
+          -0.2579012611603567,
+          -0.17066281784756787
+        ],
+        "continuous_Hessian_condition": 5.9651217174915425
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.4353513140179677,
+          0.3485153547403137,
+          -0.2549742114232839
+        ],
+        "ncc": 0.7954799394601327,
+        "integer_grid_ncc": 0.7468231483466456,
+        "margin": 0.23170503698723288,
+        "competing_ncc": 0.5151181113594128,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 86,
+        "continuous_Hessian_eigenvalues": [
+          -0.6543573257967508,
+          -0.3114480345519721,
+          -0.24816223818378294
+        ],
+        "continuous_Hessian_condition": 2.63681263751397
+      }
+    }
+  },
+  {
+    "point": 4,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4653,
+      3516,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999946416323731,
+      "std": 36.07583758275267,
+      "clip255_fraction": 0.0
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9225074896957053,
+      "std": 41.284249348968864,
+      "clip255_fraction": 0.0003955545237125992
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.38352999475917654,
+          -0.24499672532558406,
+          -0.19666280974769687
+        ],
+        "ncc": 0.8700455984103983,
+        "integer_grid_ncc": 0.8498719334072851,
+        "margin": 0.19550698259941812,
+        "competing_ncc": 0.6543649508078669,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 149,
+        "continuous_Hessian_eigenvalues": [
+          -0.8720705777359481,
+          -0.18360822922397163,
+          -0.11914206148393984
+        ],
+        "continuous_Hessian_condition": 7.3195861048073425
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.31786788693864987,
+          0.34410665008005914,
+          0.29749549854789753
+        ],
+        "ncc": 0.856929670855944,
+        "integer_grid_ncc": 0.8037393699214754,
+        "margin": 0.1817298446197152,
+        "competing_ncc": 0.6220095253017602,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 105,
+        "continuous_Hessian_eigenvalues": [
+          -0.6641450628405126,
+          -0.3131498742140191,
+          -0.16987197068812643
+        ],
+        "continuous_Hessian_condition": 3.9096800970175267
+      }
+    }
+  },
+  {
+    "point": 4,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4653,
+      3516,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999946416323731,
+      "std": 36.07583758275267,
+      "clip255_fraction": 0.0
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9034707822359047,
+      "std": 37.89343631755586,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.3932221249504096,
+          -0.2582512636271476,
+          -0.2138185173829557
+        ],
+        "ncc": 0.811315885456012,
+        "integer_grid_ncc": 0.7900520095448497,
+        "margin": 0.1863069416805787,
+        "competing_ncc": 0.603745067864271,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 184,
+        "continuous_Hessian_eigenvalues": [
+          -0.850725577891601,
+          -0.1843734858072359,
+          -0.12024227156138091
+        ],
+        "continuous_Hessian_condition": 7.075095695088604
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.3015050540240712,
+          0.33005254140055695,
+          0.30081902094868235
+        ],
+        "ncc": 0.7886433314203263,
+        "integer_grid_ncc": 0.7405707128649482,
+        "margin": 0.1893710421527286,
+        "competing_ncc": 0.5511996707122196,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 112,
+        "continuous_Hessian_eigenvalues": [
+          -0.6707502244714723,
+          -0.2947837954161776,
+          -0.1711950572953902
+        ],
+        "continuous_Hessian_condition": 3.9180466718388938
+      }
+    }
+  },
+  {
+    "point": 5,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4653,
+      3516,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999598122427984,
+      "std": 30.790504415693714,
+      "clip255_fraction": 2.143347050754458e-05
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9568030607571748,
+      "std": 33.613939314037246,
+      "clip255_fraction": 0.00019598832179930795
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5266642893922983,
+          -0.29747812472761775,
+          -0.18753045929831783
+        ],
+        "ncc": 0.9070365908024521,
+        "integer_grid_ncc": 0.8925976683552752,
+        "margin": 0.08947545526178924,
+        "competing_ncc": 0.803122213093486,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 151,
+        "continuous_Hessian_eigenvalues": [
+          -0.4642365555323684,
+          -0.08383584843563967,
+          -0.07374880546167642
+        ],
+        "continuous_Hessian_condition": 6.29483491462935
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5037956463503607,
+          -0.37730599868831505,
+          -0.31911137936145545
+        ],
+        "ncc": 0.8539249337500069,
+        "integer_grid_ncc": 0.7809166835892157,
+        "margin": 0.12958194032834036,
+        "competing_ncc": 0.6513347432608754,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 98,
+        "continuous_Hessian_eigenvalues": [
+          -0.5756603769788015,
+          -0.3137228645681814,
+          -0.21011911470651812
+        ],
+        "continuous_Hessian_condition": 2.739685905220235
+      }
+    }
+  },
+  {
+    "point": 5,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4653,
+      3516,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999598122427984,
+      "std": 30.790504415693714,
+      "clip255_fraction": 2.143347050754458e-05
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9485099321951964,
+      "std": 30.22698211442314,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5192787928194434,
+          -0.3102191356727682,
+          -0.22775590274228308
+        ],
+        "ncc": 0.8575280066344381,
+        "integer_grid_ncc": 0.8410558265633863,
+        "margin": 0.0856887992091665,
+        "competing_ncc": 0.7553670273542198,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 146,
+        "continuous_Hessian_eigenvalues": [
+          -0.45610569110552246,
+          -0.08571189530137702,
+          -0.07452035760717847
+        ],
+        "continuous_Hessian_condition": 6.120551561357326
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5529503955615028,
+          0.3686459756452543,
+          0.32104982133873644
+        ],
+        "ncc": 0.7593040076275344,
+        "integer_grid_ncc": 0.6944094723418649,
+        "margin": 0.14307219818038996,
+        "competing_ncc": 0.5513372741614749,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 102,
+        "continuous_Hessian_eigenvalues": [
+          -0.5965336405913719,
+          -0.2983507235133161,
+          -0.2219511522129055
+        ],
+        "continuous_Hessian_condition": 2.687679854976153
+      }
+    }
+  },
+  {
+    "point": 6,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4653,
+      4140,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9998874742798354,
+      "std": 41.6423405380438,
+      "clip255_fraction": 3.750857338820302e-05
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8615749987278648,
+      "std": 51.30927402547418,
+      "clip255_fraction": 0.0012753154895176063
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.3996282746372647,
+          0.38611917670920526,
+          -0.34312780851544233
+        ],
+        "ncc": 0.9020296472253619,
+        "integer_grid_ncc": 0.8682877960873863,
+        "margin": 0.18104157003759414,
+        "competing_ncc": 0.6872462260497921,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 142,
+        "continuous_Hessian_eigenvalues": [
+          -1.0435217135322135,
+          -0.1768882011413249,
+          -0.14334685894134944
+        ],
+        "continuous_Hessian_condition": 7.2796971014144916
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.4309350219728227,
+          0.4069803128159037,
+          -0.3916477874318957
+        ],
+        "ncc": 0.8883412208879748,
+        "integer_grid_ncc": 0.8253480406435177,
+        "margin": 0.1888245192367799,
+        "competing_ncc": 0.6365235214067378,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 116,
+        "continuous_Hessian_eigenvalues": [
+          -0.7146876321691066,
+          -0.24582478110727257,
+          -0.23515923931375637
+        ],
+        "continuous_Hessian_condition": 3.0391645858981087
+      }
+    }
+  },
+  {
+    "point": 6,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4653,
+      4140,
+      6171
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9998874742798354,
+      "std": 41.6423405380438,
+      "clip255_fraction": 3.750857338820302e-05
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8335788819204152,
+      "std": 47.79356019431369,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.40749705782301987,
+          0.3895365140849892,
+          -0.3540282947673233
+        ],
+        "ncc": 0.8491043258142771,
+        "integer_grid_ncc": 0.8138345249778401,
+        "margin": 0.1714841927771571,
+        "competing_ncc": 0.642350332200683,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 148,
+        "continuous_Hessian_eigenvalues": [
+          -1.0182518000448595,
+          -0.18193045393989565,
+          -0.143130465142943
+        ],
+        "continuous_Hessian_condition": 7.114151407444539
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.4301196380605185,
+          -0.40121337234892684,
+          0.38109013714120443
+        ],
+        "ncc": 0.8275510156015565,
+        "integer_grid_ncc": 0.7686604989832454,
+        "margin": 0.19151429946335652,
+        "competing_ncc": 0.5771461995198889,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 119,
+        "continuous_Hessian_eigenvalues": [
+          -0.7370502071674092,
+          -0.25036110587266447,
+          -0.22718647730938465
+        ],
+        "continuous_Hessian_condition": 3.244252104687056
+      }
+    }
+  },
+  {
+    "point": 7,
+    "role": "calibration",
+    "volume": "pag0",
+    "source_xyz": [
+      4653,
+      4140,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9994963134430727,
+      "std": 42.265433376446055,
+      "clip255_fraction": 0.0014494384430727024
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8764669308467331,
+      "std": 48.079663931850135,
+      "clip255_fraction": 0.0010797247099531854
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.42646619690626086,
+          0.34392315215724134,
+          -0.2677864919718227
+        ],
+        "ncc": 0.8963458384687802,
+        "integer_grid_ncc": 0.8373440484586431,
+        "margin": 0.23475128833167735,
+        "competing_ncc": 0.6025927601269657,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 139,
+        "continuous_Hessian_eigenvalues": [
+          -1.2731112810623764,
+          -0.2891691559637251,
+          -0.19759157397281762
+        ],
+        "continuous_Hessian_condition": 6.443145603149638
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.44159422577151,
+          0.3644268558630208,
+          -0.3069793008169239
+        ],
+        "ncc": 0.8994613446445665,
+        "integer_grid_ncc": 0.8299500317993203,
+        "margin": 0.20268232756470483,
+        "competing_ncc": 0.6272677042346154,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 169,
+        "continuous_Hessian_eigenvalues": [
+          -0.7266129067598126,
+          -0.3330674461879575,
+          -0.23133232841891743
+        ],
+        "continuous_Hessian_condition": 3.140991627612015
+      }
+    }
+  },
+  {
+    "point": 7,
+    "role": "calibration",
+    "volume": "pag50",
+    "source_xyz": [
+      4653,
+      4140,
+      6846
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9994963134430727,
+      "std": 42.265433376446055,
+      "clip255_fraction": 0.0014494384430727024
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.851795062207409,
+      "std": 44.75251769596226,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.42621325967398943,
+          0.3514375109597541,
+          -0.2795531912240136
+        ],
+        "ncc": 0.834520764305923,
+        "integer_grid_ncc": 0.7745236610632573,
+        "margin": 0.2242458381803203,
+        "competing_ncc": 0.550277822882937,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 143,
+        "continuous_Hessian_eigenvalues": [
+          -1.2453471202231543,
+          -0.2890557623546102,
+          -0.20539410561889754
+        ],
+        "continuous_Hessian_condition": 6.06320768782848
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.4360234247775233,
+          0.3575026812641494,
+          -0.30646547696503207
+        ],
+        "ncc": 0.8428874243656819,
+        "integer_grid_ncc": 0.7786444672748594,
+        "margin": 0.20974646142325104,
+        "competing_ncc": 0.5688980058516083,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 161,
+        "continuous_Hessian_eigenvalues": [
+          -0.7385161068259165,
+          -0.31951820420251725,
+          -0.2342540107702509
+        ],
+        "continuous_Hessian_condition": 3.152629508445131
+      }
+    }
+  },
+  {
+    "point": 8,
+    "role": "audit",
+    "volume": "pag0",
+    "source_xyz": [
+      4494,
+      3703,
+      6286
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999544538751715,
+      "std": 33.32908740336497,
+      "clip255_fraction": 0.00019290123456790122
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9155290333044983,
+      "std": 40.96340584150573,
+      "clip255_fraction": 0.0005879649653979239
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.5217404488267141,
+          0.21335133560959577,
+          0.2181985326210732
+        ],
+        "ncc": 0.9286143716317006,
+        "integer_grid_ncc": 0.9062131175510487,
+        "margin": 0.12398510890736292,
+        "competing_ncc": 0.7822280086436858,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 155,
+        "continuous_Hessian_eigenvalues": [
+          -0.6337572590711275,
+          -0.10392951585999793,
+          -0.06971424373465114
+        ],
+        "continuous_Hessian_condition": 9.090785829698692
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.5081667269960624,
+          0.32431217843832744,
+          0.301052940200235
+        ],
+        "ncc": 0.8882679203257591,
+        "integer_grid_ncc": 0.8246649982793607,
+        "margin": 0.1454292457308003,
+        "competing_ncc": 0.6792357525485604,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 124,
+        "continuous_Hessian_eigenvalues": [
+          -0.7601667963188312,
+          -0.2212903280732688,
+          -0.16018085466737308
+        ],
+        "continuous_Hessian_condition": 4.74567823912147
+      }
+    }
+  },
+  {
+    "point": 8,
+    "role": "audit",
+    "volume": "pag50",
+    "source_xyz": [
+      4494,
+      3703,
+      6286
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999544538751715,
+      "std": 33.32908740336497,
+      "clip255_fraction": 0.00019290123456790122
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.898648594926725,
+      "std": 37.60590001500678,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.5242064520597051,
+          0.23250777805181158,
+          0.22737191369898666
+        ],
+        "ncc": 0.8913728145160016,
+        "integer_grid_ncc": 0.8681400408101733,
+        "margin": 0.11688028606500289,
+        "competing_ncc": 0.7512597547451704,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 156,
+        "continuous_Hessian_eigenvalues": [
+          -0.6227286817677311,
+          -0.10602281243295095,
+          -0.07403181006134037
+        ],
+        "continuous_Hessian_condition": 8.41163658232533
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.5060964973653683,
+          0.32055869983195884,
+          0.30132404943855434
+        ],
+        "ncc": 0.8329800527041379,
+        "integer_grid_ncc": 0.7748283937770147,
+        "margin": 0.15356727845158757,
+        "competing_ncc": 0.6212611153254272,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 127,
+        "continuous_Hessian_eigenvalues": [
+          -0.7886350717715782,
+          -0.199984336688595,
+          -0.16463748180613413
+        ],
+        "continuous_Hessian_condition": 4.790130795976466
+      }
+    }
+  },
+  {
+    "point": 9,
+    "role": "audit",
+    "volume": "pag0",
+    "source_xyz": [
+      4568,
+      3953,
+      6286
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9998767575445816,
+      "std": 37.176453750259476,
+      "clip255_fraction": 0.00012056327160493826
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8931998810553633,
+      "std": 46.38976053721779,
+      "clip255_fraction": 0.0010586549715041727
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.44856258920824676,
+          0.528391746531406,
+          -0.3135480904088632
+        ],
+        "ncc": 0.8973911945366607,
+        "integer_grid_ncc": 0.8657545787843627,
+        "margin": 0.0963928926312404,
+        "competing_ncc": 0.7693616861531223,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 104,
+        "continuous_Hessian_eigenvalues": [
+          -0.8030103719328752,
+          -0.12872353495249927,
+          -0.0858958526830981
+        ],
+        "continuous_Hessian_condition": 9.348651266033537
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.47058362874609744,
+          0.5067494956143107,
+          -0.360204481152688
+        ],
+        "ncc": 0.867331882520622,
+        "integer_grid_ncc": 0.7996678946045961,
+        "margin": 0.10816833106479362,
+        "competing_ncc": 0.6914995635398025,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 107,
+        "continuous_Hessian_eigenvalues": [
+          -0.6825193149573008,
+          -0.2231781449415495,
+          -0.1943664507414968
+        ],
+        "continuous_Hessian_condition": 3.511507836632963
+      }
+    }
+  },
+  {
+    "point": 9,
+    "role": "audit",
+    "volume": "pag50",
+    "source_xyz": [
+      4568,
+      3953,
+      6286
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9998767575445816,
+      "std": 37.176453750259476,
+      "clip255_fraction": 0.00012056327160493826
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.8699094716822715,
+      "std": 42.93197802121368,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.45644803034220893,
+          0.5389901292595785,
+          -0.3269767931988281
+        ],
+        "ncc": 0.8485162584899687,
+        "integer_grid_ncc": 0.8161539495903358,
+        "margin": 0.08632793948782458,
+        "competing_ncc": 0.7298260101025112,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 105,
+        "continuous_Hessian_eigenvalues": [
+          -0.7653812716153416,
+          -0.12814927042141394,
+          -0.08719581164535976
+        ],
+        "continuous_Hessian_condition": 8.777729769043011
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.46708264117181886,
+          0.5078274240833314,
+          -0.3642831322411407
+        ],
+        "ncc": 0.799242498027903,
+        "integer_grid_ncc": 0.734088374428269,
+        "margin": 0.11002518698655839,
+        "competing_ncc": 0.6240631874417106,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 107,
+        "continuous_Hessian_eigenvalues": [
+          -0.7179402736808312,
+          -0.23211896689757797,
+          -0.18298721049859318
+        ],
+        "continuous_Hessian_condition": 3.9234450961060516
+      }
+    }
+  },
+  {
+    "point": 10,
+    "role": "audit",
+    "volume": "pag0",
+    "source_xyz": [
+      4494,
+      3953,
+      6731
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999946416323731,
+      "std": 38.779073975007805,
+      "clip255_fraction": 4.8225308641975306e-05
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9215836015418278,
+      "std": 40.16061580746429,
+      "clip255_fraction": 0.0003661363983309587
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.6970615399405686,
+          -0.29194171600900215,
+          0.2810654763234498
+        ],
+        "ncc": 0.8873940982381594,
+        "integer_grid_ncc": 0.863713849918018,
+        "margin": 0.11906116708101988,
+        "competing_ncc": 0.7446526828369981,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 166,
+        "continuous_Hessian_eigenvalues": [
+          -0.6331271159073184,
+          -0.12123127374268182,
+          -0.10229662634512224
+        ],
+        "continuous_Hessian_condition": 6.189129969656204
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5376799926385795,
+          0.39720619007471664,
+          -0.27267731953580265
+        ],
+        "ncc": 0.8500998305710679,
+        "integer_grid_ncc": 0.7913453327493171,
+        "margin": 0.13850443334106433,
+        "competing_ncc": 0.6528408994082527,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 101,
+        "continuous_Hessian_eigenvalues": [
+          -0.5098562706489489,
+          -0.28994287434722427,
+          -0.2172583648214139
+        ],
+        "continuous_Hessian_condition": 2.3467739484647696
+      }
+    }
+  },
+  {
+    "point": 10,
+    "role": "audit",
+    "volume": "pag50",
+    "source_xyz": [
+      4494,
+      3953,
+      6731
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999946416323731,
+      "std": 38.779073975007805,
+      "clip255_fraction": 4.8225308641975306e-05
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9052636977152453,
+      "std": 36.774320337337,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.6914865579368593,
+          -0.3078402956469235,
+          0.290454472577127
+        ],
+        "ncc": 0.8267258289091852,
+        "integer_grid_ncc": 0.8023986410778895,
+        "margin": 0.11231665839117633,
+        "competing_ncc": 0.6900819826867132,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 178,
+        "continuous_Hessian_eigenvalues": [
+          -0.5948826516089816,
+          -0.1260668241649127,
+          -0.1042394976487918
+        ],
+        "continuous_Hessian_condition": 5.706883331434365
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.543483385259158,
+          0.38852885111952934,
+          -0.26960399001334473
+        ],
+        "ncc": 0.7511799104893396,
+        "integer_grid_ncc": 0.6992892382912995,
+        "margin": 0.15018156482428402,
+        "competing_ncc": 0.5491076734670155,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 101,
+        "continuous_Hessian_eigenvalues": [
+          -0.5366564203534085,
+          -0.27197428424700004,
+          -0.22411062574426854
+        ],
+        "continuous_Hessian_condition": 2.3946049794434305
+      }
+    }
+  },
+  {
+    "point": 11,
+    "role": "audit",
+    "volume": "pag0",
+    "source_xyz": [
+      4568,
+      3703,
+      6731
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999624914266118,
+      "std": 35.42652320790816,
+      "clip255_fraction": 2.6791838134430725e-06
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9458941042896397,
+      "std": 35.99716487828055,
+      "clip255_fraction": 0.00040032503053124364
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.7205285594065224,
+          0.1710765251481851,
+          0.16007365358000467
+        ],
+        "ncc": 0.9127115693188944,
+        "integer_grid_ncc": 0.8944701185016408,
+        "margin": 0.1437286502770836,
+        "competing_ncc": 0.7507414682245572,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 127,
+        "continuous_Hessian_eigenvalues": [
+          -0.569126782260737,
+          -0.1070492937558606,
+          -0.1010840716279005
+        ],
+        "continuous_Hessian_condition": 5.630232074107021
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5443158684166365,
+          0.3564415690696313,
+          -0.2367346441763447
+        ],
+        "ncc": 0.8719044116940574,
+        "integer_grid_ncc": 0.8183846286091697,
+        "margin": 0.18001276343431094,
+        "competing_ncc": 0.6383718651748588,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 83,
+        "continuous_Hessian_eigenvalues": [
+          -0.5702758174174449,
+          -0.30033021145365174,
+          -0.1927151886574155
+        ],
+        "continuous_Hessian_condition": 2.9591638385659813
+      }
+    }
+  },
+  {
+    "point": 11,
+    "role": "audit",
+    "volume": "pag50",
+    "source_xyz": [
+      4568,
+      3703,
+      6731
+    ],
+    "quality_original": {
+      "nonzero_fraction": 0.9999624914266118,
+      "std": 35.42652320790816,
+      "clip255_fraction": 2.6791838134430725e-06
+    },
+    "quality_phase": {
+      "nonzero_fraction": 0.9357126501119479,
+      "std": 32.60259022744907,
+      "clip255_fraction": 0.0
+    },
+    "peaks": {
+      "gradient": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.7222185944921244,
+          0.1744320571725655,
+          0.16938856369977306
+        ],
+        "ncc": 0.8613476462840902,
+        "integer_grid_ncc": 0.8427805382552712,
+        "margin": 0.13445823475428187,
+        "competing_ncc": 0.7083223035009893,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 135,
+        "continuous_Hessian_eigenvalues": [
+          -0.5522155367942883,
+          -0.107673753039598,
+          -0.10454680749013051
+        ],
+        "continuous_Hessian_condition": 5.281993300908962
+      },
+      "raw": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.5482468422085062,
+          0.3458389557463251,
+          -0.23336895301147828
+        ],
+        "ncc": 0.7917397895472748,
+        "integer_grid_ncc": 0.7449733175269698,
+        "margin": 0.1912166858319576,
+        "competing_ncc": 0.5537566316950122,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 149,
+        "continuous_Hessian_eigenvalues": [
+          -0.5920641324186102,
+          -0.2797862568426018,
+          -0.196226808932339
+        ],
+        "continuous_Hessian_condition": 3.0172438498083105
+      }
+    }
+  }
+]

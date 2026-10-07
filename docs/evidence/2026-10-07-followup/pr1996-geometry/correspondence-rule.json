@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "scope": "Geometry-only small stress test, no reader/label/target inference",
+  "hashes": {
+    "/workspace/scrolls-env/pr1996-review/grow_track_graph.py": "e39dda1a8f76e049337703fcda65c7ad1133c509dbf115fd9d978f8f4ec4e3d0",
+    "/workspace/Scrolls/kit/_surface_geometry.py": "75457b1629e914480cca0be63847f9fc3b004cc5e0c3635a86dde7b42aaae393",
+    "/workspace/scrolls-env/pr1996-geometry-interaction/correspondence_audit.py": "4dcd69c44fc8ae6c5bfbed15ac294f0293d11374ffd6677a97922505138e8106",
+    "/workspace/scrolls-env/pr1996-geometry-interaction/rule.json": "8d6fc3431201282c959b83e6437750002ba999c4ed1ca2a52d2bfd513cc01646",
+    "/workspace/scrolls-env/pr1996-geometry-interaction/result.json": "5709a5764f9ddef99722edafed0af3a50595d0cd0a5c973a96baf38f56933c62"
+  },
+  "selection": "For eachmesh sorted validnativevertex indices, select48evenlyspaced positions floor(i*(L-1)/47). No geometryerror-based selection.",
+  "factors": [
+    2,
+    4
+  ],
+  "modes": [
+    "erode",
+    "support"
+  ],
+  "gap_um": 50.0,
+  "voxel_um": 9.366,
+  "tolerance": "Existing source/nativefloat32 roundoff tolerance frompublished mesh. Actual upperdistance<=50um required unchanged.",
+  "readout": "Report all48samples percondition: certifiedeligible/ambiguous/unresolved/no-match anddistancequantiles. Supported occupancy doesnotimplyeligible correction/referencecoverage. No timing orinkgainclaim.",
+  "limits": "Source native20vox grid;40/80vox resampling stress, notParis4spacing5/10 orflattenCPU reproduction. Samplecoverage geometric only; mapsnotprovided.",
+  "resources": {
+    "threads": 1,
+    "max_peak_rss_bytes": 2147483648,
+    "network_bytes": 0
+  }
+}
