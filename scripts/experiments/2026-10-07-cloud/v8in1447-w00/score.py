@@ -56,21 +56,18 @@ def row(reader, fwd, rev, settings, seconds=None, notes=None):
     rows.append({k: v for k, v in r.items() if v is not None})
 
 
-row("v8in-1447", p("v8in1447_s21"), p("v8in1447_s42_reverse"),
-    {"checkpoint": V8, "stride": 21, "reverse_stride": 42, "layers": "28 exported, model reads its central 24", "batch": 4},
-    times.get("v8in1447_s21"), "control is the stride 42 reverse map")
-row("v8in-1447", p("v8in1447_s42"), p("v8in1447_s42_reverse"),
-    {"checkpoint": V8, "stride": 42, "reverse_stride": 42, "layers": "28 exported, model reads its central 24", "batch": 4},
-    times.get("v8in1447_s42"), "reference stride; reverse map seconds: %s" % times.get("v8in1447_s42_reverse"))
+row("v8in-1447", p("v8in1447_s42"), p("v8in1447_s64_reverse"),
+    {"checkpoint": V8, "stride": 42, "reverse_stride": 64, "layers": "28 exported, model reads its central 24", "batch": 4},
+    times.get("v8in1447_s42"), "control is the stride 64 reverse map (%s s)" % times.get("v8in1447_s64_reverse"))
 row("d9v2", p("d9v2"), p("d9v2_reverse"),
     {"checkpoint": D9, "code": "villa PR #1865", "overlap": 0.5, "blend": "hann"},
     times.get("d9v2_both"), "seconds cover both directions; pipeline bar 0.8994")
 for method in ("mean", "rank"):
-    for s in ("s21", "s42"):
+    for s in ("s42",):
         f = ens(f"ens_v8in1447_{s}+d9v2_{method}", [f"v8in1447_{s}", "d9v2"], method)
-        r = ens(f"ens_v8in1447_{s}+d9v2_{method}_reverse", ["v8in1447_s42_reverse", "d9v2_reverse"], method)
+        r = ens(f"ens_v8in1447_{s}+d9v2_{method}_reverse", ["v8in1447_s64_reverse", "d9v2_reverse"], method)
         row("v8in-1447 + d9v2", f, r,
-            {"ensemble": method, "v8in1447_stride": int(s[1:]), "reverse": "v8in1447 s42 reverse + d9v2 reverse",
+            {"ensemble": method, "v8in1447_stride": int(s[1:]), "reverse": "v8in1447 s64 reverse + d9v2 reverse",
              "maps": [V8, D9]},
             notes="kit ensemble, %s" % method)
 
