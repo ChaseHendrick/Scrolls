@@ -1,0 +1,139 @@
+[
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "whole segment",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "whole-segment AUC"
+  },
+  "auc_as_stored": 0.7479,
+  "auc_reversed": 0.501,
+  "seconds": 1380,
+  "notes": "villa PR #1865 CPU, both directions; 1380 s for both. Whole segment, no crop, no inner edge."
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "whole segment",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "millerandmuller analyze_target.py ee8eef1",
+   "threshold": 0.7843
+  },
+  "notes": "ink at or above 0.0234, background 1e-05; candidates forward 13 (3 mostly on labelled ink), reverse 4, both directions 2; 0.925 per cm2 forward on 14.05 cm2"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "whole segment",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "bnleft modal_app.py READOUT_SCRIPT 728a272",
+   "T_uint8": 199
+  },
+  "notes": "candidates forward 14 (4 mostly on ink), reverse 1"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "whole segment",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "nerln reproduce.py 1745423 + G0.md 18:48 rule",
+   "T_uint8": 128,
+   "reverse_matched_uint8": 115.0
+  },
+  "notes": "candidates forward 35 (6 mostly on ink), reverse at matched lit fraction 26, reverse at 128 10; forward exceeds reverse: True"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "whole segment",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "TAUIL read_sheets/dense_review 7a6b453, 12 x 15 mm sites"
+  },
+  "notes": "6 sites; strong (best_2mm >= 0.5) forward 1, reverse 0; row_period line_frac (z along rows, the axis the labels pick: labels 0.798) forward 0.295, reverse 0.406"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "random 0.25 cm2 squares (n=200, seed 20261007, >= 80 % on surface)",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "kit rowscore, kit auc per window"
+  },
+  "auc_as_stored": 0.7935,
+  "auc_reversed": 0.5201,
+  "notes": "row score: band empty at this size (too small); AUC medians over 43 windows with labels"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "random 0.5 cm2 squares (n=200, seed 20261007, >= 80 % on surface)",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "kit rowscore, kit auc per window"
+  },
+  "auc_as_stored": 0.7264,
+  "auc_reversed": 0.5,
+  "notes": "share of forward windows above reverse p95 (6.5): 0.045; median row score fwd 3.2, rev 2.9; AUC medians over 76 windows with labels"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "random 1.0 cm2 squares (n=200, seed 20261007, >= 80 % on surface)",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "kit rowscore, kit auc per window"
+  },
+  "auc_as_stored": 0.724,
+  "auc_reversed": 0.5064,
+  "notes": "share of forward windows above reverse p95 (9.7): 0.04; median row score fwd 4.5, rev 4.5; AUC medians over 100 windows with labels"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "random 2.0 cm2 squares (n=200, seed 20261007, >= 80 % on surface)",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "kit rowscore, kit auc per window"
+  },
+  "auc_as_stored": 0.7188,
+  "auc_reversed": 0.4891,
+  "notes": "share of forward windows above reverse p95 (11.2): 0.1; median row score fwd 6.0, rev 5.9; AUC medians over 114 windows with labels"
+ },
+ {
+  "job": "thresholds",
+  "segment": "0841-w00",
+  "window": "random 4.0 cm2 squares (n=200, seed 20261007, >= 80 % on surface)",
+  "map_from": "full",
+  "reader": "ink_9um seed 42 step 75000",
+  "device": "cpu",
+  "settings": {
+   "rule": "kit rowscore, kit auc per window"
+  },
+  "auc_as_stored": 0.7202,
+  "auc_reversed": 0.4782,
+  "notes": "share of forward windows above reverse p95 (14.6): 0.06; median row score fwd 7.7, rev 9.4; AUC medians over 152 windows with labels"
+ }
+]

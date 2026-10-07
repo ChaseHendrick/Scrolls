@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "scope": "Post-pilot robustness diagnostics fixed after main result; no independent discovery claim",
+  "script_sha256": "4f882bb8617d3b10386bf6e02395b9e3217f9ada5c4079e6f498e528f443f213",
+  "main_rule_sha256": "f506cac999a1189e4eff33fc014964e56800bbd49bdd9ea2a8c20a5218fb9f49",
+  "main_result_sha256": "12a98ba9b6a88208dfc2d14f9ac700191a351d673595cfce239da5b51392c03c",
+  "registration_result_sha256": "6c7ee5ee1e0ab7dcfbb5ef2830c7c4150461cf1fcde21e14a09bd7b4469ad536",
+  "boundary": "Same cube0 coefficients and means; reflect-pad heldback pag0 cube by32 and64vox, apply exactly32samephysical-frequencybins without refitting; crop center96 for score",
+  "boundary_gate": {
+    "max_correlation_drop": 0.002,
+    "max_normalized_rms_increase": 0.02
+  },
+  "transportability": "Use original128cubes already selected by geometry; extract pag50 target128 at prereported local structural shift+1z oncube0 and-1z oncube1. Report raw original\u2192pag50, reuse frozenpag0\u2192pag50operator, and newly trained original\u2192pag50operator oncube0 testedcube1.",
+  "transportability_limit": "Local shift audits only; global original\u2192phase translation gate failed. No mesh/render/label inference permitted from these diagnostics.",
+  "global_and_all_mean_offset_fits": "Onlycube0; cube1 mean/std allowed onlyas descriptive metrics, neverfitpredictor",
+  "fixed_prediction_gate": {
+    "maximum_normalized_rms": 0.15,
+    "minimum_correlation": 0.95
+  },
+  "resources": {
+    "threads": 1,
+    "max_peak_rss_bytes": 2147483648,
+    "network_bytes": 0
+  }
+}

@@ -1,0 +1,389 @@
+{
+  "selected_by": "source ink/supervision and geometry diagnostic ranking, never reader outputs",
+  "source_canvas_crop": [
+    2720,
+    3360,
+    2720,
+    3360
+  ],
+  "reference_canvas_crop": [
+    3120,
+    3760,
+    2680,
+    3320
+  ],
+  "native_gap_um_quantiles": [
+    62.47812912080321,
+    92.78585640113548,
+    103.11191422546557,
+    116.27886830934717,
+    192.31322753589043
+  ],
+  "native_displacement_absolute_source_normal_um_quantiles": [
+    0.024011519083737307,
+    27.379774554570755,
+    49.60305402862778,
+    74.85016917623565,
+    164.68895247209147
+  ],
+  "native_displacement_source_tangent_um_quantiles": [
+    29.388626391390915,
+    66.1808370090766,
+    89.92256445465247,
+    102.12185471210427,
+    138.82680654063097
+  ],
+  "local_continuous_triangle_gap_um_quantiles": [
+    0.42202620552098863,
+    27.02952827575375,
+    50.591622948552526,
+    75.44332137675633,
+    173.82006538222834
+  ],
+  "continuous_projected_native_uv_bounds": [
+    [
+      156.59502936174187,
+      134.61262311479527
+    ],
+    [
+      188.077773318823,
+      165.42253786007757
+    ]
+  ],
+  "continuous_gap_le50_fraction": 0.4931640625,
+  "continuous_geometric_covered_native": 469,
+  "continuous_geometric_evaluable_regions": 5,
+  "regions": [
+    {
+      "id": 0,
+      "selection_native": 9,
+      "held_back_native": 13,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 7229,
+      "source_inner64_supervised_background_px": 1987,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 7,
+          "supervised_background_native": 2,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 8,
+          "supervised_background_native": 5,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 1,
+      "selection_native": 24,
+      "held_back_native": 32,
+      "evaluable": true,
+      "source_inner64_supervised_ink_px": 8829,
+      "source_inner64_supervised_background_px": 6531,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 9,
+          "supervised_background_native": 15,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 12,
+          "supervised_background_native": 20,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "selection_native": 24,
+      "held_back_native": 32,
+      "evaluable": true,
+      "source_inner64_supervised_ink_px": 0,
+      "source_inner64_supervised_background_px": 15360,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 24,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 32,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "selection_native": 24,
+      "held_back_native": 29,
+      "evaluable": true,
+      "source_inner64_supervised_ink_px": 0,
+      "source_inner64_supervised_background_px": 9202,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 24,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 28,
+          "unknown_native": 1
+        }
+      }
+    },
+    {
+      "id": 4,
+      "selection_native": 18,
+      "held_back_native": 19,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 11204,
+      "source_inner64_supervised_background_px": 4156,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 16,
+          "supervised_background_native": 2,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 16,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "selection_native": 28,
+      "held_back_native": 27,
+      "evaluable": true,
+      "source_inner64_supervised_ink_px": 7910,
+      "source_inner64_supervised_background_px": 17690,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 11,
+          "supervised_background_native": 17,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 11,
+          "supervised_background_native": 16,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "selection_native": 30,
+      "held_back_native": 27,
+      "evaluable": true,
+      "source_inner64_supervised_ink_px": 2178,
+      "source_inner64_supervised_background_px": 23422,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 1,
+          "supervised_background_native": 29,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 1,
+          "supervised_background_native": 26,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 7,
+      "selection_native": 11,
+      "held_back_native": 7,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 10024,
+      "source_inner64_supervised_background_px": 5336,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 7,
+          "supervised_background_native": 4,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 4,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 8,
+      "selection_native": 8,
+      "held_back_native": 9,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 9842,
+      "source_inner64_supervised_background_px": 5518,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 3,
+          "supervised_background_native": 5,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 2,
+          "supervised_background_native": 7,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 9,
+      "selection_native": 10,
+      "held_back_native": 11,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 6850,
+      "source_inner64_supervised_background_px": 18750,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 3,
+          "supervised_background_native": 7,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 3,
+          "supervised_background_native": 8,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 10,
+      "selection_native": 3,
+      "held_back_native": 1,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 7556,
+      "source_inner64_supervised_background_px": 18044,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 1,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 11,
+      "selection_native": 0,
+      "held_back_native": 0,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 7402,
+      "source_inner64_supervised_background_px": 7958,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 0,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 0,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 12,
+      "selection_native": 7,
+      "held_back_native": 9,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 0,
+      "source_inner64_supervised_background_px": 9216,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 2,
+          "unknown_native": 5
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 4,
+          "unknown_native": 5
+        }
+      }
+    },
+    {
+      "id": 13,
+      "selection_native": 11,
+      "held_back_native": 15,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 0,
+      "source_inner64_supervised_background_px": 15360,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 10,
+          "unknown_native": 1
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 8,
+          "unknown_native": 7
+        }
+      }
+    },
+    {
+      "id": 14,
+      "selection_native": 13,
+      "held_back_native": 12,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 3427,
+      "source_inner64_supervised_background_px": 11933,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 13,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 10,
+          "unknown_native": 2
+        }
+      }
+    },
+    {
+      "id": 15,
+      "selection_native": 4,
+      "held_back_native": 2,
+      "evaluable": false,
+      "source_inner64_supervised_ink_px": 748,
+      "source_inner64_supervised_background_px": 8468,
+      "geometric_subset_label_counts": {
+        "selection": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 4,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "supervised_ink_native": 0,
+          "supervised_background_native": 2,
+          "unknown_native": 0
+        }
+      }
+    }
+  ],
+  "constant_offset_face_orientation_checks": {
+    "-4": true,
+    "-3": true,
+    "-2": true,
+    "-1": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+  },
+  "limits": "Closest among32 centroid-neighboring triangles from bounded nearby patch; not globally certified. Geometry-only diagnostic. Current surfacefix still uses native vertex match and will abstain. Face orientation pass does not certify global absence of selfintersection."
+}

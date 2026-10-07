@@ -1,0 +1,174 @@
+{
+  "seed": 713893,
+  "fields": 20,
+  "pairs_per_field": 400,
+  "anisotropic_grid": [
+    4,
+    5,
+    6
+  ],
+  "outside_points_included": true,
+  "passed": true,
+  "rows": [
+    {
+      "index": 0,
+      "lipschitz_bound": 0.7622244235113484,
+      "steps": 2,
+      "min_pair_ratio": 0.9750042793095997,
+      "theoretical_ratio_floor": 0.6188877882443258,
+      "min_lower_bound_margin": 0.373686171370076
+    },
+    {
+      "index": 1,
+      "lipschitz_bound": 0.8036022743135236,
+      "steps": 3,
+      "min_pair_ratio": 0.9410166436660041,
+      "theoretical_ratio_floor": 0.7321325752288255,
+      "min_lower_bound_margin": 0.20583724716577445
+    },
+    {
+      "index": 2,
+      "lipschitz_bound": 0.7698244616845501,
+      "steps": 2,
+      "min_pair_ratio": 0.8890473235197192,
+      "theoretical_ratio_floor": 0.615087769157725,
+      "min_lower_bound_margin": 0.41569709798932086
+    },
+    {
+      "index": 3,
+      "lipschitz_bound": 0.8309084068303241,
+      "steps": 3,
+      "min_pair_ratio": 0.9662740804324828,
+      "theoretical_ratio_floor": 0.7230305310565586,
+      "min_lower_bound_margin": 0.4115639898490637
+    },
+    {
+      "index": 4,
+      "lipschitz_bound": 0.7983238977492143,
+      "steps": 2,
+      "min_pair_ratio": 0.9648354831598323,
+      "theoretical_ratio_floor": 0.6008380511253928,
+      "min_lower_bound_margin": 0.24659382773218863
+    },
+    {
+      "index": 5,
+      "lipschitz_bound": 0.8597278138360847,
+      "steps": 3,
+      "min_pair_ratio": 0.9745779082294596,
+      "theoretical_ratio_floor": 0.7134240620546384,
+      "min_lower_bound_margin": 0.6135037375647079
+    },
+    {
+      "index": 6,
+      "lipschitz_bound": 0.7321759952012982,
+      "steps": 2,
+      "min_pair_ratio": 0.9708483330042499,
+      "theoretical_ratio_floor": 0.633912002399351,
+      "min_lower_bound_margin": 0.3483308201932894
+    },
+    {
+      "index": 7,
+      "lipschitz_bound": 0.7407901102988835,
+      "steps": 2,
+      "min_pair_ratio": 0.9577802374361948,
+      "theoretical_ratio_floor": 0.6296049448505583,
+      "min_lower_bound_margin": 0.5153974685926541
+    },
+    {
+      "index": 8,
+      "lipschitz_bound": 0.8196584757875395,
+      "steps": 3,
+      "min_pair_ratio": 0.9577679266177276,
+      "theoretical_ratio_floor": 0.7267805080708202,
+      "min_lower_bound_margin": 0.3879249804871313
+    },
+    {
+      "index": 9,
+      "lipschitz_bound": 0.7600017567809956,
+      "steps": 2,
+      "min_pair_ratio": 0.965033517863063,
+      "theoretical_ratio_floor": 0.6199991216095022,
+      "min_lower_bound_margin": 0.5721302045627106
+    },
+    {
+      "index": 10,
+      "lipschitz_bound": 0.8587718314152892,
+      "steps": 3,
+      "min_pair_ratio": 0.9634403413196924,
+      "theoretical_ratio_floor": 0.7137427228615703,
+      "min_lower_bound_margin": 0.20803946545268004
+    },
+    {
+      "index": 11,
+      "lipschitz_bound": 0.8554069577992229,
+      "steps": 3,
+      "min_pair_ratio": 0.9742749589017304,
+      "theoretical_ratio_floor": 0.714864347400259,
+      "min_lower_bound_margin": 0.3481303649289793
+    },
+    {
+      "index": 12,
+      "lipschitz_bound": 0.745434914604043,
+      "steps": 2,
+      "min_pair_ratio": 0.953602338453227,
+      "theoretical_ratio_floor": 0.6272825426979785,
+      "min_lower_bound_margin": 0.4910288010272499
+    },
+    {
+      "index": 13,
+      "lipschitz_bound": 0.7505353136518051,
+      "steps": 2,
+      "min_pair_ratio": 0.9527691246564209,
+      "theoretical_ratio_floor": 0.6247323431740974,
+      "min_lower_bound_margin": 0.3451690096583008
+    },
+    {
+      "index": 14,
+      "lipschitz_bound": 0.7901572992889196,
+      "steps": 2,
+      "min_pair_ratio": 0.9704863203333043,
+      "theoretical_ratio_floor": 0.6049213503555402,
+      "min_lower_bound_margin": 0.5252805728458583
+    },
+    {
+      "index": 15,
+      "lipschitz_bound": 0.8606896357762421,
+      "steps": 3,
+      "min_pair_ratio": 0.9723730688378522,
+      "theoretical_ratio_floor": 0.7131034547412527,
+      "min_lower_bound_margin": 0.4748178779310974
+    },
+    {
+      "index": 16,
+      "lipschitz_bound": 0.7813831765041449,
+      "steps": 2,
+      "min_pair_ratio": 0.9611627932869801,
+      "theoretical_ratio_floor": 0.6093084117479275,
+      "min_lower_bound_margin": 0.512295880360781
+    },
+    {
+      "index": 17,
+      "lipschitz_bound": 0.9242988102998962,
+      "steps": 3,
+      "min_pair_ratio": 0.9721333482583603,
+      "theoretical_ratio_floor": 0.6919003965667012,
+      "min_lower_bound_margin": 0.3949738704109771
+    },
+    {
+      "index": 18,
+      "lipschitz_bound": 0.7961922856954431,
+      "steps": 2,
+      "min_pair_ratio": 0.9575521583676292,
+      "theoretical_ratio_floor": 0.6019038571522785,
+      "min_lower_bound_margin": 0.7185009351089753
+    },
+    {
+      "index": 19,
+      "lipschitz_bound": 0.7577690141240766,
+      "steps": 2,
+      "min_pair_ratio": 0.964929419358876,
+      "theoretical_ratio_floor": 0.6211154929379616,
+      "min_lower_bound_margin": 0.751628648022675
+    }
+  ]
+}

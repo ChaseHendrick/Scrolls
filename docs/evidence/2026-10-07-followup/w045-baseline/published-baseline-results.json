@@ -1,0 +1,201 @@
+{
+  "scope": "Published w045 stack as-stored diagnostic only; not a recipe comparison or reading.",
+  "source_canvas": [
+    5980,
+    8240
+  ],
+  "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+  ],
+  "inner_px": 64,
+  "rows": {
+    "forward": {
+      "auc": {
+        "auc": 0.9258,
+        "ink_px": 46757,
+        "background_px": 123909,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 64
+      },
+      "hp": {
+        "hp_r": 0.0179,
+        "raw_r": 0.6632,
+        "null_max_abs": 0.0571,
+        "px": 95772,
+        "sigma_px": 5.127,
+        "inner": 0
+      },
+      "zero_fraction_primary": 0.0
+    },
+    "reverse": {
+      "auc": {
+        "auc": 0.3356,
+        "ink_px": 46757,
+        "background_px": 123909,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 64
+      },
+      "hp": {
+        "hp_r": 0.0221,
+        "raw_r": -0.2666,
+        "null_max_abs": 0.0578,
+        "px": 95772,
+        "sigma_px": 5.127,
+        "inner": 0
+      },
+      "zero_fraction_primary": 0.0
+    },
+    "shuffle": {
+      "auc": {
+        "auc": 0.5814,
+        "ink_px": 46757,
+        "background_px": 123909,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 64
+      },
+      "hp": {
+        "hp_r": 0.0041,
+        "raw_r": -0.0236,
+        "null_max_abs": 0.0231,
+        "px": 95772,
+        "sigma_px": 5.127,
+        "inner": 0
+      },
+      "zero_fraction_primary": 0.0
+    }
+  },
+  "paired_forward_vs_controls": {
+    "reverse": {
+      "draws": 1000,
+      "block_px": 107,
+      "blocks": 30,
+      "seed": 20261007,
+      "ci95": [
+        0.8839,
+        0.9618
+      ],
+      "half_width": 0.039,
+      "compare": {
+        "auc_map": 0.9258,
+        "auc_other": 0.3356,
+        "difference": 0.5903,
+        "ci95": [
+          0.4267,
+          0.7316
+        ],
+        "share_draws_map_not_ahead": 0.0,
+        "pixels": 170666
+      }
+    },
+    "shuffle": {
+      "draws": 1000,
+      "block_px": 107,
+      "blocks": 30,
+      "seed": 20261007,
+      "ci95": [
+        0.8839,
+        0.9618
+      ],
+      "half_width": 0.039,
+      "compare": {
+        "auc_map": 0.9258,
+        "auc_other": 0.5814,
+        "difference": 0.3444,
+        "ci95": [
+          0.2196,
+          0.454
+        ],
+        "share_draws_map_not_ahead": 0.0,
+        "pixels": 170666
+      }
+    }
+  },
+  "fixed_spatial_halves": {
+    "upper": {
+      "forward": {
+        "auc": 0.9237,
+        "ink_px": 31970,
+        "background_px": 56262,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 0
+      },
+      "reverse": {
+        "auc": 0.379,
+        "ink_px": 31970,
+        "background_px": 56262,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 0
+      },
+      "shuffle": {
+        "auc": 0.5659,
+        "ink_px": 31970,
+        "background_px": 56262,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 0
+      }
+    },
+    "lower": {
+      "forward": {
+        "auc": 0.9319,
+        "ink_px": 14787,
+        "background_px": 67647,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 0
+      },
+      "reverse": {
+        "auc": 0.3423,
+        "ink_px": 14787,
+        "background_px": 67647,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 0
+      },
+      "shuffle": {
+        "auc": 0.6053,
+        "ink_px": 14787,
+        "background_px": 67647,
+        "zero_px_in_mask": 0,
+        "zero_px_counted": true,
+        "inner": 0
+      }
+    }
+  },
+  "common_hp_pixels_before_erosion": 170666,
+  "forward_beats_both_controls": true,
+  "failure_policy": "If false, report failure without choosing a different depth order or changing settings.",
+  "input_hashes": {
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/meta.json": "5ddaa7d7de1c6b14b6194bb4deef8964e8db44fbd5dd87cff30370a3206da82c",
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/x.tif": "152250af01f4997f3e49ccc2ec21a865e34d44a1b7cbff91f610cce3e400bdc5",
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/y.tif": "7b05ff73132afdad9a3c03d3de53a5fb8741f8be1c8a398cd7b49901dff27b9f",
+    "/workspace/scrolls-env/phase-reconstruction/w045-source.tifxyz/z.tif": "c29c270be3daec9ed8d108d7df348daeb32d7ab867072feba028d1309633a58e",
+    "/workspace/scrolls-env/phase-reconstruction/w045-crop-ink.npy": "3f569b4d7cf6ae6ac5084a948e06522aa631dee6c77cc7a57a2f9be3afc8493f",
+    "/workspace/scrolls-env/phase-reconstruction/w045-crop-supervision.npy": "91e3ac278c53aca6754e0bc5258b707ffb2f1908f1a2f7e21f70452ab3ba1249",
+    "/workspace/scrolls-env/phase-reconstruction/w045-label-coverage.json": "d06ceeed912f5559a72b193ec96cf3cef63d8d0395bd462d59ea6676f5ff1963",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/download-receipt.json": "1ce4cc7320bcd3192054186951b6afa34be1e5de096415b7b9b5d01ab5789d78",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/supervision.zarr/zarr.json": "f96d2694db84a0bd01c2d260e05635a64d31f7edfb787219f7a9e0cd07d21bbd",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/inklabels.zarr/zarr.json": "5e6d748e6f7322b80fdf49492f00c3be3306ce1754b1ba949b17ee1a69ee11b4",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/supervision.zarr/2/zarr.json": "70728c58b611172a6f32fd1d73a599e304ddc29cd1f1c65f195431737bbdd4c2",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/supervision.zarr/2/c/0/0": "af8e0ce57106e7619af42a1a1936dbcfa039dd72a238ec3460bae3a00a84c839",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/inklabels.zarr/2/zarr.json": "70728c58b611172a6f32fd1d73a599e304ddc29cd1f1c65f195431737bbdd4c2",
+    "/workspace/scrolls-env/phase-reconstruction/labels-w045/inklabels.zarr/2/c/0/0": "43ca1cc9cccce3ed57316d7b0397d14fbb352dbc6357f90000658d310173251a"
+  },
+  "supplement_sha256": "2154ce10bb969bdba43c57af730ee64da43fc2422a0f2cf09877b947a71a5710",
+  "scoring_script_sha256": "6017d0c02d2cb0bdb6b749d05231aac9991bf34e428058c9e57d5c62c2c80e69",
+  "layer_receipt_sha256": "463efd0fbc4552c47d8a203dc0ee6250067bb8c90f5bd64bc8639af463e5d672",
+  "inference_manifest_sha256": "33e9f2161514ab6cc5fbb0d4e542077040762803261247fcc2d0d5ddfaffabde",
+  "output_map_sha256": {
+    "forward": "7e993cc5fd5f51846c0d7e75d5005c57e78af404011ce730ebb25b3927a91f07",
+    "reverse": "bb9107a1dd1a43e2cedab4b8bb0060b25d0652b015ae0af28f125a91b3a77287",
+    "shuffle": "fc47efef906fc05f50b4d1d3ff6261f4021667b5dea519384e56aadf6a61f5e8"
+  }
+}

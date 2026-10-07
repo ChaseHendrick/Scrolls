@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,gate,layers,shuffle,provenance,compute,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,surfacefix,ensemble,gate,layers,shuffle,provenance,compute,run}."""
 
 import argparse
 import json
@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify
+from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, surfacefix, verify
 
 
 def cmd_prizes(args):
@@ -123,6 +123,27 @@ def cmd_collate(args):
         return 2
     print(overlap.dumps(result) if args.json else overlap.format_collate(result))
     return 0
+
+
+def cmd_surfacefix(args):
+    try:
+        if args.action == "prepare":
+            result = surfacefix.prepare(args.mesh, args.out, args.voxel_um, args.offsets, args.max_shift_um)
+        else:
+            result = surfacefix.correct(args.manifest, args.out, args.region_points, args.min_points,
+                                        args.min_corr, args.min_gain, args.control_margin, args.max_step_vox)
+    except (verify.VerifyError, OSError, ValueError) as exc:
+        print(f"surfacefix: {exc}", file=sys.stderr)
+        return 2
+    if args.json:
+        print(json.dumps(result, indent=2))
+    elif args.action == "prepare":
+        print(f"candidate surfaces prepared in {args.out}; render and score them with the existing reader, "
+              "then fill manifest.json before applying corrections")
+    else:
+        print(f"{result['status']}: corrected surface copy and region report in {args.out}; "
+              "rerender and recheck this copy before using its predictions")
+    return 0 if args.action == "prepare" or result["accepted_regions"] > 0 or result["status"] == "unchanged" else 1
 
 
 def cmd_provenance(args):
@@ -364,6 +385,27 @@ def build_parser():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_collate)
+
+    p = sub.add_parser("surfacefix", help="experimental region flags and bounded, controlled surface corrections")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("prepare", help="write offset surface copies for the official render and reader pipeline")
+    a.add_argument("mesh", help="source tifxyz folder; kept unchanged")
+    a.add_argument("out", help="new local output folder, e.g. work/surfacefix-candidates")
+    a.add_argument("--voxel-um", type=float, required=True)
+    a.add_argument("--offsets", type=float, nargs="+", default=[-1, 1], help="candidate normal offsets in voxels")
+    a.add_argument("--max-shift-um", type=float, default=50.0)
+    a.add_argument("--json", action="store_true")
+    a = actions.add_parser("apply", help="select, independently check and apply regional offsets to a new surface copy")
+    a.add_argument("manifest", help="prepared manifest filled with matching forward, reverse and shuffle maps")
+    a.add_argument("out", help="new local output folder, e.g. work/surfacefix-output")
+    a.add_argument("--region-points", type=int, default=8, help="native mesh-grid side per scoring region")
+    a.add_argument("--min-points", type=int, default=24, help="minimum common points in each scoring subset")
+    a.add_argument("--min-corr", type=float, default=0.5)
+    a.add_argument("--min-gain", type=float, default=0.1)
+    a.add_argument("--control-margin", type=float, default=0.1)
+    a.add_argument("--max-step-vox", type=float, default=1.0, help="maximum offset jump between adjacent mesh vertices")
+    a.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_surfacefix)
 
     p = sub.add_parser("provenance", help="who ran what, when, from which inputs: a record and one digest")
     actions = p.add_subparsers(dest="action", required=True)

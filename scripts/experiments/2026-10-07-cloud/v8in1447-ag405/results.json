@@ -1,0 +1,25 @@
+[
+ {
+  "job": "v8in1447-ag405",
+  "segment": "0841-ag405",
+  "window": "crop",
+  "inner_px": 64,
+  "map_from": "bare-crop",
+  "map": "d9v2",
+  "reader": "d9v2",
+  "settings": {
+   "checkpoint": "d9v2_ft-012000.pth (TAUIL-Abd-Elilah/pherc0826-first-letters-search v1.0, sha256 50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966)",
+   "villa": "PR #1865",
+   "overlap": 0.5,
+   "blend": "hann"
+  },
+  "device": "cpu",
+  "auc_as_stored": 0.8319,
+  "auc_reversed": 0.6572,
+  "hp_r": 0.0248,
+  "hp_r_reversed": 0.003,
+  "hp_null_max_abs": 0.0102,
+  "ink_px": 67060,
+  "notes": "reverse is villa --direction both"
+ }
+]

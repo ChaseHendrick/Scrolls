@@ -1,89 +1,79 @@
 # Draft: October 2026 Progress Prize submission
 
-Status: draft, not submitted. The user submits it through the [form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) by 31 Oct 2026, 11:59pm Pacific. Blanks marked **[MAC]** wait on `scripts/mac-w045.sh`; **[ATLAS]** waits on `scripts/mac-atlas-v8in.sh` and is filled only if that run is a null (a candidate is never described here; see [`../WORKFLOW.md`](../WORKFLOW.md) 3b).
-
----
+Status: draft, not submitted. Author: **Chase Hendrick**, GitHub **[@ChaseHendrick](https://github.com/ChaseHendrick)**. Repository: **[ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls)**, Apache-2.0. Updated 7 October 2026.
 
 ## Title
 
-Checking the checks: what PHerc0841's labels and published First Letters null rules can show, with tools to score ink maps against labels and controls
+Continuous surface matching and controlled reader validation on public labelled papyrus
 
-## Problem
+## Problem and community fit
 
-Ink models are usually judged by eye, often on segments they were trained on. On PHerc0139 w035, the segment most tutorials use as the control, the clean letters `ink_9um` shows are its own training labels reproduced: every clean letterform lies inside a supervised label region, and two letters painted outside those regions do not appear ([log](../logs/2026-10-07-w035-cpu.md)). That proves a pipeline runs, not that a model reads unseen ink. v8in (YoussefMoNader/ink-8um-v8in, released 28 September) has been checked on PHerc1447 by its author and reproduced there by others, including on Apple Silicon ([afraazali42](https://github.com/afraazali42/vesuvius-challenge), M3 Max, 3 October). It has not been scored against labels on other scrolls. The closest prior work is [TAUIL-Abd-Elilah's held-out benchmark](https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search): eight labelled segments including PHerc0841, scoring `ink_9um`, d9v2 and Reader v2, with v8in used only to check seven leads.
+A higher ink-map score does not by itself establish a correctly traced sheet or a readable letter. Comparing readers also requires aligned supervision, independent evaluation surfaces and comparable controls. This work makes those requirements explicit and provides commands and records that others can inspect and reproduce.
 
-## What this adds
+The direction follows the organizers' request for better sheets: in [villa #1937](https://github.com/ScrollPrize/villa/pull/1937), merged 30 September 2026, pmh47 asks contributors to "create better sheets ... much more valuable." The official [open problems](https://github.com/ScrollPrize/villa/blob/e0bbb8b40a2db58b1d71864f286eb85717e59e64/scrollprize.org/docs/37_2026_open_problems.md) include topology-preserving predictions, geometry optimization and label snapping. villa's Lasagna already implements snapping and optimization. Scrolls supplies a bounded selection and checking layer around existing outputs; it does not claim to invent snapping. [The community review](../logs/2026-10-07-community-needs.md) records the requests, existing implementations and limits of the source search.
 
-One command on an Apple Silicon Mac, `scripts/mac-w045.sh` (`QUICK=1` for under an hour; `SEGMENT=` picks w045 or one of PHerc0841's three segments), and three tested `kit` tools it is built from:
+## Concrete contributions
 
-| Tool | What it does | Checked against |
+| Contribution | Useful behavior | Evidence and current limit |
 | --- | --- | --- |
-| `kit auc` | Pixel AUC of an ink map against a segment's published `inklabels.zarr`, only inside `supervision.zarr`, with the reverse-depth map as the control. Maps the 2.4 µm label grid onto the 9 µm surface by a uniform scale and refuses anisotropic grids; works on a cropped map | Pairwise definition (unit test); a cropped map and the same window on the full grid give the same AUC on the same 78,047 ink pixels |
-| `kit rowscore` | Text-row periodicity score (port of Bullo27's), forward against reverse, averaged over checkpoints | The original script to float rounding on six maps; 79.8 on w045 against Bullo27's published 84 for the same checkpoint on his own render |
-| `kit layers` | Surface-volume zarr (OME or bare) to the numbered layer TIFFs v8in reads, optionally cropped | Unit tests; 23 s for all of w045, reading row bands across layers (per-layer reads decompress every chunk 28 times) |
+| `kit surfacefix prepare/apply` | Matches the continuous reference surface, checks bounded normal-offset candidates, and writes a separate corrected mesh plus uncertain-region flags | Initial tool [cc880c6](https://github.com/ChaseHendrick/Scrolls/commit/cc880c6), continuous correspondence [93c42bf](https://github.com/ChaseHendrick/Scrolls/commit/93c42bf); [workflow](../surfacefix.md). Tested recovery and rejection behavior; successful real repair requires a combined-surface rerender and label audit |
+| Supervised reader scoring | `kit auc` uses published labels only within the supervision mask, supports cropped maps, paired comparisons and block-bootstrap intervals; `kit hpscore` adds a high-pass diagnostic | Logged public labelled benchmarks and unit tests. Neither AUC nor high-pass correlation measures legibility |
+| Reproducible controls and map checks | `kit rowscore` compares forward/reverse periodicity; `kit verify` checks CPU/MPS agreement and catches a control map; `kit layers` exports reader inputs | Comparisons with original scripts, logged CPU/MPS runs and tests. Control choice and render provenance still constrain interpretation |
+| Benchmark repair and partial-result reporting | Separates overlapping traces from independent sheets, preserves unknown labels, records matched or provisional controls, and reports incomplete coverage | Repairs pushed to [PR #6](https://github.com/ChaseHendrick/Scrolls/pull/6), [#7](https://github.com/ChaseHendrick/Scrolls/pull/7), [#8](https://github.com/ChaseHendrick/Scrolls/pull/8), [#9](https://github.com/ChaseHendrick/Scrolls/pull/9) and [#10](https://github.com/ChaseHendrick/Scrolls/pull/10). Historical metric files were preserved; new inference results are not implied |
+| Mac workflow and experiment records | `scripts/mac-w045.sh` runs a labelled control comparison; the local ledger records readout rules, costs, provenance and status | [Mac guide](../mac.md), [logged runs](../logs/2026-10-07-community-scan.md). Model weights and scroll data remain outside the source repository |
 
-w045 is held out from both models: `ink_9um` per Bullo27's survey, and v8in per its patch pack, whose PHerc0139 segments are w033, w035, w041 and w044.
+Surfacefix freezes geometric correspondences from the source and separates candidate selection from a local held-back subset. Acceptance requires bounded normal movement, mesh topology and hole preservation, adequate coverage, matched inference metadata, improvements on both subsets, and checks against reversed-depth, shuffled-depth and displaced matches. Excessive neighboring jumps or failed checks leave a region unchanged and flagged. Source meshes remain intact.
 
-## Findings about the benchmark and the null rules
+Those checks permit conservative abstention but cannot establish ink identity. Two traces may share an artifact, and local held-back points are not independent scrolls. The final combined surface must be rerendered and rescored before any improvement claim. The [surfacefix guide](../surfacefix.md) documents inputs, output provenance, rollback and that validation requirement.
 
-All on public labelled data, model output, measured with the tools below ([log 1](../logs/2026-10-07-novel-checks.md), [log 2](../logs/2026-10-07-overlap-and-baseline.md)):
+**A concrete matching defect was repaired.** Native vertices about 187 um apart can have large lateral offsets even where their continuous surfaces are close. On a new labelled PHerc0841 crop, nearest-vertex matching admitted zero points under the 50 um distance limit. Certified bilinear matching admits 479 points without increasing that limit; 444 also lie inside the reference raster. It samples the dense reference predictions at those fractional coordinates and refuses ambiguous or uncertified matches. Historical schema 1 results remain reproducible. This is a correspondence fix, not evidence of an accurate completed surface repair. [Tests and evidence](../logs/2026-10-07-followup-tests.md).
 
-1. **PHerc0841 has two independent labelled surfaces, not three.** The published meshes of w00 and ag896 run a median 81 um apart and within 25 voxels over 98 % of their area, and their human labels agree where both exist (Dice 0.83 against at most 0.69 for displaced matches). Every PHerc0841 benchmark that averages its three segments, or leaves one out, counts one sheet twice.
-2. **A traced surface must sit within about 50 um of the ink layer.** w00 and ag896 are a natural experiment: the team's own ink maps of the two traces correlate 0.86 where the traces are within 28 um and fall to chance beyond 112 um, with the same contrast and text density at every gap.
-3. **Collation as a label-free check.** Two traces of one sheet act as two copies of the text: a strong ink spot reappears on the other trace 70 % of the time within 28 um, against 50 % for CT texture (chance 20 %). A candidate that does not reappear on an overlapping trace within about 50 um is probably noise.
-4. **The PHerc0841 benchmark is 3.4 cm² of labelled papyrus**, and a 1 mm block bootstrap gives +-0.01 to +-0.04 AUC of sampling noise per segment, so many published rankings sit inside the noise.
-5. **A threshold taken from a training segment misses about 96 % of real ink on an unseen scroll.** The 0.7843 cut-off of a published PHerc0826 null keeps 2.3 to 3.7 % of PHerc0841's labelled ink. Nulls from such thresholds say little about faint ink.
-6. **Raw CT brightness alone is not ink on PHerc0841** (per-layer AUC 0.43 to 0.58), so the controls that matter are depth order (reverse and shuffle), not brightness.
-7. **Depth-shuffled input is a stricter control than reversed input** (shuffled reads at or below reversed on all crops).
-8. **Crop scores need a 64 px edge margin**, or they differ from whole-map scores by up to 0.03 AUC.
-9. **Averaging four depth windows matches the window chosen with the labels** at 9 um (0.820 against 0.819 over 8 reader-crop cases); related work by ArcheyChen (Hecate) and villa #1867 and #1946.
+## Measurements on public labelled data
 
-## Results
+These are observations from specific renders and models, not readings or universal operating rules. Sources: [benchmark checks](../logs/2026-10-07-novel-checks.md), [overlap and baselines](../logs/2026-10-07-overlap-and-baseline.md), and [the corrected partial cloud report](../logs/2026-10-07-cloud-partial.md).
 
-`ink_9um`, CPU reference (villa `e0bbb8b`, step 75,000), on the team's published surface volumes. PHerc0841 is in neither model's training set; its `ink_9um` numbers agree with Bullo27's calibration and TAUIL's benchmark (0.736):
+1. **Overlapping traces require sheet-level splits.** Published PHerc0841 w00/ag896 meshes have median nearest-sampled-point distance of 81 um on a 47 um sampling grid, lie within 25 voxels over 98% of their compared area, and their common labels agree with Dice 0.83. This supports treating them as overlapping traces of one sheet for evaluation. ag405 supplies the separate-surface check. Calibration now holds out the whole sheet and uses w00 as the fixed primary trace when evaluating ag405, rather than pooling w00 and ag896 as independent examples.
+2. **Agreement decreases with sampled-point distance.** The team's w00/ag896 maps correlate 0.86 within 28 um, 0.75 at 28 to 56 um, and 0.07 at 112 to 169 um. These matches use a 47 um point grid; lateral sampling error contributes to distance. This measures agreement in one render/model setup and does not isolate normal displacement, identify the ink layer or establish a universal tracing tolerance. Whether a bounded correction improves common-label accuracy requires a controlled test.
+3. **Limited supervision needs careful interpretation.** Published masks total 3.4 cm² across the three PHerc0841 segments, covering 7 to 11% of each; overlapping coverage has not been deduplicated. A 1 mm block bootstrap on the team's maps gives 95% AUC interval half-widths of 0.008 to 0.038. Those intervals describe that setup, not a universal noise floor. Unknown pixels are reported separately from supervised background; a component's supervised ink fraction is not its false-positive rate. Known-label precision is reported with supervision coverage.
+4. **Threshold transfer can discard labelled ink.** A published threshold of 0.7843, derived from PHerc0139 w035 labelled ink, retains only 2.3 to 3.7% of supervised ink on the PHerc0841 traces. This is a threshold-transfer observation, not a sensitivity estimate for every unseen scroll. Corrected null-rule tiling includes canvas boundaries and reports tested/skipped coverage rather than silently dropping remainders.
+5. **Crop boundaries and depth controls change comparisons.** A 64 px edge exclusion reconciled crop/full-window AUCs to four decimals on the three tested segments. Future primary v8in forward and reverse maps use matching strides; historical stride-42/64 comparisons remain explicitly provisional. A scorer completing successfully does not mean a planned job or matched comparison completed.
+6. **Depth-window averaging is a reproduction with a bounded comparison.** In eight reader/crop cases at 9 um, four-window averaging gave mean AUC 0.820 versus 0.819 for the label-selected single window. The cases share surfaces, and window averaging has prior work in Hecate and villa. Some later cloud comparisons also improve reversed AUC and shrink the forward-minus-reverse gap. These observations do not establish a label-free optimum or universal improvement.
+7. **Pixel and periodicity metrics can disagree.** In 152 overlapping, label-filtered 4 cm² windows of one archived w00 map, forward AUC exceeded reverse in all 152, but forward row score exceeded reverse in only 58. Windows are dependent and required at least 100 supervised ink and 100 supervised background pixels. No significance, minimum useful area or novelty claim follows from these counts. [Archived-window recalculation and caveats](https://github.com/ChaseHendrick/Scrolls/blob/814563f/scripts/experiments/2026-10-07-cloud/thresholds/notes.md).
 
-| | AUC as stored | AUC reversed | Row score as stored / reversed |
-| --- | --- | --- | --- |
-| Seed 42, whole supervised region (149,192 ink px) | 0.872 | 0.443 | 79.8 / 8.1 |
-| Seed 43, whole supervised region | 0.887 | 0.502 | 68.3 / 10.6 |
-| Seed 42, 640 px crop of densest text (78,047 ink px) | 0.914 | 0.370 | |
-| Seed 43, same crop | 0.910 | 0.435 | |
-| PHerc0841 w00, seed 42, whole (crop) | 0.748 (0.770) | 0.501 (0.514) | 13.7 / 23.6 |
-| PHerc0841 ag896, seed 42, whole (crop) | 0.720 (0.655) | 0.570 (0.540) | 17.5 / 8.8 |
-| PHerc0841 ag405, seed 42, whole (crop) | 0.751 (0.793) | 0.601 (0.653) | 46.4 / 7.5 |
+Cross-trace top-20% agreement also suggests a triage experiment: about 70% agreement within 28 um, versus 50% for letter-scale CT texture and a 20% independent-match expectation. This is an untested use of model-output agreement. Disagreement alone cannot identify which trace to correct, and target use requires a frozen selection rule and held-out false-positive/sensitivity checks.
 
-Mac (Apple M1 Pro, MPS):
+## Reproductions and historical results
 
-| | AUC as stored | AUC reversed |
-| --- | --- | --- |
-| `ink_9um` seed 42 via villa PR #1865, w045 crop | 0.9136 | 0.3704 |
-| `ink_9um` seed 43 via villa PR #1865, w045 crop | 0.9098 | 0.4347 |
-| v8in, w045 crop, stride 21 | 0.7382 | 0.3269 |
-| v8in, PHerc0841 crops (w00, ag896, ag405): a reproduction of Bullo27's [v8in-12gb](https://github.com/Bullo27/v8in-12gb) (0.837, 0.807, 0.810) | **[MAC]** | **[MAC]** |
-| v8in CPU vs MPS (`kit verify`, reverse as control; a second-chip confirmation of afraazali42's M3 Max result) | pass, max diff 1, Pearson 0.99999998 | |
-| Time, M1 Pro | `ink_9um` about 11 min per seed (whole segment, both directions); v8in about 1.1 s per tile on MPS, 25 s on CPU | |
+These retained results help check a pipeline; they are not a new reader leaderboard. On the PHerc0139 w045 640 px crop, `ink_9um` seed 42 reached AUC 0.9136 forward / 0.3704 reversed through villa PR #1865 on an Apple M1 Pro, while base v8in at stride 21 reached 0.7382 / 0.3269. w045 is held out as a segment but belongs to an `ink_9um` training scroll, which favors that reader. MPS and CPU `ink_9um` scores agree to four decimals; the logged v8in CPU/MPS verification passed with maximum uint8 difference 1 and Pearson correlation 0.99999998. [Source and settings](../logs/2026-10-07-community-scan.md).
 
-MPS `ink_9um` equals the CPU reference to four decimals. On w045, a segment of a main `ink_9um` training scroll, v8in reads ink but scores well below `ink_9um`; v8in saw about 1 % of its training patches from PHerc0139.
+v8in on PHerc0841 already has a public benchmark: [Bullo27/v8in-12gb](https://github.com/Bullo27/v8in-12gb), published 1 October 2026, reports AUC 0.837, 0.807 and 0.810 on w00, ag896 and ag405. Scrolls' Mac workflow reproduces that comparison; it is not a first evaluation. [TAUIL's held-out benchmark](https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search) and [Reader v2](https://huggingface.co/domenicor046/reader-v2) provide other prior comparisons.
 
-**[ATLAS]** If the preregistered v8in run over the 81 public automatic meshes of PHerc0813, 0358 and 0826 ([preregistration](../prereg/2026-10-07-v8in-atlas.md)) is a null: a short paragraph with the count, the meshes inspected, stride, time, and the statement that it is a null for v8in on automatic surfaces only.
+The PHerc1447 fine-tune and tricks branches remain partial records. PR #9's historical ag405 result contains only completed d9v2 scores, AUC 0.8319 forward / 0.6572 reversed and high-pass correlation 0.0248 / 0.0030. No completed v8in or ensemble result is implied there. The repairs preserve that historical JSON and distinguish four primary planned maps from an optional stride-21 row.
 
-## Limits
+## Software checks and pending real-data validation
 
-- w045 is a held-out segment of a training scroll. Bullo27 notes such segments can overstate sensitivity; an unseen scroll (his PHerc0841 calibration) is the harder test.
-- Pixel AUC is not legibility. On PHerc0841 `ink_9um` reached AUC 0.74 to 0.81 and no letter was readable.
-- The reverse map is not a neutral baseline: it can score below 0.5. Read how far each direction sits from 0.5.
-- One segment, one crop for the quick comparison.
+The current local verification passed **146 tests, including 35 focused surface geometry and correction tests**. These cover recovery and rejection, missing controls and coverage, provenance, geometry constraints, incomplete searches and multiple nearest points on one curved patch. They establish software behavior, not real-scroll correction accuracy. PR #6 through #10 repairs passed **31 additional targeted tests** (11, 6, 1, 7 and 6 respectively). A separately repaired ag896 branch passed six tests and is excluded from that 31-test total; their pushed heads are `814563f`, `c4a5ead`, `a295168`, `97d26e7` and `d288c58`, respectively. They remain unmerged PRs.
 
-## Formats and integration
+**Completed real-input validation.** [The PHerc0841 test](../logs/2026-10-07-real-surfacefix-validation.md) rendered four actual meshes with official `vc_render_tifxyz` revision `1e3f4c021f4e` and produced twelve d9v2 maps with matched stride-42 controls. Four regions were evaluable; zero corrections passed and 16 regions were flagged. Eight complete misregistered-reference searches also accepted zero corrections, with two to four evaluable regions each. Excessive and tangential edits were rejected; sources and output coordinates were unchanged. The frozen patch contained zero supervised pixels, so no accuracy or successful correction claim is made. A [separate raw-CT reconstruction test](../logs/2026-10-07-reconstruction-tests.md) passed four known-shift controls but failed its held-back integer-grid translation check for both phase recipes. The two-voxel peak discrepancy is not a precise measurement of physical distortion. Phase ink comparisons remain unrun. These are bounded failure tests, not superiority to Lasagna or calibrated false-positive rates. Further work is CPU-only; GPU training is outside this plan.
 
-Input: OME-Zarr surface volumes as `vc_render_tifxyz` writes and the team publishes; the segment's `inklabels.zarr` and `supervision.zarr`. Output: uint8 TIFF ink maps, JSON results. Standard library plus numpy, tifffile and zarr, all in villa's environment. Apache-2.0.
+**[MAC PENDING.]** Add further PHerc0841 Mac reproduction numbers only after a completed, logged run with comparable settings. Missing results are not negative findings.
 
-## Links
+**Additional reconstruction and reader checks.** A fixed filter predicted one public reconstruction from another on a held-back CT cube with correlation 0.99724, reducing error by 55.75% relative to brightness adjustment. Controls and a boundary audit passed, but transport to the original reconstruction failed. This measures recipe redundancy, not ink recovery. Independently checked official rendering reproduced published depth order on PHerc0841 and w045. Fresh w045 d9v2 scores were 0.9255 forward, 0.3346 reversed and 0.5814 shuffled AUC on a fixed supervised mask. Its high-pass detail score failed the matched controls and displaced-label null, so the AUC advantage does not establish better detail. [Complete follow-up record](../logs/2026-10-07-followup-tests.md). Frozen rules, failures, source receipts and results have SHA-256 records; hashes establish integrity, not scientific validity.
 
-- Repository: https://github.com/ChaseHendrick/Scrolls
-- Mac guide: [`docs/mac.md`](../mac.md)
-- Research log with every number above: [`docs/logs/2026-10-07-community-scan.md`](../logs/2026-10-07-community-scan.md)
+**Completed supervised correction audit.** A new labelled PHerc0841 crop completed another twelve real CT-derived reader maps. The fixed corrector accepted zero edits and all eight displaced-reference null searches also accepted zero. Baseline AUC was 0.9211, with reverse 0.5951 and shuffle 0.6439; its high-pass controls passed. The plus-one-voxel candidate's descriptive AUC gain was 0.00889, with simultaneous paired interval [-0.00461, 0.02239], so it failed the declared improvement rule. No combined corrected-surface improvement is claimed. A fresh eight-site affine fit with four held-back CT sites also failed its registration gates despite all 34 estimator controls passing; phase reader comparisons remain blocked. [Results and limitations](../logs/2026-10-07-followup-tests.md).
+
+**[ATLAS PENDING.]** The [preregistered atlas run](../prereg/2026-10-07-v8in-atlas.md) has no result added here. If it completes as a null, report completed mesh count, coverage, settings and costs, with the scope limited to that reader and those automatic surfaces. A candidate must stay private under [the workflow](../WORKFLOW.md); it must not be described in this draft.
+
+**Relevant upstream work.** [villa PR #1996](https://github.com/ScrollPrize/villa/pull/1996) adds optional support-aware coarse masking. Its public study reports a useful flattening cost/coverage tradeoff. We passed its 12 tests and separately checked the exact helper on cached PHerc0841 meshes: support retained more valid working cells, but some retained quads still failed geometry certification. This is upstream work, with our validation recorded separately; it does not establish improved reader accuracy. [Review and measurements](../logs/2026-10-07-coarse-support-mask.md).
+
+## Limits, reuse and submission status
+
+All measurements described here use public labelled data and model output. No letters, title, new reading or groundbreaking result is claimed. Observational novelty is provisional within the sources searched; GitHub and Discord search coverage was incomplete. Geometry or model agreement may reflect shared artifacts. Pixel AUC, high-pass correlation and row scores are diagnostic metrics, not papyrologist evaluation.
+
+Inputs are published surface meshes/volumes, supervision masks and externally generated reader maps. Outputs are JSON records, candidate/corrected mesh copies and flags. The repository is Apache-2.0; data and model licenses apply separately. The [scan-status overview](../scan-status.md) separates catalogue information, measurements and pending work; it does not turn an absent result into a completed null. Reuse the [commands and acceptance rules](../surfacefix.md), [Mac workflow](../mac.md), [benchmark records](../results.json) and [community review](../logs/2026-10-07-community-needs.md).
+
+Chase Hendrick will review and submit through the [Progress Prize form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) by **31 October 2026, 11:59pm Pacific**, subject to the [live prize rules](https://scrollprize.org/prizes). This remains a local draft. No prize submission, organizer contact or upstream contribution has been made by this update. villa's contribution guidance requires real-data validation and human-written motivation; Chase Hendrick should write and review any eventual personal submission commentary.
 
 ## AI assistance
 
-Built with Claude Code, directed and reviewed by the author; every number comes from a logged run.
+Claude Code and Codex assisted research, implementation, review and this draft under Chase Hendrick's direction. Recorded benchmark numbers come from cited runs; synthetic tests and pending real-data work are identified separately. Chase Hendrick's final review of the wording and evidence is pending.
