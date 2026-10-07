@@ -11,7 +11,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 1. [`docs/HANDOFF.md`](docs/HANDOFF.md): current state and the next steps, newest session first.
 2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): phases, gates, timeline.
 3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
-   The README section "What this repository has found" summarizes it in prose; keep both in step when numbers change.
+   The README section "Novel findings (Chase Hendrick)" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
 4. [`docs/logs/`](docs/logs/): dated research notes; the newest explains the latest numbers.
    Literature (arXiv, journals, Zenodo, Kaggle): [`docs/logs/2026-10-07-literature.md`](docs/logs/2026-10-07-literature.md) and machine-readable [`docs/papers.json`](docs/papers.json).
 5. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.

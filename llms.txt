@@ -10,7 +10,7 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 - [docs/HANDOFF.md](docs/HANDOFF.md): current state and next steps, newest first
 - [docs/plans/roadmap.md](docs/plans/roadmap.md): phases, gates, timeline
 - [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
-- [README.md](README.md): includes "What this repository has found", the findings in prose
+- [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
 
 ## Research
 

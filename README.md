@@ -7,16 +7,14 @@ Research notes, a run planner, and an experiment ledger for the [Vesuvius Challe
 **This repository does not claim that any letters have been found in any scroll.**
 The `kit/` package plans and records runs of the official open-source pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)). It does not reimplement that pipeline. Prize amounts, deadlines and eligible scrolls are a dated snapshot (checked 2026-10-06); [scrollprize.org/prizes](https://scrollprize.org/prizes) wins if they disagree.
 
-## What this repository has found (as of 2026-10-07)
+## Novel findings (Chase Hendrick)
 
-Measured here, on public labelled data only (never target scrolls; model output, not readings). Every number, with settings and source: [`docs/results.json`](docs/results.json); context: [`docs/logs/2026-10-07-community-scan.md`](docs/logs/2026-10-07-community-scan.md).
+Only results that are new: found in this work and not published elsewhere, as far as our searches reach (web and the community repositories we read; GitHub search and Discord were not searchable from here). Public labelled data only, never target scrolls; model output, not readings. Reproductions of others' results are in [`docs/results.json`](docs/results.json) and the [log](docs/logs/2026-10-07-community-scan.md), not here.
 
-1. **v8in (YoussefMoNader/ink-8um-v8in, 2026-09-28) scored against human labels on a held-out segment.** On PHerc0139 w045 it reaches AUC 0.738 (reversed 0.327), against 0.914 for the team's `ink_9um` on the same crop. Not published elsewhere as far as our searches reach. This test favours `ink_9um` (its training scroll); the fair test on PHerc0841 is running.
-2. **On an unseen scroll, the community fine-tune d9v2 beats the released `ink_9um` on all three PHerc0841 crops** (0.899 / 0.823 / 0.832 against 0.806 / 0.659 / 0.784, 64 px edge left out), reproducing TAUIL-Abd-Elilah's benchmark independently.
-3. **`ink_9um` on PHerc0841 finds ink but mostly loses text rows:** AUC 0.72 to 0.75 and rows on one segment of three (ag405), reproducing Bullo27's unseen-scroll calibration.
-4. **Scoring a crop needs an edge margin.** A map inferred on a bare 640 px crop differs from the same window of a whole-segment map by up to 0.03 AUC; leaving a 64 px edge out makes them identical to four decimals (three segments). Every crop score here uses that.
-5. **The Apple M1 Pro GPU reproduces the CPU.** `ink_9um` via villa PR #1865 and v8in both match the CPU (max difference 1 grey level, Pearson above 0.9999999); `ink_9um` AUCs on MPS equal the CPU's to four decimals. (afraazali42 showed v8in on an M3 Max first.)
-6. **w035, the usual control, only shows memorization:** every clean letter it shows lies inside a supervised label region. Use a held-out segment to judge a model.
+1. **v8in, scored against human labels on a held-out segment, trails the older `ink_9um`** (2026-10-07). On PHerc0139 w045 (held out from both models), v8in (YoussefMoNader/ink-8um-v8in, released 2026-09-28) reaches pixel AUC 0.738 (0.327 with depth reversed, the control) against 0.914 for `ink_9um` on the same 640 px crop. v8in had been evaluated only on PHerc1447 by its author; TAUIL's benchmark and Reader v2's scoreboard do not include it. Caveat: w045's scroll is one of `ink_9um`'s main training scrolls, so this test favours `ink_9um`.
+2. **Scoring a crop needs an edge margin** (2026-10-07). A map inferred on a bare 640 px crop differs from the same window of a whole-segment map by up to 0.03 AUC (PHerc0841 ag405: 0.821 against 0.793); leaving a 64 px edge out makes the two identical to four decimals on all three segments tested. Crop-based comparisons that skip this can rank models wrongly by that much.
+
+Pending: v8in against labels on PHerc0841, the scroll no model trained on (running on the M1 Pro). Its bars on the same crop: d9v2 0.899, `ink_9um` 0.806.
 
 ## Start here (recommendation)
 
