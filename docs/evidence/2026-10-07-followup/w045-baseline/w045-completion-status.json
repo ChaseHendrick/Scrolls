@@ -1,0 +1,17 @@
+{
+  "status": "original_and_published_baselines_completed_phase_comparison_blocked_by_structural_gate",
+  "scope": "One fixed w045 crop; strong pixel-ranking control result, no detail or legibility claim.",
+  "primary_original_results": "/workspace/scrolls-env/phase-reconstruction/original-baseline-results.json",
+  "primary_original_results_sha256": "967bd813497b15c7369a6d22666822c2bb512278e97c98ecbbc590b0706dd4fd",
+  "published_diagnostic_results_sha256": "5a8d4ec9e276fb19614872d865fa5d16e2234be63195b9172427ec39250a94bf",
+  "reader_reproduction_result_sha256": "bdbf9eb992bc3411ecc4a5e95ac997207be5d79c9796432331102c8a8f8784ac",
+  "authoritative_reader_settings_audit_sha256": "9fd473acb602fe875d061186f5540560f0605d917ab307a5863e2410f5ed8467",
+  "phase_registration_gate": "/workspace/scrolls-env/phase-reconstruction/affine-followup/v3/result.json",
+  "phase_registration_gate_sha256": "3986f8b438af155f58b94ad47a5c3e6a3833705c8d6a3b421bfb7390d60a69fe",
+  "phase_registration_all_pass": false,
+  "phase_candidate_reader_runs": 0,
+  "stop_reason": "Fresh original-to-phase structural heldback checks failed: 7/16 raw/gradient residuals above0.5voxel, max0.77775voxel (about7.281um). Phase-pair closure passing does not approve original label alignment.",
+  "baseline_sha256_manifest": "/workspace/scrolls-env/phase-reconstruction/w045-baseline-findings-sha256.json",
+  "baseline_sha256_manifest_sha256": "0fbfd993bd5ac0384c06a546e2090dd4af787ed3e0e60f6603770229ad17d644",
+  "audit_code_sha256": "80460ae255c91ebc8989f2ca0aee1010c4e62c8fc449fd5e3b4696dc7a3c1011"
+}

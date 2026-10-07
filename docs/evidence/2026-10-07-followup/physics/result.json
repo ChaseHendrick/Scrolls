@@ -1,0 +1,225 @@
+{
+  "rule_sha256": "f506cac999a1189e4eff33fc014964e56800bbd49bdd9ea2a8c20a5218fb9f49",
+  "alignment": [
+    {
+      "shift_zyx_vox": [
+        0,
+        0,
+        0
+      ],
+      "ncc": 0.9845778947391562,
+      "competing_peak_ncc": 0.6317469867884788,
+      "peak_margin": 0.3528309079506774,
+      "boundary": false,
+      "patch": 0,
+      "pass": true
+    },
+    {
+      "shift_zyx_vox": [
+        0,
+        0,
+        0
+      ],
+      "ncc": 0.9817483733650002,
+      "competing_peak_ncc": 0.6795839119440572,
+      "peak_margin": 0.302164461420943,
+      "boundary": false,
+      "patch": 1,
+      "pass": true
+    }
+  ],
+  "limits": "TRANSFER_PREDICTABLE only if alignment, prediction and all controls pass; otherwise NEGATIVE_OR_INCONCLUSIVE. This measures reconstruction redundancy/attenuation, not independent acquisition, noise, ink, topology or legibility.",
+  "outcome": "TRANSFER_PREDICTABLE",
+  "primary": {
+    "rms_uint8_units": 2.7172861665532877,
+    "target_std_uint8_units": 35.81703106544626,
+    "normalized_rms": 0.07586575675655968,
+    "correlation": 0.9972415686653727,
+    "rms_reduction_vs_affine": 0.5575069048626593
+  },
+  "affine_baseline": {
+    "rms_uint8_units": 6.14085552162096,
+    "target_std_uint8_units": 35.81703106544626,
+    "normalized_rms": 0.17145071322076227,
+    "correlation": 0.9855110854969461
+  },
+  "controls": {
+    "self": {
+      "rms_uint8_units": 6.508392482636255e-06,
+      "target_std_uint8_units": 39.69610406220731,
+      "normalized_rms": 1.6395544692338137e-07,
+      "correlation": 0.9999999999999892,
+      "passed": true
+    },
+    "misregistered": {
+      "rms_uint8_units": 50.41781355615378,
+      "target_std_uint8_units": 35.021058936088636,
+      "normalized_rms": 1.4396427489004062,
+      "correlation": -0.015493771731763854,
+      "correlation_drop": 1.0127353403971366,
+      "passed": true
+    },
+    "depth_shuffle": {
+      "rms_uint8_units": 48.03849028313286,
+      "target_std_uint8_units": 36.23266649364926,
+      "normalized_rms": 1.3258337001377716,
+      "correlation": 0.10851748810500667,
+      "correlation_drop": 0.888724080560366,
+      "passed": true
+    }
+  },
+  "affine_gain": 0.9116054177284241,
+  "affine_offset": -0.3816986083984375,
+  "radial_transfer": [
+    0.7258486170846283,
+    0.7032932283834468,
+    0.7331024496715641,
+    0.8354306146896527,
+    0.9364171462701091,
+    0.9954975591126076,
+    1.039320794264641,
+    1.0435778816438532,
+    1.023224084001559,
+    0.990418333456636,
+    0.944856448930883,
+    0.9076760732867483,
+    0.8620345210735558,
+    0.8259899327072134,
+    0.7936108333393036,
+    0.7733609516020045,
+    0.7611281575497651,
+    0.7522616703348817,
+    0.7474639142801405,
+    0.7282859821043245,
+    0.7072613248536009,
+    0.686793236438808,
+    0.6874131073672249,
+    0.6790719109549247,
+    0.6566747190432581,
+    0.63970111596856,
+    0.6314866221755115,
+    0.6032045494627476,
+    0.6047401764388605,
+    0.6054858911691151,
+    0.6596258981235865,
+    0.6890174186459745
+  ],
+  "bands": [
+    {
+      "patch": 0,
+      "measurements": [
+        {
+          "wavelength_vox": [
+            2,
+            4
+          ],
+          "wavelength_um": [
+            18.724,
+            37.448
+          ],
+          "pag50_to_pag0_rms_ratio": 0.9028735714494396,
+          "magnitude_squared_coherence": 0.9752529935191998,
+          "real_cross_transfer": 0.8916316661922438
+        },
+        {
+          "wavelength_vox": [
+            4,
+            8
+          ],
+          "wavelength_um": [
+            37.448,
+            74.896
+          ],
+          "pag50_to_pag0_rms_ratio": 1.0145256791697672,
+          "magnitude_squared_coherence": 0.9978593168928175,
+          "real_cross_transfer": 1.0134392037917717
+        },
+        {
+          "wavelength_vox": [
+            8,
+            16
+          ],
+          "wavelength_um": [
+            74.896,
+            149.792
+          ],
+          "pag50_to_pag0_rms_ratio": 0.8368645749433452,
+          "magnitude_squared_coherence": 0.9885150882815776,
+          "real_cross_transfer": 0.8320414170056679
+        },
+        {
+          "wavelength_vox": [
+            16,
+            32
+          ],
+          "wavelength_um": [
+            149.792,
+            299.584
+          ],
+          "pag50_to_pag0_rms_ratio": 0.713301028899606,
+          "magnitude_squared_coherence": 0.9856834983865387,
+          "real_cross_transfer": 0.7078237187084022
+        }
+      ]
+    },
+    {
+      "patch": 1,
+      "measurements": [
+        {
+          "wavelength_vox": [
+            2,
+            4
+          ],
+          "wavelength_um": [
+            18.724,
+            37.448
+          ],
+          "pag50_to_pag0_rms_ratio": 0.9068143092761437,
+          "magnitude_squared_coherence": 0.9754421471089817,
+          "real_cross_transfer": 0.8956100388312851
+        },
+        {
+          "wavelength_vox": [
+            4,
+            8
+          ],
+          "wavelength_um": [
+            37.448,
+            74.896
+          ],
+          "pag50_to_pag0_rms_ratio": 1.026155595048623,
+          "magnitude_squared_coherence": 0.9978088986186355,
+          "real_cross_transfer": 1.025030423626898
+        },
+        {
+          "wavelength_vox": [
+            8,
+            16
+          ],
+          "wavelength_um": [
+            74.896,
+            149.792
+          ],
+          "pag50_to_pag0_rms_ratio": 0.8344131271442952,
+          "magnitude_squared_coherence": 0.9904926139139744,
+          "real_cross_transfer": 0.8304102565551498
+        },
+        {
+          "wavelength_vox": [
+            16,
+            32
+          ],
+          "wavelength_um": [
+            149.792,
+            299.584
+          ],
+          "pag50_to_pag0_rms_ratio": 0.6720983585968007,
+          "magnitude_squared_coherence": 0.9961355714980293,
+          "real_cross_transfer": 0.6707722045797623
+        }
+      ]
+    }
+  ],
+  "elapsed_seconds": 5.557533055000022,
+  "peak_rss_bytes": 738816000
+}

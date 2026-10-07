@@ -1,0 +1,68 @@
+[
+  {
+    "name": "prediction",
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/representations/predictions/surfaces/20260411134726-surface-20260413222639-surface-m7-L2-th0.2.zarr/0/.zarray",
+    "live": {
+      "chunks": [
+        192,
+        192,
+        192
+      ],
+      "compressor": {
+        "blocksize": 0,
+        "clevel": 1,
+        "cname": "zstd",
+        "id": "blosc",
+        "shuffle": 1
+      },
+      "dimension_separator": "/",
+      "dtype": "|u1",
+      "fill_value": 0,
+      "filters": null,
+      "order": "C",
+      "shape": [
+        18946,
+        8174,
+        8174
+      ],
+      "zarr_format": 2
+    },
+    "declared_shape_matches": true,
+    "declared_chunks_match": true,
+    "headers": {
+      "last-modified": "Thu, 02 Jul 2026 11:40:57 GMT",
+      "etag": "\"c4806ccd6bc045bb8096dab92236dd58\"",
+      "content-length": "402"
+    }
+  },
+  {
+    "name": "ct",
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHercParis4/volumes/20260411134726-2.400um-0.2m-78keV-masked.zarr/2/.zarray",
+    "live": {
+      "shape": [
+        18946,
+        8174,
+        8174
+      ],
+      "chunks": [
+        128,
+        128,
+        128
+      ],
+      "dtype": "|u1",
+      "fill_value": 0,
+      "order": "C",
+      "filters": null,
+      "dimension_separator": "/",
+      "compressor": null,
+      "zarr_format": 2
+    },
+    "declared_shape_matches": true,
+    "declared_chunks_match": true,
+    "headers": {
+      "last-modified": "Wed, 15 Apr 2026 21:59:03 GMT",
+      "etag": "\"141f38a284e5946a603e2ffb76848ccd\"",
+      "content-length": "285"
+    }
+  }
+]

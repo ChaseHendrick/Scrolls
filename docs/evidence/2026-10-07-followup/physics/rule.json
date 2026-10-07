@@ -1,0 +1,507 @@
+{
+  "schema": 1,
+  "scope": "Public PHerc0139 structural CT, pag0 versus pag50 only; no labels or inference",
+  "source_rule_sha256": "37ed675e2edf44d9010cefbb434ecbffc504e8e9692c6dca358ee46934839dbd",
+  "script_sha256": "9dfb0907dd8d020cf054e8bbd1cb1cedc36ffc4ebe36b605f272833b675ea94e",
+  "patches": [
+    {
+      "volume": "pag0",
+      "patch": 0,
+      "center_zyx": [
+        6402,
+        3730,
+        4496
+      ],
+      "bounds_zyx": [
+        [
+          6306,
+          6498
+        ],
+        [
+          3634,
+          3826
+        ],
+        [
+          4400,
+          4592
+        ]
+      ],
+      "chunk_keys_zyx": [
+        [
+          49,
+          28,
+          34
+        ],
+        [
+          49,
+          28,
+          35
+        ],
+        [
+          49,
+          29,
+          34
+        ],
+        [
+          49,
+          29,
+          35
+        ],
+        [
+          50,
+          28,
+          34
+        ],
+        [
+          50,
+          28,
+          35
+        ],
+        [
+          50,
+          29,
+          34
+        ],
+        [
+          50,
+          29,
+          35
+        ]
+      ]
+    },
+    {
+      "volume": "pag0",
+      "patch": 1,
+      "center_zyx": [
+        6615,
+        3926,
+        4566
+      ],
+      "bounds_zyx": [
+        [
+          6519,
+          6711
+        ],
+        [
+          3830,
+          4022
+        ],
+        [
+          4470,
+          4662
+        ]
+      ],
+      "chunk_keys_zyx": [
+        [
+          50,
+          29,
+          34
+        ],
+        [
+          50,
+          29,
+          35
+        ],
+        [
+          50,
+          29,
+          36
+        ],
+        [
+          50,
+          30,
+          34
+        ],
+        [
+          50,
+          30,
+          35
+        ],
+        [
+          50,
+          30,
+          36
+        ],
+        [
+          50,
+          31,
+          34
+        ],
+        [
+          50,
+          31,
+          35
+        ],
+        [
+          50,
+          31,
+          36
+        ],
+        [
+          51,
+          29,
+          34
+        ],
+        [
+          51,
+          29,
+          35
+        ],
+        [
+          51,
+          29,
+          36
+        ],
+        [
+          51,
+          30,
+          34
+        ],
+        [
+          51,
+          30,
+          35
+        ],
+        [
+          51,
+          30,
+          36
+        ],
+        [
+          51,
+          31,
+          34
+        ],
+        [
+          51,
+          31,
+          35
+        ],
+        [
+          51,
+          31,
+          36
+        ],
+        [
+          52,
+          29,
+          34
+        ],
+        [
+          52,
+          29,
+          35
+        ],
+        [
+          52,
+          29,
+          36
+        ],
+        [
+          52,
+          30,
+          34
+        ],
+        [
+          52,
+          30,
+          35
+        ],
+        [
+          52,
+          30,
+          36
+        ],
+        [
+          52,
+          31,
+          34
+        ],
+        [
+          52,
+          31,
+          35
+        ],
+        [
+          52,
+          31,
+          36
+        ]
+      ]
+    },
+    {
+      "volume": "pag50",
+      "patch": 0,
+      "center_zyx": [
+        6402,
+        3730,
+        4496
+      ],
+      "bounds_zyx": [
+        [
+          6306,
+          6498
+        ],
+        [
+          3634,
+          3826
+        ],
+        [
+          4400,
+          4592
+        ]
+      ],
+      "chunk_keys_zyx": [
+        [
+          49,
+          28,
+          34
+        ],
+        [
+          49,
+          28,
+          35
+        ],
+        [
+          49,
+          29,
+          34
+        ],
+        [
+          49,
+          29,
+          35
+        ],
+        [
+          50,
+          28,
+          34
+        ],
+        [
+          50,
+          28,
+          35
+        ],
+        [
+          50,
+          29,
+          34
+        ],
+        [
+          50,
+          29,
+          35
+        ]
+      ]
+    },
+    {
+      "volume": "pag50",
+      "patch": 1,
+      "center_zyx": [
+        6615,
+        3926,
+        4566
+      ],
+      "bounds_zyx": [
+        [
+          6519,
+          6711
+        ],
+        [
+          3830,
+          4022
+        ],
+        [
+          4470,
+          4662
+        ]
+      ],
+      "chunk_keys_zyx": [
+        [
+          50,
+          29,
+          34
+        ],
+        [
+          50,
+          29,
+          35
+        ],
+        [
+          50,
+          29,
+          36
+        ],
+        [
+          50,
+          30,
+          34
+        ],
+        [
+          50,
+          30,
+          35
+        ],
+        [
+          50,
+          30,
+          36
+        ],
+        [
+          50,
+          31,
+          34
+        ],
+        [
+          50,
+          31,
+          35
+        ],
+        [
+          50,
+          31,
+          36
+        ],
+        [
+          51,
+          29,
+          34
+        ],
+        [
+          51,
+          29,
+          35
+        ],
+        [
+          51,
+          29,
+          36
+        ],
+        [
+          51,
+          30,
+          34
+        ],
+        [
+          51,
+          30,
+          35
+        ],
+        [
+          51,
+          30,
+          36
+        ],
+        [
+          51,
+          31,
+          34
+        ],
+        [
+          51,
+          31,
+          35
+        ],
+        [
+          51,
+          31,
+          36
+        ],
+        [
+          52,
+          29,
+          34
+        ],
+        [
+          52,
+          29,
+          35
+        ],
+        [
+          52,
+          29,
+          36
+        ],
+        [
+          52,
+          30,
+          34
+        ],
+        [
+          52,
+          30,
+          35
+        ],
+        [
+          52,
+          30,
+          36
+        ],
+        [
+          52,
+          31,
+          34
+        ],
+        [
+          52,
+          31,
+          35
+        ],
+        [
+          52,
+          31,
+          36
+        ]
+      ]
+    }
+  ],
+  "alignment": {
+    "template128_search160": true,
+    "require_integer_shift_zyx": [
+      0,
+      0,
+      0
+    ],
+    "minimum_gradient_ncc": 0.6,
+    "minimum_peak_margin": 0.03,
+    "require_interior_peak": true
+  },
+  "split": "cube0 learns all transfer/gain/offset coefficients; disjoint cube1 is held back",
+  "filter": "32 fixed radial bins of Re(cross-spectrum)/input spectrum power, using separable Hann window; no fitted upper bound or positivity clip; apply coefficients to unwindowed heldback FFT and evaluate center96cube",
+  "baseline": "one global affine contrast fit on cube0 applied unchanged to cube1",
+  "primary": "heldback residual RMS divided by pag50 std, and relative RMS reduction versus affine baseline",
+  "positive_gate": {
+    "maximum_normalized_rms": 0.15,
+    "minimum_rms_reduction": 0.2,
+    "minimum_prediction_correlation": 0.95
+  },
+  "band_voxel_wavelengths": [
+    [
+      2,
+      4
+    ],
+    [
+      4,
+      8
+    ],
+    [
+      8,
+      16
+    ],
+    [
+      16,
+      32
+    ]
+  ],
+  "controls": {
+    "self": "same pag0 input/target gives normalizedRMS<=1e-4 and correlation>=.9999",
+    "misregistered": "pag50 x-shift8vox must lower heldback correlation>=.1",
+    "depth_shuffle": "pag50 fixed depth permutation seed20261007 must lower heldback correlation>=.1"
+  },
+  "resources": {
+    "max_peak_rss_bytes": 2147483648,
+    "cpu_threads": 1,
+    "network_bytes": 0
+  },
+  "readout": "TRANSFER_PREDICTABLE only if alignment, prediction and all controls pass; otherwise NEGATIVE_OR_INCONCLUSIVE. This measures reconstruction redundancy/attenuation, not independent acquisition, noise, ink, topology or legibility."
+}

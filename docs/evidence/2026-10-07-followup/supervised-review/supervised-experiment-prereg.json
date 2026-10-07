@@ -1,0 +1,211 @@
+{
+  "schema": 2,
+  "frozen_at_utc": "2026-10-07T13:41:23.416125+00:00",
+  "status": "frozen before any reader output for this new crop; root approval required before inference",
+  "scope": "public PHerc0841 known labelled sheet, spatially distinct same-sheet audit; not independent scroll or sheet",
+  "selection": "label counts and original geometry only. Initial source label-density grid search was blocked by coarse native matching. Continuous geometry diagnostic motivated a separately tested schema2 matching amendment, without reader-output inspection. See selection-rule-v1.json, selection-rule.json and selection-diagnostic.json for the complete selection history.",
+  "source_segment": "20260220213127-w00",
+  "reference_segment": "20260220214732-auto_grown_20260220144552896",
+  "source_native_crop": [
+    136,
+    168,
+    136,
+    168
+  ],
+  "reference_native_crop": [
+    156,
+    188,
+    134,
+    166
+  ],
+  "source_canvas_crop": [
+    2720,
+    3360,
+    2720,
+    3360
+  ],
+  "reference_canvas_crop": [
+    3120,
+    3760,
+    2680,
+    3320
+  ],
+  "source_surface_shape": [
+    4220,
+    4760
+  ],
+  "voxel_um": 9.366,
+  "map_shape": [
+    640,
+    640
+  ],
+  "offsets_vox": [
+    -1,
+    1
+  ],
+  "thresholds": {
+    "region_points": 8,
+    "min_points": 24,
+    "min_corr": 0.5,
+    "min_gain": 0.1,
+    "control_margin": 0.1,
+    "max_step_vox": 1,
+    "max_shift_um": 50
+  },
+  "matching_mode": "certified_bilinear_reference_v1",
+  "render_geometry": {
+    "position_interpolation": "linear",
+    "scale": 1,
+    "group": 0,
+    "rotation_degrees": 0,
+    "affine": false,
+    "full_native_canvas": true
+  },
+  "renderer": {
+    "revision": "1e3f4c021f4e53bea3867772ed05f51a7e586a9c",
+    "binary_sha256": "fd1d5118e8f7e38c2c482d9cd5473eb5631f82546b896f088ef85ee4fe615a6a",
+    "slices": 28,
+    "slice_step": 1,
+    "canonical_direction": "reverse official column-cross-row into row-cross-column -N"
+  },
+  "reader": {
+    "name": "d9v2_ft-012000.pth",
+    "checkpoint_sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+    "villa_revision": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+    "device": "cpu",
+    "batch_size": 1,
+    "stride": 42,
+    "selected_source_layers": [
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22
+    ],
+    "reverse_source_layers": [
+      22,
+      21,
+      20,
+      19,
+      18,
+      17,
+      16,
+      15,
+      14,
+      13,
+      12,
+      11,
+      10,
+      9,
+      8,
+      7,
+      6
+    ],
+    "shuffle_seed": 20261007,
+    "blend": "hann",
+    "mirror_tta": false,
+    "mixed_precision": false,
+    "compile": false
+  },
+  "label_metadata": {
+    "level": "2",
+    "label_shape": [
+      4115,
+      4640
+    ],
+    "alignment": "existing kit.auc.labels_on_map uniform nearest-center resize on published w00 source canvas",
+    "shards": [
+      {
+        "key": "supervision.zarr/2/c/0/0",
+        "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/2/c/0/0",
+        "bytes": 8634,
+        "sha256": "81ae85d1cb7db283791aca23647004f12f66d2479d14dbb364869d559fc2347e"
+      },
+      {
+        "key": "inklabels.zarr/2/c/0/0",
+        "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/2/c/0/0",
+        "bytes": 10381,
+        "sha256": "a358449405e494e5aeb8906e0793f8dec741a60dbb26fa4bc58d05c6220a7923"
+      }
+    ],
+    "inner_px": 64,
+    "contiguous_audit_halves": [
+      {
+        "canvas_box": [
+          2784,
+          3040,
+          2784,
+          3296
+        ],
+        "supervised_ink_px": 47374,
+        "supervised_background_px": 83684,
+        "supervised_px": 131058,
+        "supervision_fraction": 0.9998931884765625
+      },
+      {
+        "canvas_box": [
+          3040,
+          3296,
+          2784,
+          3296
+        ],
+        "supervised_ink_px": 35825,
+        "supervised_background_px": 95247,
+        "supervised_px": 131072,
+        "supervision_fraction": 1.0
+      }
+    ]
+  },
+  "label_readout": {
+    "primary": "After the frozen label-free winner/acceptance search finishes, compare final combined rerender with baseline on the SAME w00 supervised inner64 pixels. Include legitimate quantized zeros in AUC (keep_zero=True), since this dense crop geometry and all completed inference tiles supply explicit coverage. Preserve supervision and confirmed-background distinction.",
+    "secondary": "Report all baseline/candidate forward/reverse/shuffle AUCs and high-pass label correlations descriptively after acceptance is frozen. Candidate label scores may not choose an offset, winner or threshold.",
+    "coverage": "Report expected/completed maps, common supervised ink/background pixels, zeros, corrected vs unchanged pixels, geometry/map abstentions, and source and output hashes. If map validity is incomplete, separate missing geometry/inference coverage from valid zero predictions; do not condition the primary score on positive prediction values.",
+    "uncertainty": "Paired block resampling on common pixels, block_px107 (~1mm),300draws,seed20261007 if available. Report interval and number of occupied blocks. One dense patch and a small number of blocks do not justify population significance, FPR, power, or cross-scroll generalization claims.",
+    "subset_limit": "Surfacefix interleaved-row selection/held-back points are correlated local checks. The two contiguous label-audit halves are descriptive spatial strata, not independent-sheet replications.",
+    "final_render": "Any accepted geometry must be officially rerendered and rerun with matched controls before an improvement claim. If no corrections pass, report unchanged output and no recovery; no extra final inference is needed."
+  },
+  "stopping": "Keep all fixed bars. If baseline/reference contrast or map coverage is inadequate, report failure/abstention; do not change offsets, thresholds, crop or reader based on these outputs. New settings require a new prospective experiment and separate audit data.",
+  "cpu_only": true,
+  "gpu_or_paid_compute": false,
+  "reader_outputs_inspected_for_selection": false,
+  "code_sha256": {
+    "kit/_surface_geometry.py": "75457b1629e914480cca0be63847f9fc3b004cc5e0c3635a86dde7b42aaae393",
+    "kit/surfacefix.py": "c44e8fb21be1381a0788ab7add7dfc23f3db52c2a90852d147b7d8d8fe989117",
+    "tests/test_surface_geometry.py": "9ce1aa17574a1aae342d9e5309f143cbee8e055f005eeea07dd605c45ab8cd0c",
+    "tests/test_surfacefix.py": "2b01cedefd3fd5c64f7e9c5ead5da6bfebe64dd515f7bd618745dfd86062b0be",
+    "docs/surfacefix.md": "b591e0291cf47daa59c4ed41f8c28d474a087e38a3927f179fe1e5b25c98f211"
+  },
+  "full_source_mesh_sha256": {
+    "w00": {
+      "x.tif": "e9ecdbe1481d9d50303cefe51d83e65dfa129f32e9921a4d28adc5b689326b9e",
+      "y.tif": "ba2567e70adfa7a12b72448aa3b39f176a4156896085b429938e491507eff97f",
+      "z.tif": "14a84cadd3a2216b0a32b3d3cc3852877f17a73c3564041779b95d5496c50762",
+      "meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a"
+    },
+    "ag896": {
+      "x.tif": "6da341cd503cc3ceaf96f6f559d7e3c7bc2ef23ddafce6fd60551fb9d070b942",
+      "y.tif": "44006942ed2c9529369a861c34ce2343be62d2743329ccee702a1b6db4e79d8b",
+      "z.tif": "35bcd9970826808800fefe0a62db0e49f0fa4a6f04a1272ca74ef3eae845dfee",
+      "meta.json": "30d5863f2dac76c52ea32141f69dd4303e92324dd3de3d86c7588d9612e44e68"
+    }
+  },
+  "geometry_receipt_sha256": "c098dbee77c0cf626a5d08a072684adc062228983c722022cf943564f245b9ad",
+  "tests": {
+    "focused_passed": 35,
+    "log_sha256": "ea3162be8613781a80225d37d7655bb9172d9d9ddaa093a3c6fba0c0a88b067d",
+    "schema1_exact_historical_report_equal": true
+  },
+  "repository_head_before_uncommitted_change": "722e7f9612fd5225606d2be20566a41d0d2f508b"
+}

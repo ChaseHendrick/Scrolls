@@ -1,0 +1,41 @@
+test_failed_replacement_keeps_previous_prediction_and_removes_old_scores (test_eval_holdouts.HoldoutReuse.test_failed_replacement_keeps_previous_prediction_and_removes_old_scores) ... ok
+test_flags_binary_and_precision_manifest_invalidate_prediction (test_eval_holdouts.HoldoutReuse.test_flags_binary_and_precision_manifest_invalidate_prediction) ... ok
+test_legacy_prediction_is_regenerated_unless_score_only (test_eval_holdouts.HoldoutReuse.test_legacy_prediction_is_regenerated_unless_score_only) ... ok
+test_minimum_label_level_is_obeyed (test_eval_holdouts.HoldoutReuse.test_minimum_label_level_is_obeyed) ... ok
+test_overwritten_checkpoint_invalidates_prediction (test_eval_holdouts.HoldoutReuse.test_overwritten_checkpoint_invalidates_prediction) ... ok
+test_same_prediction_is_reused (test_eval_holdouts.HoldoutReuse.test_same_prediction_is_reused) ... ok
+test_source_level_is_explicit_and_respects_available_labels (test_eval_holdouts.HoldoutReuse.test_source_level_is_explicit_and_respects_available_labels) ... ok
+test_unknown_or_invalid_source_level_is_rejected_before_prediction (test_eval_holdouts.HoldoutReuse.test_unknown_or_invalid_source_level_is_rejected_before_prediction) ... ok
+test_metadata_bound_raw_fixture_and_cli (test_training_cover.TrainingCover.test_metadata_bound_raw_fixture_and_cli) ... TRAINING_COVER_READY /tmp/tmph3sn5m1d/cover.json: 84 distinct 4^3 tiles, seed 2, sha256 8c884c1feec76e2fe952ff939137c5a795a4d318d146692fa984c8fa5906868e
+TRAINING_COVER_READY /tmp/tmph3sn5m1d/cover.json: 84 distinct 4^3 tiles, seed 2, sha256 8c884c1feec76e2fe952ff939137c5a795a4d318d146692fa984c8fa5906868e
+ok
+test_missing_and_truncated_occupancy_fail (test_training_cover.TrainingCover.test_missing_and_truncated_occupancy_fail) ... ok
+test_positive_coarse_cells_and_partial_native_end_are_conservative (test_training_cover.TrainingCover.test_positive_coarse_cells_and_partial_native_end_are_conservative) ... ok
+test_seeded_order_and_membership_verification (test_training_cover.TrainingCover.test_seeded_order_and_membership_verification) ... ok
+test_six_slabs_are_exact_disjoint_complement (test_training_cover.TrainingCover.test_six_slabs_are_exact_disjoint_complement) ... ok
+test_small_cube_cover_and_tail_preserve_every_occupied_voxel (test_training_cover.TrainingCover.test_small_cube_cover_and_tail_preserve_every_occupied_voxel) ... ok
+test_changed_labels_and_bad_tile_structure_fail_before_execution (test_production_cover.ProductionCover.test_changed_labels_and_bad_tile_structure_fail_before_execution) ... ok
+test_cli_cover_override_and_post_checkpoint_integrity (test_production_cover.ProductionCover.test_cli_cover_override_and_post_checkpoint_integrity) ... trained checkpoint: /tmp/tmp5n360c0w/override/cover/last.ckpt
+ok
+test_continuation_rejects_hash_count_cursor_and_already_complete (test_production_cover.ProductionCover.test_continuation_rejects_hash_count_cursor_and_already_complete) ... ok
+test_incompatible_dimensions_schedule_and_parallelism_fail (test_production_cover.ProductionCover.test_incompatible_dimensions_schedule_and_parallelism_fail) ... ok
+test_noncover_stages_and_time_trials_keep_existing_behavior (test_production_cover.ProductionCover.test_noncover_stages_and_time_trials_keep_existing_behavior) ... trained checkpoint: /tmp/tmpxzakjy02/ordinary/second/last.ckpt
+ok
+test_trial_is_partial_and_resume_keeps_original_pass_schedule (test_production_cover.ProductionCover.test_trial_is_partial_and_resume_keeps_original_pass_schedule) ... partial cover checkpoint: /tmp/tmpmg9hdyzt/trial/cover/last.ckpt
+trained checkpoint: /tmp/tmpmg9hdyzt/continued/cover/last.ckpt
+ok
+test_warm_start_freezes_cover_preserves_optimizer_step_and_complete_budget (test_production_cover.ProductionCover.test_warm_start_freezes_cover_preserves_optimizer_step_and_complete_budget) ... trained checkpoint: /tmp/tmpc7kexeqx/run/cover/last.ckpt
+ok
+test_arithmetic_calibration_reports_remain_unchanged (test_evaluation_plan.EvaluationSplit.test_arithmetic_calibration_reports_remain_unchanged) ... ok
+test_fixed_cutoff_legacy_recipe_is_preserved (test_evaluation_plan.EvaluationSplit.test_fixed_cutoff_legacy_recipe_is_preserved) ... ok
+test_geometric_calibration_balances_relative_source_gains (test_evaluation_plan.EvaluationSplit.test_geometric_calibration_balances_relative_source_gains) ... ok
+test_geometric_zeros_ties_and_small_scores_are_finite (test_evaluation_plan.EvaluationSplit.test_geometric_zeros_ties_and_small_scores_are_finite) ... ok
+test_incomplete_and_nonfinite_scores_cannot_be_exported_as_summary (test_evaluation_plan.EvaluationSplit.test_incomplete_and_nonfinite_scores_cannot_be_exported_as_summary) ... ok
+test_only_calibration_sources_fit_one_global_cutoff (test_evaluation_plan.EvaluationSplit.test_only_calibration_sources_fit_one_global_cutoff) ... ok
+test_overlapping_incomplete_and_unknown_partitions_are_rejected (test_evaluation_plan.EvaluationSplit.test_overlapping_incomplete_and_unknown_partitions_are_rejected) ... ok
+test_ties_choose_lower_cutoff_independent_of_grid_order (test_evaluation_plan.EvaluationSplit.test_ties_choose_lower_cutoff_independent_of_grid_order) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 2.359s
+
+OK

@@ -1,0 +1,37 @@
+{
+  "scope": "Independent bilinear-versus-triangle approximation bound audit; no reader outputs",
+  "reference_valid_quads": 36509,
+  "global_quad_max_triangle_bilinear_error_um_quantiles": [
+    0.0,
+    2.155366377547065,
+    7.913468928228024,
+    26.101591419537886,
+    67.40678066819696
+  ],
+  "reference_crop": [
+    156,
+    188,
+    134,
+    166
+  ],
+  "crop_valid_quads": 961,
+  "crop_max_triangle_bilinear_error_um_quantiles": [
+    0.053787263095901594,
+    1.774577818759081,
+    5.083017318551172,
+    17.36620863925681,
+    28.314650192986562
+  ],
+  "analytic_bound": "||p11-p10-p01+p00||/4 at identical(u,v), valid for either diagonal",
+  "phantom_bound_checks": {
+    "cells": 100,
+    "samples_per_cell": 100,
+    "diagonals": 2,
+    "maximum_fraction_of_bound_each_diagonal": [
+      0.9988910420264263,
+      0.9979196172967111
+    ],
+    "passed": true
+  },
+  "limits": "Bound proves triangle/bilinear Hausdorff proximity, not exactclosestUV, globalnearestsurface, sheetidentity or mapcoverage. Usefulconservativegapcertificates need fullcandidateenumeration andrivalhandling."
+}

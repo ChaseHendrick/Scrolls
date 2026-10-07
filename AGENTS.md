@@ -57,6 +57,8 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 | `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
 | `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
+| `kit/surfacefix.py` | Experimental bounded normal-offset suggestions, frozen correspondence checks and uncertain-region flags; see `docs/surfacefix.md` |
+| `docs/scan-status.md` | Our completed/partial/planned processing, plus the dated official CT catalogue and documented acquisition unknowns |
 | `kit/ledger.py` | Local experiment records in `experiments/<slug>/run.json` with readout-rule hash and status gate |
 | `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
@@ -76,7 +78,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 ## Commands
 
 ```bash
-python -m unittest discover -s tests -v        # all tests (about 71; some skip without numpy/tifffile/zarr)
+python -m unittest discover -s tests -v        # all tests (146; map tests skip without their numerical dependencies)
 python -m kit prizes                            # open prizes from the snapshot
 python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr \
     [--crop Y0 Y1 X0 X1 --surface-shape H W] [--inner 64] [--json]
