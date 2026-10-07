@@ -2,6 +2,14 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (morning, later): training our own reader, all three ideas
+
+The user decided (2026-10-07) to pursue all three training ideas in [`plans/2026-10-07-training.md`](plans/2026-10-07-training.md): (1) train on PHerc1447, the scroll whose text was just found, at the First Letters scan protocol; (2) learn from the team's 1 µm ink maps instead of the 2.4 µm ones every public fine-tune used; (3) self-supervised pre-training on the eligible scans themselves. The plan fixes the test (PHerc0841, labels, reverse control) and the bar (Hecate 0.855, d9v2 0.828, Reader v2 0.824, `ink_9um` about 0.74) before any training.
+
+State: nothing trained. Downloaded and checked: d9v2 (sha256 matches TAUIL's) and Reader v2 (matches its card), both load with `weights_only=True`. v8in's `finetune_loo_w062.py` reads plain layer folders and labels, takes a starting checkpoint and has `--smoke-test`, so each idea mostly needs its data staged. A CPU comparison of `ink_9um` and d9v2 on the four crops (and Reader v2 on PHerc0841's) is running here.
+
+Next: (a) the user's v8in PHerc0841 number decides the base model; (b) score Youssef's released PHerc1447 fine-tune on PHerc0841 (no training); (c) stage data and smoke-test here; (d) renting a GPU needs the user's decision on provider and budget.
+
 ## Session 7 October 2026 (morning): where this stands as a contribution
 
 **Nothing has been shared outside this repository yet.** The Challenge pays for work that is released and used, so none of the below counts until it is out. Nothing is posted, commented or submitted without the user's go-ahead.

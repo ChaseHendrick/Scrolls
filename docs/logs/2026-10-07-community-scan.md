@@ -130,3 +130,7 @@ What is still unpublished, as far as these searches reach: v8in scored against l
 - v8in leaves the outer few pixels of the crop unpredicted (tiles must lie fully inside), hence its slightly smaller pixel counts.
 
 Reading (Interpretation): v8in reads ink on w045 (above chance as stored, below it reversed) but well below `ink_9um` (0.74 against 0.91). This test favours `ink_9um`: PHerc0139 is a main `ink_9um` training scroll, while v8in saw four small PHerc0139 segments (about 5,600 of its 508,000 training patches). The fair test is PHerc0841, which neither model saw.
+
+## Reader leaderboard on PHerc0841, and two more released readers (Community reports)
+
+From [Reader v2's card](https://huggingface.co/domenicor046/reader-v2) (Domenico Russo, MIT, 2026-09-27), PHerc0841 AUC against human labels: Hecate 0.855, Reader v2 0.824, released `ink_9um` 0.733, Reader v2 + Hecate averaged 0.866. Against the team's map: Reader v2 0.858, Hecate 0.848, `ink_9um` 0.708. Reader v2 is a drop-in `ink_9um`-format checkpoint (sha256 `654ec5ac…d5d3a6`, verified here) but trained on w045 (its `train_config.json`), so it is not a fair reader on w045. d9v2 (TAUIL, sha256 `50d2ad0e…a9f966`, verified) holds out w045 and all three PHerc0841 segments. Neither card nor TAUIL's benchmark scores v8in. Plan built on these: [`../plans/2026-10-07-training.md`](../plans/2026-10-07-training.md).
