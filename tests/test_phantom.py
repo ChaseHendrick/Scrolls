@@ -57,6 +57,53 @@ class ViewerTest(unittest.TestCase):
         with self.assertRaises(Exception):
             viewer.build_html([("a", a), ("b", b[:10])])
 
+    def test_constant_and_quantized_maps_preserve_auc_ties(self):
+        import json
+        import numpy as np
+        from kit import auc, viewer
+        labels = np.zeros((16, 16), dtype=bool)
+        labels[8:] = True
+        mask = np.ones_like(labels)
+        constant = np.ones(labels.shape)
+        quantized = np.tile(np.array([1, 1, 2, 2] * 4), (16, 1))
+        _, stats = viewer.build_html([("constant", constant), ("quantized", quantized)], labels, mask)
+        for name, array in [("constant", constant), ("quantized", quantized)]:
+            self.assertEqual(stats["auc_on_view"][name], auc.score_array(array, labels, mask)["auc"])
+        self.assertEqual(stats["auc_on_view"]["constant"], 0.5)
+        self.assertIsNone(stats["rank_correlation"]["constant vs quantized"])
+        json.dumps(stats, allow_nan=False)
+
+    def test_hostile_names_cannot_add_script_elements(self):
+        import json
+        import re
+        from html.parser import HTMLParser
+        import numpy as np
+        from kit import viewer
+        hostile = '</script><script>window.reviewMarker=1</script>'
+        page, _ = viewer.build_html([(hostile, np.ones((8, 8))), ("safe", np.arange(64).reshape(8, 8) + 1)])
+        class Parser(HTMLParser):
+            def __init__(self):
+                super().__init__()
+                self.scripts = 0
+            def handle_starttag(self, tag, attrs):
+                if tag == "script":
+                    self.scripts += 1
+        parser = Parser()
+        parser.feed(page)
+        self.assertEqual(parser.scripts, 1)
+        readers = re.search(r"const R=(.*?),O=", page).group(1)
+        self.assertEqual(json.loads(readers)[0], hostile)
+        self.assertIn(r"\u003c/script>", readers)
+
+    def test_stage_keeps_dimensions_when_first_reader_is_hidden(self):
+        import re
+        import numpy as np
+        from kit import viewer
+        page, _ = viewer.build_html([("first", np.ones((8, 12))), ("second", np.arange(96).reshape(8, 12) + 1)])
+        style = re.search(r"#stage\{([^}]+)\}", page).group(1)
+        self.assertIn("width:12px", style)
+        self.assertIn("height:8px", style)
+
     def test_cli_view(self):
         import numpy as np
         from kit import cli

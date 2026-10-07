@@ -25,6 +25,8 @@ Interpretation: on these small phantoms (5 to 10 letter cells each), the one-sam
 
 ## Viewer
 
+Historical output: the viewer figures and PNG below predate the correction to use average ranks for tied values. They are retained as the original run record and must not be used as evidence from the corrected viewer. Constant maps previously acquired artificial rank gradients and could report an AUC of 1 instead of 0.5.
+
 `python3 -m kit view /tmp/phantom-demo/viewer.html surface=... reversed=... sim_q1=... sim_q3=... --labels ink.npy --mask mask.npy --png viewer.png` on phantom seed 7 (256 x 256, 16 layers): HTML 654 KB, one file. AUC on view: surface 0.7754, reversed 0.3284, sim_q1 0.9377, sim_q3 0.9913; rank correlation surface vs reversed -0.8382, sim_q1 vs sim_q3 0.5483; mean disagreement 0.2372. Panels: [`../assets/phantom-viewer-demo.png`](../assets/phantom-viewer-demo.png) (left to right: surface, reversed, sim_q1, sim_q3, disagreement; green: label outline).
 
 ## Commands as logged

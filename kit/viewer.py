@@ -65,7 +65,11 @@ def rank01(np, a, valid):
     if v.size:
         order = np.argsort(v, kind="stable")
         r = np.empty(v.size)
-        r[order] = np.arange(v.size) / max(v.size - 1, 1)
+        sorted_values = v[order]
+        starts = np.r_[0, np.flatnonzero(sorted_values[1:] != sorted_values[:-1]) + 1]
+        ends = np.r_[starts[1:], v.size]
+        mean_ranks = (starts + ends - 1) / (2 * max(v.size - 1, 1))
+        r[order] = np.repeat(mean_ranks, ends - starts)
         out[valid] = r
     return out
 
@@ -95,12 +99,13 @@ def build_layers(maps, labels=None, mask=None, max_side=MAX_SIDE):
         dis = stack.std(0)
         top = max(float(dis[valid].max()) if valid.any() else 0.0, 1e-9)
         layers["disagreement"] = (dis / top * 255).round().astype(np.uint8)
-        stats["disagreement_mean"] = round(float(dis[valid].mean()), 4)
+        stats["disagreement_mean"] = round(float(dis[valid].mean()), 4) if valid.any() else None
         corr = {}
         for i in range(len(ranks)):
             for j in range(i + 1, len(ranks)):
-                c = np.corrcoef(stack[i][valid], stack[j][valid])[0, 1]
-                corr[f"{ranks[i][0]} vs {ranks[j][0]}"] = round(float(c), 4)
+                a, b = stack[i][valid], stack[j][valid]
+                c = None if a.size < 2 or a.std() == 0 or b.std() == 0 else float(np.corrcoef(a, b)[0, 1])
+                corr[f"{ranks[i][0]} vs {ranks[j][0]}"] = None if c is None else round(c, 4)
         stats["rank_correlation"] = corr
     if labels is not None:
         lab = sub(labels).astype(bool)
@@ -126,7 +131,7 @@ def _uri(img):
 
 PAGE = """<!doctype html><html><head><meta charset="utf-8"><title>{title}</title><style>
 body{{font:14px system-ui,sans-serif;margin:16px;background:#111;color:#ddd}}
-#stage{{position:relative;display:inline-block;image-rendering:pixelated}}
+#stage{{position:relative;display:inline-block;image-rendering:pixelated;width:{w}px;height:{h}px}}
 #stage img{{position:absolute;left:0;top:0;width:{w}px;height:{h}px}}
 #stage img.base{{position:relative}} .ctl{{margin:6px 0}} code{{color:#9cf}}
 .warn{{color:#fc6}}</style></head><body>
@@ -155,6 +160,11 @@ st.onmousemove=e=>{{const b=st.getBoundingClientRect(),x=Math.floor(e.clientX-b.
  if(O.includes('disagreement'))t+='disagreement '+(px('o_disagreement',x,y)[0]/255).toFixed(2);
  document.getElementById('read').textContent=t}};show();
 </script></body></html>"""
+
+
+def _script_json(value):
+    """Serialize inline-script data without allowing HTML raw-text termination."""
+    return json.dumps(value).replace("<", "\\u003c")
 
 
 def build_html(maps, labels=None, mask=None, title="Ink map viewer", max_side=MAX_SIDE):
@@ -193,7 +203,7 @@ def build_html(maps, labels=None, mask=None, title="Ink map viewer", max_side=MA
     opt = lambda names: "".join(f'<option value="{html.escape(n)}">{html.escape(n)}</option>' for n in names)
     return PAGE.format(title=html.escape(title), w=w, h=h, step=stats["step"], options=opt(readers),
                        over_opts=opt(over), imgs="".join(imgs), stats=html.escape(json.dumps(stats, indent=1)),
-                       readers_json=json.dumps(readers), over_json=json.dumps(over)), stats
+                       readers_json=_script_json(readers), over_json=_script_json(over)), stats
 
 
 def render_png(maps, labels=None, mask=None, max_side=384):
