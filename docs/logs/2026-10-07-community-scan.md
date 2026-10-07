@@ -98,3 +98,7 @@ Same command and seed 42 checkpoint as for w045, on the team's published 9.366 Â
 | ag405 (`â€¦174252405`) | 0.751 / 0.601 | 0.793 / 0.653 | 46.4 (5.82 mm) / 7.5 |
 
 This reproduces Bullo27's unseen-scroll calibration independently (Community report): AUC 0.74 to 0.81 against the labels, no rows on w00 and ag896 (his row scores at most 15.4), rows on ag405 only (his "ag174", 57.8 with two checkpoints). Compared with w045 (0.872, rows at 79.8), `ink_9um` on a new scroll still locates ink but mostly loses the row structure: the blob problem in numbers. Model output, not a reading; PHerc0841 is not First Letters eligible.
+
+## Is this a contribution yet? (Note, 2026-10-07)
+
+Not yet: everything is in this repository and the session. The Challenge pays for released, used work (prize page: "released or open-sourced early", "actually get used"). What is new here: v8in verified on Apple Silicon against the CPU; a labelled, reverse-controlled ink-model test with seen- and unseen-scroll references; an independent reproduction of Bullo27's PHerc0841 calibration. Ways to share, cheapest first: a Hugging Face discussion post on the v8in model page; the v8in vs `ink_9um` result on PHerc0841; a small villa PR for label-scoring with a reverse control; the Progress Prize write-up at the deadline. Each waits for the user's go-ahead (see [`../HANDOFF.md`](../HANDOFF.md)).

@@ -2,6 +2,31 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (morning): where this stands as a contribution
+
+**Nothing has been shared outside this repository yet.** The Challenge pays for work that is released and used, so none of the below counts until it is out. Nothing is posted, commented or submitted without the user's go-ahead.
+
+User decisions (2026-10-07):
+
+- **Progress Prize:** submit near the 31 Oct deadline, not before. The draft is [`contrib/progress-prize-2026-10-draft.md`](contrib/progress-prize-2026-10-draft.md); keep it updated, do not send it.
+- **villa #1865 draft comment** ([`contrib/villa-1865-m1pro-comment.md`](contrib/villa-1865-m1pro-comment.md)): leave it alone.
+- Keep researching and building in the meantime.
+
+What is new and worth sharing once the user agrees:
+
+1. **v8in on Apple Silicon, checked against the CPU.** On the user's M1 Pro, `scripts/mac-w045.sh` step 5 passed (`kit verify`, reverse as control; MPS map mean 0.2430, same as CPU). MPS about 1.1 to 1.3 s per tile against 25 s on the M1 Pro's CPU. Not seen published elsewhere.
+2. **A labelled, controlled test of ink models** (`kit auc` with a reverse control, `kit rowscore`, one command per segment), with CPU references: w045 (seen scroll) 0.872 / 0.887; PHerc0841 (unseen scroll) 0.720 to 0.751, rows only on ag405. Numbers in [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
+3. **An independent reproduction** of Bullo27's PHerc0841 calibration and his w045 row score.
+
+Ways to contribute, cheapest first (propose each to the user; do none unasked):
+
+- **Post the v8in on MPS result** on the v8in model's Hugging Face discussion page, after the w045 summary arrives.
+- **v8in vs `ink_9um` on PHerc0841** (`SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh`, then ag896 and ag405). A clear v8in win on an unseen scroll is news the community would act on; a loss is useful too.
+- **Upstream the scoring tool:** villa has no simple command that scores an ink map against a segment's labels with a reverse control. A small tested PR there is the most "used by others" piece.
+- **Progress Prize write-up** at the deadline.
+
+Next: the user's `QUICK=1` w045 run (in progress at the time of writing) prints a summary to compare with the CPU reference (crop 0.914 / 0.910). Then the PHerc0841 quick runs. The user must `git pull` first: the Mac checkout predates `SEGMENT=` and resumable reruns.
+
 ## Session 7 October 2026 (late night): first target run, preregistered
 
 The user chose the target set and the readout rule (2026-10-07): v8in on all 81 public automatic meshes of PHerc0813, 0358 and 0826 (rodriguescarson's atlas renders, which include his 5 held-back meshes), with the rule in [`prereg/2026-10-07-v8in-atlas.md`](prereg/2026-10-07-v8in-atlas.md). One variable changes from published reads of these surfaces: the model. `scripts/mac-atlas-v8in.sh` runs it on the Mac after `scripts/mac-w045.sh` passes; tested here end to end on fake meshes built from w045 (PHerc0139), never on target data. No target map has been made in this repository's sessions.
