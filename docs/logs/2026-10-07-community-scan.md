@@ -72,3 +72,14 @@ Measured on the way: v8in costs about 8 s per tile on 4 CPU cores (it upsamples 
 ## v8in's depth order on team-layout renders (Sourced fact)
 
 The v8 patch pack's `segments.json` lists every PHerc0139 training segment (w033v5, w035v8, w041v8, w044v8) with `layer_range` [2, 26] and `reverse_layers: false`: v8in read the team's 28-layer 9 µm renders as stored, layers 2 to 25. `predict.py`'s default (the central 24 of 28) is that same window. The atlas renders have 31 planes with the surface at plane 15; their central 24 (planes 3 to 26) put the surface at the same position in the window (index 12). So on w045 and on the atlas meshes, "as stored" is the direction v8in was trained on, and "reversed" is the control.
+
+## ink_9um on PHerc0139 w045, CPU reference (Sourced fact: run below)
+
+villa `main` at `e0bbb8b`, CPU (4 cores), `python -m vesuvius.ink_detection.inference.infer` on the team's published w045 9.362 µm surface volume (`kit fetch w045`), `hybrid_3d2d-seed42/step-075000.pth` (sha256 `e635558a…2a9cab`), `--overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both`; 10,954 patches per direction, forward 20 min. Scored against w045's labels (`ink-labels/2.399um-volume-20260102150214/20260918`, level 2) inside the supervision mask:
+
+| Window | AUC as stored | AUC reversed | Ink px | Row score as stored / reversed |
+| --- | --- | --- | --- | --- |
+| Whole supervised region | 0.8722 | 0.4425 | 149,192 | 79.8 (4.67 mm, horizontal) / 8.1 |
+| 640 px crop, rows 3840 to 4480, columns 2560 to 3200 | 0.9136 | 0.3704 | 78,047 | (too small) |
+
+Model output on a training scroll's held-out segment, not a reading. It is the CPU reference for `scripts/mac-w045.sh` (the crop row is what `QUICK=1` scores) and the bar v8in is measured against. Bullo27 reports a row score of 84 for this checkpoint on his own w045 render (Community report); ours is 79.8 on the team's render. Scoring a map cut to the crop and the same window on the full grid gave the same AUC on the same 78,047 ink pixels, so `QUICK=1`'s cropping path is exact.
