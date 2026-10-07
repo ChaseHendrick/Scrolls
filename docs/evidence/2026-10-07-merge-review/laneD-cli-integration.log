@@ -1,0 +1,61 @@
+{
+  "kind": "fibre",
+  "model": "logreg",
+  "seed": 0,
+  "train_volume": "/tmp/tmpda5lzqse/v.zarr",
+  "crop": [
+    16,
+    48,
+    8,
+    56
+  ],
+  "train_axes": [
+    -1.323130488395691,
+    1.1846274137496948,
+    0.3065887689590454,
+    -0.6546421647071838,
+    1.501670002937317
+  ],
+  "bands": 5,
+  "rho": [
+    2.0,
+    4.0,
+    8.0
+  ],
+  "features": 59,
+  "train_loss": 0.6189533702278,
+  "train_pixels": 512
+}
+{
+  "map": "/tmp/tmpda5lzqse/forward.tif",
+  "shape": [
+    32,
+    48
+  ],
+  "axes": [
+    -1.323130488395691,
+    1.1846274137496948,
+    0.3065887689590454,
+    -0.6546421647071838,
+    1.501670002937317
+  ],
+  "kind": "fibre",
+  "reverse": false
+}
+{
+  "map": "/tmp/tmpda5lzqse/reverse.tif",
+  "shape": [
+    32,
+    48
+  ],
+  "axes": [
+    1.501670002937317,
+    -0.6546421647071838,
+    0.3065887689590454,
+    1.1846274137496948,
+    -1.323130488395691
+  ],
+  "kind": "fibre",
+  "reverse": true
+}
+PASS: actual CLI training, model serialization, cropped prediction and reverse control

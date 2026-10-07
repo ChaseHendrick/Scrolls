@@ -1,0 +1,64 @@
+test_control_keeps_classifier_fixed_and_only_permutes_test_depth (test_lane_f_regression.NumericTests.test_control_keeps_classifier_fixed_and_only_permutes_test_depth) ... ok
+test_equal_predictions_have_equal_ranks (test_lane_f_regression.NumericTests.test_equal_predictions_have_equal_ranks) ... ok
+test_rank_does_not_depend_on_raster_order (test_lane_f_regression.NumericTests.test_rank_does_not_depend_on_raster_order) ... ok
+test_failed_inference_stops_before_other_runs (test_lane_f_regression.WrapperTests.test_failed_inference_stops_before_other_runs) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.014s
+
+OK
+test_docs_json_parses (test_repo.RepoTest.test_docs_json_parses) ... ok
+test_documented_kit_commands_exist (test_repo.RepoTest.test_documented_kit_commands_exist) ... ok
+test_mac_scripts_are_bash_32 (test_repo.RepoTest.test_mac_scripts_are_bash_32) ... ok
+test_no_long_dashes (test_repo.RepoTest.test_no_long_dashes) ... ok
+test_shell_scripts_parse (test_repo.RepoTest.test_shell_scripts_parse) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.047s
+
+OK
+usage: python -m kit [-h]
+                     {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,run}
+                     ...
+
+Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc
+,hpscore,overlap,collate,surfacefix,ensemble,gate,layers,shuffle,provenance,co
+mpute,run}.
+
+positional arguments:
+  {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,run}
+    prizes              open prizes from the dated snapshot
+    doctor              check GPU, disk, tools and villa paths
+    plan                print a First Letters run plan for an eligible scroll
+    cost                estimate run cost in USD
+    fetch               mirror a public bucket prefix over HTTPS (no AWS CLI
+                        needed)
+    verify              compare two ink maps (e.g. CPU vs MPS) with a control
+    rowscore            text-row periodicity triage score for ink maps
+                        (Bullo27's method)
+    auc                 pixel AUC of an ink map against a segment's published
+                        labels
+    hpscore             letter-scale score: 48 um high-passed correlation with
+                        the labels (Scheirer)
+    overlap             do two segments trace the same papyrus? mesh gaps and
+                        label agreement
+    collate             two traces of one sheet as two copies: do their ink
+                        maps agree, against a control?
+    surfacefix          experimental region flags and bounded, controlled
+                        surface corrections
+    provenance          who ran what, when, from which inputs: a record and
+                        one digest
+    compute             machine time per run, from provenance records
+                        (GENChase-style ledger)
+    ensemble            average several ink maps of one surface (mean, or rank
+                        mean across models)
+    gate                Gate A: rank readers on PHerc0841's three crops by the
+                        roadmap's rule
+    layers              export a surface-volume zarr to 00.tif, 01.tif, ...
+                        (v8in's input)
+    shuffle             depth-shuffle control: copy a surface volume with its
+                        layers in a fixed random order
+    run                 local experiment ledger (experiments/, gitignored)
+
+options:
+  -h, --help            show this help message and exit

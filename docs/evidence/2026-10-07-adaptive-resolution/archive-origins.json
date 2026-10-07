@@ -1,0 +1,125 @@
+{
+  "scope": "Post-run byte-preserving evidence archive; raw geometry inputs excluded",
+  "files": [
+    {
+      "file": "audit.py",
+      "source": "/workspace/scrolls-env/adaptive-resolution/audit.py",
+      "sha256": "4d6f25a9a200991ced2a1ad7772457ba7b42e774a8f660c54f50fd4ef760493b",
+      "bytes": 9732
+    },
+    {
+      "file": "geometry_snapshot.py",
+      "source": "/workspace/scrolls-env/adaptive-resolution/geometry_snapshot.py",
+      "sha256": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898",
+      "bytes": 10265
+    },
+    {
+      "file": "rule.json",
+      "source": "/workspace/scrolls-env/adaptive-resolution/rule.json",
+      "sha256": "ad7c395cbe658679fe84481fd5d190fe45ca622ac6817977b73dc897614e0cab",
+      "bytes": 3496
+    },
+    {
+      "file": "preregistration.sha256",
+      "source": "/workspace/scrolls-env/adaptive-resolution/preregistration.sha256",
+      "sha256": "631e650d87393df26af5dc0cf450a672feb9f9ca042357cd940966df3f752766",
+      "bytes": 76
+    },
+    {
+      "file": "result.json",
+      "source": "/workspace/scrolls-env/adaptive-resolution/result.json",
+      "sha256": "5daaf8828a8adb31801e099c4a9052e576c37335daad31198778a485e04b68ea",
+      "bytes": 241698
+    },
+    {
+      "file": "report.md",
+      "source": "/workspace/scrolls-env/adaptive-resolution/report.md",
+      "sha256": "224e37ebb49d1196be32d65d9242826efc4d4f87b85de60b45498f36f43f8161",
+      "bytes": 7570
+    },
+    {
+      "file": "run.log",
+      "source": "/workspace/scrolls-env/adaptive-resolution/run.log",
+      "sha256": "9a74074ad608f954bfb710af6482363c85dbe45c03f6d4697bddcdbac5b10112",
+      "bytes": 1184
+    },
+    {
+      "file": "verification.json",
+      "source": "/workspace/scrolls-env/adaptive-resolution/verification.json",
+      "sha256": "89a52feea160e4bf4a0eed61a4a23140faa8c443f49b7f4c87b5b4579edb11e7",
+      "bytes": 205
+    },
+    {
+      "file": "ag405-download-receipt.json",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-download-receipt.json",
+      "sha256": "3cbe0026ea472f7d440ba52b7e8a0a628f19fcc3b5f030717dc6a56852ec4a81",
+      "bytes": 1330
+    },
+    {
+      "file": "ag405-primary/audit.py",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/audit.py",
+      "sha256": "656f6f66c05287f16e965a710cbf42f11f87dda949f0102e70451b2c6226a5de",
+      "bytes": 9741
+    },
+    {
+      "file": "ag405-primary/geometry_snapshot.py",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/geometry_snapshot.py",
+      "sha256": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898",
+      "bytes": 10265
+    },
+    {
+      "file": "ag405-primary/rule.json",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/rule.json",
+      "sha256": "e149b3f78af6620aa07041d4c2530e1ed9ffd064de2ff59dc60ef7b4baf4bd9a",
+      "bytes": 3104
+    },
+    {
+      "file": "ag405-primary/preregistration.sha256",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/preregistration.sha256",
+      "sha256": "c0146a0c1682d90f02167dbf3060815295ec9744d298ac887fe1a01875f89b28",
+      "bytes": 76
+    },
+    {
+      "file": "ag405-primary/result.json",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/result.json",
+      "sha256": "97b0414de4f927d5f60e4f41a497708325dc900de7072f70680dfaeba28be6f3",
+      "bytes": 121413
+    },
+    {
+      "file": "ag405-primary/run.log",
+      "source": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/run.log",
+      "sha256": "b1465243be4c3f40b910368d474fd93b90c7a939a964d42162b2bb7b6741e3a2",
+      "bytes": 587
+    },
+    {
+      "file": "source-SHA256SUMS",
+      "source": "/workspace/scrolls-env/adaptive-resolution/SHA256SUMS",
+      "sha256": "56f69e0a413f4123684f08f4e9b2b7140b397d4084b142b81cf6c2e690db050b",
+      "bytes": 1640
+    },
+    {
+      "file": "independent-review/adaptive-independent-review.md",
+      "source": "/workspace/scrolls-env/pr-merge-review/adaptive-independent-review.md",
+      "sha256": "a0fa631534d6f659eb111075b13473fe32035782a6a12e35a78fba3b73264a1c",
+      "bytes": 5084
+    },
+    {
+      "file": "independent-review/adaptive-independent-review.json",
+      "source": "/workspace/scrolls-env/pr-merge-review/adaptive-independent-review.json",
+      "sha256": "be8d685c3bb8afe946512bb4a9b534233fe858118d8798ebcb697472a4ca78fe",
+      "bytes": 8307
+    },
+    {
+      "file": "independent-review/adaptive_independent_audit.py",
+      "source": "/workspace/scrolls-env/pr-merge-review/adaptive_independent_audit.py",
+      "sha256": "571aced7d1b5c98b017dd14e12a3b03f8bc8f39c6132206700f889a9f98328b3",
+      "bytes": 7809
+    },
+    {
+      "file": "independent-review/adaptive-independent-review-sha256.json",
+      "source": "/workspace/scrolls-env/pr-merge-review/adaptive-independent-review-sha256.json",
+      "sha256": "de4c47c06b8672d443a322f34719d310118f1f8911721cb70d1eb713a3a32b67",
+      "bytes": 316
+    }
+  ]
+}

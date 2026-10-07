@@ -1,0 +1,15 @@
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00_to_w045_vs_ink9um.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00_to_w045_vs_raw.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00train_to_w00_vs_ink9um.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w00train_to_w00_vs_raw.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w045_to_w00_vs_ink9um.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_fibre_w045_to_w00_vs_raw.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_raw_w00_to_w045.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_raw_w00train_to_w00.json
+scripts/experiments/2026-10-07-grok-laneD/results/._auc_raw_w045_to_w00.json
+scripts/experiments/2026-10-07-grok-laneD/results/._model_fibre_w00.npz.json
+scripts/experiments/2026-10-07-grok-laneD/results/._model_fibre_w00train.npz.json
+scripts/experiments/2026-10-07-grok-laneD/results/._model_fibre_w045.npz.json
+scripts/experiments/2026-10-07-grok-laneD/results/._model_raw_w00.npz.json
+scripts/experiments/2026-10-07-grok-laneD/results/._model_raw_w00train.npz.json
+scripts/experiments/2026-10-07-grok-laneD/results/._model_raw_w045.npz.json

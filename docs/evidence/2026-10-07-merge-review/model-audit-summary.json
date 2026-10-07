@@ -1,0 +1,28 @@
+{
+  "scope": "Merge readiness repairs only; no new data/model runs or changes to historical scores.",
+  "PR15": {
+    "head": "18ea482a4326c4f585f5e4adea796bfb76b2f986",
+    "exported_tree": "/workspace/scrolls-env/pr-merge-review/laneG-fixed",
+    "tests": 115,
+    "new_regression_tests": 4,
+    "passed": true,
+    "notes": [
+      "Historical JSON unchanged; first-peak protocol correction applies to future runs only.",
+      "Sign-flipped exploratory nulls now use their flipped minima.",
+      "w045 is calibration, w00 transferred sign is evaluation."
+    ]
+  },
+  "PR16": {
+    "head": "4d8dfee2e3f5776986beb5915f4d6ac5a5b917db",
+    "exported_tree": "/workspace/scrolls-env/pr-merge-review/laneF-fixed",
+    "tests": 115,
+    "new_regression_tests": 4,
+    "passed": true,
+    "notes": [
+      "Historical JSON/numeric logs unchanged; ten AppleDouble metadata files removed.",
+      "Historic ordinal-rank ensembles and refitted-permutation diagnostic are qualified, not silently rescored.",
+      "Average-tie ranks and fixed classifier depth controls apply prospectively.",
+      "E1 self-control same AUC but max map difference1; causal null conclusions narrowed."
+    ]
+  }
+}

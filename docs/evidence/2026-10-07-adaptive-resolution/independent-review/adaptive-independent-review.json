@@ -1,0 +1,262 @@
+{
+  "scope": "Independent read-only audit; no mesh export or inference",
+  "existing_manifest_sha256": "56f69e0a413f4123684f08f4e9b2b7140b397d4084b142b81cf6c2e690db050b",
+  "manifest_files_checked": [
+    {
+      "file": "ag405-download-receipt.json",
+      "sha256": "3cbe0026ea472f7d440ba52b7e8a0a628f19fcc3b5f030717dc6a56852ec4a81"
+    },
+    {
+      "file": "ag405-primary/audit.py",
+      "sha256": "656f6f66c05287f16e965a710cbf42f11f87dda949f0102e70451b2c6226a5de"
+    },
+    {
+      "file": "ag405-primary/geometry_snapshot.py",
+      "sha256": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898"
+    },
+    {
+      "file": "ag405-primary/preregistration.sha256",
+      "sha256": "c0146a0c1682d90f02167dbf3060815295ec9744d298ac887fe1a01875f89b28"
+    },
+    {
+      "file": "ag405-primary/result.json",
+      "sha256": "97b0414de4f927d5f60e4f41a497708325dc900de7072f70680dfaeba28be6f3"
+    },
+    {
+      "file": "ag405-primary/rule.json",
+      "sha256": "e149b3f78af6620aa07041d4c2530e1ed9ffd064de2ff59dc60ef7b4baf4bd9a"
+    },
+    {
+      "file": "ag405-primary/run.log",
+      "sha256": "b1465243be4c3f40b910368d474fd93b90c7a939a964d42162b2bb7b6741e3a2"
+    },
+    {
+      "file": "ag405.tifxyz/meta.json",
+      "sha256": "b597fd8d7b08acc38c8ef1bb78d8596fa4b2797610e0923b499932d23d6c8bc0"
+    },
+    {
+      "file": "ag405.tifxyz/x.tif",
+      "sha256": "912895f58e1572f2b3ee43704e71f1b2e055af7b70f2d904168182a7e7b68e97"
+    },
+    {
+      "file": "ag405.tifxyz/y.tif",
+      "sha256": "49db4ef0e1fd68b107f12b940840afddbeb367fde1bffdbce99488fd84d86df0"
+    },
+    {
+      "file": "ag405.tifxyz/z.tif",
+      "sha256": "5fcf84a80ba590b3ab218da5aeb7780e4da8763cf45f4c9f7dee73bbfc6a1cb2"
+    },
+    {
+      "file": "audit.py",
+      "sha256": "4d6f25a9a200991ced2a1ad7772457ba7b42e774a8f660c54f50fd4ef760493b"
+    },
+    {
+      "file": "geometry_snapshot.py",
+      "sha256": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898"
+    },
+    {
+      "file": "preregistration.sha256",
+      "sha256": "631e650d87393df26af5dc0cf450a672feb9f9ca042357cd940966df3f752766"
+    },
+    {
+      "file": "report.md",
+      "sha256": "224e37ebb49d1196be32d65d9242826efc4d4f87b85de60b45498f36f43f8161"
+    },
+    {
+      "file": "result.json",
+      "sha256": "5daaf8828a8adb31801e099c4a9052e576c37335daad31198778a485e04b68ea"
+    },
+    {
+      "file": "rule.json",
+      "sha256": "ad7c395cbe658679fe84481fd5d190fe45ca622ac6817977b73dc897614e0cab"
+    },
+    {
+      "file": "run.log",
+      "sha256": "9a74074ad608f954bfb710af6482363c85dbe45c03f6d4697bddcdbac5b10112"
+    },
+    {
+      "file": "verification.json",
+      "sha256": "89a52feea160e4bf4a0eed61a4a23140faa8c443f49b7f4c87b5b4579edb11e7"
+    }
+  ],
+  "frozen_input_hashes_checked": [
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/audit.py",
+      "sha256": "4d6f25a9a200991ced2a1ad7772457ba7b42e774a8f660c54f50fd4ef760493b"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/geometry_snapshot.py",
+      "sha256": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/w00.tifxyz/x.tif",
+      "sha256": "e9ecdbe1481d9d50303cefe51d83e65dfa129f32e9921a4d28adc5b689326b9e"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/w00.tifxyz/y.tif",
+      "sha256": "ba2567e70adfa7a12b72448aa3b39f176a4156896085b429938e491507eff97f"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/w00.tifxyz/z.tif",
+      "sha256": "14a84cadd3a2216b0a32b3d3cc3852877f17a73c3564041779b95d5496c50762"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/w00.tifxyz/meta.json",
+      "sha256": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/x.tif",
+      "sha256": "6da341cd503cc3ceaf96f6f559d7e3c7bc2ef23ddafce6fd60551fb9d070b942"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/y.tif",
+      "sha256": "44006942ed2c9529369a861c34ce2343be62d2743329ccee702a1b6db4e79d8b"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/z.tif",
+      "sha256": "35bcd9970826808800fefe0a62db0e49f0fa4a6f04a1272ca74ef3eae845dfee"
+    },
+    {
+      "file": "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/meta.json",
+      "sha256": "30d5863f2dac76c52ea32141f69dd4303e92324dd3de3d86c7588d9612e44e68"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/audit.py",
+      "sha256": "656f6f66c05287f16e965a710cbf42f11f87dda949f0102e70451b2c6226a5de"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/geometry_snapshot.py",
+      "sha256": "2833d81d0cd342ad748dd0adca20dc90c7d4227ca17574f69c6d17ee090fc898"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/x.tif",
+      "sha256": "912895f58e1572f2b3ee43704e71f1b2e055af7b70f2d904168182a7e7b68e97"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/y.tif",
+      "sha256": "49db4ef0e1fd68b107f12b940840afddbeb367fde1bffdbce99488fd84d86df0"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/z.tif",
+      "sha256": "5fcf84a80ba590b3ab218da5aeb7780e4da8763cf45f4c9f7dee73bbfc6a1cb2"
+    },
+    {
+      "file": "/workspace/scrolls-env/adaptive-resolution/ag405-primary/ag405.tifxyz/meta.json",
+      "sha256": "b597fd8d7b08acc38c8ef1bb78d8596fa4b2797610e0923b499932d23d6c8bc0"
+    }
+  ],
+  "interpolation_random_patches": 300,
+  "interpolation_random_uv_per_patch": 150,
+  "maximum_synthetic_sample_minus_bound_voxels": -0.3526586374129934,
+  "frozen_controls": {
+    "plane": [
+      true,
+      true,
+      0.0
+    ],
+    "translated_plane": [
+      true,
+      true,
+      0.0
+    ],
+    "nonplanar_bilinear": [
+      true,
+      true,
+      0.0
+    ],
+    "saddle": [
+      true,
+      true,
+      0.0
+    ],
+    "saddle_projection_rejected": true,
+    "bowed_center": [
+      true,
+      true,
+      93.66
+    ],
+    "hole": [
+      false,
+      true,
+      1672.3752937507777
+    ],
+    "passed": true
+  },
+  "traces": [
+    {
+      "trace": "w00",
+      "native_regular_quads": 36237,
+      "blocks": 8897,
+      "selected": 6304,
+      "primitive_reduction": 0.5218975080718603,
+      "query_summaries": {
+        "adaptive": {
+          "retained": 116,
+          "native": 120
+        },
+        "uniform2": {
+          "retained": 104,
+          "native": 120
+        },
+        "count_matched_random": {
+          "retained": 110,
+          "native": 120
+        }
+      },
+      "all_120_saved_queries_exactly_replayed": true,
+      "fresh_random_uv_patch_checks": 40,
+      "maximum_sample_minus_bound_um": -0.09998830717844065
+    },
+    {
+      "trace": "ag896",
+      "native_regular_quads": 36381,
+      "blocks": 8910,
+      "selected": 6261,
+      "primitive_reduction": 0.5162859734476787,
+      "query_summaries": {
+        "adaptive": {
+          "retained": 112,
+          "native": 120
+        },
+        "uniform2": {
+          "retained": 104,
+          "native": 120
+        },
+        "count_matched_random": {
+          "retained": 108,
+          "native": 120
+        }
+      },
+      "all_120_saved_queries_exactly_replayed": true,
+      "fresh_random_uv_patch_checks": 40,
+      "maximum_sample_minus_bound_um": -0.03683166052004605
+    },
+    {
+      "trace": "ag405",
+      "native_regular_quads": 34236,
+      "blocks": 8375,
+      "selected": 6167,
+      "primitive_reduction": 0.5403960743077463,
+      "query_summaries": {
+        "adaptive": {
+          "retained": 116,
+          "native": 120
+        },
+        "uniform2": {
+          "retained": 106,
+          "native": 120
+        },
+        "count_matched_random": {
+          "retained": 111,
+          "native": 120
+        }
+      },
+      "all_120_saved_queries_exactly_replayed": true,
+      "fresh_random_uv_patch_checks": 40,
+      "maximum_sample_minus_bound_um": -0.06048144334877392
+    }
+  ],
+  "defects": [],
+  "timing_seconds": 12.966485511000087,
+  "script_sha256": "571aced7d1b5c98b017dd14e12a3b03f8bc8f39c6132206700f889a9f98328b3"
+}

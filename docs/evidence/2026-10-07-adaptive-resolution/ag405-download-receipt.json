@@ -1,0 +1,25 @@
+{
+  "total_bytes": 553406,
+  "files": [
+    {
+      "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260221022814-auto_grown_20260220174252405/mesh/20260221022814-on-20250821151531-9.366um.tifxyz/meta.json",
+      "bytes": 284,
+      "sha256": "b597fd8d7b08acc38c8ef1bb78d8596fa4b2797610e0923b499932d23d6c8bc0"
+    },
+    {
+      "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260221022814-auto_grown_20260220174252405/mesh/20260221022814-on-20250821151531-9.366um.tifxyz/x.tif",
+      "bytes": 184374,
+      "sha256": "912895f58e1572f2b3ee43704e71f1b2e055af7b70f2d904168182a7e7b68e97"
+    },
+    {
+      "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260221022814-auto_grown_20260220174252405/mesh/20260221022814-on-20250821151531-9.366um.tifxyz/y.tif",
+      "bytes": 184374,
+      "sha256": "49db4ef0e1fd68b107f12b940840afddbeb367fde1bffdbce99488fd84d86df0"
+    },
+    {
+      "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260221022814-auto_grown_20260220174252405/mesh/20260221022814-on-20250821151531-9.366um.tifxyz/z.tif",
+      "bytes": 184374,
+      "sha256": "5fcf84a80ba590b3ab218da5aeb7780e4da8763cf45f4c9f7dee73bbfc6a1cb2"
+    }
+  ]
+}

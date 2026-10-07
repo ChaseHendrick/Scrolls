@@ -1,0 +1,51 @@
+{
+  "laneG": {
+    "baseline_head": "18ea482a4326c4f585f5e4adea796bfb76b2f986",
+    "modified": [
+      "docs/logs/2026-10-07-grok-laneG.md",
+      "scripts/experiments/2026-10-07-laneG/run.sh",
+      "scripts/experiments/2026-10-07-laneG/signals.py"
+    ],
+    "added": [
+      "tests/test_lane_g_regression.py"
+    ],
+    "deleted": [],
+    "historical_results": [
+      {
+        "path": "scripts/experiments/2026-10-07-laneG/results.json",
+        "byte_equal": true,
+        "sha256": "6999c6357ff8b3e46cf06b5f9a72461a5793be90607772921d39d49d95455bd6"
+      }
+    ]
+  },
+  "laneF": {
+    "baseline_head": "4d8dfee2e3f5776986beb5915f4d6ac5a5b917db",
+    "modified": [
+      "docs/logs/2026-10-07-grok-laneF.md",
+      "scripts/experiments/2026-10-07-grok-laneF/e1_infer.sh",
+      "scripts/experiments/2026-10-07-grok-laneF/e234.py"
+    ],
+    "added": [
+      "tests/test_lane_f_regression.py"
+    ],
+    "deleted": [
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_infer.out",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_prep.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_w00_matched_perlayer_s42.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_w00_matched_perlayer_s43.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_w00_matched_self_s42.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_w00_matched_self_s43.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_w00_matched_w045_s42.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e1_w00_matched_w045_s43.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._e234.log",
+      "scripts/experiments/2026-10-07-grok-laneF/logs/._results.json"
+    ],
+    "historical_results": [
+      {
+        "path": "scripts/experiments/2026-10-07-grok-laneF/results.json",
+        "byte_equal": true,
+        "sha256": "8fa294798056b6f28db1a5c1d6173ff3387149b5564fbda4e24da70b13621081"
+      }
+    ]
+  }
+}

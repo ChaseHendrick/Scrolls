@@ -4698,5 +4698,247 @@
     "limits": "Source native20vox grid;40/80vox resampling stress, notParis4spacing5/10 orflattenCPU reproduction. Samplecoverage geometric only; mapsnotprovided."
    }
   }
- ]
+ ],
+ "adaptive_geometry_checks": {
+  "date": "2026-10-07",
+  "source": "docs/logs/2026-10-07-adaptive-resolution.md",
+  "original_primary": "ag896",
+  "original_primary_passed": false,
+  "interpretation": "Promising local geometric discrimination; failed original primary retained. No exported mesh, global topology, speedup or ink accuracy claim.",
+  "experiments": [
+   {
+    "experiment": "original",
+    "rule_sha256": "ad7c395cbe658679fe84481fd5d190fe45ca622ac6817977b73dc897614e0cab",
+    "evidence": "docs/evidence/2026-10-07-adaptive-resolution/result.json",
+    "evidence_sha256": "5daaf8828a8adb31801e099c4a9052e576c37335daad31198778a485e04b68ea",
+    "elapsed_seconds": 9.273897722000015,
+    "peak_rss_bytes": 74723328,
+    "traces": [
+     {
+      "trace": "w00",
+      "native_regular_quads": 36237,
+      "selected_blocks": 6304,
+      "hypothetical_primitive_reduction": 0.5218975080718603,
+      "query_summaries": {
+       "adaptive": {
+        "native_eligible": 120,
+        "retained": 116,
+        "retention": 0.9666666666666667,
+        "total_eligible": 116,
+        "ambiguous": 0,
+        "unresolved": 0
+       },
+       "uniform2": {
+        "native_eligible": 120,
+        "retained": 104,
+        "retention": 0.8666666666666667,
+        "total_eligible": 104,
+        "ambiguous": 0,
+        "unresolved": 0
+       },
+       "count_matched_random": {
+        "native_eligible": 120,
+        "retained": 110,
+        "retention": 0.9166666666666666,
+        "total_eligible": 110,
+        "ambiguous": 0,
+        "unresolved": 0
+       }
+      },
+      "dense_all_pass": true,
+      "primary_hypothesis_passed": true
+     },
+     {
+      "trace": "ag896",
+      "native_regular_quads": 36381,
+      "selected_blocks": 6261,
+      "hypothetical_primitive_reduction": 0.5162859734476787,
+      "query_summaries": {
+       "adaptive": {
+        "native_eligible": 120,
+        "retained": 112,
+        "retention": 0.9333333333333333,
+        "total_eligible": 112,
+        "ambiguous": 0,
+        "unresolved": 0
+       },
+       "uniform2": {
+        "native_eligible": 120,
+        "retained": 104,
+        "retention": 0.8666666666666667,
+        "total_eligible": 104,
+        "ambiguous": 0,
+        "unresolved": 0
+       },
+       "count_matched_random": {
+        "native_eligible": 120,
+        "retained": 108,
+        "retention": 0.9,
+        "total_eligible": 108,
+        "ambiguous": 0,
+        "unresolved": 0
+       }
+      },
+      "dense_all_pass": true,
+      "primary_hypothesis_passed": false
+     }
+    ]
+   },
+   {
+    "experiment": "separately_frozen_ag405_followup",
+    "rule_sha256": "e149b3f78af6620aa07041d4c2530e1ed9ffd064de2ff59dc60ef7b4baf4bd9a",
+    "evidence": "docs/evidence/2026-10-07-adaptive-resolution/ag405-primary/result.json",
+    "evidence_sha256": "97b0414de4f927d5f60e4f41a497708325dc900de7072f70680dfaeba28be6f3",
+    "elapsed_seconds": 4.339847684999995,
+    "peak_rss_bytes": 66490368,
+    "traces": [
+     {
+      "trace": "ag405",
+      "native_regular_quads": 34236,
+      "selected_blocks": 6167,
+      "hypothetical_primitive_reduction": 0.5403960743077463,
+      "query_summaries": {
+       "adaptive": {
+        "native_eligible": 120,
+        "retained": 116,
+        "retention": 0.9666666666666667,
+        "total_eligible": 116,
+        "ambiguous": 0,
+        "unresolved": 0
+       },
+       "uniform2": {
+        "native_eligible": 120,
+        "retained": 106,
+        "retention": 0.8833333333333333,
+        "total_eligible": 106,
+        "ambiguous": 0,
+        "unresolved": 0
+       },
+       "count_matched_random": {
+        "native_eligible": 120,
+        "retained": 111,
+        "retention": 0.925,
+        "total_eligible": 111,
+        "ambiguous": 0,
+        "unresolved": 0
+       }
+      },
+      "dense_all_pass": true,
+      "primary_hypothesis_passed": true
+     }
+    ]
+   }
+  ],
+  "independent_audit": "docs/evidence/2026-10-07-adaptive-resolution/independent-review/adaptive-independent-review.md",
+  "margin_followup": {
+   "primary": "ag896",
+   "source": "docs/evidence/2026-10-07-adaptive-margin/result.json",
+   "source_sha256": "42a1f0e6c43d2a6a9667cf830ce5c9c2a964f900513994b8f47ba90606cb58e0",
+   "rule_sha256": "563513c0b47acac2698c1d128813ea30b55847c5f7e6ef2e78d7326f504a544d",
+   "elapsed_seconds": 14.671653177000053,
+   "peak_rss_bytes": 72364032,
+   "traces": [
+    {
+     "trace": "ag896",
+     "native_regular_quads": 36381,
+     "selected_blocks": 1887,
+     "hypothetical_primitive_reduction": 0.155603199472252,
+     "query_summaries": {
+      "adaptive": {
+       "native_eligible": 120,
+       "retained": 120,
+       "retention": 1.0,
+       "total_eligible": 120,
+       "ambiguous": 0,
+       "unresolved": 0
+      },
+      "uniform2": {
+       "native_eligible": 120,
+       "retained": 103,
+       "retention": 0.8583333333333333,
+       "total_eligible": 103,
+       "ambiguous": 0,
+       "unresolved": 0
+      },
+      "count_matched_random": {
+       "native_eligible": 120,
+       "retained": 117,
+       "retention": 0.975,
+       "total_eligible": 117,
+       "ambiguous": 0,
+       "unresolved": 0
+      }
+     },
+     "primary_hypothesis_passed": false
+    },
+    {
+     "trace": "w00",
+     "native_regular_quads": 36237,
+     "selected_blocks": 1922,
+     "hypothetical_primitive_reduction": 0.15911913237850817,
+     "query_summaries": {
+      "adaptive": {
+       "native_eligible": 118,
+       "retained": 118,
+       "retention": 1.0,
+       "total_eligible": 118,
+       "ambiguous": 0,
+       "unresolved": 2
+      },
+      "uniform2": {
+       "native_eligible": 118,
+       "retained": 95,
+       "retention": 0.8050847457627118,
+       "total_eligible": 97,
+       "ambiguous": 0,
+       "unresolved": 0
+      },
+      "count_matched_random": {
+       "native_eligible": 118,
+       "retained": 114,
+       "retention": 0.9661016949152542,
+       "total_eligible": 116,
+       "ambiguous": 0,
+       "unresolved": 0
+      }
+     },
+     "primary_hypothesis_passed": false
+    },
+    {
+     "trace": "ag405",
+     "native_regular_quads": 34236,
+     "selected_blocks": 2112,
+     "hypothetical_primitive_reduction": 0.18506834910620398,
+     "query_summaries": {
+      "adaptive": {
+       "native_eligible": 120,
+       "retained": 120,
+       "retention": 1.0,
+       "total_eligible": 120,
+       "ambiguous": 0,
+       "unresolved": 0
+      },
+      "uniform2": {
+       "native_eligible": 120,
+       "retained": 105,
+       "retention": 0.875,
+       "total_eligible": 105,
+       "ambiguous": 0,
+       "unresolved": 0
+      },
+      "count_matched_random": {
+       "native_eligible": 120,
+       "retained": 117,
+       "retention": 0.975,
+       "total_eligible": 117,
+       "ambiguous": 0,
+       "unresolved": 0
+      }
+     },
+     "primary_hypothesis_passed": false
+    }
+   ],
+   "interpretation": "All combined endpoints failed because reduction was below20percent. All baseline-eligible queries retained on a fresh fixed query set; two native w00 abstentions preserved. Distance bound proves existence, not uniqueness."
+  }
+ }
 }

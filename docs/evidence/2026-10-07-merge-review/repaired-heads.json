@@ -1,0 +1,82 @@
+{
+  "11": {
+    "branch": "grok/laneA-pr-synthesis",
+    "baseline_head": "84a9ef20f0e0a02f87b7b4c76bc8372a36181e45",
+    "reviewed_head": "c6628f974691b126872f5b14b20f061874e56970",
+    "files": [
+      "docs/logs/2026-10-07-grok-laneA.md",
+      "scripts/experiments/2026-10-07-grok-laneA/synth.py",
+      "tests/test_grok_synthesis.py"
+    ],
+    "tests": "pr-11-post-integration-tests.log"
+  },
+  "12": {
+    "branch": "grok/laneB-label-free",
+    "baseline_head": "487540845054573a650e3cb1d1c7b7c6c28da8b5",
+    "reviewed_head": "cf05a2188c1dbeda9f559af12b5e1fed8c3cf97d",
+    "files": [
+      "scripts/experiments/2026-10-07-grok-laneB/checks.py",
+      "scripts/experiments/2026-10-07-grok-laneB/laneb.py",
+      "tests/test_laneb.py",
+      "docs/logs/2026-10-07-grok-laneB.md"
+    ],
+    "tests": "pr-12-post-integration-tests.log"
+  },
+  "15": {
+    "branch": "grok/laneG-new-signals",
+    "baseline_head": "18ea482a4326c4f585f5e4adea796bfb76b2f986",
+    "reviewed_head": "3c0a9a60a43cd369a6eac1e799d4bd6f685ac391",
+    "files": [
+      "docs/logs/2026-10-07-grok-laneG.md",
+      "scripts/experiments/2026-10-07-laneG/run.sh",
+      "scripts/experiments/2026-10-07-laneG/signals.py",
+      "tests/test_lane_g_regression.py"
+    ],
+    "tests": "pr-15-post-integration-tests.log"
+  },
+  "16": {
+    "branch": "grok/laneF-bold",
+    "baseline_head": "4d8dfee2e3f5776986beb5915f4d6ac5a5b917db",
+    "reviewed_head": "bf48017a8ca255da443f451ab9b3294a0c2f8b91",
+    "files": [
+      "docs/logs/2026-10-07-grok-laneF.md",
+      "scripts/experiments/2026-10-07-grok-laneF/e1_infer.sh",
+      "scripts/experiments/2026-10-07-grok-laneF/e234.py",
+      "tests/test_lane_f_regression.py"
+    ],
+    "tests": "pr-16-post-integration-tests.log"
+  },
+  "13": {
+    "branch": "grok/laneE-new-tools",
+    "baseline_head": "afe8d3c0d83030ac2fb96ff05a766b3ee8ff5f7f",
+    "reviewed_head": "bb29793760f6bca8dff0635598a4725f6a3bd201",
+    "files": [
+      "kit/viewer.py",
+      "tests/test_phantom.py",
+      "docs/logs/2026-10-07-phantom-demo.md"
+    ],
+    "tests": "pr-13-post-integration-tests.log"
+  },
+  "14": {
+    "branch": "grok/laneD-new-method",
+    "baseline_head": "3c09d39701d0e1bbc467016c92781fcc39c1c36e",
+    "reviewed_head": "71c7192422e82aa424af0ef5bcbf04ef40922f9d",
+    "files": [],
+    "tests": "pr-14-post-integration-tests.log",
+    "combined_tests": "combined-tests.log",
+    "final_dispatch_check": "pr14-99c71f3/dispatch-check.json",
+    "final_report_review": "pr14-ca9c8c4/review-checks.json"
+  },
+  "18": {
+    "branch": "grok/laneC-gaps",
+    "baseline_head": "d3074de09b36e8717108d2ac073de7943657af9d",
+    "reviewed_head": "6eb6f271610fb6a9d1e0e5725b805ece04a98270",
+    "files": [
+      "docs/logs/2026-10-07-grok-laneC.md",
+      "scripts/experiments/2026-10-07-grok-laneC/results.json",
+      "scripts/experiments/2026-10-07-grok-laneC/texture.py",
+      "scripts/experiments/2026-10-07-grok-laneC/test_texture.py"
+    ],
+    "tests": "pr-18-post-integration-tests.log"
+  }
+}
