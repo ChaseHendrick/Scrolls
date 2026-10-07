@@ -1,0 +1,20 @@
+[
+ {
+  "job": "v8in-ag405",
+  "segment": "0841-ag405",
+  "window": "crop",
+  "inner_px": 64,
+  "map_from": "bare-crop",
+  "device": "cpu",
+  "reader": "ink_9um seed42",
+  "settings": "step-075000, villa PR #1865, overlap 0.5, hann, batch 1, both directions",
+  "auc_as_stored": 0.7838,
+  "ink_px": 67060,
+  "auc_reversed": 0.6423,
+  "hp_r": 0.0114,
+  "hp_null_max_abs": 0.0204,
+  "hp_r_reversed": 0.0115,
+  "seconds": 84,
+  "notes": "seconds cover both directions"
+ }
+]
