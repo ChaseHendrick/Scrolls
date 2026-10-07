@@ -1,0 +1,665 @@
+{
+ "seed": 20261007,
+ "pad": 48,
+ "inner": 64,
+ "segments": {
+  "w045": {
+   "surface": [
+    5980,
+    8240
+   ],
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "features": {
+    "brightness": {
+     "direction": "higher=ink",
+     "auc": 0.5364,
+     "auc_depth_shuffled": 0.4726,
+     "rolled_null_max": 0.5571,
+     "rolled_null_min": 0.4493,
+     "spearman_vs_brightness": 0.999999883252592
+    },
+    "dog_band": {
+     "direction": "lower=ink",
+     "auc": 0.5433,
+     "auc_depth_shuffled": 0.535,
+     "rolled_null_max": 0.4982,
+     "rolled_null_min": 0.3767,
+     "spearman_vs_brightness": 0.20289615275784625
+    },
+    "noise_resid": {
+     "direction": "higher=ink",
+     "auc": 0.5151,
+     "auc_depth_shuffled": 0.5507,
+     "rolled_null_max": 0.6157,
+     "rolled_null_min": 0.4101,
+     "spearman_vs_brightness": 0.3491988737568911
+    },
+    "crackle": {
+     "direction": "lower=ink",
+     "auc": 0.567,
+     "auc_depth_shuffled": 0.5749,
+     "rolled_null_max": 0.603,
+     "rolled_null_min": 0.3562,
+     "spearman_vs_brightness": 0.45010379208870094
+    },
+    "relief": {
+     "direction": "lower=ink",
+     "auc": 0.5318,
+     "auc_depth_shuffled": 0.5,
+     "rolled_null_max": 0.5453,
+     "rolled_null_min": 0.4397,
+     "spearman_vs_brightness": -0.0687069711062344
+    },
+    "phase_sym": {
+     "direction": "lower=ink",
+     "auc": 0.5012,
+     "auc_depth_shuffled": 0.5011,
+     "rolled_null_max": 0.5006,
+     "rolled_null_min": 0.4974,
+     "spearman_vs_brightness": 0.05502688777804087
+    }
+   },
+   "line_period": {
+    "labels": {
+     "lag_px": 187,
+     "peak": -0.2575451344012549
+    },
+    "dog_band": {
+     "lag_px": 45,
+     "peak": 0.20704346895217896
+    },
+    "dog_band_shuf": {
+     "lag_px": 62,
+     "peak": 0.17538173496723175
+    }
+   }
+  },
+  "0841-w00": {
+   "surface": [
+    4220,
+    4760
+   ],
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "features": {
+    "brightness": {
+     "direction": "higher=ink",
+     "auc": 0.4648,
+     "auc_depth_shuffled": 0.477,
+     "rolled_null_max": 0.6306,
+     "rolled_null_min": 0.4435,
+     "spearman_vs_brightness": 0.999999880104471
+    },
+    "dog_band": {
+     "direction": "lower=ink",
+     "auc": 0.4158,
+     "auc_depth_shuffled": 0.472,
+     "rolled_null_max": 0.5325,
+     "rolled_null_min": 0.4802,
+     "spearman_vs_brightness": 0.07392495992458253
+    },
+    "noise_resid": {
+     "direction": "higher=ink",
+     "auc": 0.4931,
+     "auc_depth_shuffled": 0.5079,
+     "rolled_null_max": 0.6173,
+     "rolled_null_min": 0.5009,
+     "spearman_vs_brightness": 0.11986621069467458
+    },
+    "crackle": {
+     "direction": "lower=ink",
+     "auc": 0.3851,
+     "auc_depth_shuffled": 0.4062,
+     "rolled_null_max": 0.5235,
+     "rolled_null_min": 0.3886,
+     "spearman_vs_brightness": 0.506220041484811
+    },
+    "relief": {
+     "direction": "lower=ink",
+     "auc": 0.5005,
+     "auc_depth_shuffled": 0.5071,
+     "rolled_null_max": 0.5741,
+     "rolled_null_min": 0.4905,
+     "spearman_vs_brightness": -0.1930225122098909
+    },
+    "phase_sym": {
+     "direction": "lower=ink",
+     "auc": 0.4975,
+     "auc_depth_shuffled": 0.5001,
+     "rolled_null_max": 0.5032,
+     "rolled_null_min": 0.4993,
+     "spearman_vs_brightness": 0.062765347098205
+    }
+   },
+   "line_period": {
+    "labels": {
+     "lag_px": 115,
+     "peak": 0.2633202842116372
+    },
+    "dog_band": {
+     "lag_px": 117,
+     "peak": 0.42829200625419617
+    },
+    "dog_band_shuf": {
+     "lag_px": 78,
+     "peak": 0.2166084498167038
+    }
+   }
+  }
+ },
+ "kit_auc_bootstrap": {
+  "0841-w00_brightness": {
+   "forward": {
+    "auc": 0.4648,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/0841-w00_brightness.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "out/maps/0841-w00_brightness_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "control": {
+    "auc": 0.477,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 20261007,
+    "ci95": [
+     0.4057,
+     0.53
+    ],
+    "half_width": 0.0621
+   }
+  },
+  "0841-w00_crackle": {
+   "forward": {
+    "auc": 0.3851,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/0841-w00_crackle.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "out/maps/0841-w00_crackle_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "control": {
+    "auc": 0.4062,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 20261007,
+    "ci95": [
+     0.3233,
+     0.4369
+    ],
+    "half_width": 0.0568
+   }
+  },
+  "0841-w00_dog_band": {
+   "forward": {
+    "auc": 0.4158,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/0841-w00_dog_band.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "out/maps/0841-w00_dog_band_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "control": {
+    "auc": 0.472,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 20261007,
+    "ci95": [
+     0.347,
+     0.4865
+    ],
+    "half_width": 0.0697
+   }
+  },
+  "0841-w00_noise_resid": {
+   "forward": {
+    "auc": 0.4931,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/0841-w00_noise_resid.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "out/maps/0841-w00_noise_resid_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "control": {
+    "auc": 0.5079,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 20261007,
+    "ci95": [
+     0.4148,
+     0.5548
+    ],
+    "half_width": 0.07
+   }
+  },
+  "0841-w00_phase_sym": {
+   "forward": {
+    "auc": 0.4975,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/0841-w00_phase_sym.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "out/maps/0841-w00_phase_sym_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "control": {
+    "auc": 0.5001,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 20261007,
+    "ci95": [
+     0.4928,
+     0.5014
+    ],
+    "half_width": 0.0043
+   }
+  },
+  "0841-w00_relief": {
+   "forward": {
+    "auc": 0.5005,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/0841-w00_relief.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/0841-w00_labels/supervision.zarr",
+    "control": "out/maps/0841-w00_relief_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "control": {
+    "auc": 0.5071,
+    "ink_px": 84484,
+    "background_px": 177660,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 36,
+    "seed": 20261007,
+    "ci95": [
+     0.4435,
+     0.5477
+    ],
+    "half_width": 0.0521
+   }
+  },
+  "w045_brightness": {
+   "forward": {
+    "auc": 0.5364,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/w045_brightness.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "out/maps/w045_brightness_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "control": {
+    "auc": 0.4726,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 20261007,
+    "ci95": [
+     0.4383,
+     0.6389
+    ],
+    "half_width": 0.1003
+   }
+  },
+  "w045_crackle": {
+   "forward": {
+    "auc": 0.567,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/w045_crackle.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "out/maps/w045_crackle_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "control": {
+    "auc": 0.5749,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 20261007,
+    "ci95": [
+     0.4191,
+     0.7083
+    ],
+    "half_width": 0.1446
+   }
+  },
+  "w045_dog_band": {
+   "forward": {
+    "auc": 0.5433,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/w045_dog_band.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "out/maps/w045_dog_band_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "control": {
+    "auc": 0.535,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 20261007,
+    "ci95": [
+     0.4669,
+     0.6455
+    ],
+    "half_width": 0.0893
+   }
+  },
+  "w045_noise_resid": {
+   "forward": {
+    "auc": 0.5151,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/w045_noise_resid.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "out/maps/w045_noise_resid_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "control": {
+    "auc": 0.5507,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 20261007,
+    "ci95": [
+     0.4115,
+     0.6288
+    ],
+    "half_width": 0.1086
+   }
+  },
+  "w045_phase_sym": {
+   "forward": {
+    "auc": 0.5012,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/w045_phase_sym.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "out/maps/w045_phase_sym_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "control": {
+    "auc": 0.5011,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 20261007,
+    "ci95": [
+     0.4997,
+     0.5027
+    ],
+    "half_width": 0.0015
+   }
+  },
+  "w045_relief": {
+   "forward": {
+    "auc": 0.5318,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "files": {
+    "prediction": "out/maps/w045_relief.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "out/maps/w045_relief_shuf.tif"
+   },
+   "level": "2",
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "control": {
+    "auc": 0.5,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+   },
+   "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 20261007,
+    "ci95": [
+     0.4862,
+     0.5771
+    ],
+    "half_width": 0.0454
+   }
+  }
+ }
+}
