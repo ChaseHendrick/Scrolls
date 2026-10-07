@@ -277,7 +277,7 @@ print("kit mac-w045 summary (paste this)")
 print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE | quick: $QUICK")
 if "$QUICK" == "1":
     print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns), so the models face the same test")
-print("villa PR #$PR $PR_SHA on $EXPECT_GPU | v8in $V8IN_REV on $V8IN_DEVICE, stride $STRIDE, batch $BATCH, fp16 ${V8IN_FP16:-0}, region ${V8IN_CROP[*]:-all}")
+print(f"villa PR #$PR $PR_SHA on $EXPECT_GPU | v8in $V8IN_REV on $V8IN_DEVICE, stride $STRIDE, batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
 print("sha256 seed42 $SHA42 | seed43 $SHA43 | v8in $SHAV8")
 print("times (s): ink_9um s42 ${T_ink9um_s42}, s43 ${T_ink9um_s43} (both directions) | v8in ${T_v8in} + ${T_v8in_reverse}")
 d = j("v8in_device"); c = d["candidate"]
