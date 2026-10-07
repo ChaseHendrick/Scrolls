@@ -7,7 +7,7 @@ Research notes, a run planner, and an experiment ledger for the [Vesuvius Challe
 **This repository does not claim that any letters have been found in any scroll.**
 The `kit/` package plans and records runs of the official open-source pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)). It does not reimplement that pipeline. Prize amounts, deadlines and eligible scrolls are a dated snapshot (checked 2026-10-06); [scrollprize.org/prizes](https://scrollprize.org/prizes) wins if they disagree.
 
-## Novel findings (Chase Hendrick)
+## Novel findings
 
 Only results that are new: found in this work and not published elsewhere, as far as our searches reach (web and the community repositories we read; GitHub search and Discord were not searchable from here). Public labelled data only, never target scrolls; model output, not readings. Reproductions of others' results are in [`docs/results.json`](docs/results.json) and the [log](docs/logs/2026-10-07-community-scan.md), not here.
 
