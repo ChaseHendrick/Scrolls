@@ -1,0 +1,359 @@
+{
+  "production_geometry_only": true,
+  "reader_outputs_inspected": false,
+  "runtime_seconds": 9.782116143999701,
+  "source_native_crop": [
+    136,
+    168,
+    136,
+    168
+  ],
+  "reference_native_crop": [
+    156,
+    188,
+    134,
+    166
+  ],
+  "source_canvas_crop": [
+    2720,
+    3360,
+    2720,
+    3360
+  ],
+  "reference_canvas_crop": [
+    3120,
+    3760,
+    2680,
+    3320
+  ],
+  "coordinate_tolerance_vox": 0.0033829117335329633,
+  "geometrically_matched_native": 479,
+  "ambiguous_native": 0,
+  "unresolved_native": 0,
+  "geometric_and_canvas_covered_native": 444,
+  "evaluable_regions_before_map_coverage": 4,
+  "matched_gap_um_quantiles": [
+    0.2769855691947152,
+    10.07928093344302,
+    25.65277831043072,
+    37.91258020246772,
+    49.93640717858878
+  ],
+  "label_audit_contiguous_halves": [
+    {
+      "canvas_box": [
+        2784,
+        3040,
+        2784,
+        3296
+      ],
+      "supervised_ink_px": 47374,
+      "supervised_background_px": 83684,
+      "supervised_px": 131058,
+      "supervision_fraction": 0.9998931884765625
+    },
+    {
+      "canvas_box": [
+        3040,
+        3296,
+        2784,
+        3296
+      ],
+      "supervised_ink_px": 35825,
+      "supervised_background_px": 95247,
+      "supervised_px": 131072,
+      "supervision_fraction": 1.0
+    }
+  ],
+  "regions": [
+    {
+      "id": 0,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 9,
+          "supervised_ink_native": 7,
+          "supervised_background_native": 2,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 13,
+          "supervised_ink_native": 8,
+          "supervised_background_native": 5,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 1,
+      "evaluable_before_map_coverage": true,
+      "subsets": {
+        "selection": {
+          "covered_native": 24,
+          "supervised_ink_native": 9,
+          "supervised_background_native": 15,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 32,
+          "supervised_ink_native": 12,
+          "supervised_background_native": 20,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 2,
+      "evaluable_before_map_coverage": true,
+      "subsets": {
+        "selection": {
+          "covered_native": 24,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 24,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 32,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 32,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 3,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 21,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 21,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 27,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 26,
+          "unknown_native": 1
+        }
+      }
+    },
+    {
+      "id": 4,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 18,
+          "supervised_ink_native": 16,
+          "supervised_background_native": 2,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 19,
+          "supervised_ink_native": 16,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 5,
+      "evaluable_before_map_coverage": true,
+      "subsets": {
+        "selection": {
+          "covered_native": 28,
+          "supervised_ink_native": 11,
+          "supervised_background_native": 17,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 27,
+          "supervised_ink_native": 11,
+          "supervised_background_native": 16,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 6,
+      "evaluable_before_map_coverage": true,
+      "subsets": {
+        "selection": {
+          "covered_native": 30,
+          "supervised_ink_native": 1,
+          "supervised_background_native": 29,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 26,
+          "supervised_ink_native": 1,
+          "supervised_background_native": 25,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 7,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 11,
+          "supervised_ink_native": 7,
+          "supervised_background_native": 4,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 7,
+          "supervised_ink_native": 4,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 8,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 10,
+          "supervised_ink_native": 4,
+          "supervised_background_native": 6,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 9,
+          "supervised_ink_native": 2,
+          "supervised_background_native": 7,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 9,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 10,
+          "supervised_ink_native": 3,
+          "supervised_background_native": 7,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 10,
+          "supervised_ink_native": 4,
+          "supervised_background_native": 6,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 10,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 3,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 1,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 1,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 11,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 0,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 0,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 0,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 0,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 12,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 6,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 1,
+          "unknown_native": 5
+        },
+        "held_back": {
+          "covered_native": 4,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 4,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 13,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 11,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 10,
+          "unknown_native": 1
+        },
+        "held_back": {
+          "covered_native": 8,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 8,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 14,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 13,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 13,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 8,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 8,
+          "unknown_native": 0
+        }
+      }
+    },
+    {
+      "id": 15,
+      "evaluable_before_map_coverage": false,
+      "subsets": {
+        "selection": {
+          "covered_native": 3,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 3,
+          "unknown_native": 0
+        },
+        "held_back": {
+          "covered_native": 0,
+          "supervised_ink_native": 0,
+          "supervised_background_native": 0,
+          "unknown_native": 0
+        }
+      }
+    }
+  ],
+  "limits": "Native label samples are geometric eligibility counts only, not final prediction coverage. Interleaved subsets are correlated local checks, not statistical independence. Labels reused from one source sheet are not independent ag896 annotations."
+}

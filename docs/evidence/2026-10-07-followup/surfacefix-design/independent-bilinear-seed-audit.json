@@ -1,0 +1,18 @@
+{
+  "scope": "Independent actualbilinearpoint evaluation at fixed32triangle seedUV; no globalclosestclaim",
+  "project_reference_code_sha256": "64e52f019f27b162d7ff2905e982a58fe83332f061b7f1e2749976267133f1cd",
+  "points": 1024,
+  "all4corner_valid_points": 1024,
+  "triangle_50um_pass": 505,
+  "actual_bilinear_seed_50um_pass": 504,
+  "triangle_pass_bilinear_seed_fails": 5,
+  "triangle_fails_bilinear_seed_pass": 4,
+  "signed_actual_bilinear_minus_triangle_gap_um_quantiles": [
+    -6.345773670426411,
+    -0.6254821953929941,
+    0.08687287738346994,
+    0.9531652641503108,
+    8.011942117350486
+  ],
+  "limits": "Bilinearseed upperdistance proves a point exists, not true nearestUV or independent sheetidentity. Existing32triangle search is not globallycertified; classification can change after truebilinear minimization."
+}

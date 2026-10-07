@@ -1,0 +1,8 @@
+{
+  "zero_accepted": true,
+  "coordinate_arrays_identical": true,
+  "coordinate_dtypes_preserved": true,
+  "metadata_bytes_identical": true,
+  "source_input_hashes_unchanged": true,
+  "final_merged_rerender": "Not applicable because no accepted geometry; output is unchanged copy"
+}

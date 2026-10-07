@@ -1,0 +1,51 @@
+{
+  "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+  ],
+  "native_crop": [
+    192,
+    224,
+    128,
+    160
+  ],
+  "source_mesh_shape": [
+    299,
+    412
+  ],
+  "native_mesh_scale": [
+    0.05000000074505806,
+    0.05000000074505806
+  ],
+  "source_surface_shape": [
+    5980,
+    8240
+  ],
+  "label_shape": [
+    5820,
+    8020
+  ],
+  "label_level": "2",
+  "mapping": "existing kit.auc.label_grid nearest-center sampling from source canvas derived by round(native_shape/meta.scale)",
+  "supervised_pixels": 235578,
+  "supervised_ink_pixels": 78047,
+  "supervised_background_pixels": 157531,
+  "inner64": {
+    "supervised_pixels": 170666,
+    "ink_pixels": 46757,
+    "background_pixels": 123909,
+    "spatial_blocks_107px": 30
+  },
+  "upper": {
+    "supervised_pixels": 88232,
+    "ink_pixels": 31970,
+    "background_pixels": 56262
+  },
+  "lower": {
+    "supervised_pixels": 82434,
+    "ink_pixels": 14787,
+    "background_pixels": 67647
+  }
+}

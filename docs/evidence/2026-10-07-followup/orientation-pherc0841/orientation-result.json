@@ -1,0 +1,53 @@
+{
+  "rule_sha256": "a54f795b1e22a34a3e07daf3c68e3bc10cc45000900bd79b94665a8feed7552c",
+  "script_sha256": "7b11f52c654f3368a29599eb4f1622efcbd772aba9556dbf6143fef7acadf582",
+  "scope": "Structural order verification, no ink labels or reader selection",
+  "published_sha256": "cbd2dcd7f5acff2507d1b718b4410683481dc6113431c891cdfbc0070acc8ad1",
+  "existing_canonical_layer_hashes": {
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/00.tif": "fcdf437268cbf2074f111f0506285a48fafaf30c2fc48c92ad27a9582c6bb54f",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/01.tif": "be9dd6111f8330cc793b9cb037ceae8ff79e087720f1c0e642dd20a590e1505c",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/02.tif": "58f04af2d19b3b29985622045b3f699c229e5782c263debdc55f0d7d33610a94",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/03.tif": "6421e6d4d1a7fe662928e776f03150db8e844130617e20fdf9a4bc122615d1ad",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/04.tif": "c40ef6da343b74a997af7aa21dec0b6a3f7ef28db7705f80efbb0446e1ed46ea",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/05.tif": "f989d4c13966749a94c4b54c436f5fc5bcc416f9b82f5f3e9863a12f2dc14559",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/06.tif": "4e0c3e9fd66e965b5d90fcca460660abe1230a083371b25c458fb623e0715b7b",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/07.tif": "83665f9b3adeb03921cd678ebd47c11184c118bc0244210e1a27afb1c2ee66ca",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/08.tif": "1e09973824ed264f4f3bb1b325238a96291da0973e25958e1d24d0bff4023c20",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/09.tif": "8be71fd5f35b024731a0750d8661a83e6c92522a8e2284c45f2f3ddaa382fe61",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/10.tif": "82cf19054c77a12e27accc4996871bd8ed585420ac9d1beca7b2a02b1844c8d4",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/11.tif": "9bfb76e53560360441466ce260b4fa5e6456bcacebc0bfc47857141a709d773b",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/12.tif": "c13ecd2cb0d9779c54c9616d491fd43f0697426ba821794554dccdc110b3e178",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/13.tif": "70d14d1569a6ea097d44201b25e08d0f7d8f9e2c5120387c60ee7f8a70bdb925",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/14.tif": "0bf13ed3aafed322956956b29c4f49cdcc562232b735c220170fec2fa1bb6287",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/15.tif": "9aebc12b6270bfe9c765e6e0d2eb8dbe85ea1bff6227f2e49066d419d6f5fdc3",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/16.tif": "6f7fde8800e9e1fde1b449f2044bbf7c8725e9960af800ddd81a011098f209f3",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/17.tif": "87979428efbac8839edb25073a3e517ba5ec86393ff6e7734f2548f72601ebca",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/18.tif": "3dc096ff3546c87151d6926dfb12de25327355c17832eb62ac1c6b7faf510821",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/19.tif": "780b131d8661930b2d209ad1b1b40aa45180b0e6a9b4016aab3921d2a063adcd",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/20.tif": "e6ff47730bdbbb1172905b89aa97ced4bda38b8b382d415a80fa60116d51b78c",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/21.tif": "b55582e02fd34889e984da7601128809bc09c0040a95923f89e902e87296dbee",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/22.tif": "48435deebc6185125a8719ab0d548653dc427ef2338b5099ca18007f9306809d",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/23.tif": "bd44878a1ab16cb8beae407a6c62c058cae0c9f9f657c8d7f156cf8897411a1f",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/24.tif": "b69eae1e0808acf968b03578c6f7982c796f73ed0eeeb27bc0d619896f9f8697",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/25.tif": "af92e11704e34ad81c6e16d232248abbb12fa3c39c429f473b2f76a8fce0425f",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/26.tif": "e9f943609dd740be0f9eda2728f948541b124d4404f1f9b53a8cb11d3ba2e6e9",
+    "/workspace/scrolls-env/geometry-validation/layers-baseline/27.tif": "591429582af72aefa09569e8c5a9e7831fe1cbfdde9efaf10e8d2ac2d42af3f0"
+  },
+  "existing_canonical_negative_normal": {
+    "correlation": 0.9999982592883446,
+    "mean_absolute_error_uint8": 0.005617822919573102,
+    "rms_error_uint8": 0.07495213752504395,
+    "equal_fraction": 0.9943821770804269,
+    "voxels": 7340032,
+    "passes_frozen_reproduction_bar": true
+  },
+  "existing_order_reversed_positive_normal": {
+    "correlation": 0.09173207985689143,
+    "mean_absolute_error_uint8": 42.459928376334055,
+    "rms_error_uint8": 54.14116455136405,
+    "equal_fraction": 0.01311847141810826,
+    "voxels": 7340032,
+    "passes_frozen_reproduction_bar": false
+  },
+  "limits": "One real public crop. The old run keeps its original forward/reverse names and cannot be retroactively reclassified as a preregistered published-order run. Input normal sign and correction-offset sign are separate concepts."
+}
