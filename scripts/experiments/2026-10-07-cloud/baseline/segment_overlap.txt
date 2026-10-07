@@ -1,0 +1,9 @@
+w00 vs ag896, both labelled within 12 vox: 5096 pts (0.112 cm2), Dice 0.828; in-plane displaced null (200 draws): mean 0.253, 99th pct 0.685, max 0.690
+crop of w00: share within 12 vox of ag896: 0.988; of those, landing inside ag896's crop: 0.000
+crop of w00: share within 12 vox of ag405: 0.000; of those, landing inside ag405's crop: 0.000
+crop of ag896: share within 12 vox of ag405: 0.000; of those, landing inside ag405's crop: 0.000
+w00->ag896 gap percentiles (vox): [ 2.9  6.   8.6 12.  19.4]
+w00 -> ag896: 12.7 cm2, median gap 8.6 vox, within 5: 0.173, within 12: 0.750, within 25: 0.981, within 50: 0.999
+ag896 -> w00: 12.8 cm2, median gap 8.6 vox, within 5: 0.173, within 12: 0.747, within 25: 0.976, within 50: 0.994
+w00 -> ag405: 12.7 cm2, median gap 38.7 vox, within 5: 0.013, within 12: 0.054, within 25: 0.214, within 50: 0.713
+ag896 -> ag405: 12.8 cm2, median gap 47.6 vox, within 5: 0.005, within 12: 0.015, within 25: 0.108, within 50: 0.549

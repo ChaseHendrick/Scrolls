@@ -1,0 +1,5 @@
+{'gap_um': '0-28', 'points': 30737, 'ink_r': 0.861, 'ct_highpass_r': 0.433, 'ct_raw_r': 0.674, 'ct_thick_r': 0.828, 'ct_thick_highpass_r': 0.506, 'reappear_ink': 0.698, 'reappear_ct_thick_highpass': 0.498}
+{'gap_um': '28-56', 'points': 112692, 'ink_r': 0.755, 'ct_highpass_r': 0.089, 'ct_raw_r': 0.262, 'ct_thick_r': 0.753, 'ct_thick_highpass_r': 0.386, 'reappear_ink': 0.645, 'reappear_ct_thick_highpass': 0.406}
+{'gap_um': '56-84', 'points': 161752, 'ink_r': 0.454, 'ct_highpass_r': -0.021, 'ct_raw_r': 0.059, 'ct_thick_r': 0.636, 'ct_thick_highpass_r': 0.303, 'reappear_ink': 0.474, 'reappear_ct_thick_highpass': 0.363}
+{'gap_um': '84-112', 'points': 122807, 'ink_r': 0.257, 'ct_highpass_r': 0.002, 'ct_raw_r': 0.07, 'ct_thick_r': 0.526, 'ct_thick_highpass_r': 0.234, 'reappear_ink': 0.378, 'reappear_ct_thick_highpass': 0.32}
+{'gap_um': '112-169', 'points': 102582, 'ink_r': 0.076, 'ct_highpass_r': 0.012, 'ct_raw_r': 0.101, 'ct_thick_r': 0.42, 'ct_thick_highpass_r': 0.142, 'reappear_ink': 0.306, 'reappear_ct_thick_highpass': 0.282}

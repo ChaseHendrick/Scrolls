@@ -11,7 +11,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 1. [`docs/HANDOFF.md`](docs/HANDOFF.md): current state and the next steps, newest session first.
 2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): phases, gates, timeline.
 3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
-   The README section "Novel findings (Chase Hendrick)" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
+   The README section "Novel findings" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
 4. [`docs/logs/`](docs/logs/): dated research notes; the newest explains the latest numbers.
    Literature (arXiv, journals, Zenodo, Kaggle): [`docs/logs/2026-10-07-literature.md`](docs/logs/2026-10-07-literature.md) and machine-readable [`docs/papers.json`](docs/papers.json).
 5. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
@@ -56,6 +56,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
 | `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
+| `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
 | `kit/ledger.py` | Local experiment records in `experiments/<slug>/run.json` with readout-rule hash and status gate |
 | `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |

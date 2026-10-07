@@ -1,0 +1,316 @@
+{
+ "segment": "0841-ag896",
+ "layers": 28,
+ "ink_px_crop": 97238,
+ "ink_px_whole": 318252,
+ "per_layer": [
+  {
+   "layer": 0,
+   "crop": 0.5051,
+   "whole": 0.514
+  },
+  {
+   "layer": 1,
+   "crop": 0.496,
+   "whole": 0.5207
+  },
+  {
+   "layer": 2,
+   "crop": 0.4714,
+   "whole": 0.5157
+  },
+  {
+   "layer": 3,
+   "crop": 0.4488,
+   "whole": 0.501
+  },
+  {
+   "layer": 4,
+   "crop": 0.4344,
+   "whole": 0.4851
+  },
+  {
+   "layer": 5,
+   "crop": 0.4317,
+   "whole": 0.4772
+  },
+  {
+   "layer": 6,
+   "crop": 0.4441,
+   "whole": 0.4737
+  },
+  {
+   "layer": 7,
+   "crop": 0.4564,
+   "whole": 0.4723
+  },
+  {
+   "layer": 8,
+   "crop": 0.4641,
+   "whole": 0.4785
+  },
+  {
+   "layer": 9,
+   "crop": 0.4782,
+   "whole": 0.4932
+  },
+  {
+   "layer": 10,
+   "crop": 0.501,
+   "whole": 0.5072
+  },
+  {
+   "layer": 11,
+   "crop": 0.513,
+   "whole": 0.5142
+  },
+  {
+   "layer": 12,
+   "crop": 0.512,
+   "whole": 0.5199
+  },
+  {
+   "layer": 13,
+   "crop": 0.5079,
+   "whole": 0.5238
+  },
+  {
+   "layer": 14,
+   "crop": 0.508,
+   "whole": 0.5256
+  },
+  {
+   "layer": 15,
+   "crop": 0.5155,
+   "whole": 0.5273
+  },
+  {
+   "layer": 16,
+   "crop": 0.5242,
+   "whole": 0.5253
+  },
+  {
+   "layer": 17,
+   "crop": 0.5283,
+   "whole": 0.5232
+  },
+  {
+   "layer": 18,
+   "crop": 0.5259,
+   "whole": 0.5247
+  },
+  {
+   "layer": 19,
+   "crop": 0.5176,
+   "whole": 0.5262
+  },
+  {
+   "layer": 20,
+   "crop": 0.5073,
+   "whole": 0.5234
+  },
+  {
+   "layer": 21,
+   "crop": 0.5041,
+   "whole": 0.5221
+  },
+  {
+   "layer": 22,
+   "crop": 0.5197,
+   "whole": 0.5273
+  },
+  {
+   "layer": 23,
+   "crop": 0.5493,
+   "whole": 0.5361
+  },
+  {
+   "layer": 24,
+   "crop": 0.5721,
+   "whole": 0.5393
+  },
+  {
+   "layer": 25,
+   "crop": 0.5814,
+   "whole": 0.5339
+  },
+  {
+   "layer": 26,
+   "crop": 0.5829,
+   "whole": 0.5257
+  },
+  {
+   "layer": 27,
+   "crop": 0.5551,
+   "whole": 0.5136
+  }
+ ],
+ "stats": {
+  "mean_all": {
+   "crop": 0.5193,
+   "whole": 0.5383
+  },
+  "std_depth": {
+   "crop": 0.4769,
+   "whole": 0.5105
+  },
+  "max_depth": {
+   "crop": 0.5412,
+   "whole": 0.548
+  },
+  "argmax_depth": {
+   "crop": 0.5207,
+   "whole": 0.5055
+  },
+  "mean_central_10_17": {
+   "crop": 0.5325,
+   "whole": 0.5374
+  },
+  "central_minus_outer": {
+   "crop": 0.5048,
+   "whole": 0.5077
+  }
+ },
+ "highpass_per_layer": [
+  {
+   "layer": 0,
+   "crop": 0.4922,
+   "whole": 0.5001
+  },
+  {
+   "layer": 1,
+   "crop": 0.4983,
+   "whole": 0.5009
+  },
+  {
+   "layer": 2,
+   "crop": 0.5008,
+   "whole": 0.4998
+  },
+  {
+   "layer": 3,
+   "crop": 0.4989,
+   "whole": 0.4979
+  },
+  {
+   "layer": 4,
+   "crop": 0.4927,
+   "whole": 0.4952
+  },
+  {
+   "layer": 5,
+   "crop": 0.4918,
+   "whole": 0.4948
+  },
+  {
+   "layer": 6,
+   "crop": 0.4939,
+   "whole": 0.4959
+  },
+  {
+   "layer": 7,
+   "crop": 0.4987,
+   "whole": 0.496
+  },
+  {
+   "layer": 8,
+   "crop": 0.4994,
+   "whole": 0.4962
+  },
+  {
+   "layer": 9,
+   "crop": 0.4979,
+   "whole": 0.498
+  },
+  {
+   "layer": 10,
+   "crop": 0.4988,
+   "whole": 0.4984
+  },
+  {
+   "layer": 11,
+   "crop": 0.5008,
+   "whole": 0.4977
+  },
+  {
+   "layer": 12,
+   "crop": 0.5014,
+   "whole": 0.499
+  },
+  {
+   "layer": 13,
+   "crop": 0.5024,
+   "whole": 0.5014
+  },
+  {
+   "layer": 14,
+   "crop": 0.5022,
+   "whole": 0.5024
+  },
+  {
+   "layer": 15,
+   "crop": 0.5018,
+   "whole": 0.5019
+  },
+  {
+   "layer": 16,
+   "crop": 0.5058,
+   "whole": 0.502
+  },
+  {
+   "layer": 17,
+   "crop": 0.5099,
+   "whole": 0.5014
+  },
+  {
+   "layer": 18,
+   "crop": 0.5109,
+   "whole": 0.5023
+  },
+  {
+   "layer": 19,
+   "crop": 0.5028,
+   "whole": 0.5029
+  },
+  {
+   "layer": 20,
+   "crop": 0.4949,
+   "whole": 0.5007
+  },
+  {
+   "layer": 21,
+   "crop": 0.4927,
+   "whole": 0.4991
+  },
+  {
+   "layer": 22,
+   "crop": 0.4959,
+   "whole": 0.4998
+  },
+  {
+   "layer": 23,
+   "crop": 0.4998,
+   "whole": 0.5016
+  },
+  {
+   "layer": 24,
+   "crop": 0.5014,
+   "whole": 0.502
+  },
+  {
+   "layer": 25,
+   "crop": 0.5007,
+   "whole": 0.5
+  },
+  {
+   "layer": 26,
+   "crop": 0.4983,
+   "whole": 0.498
+  },
+  {
+   "layer": 27,
+   "crop": 0.4967,
+   "whole": 0.4972
+  }
+ ]
+}

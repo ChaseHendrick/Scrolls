@@ -1,0 +1,107 @@
+{
+ "trace_consistency": [
+  {
+   "gap_vox": "0-3",
+   "gap_um": "0-28",
+   "points": 31177,
+   "cm2": 0.68,
+   "pearson": 0.862,
+   "null_mean": 0.043,
+   "null_max": 0.291
+  },
+  {
+   "gap_vox": "3-6",
+   "gap_um": "28-56",
+   "points": 113412,
+   "cm2": 2.49,
+   "pearson": 0.753,
+   "null_mean": 0.056,
+   "null_max": 0.192
+  },
+  {
+   "gap_vox": "6-9",
+   "gap_um": "56-84",
+   "points": 162528,
+   "cm2": 3.56,
+   "pearson": 0.452,
+   "null_mean": 0.051,
+   "null_max": 0.161
+  },
+  {
+   "gap_vox": "9-12",
+   "gap_um": "84-112",
+   "points": 123171,
+   "cm2": 2.7,
+   "pearson": 0.256,
+   "null_mean": 0.038,
+   "null_max": 0.138
+  },
+  {
+   "gap_vox": "12-18",
+   "gap_um": "112-169",
+   "points": 102582,
+   "cm2": 2.25,
+   "pearson": 0.074,
+   "null_mean": 0.036,
+   "null_max": 0.17
+  },
+  {
+   "gap_vox": "18-30",
+   "gap_um": "169-281",
+   "points": 31218,
+   "cm2": 0.68,
+   "pearson": 0.104,
+   "null_mean": 0.055,
+   "null_max": 0.217
+  }
+ ],
+ "area": {
+  "w00": {
+   "surface_cm2": 12.7,
+   "supervised_cm2": 1.41,
+   "ink_cm2": 0.31,
+   "supervised_share": 0.111
+  },
+  "ag896": {
+   "surface_cm2": 12.8,
+   "supervised_cm2": 0.86,
+   "ink_cm2": 0.28,
+   "supervised_share": 0.068
+  },
+  "ag405": {
+   "surface_cm2": 12.0,
+   "supervised_cm2": 1.12,
+   "ink_cm2": 0.25,
+   "supervised_share": 0.093
+  }
+ },
+ "bootstrap": {
+  "w00": {
+   "auc": 0.9713,
+   "ci95": [
+    0.9624,
+    0.9786
+   ],
+   "half_width": 0.0081,
+   "blocks_1mm": 185
+  },
+  "ag896": {
+   "auc": 0.9206,
+   "ci95": [
+    0.896,
+    0.9408
+   ],
+   "half_width": 0.0224,
+   "blocks_1mm": 127
+  },
+  "ag405": {
+   "auc": 0.8691,
+   "ci95": [
+    0.8285,
+    0.9052
+   ],
+   "half_width": 0.0383,
+   "blocks_1mm": 149
+  }
+ }
+}

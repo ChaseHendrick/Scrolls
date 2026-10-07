@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,ensemble,gate,layers,shuffle,provenance,compute,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,gate,layers,shuffle,provenance,compute,run}."""
 
 import argparse
 import json
@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
+from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -79,7 +79,8 @@ def cmd_rowscore(args):
 def cmd_auc(args):
     try:
         result = auc.score_files(args.prediction, args.labels, args.mask, args.control, args.level,
-                                 args.crop, args.surface_shape, args.keep_zero, args.inner)
+                                 args.crop, args.surface_shape, args.keep_zero, args.inner,
+                                 args.bootstrap, args.block_px, args.compare, args.seed)
         if args.slug:
             ledger.add_check(args.slug, args.name, result, root=args.root)
     except (verify.VerifyError, ledger.LedgerError) as exc:
@@ -99,6 +100,28 @@ def cmd_hpscore(args):
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2) if args.json else hpscore.format_result(result))
+    return 0
+
+
+def cmd_overlap(args):
+    try:
+        result = overlap.overlap(args.mesh_a, args.mesh_b, args.voxel_um, args.within, args.labels_a, args.labels_b,
+                                 args.level, args.draws, args.seed)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(overlap.dumps(result) if args.json else overlap.format_overlap(result))
+    return 0
+
+
+def cmd_collate(args):
+    try:
+        result = overlap.collate(args.mesh_a, args.mesh_b, args.map_a, args.map_b, args.voxel_um, tuple(args.gaps),
+                                 args.top, args.control_a, args.control_b, args.box, args.draws, args.seed)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(overlap.dumps(result) if args.json else overlap.format_collate(result))
     return 0
 
 
@@ -285,6 +308,11 @@ def build_parser():
     p.add_argument("--keep-zero", action="store_true", help="count pixels where the map is exactly 0")
     p.add_argument("--inner", type=int, default=0, metavar="PX",
                    help="leave out this many pixels at every edge (for maps inferred on a cropped input)")
+    p.add_argument("--bootstrap", type=int, default=0, metavar="N",
+                   help="block-bootstrap draws for a 95 %% interval (300 is plenty); 0 for none")
+    p.add_argument("--block-px", type=int, default=auc.BLOCK_PX, help="bootstrap block side (default 107: 1 mm at 9.366 um)")
+    p.add_argument("--compare", metavar="MAP", help="second map of the same surface: is the first ahead beyond sampling noise?")
+    p.add_argument("--seed", type=int, default=0)
     p.add_argument("--json", action="store_true")
     p.add_argument("--slug", help="attach the result to this experiment")
     p.add_argument("--name", default="label-auc")
@@ -306,6 +334,36 @@ def build_parser():
     p.add_argument("--name", default="letter-scale")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_hpscore)
+
+    p = sub.add_parser("overlap", help="do two segments trace the same papyrus? mesh gaps and label agreement")
+    p.add_argument("mesh_a", help="tifxyz folder (x.tif, y.tif, z.tif) of segment A")
+    p.add_argument("mesh_b", help="tifxyz folder of segment B, in the same volume")
+    p.add_argument("--voxel-um", type=float, required=True, help="voxel size of the mesh coordinates, e.g. 9.366")
+    p.add_argument("--within", type=int, default=12, help="gap in voxels that counts as the same sheet (default 12)")
+    p.add_argument("--labels-a", help="folder with A's inklabels.zarr and supervision.zarr")
+    p.add_argument("--labels-b", help="the same for B")
+    p.add_argument("--level", default=auc.DEFAULT_LEVEL)
+    p.add_argument("--draws", type=int, default=200, help="displaced matches for the label null")
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_overlap)
+
+    p = sub.add_parser("collate", help="two traces of one sheet as two copies: do their ink maps agree, against a control?")
+    p.add_argument("mesh_a")
+    p.add_argument("mesh_b")
+    p.add_argument("map_a", help="ink map of A on A's surface grid (.tif or .npy, any resolution)")
+    p.add_argument("map_b", help="ink map of B on B's surface grid")
+    p.add_argument("--voxel-um", type=float, required=True)
+    p.add_argument("--gaps", type=float, nargs="+", default=[0, 3, 6, 9, 12, 18, 30], help="gap bin edges in voxels")
+    p.add_argument("--top", type=float, default=0.2, help="a 'strong spot' is in this top fraction of its map")
+    p.add_argument("--control-a", help="control map of A (e.g. high-passed raw CT or the reverse-depth map)")
+    p.add_argument("--control-b", help="control map of B")
+    p.add_argument("--box", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="only A's points in this window of map A (one candidate)")
+    p.add_argument("--draws", type=int, default=50, help="displaced matches for the null")
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_collate)
 
     p = sub.add_parser("provenance", help="who ran what, when, from which inputs: a record and one digest")
     actions = p.add_subparsers(dest="action", required=True)

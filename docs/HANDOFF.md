@@ -2,6 +2,42 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (end of day): read this first
+
+**The user had about 8 % of weekly usage left when this was written. Keep the next session small: one task at a time, no fleets of agents, no multi-hour jobs without asking.**
+
+Done today (all on branch `claude/gallant-pasteur-b1y2si`, not yet merged; open a PR to `main` when the user says so):
+
+- README findings 5 to 9 (new): PHerc0841 w00 and ag896 are one sheet traced twice; raw CT brightness is not ink (AUC at most 0.58 per layer); ink readings of one sheet agree only within about 50 um of trace offset; the PHerc0841 benchmark is 3.4 cm² with +-0.01 to +-0.04 AUC sampling noise; collation of two traces as a label-free check. Log: [`logs/2026-10-07-overlap-and-baseline.md`](logs/2026-10-07-overlap-and-baseline.md).
+- New checks in `kit` (tested in `tests/test_overlap.py`): `kit overlap MESH_A MESH_B --voxel-um 9.366 [--labels-a DIR --labels-b DIR]` (same sheet?), `kit collate MESH_A MESH_B MAP_A MAP_B --voxel-um 9.366 [--control-a C --control-b C] [--box Y0 Y1 X0 X1]` (do two traces' maps agree, against a control?), `kit auc ... --bootstrap 300 [--compare MAP2]` (95 % interval, paired difference). Checked on the real PHerc0841 data: they reproduce the log's numbers.
+- Progress Prize draft rewritten to lead with these findings ([`contrib/progress-prize-2026-10-draft.md`](contrib/progress-prize-2026-10-draft.md)). Still: submit near 31 Oct, only with the user's go-ahead.
+- Name removed from the README findings heading (user request).
+
+Still running or unfinished:
+
+- Cloud jobs `v8in1447-w00/ag896/ag405`, `tricks`, `thresholds` may have pushed results to `origin/claude/gallant-pasteur-b1y2si-<job>` (`scripts/experiments/2026-10-07-cloud/<job>/results.json` and `notes.md`). `git fetch origin` and look; fold any results into `docs/results.json`, `docs/tricks.md` and the README (v8in-1447 on PHerc0841 is unpublished). `finetune` finished without running the smoke test (permission denied for Hub code); its notes say w062 has no public labels and most of the 385 GB pre-training set is target scrolls: update `plans/2026-10-07-training.md` from them.
+- w045's raw-brightness baseline ran out of memory; not redone.
+
+What to do next, in order (cheapest first):
+
+1. Merge this branch (PR) so `main` has findings 5 to 9 and the new checks.
+2. Fold the cloud job results (above). No new compute.
+3. On the Mac, when the user wants: `bash scripts/mac-phase0.sh` (now a reproduction of Bullo27 plus the device check), then the preregistered atlas run `scripts/mac-atlas-v8in.sh`. Target outputs stay private.
+4. Use `kit collate` on overlapping automatic meshes of a target scroll as a candidate filter (private outputs); preregister the rule first (`docs/prereg/`).
+5. Before 31 Oct: finish the Progress Prize draft; ask the user about a small villa PR upstreaming `kit auc --bootstrap/--compare` and `kit overlap`.
+
+## Session 7 October 2026 (afternoon): cloud jobs, two new findings, prior work found
+
+**The user is short on usage (weekly limit warning).** Keep runs short and agents few; ask before starting anything that takes hours.
+
+New findings (README 5 and 6; [log](logs/2026-10-07-overlap-and-baseline.md)): PHerc0841's w00 and ag896 are the same papyrus traced twice (meshes 81 um apart, labels agree, Dice 0.83), so PHerc0841 has two independent labelled surfaces, not three; raw CT brightness alone scores at most 0.58 AUC per layer on PHerc0841; the team's ink maps of the two traces of that sheet agree only where the traces are within about 50 um (README 7); the PHerc0841 benchmark is 3.4 cm² of labelled papyrus with +-0.01 to +-0.04 AUC of sampling noise per segment (README 8).
+
+Prior work found by a web scan (same log, section 3): **v8in on PHerc0841 is already published** (Bullo27, [v8in-12gb](https://github.com/Bullo27/v8in-12gb), 2026-10-01: 0.837, 0.807, 0.810, ahead of `ink_9um`), so step A.4 on the Mac is now a reproduction and device check, not a novel result; window averaging on PHerc0841 has related prior work (README finding 4 now cites it).
+
+Cloud jobs (spec: [`scripts/experiments/2026-10-07-cloud/README.md`](../scripts/experiments/2026-10-07-cloud/README.md)), each in its own container, pushing to `claude/gallant-pasteur-b1y2si-<job>`: `v8in1447-w00`, `v8in1447-ag896`, `v8in1447-ag405` (stride 42 forward, 64 reverse, ensembles with d9v2), `tricks` (handoff B.1 and lead d, PHerc0841 crops only), `thresholds` (lead c, published null rules on known text, row score by area), `finetune` (B.2). Stopped to save usage: the base v8in jobs (a reproduction now) and the v8in depth-window jobs (lead a; about 3 hours of CPU each). Fold each finished job's `results.json` and `notes.md` into `docs/results.json`, `docs/tricks.md`, the README findings and a dated log, then delete nothing from the job branches (they are the record).
+
+Next leads, cheapest first: (a) score `ink_9um` on the shared w00/ag896 sheet from both traces with one label set carried across by the meshes (does an 80 um trace offset change AUC?); (b) report PHerc0841 results per independent surface (w00/ag896 sheet, ag405) rather than as a three-segment mean; (c) the window sensitivity on whole segments against crops, to reconcile with villa #1867.
+
 ## Session 7 October 2026 (midday): an agent runs everything from here
 
 **The user does not want to type or paste commands.** Copying commands into the terminal was too much (user, 2026-10-07). Whoever picks this up runs the steps themselves and reports results in plain words. PR [ChaseHendrick/Scrolls#2](https://github.com/ChaseHendrick/Scrolls/pull/2) was merged into `main` at the user's request.
@@ -12,7 +48,7 @@ Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` 
 2. Make sure no old run is going: `ps aux | grep -E "v8in_run|ink_detection" | grep -v grep`. An fp16 run of `SEGMENT=0841-w00` was going at 6.2 s per tile; if it is still alive, stop it (it is safe: maps are recomputed, the lock is taken over).
 3. `git checkout main && git pull`.
 4. `bash scripts/mac-phase0.sh` and let it run (about 2 hours: v8in, then `v8in-1447`, on the three PHerc0841 crops; fp32; resumable; keeps the Mac awake; notification at the end). Do not set `V8IN_FP16` (5x slower on the M1 Pro).
-5. Then `python3 -m kit gate` (Gate A table). Record the Mac numbers: each `~/scrolls-work/0841-*/results/auc_v8in*.json` becomes a row in `docs/results.json` (window `crop`, `inner_px` 64, `map_from` `bare-crop`, device `mps`, reader `v8in d89166b` or `v8in-1447 2bf9f42`); `kit gate` must report "match" for the `ink_9um` check. Update the README's "Novel findings (Chase Hendrick)" (v8in on PHerc0841 is unpublished), `docs/tricks.md` if relevant, `docs/contrib/progress-prize-2026-10-draft.md`, and this handoff. Commit on a new branch and open a PR; tell the user the Gate A line in one sentence.
+5. Then `python3 -m kit gate` (Gate A table). Record the Mac numbers: each `~/scrolls-work/0841-*/results/auc_v8in*.json` becomes a row in `docs/results.json` (window `crop`, `inner_px` 64, `map_from` `bare-crop`, device `mps`, reader `v8in d89166b` or `v8in-1447 2bf9f42`); `kit gate` must report "match" for the `ink_9um` check. Update the README's "Novel findings" (v8in on PHerc0841 is unpublished), `docs/tricks.md` if relevant, `docs/contrib/progress-prize-2026-10-draft.md`, and this handoff. Commit on a new branch and open a PR; tell the user the Gate A line in one sentence.
 
 ### B. In a cloud session (no GPU needed)
 

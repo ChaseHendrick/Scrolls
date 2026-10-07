@@ -52,7 +52,3 @@ Layers permuted in a fixed order (`kit shuffle`, seed 20261007), forward AUC on 
 | d9v2 | 0.491 (0.586) | 0.476 (0.532) | running |
 
 (Model output.) Shuffled input reads at or below the reversed input everywhere: reversing keeps a depth structure the readers partly use. On ag405, 0.06 to 0.11 above 0.5 survives any depth order, a brightness share of the AUC that differs by segment. **Interpretation:** report the shuffle control beside the reverse one; a reader's AUC above its shuffled AUC is the part that depends on depth order.
-
-## Corrections
-
-- In chat (not committed) d9v2 was said to score below `ink_9um` on the letter-scale score; that held on w00 only. Over the three crops d9v2 is higher (mean 0.019 against 0.012, `kit hpscore` against labels).
