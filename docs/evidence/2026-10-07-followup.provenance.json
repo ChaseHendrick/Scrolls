@@ -1,0 +1,127 @@
+{
+  "code": [
+    {
+      "branch": "codex/cloud-validation-and-scan-status",
+      "commit": "93c42bf456f62b50d530c96366c5cb777b547534",
+      "repo": "/workspace/Scrolls",
+      "uncommitted_changes": true
+    }
+  ],
+  "digest": "de72805894066f9459c7f8c57248f232e3994f1287a495172199cc015178d784",
+  "finished_utc": "2026-10-07T14:01:56Z",
+  "inputs": [
+    {
+      "bytes": 1021003,
+      "files": 113,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-followup",
+      "sha256": "f50c9474f6732ffde3fe85d8225b90675e6681e7846f4f37ce15466870854574"
+    },
+    {
+      "bytes": 10241,
+      "kind": "file",
+      "path": "kit/_surface_geometry.py",
+      "sha256": "75457b1629e914480cca0be63847f9fc3b004cc5e0c3635a86dde7b42aaae393"
+    },
+    {
+      "bytes": 34481,
+      "kind": "file",
+      "path": "kit/surfacefix.py",
+      "sha256": "c44e8fb21be1381a0788ab7add7dfc23f3db52c2a90852d147b7d8d8fe989117"
+    },
+    {
+      "bytes": 7391,
+      "kind": "file",
+      "path": "tests/test_surface_geometry.py",
+      "sha256": "9ce1aa17574a1aae342d9e5309f143cbee8e055f005eeea07dd605c45ab8cd0c"
+    },
+    {
+      "bytes": 19624,
+      "kind": "file",
+      "path": "tests/test_surfacefix.py",
+      "sha256": "2b01cedefd3fd5c64f7e9c5ead5da6bfebe64dd515f7bd618745dfd86062b0be"
+    },
+    {
+      "bytes": 6977,
+      "kind": "file",
+      "path": "docs/surfacefix.md",
+      "sha256": "b591e0291cf47daa59c4ed41f8c28d474a087e38a3927f179fe1e5b25c98f211"
+    },
+    {
+      "bytes": 9665,
+      "kind": "file",
+      "path": "AGENTS.md",
+      "sha256": "1c413ee485fe969e9b039447fc0c0973637d369f8350350699b0df6d9fae9975"
+    },
+    {
+      "bytes": 19233,
+      "kind": "file",
+      "path": "README.md",
+      "sha256": "26d34d1fcf2a4cd50b9750ed43428e91ae2a967517bd39c7b12bcfbc6f0ca298"
+    },
+    {
+      "bytes": 35326,
+      "kind": "file",
+      "path": "docs/HANDOFF.md",
+      "sha256": "2983f930012a02e77595896395371897caa60ee60e6a4ab7080f4c526235f36e"
+    },
+    {
+      "bytes": 117198,
+      "kind": "file",
+      "path": "docs/results.json",
+      "sha256": "7a3ebb1a9be9530c38a902b5cf1d2631413d4697cd3b285c123b963c29eae374"
+    },
+    {
+      "bytes": 25445,
+      "kind": "file",
+      "path": "docs/scan-status.md",
+      "sha256": "3b1e6e76b2c1763afd3a8ceb614856a01e8d4be847bbddd25f98c90283be29d6"
+    },
+    {
+      "bytes": 17606,
+      "kind": "file",
+      "path": "docs/contrib/progress-prize-2026-10-draft.md",
+      "sha256": "c39896fba4c74370c5b05e44bcce303bb03b8362f15bd2dd120b2a40b4854994"
+    },
+    {
+      "bytes": 11188,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-followup-tests.md",
+      "sha256": "ebbacb1274ddc375ea68409251ed4c46188a85397e9ed4b42cce73ad6e732af5"
+    },
+    {
+      "bytes": 4645,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-coarse-support-mask.md",
+      "sha256": "13cbaa99937a2904be67eb9dc1c63af6ba99a1a8bb5f7d4cec28383fb5517e86"
+    },
+    {
+      "bytes": 13921,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-overlap-and-baseline.md",
+      "sha256": "a8af41c2235a53ae851c04234a5b18ac0c7021fbfde41d116a779c395b0cbdcc"
+    },
+    {
+      "bytes": 8273,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-reconstruction-tests.md",
+      "sha256": "4014ec5015cb7dae9a18f9d6e4d034cd3f17de7d03eca80ff7c6ed9f01f65def"
+    }
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "release": "6.18.44",
+    "system": "Linux"
+  },
+  "models": [],
+  "note": "Post-run evidence integrity seal for Chase Hendrick. Frozen originals and failed checks retained; no external pre-run timestamp or scientific validity implied. Full suite 146 passed; final repository checks 5 passed. Public controls only; no target candidates, successful real correction or ink-recovery breakthrough. Documentation is uncommitted at sealing; the next Git commit records these exact files.",
+  "operator": {
+    "login": "agent",
+    "name": "Chase Hendrick"
+  },
+  "outputs": [],
+  "run": "2026-10-07-completed-controlled-followup-and-community-pr-review",
+  "schema": 1,
+  "started_utc": null
+}

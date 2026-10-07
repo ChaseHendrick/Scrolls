@@ -1,0 +1,32 @@
+{
+  "reviewed_at_utc": "2026-10-07T13:47:15.239586+00:00",
+  "status": "approved_for_freeze_before_label_scoring",
+  "review_scope": "Code-only independent statistical/provenance review; no actual candidate prediction values or AUC outputs inspected. Runtime completion and real-data results are not approved by this receipt.",
+  "supervised_evaluator_path": "/workspace/scrolls-env/supervised-surfacefix/evaluate_supervised.py",
+  "supervised_evaluator_sha256": "31a61bbce494275a7d33443cd71711039c1d607bd9c600e1dafde0bed2b1a8c1",
+  "immutable_w045_math_path": "/workspace/scrolls-env/phase-reconstruction/evaluate_w045.py",
+  "immutable_w045_math_sha256": "a95e703eb73dcfe02a97b48184cbf1ef965ef1872219a3d0774780b7b9d4e72c",
+  "authoritative_rule_sha256": "a897301ed8a1ffe5099c0e9ff85cdff9affcc2a956962b64f85f32a05f618f26",
+  "checks": [
+    "Fixed supervised primary AUC includes legitimate quantized zeros, exact uint8 ties; unknown pixels excluded rather than made negative.",
+    "1000 paired107px source-block draws withseed20261007 reused across allmaps and metric sufficient statistics.",
+    "Common positiveHP mask and shared smoothed support across maps; edited cohorts reuse global smoothing.",
+    "Two candidate-minusbaseline simultaneous max-centered-deviation bands are descriptive, not a label-based winner selector.",
+    "Explicit1000-draw rootrule precedence recorded inappend-only prereg-precedence-note.json;300 auxiliary summary doesnot override it.",
+    "AUC/HP invalid draws and one-class cohorts cannot provide passing simultaneous intervals.",
+    "Corrector report and eight whole-search nulls required before scoring; noaccepted corrections cannot pass success gate.",
+    "Accepted geometry requires genuine official combined geometry-to-layer hashes and matched inference metadata before metrics.",
+    "Final guard ties all10 reader settings, EMAstate, CPUdevice, seeded shuffle order and original layers to frozen protocol.",
+    "Primary geometry-edited support comes only from changed bilinear corners, not prediction or label scores."
+  ],
+  "resolved_finding": "Comparability alone did not enforce the frozen checkpoint/inference recipe; unfrozen supervised evaluator now asserts exact authoritative settings. Its combined-render proof also binds corrected geometry to actual inputs.",
+  "math_test_receipt_sha256": "aa0fd3f650cd7bbe6c419fdfc1b3bd4c939ed96fce3b29df0909f2ae787f67bd",
+  "geometry_test_receipt_sha256": "145f8e7725393db5db7fa5e16a215d9fa2475fb3386dca0ce7fc618ebe1d7012",
+  "limitations": [
+    "Single label-selected crop on one sheet; overlappingtraces and interleavedrows are not independent replications.",
+    "Spatial bootstrap bands are approximate conditional sensitivity intervals, not calibrated false-positive guarantees. Families are separate forAUC/HP and depth/candidate contrasts; do not describe all reported intervals as one joint95percent guarantee.",
+    "HP uses map-dependent common positive prediction coverage, whereas primaryAUC includeszeros; report HPcohortcounts and do not interchange these populations.",
+    "Postselection final-mesh intervals holdthe chosen geometry fixed and do not resample the entire correction selection process. Generalization ofthe selection algorithm stillrequires a separate patch/sheet.",
+    "Immutable w045 load_maps checks shared settings moreweakly; retain it unchanged and verify manifest settings against the frozen w045rule in an external audit receipt before any future phasecandidate evaluation. Existing baseline producer is pinned; no observedmetric error is established."
+  ]
+}

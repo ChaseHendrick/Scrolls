@@ -1,0 +1,1244 @@
+[
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -1.9610278873782015e-05,
+        -8.545161384852199e-05,
+        0.00013444438395313063
+      ],
+      "ncc": 0.9999999948937625,
+      "integer_grid_ncc": 0.9999995695456397,
+      "margin": 0.21161636102686487,
+      "competing_ncc": 0.7883832085187749,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 21,
+      "continuous_Hessian_eigenvalues": [
+        -0.6282406794063842,
+        -0.10289925206599558,
+        -0.06652313544897057
+      ],
+      "continuous_Hessian_condition": 9.443942700029574
+    },
+    "error_vox": 0.0001605049336418081,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -2.0092467580829724e-05,
+        -0.00025467291581979246,
+        -0.0003171118164103776
+      ],
+      "ncc": 0.9999999862099536,
+      "integer_grid_ncc": 1.0000007087635323,
+      "margin": 0.16879384568667766,
+      "competing_ncc": 0.8312068630768547,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 23,
+      "continuous_Hessian_eigenvalues": [
+        -0.28505822747961046,
+        -0.06324444400124749,
+        -0.05129789574422016
+      ],
+      "continuous_Hessian_condition": 5.556918531336221
+    },
+    "error_vox": 0.00040721235911098135,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        2.9999803897211264,
+        -4.000085451613849,
+        5.000134444383953
+      ],
+      "ncc": 0.9999999948937625,
+      "integer_grid_ncc": 0.9999996960720139,
+      "margin": 0.21161648755323903,
+      "competing_ncc": 0.7883832085187749,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 21,
+      "continuous_Hessian_eigenvalues": [
+        -0.6282406794063842,
+        -0.10289925206599558,
+        -0.06652313544897057
+      ],
+      "continuous_Hessian_condition": 9.443942700029574
+    },
+    "error_vox": 0.00016050493364172403,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        2.999979907532419,
+        -4.00025467291582,
+        4.99968288818359
+      ],
+      "ncc": 0.9999999862099536,
+      "integer_grid_ncc": 1.0000007087635323,
+      "margin": 0.1687937712495644,
+      "competing_ncc": 0.8312069375139679,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 23,
+      "continuous_Hessian_eigenvalues": [
+        -0.28505822747961046,
+        -0.06324444400124749,
+        -0.05129789574422016
+      ],
+      "continuous_Hessian_condition": 5.556918531336221
+    },
+    "error_vox": 0.0004072123591109719,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        1,
+        -1,
+        0
+      ],
+      "shift_zyx": [
+        0.2498171751556605,
+        -0.3523826186284307,
+        0.40166214159068164
+      ],
+      "ncc": 0.9978379968622566,
+      "integer_grid_ncc": 0.9565976114462643,
+      "margin": 0.10861854159421525,
+      "competing_ncc": 0.8479790698520491,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 129,
+      "continuous_Hessian_eigenvalues": [
+        -0.7260691203279726,
+        -0.09865994618934601,
+        -0.06292948098107437
+      ],
+      "continuous_Hessian_condition": 11.537821526707539
+    },
+    "error_vox": 0.002910843712693346,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        1,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.23812708857403495,
+        -0.342784270108633,
+        0.4023911367751113
+      ],
+      "ncc": 0.997649383627095,
+      "integer_grid_ncc": 0.9709418506939486,
+      "margin": 0.10065253217739611,
+      "competing_ncc": 0.8702893185165524,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 96,
+      "continuous_Hessian_eigenvalues": [
+        -0.30888026798031637,
+        -0.05514515157611917,
+        -0.04618598935613962
+      ],
+      "continuous_Hessian_condition": 6.687748217290405
+    },
+    "error_vox": 0.014097883481972323,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.4039516293158197,
+        0.19332422915951153,
+        -0.30335669857114334
+      ],
+      "ncc": 0.9981716148189965,
+      "integer_grid_ncc": 0.9733379846703814,
+      "margin": 0.15727457072203377,
+      "competing_ncc": 0.8160634139483476,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 93,
+      "continuous_Hessian_eigenvalues": [
+        -0.711017718778449,
+        -0.09973597779638042,
+        -0.06361977212626521
+      ],
+      "continuous_Hessian_condition": 11.176049442102729
+    },
+    "error_vox": 0.00845273422401754,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.4044044774968747,
+        0.1851607091074407,
+        -0.297045402815729
+      ],
+      "ncc": 0.9980106365333891,
+      "integer_grid_ncc": 0.9831266402004422,
+      "margin": 0.12583314422131275,
+      "competing_ncc": 0.8572934959791294,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 73,
+      "continuous_Hessian_eigenvalues": [
+        -0.3049277516424267,
+        -0.056264930342448824,
+        -0.04631449770891351
+      ],
+      "continuous_Hessian_condition": 6.583850991084839
+    },
+    "error_vox": 0.015758604657004727,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.4,
+      0.3,
+      -0.2
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.3860950573130339,
+        0.2985355845390526,
+        -0.1986460032077951
+      ],
+      "ncc": 0.9985873264649606,
+      "integer_grid_ncc": 0.9844075034660804,
+      "margin": 0.17015766371888363,
+      "competing_ncc": 0.8142498397471968,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 94,
+      "continuous_Hessian_eigenvalues": [
+        -0.6858302699448013,
+        -0.1007134484537504,
+        -0.06367502524901661
+      ],
+      "continuous_Hessian_condition": 10.770789132202083
+    },
+    "error_vox": 0.014047250659234912,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      0.4,
+      0.3,
+      -0.2
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.37274810872857767,
+        0.2931582780312491,
+        -0.18715739118851218
+      ],
+      "ncc": 0.998358668319246,
+      "integer_grid_ncc": 0.9900257141799419,
+      "margin": 0.13216968649450167,
+      "competing_ncc": 0.8578560276854402,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 74,
+      "continuous_Hessian_eigenvalues": [
+        -0.29645246826244276,
+        -0.057853522301330014,
+        -0.04705284454416159
+      ],
+      "continuous_Hessian_condition": 6.300415440010357
+    },
+    "error_vox": 0.03089348375389249,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      -0.25,
+      -0.4,
+      0.35
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        -1,
+        0
+      ],
+      "shift_zyx": [
+        -0.23032468839145454,
+        -0.4077701917990389,
+        0.34351411859078346
+      ],
+      "ncc": 0.9980057157321361,
+      "integer_grid_ncc": 0.9698058042584451,
+      "margin": 0.12234593403025285,
+      "competing_ncc": 0.8474598702281922,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 71,
+      "continuous_Hessian_eigenvalues": [
+        -0.7145819821919319,
+        -0.09971129533596475,
+        -0.06303276051797008
+      ],
+      "continuous_Hessian_condition": 11.336675981186179
+    },
+    "error_vox": 0.022126012409416106,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      -0.25,
+      -0.4,
+      0.35
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        -1,
+        0
+      ],
+      "shift_zyx": [
+        -0.2121070183777534,
+        -0.4022478037384267,
+        0.333985002263566
+      ],
+      "ncc": 0.9978049823758534,
+      "integer_grid_ncc": 0.9805833273109001,
+      "margin": 0.10302614547830313,
+      "competing_ncc": 0.877557181832597,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 75,
+      "continuous_Hessian_eigenvalues": [
+        -0.30421897824685534,
+        -0.05662818043928269,
+        -0.046470790693055264
+      ],
+      "continuous_Hessian_condition": 6.546455821168516
+    },
+    "error_vox": 0.04119964599809555,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.15,
+      0.45,
+      0.25
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.15477627912612124,
+        0.43654352798381274,
+        0.25119969843967005
+      ],
+      "ncc": 0.9985916574759534,
+      "integer_grid_ncc": 0.969712692313386,
+      "margin": 0.15005273983167644,
+      "competing_ncc": 0.8196599524817095,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 97,
+      "continuous_Hessian_eigenvalues": [
+        -0.6982769180457113,
+        -0.09898323136386113,
+        -0.06365965253206747
+      ],
+      "continuous_Hessian_condition": 10.968908724312723
+    },
+    "error_vox": 0.014329297183016319,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      0.15,
+      0.45,
+      0.25
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.1452004752235331,
+        0.43426436439566085,
+        0.24674491367942333
+      ],
+      "ncc": 0.998395360355028,
+      "integer_grid_ncc": 0.9840076980215083,
+      "margin": 0.12671249986331556,
+      "competing_ncc": 0.8572951981581928,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 74,
+      "continuous_Hessian_eigenvalues": [
+        -0.3018592245415878,
+        -0.05607254651125931,
+        -0.047325929897009796
+      ],
+      "continuous_Hessian_condition": 6.378305195449741
+    },
+    "error_vox": 0.01677024904128949,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "gradient",
+    "expected_zyx": [
+      12,
+      -11,
+      9
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        12,
+        -11,
+        9
+      ],
+      "shift_zyx": [
+        11.999980389721125,
+        -11.000085451613849,
+        9.000134444383953
+      ],
+      "ncc": 0.9999999948937625,
+      "integer_grid_ncc": 0.9999995695456395,
+      "margin": 0.21161642390166446,
+      "competing_ncc": 0.788383145643975,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 21,
+      "continuous_Hessian_eigenvalues": [
+        -0.6282406794063842,
+        -0.10289925206599558,
+        -0.06652313544897057
+      ],
+      "continuous_Hessian_condition": 9.443942700029574
+    },
+    "error_vox": 0.00016050493364183255,
+    "pass": true
+  },
+  {
+    "cube": 0,
+    "kind": "raw",
+    "expected_zyx": [
+      12,
+      -11,
+      9
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        12,
+        -11,
+        9
+      ],
+      "shift_zyx": [
+        11.999979907532419,
+        -11.000254672915819,
+        8.999682888183589
+      ],
+      "ncc": 0.9999999862099536,
+      "integer_grid_ncc": 1.0000007087635323,
+      "margin": 0.16879384568667766,
+      "competing_ncc": 0.8312068630768547,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 23,
+      "continuous_Hessian_eigenvalues": [
+        -0.28505822747961046,
+        -0.06324444400124749,
+        -0.05129789574422016
+      ],
+      "continuous_Hessian_condition": 5.556918531336221
+    },
+    "error_vox": 0.00040721235911113,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.00010227725127741534,
+        0.00021862134227543576,
+        -3.6001161729256746e-05
+      ],
+      "ncc": 0.9999999974201096,
+      "integer_grid_ncc": 0.9999996762333515,
+      "margin": 0.13255914546140146,
+      "competing_ncc": 0.86744053077195,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 23,
+      "continuous_Hessian_eigenvalues": [
+        -0.6526870656206151,
+        -0.06532227727946016,
+        -0.0379554813392769
+      ],
+      "continuous_Hessian_condition": 17.196121418837198
+    },
+    "error_vox": 0.00024403280737030604,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      0,
+      0,
+      0
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        9.230423749782488e-06,
+        0.00010528067947284184,
+        -5.429782437301378e-05
+      ],
+      "ncc": 0.9999999996434327,
+      "integer_grid_ncc": 0.9999999966478278,
+      "margin": 0.09870172029394919,
+      "competing_ncc": 0.9012982763538786,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 25,
+      "continuous_Hessian_eigenvalues": [
+        -0.26334473860204366,
+        -0.04703859615227561,
+        -0.03059302415873936
+      ],
+      "continuous_Hessian_condition": 8.607999563417312
+    },
+    "error_vox": 0.00011881698500006831,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        2.9998977227487225,
+        -3.9997813786577248,
+        4.999963998838271
+      ],
+      "ncc": 0.9999999974201096,
+      "integer_grid_ncc": 0.9999996762333491,
+      "margin": 0.13255914546139902,
+      "competing_ncc": 0.86744053077195,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 23,
+      "continuous_Hessian_eigenvalues": [
+        -0.6526870656206151,
+        -0.06532227727946016,
+        -0.0379554813392769
+      ],
+      "continuous_Hessian_condition": 17.196121418837198
+    },
+    "error_vox": 0.00024403280737015476,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      3,
+      -4,
+      5
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        3,
+        -4,
+        5
+      ],
+      "shift_zyx": [
+        3.00000923042375,
+        -3.999894719320527,
+        4.999945702175627
+      ],
+      "ncc": 0.9999999996434327,
+      "integer_grid_ncc": 0.9999999273277793,
+      "margin": 0.09870165097390071,
+      "competing_ncc": 0.9012982763538786,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 25,
+      "continuous_Hessian_eigenvalues": [
+        -0.26334473860204366,
+        -0.04703859615227561,
+        -0.03059302415873936
+      ],
+      "continuous_Hessian_condition": 8.607999563417312
+    },
+    "error_vox": 0.00011881698500008992,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        1,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.26468925728182296,
+        -0.32075654210942595,
+        0.38412954884767814
+      ],
+      "ncc": 0.9980941479134839,
+      "integer_grid_ncc": 0.9805691757423648,
+      "margin": 0.06856430948622927,
+      "competing_ncc": 0.9120048662561355,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 205,
+      "continuous_Hessian_eigenvalues": [
+        -0.7333532869105606,
+        -0.05580859694978671,
+        -0.03444858620804474
+      ],
+      "continuous_Hessian_condition": 21.288342066685495
+    },
+    "error_vox": 0.03637066577157477,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      0.25,
+      -0.35,
+      0.4
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.23700780167300864,
+        -0.3180542070837604,
+        0.38473450672202963
+      ],
+      "ncc": 0.9982598892865182,
+      "integer_grid_ncc": 0.9851188027710025,
+      "margin": 0.07112694943367392,
+      "competing_ncc": 0.9139918533373286,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 159,
+      "continuous_Hessian_eigenvalues": [
+        -0.2792486856805716,
+        -0.03908472252521987,
+        -0.026776532381193655
+      ],
+      "continuous_Hessian_condition": 10.428859185541901
+    },
+    "error_vox": 0.03771427034207208,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.39468926636120444,
+        0.15907411733157503,
+        -0.28465416003985106
+      ],
+      "ncc": 0.9986297006808538,
+      "integer_grid_ncc": 0.9876768332571997,
+      "margin": 0.08494287717780558,
+      "competing_ncc": 0.9027339560793941,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 132,
+      "continuous_Hessian_eigenvalues": [
+        -0.7161711475936428,
+        -0.05824091886521318,
+        -0.034849896630224884
+      ],
+      "continuous_Hessian_condition": 20.550165620075795
+    },
+    "error_vox": 0.04402983724764863,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      -0.4,
+      0.2,
+      -0.3
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        -1,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.39732838238114776,
+        0.15200100977405126,
+        -0.2784831103500061
+      ],
+      "ncc": 0.9986855907205922,
+      "integer_grid_ncc": 0.9909431701840109,
+      "margin": 0.06804648406549885,
+      "competing_ncc": 0.922896686118512,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 163,
+      "continuous_Hessian_eigenvalues": [
+        -0.274516647376531,
+        -0.041089550176847796,
+        -0.027489786130926005
+      ],
+      "continuous_Hessian_condition": 9.986132524607013
+    },
+    "error_vox": 0.052668939078190084,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.4,
+      0.3,
+      -0.2
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.39013166065356675,
+        0.26236400962077266,
+        -0.18291841740921128
+      ],
+      "ncc": 0.998856071751391,
+      "integer_grid_ncc": 0.9934084832463136,
+      "margin": 0.09673556063180644,
+      "competing_ncc": 0.8966729226145072,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 111,
+      "continuous_Hessian_eigenvalues": [
+        -0.6935509597486857,
+        -0.0594626625347292,
+        -0.03503121226099532
+      ],
+      "continuous_Hessian_condition": 19.798086191864495
+    },
+    "error_vox": 0.04249273299150799,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      0.4,
+      0.3,
+      -0.2
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        0.37759366343328926,
+        0.25784351263684013,
+        -0.1743818100110103
+      ],
+      "ncc": 0.9988245937625028,
+      "integer_grid_ncc": 0.9946485957302101,
+      "margin": 0.07611020632668808,
+      "competing_ncc": 0.9185383894035221,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 132,
+      "continuous_Hessian_eigenvalues": [
+        -0.2680373542901905,
+        -0.042128037265713875,
+        -0.02770824941622613
+      ],
+      "continuous_Hessian_condition": 9.67355787310136
+    },
+    "error_vox": 0.054180300880051865,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      -0.25,
+      -0.4,
+      0.35
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.20712889781245566,
+        -0.3707238072698547,
+        0.32982458393367536
+      ],
+      "ncc": 0.9982039441633169,
+      "integer_grid_ncc": 0.9878158245483877,
+      "margin": 0.1000731531574558,
+      "competing_ncc": 0.8877426713909319,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 209,
+      "continuous_Hessian_eigenvalues": [
+        -0.7270403242360938,
+        -0.056164389679982274,
+        -0.03546959988692617
+      ],
+      "continuous_Hessian_condition": 20.49756204055957
+    },
+    "error_vox": 0.055696268070641784,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      -0.25,
+      -0.4,
+      0.35
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        0,
+        0
+      ],
+      "shift_zyx": [
+        -0.21082502064661426,
+        -0.3710624260503954,
+        0.3266454117213511
+      ],
+      "ncc": 0.9983265377918599,
+      "integer_grid_ncc": 0.9916123913525571,
+      "margin": 0.07567274585708039,
+      "competing_ncc": 0.9159396454954767,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 140,
+      "continuous_Hessian_eigenvalues": [
+        -0.277720428178975,
+        -0.03935241838211262,
+        -0.027329570049091204
+      ],
+      "continuous_Hessian_condition": 10.161902572199818
+    },
+    "error_vox": 0.05401387772686051,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      0.15,
+      0.45,
+      0.25
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        1,
+        0
+      ],
+      "shift_zyx": [
+        0.16851992968611304,
+        0.472684197824617,
+        0.238175251636044
+      ],
+      "ncc": 0.9985895349064788,
+      "integer_grid_ncc": 0.9885307640833497,
+      "margin": 0.0958486980050588,
+      "competing_ncc": 0.8926820660782909,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 139,
+      "continuous_Hessian_eigenvalues": [
+        -0.7119548636776726,
+        -0.05684087455515905,
+        -0.03508016074126196
+      ],
+      "continuous_Hessian_condition": 20.295085559293277
+    },
+    "error_vox": 0.03158140751131606,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      0.15,
+      0.45,
+      0.25
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        0,
+        1,
+        0
+      ],
+      "shift_zyx": [
+        0.14389852556485797,
+        0.4681621359443799,
+        0.2381816940944267
+      ],
+      "ncc": 0.99868255066245,
+      "integer_grid_ncc": 0.9910803458184799,
+      "margin": 0.07163781909582279,
+      "competing_ncc": 0.9194425267226571,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 144,
+      "continuous_Hessian_eigenvalues": [
+        -0.2752888981396866,
+        -0.04011405025180963,
+        -0.027199656424903684
+      ],
+      "continuous_Hessian_condition": 10.121043216106044
+    },
+    "error_vox": 0.02251140881469963,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "gradient",
+    "expected_zyx": [
+      12,
+      -11,
+      9
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        12,
+        -11,
+        9
+      ],
+      "shift_zyx": [
+        11.999897722748722,
+        -10.999781378657724,
+        8.99996399883827
+      ],
+      "ncc": 0.9999999974201096,
+      "integer_grid_ncc": 0.9999997427459388,
+      "margin": 0.13255927881078078,
+      "competing_ncc": 0.8674404639351581,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 23,
+      "continuous_Hessian_eigenvalues": [
+        -0.6526870656206151,
+        -0.06532227727946016,
+        -0.0379554813392769
+      ],
+      "continuous_Hessian_condition": 17.196121418837198
+    },
+    "error_vox": 0.00024403280737086977,
+    "pass": true
+  },
+  {
+    "cube": 1,
+    "kind": "raw",
+    "expected_zyx": [
+      12,
+      -11,
+      9
+    ],
+    "peak": {
+      "integer_shift_zyx": [
+        12,
+        -11,
+        9
+      ],
+      "shift_zyx": [
+        12.00000923042375,
+        -10.999894719320528,
+        8.999945702175626
+      ],
+      "ncc": 0.9999999996434327,
+      "integer_grid_ncc": 1.0000000659678763,
+      "margin": 0.09870178961399767,
+      "competing_ncc": 0.9012982763538786,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 25,
+      "continuous_Hessian_eigenvalues": [
+        -0.26334473860212426,
+        -0.04703859615219366,
+        -0.030593024158740677
+      ],
+      "continuous_Hessian_condition": 8.607999563419575
+    },
+    "error_vox": 0.00011881698499970881,
+    "pass": true
+  },
+  {
+    "control": "deliberately_periodic_ambiguous_field",
+    "kind": "gradient",
+    "peak": {
+      "integer_shift_zyx": [
+        -28,
+        -8,
+        -8
+      ],
+      "shift_zyx": [
+        -27.999999486771596,
+        -7.999999486930954,
+        -7.9999994866187825
+      ],
+      "ncc": 0.9999999999989856,
+      "integer_grid_ncc": 0.9999977524150837,
+      "margin": 0.0,
+      "competing_ncc": 0.9999977524150837,
+      "refinement_error": null,
+      "boundary": false,
+      "optimization_success": true,
+      "optimization_evaluations": 19,
+      "continuous_Hessian_eigenvalues": [
+        -0.7373549458542372,
+        -0.7373549032012499,
+        -0.7373542403235523
+      ],
+      "continuous_Hessian_condition": 1.0000009568408863
+    },
+    "pass": true
+  },
+  {
+    "control": "deliberately_periodic_ambiguous_field",
+    "kind": "raw",
+    "peak": {
+      "integer_shift_zyx": [
+        -24,
+        -32,
+        -32
+      ],
+      "shift_zyx": null,
+      "ncc": 0.9999997519015609,
+      "integer_grid_ncc": 0.9999999667491665,
+      "margin": 0.0,
+      "competing_ncc": 0.9999999667491665,
+      "refinement_error": "continuous_bound_peak",
+      "boundary": true,
+      "optimization_success": true,
+      "optimization_evaluations": 35,
+      "continuous_Hessian_eigenvalues": [
+        -250.04991180673187,
+        -150.14352307564047,
+        -0.18877122618269346
+      ],
+      "continuous_Hessian_condition": 1324.6187825507511
+    },
+    "pass": true
+  }
+]

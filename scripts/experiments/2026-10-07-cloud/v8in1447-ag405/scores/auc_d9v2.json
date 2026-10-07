@@ -1,0 +1,31 @@
+{
+  "forward": {
+    "auc": 0.8319,
+    "ink_px": 67060,
+    "background_px": 184412,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "files": {
+    "prediction": "/root/scrolls-work/job-v8in1447-ag405/maps/d9v2.tif",
+    "labels": "/root/scrolls-work/data/0841-ag405_labels/inklabels.zarr",
+    "mask": "/root/scrolls-work/data/0841-ag405_labels/supervision.zarr",
+    "control": "/root/scrolls-work/job-v8in1447-ag405/maps/d9v2_reverse.tif"
+  },
+  "level": "2",
+  "crop": [
+    1024,
+    1664,
+    2496,
+    3136
+  ],
+  "control": {
+    "auc": 0.6572,
+    "ink_px": 67060,
+    "background_px": 184412,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  }
+}

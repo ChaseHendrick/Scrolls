@@ -1,0 +1,10 @@
+{
+ "ours_safetensors_sha256": "ab3f1bdefa53733f4d4c46da6c7713c142bc8c703df5098fe8641757d764849c",
+ "theirs_file_sha256": "ab3f1bdefa53733f4d4c46da6c7713c142bc8c703df5098fe8641757d764849c",
+ "published_sha256": "ab3f1bdefa53733f4d4c46da6c7713c142bc8c703df5098fe8641757d764849c",
+ "sha_match": true,
+ "tensors": 508,
+ "same_names": true,
+ "tensors_differing": 0,
+ "bit_identical": true
+}

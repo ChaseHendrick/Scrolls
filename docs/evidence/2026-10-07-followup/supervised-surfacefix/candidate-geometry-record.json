@@ -1,0 +1,26 @@
+{
+  "scope": "Geometry-only candidates prepared with unchanged bounded normal-offset API; final matching implementation freeze still pending",
+  "rule_sha256": "2f2bd0fa614a365107a8c9f7580d81b468c31eba1251b5670e59b7dc456637a1",
+  "prepare_source_sha256_observed": "a0e53d73ee50a279d254afb4d74f398b237da62a34ce34947d3330b7c15a14dd",
+  "candidate_manifest_sha256": "a661764213b6264b73ff9e92856c495606328c454ee2727dd2c0264441df95d6",
+  "candidate_mesh_hashes": {
+    "offset-000.tifxyz": {
+      "meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+      "x.tif": "84889f6a341417bbb31eba8ef366a4d2be2c4c16a6c2e0222401632dad189e93",
+      "y.tif": "839b06a06c7661b9c043935e548c807d6c9a2f519a25dae275e91889fdcf0676",
+      "z.tif": "0f35c1a5bce3e69c3260a7578d22a6f19631498aeb85b47906d9571baf194138"
+    },
+    "offset-001.tifxyz": {
+      "meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+      "x.tif": "f621e5d7e4eaa8c3764f0f11ebe103d96a3a37345889cbea8ecddf93aa8dca84",
+      "y.tif": "b1fb649f7906985e99f863446e5336d3661a258c1aaabb68589781b5239ad2e5",
+      "z.tif": "6fd78bf235f7998dd452a3cfead307107e7c7ac10497dbd85e7832e59da03c09"
+    }
+  },
+  "offsets_vox": [
+    -1,
+    1
+  ],
+  "source_hashes_unchanged": true,
+  "reader_maps_generated": false
+}

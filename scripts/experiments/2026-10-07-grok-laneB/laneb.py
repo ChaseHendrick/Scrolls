@@ -2,34 +2,73 @@
 
 Each function takes plain 2D arrays on one surface grid; tests in tests/test_laneb.py.
 """
+import hashlib
 import numpy as np
 from scipy import ndimage as ndi
 
 
+def file_sha256(path, chunk_bytes=1024 * 1024):
+    """Stream an input digest using APIs available on Python 3.10."""
+    if chunk_bytes < 1:
+        raise ValueError("chunk_bytes must be positive")
+    digest = hashlib.sha256()
+    with open(path, "rb") as stream:
+        for chunk in iter(lambda: stream.read(chunk_bytes), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
 def normals_from_xyz(xyz, valid):
     """Unit surface normals of a tifxyz grid (H, W, 3) by central differences; NaN off-surface."""
-    du = np.gradient(xyz, axis=1)
-    dv = np.gradient(xyz, axis=0)
+    valid = geometry_valid(xyz, valid)
+    clean = np.where(valid[..., None], xyz, np.nan)
+    du = np.gradient(clean, axis=1)
+    dv = np.gradient(clean, axis=0)
     n = np.cross(du, dv)
     norm = np.linalg.norm(n, axis=-1, keepdims=True)
     n = n / np.where(norm > 0, norm, np.nan)
-    n[~valid] = np.nan
+    n[~known_feature_support(valid, extra=1)] = np.nan
     return n
 
 
-def stretch_from_xyz(xyz):
+def stretch_from_xyz(xyz, valid=None):
     """Local area of one grid cell in volume voxels squared (mesh stretch)."""
-    du = np.gradient(xyz, axis=1)
-    dv = np.gradient(xyz, axis=0)
-    return np.linalg.norm(np.cross(du, dv), axis=-1)
+    valid = geometry_valid(xyz, valid)
+    clean = np.where(valid[..., None], xyz, np.nan)
+    du = np.gradient(clean, axis=1)
+    dv = np.gradient(clean, axis=0)
+    area = np.linalg.norm(np.cross(du, dv), axis=-1)
+    area[~known_feature_support(valid, extra=1)] = np.nan
+    return area
 
 
-def orientation(img, sigma_grad=1.0, sigma_win=4.0):
+def geometry_valid(xyz, valid=None):
+    intrinsic = np.isfinite(xyz).all(-1) & (xyz >= 0).all(-1) & (xyz.sum(-1) > 0)
+    return intrinsic if valid is None else intrinsic & np.asarray(valid, bool)
+
+
+def known_feature_support(mask, *sigmas, extra=0):
+    """Conservative square support for composed Gaussian filters and stencils."""
+    radius = int(extra) + sum(int(np.ceil(4 * float(s))) for s in sigmas)
+    return ndi.minimum_filter(np.asarray(mask, bool), size=2 * radius + 1,
+                              mode="constant", cval=0).astype(bool)
+
+
+def known_high_pass(img, known, sigma):
+    """High-pass and valid core; unknown labels are never image background."""
+    known = np.asarray(known, bool)
+    clean = np.where(known, img, 0.0).astype(np.float64)
+    weight = ndi.gaussian_filter(known.astype(float), sigma)
+    trend = ndi.gaussian_filter(clean, sigma) / np.maximum(weight, 1e-12)
+    return clean - trend, known_feature_support(known, sigma)
+
+
+def orientation(img, sigma_grad=1.0, sigma_win=4.0, known=None):
     """Structure-tensor orientation of the dominant line direction (radians in [0, pi)) and coherence.
 
     Lines along x (horizontal stripes varying in y) give angle 0.
     """
-    f = img.astype(np.float64)
+    f = img.astype(np.float64) if known is None else np.where(known, img, 0.0).astype(np.float64)
     gy = ndi.gaussian_filter(f, sigma_grad, order=(1, 0))
     gx = ndi.gaussian_filter(f, sigma_grad, order=(0, 1))
     jxx = ndi.gaussian_filter(gx * gx, sigma_win)
@@ -39,6 +78,10 @@ def orientation(img, sigma_grad=1.0, sigma_win=4.0):
     line_angle = np.mod(grad_angle + np.pi / 2, np.pi)      # lines run perpendicular to it
     tr = jxx + jyy
     coh = np.sqrt((jxx - jyy) ** 2 + 4 * jxy ** 2) / np.where(tr > 0, tr, np.inf)
+    if known is not None:
+        core = known_feature_support(known, sigma_grad, sigma_win)
+        line_angle[~core] = np.nan
+        coh[~core] = np.nan
     return line_angle, coh
 
 
@@ -56,6 +99,8 @@ def angle_hist(angle, weight, bins=12):
 
 def autocorr_profile(img, mask, max_lag):
     """Normalised autocorrelation along y and along x of a masked image, lags 0..max_lag."""
+    if not np.asarray(mask).any() or not np.isfinite(img[mask]).all() or np.std(img[mask]) == 0:
+        return np.full(max_lag + 1, np.nan), np.full(max_lag + 1, np.nan)
     f = np.where(mask, img - img[mask].mean(), 0.0).astype(np.float64)
     m = mask.astype(np.float64)
     shape = [s + max_lag for s in f.shape]
@@ -85,12 +130,14 @@ def first_peak(profile, start):
     return float("nan"), float("nan")
 
 
-def stroke_widths(mask, min_px=20):
+def stroke_widths(mask, min_px=20, known=None):
     """Stroke width per skeleton pixel: twice the distance to background (in pixels).
 
     Medial-axis approximation: local maxima of the distance transform in a 3x3 window,
     inside components of at least min_px pixels.
     """
+    if known is not None:
+        mask = np.asarray(mask, bool) & np.asarray(known, bool)
     lab, n = ndi.label(mask)
     if n == 0:
         return np.array([])
@@ -98,6 +145,10 @@ def stroke_widths(mask, min_px=20):
     keep = np.isin(lab, np.nonzero(sizes >= min_px)[0] + 1)
     dt = ndi.distance_transform_edt(keep)
     ridge = keep & (dt >= ndi.maximum_filter(dt, size=3)) & (dt > 0)
+    if known is not None:
+        # Exclude widths and nearby ridge decisions determined by an unknown edge.
+        unknown_distance = ndi.distance_transform_edt(np.pad(np.asarray(known, bool), 1))[1:-1, 1:-1]
+        ridge &= known_feature_support(known, extra=1) & (unknown_distance > dt + 2)
     return 2.0 * dt[ridge]
 
 
@@ -116,6 +167,8 @@ def otsu(values, bins=256):
 def block_shift_null(x, y, mask, shifts):
     """Pearson r of x and y inside mask, and r after cyclic 2D shifts of y (spatial null)."""
     def r(a, b, m):
+        if int(m.sum()) < 3 or np.std(a[m]) == 0 or np.std(b[m]) == 0:
+            return float("nan")
         return float(np.corrcoef(a[m], b[m])[0, 1])
     real = r(x, y, mask)
     null = []
@@ -124,3 +177,14 @@ def block_shift_null(x, y, mask, shifts):
         ms = mask & np.roll(mask, (dy, dx), axis=(0, 1))
         null.append(r(x, ys, ms))
     return real, np.array(null)
+
+
+def finite_json(value):
+    """Encode unavailable statistics as JSON null, never NaN or infinity."""
+    if isinstance(value, dict):
+        return {k: finite_json(v) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [finite_json(v) for v in value]
+    if isinstance(value, (float, np.floating)):
+        return float(value) if np.isfinite(value) else None
+    return value

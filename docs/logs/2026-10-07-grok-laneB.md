@@ -6,7 +6,7 @@ Research notes. Labels per [`../NOVELTY.md`](../NOVELTY.md). Public labelled dat
 
 - Maps (whole segment, 9 um grid, already on the user's Mac from earlier sessions): `ink_9um` seed 42 and 43, forward and reverse, on PHerc0841 w00 and PHerc0139 w045 (villa PR #1865, CPU). Also the team's own 2.4 um PHerc0841 w00 map (`ink-detection/...new_canon_autoresearch_recipe-tile256-stride128.tif`, 4x4 block mean), which has no reverse control.
 - Data: surface volumes and 20260918 labels already in `~/scrolls-work/data`; the w00 9.366 um mesh (`mesh/20260220213127-on-20250821151531-9.366um.tifxyz`) and the team map fetched with `fetch_data.py` (bucket's global endpoint; about 25 MB for these two items).
-- Scripts: `laneb.py` (statistics, tested in `tests/test_laneb.py`), `checks.py` (per map: geometry, fibers, strokes, depth), `run_mac.sh` (the exact runs; Apple M1 Pro, CPU, `nice -n 10`; about 5 minutes, peak memory 4.0 to 8.6 GB).
+- Scripts: `checks_run_2026-10-07.py` with `laneb_run_2026_10_07.py` (frozen copies of the scripts that produced `results/`), `run_mac.sh` (the exact runs; Apple M1 Pro, CPU, `nice -n 10`; about 5 minutes, peak memory 4.0 to 8.6 GB).
 - Commands: `bash run_mac.sh` in `~/scrolls-work/laneB` (repo subset in `laneB/repo`, data links in `laneB/data`). It calls `python -m kit auc MAP --control MAP_reverse --labels L/inklabels.zarr --mask L/supervision.zarr --level 2 --bootstrap 300 --json` and `python checks.py DATA SEGMENT MAP --control MAP_reverse [--mesh MESH]`.
 
 Every statistic is computed on the forward map and on its reverse-depth control, with the human labels as a reference only. Spatial nulls are 20 or 30 cyclic shifts of at least 2 mm in the surface plane (seed 20261007).
@@ -70,8 +70,26 @@ Pearson r between the map and three mesh quantities on the w00 surface (normal d
 
 Correlation of the 48 um high-pass of each map with the 48 um high-pass of each of the 28 raw layers, over the surface: every |r| is below 0.012 for every map, its control and the labels. The forward and reverse profiles of `ink_9um` are mirror images (peaks at layer 7 and layer 21 of 0 to 27, on both segments), which is only a check that the reverse map is the depth-flipped run. **Null:** letter-scale ink in these maps is not a copy of any one layer's letter-scale brightness, which agrees with the raw-baseline finding (overlap log, section 2) that brightness alone carries almost no ink.
 
+## Support corrections merged after this run (prospective)
+
+- Geometry differences require finite valid mesh coordinates throughout their stencil. Nodes next to holes and canvas boundaries are excluded conservatively; a valid center alone is insufficient. Bend estimates inherit the invalid normal support.
+- Label orientation and high-pass features require known supervision throughout the composed filter support. Unknown labels are not treated as background. High-pass label statistics report their supported pixel count.
+- Stroke widths near unknown annotation boundaries are excluded when the distance or nearby ridge decision can depend on that boundary. This can reduce coverage; it does not invent a width for an incomplete annotation.
+- Empty or constant cohorts produce unavailable statistics, encoded as strict JSON `null`. They do not produce positive or negative evidence. Correlation/null support counts remain descriptive.
+- The analysis requires one explicitly selected ink TIFF and records its filename and SHA-256. A folder containing multiple versions is refused instead of silently choosing the first file.
+- Correlations condition on positive-map surface support. The output reports geometric surface and zero-map counts separately. This is not full-surface accuracy or a detection threshold; a zero prediction cannot be inferred to be background.
+
+The 16 focused tests include the original seven helper checks and nine regressions for geometry holes, unknown label boundaries, known-background widths, degenerate cohorts and strict JSON. These corrections were written in parallel with the run above and are not in it: `results/*.json` come from the frozen `checks_run_2026-10-07.py` and `laneb_run_2026_10_07.py`. The label-reference rows (label widths, label fiber shares, label geometry r) and the in-supervision map widths are the ones most likely to move under the corrected support, so treat every number above as preliminary until `checks.py` is rerun on the same maps.
+
+## Limits before any experiment
+
+Proportional nearest resampling and 4x4 map reduction are exploratory approximations, not the certified continuous mesh correspondence used by `kit surfacefix`. Record and inspect source geometry, dimensions, metadata, full input hashes and any coordinate conversion before interpreting a run. The CT structure tensor is a local orientation descriptor, not proof that a feature is a papyrus fiber or ink stroke. Cyclic rolled-map controls are dependent descriptive perturbations, not independent negatives or a calibrated error rate.
+
+Freeze a readout rule before a new experiment. A useful accuracy or correction claim needs matched reader controls, actual known ink/background labels, fixed populations, and an independent patch or sheet. These helper scripts establish none of those claims by themselves.
+
 ## Not done (next steps)
 
+- Port the `MAP --control --mesh` arguments of the frozen script into the corrected `checks.py` (it still reads only the team map), then rerun every map above with it (and `laneb.py`, tested in `tests/test_laneb.py`) and replace the tables; the frozen run stays as the record.
 - ag896 and ag405 (the box fetched their meshes and maps but could not finish; the Mac has only w00 and w045 volumes): rerun `checks.py` there to see whether the stroke-width ordering holds on the second independent PHerc0841 surface (ag405).
 - d9v2 and v8in whole-segment maps: does the stroke-width upper quartile rank readers as AUC does?
 - A preregistered threshold for the stroke-width check (for example: forward p75 at least twice the reverse p75) before it is used on any target map.

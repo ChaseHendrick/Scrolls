@@ -4,7 +4,7 @@ set -o pipefail
 PY=$HOME/scrolls-work/venv/bin/python
 R=$HOME/scrolls-work/laneB/repo; D=$HOME/scrolls-work/laneB/data; O=$HOME/scrolls-work/laneB/out   # repo subset and data links (see the log)
 M=$HOME/scrolls-work/0841-w00/maps; M45=$HOME/scrolls-work/w045/maps
-C=$R/scripts/experiments/2026-10-07-grok-laneB/checks.py
+C=$R/scripts/experiments/2026-10-07-grok-laneB/checks_run_2026-10-07.py   # ran under the name checks.py before the merge
 TEAM=$(ls $D/inkdet/w00/*.tif)
 L0=$D/0841-w00_labels; L45=$D/w045_labels
 cd $R
