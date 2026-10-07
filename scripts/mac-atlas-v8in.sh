@@ -73,6 +73,8 @@ if ! mkdir "$LOCK" 2>/dev/null; then
 fi
 echo $$ > "$LOCK/pid"
 trap 'rm -rf "$LOCK"' EXIT
+# Keep the Mac awake while this runs (an idle sleep would pause inference; closing the lid still sleeps it).
+command -v caffeinate >/dev/null 2>&1 && { caffeinate -i -w $$ >/dev/null 2>&1 & }
 cd "$SCROLLS"
 
 say "1/4 preregistration: $PREREG"

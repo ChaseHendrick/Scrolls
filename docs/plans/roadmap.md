@@ -26,7 +26,9 @@ Goal: an honest ranking of released readers on PHerc0841, the only labelled scro
 3. Reader v2 on the three 0841 crops (here, CPU, about 2 min each). Hecate optional: it needs villa's Hecate inference path and aviad12g found its eligible-scroll positives depth-order independent.
 4. An ensemble (mean of the best two or three maps) on the same crops (here, seconds).
 
-**Gate A.** Rank by mean forward AUC over the three crops, with the reverse AUC well below it on each. The winner reads the targets in Phase 1. A reader beats another only by at least 0.02 mean AUC (three crops are not many).
+Steps 1 and 2 run as one queue: `bash scripts/mac-phase0.sh`.
+
+**Gate A** (`python -m kit gate` applies it). Rank by mean forward AUC over the three crops, with the reverse AUC well below it on each. The winner reads the targets in Phase 1. A reader beats another only by at least 0.02 mean AUC (three crops are not many).
 
 Risks: three crops of one scroll is a small sample; PHerc0841 is 113 keV, like half the targets but not the 116 keV half (PHerc1447's protocol), so idea 1 below matters.
 

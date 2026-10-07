@@ -107,6 +107,8 @@ if ! mkdir "$LOCK" 2>/dev/null; then
 fi
 echo $$ > "$LOCK/pid"
 trap 'rm -rf "$LOCK"' EXIT
+# Keep the Mac awake while this runs (an idle sleep would pause inference; closing the lid still sleeps it).
+command -v caffeinate >/dev/null 2>&1 && { caffeinate -i -w $$ >/dev/null 2>&1 & }
 
 say "1/7 villa main and PR #$PR, Python 3.14 environment"
 if [[ ! -d "$VILLA/.git" ]]; then
@@ -406,8 +408,12 @@ rows "$M/${INK}_s42.tif" "$M/${INK}_s43.tif" --reverse "$M/${INK}_s42_reverse.ti
 rows "$M/$V8IN_MAP.tif" --reverse "$M/${V8IN_MAP}_reverse.tif" > "$OUT/results/rows_$MTAG.json"
 
 CHIP="$(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m)"
+# One summary and provenance record per model: a MODEL=v8in-1447 run on a segment must not
+# overwrite the base v8in run's record there. Base v8in keeps the original names.
+PTAG=""; [[ "$MODEL" != v8in ]] && PTAG="_$MTAG"
+SUMMARY="$OUT/results/summary$PTAG.txt"
 OS="$(sw_vers -productVersion 2>/dev/null || uname -sr)"
-"$PY" - "$OUT/results" > "$OUT/results/summary.txt" <<EOF
+"$PY" - "$OUT/results" > "$SUMMARY" <<EOF
 import json, sys, pathlib
 r = pathlib.Path(sys.argv[1])
 j = lambda n: json.loads((r / f"{n}.json").read_text())
@@ -437,11 +443,13 @@ PROV=(--model "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth"
       --model "$V8IN/model.safetensors"
       --input "$ZARR" --input "$LAB/inklabels.zarr" --input "$LAB/supervision.zarr")
 for f in "$M/${INK}_s42.tif" "$M/${INK}_s42_reverse.tif" "$M/${INK}_s43.tif" "$M/${INK}_s43_reverse.tif" \
-         "$M/$V8IN_MAP.tif" "$M/${V8IN_MAP}_reverse.tif" "$OUT/results"/*.json "$OUT/results/summary.txt"; do
-  [[ -f "$f" && "$f" != "$OUT/results/provenance.json" ]] && PROV+=(--output "$f")
+         "$M/$V8IN_MAP.tif" "$M/${V8IN_MAP}_reverse.tif" "$OUT/results/$DEVJSON.json" \
+         "$OUT/results/auc_ink9um_s42.json" "$OUT/results/auc_ink9um_s43.json" "$OUT/results/auc_$MTAG.json" \
+         "$OUT/results/rows_ink9um.json" "$OUT/results/rows_$MTAG.json" "$SUMMARY"; do
+  [[ -f "$f" ]] && PROV+=(--output "$f")
 done
-"$PY" -m kit provenance write "$OUT/results/provenance.json" --run "mac-w045 $SEGMENT $MODEL quick=$QUICK smoke=$SMOKE" \
-  --repo "$SCROLLS" --code-repo "$VILLA" --started "$STARTED_UTC" "${PROV[@]}" > "$OUT/results/provenance.digest"
-say "summary (also in $OUT/results/summary.txt)"
-cat "$OUT/results/summary.txt"
-echo "provenance: $(cat "$OUT/results/provenance.digest")"
+"$PY" -m kit provenance write "$OUT/results/provenance$PTAG.json" --run "mac-w045 $SEGMENT $MODEL quick=$QUICK smoke=$SMOKE" \
+  --repo "$SCROLLS" --code-repo "$VILLA" --started "$STARTED_UTC" "${PROV[@]}" > "$OUT/results/provenance$PTAG.digest"
+say "summary (also in $SUMMARY)"
+cat "$SUMMARY"
+echo "provenance: $(cat "$OUT/results/provenance$PTAG.digest")"

@@ -25,6 +25,8 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 ## Tools
 
 - [kit/auc.py](kit/auc.py): pixel AUC against labels, reverse control, crop and edge options
+- [kit/gate.py](kit/gate.py): Gate A decision from committed and Mac scores
+- [scripts/mac-phase0.sh](scripts/mac-phase0.sh): the Phase 0 Mac queue in one command
 - [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
 - [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
 - [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run

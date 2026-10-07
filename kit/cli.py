@@ -1,11 +1,12 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,layers,provenance,compute,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,ensemble,gate,layers,provenance,compute,run}."""
 
 import argparse
 import json
 import sys
+from pathlib import Path
 from datetime import date
 
-from . import auc, compute, ensemble, hpscore, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
+from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -145,6 +146,20 @@ def cmd_ensemble(args):
         print(f"{result['method']} of {len(result['inputs'])} maps -> {result['out']} "
               f"({result['valid_px']} valid px of {result['shape'][0]} x {result['shape'][1]})")
     return 0
+
+
+def cmd_gate(args):
+    work = args.work
+    if work is None:
+        default = Path.home() / "scrolls-work"
+        work = str(default) if default.is_dir() else None
+    try:
+        result = gate.run(work, args.results, args.min_lead, args.min_gap)
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"cannot read the scores: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else gate.format_result(result))
+    return 1 if any(not c["match"] for c in result["checks"]) else 0
 
 
 def cmd_layers(args):
@@ -311,6 +326,14 @@ def build_parser():
     p.add_argument("--weights", type=float, nargs="+", help="one weight per map (default equal)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_ensemble)
+
+    p = sub.add_parser("gate", help="Gate A: rank readers on PHerc0841's three crops by the roadmap's rule")
+    p.add_argument("work", nargs="?", help="Mac work directory with <segment>/results/auc_*.json (default ~/scrolls-work if present)")
+    p.add_argument("--results", default=str(gate.RESULTS), help="committed scores (docs/results.json)")
+    p.add_argument("--min-lead", type=float, default=gate.MIN_LEAD, help="mean AUC lead that counts as a win")
+    p.add_argument("--min-gap", type=float, default=gate.MIN_GAP, help="forward minus reverse AUC needed on every crop")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_gate)
 
     p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
     p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")

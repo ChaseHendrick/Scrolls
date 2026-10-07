@@ -14,6 +14,8 @@ User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum p
 
 Mac runs are guarded by a shared lock (one GPU job at a time) after two concurrent runs swapped the M1 Pro to 56 s per tile.
 
+**Automation (2026-10-07):** steps 1 to 3 are one command, `bash scripts/mac-phase0.sh` (resumable; skips scored jobs; keeps the Mac awake; notifies at the end), and step 4's Gate A table is `python -m kit gate` (reads `docs/results.json` and `~/scrolls-work/*/results/auc_*.json`, applies the 0.02 rule, checks the Mac's `ink_9um` against the CPU bar). `mac-w045.sh` drops fp16 by itself when it is slower, and writes `provenance_v8in1447.json` and `summary_v8in1447.txt` for the fine-tune so it no longer overwrites the base model's record. CI runs `tests/test_repo.py` (scripts parse, bash 3.2, house style, docs JSON, documented commands).
+
 ## Session 7 October 2026 (morning, later): training our own reader, all three ideas
 
 The user decided (2026-10-07) to pursue all three training ideas in [`plans/2026-10-07-training.md`](plans/2026-10-07-training.md): (1) train on PHerc1447, the scroll whose text was just found, at the First Letters scan protocol; (2) learn from the team's 1 µm ink maps instead of the 2.4 µm ones every public fine-tune used; (3) self-supervised pre-training on the eligible scans themselves. The plan fixes the test (PHerc0841, labels, reverse control) and the bar (Hecate 0.855, d9v2 0.828, Reader v2 0.824, `ink_9um` about 0.74) before any training.
