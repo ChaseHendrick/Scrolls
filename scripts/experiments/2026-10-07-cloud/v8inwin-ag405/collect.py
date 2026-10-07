@@ -27,28 +27,26 @@ def pick(d, *keys):
 
 
 rows = []
-for tag in ["w0", "w1", "w2", "w3", "w4", "mean"]:
+for tag in ["w0", "w2", "w4", "mean"]:
     a, h = scores / f"{tag}_auc.json", scores / f"{tag}_hp.json"
     if not a.exists():
         continue
     auc = json.loads(a.read_text())
     hp = json.loads(h.read_text()) if h.exists() else {}
     if tag == "mean":
-        window, secs = "mean of the five 24-layer windows (layers 0-23 .. 4-27)", None
-        fwd = [seconds(f"w{s}_fwd_s42") for s in range(5)]
-        rev = [seconds(f"w{s}_rev_s64") for s in range(5)]
-        secs = sum(x for x in fwd + rev if x) or None
+        window = "mean of three 24-layer windows (layers 0-23, 2-25, 4-27)"
+        secs = sum(x for x in (seconds(f"w{s}_fwd_s64") for s in (0, 2, 4)) if x) or None
     else:
         s = int(tag[1])
         window = f"layers {s}-{s + 23} of 28" + (" (v8in's default, centred)" if s == 2 else "")
-        f, r = seconds(f"{tag}_fwd_s42"), seconds(f"{tag}_rev_s64")
-        secs = (f or 0) + (r or 0) or None
+        secs = seconds(f"{tag}_fwd_s64")
     rows.append({
         "job": "v8inwin-ag405", "segment": "0841-ag405", "window": "crop", "inner_px": 64,
         "map_from": "bare-crop", "reader": "v8in",
         "settings": {"checkpoint": "YoussefMoNader/ink-8um-v8in", "revision": REV,
-                     "stride_forward": 42, "stride_reverse": 64, "layer_window": window,
-                     "ensemble_method": "mean" if tag == "mean" else None, "batch_size": 4},
+                     "stride": 64, "layer_window": window,
+                     "ensemble_method": "mean" if tag == "mean" else None, "batch_size": 4,
+                     "control": "reverse of the default window (layers 2-25), stride 64"},
         "device": "cpu",
         "auc_as_stored": pick(auc, "auc", "auc_as_stored", "forward"),
         "auc_reversed": pick(auc, "control_auc", "auc_control", "auc_reversed", "reverse"),
@@ -56,6 +54,7 @@ for tag in ["w0", "w1", "w2", "w3", "w4", "mean"]:
         "hp_r_reversed": pick(hp, "hp_r_control", "control_r", "hp_r_reversed", "control"),
         "ink_px": pick(auc, "ink_px", "n_ink", "ink"),
         "seconds": secs,
+        "notes": None if tag == "w2" else "control is the default window's reverse map (only one reverse run in the budget)",
         "raw": {"auc": auc, "hp": hp},
     })
 out.write_text(json.dumps(rows, indent=1) + "\n")

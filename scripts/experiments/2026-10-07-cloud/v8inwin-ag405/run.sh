@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # v8inwin-ag405: base v8in on the PHerc0841 ag405 crop, one map per 24-layer depth window of the
-# 28 stored layers (windows start at 0..4), forward at stride 42 and reverse at stride 64, then the
-# mean of the five windows (forward and reverse). Resumable: maps that exist are skipped.
+# 28 stored layers. Budget cut by the coordinating session (about 1 h of CPU): windows starting at
+# 0, 2 (v8in's default, centred) and 4, forward at stride 64, plus their mean; reverse only for the
+# default window, stride 64. Resumable: maps that exist are skipped.
 #
 # How v8in picks layers (ink8um/inference.py read_stack, revision in notes.md): with no
 # --layer-start it takes the centred 24 of the numbered files in the folder, start
@@ -20,7 +21,7 @@ OUT="$W/v8inwin-ag405"
 mkdir -p "$OUT/maps" "$OUT/logs"
 cd "$SCROLLS"
 
-for s in 0 1 2 3 4; do
+for s in 0 2 4; do
   d="$OUT/layers_w$s"
   if [[ ! -f "$d/23.tif" ]]; then
     rm -rf "$d.tmp"
@@ -43,12 +44,10 @@ run() {  # run NAME LAYERS STRIDE [--reverse]
   echo "$name: done $(date -u +%FT%TZ)"
 }
 
-# Default window (w2) first, then the others; forward s42 before reverse s64.
-for s in 2 0 1 3 4; do
-  run "w${s}_fwd_s42" "$OUT/layers_w$s" 42
-  run "w${s}_rev_s64" "$OUT/layers_w$s" 64 --reverse
-done
+run w2_fwd_s64 "$OUT/layers_w2" 64
+run w2_rev_s64 "$OUT/layers_w2" 64 --reverse
+run w0_fwd_s64 "$OUT/layers_w0" 64
+run w4_fwd_s64 "$OUT/layers_w4" 64
 
-"$PY" -m kit ensemble "$OUT/maps/mean_fwd.npy" "$OUT"/maps/w{0,1,2,3,4}_fwd_s42.npy --method mean
-"$PY" -m kit ensemble "$OUT/maps/mean_rev.npy" "$OUT"/maps/w{0,1,2,3,4}_rev_s64.npy --method mean
+"$PY" -m kit ensemble "$OUT/maps/mean_fwd.npy" "$OUT"/maps/w{0,2,4}_fwd_s64.npy --method mean
 echo "all done $(date -u +%FT%TZ)"
