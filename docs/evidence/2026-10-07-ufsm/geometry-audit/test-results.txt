@@ -1,0 +1,19 @@
+Command:
+env OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 /workspace/scrolls-env/inference-venv/bin/python -m unittest discover -s tests -p test_sheet_geometry.py -v
+Working directory: /workspace/scrolls-env/ufsm-review/source
+
+Transcribed tool output from completed exec session 54836:
+test_folded_local_reference_uses_positive_global_pitch ... ok
+test_holdout_guard ... ok
+test_inconsistent_cycle_is_excluded ... ok
+test_injective_flow_bound ... ok
+test_losses_numerical_gradient ... ok
+test_mesh_validation ... ok
+test_nearest_triangle_gauge_and_ambiguous_first_hit ... ok
+test_reference_and_contract ... ok
+test_spiral_seam_and_holes ... ok
+
+Ran 9 tests in 0.053s
+
+OK
+Exit code: 0

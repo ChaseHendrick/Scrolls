@@ -1,0 +1,11 @@
+{
+  "created_utc": "2026-10-07T13:44:44.561573+00:00",
+  "append_only": true,
+  "auxiliary_prereg_path": "/workspace/scrolls-env/supervised-overlap-audit/supervised-experiment-prereg.json",
+  "auxiliary_prereg_sha256": "568eb08669eaa3ad15989395787be7cd3ea1e759e3fc8a7a420e8508b9bf8b30",
+  "authoritative_label_rule": "/workspace/scrolls-env/supervised-surfacefix/label-evaluation-rule.json",
+  "authoritative_label_rule_sha256": "a897301ed8a1ffe5099c0e9ff85cdff9affcc2a956962b64f85f32a05f618f26",
+  "precedence": "The root label-evaluation-rule.json was frozen earlier and is authoritative for inference orchestration and label readout. Its1000 paired draws with107px source-grid blocks andseed20261007 take precedence over the auxiliary300draw summary. The auxiliary record consolidates geometry selection, code hashes and limits; it must not override an earlier frozen label rule. No frozen artifact was rewritten.",
+  "readout_requirements": "All two candidate-minus-baseline AUC contrasts use the authoritative simultaneous max-centered-deviation bands and remain descriptive only. Candidate AUC cannot select or retry a correction. Include valid prediction zeros in primary fixed-mask AUC. Require genuine combined rerender when geometry is accepted.",
+  "inspection": "No candidate AUC outputs inspected; evaluation review was code only. The authoritative earlier freeze provides chronology; this later note and auxiliary summary do not establish that files were created before inference started."
+}

@@ -1,0 +1,103 @@
+{
+  "supplement_rule_sha256": "c4bb51f47aec5a8898cb4db14a6864e9bb959345eb4962c53361c44f7f81b4a1",
+  "boundary": [
+    {
+      "rms_uint8_units": 2.7104543482052783,
+      "target_std_uint8_units": 35.81703106544626,
+      "normalized_rms": 0.0756750145832197,
+      "correlation": 0.9972561272523617,
+      "reflection_pad_vox": 32,
+      "correlation_drop": -1.4558586988955291e-05,
+      "normalized_rms_increase": -0.00019074217333998889,
+      "pass": true
+    },
+    {
+      "rms_uint8_units": 2.7070283505277093,
+      "target_std_uint8_units": 35.81703106544626,
+      "normalized_rms": 0.07557936182877142,
+      "correlation": 0.9972636976977209,
+      "reflection_pad_vox": 64,
+      "correlation_drop": -2.212903234821706e-05,
+      "normalized_rms_increase": -0.00028639492778825826,
+      "pass": true
+    }
+  ],
+  "boundary_all_pass": true,
+  "transportability": {
+    "local_original_to_pag50_shift_zyx": [
+      [
+        1,
+        0,
+        0
+      ],
+      [
+        -1,
+        0,
+        0
+      ]
+    ],
+    "unaltered_original_vs_pag50": {
+      "rms_uint8_units": 37.97422313340617,
+      "target_std_uint8_units": 35.84023378229306,
+      "normalized_rms": 1.0595417252040193,
+      "correlation": 0.7700780778788229
+    },
+    "reuse_pag0_to_pag50_response": {
+      "rms_uint8_units": 26.202700154385873,
+      "target_std_uint8_units": 35.84023378229306,
+      "normalized_rms": 0.7310973559366504,
+      "correlation": 0.826032116069194,
+      "meets_main_prediction_gate": false
+    },
+    "new_original_to_pag50_response": {
+      "rms_uint8_units": 14.877056321028931,
+      "target_std_uint8_units": 35.84023378229306,
+      "normalized_rms": 0.41509372989578464,
+      "correlation": 0.9162328134819623,
+      "meets_main_prediction_gate": false
+    },
+    "new_original_to_pag50_affine_baseline": {
+      "rms_uint8_units": 23.144581538942198,
+      "target_std_uint8_units": 35.84023378229306,
+      "normalized_rms": 0.6457709422190439,
+      "correlation": 0.770078076098251
+    },
+    "new_radial_response": [
+      0.35731608267892945,
+      0.4246066960891954,
+      0.5342380065149127,
+      0.7843969553108562,
+      1.1336330013153784,
+      1.4427832619340673,
+      1.714579104322068,
+      1.8916182713273852,
+      2.084863990522495,
+      2.2828395536613195,
+      2.215548085772253,
+      2.378324195170307,
+      2.520417370676034,
+      2.8039534305234186,
+      2.860778081951922,
+      2.9432688071361297,
+      3.0203800875165943,
+      2.9382258498162552,
+      3.0525854977984785,
+      2.375778460802748,
+      1.8853187875719328,
+      1.6242616464737876,
+      1.3057280032939365,
+      1.247538787475447,
+      1.019512066666303,
+      0.8524376127482227,
+      0.37035551507980324,
+      0.33297207359333336,
+      0.12454588304290581,
+      0.42633484117234016,
+      0.6152649877899703,
+      1.3462497734949692
+    ]
+  },
+  "limits": "Local shift audits only; global original\u2192phase translation gate failed. No mesh/render/label inference permitted from these diagnostics.",
+  "elapsed_seconds": 2.09436192999965,
+  "peak_rss_bytes": 839704576
+}

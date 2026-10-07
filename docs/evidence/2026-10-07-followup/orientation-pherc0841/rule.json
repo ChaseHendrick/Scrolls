@@ -1,0 +1,54 @@
+{
+  "scope": "Public known PHerc0841 w00 papyrus; structural raster/depth-order audit only",
+  "base": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr/",
+  "crop_yxyx": [
+    2560,
+    3200,
+    0,
+    640
+  ],
+  "source_shape_zyx": [
+    28,
+    4220,
+    4760
+  ],
+  "chunk_shape_zyx": [
+    28,
+    128,
+    128
+  ],
+  "chunk_keys": [
+    "0/20/0",
+    "0/20/1",
+    "0/20/2",
+    "0/20/3",
+    "0/20/4",
+    "0/21/0",
+    "0/21/1",
+    "0/21/2",
+    "0/21/3",
+    "0/21/4",
+    "0/22/0",
+    "0/22/1",
+    "0/22/2",
+    "0/22/3",
+    "0/22/4",
+    "0/23/0",
+    "0/23/1",
+    "0/23/2",
+    "0/23/3",
+    "0/23/4",
+    "0/24/0",
+    "0/24/1",
+    "0/24/2",
+    "0/24/3",
+    "0/24/4"
+  ],
+  "max_bytes": 11468800,
+  "comparison": "Compare direct and reversed generated depth order to the fixed official public stack; report both. No label/reader selection. Require core64 Pearson r>=0.98 and core mean absolute error<=3 uint8 units for a reproduction claim. A failure is diagnostic, not permission to optimize against labels.",
+  "script_sha256": "c6bac99a1d733aab78ab1de4848194ff20d2288b42b394ac93f77c210f044e54",
+  "metadata_sha256": {
+    ".zattrs": "4d9f13361c8d10c895f268cc06d91bbbb973d338e073413db1960fe73e3812e8",
+    "0_.zarray": "05d70529bf79232bc34fbaded9a9991e0c73f8551283659a901cd31580ce0e5d"
+  }
+}

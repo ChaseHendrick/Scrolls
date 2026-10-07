@@ -1,0 +1,18 @@
+{
+  "repository": "https://github.com/SuperOptimizer/ufsm",
+  "commit": "d86a00cff5ab198e6b7864f89e49a6101746dc9f",
+  "root": "/workspace/scrolls-env/ufsm-review/source",
+  "files": {
+    "SHEET_PIPELINE.md": "fc9bdec78d4c16deaaf986dadc321de063e00c0111f0c3867042fd8cb0c22cbe",
+    "README.md": "d6ec9e2841ea959dff3a27d7c0180e42f2e52cfb5dce21cf1c3a36d79e53d4f7",
+    "tools/sheet_geometry.py": "4054354e5c28d75504c9b064019db3076906054376e5bcb888720cb8b81de8be",
+    "tools/sheet_reconstruct.py": "34cc2137406012ddd2b489f0a6e369045e8c77b7b4e169513e72d85f1eef51ba",
+    "tools/band_field.py": "88fcf9810ac0823e37468e8cb790323d8eab2856f22d60aa033dfbaad89b5eaa",
+    "tools/build_sheet_geometry.py": "82d9909acc570315813ae2e2c03fc36c5cd71168b6a45ea965304c65985414d0",
+    "tools/sheet_pipeline.py": "a58c0114a4d8393d5b46cd5f2f7ae4928f10becf0126672c0d629a1de99e497e",
+    "tests/test_sheet_geometry.py": "cc1c9a5d52c75e37ec5d68d3c0044d2ea7ad1b6fcce687768a10b335bf87b784",
+    "tests/test_sheet_pipeline.py": "0f5355db152aad92186f46c03dcb1647d0d201ef1dc8f523f1abb40ccd3b5225",
+    "third_party/LICENSE.surfcomp": "de1157f72933091c34739dd8db3299034aedda27e6f0dc1033b264e570b77de2",
+    "third_party/LICENSE.volcomp": "de1157f72933091c34739dd8db3299034aedda27e6f0dc1033b264e570b77de2"
+  }
+}

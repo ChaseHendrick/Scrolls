@@ -1,0 +1,105 @@
+[
+ {
+  "job": "v8in1447-w00",
+  "segment": "0841-w00",
+  "window": "crop",
+  "inner_px": 64,
+  "map_from": "bare-crop",
+  "reader": "v8in-1447",
+  "settings": {
+   "checkpoint": "YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062@2bf9f421862cda0ed41dcae6e8274c12e295d03a",
+   "stride": 42,
+   "reverse_stride": 64,
+   "layers": "28 exported, model reads its central 24",
+   "batch": 4
+  },
+  "device": "cpu",
+  "auc_as_stored": 0.8381,
+  "auc_reversed": 0.5932,
+  "hp_r": 0.0069,
+  "hp_r_reversed": -0.0137,
+  "hp_null_max_abs": 0.0058,
+  "ink_px": 84484,
+  "seconds": 1447,
+  "notes": "control is the stride 64 reverse map (714 s)",
+  "control_status": "provisional_stride_mismatch",
+  "control_note": "Historical reverse uses stride 64; forward uses stride 42. Direction is confounded with stride. Rerun reverse at stride 42."
+ },
+ {
+  "job": "v8in1447-w00",
+  "segment": "0841-w00",
+  "window": "crop",
+  "inner_px": 64,
+  "map_from": "bare-crop",
+  "reader": "d9v2",
+  "settings": {
+   "checkpoint": "d9v2_ft-012000.pth (TAUIL-Abd-Elilah v1.0, sha256 50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966)",
+   "code": "villa PR #1865",
+   "overlap": 0.5,
+   "blend": "hann"
+  },
+  "device": "cpu",
+  "auc_as_stored": 0.8994,
+  "auc_reversed": 0.5855,
+  "hp_r": 0.0154,
+  "hp_r_reversed": -0.0034,
+  "hp_null_max_abs": 0.0132,
+  "ink_px": 84484,
+  "seconds": 55,
+  "notes": "seconds cover both directions; pipeline bar 0.8994"
+ },
+ {
+  "job": "v8in1447-w00",
+  "segment": "0841-w00",
+  "window": "crop",
+  "inner_px": 64,
+  "map_from": "bare-crop",
+  "reader": "v8in-1447 + d9v2",
+  "settings": {
+   "ensemble": "mean",
+   "v8in1447_stride": 42,
+   "reverse": "v8in1447 s64 reverse + d9v2 reverse",
+   "maps": [
+    "YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062@2bf9f421862cda0ed41dcae6e8274c12e295d03a",
+    "d9v2_ft-012000.pth (TAUIL-Abd-Elilah v1.0, sha256 50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966)"
+   ]
+  },
+  "device": "cpu",
+  "auc_as_stored": 0.89,
+  "auc_reversed": 0.6021,
+  "hp_r": 0.0097,
+  "hp_r_reversed": -0.0141,
+  "hp_null_max_abs": 0.0059,
+  "ink_px": 84484,
+  "notes": "kit ensemble, mean",
+  "control_status": "provisional_stride_mismatch",
+  "control_note": "Historical reverse uses stride 64; forward uses stride 42. Direction is confounded with stride. Rerun reverse at stride 42."
+ },
+ {
+  "job": "v8in1447-w00",
+  "segment": "0841-w00",
+  "window": "crop",
+  "inner_px": 64,
+  "map_from": "bare-crop",
+  "reader": "v8in-1447 + d9v2",
+  "settings": {
+   "ensemble": "rank",
+   "v8in1447_stride": 42,
+   "reverse": "v8in1447 s64 reverse + d9v2 reverse",
+   "maps": [
+    "YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062@2bf9f421862cda0ed41dcae6e8274c12e295d03a",
+    "d9v2_ft-012000.pth (TAUIL-Abd-Elilah v1.0, sha256 50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966)"
+   ]
+  },
+  "device": "cpu",
+  "auc_as_stored": 0.9065,
+  "auc_reversed": 0.6134,
+  "hp_r": 0.0115,
+  "hp_r_reversed": -0.0088,
+  "hp_null_max_abs": 0.007,
+  "ink_px": 84484,
+  "notes": "kit ensemble, rank",
+  "control_status": "provisional_stride_mismatch",
+  "control_note": "Historical reverse uses stride 64; forward uses stride 42. Direction is confounded with stride. Rerun reverse at stride 42."
+ }
+]
