@@ -54,6 +54,20 @@ Both maps keep the same contrast at every gap (standard deviation 53 to 69 of 25
 
 Every unseen-scroll AUC quoted for PHerc0841 rests on 3.4 cm² of labelled papyrus (0.84 cm² of it ink), less than the single 4 cm² area a First Letters claim needs, and on two independent surfaces (section 1). A block bootstrap over 1 mm blocks (300 draws) of the team's map against the labels gives AUC 0.971 (95 % interval 0.962 to 0.979) on w00, 0.921 (0.896 to 0.941) on ag896 and 0.869 (0.829 to 0.905) on ag405 (the labels may have been drawn with this map's help, so the levels are not a fair score; the interval widths are the point). **Interpretation.** On one segment, AUC differences below about 0.02 (w00) to 0.04 (ag405) are within sampling noise for a strong map, and weaker maps spread more. Many published rankings on PHerc0841 differ by less than that, and our own Gate A rule (0.02) sits at the noise floor. Not found reported for PHerc0841 by anyone.
 
+## 6. Collation: two traces as two copies of one text (from decipherment practice)
+
+In decipherment, a passage that survives in two independent copies is checked by collation: what both copies share is real, what one alone shows is noise or a copying error. Two traces of one sheet are two copies. `collation.py` (output `collation.txt`) compares, at matched points of w00 and ag896, the team's ink maps against raw CT averaged over a thin slab (5 layers, about 47 um) and a thick slab (21 layers, about 200 um, closer to an ink model's input), plain and with a 48 um high-pass (letter scale). "Reappears" is the share of points in the top 20 % of one trace's map that are also in the top 20 % of the other's (chance 0.20):
+
+| Gap | Ink maps r | Thick CT r | Thick CT, letter scale r | Ink spot reappears | CT-texture spot reappears |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 0 to 28 um | 0.86 | 0.83 | 0.51 | 0.70 | 0.50 |
+| 28 to 56 um | 0.75 | 0.75 | 0.39 | 0.65 | 0.41 |
+| 56 to 84 um | 0.45 | 0.64 | 0.30 | 0.47 | 0.36 |
+| 84 to 112 um | 0.26 | 0.53 | 0.23 | 0.38 | 0.32 |
+| 112 to 169 um | 0.08 | 0.42 | 0.14 | 0.31 | 0.28 |
+
+**Interpretation.** (a) At gaps beyond about 80 um the thick-slab CT of the two traces still correlates 0.4 to 0.5, so they see the same papyrus; the ink reading is what is lost, faster than the papyrus structure. This sharpens section 4: depth precision matters for ink, not for finding the sheet. (b) Within about 60 um, the ink maps agree well beyond the letter-scale CT texture (0.86 against 0.51; a strong ink spot reappears 70 % of the time against 50 % for a strong texture spot). So collation carries ink-specific information, but reappearance alone is weak evidence, since texture reappears half the time. **As a test:** on overlapping automatic meshes of a target scroll, a candidate that does not reappear on a second trace lying within about 50 um is probably noise; one that does is still to be judged by eye. Labels are not needed, so it works where no labels exist. A cross-trace comparison of ink maps was not found in the community work read on 2026-10-07 (Untested idea as a target-scroll test; measured only on PHerc0841).
+
 ## 3. What the community published that changes our claims (scan of 2026-10-07; Community reports)
 
 - **v8in on PHerc0841 is published.** Bullo27, [v8in-12gb](https://github.com/Bullo27/v8in-12gb) (commits 2026-10-01 and 02): v8in, no fine-tune, labels' bounding box, AUC (reverse) w00 0.837 (0.562), ag896 0.807 (0.618), ag405 0.810 (0.586); `ink_9um` mean of 14 checkpoints 0.813, 0.756, 0.761. v8in leads `ink_9um` there, the opposite of our w045 result (README finding 1, still unpublished elsewhere). Not there: a shuffle control, w045, and the PHerc1447 fine-tune on PHerc0841 ("was not scored on PHerc0841"). Our Mac and cloud v8in runs on PHerc0841 are therefore reproductions; the fine-tune runs are not.

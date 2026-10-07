@@ -30,12 +30,13 @@ All on public labelled data, model output, measured with the tools below ([log 1
 
 1. **PHerc0841 has two independent labelled surfaces, not three.** The published meshes of w00 and ag896 run a median 81 um apart and within 25 voxels over 98 % of their area, and their human labels agree where both exist (Dice 0.83 against at most 0.69 for displaced matches). Every PHerc0841 benchmark that averages its three segments, or leaves one out, counts one sheet twice.
 2. **A traced surface must sit within about 50 um of the ink layer.** w00 and ag896 are a natural experiment: the team's own ink maps of the two traces correlate 0.86 where the traces are within 28 um and fall to chance beyond 112 um, with the same contrast and text density at every gap.
-3. **The PHerc0841 benchmark is 3.4 cm² of labelled papyrus**, and a 1 mm block bootstrap gives +-0.01 to +-0.04 AUC of sampling noise per segment, so many published rankings sit inside the noise.
-4. **A threshold taken from a training segment misses about 96 % of real ink on an unseen scroll.** The 0.7843 cut-off of a published PHerc0826 null keeps 2.3 to 3.7 % of PHerc0841's labelled ink. Nulls from such thresholds say little about faint ink.
-5. **Raw CT brightness alone is not ink on PHerc0841** (per-layer AUC 0.43 to 0.58), so the controls that matter are depth order (reverse and shuffle), not brightness.
-6. **Depth-shuffled input is a stricter control than reversed input** (shuffled reads at or below reversed on all crops).
-7. **Crop scores need a 64 px edge margin**, or they differ from whole-map scores by up to 0.03 AUC.
-8. **Averaging four depth windows matches the window chosen with the labels** at 9 um (0.820 against 0.819 over 8 reader-crop cases); related work by ArcheyChen (Hecate) and villa #1867 and #1946.
+3. **Collation as a label-free check.** Two traces of one sheet act as two copies of the text: a strong ink spot reappears on the other trace 70 % of the time within 28 um, against 50 % for CT texture (chance 20 %). A candidate that does not reappear on an overlapping trace within about 50 um is probably noise.
+4. **The PHerc0841 benchmark is 3.4 cm² of labelled papyrus**, and a 1 mm block bootstrap gives +-0.01 to +-0.04 AUC of sampling noise per segment, so many published rankings sit inside the noise.
+5. **A threshold taken from a training segment misses about 96 % of real ink on an unseen scroll.** The 0.7843 cut-off of a published PHerc0826 null keeps 2.3 to 3.7 % of PHerc0841's labelled ink. Nulls from such thresholds say little about faint ink.
+6. **Raw CT brightness alone is not ink on PHerc0841** (per-layer AUC 0.43 to 0.58), so the controls that matter are depth order (reverse and shuffle), not brightness.
+7. **Depth-shuffled input is a stricter control than reversed input** (shuffled reads at or below reversed on all crops).
+8. **Crop scores need a 64 px edge margin**, or they differ from whole-map scores by up to 0.03 AUC.
+9. **Averaging four depth windows matches the window chosen with the labels** at 9 um (0.820 against 0.819 over 8 reader-crop cases); related work by ArcheyChen (Hecate) and villa #1867 and #1946.
 
 ## Results
 
