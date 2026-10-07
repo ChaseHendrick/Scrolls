@@ -4,7 +4,7 @@ Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` 
 
 ## Session 7 October 2026 (late morning): the plan the user agreed
 
-User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum posting**.
+User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum posting**. The longer view, steps 6 onwards, is in [`plans/roadmap.md`](plans/roadmap.md).
 
 1. The user pastes the `SEGMENT=0841-w00` summary (v8in fp16, QUICK); compare with the bars on the same crop with a 64 px edge left out: d9v2 0.8994, `ink_9um` seed 42 0.8061 (the summary's `ink_9um` line should match 0.8061 exactly).
 2. The same for `0841-ag896` and `0841-ag405` (bars: d9v2 0.8230 / 0.8319, `ink_9um` 0.6594 / 0.7838), one run at a time.
