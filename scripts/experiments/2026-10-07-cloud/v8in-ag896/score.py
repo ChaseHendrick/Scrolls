@@ -91,28 +91,26 @@ def add(reader, settings, fwd, rev=None, shuf=None, secs=None, notes=None):
     rows.append(r)
 
 
-rev42 = path("v8in_s42_reverse")
-shuf42 = path("v8in_shuf_s42")
-add("v8in", dict(V8, stride=21, reverse_stride=42, shuffled_stride=42), path("v8in_s21"), rev42, shuf42,
-    seconds("v8in_s21"), "main row: forward stride 21; control reverse stride 42; shuffle control stride 42")
-add("v8in", dict(V8, stride=42, reverse_stride=42, shuffled_stride=42), path("v8in_s42"), rev42, shuf42,
-    seconds("v8in_s42"), "reference: forward stride 42")
-add("v8in depth-shuffled", dict(V8, stride=42, shuffle_seed=20261007), shuf42, None, None,
-    seconds("v8in_shuf_s42"), "shuffled layers scored as a map of their own (the control)")
-add("v8in reversed", dict(V8, stride=42, reverse=True), rev42, None, None, seconds("v8in_s42_reverse"),
+rev = path("v8in_s64_reverse")
+shuf = path("v8in_shuf_s64")
+add("v8in", dict(V8, stride=42, reverse_stride=64, shuffled_stride=64), path("v8in_s42"), rev, shuf,
+    seconds("v8in_s42"), "main row: forward stride 42; controls reverse and depth-shuffled at stride 64")
+add("v8in depth-shuffled", dict(V8, stride=64, shuffle_seed=20261007), shuf, None, None,
+    seconds("v8in_shuf_s64"), "shuffled layers scored as a map of their own (the control)")
+add("v8in reversed", dict(V8, stride=64, reverse=True), rev, None, None, seconds("v8in_s64_reverse"),
     "the reverse map scored as forward (equals auc_reversed above)")
 add("ink_9um s42", INK, path("ink9um_s42"), path("ink9um_s42_reverse"), None, seconds("ink9um_s42"),
     "seconds cover both directions")
 add("d9v2", D9, path("d9v2"), path("d9v2_reverse"), None, seconds("d9v2"), "seconds cover both directions")
 
-v8f = "v8in_s21" if path("v8in_s21") else "v8in_s42"
+v8f = "v8in_s42"
 for others, label in ((["d9v2"], "v8in + d9v2"), (["ink9um_s42"], "v8in + ink_9um s42"),
                       (["d9v2", "ink9um_s42"], "v8in + d9v2 + ink_9um s42")):
     for method in ("mean", "rank"):
         f = ens([v8f] + others, method, False)
-        r = ens(["v8in_s42_reverse"] + [o + "_reverse" for o in others], method, True)
+        r = ens(["v8in_s64_reverse"] + [o + "_reverse" for o in others], method, True)
         add(label, {"ensemble_method": method, "members": [v8f] + others,
-                    "reverse_members": ["v8in_s42_reverse"] + [o + "_reverse" for o in others]},
+                    "reverse_members": ["v8in_s64_reverse"] + [o + "_reverse" for o in others]},
             f, r, None, None, "map-level ensemble (kit ensemble); reverse ensembled the same way")
 
 (HERE / "results.json").write_text(json.dumps(rows, indent=2) + "\n")

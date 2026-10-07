@@ -52,8 +52,9 @@ v8in() {  # v8in NAME LAYERS STRIDE [--reverse]
 # Cheapest first, so partial results land early; one inference at a time.
 villa ink9um_s42 "$INK42"
 villa d9v2 "$D9V2"
+# Budget cut by the coordinating session (2026-10-07): forward stride 42 is the main map,
+# reverse and depth-shuffled controls at stride 64; no stride 21 run.
 v8in v8in_s42 "$J/layers" 42
-v8in v8in_s42_reverse "$J/layers" 42 --reverse
-v8in v8in_shuf_s42 "$J/layers_shuf" 42
-v8in v8in_s21 "$J/layers" 21
+v8in v8in_s64_reverse "$J/layers" 64 --reverse
+v8in v8in_shuf_s64 "$J/layers_shuf" 64
 echo "all maps done"
