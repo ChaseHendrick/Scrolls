@@ -14,13 +14,14 @@ User decisions (2026-10-07):
 
 What is new and worth sharing once the user agrees:
 
-1. **v8in on Apple Silicon, checked against the CPU.** On the user's M1 Pro, `scripts/mac-w045.sh` step 5 passed (`kit verify`, reverse as control; MPS map mean 0.2430, same as CPU). MPS about 1.1 to 1.3 s per tile against 25 s on the M1 Pro's CPU. Not seen published elsewhere.
+1. **v8in on Apple Silicon, checked against the CPU** on the user's M1 Pro (`scripts/mac-w045.sh` step 5 passed; MPS about 1.1 to 1.3 s per tile against 25 s on the M1 Pro's CPU). **Not a first:** afraazali42 published v8in MPS vs CPU on an M3 Max on 2026-10-03. Ours is a second-chip confirmation; mention it as that, if at all.
 2. **A labelled, controlled test of ink models** (`kit auc` with a reverse control, `kit rowscore`, one command per segment), with CPU references: w045 (seen scroll) 0.872 / 0.887; PHerc0841 (unseen scroll) 0.720 to 0.751, rows only on ag405. Numbers in [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
 3. **An independent reproduction** of Bullo27's PHerc0841 calibration and his w045 row score.
 
 Ways to contribute, cheapest first (propose each to the user; do none unasked):
 
 - **Post the v8in on MPS result** on the v8in model's Hugging Face discussion page, after the w045 summary arrives.
+- **v8in on TAUIL's held-out benchmark segments.** TAUIL-Abd-Elilah's benchmark (8 labelled segments incl. PHerc0841) scores `ink_9um`, d9v2 and Reader v2 but not v8in. Adding v8in to the same segments is the unpublished piece. Consider also running d9v2 (released, loads like `ink_9um`) in `mac-w045.sh` as a third model.
 - **v8in vs `ink_9um` on PHerc0841** (`SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh`, then ag896 and ag405). A clear v8in win on an unseen scroll is news the community would act on; a loss is useful too.
 - **Upstream the scoring tool:** villa has no simple command that scores an ink map against a segment's labels with a reverse control. A small tested PR there is the most "used by others" piece.
 - **Progress Prize write-up** at the deadline.
