@@ -36,3 +36,9 @@ Tiers, fixed now: leave-one-out RMS below 25 um is "tight", 25 to 75 um "loose",
 ## What this cannot show
 
 Brightness peaks locate papyrus, not ink, and a tracing convention (centre of sheet or recto surface) cancels only within a pair. A small delta does not prove a render is good for ink, and a large delta does not prove ink is lost. Nothing here concerns letters or readings.
+
+## Amendment 2026-10-07, after H2 and before any content run
+
+H2 found one stored transform that does not reproduce its own landmarks: PHerc1667 `20260323082859` (1.129 um) to `20251217075048` (2.399 um) misses its six landmarks by 42 to 212 um, while a least-squares refit of the same landmarks fits within 4 um. PHerc1667 segments are traced on `20231117161658` (7.91 um), which has no published render, so H3's native comparison cannot reach this transform.
+
+**H3b.** For PHerc1667, compare the 1.129 um render with the 2.399 um render of the same segment, the 2.399 um render taking the native role, with H3's estimator, tiles, seed and controls unchanged; 5 segments chosen with the same seed. H3b measures the relative depth placement of two cross-scan renders, not either one's absolute accuracy. It is added because of the H2 result; nothing else in the protocol changes.
