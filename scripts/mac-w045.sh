@@ -31,6 +31,7 @@ set -euo pipefail
 unset PYTORCH_ENABLE_MPS_FALLBACK   # an op MPS lacks must fail, not quietly run on the CPU
 
 SCROLLS="$(cd "$(dirname "$0")/.." && pwd)"
+STARTED_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 WORK="${WORK:-$HOME/scrolls-work}"
 VILLA="$WORK/villa"
 PY="$WORK/venv/bin/python"
@@ -384,5 +385,19 @@ for name in ("ink9um", "$MTAG"):
     s = j(f"rows_{name}")
     print(f"row score {name}: as stored {s['forward'].get('score')} | reversed {s['reverse'].get('score')}")
 EOF
+# Provenance: who ran it, when, on which machine, from which code, models, inputs and outputs, as
+# a record and one digest (kit provenance). The digest alone can be published or committed as a
+# timestamped commitment; it reveals nothing, and the record proves it later.
+PROV=(--model "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth"
+      --model "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed43/step-075000.pth"
+      --model "$V8IN/model.safetensors"
+      --input "$ZARR" --input "$LAB/inklabels.zarr" --input "$LAB/supervision.zarr")
+for f in "$M/${INK}_s42.tif" "$M/${INK}_s42_reverse.tif" "$M/${INK}_s43.tif" "$M/${INK}_s43_reverse.tif" \
+         "$M/$V8IN_MAP.tif" "$M/${V8IN_MAP}_reverse.tif" "$OUT/results"/*.json "$OUT/results/summary.txt"; do
+  [[ -f "$f" && "$f" != "$OUT/results/provenance.json" ]] && PROV+=(--output "$f")
+done
+"$PY" -m kit provenance write "$OUT/results/provenance.json" --run "mac-w045 $SEGMENT $MODEL quick=$QUICK smoke=$SMOKE" \
+  --repo "$SCROLLS" --code-repo "$VILLA" --started "$STARTED_UTC" "${PROV[@]}" > "$OUT/results/provenance.digest"
 say "summary (also in $OUT/results/summary.txt)"
 cat "$OUT/results/summary.txt"
+echo "provenance: $(cat "$OUT/results/provenance.digest")"

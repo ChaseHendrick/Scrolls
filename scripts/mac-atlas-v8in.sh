@@ -19,6 +19,7 @@ set -euo pipefail
 unset PYTORCH_ENABLE_MPS_FALLBACK
 
 SCROLLS="$(cd "$(dirname "$0")/.." && pwd)"
+STARTED_UTC="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 WORK="${WORK:-$HOME/scrolls-work}"
 PY="$WORK/venv/bin/python"
 V8IN="$WORK/checkpoints/ink-8um-v8in"
@@ -133,6 +134,8 @@ for key in $MESHES; do
   start=$SECONDS
   rm -rf "$dir/tmp" && mkdir -p "$dir/tmp"
   curl -fsSL --retry 4 "$RENDERS/$key/surface-volumes.tar" -o "$dir/tmp/sv.tar"
+  # The volume is deleted after inference, so its hash is taken now, for the provenance record.
+  printf '%s  %s\n' "$(sha "$dir/tmp/sv.tar")" "$key/surface-volumes.tar" > "$dir/input.sha256"
   tar xf "$dir/tmp/sv.tar" -C "$dir/tmp" && rm "$dir/tmp/sv.tar"
   zarr_path="$(find "$dir/tmp" -maxdepth 3 -name '*.zarr' -type d | head -1)"
   "$PY" -m kit layers "$zarr_path" "$dir/tmp/layers" > /dev/null
@@ -184,6 +187,20 @@ for r in sorted(rows, key=lambda r: -max(num(r["row_fwd"]), num(r["row_rev"]))):
     if r["mesh"] in look:
         print(f"  {r['mesh']:<24} fwd {r['row_fwd']:>6}  rev {r['row_rev']:>6}{'  (held back by rodriguescarson)' if r['mesh'] in held else ''}")
 EOF
+# Provenance: operator, machine, times, code, the model, every mesh volume's hash and every map,
+# as a private record (kept with the maps) and one digest. The digest alone reveals nothing and can
+# be committed or published as a timestamped commitment; it is also stored in the ledger.
+PROV=(--model "$V8IN/model.safetensors" --input "$OUT/manifest.csv" --output "$OUT/triage_$TAG.tsv")
+for key in $MESHES; do
+  for f in "$OUT/$key/input.sha256" "$OUT/$key/v8in_${TAG}_fwd.tif" "$OUT/$key/v8in_${TAG}_rev.tif"; do
+    [[ -f "$f" ]] || continue
+    [[ "$f" == *input.sha256 ]] && PROV+=(--input "$f") || PROV+=(--output "$f")
+  done
+done
+"$PY" -m kit provenance write "$OUT/provenance_$TAG.json" --run "$SLUG stride $STRIDE" --repo "$SCROLLS" \
+  --started "$STARTED_UTC" --note "atlas $ATLAS_REV" "${PROV[@]}" > "$OUT/provenance_$TAG.digest"
+"$PY" -m kit run record "$SLUG" --command "provenance record for stride $STRIDE" --file "$OUT/provenance_$TAG.json" > /dev/null
+echo "provenance: $(cat "$OUT/provenance_$TAG.digest")"
 echo
 echo "Maps: $OUT/<scroll>/<mesh>/v8in_${TAG}_{fwd,rev}.tif. Look privately, then record the verdict:"
 echo "  python -m kit run status $SLUG null --note \"...\"        or        ... candidate --note \"...\""
