@@ -1,0 +1,24 @@
+{
+  "frozen_utc": "2026-10-07T15:50:29.457490+00:00",
+  "input_freeze_sha256": "53392810651dfaefdc8054083894f14b4e9b76bafc7a93b3c9e97c4b2766835d",
+  "change": "Replace repeated scattered bootstrap histogram updates and block-key sorting with bounded linear bincount construction, keeping score bins/RNG/statistic and output schema exact. Reuse identical HP label fields within one forward/reverse score_files operation only. No global cache.",
+  "primary": "Full auc.score_files including TIFF loading, zarr label/mask reads and mapping, point AUC for forward/control, paired1000-draw107px block bootstrap with fixedseed20261007, keep_zero=True,inner64,crop2720:3360 both axes.",
+  "secondary": [
+    "Full hpscore.score_files forward/control with48um filter and same labels/crop",
+    "Full rowscore.score_files forward/control unchanged",
+    "Full sequential AUC+HP+rows pipeline, with each function doing its own input reads as before"
+  ],
+  "timing": "Six pairs. Alternate order baseline,candidate then candidate,baseline. Each variant uses its own subprocess, warms the full pipeline once outside timing, then times each full operation and the full sequential pipeline. Interpreter/import startup and JSON serialization excluded; file I/O and label resampling included. Cached public input pages. No microbenchmark substituted for primary.",
+  "resources": {
+    "physical_cpu_cores": 1,
+    "OMP_NUM_THREADS": 1,
+    "OPENBLAS_NUM_THREADS": 1,
+    "MKL_NUM_THREADS": 1,
+    "NUMEXPR_NUM_THREADS": 1,
+    "zarr_async_concurrency": 1,
+    "zarr_thread_workers": 1,
+    "tifffile_read_maxworkers": 1
+  },
+  "correctness": "Every returned output field exactly matches baseline JSON for every timed operation, plus mathematical synthetic regression tests including ties, zero masks, sparse block keys, paired draws, nondivisible edges and uint8/uint16/float quantization. No tolerance-only statistical check.",
+  "acceptance": "Keep exact-output correctness and >=10% median full primary operation improvement, without >10% secondary regression. Retain all raw times and negative results; report only bounded cached640crop CPU measurements. Do not infer full-volume, GPU or UFSM transfer."
+}

@@ -1,0 +1,64 @@
+{
+  "files": [
+    {
+      "path": "fingerprint-result.json",
+      "bytes": 1179,
+      "sha256": "b8428d06df87ab4e1f4527001c8ab785bcda073105bf5d4d944c14f1fbb02a3b"
+    },
+    {
+      "path": "input-receipt.json",
+      "bytes": 27565,
+      "sha256": "80c42231cfe4eeb0c4e6bf4ba10fb902b5bf6eb33aaa0a1c771247386a872ed2"
+    },
+    {
+      "path": "inventory.json",
+      "bytes": 28712,
+      "sha256": "b86b0e48790ad556de80824c0ea49449a5939a9ff110ddf4b024ca36a13a81a9"
+    },
+    {
+      "path": "profile-result.json",
+      "bytes": 4287,
+      "sha256": "2e7aaf9dfa1fc300b21f77e69624698dd98938c6c91e09fe43764e7b06cbe362"
+    },
+    {
+      "path": "profile.log",
+      "bytes": 4287,
+      "sha256": "2e7aaf9dfa1fc300b21f77e69624698dd98938c6c91e09fe43764e7b06cbe362"
+    },
+    {
+      "path": "profile_io.py",
+      "bytes": 5291,
+      "sha256": "7143f3191de7610ae357c3b8e601b53f4a7720abb650999389b543dfe5a57f04"
+    },
+    {
+      "path": "report.md",
+      "bytes": 4511,
+      "sha256": "4ef67d16fcb23f2a78ff79dcd41f1c3d30e3b912fb5d556e99b5a085017ac944"
+    },
+    {
+      "path": "source-context/infer_layers_cpu.py",
+      "bytes": 8924,
+      "sha256": "1357601e51ff49d5487465ddd14a77de642d1fad325d51814e702b8087e30495"
+    },
+    {
+      "path": "source-context/kit-layers.py",
+      "bytes": 6551,
+      "sha256": "d8afa0ffacedb6ab57e2760924f55770ccaafac0d6c11fa7e919f158f52707b9"
+    },
+    {
+      "path": "source-context/mac-w045.sh",
+      "bytes": 25715,
+      "sha256": "fc9f59a15d881fc356ae84b0cbb82363fbe686f71c695fba4096bf5d539c02c8"
+    },
+    {
+      "path": "source-context/official-infer.py",
+      "bytes": 48446,
+      "sha256": "979aed8e1bf047bea8e30bd0bbe55538556289c72b5914bbbbecf355e5940389"
+    },
+    {
+      "path": "source-context/reader-baseline.log",
+      "bytes": 4093,
+      "sha256": "e59423807709bdf61a6541242cc72af91aaa4ac0567e2d283a9e4742c49ef8a9"
+    }
+  ]
+}

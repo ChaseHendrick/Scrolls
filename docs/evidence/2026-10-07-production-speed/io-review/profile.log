@@ -1,0 +1,126 @@
+{
+  "status": "io_profile_only_no_inference",
+  "source_infer_sha256": "979aed8e1bf047bea8e30bd0bbe55538556289c72b5914bbbbecf355e5940389",
+  "export_source_metadata_only_normalization": "isolated <u1 to |u1; same chunk bytes; source unchanged",
+  "source_layers_sha256": "d8afa0ffacedb6ab57e2760924f55770ccaafac0d6c11fa7e919f158f52707b9",
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "zarr": "3.4.0",
+    "blosc_threads": 1
+  },
+  "read_profile": [
+    {
+      "repeat": 0,
+      "mode": "zarr_per_patch",
+      "seconds_including_hash_and_preload": 0.9949907059999532,
+      "preload_seconds": 0.0,
+      "patch_sha256": "8660d76b8b7cc2936623d31bf6aef76f3026b995f910ac18619e851656831dcd",
+      "patch_count": 588,
+      "cached_raw_bytes": 0
+    },
+    {
+      "repeat": 0,
+      "mode": "bounded_preload",
+      "seconds_including_hash_and_preload": 0.32301523000023735,
+      "preload_seconds": 0.018761487000119814,
+      "patch_sha256": "8660d76b8b7cc2936623d31bf6aef76f3026b995f910ac18619e851656831dcd",
+      "patch_count": 588,
+      "cached_raw_bytes": 13926400
+    },
+    {
+      "repeat": 1,
+      "mode": "bounded_preload",
+      "seconds_including_hash_and_preload": 0.30850912100049754,
+      "preload_seconds": 0.01717400799952884,
+      "patch_sha256": "8660d76b8b7cc2936623d31bf6aef76f3026b995f910ac18619e851656831dcd",
+      "patch_count": 588,
+      "cached_raw_bytes": 13926400
+    },
+    {
+      "repeat": 1,
+      "mode": "zarr_per_patch",
+      "seconds_including_hash_and_preload": 1.020862892999503,
+      "preload_seconds": 0.0,
+      "patch_sha256": "8660d76b8b7cc2936623d31bf6aef76f3026b995f910ac18619e851656831dcd",
+      "patch_count": 588,
+      "cached_raw_bytes": 0
+    },
+    {
+      "repeat": 2,
+      "mode": "zarr_per_patch",
+      "seconds_including_hash_and_preload": 1.0332391359997928,
+      "preload_seconds": 0.0,
+      "patch_sha256": "8660d76b8b7cc2936623d31bf6aef76f3026b995f910ac18619e851656831dcd",
+      "patch_count": 588,
+      "cached_raw_bytes": 0
+    },
+    {
+      "repeat": 2,
+      "mode": "bounded_preload",
+      "seconds_including_hash_and_preload": 0.3077791519999664,
+      "preload_seconds": 0.01459986600002594,
+      "patch_sha256": "8660d76b8b7cc2936623d31bf6aef76f3026b995f910ac18619e851656831dcd",
+      "patch_count": 588,
+      "cached_raw_bytes": 13926400
+    }
+  ],
+  "export_profile": [
+    {
+      "mode": "per_layer_fallback",
+      "repeat": 0,
+      "export_seconds": 0.3426306339997609,
+      "pixel_sha256": "6e079dba530049ec4ec4f77c8e7f4dd8603a82a30d7f0a7fe919b9c5538a3725",
+      "tiff_bytes": 5333012,
+      "layers": 28
+    },
+    {
+      "mode": "per_layer_fallback",
+      "repeat": 1,
+      "export_seconds": 0.2814057249997859,
+      "pixel_sha256": "6e079dba530049ec4ec4f77c8e7f4dd8603a82a30d7f0a7fe919b9c5538a3725",
+      "tiff_bytes": 5333012,
+      "layers": 28
+    },
+    {
+      "mode": "per_layer_fallback",
+      "repeat": 2,
+      "export_seconds": 0.2714664509994691,
+      "pixel_sha256": "6e079dba530049ec4ec4f77c8e7f4dd8603a82a30d7f0a7fe919b9c5538a3725",
+      "tiff_bytes": 5333012,
+      "layers": 28
+    },
+    {
+      "mode": "existing_banded",
+      "repeat": 0,
+      "export_seconds": 0.0912279430003764,
+      "pixel_sha256": "6e079dba530049ec4ec4f77c8e7f4dd8603a82a30d7f0a7fe919b9c5538a3725",
+      "tiff_bytes": 5333012,
+      "layers": 28
+    },
+    {
+      "mode": "existing_banded",
+      "repeat": 1,
+      "export_seconds": 0.09080960200026311,
+      "pixel_sha256": "6e079dba530049ec4ec4f77c8e7f4dd8603a82a30d7f0a7fe919b9c5538a3725",
+      "tiff_bytes": 5333012,
+      "layers": 28
+    },
+    {
+      "mode": "existing_banded",
+      "repeat": 2,
+      "export_seconds": 0.08876092799982871,
+      "pixel_sha256": "6e079dba530049ec4ec4f77c8e7f4dd8603a82a30d7f0a7fe919b9c5538a3725",
+      "tiff_bytes": 5333012,
+      "layers": 28
+    }
+  ],
+  "all_reader_pixels_identical": true,
+  "all_export_pixels_identical": true,
+  "peak_rss_bytes": 72564736,
+  "limitations": [
+    "Warm page-cache bounded crop profile, not full model or end-to-end throughput.",
+    "Hashing/copying is included in reader times; no prediction maps are computed.",
+    "Bounded preload proposal still needs official end-to-end map equivalence and memory budget tests."
+  ]
+}

@@ -1,0 +1,112 @@
+{
+  "auc_files": {
+    "forward": {
+      "auc": 0.9211,
+      "ink_px": 83199,
+      "background_px": 178931,
+      "zero_px_in_mask": 0,
+      "zero_px_counted": true,
+      "inner": 64
+    },
+    "files": {
+      "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif",
+      "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+      "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+      "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+      "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+    },
+    "level": "2",
+    "crop": [
+      2720,
+      3360,
+      2720,
+      3360
+    ],
+    "control": {
+      "auc": 0.5951,
+      "ink_px": 83199,
+      "background_px": 178931,
+      "zero_px_in_mask": 0,
+      "zero_px_counted": true,
+      "inner": 64
+    },
+    "bootstrap": {
+      "draws": 1000,
+      "block_px": 107,
+      "blocks": 36,
+      "seed": 20261007,
+      "ci95": [
+        0.8836,
+        0.9532
+      ],
+      "half_width": 0.0348,
+      "compare": {
+        "auc_map": 0.9211,
+        "auc_other": 0.5951,
+        "difference": 0.326,
+        "ci95": [
+          0.2036,
+          0.4492
+        ],
+        "share_draws_map_not_ahead": 0.0,
+        "pixels": 262130
+      }
+    }
+  },
+  "hp_files": {
+    "forward": {
+      "hp_r": 0.0299,
+      "raw_r": 0.7095,
+      "null_max_abs": 0.0089,
+      "px": 258317,
+      "sigma_px": 5.125,
+      "inner": 64
+    },
+    "voxel_um": 9.366,
+    "crop": [
+      2720,
+      3360,
+      2720,
+      3360
+    ],
+    "control": {
+      "hp_r": -0.0036,
+      "raw_r": 0.1716,
+      "null_max_abs": 0.0049,
+      "px": 258317,
+      "sigma_px": 5.125,
+      "inner": 64
+    }
+  },
+  "rows_files": {
+    "voxel_um": 9.366,
+    "forward": {
+      "valid_px": 409600,
+      "largest_piece": true,
+      "score": 11.0,
+      "period_mm": 3.0,
+      "angle_deg": 180.0,
+      "mean_ink": 0.3273,
+      "p99": 1.0,
+      "frac_gt_half": 0.1709
+    },
+    "files": {
+      "forward": [
+        "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+      ],
+      "reverse": [
+        "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+      ]
+    },
+    "reverse": {
+      "valid_px": 409600,
+      "largest_piece": true,
+      "score": 2.2,
+      "period_mm": 2.68,
+      "angle_deg": -116.6,
+      "mean_ink": 0.2137,
+      "p99": 0.347,
+      "frac_gt_half": 0.0
+    }
+  }
+}

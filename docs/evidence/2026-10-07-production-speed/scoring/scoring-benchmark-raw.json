@@ -1,0 +1,1574 @@
+[
+  {
+    "code_sha256": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.1032516739996936,
+      "full_pipeline": 0.28655901700039976,
+      "hp_files": 0.16421869299938407,
+      "rows_files": 0.02166180099993653
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring-baseline",
+    "pair": 0,
+    "position": 0,
+    "worker_process_wall_s": 1.316302017000453,
+    "cli_process_wall_s": 0.3981131769996864,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.036836064999988594,
+      "full_pipeline": 0.2319456410004932,
+      "hp_files": 0.17670931800057588,
+      "rows_files": 0.02079907400002412
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring",
+    "pair": 0,
+    "position": 1,
+    "worker_process_wall_s": 1.1347419759995319,
+    "cli_process_wall_s": 0.28456499200001417,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.04144546400038962,
+      "full_pipeline": 0.22589478099962434,
+      "hp_files": 0.17588288599927182,
+      "rows_files": 0.01958457799992175
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring",
+    "pair": 1,
+    "position": 0,
+    "worker_process_wall_s": 1.1008873409991793,
+    "cli_process_wall_s": 0.27702825400047004,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.10113771699980134,
+      "full_pipeline": 0.27050799999960873,
+      "hp_files": 0.16449390999969182,
+      "rows_files": 0.020785255000191682
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring-baseline",
+    "pair": 1,
+    "position": 1,
+    "worker_process_wall_s": 1.2475565550003012,
+    "cli_process_wall_s": 0.35026644000026863,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.1120230079995963,
+      "full_pipeline": 0.31849345699993137,
+      "hp_files": 0.18007687899989833,
+      "rows_files": 0.020629483999982767
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring-baseline",
+    "pair": 2,
+    "position": 0,
+    "worker_process_wall_s": 1.363822039000297,
+    "cli_process_wall_s": 0.36835863499982224,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.042978625000614556,
+      "full_pipeline": 0.24163543499980733,
+      "hp_files": 0.20756845799951407,
+      "rows_files": 0.0231757519995881
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring",
+    "pair": 2,
+    "position": 1,
+    "worker_process_wall_s": 1.232536190999781,
+    "cli_process_wall_s": 0.2920389580003757,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.03785678799977177,
+      "full_pipeline": 0.23326665100012178,
+      "hp_files": 0.17470880200016836,
+      "rows_files": 0.020767439000337617
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring",
+    "pair": 3,
+    "position": 0,
+    "worker_process_wall_s": 1.1352897059996394,
+    "cli_process_wall_s": 0.3508303730004627,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.10851311500027805,
+      "full_pipeline": 0.30530160699981934,
+      "hp_files": 0.17888846400001057,
+      "rows_files": 0.02274725799998123
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring-baseline",
+    "pair": 3,
+    "position": 1,
+    "worker_process_wall_s": 1.3575611889991706,
+    "cli_process_wall_s": 0.3716309009996621,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.1042232290001266,
+      "full_pipeline": 0.2917915620000713,
+      "hp_files": 0.17253225199965527,
+      "rows_files": 0.020591298999534047
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring-baseline",
+    "pair": 4,
+    "position": 0,
+    "worker_process_wall_s": 1.3213943390001077,
+    "cli_process_wall_s": 0.3723670059998767,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.04444910999973217,
+      "full_pipeline": 0.26930804400035413,
+      "hp_files": 0.1863464460002433,
+      "rows_files": 0.025582000999747834
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring",
+    "pair": 4,
+    "position": 1,
+    "worker_process_wall_s": 1.2335653969994382,
+    "cli_process_wall_s": 0.3094612690001668,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.039821893000407727,
+      "full_pipeline": 0.23716004800007795,
+      "hp_files": 0.17898427699947206,
+      "rows_files": 0.020086970999727782
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring",
+    "pair": 5,
+    "position": 0,
+    "worker_process_wall_s": 1.1622833440005707,
+    "cli_process_wall_s": 0.3042056389995196,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  },
+  {
+    "code_sha256": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "cpu_affinity": [
+      0
+    ],
+    "operation_times_s": {
+      "auc_files": 0.11311254199972609,
+      "full_pipeline": 0.3107734539999001,
+      "hp_files": 0.1777116900002511,
+      "rows_files": 0.024563975000091887
+    },
+    "outputs": {
+      "auc_files": {
+        "bootstrap": {
+          "block_px": 107,
+          "blocks": 36,
+          "ci95": [
+            0.8836,
+            0.9532
+          ],
+          "compare": {
+            "auc_map": 0.9211,
+            "auc_other": 0.5951,
+            "ci95": [
+              0.2036,
+              0.4492
+            ],
+            "difference": 0.326,
+            "pixels": 262130,
+            "share_draws_map_not_ahead": 0.0
+          },
+          "draws": 1000,
+          "half_width": 0.0348,
+          "seed": 20261007
+        },
+        "control": {
+          "auc": 0.5951,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "files": {
+          "compare": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "control": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+          "labels": "/workspace/scrolls-env/geometry-validation/labels-w00/inklabels.zarr",
+          "mask": "/workspace/scrolls-env/geometry-validation/labels-w00/supervision.zarr",
+          "prediction": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        },
+        "forward": {
+          "auc": 0.9211,
+          "background_px": 178931,
+          "ink_px": 83199,
+          "inner": 64,
+          "zero_px_counted": true,
+          "zero_px_in_mask": 0
+        },
+        "level": "2"
+      },
+      "hp_files": {
+        "control": {
+          "hp_r": -0.0036,
+          "inner": 64,
+          "null_max_abs": 0.0049,
+          "px": 258317,
+          "raw_r": 0.1716,
+          "sigma_px": 5.125
+        },
+        "crop": [
+          2720,
+          3360,
+          2720,
+          3360
+        ],
+        "forward": {
+          "hp_r": 0.0299,
+          "inner": 64,
+          "null_max_abs": 0.0089,
+          "px": 258317,
+          "raw_r": 0.7095,
+          "sigma_px": 5.125
+        },
+        "voxel_um": 9.366
+      },
+      "rows_files": {
+        "files": {
+          "forward": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+          ],
+          "reverse": [
+            "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+          ]
+        },
+        "forward": {
+          "angle_deg": 180.0,
+          "frac_gt_half": 0.1709,
+          "largest_piece": true,
+          "mean_ink": 0.3273,
+          "p99": 1.0,
+          "period_mm": 3.0,
+          "score": 11.0,
+          "valid_px": 409600
+        },
+        "reverse": {
+          "angle_deg": -116.6,
+          "frac_gt_half": 0.0,
+          "largest_piece": true,
+          "mean_ink": 0.2137,
+          "p99": 0.347,
+          "period_mm": 2.68,
+          "score": 2.2,
+          "valid_px": 409600
+        },
+        "voxel_um": 9.366
+      }
+    },
+    "variant": "scoring-baseline",
+    "pair": 5,
+    "position": 1,
+    "worker_process_wall_s": 1.3751030250004987,
+    "cli_process_wall_s": 0.40219319900006667,
+    "exact_output_match": true,
+    "cli_exact_output_match": true
+  }
+]

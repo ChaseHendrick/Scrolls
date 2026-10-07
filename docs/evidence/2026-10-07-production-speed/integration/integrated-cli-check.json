@@ -1,0 +1,58 @@
+{
+  "rows": [
+    {
+      "variant": "baseline",
+      "command": [
+        "/workspace/Scrolls/.venv/bin/python",
+        "-m",
+        "kit",
+        "surfacefix",
+        "apply",
+        "/workspace/scrolls-env/supervised-surfacefix/actual-maps-manifest.json",
+        "/workspace/scrolls-env/production-speed/cli-baseline",
+        "--json"
+      ],
+      "cwd": "/workspace/scrolls-env/production-speed/geometry/baseline",
+      "exit_code": 1,
+      "status": "no_corrections",
+      "accepted_regions": 0,
+      "flagged_regions": 16,
+      "stdout_sha256": "8b828a35750fa4ec7208a218bc2bb01544005ed06ffa5f83a734057379a41b1e",
+      "output_sha256": {
+        "report.json": "8b828a35750fa4ec7208a218bc2bb01544005ed06ffa5f83a734057379a41b1e",
+        "corrected.tifxyz/z.tif": "5b129fb3930283dd942bf623120b7c5676110149fb5beaa202c7613f4ca32306",
+        "corrected.tifxyz/meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+        "corrected.tifxyz/x.tif": "f9f63820a8dfb4da2523269e4baa88b272313b1b1f473b10a18f15a110b3737b",
+        "corrected.tifxyz/y.tif": "3e8c98c5d7aebe89d7cefe7d2c7f202dd6bc93f1e2a1c58309d2132a2629148e"
+      }
+    },
+    {
+      "variant": "integrated",
+      "command": [
+        "/workspace/Scrolls/.venv/bin/python",
+        "-m",
+        "kit",
+        "surfacefix",
+        "apply",
+        "/workspace/scrolls-env/supervised-surfacefix/actual-maps-manifest.json",
+        "/workspace/scrolls-env/production-speed/cli-integrated",
+        "--json"
+      ],
+      "cwd": "/workspace/Scrolls",
+      "exit_code": 1,
+      "status": "no_corrections",
+      "accepted_regions": 0,
+      "flagged_regions": 16,
+      "stdout_sha256": "8b828a35750fa4ec7208a218bc2bb01544005ed06ffa5f83a734057379a41b1e",
+      "output_sha256": {
+        "report.json": "8b828a35750fa4ec7208a218bc2bb01544005ed06ffa5f83a734057379a41b1e",
+        "corrected.tifxyz/z.tif": "5b129fb3930283dd942bf623120b7c5676110149fb5beaa202c7613f4ca32306",
+        "corrected.tifxyz/meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+        "corrected.tifxyz/x.tif": "f9f63820a8dfb4da2523269e4baa88b272313b1b1f473b10a18f15a110b3737b",
+        "corrected.tifxyz/y.tif": "3e8c98c5d7aebe89d7cefe7d2c7f202dd6bc93f1e2a1c58309d2132a2629148e"
+      }
+    }
+  ],
+  "all_exact": true,
+  "exit_code_1_expected": "Surfacefix abstains with no accepted corrections; both baseline and integrated CLI preserve this status."
+}

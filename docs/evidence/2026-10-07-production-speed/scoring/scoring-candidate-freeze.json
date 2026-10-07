@@ -1,0 +1,11 @@
+{
+  "frozen_utc": "2026-10-07T15:53:06.843708+00:00",
+  "files_sha256": {
+    "scoring/kit/auc.py": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "scoring/tests/test_auc_bootstrap_exact.py": "c81d36aba86ba718cc38bbaeeba2a0d16b92a04d448746fa85503ce059e505f6",
+    "benchmark_scoring.py": "54b67b3d2122795e9765d373c1cede2ee9ee5365bc803de87004d3f0f7d15183",
+    "scoring-benchmark-rule.json": "4592e4582849ffd60880758ba6d7341ccd82ccd97939de18ac6f543a0cad912a",
+    "scoring-input-freeze.json": "53392810651dfaefdc8054083894f14b4e9b76bafc7a93b3c9e97c4b2766835d"
+  },
+  "hp_and_rows_unchanged": true
+}

@@ -4940,5 +4940,132 @@
    ],
    "interpretation": "All combined endpoints failed because reduction was below20percent. All baseline-eligible queries retained on a fresh fixed query set; two native w00 abstentions preserved. Distance bound proves existence, not uniqueness."
   }
+ },
+ "production_speed_checks": {
+  "date": "2026-10-07",
+  "source": "docs/logs/2026-10-07-production-speed.md",
+  "baseline_commit": "e2fd0c0afb5b3bb4e9f956f8cba648e674299949",
+  "scope": "Single-core CPU on cached public PHerc0841 test crops; optimized existing operations, no model inference/flattening/whole-scroll throughput claim.",
+  "geometry": {
+   "evidence": "docs/evidence/2026-10-07-production-speed/geometry/process-result.json",
+   "sha256": "1938ce7d3a49be65e8fee8bd1f9a4e9b978b867137251fa8be6dea614bad0769",
+   "alternating_pairs_per_case": 5,
+   "medians": {
+    "supervised_schema2": {
+     "baseline": {
+      "process_wall_seconds": 5.291266432000157,
+      "full_seconds": 5.173491796000235,
+      "geometry_seconds": 4.5208181810003225
+     },
+     "optimized": {
+      "process_wall_seconds": 2.550777377000486,
+      "full_seconds": 2.4328744889999143,
+      "geometry_seconds": 1.8074414839993551
+     }
+    },
+    "earlier_schema1_control": {
+     "baseline": {
+      "process_wall_seconds": 0.7533203149996552,
+      "full_seconds": 0.6416048600003705,
+      "geometry_seconds": 0.0
+     },
+     "optimized": {
+      "process_wall_seconds": 0.7541534380006851,
+      "full_seconds": 0.6430288149995249,
+      "geometry_seconds": 0.0
+     }
+    }
+   },
+   "ratios_of_medians": {
+    "supervised_schema2": {
+     "process_wall_seconds": 2.07437406325999,
+     "full_seconds": 2.1264935036278465,
+     "geometry_seconds": 2.501225196512052
+    },
+    "earlier_schema1_control": {
+     "process_wall_seconds": 0.9988952871404544,
+     "full_seconds": 0.9977855502491666,
+     "geometry_seconds": null
+    }
+   },
+   "all_exact": true,
+   "target_met": true,
+   "rule_sha256": "582429ecdb0ca0492697af3440a46158c9c8117d64c155d4cec49e2de5035829",
+   "process_amendment_sha256": "9dcd939d50a5583ad9cc4fa0a85f1d96c816b80704958bcc0012699846ea90b1"
+  },
+  "scoring": {
+   "evidence": "docs/evidence/2026-10-07-production-speed/scoring/scoring-benchmark-summary.json",
+   "sha256": "2b22ecb64e3baaf46ef09425f1cabb27c2ed9971247ac19c5dcd95cfef292ba1",
+   "alternating_pairs": 6,
+   "all_exact": true,
+   "operations": {
+    "auc_files": {
+     "baseline_median_s": 0.10636817200020232,
+     "candidate_median_s": 0.04063367850039867,
+     "ratio_of_medians": 2.617734252121887,
+     "paired_speedup_range": [
+      2.3447765096028825,
+      2.8664110383831893
+     ]
+    },
+    "hp_files": {
+     "baseline_median_s": 0.1751219709999532,
+     "candidate_median_s": 0.17784679750002397,
+     "ratio_of_medians": 0.9846787991778687,
+     "paired_speedup_range": [
+      0.867554158928713,
+      1.0239235914389602
+     ]
+    },
+    "rows_files": {
+     "baseline_median_s": 0.021223528000064107,
+     "candidate_median_s": 0.02078325650018087,
+     "ratio_of_medians": 1.0211839516044758,
+     "paired_speedup_range": [
+      0.8049135405685044,
+      1.2228809908883114
+     ]
+    },
+    "full_pipeline": {
+     "baseline_median_s": 0.2985465844999453,
+     "candidate_median_s": 0.23521334950009987,
+     "ratio_of_medians": 1.2692586757275806,
+     "paired_speedup_range": [
+      1.0834862474426779,
+      1.318074300651249
+     ]
+    },
+    "cli_process_wall_s": {
+     "baseline_median_s": 0.3719989534997694,
+     "candidate_median_s": 0.29812229849994765,
+     "ratio_of_medians": 1.2478065390329558,
+     "paired_speedup_range": [
+      1.0592894161965047,
+      1.3990237316319871
+     ]
+    },
+    "worker_process_wall_s": {
+     "baseline_median_s": 1.3394777639996391,
+     "candidate_median_s": 1.148786525000105,
+     "ratio_of_medians": 1.1659936244460358,
+     "paired_speedup_range": [
+      1.07119925884295,
+      1.1957839323521549
+     ]
+    }
+   },
+   "scope": "full_pipeline here means sequential AUC/HP/row file scoring, not rendering/inference. Fresh CLI and warm file-operation timers are distinct."
+  },
+  "integration": {
+   "repository_tests": 193,
+   "experiment_regressions": 39,
+   "actual_cli": "docs/evidence/2026-10-07-production-speed/integration/integrated-cli-check.json"
+  },
+  "limits": [
+   "One real schema2 crop plus unchanged legacy case; larger-surface scaling unmeasured.",
+   "Wall time includes warm local data/cache; no cold-storage benchmark.",
+   "No measured peak-memory improvement; scoring adds O(pixels) temporary workspace.",
+   "Geometry still rejects uncertain cases; zero real corrections accepted on the benchmark crop."
+  ]
  }
 }

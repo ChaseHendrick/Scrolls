@@ -1,0 +1,16 @@
+{
+  "reason": "Parent requests cold complete-process wall time in addition to correct()/geometry timers; original rule retained unchanged",
+  "original_rule_sha256": "582429ecdb0ca0492697af3440a46158c9c8117d64c155d4cec49e2de5035829",
+  "harness_hashes": {
+    "/workspace/scrolls-env/production-speed/geometry/benchmark_process.py": "047725000dbcc3c9092a0406c1bc373bbce2c8628010f08a0cd90781a81b953d",
+    "/workspace/scrolls-env/production-speed/geometry/worker.py": "9f4fcd47f2e552f7520953d6b5cdd1d2a1f9ace6e3e13ef7abbe15df6e1d1e1f"
+  },
+  "order_cases_options_endpoint_exactness": "Unchanged from original rule:2cases,warmup+5alternatingpairs,1nullpair,tangentialnegative;1.5xschema2target;exactallreports/projections/outputhashes",
+  "timers": [
+    "parentprocesswallincludingPythonstartup/allimports/fulloperation/I/O/exit",
+    "innercorrectfulloperation",
+    "innergeometry"
+  ],
+  "resource": "oneCPUaffinity inheritedbyallworkers; nootherheavyjobsduringfinaltiming",
+  "frozen_before_any_repeated_timing": true
+}

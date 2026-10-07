@@ -30,7 +30,7 @@ python -m kit prizes
 python -m kit doctor        # exit 1 when a check fails (e.g. no GPU); that is a report, not a test failure
 ```
 
-CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the tests on Python 3.10 and 3.13 (standard library only), again on 3.13 with numpy, tifffile, imagecodecs, scipy and zarr, and smoke-runs `prizes` and `plan`. The integrated suite has 185 tests with these dependencies. The numerical job also discovers each directory containing `scripts/experiments/**/test_*.py` and runs it in a separate unittest process. Those six directories add 39 passing regression tests, including historical experiment scoring and coverage controls. They were previously outside CI discovery. The recorded counts describe the October 7 merge review; later changes can add tests.
+CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the tests on Python 3.10 and 3.13 (standard library only), again on 3.13 with numpy, tifffile, imagecodecs, scipy and zarr, and smoke-runs `prizes` and `plan`. The integrated suite has 193 tests with these dependencies. The numerical job also discovers each directory containing `scripts/experiments/**/test_*.py` and runs it in a separate unittest process. Those six directories add 39 passing regression tests, including historical experiment scoring and coverage controls. They were previously outside CI discovery. The recorded counts describe the October 7 merge review; later changes can add tests.
 
 ## What the tests pin
 

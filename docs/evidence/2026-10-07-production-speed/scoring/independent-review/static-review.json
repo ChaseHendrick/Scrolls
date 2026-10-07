@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "timestamp_utc": "2026-10-07T15:54:22.053294+00:00",
+  "review_scope": "Independent static review only; no tests or heavy processes during quiet benchmark",
+  "source_sha256": {
+    "baseline": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "optimized": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "tests": "c81d36aba86ba718cc38bbaeeba2a0d16b92a04d448746fa85503ce059e505f6"
+  },
+  "finite_supported_maps_blockers": [],
+  "verified_reasoning": [
+    "Counting block IDs preserves ascending IDs and identical inverse mapping; sparse coordinate extents fall back to original unique/sort.",
+    "Histogram bins use unchanged quantization and ordered union across compared maps.",
+    "RNG initialization and per-draw integer sampling order are unchanged.",
+    "Source and each draw totals <=2**26 suffice for exact nonnegative float64 count products, cumulative sums and half-tie arithmetic. Larger cases retain historical column layout.",
+    "Return dictionary construction, rounding and validation preceding histogram construction are unchanged."
+  ],
+  "limits": [
+    "Nonfinite maps are not validated by inherited quantizer. New bincount may change their exception type compared with historical add.at; valid-map equivalence should not be generalized to invalid maps.",
+    "Workspace is bounded linearly by pixel count, not by a fixed byte budget. Dense histograms already depend on occupied block count times1024; new bincount adds temporary integer histograms and pixel indices.",
+    "New pixel-oracle tests cover uint8,uint16 and three float scales, support zeros and margins; static review does not substitute for actual executed results."
+  ],
+  "suggested_optional_test": "Finite unpaired other=None output equivalence and explicit documentation of inherited nonfinite invalid-input scope.",
+  "shared_repo_modified": false
+}

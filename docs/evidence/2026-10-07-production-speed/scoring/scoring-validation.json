@@ -1,0 +1,30 @@
+{
+  "checked_utc": "2026-10-07T15:56:27.282609+00:00",
+  "baseline_commit": "e2fd0c0afb5b3bb4e9f956f8cba648e674299949",
+  "candidate_export": "/workspace/scrolls-env/production-speed/scoring",
+  "changed_relative_files": [
+    "kit/auc.py",
+    "tests/test_auc_bootstrap_exact.py"
+  ],
+  "sha256": {
+    "kit/auc.py": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "tests/test_auc_bootstrap_exact.py": "b183214da00a2a46b48cb1b29a346d88f229ddcc6fd9212ab4478d8bc2a3f709"
+  },
+  "focused_tests": {
+    "new_pixel_oracle_regressions": 7,
+    "existing_auc_tests": 15,
+    "existing_overlap_bootstrap_tests": 3,
+    "status": "passed"
+  },
+  "paired_oracle_combinations": 20,
+  "single_map_oracle_combinations": 4,
+  "production_code_unchanged_from_measurement_freeze": true,
+  "comparative_pairs": 6,
+  "real_output_fields_exact": true,
+  "primary_rule_met": true,
+  "secondary_median_regression_under10percent": true,
+  "patch": "/workspace/scrolls-env/production-speed/scoring-exact-speedup.patch",
+  "patch_sha256": "b759e736c7b9abb94cbcda9aee5ad83564238dd42c5aa352b7d602f806fa234b",
+  "rss": "not captured; counting adds O(supervised pixels) temporary workspace with bounded key-range fallback, no fixed-byte cap claimed",
+  "input_error_scope": "Existing explicit validation guards covered. Nonfinite floating maps are outside finite-input parity scope and can change NumPy exception class."
+}
