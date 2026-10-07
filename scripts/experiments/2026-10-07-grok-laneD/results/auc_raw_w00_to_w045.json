@@ -1,0 +1,42 @@
+{
+  "forward": {
+    "auc": 0.5096,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "files": {
+    "prediction": "~/scrolls-work/laneD/out/map_raw_w00_to_w045_fwd.tif",
+    "labels": "~/scrolls-work/data/w045_labels/inklabels.zarr",
+    "mask": "~/scrolls-work/data/w045_labels/supervision.zarr",
+    "control": "~/scrolls-work/laneD/out/map_raw_w00_to_w045_rev.tif"
+  },
+  "level": "2",
+  "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+  ],
+  "control": {
+    "auc": 0.4532,
+    "ink_px": 46757,
+    "background_px": 123909,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 64
+  },
+  "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 30,
+    "seed": 0,
+    "ci95": [
+      0.3688,
+      0.6307
+    ],
+    "half_width": 0.131
+  }
+}
