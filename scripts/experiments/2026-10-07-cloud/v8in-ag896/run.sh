@@ -49,12 +49,21 @@ v8in() {  # v8in NAME LAYERS STRIDE [--reverse]
   echo "$name: $(( SECONDS - t )) s ($(tail -1 "$L/$name.log"))" | tee -a "$J/times.txt"
 }
 
+score_results() {
+  W="$W" "$PY" "$SCROLLS/scripts/experiments/2026-10-07-cloud/v8in-ag896/score.py"
+}
+
 # Cheapest first, so partial results land early; one inference at a time.
 villa ink9um_s42 "$INK42"
+score_results
 villa d9v2 "$D9V2"
+score_results
 # Budget cut by the coordinating session (2026-10-07): forward stride 42 is the main map,
 # reverse and depth-shuffled controls at stride 64; no stride 21 run.
 v8in v8in_s42 "$J/layers" 42
+score_results
 v8in v8in_s64_reverse "$J/layers" 64 --reverse
+score_results
 v8in v8in_shuf_s64 "$J/layers_shuf" 64
+score_results
 echo "all maps done"

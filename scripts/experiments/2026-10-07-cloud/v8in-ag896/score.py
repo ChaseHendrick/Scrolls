@@ -13,6 +13,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[3]))
 from kit import auc, ensemble, hpscore  # noqa: E402
+from status import build_status
 
 W = Path(os.environ.get("W", Path.home() / "scrolls-work"))
 J = W / "job-v8in-ag896"
@@ -113,7 +114,11 @@ for others, label in ((["d9v2"], "v8in + d9v2"), (["ink9um_s42"], "v8in + ink_9u
                     "reverse_members": ["v8in_s64_reverse"] + [o + "_reverse" for o in others]},
             f, r, None, None, "map-level ensemble (kit ensemble); reverse ensembled the same way")
 
-(HERE / "results.json").write_text(json.dumps(rows, indent=2) + "\n")
+# Only replace reports once scoring has succeeded; existing reports survive scorer failure.
+for name, payload in (("results.json", rows), ("status.json", build_status(rows))):
+    temporary = HERE / (name + ".tmp")
+    temporary.write_text(json.dumps(payload, indent=2) + "\n")
+    temporary.replace(HERE / name)
 
 
 def fmt(v, d=4):
@@ -128,3 +133,11 @@ for r in rows:
     print(f"| {r['reader']} | {st} | {fmt(r['auc_as_stored'])} | {fmt(r.get('auc_reversed'))} | "
           f"{fmt(r.get('auc_shuffled'))} | {fmt(r['hp_r'], 3)} | {fmt(r.get('hp_r_reversed'), 3)} | "
           f"{fmt(r['hp_null_max_abs'], 3)} |")
+
+status = build_status(rows)
+print("Status: " + status["status"] + "; inference completion: " + status["inference_completion"])
+if status["missing_rows"]:
+    print("Missing scored rows: " + ", ".join(status["missing_rows"]))
+if status["missing_control_fields"]:
+    print("Missing controls: " + ", ".join(status["missing_control_fields"]))
+print(status["control_comparability"])
