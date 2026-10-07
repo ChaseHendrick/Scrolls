@@ -29,6 +29,31 @@ Pixel AUC of each of the 28 surface-volume layers as is, against the human label
 
 The layer that separates best is chosen with the labels, so these ranges are an upper bound for any single layer. **Interpretation.** Brightness at any one depth, or its plain depth statistics, reaches at most 0.58 on a crop and 0.57 on a whole segment, and nothing at letter scale; the readers' 0.66 to 0.93 on the same crops comes from learned 3D texture. It also bounds the brightness share in the depth-shuffle control (novel-checks log, section 3): `ink_9um` on shuffled ag405 reads 0.563, its soup 0.607, both above the best raw statistic on that crop (0.537 for depth std), so the readers find some depth-order-free texture beyond brightness there. Analogues on other data: per-depth AUC at most 0.55 on Paris 4 w00 ([khj1222](https://github.com/khj1222/vesuvius-challenge)) and at most 0.56 on single fragment layers ([kartoun](https://github.com/kartoun/vesuvius-fragment-ink-depth), 2026-10-05) (Community reports). Not found for PHerc0841. w045's run ran out of memory here and was not redone.
 
+## 4. An ink reading survives a trace offset of about 50 um, not 100 um (Model output: the team's maps; no labels involved)
+
+The team publishes its own 2.4 um ink map for each PHerc0841 segment (`ink-detection/...new_canon_autoresearch_recipe-tile256-stride128.tif`). Because w00 and ag896 trace one sheet at gaps that vary from 0 to about 30 voxels, they are a natural experiment: the same papyrus, read by the same model, from two surfaces a known distance apart. Pearson correlation of the two maps at matched 3D points (47 um grid), by gap, against matches displaced 1 to 3 mm in the surface plane (`trace_and_noise.py`, output `trace_and_noise.txt`):
+
+| Gap between the traces | Area | Correlation | Displaced null, mean (max of 50) |
+| --- | ---: | ---: | --- |
+| 0 to 28 um | 0.68 cm² | **0.86** | 0.04 (0.29) |
+| 28 to 56 um | 2.49 cm² | **0.75** | 0.06 (0.19) |
+| 56 to 84 um | 3.56 cm² | 0.45 | 0.05 (0.16) |
+| 84 to 112 um | 2.70 cm² | 0.26 | 0.04 (0.14) |
+| 112 to 169 um | 2.25 cm² | 0.07 | 0.04 (0.17) |
+| 169 to 281 um | 0.68 cm² | 0.10 | 0.06 (0.22) |
+
+Both maps keep the same contrast at every gap (standard deviation 53 to 69 of 255) and w00's labelled ink share there is 20 to 31 % for every gap above 28 um, so the drop is not a lack of text. **Interpretation.** Two readings of one sheet agree well only while the surfaces are within about 50 um (five 9.4 um voxels) of each other; at about 110 um they are unrelated. A traced surface that sits a tenth of a millimetre off the ink layer reads something else. This puts a number on how precise a hand-fixed surface has to be, and on how much an automatic surface may wander before a null from it means nothing. Nearest published work: [Ahggggg/page-that-isnt-flat](https://github.com/Ahggggg/page-that-isnt-flat) (offset tolerance of the 2.4 um model by shifting one surface) and villa #1867 (window shifts); a comparison of two independent traces of the same sheet was not found.
+
+## 5. The PHerc0841 benchmark is 3.4 cm² of labelled papyrus, and its AUCs carry about +-0.01 to +-0.04 of sampling noise
+
+| Segment | Surface | Supervised (labelled) | Labelled ink | Share labelled |
+| --- | ---: | ---: | ---: | ---: |
+| w00 | 12.7 cm² | 1.41 cm² | 0.31 cm² | 11 % |
+| ag896 (same sheet as w00) | 12.8 cm² | 0.86 cm² | 0.28 cm² | 7 % |
+| ag405 | 12.0 cm² | 1.12 cm² | 0.25 cm² | 9 % |
+
+Every unseen-scroll AUC quoted for PHerc0841 rests on 3.4 cm² of labelled papyrus (0.84 cm² of it ink), less than the single 4 cm² area a First Letters claim needs, and on two independent surfaces (section 1). A block bootstrap over 1 mm blocks (300 draws) of the team's map against the labels gives AUC 0.971 (95 % interval 0.962 to 0.979) on w00, 0.921 (0.896 to 0.941) on ag896 and 0.869 (0.829 to 0.905) on ag405 (the labels may have been drawn with this map's help, so the levels are not a fair score; the interval widths are the point). **Interpretation.** On one segment, AUC differences below about 0.02 (w00) to 0.04 (ag405) are within sampling noise for a strong map, and weaker maps spread more. Many published rankings on PHerc0841 differ by less than that, and our own Gate A rule (0.02) sits at the noise floor. Not found reported for PHerc0841 by anyone.
+
 ## 3. What the community published that changes our claims (scan of 2026-10-07; Community reports)
 
 - **v8in on PHerc0841 is published.** Bullo27, [v8in-12gb](https://github.com/Bullo27/v8in-12gb) (commits 2026-10-01 and 02): v8in, no fine-tune, labels' bounding box, AUC (reverse) w00 0.837 (0.562), ag896 0.807 (0.618), ag405 0.810 (0.586); `ink_9um` mean of 14 checkpoints 0.813, 0.756, 0.761. v8in leads `ink_9um` there, the opposite of our w045 result (README finding 1, still unpublished elsewhere). Not there: a shuffle control, w045, and the PHerc1447 fine-tune on PHerc0841 ("was not scored on PHerc0841"). Our Mac and cloud v8in runs on PHerc0841 are therefore reproductions; the fine-tune runs are not.

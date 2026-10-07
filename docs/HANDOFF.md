@@ -6,7 +6,7 @@ Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` 
 
 **The user is short on usage (weekly limit warning).** Keep runs short and agents few; ask before starting anything that takes hours.
 
-New findings (README 5 and 6; [log](logs/2026-10-07-overlap-and-baseline.md)): PHerc0841's w00 and ag896 are the same papyrus traced twice (meshes 81 um apart, labels agree, Dice 0.83), so PHerc0841 has two independent labelled surfaces, not three; raw CT brightness alone scores at most 0.58 AUC per layer on PHerc0841.
+New findings (README 5 and 6; [log](logs/2026-10-07-overlap-and-baseline.md)): PHerc0841's w00 and ag896 are the same papyrus traced twice (meshes 81 um apart, labels agree, Dice 0.83), so PHerc0841 has two independent labelled surfaces, not three; raw CT brightness alone scores at most 0.58 AUC per layer on PHerc0841; the team's ink maps of the two traces of that sheet agree only where the traces are within about 50 um (README 7); the PHerc0841 benchmark is 3.4 cm² of labelled papyrus with +-0.01 to +-0.04 AUC of sampling noise per segment (README 8).
 
 Prior work found by a web scan (same log, section 3): **v8in on PHerc0841 is already published** (Bullo27, [v8in-12gb](https://github.com/Bullo27/v8in-12gb), 2026-10-01: 0.837, 0.807, 0.810, ahead of `ink_9um`), so step A.4 on the Mac is now a reproduction and device check, not a novel result; window averaging on PHerc0841 has related prior work (README finding 4 now cites it).
 

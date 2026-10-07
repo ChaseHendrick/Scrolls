@@ -1,0 +1,22 @@
+1. team ink map, w00 trace against ag896 trace at matched points
+   {'gap_vox': '0-3', 'gap_um': '0-28', 'points': 31177, 'cm2': 0.68, 'pearson': 0.862, 'null_mean': 0.043, 'null_max': 0.291}
+   {'gap_vox': '3-6', 'gap_um': '28-56', 'points': 113412, 'cm2': 2.49, 'pearson': 0.753, 'null_mean': 0.056, 'null_max': 0.192}
+   {'gap_vox': '6-9', 'gap_um': '56-84', 'points': 162528, 'cm2': 3.56, 'pearson': 0.452, 'null_mean': 0.051, 'null_max': 0.161}
+   {'gap_vox': '9-12', 'gap_um': '84-112', 'points': 123171, 'cm2': 2.7, 'pearson': 0.256, 'null_mean': 0.038, 'null_max': 0.138}
+   {'gap_vox': '12-18', 'gap_um': '112-169', 'points': 102582, 'cm2': 2.25, 'pearson': 0.074, 'null_mean': 0.036, 'null_max': 0.17}
+   {'gap_vox': '18-30', 'gap_um': '169-281', 'points': 31218, 'cm2': 0.68, 'pearson': 0.104, 'null_mean': 0.055, 'null_max': 0.217}
+2. labelled area
+   w00 {'surface_cm2': 12.7, 'supervised_cm2': 1.41, 'ink_cm2': 0.31, 'supervised_share': 0.111}
+   ag896 {'surface_cm2': 12.8, 'supervised_cm2': 0.86, 'ink_cm2': 0.28, 'supervised_share': 0.068}
+   ag405 {'surface_cm2': 12.0, 'supervised_cm2': 1.12, 'ink_cm2': 0.25, 'supervised_share': 0.093}
+3. AUC block bootstrap (team 2.4 um map against the labels; labels may have been drawn with its help)
+   w00 {'auc': np.float64(0.9713), 'ci95': [np.float64(0.9624), np.float64(0.9786)], 'half_width': np.float64(0.0081), 'blocks_1mm': 185}
+   ag896 {'auc': np.float64(0.9206), 'ci95': [np.float64(0.896), np.float64(0.9408)], 'half_width': np.float64(0.0224), 'blocks_1mm': 127}
+   ag405 {'auc': np.float64(0.8691), 'ci95': [np.float64(0.8285), np.float64(0.9052)], 'half_width': np.float64(0.0383), 'blocks_1mm': 149}
+1b. per gap: map spread on each trace and share of points with labelled ink on w00
+   gap 0-3: w00 map mean 54.8 sd 53.5; ag896 mean 55.1 sd 53.0; w00 p90-p10 95; labelled pts 3606, ink share 0.08
+   gap 3-6: w00 map mean 62.0 sd 62.1; ag896 mean 62.9 sd 62.6; w00 p90-p10 164; labelled pts 19481, ink share 0.25
+   gap 6-9: w00 map mean 59.4 sd 58.3; ag896 mean 64.3 sd 63.5; w00 p90-p10 134; labelled pts 19135, ink share 0.20
+   gap 9-12: w00 map mean 61.6 sd 60.3; ag896 mean 68.7 sd 66.4; w00 p90-p10 149; labelled pts 9456, ink share 0.21
+   gap 12-18: w00 map mean 60.9 sd 60.5; ag896 mean 72.6 sd 68.7; w00 p90-p10 151; labelled pts 8489, ink share 0.24
+   gap 18-30: w00 map mean 57.2 sd 58.0; ag896 mean 64.4 sd 61.7; w00 p90-p10 123; labelled pts 3443, ink share 0.31
