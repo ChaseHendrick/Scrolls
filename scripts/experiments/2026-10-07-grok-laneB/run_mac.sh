@@ -1,5 +1,13 @@
 #!/bin/bash
-# lane B runs, 2026-10-07; resumable
+# Historical lane B launcher, 2026-10-07; not a supported prospective analysis.
+# The frozen calculations below predate the mesh/supervision support corrections.
+if [ "${SCROLLS_RUN_HISTORICAL_LANEB:-}" != 1 ]; then
+  echo "Archival launcher only: these calculations predate the support corrections." >&2
+  echo "For a deliberate historical replay, set SCROLLS_RUN_HISTORICAL_LANEB=1." >&2
+  echo "Use corrected checks.py/laneb.py for new work; their map/control CLI port is pending." >&2
+  exit 2
+fi
+echo "WARNING: historical replay; outputs are preliminary and use uncorrected support." >&2
 set -o pipefail
 PY=$HOME/scrolls-work/venv/bin/python
 R=$HOME/scrolls-work/laneB/repo; D=$HOME/scrolls-work/laneB/data; O=$HOME/scrolls-work/laneB/out   # repo subset and data links (see the log)

@@ -2,6 +2,14 @@
 
 Research notes. Labels per [`../NOVELTY.md`](../NOVELTY.md). Public labelled data only; no target scroll. Every number below comes from `scripts/experiments/2026-10-07-grok-laneB/results/*.json`, written by the commands in this log. An ink map is model output, not a reading.
 
+## Review status: historical, preliminary observations
+
+The tables and interpretations below are Grok's reported Mac run, retained as a historical account. This merge review checked the saved records and code; it did not independently rerun the maps. The run predates the mesh-hole and unknown-supervision corrections described below. The original frozen Python scripts and raw result files remain unchanged. Their original PR head is `c61427ede1f45fc925f95cc0d66d826a4b74b201`.
+
+The historical "Novel", "Null" and artifact descriptions do not establish a validated label-free detector, causal identification of fibers or ink, or a calibrated target-surface gate. In particular, the displayed stroke-width comparison selects an area using the supervision mask: Otsu and the whole-surface width calculation use no labels, but the displayed in-supervision population is label-dependent. Its ordering has not been validated on an independent unlabeled surface. The corrected helper tests verify support rules, not these historical numerical findings.
+
+`run_mac.sh` is now guarded against accidental prospective use. A deliberate historical replay requires `SCROLLS_RUN_HISTORICAL_LANEB=1`; this only acknowledges the old calculation, not its validity. Do not use the frozen scripts to produce new claimed evidence. The corrected `checks.py` map/control CLI port remains pending.
+
 ## What ran
 
 - Maps (whole segment, 9 um grid, already on the user's Mac from earlier sessions): `ink_9um` seed 42 and 43, forward and reverse, on PHerc0841 w00 and PHerc0139 w045 (villa PR #1865, CPU). Also the team's own 2.4 um PHerc0841 w00 map (`ink-detection/...new_canon_autoresearch_recipe-tile256-stride128.tif`, 4x4 block mean), which has no reverse control.
@@ -69,6 +77,15 @@ Pearson r between the map and three mesh quantities on the w00 surface (normal d
 ## 4. Depth: the map's letter-scale pattern follows no single CT layer (Null)
 
 Correlation of the 48 um high-pass of each map with the 48 um high-pass of each of the 28 raw layers, over the surface: every |r| is below 0.012 for every map, its control and the labels. The forward and reverse profiles of `ink_9um` are mirror images (peaks at layer 7 and layer 21 of 0 to 27, on both segments), which is only a check that the reverse map is the depth-flipped run. **Null:** letter-scale ink in these maps is not a copy of any one layer's letter-scale brightness, which agrees with the raw-baseline finding (overlap log, section 2) that brightness alone carries almost no ink.
+
+### Corrections to the historical narrative
+
+- The frozen width estimator reports twice the distance-transform radius. Its minimum reported width of about 19 um is a two-pixel diameter at 9.366 um, not the one-pixel width stated in section 1. The historical values are unchanged; these discrete ridge diameters are not direct pen-stroke measurements.
+- The saved w045 label depth profile reaches `|r| = 0.0169`. The section 4 statement that every label value is below 0.012 is incorrect; all saved map/control profiles do stay below 0.012. The label profile also predates the unknown-label support correction.
+- On a 28-plane stack indexed 0 to 27, index 7 reverses to 20, not 21. The recorded peaks at 7 and 21 do not demonstrate an exact mirrored profile or certify a correct depth-reversal pipeline. Filenames and weak layer correlations are not a substitute for verified layer provenance.
+- Alignment with a CT structure-tensor field, agreement between forward and reverse, and a bending correlation suggest possible texture or geometry effects. They do not prove a feature is a papyrus fiber, establish that correlated signal is not ink, or isolate a causal reader artifact. Mesh-hole support and resampling limitations especially affect the geometry interpretation.
+- The cyclic shifts are dependent exploratory controls with varying supported populations. The saved records contain no preregistered selection rule, independent validation split for these statistics, or calibrated false-positive rate. The proposed stroke-width ratio threshold is an untested idea, not a supported gate.
+- The raw records identify map filenames and settings but do not provide complete input/checkpoint hashes or render transforms. Exact physical registration and numerical reproduction of this historical run therefore remain unverified. Retain the records; new verified runs must be reported separately rather than overwrite these tables.
 
 ## Support corrections merged after this run (prospective)
 
