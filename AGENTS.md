@@ -13,6 +13,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
    The README section "What this repository has found" summarizes it in prose; keep both in step when numbers change.
 4. [`docs/logs/`](docs/logs/): dated research notes; the newest explains the latest numbers.
+   Literature (arXiv, journals, Zenodo, Kaggle): [`docs/logs/2026-10-07-literature.md`](docs/logs/2026-10-07-literature.md) and machine-readable [`docs/papers.json`](docs/papers.json).
 5. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
 
 ## Hard rules (short form)

@@ -15,6 +15,8 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 ## Research
 
 - [docs/state-of-play.md](docs/state-of-play.md): what has been read, tried and paid, with sources
+- [docs/logs/2026-10-07-literature.md](docs/logs/2026-10-07-literature.md): papers, datasets and code (arXiv, journals, Zenodo, Kaggle) and what they mean here
+- [docs/papers.json](docs/papers.json): the same bibliography, machine-readable
 - [docs/logs/2026-10-07-community-scan.md](docs/logs/2026-10-07-community-scan.md): community repositories, new models, and this repository's measurements
 - [docs/plans/2026-10-07-training.md](docs/plans/2026-10-07-training.md): plan for training a reader three ways
 - [docs/prereg/2026-10-07-v8in-atlas.md](docs/prereg/2026-10-07-v8in-atlas.md): preregistered target run
