@@ -222,3 +222,6 @@ Lead (d): default window, 4-window mean, best single window chosen with the labe
 Over 6 reader-crop cases on PHerc0841: default 0.7821 / +0.0150; 4-window mean 0.8199 / +0.0166; best window by AUC 0.8268; best window by hp_r +0.0238. hp_r: mean above default in 4 of 6, at or above the best window in 1 of 6.
 #### 0841-ag896 done 2026-10-07T11:48:18Z
 #### 0841-ag405 start 2026-10-07T11:48:18Z
+0841-ag405 ink9um_s42 66 s
+0841-ag405 d9v2 62 s
+perm [0, 25, 2, 9, 3, 15, 16, 19, 26, 6, 7, 8, 21, 13, 24, 10, 11, 20, 17, 22, 4, 5, 18, 1, 27, 14, 12, 23]
