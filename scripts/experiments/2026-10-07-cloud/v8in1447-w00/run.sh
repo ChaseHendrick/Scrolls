@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Job v8in1447-w00 (README of 2026-10-07-cloud): v8in-1447 on the PHerc0841 w00 crop, CPU.
-#   forward stride 42, reverse stride 64 (cut from s21/s42/s42 by the coordinator's budget message); d9v2 on the crop (villa, both
+#   forward and reverse stride 42; preserve historical reverse stride 64 as provisional.
+#   d9v2 on the crop (villa, both
 #   directions); ensemble v8in-1447 + d9v2 (mean and rank); every map scored by score.py.
 # Resumable: a map that exists is not rebuilt. After each map: score, commit, push.
 #   nohup bash scripts/experiments/2026-10-07-cloud/v8in1447-w00/run.sh > $W/logs/job.log 2>&1 &
@@ -72,5 +73,5 @@ EOF
   publish "$name"
 }
 v8 v8in1447_s42 42 fwd
-v8 v8in1447_s64_reverse 64 rev
+v8 v8in1447_s42_reverse 42 rev
 echo "all done"

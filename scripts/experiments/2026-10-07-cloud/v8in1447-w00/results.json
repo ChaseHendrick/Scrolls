@@ -21,7 +21,9 @@
   "hp_null_max_abs": 0.0058,
   "ink_px": 84484,
   "seconds": 1447,
-  "notes": "control is the stride 64 reverse map (714 s)"
+  "notes": "control is the stride 64 reverse map (714 s)",
+  "control_status": "provisional_stride_mismatch",
+  "control_note": "Historical reverse uses stride 64; forward uses stride 42. Direction is confounded with stride. Rerun reverse at stride 42."
  },
  {
   "job": "v8in1447-w00",
@@ -69,7 +71,9 @@
   "hp_r_reversed": -0.0141,
   "hp_null_max_abs": 0.0059,
   "ink_px": 84484,
-  "notes": "kit ensemble, mean"
+  "notes": "kit ensemble, mean",
+  "control_status": "provisional_stride_mismatch",
+  "control_note": "Historical reverse uses stride 64; forward uses stride 42. Direction is confounded with stride. Rerun reverse at stride 42."
  },
  {
   "job": "v8in1447-w00",
@@ -94,6 +98,8 @@
   "hp_r_reversed": -0.0088,
   "hp_null_max_abs": 0.007,
   "ink_px": 84484,
-  "notes": "kit ensemble, rank"
+  "notes": "kit ensemble, rank",
+  "control_status": "provisional_stride_mismatch",
+  "control_note": "Historical reverse uses stride 64; forward uses stride 42. Direction is confounded with stride. Rerun reverse at stride 42."
  }
 ]

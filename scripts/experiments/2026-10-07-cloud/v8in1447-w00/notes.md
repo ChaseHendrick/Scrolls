@@ -61,3 +61,25 @@ Pipeline check: d9v2 forward 0.8994 matches the earlier CPU bar (0.8994) to four
 - The ensemble controls use the stride 64 v8in-1447 reverse map with the stride 42 forward map, so the
   forward and control maps of the ensemble differ in v8in stride as well as direction.
 - No maps or weights are committed; they stay in `~/scrolls-work/job-v8in1447-w00/` in the container.
+
+## Control comparability correction (2026-10-07)
+
+The table above and `results.json` preserve the historical measurements. All v8in-1447
+forward/reverse comparisons, including ensembles, are provisional: stride changes from
+42 to 64 along with depth direction. They are not a matched-pipeline control result.
+The forward AUC and hp_r values are still measurements of the stride 42 maps, but the
+reverse values do not isolate the effect of reversing depth.
+
+Future `run.sh` runs write a new `v8in1447_s42_reverse` map at stride 42. `score.py`
+prefers it if available, uses new `_reverse_s42` ensemble filenames, and records
+`control_status`, `control_note`, `control_map`, and the actual `reverse_stride`.
+If only the historical reverse exists, it remains stride 64 and explicitly provisional.
+Missing reverse members are marked `missing`. No new inference or matched controls
+were run as part of this correction; do not infer that the historical numbers are updated.
+
+## Script validation
+
+Run `python -m unittest discover -s scripts/experiments/2026-10-07-cloud/v8in1447-w00 -p 'test_*.py' -v` from the checkout. The six tests use synthetic map
+files and mocked scoring; they verify selection/reporting and do not claim real-data
+validation. Scorer exit success means available maps were scored, not that a matched
+control passed or inference completed. Read the recorded status fields.
