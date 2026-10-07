@@ -82,6 +82,30 @@ class DoctorTest(unittest.TestCase):
         self.assertEqual(worst, doctor.WARN)
 
 
+class AgentFilesTest(unittest.TestCase):
+    """The machine-readable files agents rely on stay parseable and consistent."""
+
+    ROOT = Path(__file__).resolve().parent.parent
+
+    def test_results_json_parses_and_rows_have_sources(self):
+        data = json.loads((self.ROOT / "docs" / "results.json").read_text())
+        self.assertEqual(data["schema"], 1)
+        for row in data["results"]:
+            self.assertIn(row["segment"], data["segments"])
+            self.assertTrue(row["source"])
+            for k in ("auc_as_stored", "auc_reversed"):
+                if k in row:
+                    self.assertTrue(0.0 <= row[k] <= 1.0)
+
+    def test_agent_entry_points_link_to_existing_files(self):
+        import re
+        for name in ("AGENTS.md", "llms.txt"):
+            text = (self.ROOT / name).read_text()
+            for link in re.findall(r"\]\(([^)#]+)\)", text):
+                if not link.startswith("http"):
+                    self.assertTrue((self.ROOT / link).exists(), f"{name} links to missing {link}")
+
+
 class PlanTest(unittest.TestCase):
     def test_plan_has_control_target_and_privacy_rule(self):
         text = plan.first_letters("PHerc. 826", batch=1)

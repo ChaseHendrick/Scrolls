@@ -7,6 +7,17 @@ Research notes, a run planner, and an experiment ledger for the [Vesuvius Challe
 **This repository does not claim that any letters have been found in any scroll.**
 The `kit/` package plans and records runs of the official open-source pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)). It does not reimplement that pipeline. Prize amounts, deadlines and eligible scrolls are a dated snapshot (checked 2026-10-06); [scrollprize.org/prizes](https://scrollprize.org/prizes) wins if they disagree.
 
+## What this repository has found (as of 2026-10-07)
+
+Measured here, on public labelled data only (never target scrolls; model output, not readings). Every number, with settings and source: [`docs/results.json`](docs/results.json); context: [`docs/logs/2026-10-07-community-scan.md`](docs/logs/2026-10-07-community-scan.md).
+
+1. **v8in (YoussefMoNader/ink-8um-v8in, 2026-09-28) scored against human labels on a held-out segment.** On PHerc0139 w045 it reaches AUC 0.738 (reversed 0.327), against 0.914 for the team's `ink_9um` on the same crop. Not published elsewhere as far as our searches reach. This test favours `ink_9um` (its training scroll); the fair test on PHerc0841 is running.
+2. **On an unseen scroll, the community fine-tune d9v2 beats the released `ink_9um` on all three PHerc0841 crops** (0.899 / 0.823 / 0.832 against 0.806 / 0.659 / 0.784, 64 px edge left out), reproducing TAUIL-Abd-Elilah's benchmark independently.
+3. **`ink_9um` on PHerc0841 finds ink but mostly loses text rows:** AUC 0.72 to 0.75 and rows on one segment of three (ag405), reproducing Bullo27's unseen-scroll calibration.
+4. **Scoring a crop needs an edge margin.** A map inferred on a bare 640 px crop differs from the same window of a whole-segment map by up to 0.03 AUC; leaving a 64 px edge out makes them identical to four decimals (three segments). Every crop score here uses that.
+5. **The Apple M1 Pro GPU reproduces the CPU.** `ink_9um` via villa PR #1865 and v8in both match the CPU (max difference 1 grey level, Pearson above 0.9999999); `ink_9um` AUCs on MPS equal the CPU's to four decimals. (afraazali42 showed v8in on an M3 Max first.)
+6. **w035, the usual control, only shows memorization:** every clean letter it shows lies inside a supervised label region. Use a held-out segment to judge a model.
+
 ## Start here (recommendation)
 
 If you are new, **go for Progress Prizes first, then First Letters**. Leave the Grand Prize for later.
@@ -74,7 +85,11 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 
 | Path | Role |
 | --- | --- |
-| [`kit/`](kit/) | Planner, doctor, prize snapshot and experiment ledger + CLI (`python -m kit`) |
+| [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), [`llms.txt`](llms.txt) | Entry points for AI agents: rules, map, commands, glossary |
+| [`kit/`](kit/) | Planner, doctor, prize snapshot, map scoring (`auc`, `rowscore`, `verify`), `layers`, `provenance`, experiment ledger; CLI `python -m kit` |
+| [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labelled test), `mac-atlas-v8in.sh` (preregistered target run), `mac-verify.sh` |
+| [`docs/results.json`](docs/results.json) | Every benchmark number with settings and source |
+| [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Roadmap, training plan, preregistrations |
 | [`kit/data/prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) | Dated prize snapshot: amounts, deadlines, 13 + 22 eligible volumes with S3 names |
 | [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, week by week, with costs |
