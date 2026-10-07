@@ -156,5 +156,19 @@
    "0841-w00_w0.5": 0.6847,
    "0841-w00_ink9um_rank": 0.8073
   }
+ },
+ "historical_review": {
+  "baseline_commit": "d3074de09b36e8717108d2ac073de7943657af9d",
+  "historical_numeric_values_unchanged": true,
+  "texture_status": "descriptive failure of the original two-crop readout rule; not evidence of no ink signal",
+  "fusion_inference_deprecated": true,
+  "fusion_reasons": [
+   "Stable ordinal ranks split equal reader scores by flattened pixel position.",
+   "Percentile clipping can create additional score ties.",
+   "Raw reader and transformed maps can have different zero-pixel cohorts."
+  ],
+  "uncertainty_status": "No paired crop-specific uncertainty was estimated; unrelated whole-map bootstrap cannot supply a noise floor.",
+  "depth_order_causal_claim_deprecated": true,
+  "corrected_future_run_performed": false
  }
 }
