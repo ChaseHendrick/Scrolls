@@ -22,3 +22,31 @@ d9v2 forward reproduces the earlier CPU bar (0.8319) to four decimals, so the pi
 ## To finish
 
 Rerun the shared setup, fetch the d9v2 checkpoint into `$W/checkpoints/d9v2/`, then `nohup bash scripts/experiments/2026-10-07-cloud/v8in1447-ag405/run.sh > $W/logs/job.log 2>&1 &` and `python make_results.py`. Expected CPU time at about 8 s per tile: 27 min per stride 42 map (two) and about 1.75 h for stride 21.
+
+## Review correction: partial coverage and controls
+
+The checked-in `results.json` and `scores/*.json` remain the historical d9v2-only
+record. Neither a completed v8in map nor a completed ensemble was produced in that
+run. The table's missing rows are not zero scores or completed negative results.
+
+The corrected primary plan is d9v2, v8in1447_s42, and the mean/rank ensembles using
+v8in1447_s42 plus d9v2. Both primary depth directions use stride 42. An existing
+stride 64 reverse map is preserved as a provisional fallback; varying stride and
+direction together cannot establish a direction effect. The optional s21 row is
+also provisional against an s42 control, and now requires `RUN_S21=1` to generate.
+Reverse ensembles use explicit `_reverse_s42` or `_reverse_s64` names. Legacy score
+pairs without a reverse-stride metadata file are reported as unverified, not matched.
+
+New scores, results and `status.json` are written under the runtime job directory;
+checked-in historical JSON is not overwritten. Collection defaults to
+`results.current.json` and `status.current.json` when called directly. Status lists
+all five declared rows, distinguishing the four primary maps from optional s21,
+missing score pairs, and missing/provisional controls. Successful collection means
+available pairs were collected, not that inference completed. Interrupted runs
+retain the last successfully collected partial status.
+
+The prior rough completion-time estimates are not measurements of this corrected
+plan; they should not be used to claim a completed or validated comparison. No model
+inference or real-data validation was run for this correction. Run
+`python -m unittest discover -s scripts/experiments/2026-10-07-cloud/v8in1447-ag405 -p 'test_*.py' -v`
+for bounded provenance and coverage tests with temporary score files.
