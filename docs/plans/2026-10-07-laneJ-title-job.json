@@ -1,0 +1,24 @@
+{
+  "slug": "paris4-title-a",
+  "created": "2026-10-07T15:20:00+00:00",
+  "scroll": "PHercParis4",
+  "prize": "PHerc. Paris 4 title ($50,000, deadline 25 Jun 2027)",
+  "prize_snapshot": "2026-10-07",
+  "question": "Does any ink reader show an isolated short block of larger, spaced letterforms after the last text column of PHerc. Paris 4 (the innermost wraps), at any depth offset, that is absent in the reverse-depth and depth-shuffled controls?",
+  "inputs": {
+    "volumes": ["20230205180739 (7.91 um, DLS)", "20260411134726 (2.4 um, 78 keV, ESRF)"],
+    "surfaces": "published PHercParis4 segments covering the innermost wraps after the last column (start with tracing 20260701183124-w010-027 if its mesh is public); spiral-input verified_patches only as geometry",
+    "reader": "scrollprize/ink_9um hybrid_3d2d seed42 and seed43 step-075000 (SHA-256 in docs/logs/2026-10-07-w035-cpu.md), downsampled 2.4 um renders to about 9.6 um"
+  },
+  "readout_rule": "Fixed before any map exists. Candidate region only if: (1) components of 1.5 to 6 mm height (larger than body text, about 2 to 3 mm) cluster in at most 4 rows; (2) the cluster lies past the last body column along the winding, separated by at least 10 mm of blank surface; (3) present on both seeds; (4) absent in reverse depth and in kit shuffle seed 0; (5) not inside any training label region. Anything else is reported as no candidate. Never a reading.",
+  "readout_rule_sha256": "filled in by kit run init",
+  "villa_commit": "git rev-parse HEAD of the villa checkout used",
+  "compute": {
+    "where": "pay-per-second serverless GPU (Modal A10 class), or the Mac M1 Pro MPS at zero cash cost",
+    "estimate": "render plus inference of about 30,000 mm2 at 13 depth offsets x 2 seeds x 2 directions: about 16 GPU hours. python3 -m kit cost --gpu-hours 16 --rate 1.10 gives $17.60; at --rate 0.60 gives $9.60. Egress free (AWS Open Data). Budget cap proposed: $25.",
+    "approval": "NOT launched. Needs the owner's budget decision (AGENTS.md standing decision on GPU rental)."
+  },
+  "status": "planned",
+  "history": [{"at": "2026-10-07T15:20:00+00:00", "status": "planned", "note": "created by Grok lane J; Mac offline, box has no S3 or HF access"}],
+  "costs": []
+}
