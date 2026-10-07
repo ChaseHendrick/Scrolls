@@ -1,0 +1,6 @@
+cannot read /workspace/scrolls-env/production-speed-v2/large-input-review/central8192.npy: not a TIFF file: header=b'\x93NUM'
+Traceback (most recent call last):
+  File "/workspace/scrolls-env/production-speed-v2/large-input-review/profile_rows_cli_child.py", line 46, in <module>
+    assert code==0 and len(resized)==1
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError

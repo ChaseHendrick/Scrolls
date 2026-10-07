@@ -66,7 +66,7 @@ def cmd_verify(args):
 
 def cmd_rowscore(args):
     try:
-        result = rowscore.score_files(args.forward, args.voxel_um, args.reverse)
+        result = rowscore.score_files(args.forward, args.voxel_um, args.reverse, fast_resize=args.fast_resize)
         if args.slug:
             ledger.add_check(args.slug, args.name, result, root=args.root)
     except (verify.VerifyError, ledger.LedgerError) as exc:
@@ -409,6 +409,8 @@ def build_parser():
     p.set_defaults(func=cmd_verify)
 
     p = sub.add_parser("rowscore", help="text-row periodicity triage score for ink maps (Bullo27's method)")
+    p.add_argument("--fast-resize", action="store_true",
+                   help="use sparse area resize (scipy); float32 rounding and near-tied FFT peaks can differ")
     p.add_argument("forward", nargs="+", help="forward-direction map(s); several are averaged, e.g. two checkpoints")
     p.add_argument("--reverse", nargs="+", default=[], help="reverse-direction map(s), averaged the same way")
     p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.362")

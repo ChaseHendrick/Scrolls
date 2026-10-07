@@ -1,0 +1,113 @@
+--- a/kit/_surface_geometry.py
++++ b/kit/_surface_geometry.py
+@@ -44,7 +44,7 @@
+     return bilinear(corners, safe - cells), inside & quad_mask(mesh)[r, c]
+ 
+ 
+-def _triangle_closest(point, triangles):
++def _triangle_closest_scalar(point, triangles):
+     """Exact closest points on nondegenerate triangles, including their edges."""
+     np = _numpy()
+     a, b, c = [triangles[:, i] for i in range(3)]
+@@ -66,6 +66,44 @@
+         weights[:, i], weights[:, j] = 1 - alpha, alpha
+         bary.append(weights)
+     points, bary = np.stack(points, 1), np.stack(bary, 1)
++    distance = np.linalg.norm(points - point, axis=-1)
++    distance[:, 0] = np.where((den > 0) & (u >= 0) & (vv >= 0) & (u + vv <= 1), distance[:, 0], np.inf)
++    best = distance.argmin(-1)
++    return distance[np.arange(len(best)), best], bary[np.arange(len(best)), best]
++
++
++def _triangle_closest(point, triangles):
++    """Exact closest points on nondegenerate triangles, including their edges."""
++    np = _numpy()
++    # Half/wider/mixed inputs retain the original reduction and promotion path.
++    if triangles.dtype not in (np.dtype(np.float32), np.dtype(np.float64)) or getattr(point, "dtype", None) != triangles.dtype:
++        return _triangle_closest_scalar(point, triangles)
++    a, b, c = [triangles[:, i] for i in range(3)]
++    e0, e1, v = b - a, c - a, point - a
++    d00, d01, d11 = (e0 * e0).sum(-1), (e0 * e1).sum(-1), (e1 * e1).sum(-1)
++    d20, d21 = (v * e0).sum(-1), (v * e1).sum(-1)
++    den = d00 * d11 - d01 * d01
++    u = np.divide(d11 * d20 - d01 * d21, den, out=np.zeros_like(den), where=den > 0)
++    vv = np.divide(d00 * d21 - d01 * d20, den, out=np.zeros_like(den), where=den > 0)
++    interior = a + u[:, None] * e0 + vv[:, None] * e1
++    starts = np.stack([a, b, c], 1)
++    edges = starts[:, [1, 2, 0]] - starts
++    denominator = (edges * edges).sum(-1)
++    alpha = np.clip(np.divide(((point - starts) * edges).sum(-1), denominator,
++                             out=np.zeros_like(denominator), where=denominator > 0), 0, 1)
++    points = np.empty((len(triangles), 4, 3), dtype=interior.dtype)
++    points[:, 0] = interior
++    points[:, 1:] = starts + alpha[..., None] * edges
++    # Original edges rounded weights to float64, then stacked with the interior.
++    # Preserve that promotion and rounding even for wider floating point inputs.
++    interior_bary = np.stack([1 - u - vv, u, vv], -1)
++    bary = np.zeros((len(triangles), 4, 3), dtype=np.result_type(interior_bary.dtype, np.float64))
++    bary[:, 0] = interior_bary
++    edge_alpha = alpha.astype(np.float64, copy=False)
++    edge_complement = (1 - alpha).astype(np.float64, copy=False)
++    bary[:, 1, 0], bary[:, 1, 1] = edge_complement[:, 0], edge_alpha[:, 0]
++    bary[:, 2, 1], bary[:, 2, 2] = edge_complement[:, 1], edge_alpha[:, 1]
++    bary[:, 3, 2], bary[:, 3, 0] = edge_complement[:, 2], edge_alpha[:, 2]
+     distance = np.linalg.norm(points - point, axis=-1)
+     distance[:, 0] = np.where((den > 0) & (u >= 0) & (vv >= 0) & (u + vv <= 1), distance[:, 0], np.inf)
+     best = distance.argmin(-1)
+--- a/tests/test_surface_geometry.py
++++ b/tests/test_surface_geometry.py
+@@ -12,6 +12,54 @@
+ 
+ @unittest.skipIf(np is None, "numpy and scipy required")
+ class SurfaceGeometryTests(unittest.TestCase):
++    def test_batched_triangle_edges_preserve_ties_and_legacy_dtypes(self):
++        from kit._surface_geometry import _triangle_closest
++        triangles = [[[-.5, -.5, 0], [1.5, -.5, 0], [-.5, 1.5, 0]],
++                     [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
++                     [[-1, 0, 0], [1, 0, 0], [0, 0, 0]],
++                     [[-3, 0, 0], [-1, 0, 0], [-3, 2, 0]]]
++        for dtype in (np.float32, np.float64):
++            distance, bary = _triangle_closest(np.array([0, 0, 1], dtype=dtype),
++                                               np.array(triangles, dtype=dtype))
++            expected = np.sqrt(np.array([1, 1, 1, 2], dtype=dtype))
++            np.testing.assert_array_equal(distance, expected)
++            np.testing.assert_array_equal(bary, [[.5, .25, .25], [1, 0, 0],
++                                                 [.5, .5, 0], [0, 1, 0]])
++            self.assertEqual(bary.dtype, np.dtype(np.float64))
++            empty_distance, empty_bary = _triangle_closest(np.ones(3, dtype=dtype),
++                                                           np.empty((0, 3, 3), dtype=dtype))
++            self.assertEqual(empty_distance.shape, (0,))
++            self.assertEqual(empty_bary.shape, (0, 3))
++
++    def test_triangle_barycentrics_preserve_extended_and_mixed_dtypes(self):
++        from kit._surface_geometry import _triangle_closest
++        for triangle_dtype in (np.float32, np.float64, np.longdouble):
++            for point_dtype in (np.float32, np.float64, np.longdouble):
++                triangles = np.array([[[0, 0, 0], [3, 0, 0], [0, 3, 0]]], dtype=triangle_dtype)
++                point = np.array([1, 1, 1], dtype=point_dtype)
++                _, bary = _triangle_closest(point, triangles)
++                u = np.array([1 / np.longdouble(3)], dtype=triangle_dtype)
++                expected = np.stack([1 - u - u, u, u], -1)
++                expected = expected.astype(np.result_type(expected.dtype, np.float64))
++                np.testing.assert_array_equal(bary, expected)
++                self.assertEqual(bary.dtype, expected.dtype)
++        # An outside-plane winner uses edge weights rounded before stack promotion.
++        triangles = np.array([[[0, 0, 0], [3, 0, 0], [0, 3, 0]]], dtype=np.longdouble)
++        _, bary = _triangle_closest(np.array([1, -1, 1], dtype=np.longdouble), triangles)
++        alpha = np.longdouble(1) / 3
++        expected = np.array([[np.float64(1 - alpha), np.float64(alpha), 0]], dtype=np.longdouble)
++        np.testing.assert_array_equal(bary, expected)
++
++    def test_half_precision_fortran_edges_keep_legacy_rounding(self):
++        from kit._surface_geometry import _triangle_closest, _triangle_closest_scalar
++        rng = np.random.default_rng(11509)
++        triangles = np.asfortranarray(rng.normal(size=(17, 3, 3)).astype(np.float16))
++        point = np.array([-.731, 1.617, -.291], dtype=np.float32)
++        distance, bary = _triangle_closest(point, triangles)
++        legacy_distance, legacy_bary = _triangle_closest_scalar(point, triangles)
++        np.testing.assert_array_equal(distance, legacy_distance)
++        np.testing.assert_array_equal(bary, legacy_bary)
++
+     def test_batched_children_preserve_scalar_bounds_and_seed_ties(self):
+         from kit._surface_geometry import _cell_bounds, _child_bounds
+         rng = np.random.default_rng(911074)

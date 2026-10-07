@@ -1,0 +1,59 @@
+{
+  "initial_candidate_sha256": "0299fe7aeb38cde77d0fbeb1e7fde41be05231b5fc67b39cfb0588f3e51cb072",
+  "finding": "Longdouble interior barycentrics and closest_quad UV were narrowed to float64",
+  "reproducer": {
+    "triangle_dtype": "numpy.longdouble",
+    "triangle": [
+      [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          3,
+          0,
+          0
+        ],
+        [
+          0,
+          3,
+          0
+        ]
+      ]
+    ],
+    "point": [
+      1,
+      1,
+      1
+    ],
+    "quad": [
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        3,
+        0,
+        0
+      ],
+      [
+        0,
+        3,
+        0
+      ],
+      [
+        3,
+        3,
+        0
+      ]
+    ],
+    "tolerance": 0.001
+  },
+  "baseline_bary_and_uv_dtype": "float128",
+  "initial_candidate_bary_and_uv_dtype": "float64",
+  "maximum_observed_difference": 1.8512752095189988e-17,
+  "scope": "Helper dtype regression; production mesh loader uses float64",
+  "status": "Fixed by candidate 290634636090c9355ddd98d89b008db0cb2de34fd5c66aa6b98abae6e3153721 original scalar fallback"
+}

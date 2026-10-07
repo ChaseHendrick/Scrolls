@@ -1,0 +1,148 @@
+{
+  "map": {
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+    "shape": [
+      16460,
+      18560
+    ],
+    "dtype": "uint8"
+  },
+  "labels": {
+    "inklabels": {
+      "0": {
+        "shape": [
+          16460,
+          18560
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "5": {
+        "shape": [
+          515,
+          580
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "1": {
+        "shape": [
+          8230,
+          9280
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "4": {
+        "shape": [
+          1029,
+          1160
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "2": {
+        "shape": [
+          4115,
+          4640
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "3": {
+        "shape": [
+          2058,
+          2320
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      }
+    },
+    "supervision": {
+      "3": {
+        "shape": [
+          2058,
+          2320
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "5": {
+        "shape": [
+          515,
+          580
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "0": {
+        "shape": [
+          16460,
+          18560
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "2": {
+        "shape": [
+          4115,
+          4640
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "1": {
+        "shape": [
+          8230,
+          9280
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      },
+      "4": {
+        "shape": [
+          1029,
+          1160
+        ],
+        "dtype": "uint8",
+        "chunks": [
+          512,
+          512
+        ]
+      }
+    }
+  }
+}

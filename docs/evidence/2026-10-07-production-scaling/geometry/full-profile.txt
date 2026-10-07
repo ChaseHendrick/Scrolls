@@ -1,0 +1,40 @@
+         3168538 function calls (3143014 primitive calls) in 3.320 seconds
+
+   Ordered by: cumulative time
+   List reduced from 2573 to 32 due to restriction <32>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.002    0.002    3.322    3.322 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/surfacefix.py:420(correct)
+        1    0.040    0.040    2.427    2.427 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:164(project)
+     1955    0.032    0.000    2.346    0.001 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:141(closest_quad)
+     6910    0.254    0.000    1.879    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:91(_child_bounds)
+     8865    0.694    0.000    1.275    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:47(_triangle_closest)
+    483/5    0.003    0.000    0.520    0.104 <frozen importlib._bootstrap>:1349(_find_and_load)
+    474/5    0.001    0.000    0.520    0.104 <frozen importlib._bootstrap>:1304(_find_and_load_unlocked)
+    467/6    0.001    0.000    0.519    0.086 <frozen importlib._bootstrap>:911(_load_unlocked)
+  1151/12    0.002    0.000    0.518    0.043 <frozen importlib._bootstrap>:480(_call_with_frames_removed)
+    393/5    0.001    0.000    0.514    0.103 <frozen importlib._bootstrap_external>:993(exec_module)
+   428/11    0.004    0.000    0.514    0.047 {built-in method builtins.exec}
+     1955    0.033    0.000    0.430    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:75(_cell_bounds)
+        4    0.005    0.001    0.397    0.099 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/surfacefix.py:235(_record)
+    17743    0.343    0.000    0.352    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:25(bilinear)
+        1    0.000    0.000    0.344    0.344 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/spatial/__init__.py:1(<module>)
+        1    0.000    0.000    0.321    0.321 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/spatial/_kdtree.py:1(<module>)
+   504/66    0.001    0.000    0.272    0.004 {built-in method builtins.__import__}
+       12    0.013    0.001    0.261    0.022 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/hpscore.py:36(high_pass)
+  386/137    0.001    0.000    0.251    0.002 <frozen importlib._bootstrap>:1390(_handle_fromlist)
+       24    0.000    0.000    0.244    0.010 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/ndimage/_filters.py:757(gaussian_filter)
+       48    0.000    0.000    0.242    0.005 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/ndimage/_filters.py:687(gaussian_filter1d)
+       48    0.001    0.000    0.240    0.005 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/ndimage/_filters.py:555(correlate1d)
+       48    0.239    0.005    0.239    0.005 {built-in method scipy.ndimage._nd_image.correlate1d}
+    61203    0.201    0.000    0.238    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/shape_base.py:378(stack)
+    48/26    0.000    0.000    0.208    0.008 <frozen importlib._bootstrap_external>:1299(exec_module)
+    48/26    0.011    0.000    0.207    0.008 {built-in method _imp.exec_dynamic}
+    51350    0.101    0.000    0.191    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2598(norm)
+   106926    0.034    0.000    0.186    0.000 {method 'sum' of 'numpy.ndarray' objects}
+   156564    0.185    0.000    0.185    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+        1    0.000    0.000    0.185    0.185 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/sparse/__init__.py:1(<module>)
+        1    0.000    0.000    0.174    0.174 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/sparse/_csr.py:1(<module>)
+        1    0.000    0.000    0.174    0.174 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/scipy/sparse/_compressed.py:1(<module>)
+
+

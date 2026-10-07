@@ -1,0 +1,15 @@
+{
+  "purpose": "First native-full public control rowscore compatibility/performance pair, authorized after promising central8192 profile",
+  "source_map_sha256": "c980b60dc457037d0cfe8c654619c23f3fd673e2847d64aed09cbdb3e26f7bde",
+  "source_shape": [
+    16460,
+    18560
+  ],
+  "voxel_um": 2.403,
+  "crop": null,
+  "validity": "unchanged score_array a>.01",
+  "baseline_revision": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "code_receipt_v2_sha256": "bd714108a95c1069de745e032c69fe75f0277b94d974624758fdeecef574396e",
+  "execution": "Only after central3pairs; baseline then opt-in fast in separate1CPU CLI/file child processes;120s wall cap each;10GiB RSSstop;16GiB virtualmemory cap",
+  "report": "Report both wholecommand andresize timings, peakRSS, complete historical output-field equality and resizedfloatSHA; ifnotexact disclosemaxdifference/count withoutlooseningdefaultbehavior. No alternativeFFTpeak policy or map/cropselection; stop ifcapsfail."
+}

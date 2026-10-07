@@ -1,0 +1,35 @@
+{
+  "baseline_revision": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "baseline_rowscore_sha256": "b94fc1c1cd7467d950fb4c9ab4bf89c666cd01e520fe7f3e9b7d97de9523f67b",
+  "input_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+  "input_file_sha256": "c980b60dc457037d0cfe8c654619c23f3fd673e2847d64aed09cbdb3e26f7bde",
+  "source_shape": [
+    16460,
+    18560
+  ],
+  "crop_yxyx": [
+    0,
+    4096,
+    0,
+    4096
+  ],
+  "crop_bytes_sha256": "a5a5aadb36b902dd79ad8820023c24812a08f8788c0f57279ec4047d7baa010c",
+  "voxel_um": 2.403,
+  "cpu_affinity": [
+    0
+  ],
+  "decode_full_and_crop_seconds": 0.21387917299944093,
+  "score_seconds": 0.9454098719998001,
+  "peak_rss_bytes_including_full_decode": 380166144,
+  "result": {
+    "valid_px": 859636,
+    "largest_piece": true,
+    "score": null,
+    "reason": "band empty: the map is too small for a 2.5 to 8 mm period"
+  },
+  "limits": [
+    "One fixed upper-left crop of a real public map, not full-canvas scoring.",
+    "No reader, rendering, labels, target CT or synthetic benchmark input.",
+    "Timing includes cProfile overhead and is diagnostic, not a matched optimization benchmark."
+  ]
+}

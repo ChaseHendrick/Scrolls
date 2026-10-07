@@ -1,0 +1,1074 @@
+{
+  "central8192-first-tiff": {
+    "runs": [
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 5.38596224199955,
+        "resize_seconds": [
+          4.053789350000443
+        ],
+        "peak_rss_bytes": 1660760064,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 1.7434864340002605,
+        "resize_seconds": [
+          0.4451613940000243
+        ],
+        "peak_rss_bytes": 1655955456,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      }
+    ],
+    "parent_runs": [
+      {
+        "repeat": 0,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.520707779999611,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-baseline.log"
+      },
+      {
+        "repeat": 0,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 1.9120354930000758,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-fast.log"
+      }
+    ],
+    "median": {
+      "baseline": {
+        "worker_operation_seconds": 5.38596224199955,
+        "resize_seconds": 4.053789350000443,
+        "parent_wall_seconds": 5.520707779999611,
+        "peak_rss_bytes_max": 1660760064
+      },
+      "fast": {
+        "worker_operation_seconds": 1.7434864340002605,
+        "resize_seconds": 0.4451613940000243,
+        "parent_wall_seconds": 1.9120354930000758,
+        "peak_rss_bytes_max": 1655955456
+      }
+    },
+    "worker_speedup": 3.089190794356789,
+    "parent_speedup": 2.887345867904029,
+    "resize_float_hashes_equal": true,
+    "old_fields_equal_all_runs": true
+  },
+  "central8192-three-pairs": {
+    "runs": [
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 1.7387010290003673,
+        "resize_seconds": [
+          0.452099981000174
+        ],
+        "peak_rss_bytes": 1655980032,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 6.711427885000376,
+        "resize_seconds": [
+          4.804747244999817
+        ],
+        "peak_rss_bytes": 1660702720,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 5.279071661999296,
+        "resize_seconds": [
+          3.917248194000422
+        ],
+        "peak_rss_bytes": 1660747776,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 5.233281157999954,
+        "resize_seconds": [
+          3.899686628999916
+        ],
+        "peak_rss_bytes": 1660817408,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 1.96820784800002,
+        "resize_seconds": [
+          0.4845775860003414
+        ],
+        "peak_rss_bytes": 1655955456,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 1.9949459819999902,
+        "resize_seconds": [
+          0.4882221000007121
+        ],
+        "peak_rss_bytes": 1655967744,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 67108864,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 15.1,
+            "period_mm": 6.56,
+            "angle_deg": -90.0,
+            "mean_ink": 0.1452,
+            "p99": 1.0,
+            "frac_gt_half": 0.1418
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          2048,
+          2048
+        ],
+        "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      }
+    ],
+    "parent_runs": [
+      {
+        "repeat": 0,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 6.829713914999957,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-baseline.log"
+      },
+      {
+        "repeat": 0,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 2.2083542399996077,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-fast.log"
+      },
+      {
+        "repeat": 1,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 2.1101680850006233,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-fast.log"
+      },
+      {
+        "repeat": 1,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.420129512999665,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-baseline.log"
+      },
+      {
+        "repeat": 2,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.3186750400000165,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-baseline.log"
+      },
+      {
+        "repeat": 2,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 1.9064012660001026,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-fast.log"
+      }
+    ],
+    "median": {
+      "baseline": {
+        "worker_operation_seconds": 5.279071661999296,
+        "resize_seconds": 3.917248194000422,
+        "parent_wall_seconds": 5.420129512999665,
+        "peak_rss_bytes_max": 1660817408
+      },
+      "fast": {
+        "worker_operation_seconds": 1.96820784800002,
+        "resize_seconds": 0.4845775860003414,
+        "parent_wall_seconds": 2.1101680850006233,
+        "peak_rss_bytes_max": 1655980032
+      }
+    },
+    "worker_speedup": 2.6821718383876916,
+    "parent_speedup": 2.568577143937832,
+    "resize_float_hashes_equal": true,
+    "old_fields_equal_all_runs": true
+  },
+  "native-full-first": {
+    "runs": [
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 55.84271038799943,
+        "resize_seconds": [
+          38.67222538900023
+        ],
+        "peak_rss_bytes": 7097790464,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 7.9077532969995445,
+        "resize_seconds": [
+          0.40357894499993563
+        ],
+        "peak_rss_bytes": 6535958528,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      }
+    ],
+    "parent_runs": [
+      {
+        "repeat": 0,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 56.044335812999634,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-baseline.log"
+      },
+      {
+        "repeat": 0,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 8.137830977999329,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-fast.log"
+      }
+    ],
+    "median": {
+      "baseline": {
+        "worker_operation_seconds": 55.84271038799943,
+        "resize_seconds": 38.67222538900023,
+        "parent_wall_seconds": 56.044335812999634,
+        "peak_rss_bytes_max": 7097790464
+      },
+      "fast": {
+        "worker_operation_seconds": 7.9077532969995445,
+        "resize_seconds": 0.40357894499993563,
+        "parent_wall_seconds": 8.137830977999329,
+        "peak_rss_bytes_max": 6535958528
+      }
+    },
+    "worker_speedup": 7.0617668875922,
+    "parent_speedup": 6.8868886518429555,
+    "resize_float_hashes_equal": true,
+    "old_fields_equal_all_runs": true
+  },
+  "native-full-three-fresh-pairs": {
+    "runs": [
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 5.670121790999474,
+        "resize_seconds": [
+          0.39618145500026003
+        ],
+        "peak_rss_bytes": 6535864320,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 39.55496046400003,
+        "resize_seconds": [
+          33.42331617200034
+        ],
+        "peak_rss_bytes": 7097892864,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 39.73196149500018,
+        "resize_seconds": [
+          34.403317003000666
+        ],
+        "peak_rss_bytes": 7097917440,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "baseline",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 53.07175942199956,
+        "resize_seconds": [
+          41.20144210499984
+        ],
+        "peak_rss_bytes": 7097786368,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          }
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 5.667043256999932,
+        "resize_seconds": [
+          0.38171915099974285
+        ],
+        "peak_rss_bytes": 6535991296,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      },
+      {
+        "mode": "fast",
+        "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+        "command": [
+          "python",
+          "-m",
+          "kit",
+          "rowscore",
+          "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+          "--voxel-um",
+          "2.403",
+          "--json",
+          "--fast-resize"
+        ],
+        "whole_command_seconds_including_import_and_file_read": 5.681249019999996,
+        "resize_seconds": [
+          0.38628741899992747
+        ],
+        "peak_rss_bytes": 6536126464,
+        "cpu_affinity": [
+          0
+        ],
+        "score_record": {
+          "voxel_um": 2.403,
+          "forward": {
+            "valid_px": 216957844,
+            "largest_piece": true,
+            "resize_mode": "sparse_area_float32",
+            "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+            "score": 36.1,
+            "period_mm": 5.78,
+            "angle_deg": -66.6,
+            "mean_ink": 0.1286,
+            "p99": 1.0,
+            "frac_gt_half": 0.1254
+          },
+          "files": {
+            "forward": [
+              "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif"
+            ],
+            "reverse": []
+          },
+          "fast_resize": true
+        },
+        "resized_shape": [
+          4115,
+          4640
+        ],
+        "resized_float_sha256": "56ba4f35429e2ed899cd45dd02d280dd47645984a43dd33adff07685ab7d6361",
+        "notes": [
+          "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+          "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+        ]
+      }
+    ],
+    "parent_runs": [
+      {
+        "repeat": 0,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 39.7425445530007,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-baseline.log"
+      },
+      {
+        "repeat": 0,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.923026477000349,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-fast.log"
+      },
+      {
+        "repeat": 1,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.924856167000144,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-fast.log"
+      },
+      {
+        "repeat": 1,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 39.960150818999864,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-baseline.log"
+      },
+      {
+        "repeat": 2,
+        "mode": "baseline",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 53.330476173000534,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-baseline",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-baseline.log"
+      },
+      {
+        "repeat": 2,
+        "mode": "fast",
+        "status": "completed",
+        "returncode": 0,
+        "wall_seconds": 5.9256819590000305,
+        "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-fast",
+        "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-fast.log"
+      }
+    ],
+    "median": {
+      "baseline": {
+        "worker_operation_seconds": 39.73196149500018,
+        "resize_seconds": 34.403317003000666,
+        "parent_wall_seconds": 39.960150818999864,
+        "peak_rss_bytes_max": 7097917440
+      },
+      "fast": {
+        "worker_operation_seconds": 5.670121790999474,
+        "resize_seconds": 0.38628741899992747,
+        "parent_wall_seconds": 5.924856167000144,
+        "peak_rss_bytes_max": 6536126464
+      }
+    },
+    "worker_speedup": 7.007250101412128,
+    "parent_speedup": 6.744492978845152,
+    "resize_float_hashes_equal": true,
+    "old_fields_equal_all_runs": true
+  }
+}

@@ -1,0 +1,916 @@
+{
+  "status": "external_optional_prototype_only",
+  "cases": [
+    {
+      "case": "real_public_fixed_origin_4096",
+      "shape": [
+        4096,
+        4096
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "2b5ac59616b33bf7f58cc6652e4dc6a415f285fbc6f2b1f3ea4e1253c5512f14",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.525009971000145,
+          0.5195728580001742,
+          0.5210684909998236
+        ],
+        "sparse": [
+          0.051192633000027854,
+          0.05578575100025773,
+          0.0550973339995835
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 859636,
+          "largest_piece": true,
+          "score": null,
+          "reason": "band empty: the map is too small for a 2.5 to 8 mm period"
+        },
+        "sparse": {
+          "valid_px": 859636,
+          "largest_piece": true,
+          "score": null,
+          "reason": "band empty: the map is too small for a 2.5 to 8 mm period"
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "bounded_positive_(64, 80)",
+      "shape": [
+        64,
+        80
+      ],
+      "input_range": [
+        1.4662742614746094e-05,
+        0.9999198317527771
+      ],
+      "input_bytes_sha256": "6c4fd378c2430291a2341631fc42d30fb394b4515fa439bbd5f8633429e5587e",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 5.960464477539063e-08,
+      "different_values": 61,
+      "max_output_ulp_difference": 1,
+      "elapsed_seconds": {
+        "dense": [
+          0.00018591600019135512,
+          4.941400038660504e-05,
+          3.2587999157840386e-05
+        ],
+        "sparse": [
+          0.0004792300005647121,
+          0.0001752299995132489,
+          0.00019764199987548636
+        ]
+      }
+    },
+    {
+      "case": "signed_cancellation_(64, 80)",
+      "shape": [
+        64,
+        80
+      ],
+      "input_range": [
+        -1.0000000200408773e+20,
+        1.0000000200408773e+20
+      ],
+      "input_bytes_sha256": "37bedb648d9bf4fae3f6c122a0c13098c70d7f1e17b39410025332c7a7d1fa2b",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 8796093022208.0,
+      "different_values": 5,
+      "max_output_ulp_difference": 1,
+      "elapsed_seconds": {
+        "dense": [
+          4.900299973087385e-05,
+          4.317399998399196e-05,
+          0.00015731299936305732
+        ],
+        "sparse": [
+          0.00018914999964181334,
+          0.00023554900053568417,
+          0.00019558999974833569
+        ]
+      }
+    },
+    {
+      "case": "bounded_positive_(65, 83)",
+      "shape": [
+        65,
+        83
+      ],
+      "input_range": [
+        5.501508712768555e-05,
+        0.9998571276664734
+      ],
+      "input_bytes_sha256": "75906cfda830f4311b8e5ef0da471fb1de671bfb84057fc6d87d5c3e5ac55679",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.1920928955078125e-07,
+      "different_values": 122,
+      "max_output_ulp_difference": 2,
+      "elapsed_seconds": {
+        "dense": [
+          6.28930001767003e-05,
+          4.6408999878622126e-05,
+          3.259799996158108e-05
+        ],
+        "sparse": [
+          0.0003622860003815731,
+          0.0001628319996598293,
+          0.00494176900065213
+        ]
+      }
+    },
+    {
+      "case": "signed_cancellation_(65, 83)",
+      "shape": [
+        65,
+        83
+      ],
+      "input_range": [
+        -1.0000000200408773e+20,
+        1.0000000200408773e+20
+      ],
+      "input_bytes_sha256": "a3dfd663cfa871ab42a3324b9ef835016e03efa6dec38b913a7438a9a3ec6f17",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 8796093022208.0,
+      "different_values": 207,
+      "max_output_ulp_difference": 256,
+      "elapsed_seconds": {
+        "dense": [
+          5.583300026046345e-05,
+          4.503599939198466e-05,
+          3.214699972886592e-05
+        ],
+        "sparse": [
+          0.0003217069997845101,
+          0.00016442300056951353,
+          0.0001645639995331294
+        ]
+      }
+    },
+    {
+      "case": "bounded_positive_(640, 640)",
+      "shape": [
+        640,
+        640
+      ],
+      "input_range": [
+        5.781650543212891e-06,
+        0.9999994039535522
+      ],
+      "input_bytes_sha256": "cebe5fdcd47403b02923802c84b7cad94116a42488afcf3e66ff72154439e4cc",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.0034452230001988937,
+          0.002833147000274039,
+          0.002300868000020273
+        ],
+        "sparse": [
+          0.0008221170000979328,
+          0.0009109190004892298,
+          0.0009743529999468592
+        ]
+      }
+    },
+    {
+      "case": "signed_cancellation_(640, 640)",
+      "shape": [
+        640,
+        640
+      ],
+      "input_range": [
+        -1.0000000200408773e+20,
+        1.0000000200408773e+20
+      ],
+      "input_bytes_sha256": "6d09e2263e033325335edc61c80e866ce47aad1f60a6b14e9a65e8dffa762996",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.014089286999478645,
+          0.0028641720000450732,
+          0.0022971320004216977
+        ],
+        "sparse": [
+          0.0012400169998727506,
+          0.0006601280001632404,
+          0.0008917109998947126
+        ]
+      }
+    },
+    {
+      "case": "bounded_positive_(639, 641)",
+      "shape": [
+        639,
+        641
+      ],
+      "input_range": [
+        8.344650268554688e-07,
+        0.9999998807907104
+      ],
+      "input_bytes_sha256": "50285e9c239303946a593fb2503d8ceb04d102aa2ba97e70723b03e22011267c",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.1920928955078125e-07,
+      "different_values": 9846,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.0032718160000513308,
+          0.003293898999800149,
+          0.003165377999721386
+        ],
+        "sparse": [
+          0.0010285539992764825,
+          0.0007260960001076455,
+          0.0009614849996069097
+        ]
+      }
+    },
+    {
+      "case": "signed_cancellation_(639, 641)",
+      "shape": [
+        639,
+        641
+      ],
+      "input_range": [
+        -1.0000000200408773e+20,
+        1.0000000200408773e+20
+      ],
+      "input_bytes_sha256": "388d8b32451a453bc82bbfdb5a53c14418b95b5f2510b895a2ceca10e9972102",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 17592186044416.0,
+      "different_values": 16679,
+      "max_output_ulp_difference": 2790636593,
+      "elapsed_seconds": {
+        "dense": [
+          0.003494394999506767,
+          0.0031054800001584226,
+          0.0029159890000300948
+        ],
+        "sparse": [
+          0.0009374179999213084,
+          0.0008696880004208651,
+          0.0009384699997099233
+        ]
+      }
+    },
+    {
+      "case": "bounded_positive_(1024, 1024)",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        1.1920928955078125e-06,
+        0.9999986290931702
+      ],
+      "input_bytes_sha256": "1bd7a4cef39088b43d46930151901a033eb7d6b7059317a90696a9c9fa788d8e",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.013671839000380714,
+          0.010127194999768108,
+          0.0107291210006224
+        ],
+        "sparse": [
+          0.0023017690000415314,
+          0.001979671999833954,
+          0.002359084000090661
+        ]
+      }
+    },
+    {
+      "case": "signed_cancellation_(1024, 1024)",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        -1.0000000200408773e+20,
+        1.0000000200408773e+20
+      ],
+      "input_bytes_sha256": "2a900cea58afe9abccd74def83ee7a1c6d29c5dafb645b1d5ccf869f54b74623",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.011895437999555725,
+          0.010934735000773799,
+          0.00861670199992659
+        ],
+        "sparse": [
+          0.0023489389996029786,
+          0.0029616760002681985,
+          0.0019043009997403715
+        ]
+      }
+    },
+    {
+      "case": "random_probability",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "9e1fe00834ab870522d7ac8cada9b0b8c23df5ae7df7c28dbcde967d71600f3a",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.010083023999868601,
+          0.010038078000434325,
+          0.008985126999505155
+        ],
+        "sparse": [
+          0.0019810029998552636,
+          0.0017968410002140445,
+          0.0018945159999930183
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 3.2,
+          "period_mm": 3.03,
+          "angle_deg": -18.4,
+          "mean_ink": 0.5005,
+          "p99": 1.0,
+          "frac_gt_half": 0.5004
+        },
+        "sparse": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 3.2,
+          "period_mm": 3.03,
+          "angle_deg": -18.4,
+          "mean_ink": 0.5005,
+          "p99": 1.0,
+          "frac_gt_half": 0.5004
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "quantized_ties",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "3fc3d99ca45a7e04664bd493d40e1977eecebcf13345f445b8972b569daf8019",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.009504908000053547,
+          0.009508572999948228,
+          0.009436366000045382
+        ],
+        "sparse": [
+          0.002025589999902877,
+          0.0016122779998113401,
+          0.002121903000443126
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 8.8,
+          "period_mm": 6.78,
+          "angle_deg": -45.0,
+          "mean_ink": 0.5001,
+          "p99": 1.0,
+          "frac_gt_half": 0.4
+        },
+        "sparse": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 8.8,
+          "period_mm": 6.78,
+          "angle_deg": -45.0,
+          "mean_ink": 0.5001,
+          "p99": 1.0,
+          "frac_gt_half": 0.4
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "two_close_fft_peaks",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        0.1001516580581665,
+        0.8998483419418335
+      ],
+      "input_bytes_sha256": "27af47d77862870ab569dee18a559cb237378c902668b1d3def42ffd8f45955e",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.009068530999684299,
+          0.008953892000135966,
+          0.008787915000539215
+        ],
+        "sparse": [
+          0.0018900100003520492,
+          0.002092770000672317,
+          0.0018925029999081744
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 6288.5,
+          "period_mm": 6.78,
+          "angle_deg": -135.0,
+          "mean_ink": 0.5075,
+          "p99": 0.888,
+          "frac_gt_half": 0.5147
+        },
+        "sparse": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 6288.5,
+          "period_mm": 6.78,
+          "angle_deg": -135.0,
+          "mean_ink": 0.5075,
+          "p99": 0.888,
+          "frac_gt_half": 0.5147
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "high_dynamic_clipped",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "f03e21b060364e1268eaa21dd5e5a9ccf53855ef773ae8383a8bddc6f249e1ec",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.008930827999392932,
+          0.008796939000603743,
+          0.00870956099970499
+        ],
+        "sparse": [
+          0.0018801350006469875,
+          0.001735340999402979,
+          0.0018542759999036207
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 4.7,
+          "period_mm": 3.2,
+          "angle_deg": 180.0,
+          "mean_ink": 0.2507,
+          "p99": 1.0,
+          "frac_gt_half": 0.2507
+        },
+        "sparse": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 4.7,
+          "period_mm": 3.2,
+          "angle_deg": 180.0,
+          "mean_ink": 0.2507,
+          "p99": 1.0,
+          "frac_gt_half": 0.2507
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "near_clip_thresholds",
+      "shape": [
+        1024,
+        1024
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "e3541f0b700adc2bb381278feb4fbae93b2ccf62f7ea78736e10d6fb4e2bf267",
+      "all_weights_equal": true,
+      "exact_output": true,
+      "max_absolute_difference": 0.0,
+      "different_values": 0,
+      "max_output_ulp_difference": 0,
+      "elapsed_seconds": {
+        "dense": [
+          0.010615010999572405,
+          0.008888864999789803,
+          0.008994892999908188
+        ],
+        "sparse": [
+          0.00268908299949544,
+          0.002178877000005741,
+          0.001891600999442744
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 3.0,
+          "period_mm": 2.66,
+          "angle_deg": -33.7,
+          "mean_ink": 0.5002,
+          "p99": 1.0,
+          "frac_gt_half": 0.5002
+        },
+        "sparse": {
+          "valid_px": 1048576,
+          "largest_piece": true,
+          "score": 3.0,
+          "period_mm": 2.66,
+          "angle_deg": -33.7,
+          "mean_ink": 0.5002,
+          "p99": 1.0,
+          "frac_gt_half": 0.5002
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "nondivisible_random_(1023, 1025)",
+      "shape": [
+        1023,
+        1025
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "91dd1ff90d69228b7dc6499991de98512e191ad84fa3fae7390ad16d445d3d7f",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.1920928955078125e-07,
+      "different_values": 22329,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.008877968999513541,
+          0.008850717999848712,
+          0.009353983000437438
+        ],
+        "sparse": [
+          0.001475005000429519,
+          0.0014074439995965804,
+          0.0015327999999499298
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048575,
+          "largest_piece": true,
+          "score": 3.8,
+          "period_mm": 3.38,
+          "angle_deg": -45.1,
+          "mean_ink": 0.5004,
+          "p99": 1.0,
+          "frac_gt_half": 0.5006
+        },
+        "sparse": {
+          "valid_px": 1048575,
+          "largest_piece": true,
+          "score": 3.8,
+          "period_mm": 3.38,
+          "angle_deg": -45.1,
+          "mean_ink": 0.5004,
+          "p99": 1.0,
+          "frac_gt_half": 0.5006
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "nondivisible_quantized_ties_(1023, 1025)",
+      "shape": [
+        1023,
+        1025
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "c86eeb459c2784e66c61feb90816ae4601d49fa2e6ac940f19633f1b07100b3f",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.7881393432617188e-07,
+      "different_values": 18402,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.008995633999802521,
+          0.009056734000296274,
+          0.00888168500023312
+        ],
+        "sparse": [
+          0.0020636459994420875,
+          0.0013813059995300137,
+          0.0014987900003688992
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048575,
+          "largest_piece": true,
+          "score": 1.7,
+          "period_mm": 4.29,
+          "angle_deg": -153.3,
+          "mean_ink": 0.5008,
+          "p99": 1.0,
+          "frac_gt_half": 0.4009
+        },
+        "sparse": {
+          "valid_px": 1048575,
+          "largest_piece": true,
+          "score": 1.7,
+          "period_mm": 4.29,
+          "angle_deg": -153.3,
+          "mean_ink": 0.5008,
+          "p99": 1.0,
+          "frac_gt_half": 0.4009
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "symmetric_fft_tie_(1023, 1025)",
+      "shape": [
+        1023,
+        1025
+      ],
+      "input_range": [
+        0.10000944137573242,
+        0.8999999761581421
+      ],
+      "input_bytes_sha256": "e8a88fab8180fd24e9ce2ce156d3175f45552ad5c47854cd2e587dda7cf0e789",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.7881393432617188e-07,
+      "different_values": 24932,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.010240446999887354,
+          0.009486900999945647,
+          0.009078125000087311
+        ],
+        "sparse": [
+          0.0015915769999992335,
+          0.0014823860001342837,
+          0.0015152739997574827
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1048575,
+          "largest_piece": true,
+          "score": 15.6,
+          "period_mm": 3.18,
+          "angle_deg": -90.0,
+          "mean_ink": 0.5,
+          "p99": 0.888,
+          "frac_gt_half": 0.5
+        },
+        "sparse": {
+          "valid_px": 1048575,
+          "largest_piece": true,
+          "score": 15.6,
+          "period_mm": 3.18,
+          "angle_deg": -90.0,
+          "mean_ink": 0.5,
+          "p99": 0.888,
+          "frac_gt_half": 0.5
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "nondivisible_random_(1023, 1023)",
+      "shape": [
+        1023,
+        1023
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "56ab3b1b5741d4df5a029c52a0d88dce9670e5c7a3bf0f9746c8985918c9449d",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.1920928955078125e-07,
+      "different_values": 22363,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.009397759000421502,
+          0.00937345300008019,
+          0.00937608700041892
+        ],
+        "sparse": [
+          0.001979701999516692,
+          0.0013247720007711905,
+          0.0015395899999930407
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1046529,
+          "largest_piece": true,
+          "score": 1.6,
+          "period_mm": 3.02,
+          "angle_deg": -18.4,
+          "mean_ink": 0.4996,
+          "p99": 1.0,
+          "frac_gt_half": 0.4995
+        },
+        "sparse": {
+          "valid_px": 1046529,
+          "largest_piece": true,
+          "score": 1.6,
+          "period_mm": 3.02,
+          "angle_deg": -18.4,
+          "mean_ink": 0.4996,
+          "p99": 1.0,
+          "frac_gt_half": 0.4995
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "nondivisible_quantized_ties_(1023, 1023)",
+      "shape": [
+        1023,
+        1023
+      ],
+      "input_range": [
+        0.0,
+        1.0
+      ],
+      "input_bytes_sha256": "73bda6bafbb188dc705b43c73f2ef597516d9704db1e21c5d16adbe355039bea",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.7881393432617188e-07,
+      "different_values": 18149,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.009719855999719584,
+          0.010268959000313771,
+          0.009107478999794694
+        ],
+        "sparse": [
+          0.0017679689999567927,
+          0.001379383000312373,
+          0.0014896359998601838
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1046529,
+          "largest_piece": true,
+          "score": 7.9,
+          "period_mm": 2.65,
+          "angle_deg": -123.7,
+          "mean_ink": 0.5002,
+          "p99": 1.0,
+          "frac_gt_half": 0.4006
+        },
+        "sparse": {
+          "valid_px": 1046529,
+          "largest_piece": true,
+          "score": 7.9,
+          "period_mm": 2.65,
+          "angle_deg": -123.7,
+          "mean_ink": 0.5002,
+          "p99": 1.0,
+          "frac_gt_half": 0.4006
+        }
+      },
+      "rounded_score_records_equal": true
+    },
+    {
+      "case": "symmetric_fft_tie_(1023, 1023)",
+      "shape": [
+        1023,
+        1023
+      ],
+      "input_range": [
+        0.10001695156097412,
+        0.8999999761581421
+      ],
+      "input_bytes_sha256": "3ba1bbfb9e1fef7f298b6d2f775be292b20c8166a66051d7f5f9cbe48cf652ae",
+      "all_weights_equal": true,
+      "exact_output": false,
+      "max_absolute_difference": 1.1920928955078125e-07,
+      "different_values": 25326,
+      "max_output_ulp_difference": 3,
+      "elapsed_seconds": {
+        "dense": [
+          0.009104615000069316,
+          0.00887390299976687,
+          0.009903927999403095
+        ],
+        "sparse": [
+          0.0014727110001331312,
+          0.001335236999693734,
+          0.001476286000070104
+        ]
+      },
+      "scores": {
+        "dense": {
+          "valid_px": 1046529,
+          "largest_piece": true,
+          "score": 15.6,
+          "period_mm": 3.18,
+          "angle_deg": -90.0,
+          "mean_ink": 0.5,
+          "p99": 0.888,
+          "frac_gt_half": 0.5
+        },
+        "sparse": {
+          "valid_px": 1046529,
+          "largest_piece": true,
+          "score": 15.6,
+          "period_mm": 3.18,
+          "angle_deg": -90.0,
+          "mean_ink": 0.5,
+          "p99": 0.888,
+          "frac_gt_half": 0.5
+        }
+      },
+      "rounded_score_records_equal": true
+    }
+  ],
+  "limits": [
+    "Not universal bitwise parity. Default optimization gate fails.",
+    "No full-canvas native map scoring or production CLI was run.",
+    "Real fixed crop abstains; synthetic score compatibility does not establish real full-map FFT stability."
+  ]
+}

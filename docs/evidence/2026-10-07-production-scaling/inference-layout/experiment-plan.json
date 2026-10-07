@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "status": "static plan only; inference requires root GO",
+  "created_utc": "2026-10-07T16:08:56.742809+00:00",
+  "experiment": "OneDNN 2D convolution weight layout screening",
+  "candidate_change": "torch.nn.utils.convert_conv2d_weight_memory_format(configured.model, torch.channels_last), applied once after official strict checkpoint loading/eval; no model.forward replacement",
+  "baseline": "Current official model with contiguous convolution weights",
+  "frozen_model": {
+    "villa_revision": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+    "reader": "d9v2",
+    "checkpoint_sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+    "checkpoint_path": "/workspace/scrolls-env/checkpoints/d9v2/d9v2_ft-012000.pth",
+    "weights": "ema_model"
+  },
+  "input": {
+    "source": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/selected_layers.zarr",
+    "crop_yx": [
+      224,
+      416,
+      224,
+      416
+    ],
+    "shape": [
+      17,
+      192,
+      192
+    ],
+    "selection": "Geometric center crop fixed before new candidate outputs; no labels/AUC used",
+    "controls": [
+      "forward as stored",
+      "same17 reversed",
+      "same17 shuffled with seed20261007"
+    ],
+    "expected_tiles_per_control": 9
+  },
+  "unchanged_settings": {
+    "threads": 2,
+    "interop_threads": 1,
+    "batch_size": 1,
+    "num_workers": 0,
+    "stride": 42,
+    "blend_mode": "hann",
+    "patch_size": 128,
+    "preprocessing": "tifxyz_robust",
+    "precision": "fp32",
+    "AMP": false,
+    "TTA": false,
+    "compile": false,
+    "engine": "Official infer.infer_single_zarr, all normalizations/scheduling/blending/output encoding unchanged"
+  },
+  "timing_plan": {
+    "resource_reservation": "One worker with two CPU threads; wait for root GO and two available CPU slots, no concurrent timing competitor",
+    "model_load": "Load both versions once, then warm one tile per version before timing; initialization separately logged",
+    "pairs": 3,
+    "order": [
+      "baseline then candidate",
+      "candidate then baseline",
+      "baseline then candidate"
+    ],
+    "each_timed_operation": "All three fixed-control maps via official engine, including reading/normalization/accumulation/output TIFF write; warm imports and cached files",
+    "expected_cpu_seconds": 160,
+    "hard_cpu_budget_seconds": 175,
+    "scope": "192x192 screening crop; not full640x640 validation or fresh CLI throughput"
+  },
+  "exactness_gate": [
+    "Convolution weight logical values and checkpoint hash unchanged.",
+    "All18 saved control-map uint8 arrays and TIFF hashes match paired baseline exactly; output shapes and nonzero coverage identical.",
+    "Existing640x640 maps are not relabeled or overwritten.",
+    "Any mismatched pixel rejects candidate for exact-output shipping; retain maximum/count differences diagnostically, never silently relax tolerance."
+  ],
+  "performance_gate": "At least1.20 ratio of baseline/candidate median three-control operation, with all three paired ratios above1.0 and exactness gate passed. Report raw pairs and process CPU time, RSS and layout counts.",
+  "followup_if_screen_passes": "Separately freeze complete640x640 forward/reverse/shuffle validation and repeated fresh-process timing before deployment; screening alone cannot establish general byte identity.",
+  "hardware": {
+    "cpu_quota": "400000 100000",
+    "architecture": "x86_64 AMD EPYC9V74 with AVX512; host shows5 CPUs but cgroup quota4",
+    "memory_budget": "32GB"
+  },
+  "no_go_actions": [
+    "No actual inference, profiling, GPU, training, shared checkout edits or official-source edits in this assessment."
+  ],
+  "source_sha256": {
+    "/workspace/scrolls-env/infer_layers_cpu.py": "1357601e51ff49d5487465ddd14a77de642d1fad325d51814e702b8087e30495",
+    "/workspace/scrolls-env/inference-villa/vesuvius/src/vesuvius/ink_detection/models/hybrid_3d2d.py": "799363ce85438e1305ed6505927f9ba61875fc4bd12433b2c5a2b9767d9ee232",
+    "/workspace/scrolls-env/inference-villa/vesuvius/src/vesuvius/ink_detection/models/model.py": "d58c9f24723ce4633d67b96c3283d54bd2715679f07622ef957a33c2f06faf73",
+    "/workspace/scrolls-env/inference-villa/vesuvius/src/vesuvius/ink_detection/inference/infer.py": "979aed8e1bf047bea8e30bd0bbe55538556289c72b5914bbbbecf355e5940389",
+    "/workspace/scrolls-env/inference-villa/vesuvius/src/vesuvius/ink_detection/inference/inference_runtime.py": "0847a943e83038a51de372a56401fee3ae0bdad0ed1db4908397c4caba0245a0",
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/inference_manifest.json": "4b8441f49c5ae1bf585f792c927ef9fe5ed05dd606609c8e5a245c4fbc9b21de",
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline.log": "e59423807709bdf61a6541242cc72af91aaa4ac0567e2d283a9e4742c49ef8a9"
+  }
+}

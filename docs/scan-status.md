@@ -6,7 +6,7 @@ Snapshot assembled 2026-10-07. This page answers two different questions: which 
 
 **Done** means the named scope has saved results. **Partial** means some work finished but the requested comparison or controls did not. **Planned** means a queue or preregistration exists without a completed result in the reviewed record. **Not started** is used only for a named task with no recorded run. These are repository records, not a monitor of the user's Mac or the old cloud jobs. No job below is asserted to be running now.
 
-The evidence is [`results.json`](results.json), dated logs, the [Mac Phase 0 queue](../scripts/mac-phase0.sh), the [atlas preregistration](prereg/2026-10-07-v8in-atlas.md), and the saved cloud branches linked below. Community benchmark rows are comparison sources, not runs completed by this repository. CPU and MPS results are kept separate.
+The evidence is [`results.json`](results.json), dated logs, the [Mac Phase 0 queue](../scripts/mac-phase0.sh), and the saved cloud branches linked below. Community benchmark rows are comparison sources, not runs completed by this repository. CPU and MPS results are kept separate.
 
 | Volume or segment | Model or task | Device | Recorded status | Evidence and remaining scope |
 | --- | --- | --- | --- | --- |
@@ -35,12 +35,9 @@ The evidence is [`results.json`](results.json), dated logs, the [Mac Phase 0 que
 | PHerc0139 pag0/pag50 structural cubes | Frozen reconstruction transfer and boundary controls | Cloud CPU | Done: local structural prediction | [Follow-up](logs/2026-10-07-followup-tests.md): held-back correlation 0.99724; transport to the original reconstruction failed. No ink recovery claim. |
 | PHerc0841 w00/ag896 | Exact villa #1996 coarse support helper; mask and continuous geometry controls | Cloud CPU | Done: local geometry stress test | [Review](logs/2026-10-07-coarse-support-mask.md). No flattening or ink inference comparison; native spacing differs from the Paris4 benchmark. |
 | PHercParis4 | villa #1996 full spacing-5/10 growth and flattening comparison | CPU feasible | Not started here: public study reviewed | [Pinned source, checks and reproduction requirements](evidence/2026-10-07-followup/pr1996-review/report.md). Upstream tests and saved-table rebuild passed; community timing is not our rerun. |
-| PHerc0813 | Base `v8in` atlas, 75 automatic meshes | Mac MPS planned | Planned: no target run recorded | [Preregistration](prereg/2026-10-07-v8in-atlas.md); [atlas runner](../scripts/mac-atlas-v8in.sh). Public CT and meshes already exist; this is processing still to do here. |
-| PHerc0358 | Base `v8in` atlas, 3 automatic meshes | Mac MPS planned | Planned: no target run recorded | Same preregistration; gated on the labelled device/model checks. |
-| PHerc0826 | Base `v8in` atlas, 3 automatic meshes | Mac MPS planned | Planned: no target run recorded | Same preregistration. Together these are 81 planned meshes; no target maps, triage scores or verdicts are listed here. |
 | Other publicly catalogued samples below | No further own target-processing task established by this inventory | Not recorded | No completed processing recorded here | Public availability is not a commitment to process every scan. Community runs are separate evidence. |
 
-w00 and ag896 are traces of the same PHerc0841 sheet, with disjoint scoring crops; ag405 is a different surface. Their crop results are useful descriptive measurements, but w00/ag896 are not independent sheet replications. See the [overlap measurements](logs/2026-10-07-overlap-and-baseline.md). Passing one component above does not mean Phase 0 or the target readout has passed in full.
+w00 and ag896 are traces of the same PHerc0841 sheet, with disjoint scoring crops; ag405 is a different surface. Their crop results are useful descriptive measurements, but w00/ag896 are not independent sheet replications. See the [overlap measurements](logs/2026-10-07-overlap-and-baseline.md). Passing one component above does not mean the complete public model-comparison queue has passed. Private target-processing status is maintained in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required).
 
 ## Community CT acquisition and public availability
 

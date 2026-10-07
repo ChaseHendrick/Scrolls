@@ -1,0 +1,8 @@
+{
+  "historical_ref": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "record": "docs/evidence/2026-10-07-production-speed.provenance.json",
+  "digest": "eaa4db438164ec502cef7abf37c8ad77c679cce911acdd33f315512ee109ab5f",
+  "canonical_record_and_all_historical_fingerprints_valid": true,
+  "prior_tracked_evidence_unchanged": true,
+  "scope": "PR24 source/docs checked in its frozen export; earlier archives unchanged against PR24."
+}

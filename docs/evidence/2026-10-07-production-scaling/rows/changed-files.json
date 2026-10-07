@@ -1,0 +1,11 @@
+{
+  "baseline_head": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "changed_relative_files": [
+    "kit/rowscore.py",
+    "kit/cli.py",
+    "tests/test_rowscore_fast.py",
+    "docs/rowscore.md"
+  ],
+  "test_result": "19 focused row-score tests PASS, including8 new tests; root owns integrated suite",
+  "patch_sha256": "e325d730df0a2a04713bde67a3e6d2e670e2411c563b72ff2c2d02687390d6f6"
+}

@@ -1,0 +1,14 @@
+{
+  "rule_sha256": "435560b5222b4133ccd0955d3928473c4a867c0191d84f1586994a754e7cc28b",
+  "triangle_batches_exact": 720,
+  "closest_budget_cases_exact": 256,
+  "larger_projection_fields_exact": [
+    "uv",
+    "distance",
+    "valid",
+    "ambiguous",
+    "unresolved"
+  ],
+  "larger_points": 4096,
+  "all_pass": true
+}

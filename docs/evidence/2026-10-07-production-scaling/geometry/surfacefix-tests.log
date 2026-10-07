@@ -1,0 +1,29 @@
+test_anisotropic_xy_scale_and_exact_native_map_registration (test_surfacefix.SurfaceFixTests.test_anisotropic_xy_scale_and_exact_native_map_registration) ... ok
+test_candidate_tangential_change_rejected_even_with_updated_hash (test_surfacefix.SurfaceFixTests.test_candidate_tangential_change_rejected_even_with_updated_hash) ... ok
+test_changed_candidate_hash_rejected (test_surfacefix.SurfaceFixTests.test_changed_candidate_hash_rejected) ... ok
+test_cli_prepare_and_apply (test_surfacefix.SurfaceFixTests.test_cli_prepare_and_apply) ... ok
+test_control_contaminated_baseline_stays_flagged_without_usable_candidate (test_surfacefix.SurfaceFixTests.test_control_contaminated_baseline_stays_flagged_without_usable_candidate) ... ok
+test_fractional_geometry_matches_recover_shifted_dense_maps_and_legacy_abstains (test_surfacefix.SurfaceFixTests.test_fractional_geometry_matches_recover_shifted_dense_maps_and_legacy_abstains) ... ok
+test_fractional_samples_use_original_dense_hp_not_coarse_native_interpolation (test_surfacefix.SurfaceFixTests.test_fractional_samples_use_original_dense_hp_not_coarse_native_interpolation) ... ok
+test_healthy_baseline_is_unchanged_and_not_flagged (test_surfacefix.SurfaceFixTests.test_healthy_baseline_is_unchanged_and_not_flagged) ... ok
+test_invalid_config_and_missing_scale (test_surfacefix.SurfaceFixTests.test_invalid_config_and_missing_scale) ... ok
+test_invalid_map_nan_and_wrong_shape_rejected (test_surfacefix.SurfaceFixTests.test_invalid_map_nan_and_wrong_shape_rejected) ... ok
+test_invalid_offset_leaves_no_partial_output (test_surfacefix.SurfaceFixTests.test_invalid_offset_leaves_no_partial_output) ... ok
+test_large_coordinate_angled_normal_roundoff (test_surfacefix.SurfaceFixTests.test_large_coordinate_angled_normal_roundoff) ... ok
+test_missing_control_and_mixed_stride_rejected (test_surfacefix.SurfaceFixTests.test_missing_control_and_mixed_stride_rejected) ... ok
+test_native_triangle_jacobian_catches_local_fold (test_surfacefix.SurfaceFixTests.test_native_triangle_jacobian_catches_local_fold) ... ok
+test_no_reference_coverage_flags_without_geometry_change (test_surfacefix.SurfaceFixTests.test_no_reference_coverage_flags_without_geometry_change) ... ok
+test_nonvarying_negative_control_refuses_correction (test_surfacefix.SurfaceFixTests.test_nonvarying_negative_control_refuses_correction) ... ok
+test_offset_boundary_above_limit_refused (test_surfacefix.SurfaceFixTests.test_offset_boundary_above_limit_refused) ... ok
+test_prepare_rejects_invalid_offsets_and_overlap (test_surfacefix.SurfaceFixTests.test_prepare_rejects_invalid_offsets_and_overlap) ... ok
+test_recovers_known_normal_shift_and_preserves_inputs_holes_metadata (test_surfacefix.SurfaceFixTests.test_recovers_known_normal_shift_and_preserves_inputs_holes_metadata) ... ok
+test_same_reference_mesh_and_apply_output_overlap_rejected (test_surfacefix.SurfaceFixTests.test_same_reference_mesh_and_apply_output_overlap_rejected) ... ok
+test_schema2_geometry_freezes_before_first_map_record (test_surfacefix.SurfaceFixTests.test_schema2_geometry_freezes_before_first_map_record) ... ok
+test_schema2_rejects_unknown_matching_and_bicubic_render_geometry (test_surfacefix.SurfaceFixTests.test_schema2_rejects_unknown_matching_and_bicubic_render_geometry) ... ok
+test_shared_artifact_controls_refuse_correction (test_surfacefix.SurfaceFixTests.test_shared_artifact_controls_refuse_correction) ... ok
+test_winner_rejected_on_held_back_without_trying_runner_up (test_surfacefix.SurfaceFixTests.test_winner_rejected_on_held_back_without_trying_runner_up) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 14.237s
+
+OK

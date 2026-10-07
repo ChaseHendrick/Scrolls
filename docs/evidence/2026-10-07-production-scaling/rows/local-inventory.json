@@ -1,0 +1,1085 @@
+{
+  "files": [
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/0.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/1.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/10.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/11.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/12.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/13.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/14.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/15.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/16.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/17.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/18.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/19.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/2.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/20.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/21.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/22.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/23.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/24.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/25.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/26.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/27.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/3.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/4.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/5.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/6.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/7.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/8.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/layers/9.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 16640
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps-retry/forward_s42.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 8033
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps-retry/reverse_s42.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 8408
+    },
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps-retry/shuffle_s42.tif",
+      "shape": [
+        128,
+        128
+      ],
+      "dtype": "uint8",
+      "file_bytes": 8686
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/w00-crop-ink.npy",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "bool",
+      "file_bytes": 409728
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/w00-crop-supervision.npy",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "bool",
+      "file_bytes": 409728
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift-150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift-150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift-150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift-300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift-300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift-300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis0-shift300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift-150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift-150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift-150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift-300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift-300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift-300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/null-axis1-shift300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/published-render-check/official-published-crop.npy",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 11468928
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-baseline/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 168573
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-baseline/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 170538
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-baseline/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 161987
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-minus1/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 171843
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-minus1/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 175486
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-minus1/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 163577
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-plus1/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 167130
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-plus1/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 170461
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-plus1/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 160093
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-reference/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 170205
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-reference/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 164352
+    },
+    {
+      "path": "/workspace/scrolls-env/geometry-validation/reader-reference/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 161961
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/w045-crop-ink.npy",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "bool",
+      "file_bytes": 409728
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/w045-crop-supervision.npy",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "bool",
+      "file_bytes": 409728
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/published-render-check/official-published-crop.npy",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 11468928
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-original/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 189892
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-original/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 199393
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-original/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 157809
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 189816
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 199398
+    },
+    {
+      "path": "/workspace/scrolls-env/phase-reconstruction/reader-published-baseline/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 157663
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/published-baseline-crop.npy",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 11468928
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/published-reference-crop.npy",
+      "shape": [
+        28,
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 11468928
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/source-ink.npy",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "bool",
+      "file_bytes": 409728
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/source-supervision.npy",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "bool",
+      "file_bytes": 409728
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift-300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis0-shift300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift-300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift150/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift150/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift150/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift300/forward.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift300/reverse.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/null-axis1-shift300/shuffle.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 409856
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 203366
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 160914
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 164162
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-minus1/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 202868
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-minus1/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 161772
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-minus1/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 162265
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-plus1/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 202992
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-plus1/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 160524
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-plus1/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 163891
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-reference/forward_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 195999
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-reference/reverse_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 163276
+    },
+    {
+      "path": "/workspace/scrolls-env/supervised-surfacefix/reader-reference/shuffle_s42.tif",
+      "shape": [
+        640,
+        640
+      ],
+      "dtype": "uint8",
+      "file_bytes": 165086
+    }
+  ],
+  "errors": [
+    {
+      "path": "/workspace/scrolls-env/adapter-smoke/maps/forward_s42.tif",
+      "error": "list index out of range"
+    }
+  ]
+}

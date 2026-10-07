@@ -1,0 +1,18 @@
+{
+  "source_file_sha256": "c980b60dc457037d0cfe8c654619c23f3fd673e2847d64aed09cbdb3e26f7bde",
+  "crop_yxyx": [
+    4134,
+    12326,
+    5184,
+    13376
+  ],
+  "crop_shape": [
+    8192,
+    8192
+  ],
+  "crop_file": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.npy",
+  "crop_file_sha256": "d5e02e7fb79a5e09b1526916bb4197a1cccf03ba6ebd3f707266aed4274d0bce",
+  "crop_bytes_sha256": "7e63f3b343dfb5a361daba8a5dc405afc98ef1f1cef059dbfadb064c319b3659",
+  "rule_sha256": "2c9beb111c4fb36c171e785fd75b0a2ef3be39f349e30a3396d1a8b121aeb479",
+  "code_receipt_v2_sha256": "bd714108a95c1069de745e032c69fe75f0277b94d974624758fdeecef574396e"
+}

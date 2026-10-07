@@ -1,0 +1,24 @@
+{
+  "purpose": "Geometry-selected fixed central8192 public control crop for optional sparse-area compatibility and diagnostic performance; not a novel ink or text claim",
+  "baseline_revision": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "source_map_sha256": "c980b60dc457037d0cfe8c654619c23f3fd673e2847d64aed09cbdb3e26f7bde",
+  "source_shape": [
+    16460,
+    18560
+  ],
+  "crop_yxyx": [
+    4134,
+    12326,
+    5184,
+    13376
+  ],
+  "voxel_um": 2.403,
+  "validity": "unchanged score_array default a>.01",
+  "execution": "Hold for parent GO; oneCPU affinity plus BLAS1; separate baseline and sparse child process;120s wall cap and10GiBRSSstop; first single pair then3 pairedquiet trials if feasible",
+  "pass_requirements": [
+    "Exact same overlap coefficients at matching row/column coordinates",
+    "Default path untouched; opt-in may differ in float32 accumulation order",
+    "All final public crop rounded score, period, angle, mean_ink,p99,frac_gt_half and abstention decision compared; any mismatch disclosed",
+    "No dropping points, selecting crop by ink result or forced parity"
+  ]
+}

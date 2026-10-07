@@ -1,0 +1,13 @@
+{
+  "hashes": {
+    "/workspace/scrolls-env/production-speed-v2/geometry/parity_check_fixed.py": "7f9747e1af52a6d157a7c284b3e0637cdb28c3d5238cd933afd4e719257052ab",
+    "/workspace/scrolls-env/production-speed-v2/geometry/profile-rule.json": "174ecfa63e39db6134754a50434e2eaa27bf8fef457f7fdf569f065aecb448fc",
+    "/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa",
+    "/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py": "3983fa76efa53275ed4e93de1ce5f088be9c101b8577bba3a2c0482230e1d7f4"
+  },
+  "seed": 93118,
+  "triangles": "float32/float64/longdouble;batch0,1,2,8,17;scales1e-6,1,1000,1e7;12batches/case;degenerate/collinear/exactplane/ties",
+  "closest": "64 random quads,budgets1/5/17/65,exactallfields",
+  "larger": "Exactall5projectionarrays on frozen64x64/fullreference case",
+  "no_numerical_tolerance": true
+}

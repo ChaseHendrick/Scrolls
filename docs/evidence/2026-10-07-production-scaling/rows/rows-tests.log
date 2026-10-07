@@ -1,0 +1,24 @@
+test_area_resize_keeps_the_mean_on_fractional_factors (test_rowscore.RowScoreArrayTest.test_area_resize_keeps_the_mean_on_fractional_factors) ... ok
+test_area_resize_matches_block_mean_on_whole_factors (test_rowscore.RowScoreArrayTest.test_area_resize_matches_block_mean_on_whole_factors) ... ok
+test_erode_square (test_rowscore.RowScoreArrayTest.test_erode_square) ... ok
+test_float_probabilities_match_uint8 (test_rowscore.RowScoreArrayTest.test_float_probabilities_match_uint8) ... ok
+test_holes_in_the_surface_erode_their_neighbourhood (test_rowscore.RowScoreArrayTest.test_holes_in_the_surface_erode_their_neighbourhood) ... ok
+test_mean_map_rejects_shape_mismatch (test_rowscore.RowScoreArrayTest.test_mean_map_rejects_shape_mismatch) ... ok
+test_period_outside_band_is_not_rows (test_rowscore.RowScoreArrayTest.test_period_outside_band_is_not_rows) ... ok
+test_rows_score_high_at_their_period (test_rowscore.RowScoreArrayTest.test_rows_score_high_at_their_period) ... ok
+test_small_map_gets_no_score (test_rowscore.RowScoreArrayTest.test_small_map_gets_no_score) ... ok
+test_speckle_scores_low (test_rowscore.RowScoreArrayTest.test_speckle_scores_low) ... ok
+test_forward_and_reverse (test_rowscore.RowScoreCliTest.test_forward_and_reverse) ... ok
+test_cli_marks_both_depth_directions_only_when_opted_in (test_rowscore_fast.SparseRowResizeTest.test_cli_marks_both_depth_directions_only_when_opted_in) ... ok
+test_default_never_calls_sparse_and_keeps_original_record (test_rowscore_fast.SparseRowResizeTest.test_default_never_calls_sparse_and_keeps_original_record) ... ok
+test_finite_probability_resize_matches_with_float32_rounding_tolerance (test_rowscore_fast.SparseRowResizeTest.test_finite_probability_resize_matches_with_float32_rounding_tolerance) ... ok
+test_missing_scipy_is_an_explicit_opt_in_error (test_rowscore_fast.SparseRowResizeTest.test_missing_scipy_is_an_explicit_opt_in_error) ... ok
+test_nondegenerate_fractional_grid_scores_agree_with_rounding_tolerance (test_rowscore_fast.SparseRowResizeTest.test_nondegenerate_fractional_grid_scores_agree_with_rounding_tolerance) ... ok
+test_nonfinite_values_keep_dense_propagation_and_abstention (test_rowscore_fast.SparseRowResizeTest.test_nonfinite_values_keep_dense_propagation_and_abstention) ... ok
+test_overlap_coefficients_match_dense_including_fractional_edges (test_rowscore_fast.SparseRowResizeTest.test_overlap_coefficients_match_dense_including_fractional_edges) ... ok
+test_tied_spectrum_allows_either_orientation_and_mirrored_peak (test_rowscore_fast.SparseRowResizeTest.test_tied_spectrum_allows_either_orientation_and_mirrored_peak) ... ok
+
+----------------------------------------------------------------------
+Ran 19 tests in 1.394s
+
+OK

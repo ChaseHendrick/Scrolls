@@ -1,0 +1,276 @@
+{
+  "scope": "Compactevidence+source+syntheticrepros only; no rawmesh/projection/modeldata",
+  "files": [
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/report.md",
+      "sha256": "150cfec3c43ec946730cfdd0d2190783d438d6a52f1ade227447219cd9be363f",
+      "archive_relative": "geometry/report.md"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/profile-rule.json",
+      "sha256": "174ecfa63e39db6134754a50434e2eaa27bf8fef457f7fdf569f065aecb448fc",
+      "archive_relative": "geometry/profile-rule.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/profile_baseline.py",
+      "sha256": "4f79738d9fef6897e35af3ca42168efe83249aba1b44aaf81d93f6da45e19b42",
+      "archive_relative": "geometry/profile_baseline.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/profile-result.json",
+      "sha256": "d831bfce2af74254c569a66b4cc3ab31c0337079d04c8028c3881fe85fbff20a",
+      "archive_relative": "geometry/profile-result.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/profile-run.log",
+      "sha256": "9cc819523f932abde84ca62b65eeab29aff09e0fe747346f1966803870bc498a",
+      "archive_relative": "geometry/profile-run.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/full-profile.txt",
+      "sha256": "50a9a4dd647b1531457da78352c8b82358abf3994fd511481f76f74967120e91",
+      "archive_relative": "geometry/full-profile.txt"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/larger-profile.txt",
+      "sha256": "f6a628cbc7b4eb0ae1be780b7159db5cba542b0c37da8baac353df236d043e02",
+      "archive_relative": "geometry/larger-profile.txt"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity_check.py",
+      "sha256": "a77d2ce759b3768dad6dd3ddf74962142e61d04110f29ace4532b39d11b3e0f4",
+      "archive_relative": "geometry/parity_check.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-rule.json",
+      "sha256": "1ad40ab3e219753a7a53e61165f2989abb2d1b23121f1af22814c42f157dcb85",
+      "archive_relative": "geometry/parity-rule.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-result.json",
+      "sha256": "4f1a339c6978630f76d45bdf44a02c205e0cac976107169398515a09d0d00607",
+      "archive_relative": "geometry/parity-result.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-run.log",
+      "sha256": "5f888cafc163ae62924e380f6cec48afa9e3641ad5c1a0419f67dbecd688d042",
+      "archive_relative": "geometry/parity-run.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity_check_fixed.py",
+      "sha256": "7f9747e1af52a6d157a7c284b3e0637cdb28c3d5238cd933afd4e719257052ab",
+      "archive_relative": "geometry/parity_check_fixed.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-rule-fixed.json",
+      "sha256": "435560b5222b4133ccd0955d3928473c4a867c0191d84f1586994a754e7cc28b",
+      "archive_relative": "geometry/parity-rule-fixed.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-result-fixed.json",
+      "sha256": "8ae3d1feb56d664601c81f7a74c6c13e430255216c3b85ca50c00e10f6167729",
+      "archive_relative": "geometry/parity-result-fixed.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-fixed-run.log",
+      "sha256": "38d28ad701a3c64a88ef96e383018c26136b2a0b1d0ffa98dac608e419a13160",
+      "archive_relative": "geometry/parity-fixed-run.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity_check_final.py",
+      "sha256": "fec89590469ae2e81382f30768debb3624ff3ef695a2c0e962d58ce3245cff34",
+      "archive_relative": "geometry/parity_check_final.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-rule-final.json",
+      "sha256": "79b2752e8de39e90633a780886d1cf680972ec2568b618f9c354e755bb0dafa2",
+      "archive_relative": "geometry/parity-rule-final.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-result-final.json",
+      "sha256": "eb4a4394502720e32f424e42c40c58a0d8249ba05dcbfd06235183fd507b0f61",
+      "archive_relative": "geometry/parity-result-final.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/parity-final-run.log",
+      "sha256": "4d39919c8d177af280a8f83c36cf94337dfb999d59f715998170a928362f3452",
+      "archive_relative": "geometry/parity-final-run.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/source-fix-amendment-before-fallback.json",
+      "sha256": "c3ac38149091eb1593ba110a028efbcf814c9c3ede9a532a7bfb4d30a04b65b0",
+      "archive_relative": "geometry/source-fix-amendment-before-fallback.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/source-fix-amendment.json",
+      "sha256": "3e7169e0486f3dca100c6083337a7607dec5280b636dc68137148343a0299272",
+      "archive_relative": "geometry/source-fix-amendment.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/benchmark-before-fallback.py",
+      "sha256": "cf7172c10c0849c66c71bc4b9e11fd2af09bc36929466848e1ace0ea32fa5f82",
+      "archive_relative": "geometry/benchmark-before-fallback.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/benchmark-rule-before-fallback.json",
+      "sha256": "aba911028dfe58ae7806061371698472095c75de29a33051bbb832f8b2d41614",
+      "archive_relative": "geometry/benchmark-rule-before-fallback.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/benchmark.py",
+      "sha256": "e0c7723d35f9b192b9cbeac357ab9a3affd60d23ca9d2910d29f44388b5b988c",
+      "archive_relative": "geometry/benchmark.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/benchmark-rule.json",
+      "sha256": "2b2454f793477b4dc0fa729a9df49f26df60d9371872536ac9406fcc583dbbf9",
+      "archive_relative": "geometry/benchmark-rule.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/benchmark-result.json",
+      "sha256": "c681f8230b1c109c3e083665cb96cd89fa25aef40e7a01e1e5bf13fd3d5f95e3",
+      "archive_relative": "geometry/benchmark-result.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/benchmark-run.log",
+      "sha256": "68185fdc98d00e8086514bce94ccc84027aa54a2735a97084fa66fd0f256ac10",
+      "archive_relative": "geometry/benchmark-run.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/worker.py",
+      "sha256": "2a7be027513dfbb7cf7108049efa530c0fb8613946d8549461ccbdfa3595f571",
+      "archive_relative": "geometry/worker.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/geometry-tests.log",
+      "sha256": "d3167bb354d533439f909fc1a59e539ec6388fe9b9e775127bd8bcff5ceca4ea",
+      "archive_relative": "geometry/geometry-tests.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/geometry-regression-tests.log",
+      "sha256": "f64ea43ed47f886f539792da25e520c7ea55b00b9013d7d3ac2481105167151b",
+      "archive_relative": "geometry/geometry-regression-tests.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/geometry-regression-fixed-tests.log",
+      "sha256": "5dec5985f8100e2e1ea9217b820599c3d52591bd469d13bef2158cb472252efe",
+      "archive_relative": "geometry/geometry-regression-fixed-tests.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/geometry-regression-final-tests.log",
+      "sha256": "e7e393bc6ab81cf0281943f8e99dc5e27c5c7276398393ed8626fce607289975",
+      "archive_relative": "geometry/geometry-regression-final-tests.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/surfacefix-tests.log",
+      "sha256": "7fe39db0c9485b4f3c2f6e5f7f21faa8537cfd8bc3026a823572fc1bb1606a54",
+      "archive_relative": "geometry/surfacefix-tests.log"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/ready-files.json",
+      "sha256": "c365fd88b5c92755b7812e961f60ffdfb32af6283aaf445b1dc4983cd5f9416f",
+      "archive_relative": "geometry/ready-files.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/geometry-speed-v2.patch",
+      "sha256": "098f54f12675fa4b85918df6fd3d56ec9b7604b7fa39e9235dea9d074edffcd8",
+      "archive_relative": "geometry/geometry-speed-v2.patch"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/candidate-before-longdouble-fix.py",
+      "sha256": "0299fe7aeb38cde77d0fbeb1e7fde41be05231b5fc67b39cfb0588f3e51cb072",
+      "archive_relative": "geometry/candidate-before-longdouble-fix.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/candidate-before-float16-fallback.py",
+      "sha256": "3983fa76efa53275ed4e93de1ce5f088be9c101b8577bba3a2c0482230e1d7f4",
+      "archive_relative": "geometry/candidate-before-float16-fallback.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/byte-parity-result.json",
+      "sha256": "6709cbc45d6e7ad87dc1f1b63b4cd4d38ec99a770aad8b3071ef532e5d10ae7d",
+      "archive_relative": "geometry/byte-parity-result.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py",
+      "sha256": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa",
+      "archive_relative": "geometry/baseline/kit/_surface_geometry.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py",
+      "sha256": "290634636090c9355ddd98d89b008db0cb2de34fd5c66aa6b98abae6e3153721",
+      "archive_relative": "geometry/optimized/kit/_surface_geometry.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry/optimized/tests/test_surface_geometry.py",
+      "sha256": "0701f885daa228b6dbf0d1abfa4ebb1e6bd2cfca2f1bd35f7ad3d9771faedddd",
+      "archive_relative": "geometry/optimized/tests/test_surface_geometry.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/review.py",
+      "sha256": "8a9e2b6e8bcf1b9724b7e6d57e23314d2d7be2d0ec118eb162e1932e06511e05",
+      "archive_relative": "independent-review/review.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/cancellation_audit.py",
+      "sha256": "46b9d62435884c58254a43527e5998969e3dfe260a599ef6edfe871cdca21a3d",
+      "archive_relative": "independent-review/cancellation_audit.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/result.json",
+      "sha256": "a743d32b46c99f03c87c7ec5c5105a826d1c7c626dddde1a5967e83f26d77cfe",
+      "archive_relative": "independent-review/result.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/optimized-0299fe7aeb38.py",
+      "sha256": "0299fe7aeb38cde77d0fbeb1e7fde41be05231b5fc67b39cfb0588f3e51cb072",
+      "archive_relative": "independent-review/optimized-0299fe7aeb38.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/cancellation-audit.json",
+      "sha256": "87efd1528ab32eb0ddea177270526abff4cc8e87ffa572106cab15889065ce67",
+      "archive_relative": "independent-review/cancellation-audit.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/report.md",
+      "sha256": "deb3cced1c555bdbe16bbd175116b614466a754d2b84eac475eee3b539b694d0",
+      "archive_relative": "independent-review/report.md"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/baseline-4590aacfcefb.py",
+      "sha256": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa",
+      "archive_relative": "independent-review/baseline-4590aacfcefb.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/optimized-290634636090.py",
+      "sha256": "290634636090c9355ddd98d89b008db0cb2de34fd5c66aa6b98abae6e3153721",
+      "archive_relative": "independent-review/optimized-290634636090.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/review-before-scalar-fallback.py",
+      "sha256": "9237cd40da11abbbe4db76d4d5d5505221cb4bd3b33fce981e619d07536973d6",
+      "archive_relative": "independent-review/review-before-scalar-fallback.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/longdouble-finding.json",
+      "sha256": "ea165ff45ef52970052aa9ab72a3ba71394d8ebb035dbe016fc8082dbf3b4fec",
+      "archive_relative": "independent-review/longdouble-finding.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/optimized-3983fa76efa5.py",
+      "sha256": "3983fa76efa53275ed4e93de1ce5f088be9c101b8577bba3a2c0482230e1d7f4",
+      "archive_relative": "independent-review/optimized-3983fa76efa5.py"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/layout-mismatch.json",
+      "sha256": "4b41ccae60265421a58d774102a8ab09598d28dd3b3f99061af6aded6a07092e",
+      "archive_relative": "independent-review/layout-mismatch.json"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/geometry-independent-review/initial-layout-audit.json",
+      "sha256": "5bc2604c3a098d7548cecc47d523c037516f49eec7bbf7b3ac220787dbf0b9c5",
+      "archive_relative": "independent-review/initial-layout-audit.json"
+    }
+  ],
+  "independent_review_snapshot": true
+}

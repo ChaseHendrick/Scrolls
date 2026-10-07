@@ -1,0 +1,56 @@
+[
+  {
+    "repeat": 0,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 6.829713914999957,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-baseline.log"
+  },
+  {
+    "repeat": 0,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 2.2083542399996077,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/0-fast.log"
+  },
+  {
+    "repeat": 1,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 2.1101680850006233,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-fast.log"
+  },
+  {
+    "repeat": 1,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 5.420129512999665,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/1-baseline.log"
+  },
+  {
+    "repeat": 2,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 5.3186750400000165,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-baseline.log"
+  },
+  {
+    "repeat": 2,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 1.9064012660001026,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-three-pairs/2-fast.log"
+  }
+]

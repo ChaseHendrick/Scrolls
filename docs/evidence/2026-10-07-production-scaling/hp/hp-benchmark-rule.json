@@ -1,0 +1,29 @@
+{
+  "baseline_commit": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "frozen_before_comparative_timing": true,
+  "pairs_per_case": 5,
+  "pair_orders": [
+    "baseline,candidate",
+    "candidate,baseline",
+    "baseline,candidate",
+    "candidate,baseline",
+    "baseline,candidate"
+  ],
+  "cpu": "One Linux affinity core; OMP/OPENBLAS/MKL/NUMEXPR1; TIFF/Zarr worker1; no GPU.",
+  "cases": {
+    "real640": "Actual CT-derived baseline/reverse d9v2 maps, published w00 labels; HP/AUC/rows and combined file pipeline.",
+    "public2560": "2560x2560 crop of official public2.403um map plus matching humanlabels; synthetic523-row rolled workload control. HP only; no depth-order validation."
+  },
+  "measurements": {
+    "hp_files": "Entire warmed score_files call, including both TIFF loads, label reads/grid mapping, forward/control filters, masks/correlations/nulls/report return.",
+    "full_pipeline": "real640 AUC(1000paired draws,107pxblocks)+HP+rows, eachwithfiles/control, no intertool cache; includes all reads/reports, no interpreter startup.",
+    "cli_process_wall_s": "Fresh subprocess from immediately before launch until return: imports, all HP files/scoring, JSON stdout and process shutdown; no warmup.",
+    "worker_process_wall_s": "Diagnostic whole worker process includes one warm pipeline, each timed operation, and repeat fullpipeline only for real640; not single CLI latency.",
+    "process_peak_rss_kib": "Linux ru_maxrss for worker process including imports/warmup/alloperations, KiB; no incremental or per-function interpretation.",
+    "cli_peak_rss_kib": "Linux ru_maxrss for cold HP CLI process, KiB; captures all imports and scoring."
+  },
+  "parity": "Every returned JSON field for all operation/control reports compared exactly to baseline reference; CLI parsed report too. All20variant rows retained. Rounding/statistics/schema unchanged.",
+  "summary": "Ratio of medians and all pairedratios; five timings pervariant percase, no significance/generalwholecanvasclaim. Retain negative results and RSS.",
+  "implementation": "Only per-call reuse of label-only highpass key/core; map coverage,inner,rollednullsupport independent. No globalcache.",
+  "limits": "Existing nonfinite/invalid input behaviors not redefined; same supported numerical inputs. Bounded2560crop is not full305Mpixel canvas; syntheticcontrol not inference."
+}

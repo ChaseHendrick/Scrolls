@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "status": "harness prepared; not executed; awaits root GO",
+  "created_utc": "2026-10-07T16:10:47.117852+00:00",
+  "parent_plan_sha256": "04af40c0a3727338e7888425b4fe3ac14b64e67c4d1a8f322366c33e4bdd7196",
+  "harness_sha256": "9c9f83e22ed4ec89aec53831d6db40445ac11cf4ecf89957dda97984889f9785",
+  "validation": "stdlib AST parse only; no Torch/model inference or runtime test yet",
+  "peak_rss_scope": "Whole shared worker high-water RSS including both models; no per-variant memory reduction inferred",
+  "future_repo_deliverable": "Opt-in CPU official-reader launcher with external checkpoint path/hash, official source pin, batch/thread/layout manifest and unchanged contiguous default. Layout remains experimental until full-canvas exact parity and repeated fresh-process performance pass."
+}

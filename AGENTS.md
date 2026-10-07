@@ -6,7 +6,13 @@ Entry point for AI agents (and people) working in this repository. Read this fil
 
 A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carbonized Herculaneum scrolls from X-ray CT. It does not reimplement the official pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)); it plans runs of it, scores ink maps against published labels, checks results across devices, records provenance, and keeps dated research notes. Owner: Chase Hendrick (GitHub ChaseHendrick). Machine: Apple M1 Pro (MPS GPU, no CUDA).
 
+## Public and private work
+
+**[ChaseHendrick/Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) is the home for all work that cannot be public** (user decision, 2026-10-07). Read its handoff and relevant branches before starting or continuing a private investigation. Keep candidate outputs, private research notes and submission material there or in its ignored local data directories. This public repository holds tools, public-data benchmarks and material cleared for public release. Never copy private findings into public commits, PRs, CI logs or documentation.
+
 ## Read first, in this order
+
+When the private checkout is available, refresh the combined session context from that checkout with `python3 -m kit.repo_handoff context --private-root . --public-root ../Scrolls`. Its handoff helper installs local Git hooks in both checkouts and writes combined context only inside the private workspace. Hooks do not push, run hosted jobs or copy private notes into this repository. Read the generated private context before private work; never paste it into public artifacts.
 
 1. [`docs/HANDOFF.md`](docs/HANDOFF.md): current state and the next steps, newest session first.
 2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): phases, gates, timeline.
@@ -18,7 +24,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 
 ## Hard rules (short form)
 
-1. **Never publish or describe a possible finding.** Target-scroll maps, triage lists and verdicts stay on the user's machine (`~/scrolls-work`, `work/`, `experiments/`; the last two are gitignored). The prize terms forbid disclosure before the official announcement. This repository is public.
+1. **Never publish or describe a possible finding.** Target-scroll maps, triage lists and verdicts belong in Scrolls-private or its ignored local data directories. The prize terms forbid disclosure before the official announcement. This repository is public.
 2. **An ink map is model output, not a reading.** Never write that letters were found or read.
 3. **Preregister before looking.** Readout rules are fixed (`python -m kit run init`, or a committed file in `docs/prereg/`) before any target map exists.
 4. **Every check must be able to fail.** Device agreement needs a control (`kit verify --control`); AUC needs the reverse-depth map as control.
@@ -33,11 +39,10 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 
 | Date | Decision |
 | --- | --- |
-| 2026-10-07 | Progress Prize: submit near the 31 Oct deadline, not before; keep the draft updated |
+| 2026-10-07 | Private operational plans and submission material live in Scrolls-private |
 | 2026-10-07 | Leave `docs/contrib/villa-1865-m1pro-comment.md` alone |
 | 2026-10-07 | No Hugging Face or forum posting |
-| 2026-10-07 | Target run: v8in on all 81 atlas meshes of PHerc0813, 0358, 0826, with the rule in `docs/prereg/2026-10-07-v8in-atlas.md` |
-| 2026-10-07 | Pursue all three training ideas in `docs/plans/2026-10-07-training.md`; GPU rental needs a budget decision first |
+| 2026-10-07 | No paid compute without the user's budget decision |
 
 ## Repository map
 
@@ -64,13 +69,12 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 | `kit/ledger.py` | Local experiment records in `experiments/<slug>/run.json` with readout-rule hash and status gate |
 | `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
-| `scripts/mac-atlas-v8in.sh` | Mac GPU: the preregistered target run on the atlas meshes (private outputs) |
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
-| `docs/plans/` | Roadmap and the training plan |
-| `docs/prereg/` | Preregistrations, committed before their maps exist |
-| `docs/contrib/` | Drafts for the user to send (Progress Prize draft) |
+| `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
+| `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
+| `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
 | `docs/logs/` | Dated research notes (not claims) |
 | `docs/state-of-play.md`, `docs/prizes.md` | What has been read and tried; prize terms |
 | `docs/mac.md` | Apple Silicon guide: commands, how to watch a run, measured timings |
@@ -80,7 +84,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 ## Commands
 
 ```bash
-python -m unittest discover -s tests -v        # all tests (193; map tests skip without their numerical dependencies)
+python -m unittest discover -s tests -v        # all tests (229; map tests skip without their numerical dependencies)
 python -m kit prizes                            # open prizes from the snapshot
 python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr \
     [--crop Y0 Y1 X0 X1 --surface-shape H W] [--inner 64] [--json]

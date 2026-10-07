@@ -1,0 +1,43 @@
+{
+  "status": "V2 frozen before central8192 benchmark; tests amended after parent independent review, backend/rule unchanged",
+  "files": [
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/baseline_rowscore.py",
+      "sha256": "b94fc1c1cd7467d950fb4c9ab4bf89c666cd01e520fe7f3e9b7d97de9523f67b"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/sparse_area_prototype.py",
+      "sha256": "462cddaeed6c43e5b59bb3336bcd0cf081c566275dada34481f42a5a588a2f6f"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192-rule.json",
+      "sha256": "2c9beb111c4fb36c171e785fd75b0a2ef3be39f349e30a3396d1a8b121aeb479"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/profile_rows_cli_child.py",
+      "sha256": "1b7ec10c5298a73d9b4791f5edc3c9d34b4b3c24caa3c56cedc4446da369a821"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/run_rows_pair.py",
+      "sha256": "3e68fdbf9ee503e2c74464fa0dc1a95041768ad8599e9088000f0b90bfd85bd0"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/rows-fixed/kit/rowscore.py",
+      "sha256": "aed64974ed9315d831e2903a165044b3d13135601f54d25d063e05882f5cd74a"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/rows-fixed/kit/cli.py",
+      "sha256": "a9bb107f291e6ae45fc31c87017a4d3b3d8ac101e52cab33338ea396ca109c57"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/rows-fixed/tests/test_rowscore_fast.py",
+      "sha256": "1946063b5c21d0a9f4aad689ccb8d112e365cc2d01d1fb51c536658daf5a9048"
+    },
+    {
+      "path": "/workspace/scrolls-env/production-speed-v2/rows-fixed/docs/rowscore.md",
+      "sha256": "da01c1f7c734a1c3eb3259bcf02c269acc2116d5888caa1dfcdd343ff29f70f0"
+    }
+  ],
+  "prior_receipt_sha256": "d0ad052bcca11af3777372694cda01ef4a802c07757b12db82025bb3d2448353",
+  "amendment": "Separate nondegenerate score-tolerance and tied-spectrum allowed-peak tests; no universal angle parity asserted. Add missing-SciPy opt-in error check."
+}

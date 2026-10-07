@@ -1,0 +1,164 @@
+[
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+    "bytes": 23560428,
+    "sha256": "c980b60dc457037d0cfe8c654619c23f3fd673e2847d64aed09cbdb3e26f7bde"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/0/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/0/c/0/0",
+    "bytes": 63141,
+    "sha256": "ff35237379ec79eacb51db27cbfbb9fab984ae4e32d921fa7de932d8d4599226"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/0/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/0/zarr.json",
+    "bytes": 1218,
+    "sha256": "6c02f94b2296bfbd2825890892e42db656550dff3f57763b3f475304f8432479"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/1/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/1/c/0/0",
+    "bytes": 25351,
+    "sha256": "a2bf8e7caa05406887fc9ffa20738b747104e96ef044e77037316a5dc24b0bf2"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/1/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/1/zarr.json",
+    "bytes": 1214,
+    "sha256": "ac0247b41b7ddee58777b6117674097261558ba5f409e9e555eb83ed7d2cb856"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/2/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/2/c/0/0",
+    "bytes": 10381,
+    "sha256": "a358449405e494e5aeb8906e0793f8dec741a60dbb26fa4bc58d05c6220a7923"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/2/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/2/zarr.json",
+    "bytes": 1214,
+    "sha256": "93b80ecf0be5989dd05f1982e9ff47d3bbf8644ce20de75fbac3b28fe73f2c87"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/3/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/3/c/0/0",
+    "bytes": 4901,
+    "sha256": "20b90a18cd5f82d07415d6401423b35ba364f812f952bdd2cf2b3d6651572e68"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/3/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/3/zarr.json",
+    "bytes": 1214,
+    "sha256": "820057055fdb94b8a01313a4d00058a04d6e669a8189dddfa9fcdbcd160f12fd"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/4/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/4/c/0/0",
+    "bytes": 2292,
+    "sha256": "f77f5174973e0418d6788cbdc308613366a98b3a39556411c80de07f70f53f03"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/4/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/4/zarr.json",
+    "bytes": 1214,
+    "sha256": "6e3b28a18e71d5501836a4cae02d9150906b97a7d781d25d5775b4727b414472"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/5/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/5/c/0/0",
+    "bytes": 1050,
+    "sha256": "c382e99b5e3992b33295e7944a7c49ee5f6d540bd966e741e139785dcabe0bb7"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/5/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/5/zarr.json",
+    "bytes": 1212,
+    "sha256": "5954b500f05f437e1fb85b65b404762a9804735288ea0003e5cc80b72a5f4af6"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/inklabels.zarr/zarr.json",
+    "bytes": 2909,
+    "sha256": "50b3ee594a16898790108a4e599036a738b06d71d5741f7d10a58bc5e1fd0697"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/0/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/0/c/0/0",
+    "bytes": 58715,
+    "sha256": "e994d6094be98da9a8bf5bba39ed07f07bafcc36c77890b6a7d192c01f603831"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/0/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/0/zarr.json",
+    "bytes": 1218,
+    "sha256": "6c02f94b2296bfbd2825890892e42db656550dff3f57763b3f475304f8432479"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/1/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/1/c/0/0",
+    "bytes": 21514,
+    "sha256": "09df4d59f7ca295fcf76dd2b15d88ced033170aba85b7ffd576066f27cd3054c"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/1/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/1/zarr.json",
+    "bytes": 1214,
+    "sha256": "ac0247b41b7ddee58777b6117674097261558ba5f409e9e555eb83ed7d2cb856"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/2/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/2/c/0/0",
+    "bytes": 8634,
+    "sha256": "81ae85d1cb7db283791aca23647004f12f66d2479d14dbb364869d559fc2347e"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/2/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/2/zarr.json",
+    "bytes": 1214,
+    "sha256": "93b80ecf0be5989dd05f1982e9ff47d3bbf8644ce20de75fbac3b28fe73f2c87"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/3/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/3/c/0/0",
+    "bytes": 3612,
+    "sha256": "6deba080e194a2018b3bad3ad025f4ae42df8868dbbfac982990c49f5dcf6c72"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/3/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/3/zarr.json",
+    "bytes": 1214,
+    "sha256": "820057055fdb94b8a01313a4d00058a04d6e669a8189dddfa9fcdbcd160f12fd"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/4/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/4/c/0/0",
+    "bytes": 1461,
+    "sha256": "d6e844db24f421cc96d0fc41befd44ce6be59fbbdb6f6d8bc770bb4f7555d7db"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/4/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/4/zarr.json",
+    "bytes": 1214,
+    "sha256": "6e3b28a18e71d5501836a4cae02d9150906b97a7d781d25d5775b4727b414472"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/5/c/0/0",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/5/c/0/0",
+    "bytes": 754,
+    "sha256": "262275ca5355806fd6427250663add278b9d194168dc11c96a5c92681c6b7fc9"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/5/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/5/zarr.json",
+    "bytes": 1212,
+    "sha256": "5954b500f05f437e1fb85b65b404762a9804735288ea0003e5cc80b72a5f4af6"
+  },
+  {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/zarr.json",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-labels/2.403um-volume-20260319124803/20260918/supervision.zarr/zarr.json",
+    "bytes": 2924,
+    "sha256": "e9542a6e9c8143e1da3308b41844024bdc92ac40cdf4a2e5d8ca4fcb06ee2beb"
+  }
+]
