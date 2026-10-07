@@ -2,6 +2,18 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (late morning): the plan the user agreed
+
+User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum posting**.
+
+1. The user pastes the `SEGMENT=0841-w00` summary (v8in fp16, QUICK); compare with the bars on the same crop with a 64 px edge left out: d9v2 0.8994, `ink_9um` seed 42 0.8061 (the summary's `ink_9um` line should match 0.8061 exactly).
+2. The same for `0841-ag896` and `0841-ag405` (bars: d9v2 0.8230 / 0.8319, `ink_9um` 0.6594 / 0.7838), one run at a time.
+3. `MODEL=v8in-1447` on the three crops: Youssef's PHerc1447 fine-tune, idea 1 with no training.
+4. Choose the reader for the targets: the v8in atlas run stays preregistered; if d9v2 stays clearly ahead, propose a second preregistered run with d9v2 on PHerc0813 and 0358 (TAUIL ran it on 0826 only).
+5. Training prep: stage data, CPU smoke test of the fine-tune loop, then ask the user about GPU budget.
+
+Mac runs are guarded by a shared lock (one GPU job at a time) after two concurrent runs swapped the M1 Pro to 56 s per tile.
+
 ## Session 7 October 2026 (morning, later): training our own reader, all three ideas
 
 The user decided (2026-10-07) to pursue all three training ideas in [`plans/2026-10-07-training.md`](plans/2026-10-07-training.md): (1) train on PHerc1447, the scroll whose text was just found, at the First Letters scan protocol; (2) learn from the team's 1 µm ink maps instead of the 2.4 µm ones every public fine-tune used; (3) self-supervised pre-training on the eligible scans themselves. The plan fixes the test (PHerc0841, labels, reverse control) and the bar (Hecate 0.855, d9v2 0.828, Reader v2 0.824, `ink_9um` about 0.74) before any training.
@@ -28,7 +40,7 @@ What is new and worth sharing once the user agrees:
 
 Ways to contribute, cheapest first (propose each to the user; do none unasked):
 
-- **Post the v8in on MPS result** on the v8in model's Hugging Face discussion page, after the w045 summary arrives.
+- ~~Post on Hugging Face~~: **the user declined (2026-10-07). Do not suggest Hugging Face or forum posts.**
 - **v8in on TAUIL's held-out benchmark segments.** TAUIL-Abd-Elilah's benchmark (8 labelled segments incl. PHerc0841) scores `ink_9um`, d9v2 and Reader v2 but not v8in. Adding v8in to the same segments is the unpublished piece. Consider also running d9v2 (released, loads like `ink_9um`) in `mac-w045.sh` as a third model.
 - **v8in vs `ink_9um` on PHerc0841** (`SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh`, then ag896 and ag405). A clear v8in win on an unseen scroll is news the community would act on; a loss is useful too.
 - **Upstream the scoring tool:** villa has no simple command that scores an ink map against a segment's labels with a reverse control. A small tested PR there is the most "used by others" piece.
