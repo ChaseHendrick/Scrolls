@@ -74,8 +74,8 @@ class RepoTest(unittest.TestCase):
             if f.suffix not in TEXT or not f.exists():
                 continue
             text = f.read_text(encoding="utf-8", errors="replace")
-            for ch, name in (("—", "em dash"), ("–", "en dash")):
-                self.assertNotIn(ch, text, f"{f.relative_to(ROOT)} has an {name}")
+            for ch, name in ((chr(0x2014), "em dash"), (chr(0x2013), "en dash")):
+                self.assertFalse(ch in text, f"{f.relative_to(ROOT)} has an {name}")
 
     def test_docs_json_parses(self):
         for f in sorted((ROOT / "docs").rglob("*.json")):
