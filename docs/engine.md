@@ -26,7 +26,8 @@ Small, standard-library helpers for the parts villa does not cover:
 | `prizes` | One dated, tested place for amounts, deadlines and eligible volumes, with S3 names resolved |
 | `doctor` | Tells a newcomer what is missing before a 25 GB download fails |
 | `plan` | Copies the official commands for a scroll, control first, and prints the 8.64 µm resampling caveat |
-| `run` ledger | Preregistered readout rule with a hash, costs, status history, and a gate against early disclosure |
+| `run` ledger | Preregistered readout rule with a hash, costs, provenance hashes, attached checks, status history, and a gate against early disclosure |
+| `verify` | CPU vs MPS (or any two runs) map agreement, valid only when a control map is caught |
 
 ## Where to grow it
 
@@ -34,7 +35,7 @@ Add to `kit/` only what is specific to running and recording experiments. Anythi
 
 Candidates, roughly in order of value:
 
-1. `kit run` hooks that record villa commit, checkpoint SHA-256 and exact command lines automatically.
-2. A forward/reverse depth comparison report for an inference output pair.
+1. Done: `kit run record` (command lines and SHA-256 of checkpoints or outputs) and `kit verify` (map agreement with a control).
+2. A forward/reverse depth readout report (candidate components above a control-derived threshold), building on `kit verify`'s loader.
 3. A thin wrapper over [`vesuvius-catalog`](https://github.com/Schurkai/vesuvius-catalog) to refresh the volume table instead of the one-off bucket listing.
 4. A Modal or RunPod launcher that enforces a cost cap.

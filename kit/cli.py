@@ -5,7 +5,7 @@ import json
 import sys
 from datetime import date
 
-from . import doctor, ledger, plan, prizes
+from . import doctor, ledger, plan, prizes, verify
 
 
 def cmd_prizes(args):
@@ -39,6 +39,19 @@ def cmd_cost(args):
     return 0
 
 
+def cmd_verify(args):
+    try:
+        result = verify.verify_files(args.reference, args.candidate, args.control,
+                                     args.tolerance, args.max_fraction)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else verify.format_result(result))
+    return {verify.PASS: 0, verify.PASS_UNCONTROLLED: 3}.get(result["verdict"], 1)
+
+
 def cmd_run(args):
     root = args.root
     try:
@@ -52,6 +65,9 @@ def cmd_run(args):
         elif args.action == "cost":
             record = ledger.add_cost(args.slug, args.usd, args.what, root=root)
             print(f"{record['slug']}: total ${ledger.total_cost(record):.2f}")
+        elif args.action == "record":
+            record = ledger.add_provenance(args.slug, args.command, args.file, root=root)
+            print(f"{record['slug']}: recorded command and {len(args.file)} file hash(es)")
         elif args.action == "check":
             problems = ledger.check(args.slug, root=root)
             for problem in problems:
@@ -95,6 +111,19 @@ def build_parser():
     p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
     p.set_defaults(func=cmd_cost)
 
+    p = sub.add_parser("verify", help="compare two ink maps (e.g. CPU vs MPS) with a control")
+    p.add_argument("reference", help="reference map, e.g. the CPU run")
+    p.add_argument("candidate", help="map to check, e.g. the MPS run")
+    p.add_argument("--control", help="a map that must NOT agree, e.g. the reverse-direction output")
+    p.add_argument("--tolerance", type=float, default=verify.DEFAULT_TOLERANCE, help="grey levels (0-255)")
+    p.add_argument("--max-fraction", type=float, default=verify.DEFAULT_MAX_FRACTION,
+                   help="largest fraction of pixels allowed beyond the tolerance")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug", help="attach the result to this experiment")
+    p.add_argument("--name", default="device-agreement")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_verify)
+
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     actions = p.add_subparsers(dest="action", required=True)
@@ -113,6 +142,10 @@ def build_parser():
     a.add_argument("slug")
     a.add_argument("--usd", type=float, required=True)
     a.add_argument("--what", required=True)
+    a = actions.add_parser("record", help="store a command line and SHA-256 of its files")
+    a.add_argument("slug")
+    a.add_argument("--command", required=True)
+    a.add_argument("--file", action="append", default=[], help="checkpoint or output to hash; repeatable")
     a = actions.add_parser("check")
     a.add_argument("slug")
     actions.add_parser("list")

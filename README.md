@@ -21,7 +21,7 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 
 ## Quick start (kit)
 
-Python **3.10+**, standard library only. The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
+Python **3.10+**, standard library only (except `verify`, which reads TIFFs with numpy and tifffile from villa's environment). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
 
 ```bash
 # from repo root
@@ -37,6 +37,7 @@ python -m kit run init p0826-a --scroll PHerc0826 \
 python -m kit run cost p0826-a --usd 7.15 --what "A10, 6.5 h"
 python -m kit run status p0826-a running
 python -m kit run check p0826-a
+python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif   # needs numpy + tifffile (villa's env)
 python -m unittest discover -s tests -v
 ```
 
@@ -71,7 +72,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | --- | --- |
 | [`kit/`](kit/) | Planner, doctor, prize snapshot and experiment ledger + CLI (`python -m kit`) |
 | [`kit/data/prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) | Dated prize snapshot: amounts, deadlines, 13 + 22 eligible volumes with S3 names |
-| [`tests/test_kit.py`](tests/test_kit.py) | Snapshot, planner, doctor and ledger tests |
+| [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, week by week, with costs |
 | [`docs/prizes.md`](docs/prizes.md) | Every open prize, its submission contents, eligible scrolls |
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
@@ -101,7 +102,8 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `prizes.py` | Load the snapshot, normalize scroll names (`PHerc. 826` = `PHerc0826`), days to deadline |
 | `doctor.py` | `nvidia-smi` or Apple Silicon, memory, disk, tools, `VILLA` and `VC_BIN` checks with sourced thresholds |
 | `plan.py` | Official command templates filled per scroll; cost arithmetic |
-| `ledger.py` | `run.json` records, readout hash, legal status transitions, privacy gate |
+| `ledger.py` | `run.json` records, readout hash, legal status transitions, privacy gate, provenance hashes, attached checks |
+| `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `cli.py` | `python -m kit` entry point |
 
 ## Guidelines

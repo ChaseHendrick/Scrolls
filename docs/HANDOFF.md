@@ -2,6 +2,14 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (later): kit verify and the Mac runbook
+
+Added `kit verify` (two ink maps, tolerance, a control that must be caught, verdicts pass / pass-uncontrolled / fail / control-not-caught), `kit run record` (command lines and SHA-256), and a CI job with numpy, tifffile and imagecodecs. 35 tests. `kit verify` was run on the real published w035 2.4 µm ink map (462 Mpx): correct verdicts, 36 s, 2.25 GB peak.
+
+Corrections found: PR #1812 changes `ink-detection/optimized_inference`, not the tutorial's `vesuvius.ink_detection`; for the tutorial path the PR is #1865 (four lines, `get_accelerator()`). All runbook flags were checked against `infer.py` on `main` and on `pr-1865`.
+
+Next: the user runs the runbook in [`mac.md`](mac.md) on the M1 Pro. If the verdicts pass, ask nerln (the #1865 author) before posting the JSON on the PR.
+
 ## Session 7 October 2026: M1 Pro path and repo transfer
 
 The user's machine is an Apple M1 Pro. Added `doctor` Apple Silicon handling (warn, not fail; memory check; VC3D.app tool path), `plan --mac`, [`mac.md`](mac.md), and [`logs/2026-10-07-mac-and-repos.md`](logs/2026-10-07-mac-and-repos.md). 25 tests pass.

@@ -12,7 +12,8 @@ Use Python 3.10 or newer. Depending on the environment the executable is `python
 | `python -m kit doctor` | pass / warn / fail per check; exit 1 on any fail; Apple Silicon without CUDA is a warn | `VILLA`, `VC_BIN` environment variables; `--disk PATH` |
 | `python -m kit plan SCROLL` | Shell commands with comments: setup, control, target, rules | `--batch N`, `--mac`; exits 2 for an ineligible scroll |
 | `python -m kit cost` | A dollar figure | `--gpu-hours`, `--rate`, optional CPU and storage |
-| `python -m kit run init/status/cost/check/list` | Ledger records under `experiments/` | `--root DIR`; `status ... --announced` only after an official announcement |
+| `python -m kit verify REF CAND` | Map agreement stats and a verdict: pass, pass-uncontrolled, fail, control-not-caught | `--control MAP`, `--tolerance`, `--max-fraction`, `--json`, `--slug`; exit 0/1/2/3 |
+| `python -m kit run init/status/cost/record/check/list` | Ledger records under `experiments/` | `--root DIR`; `status ... --announced` only after an official announcement |
 
 ## Output rules
 

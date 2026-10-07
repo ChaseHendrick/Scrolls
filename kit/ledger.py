@@ -115,6 +115,35 @@ def add_cost(slug, usd, what, root=DEFAULT_ROOT):
     return record
 
 
+def _file_sha256(path):
+    digest = hashlib.sha256()
+    with open(path, "rb") as fh:
+        for chunk in iter(lambda: fh.read(1 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def add_provenance(slug, command, files=(), root=DEFAULT_ROOT):
+    """Record a command line and the SHA-256 of files it used or wrote (checkpoints, maps)."""
+    record = load(slug, root)
+    hashes = {}
+    for path in files:
+        if not Path(path).is_file():
+            raise LedgerError(f"not a file: {path}")
+        hashes[str(path)] = _file_sha256(path)
+    record.setdefault("provenance", []).append({"at": _now(), "command": command, "sha256": hashes})
+    save(record, root)
+    return record
+
+
+def add_check(slug, name, result, root=DEFAULT_ROOT):
+    """Attach a verification result (e.g. from kit verify) to an experiment."""
+    record = load(slug, root)
+    record.setdefault("checks", []).append({"at": _now(), "name": name, "result": result})
+    save(record, root)
+    return record
+
+
 def total_cost(record):
     return round(sum(item["usd"] for item in record["costs"]), 2)
 

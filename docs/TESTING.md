@@ -24,12 +24,13 @@ OK
 From the repository root, Python 3.10 or newer, no dependencies:
 
 ```bash
-python -m unittest discover -s tests -v
+python -m unittest discover -s tests -v          # verify tests skip without numpy/tifffile
+python -m pip install numpy tifffile imagecodecs  # to run them
 python -m kit prizes
 python -m kit doctor        # exit 1 when a check fails (e.g. no GPU); that is a report, not a test failure
 ```
 
-CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the tests on Python 3.10 and 3.13 and smoke-runs `prizes` and `plan`.
+CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the tests on Python 3.10 and 3.13 (standard library only), again on 3.13 with numpy, tifffile and imagecodecs so the `verify` tests run, and smoke-runs `prizes` and `plan`.
 
 ## What the tests pin
 
@@ -40,6 +41,8 @@ CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the te
 | `PlanTest` | Mac setup (VC3D.app tools, MPS check, PR branch, batch 1), control segment present, resolved target path, `--direction both`, privacy instruction, 8.64 µm resampling note, rejection of ineligible scrolls, cost arithmetic against bnleft's published A10 figure |
 | `LedgerTest` | Readout hash and tamper detection, legal transitions, candidate cannot go public before `--announced`, null can, costs, slug safety |
 | `CliTest` | End-to-end CLI for `prizes`, `plan` and `run` |
+| `VerifyArraysTest`, `VerifyFilesTest` | Verdict logic (a control that agrees invalidates the check), block statistics equal whole-array numpy, villa-style tiled LZW BigTIFF reading, exit codes, results attached to the ledger. Skipped without numpy and tifffile |
+| `ProvenanceTest` | SHA-256 of recorded files, missing files refused |
 
 ## When the snapshot changes
 

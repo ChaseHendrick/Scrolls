@@ -33,7 +33,7 @@ What these nulls say: the public 9 µm model, on automatically traced or spiral-
 
 ## Apple Silicon support (open PRs, 2026-10-07)
 
-Ink inference on MPS: [#1865](https://github.com/ScrollPrize/villa/pull/1865) and [#1812](https://github.com/ScrollPrize/villa/pull/1812) open, [#1770](https://github.com/ScrollPrize/villa/pull/1770) closed for inactivity. Training, `vesuvius.predict` and spiral fitting on MPS: [#1927](https://github.com/ScrollPrize/villa/pull/1927), [#1988](https://github.com/ScrollPrize/villa/pull/1988), [#1925](https://github.com/ScrollPrize/villa/pull/1925). Lasagna on MPS merged ([#1639](https://github.com/ScrollPrize/villa/pull/1639)). Details: [`mac.md`](mac.md).
+Ink inference on MPS: [#1865](https://github.com/ScrollPrize/villa/pull/1865) (the tutorial's `vesuvius.ink_detection` path) and [#1812](https://github.com/ScrollPrize/villa/pull/1812) (the separate `ink-detection/optimized_inference` path) open, [#1770](https://github.com/ScrollPrize/villa/pull/1770) closed for inactivity. Training, `vesuvius.predict` and spiral fitting on MPS: [#1927](https://github.com/ScrollPrize/villa/pull/1927), [#1988](https://github.com/ScrollPrize/villa/pull/1988), [#1925](https://github.com/ScrollPrize/villa/pull/1925). Lasagna on MPS merged ([#1639](https://github.com/ScrollPrize/villa/pull/1639)). Details: [`mac.md`](mac.md).
 
 ## Recent Progress Prize winners (what gets paid)
 
