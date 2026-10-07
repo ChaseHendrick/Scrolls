@@ -6,6 +6,7 @@ Usage: python e234.py REPO_ROOT WORK_DIR OUT_JSON
 import json, sys
 import numpy as np
 from scipy import ndimage as ndi
+from scipy.stats import rankdata
 from sklearn.linear_model import LogisticRegression
 from sklearn.cluster import KMeans
 sys.path.insert(0, sys.argv[1])
@@ -24,8 +25,8 @@ def norm(m):
 
 
 def rank(a):
-    r = np.empty(a.size); r[np.argsort(a.ravel(), kind="stable")] = np.arange(1, a.size + 1)
-    return (r / a.size).reshape(a.shape)
+    """Preserve equal predictions; pixel order must not break score ties."""
+    return (rankdata(a, method="average") / a.size).reshape(a.shape)
 
 
 def auc(m, ink, sup):
@@ -50,7 +51,8 @@ D["w00"]["s42"] = _load(f"{W}/0841-w00/maps/ink9um_s42.tif")[2624:3264, 2688:332
 D["w00"]["v8in"] = np.load(f"{W}/0841-w00/maps/crop_gpu.npy").astype(np.float64)
 D["w045"]["s42"] = _load(f"{W}/w045/maps/ink9um_s42.tif")[3840:4480, 2560:3200].astype(np.float64)
 D["w045"]["v8in"] = np.load(f"{W}/w045/maps/v8in.npy").astype(np.float64)
-res = {"seed": SEED, "inner": INNER}
+res = {"seed": SEED, "inner": INNER, "rank_method": "average_ties_v2",
+       "E3_control_method": "fixed_real_classifier_permuted_test_depth_v2"}
 
 # ---- E1 scoring
 e1 = {}
@@ -106,11 +108,21 @@ def fit_apply(train_v, test_v, d_train, shape_only=True, sizes=(5,), labels=None
     return clf.decision_function(Xte).reshape(640, 640), clf
 
 
+def shuffled_test_score(clf, test_v, permutation):
+    """Disrupt test depth order while keeping the real-trained reader fixed.
+
+    Refitting with the same permutation of train and test merely renames
+    logistic-regression features and cannot be a wrong-depth control.
+    """
+    shape = (test_v.shape[1] - 2 * PAD, test_v.shape[2] - 2 * PAD)
+    return clf.decision_function(profiles(test_v[permutation])).reshape(shape)
+
+
 a, b = D["w045"], D["w00"]
 perm = depth_permutation(a["v"].shape[0], SEED)
 m_real, clf = fit_apply(a["v"], b["v"], a)
-m_shuf, _ = fit_apply(a["v"][perm], b["v"][perm], a)
-m_rev, _ = fit_apply(a["v"], b["v"][::-1], a)
+m_shuf = shuffled_test_score(clf, b["v"], perm)
+m_rev = shuffled_test_score(clf, b["v"], np.arange(b["v"].shape[0] - 1, -1, -1))
 rng = np.random.default_rng(SEED)
 nulls = [auc(np.roll(m_real, (int(p), int(q)), (0, 1)), b["ink"], b["sup"]) for p, q in rng.integers(120, 520, (8, 2))]
 self_w045 = auc(fit_apply(a["v"], a["v"], a)[0], a["ink"], a["sup"])
