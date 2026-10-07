@@ -86,3 +86,15 @@ villa `main` at `e0bbb8b`, CPU (4 cores), `python -m vesuvius.ink_detection.infe
 | Seeds 42 and 43 averaged, whole | | | | 95.9 (4.67 mm, horizontal) / 9.5 |
 
 Model output on a training scroll's held-out segment, not a reading. It is the CPU reference for `scripts/mac-w045.sh` (the crop row is what `QUICK=1` scores) and the bar v8in is measured against. Bullo27 reports a row score of 84 for this checkpoint on his own w045 render (Community report); ours is 79.8 on the team's render. Scoring a map cut to the crop and the same window on the full grid gave the same AUC on the same 78,047 ink pixels, so `QUICK=1`'s cropping path is exact.
+
+## ink_9um on PHerc0841, a scroll in neither model's training set, CPU reference (Sourced fact: run below)
+
+Same command and seed 42 checkpoint as for w045, on the team's published 9.366 µm surface volumes of the three traced PHerc0841 segments (volume `20250821151531`), scored against their `ink-labels/2.403um-volume-20260319124803/20260918` labels inside the supervision masks (label grid 0.975 of the surface grid on both axes). The crops are the 640 px windows `scripts/mac-w045.sh SEGMENT=0841-*` uses. CPU time: 2,085 s, 817 s and 1,841 s for both directions (shared CPU for the first and third).
+
+| Segment | Whole AUC as stored / reversed | Crop AUC as stored / reversed | Row score as stored / reversed |
+| --- | --- | --- | --- |
+| w00 (`20260220213127-w00`) | 0.748 / 0.501 | 0.770 / 0.514 | 13.7 / 23.6 |
+| ag896 (`…144552896`) | 0.720 / 0.570 | 0.655 / 0.540 | 17.5 / 8.8 |
+| ag405 (`…174252405`) | 0.751 / 0.601 | 0.793 / 0.653 | 46.4 (5.82 mm) / 7.5 |
+
+This reproduces Bullo27's unseen-scroll calibration independently (Community report): AUC 0.74 to 0.81 against the labels, no rows on w00 and ag896 (his row scores at most 15.4), rows on ag405 only (his "ag174", 57.8 with two checkpoints). Compared with w045 (0.872, rows at 79.8), `ink_9um` on a new scroll still locates ink but mostly loses the row structure: the blob problem in numbers. Model output, not a reading; PHerc0841 is not First Letters eligible.
