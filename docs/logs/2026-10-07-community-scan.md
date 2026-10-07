@@ -68,3 +68,7 @@ Added `kit layers`, `kit auc`, `scripts/v8in_run.py` and `scripts/mac-w045.sh`. 
 These are a test of the script, not a result: 4,576 ink pixels in one window, and v8in at a quarter of its default tile density. Note for reading the real run: the reversed maps score well below 0.5, so they are not neutral. Compare forward and reverse distances from 0.5, not only their difference.
 
 Measured on the way: v8in costs about 8 s per tile on 4 CPU cores (it upsamples each 64 px tile to 96 x 256 x 256), so full-segment v8in is a GPU job; fp32 at batch 8 used about 10 GB of RAM and was killed for memory next to another job on a 15 GB machine, so the script picks the batch from memory (4 at 16 GB). `kit layers` reads w045 in row bands, 23 s for the full export, against about 72 s of reads layer by layer.
+
+## v8in's depth order on team-layout renders (Sourced fact)
+
+The v8 patch pack's `segments.json` lists every PHerc0139 training segment (w033v5, w035v8, w041v8, w044v8) with `layer_range` [2, 26] and `reverse_layers: false`: v8in read the team's 28-layer 9 µm renders as stored, layers 2 to 25. `predict.py`'s default (the central 24 of 28) is that same window. The atlas renders have 31 planes with the surface at plane 15; their central 24 (planes 3 to 26) put the surface at the same position in the window (index 12). So on w045 and on the atlas meshes, "as stored" is the direction v8in was trained on, and "reversed" is the control.
