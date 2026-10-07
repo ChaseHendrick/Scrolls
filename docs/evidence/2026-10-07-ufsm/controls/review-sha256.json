@@ -1,0 +1,33 @@
+{
+  "source_pin": "d86a00cff5ab198e6b7864f89e49a6101746dc9f",
+  "sha256": {
+    "/workspace/scrolls-env/ufsm-review/controls/production-io-review.json": "d744b7cb3237e5e86cda465cc5222f5152180665e70b34bbb929972ed71ac20c",
+    "/workspace/scrolls-env/ufsm-review/controls/save_review.py": "649532992ca86aa28f067e303f7588f55a52f971603897b7c19bba1db19babe6",
+    "/workspace/scrolls-env/ufsm-review/controls/check_scrolls_gaps.py": "eaa927867b86ce907519cddadc28d1eb60af273e25c91ed25c0d4708bb722e52",
+    "/workspace/scrolls-env/ufsm-review/controls/scrolls-gap-receipt.json": "afa4516380c352eaf0354b06aef0cb7ecb041ce46f94c73180802718118d25a8",
+    "/workspace/scrolls-env/ufsm-review/controls/cpu-tests.log": "fc297d1c19918a4817fcac2ce636707488c74fdb7fa8672987db6978222c7c3f"
+  },
+  "verified_source_sha256": {
+    "tools/eval_holdouts.py": "40ba8038b90a2dfa96136fe286b489c85ea0c4af8e7d61987bf4902da0ef3725",
+    "tools/production.py": "05471a61f32b69f8552aa95c4a37a079eaf25cec0c1a03b2022bed899d4bf26d",
+    "tools/build_training_cover.py": "cf231f7bcf6cd37dc8faaac64dc762e16b4fb2136c7d5175053ec99892434dc2",
+    "tools/build_surface_store.py": "fb670abbabd45b0b5010beb40472707a44a5654981be1c7be5e8314c26be9370",
+    "src/store.c": "58043ace7ca3ba343b07bd1814d50f4926dfddcf626c0220ef33a39e6b0ab767",
+    "src/zarr3.c": "b419043dcffa9b67f36b3c74061278e5dd507f6ce0d4a3edf65366e0ee26f13d",
+    "tests/test_eval_holdouts.py": "41409b4212c3809b392eaba6d0c0f3a9177f4c0699107d45d4b474c34539141c",
+    "tests/test_training_cover.py": "6c2d342e5fe3970a1740833106eea67cc607e4c4818e65e5c3c88b35036830aa",
+    "tests/test_production_cover.py": "523c3cefee13685e661f9b77cd28058b4e65dfd6900947d827cf918ee2859d6c",
+    "tests/test_evaluation_plan.py": "64b8cb52a25008dc9f0cccf25dc2d1ddcef75521e5d1e7718c5034b0abb8f360",
+    "README.md": "d6ec9e2841ea959dff3a27d7c0180e42f2e52cfb5dce21cf1c3a36d79e53d4f7",
+    "third_party/LICENSE.volcomp": "de1157f72933091c34739dd8db3299034aedda27e6f0dc1033b264e570b77de2",
+    "third_party/LICENSE.surfcomp": "de1157f72933091c34739dd8db3299034aedda27e6f0dc1033b264e570b77de2"
+  },
+  "verified_scrolls_sources_sha256": {
+    "kit/ledger.py": "10613ba6b2425fe0d844d9a975483fc8c1f0cb9fb33e059d715335477edbaecd",
+    "kit/provenance.py": "d3578c48538ba6f48d64e1af4bd75c452b634da06f1a31e452d1118aae4a1828",
+    "kit/fetch.py": "7d1b59cdd635171cebc0a71ee477a9ae74314c1760e01476b823844b43ff6651",
+    "scripts/mac-w045.sh": "fc9f59a15d881fc356ae84b0cbb82363fbe686f71c695fba4096bf5d539c02c8",
+    "scripts/mac-atlas-v8in.sh": "9897c86bd68d7af5b45351ba60b3f31c3160d30e9e9a3eb9aa260d5c0ea596dc",
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  }
+}
