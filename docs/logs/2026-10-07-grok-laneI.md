@@ -2,6 +2,20 @@
 
 Rule preregistered in commit 2f8d7e7 (`docs/prereg/2026-10-07-grok-laneI.md`), pushed before any number was computed. Labels: Null and Model output only. No reading is claimed. Public PHerc0841 w00 only.
 
+## Review status: R1/R2 unresolved; P1 descriptive on the measured cohort
+
+The following tables are the original reported run and remain unchanged, together with its raw `results.json`, `run.log` and preregistration. This merge review inspected the code and records; it did not independently rerun the public maps. The original source head is `d0bc8d1af33d9b54e90d603b86f40e5c0d0b4786`.
+
+The recorded `median_boot_sd` is NaN for every reader because at least one of its per-crop intervals was nonfinite. The same interval list was used in R1: comparisons against NaN evaluate false, so undefined intervals were counted as zero coverage. R2's `not (lo <= 0 <= hi)` also classifies a nonfinite interval as significant. Consequently the original R1 problem declaration and R2 null are not validated; the "median field only" caveat below understates the impact. The per-crop intervals and valid-draw counts were not saved, so the corrected decisions cannot be recovered from this archive. A separate, preregistered rerun must address undefined resamples and report eligible intervals and draws. Missing intervals must never count as either evidence of miscoverage or significant orderings.
+
+Containment of other crops' AUCs is a spatial heterogeneity diagnostic, not nominal confidence-interval coverage: a within-crop interval targets that crop's population, while different crops have different populations. Overlapping crops and multiple pairwise comparisons add dependence. The displayed containment figures cannot calibrate a segment-level uncertainty or error rate.
+
+P1's saved point-AUC comparisons and fixed threshold checks are separate descriptive observations on 24 overlapping crops from one segment, one team map and five brightness summaries. They do not validate a proxy for new readers, lower-resolution inference, held-out sheets or targets. Majority pooling changes the label population and excludes partially supervised pooled pixels. The reported timing ratios come from one noisy run, with different work paths and memory pressure; they are observed ratios, not a general speed guarantee or a controlled performance benchmark. No reverse-depth reader controls were included, so this is not evidence of ink detection accuracy. R3 does not establish label leakage, and no independent prior-art novelty search is documented here.
+
+The historical `run.py` is guarded against accidental prospective use. A deliberate unvalidated replay requires `SCROLLS_REPLAY_HISTORICAL_LANEI=1`; it still contains the old analysis and is not a corrected experiment. The original source remains available at the head named above. New crop-scan calls use the tested helper's explicit input domain and memory bound described below.
+
+That runner also accepts a cache without validating its source hashes and selects the first globbed team TIFF when several exist. A stale cache or a different file can therefore change the experiment silently. The 4x4 team-map reduction and subsequent label-grid indexing are exploratory coordinate assumptions without a full registration/provenance receipt. A prospective runner must require an explicit map, verify grid metadata and freeze hashes of labels, masks, maps, cache and reader settings before computing. The archival gate does not repair these historical limitations.
+
 ## Commands (box CPU; the Mac was offline so no lane B, H or cost-ledger job was touched; the local cost logger had not landed on main, so runs are not wrapped)
 
 ```
@@ -44,5 +58,7 @@ Both pass the fixed rule (Spearman >= 0.95, error <= 0.02, ordering >= 95 %). 4 
 ## T1: whole segment crop scan tool (null on speed)
 
 `kit/cropscan.py` matches `score_array` (max diff 1.0e-4, at the tolerance) but took 297 s against 17.7 s for the loop (0.06x) on a box with load average up to 20 from other jobs. The tile histogram design is slower at this crop count; it is kept as a correctness-checked helper, not claimed as a speedup.
+
+Prospective helper contract after review: `scan` requires 2D uint8/uint16 predictions or normalized finite floats in [0, 1], boolean labels/masks, valid integer grid parameters and bounded finite coverage fractions. At 65536 bins it matches `score_array` on that domain; uint8 retains all 256 levels with at least 256 bins. Coarser bins create data-dependent ties and need separate error validation. Arbitrary unnormalized float maps are refused because per-crop quantization can change with the crop maximum. Excessive estimated temporary-array work is refused before histogram allocation (default 2 GiB, configurable with `max_work_bytes`; caller inputs and allocator overhead are outside that estimate). This does not make the original 4096-bin historical timing a production speed result.
 
 Caching: building the readers from raw data took 592 s inside the run; reloading the saved `maps.npz` took 110 s wall (mostly system time under memory pressure). Box I/O was noisy, so no speedup figure is claimed for the cache.

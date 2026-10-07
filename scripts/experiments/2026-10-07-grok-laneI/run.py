@@ -2,6 +2,15 @@
 
 Usage: python run.py DATA_DIR OUT_JSON   (DATA_DIR holds 0841-w00_labels, 0841-w00_9um.zarr, inkdet/w00/*.tif)
 """
+import os
+import sys
+
+if os.environ.get("SCROLLS_REPLAY_HISTORICAL_LANEI") != "1":
+    raise SystemExit("Archival run only: R1/R2 used nonfinite bootstrap intervals. "
+                     "New validated runs require corrected interval handling and input provenance. "
+                     "For a deliberate unvalidated replay, set SCROLLS_REPLAY_HISTORICAL_LANEI=1.")
+print("WARNING: historical unvalidated replay; do not report R1/R2 as validated evidence.",
+      file=sys.stderr)
 import glob, json, sys, time
 import numpy as np, tifffile, zarr
 from scipy.stats import rankdata, spearmanr
