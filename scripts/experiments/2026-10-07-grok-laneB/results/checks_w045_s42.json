@@ -1,0 +1,197 @@
+{
+ "segment": "w045",
+ "map": "ink9um_s42.tif",
+ "control": "ink9um_s42_reverse.tif",
+ "voxel_um": 9.362,
+ "surface_shape": [
+  5980,
+  8240
+ ],
+ "surface_px": 42711991,
+ "supervised_px": 578783,
+ "label_ink_px": 149192,
+ "fibers": {
+  "fiber_angle_hist_12bins_15deg_from_0": [
+   0.338,
+   0.022,
+   0.0045,
+   0.0046,
+   0.0242,
+   0.276,
+   0.1325,
+   0.0066,
+   0.0017,
+   0.0018,
+   0.0083,
+   0.1798
+  ],
+  "labels_in_supervision": {
+   "share_within_15deg": 0.1298,
+   "shifted_null_mean": 0.149,
+   "shifted_null_max": 0.2305,
+   "px": 5685
+  },
+  "map_whole": {
+   "share_within_15deg": 0.2301,
+   "shifted_null_mean": 0.2045,
+   "shifted_null_max": 0.2123,
+   "px": 3590360
+  },
+  "map_in_supervision": {
+   "share_within_15deg": 0.2021,
+   "shifted_null_mean": 0.2176,
+   "shifted_null_max": 0.3306,
+   "px": 49658
+  },
+  "control_whole": {
+   "share_within_15deg": 0.237,
+   "shifted_null_mean": 0.206,
+   "shifted_null_max": 0.2162,
+   "px": 3188263
+  },
+  "control_in_supervision": {
+   "share_within_15deg": 0.273,
+   "shifted_null_mean": 0.1972,
+   "shifted_null_max": 0.2741,
+   "px": 41554
+  }
+ },
+ "strokes": {
+  "labels_um": {
+   "n": 485,
+   "p25": 543.3,
+   "median": 599.2,
+   "p75": 648.9
+  },
+  "label_ink_share_in_supervision": 0.2578,
+  "map": {
+   "otsu": 111.27,
+   "area_share_above": 0.1708,
+   "whole_um": {
+    "n": 46600,
+    "p25": 18.7,
+    "median": 37.4,
+    "p75": 234.6
+   },
+   "in_supervision_um": {
+    "n": 507,
+    "p25": 18.7,
+    "median": 264.8,
+    "p75": 622.4
+   },
+   "dice_with_labels_in_supervision": 0.6783
+  },
+  "control": {
+   "otsu": 100.818,
+   "area_share_above": 0.1232,
+   "whole_um": {
+    "n": 51833,
+    "p25": 18.7,
+    "median": 18.7,
+    "p75": 83.7
+   },
+   "in_supervision_um": {
+    "n": 1183,
+    "p25": 18.7,
+    "median": 26.5,
+    "p75": 125.6
+   },
+   "dice_with_labels_in_supervision": 0.1426
+  }
+ },
+ "depth": {
+  "map_hp_vs_ct_layer_hp_r": [
+   0.0001,
+   -0.0001,
+   -0.0003,
+   -0.0001,
+   -0.0005,
+   -0.0024,
+   -0.0051,
+   -0.0068,
+   -0.0063,
+   -0.0038,
+   -0.0009,
+   0.0008,
+   0.0012,
+   0.0011,
+   0.0012,
+   0.0017,
+   0.0019,
+   0.0016,
+   0.0007,
+   -0.0,
+   0.0007,
+   0.0021,
+   0.0024,
+   0.0014,
+   0.0002,
+   -0.0005,
+   -0.0007,
+   -0.0004
+  ],
+  "control_hp_vs_ct_layer_hp_r": [
+   -0.0007,
+   -0.0019,
+   -0.0024,
+   -0.0021,
+   -0.0002,
+   0.0036,
+   0.0073,
+   0.0082,
+   0.0062,
+   0.0031,
+   0.0007,
+   -0.0006,
+   -0.0013,
+   -0.0023,
+   -0.0034,
+   -0.0042,
+   -0.0047,
+   -0.0047,
+   -0.0053,
+   -0.0069,
+   -0.0087,
+   -0.0092,
+   -0.0073,
+   -0.0035,
+   0.0,
+   0.0018,
+   0.0021,
+   0.0015
+  ],
+  "labels_hp_vs_ct_layer_hp_r": [
+   0.0012,
+   0.0015,
+   0.0023,
+   0.0016,
+   -0.0017,
+   -0.0054,
+   -0.0064,
+   -0.0058,
+   -0.0054,
+   -0.0061,
+   -0.0076,
+   -0.0056,
+   0.0,
+   0.0068,
+   0.0115,
+   0.0096,
+   0.0028,
+   -0.0035,
+   -0.0065,
+   -0.0071,
+   -0.0085,
+   -0.0088,
+   -0.0041,
+   0.0031,
+   0.0089,
+   0.0141,
+   0.0169,
+   0.013
+  ],
+  "map_peak_layer_by_abs": 7,
+  "control_peak_layer_by_abs": 21,
+  "labels_peak_layer_by_abs": 26
+ }
+}

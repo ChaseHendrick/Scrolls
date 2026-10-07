@@ -1,0 +1,267 @@
+{
+ "segment": "0841-w00",
+ "map": "ink9um_s42.tif",
+ "control": "ink9um_s42_reverse.tif",
+ "voxel_um": 9.366,
+ "surface_shape": [
+  4220,
+  4760
+ ],
+ "surface_px": 14288847,
+ "supervised_px": 1600064,
+ "label_ink_px": 355098,
+ "geometry": {
+  "normal_z": {
+   "map": {
+    "r": 0.0199,
+    "null_mean": -0.0053,
+    "null_abs_max": 0.0921
+   },
+   "control": {
+    "r": 0.0028,
+    "null_mean": -0.0023,
+    "null_abs_max": 0.0916
+   },
+   "labels_in_supervision": {
+    "r": 0.0805,
+    "null_mean": -0.0233,
+    "null_abs_max": 0.3801
+   }
+  },
+  "stretch": {
+   "map": {
+    "r": 0.041,
+    "null_mean": -0.002,
+    "null_abs_max": 0.0582
+   },
+   "control": {
+    "r": 0.0349,
+    "null_mean": 0.0048,
+    "null_abs_max": 0.0427
+   },
+   "labels_in_supervision": {
+    "r": 0.0352,
+    "null_mean": 0.0006,
+    "null_abs_max": 0.5126
+   }
+  },
+  "bend": {
+   "map": {
+    "r": -0.0951,
+    "null_mean": 0.0009,
+    "null_abs_max": 0.0632
+   },
+   "control": {
+    "r": -0.0837,
+    "null_mean": -0.0031,
+    "null_abs_max": 0.075
+   },
+   "labels_in_supervision": {
+    "r": -0.0504,
+    "null_mean": 0.0278,
+    "null_abs_max": 0.2134
+   }
+  },
+  "ct_thick_brightness": {
+   "map": {
+    "r": 0.0291,
+    "null_mean": -0.0061,
+    "null_abs_max": 0.0543
+   },
+   "control": {
+    "r": 0.0699,
+    "null_mean": -0.0034,
+    "null_abs_max": 0.0401
+   },
+   "labels_in_supervision": {
+    "r": 0.027,
+    "null_mean": -0.0045,
+    "null_abs_max": 0.2543
+   }
+  }
+ },
+ "fibers": {
+  "fiber_angle_hist_12bins_15deg_from_0": [
+   0.1868,
+   0.0984,
+   0.0352,
+   0.0208,
+   0.028,
+   0.104,
+   0.2935,
+   0.0783,
+   0.0226,
+   0.0172,
+   0.0276,
+   0.0877
+  ],
+  "labels_in_supervision": {
+   "share_within_15deg": 0.1882,
+   "shifted_null_mean": 0.172,
+   "shifted_null_max": 0.2334,
+   "px": 9216
+  },
+  "map_whole": {
+   "share_within_15deg": 0.2159,
+   "shifted_null_mean": 0.184,
+   "shifted_null_max": 0.1946,
+   "px": 1102474
+  },
+  "map_in_supervision": {
+   "share_within_15deg": 0.2222,
+   "shifted_null_mean": 0.2034,
+   "shifted_null_max": 0.2661,
+   "px": 112779
+  },
+  "control_whole": {
+   "share_within_15deg": 0.2118,
+   "shifted_null_mean": 0.1892,
+   "shifted_null_max": 0.2024,
+   "px": 1038690
+  },
+  "control_in_supervision": {
+   "share_within_15deg": 0.2184,
+   "shifted_null_mean": 0.1861,
+   "shifted_null_max": 0.2417,
+   "px": 98102
+  }
+ },
+ "strokes": {
+  "labels_um": {
+   "n": 996,
+   "p25": 607.6,
+   "median": 640.7,
+   "p75": 749.3
+  },
+  "label_ink_share_in_supervision": 0.2219,
+  "map": {
+   "otsu": 108.975,
+   "area_share_above": 0.196,
+   "whole_um": {
+    "n": 26515,
+    "p25": 18.7,
+    "median": 18.7,
+    "p75": 77.2
+   },
+   "in_supervision_um": {
+    "n": 3350,
+    "p25": 18.7,
+    "median": 26.5,
+    "p75": 136.4
+   },
+   "dice_with_labels_in_supervision": 0.4851
+  },
+  "control": {
+   "otsu": 102.066,
+   "area_share_above": 0.1827,
+   "whole_um": {
+    "n": 33393,
+    "p25": 18.7,
+    "median": 18.7,
+    "p75": 56.2
+   },
+   "in_supervision_um": {
+    "n": 4562,
+    "p25": 18.7,
+    "median": 18.7,
+    "p75": 56.2
+   },
+   "dice_with_labels_in_supervision": 0.1965
+  }
+ },
+ "depth": {
+  "map_hp_vs_ct_layer_hp_r": [
+   0.0015,
+   0.0016,
+   0.0013,
+   0.0,
+   -0.0021,
+   -0.0048,
+   -0.0078,
+   -0.0097,
+   -0.0084,
+   -0.004,
+   0.0004,
+   0.0022,
+   0.0016,
+   0.0009,
+   0.0013,
+   0.002,
+   0.0028,
+   0.0035,
+   0.0039,
+   0.0048,
+   0.0069,
+   0.0087,
+   0.0076,
+   0.004,
+   0.001,
+   0.0001,
+   -0.0003,
+   -0.0005
+  ],
+  "control_hp_vs_ct_layer_hp_r": [
+   -0.0021,
+   -0.0023,
+   -0.0021,
+   -0.0015,
+   0.0003,
+   0.0042,
+   0.0085,
+   0.0101,
+   0.0084,
+   0.0052,
+   0.002,
+   0.0006,
+   0.0007,
+   0.0016,
+   0.0026,
+   0.0026,
+   0.0018,
+   0.0005,
+   -0.002,
+   -0.0058,
+   -0.0098,
+   -0.0117,
+   -0.0108,
+   -0.0074,
+   -0.0033,
+   -0.0007,
+   0.0001,
+   -0.0004
+  ],
+  "labels_hp_vs_ct_layer_hp_r": [
+   0.0036,
+   0.002,
+   -0.0023,
+   -0.0042,
+   -0.0032,
+   -0.0035,
+   -0.0032,
+   0.0003,
+   0.0025,
+   0.0004,
+   -0.0027,
+   -0.0033,
+   -0.0024,
+   -0.0036,
+   -0.0053,
+   -0.0033,
+   -0.0002,
+   0.0004,
+   -0.0001,
+   0.0003,
+   -0.0009,
+   -0.0044,
+   -0.0054,
+   -0.0043,
+   -0.0049,
+   -0.0063,
+   -0.0067,
+   -0.0048
+  ],
+  "map_peak_layer_by_abs": 7,
+  "control_peak_layer_by_abs": 21,
+  "labels_peak_layer_by_abs": 26
+ }
+}

@@ -1,0 +1,37 @@
+{
+  "forward": {
+    "auc": 0.7479,
+    "ink_px": 355098,
+    "background_px": 1244966,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 0
+  },
+  "files": {
+    "prediction": "/Users/chasehendrick/scrolls-work/0841-w00/maps/ink9um_s42.tif",
+    "labels": "/Users/chasehendrick/scrolls-work/laneB/data/0841-w00_labels/inklabels.zarr",
+    "mask": "/Users/chasehendrick/scrolls-work/laneB/data/0841-w00_labels/supervision.zarr",
+    "control": "/Users/chasehendrick/scrolls-work/0841-w00/maps/ink9um_s42_reverse.tif"
+  },
+  "level": "2",
+  "crop": null,
+  "control": {
+    "auc": 0.501,
+    "ink_px": 355098,
+    "background_px": 1244966,
+    "zero_px_in_mask": 0,
+    "zero_px_counted": false,
+    "inner": 0
+  },
+  "bootstrap": {
+    "draws": 300,
+    "block_px": 107,
+    "blocks": 184,
+    "seed": 0,
+    "ci95": [
+      0.6966,
+      0.795
+    ],
+    "half_width": 0.0492
+  }
+}

@@ -1,0 +1,187 @@
+{
+ "segment": "0841-w00",
+ "map": "PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+ "control": null,
+ "voxel_um": 9.366,
+ "surface_shape": [
+  4220,
+  4760
+ ],
+ "surface_px": 14114423,
+ "supervised_px": 1600064,
+ "label_ink_px": 355098,
+ "geometry": {
+  "normal_z": {
+   "map": {
+    "r": 0.0471,
+    "null_mean": -0.0023,
+    "null_abs_max": 0.1102
+   },
+   "labels_in_supervision": {
+    "r": 0.0805,
+    "null_mean": -0.0233,
+    "null_abs_max": 0.3801
+   }
+  },
+  "stretch": {
+   "map": {
+    "r": 0.0417,
+    "null_mean": 0.0016,
+    "null_abs_max": 0.0664
+   },
+   "labels_in_supervision": {
+    "r": 0.0352,
+    "null_mean": 0.0006,
+    "null_abs_max": 0.5126
+   }
+  },
+  "bend": {
+   "map": {
+    "r": -0.0548,
+    "null_mean": -0.0048,
+    "null_abs_max": 0.1032
+   },
+   "labels_in_supervision": {
+    "r": -0.0504,
+    "null_mean": 0.0278,
+    "null_abs_max": 0.2134
+   }
+  },
+  "ct_thick_brightness": {
+   "map": {
+    "r": -0.0198,
+    "null_mean": 0.0031,
+    "null_abs_max": 0.0701
+   },
+   "labels_in_supervision": {
+    "r": 0.027,
+    "null_mean": -0.0045,
+    "null_abs_max": 0.2543
+   }
+  }
+ },
+ "fibers": {
+  "fiber_angle_hist_12bins_15deg_from_0": [
+   0.1871,
+   0.0992,
+   0.0352,
+   0.0207,
+   0.028,
+   0.1045,
+   0.2932,
+   0.0781,
+   0.0227,
+   0.0173,
+   0.0279,
+   0.0861
+  ],
+  "labels_in_supervision": {
+   "share_within_15deg": 0.188,
+   "shifted_null_mean": 0.1701,
+   "shifted_null_max": 0.2317,
+   "px": 9188
+  },
+  "map_whole": {
+   "share_within_15deg": 0.2213,
+   "shifted_null_mean": 0.1855,
+   "shifted_null_max": 0.2016,
+   "px": 1310486
+  },
+  "map_in_supervision": {
+   "share_within_15deg": 0.2036,
+   "shifted_null_mean": 0.178,
+   "shifted_null_max": 0.2103,
+   "px": 129378
+  }
+ },
+ "strokes": {
+  "labels_um": {
+   "n": 996,
+   "p25": 607.6,
+   "median": 640.7,
+   "p75": 749.3
+  },
+  "label_ink_share_in_supervision": 0.2219,
+  "map": {
+   "otsu": 122.994,
+   "area_share_above": 0.1287,
+   "whole_um": {
+    "n": 4008,
+    "p25": 243.5,
+    "median": 536.1,
+    "p75": 701.6
+   },
+   "in_supervision_um": {
+    "n": 778,
+    "p25": 524.8,
+    "median": 695.2,
+    "p75": 813.1
+   },
+   "dice_with_labels_in_supervision": 0.835
+  }
+ },
+ "depth": {
+  "map_hp_vs_ct_layer_hp_r": [
+   -0.0009,
+   -0.001,
+   -0.001,
+   -0.0005,
+   0.0006,
+   0.0018,
+   0.0023,
+   0.002,
+   0.0007,
+   -0.0009,
+   -0.0015,
+   -0.0005,
+   0.0008,
+   0.0014,
+   0.0011,
+   0.0002,
+   -0.0001,
+   -0.0002,
+   -0.0009,
+   -0.001,
+   -0.0002,
+   0.0004,
+   -0.0001,
+   -0.001,
+   -0.0016,
+   -0.0014,
+   -0.0006,
+   0.0001
+  ],
+  "labels_hp_vs_ct_layer_hp_r": [
+   0.0036,
+   0.002,
+   -0.0023,
+   -0.0042,
+   -0.0032,
+   -0.0035,
+   -0.0032,
+   0.0003,
+   0.0025,
+   0.0004,
+   -0.0027,
+   -0.0033,
+   -0.0024,
+   -0.0036,
+   -0.0053,
+   -0.0033,
+   -0.0002,
+   0.0004,
+   -0.0001,
+   0.0003,
+   -0.0009,
+   -0.0044,
+   -0.0054,
+   -0.0043,
+   -0.0049,
+   -0.0063,
+   -0.0067,
+   -0.0048
+  ],
+  "map_peak_layer_by_abs": 6,
+  "labels_peak_layer_by_abs": 26
+ }
+}
