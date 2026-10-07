@@ -37,7 +37,7 @@ Training loss (log loss, balanced sample): fibre head 0.33 to 0.36, brightness h
 
 ## Result (Null)
 
-The method loses. On held-out area it is at chance on every split, never ahead of the brightness-only ablation beyond noise (and behind it cross-scroll from w045 to w00), and 0.30 to 0.48 AUC behind `ink_9um`. The fibre head fits its training window well (log loss 0.33 against 0.60), so the texture it learns there is specific to the window and does not transfer, even to another window of the same segment. **Interpretation.** In-plane fibre texture at 9 um, summarised by a structure tensor, does not carry the ink signal the 3D readers use; whatever `ink_9um` reads is not this. Not tried: larger training areas (several windows or segments), a stronger prior on depth, a 3D tensor. Given a within-segment null, none looks likely to close a 0.3 AUC gap.
+This implementation did not improve on the brightness-only ablation on any of the three tested splits. Each fibre-head AUC interval includes chance, and the w045-to-w00 fibre-versus-brightness interval indicates a decrease. It is 0.30 to 0.48 AUC behind the reported `ink_9um` comparisons. Lower training loss alongside weak held-out performance is consistent with learning window-specific texture. **Interpretation.** These runs are a null for the tested 2D features, 16-unit learner, training windows, and settings; they do not establish that fibre texture contains no ink information or identify which features `ink_9um` uses. Larger training areas, stronger depth priors, and a 3D tensor were not tested and remain unresolved.
 
 ## Use
 
