@@ -10,6 +10,8 @@
 # kit rowscore. Paste the summary it prints. See docs/mac.md.
 #
 #   bash scripts/mac-w045.sh                   # from the Scrolls checkout
+#   QUICK=1 bash scripts/mac-w045.sh           # under an hour: v8in on the 640 px crop only (densest
+#                                              # labelled text), every model scored on that same crop
 #   V8IN_HOURS=2 bash scripts/mac-w045.sh      # time budget for the full v8in pass (picks the stride)
 #   V8IN_STRIDE=21 bash scripts/mac-w045.sh    # or set the stride (21 is v8in's own default)
 #   V8IN_FP16=1 bash scripts/mac-w045.sh       # fp16 on MPS, kept only if the crop check still passes
@@ -30,6 +32,7 @@ VILLA="$WORK/villa"
 PY="$WORK/venv/bin/python"
 EXPECT_GPU="${EXPECT_GPU:-mps}"
 SMOKE="${SMOKE:-0}"
+QUICK="${QUICK:-0}"
 PR=1865
 V8IN_REPO=YoussefMoNader/ink-8um-v8in
 V8IN_REV=d89166b41a3f5fad7749b3d7c0fdd1bd3695d844   # 2026-09-28 release
@@ -155,7 +158,9 @@ git -C "$VILLA" checkout -q --detach origin/main
 say "4/7 layers for v8in (kit layers)"
 cd "$SCROLLS"
 rm -rf "$OUT/layers"
-if [[ "$SMOKE" == "1" ]]; then
+if [[ "$QUICK" == "1" ]]; then
+  echo "quick: only the crop is exported"
+elif [[ "$SMOKE" == "1" ]]; then
   "$PY" -m kit layers "$INPUT" "$OUT/layers"
 elif (( ${#V8IN_CROP[@]} == 4 )); then
   "$PY" -m kit layers "$ZARR" "$OUT/layers" --crop "${V8IN_CROP[@]}"
@@ -192,8 +197,29 @@ set -e
 [[ "$VDEV" == 0 || "$EXPECT_GPU" != "mps" ]] || { echo "v8in on MPS does not match the CPU${V8IN_FP16:+ (fp16 on: try again without V8IN_FP16)}; stopping before the full run" >&2; exit 1; }
 echo "crop: cpu ${T_crop_cpu}s, $V8IN_DEVICE ${T_crop_gpu}s"
 
-say "6/7 v8in over the segment on $V8IN_DEVICE, both directions"
+INK_AUC=("${AUC_CROP[@]}")   # where ink_9um maps are scored; QUICK narrows it to the crop
+INK_TAG=""
 STRIDE="${V8IN_STRIDE:-}"
+if [[ "$QUICK" == "1" ]]; then
+  say "6/7 quick: v8in on the crop on $V8IN_DEVICE at full density, both directions"
+  STRIDE="${STRIDE:-21}"
+  v8in v8in "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
+  v8in v8in_reverse "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+  echo "v8in: ${T_v8in}s and ${T_v8in_reverse}s"
+  V8IN_AUC=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}")
+  INK_AUC=("${V8IN_AUC[@]}")
+  if [[ "$SMOKE" != "1" ]]; then   # cut the full ink_9um maps to the same crop, so all models face one test
+    INK_TAG="_crop"
+    for f in "$OUT"/maps/ink9um_s4[23].tif "$OUT"/maps/ink9um_s4[23]_reverse.tif; do
+      "$PY" - "$f" "${f%.tif}_crop.tif" "${CROP[@]}" <<'EOF'
+import sys, tifffile
+y0, y1, x0, x1 = map(int, sys.argv[3:])
+tifffile.imwrite(sys.argv[2], tifffile.imread(sys.argv[1])[y0:y1, x0:x1], compression="zlib")
+EOF
+    done
+  fi
+else
+say "6/7 v8in over the segment on $V8IN_DEVICE, both directions"
 if [[ -z "$STRIDE" && "$SMOKE" == "1" ]]; then
   STRIDE=64
 elif [[ -z "$STRIDE" ]]; then   # pick the finest stride whose estimate fits V8IN_HOURS, from the measured speed
@@ -224,6 +250,7 @@ echo "stride $STRIDE"
 v8in v8in "$OUT/layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
 v8in v8in_reverse "$OUT/layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
 echo "v8in: ${T_v8in}s and ${T_v8in_reverse}s"
+fi
 
 say "7/7 scores"
 auc() {  # auc MAP CONTROL [crop args]
@@ -232,8 +259,9 @@ auc() {  # auc MAP CONTROL [crop args]
 }
 rows() { "$PY" -m kit rowscore "$@" --voxel-um 9.362 --json; }
 M="$OUT/maps"
-auc "$M/ink9um_s42.tif" "$M/ink9um_s42_reverse.tif" "${AUC_CROP[@]}" > "$OUT/results/auc_ink9um_s42.json"
-auc "$M/ink9um_s43.tif" "$M/ink9um_s43_reverse.tif" "${AUC_CROP[@]}" > "$OUT/results/auc_ink9um_s43.json"
+for seed in 42 43; do
+  auc "$M/ink9um_s$seed$INK_TAG.tif" "$M/ink9um_s${seed}_reverse$INK_TAG.tif" "${INK_AUC[@]}" > "$OUT/results/auc_ink9um_s$seed.json"
+done
 auc "$M/v8in.tif" "$M/v8in_reverse.tif" "${V8IN_AUC[@]}" > "$OUT/results/auc_v8in.json"
 rows "$M/ink9um_s42.tif" "$M/ink9um_s43.tif" --reverse "$M/ink9um_s42_reverse.tif" "$M/ink9um_s43_reverse.tif" \
   > "$OUT/results/rows_ink9um.json"
@@ -246,7 +274,9 @@ import json, sys, pathlib
 r = pathlib.Path(sys.argv[1])
 j = lambda n: json.loads((r / f"{n}.json").read_text())
 print("kit mac-w045 summary (paste this)")
-print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE")
+print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE | quick: $QUICK")
+if "$QUICK" == "1":
+    print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns), so the models face the same test")
 print("villa PR #$PR $PR_SHA on $EXPECT_GPU | v8in $V8IN_REV on $V8IN_DEVICE, stride $STRIDE, batch $BATCH, fp16 ${V8IN_FP16:-0}, region ${V8IN_CROP[*]:-all}")
 print("sha256 seed42 $SHA42 | seed43 $SHA43 | v8in $SHAV8")
 print("times (s): ink_9um s42 ${T_ink9um_s42}, s43 ${T_ink9um_s43} (both directions) | v8in ${T_v8in} + ${T_v8in_reverse}")
