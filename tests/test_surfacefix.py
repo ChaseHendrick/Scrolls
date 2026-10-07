@@ -282,6 +282,77 @@ class SurfaceFixTests(unittest.TestCase):
         with self.assertRaisesRegex(VerifyError, "scale"):
             prepare(self.base, self.root / "other", 10, (1,))
 
+    def test_fractional_geometry_matches_recover_shifted_dense_maps_and_legacy_abstains(self):
+        path, manifest = self._manifest()
+        ref = self._xyz(self.reference)
+        ref[ref[..., 2] >= 0, :2] += 5
+        for axis, c in enumerate("xyz"):
+            tifffile.imwrite(self.reference / f"{c}.tif", ref[..., axis])
+        # Reference pixel (r,c) observes source physical position (r+5,c+5).
+        # Wrap is outside the interior used in this fixture's correspondences.
+        shifted = np.roll(self.signal, (-5, -5), axis=(0, 1))
+        np.save(manifest["reference"]["maps"]["forward"]["path"], shifted)
+        report = correct(path, self.root / "continuous")
+        self.assertEqual(report["schema"], 2)
+        self.assertGreater(report["accepted_regions"], 0)
+        self.assertGreater(report["correspondence"]["all_maps_covered_points"], 500)
+        manifest["schema"] = 1
+        self._save(path, manifest)
+        legacy = correct(path, self.root / "legacy")
+        self.assertEqual(legacy["schema"], 1)
+        self.assertNotIn("correspondence", legacy)
+        self.assertEqual(legacy["accepted_regions"], 0)
+        self.assertTrue(all("coverage" in r["reasons"][0] for r in legacy["regions"]))
+
+    def test_fractional_samples_use_original_dense_hp_not_coarse_native_interpolation(self):
+        from scipy.ndimage import map_coordinates
+        from kit.surfacefix import _mesh, _sample_native, _sample_projected
+        mesh = _mesh(self.reference)
+        r, c = np.indices(mesh["map_shape"], dtype=float)
+        field = np.sin(r * .7) + np.cos(c * .9)
+        covered = np.ones_like(field, dtype=bool)
+        uv = np.array([[[10.25, 11.75]]])
+        values, valid = _sample_projected(field, covered, mesh, uv)
+        position = np.moveaxis(uv / mesh["scale"][::-1] - .5, -1, 0)
+        expected = map_coordinates(field, position, order=1, prefilter=False)
+        np.testing.assert_allclose(values, expected)
+        native, _ = _sample_native(field, covered, mesh)
+        coarse = map_coordinates(native, np.moveaxis(uv, -1, 0), order=1, prefilter=False)
+        self.assertGreater(abs(float(values[0, 0] - coarse[0, 0])), .1)
+        self.assertTrue(valid.all())
+        covered[102, 117] = False
+        _, valid = _sample_projected(field, covered, mesh, uv)
+        self.assertFalse(valid.any())
+        _, valid = _sample_projected(field, np.ones_like(covered), mesh, np.array([[[0., 1.]]]))
+        self.assertFalse(valid.any())
+
+    def test_schema2_geometry_freezes_before_first_map_record(self):
+        from unittest.mock import patch
+        from kit import surfacefix
+        from kit import _surface_geometry
+        path, _ = self._manifest()
+        record = surfacefix._record
+        with patch.object(_surface_geometry, "project", wraps=_surface_geometry.project) as projection:
+            def read_record(*args, **kwargs):
+                self.assertEqual(projection.call_count, 1)
+                return record(*args, **kwargs)
+            with patch.object(surfacefix, "_record", side_effect=read_record):
+                report = correct(path, self.root / "out")
+        self.assertTrue(report["correspondence"]["geometry_frozen_before_maps"])
+
+    def test_schema2_rejects_unknown_matching_and_bicubic_render_geometry(self):
+        path, manifest = self._manifest()
+        self.assertEqual(manifest["schema"], 2)
+        manifest["render_geometry"]["position_interpolation"] = "smooth"
+        self._save(path, manifest)
+        with self.assertRaisesRegex(VerifyError, "render_geometry"):
+            correct(path, self.root / "out")
+        manifest["render_geometry"]["position_interpolation"] = "linear"
+        manifest["matching_mode"] = "nearest_native_vertex"
+        self._save(path, manifest)
+        with self.assertRaisesRegex(VerifyError, "matching_mode"):
+            correct(path, self.root / "out")
+
     def test_cli_prepare_and_apply(self):
         dest = self.root / "prepared"
         proc = subprocess.run([sys.executable, "-m", "kit", "surfacefix", "prepare", str(self.base), str(dest),

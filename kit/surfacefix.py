@@ -15,6 +15,9 @@ from .hpscore import HIGH_PASS_UM, high_pass, _r
 from .verify import VerifyError, _numpy, load_map
 
 KINDS = ("forward", "reverse", "shuffle")
+CONTINUOUS_MODE = "certified_bilinear_reference_v1"
+CONTINUOUS_RENDER = {"position_interpolation": "linear", "scale": 1, "group": 0,
+                     "rotation_degrees": 0, "affine": False, "full_native_canvas": True}
 NOTICE = ("Experimental consistency-approved geometry only. The final merged surface "
           "must be rerendered and rechecked before claiming improvement: patch context changes.")
 
@@ -209,7 +212,9 @@ def prepare(mesh, out_dir, voxel_um, offsets, max_shift_um=50):
         prepared.append(xyz)
     out.mkdir(parents=True)
     baseline = {"mesh": os.path.relpath(source["path"], out), "hashes": hashes, "maps": _blank_maps()}
-    manifest = {"schema": 1, "voxel_um": voxel_um, "max_shift_um": max_shift_um,
+    manifest = {"schema": 2, "matching_mode": CONTINUOUS_MODE,
+                "render_geometry": dict(CONTINUOUS_RENDER),
+                "voxel_um": voxel_um, "max_shift_um": max_shift_um,
                 "model": None, "stride": None, "baseline": baseline, "reference": None,
                 "candidates": [], "notice": NOTICE}
     for i, (offset, xyz) in enumerate(zip(offsets, prepared)):
@@ -227,7 +232,7 @@ def _path(root, value):
     return (root / value).resolve()
 
 
-def _record(record, root, model, stride, voxel_um, require_hashes=True):
+def _record(record, root, model, stride, voxel_um, require_hashes=True, dense=False):
     np = _numpy()
     from scipy.ndimage import gaussian_filter
     if not isinstance(record, dict):
@@ -238,6 +243,7 @@ def _record(record, root, model, stride, voxel_um, require_hashes=True):
     if (require_hashes and not expected) or (expected is not None and expected != hashes):
         raise VerifyError(f"missing or changed mesh file hashes: {mesh['path']}")
     maps, map_hashes, paths, coverage = {}, {}, [], {}
+    canvas_maps, canvas_coverage = {}, {}
     for kind in KINDS:
         spec = record.get("maps", {}).get(kind)
         if (not isinstance(spec, dict) or spec.get("model") != model or
@@ -256,9 +262,13 @@ def _record(record, root, model, stride, voxel_um, require_hashes=True):
         covered = array > 0
         hp = high_pass(np, gaussian_filter, array, covered, HIGH_PASS_UM / voxel_um)
         maps[kind], coverage[kind] = _sample_native(hp, covered, mesh)
+        if dense:
+            canvas_maps[kind], canvas_coverage[kind] = hp, covered
         paths.append(path)
         map_hashes[kind] = {"path": str(path), "sha256": _hashes(path)[path.name]}
     mesh.update(maps=maps, coverage=coverage, hashes=hashes, map_hashes=map_hashes, inputs=paths)
+    if dense:
+        mesh.update(canvas_maps=canvas_maps, canvas_coverage=canvas_coverage)
     return mesh
 
 
@@ -292,6 +302,8 @@ def _correlation(np, a, b, mask, min_points):
 
 def _scores(np, source, reference, ref_index, mask, min_points, displaced):
     """All controls use fixed correspondences and the same subset as the forward map."""
+    if ref_index is None:
+        return _projected_scores(np, source, reference, mask, min_points, displaced)
     flat = lambda array: array.ravel()
     sf, rf = source["maps"]["forward"], flat(reference["maps"]["forward"])[ref_index]
     score = _correlation(np, sf, rf, mask, min_points)
@@ -314,6 +326,66 @@ def _scores(np, source, reference, ref_index, mask, min_points, displaced):
         return {"r": score, "control_max_abs": None, "reason": "inadequate spatially displaced controls"}
     return {"r": score, "control_max_abs": max(controls + spatial),
             "spatial_controls": len(spatial), "reason": None}
+
+
+def _sample_projected(array, covered, reference, uv):
+    """Sample the original dense HP canvas at a fractional native-grid position."""
+    np = _numpy()
+    from scipy.ndimage import map_coordinates
+    positions = np.moveaxis(uv / reference["scale"][::-1] - .5, -1, 0)
+    values = map_coordinates(array, positions, order=1, mode="constant", cval=0, prefilter=False)
+    weights = map_coordinates(covered.astype(float), positions, order=1, mode="constant", cval=0, prefilter=False)
+    return values, weights >= 1 - 1e-6
+
+
+def _projected_scores(np, source, reference, mask, min_points, displaced):
+    sf, rf = source["maps"]["forward"], reference["projected_maps"]["forward"]
+    score = _correlation(np, sf, rf, mask, min_points)
+    controls = []
+    for kind in ("reverse", "shuffle"):
+        sc, rc = source["maps"][kind], reference["projected_maps"][kind]
+        for a, b in ((sc, rc), (sc, rf), (sf, rc)):
+            r = _correlation(np, a, b, mask, min_points)
+            if r is None:
+                return {"r": score, "control_max_abs": None, "reason": "inadequate control points or variation"}
+            controls.append(abs(r))
+    spatial = []
+    for values, valid in displaced:
+        r = _correlation(np, sf, values, mask & valid, min_points)
+        if r is not None:
+            spatial.append(abs(r))
+    if len(spatial) < 2:
+        return {"r": score, "control_max_abs": None, "reason": "inadequate spatially displaced controls"}
+    return {"r": score, "control_max_abs": max(controls + spatial),
+            "spatial_controls": len(spatial), "reason": None}
+
+
+def _projected_displacements(np, reference, projection, voxel_um):
+    """The same fractional UV, translated 1 to 3 mm without wrapping."""
+    from ._surface_geometry import sample_geometry
+    uv = projection["uv"]
+    original, original_valid = sample_geometry(reference, uv)
+    result = []
+    for axis in (0, 1):
+        d = np.linalg.norm(np.diff(reference["xyz"], axis=axis), axis=-1)
+        valid = reference["valid"]
+        pairs = np.take(valid, range(valid.shape[axis] - 1), axis=axis) & np.take(valid, range(1, valid.shape[axis]), axis=axis)
+        spacing = float(np.median(d[pairs])) * voxel_um if pairs.any() else 0
+        if spacing <= 0:
+            continue
+        for mm in (1, 2, 3):
+            step = max(1, int(round(mm * 1000 / spacing)))
+            for sign in (-1, 1):
+                shifted = uv.copy()
+                shifted[..., axis] += sign * step
+                positions, geometric_valid = sample_geometry(reference, shifted)
+                values, covered = _sample_projected(reference["canvas_maps"]["forward"],
+                                                   reference["canvas_coverage"]["forward"], reference, shifted)
+                distance = np.linalg.norm(positions - original, axis=-1) * voxel_um
+                inside = original_valid & geometric_valid & covered
+                inside &= (distance >= 1000 - 1e-6) & (distance <= 3000 + 1e-6)
+                result.append((values, inside))
+    return result
 
 
 def _displacements(np, reference, ref_index, voxel_um):
@@ -367,16 +439,35 @@ def correct(manifest_path, out_dir, region_points=8, min_points=24, min_corr=.5,
         manifest = json.loads(manifest_path.read_text())
     except (OSError, ValueError) as exc:
         raise VerifyError(f"cannot read manifest: {exc}") from exc
-    if not isinstance(manifest, dict) or manifest.get("schema") != 1:
-        raise VerifyError("surfacefix manifest schema must be 1")
+    if not isinstance(manifest, dict) or type(manifest.get("schema")) is not int or manifest["schema"] not in (1, 2):
+        raise VerifyError("surfacefix manifest schema must be 1 or 2")
+    continuous = manifest["schema"] == 2
+    if continuous and manifest.get("matching_mode") != CONTINUOUS_MODE:
+        raise VerifyError("schema 2 requires explicit certified bilinear matching_mode")
+    if continuous and manifest.get("render_geometry") != CONTINUOUS_RENDER:
+        raise VerifyError("schema 2 requires declared linear, untransformed full-native-canvas render_geometry")
     voxel_um = _positive(manifest.get("voxel_um"), "voxel_um")
     bound = _positive(manifest.get("max_shift_um"), "max_shift_um")
     model, stride = manifest.get("model"), manifest.get("stride")
     if not isinstance(model, str) or not model.strip() or isinstance(stride, bool) or not isinstance(stride, int) or stride <= 0:
         raise VerifyError("manifest needs a model identifier and positive integer inference stride")
     root = manifest_path.parent
+    projection = None
+    if continuous:
+        from ._surface_geometry import project
+        # Freeze geometry before any baseline, reference or candidate map is read.
+        baseline_record, reference_record = manifest.get("baseline"), manifest.get("reference")
+        if not isinstance(baseline_record, dict) or not isinstance(reference_record, dict):
+            raise VerifyError("baseline and reference must be mesh records")
+        geometry_base = _mesh(_path(root, baseline_record.get("mesh")))
+        geometry_reference = _mesh(_path(root, reference_record.get("mesh")))
+        geometry_hashes = (_hashes(geometry_base["path"]), _hashes(geometry_reference["path"]))
+        tolerance = max(_roundoff(geometry_base), _roundoff(geometry_reference))
+        projection = project(geometry_base, geometry_reference, bound / voxel_um, tolerance)
     base = _record(manifest.get("baseline"), root, model, stride, voxel_um)
-    reference = _record(manifest.get("reference"), root, model, stride, voxel_um, require_hashes=False)
+    reference = _record(manifest.get("reference"), root, model, stride, voxel_um, require_hashes=False, dense=continuous)
+    if continuous and geometry_hashes != (base["hashes"], reference["hashes"]):
+        raise VerifyError("baseline or reference geometry changed after correspondence was frozen")
     if base["path"] == reference["path"] or base["hashes"] == reference["hashes"] or (
             base["xyz"].shape == reference["xyz"].shape and np.array_equal(base["xyz"], reference["xyz"])):
         raise VerifyError("reference must be a separate trace, not a copy of the baseline mesh")
@@ -399,17 +490,28 @@ def correct(manifest_path, out_dir, region_points=8, min_points=24, min_corr=.5,
     inputs = [manifest_path] + [p for mesh in all_meshes for p in [mesh["path"]] + mesh["inputs"]]
     out = _overlap(out_dir, inputs)
     # Freeze baseline-to-reference matches before inspecting any candidate's map.
-    ref_flat = np.flatnonzero(reference["valid"])
-    distance, nearest = cKDTree(reference["xyz"].reshape(-1, 3)[ref_flat]).query(base["xyz"].reshape(-1, 3))
-    ref_index = ref_flat[nearest].reshape(base["valid"].shape)
-    gap_ok = distance.reshape(base["valid"].shape) * voxel_um <= bound
+    if continuous:
+        ref_index = None
+        gap_ok = projection["valid"]
+        reference["projected_maps"], reference["projected_coverage"] = {}, {}
+        for kind in KINDS:
+            values, covered = _sample_projected(reference["canvas_maps"][kind], reference["canvas_coverage"][kind],
+                                                reference, projection["uv"])
+            reference["projected_maps"][kind], reference["projected_coverage"][kind] = values, covered
+    else:
+        ref_flat = np.flatnonzero(reference["valid"])
+        distance, nearest = cKDTree(reference["xyz"].reshape(-1, 3)[ref_flat]).query(base["xyz"].reshape(-1, 3))
+        ref_index = ref_flat[nearest].reshape(base["valid"].shape)
+        gap_ok = distance.reshape(base["valid"].shape) * voxel_um <= bound
     coverage = base["valid"] & supported & gap_ok
     for mesh in [base] + candidates:
         for kind in KINDS:
             coverage &= mesh["coverage"][kind]
     for kind in KINDS:
-        coverage &= reference["coverage"][kind].ravel()[ref_index]
-    displaced = _displacements(np, reference, ref_index, voxel_um)
+        coverage &= (reference["projected_coverage"][kind] if continuous else
+                     reference["coverage"][kind].ravel()[ref_index])
+    displaced = (_projected_displacements(np, reference, projection, voxel_um) if continuous else
+                 _displacements(np, reference, ref_index, voxel_um))
     rows, cols = np.indices(base["valid"].shape)
     region_ids = (rows // region_points) * math.ceil(base["valid"].shape[1] / region_points) + cols // region_points
     choices = np.zeros_like(base["valid"], dtype=float)
@@ -423,6 +525,21 @@ def correct(manifest_path, out_dir, region_points=8, min_points=24, min_corr=.5,
               "input_hashes": {str(mesh["path"]): {"mesh": mesh["hashes"], "maps": mesh["map_hashes"]}
                                for mesh in all_meshes}, "manifest_sha256": _hashes(manifest_path)[manifest_path.name],
               "regions": []}
+    if continuous:
+        report["schema"] = 2
+        report["matching_mode"] = CONTINUOUS_MODE
+        report["render_geometry"] = dict(CONTINUOUS_RENDER)
+        report["correspondence"] = {
+            "geometry_frozen_before_maps": True,
+            "method": "complete radius search over valid bilinear quads; certified distance brackets",
+            "uniqueness": "sufficient global strict-convexity certificate per qualifying quad; competing UVs abstain",
+            "reference_sampling": "original dense high-pass canvas at fractional UV/scale-.5",
+            "distance_tolerance_vox": tolerance,
+            "geometrically_matched_points": int(projection["valid"].sum()),
+            "ambiguous_points": int(projection["ambiguous"].sum()),
+            "unresolved_points": int(projection["unresolved"].sum()),
+            "all_maps_covered_points": int(coverage.sum()),
+        }
     for region_id in np.unique(region_ids[base["valid"]]):
         area = (region_ids == region_id) & base["valid"]
         rr, cc = np.nonzero(area)

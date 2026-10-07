@@ -19,6 +19,19 @@ This produces offset meshes and a manifest template. Use villa to render each me
 
 Fill `manifest.json` with the reference mesh, map paths, and the matching model and stride metadata for every map. Paths are relative to the manifest. The template records source mesh hashes; they must match when corrections are applied. Use the same model and inference settings for all comparisons. In particular, reverse controls must use the forward stride.
 
+New manifests use schema 2 with explicit `certified_bilinear_reference_v1` matching.
+The required `render_geometry` declares linear position interpolation, scale 1,
+group 0, no rotation or affine transform, and a canvas covering the complete native
+mesh. These declarations must match the actual renderer command. A cropped native
+mesh needs its own full crop render; a full-surface map cannot be paired with local
+crop coordinates. Bicubic or unknown position interpolation is rejected.
+
+Schema 1 remains supported with its original nearest-native-vertex behavior for
+historical replication. Do not relabel old reports as continuous matching results.
+Native reference vertices can be about 187 um apart on public meshes, so the nearest
+vertex's tangential displacement can exceed the 50 um bound even when the continuous
+sheet is close. Schema 2 separates this sampling effect from the physical distance.
+
 ```bash
 python -m kit surfacefix apply work/surfacefix-candidates/manifest.json \
   work/surfacefix-output --region-points 8 --min-points 24 \
@@ -30,6 +43,26 @@ The thresholds are experimental defaults, not calibrated operating points. Choos
 ## Acceptance checks
 
 Physical point correspondences are frozen from the original geometry. Candidate shifts must follow the local normal, preserve mesh topology and holes, and stay within the physical displacement bound. Selection uses one subset of region points; the selected winner must also improve agreement on a separate subset. Reverse, shuffle and displaced matches must score below the forward agreement. Missing coverage or controls, inadequate agreement, or excessive neighboring offset jumps prevent correction.
+
+Schema 2 freezes correspondences before loading reader maps. A complete radius search
+considers every valid reference quad that could lie within the physical bound.
+Triangle distances supply conservative bounds; subdivision checks the actual
+bilinear surface and certifies its distance bracket to coordinate precision. The
+accepted physical distance must be at most 50 um under the default bound; numerical
+tolerance does not enlarge it. Holes, folded or degenerate quads, unresolved searches
+and ambiguous competing positions prevent coverage. A strict-convexity certificate
+also rules out multiple nearest positions inside one qualifying quad; a failed
+certificate abstains rather than assuming that an unfolded quad has a unique match.
+Nearby remote windings also
+cause abstention. This is a local correspondence check, not a global topology proof.
+
+Reference high-pass maps are sampled from the original dense canvas at the fractional
+projected position. Interpolating previously sampled coarse vertex scores would lose
+information. All three depth orders require full interpolation support. Spatial
+controls shift the same fractional position without wrapping, verify a real 1 to 3 mm
+physical displacement, and require valid geometry and map coverage. Zero predictions
+retain the existing conservative uncovered convention; a valid quantized background
+can therefore be excluded. Coverage counts are reported separately from corrections.
 
 A reference trace can share an artifact with the source. Control failures and held-back points reduce this risk but cannot establish that the chosen surface is the true ink layer. The subsets are local spatial checks, not independent scrolls or statistically calibrated confidence estimates.
 
