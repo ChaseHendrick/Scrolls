@@ -6,15 +6,15 @@ Status: draft, not submitted. The user submits it through the [form](https://doc
 
 ## Title
 
-A labelled, controlled ink-model test on held-out PHerc0139 w045, and v8in on Apple Silicon
+v8in against labels on a seen and an unseen scroll, with a reverse-depth control
 
 ## Problem
 
-Ink models are usually judged by eye, often on segments they were trained on. On PHerc0139 w035, the segment most tutorials use as the control, the clean letters `ink_9um` shows are its own training labels reproduced: every clean letterform lies inside a supervised label region, and two letters painted outside those regions do not appear ([log](../logs/2026-10-07-w035-cpu.md)). That proves a pipeline runs, not that a model reads unseen ink. When v8in (YoussefMoNader/ink-8um-v8in) was released on 28 September there was no quick, labelled, held-out way to compare it with `ink_9um`, and it had not been run on a Mac.
+Ink models are usually judged by eye, often on segments they were trained on. On PHerc0139 w035, the segment most tutorials use as the control, the clean letters `ink_9um` shows are its own training labels reproduced: every clean letterform lies inside a supervised label region, and two letters painted outside those regions do not appear ([log](../logs/2026-10-07-w035-cpu.md)). That proves a pipeline runs, not that a model reads unseen ink. v8in (YoussefMoNader/ink-8um-v8in, released 28 September) has been checked on PHerc1447 by its author and reproduced there by others, including on Apple Silicon ([afraazali42](https://github.com/afraazali42/vesuvius-challenge), M3 Max, 3 October). It has not been scored against labels on other scrolls. The closest prior work is [TAUIL-Abd-Elilah's held-out benchmark](https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search): eight labelled segments including PHerc0841, scoring `ink_9um`, d9v2 and Reader v2, with v8in used only to check seven leads.
 
 ## What this adds
 
-One command on an Apple Silicon Mac, `scripts/mac-w045.sh` (`QUICK=1` for under an hour), and three tested `kit` tools it is built from:
+One command on an Apple Silicon Mac, `scripts/mac-w045.sh` (`QUICK=1` for under an hour; `SEGMENT=` picks w045 or one of PHerc0841's three segments), and three tested `kit` tools it is built from:
 
 | Tool | What it does | Checked against |
 | --- | --- | --- |
@@ -26,7 +26,7 @@ w045 is held out from both models: `ink_9um` per Bullo27's survey, and v8in per 
 
 ## Results
 
-`ink_9um`, CPU reference (villa `e0bbb8b`, both seeds at step 75,000), on the team's published w045 surface volume:
+`ink_9um`, CPU reference (villa `e0bbb8b`, step 75,000), on the team's published surface volumes. PHerc0841 is in neither model's training set; its `ink_9um` numbers agree with Bullo27's calibration and TAUIL's benchmark (0.736):
 
 | | AUC as stored | AUC reversed | Row score as stored / reversed |
 | --- | --- | --- | --- |
@@ -34,6 +34,9 @@ w045 is held out from both models: `ink_9um` per Bullo27's survey, and v8in per 
 | Seed 43, whole supervised region | 0.887 | 0.502 | 68.3 / 10.6 |
 | Seed 42, 640 px crop of densest text (78,047 ink px) | 0.914 | 0.370 | |
 | Seed 43, same crop | 0.910 | 0.435 | |
+| PHerc0841 w00, seed 42, whole (crop) | 0.748 (0.770) | 0.501 (0.514) | 13.7 / 23.6 |
+| PHerc0841 ag896, seed 42, whole (crop) | 0.720 (0.655) | 0.570 (0.540) | 17.5 / 8.8 |
+| PHerc0841 ag405, seed 42, whole (crop) | 0.751 (0.793) | 0.601 (0.653) | 46.4 / 7.5 |
 
 Mac (Apple M1 Pro, MPS):
 
@@ -41,7 +44,8 @@ Mac (Apple M1 Pro, MPS):
 | --- | --- | --- |
 | `ink_9um` seed 42 via villa PR #1865, crop | **[MAC]** | **[MAC]** |
 | v8in, crop, stride 21 | **[MAC]** | **[MAC]** |
-| v8in CPU vs MPS (`kit verify`, reverse as control) | **[MAC]** verdict, max diff, Pearson | |
+| v8in, PHerc0841 crops (w00, ag896, ag405) | **[MAC]** | **[MAC]** |
+| v8in CPU vs MPS (`kit verify`, reverse as control; a second-chip confirmation of afraazali42's M3 Max result) | **[MAC]** verdict, max diff, Pearson | |
 | Time, M1 Pro | **[MAC]** | |
 
 **[ATLAS]** If the preregistered v8in run over the 81 public automatic meshes of PHerc0813, 0358 and 0826 ([preregistration](../prereg/2026-10-07-v8in-atlas.md)) is a null: a short paragraph with the count, the meshes inspected, stride, time, and the statement that it is a null for v8in on automatic surfaces only.
