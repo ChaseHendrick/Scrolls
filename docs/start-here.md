@@ -29,7 +29,7 @@ About 2,000 years ago Vesuvius buried a library of papyrus scrolls at Herculaneu
 
 1. Get a GPU (yours, or rented; see [`compute.md`](compute.md)).
 2. `python -m kit plan PHerc0826` and run steps 0 and 1: install villa, download the `ink_9um` checkpoints, render segment w035 of PHerc. 0139, run inference.
-3. You should see Greek letters. The models were trained on this scroll, so this proves your setup works, nothing more.
+3. You should see Greek letters. They are the hand-painted training labels, reproduced by a model that was trained on them ([comparison](logs/2026-10-07-w035-cpu.md)). This proves your setup works, nothing more.
 
 **Weeks 3 to 6: a real First Letters attempt.**
 

@@ -46,7 +46,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 Lessons from the published, agent-assisted runs:
 
 - **Preregister.** Write what counts as ink before looking (bnleft's `prereg/readout.md`; `python -m kit run init` here). Agents and humans both see letters in noise.
-- **Run the control first** (PHerc0139 w035) and keep it in every report.
+- **Run the control first** (PHerc0139 w035) and keep it in every report. It checks the pipeline, not generalization: the letters it shows are memorized training labels ([log](logs/2026-10-07-w035-cpu.md)). For a generalization check use a held-out labelled segment; Bullo27 reports clear rows on held-out PHerc0139 w045.
 - **Compare forward and reverse depth.** Ink should appear in one direction, not both.
 - **`set -o pipefail`.** bnleft lost a run when `cmd | tee log` hid a failed render.
 - **Build tools from current villa main.** The published VC3D container was months stale and lacked flags the recipe needs ([villa #1588](https://github.com/ScrollPrize/villa/issues/1588)).

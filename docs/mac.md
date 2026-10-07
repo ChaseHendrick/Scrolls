@@ -90,7 +90,7 @@ uv run --project "$VILLA/vesuvius" --extra models python -m kit verify \
 
 `kit verify` exit codes: 0 pass; 1 fail, or the control was not caught; 2 unreadable input; 3 agreement with no control given. Add `--slug NAME` to store the result in an experiment record, and `python -m kit run record NAME --command "..." --file "$CKPT"` to store the command and checkpoint hash.
 
-Default acceptance: at most 0.01% of pixels differ by more than 2 grey levels. #1865 reported 1 level on 0.002% of pixels, so a healthy MPS run should pass with margin. The control is the reverse-depth CPU map: on w035, where there is ink, it should differ widely from the forward map. If it does not, the comparison cannot tell maps apart and the verdict says so.
+Default acceptance: at most 0.01% of pixels differ by more than 2 grey levels. #1865 reported 1 level on 0.002% of pixels, so a healthy MPS run should pass with margin. The control is the reverse-depth CPU map: on w035 it should differ widely from the forward map. w035 is a training segment: its clean letters are the model reproducing its training labels ([log](logs/2026-10-07-w035-cpu.md)). That does not matter for a CPU vs MPS comparison, which only needs the same input on both, but it is not evidence that the model reads unseen ink. If it does not, the comparison cannot tell maps apart and the verdict says so.
 
 Measured in the setup container on 2026-10-07: on the published 2.4 µm w035 ink map (22,640 × 20,400 pixels, about 462 million), `kit verify` passed a copy with 0.002% of pixels changed by one level and caught a 64-pixel-shifted control (34% of pixels beyond tolerance) in 36 s with 2.25 GB peak memory. The 9 µm w035 maps from this runbook are about 30 times smaller.
 

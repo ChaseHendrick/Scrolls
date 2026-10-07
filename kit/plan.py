@@ -38,6 +38,8 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
 CONTROL = """\
 # 1. Control first: a PHerc. 0139 segment the released models were trained on.
 #    If you cannot see letters here, the pipeline is broken, not the scroll.
+#    The clean letters it shows are the training labels, reproduced (docs/logs/2026-10-07-w035-cpu.md).
+#    That proves the pipeline runs, not that the model finds ink it was not trained on.
 aws s3 sync --no-sign-request \\
   s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/ \\
   ink-dataset/pherc0139/w035/w035.tifxyz
