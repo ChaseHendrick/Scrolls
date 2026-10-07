@@ -1,0 +1,23 @@
+{
+  "fetch": {
+    "synthetic_only": true,
+    "files": 1,
+    "downloaded_bytes": 0,
+    "expected_total_bytes": 4,
+    "object_get_calls": 0,
+    "same_size_wrong_bytes_remain": true
+  },
+  "ledger": {
+    "synthetic_only": true,
+    "ledger_check_after_recorded_file_changed": [],
+    "existing_provenance_files_check_after_same_change": [
+      "inputs: /workspace/scrolls-env/ufsm-review/controls/tmpihj7oem0/artifact changed"
+    ]
+  },
+  "limits": "These reproduce existing logical guards with local synthetic files; they benchmark no network/model performance and modify no Scrolls files. Existing kit.provenance already detects changed files when explicitly called with --files.",
+  "source_sha256": {
+    "/workspace/Scrolls/kit/fetch.py": "7d1b59cdd635171cebc0a71ee477a9ae74314c1760e01476b823844b43ff6651",
+    "/workspace/Scrolls/kit/ledger.py": "10613ba6b2425fe0d844d9a975483fc8c1f0cb9fb33e059d715335477edbaecd",
+    "/workspace/Scrolls/kit/provenance.py": "d3578c48538ba6f48d64e1af4bd75c452b634da06f1a31e452d1118aae4a1828"
+  }
+}

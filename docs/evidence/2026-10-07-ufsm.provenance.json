@@ -1,0 +1,43 @@
+{
+  "code": [
+    {
+      "branch": "codex/cloud-validation-and-scan-status",
+      "commit": "4af30e8701bc1cb078f3dd2e1eacc1eaf86b09dd",
+      "repo": "/workspace/Scrolls",
+      "uncommitted_changes": true
+    }
+  ],
+  "digest": "4384a62795ab49b33aaeba3ba6a926b56abbad288658bcebd81ee0d9960ab931",
+  "finished_utc": "2026-10-07T14:08:18Z",
+  "inputs": [
+    {
+      "bytes": 50186,
+      "files": 15,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-ufsm",
+      "sha256": "2baff79e8e6ef898ab3b96a1646837388c92707e5df70f2def29a395fe49cd9b"
+    },
+    {
+      "bytes": 8143,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-ufsm-review.md",
+      "sha256": "badd8499a8674023c7da7030ed1ce4259c8f219bbf55fbe6a873fa8a018306b9"
+    }
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "release": "6.18.44",
+    "system": "Linux"
+  },
+  "models": [],
+  "note": "Read-only external source review for Chase Hendrick; 29 production/coverage and nine geometry CPU tests passed on synthetic fixtures. No model training, inference, target data, UFSM source copying or Scrolls production code change. This is a completed evidence integrity record, not a preregistration.",
+  "operator": {
+    "login": "agent",
+    "name": "Chase Hendrick"
+  },
+  "outputs": [],
+  "run": "2026-10-07-ufsm-implementation-assessment",
+  "schema": 1,
+  "started_utc": null
+}

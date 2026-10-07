@@ -1,0 +1,6 @@
+{
+  "scope": "Operational helper frozen before supervised correction results; only actual accepted geometry may produce combined maps",
+  "script_sha256": "a3a31a97efd8c7053b311ee00923c3bb10629ee27e4b0bb81361b2146f746591",
+  "implementation_amendment_sha256": "0fc0f44046eeb8f9d2cc3506c078708bacd1795bac32a402320cb87cbe695529",
+  "official_pipeline": "Same fixed rawCT cache, linear positions,1x fullnativecanvas,28planes,step1,9.366um, published-N depthorder. No mapassembly/resizing and no threshold changes."
+}
