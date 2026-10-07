@@ -2,6 +2,12 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (late night): first target run, preregistered
+
+The user chose the target set and the readout rule (2026-10-07): v8in on all 81 public automatic meshes of PHerc0813, 0358 and 0826 (rodriguescarson's atlas renders, which include his 5 held-back meshes), with the rule in [`prereg/2026-10-07-v8in-atlas.md`](prereg/2026-10-07-v8in-atlas.md). One variable changes from published reads of these surfaces: the model. `scripts/mac-atlas-v8in.sh` runs it on the Mac after `scripts/mac-w045.sh` passes; tested here end to end on fake meshes built from w045 (PHerc0139), never on target data. No target map has been made in this repository's sessions.
+
+Next: the user runs `mac-w045.sh`, then `mac-atlas-v8in.sh`. Target results stay private: do not commit triage numbers, maps or verdicts on target meshes before the user decides (WORKFLOW.md 3b). After that, hand-fix whichever surfaces the run points to.
+
 ## Session 7 October 2026 (night): the w045 check is one command on the Mac
 
 `bash scripts/mac-w045.sh` (see [`mac.md`](mac.md)) runs `ink_9um` seeds 42 and 43 and v8in on PHerc0139 w045 on the Mac GPU, checks v8in CPU vs MPS on a crop first, and prints AUC against w045's published labels (reverse as control) and row scores. It ran end to end here in CPU smoke mode; numbers and caveats in [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md). New: `kit layers`, `kit auc`, `scripts/v8in_run.py` (fp16 on MPS, opt-in). 71 tests.

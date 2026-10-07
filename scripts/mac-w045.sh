@@ -197,8 +197,8 @@ STRIDE="${V8IN_STRIDE:-}"
 if [[ -z "$STRIDE" && "$SMOKE" == "1" ]]; then
   STRIDE=64
 elif [[ -z "$STRIDE" ]]; then   # pick the finest stride whose estimate fits V8IN_HOURS, from the measured speed
-  STRIDE="$("$PY" - "$OUT/layers" "${T_crop_gpu}" "${V8IN_HOURS:-4}" "$V8IN" <<'EOF'
-import sys
+  STRIDE="$("$PY" - "$OUT/layers" "$WORK/logs/w045_crop_gpu.log" "${V8IN_HOURS:-4}" "$V8IN" <<'EOF'
+import re, sys
 sys.path.insert(0, sys.argv[4])
 import numpy as np, tifffile
 from ink8um.inference import coverage_mask, tile_positions, list_layer_files
@@ -208,7 +208,8 @@ for f in files:
     a = tifffile.imread(f)
     top = a if top is None else np.maximum(top, a)
 mask = coverage_mask(top[..., None])
-per_tile = float(sys.argv[2]) / 100                    # the 640 px crop at stride 64 is 100 tiles
+m = re.search(r"tiles=(\d+) done in (\d+)s", open(sys.argv[2]).read())   # the crop run on the GPU
+per_tile = float(m.group(2)) / int(m.group(1))
 budget = float(sys.argv[3]) * 3600 / 2                 # two directions
 for stride in (21, 32, 42, 64):
     n = len(tile_positions(mask, 64, stride))

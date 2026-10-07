@@ -38,8 +38,10 @@ def main(argv=None):
     model = InkDetector.from_pretrained(str(args.model_dir))
     started = time.time()
     last = [0.0]
+    tiles = [0]
 
     def progress(done, total):
+        tiles[0] = total
         if time.time() - last[0] > 30 or done == total:
             last[0] = time.time()
             print(f"  {done}/{total} tiles ({time.time() - started:.0f}s)", flush=True)
@@ -52,7 +54,8 @@ def main(argv=None):
                                      device=args.device, progress=progress)
     save_prediction(prediction, args.output)
     print(f"device={args.device} fp16={args.fp16} reverse={args.reverse} stride={args.stride or model.stride} "
-          f"done in {time.time() - started:.0f}s; shape={prediction.shape} mean={prediction.mean():.4f}", flush=True)
+          f"tiles={tiles[0]} done in {time.time() - started:.0f}s; shape={prediction.shape} "
+          f"mean={prediction.mean():.4f}", flush=True)
     return 0
 
 

@@ -71,6 +71,17 @@ bash scripts/mac-w045.sh
 
 Knobs: `V8IN_FP16=1` (half precision on MPS; kept only if the crop check still passes), `V8IN_STRIDE`, `V8IN_BATCH`, `V8IN_REGION=full`. What to expect from the AUC: Bullo27 reports 0.74 to 0.81 for `ink_9um` on another scroll it never saw; about 0.5 means the model reads nothing. A forward AUC close to the reverse AUC means it reads brightness, not ink.
 
+## First Letters target run: v8in on the public meshes of PHerc0813, 0358 and 0826
+
+```bash
+bash scripts/mac-w045.sh          # first; this needs its CPU vs MPS pass
+bash scripts/mac-atlas-v8in.sh    # resumable; ATLAS_HOURS=12 by default
+```
+
+[`scripts/mac-atlas-v8in.sh`](../scripts/mac-atlas-v8in.sh) reads all 81 automatic meshes on these three scrolls with v8in, using rodriguescarson's published renders (about 72 MB per mesh, deleted after use), both depth directions. It does the 5 meshes he holds back first, then the rest in Hecate rank order, so a run you stop early has covered the likeliest ones. Preregistered in [`prereg/2026-10-07-v8in-atlas.md`](prereg/2026-10-07-v8in-atlas.md): the script copies that rule into your ledger before the first inference and stops if the ledger holds a different one. It picks the stride from w045's measured speed and `ATLAS_HOURS`. At the end it prints which meshes the rule says to look at.
+
+**This is a target run.** Maps stay in `~/scrolls-work/atlas`. Do not post the maps or the list publicly; look privately, then record `null` or `candidate` with `python -m kit run status`. For a candidate, follow [`WORKFLOW.md`](WORKFLOW.md) section 3b. The rule's second-stride check: `SECOND_STRIDE=21 ONLY="PHerc0813/<mesh>" bash scripts/mac-atlas-v8in.sh`.
+
 ## Runbook: verify MPS against CPU on the control segment
 
 The script above runs exactly this. The published w035 surface volume can replace the render step: `python -m kit fetch w035 ink-dataset/pherc0139/w035/w035_9um.zarr`.
