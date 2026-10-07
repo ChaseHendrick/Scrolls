@@ -1,0 +1,3 @@
+[
+ {"job": "finetune", "device": "cpu", "notes": "Smoke test of finetune_loo_w062.py not run: the session's permission layer denied running code downloaded from the Hub. No AUC, timing or memory measured. Data inventory and GPU-hour estimates in notes.md."}
+]
