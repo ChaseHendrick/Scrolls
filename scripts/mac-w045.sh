@@ -181,7 +181,7 @@ EOF
   printf -v "T_$name" %s "$(( SECONDS - start ))"
 }
 
-say "5/7 v8in device check on a 640 px crop: CPU vs $V8IN_DEVICE, reverse as the control"
+say "5/7 v8in device check on a crop ($(( CROP[1] - CROP[0] )) px): CPU vs $V8IN_DEVICE, reverse as the control"
 v8in crop_cpu "$OUT/crop_layers" cpu 64 fwd --batch-size "$BATCH"
 v8in crop_gpu "$OUT/crop_layers" "$V8IN_DEVICE" 64 fwd "${FP16[@]}"
 v8in crop_gpu_reverse "$OUT/crop_layers" "$V8IN_DEVICE" 64 rev "${FP16[@]}"

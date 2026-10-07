@@ -94,7 +94,8 @@ def cmd_layers(args):
     except verify.VerifyError as exc:
         print(exc, file=sys.stderr)
         return 2
-    print(f"{result['layers']} layers of {result['shape']} from layer {result['start']} -> {result['out_dir']}")
+    window = f", rows {args.crop[0]}-{args.crop[1]}, columns {args.crop[2]}-{args.crop[3]}" if args.crop else ""
+    print(f"{result['layers']} layers of {result['shape']} from layer {result['start']}{window} -> {result['out_dir']}")
     return 0
 
 

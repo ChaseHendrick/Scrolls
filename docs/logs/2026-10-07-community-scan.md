@@ -54,3 +54,17 @@ What nobody in this set has done: a **hand-corrected** surface on an eligible sc
 - LimeGS [legibility proxy v5](https://huggingface.co/LimeGS/herculaneum-legibility-proxy-v5): a classifier that ranks 1 cm windows of ink maps by "legible text" likelihood. Self-labelled experimental, no held-out evaluation of the shipped refit. Worth trying as a second triage score once there is a map to triage (Untested idea).
 - Nieuwlaar's checkpoint soup and z-window ensemble: real gains on the PHerc0139 title (0.81 to 0.86 AUC) but for `ink_9um`. If v8in is the stronger base, apply the same idea to it later.
 - Physics vetoes (Nieuwlaar `vetoes.py`), Hecate depth concentration (rodriguescarson found it does not separate ink from non-ink).
+
+## Later the same day: w045 tooling and a CPU smoke run (Sourced fact: commands and files below)
+
+Added `kit layers`, `kit auc`, `scripts/v8in_run.py` and `scripts/mac-w045.sh`. The script ran end to end on this Linux container with `SMOKE=1 EXPECT_GPU=cpu` (villa PR #1865 at `6723ad158`, torch 2.14.1, v8in revision `d89166b`, model.safetensors SHA-256 `3b94548d…88c4cd`), on one 256 px window of w045 (rows 4000 to 4256, columns 2700 to 2956), v8in at stride 64:
+
+| Map | AUC as stored | AUC reversed |
+| --- | --- | --- |
+| `ink_9um` seed 42 | 0.7631 | 0.3674 |
+| `ink_9um` seed 43 | 0.6688 | 0.2478 |
+| v8in | 0.5857 | 0.2791 |
+
+These are a test of the script, not a result: 4,576 ink pixels in one window, and v8in at a quarter of its default tile density. Note for reading the real run: the reversed maps score well below 0.5, so they are not neutral. Compare forward and reverse distances from 0.5, not only their difference.
+
+Measured on the way: v8in costs about 8 s per tile on 4 CPU cores (it upsamples each 64 px tile to 96 x 256 x 256), so full-segment v8in is a GPU job; fp32 at batch 8 used about 10 GB of RAM and was killed for memory next to another job on a 15 GB machine, so the script picks the batch from memory (4 at 16 GB). `kit layers` reads w045 in row bands, 23 s for the full export, against about 72 s of reads layer by layer.

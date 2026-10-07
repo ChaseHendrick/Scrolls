@@ -2,6 +2,12 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (night): the w045 check is one command on the Mac
+
+`bash scripts/mac-w045.sh` (see [`mac.md`](mac.md)) runs `ink_9um` seeds 42 and 43 and v8in on PHerc0139 w045 on the Mac GPU, checks v8in CPU vs MPS on a crop first, and prints AUC against w045's published labels (reverse as control) and row scores. It ran end to end here in CPU smoke mode; numbers and caveats in [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md). New: `kit layers`, `kit auc`, `scripts/v8in_run.py` (fp16 on MPS, opt-in). 71 tests.
+
+Next: the user runs `scripts/mac-w045.sh` and pastes the summary. If v8in's forward AUC on w045 is clearly above `ink_9um`'s, v8in is the reader for the PHerc0826 / 0358 / 0813 / 1545 attempt. If MPS fails the crop check, report it (that is itself useful on the v8in model page).
+
 ## Session 7 October 2026 (evening): community scan, rowscore, new models
 
 Read 16 winners' and contributors' repositories, Hugging Face, and villa's history and branches. Notes: [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
