@@ -3,8 +3,9 @@ maps (forward and reverse) of PHerc0841 w00, ag896, ag405 and PHerc0139 w045.
 
   python analyze.py part1|part2|part3|all [--work DIR] [--out results_partN.json]
 
-part1: leave-one-out threshold calibrated on PHerc0841 (median forward value on labelled ink of the other two
-       segments), applied to the held-out one; millerandmuller's candidate rule at that threshold and at 0.7843.
+part1: leave-one-sheet-out threshold calibrated on PHerc0841. w00 and ag896 are two traces of one sheet;
+       both calibrate on ag405. ag405 calibrates on the fixed primary trace w00, never pooled with ag896.
+       Apply millerandmuller's candidate rule at that threshold and at 0.7843.
 part2: the automatic readout rules of three community repositories, reimplemented from the files and commits
        cited in notes.md, applied to every whole-segment map, forward and reverse.
 part3: kit rowscore and kit auc on random square windows of 0.25 to 4 cm2, forward and reverse.
@@ -34,6 +35,11 @@ SEGMENTS = {  # surface shape (H, W) and voxel size (um), from scripts/mac-w045.
 }
 P0841 = ["0841-w00", "0841-ag896", "0841-ag405"]
 ACTIVE = list(P0841)  # --segments narrows parts 2 and 3 (part 1 always needs all three); w045 dropped for budget
+# Fixed before part 1 runs. The second trace is a sensitivity check, not another independent sheet.
+SHEET_BY_SEGMENT = {"0841-w00": "w00-ag896", "0841-ag896": "w00-ag896", "0841-ag405": "ag405"}
+PRIMARY_TRACE = "0841-w00"
+CALIBRATION_TRACES = {"0841-w00": ("0841-ag405",), "0841-ag896": ("0841-ag405",),
+                      "0841-ag405": (PRIMARY_TRACE,)}
 
 
 def load(work, seg):
@@ -64,6 +70,31 @@ def mid_slice(work, seg):
 MM_FLOOR_PX = 0.5 * 1000 / 9.362
 
 
+def component_label_evidence(area, on_ink, in_supervision):
+    """Keep historical ink_frac; precision uses only pixels with known labels.
+
+    Pixels outside supervision are unknown, even when inklabels is zero there.
+    known_label_precision is undefined for an entirely unlabelled component.
+    """
+    area, on_ink, in_supervision = int(area), int(on_ink), int(in_supervision)
+    if not 0 <= on_ink <= in_supervision <= area or area <= 0:
+        raise ValueError("component label counts must satisfy 0 <= ink <= supervision <= area, area > 0")
+    return {"area_px": area, "ink_frac": on_ink / area, "sup_frac": in_supervision / area,
+            "supervised_ink_px": on_ink, "supervised_background_px": in_supervision - on_ink,
+            "unknown_px": area - in_supervision,
+            "known_label_precision": on_ink / in_supervision if in_supervision else None}
+
+
+def label_summary(components):
+    """Add label coverage without treating unknown pixels as false positives."""
+    known = [c["known_label_precision"] for c in components if c["known_label_precision"] is not None]
+    return {"label_evidence": components,
+            "candidates_without_supervision": sum(c["sup_frac"] == 0 for c in components),
+            "candidates_with_partial_supervision": sum(0 < c["sup_frac"] < 1 for c in components),
+            "median_supervision_fraction": float(np.median([c["sup_frac"] for c in components])) if components else None,
+            "median_known_label_precision": float(np.median(known)) if known else None}
+
+
 def mm_components(mask, ink=None, sup=None):
     lab, n = ndimage.label(mask, structure=np.ones((3, 3)))
     out = []
@@ -81,16 +112,15 @@ def mm_components(mask, ink=None, sup=None):
             continue
         c = {"long_px": int(max(h, w)), "bbox": [int(sl[0].start), int(sl[0].stop), int(sl[1].start), int(sl[1].stop)]}
         if ink is not None:
-            c["area_px"] = int(area[i - 1])
-            c["ink_frac"] = float(on_ink[i - 1] / area[i - 1])
-            c["sup_frac"] = float(in_sup[i - 1] / area[i - 1])
+            c.update(component_label_evidence(area[i - 1], on_ink[i - 1], in_sup[i - 1]))
         out.append(c)
     return out
 
 
 def mm_rule(d, T):
     """Counts under millerandmuller's rule at threshold T (probability). 'mostly on labelled ink': more than half
-    of the component's pixels are labelled ink (labels at level 2, inside the supervision mask)."""
+    of the component's pixels are labelled ink (labels at level 2, inside the supervision mask).
+    This historical count is not precision: unlabelled pixels remain unknown."""
     f = d["F"].astype(np.float32) / 255 >= T
     r = d["R"].astype(np.float32) / 255 >= T
     res = {}
@@ -99,7 +129,7 @@ def mm_rule(d, T):
         res[name] = {"candidates": len(cs), "per_cm2": round(len(cs) / d["area_cm2"], 3),
                      "mostly_on_ink": sum(c["ink_frac"] > 0.5 for c in cs),
                      "mostly_in_supervision": sum(c["sup_frac"] > 0.5 for c in cs),
-                     "px_at_or_above": int(m.sum())}
+                     "px_at_or_above": int(m.sum()), **label_summary(cs)}
     sup = d["sup"] & d["valid"]
     res["ink_share_at_or_above"] = round(float(f[sup & d["ink"]].mean()), 4)
     res["background_share_at_or_above"] = round(float(f[sup & ~d["ink"]].mean()), 5)
@@ -111,24 +141,46 @@ def ink_values(d):
     return d["F"][d["sup"] & d["ink"] & d["valid"]].astype(np.float32) / 255
 
 
+def calibration_traces(held_out):
+    traces = CALIBRATION_TRACES[held_out]
+    if any(SHEET_BY_SEGMENT[s] == SHEET_BY_SEGMENT[held_out] for s in traces):
+        raise ValueError("calibration cannot use another trace of the held-out sheet")
+    if len({SHEET_BY_SEGMENT[s] for s in traces}) != len(traces):
+        raise ValueError("calibration cannot pool duplicate traces of one sheet")
+    return traces
+
+
+def threshold_uint8(T):
+    """First uint8 bin accepted by the actual float32 map/255 comparison."""
+    if not np.isfinite(T) or not 0 <= T <= 1:
+        raise ValueError("threshold must be finite and between zero and one")
+    return int(np.searchsorted(np.arange(256, dtype=np.float32) / 255, T, side="left"))
+
+
 def part1(work):
     data = {s: load(work, s) for s in P0841}
     rows, med = [], {}
     for s, d in data.items():
         v = ink_values(d)
+        if not v.size:
+            raise ValueError(f"no supervised ink pixels in {s}")
         med[s] = float(np.median(v))
         rows.append({"segment": s, "area_cm2": round(d["area_cm2"], 2), "ink_px": int(v.size),
                      "background_px": int((d["sup"] & ~d["ink"] & d["valid"]).sum()),
                      "median_forward_on_ink": round(med[s], 4),
                      "median_reverse_on_ink": round(float(np.median(d["R"][d["sup"] & d["ink"] & d["valid"]]) / 255), 4)})
-    out = {"segments": rows, "loo": [], "training_threshold_0.7843": {}}
+    out = {"segments": rows, "loo": [], "training_threshold_0.7843": {},
+           "calibration_unit": "independent sheet", "primary_trace": PRIMARY_TRACE,
+           "sheet_by_segment": dict(SHEET_BY_SEGMENT)}
     for held in P0841:
-        others = [s for s in P0841 if s != held]
-        T = float(np.median(np.concatenate([ink_values(data[s]) for s in others])))
-        r = {"held_out": held, "calibrated_on": others, "threshold": round(T, 4),
-             "threshold_uint8": int(math.ceil(T * 255 - 1e-9)), **mm_rule(data[held], T)}
-        if held == "w045":
-            r["note"] = "w045 is not a PHerc0841 segment: threshold is the pooled median of all three PHerc0841 segments"
+        others = calibration_traces(held)
+        values = np.concatenate([ink_values(data[s]) for s in others])
+        if not values.size:
+            raise ValueError(f"no supervised ink pixels for calibrating {held}")
+        T = float(np.median(values))
+        r = {"held_out": held, "held_out_sheet": SHEET_BY_SEGMENT[held],
+             "calibrated_on": list(others), "threshold": round(T, 4),
+             "threshold_uint8": threshold_uint8(T), **mm_rule(data[held], T)}
         out["loo"].append(r)
     for s, d in data.items():
         out["training_threshold_0.7843"][s] = mm_rule(d, 0.7843)
@@ -160,13 +212,12 @@ def bnleft_rule(d, mid, T=199):
             if low_cov[cy, cx]:
                 ex["low_coverage"] += 1; continue
             comp = lab[sl] == i
-            area = int(comp.sum())
-            on_ink = float((d["ink"][sl] & d["sup"][sl] & comp).sum()) / area
-            cands.append(on_ink)
+            cands.append(component_label_evidence(comp.sum(), (d["ink"][sl] & d["sup"][sl] & comp).sum(),
+                                                  (d["sup"][sl] & comp).sum()))
         res[name] = {"components": int(n), "excluded": ex, "candidates": len(cands),
                      "per_cm2": round(len(cands) / d["area_cm2"], 3),
-                     "mostly_on_ink": int(sum(c > 0.5 for c in cands)),
-                     "frac_ge_T": round(float((P[d["valid"]] >= T).mean()), 5)}
+                     "mostly_on_ink": int(sum(c["ink_frac"] > 0.5 for c in cands)),
+                     "frac_ge_T": round(float((P[d["valid"]] >= T).mean()), 5), **label_summary(cands)}
     return res
 
 
@@ -204,17 +255,18 @@ def nerln_rule(d):
     labR, cR, sR = nerln_candidates(R, thr_m)
     _, cRa, sRa = nerln_candidates(R, NERLN_T)
     rev_mask = np.isin(labR, cR)
-    overl, on_ink = [], []
+    overl, label_evidence = [], []
     for i in cF:
         b = labF == i
         overl.append(float(rev_mask[b].mean()))
-        on_ink.append(float((d["ink"] & d["sup"])[b].mean()))
+        label_evidence.append(component_label_evidence(b.sum(), (d["ink"] & d["sup"])[b].sum(), d["sup"][b].sum()))
     occ_mpx = valid.sum() / 1e6
     return {"forward_lit_fraction": round(fa, 5), "reverse_matched_threshold_uint8": round(thr_m, 1),
             "forward": {**sF, "candidates": len(cF), "per_cm2": round(len(cF) / d["area_cm2"], 3),
                         "per_valid_mpx": round(len(cF) / occ_mpx, 2),
-                        "mostly_on_ink": int(sum(x > 0.5 for x in on_ink)),
-                        "overlap_ge_50pct_with_reverse": int(sum(x >= 0.5 for x in overl))},
+                        "mostly_on_ink": int(sum(c["ink_frac"] > 0.5 for c in label_evidence)),
+                        "overlap_ge_50pct_with_reverse": int(sum(x >= 0.5 for x in overl)),
+                        **label_summary(label_evidence)},
             "reverse_matched": {**sR, "candidates": len(cR), "per_cm2": round(len(cR) / d["area_cm2"], 3)},
             "reverse_absolute_128": {**sRa, "candidates": len(cRa)},
             "verdict_forward_exceeds_reverse": len(cF) > len(cR),
@@ -266,6 +318,17 @@ def slab_fraction(m, v):
     return float(np.bincount(lab.ravel())[1:].max() / b.sum())
 
 
+def site_slices(shape, site_shape):
+    """Nonoverlapping real footprints, including both remainder strips."""
+    H, W = shape
+    sh, sw = site_shape
+    if H <= 0 or W <= 0 or sh <= 0 or sw <= 0:
+        raise ValueError("canvas and site dimensions must be positive")
+    for y0 in range(0, H, sh):
+        for x0 in range(0, W, sw):
+            yield slice(y0, min(y0 + sh, H)), slice(x0, min(x0 + sw, W))
+
+
 def tauil_sites(d, mid):
     px_mm = d["vox"] * 1e-3
     sh, sw = int(round(12 / px_mm)), int(round(15 / px_mm))   # 12 mm along z (rows), 15 mm laterally
@@ -273,24 +336,43 @@ def tauil_sites(d, mid):
     valid_all = mid > 0                                        # read_sheets: valid = middle layer > 0
     mf, mr = tauil_rescale(d["F"]), tauil_rescale(d["R"])
     sites = []
-    for y0 in range(0, H - sh + 1, sh):
-        for x0 in range(0, W - sw + 1, sw):
-            sl = (slice(y0, y0 + sh), slice(x0, x0 + sw))
-            v = valid_all[sl]
-            if v.mean() < 0.05:                                # read_sheets skips these
-                continue
-            s = {"y0": y0, "x0": x0, "valid_frac": round(float(v.mean()), 3),
-                 "labelled_ink_px": int((d["ink"][sl] & d["sup"][sl]).sum())}
-            for face, m in (("fwd", mf[sl]), ("rev", mr[sl])):
-                b = best2mm(m, v, px_mm)
-                s[face] = {"best_2mm": round(b["best_2mm"], 3), "band": round(band_score(m, v), 3),
-                           "slab": round(slab_fraction(m, v), 3)}
-            for face, other in (("fwd", "rev"), ("rev", "fwd")):
-                a, o = s[face], s[other]
-                a["one_sided"] = round(a["best_2mm"] - o["best_2mm"], 3)
-                a["rank_score"] = round((a["best_2mm"] + 2 * a["band"] + max(0.0, a["one_sided"])) * (1 - 0.7 * a["slab"]), 3)
-            sites.append(s)
-    out = {"site_px": [sh, sw], "sites": len(sites)}
+    covered_canvas_px = covered_valid_px = skipped_canvas_px = skipped_valid_px = 0
+    tiled_sites = skipped_sites = 0
+    for sl in site_slices((H, W), (sh, sw)):
+        tiled_sites += 1
+        height, width = sl[0].stop - sl[0].start, sl[1].stop - sl[1].start
+        pad = ((0, sh - height), (0, sw - width))
+        # Outside-canvas samples are zero and invalid; they cannot add evidence.
+        v = np.pad(valid_all[sl], pad, constant_values=False)
+        if v.mean() < 0.05:                                    # fraction of the nominal-size site
+            skipped_sites += 1
+            skipped_canvas_px += height * width
+            skipped_valid_px += int(v.sum())
+            continue
+        covered_canvas_px += height * width
+        covered_valid_px += int(v.sum())
+        s = {"y0": sl[0].start, "y1": sl[0].stop, "x0": sl[1].start, "x1": sl[1].stop,
+             "shape_px": [height, width], "padded_px": sh * sw - height * width,
+             "valid_frac": round(float(v.mean()), 3),
+             "labelled_ink_px": int((d["ink"][sl] & d["sup"][sl]).sum())}
+        for face, M in (("fwd", mf), ("rev", mr)):
+            m = np.pad(M[sl], pad, constant_values=0)
+            b = best2mm(m, v, px_mm)
+            s[face] = {"best_2mm": round(b["best_2mm"], 3), "band": round(band_score(m, v), 3),
+                       "slab": round(slab_fraction(m, v), 3)}
+        for face, other in (("fwd", "rev"), ("rev", "fwd")):
+            a, o = s[face], s[other]
+            a["one_sided"] = round(a["best_2mm"] - o["best_2mm"], 3)
+            a["rank_score"] = round((a["best_2mm"] + 2 * a["band"] + max(0.0, a["one_sided"])) * (1 - 0.7 * a["slab"]), 3)
+        sites.append(s)
+    valid_px = int(valid_all.sum())
+    out = {"site_px": [sh, sw], "sites": len(sites), "boundary_policy": "zero-pad to nominal site; padding invalid",
+           "coverage": {"tiled_sites": tiled_sites, "skipped_sites_below_5pct_valid": skipped_sites,
+                        "canvas_px": H * W, "valid_surface_px": valid_px,
+                        "covered_canvas_px": covered_canvas_px, "covered_valid_px": covered_valid_px,
+                        "skipped_canvas_px": skipped_canvas_px, "skipped_valid_px": skipped_valid_px,
+                        "canvas_fraction": covered_canvas_px / (H * W),
+                        "valid_fraction": covered_valid_px / valid_px if valid_px else None}}
     for face in ("fwd", "rev"):
         st = [s for s in sites if s[face]["best_2mm"] >= 0.5]
         out[face] = {"strong": len(st),
