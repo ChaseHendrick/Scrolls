@@ -25,6 +25,9 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 ## Tools
 
 - [kit/auc.py](kit/auc.py): pixel AUC against labels, reverse control, crop and edge options
+- [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
+- [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
+- [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run
 - [kit/provenance.py](kit/provenance.py): who ran what, when, from which inputs, with one digest
 - [kit/verify.py](kit/verify.py): two maps agree only if a control map is caught
 - [kit/rowscore.py](kit/rowscore.py): text-row periodicity triage score

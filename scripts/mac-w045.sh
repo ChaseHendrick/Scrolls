@@ -274,6 +274,27 @@ CROP_LOG="$WORK/logs/${NAME}_${DEV}_gpu.log"   # per-tile speed for the stride e
 W045_DEVICE="$WORK/w045/results/v8in_device.json"
 [[ "$FP16_ON" == 1 ]] && W045_DEVICE="$WORK/w045/results/v8in_device_fp16.json"
 passed() { "$PY" -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))["verdict"] == "pass" else 1)' "$1" 2>/dev/null; }
+# fp16 is kept only when it is faster. On the user's M1 Pro it was about 5x slower than fp32
+# (5.5 to 6.2 s per tile against 1.1 to 1.2), so a matching but slower fp16 falls back to fp32.
+fp16_slower() {  # FP32_LOG FP16_LOG: true when both passes finished and fp16 took longer per tile
+  "$PY" - "$1" "$2" <<'EOF'
+import re, sys
+def per_tile(path):
+    try:
+        runs = re.findall(r"tiles=(\d+) done in (\d+)s", open(path).read())
+    except OSError:
+        return None
+    return int(runs[-1][1]) / max(int(runs[-1][0]), 1) if runs else None
+a, b = per_tile(sys.argv[1]), per_tile(sys.argv[2])
+if a and b:
+    print(f"per tile: fp32 {a:.2f} s, fp16 {b:.2f} s", file=sys.stderr)
+sys.exit(0 if a and b and b > a else 1)
+EOF
+}
+drop_fp16() {
+  echo "fp16 is slower than fp32 on this Mac: the remaining passes run fp32 (maps match either way)" >&2
+  FP16=(--batch-size "$BATCH")
+}
 # The device check answers one question (does v8in on this Mac's GPU give the CPU's map?), so other
 # segments and models reuse w045's pass rather than spend another CPU pass (40 min on an M1 Pro).
 # fp16 is checked once against fp32 on the GPU, which w045's pass already tied to the CPU.
@@ -284,6 +305,10 @@ if [[ ( "$SEGMENT" != w045 || "$MODEL" != v8in ) && "${DEVICE_CHECK:-0}" != 1 &&
   [[ "$W045_DEVICE" -ef "$OUT/results/$DEVJSON.json" ]] || cp "$W045_DEVICE" "$OUT/results/$DEVJSON.json"
   CROP_LOG="$WORK/logs/w045_crop_gpu.log"
   T_crop_cpu="w045"; T_crop_gpu="w045"
+  if [[ "$FP16_ON" == 1 ]]; then
+    if fp16_slower "$WORK/logs/w045_crop_gpu.log" "$WORK/logs/w045_crop_gpu_fp16.log"; then drop_fp16
+    else CROP_LOG="$WORK/logs/w045_crop_gpu_fp16.log"; fi
+  fi
 elif [[ "$FP16_ON" == 1 ]]; then
   say "5/7 fp16 check on a crop: $V8IN_DEVICE fp16 against $V8IN_DEVICE fp32, reverse fp16 as the control"
   [[ "$SMOKE" == 1 ]] || passed "$WORK/w045/results/v8in_device.json" \
@@ -299,6 +324,9 @@ elif [[ "$FP16_ON" == 1 ]]; then
   set -e
   [[ "$VDEV" == 0 ]] || { echo "v8in fp16 does not match fp32 on $V8IN_DEVICE; run without V8IN_FP16" >&2; exit 1; }
   echo "crop: fp32 ${T_crop_cpu#fp32 }s, fp16 ${T_crop_gpu}s"
+  if fp16_slower "$WORK/logs/${NAME}_${DEV}_gpu.log" "$WORK/logs/${NAME}_${DEV}_gpu_fp16.log"; then
+    drop_fp16; CROP_LOG="$WORK/logs/${NAME}_${DEV}_gpu.log"
+  fi
 else
 say "5/7 v8in device check on a crop ($(( CROP[1] - CROP[0] )) px): CPU vs $V8IN_DEVICE, reverse as the control"
 v8in "${DEV}_cpu" "$OUT/crop_layers" cpu 64 fwd --batch-size "$BATCH"

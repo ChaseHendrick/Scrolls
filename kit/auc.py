@@ -96,6 +96,20 @@ def label_grid(labels_shape, surface_shape, crop, map_shape):
     return rows, cols
 
 
+def labels_on_map(labels, mask, level, surface_shape, crop, map_shape):
+    """Boolean ink and supervision arrays on the map's own grid."""
+    np = _numpy()
+    lab = _levels(labels, level)
+    msk = _levels(mask, level)
+    if lab.shape != msk.shape:
+        raise VerifyError(f"labels {lab.shape} and mask {msk.shape} differ in shape at level {level}")
+    rows, cols = label_grid(lab.shape, surface_shape, crop, map_shape)
+    r0, r1, c0, c1 = int(rows.min()), int(rows.max()) + 1, int(cols.min()), int(cols.max()) + 1
+    ink = np.asarray(lab[r0:r1, c0:c1])[np.ix_(rows - r0, cols - c0)] > 0
+    supervised = np.asarray(msk[r0:r1, c0:c1])[np.ix_(rows - r0, cols - c0)] > 0
+    return ink, supervised
+
+
 def score_array(prediction, ink, mask, keep_zero=False, inner=0):
     """AUC of a 2D map against same-shape boolean ink and mask arrays.
 
@@ -133,14 +147,7 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
         if crop is not None:
             raise VerifyError("a cropped map needs the full surface shape (surface_shape)")
         surface_shape = pred.shape
-    lab = _levels(labels, level)
-    msk = _levels(mask, level)
-    if lab.shape != msk.shape:
-        raise VerifyError(f"labels {lab.shape} and mask {msk.shape} differ in shape at level {level}")
-    rows, cols = label_grid(lab.shape, surface_shape, crop, pred.shape)
-    r0, r1, c0, c1 = int(rows.min()), int(rows.max()) + 1, int(cols.min()), int(cols.max()) + 1
-    ink = np.asarray(lab[r0:r1, c0:c1])[np.ix_(rows - r0, cols - c0)] > 0
-    supervised = np.asarray(msk[r0:r1, c0:c1])[np.ix_(rows - r0, cols - c0)] > 0
+    ink, supervised = labels_on_map(labels, mask, level, surface_shape, crop, pred.shape)
     result = {"forward": score_array(pred, ink, supervised, keep_zero, inner),
               "files": {"prediction": str(prediction), "labels": str(labels), "mask": str(mask),
                         "control": None if control is None else str(control)},

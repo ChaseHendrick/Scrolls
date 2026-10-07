@@ -6,7 +6,7 @@ Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` 
 
 User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum posting**. The longer view, steps 6 onwards, is in [`plans/roadmap.md`](plans/roadmap.md).
 
-1. The user pastes the `SEGMENT=0841-w00` summary (v8in fp16, QUICK); compare with the bars on the same crop with a 64 px edge left out: d9v2 0.8994, `ink_9um` seed 42 0.8061 (the summary's `ink_9um` line should match 0.8061 exactly).
+1. The user pastes the `SEGMENT=0841-w00` summary (v8in, QUICK; the fp16 run was 6.2 s per tile against 1.1 to 1.2 in fp32, so it was to be restarted without `V8IN_FP16`); compare with the bars on the same crop with a 64 px edge left out: d9v2 0.8994, `ink_9um` seed 42 0.8061 (the summary's `ink_9um` line should match 0.8061 exactly).
 2. The same for `0841-ag896` and `0841-ag405` (bars: d9v2 0.8230 / 0.8319, `ink_9um` 0.6594 / 0.7838), one run at a time.
 3. `MODEL=v8in-1447` on the three crops: Youssef's PHerc1447 fine-tune, idea 1 with no training.
 4. Choose the reader for the targets: the v8in atlas run stays preregistered; if d9v2 stays clearly ahead, propose a second preregistered run with d9v2 on PHerc0813 and 0358 (TAUIL ran it on 0826 only).

@@ -5,7 +5,7 @@ import json
 import sys
 from datetime import date
 
-from . import auc, compute, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
+from . import auc, compute, ensemble, hpscore, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -88,6 +88,19 @@ def cmd_auc(args):
     return 0
 
 
+def cmd_hpscore(args):
+    try:
+        result = hpscore.score_files(args.prediction, args.labels, args.mask, args.voxel_um, args.control,
+                                     args.level, args.crop, args.surface_shape, args.inner)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else hpscore.format_result(result))
+    return 0
+
+
 def cmd_provenance(args):
     try:
         if args.action == "write":
@@ -117,6 +130,20 @@ def cmd_compute(args):
         return 2
     r = compute.rows(records, args.watts)
     print(json.dumps(r, indent=2) if args.json else compute.table(r, args.watts))
+    return 0
+
+
+def cmd_ensemble(args):
+    try:
+        result = ensemble.ensemble_files(args.out, args.maps, args.method, args.weights)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"{result['method']} of {len(result['inputs'])} maps -> {result['out']} "
+              f"({result['valid_px']} valid px of {result['shape'][0]} x {result['shape'][1]})")
     return 0
 
 
@@ -237,6 +264,22 @@ def build_parser():
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_auc)
 
+    p = sub.add_parser("hpscore", help="letter-scale score: 48 um high-passed correlation with the labels (Scheirer)")
+    p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
+    p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
+    p.add_argument("--mask", required=True, help="supervision.zarr")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.366")
+    p.add_argument("--control", help="reverse-direction map of the same surface")
+    p.add_argument("--level", default=auc.DEFAULT_LEVEL)
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    p.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"))
+    p.add_argument("--inner", type=int, default=0, metavar="PX", help="leave this many edge pixels out")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug")
+    p.add_argument("--name", default="letter-scale")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_hpscore)
+
     p = sub.add_parser("provenance", help="who ran what, when, from which inputs: a record and one digest")
     actions = p.add_subparsers(dest="action", required=True)
     a = actions.add_parser("write", help="hash models, inputs and outputs into a provenance record")
@@ -259,6 +302,15 @@ def build_parser():
     p.add_argument("--watts", type=float, help="assumed average power draw, for a Wh estimate")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_compute)
+
+    p = sub.add_parser("ensemble", help="average several ink maps of one surface (mean, or rank mean across models)")
+    p.add_argument("out", help="output map, .tif (uint16) or .npy (float32)")
+    p.add_argument("maps", nargs="+", help="input maps on the same grid (.tif or .npy)")
+    p.add_argument("--method", choices=ensemble.METHODS, default="mean",
+                   help="mean: same model (seeds, checkpoints, z windows); rank: different models")
+    p.add_argument("--weights", type=float, nargs="+", help="one weight per map (default equal)")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_ensemble)
 
     p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
     p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")

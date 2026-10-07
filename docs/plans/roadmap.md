@@ -21,7 +21,7 @@ PHerc0841 crop numbers leave a 64 px edge out (`kit auc --inner 64`). Published 
 
 Goal: an honest ranking of released readers on PHerc0841, the only labelled scroll no candidate trained on.
 
-1. v8in on 0841 w00, then ag896, then ag405 (Mac, about 20 min each with `V8IN_FP16=1 QUICK=1`, one at a time). Each summary's `ink_9um` seed 42 line must match the CPU bar to four decimals.
+1. v8in on 0841 w00, then ag896, then ag405 (Mac, about 20 min each with `QUICK=1`, one at a time; fp16 is about 5x slower on the M1 Pro, so leave it off). Each summary's `ink_9um` seed 42 line must match the CPU bar to four decimals.
 2. Youssef's PHerc1447 fine-tune on the same three crops (`MODEL=v8in-1447`, Mac, about 20 min each).
 3. Reader v2 on the three 0841 crops (here, CPU, about 2 min each). Hecate optional: it needs villa's Hecate inference path and aviad12g found its eligible-scroll positives depth-order independent.
 4. An ensemble (mean of the best two or three maps) on the same crops (here, seconds).
