@@ -31,6 +31,10 @@ Related diagnostics: [first-letters-scan-atlas](https://github.com/claudepro1515
 
 What these nulls say: the public 9 µm model, on automatically traced or spiral-fitted surfaces, did not show letters. What they do not say: that these scrolls have no ink. On PHerc0841, the same public pipeline found ink only as blobs where the team's 2.4 µm predictions show text (Bullo27 calibration). Surface quality and model generalization are the open variables.
 
+## Apple Silicon support (open PRs, 2026-10-07)
+
+Ink inference on MPS: [#1865](https://github.com/ScrollPrize/villa/pull/1865) and [#1812](https://github.com/ScrollPrize/villa/pull/1812) open, [#1770](https://github.com/ScrollPrize/villa/pull/1770) closed for inactivity. Training, `vesuvius.predict` and spiral fitting on MPS: [#1927](https://github.com/ScrollPrize/villa/pull/1927), [#1988](https://github.com/ScrollPrize/villa/pull/1988), [#1925](https://github.com/ScrollPrize/villa/pull/1925). Lasagna on MPS merged ([#1639](https://github.com/ScrollPrize/villa/pull/1639)). Details: [`mac.md`](mac.md).
+
 ## Recent Progress Prize winners (what gets paid)
 
 August 2026, $31,000 total: $20,000 patch-based unwrapping (William Stevens); $2,500 9 µm surface model and ScrollFiesta fixes; $1,000 each for ink checkpoint benchmarking, seeded sheet growing, a depth-slice study, Lasagna and VC3D fixes, the PHerc. 0826 First Letters run, nnInteractive label refinement; $500 each for dense pseudo-labels and checkpoint repair, assorted villa fixes, sustained PR work; $250 each for a shared disk cache, spiral fitting on Windows, VC3D agent bridge fixes, checkpoint averaging.

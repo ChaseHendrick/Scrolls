@@ -17,6 +17,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 | RTX 5090 | Four experiment reports incl. a PHerc0826 run | [ShribyrLabs/vesuvius-reports](https://github.com/ShribyrLabs/vesuvius-reports) |
 | Modal A10 (cloud) | Full PHerc0211 First Letters run, about 6.5 h GPU + 1.5 h CPU, **$13.53** | [bnleft/first-light-pherc0211](https://github.com/bnleft/first-light-pherc0211) |
 | 12 GB consumer cards | The official spiral fitter, after a July 2026 progress-prize fix | [winners](https://scrollprize.org/winners) |
+| Apple Silicon (M1 Max, M4, M5 Pro) | Ink inference on MPS through open villa PRs, 2.4x to 7.6x faster than CPU | [docs/mac.md](mac.md) |
 | CPU only, 2 cores | Scan-visibility atlas of 31 scans, about 400 MB streamed per scroll | [first-letters-scan-atlas](https://github.com/claudepro1515/first-letters-scan-atlas) |
 
 `python -m kit doctor` checks for 12 GB of GPU memory and 25 GB of free disk. Disk: one tutorial training segment is about 25 GB, the full ink label set is hundreds of GB ([tutorial](https://scrollprize.org/tutorial5)), and VC3D's streaming cache under `~/.VC3D/remote_cache` grows by gigabytes.

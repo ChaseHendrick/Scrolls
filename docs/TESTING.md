@@ -36,8 +36,8 @@ CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) runs the te
 | Test | Pins |
 | --- | --- |
 | `PrizeSnapshotTest` | Totals and tiers, 13 Grand Prize and 22 First Letters volumes, PHerc1447 moved off First Letters, every volume resolved to an S3 Zarr name, scroll-name normalization, deadline arithmetic |
-| `DoctorTest` | `nvidia-smi` parsing, the 12 GB threshold, villa checkout detection |
-| `PlanTest` | Control segment present, resolved target path, `--direction both`, privacy instruction, 8.64 µm resampling note, rejection of ineligible scrolls, cost arithmetic against bnleft's published A10 figure |
+| `DoctorTest` | `nvidia-smi` parsing, the 12 GB threshold, Apple Silicon reported as a path not a failure, memory rounding, villa checkout detection |
+| `PlanTest` | Mac setup (VC3D.app tools, MPS check, PR branch, batch 1), control segment present, resolved target path, `--direction both`, privacy instruction, 8.64 µm resampling note, rejection of ineligible scrolls, cost arithmetic against bnleft's published A10 figure |
 | `LedgerTest` | Readout hash and tamper detection, legal transitions, candidate cannot go public before `--announced`, null can, costs, slug safety |
 | `CliTest` | End-to-end CLI for `prizes`, `plan` and `run` |
 

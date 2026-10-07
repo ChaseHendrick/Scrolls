@@ -8,6 +8,33 @@ tutorial as the authority when a command fails.
 
 from . import prizes
 
+SETUP_MAC = """\
+# 0. Setup on Apple Silicon (once). Nothing here uses CUDA.
+#    VC3D: install VC3D-<version>-macos-arm64.dmg from https://github.com/ScrollPrize/villa/releases
+#    Use the latest build: the stable build crashes opening PHerc0826 (villa issue #1910).
+brew install uv awscli
+#    First launch of VC3D: right-click > Open, or
+xattr -dr com.apple.quarantine /Applications/VC3D.app
+export VC_BIN=/Applications/VC3D.app/Contents/MacOS   # vc_render_tifxyz and friends ship here
+export PATH="$VC_BIN:$PATH"
+git clone https://github.com/ScrollPrize/villa.git
+cd villa/vesuvius && uv sync --extra models
+#    Not yet tried on macOS by this repo. If the volume-cartographer Python package fails to
+#    build, follow the macOS section of villa/volume-cartographer/README.md (scripts/build_macos.sh).
+uv run --extra models python -c "import torch; print(torch.__version__, '| mps:', torch.backends.mps.is_available())"
+uvx --from huggingface_hub hf download scrollprize/ink_9um \\
+  hybrid_3d2d-seed42/step-075000.pth --local-dir checkpoints/ink_9um
+uvx --from huggingface_hub hf download scrollprize/ink_9um \\
+  hybrid_3d2d-seed43/step-075000.pth --local-dir checkpoints/ink_9um
+#    Stock villa ink inference ignores the Mac GPU and runs on the CPU: correct, but slow
+#    (about 114 s CPU vs 38 s MPS for one PHerc0139 segment in villa PR #1865's test).
+#    To try the GPU, check out an open, unreviewed PR branch and record which one you used:
+#      git fetch origin pull/1865/head:pr-1865 && git checkout pr-1865
+#    Reported risk on #1865: with torch 2.12.1, non-blocking host-to-MPS copies can read freed
+#    memory. Run the control on CPU and on MPS and compare before trusting MPS output.
+#    Full-scroll work: rent a CUDA GPU (docs/compute.md).
+"""
+
 CONTROL = """\
 # 1. Control first: a PHerc. 0139 segment the released models were trained on.
 #    If you cannot see letters here, the pipeline is broken, not the scroll.
@@ -79,7 +106,7 @@ RULES = """\
 """
 
 
-def first_letters(scroll, batch=4, snapshot=None):
+def first_letters(scroll, batch=None, snapshot=None, mac=False):
     snapshot = snapshot or prizes.load()
     entry = prizes.eligible_entry(snapshot, scroll)
     if entry is None:
@@ -87,6 +114,8 @@ def first_letters(scroll, batch=4, snapshot=None):
         raise ValueError(f"{scroll} is not First Letters eligible in the {snapshot['checked']} snapshot. Eligible: {names}")
     canonical = entry["scroll"]
     slug = canonical.lower()
+    if batch is None:
+        batch = 1 if mac else 4
     resample = ""
     if abs(entry["voxel_um"] - NATIVE_UM) > 0.1:
         resample = RESAMPLE_NOTE.format(voxel=entry["voxel_um"])
@@ -94,7 +123,7 @@ def first_letters(scroll, batch=4, snapshot=None):
     return "\n".join([
         f"# First Letters plan for {canonical} (prize snapshot {snapshot['checked']}; check scrollprize.org/prizes first)",
         "",
-        SETUP,
+        SETUP_MAC if mac else SETUP,
         CONTROL.format(batch=batch),
         TARGET.format(scroll=canonical, volume=entry["volume"], zarr=entry["zarr"], voxel=entry["voxel_um"],
                       browser=prizes.DATA_BROWSER + canonical, slug=slug, batch=batch, resample=resample),

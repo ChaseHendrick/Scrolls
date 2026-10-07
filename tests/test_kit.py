@@ -56,6 +56,19 @@ class DoctorTest(unittest.TestCase):
         self.assertEqual(doctor.check_gpu([("small", 8192)])[0], doctor.WARN)
         self.assertEqual(doctor.check_gpu([("ok", 12288)])[0], doctor.PASS)
 
+    def test_apple_silicon_is_a_path_not_a_failure(self):
+        self.assertTrue(doctor.is_apple_silicon("Darwin", "arm64"))
+        self.assertFalse(doctor.is_apple_silicon("Linux", "arm64"))
+        status, detail = doctor.check_gpu([], apple_silicon=True)
+        self.assertEqual(status, doctor.WARN)
+        self.assertIn("docs/mac.md", detail)
+
+    def test_ram_rounding(self):
+        self.assertEqual(doctor.check_ram(15.6)[0], doctor.PASS)
+        self.assertEqual(doctor.check_ram(8.0)[0], doctor.WARN)
+        self.assertIn("shared with the GPU", doctor.check_ram(32.0, apple_silicon=True)[1])
+        self.assertEqual(doctor.check_ram(None)[0], doctor.WARN)
+
     def test_villa_detection(self):
         with tempfile.TemporaryDirectory() as tmp:
             self.assertEqual(doctor.check_villa(tmp)[0], doctor.FAIL)
@@ -84,6 +97,14 @@ class PlanTest(unittest.TestCase):
         text = plan.first_letters("PHerc0800")
         self.assertIn("--voxel-size 8.64 ", text)
         self.assertIn("resampling to 9.362 um", text)
+
+    def test_mac_plan(self):
+        text = plan.first_letters("PHerc0826", mac=True)
+        self.assertIn("/Applications/VC3D.app/Contents/MacOS", text)
+        self.assertIn("torch.backends.mps.is_available()", text)
+        self.assertIn("pull/1865/head", text)
+        self.assertIn("--batch-size 1", text)
+        self.assertNotIn("cuda:', torch.cuda.is_available()", text)
 
     def test_plan_rejects_ineligible_scroll(self):
         with self.assertRaises(ValueError):

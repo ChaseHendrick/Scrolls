@@ -9,8 +9,8 @@ Use Python 3.10 or newer. Depending on the environment the executable is `python
 | Command | Result | Important inputs |
 | --- | --- | --- |
 | `python -m kit prizes` | Table of open prizes, days left, eligible scrolls | `--json`, `--today YYYY-MM-DD` |
-| `python -m kit doctor` | pass / warn / fail per check; exit 1 on any fail | `VILLA`, `VC_BIN` environment variables; `--disk PATH` |
-| `python -m kit plan SCROLL` | Shell commands with comments: setup, control, target, rules | `--batch N`; exits 2 for an ineligible scroll |
+| `python -m kit doctor` | pass / warn / fail per check; exit 1 on any fail; Apple Silicon without CUDA is a warn | `VILLA`, `VC_BIN` environment variables; `--disk PATH` |
+| `python -m kit plan SCROLL` | Shell commands with comments: setup, control, target, rules | `--batch N`, `--mac`; exits 2 for an ineligible scroll |
 | `python -m kit cost` | A dollar figure | `--gpu-hours`, `--rate`, optional CPU and storage |
 | `python -m kit run init/status/cost/check/list` | Ledger records under `experiments/` | `--root DIR`; `status ... --announced` only after an official announcement |
 

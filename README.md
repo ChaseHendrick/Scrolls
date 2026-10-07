@@ -13,8 +13,9 @@ If you are new, **go for Progress Prizes first, then First Letters**. Leave the 
 
 1. **Read [`docs/start-here.md`](docs/start-here.md).** It is the plain-language path from "no idea" to a first submission, with what each step costs.
 2. **Join the [Vesuvius Challenge Discord](https://discord.gg/V4fJhvtaQn).** Registration there is a condition of winning the Grand Prize, and most announcements land there first.
-3. **Run the control.** Reproduce letters on PHerc. 0139 segment w035, which the released ink models were trained on. If you cannot see letters there, your pipeline is broken. `python -m kit plan PHerc0826` prints the commands.
-4. **Win something small and real.** In July and August 2026, 28 Progress Prizes went to merged bug fixes, QA tools, benchmarks, and one honest end-to-end First Letters run that found nothing but published its commands and costs. See [`docs/state-of-play.md`](docs/state-of-play.md).
+3. **On a Mac?** Read [`docs/mac.md`](docs/mac.md). VC3D, rendering and flattening run natively on Apple Silicon; ink inference runs on the CPU unless you use an open villa PR.
+4. **Run the control.** Reproduce letters on PHerc. 0139 segment w035, which the released ink models were trained on. If you cannot see letters there, your pipeline is broken. `python -m kit plan PHerc0826` prints the commands.
+5. **Win something small and real.** In July and August 2026, 28 Progress Prizes went to merged bug fixes, QA tools, benchmarks, and one honest end-to-end First Letters run that found nothing but published its commands and costs. See [`docs/state-of-play.md`](docs/state-of-play.md).
 
 Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists can read. Raw compute does not buy that by itself. In August and September 2026 at least five independent teams, at least three of them openly Claude-driven, ran the released 9 µm ink models on eligible scrolls (one survey covered all 21 that lacked catalog segments) and published **nulls**. The bottleneck is keeping a surface on one papyrus sheet, and getting ink models to generalize across scrolls. It is not GPU hours. See [`docs/compute.md`](docs/compute.md).
 
@@ -28,6 +29,7 @@ python -m kit prizes                      # open prizes, deadlines, eligible scr
 python -m kit doctor                      # GPU, disk, uv/docker/git, VILLA and VC_BIN paths
 python -m kit plan PHerc0826              # control + target commands for one eligible scroll
 python -m kit plan PHerc0800 --batch 1    # 8.64 um scan: prints the resampling note
+python -m kit plan PHerc0826 --mac        # Apple Silicon: VC3D.app tools, CPU or MPS inference
 python -m kit cost --gpu-hours 6.5 --rate 1.10
 python -m kit run init p0826-a --scroll PHerc0826 \
   --question "Does ink_9um show rows on a hand-refined GrowPatch near the outer wraps?" \
@@ -75,6 +77,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
 | [`docs/state-of-play.md`](docs/state-of-play.md) | What has been read, what has been tried, recent winners and published nulls |
 | [`docs/compute.md`](docs/compute.md) | Hardware, cloud costs, and what AI agents can and cannot do here |
+| [`docs/mac.md`](docs/mac.md) | Apple Silicon: what runs locally, the open MPS PRs, useful Mac contributions |
 | [`docs/engine.md`](docs/engine.md) | villa is the engine; how `kit/` sits on top of it |
 | [`docs/external.md`](docs/external.md) | ScrollPrize repositories, community tools, datasets, models |
 | [`docs/sources.md`](docs/sources.md) | Consolidated URLs |
@@ -96,7 +99,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | Piece | Role |
 | --- | --- |
 | `prizes.py` | Load the snapshot, normalize scroll names (`PHerc. 826` = `PHerc0826`), days to deadline |
-| `doctor.py` | `nvidia-smi`, disk, tools, `VILLA` and `VC_BIN` checks with sourced thresholds |
+| `doctor.py` | `nvidia-smi` or Apple Silicon, memory, disk, tools, `VILLA` and `VC_BIN` checks with sourced thresholds |
 | `plan.py` | Official command templates filled per scroll; cost arithmetic |
 | `ledger.py` | `run.json` records, readout hash, legal status transitions, privacy gate |
 | `cli.py` | `python -m kit` entry point |

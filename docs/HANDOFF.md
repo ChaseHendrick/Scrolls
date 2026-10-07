@@ -2,6 +2,16 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026: M1 Pro path and repo transfer
+
+The user's machine is an Apple M1 Pro. Added `doctor` Apple Silicon handling (warn, not fail; memory check; VC3D.app tool path), `plan --mac`, [`mac.md`](mac.md), and [`logs/2026-10-07-mac-and-repos.md`](logs/2026-10-07-mac-and-repos.md). 25 tests pass.
+
+Key facts: stock villa ink inference is CUDA or CPU. MPS support is in open PRs #1865 and #1812; do not write a duplicate. Lasagna has MPS (#1639). The VC3D stable build crashes opening PHerc0826 on macOS (#1910); use the latest build.
+
+From Chase's repositories, the GENChase Apple GPU verification method and the Research-Integrity skill transfer. Nothing else does in a meaningful way; see the log.
+
+Next: the user runs `python -m kit doctor` and the w035 control on the Mac (CPU), then on the #1865 branch (MPS), and compares.
+
 ## Session 6 October 2026: repository set up
 
 Work is on branch `claude/youthful-heisenberg-gdjttc`. The repository went from a one-line README to a workbench modeled on [Undeciphered-Texts](https://github.com/ChaseHendrick/Undeciphered-Texts): README, governance docs, research docs, and the `kit/` package with 22 passing tests.
@@ -17,7 +27,6 @@ What was not done:
 
 - No pipeline step was run. Nothing here has touched a CT volume beyond listing bucket prefixes.
 - scrollprize.org and the Substack were blocked from this session. Prize facts come from the website source in villa. The Substack First Letters workflow post was not read in full.
-- The user has not yet said what hardware they have. `python -m kit doctor` on their machine is the first step.
 
 Next steps, in order:
 

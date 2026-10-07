@@ -16,6 +16,15 @@ This repository mixes **sourced research notes** about the Vesuvius Challenge wi
 10. **No scroll data in Git.** No volumes, renders, ink maps, checkpoints or large binaries. They are large and some carry non-commercial licenses.
 11. **Plain style.** Plain sentences. Do not put U+2014 or U+2013 dashes in new text.
 
+## Evidence discipline
+
+The [Research-Integrity](https://github.com/ChaseHendrick/Research-Integrity) skill fits this repository: say how each claim is known, what each search could and could not reach, and whether each check could have failed. A First Letters readout that cannot come out negative is not a check. Install it in Claude Code with:
+
+```
+/plugin marketplace add ChaseHendrick/Research-Integrity
+/plugin install research-integrity@research-integrity
+```
+
 ## Quality bar
 
 See [`QUALITY.md`](QUALITY.md) and [`NOVELTY.md`](NOVELTY.md).

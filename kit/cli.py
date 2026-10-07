@@ -26,7 +26,7 @@ def cmd_doctor(args):
 
 def cmd_plan(args):
     try:
-        print(plan.first_letters(args.scroll, batch=args.batch))
+        print(plan.first_letters(args.scroll, batch=args.batch, mac=args.mac))
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -83,7 +83,8 @@ def build_parser():
 
     p = sub.add_parser("plan", help="print a First Letters run plan for an eligible scroll")
     p.add_argument("scroll", help="e.g. PHerc0826")
-    p.add_argument("--batch", type=int, default=4, help="inference batch size (1 for small GPUs)")
+    p.add_argument("--batch", type=int, help="inference batch size (default 4, or 1 with --mac)")
+    p.add_argument("--mac", action="store_true", help="Apple Silicon setup: VC3D.app tools, CPU or MPS inference")
     p.set_defaults(func=cmd_plan)
 
     p = sub.add_parser("cost", help="estimate run cost in USD")
