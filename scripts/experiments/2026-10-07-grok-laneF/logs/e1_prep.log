@@ -1,0 +1,6 @@
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.prefix, expected /Users/chasehendrick/scrolls-work/venv, got /Users/chasehendrick/scrolls-work/laneF/../venv
+<frozen site>:101: RuntimeWarning: Unexpected value in sys.exec_prefix, expected /Users/chasehendrick/scrolls-work/venv, got /Users/chasehendrick/scrolls-work/laneF/../venv
+w00_matched_w045 mean 72.96 std 37.38 changed_vox 0.973330078125
+w00_matched_self mean 90.8 std 40.33 changed_vox 0.0
+w00_matched_perlayer mean 72.97 std 37.36 changed_vox 0.976745867047991
+w00 mean/std 90.8 40.33 w045 mean/std 72.97 37.36
