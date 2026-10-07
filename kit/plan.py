@@ -70,6 +70,37 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
 # reported stale (villa issue #1588) and lacked --flip-normals.
 """
 
+HELD_OUT = """\
+# 1b. Generalization check: PHerc0139 w045, held out from ink_9um and from v8in training.
+#     Rows of letters here mean the model reads ink it was not trained on. Score it before
+#     you look at any target: Bullo27 reports row scores 73-148 on w045 and w033.
+python -m kit fetch w045 ink-dataset/pherc0139/w045/w045_9um.zarr
+uv run --extra models python -m vesuvius.ink_detection.inference.infer \\
+  ink-dataset/pherc0139/w045/w045_9um.zarr \\
+  checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth \\
+  predictions/w045_seed42.tif \\
+  --overlap 0.5 --blend-mode hann --batch-size {batch} --direction both
+python -m kit rowscore predictions/w045_seed42.tif --reverse predictions/w045_seed42_reverse.tif --voxel-um 9.362
+"""
+
+V8IN = """\
+#    Newer model: YoussefMoNader/ink-8um-v8in (MIT, released 2026-09-28), a ResNet3D-50 that
+#    responds near the team's announced PHerc1447 text, which it never saw (Bullo27, 2026-09-30).
+#    Every published First Letters null used ink_9um. v8in reads a folder of 24 layer TIFFs
+#    (00.tif, 01.tif, ...), not a zarr; export the render's layers first. Not yet run by this repo.
+uvx --from huggingface_hub hf download YoussefMoNader/ink-8um-v8in --local-dir checkpoints/ink-8um-v8in --exclude "training/*"
+python checkpoints/ink-8um-v8in/predict.py --layers work/{slug}/layers --output work/{slug}/v8in_forward.tif{device}
+python checkpoints/ink-8um-v8in/predict.py --layers work/{slug}/layers --output work/{slug}/v8in_reverse.tif --reverse{device}
+"""
+
+QA = """\
+#    Before rendering, check the surface (both read the tifxyz only, CPU, minutes):
+#      tifxyz-doctor (github.com/aviad12g/tifxyz-doctor): file, metadata and topology checks
+#      windcheck check work/{slug}/surface.tifxyz (github.com/joe-carr-data/windcheck):
+#        self-intersections, i.e. places the trace passes through itself
+#    A trace that fails either is fixed in VC3D before any ink model sees it.
+"""
+
 TARGET = """\
 # 2. Target: {scroll}, eligible volume {volume} ({voxel} um voxels)
 #    Browse: {browser}{resample}
@@ -103,6 +134,7 @@ RULES = """\
 #    - Write your readout rule in experiments/{slug}/run.json (python -m kit run init).
 #    - Use `set -o pipefail`: a failed render piped through tee looks like success.
 #    - Compare forward and reverse depth. Ink should appear in one, not both.
+#    - Triage with python -m kit rowscore (forward maps, --reverse maps); then look anyway.
 # 4. If you see letters: tell nobody in public. Keep it in work/ (gitignored),
 #    and follow docs/WORKFLOW.md to submit: {submit}
 """
@@ -127,8 +159,11 @@ def first_letters(scroll, batch=None, snapshot=None, mac=False):
         "",
         SETUP_MAC if mac else SETUP,
         CONTROL.format(batch=batch),
+        HELD_OUT.format(batch=batch),
+        QA.format(slug=slug),
         TARGET.format(scroll=canonical, volume=entry["volume"], zarr=entry["zarr"], voxel=entry["voxel_um"],
                       browser=prizes.DATA_BROWSER + canonical, slug=slug, batch=batch, resample=resample),
+        V8IN.format(slug=slug, device=" --device mps" if mac else ""),
         RULES.format(slug=slug, submit=submit),
     ])
 

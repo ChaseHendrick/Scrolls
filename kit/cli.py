@@ -1,11 +1,11 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,run}."""
 
 import argparse
 import json
 import sys
 from datetime import date
 
-from . import doctor, fetch, ledger, plan, prizes, verify
+from . import doctor, fetch, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -40,7 +40,7 @@ def cmd_cost(args):
 
 
 def cmd_fetch(args):
-    prefix = fetch.W035_9UM if args.prefix == "w035" else args.prefix
+    prefix = fetch.ALIASES.get(args.prefix, args.prefix)
     try:
         objects, fetched, total = fetch.fetch_prefix(prefix, args.dest, workers=args.workers)
     except (fetch.FetchError, OSError) as exc:
@@ -61,6 +61,18 @@ def cmd_verify(args):
         return 2
     print(json.dumps(result, indent=2) if args.json else verify.format_result(result))
     return {verify.PASS: 0, verify.PASS_UNCONTROLLED: 3}.get(result["verdict"], 1)
+
+
+def cmd_rowscore(args):
+    try:
+        result = rowscore.score_files(args.forward, args.voxel_um, args.reverse)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else rowscore.format_result(result))
+    return 0
 
 
 def cmd_run(args):
@@ -123,7 +135,7 @@ def build_parser():
     p.set_defaults(func=cmd_cost)
 
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
-    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' for the control surface volume")
+    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 training / held-out surface volumes")
     p.add_argument("dest", help="local directory")
     p.add_argument("--workers", type=int, default=16)
     p.set_defaults(func=cmd_fetch)
@@ -140,6 +152,16 @@ def build_parser():
     p.add_argument("--name", default="device-agreement")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_verify)
+
+    p = sub.add_parser("rowscore", help="text-row periodicity triage score for ink maps (Bullo27's method)")
+    p.add_argument("forward", nargs="+", help="forward-direction map(s); several are averaged, e.g. two checkpoints")
+    p.add_argument("--reverse", nargs="+", default=[], help="reverse-direction map(s), averaged the same way")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.362")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug", help="attach the result to this experiment")
+    p.add_argument("--name", default="rowscore")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_rowscore)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))

@@ -38,6 +38,6 @@ jobs:
         with:
           python-version: '3.13'
       - name: Install map-reading dependencies
-        run: python -m pip install numpy tifffile imagecodecs
+        run: python -m pip install numpy tifffile imagecodecs scipy
       - name: Unit tests including kit verify
         run: python -m unittest discover -s tests -v

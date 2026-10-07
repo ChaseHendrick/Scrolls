@@ -106,6 +106,21 @@ class PlanTest(unittest.TestCase):
         self.assertIn("--batch-size 1", text)
         self.assertNotIn("cuda:', torch.cuda.is_available()", text)
 
+    def test_plan_has_held_out_check_surface_qa_and_v8in(self):
+        text = plan.first_letters("PHerc0826")
+        self.assertIn("python -m kit fetch w045", text)
+        self.assertIn("predictions/w045_seed42_reverse.tif", text)
+        self.assertLess(text.index("w045"), text.index("# 2. Target"))
+        self.assertIn("windcheck check work/pherc0826/surface.tifxyz", text)
+        self.assertIn("YoussefMoNader/ink-8um-v8in", text)
+        self.assertIn("v8in_reverse.tif --reverse\n", text)
+        self.assertIn("--reverse --device mps", plan.first_letters("PHerc0826", mac=True))
+
+    def test_fetch_aliases_point_at_9um_surface_volumes(self):
+        from kit import fetch
+        self.assertIn("w045_2026012619/surface-volumes/9.362um", fetch.ALIASES["w045"])
+        self.assertEqual(fetch.ALIASES["w035"], fetch.W035_9UM)
+
     def test_plan_rejects_ineligible_scroll(self):
         with self.assertRaises(ValueError):
             plan.first_letters("PHerc1667")

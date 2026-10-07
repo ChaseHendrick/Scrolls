@@ -14,6 +14,11 @@ from pathlib import Path
 BUCKET_URL = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 W035_9UM = ("PHerc0139/segments/20260317000000-w035_2026031718/surface-volumes/"
             "9.362um-1.2m-113keV-volume-20250728140407.zarr")
+# Held out from ink_9um (Bullo27's survey) and from v8in (its patch pack lists w033, w035,
+# w041, w044 for PHerc0139), so it tests whether a model finds ink it was not trained on.
+W045_9UM = ("PHerc0139/segments/20260126000000-w045_2026012619/surface-volumes/"
+            "9.362um-1.2m-113keV-volume-20250728140407.zarr")
+ALIASES = {"w035": W035_9UM, "w045": W045_9UM}
 
 
 class FetchError(Exception):
