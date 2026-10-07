@@ -15,11 +15,13 @@
   },
   "device": "cpu",
   "auc_as_stored": 0.8381,
+  "auc_reversed": 0.5932,
   "hp_r": 0.0069,
+  "hp_r_reversed": -0.0137,
   "hp_null_max_abs": 0.0058,
   "ink_px": 84484,
   "seconds": 1447,
-  "notes": "control is the stride 64 reverse map (None s)"
+  "notes": "control is the stride 64 reverse map (714 s)"
  },
  {
   "job": "v8in1447-w00",
@@ -62,7 +64,9 @@
   },
   "device": "cpu",
   "auc_as_stored": 0.89,
+  "auc_reversed": 0.6021,
   "hp_r": 0.0097,
+  "hp_r_reversed": -0.0141,
   "hp_null_max_abs": 0.0059,
   "ink_px": 84484,
   "notes": "kit ensemble, mean"
@@ -85,7 +89,9 @@
   },
   "device": "cpu",
   "auc_as_stored": 0.9065,
+  "auc_reversed": 0.6134,
   "hp_r": 0.0115,
+  "hp_r_reversed": -0.0088,
   "hp_null_max_abs": 0.007,
   "ink_px": 84484,
   "notes": "kit ensemble, rank"
