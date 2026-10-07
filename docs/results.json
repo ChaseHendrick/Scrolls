@@ -519,6 +519,30 @@
    "test": "PHerc0841, TAUIL held-out benchmark",
    "auc": 0.84,
    "source": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search"
+  },
+  {
+   "reader": "v8in d89166b",
+   "test": "PHerc0841 w00, labels' bounding box, human labels",
+   "auc": 0.837,
+   "auc_reversed": 0.562,
+   "source": "https://github.com/Bullo27/v8in-12gb",
+   "date": "2026-10-01"
+  },
+  {
+   "reader": "v8in d89166b",
+   "test": "PHerc0841 ag896, labels' bounding box, human labels",
+   "auc": 0.807,
+   "auc_reversed": 0.618,
+   "source": "https://github.com/Bullo27/v8in-12gb",
+   "date": "2026-10-01"
+  },
+  {
+   "reader": "v8in d89166b",
+   "test": "PHerc0841 ag405, labels' bounding box, human labels",
+   "auc": 0.81,
+   "auc_reversed": 0.586,
+   "source": "https://github.com/Bullo27/v8in-12gb",
+   "date": "2026-10-01"
   }
  ],
  "device_checks": [
@@ -540,8 +564,8 @@
   }
  ],
  "pending": [
-  "v8in on 0841-w00, ag896, ag405 (crop, inner 64, fp16) on the user's Mac",
-  "v8in-1447 (Youssef's PHerc1447 fine-tune) on the same crops",
-  "Reader v2 on the PHerc0841 crops"
+  "v8in on 0841-w00, ag896, ag405 (crop, inner 64) on the user's Mac: a reproduction of Bullo27's v8in-12gb (2026-10-01) and the device check",
+  "v8in-1447 (Youssef's PHerc1447 fine-tune) on the same crops (cloud CPU, stride 42, 2026-10-07)",
+  "Reader v2 and the tricks table on all three PHerc0841 crops (cloud CPU, 2026-10-07)"
  ]
 }

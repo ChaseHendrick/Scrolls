@@ -2,6 +2,18 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (afternoon): cloud jobs, two new findings, prior work found
+
+**The user is short on usage (weekly limit warning).** Keep runs short and agents few; ask before starting anything that takes hours.
+
+New findings (README 5 and 6; [log](logs/2026-10-07-overlap-and-baseline.md)): PHerc0841's w00 and ag896 are the same papyrus traced twice (meshes 81 um apart, labels agree, Dice 0.83), so PHerc0841 has two independent labelled surfaces, not three; raw CT brightness alone scores at most 0.58 AUC per layer on PHerc0841.
+
+Prior work found by a web scan (same log, section 3): **v8in on PHerc0841 is already published** (Bullo27, [v8in-12gb](https://github.com/Bullo27/v8in-12gb), 2026-10-01: 0.837, 0.807, 0.810, ahead of `ink_9um`), so step A.4 on the Mac is now a reproduction and device check, not a novel result; window averaging on PHerc0841 has related prior work (README finding 4 now cites it).
+
+Cloud jobs (spec: [`scripts/experiments/2026-10-07-cloud/README.md`](../scripts/experiments/2026-10-07-cloud/README.md)), each in its own container, pushing to `claude/gallant-pasteur-b1y2si-<job>`: `v8in1447-w00`, `v8in1447-ag896`, `v8in1447-ag405` (stride 42 forward, 64 reverse, ensembles with d9v2), `tricks` (handoff B.1 and lead d, PHerc0841 crops only), `thresholds` (lead c, published null rules on known text, row score by area), `finetune` (B.2). Stopped to save usage: the base v8in jobs (a reproduction now) and the v8in depth-window jobs (lead a; about 3 hours of CPU each). Fold each finished job's `results.json` and `notes.md` into `docs/results.json`, `docs/tricks.md`, the README findings and a dated log, then delete nothing from the job branches (they are the record).
+
+Next leads, cheapest first: (a) score `ink_9um` on the shared w00/ag896 sheet from both traces with one label set carried across by the meshes (does an 80 um trace offset change AUC?); (b) report PHerc0841 results per independent surface (w00/ag896 sheet, ag405) rather than as a three-segment mean; (c) the window sensitivity on whole segments against crops, to reconcile with villa #1867.
+
 ## Session 7 October 2026 (midday): an agent runs everything from here
 
 **The user does not want to type or paste commands.** Copying commands into the terminal was too much (user, 2026-10-07). Whoever picks this up runs the steps themselves and reports results in plain words. PR [ChaseHendrick/Scrolls#2](https://github.com/ChaseHendrick/Scrolls/pull/2) was merged into `main` at the user's request.
