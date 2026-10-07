@@ -103,6 +103,30 @@ class LayersTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("4 layers of [6, 20, 30]", out.getvalue())
 
+    def test_depth_permutation_is_fixed_and_never_trivial(self):
+        a = layers.depth_permutation(28, 20261007)
+        self.assertEqual(a, layers.depth_permutation(28, 20261007))
+        self.assertEqual(sorted(a), list(range(28)))
+        for seed in range(50):
+            p = layers.depth_permutation(3, seed)
+            self.assertNotIn(p, ([0, 1, 2], [2, 1, 0]))
+        with self.assertRaises(verify.VerifyError):
+            layers.depth_permutation(2, 0)
+
+    def test_shuffled_exports_agree(self):
+        src = self.bare(volume())
+        result = layers.export_file(src, self.root / "tifs", shuffle_seed=5)
+        values = [int(tifffile.imread(self.root / "tifs" / f"{i:02d}.tif")[0, 0]) for i in range(6)]
+        self.assertEqual(values, [10 * (j + 1) for j in result["order"]])
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            code = cli.main(["shuffle", str(src), str(self.root / "shuf.zarr"), "--seed", "5", "--crop", "2", "12", "0", "30"])
+        self.assertEqual(code, 0)
+        z = zarr.open_group(str(self.root / "shuf.zarr"), mode="r")
+        self.assertEqual(z["0"].shape, (6, 10, 30))
+        self.assertEqual([int(v) for v in z["0"][:, 0, 0]], values)
+        self.assertEqual(z.attrs["depth_shuffle"]["order"], result["order"])
+
 
 if __name__ == "__main__":
     unittest.main()

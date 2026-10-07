@@ -47,7 +47,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 | `kit/doctor.py` | Machine check: GPU (CUDA or Apple Silicon), memory, disk, tools |
 | `kit/plan.py` | Prints the official First Letters commands for one scroll (never runs them) |
 | `kit/fetch.py` | Resumable anonymous download of a bucket prefix; aliases `w035`, `w045` |
-| `kit/layers.py` | Surface-volume zarr to numbered layer TIFFs (v8in's input), banded reads, optional crop |
+| `kit/layers.py` | Surface-volume zarr to numbered layer TIFFs (v8in's input), banded reads, optional crop; `kit shuffle` and `kit layers --shuffle SEED` write the depth-shuffle control |
 | `kit/verify.py` | Two maps agree within tolerance, valid only if a control map is caught |
 | `kit/auc.py` | Pixel AUC against a segment's `inklabels.zarr` inside `supervision.zarr`; reverse map as control; `--crop`, `--inner` |
 | `kit/rowscore.py` | Text-row periodicity triage score (port of Bullo27's); a reading order, not a verdict |

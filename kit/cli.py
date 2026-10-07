@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,ensemble,gate,layers,provenance,compute,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,ensemble,gate,layers,shuffle,provenance,compute,run}."""
 
 import argparse
 import json
@@ -164,12 +164,24 @@ def cmd_gate(args):
 
 def cmd_layers(args):
     try:
-        result = layers.export_file(args.volume, args.out_dir, args.start, args.count, args.level, args.crop)
+        result = layers.export_file(args.volume, args.out_dir, args.start, args.count, args.level, args.crop,
+                                shuffle_seed=args.shuffle)
     except verify.VerifyError as exc:
         print(exc, file=sys.stderr)
         return 2
     window = f", rows {args.crop[0]}-{args.crop[1]}, columns {args.crop[2]}-{args.crop[3]}" if args.crop else ""
-    print(f"{result['layers']} layers of {result['shape']} from layer {result['start']}{window} -> {result['out_dir']}")
+    order = f", depth order shuffled (seed {args.shuffle}): {result['order']}" if args.shuffle is not None else ""
+    print(f"{result['layers']} layers of {result['shape']} from layer {result['start']}{window} -> {result['out_dir']}{order}")
+    return 0
+
+
+def cmd_shuffle(args):
+    try:
+        result = layers.shuffle_file(args.volume, args.out, args.seed, args.level, args.crop)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(f"{result['shape'][0]} layers shuffled (seed {result['seed']}, order {result['order']}) -> {result['out']}")
     return 0
 
 
@@ -343,7 +355,16 @@ def build_parser():
     p.add_argument("--level", default="0", help="OME-Zarr level when the store is a group")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
                    help="export only this window, in full-resolution pixels")
+    p.add_argument("--shuffle", type=int, metavar="SEED", help="write the layers in a fixed random order (depth-shuffle control)")
     p.set_defaults(func=cmd_layers)
+
+    p = sub.add_parser("shuffle", help="depth-shuffle control: copy a surface volume with its layers in a fixed random order")
+    p.add_argument("volume", help="surface-volume zarr")
+    p.add_argument("out", help="new zarr to write")
+    p.add_argument("--seed", type=int, default=20261007)
+    p.add_argument("--level", default="0")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    p.set_defaults(func=cmd_shuffle)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
