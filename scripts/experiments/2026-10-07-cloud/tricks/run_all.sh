@@ -4,7 +4,7 @@
 set -uo pipefail
 S="${S:-$HOME/scrolls-cpu}"; export S
 HERE="$(cd "$(dirname "$0")" && pwd)"
-for seg in ${ORDER:-0841-w00 0841-ag896 0841-ag405 w045}; do
+for seg in ${ORDER:-0841-w00 0841-ag896 0841-ag405}; do
   echo "#### $seg start $(date -u +%FT%TZ)"
   SEGS=$seg bash $HERE/crops_and_bars.sh || { echo "crops_and_bars failed on $seg"; continue; }
   SEGS=$seg bash $HERE/tricks.sh || { echo "tricks failed on $seg"; continue; }

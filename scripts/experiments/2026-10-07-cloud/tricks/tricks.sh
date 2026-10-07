@@ -26,6 +26,5 @@ PYEOF
     inf $T/${seg}_shuf.zarr ${CK[$m]} $T/${seg}_${m}_shuf.tif --direction forward
   done
   inf $z ${CK[d9v2]} $T/${seg}_d9v2_tta.tif --direction both --tta-mirror
-  inf $z ${CK[s42]} $T/${seg}_s42_tta.tif --direction both --tta-mirror
 done
 echo ALL DONE
