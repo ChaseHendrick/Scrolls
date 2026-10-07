@@ -373,6 +373,11 @@ def build_parser():
     p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
     p.set_defaults(func=cmd_cost)
 
+    p = sub.add_parser("titlecheck", help="certified (exact interval) elimination of candidate title strings against a measured region")
+    p.add_argument("priors", help="JSON: letter_width_mm, letter_spacing_mm, letter_height_mm, optional word_gap_mm, candidates[{id, lines}]")
+    p.add_argument("region", help="JSON region or list: pixel_mm, width_px, letter_height_px, lines, letters, distortion, threshold_px")
+    p.set_defaults(func=lambda a: __import__("kit.titlecheck", fromlist=["x"]).cmd_titlecheck(a))
+
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
     p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 training / held-out surface volumes")
     p.add_argument("dest", help="local directory")

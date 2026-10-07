@@ -39,3 +39,25 @@ Results: none. Candidate regions: none. Letter-like shapes: none observed, becau
 Candidate images, if any are ever made, stay in `~/scrolls-work/laneJ` on the Mac. The repo's hard rule 1 and the prize's no-disclosure term forbid committing them to this public repository, so this PR contains no previews.
 
 Assisted-by: Grok Bot
+
+## Addendum: `kit titlecheck`, certified elimination of candidate titles (Untested idea, synthetic test only)
+
+Method inspiration (Sourced fact, Zenodo records by Chase Hendrick, 2026-10-02, preprints not peer reviewed): [The Propagated Action Potential of Hodgkin and Huxley at Their 1952 Constants: A Computer-Assisted Existence Proof](https://doi.org/10.5281/zenodo.23096253) (ball arithmetic, validated Taylor integrator, every printed digit proved); [Chaos and Analytic Non-Integrability of the Classical Double Pendulum: A Computer-Assisted Proof](https://doi.org/10.5281/zenodo.23096228); [Stable Self-Similar Expansion of Four and Five Point Vortices](https://doi.org/10.5281/zenodo.23096191). Borrowed idea: carry every quantity as a ball (center, guaranteed radius) and only state what the enclosures prove.
+
+What it does (`kit/titlecheck.py`, `python3 -m kit titlecheck PRIORS REGION`):
+
+- Arithmetic: exact rationals (`fractions.Fraction`), no rounding at all, so it is stricter than outward rounding and needs no extra dependency (python-flint and mpmath are not installed on the box; kit is standard library).
+- Prediction per candidate (lines of text): longest line width = n * W + (n - 1) * S + (words - 1) * G, with letter width W, spacing S, word gap G and letter height H as intervals from the priors file; letter count and line count exact.
+- Measurement: width_mm = width_px * pixel_mm * (1 + distortion) + threshold_px * pixel_mm, all balls; letter height likewise; line and letter counts as integer intervals over the threshold range.
+- A candidate is eliminated only if a predicted interval is disjoint from the measured one; output gives the certifying inequality (`pred.hi a < meas.lo b` or `pred.lo a > meas.hi b`). Survivors are only "not excluded by geometry", never a reading.
+- Priors file keys: `letter_width_mm`, `letter_spacing_mm`, `letter_height_mm`, optional `word_gap_mm`, `candidates: [{id, lines}]`. The research lane's `docs/research/title-priors.json` (branch `grok/research-titles`) was not on the remote at 10:54 ET; when it lands it may need mapping to these keys. Its sizes must be sourced; the test uses made-up numbers.
+
+Synthetic test (`tests/test_titlecheck.py`; synthetic numbers, not sourced sizes): a known title "ABCDEF / GHIJ" drawn at W 2.5 mm, S 0.75 mm, measured at 0.01 +/- 0.0001 mm/px, distortion +/- 0.02, threshold +/- 20 px. Command `python3 -m kit titlecheck /tmp/tc/p.json /tmp/tc/r.json` printed:
+
+- measured width [71957/4000, 78073/4000] mm, height [31937/10000, 38077/10000] mm, lines 2, letters [9, 11]
+- survivors: `true`
+- `long`: width pred.lo 99/2 > meas.hi 78073/4000; letters pred.lo 22 > meas.hi 11
+- `short`: width pred.hi 7 < meas.lo 71957/4000; letters pred.hi 4 < meas.lo 9
+- `threelines`: lines pred.lo 3 > meas.hi 2
+
+A third test checks that very wide uncertainty eliminates nothing. Limits: the model of a line is additive and assumes the measured region is the whole title; abbreviations, ligatures, missing top rows (stated for Scroll 1) and line breaks the candidate does not specify all widen or break it. Use those as a reason to widen the priors, never to narrow them.

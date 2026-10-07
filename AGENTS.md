@@ -56,6 +56,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 | `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fibre orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](docs/logs/2026-10-07-grok-laneD.md)) |
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
 | `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
+| `kit/titlecheck.py` | `kit titlecheck PRIORS REGION`: exact-rational interval (ball) elimination of candidate title strings by width, letter, line count and letter height; survivors are not readings ([log](docs/logs/2026-10-07-grok-laneJ.md)) |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
 | `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
 | `kit/surfacefix.py` | Experimental bounded normal-offset suggestions, frozen correspondence checks and uncertain-region flags; see `docs/surfacefix.md` |
