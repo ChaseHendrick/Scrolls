@@ -1,0 +1,29 @@
+{
+  "code_only_no_actual_maps": true,
+  "exact_uint8_auc_and_valid_zero_checks": [
+    {
+      "map": 0,
+      "exact_auc_equal": true,
+      "max_direct_resampled_auc_error": 0.0,
+      "zeros_counted": 14
+    },
+    {
+      "map": 1,
+      "exact_auc_equal": true,
+      "max_direct_resampled_auc_error": 0.0,
+      "zeros_counted": 9
+    },
+    {
+      "map": 2,
+      "exact_auc_equal": true,
+      "max_direct_resampled_auc_error": 0.0,
+      "zeros_counted": 12
+    }
+  ],
+  "max_direct_resampled_correlation_error": 1.6653345369377348e-16,
+  "paired_weights_all_maps": true,
+  "simultaneous_family_radius_equal": true,
+  "identical_contrast_exact_zero_band": true,
+  "invalid_98percent_draw_family_abstains": true,
+  "caveat": "Synthetic arithmetic checks do not calibrate empirical95percent coverage on a single correlated papyrus crop."
+}

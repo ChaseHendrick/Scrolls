@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "checked_utc": "2026-10-07T14:06:48.362757+00:00",
+  "source": {
+    "repository": "https://github.com/SuperOptimizer/ufsm",
+    "pin": "d86a00cff5ab198e6b7864f89e49a6101746dc9f",
+    "tracked_code_changes": "",
+    "sha256": {
+      "tools/eval_holdouts.py": "40ba8038b90a2dfa96136fe286b489c85ea0c4af8e7d61987bf4902da0ef3725",
+      "tools/production.py": "05471a61f32b69f8552aa95c4a37a079eaf25cec0c1a03b2022bed899d4bf26d",
+      "tools/build_training_cover.py": "cf231f7bcf6cd37dc8faaac64dc762e16b4fb2136c7d5175053ec99892434dc2",
+      "tools/build_surface_store.py": "fb670abbabd45b0b5010beb40472707a44a5654981be1c7be5e8314c26be9370",
+      "src/store.c": "58043ace7ca3ba343b07bd1814d50f4926dfddcf626c0220ef33a39e6b0ab767",
+      "src/zarr3.c": "b419043dcffa9b67f36b3c74061278e5dd507f6ce0d4a3edf65366e0ee26f13d",
+      "tests/test_eval_holdouts.py": "41409b4212c3809b392eaba6d0c0f3a9177f4c0699107d45d4b474c34539141c",
+      "tests/test_training_cover.py": "6c2d342e5fe3970a1740833106eea67cc607e4c4818e65e5c3c88b35036830aa",
+      "tests/test_production_cover.py": "523c3cefee13685e661f9b77cd28058b4e65dfd6900947d827cf918ee2859d6c",
+      "tests/test_evaluation_plan.py": "64b8cb52a25008dc9f0cccf25dc2d1ddcef75521e5d1e7718c5034b0abb8f360",
+      "README.md": "d6ec9e2841ea959dff3a27d7c0180e42f2e52cfb5dce21cf1c3a36d79e53d4f7",
+      "third_party/LICENSE.volcomp": "de1157f72933091c34739dd8db3299034aedda27e6f0dc1033b264e570b77de2",
+      "third_party/LICENSE.surfcomp": "de1157f72933091c34739dd8db3299034aedda27e6f0dc1033b264e570b77de2"
+    }
+  },
+  "scrolls_sources_sha256": {
+    "kit/ledger.py": "10613ba6b2425fe0d844d9a975483fc8c1f0cb9fb33e059d715335477edbaecd",
+    "kit/provenance.py": "d3578c48538ba6f48d64e1af4bd75c452b634da06f1a31e452d1118aae4a1828",
+    "kit/fetch.py": "7d1b59cdd635171cebc0a71ee477a9ae74314c1760e01476b823844b43ff6651",
+    "scripts/mac-w045.sh": "fc9f59a15d881fc356ae84b0cbb82363fbe686f71c695fba4096bf5d539c02c8",
+    "scripts/mac-atlas-v8in.sh": "9897c86bd68d7af5b45351ba60b3f31c3160d30e9e9a3eb9aa260d5c0ea596dc",
+    "LICENSE": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  "license": {
+    "tracked_root_license_files": [],
+    "third_party": "MIT notices specifically cover volcomp and surfcomp. No top-level license was found at this pin; no blanket reuse permission inferred for ufsm own code.",
+    "scrolls": "Apache-2.0",
+    "recommendation": "Reuse general patterns through an independent Scrolls implementation; do not copy ufsm project code under an assumed license."
+  },
+  "tests": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=/workspace/scrolls-env/ufsm-review/source/tests /workspace/scrolls-env/inference-venv/bin/python -m unittest test_eval_holdouts test_training_cover test_production_cover test_evaluation_plan -v",
+    "python": "3.12.14",
+    "tests": 29,
+    "passed": 29,
+    "failed": 0,
+    "skipped": 0,
+    "log_sha256": "fc297d1c19918a4817fcac2ce636707488c74fdb7fa8672987db6978222c7c3f",
+    "scope": "CPU-only synthetic/fake predictor and mocked trainer/leases. No real training, inference, GPU, network download or empirical ink validation.",
+    "not_run": [
+      "tests/test_production.py real native train/evaluate/export integration",
+      "tests/test_http_reader.py compiled native HTTP/Zarr qualification"
+    ]
+  },
+  "gap_reproduction_receipt_sha256": "afa4516380c352eaf0354b06aef0cb7ecb041ce46f94c73180802718118d25a8",
+  "recommendations": [
+    {
+      "rank": 1,
+      "idea": "Verified transactional stage receipts for reader/control resume",
+      "classification": "Untested Scrolls implementation idea, source mechanism CPU-regression-tested",
+      "ufsm_refs": [
+        "tools/eval_holdouts.py:23 completed_prediction",
+        "tools/eval_holdouts.py:33 predict_atomic",
+        "tools/eval_holdouts.py:90 identity",
+        "tools/production.py:487 predict",
+        "tests/test_eval_holdouts.py:83 changed checkpoint",
+        "tests/test_eval_holdouts.py:103 failed replacement preservation"
+      ],
+      "scrolls_refs": [
+        "scripts/mac-atlas-v8in.sh:147 reverse-TIFF-only skip",
+        "scripts/mac-w045.sh:250 log/settings resume guard",
+        "kit/provenance.py:34 fingerprint",
+        "kit/provenance.py:118 verify"
+      ],
+      "change": "Bind source/mesh/crop/depth planes, checkpoint and code/config hashes, stride, direction/shuffle seed, precision/TTA to one canonical signature. Reuse only after existing provenance file recheck and complete expected matched-control inventory. Stage outputs and atomically commit readiness receipt after success; preserve prior valid outputs on failure.",
+      "avoid_duplicate": "Extend existing kit.provenance helpers and wrappers instead of adding a second hash/provenance engine.",
+      "limits": "ufsm completed_prediction checks a metadata marker and matching signature, not payload hashes. Scrolls should strengthen it with existing output fingerprint rechecks; directory replacement is rollback-aware but not a power-loss-durable transaction."
+    },
+    {
+      "rank": 2,
+      "idea": "Immutable planned-job inventory and explicit execution completeness",
+      "classification": "Untested Scrolls implementation idea, finite-cover control semantics CPU-regression-tested",
+      "ufsm_refs": [
+        "tools/build_training_cover.py:187 verify_plan",
+        "tools/production.py:262 cover_checkpoint",
+        "tools/production.py:420 partial versus trained",
+        "tools/production.py:427 run_inputs",
+        "tests/test_production_cover.py:128 partial/resume test"
+      ],
+      "scrolls_refs": [
+        "kit/ledger.py:24 statuses/transitions",
+        "kit/ledger.py:126 add_provenance",
+        "kit/ledger.py:151 check",
+        "scripts/mac-atlas-v8in.sh:177 end-of-queue reporting"
+      ],
+      "change": "Freeze expected mesh x direction artifacts/settings before runs; record verified completed/failed/missing tasks and plan SHA. Keep planned/partial/complete execution state separate from scientific null/candidate/submission status. A resumed queue may mark completion only when every required item passes receipt verification.",
+      "avoid_duplicate": "Use ledger execution subrecord and existing preregistration; transfer finite-plan semantics to inference jobs, not ufsm training-cover code or a new trainer.",
+      "limits": "Completeness of a task inventory does not prove anatomical coverage, independent evidence or correct sheet topology. Training cursor semantics are inspiration, not validated inference portability."
+    },
+    {
+      "rank": 3,
+      "idea": "Manifest-based fetch verification and bounded sparse input planning",
+      "classification": "Untested Scrolls implementation idea; current same-size-corrupt-cache gap reproduced locally",
+      "ufsm_refs": [
+        "tools/build_surface_store.py:95 download",
+        "src/store.c:372 store_read",
+        "README.md:370 bounded sparse-read claims",
+        "src/zarr3.c:185 cache_path"
+      ],
+      "scrolls_refs": [
+        "kit/fetch.py:28 parse_listing",
+        "kit/fetch.py:61 fetch_prefix"
+      ],
+      "change": "Add frozen optional requested-key manifest with normalized store/key identity, metadata/version or ETag binding, byte budget, observed/expected SHA256 and atomic receipts. Recheck cached file SHA before skipping, stream bounded blocks rather than read whole objects, and optionally fetch only required CT/label keys. If later adding Range, verify Content-Range and requested byte length, distinguishing denied/error responses from genuine missing data.",
+      "avoid_duplicate": "Keep existing fetch retry and atomic replace; do not vendor ufsm HTTP/Zarr codecs.",
+      "limits": "ufsm downloader itself reuses same-size files plus saved ETag without local SHA recheck; its Zarr cache key omits store root. Do not copy those weaknesses. ETag is a version token, not universally MD5. Upstream reports bounded cold-input speedups only; no Scrolls speedup was measured."
+    }
+  ],
+  "empirical_limits": [
+    "29 CPU regressions validate their intended local synthetic cases, not whole production readiness.",
+    "Upstream README reports about1.3-1.4x whole-process cold-input gains on two native1024-cubed trials and bounded HTTP reuse gains; cached/local, GPU compute and training speedups are not established by these changes.",
+    "Upstream README explicitly describes inspected development holdouts and bounded candidate qualification, not untouched final model validation.",
+    "No models, weights, GPU kernels, training, or source code were imported into Scrolls."
+  ]
+}

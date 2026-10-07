@@ -1,0 +1,53 @@
+{
+  "rule_sha256": "d8697827c979fa961b836da0b75413857365c94b7eb74316132a7986ed1106b7",
+  "script_sha256": "b9b64187707044e3fe02eb0872fe450363b0b6b62f4e64c3e6a650112ab76e30",
+  "scope": "Structural order verification, no ink labels or reader selection",
+  "published_sha256": "2b21f7976a1eff8474791b4e7d604e000298788f7c15315d7392bb03f778fe83",
+  "official_raw_layer_hashes": {
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/00.tif": "4256262f69161bc5402191708e5d08493fcea19d68009f1b5c47101ab80aa520",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/01.tif": "9cfb7fa7fdcd677e1dcd9ab734a959228377133ab11631d26b2aa4e8d54578b1",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/02.tif": "2016a799905cd041a9d5c8dc53166a33da2fa735c61397af29418512eda22c30",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/03.tif": "2dc8b60753446b7c4c3e657f4fe52d719f73c89a15f2c32333c5275ece570e5c",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/04.tif": "223d59ec45b678bca8619c3df507238b5b3a39d7b21ec536ce496cfd27cea51b",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/05.tif": "1ad7fd0d051f28a77eab031d95f509178ec6b2e0079f27138b8a28a9e33d9c81",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/06.tif": "c63e4d095265f2093ed314abd29fdda082d3476da8b05dc83c7aef6b1ff517d1",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/07.tif": "47e8275978cfc12415fda464df9d07a8f9a68e55a5b56e371b9af9bcdf967d18",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/08.tif": "47c70b2b234591191af0fe8c23d6a2f5b0f09d6d828bb4f4914458f3c97629cc",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/09.tif": "c78d5e662c189b2f166238cd9a56fb09f0bc830f7ab0f56c3f203c46471eea01",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/10.tif": "197681acd0f5ff7ddde5ae539eed9fdaaf65e1a219559d3f93f60ed3f42f1073",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/11.tif": "66882e11361ec0ac16106220987af42945dcae0451089db930b835e4f27bb14c",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/12.tif": "d2b532eda0d1fcd34447139b75077697426ae6cfb1017da09b4db5fb0b7e7da5",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/13.tif": "d5f4b54ff7c14db053fbfd21ce308d6774ced1d654d8e31ba363777f640f9677",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/14.tif": "915feb4d6ae6e256de76d96a32d86b457fd8bece28465f38d53eb70cced49e74",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/15.tif": "f050c78a4dda26bd3fa0695eefbe7f3a51039a7026d845689426878df10f2bbb",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/16.tif": "13f9d0eb9dd11f9a12728cb311e8f5bbe948fa5bbe93ec3f1035bd4dfc35c000",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/17.tif": "69e9581300b397e8dfa2aa882014c997561e0ff22785a1bb375aa6477d15c647",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/18.tif": "8a53da27f4e24a2027c697898a641c6ad482f458cd84c23e4dae2020aee32a3f",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/19.tif": "5d220dbda3149680c34aa75f24c13295919d6aa7cdc2ce8cec2893338c763f39",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/20.tif": "3524c41f77a103865af1b73e830e2e368e365e490962d9d3a8c7cf751ad22833",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/21.tif": "bbd6289a1bb48e3a3b5ff94f01391888bb435c1a3e907bd2ce627efee78ce62a",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/22.tif": "7705ac6dfa60a5aa6dbb4b66f8d0b62973c0d068d1d424c17cc48f2ac18159c9",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/23.tif": "b65d1d938b6e5792b56b19171fab32946337824890967154b4af6d2ad935b0e5",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/24.tif": "38c224cafeec7452859326ef0653b5b450d85ef4e14991ade744d40f6d65afb1",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/25.tif": "e2202695f080bfc1cb87cb56e4a676b09ec6d0f32a5d042775f10313780e40eb",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/26.tif": "e6d9ea3bb8268cc82b022ed4f35875321bf4a0801a6821a0ce341096aa561bec",
+    "/workspace/scrolls-env/phase-reconstruction/render-followup/tif-original/27.tif": "b1c96c026ee917968c09fc4b8946be909d5bbd0c2688e7974211f0428ccf9dc5"
+  },
+  "official_raw_positive_normal": {
+    "correlation": 0.01403328481568698,
+    "mean_absolute_error_uint8": 39.806175640651155,
+    "rms_error_uint8": 52.43670110290429,
+    "equal_fraction": 0.013877732413155692,
+    "voxels": 7340032,
+    "passes_frozen_reproduction_bar": false
+  },
+  "official_raw_reversed_negative_normal": {
+    "correlation": 0.9999988669466128,
+    "mean_absolute_error_uint8": 0.0031597954886300223,
+    "rms_error_uint8": 0.05621205821378561,
+    "equal_fraction": 0.99684020451137,
+    "voxels": 7340032,
+    "passes_frozen_reproduction_bar": true
+  },
+  "limits": "One real public crop. The old run keeps its original forward/reverse names and cannot be retroactively reclassified as a preregistered published-order run. Input normal sign and correction-offset sign are separate concepts."
+}

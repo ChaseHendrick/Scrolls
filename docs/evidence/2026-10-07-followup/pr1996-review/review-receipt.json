@@ -1,0 +1,37 @@
+{
+  "pr_url": "https://github.com/ScrollPrize/villa/pull/1996",
+  "head": "d651f04d2f5c73fc5ba46c5f859392391cc59b43",
+  "base": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+  "evidence_repository": "https://github.com/ibarapascal/ink-surface-support",
+  "evidence_commit": "e8623546a3e147e656f3059cf5c8d78db2fe7473",
+  "base_grower_sha256": "8156f58f3a7cf1ff5301a211935e63280304328e729f4bbc6f4699dbb0c734e6",
+  "evidence_declared_base_sha256": "8156f58f3a7cf1ff5301a211935e63280304328e729f4bbc6f4699dbb0c734e6",
+  "tests": {
+    "upstream_pytest": {
+      "passed": 12,
+      "seconds": 0.46,
+      "pytest": "9.1.1"
+    },
+    "linked_helper_unittest": {
+      "passed": 11
+    },
+    "randomized_base_and_helper_parity": {
+      "passed": 240
+    },
+    "saved_report_rebuild": {
+      "status": "PASS",
+      "derived_files": 6,
+      "scope": "Saved report integrity and arithmetic, not new measurement"
+    }
+  },
+  "new_ct_or_predictions_downloaded": false,
+  "notes": [
+    "Only public source and two S3 zarray metadata documents were fetched.",
+    "The isolated pytest runtime is outside the shared repository."
+  ],
+  "runtime": {
+    "python": "3.12.14",
+    "numpy": "2.5.3",
+    "scipy": "1.18.1"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "checks": [
+    "one interior edited vertex affects its four20px bilinear cells",
+    "zero edits produce empty support",
+    "boundary edits do not extrapolate beyond last valid native cell",
+    "anisotropic native scale preserves x/y convention",
+    "degenerate one-class cohort abstains",
+    "all10 wrong authoritative reader setting mutations rejected"
+  ],
+  "evaluator_sha256": "31a61bbce494275a7d33443cd71711039c1d607bd9c600e1dafde0bed2b1a8c1",
+  "test_sha256": "28cdb6b2472b192626b5ca90f003abca0461e65ce84d80a7512ad4191a5f57b1",
+  "math_sha256": "a95e703eb73dcfe02a97b48184cbf1ef965ef1872219a3d0774780b7b9d4e72c"
+}

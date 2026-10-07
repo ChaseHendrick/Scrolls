@@ -1,0 +1,810 @@
+{
+  "status": "affine_followup_completed_no_render_or_ink",
+  "all_pass": false,
+  "reasons": [
+    "pag0cal4raw_gradient_disagree",
+    "pag50cal4raw_gradient_disagree",
+    "pag50cal5raw_gradient_disagree",
+    "pag50cal6raw_gradient_disagree",
+    "pag0audit8raw_fail",
+    "pag50audit8gradient_fail",
+    "pag50audit8raw_fail",
+    "pag0audit10gradient_fail",
+    "pag50audit10gradient_fail",
+    "pag0audit11gradient_fail",
+    "pag50audit11gradient_fail"
+  ],
+  "fits": {
+    "pag0": {
+      "matrix_original_xyz_to_phase_xyz": [
+        [
+          0.9994308543471703,
+          -0.0003073651693106053,
+          -0.0001039847834849211,
+          4.2528366616661515
+        ],
+        [
+          -0.0005285749031873115,
+          1.0007866124107359,
+          -0.00034767901714558453,
+          1.7580674690293563
+        ],
+        [
+          0.0003215116415617198,
+          0.00023135703063864748,
+          0.9987197816182064,
+          5.9081799022078485
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "normalized_design_rank": 4,
+      "normalized_design_condition": 1.0000000000000002,
+      "singular_values": [
+        1.0009085007326999,
+        0.9993253223885015,
+        0.9987035666530119
+      ],
+      "determinant": 0.9989364744876597,
+      "calibration_residuals_euclidean_vox": [
+        0.4339448747972224,
+        0.2763975237016825,
+        0.21837087842122738,
+        0.09264673255467396,
+        0.19346365711334923,
+        0.027239770832756895,
+        0.07443334329286848,
+        0.2041183011158512
+      ]
+    },
+    "pag50": {
+      "matrix_original_xyz_to_phase_xyz": [
+        [
+          0.9993655952100916,
+          -0.0003026453808888393,
+          -0.00011560933525042425,
+          4.594066387434395
+        ],
+        [
+          -0.0005540530810734849,
+          1.000808020701035,
+          -0.00034888122447204343,
+          1.7987250985856917
+        ],
+        [
+          0.00034375903495374363,
+          0.00023076206871407322,
+          0.9987188840997457,
+          5.819081630699657
+        ],
+        [
+          0.0,
+          0.0,
+          0.0,
+          1.0
+        ]
+      ],
+      "normalized_design_rank": 4,
+      "normalized_design_condition": 1.0000000000000002,
+      "singular_values": [
+        1.0009291133861908,
+        0.9992642336286339,
+        0.9986993056406788
+      ],
+      "determinant": 0.998891718448916,
+      "calibration_residuals_euclidean_vox": [
+        0.44383172833246554,
+        0.2729365863872713,
+        0.22858222814375137,
+        0.09334666545106256,
+        0.19702905088143574,
+        0.030532579750315668,
+        0.07156755331138423,
+        0.21491787741865503
+      ]
+    }
+  },
+  "audits": [
+    {
+      "volume": "pag0",
+      "point": 8,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.903274526906,
+        3703.1099673092835,
+        6286.162315555886
+      ],
+      "observed_xyz": [
+        4494.2181985326215,
+        3703.21335133561,
+        6286.521740448827
+      ],
+      "residual_euclidean_vox": 0.48892907455015544,
+      "pass": true
+    },
+    {
+      "volume": "pag0",
+      "point": 8,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.903274526906,
+        3703.1099673092835,
+        6286.162315555886
+      ],
+      "observed_xyz": [
+        4494.3010529402,
+        3703.3243121784385,
+        6286.508166726996
+      ],
+      "residual_euclidean_vox": 0.5690205809754427,
+      "pass": false
+    },
+    {
+      "volume": "pag50",
+      "point": 8,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.89563513477,
+        3703.107843831143,
+        6286.165352125232
+      ],
+      "observed_xyz": [
+        4494.227371913699,
+        3703.232507778052,
+        6286.52420645206
+      ],
+      "residual_euclidean_vox": 0.5043479136832142,
+      "pass": false
+    },
+    {
+      "volume": "pag50",
+      "point": 8,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.89563513477,
+        3703.107843831143,
+        6286.165352125232
+      ],
+      "observed_xyz": [
+        4494.301324049438,
+        3703.320558699832,
+        6286.506096497365
+      ],
+      "residual_euclidean_vox": 0.57090965834104,
+      "pass": false
+    },
+    {
+      "volume": "pag0",
+      "point": 9,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.784316456269,
+        3953.2675058691316,
+        6286.243946675022
+      ],
+      "observed_xyz": [
+        4567.686451909591,
+        3953.5283917465313,
+        6286.448562589208
+      ],
+      "residual_euclidean_vox": 0.34569724161690407,
+      "pass": true
+    },
+    {
+      "volume": "pag0",
+      "point": 9,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.784316456269,
+        3953.2675058691316,
+        6286.243946675022
+      ],
+      "observed_xyz": [
+        4567.639795518848,
+        3953.5067494956143,
+        6286.470583628746
+      ],
+      "residual_euclidean_vox": 0.3598445816723486,
+      "pass": true
+    },
+    {
+      "volume": "pag50",
+      "point": 9,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.773027835095,
+        3953.268849078402,
+        6286.248480810997
+      ],
+      "observed_xyz": [
+        4567.673023206801,
+        3953.5389901292597,
+        6286.4564480303425
+      ],
+      "residual_euclidean_vox": 0.35528506492809697,
+      "pass": true
+    },
+    {
+      "volume": "pag50",
+      "point": 9,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.773027835095,
+        3953.268849078402,
+        6286.248480810997
+      ],
+      "observed_xyz": [
+        4567.635716867759,
+        3953.507827424083,
+        6286.467082641172
+      ],
+      "residual_euclidean_vox": 0.3517836147566103,
+      "pass": true
+    },
+    {
+      "volume": "pag0",
+      "point": 10,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.780160005927,
+        3953.1519032493375,
+        6730.650457633648
+      ],
+      "observed_xyz": [
+        4494.281065476323,
+        3952.708058283991,
+        6730.3029384600595
+      ],
+      "residual_euclidean_vox": 0.754104912825838,
+      "pass": false
+    },
+    {
+      "volume": "pag0",
+      "point": 10,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.780160005927,
+        3953.1519032493375,
+        6730.650457633648
+      ],
+      "observed_xyz": [
+        4493.727322680465,
+        3953.397206190075,
+        6730.462320007361
+      ],
+      "residual_euclidean_vox": 0.31362570385974364,
+      "pass": true
+    },
+    {
+      "volume": "pag50",
+      "point": 10,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.768527635361,
+        3953.1545968615114,
+        6730.652946066797
+      ],
+      "observed_xyz": [
+        4494.290454472577,
+        3952.692159704353,
+        6730.3085134420635
+      ],
+      "residual_euclidean_vox": 0.7777464758568348,
+      "pass": false
+    },
+    {
+      "volume": "pag50",
+      "point": 10,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4493.768527635361,
+        3953.1545968615114,
+        6730.652946066797
+      ],
+      "observed_xyz": [
+        4493.730396009987,
+        3953.3885288511196,
+        6730.45651661474
+      ],
+      "residual_euclidean_vox": 0.30783555066143686,
+      "pass": true
+    },
+    {
+      "volume": "pag0",
+      "point": 11,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.814884519946,
+        3702.916135603818,
+        6730.616410237464
+      ],
+      "observed_xyz": [
+        4568.16007365358,
+        3703.1710765251482,
+        6730.279471440594
+      ],
+      "residual_euclidean_vox": 0.5455989041269781,
+      "pass": false
+    },
+    {
+      "volume": "pag0",
+      "point": 11,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.814884519946,
+        3702.916135603818,
+        6730.616410237464
+      ],
+      "observed_xyz": [
+        4567.763265355824,
+        3703.35644156907,
+        6730.455684131583
+      ],
+      "residual_euclidean_vox": 0.4715578037235089,
+      "pass": true
+    },
+    {
+      "volume": "pag50",
+      "point": 11,
+      "kind": "gradient",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.797243026131,
+        3702.911591758253,
+        6730.620693718205
+      ],
+      "observed_xyz": [
+        4568.1693885637,
+        3703.1744320571725,
+        6730.277781405508
+      ],
+      "residual_euclidean_vox": 0.5702334417304685,
+      "pass": false
+    },
+    {
+      "volume": "pag50",
+      "point": 11,
+      "kind": "raw",
+      "structural_quality_pass": true,
+      "predicted_xyz": [
+        4567.797243026131,
+        3702.911591758253,
+        6730.620693718205
+      ],
+      "observed_xyz": [
+        4567.766631046989,
+        3703.3458389557463,
+        6730.451753157791
+      ],
+      "residual_euclidean_vox": 0.4669567803884022,
+      "pass": true
+    }
+  ],
+  "phase_pair_composition_xyz": [
+    [
+      0.9999347099308664,
+      4.698718521844823e-06,
+      -1.1644614943467747e-05,
+      0.3415679315836977
+    ],
+    [
+      -2.548099180247713e-05,
+      1.000021383914864,
+      -1.198957150354664e-06,
+      0.040735485341904853
+    ],
+    [
+      2.226004033877614e-05,
+      -5.874504432127577e-07,
+      0.9999991034442133,
+      -0.08918661003344042
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "phase_pair_independent_closure": [
+    {
+      "point": 8,
+      "kind": "gradient",
+      "phase0_measured_fractional_xyz": [
+        4494.2181985326215,
+        3703.21335133561,
+        6286.521740448827
+      ],
+      "phase50_predicted_xyz": [
+        4494.210534879485,
+        3703.2112216127125,
+        6286.524783645415
+      ],
+      "phase50_direct_observed_xyz": [
+        4494.231137119559,
+        3703.2416453449778,
+        6286.528767541781
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.5287675417813462,
+          0.24164534497786047,
+          0.23113711955921165
+        ],
+        "ncc": 0.9912617086311223,
+        "integer_grid_ncc": 0.9565991625660457,
+        "margin": 0.1847311394717992,
+        "competing_ncc": 0.7718680230942465,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 107,
+        "continuous_Hessian_eigenvalues": [
+          -0.9086418122114083,
+          -0.15858837882144966,
+          -0.10637438126380205
+        ],
+        "continuous_Hessian_condition": 8.541923359892749
+      },
+      "residual_euclidean_vox": 0.03695845250129618,
+      "pass": true
+    },
+    {
+      "point": 8,
+      "kind": "raw",
+      "phase0_measured_fractional_xyz": [
+        4494.2181985326215,
+        3703.21335133561,
+        6286.521740448827
+      ],
+      "phase50_predicted_xyz": [
+        4494.210534879485,
+        3703.2112216127125,
+        6286.524783645415
+      ],
+      "phase50_direct_observed_xyz": [
+        4494.230793879037,
+        3703.2305388204795,
+        6286.523694817279
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.5236948172784456,
+          0.23053882047949453,
+          0.23079387903683624
+        ],
+        "ncc": 0.9903095216439213,
+        "integer_grid_ncc": 0.937211253758535,
+        "margin": 0.2835263276553489,
+        "competing_ncc": 0.6536849261031861,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 117,
+        "continuous_Hessian_eigenvalues": [
+          -0.8794884586190095,
+          -0.24245801918731982,
+          -0.1949852959460317
+        ],
+        "continuous_Hessian_condition": 4.510537342582158
+      },
+      "residual_euclidean_vox": 0.028013695320122253,
+      "pass": true
+    },
+    {
+      "point": 9,
+      "kind": "gradient",
+      "phase0_measured_fractional_xyz": [
+        4567.686451909591,
+        3953.5283917465313,
+        6286.448562589208
+      ],
+      "phase50_predicted_xyz": [
+        4567.675168521157,
+        3953.5297427829223,
+        6286.453094210006
+      ],
+      "phase50_direct_observed_xyz": [
+        4567.652166763496,
+        3953.573849663776,
+        6286.450734988603
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.45073498860296246,
+          0.5738496637760375,
+          -0.34783323650362896
+        ],
+        "ncc": 0.9903324717825457,
+        "integer_grid_ncc": 0.9554970884207373,
+        "margin": 0.11919786360256823,
+        "competing_ncc": 0.8362992248181691,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 106,
+        "continuous_Hessian_eigenvalues": [
+          -1.3765161037694214,
+          -0.13312888159559103,
+          -0.09747359172134094
+        ],
+        "continuous_Hessian_condition": 14.12193887042377
+      },
+      "residual_euclidean_vox": 0.049800238149440235,
+      "pass": true
+    },
+    {
+      "point": 9,
+      "kind": "raw",
+      "phase0_measured_fractional_xyz": [
+        4567.686451909591,
+        3953.5283917465313,
+        6286.448562589208
+      ],
+      "phase50_predicted_xyz": [
+        4567.675168521157,
+        3953.5297427829223,
+        6286.453094210006
+      ],
+      "phase50_direct_observed_xyz": [
+        4567.6605132897375,
+        3953.552937511449,
+        6286.448370079437
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          0,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          0.44837007943713386,
+          0.5529375114489011,
+          -0.33948671026209404
+        ],
+        "ncc": 0.9890781102223921,
+        "integer_grid_ncc": 0.9330421566032908,
+        "margin": 0.15748786516240787,
+        "competing_ncc": 0.775554291440883,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 106,
+        "continuous_Hessian_eigenvalues": [
+          -1.027263390601692,
+          -0.22585620482641128,
+          -0.14142202556378233
+        ],
+        "continuous_Hessian_condition": 7.263814717025029
+      },
+      "residual_euclidean_vox": 0.027840413951654472,
+      "pass": true
+    },
+    {
+      "point": 10,
+      "kind": "gradient",
+      "phase0_measured_fractional_xyz": [
+        4494.281065476323,
+        3952.708058283991,
+        6730.3029384600595
+      ],
+      "phase50_predicted_xyz": [
+        4494.26940236283,
+        3952.7107300581133,
+        6730.305438615691
+      ],
+      "phase50_direct_observed_xyz": [
+        4494.308828170031,
+        3952.6557624461902,
+        6730.308079104248
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.6919208957521489,
+          -0.3442375538096817,
+          0.30882817003107393
+        ],
+        "ncc": 0.9862687308586394,
+        "integer_grid_ncc": 0.94864282252321,
+        "margin": 0.20688418326539038,
+        "competing_ncc": 0.7417586392578196,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 143,
+        "continuous_Hessian_eigenvalues": [
+          -1.0675909897119875,
+          -0.1693057801133904,
+          -0.16142860939469975
+        ],
+        "continuous_Hessian_condition": 6.613393956096608
+      },
+      "residual_euclidean_vox": 0.06769641655063503,
+      "pass": true
+    },
+    {
+      "point": 10,
+      "kind": "raw",
+      "phase0_measured_fractional_xyz": [
+        4494.281065476323,
+        3952.708058283991,
+        6730.3029384600595
+      ],
+      "phase50_predicted_xyz": [
+        4494.26940236283,
+        3952.7107300581133,
+        6730.305438615691
+      ],
+      "phase50_direct_observed_xyz": [
+        4494.302601874301,
+        3952.6810998788374,
+        6730.304330365578
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.6956696344225134,
+          -0.31890012116257155,
+          0.3026018743015837
+        ],
+        "ncc": 0.9817510727035333,
+        "integer_grid_ncc": 0.9333767911670587,
+        "margin": 0.3273787063041663,
+        "competing_ncc": 0.6059980848628924,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 116,
+        "continuous_Hessian_eigenvalues": [
+          -0.744805426914172,
+          -0.3404708654115668,
+          -0.25858265762156835
+        ],
+        "continuous_Hessian_condition": 2.880337891817103
+      },
+      "residual_euclidean_vox": 0.0445127319332462,
+      "pass": true
+    },
+    {
+      "point": 11,
+      "kind": "gradient",
+      "phase0_measured_fractional_xyz": [
+        4568.16007365358,
+        3703.1710765251482,
+        6730.279471440594
+      ],
+      "phase50_predicted_xyz": [
+        4568.142414743763,
+        3703.166529739432,
+        6730.283762757577
+      ],
+      "phase50_direct_observed_xyz": [
+        4568.175222561818,
+        3703.1833579812305,
+        6730.281966293447
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.7180337065528863,
+          0.18335798123060276,
+          0.17522256181836604
+        ],
+        "ncc": 0.9887676269879468,
+        "integer_grid_ncc": 0.9574646302173234,
+        "margin": 0.22794151668328877,
+        "competing_ncc": 0.7295231135340347,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 135,
+        "continuous_Hessian_eigenvalues": [
+          -0.8452440894491335,
+          -0.16037540617288915,
+          -0.13963313351581616
+        ],
+        "continuous_Hessian_condition": 6.053320355754913
+      },
+      "residual_euclidean_vox": 0.036915713875859846,
+      "pass": true
+    },
+    {
+      "point": 11,
+      "kind": "raw",
+      "phase0_measured_fractional_xyz": [
+        4568.16007365358,
+        3703.1710765251482,
+        6730.279471440594
+      ],
+      "phase50_predicted_xyz": [
+        4568.142414743763,
+        3703.166529739432,
+        6730.283762757577
+      ],
+      "phase50_direct_observed_xyz": [
+        4568.180547330947,
+        3703.178521673002,
+        6730.275638083275
+      ],
+      "peak": {
+        "integer_shift_zyx": [
+          -1,
+          0,
+          0
+        ],
+        "shift_zyx": [
+          -0.7243619167249975,
+          0.17852167300200425,
+          0.18054733094704384
+        ],
+        "ncc": 0.9849182792577222,
+        "integer_grid_ncc": 0.9517913277538985,
+        "margin": 0.37972126201785006,
+        "competing_ncc": 0.5720700657360485,
+        "refinement_error": null,
+        "boundary": false,
+        "optimization_success": true,
+        "optimization_evaluations": 100,
+        "continuous_Hessian_eigenvalues": [
+          -0.7096703985822805,
+          -0.33167819323464665,
+          -0.22981695678438904
+        ],
+        "continuous_Hessian_condition": 3.08798101111435
+      },
+      "residual_euclidean_vox": 0.040791065303601874,
+      "pass": true
+    }
+  ],
+  "rule_sha256": "b3ae4daddd7653322b1b4c407b1d766c102fa59b9675f4b000e0da175585bc5e",
+  "actual_new_bytes": 448790528,
+  "reused_bytes": 58720256,
+  "peak_rss_bytes": 365002752,
+  "limits": "Local finite checkpoints; passing does not validate global warp or ink identity. Allfailedchecks retained; noalternatefit."
+}

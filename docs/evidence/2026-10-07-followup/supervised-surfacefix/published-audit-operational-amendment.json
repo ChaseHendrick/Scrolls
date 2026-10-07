@@ -1,0 +1,5 @@
+{
+  "prior_rule_sha256": "d99ac79fb2d90dcf616324cc599a30f504ffbc525f6b7467b7c1505f25125573",
+  "rule_v2_sha256": "40f742b94ca2e8c38b972b39d4e2b7a46ff68715336776ac2dec9b2085277777",
+  "reason": "First request used dataset-relative array chunk keys without level0 prefix, all404; corrected URLs to /0/0/y/x before any crop comparison. Same pixel crop, bytes, data, order and structural gates."
+}

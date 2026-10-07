@@ -1,0 +1,13 @@
+{
+  "status": "passed",
+  "checks": [
+    "exact uint8 tied AUC versus brute pair comparisons",
+    "paired block-resampled AUC versus direct resampled pixels",
+    "correlation moments versus direct Pearson and resampled Pearson",
+    "identity contrasts have exactly zero interval",
+    "nonfinite draw abstention"
+  ],
+  "evaluator_sha256": "a95e703eb73dcfe02a97b48184cbf1ef965ef1872219a3d0774780b7b9d4e72c",
+  "test_sha256": "f9ff42219e229177d43212df52015ee594af441b17b84ab1442c242eca418091",
+  "check_count": 5
+}

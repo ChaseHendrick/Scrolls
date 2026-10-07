@@ -1,0 +1,26 @@
+== villa main + PR #1865, Python 3.14
+villa main e0bbb8b40, PR 6723ad158
+== data
+1237 objects, 563.7 MB total, 563.7 MB downloaded -> /root/scrolls-cpu/data/p0841/20260221022814-auto_grown_20260220174252405/sv.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260221022814-auto_grown_20260220174252405/inklabels.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260221022814-auto_grown_20260220174252405/supervision.zarr
+1320 objects, 601.9 MB total, 601.9 MB downloaded -> /root/scrolls-cpu/data/p0841/20260220213127-w00/sv.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260220213127-w00/inklabels.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260220213127-w00/supervision.zarr
+1327 objects, 605.1 MB total, 605.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260220214732-auto_grown_20260220144552896/sv.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260220214732-auto_grown_20260220144552896/inklabels.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/p0841/20260220214732-auto_grown_20260220144552896/supervision.zarr
+3700 objects, 1693.7 MB total, 1693.7 MB downloaded -> /root/scrolls-cpu/data/w045_9um.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/w045_labels/inklabels.zarr
+13 objects, 0.1 MB total, 0.1 MB downloaded -> /root/scrolls-cpu/data/w045_labels/supervision.zarr
+== checkpoints
+f1e2101df567a431d3f39d17503316483084bace64cba55ef9671e5ea24ea76a  /root/scrolls-cpu/smoke-work/checkpoints/ink_9um/hybrid_3d2d-seed42/step-040000.pth
+c16c75db4c6ea75b929c4db82437098d0a4ca0f3779c77e3aabc228f52ea2238  /root/scrolls-cpu/smoke-work/checkpoints/ink_9um/hybrid_3d2d-seed42/step-050000.pth
+63cad1fb689a575662b6cc367635ec968ec488b219af12aff0497781488070ab  /root/scrolls-cpu/smoke-work/checkpoints/ink_9um/hybrid_3d2d-seed42/step-060000.pth
+e635558ae6a1a807a7e5ec1e83adfd45bc3c0ac53883ea43f1d4e085d62a9cab  /root/scrolls-cpu/smoke-work/checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth
+50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966  /root/scrolls-cpu/models/d9v2/d9v2_ft-012000.pth
+654ec5acec2b6c4788d9cb326e2f0b8c2c730584949a934ef775db7f6ab5d3a6  /root/scrolls-cpu/models/reader_v2/reader-v2-step040000.pth
+== soup
+soup of 4 -> /root/scrolls-cpu/tricks/soup42_last4.pth sha256 65563b45d4144a3fdf6cbdeda53b966bf0a7ee974f9881ce77905cc9755209e1
+65563b45d4144a3fdf6cbdeda53b966bf0a7ee974f9881ce77905cc9755209e1  /root/scrolls-cpu/tricks/soup42_last4.pth
+SETUP DONE

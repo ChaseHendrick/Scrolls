@@ -1,0 +1,286 @@
+{
+  "rule_sha256": "8d6fc3431201282c959b83e6437750002ba999c4ed1ca2a52d2bfd513cc01646",
+  "rows": [
+    {
+      "mode": "erode",
+      "factor": 2,
+      "coarse_shape": [
+        106,
+        119
+      ],
+      "retainedvertices": 8870,
+      "retainedquads": 8644,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36338,
+      "represented_fine_valid_cells": 34576,
+      "represented_fine_valid_cell_fraction": 0.9515108151246628,
+      "retainedquads_failing_local_jacobian": 13,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        1.6194734601423662,
+        20.43917049627685,
+        66.89782245596513,
+        206.911799406566
+      ],
+      "mesh": "w00"
+    },
+    {
+      "mode": "support",
+      "factor": 2,
+      "coarse_shape": [
+        106,
+        119
+      ],
+      "retainedvertices": 9199,
+      "retainedquads": 8966,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36338,
+      "represented_fine_valid_cells": 35864,
+      "represented_fine_valid_cell_fraction": 0.9869558038417084,
+      "retainedquads_failing_local_jacobian": 18,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        1.6514926925253204,
+        20.68831854359533,
+        68.62861423880503,
+        206.911799406566
+      ],
+      "mesh": "w00"
+    },
+    {
+      "mode": "erode",
+      "factor": 4,
+      "coarse_shape": [
+        53,
+        60
+      ],
+      "retainedvertices": 2137,
+      "retainedquads": 2031,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36338,
+      "represented_fine_valid_cells": 32496,
+      "represented_fine_valid_cell_fraction": 0.8942704606747757,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        17.161703370617868,
+        75.4301921387718,
+        172.93376010666557,
+        373.7301539695508
+      ],
+      "mesh": "w00"
+    },
+    {
+      "mode": "support",
+      "factor": 4,
+      "coarse_shape": [
+        53,
+        60
+      ],
+      "retainedvertices": 2296,
+      "retainedquads": 2185,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36338,
+      "represented_fine_valid_cells": 34960,
+      "represented_fine_valid_cell_fraction": 0.9620782651769497,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        17.617051755850817,
+        76.47599078337332,
+        174.69621150126392,
+        373.7301539695508
+      ],
+      "mesh": "w00"
+    },
+    {
+      "mode": "erode",
+      "factor": 2,
+      "coarse_shape": [
+        116,
+        118
+      ],
+      "retainedvertices": 8910,
+      "retainedquads": 8670,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36509,
+      "represented_fine_valid_cells": 34680,
+      "represented_fine_valid_cell_fraction": 0.9499027637021008,
+      "retainedquads_failing_local_jacobian": 19,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        1.6120435451538957,
+        21.005933379870186,
+        71.89965556832662,
+        195.78267603751303
+      ],
+      "mesh": "ag896"
+    },
+    {
+      "mode": "support",
+      "factor": 2,
+      "coarse_shape": [
+        116,
+        118
+      ],
+      "retainedvertices": 9251,
+      "retainedquads": 9002,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36509,
+      "represented_fine_valid_cells": 36008,
+      "represented_fine_valid_cell_fraction": 0.9862773562683174,
+      "retainedquads_failing_local_jacobian": 27,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        1.6262381861029072,
+        21.299334650344797,
+        73.13480094476563,
+        198.01491217465815
+      ],
+      "mesh": "ag896"
+    },
+    {
+      "mode": "erode",
+      "factor": 4,
+      "coarse_shape": [
+        58,
+        59
+      ],
+      "retainedvertices": 2144,
+      "retainedquads": 2031,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36509,
+      "represented_fine_valid_cells": 32496,
+      "represented_fine_valid_cell_fraction": 0.8900818976142869,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        18.115201999501117,
+        77.15671165825667,
+        184.4090719574988,
+        413.04746340139843
+      ],
+      "mesh": "ag896"
+    },
+    {
+      "mode": "support",
+      "factor": 4,
+      "coarse_shape": [
+        58,
+        59
+      ],
+      "retainedvertices": 2308,
+      "retainedquads": 2190,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 36509,
+      "represented_fine_valid_cells": 35040,
+      "represented_fine_valid_cell_fraction": 0.9597633460242679,
+      "retainedquads_failing_local_jacobian": 1,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        18.651713767164974,
+        79.09319518045162,
+        184.52626079299577,
+        413.04746340139843
+      ],
+      "mesh": "ag896"
+    }
+  ],
+  "controls": [
+    {
+      "mode": "erode",
+      "factor": 4,
+      "coarse_shape": [
+        5,
+        5
+      ],
+      "retainedvertices": 9,
+      "retainedquads": 4,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 256,
+      "represented_fine_valid_cells": 64,
+      "represented_fine_valid_cell_fraction": 0.25,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "phantom": "full_plane"
+    },
+    {
+      "mode": "support",
+      "factor": 4,
+      "coarse_shape": [
+        5,
+        5
+      ],
+      "retainedvertices": 25,
+      "retainedquads": 16,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 256,
+      "represented_fine_valid_cells": 256,
+      "represented_fine_valid_cell_fraction": 1.0,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "phantom": "full_plane"
+    },
+    {
+      "mode": "erode",
+      "factor": 4,
+      "coarse_shape": [
+        5,
+        5
+      ],
+      "retainedvertices": 9,
+      "retainedquads": 4,
+      "fine_support_violations": 1,
+      "fine_valid_cells": 252,
+      "represented_fine_valid_cells": 60,
+      "represented_fine_valid_cell_fraction": 0.23809523809523808,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "phantom": "interior_hole"
+    },
+    {
+      "mode": "support",
+      "factor": 4,
+      "coarse_shape": [
+        5,
+        5
+      ],
+      "retainedvertices": 24,
+      "retainedquads": 12,
+      "fine_support_violations": 0,
+      "fine_valid_cells": 252,
+      "represented_fine_valid_cells": 192,
+      "represented_fine_valid_cell_fraction": 0.7619047619047619,
+      "retainedquads_failing_local_jacobian": 0,
+      "bilinear_vs_working_vertex_error_um_quantiles": [
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        0.0
+      ],
+      "phantom": "interior_hole"
+    }
+  ],
+  "elapsed_seconds": 3.1433862040003078,
+  "peak_rss_bytes": 70533120,
+  "limits": "Public PHerc0841 cached mesh resampling/mask behavior; not original track-graph growth, flattening benchmark, ink or targets; same-UV errors are geometry discrepancy, notnormaldistance, flatten distortion orink readability."
+}
