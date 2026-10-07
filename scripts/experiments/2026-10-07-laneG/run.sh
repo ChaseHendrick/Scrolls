@@ -3,6 +3,7 @@
 set -euo pipefail
 W=~/scrolls-work; PY=$W/venv/bin/python; L=$W/laneG
 cd $L
+mkdir -p "$L/out"
 nice -n 10 $PY signals.py $L $W/data $L/out 2>&1 | tee $L/out/signals.log
 for seg in w045 0841-w00; do
   if [ $seg = w045 ]; then C="3840 4480 2560 3200"; lab=w045_labels; z=w045_9um.zarr; else C="2624 3264 2688 3328"; lab=0841-w00_labels; z=0841-w00_9um.zarr; fi

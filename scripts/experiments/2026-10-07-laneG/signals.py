@@ -66,16 +66,22 @@ def features(v):
 
 
 def period(profile, lo=15, hi=200):
+    """First positive local peak, with at least three observed periods.
+
+    Historical results.json used the strongest local peak, including negative
+    peaks; those saved numbers remain unchanged and are exploratory.
+    """
     x = profile - profile.mean(); ac = np.correlate(x, x, "full")[len(x) - 1:]; ac = ac / (ac[0] + 1e-12)
-    hi = min(hi, len(ac) - 2)
-    peaks = [k for k in range(lo, hi) if ac[k] > ac[k - 1] and ac[k] >= ac[k + 1]]
+    hi = min(hi, len(ac) - 2, len(profile) // 3)
+    peaks = [k for k in range(lo, hi + 1) if ac[k] > 0 and ac[k] > ac[k - 1] and ac[k] >= ac[k + 1]]
     if not peaks: return None, None
-    k = max(peaks, key=lambda k: ac[k]); return int(k), float(ac[k])
+    k = peaks[0]; return int(k), float(ac[k])
 
 
 import os
 os.makedirs(f"{OUT}/maps", exist_ok=True)
-res = {"seed": SEED, "pad": PAD, "inner": INNER, "segments": {}}
+res = {"seed": SEED, "pad": PAD, "inner": INNER,
+       "line_period_method": "first_positive_peak_with_three_periods_v2", "segments": {}}
 sign = {}
 for name, s in SEGS.items():
     vol = open_volume(f"{DATA}/{s['zarr']}"); surf = vol.shape[1:]

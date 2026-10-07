@@ -22,7 +22,7 @@ Results: `scripts/experiments/2026-10-07-laneG/results.json` (features plus ever
 | relief (surface micro-relief, lower=ink) | 0.532 [0.486, 0.577] | 0.500 | 0.545 | 0.501 [0.444, 0.548] | 0.507 | 0.574 | null |
 | phase_sym (phase symmetry 12 to 48 px) | 0.501 [0.500, 0.503] | 0.501 | 0.501 | 0.498 [0.493, 0.501] | 0.500 | 0.503 | null |
 
-No signal clears 0.55 lower bound on either segment; every point AUC is within 0.03 of, or below, a control. Post hoc observation, not a result: crackle and dog_band flip direction between the scrolls (w00 reversed would be 0.615 and 0.584, above its rolled max of 0.52 to 0.53). That fits a scroll-specific texture difference, not a general ink cue; testing it needs a fresh preregistration and a third segment (for example ag405).
+No signal clears 0.55 lower bound on either segment; every point AUC is within 0.03 of, or below, a control. Post hoc observation, not a result: crackle and dog_band flip direction between the scrolls. Flipping a signal also flips every null: the maximum becomes one minus the original minimum. On w00, crackle would have AUC 0.6149 against a flipped rolled maximum of 0.6114 (only +0.0035); dog_band would have AUC 0.5842 against 0.5198. Selecting the sign using w00 labels makes these exploratory calibration observations, not held-out results. A transfer claim requires a fresh rule and a separate evaluation surface; ag405 is a separate surface of the same scroll, not a third scroll.
 
 ## Text-level cue: line period (row autocorrelation of dog_band row means)
 
@@ -31,4 +31,8 @@ No signal clears 0.55 lower bound on either segment; every point AUC is within 0
 | w045 | 187 (-0.26, no positive peak) | 45 (0.21) | 62 (0.18) |
 | 0841-w00 | 115 (0.26) | 117 (0.43) | 78 (0.22) |
 
-Verdict: inconclusive. On w00 the period matches labels within 2 % and beats the shuffled control by 0.21, but w045's 640 px crop has no label periodicity (fewer than 3 lines along rows), so the both-segments rule cannot be met. Next: rerun on whole-segment windows (several line periods) with an orientation-agnostic 2D autocorrelation; preregister first.
+Verdict: exploratory and inconclusive. The historical implementation selected the strongest local autocorrelation peak, including negative peaks, although the preregistration specified the first peak. Thus the saved w00 match within 2 % and peak advantage 0.21 do not establish a pass of that fixed rule. w045 has no positive supported label peak in this readout. The saved results and log remain unchanged. Future code selects the first positive local peak and requires at least three observed periods; its output records that method. No corrected data run has been performed. Next: use whole-segment windows and an orientation-agnostic 2D autocorrelation under a fresh rule.
+
+## Merge review qualification
+
+w045 labels choose each pixel signal's sign, so its AUC and bootstrap intervals are calibration descriptions. Only the unchanged sign on w00 is a transfer test; the two crops are not two independent validation samples. These nulls concern the implemented features and fixed crops, not the absence of model-free ink information in CT generally. The fresh-run wrapper now creates its output directory before opening the tee log.
