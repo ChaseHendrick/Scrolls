@@ -2,7 +2,7 @@
 
 Preregistration and ready-to-run job spec. Committed before any training. Nothing has been trained or launched; no numbers exist yet. Labels per [`docs/NOVELTY.md`](../../../../docs/NOVELTY.md): every map is model output, not a reading. Public labelled data only (PHerc0841 w00, PHerc0139 w045). No target scroll is touched. PHerc0841 ag405 (the plan's audit segment) is not used at all.
 
-Follows the rules of [`../README.md`](../README.md) (paths, crops, scoring), with one difference: this job needs one NVIDIA GPU, so it is a Modal job instead of a CPU container.
+Follows the rules of [`../README.md`](../README.md) (paths, crops, scoring), with one difference: this job needs one NVIDIA GPU, so it is a Modal GPU job instead of a CPU container.
 
 ## Why
 
@@ -35,28 +35,32 @@ A model counts as better than base only if all hold:
 
 Arm P is positive only if P90 or P80 passes on the w00 crop; with two thresholds tried, one pass with the other far below is reported as inconclusive. S1 and S2 are judged separately; both passing is needed to say supervised cross-scroll fine-tuning helps in both directions. Everything else is a null and is reported as such, with the numbers. No setting is changed after seeing results; any rerun with changed settings is a new, separately labelled variant.
 
-## Compute and cost (estimate, not measured)
+## Compute and cost (amended 2026-10-07 11:05 ET for hardware only; arms, recipe and readout rule unchanged)
 
-- Provider: Modal (the repo's documented pay-per-second precedent, bnleft's A10 run in [`docs/compute.md`](../../../../docs/compute.md)). No Modal token or other GPU credential exists on the agent box; the user launches with their own account.
-- GPU: 1 x NVIDIA A10G 24 GB, 8 vCPU, 32 GB RAM, about 15 GB disk on the volume. Any >= 16 GB CUDA GPU works.
-- Time: setup and downloads about 0.5 to 1 h (the repo setup also runs its CPU smoke tests), whole-surface base map on w00 a few minutes, 4 trainings x 1,200 steps about 0.5 to 1 h, 42 crop inferences and scoring about 0.3 h. Estimate 2.5 h; hard timeout 4 h.
-- Cost: `python -m kit cost --gpu-hours 3 --rate 1.10` gives $3.30; the 4 h cap gives $4.40 (A10G list rate assumed $1.10 per GPU hour; check current pricing).
+The first version of this section (one A10G, sequential) is in the preregistration commit `3a9e06c`. The user asked for the four variants to run in parallel on H100s. Only hardware and orchestration changed; the training recipe, leakage rule, variants and readout rule above are exactly as preregistered.
+
+- Provider: Modal. No Modal token or other GPU credential exists on the agent box; the user launches with their own account.
+- Layout (`modal_app.py`): `prepare` on a CPU container (8 vCPU, 32 GiB) builds the villa env, fetches ink_9um, both volumes and labels, and writes the test crops, all cached on Volume `scrolls-laneH` and skipped when present. Then `base` on 1 x H100 (pseudo-label source map on w00, base crop maps and scores). Then `variant.map(["P90","P80","S1","S2"])`: 4 x H100 at once, each train, infer, score. Then `collect` (CPU) writes `results.json` with score rows and a timing row (container start/end per function, and start/end of data_fetch, crops, base maps, train, infer, score per phase).
+- `--smoke-steps N` runs the same flow with N training steps per variant, all 4 in parallel, into a separate `laneH-smoke` tree; its numbers are pipeline tests, not results.
+- Pricing (fetched 2026-10-07 from https://modal.com/pricing): H100 $0.001097/s ($3.9492/h); CPU $0.0000131 per physical core per second (2 vCPU = 1 core); memory $0.00000222 per GiB per second. Region selection and non-preemptible execution cost extra and are not used. The Starter plan includes $30 of compute per month.
+- Wall time estimate (not measured): prepare 0.5 to 1.5 h on first run (downloads, venv, the repo setup's CPU smoke tests; near zero once cached), base 0.25 h, the four parallel variants 0.5 to 1.25 h (1,200 steps at batch 8, with zarr patch reads likely the bottleneck, plus 8 crop inferences and 4 bootstrap scorings each), collect a few minutes. About 1.75 h first run (range 1.25 to 3 h); about 1 to 1.5 h on a rerun with a warm Volume.
+- Cost estimate: central 3.25 H100 hours (0.25 base + 4 x 0.75), H100 container CPU and memory 3.25 h at $0.70/h (4 cores, 64 GiB), prepare $0.33: `python -m kit cost --gpu-hours 3.25 --rate 3.9492 --cpu-hours 3.25 --cpu-rate 0.70 --storage 0.33` = $15.44. Upper (5.5 H100 hours, 1.5 h prepare): `--gpu-hours 5.5 --rate 3.9492 --cpu-hours 5.5 --cpu-rate 0.70 --storage 0.67` = $26.24. Smoke run: `--gpu-hours 1.05 --rate 3.9492 --cpu-hours 1.05 --cpu-rate 0.70 --storage 0.33` = $5.21. Function timeouts cap the worst case at 2 h base + 4 x 3 h variants.
 
 ## Launch (user action; nothing was launched)
 
 ```bash
 pip install modal && modal token new
-modal run scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py --smoke-steps 5   # pipeline test, numbers not results
-modal run --detach scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py          # full job
+modal run scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py --smoke-steps 5   # all 4 variants in parallel, briefly; not results
+modal run --detach scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py          # full job, reuses the cached Volume
 modal volume get scrolls-laneH laneH/results.json scripts/experiments/2026-10-07-cloud/laneH-finetune/results.json
 ```
 
-Any Linux CUDA machine works without Modal: `WORK=$HOME/scrolls-work bash scripts/experiments/2026-10-07-cloud/laneH-finetune/run_job.sh` from the repo root.
+Without Modal, any Linux CUDA machine runs the same phases sequentially: `WORK=$HOME/scrolls-work bash scripts/experiments/2026-10-07-cloud/laneH-finetune/run_job.sh` (PHASE=all) from the repo root.
 
 ## Files
 
 - `finetune_ink9um.py`: the fine-tune loop (villa's model, config and preprocessing; saves villa-loadable checkpoints).
 - `run_job.sh`: setup, crops (stored and shuffled), pseudo-label source map, 4 trainings, inference, scoring. Resumable.
 - `collect.py`: score JSONs to `results.json` rows.
-- `modal_app.py`: Modal launcher.
+- `modal_app.py`: Modal launcher (prepare, base, 4 parallel H100 variants, collect).
 - `results.json`: status record now; replaced by real rows after the run.

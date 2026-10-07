@@ -20,3 +20,9 @@ One A10G 24 GB on Modal, about 2.5 h, hard cap 4 h. `python -m kit cost --gpu-ho
 ## Results
 
 None yet. Code was syntax-checked only; the fine-tune loop has not run (no GPU, no villa environment on the agent box). The first launch should be the `--smoke-steps 5` run.
+
+## Amendment, 11:05 ET: parallel H100 layout (hardware only)
+
+At the user's request the job now runs P90, P80, S1 and S2 in parallel on Modal, one H100 each, after a CPU `prepare` step and one H100 `base` step, with the Volume caching env, data, checkpoint and base maps. Per-phase timing goes into `results.json`. `--smoke-steps N` runs all four in parallel briefly. The preregistered arms, recipe and readout rule are unchanged (first committed in `3a9e06c`).
+
+Pricing from https://modal.com/pricing (fetched 2026-10-07): H100 $0.001097/s. Estimate (not measured): about 1.75 h wall on first run (1.25 to 3 h), $15.44 central (`kit cost --gpu-hours 3.25 --rate 3.9492 --cpu-hours 3.25 --cpu-rate 0.70 --storage 0.33`), $26.24 upper, smoke run $5.21. Nothing launched. Code syntax-checked only.
