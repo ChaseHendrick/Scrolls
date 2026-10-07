@@ -21,6 +21,12 @@ Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` 
 3. **Gate A** (after A.5): if d9v2 or an ensemble beats v8in by 0.02 or more, write an atlas script variant on villa's inference and a second preregistration (same readout rule) before any map; the user's Mac then runs it like step A.4.
 4. Open items from the plan: idea 1 depends on `v8in-1447`'s PHerc0841 number (step A.4); ideas 2 and 3 are in `plans/2026-10-07-training.md`. Progress Prize draft: submit near 31 Oct, only with the user's go-ahead.
 
+### Novel checks done after the merge (README findings 3 and 4; [log](logs/2026-10-07-novel-checks.md))
+
+Training-segment thresholds miss about 96 % of real ink on PHerc0841; averaging four depth windows matches the label-chosen best window (0.820 vs 0.819); depth-shuffled input scores at or below reversed input. These commits are on `claude/jolly-rubin-n55p5t` after the merge and need a new PR to reach `main` (with the tricks results file, B.1).
+
+Next leads for novel results, cheapest first: (a) the same window test for v8in (it reads 24 of 28 layers; `kit layers --start/--count` moves its window), on the Mac; (b) the shuffle control for v8in (`kit layers --shuffle 20261007`), on the Mac; (c) a threshold calibrated on PHerc0841 instead of a training segment, then re-run other published null rules (nerln, bnleft) on PHerc0841 to measure what they would have caught; (d) whether window averaging also helps the letter-scale score, not just pixel AUC.
+
 ### New tools this session
 
 `kit gate` (Gate A), `kit ensemble` (map averaging, rank mean across models), `kit hpscore` (Scheirer's letter-scale score), `kit shuffle` and `kit layers --shuffle` (depth-shuffle control), `scripts/soup.py` (checkpoint soup within one run, refuses mixed seeds; rebuilds Nieuwlaar's `soup42_last4` bit-identically), `scripts/mac-phase0.sh` (the Phase 0 queue), `tests/test_repo.py` (repo checks in CI). Community tricks with sources: [`tricks.md`](tricks.md).
