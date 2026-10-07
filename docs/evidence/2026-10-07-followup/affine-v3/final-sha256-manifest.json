@@ -1,0 +1,20 @@
+{
+  "__pycache__/fit_local_affine_v3.cpython-312.pyc": "656d45704619267964beeaaa9a269c95622a3a483bab7153aaa8c635ab489096",
+  "algorithm-controls.json": "56c3c0029ae7c47907c5f7e8ab5a908682a7a3bed074dc7daab1880d65add8ae",
+  "build_v3.py": "9f5f300771f7a19182d0db2cc08b4ab822234de39ab82f0dafc2d89e5b7ecae8",
+  "calibration-attempt1.json": "2905250dcd1da762efccd700a4c1790d94ce86603d869f515cc7f95840e4aff9",
+  "calibration-controls.json": "2905250dcd1da762efccd700a4c1790d94ce86603d869f515cc7f95840e4aff9",
+  "calibration-convergence-recheck.json": "07f292aaf3237891214c2fa6c862662dcf374c7c02db2f91f951482bb43b57aa",
+  "calibration-validated.json": "39c2501d2c85b096520bd8e8ccd5f08497daa24649561b6396c525986b7a6ae1",
+  "correspondences.json": "0fa94cb9709e34afaab0a08e465317984b94e41b6d9dd1ac988caf04d0193379",
+  "fit_local_affine_v3.py": "f22e8c3abc6b3e6b6044f61e3548cd1a20ac852322d33f45f3d48962dc5a90f4",
+  "fit_local_affine_v3_calibration1.py": "e8fc8e9ec1098efc7ce189ccd7a673ec167b49b3093f24a387489267a6f9309e",
+  "input-receipt.json": "cdae1826e02fc3cef728d1861aabf9d83c07023979f0fb4deab3602073ffc531",
+  "recheck_convergence.py": "28438e8eaa069ad9d74cfc8f6e4e459d0ae602edd206402b6711c60ac402fec1",
+  "reference-sha256.json": "e00b85e48d83b2fba0463017418451a567742ee47198bcda7278a7a63ac2c38f",
+  "report.md": "e67a89c6634a9b6d3332762b45b6bb781794d5343c7d6b26f5eef31467858a5c",
+  "result.json": "3986f8b438af155f58b94ad47a5c3e6a3833705c8d6a3b421bfb7390d60a69fe",
+  "rule_v3.json": "b3ae4daddd7653322b1b4c407b1d766c102fa59b9675f4b000e0da175585bc5e",
+  "sha256-manifest.json": "378fa4d0eb5e7ca80333c9531129077d3b7da6b4f198cb51f428cbd6ccd07e82",
+  "v3-amendment.json": "861132bd027db5f4b1111ef329aaab3b232fe5110412349f0bae7061baa3da44"
+}

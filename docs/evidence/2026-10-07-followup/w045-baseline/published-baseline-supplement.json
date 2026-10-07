@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "created_utc": "2026-10-07T13:28:02.745604+00:00",
+  "role": "Supplementary pipeline diagnostic only; preserves primary original/pag0/pag50 rerender experiment.",
+  "primary_rule_sha256": "688e6c97637f151e1d444ce3a54e3a6c988707d2ed296deb948a6a45e3034ec0",
+  "source": "/workspace/scrolls-env/phase-reconstruction/published-render-check/official-published-crop.npy",
+  "source_sha256": "2b21f7976a1eff8474791b4e7d604e000298788f7c15315d7392bb03f778fe83",
+  "source_shape": [
+    28,
+    640,
+    640
+  ],
+  "forward_order": "Official published as stored; no reversal or label-based choice.",
+  "reader": "d9v2 fixed verifiedv1.0",
+  "directions": "Same selected central17 voxels in forward/reverse/shuffle, allstride42, seed20261007,fp32,Hann,batch1.",
+  "threads": 2,
+  "script": "/workspace/scrolls-env/phase-reconstruction/run_published_baseline.py",
+  "script_sha256": "9b3526acc70ef1a6fd53aa61db74eac872f1848b7552cfb5cbe79ef6fa8485b8",
+  "adapter_sha256": "1357601e51ff49d5487465ddd14a77de642d1fad325d51814e702b8087e30495",
+  "labels": "Same frozen w045 source-canvas mapping and crop, inner64, zeros counted.",
+  "metrics": "Report all3 raw AUC andHP,1000-draw paired107px block forward-vs-reverse/shuffle AUC intervals; fixed upper/lower half metrics.",
+  "gate": "Diagnostic forward must beat both controls; report failure and do not flip or modify the source order based on score.",
+  "interpretation": "No recipe effect or novel finding; published rendering pipeline check.",
+  "hashing": "Hash source, staging script, adapter, exact layer and inference receipts, result JSON and final verification manifest."
+}
