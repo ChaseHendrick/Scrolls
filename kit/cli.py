@@ -1,11 +1,11 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,layers,provenance,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,layers,provenance,compute,run}."""
 
 import argparse
 import json
 import sys
 from datetime import date
 
-from . import auc, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
+from . import auc, compute, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -107,6 +107,16 @@ def cmd_provenance(args):
     if problems:
         return 1
     print(f"{args.path}: ok (digest {record['digest']}{', files unchanged' if args.files else ''})")
+    return 0
+
+
+def cmd_compute(args):
+    records = compute.collect(args.paths)
+    if not records:
+        print("no provenance records found", file=sys.stderr)
+        return 2
+    r = compute.rows(records, args.watts)
+    print(json.dumps(r, indent=2) if args.json else compute.table(r, args.watts))
     return 0
 
 
@@ -243,6 +253,12 @@ def build_parser():
     a.add_argument("path")
     a.add_argument("--files", action="store_true")
     p.set_defaults(func=cmd_provenance)
+
+    p = sub.add_parser("compute", help="machine time per run, from provenance records (GENChase-style ledger)")
+    p.add_argument("paths", nargs="+", help="provenance JSON files or directories to search")
+    p.add_argument("--watts", type=float, help="assumed average power draw, for a Wh estimate")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_compute)
 
     p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
     p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")

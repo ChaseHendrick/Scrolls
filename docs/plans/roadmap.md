@@ -67,7 +67,7 @@ Goal: a reader that beats Gate A's winner on PHerc0841. Details: [`2026-10-07-tr
 
 Compute: d9v2 took 1.3 to 2 hours on one RTX 3090; budget a few hours of a rented 24 GB GPU per run, roughly 1 to 3 USD an hour. Needs the user's go-ahead on provider and budget.
 
-**Gate D.** A trained reader is kept only if its mean PHerc0841 crop AUC beats the best released reader by at least 0.02, reverse AUC stays well below forward, and it was never shown PHerc0841 or the held-out segments. Kept readers re-run Phase 1 and read Phase 2's surfaces.
+**Gate D (promotion gate, from Undeciphered-Texts).** Select among trained variants on PHerc0841 w00 and ag896 only; score the single winner once on ag405, the audit segment, after the choice is frozen. Promote it only if it beats the best released reader by at least 0.02 mean AUC on the selection pair and does not fall below it on ag405, with reverse AUC well below forward everywhere, and it was never shown PHerc0841 or the held-out segments. Report the number of variants tried. Promoted readers re-run Phase 1 and read Phase 2's surfaces. Details: [`2026-10-07-training.md`](2026-10-07-training.md).
 
 Risks: overfitting to PHerc0841 by trying many variants (count every variant tried, report all); teacher maps carry their own errors; licences: Challenge data is CC BY-NC 4.0, so trained weights are shared under those terms.
 
@@ -97,4 +97,4 @@ Risks: overfitting to PHerc0841 by trying many variants (count every variant tri
 
 ## Records kept for attribution
 
-Every Mac run writes `provenance.json` and a digest: operator (git user.name), machine, UTC times, Scrolls and villa commits, model and input and output hashes. Preregistrations are committed before their maps exist. The ledger (`experiments/`, local) holds readout-rule hashes and verdicts. Keep the provenance files; commit digests when a date needs fixing.
+`python -m kit compute ~/scrolls-work --watts 30` turns those records into a time ledger (GENChase-style; energy is an estimate). Every Mac run writes `provenance.json` and a digest: operator (git user.name), machine, UTC times, Scrolls and villa commits, model and input and output hashes. Preregistrations are committed before their maps exist. The ledger (`experiments/`, local) holds readout-rule hashes and verdicts. Keep the provenance files; commit digests when a date needs fixing.
