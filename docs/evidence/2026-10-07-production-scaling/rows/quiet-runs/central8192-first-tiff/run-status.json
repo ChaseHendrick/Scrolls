@@ -1,0 +1,20 @@
+[
+  {
+    "repeat": 0,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 5.520707779999611,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-baseline.log"
+  },
+  {
+    "repeat": 0,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 1.9120354930000758,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/central8192-first-tiff/0-fast.log"
+  }
+]

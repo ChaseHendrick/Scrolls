@@ -1,0 +1,29 @@
+{
+  "source": {
+    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/public-inputs/ink-detection/PHerc0841-20260220213127-2.403um-0.22m-77keV-volume-20260319124803-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+    "bytes": 23560428,
+    "sha256": "c980b60dc457037d0cfe8c654619c23f3fd673e2847d64aed09cbdb3e26f7bde"
+  },
+  "source_shape": [
+    16460,
+    18560
+  ],
+  "crop": [
+    10240,
+    12800,
+    10240,
+    12800
+  ],
+  "voxel_um": 2.403,
+  "control": "Synthetic523-row roll of public prediction, only performance/parity workload; not reverse-depth control or ink evidence.",
+  "files_sha256": {
+    "/workspace/scrolls-env/production-speed-v2/large-hp-fixture/published-crop.tif": "37417727d64f8a2369e5e0f76044a6f9743a15615f0c3c8b2d2b2d329a84e6e4",
+    "/workspace/scrolls-env/production-speed-v2/large-hp-fixture/synthetic-rolled-control.tif": "69652a80e9fc545b7d1d9e53ce545b2cd99af6f25dd719b5cf184dd77d5ddbee"
+  },
+  "shape": [
+    2560,
+    2560
+  ],
+  "zero_pixels": 0
+}

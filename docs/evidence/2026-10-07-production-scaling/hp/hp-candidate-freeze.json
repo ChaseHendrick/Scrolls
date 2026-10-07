@@ -1,0 +1,19 @@
+{
+  "baseline_commit": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "files_sha256": {
+    "scoring/kit/hpscore.py": "283753892087eb4f9a005fb1b9f5a6997497f0cf846016843e9d1c2182441abf",
+    "scoring/tests/test_hpscore_reuse.py": "b6c8aaa0709192f7d71b1f6d07ab1f7c89e20e579c97bb29da6a6a739856a1d3",
+    "scoring-baseline/kit/hpscore.py": "36da84d7421a3cb05eaae09693377ca355a6da1a10110fc5985aca1ecad47e58",
+    "scoring-baseline/kit/auc.py": "6e94d02129327760eee52aafe394e6153cbfd9f58a0ccadc1e7e6a55a030c7fa",
+    "scoring-baseline/kit/rowscore.py": "b94fc1c1cd7467d950fb4c9ab4bf89c666cd01e520fe7f3e9b7d97de9523f67b",
+    "hp_common.py": "02dd2f38fe76a11f403935d3f6be20ca4a5d97e9a404c0b070b93a2872a0668b",
+    "hp_benchmark_worker.py": "33b99d74dab5759677d8ab2c0c2eb756ba5beef7120cab039eb73d514c6563bb",
+    "hp_benchmark_cli.py": "567ff76f36835636a2a15f7cc63545efdb90ab2ec91c44d72ff85dfecb1d7358",
+    "hp_benchmark_run.py": "b122646b97176f5a1ee5ac2863b5ab1dee07a4d9226a74ef10cfae770bc5ebdc",
+    "hp-benchmark-rule.json": "3efb9c3646cf1ad208e7d091273fd7acc7fdd60ae3423a7942ca168656d80d22",
+    "hp-input-freeze.json": "e705fd073461d30700ec9eef9c114af0d2b50f0d26165fdca91bd9acfb14d4d6",
+    "hp-baseline-results.json": "c576644d5e89f936954584fbdf5f9024f3f24fb355ad51699efb94b5d190a03b",
+    "large-hp-fixture.json": "2ccb1b2b35e4716fd91c3a3c669fda766625e9599bc99e29167b907bf63d7278"
+  },
+  "created_before_comparative_timing": true
+}

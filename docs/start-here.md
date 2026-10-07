@@ -1,5 +1,7 @@
 # Start here: from "no idea" to a first submission
 
+Private operational plans, target outputs and submission material belong in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). This page is public background and general tooling guidance.
+
 Checked 2026-10-06. Prize facts come from [scrollprize.org/prizes](https://scrollprize.org/prizes) (source in [villa](https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/docs/34_prizes.md), commit `e0bbb8b`). Re-check the live page before you invest time.
 
 ## What the problem is, in one paragraph

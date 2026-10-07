@@ -1,0 +1,56 @@
+[
+  {
+    "repeat": 0,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 39.7425445530007,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-baseline.log"
+  },
+  {
+    "repeat": 0,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 5.923026477000349,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/0-fast.log"
+  },
+  {
+    "repeat": 1,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 5.924856167000144,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-fast.log"
+  },
+  {
+    "repeat": 1,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 39.960150818999864,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/1-baseline.log"
+  },
+  {
+    "repeat": 2,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 53.330476173000534,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-baseline.log"
+  },
+  {
+    "repeat": 2,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 5.9256819590000305,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-three-fresh-pairs/2-fast.log"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "candidate_hpscore_sha256": "283753892087eb4f9a005fb1b9f5a6997497f0cf846016843e9d1c2182441abf",
+  "baseline_hpscore_sha256": "36da84d7421a3cb05eaae09693377ca355a6da1a10110fc5985aca1ecad47e58",
+  "counts": {
+    "score_array_matches": 368,
+    "score_files_matches": 374,
+    "exception_matches": 11,
+    "format_matches": 373
+  },
+  "gaussian_filter_calls_paired": {
+    "baseline": 10,
+    "candidate": 7
+  },
+  "input_mutation": "none",
+  "local_label_fields_after_return": "released",
+  "global_cache": "none by source inspection",
+  "status": "pass"
+}

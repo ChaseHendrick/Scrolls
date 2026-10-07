@@ -1,0 +1,8 @@
+{
+  "before_first_comparative_timing": true,
+  "parent_authorized": "Reduce redundant largecase warm-worker repeats; retain5alternating pairs and exact/RSS checks.",
+  "rule_precedence": "This append-only amendment overrides large-case warm-worker/fulloperation collection; original files/rule/freezes remain unchanged.",
+  "public2560": "One fresh HP CLI invocation per measured variant,5alternating pairs. One unmeasured CLI warmup pervariant before allpairs warms input cache. No separate redundant worker. Full score_files elapsed captured by transparent wrapper around actual CLI function; no intermediate numerical changes.",
+  "real640": "Original warmed-worker fullfile/combined pipeline plus separate fresh HP CLI in eachpair remains.",
+  "scope": "CLI wall includes startup/imports/I/O/scoring/JSON/shutdown; in-CLI function excludes startup/imports (Scipy preimported symmetrically), includes all inputfiles/mapgrid/filter/null/report computations. ColdCLI peakRSS in KiB."
+}

@@ -106,16 +106,9 @@ Faster step 6 (2026-10-07): the reverse control runs at stride 42 by default (`Q
 
 Reruns skip finished passes (they print `finished in an earlier run, reused`). `FRESH=1` redoes everything; `DEVICE_CHECK=1` redoes the device check on a non-w045 segment.
 
-## First Letters target run: v8in on the public meshes of PHerc0813, 0358 and 0826
+## Private target runs
 
-```bash
-bash scripts/mac-w045.sh          # first; this needs its CPU vs MPS pass
-bash scripts/mac-atlas-v8in.sh    # resumable; ATLAS_HOURS=12 by default
-```
-
-[`scripts/mac-atlas-v8in.sh`](../scripts/mac-atlas-v8in.sh) reads all 81 automatic meshes on these three scrolls with v8in, using rodriguescarson's published renders (about 72 MB per mesh, deleted after use), both depth directions. It does the 5 meshes he holds back first, then the rest in Hecate rank order, so a run you stop early has covered the likeliest ones. Preregistered in [`prereg/2026-10-07-v8in-atlas.md`](prereg/2026-10-07-v8in-atlas.md): the script copies that rule into your ledger before the first inference and stops if the ledger holds a different one. It picks the stride from w045's measured speed and `ATLAS_HOURS`. At the end it prints which meshes the rule says to look at.
-
-**This is a target run.** Maps stay in `~/scrolls-work/atlas`. Do not post the maps or the list publicly; look privately, then record `null` or `candidate` with `python -m kit run status`. For a candidate, follow [`WORKFLOW.md`](WORKFLOW.md) section 3b. The rule's second-stride check: `SECOND_STRIDE=21 ONLY="PHerc0813/<mesh>" bash scripts/mac-atlas-v8in.sh`.
+Target-run instructions, preregistrations and the atlas runner live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). Read its handoff before continuing private work. Keep public labelled device/model comparisons in this guide.
 
 ## Runbook: verify MPS against CPU on the control segment
 

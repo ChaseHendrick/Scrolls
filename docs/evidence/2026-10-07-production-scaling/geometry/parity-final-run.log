@@ -1,0 +1,71 @@
+/workspace/scrolls-env/production-speed-v2/geometry/parity_check_final.py:30: RuntimeWarning: overflow encountered in cast
+  t=(rng.normal(size=(size,3,3))*scale).astype(dtype);p=(rng.normal(size=3)*scale).astype(dtype)
+/workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2803: RuntimeWarning: overflow encountered in multiply
+  s = (x.conj() * x).real
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:52: RuntimeWarning: overflow encountered in multiply
+  d00, d01, d11 = (e0 * e0).sum(-1), (e0 * e1).sum(-1), (e1 * e1).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:53: RuntimeWarning: overflow encountered in multiply
+  d20, d21 = (v * e0).sum(-1), (v * e1).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:54: RuntimeWarning: invalid value encountered in subtract
+  den = d00 * d11 - d01 * d01
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:55: RuntimeWarning: invalid value encountered in subtract
+  u = np.divide(d11 * d20 - d01 * d21, den, out=np.zeros_like(den), where=den > 0)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:56: RuntimeWarning: invalid value encountered in subtract
+  vv = np.divide(d00 * d21 - d01 * d20, den, out=np.zeros_like(den), where=den > 0)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:61: RuntimeWarning: overflow encountered in multiply
+  denominator = (edge * edge).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:62: RuntimeWarning: overflow encountered in multiply
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:62: RuntimeWarning: invalid value encountered in divide
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:52: RuntimeWarning: overflow encountered in multiply
+  d00, d01, d11 = (e0 * e0).sum(-1), (e0 * e1).sum(-1), (e1 * e1).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:53: RuntimeWarning: overflow encountered in multiply
+  d20, d21 = (v * e0).sum(-1), (v * e1).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:54: RuntimeWarning: invalid value encountered in subtract
+  den = d00 * d11 - d01 * d01
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:55: RuntimeWarning: invalid value encountered in subtract
+  u = np.divide(d11 * d20 - d01 * d21, den, out=np.zeros_like(den), where=den > 0)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:56: RuntimeWarning: invalid value encountered in subtract
+  vv = np.divide(d00 * d21 - d01 * d20, den, out=np.zeros_like(den), where=den > 0)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:61: RuntimeWarning: overflow encountered in multiply
+  denominator = (edge * edge).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:62: RuntimeWarning: overflow encountered in multiply
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:62: RuntimeWarning: invalid value encountered in divide
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/_methods.py:49: RuntimeWarning: invalid value encountered in reduce
+  return umr_sum(a, axis, dtype, out, keepdims, initial, where)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:53: RuntimeWarning: invalid value encountered in multiply
+  d20, d21 = (v * e0).sum(-1), (v * e1).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:62: RuntimeWarning: invalid value encountered in multiply
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:53: RuntimeWarning: invalid value encountered in multiply
+  d20, d21 = (v * e0).sum(-1), (v * e1).sum(-1)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:62: RuntimeWarning: invalid value encountered in multiply
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:51: RuntimeWarning: invalid value encountered in subtract
+  e0, e1, v = b - a, c - a, point - a
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:60: RuntimeWarning: invalid value encountered in subtract
+  edge = end - start
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:62: RuntimeWarning: invalid value encountered in subtract
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:51: RuntimeWarning: invalid value encountered in subtract
+  e0, e1, v = b - a, c - a, point - a
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:60: RuntimeWarning: invalid value encountered in subtract
+  edge = end - start
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:62: RuntimeWarning: invalid value encountered in subtract
+  alpha = np.clip(np.divide(((point - start) * edge).sum(-1), denominator,
+/workspace/scrolls-env/production-speed-v2/geometry/parity_check_final.py:33: RuntimeWarning: invalid value encountered in subtract
+  elif case==2:t[:,2]=2*t[:,1]-t[:,0]
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:57: RuntimeWarning: invalid value encountered in multiply
+  points = [a + u[:, None] * e0 + vv[:, None] * e1]
+/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:64: RuntimeWarning: invalid value encountered in multiply
+  points.append(start + alpha[:, None] * edge)
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:57: RuntimeWarning: invalid value encountered in multiply
+  points = [a + u[:, None] * e0 + vv[:, None] * e1]
+/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py:64: RuntimeWarning: invalid value encountered in multiply
+  points.append(start + alpha[:, None] * edge)
+/workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/_methods.py:49: RuntimeWarning: overflow encountered in reduce
+  return umr_sum(a, axis, dtype, out, keepdims, initial, where)
+{"rule_sha256": "79b2752e8de39e90633a780886d1cf680972ec2568b618f9c354e755bb0dafa2", "triangle_batches_exact": 960, "closest_budget_cases_exact": 256, "larger_projection_fields_exact": ["uv", "distance", "valid", "ambiguous", "unresolved"], "larger_points": 4096, "all_pass": true}

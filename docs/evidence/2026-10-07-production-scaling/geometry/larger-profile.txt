@@ -1,0 +1,40 @@
+         8827921 function calls in 9.987 seconds
+
+   Ordered by: cumulative time
+   List reduced from 97 to 32 due to restriction <32>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.212    0.212    9.987    9.987 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:164(project)
+     7621    0.141    0.000    9.549    0.001 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:141(closest_quad)
+    27155    1.030    0.000    7.667    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:91(_child_bounds)
+    34776    2.845    0.000    5.211    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:47(_triangle_closest)
+     7621    0.138    0.000    1.718    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:75(_cell_bounds)
+    69552    1.369    0.000    1.401    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:25(bilinear)
+   240105    0.805    0.000    0.947    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/shape_base.py:378(stack)
+   210746    0.427    0.000    0.818    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/linalg/_linalg.py:2598(norm)
+   417313    0.139    0.000    0.755    0.000 {method 'sum' of 'numpy.ndarray' objects}
+   607213    0.753    0.000    0.753    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+   417313    0.093    0.000    0.616    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/_methods.py:47(_sum)
+   107836    0.097    0.000    0.416    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:2245(clip)
+   173880    0.253    0.000    0.344    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/numeric.py:97(zeros_like)
+   115459    0.057    0.000    0.331    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/fromnumeric.py:48(_wrapfunc)
+   104328    0.040    0.000    0.235    0.000 {method 'clip' of 'numpy.ndarray' objects}
+   107836    0.202    0.000    0.202    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/_methods.py:96(_clip)
+   240105    0.067    0.000    0.173    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/shape_base.py:368(_stack_dispatcher)
+   116242    0.040    0.000    0.159    0.000 {method 'min' of 'numpy.ndarray' objects}
+   116242    0.026    0.000    0.119    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/_methods.py:43(_amin)
+   141193    0.110    0.000    0.110    0.000 {method 'dot' of 'numpy.ndarray' objects}
+   240105    0.070    0.000    0.105    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/_core/shape_base.py:206(_arrays_for_stack_dispatcher)
+   278212    0.096    0.000    0.096    0.000 {built-in method numpy.zeros}
+   384635    0.085    0.000    0.085    0.000 {built-in method numpy.asarray}
+     1754    0.030    0.000    0.079    0.000 /workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py:115(_unique_minimum)
+   708406    0.058    0.000    0.058    0.000 {built-in method numpy.asanyarray}
+   483615    0.056    0.000    0.056    0.000 {built-in method builtins.len}
+    81465    0.054    0.000    0.054    0.000 {method 'reshape' of 'numpy.ndarray' objects}
+    69552    0.053    0.000    0.053    0.000 {built-in method numpy.arange}
+    69552    0.051    0.000    0.051    0.000 {method 'argmin' of 'numpy.ndarray' objects}
+   319022    0.050    0.000    0.050    0.000 {method 'append' of 'list' objects}
+    42399    0.046    0.000    0.046    0.000 {built-in method numpy.array}
+   141193    0.030    0.000    0.044    0.000 /workspace/scrolls-env/inference-venv/lib/python3.12/site-packages/numpy/linalg/_linalg.py:168(isComplexType)
+
+

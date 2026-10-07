@@ -1,0 +1,256 @@
+--- a/kit/rowscore.py
++++ b/kit/rowscore.py
+@@ -50,6 +50,37 @@
+ def _area_resize(np, a, k):
+     h, w = a.shape[0] // k, a.shape[1] // k
+     return _area_weights(np, a.shape[0], h) @ a @ _area_weights(np, a.shape[1], w).T
++
++
++def _sparse_area_weights(np, n_in, n_out):
++    """The same float32 cell overlaps as _area_weights, stored without zero entries."""
++    try:
++        from scipy.sparse import csr_matrix
++    except ImportError as exc:
++        raise VerifyError("--fast-resize requires scipy; omit it for the original dense resize") from exc
++    scale = n_in / n_out
++    starts = np.arange(n_out) * scale
++    rows, cols = [], []
++    for row, start in enumerate(starts):
++        indices = range(max(0, int(np.floor(start))), min(n_in, int(np.ceil(start + scale))))
++        cols.extend(indices)
++        rows.extend([row] * len(indices))
++    rows = np.asarray(rows, dtype=np.int64)
++    cols = np.asarray(cols, dtype=np.int64)
++    lo = np.maximum(cols, starts[rows])
++    hi = np.minimum(cols + 1, starts[rows] + scale)
++    weights = (np.clip(hi - lo, 0, None) / scale).astype(np.float32)
++    result = csr_matrix((weights, (rows, cols)), shape=(n_out, n_in))
++    result.eliminate_zeros()
++    return result
++
++
++def _sparse_area_resize(np, a, k):
++    """Resize finite clipped row-score values; summation order can differ from dense BLAS."""
++    h, w = a.shape[0] // k, a.shape[1] // k
++    rows = _sparse_area_weights(np, a.shape[0], h)
++    cols = _sparse_area_weights(np, a.shape[1], w)
++    return cols.dot(rows.dot(a).T).T
+ 
+ 
+ def _nearest_resize(np, mask, shape):
+@@ -87,8 +118,8 @@
+     return piece, box, True
+ 
+ 
+-def score_array(array, voxel_um, valid=None):
+-    """Row score of one 2D ink map (uint8, uint16 or float probabilities)."""
++def score_array(array, voxel_um, valid=None, *, fast_resize=False):
++    """Row score of one 2D ink map; optional sparse resize can change float32 rounding."""
+     np = _numpy()
+     a = _normalize(np, np.asarray(array))
+     if a.ndim != 2:
+@@ -97,7 +128,14 @@
+     if valid is None:
+         valid = a > 0.01
+     k = DOWNSAMPLE
+-    ds = _area_resize(np, v, k)
++    resize_mode = "dense"
++    if fast_resize and np.isfinite(v).all():
++        ds = _sparse_area_resize(np, v, k)
++        resize_mode = "sparse_area_float32"
++    else:
++        ds = _area_resize(np, v, k)
++        if fast_resize:
++            resize_mode = "dense_nonfinite_fallback"
+     vm = _nearest_resize(np, valid, ds.shape)
+     vm = _erode(np, vm, ERODE_PX)
+     vm, box, components = _largest_piece(np, vm)
+@@ -105,6 +143,9 @@
+         y0, y1, x0, x1 = box
+         ds, vm = ds[y0:y1, x0:x1], vm[y0:y1, x0:x1]
+     result = {"valid_px": int(valid.sum()), "largest_piece": components}
++    if fast_resize:
++        result.update(resize_mode=resize_mode,
++                      resize_note="Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.")
+     if vm.sum() < MIN_VALID_PX:
+         result.update(score=None, reason="too small: the surface needs to be over about 1 cm across")
+         return result
+@@ -148,12 +189,14 @@
+     return total / len(arrays)
+ 
+ 
+-def score_files(forward, voxel_um, reverse=()):
++def score_files(forward, voxel_um, reverse=(), *, fast_resize=False):
+     """Score the mean of the forward maps and, if given, the mean of the reverse maps."""
+-    result = {"voxel_um": voxel_um, "forward": score_array(mean_map([load_map(p) for p in forward]), voxel_um),
++    result = {"voxel_um": voxel_um, "forward": score_array(mean_map([load_map(p) for p in forward]), voxel_um, fast_resize=fast_resize),
+               "files": {"forward": [str(p) for p in forward], "reverse": [str(p) for p in reverse]}}
+     if reverse:
+-        result["reverse"] = score_array(mean_map([load_map(p) for p in reverse]), voxel_um)
++        result["reverse"] = score_array(mean_map([load_map(p) for p in reverse]), voxel_um, fast_resize=fast_resize)
++    if fast_resize:
++        result["fast_resize"] = True
+     return result
+ 
+ 
+@@ -169,5 +212,7 @@
+         rows.append(line("reverse", result["reverse"]))
+     if not result["forward"].get("largest_piece"):
+         rows.append("note: scipy not found, so the largest-piece step was skipped; thin strips can fake a period")
++    if result.get("fast_resize"):
++        rows.append("note: --fast-resize changes float32 accumulation; near-tied FFT peaks can differ (see JSON resize_mode)")
+     rows.append("triage only: Bullo27 reports held-out controls at 73-148 and 6 cm2 control tiles as low as 6.8. Look at the map.")
+     return "\n".join(rows)
+--- a/kit/cli.py
++++ b/kit/cli.py
+@@ -66,7 +66,7 @@
+ 
+ def cmd_rowscore(args):
+     try:
+-        result = rowscore.score_files(args.forward, args.voxel_um, args.reverse)
++        result = rowscore.score_files(args.forward, args.voxel_um, args.reverse, fast_resize=args.fast_resize)
+         if args.slug:
+             ledger.add_check(args.slug, args.name, result, root=args.root)
+     except (verify.VerifyError, ledger.LedgerError) as exc:
+@@ -393,6 +393,8 @@
+     p.set_defaults(func=cmd_verify)
+ 
+     p = sub.add_parser("rowscore", help="text-row periodicity triage score for ink maps (Bullo27's method)")
++    p.add_argument("--fast-resize", action="store_true",
++                   help="use sparse area resize (scipy); float32 rounding and near-tied FFT peaks can differ")
+     p.add_argument("forward", nargs="+", help="forward-direction map(s); several are averaged, e.g. two checkpoints")
+     p.add_argument("--reverse", nargs="+", default=[], help="reverse-direction map(s), averaged the same way")
+     p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.362")
+--- /dev/null
++++ b/tests/test_rowscore_fast.py
+@@ -0,0 +1,112 @@
++import contextlib
++import io
++import json
++import tempfile
++import unittest
++import sys
++from pathlib import Path
++from unittest import mock
++
++from kit import cli, rowscore, verify
++
++try:
++    import numpy as np
++    import tifffile
++    import scipy.sparse
++except ImportError:
++    np = None
++
++
++@unittest.skipIf(np is None, "numpy, scipy and tifffile are needed")
++class SparseRowResizeTest(unittest.TestCase):
++    def test_overlap_coefficients_match_dense_including_fractional_edges(self):
++        for n in (64, 65, 83, 639, 641):
++            with self.subTest(n=n):
++                sparse = rowscore._sparse_area_weights(np, n, n // 4)
++                np.testing.assert_array_equal(sparse.toarray(), rowscore._area_weights(np, n, n // 4))
++                self.assertLessEqual(sparse.nnz, n + n // 4)
++
++    def test_default_never_calls_sparse_and_keeps_original_record(self):
++        a = np.full((256, 320), 128, dtype=np.uint8)
++        original = rowscore.score_array(a, 9.362)
++        with mock.patch.object(rowscore, "_sparse_area_resize", side_effect=AssertionError("opt-in only")):
++            self.assertEqual(rowscore.score_array(a, 9.362, fast_resize=False), original)
++        self.assertNotIn("resize_mode", original)
++        self.assertNotIn("resize_note", original)
++        record = {"forward": original}
++        self.assertNotIn("--fast-resize", rowscore.format_result(record))
++
++    def test_finite_probability_resize_matches_with_float32_rounding_tolerance(self):
++        a = np.random.default_rng(37).random((65, 83), dtype=np.float32)
++        dense = rowscore._area_resize(np, a, 4)
++        fast = rowscore._sparse_area_resize(np, a, 4)
++        np.testing.assert_allclose(fast, dense, rtol=1e-6, atol=3e-7)
++        # A displaced input must fail the same comparison, so the parity check can fail.
++        displaced = rowscore._sparse_area_resize(np, np.roll(a, 17, axis=0), 4)
++        self.assertFalse(np.allclose(displaced, dense, rtol=1e-6, atol=3e-7))
++
++    def test_nondegenerate_fractional_grid_scores_agree_with_rounding_tolerance(self):
++        y, x = np.indices((1023, 1023))
++        noise = np.random.default_rng(21).normal(0, .02, y.shape)
++        a = (.5 + .15 * np.cos(2 * np.pi * y * 3 / 1023) + noise).astype(np.float32)
++        valid = np.ones(a.shape, dtype=bool)
++        dense = rowscore.score_array(a, 9.366, valid)
++        fast = rowscore.score_array(a, 9.366, valid, fast_resize=True)
++        self.assertIsNotNone(dense["score"])
++        self.assertAlmostEqual(fast["period_mm"], dense["period_mm"], delta=.01)
++        np.testing.assert_allclose(fast["score"], dense["score"], rtol=1e-5, atol=.2)
++        angle_gap = (fast["angle_deg"] - dense["angle_deg"] + 90) % 180 - 90
++        self.assertLess(abs(angle_gap), .2)
++        for key in ("valid_px", "largest_piece", "mean_ink", "p99", "frac_gt_half"):
++            self.assertEqual(fast[key], dense[key])
++        self.assertEqual(fast["resize_mode"], "sparse_area_float32")
++        self.assertIn("near-tied FFT peaks", fast["resize_note"])
++
++    def test_tied_spectrum_allows_either_orientation_and_mirrored_peak(self):
++        y, x = np.indices((1023, 1023))
++        a = (.5 + .1 * np.cos(2 * np.pi * y * 3 / 1023)
++             + .1 * np.cos(2 * np.pi * x * 3 / 1023)).astype(np.float32)
++        valid = np.ones(a.shape, dtype=bool)
++        for fast in (False, True):
++            result = rowscore.score_array(a, 9.366, valid, fast_resize=fast)
++            self.assertIsNotNone(result["score"])
++            self.assertGreater(result["period_mm"], 3.1)
++            self.assertLess(result["period_mm"], 3.3)
++            self.assertIn(result["angle_deg"], (0., 90., -90., 180., -180.))
++
++    def test_missing_scipy_is_an_explicit_opt_in_error(self):
++        with mock.patch.dict(sys.modules, {"scipy.sparse": None}):
++            with self.assertRaisesRegex(verify.VerifyError, "--fast-resize requires scipy"):
++                rowscore._sparse_area_weights(np, 65, 16)
++
++    def test_nonfinite_values_keep_dense_propagation_and_abstention(self):
++        a = np.full((200, 200), .5, dtype=np.float32)
++        a[80, 80] = np.nan
++        dense = rowscore.score_array(a, 9.366)
++        with mock.patch.object(rowscore, "_sparse_area_resize", side_effect=AssertionError("must fall back")):
++            fast = rowscore.score_array(a, 9.366, fast_resize=True)
++        self.assertEqual({key: fast[key] for key in dense}, dense)
++        self.assertEqual(fast["resize_mode"], "dense_nonfinite_fallback")
++
++    def test_cli_marks_both_depth_directions_only_when_opted_in(self):
++        with tempfile.TemporaryDirectory() as tmp:
++            image = Path(tmp) / "map.tif"
++            tifffile.imwrite(image, np.full((256, 320), 128, dtype=np.uint8))
++            results = {}
++            for fast in (False, True):
++                args = ["rowscore", str(image), "--reverse", str(image), "--voxel-um", "9.366", "--json"]
++                if fast:
++                    args.append("--fast-resize")
++                stream = io.StringIO()
++                with contextlib.redirect_stdout(stream):
++                    self.assertEqual(cli.main(args), 0)
++                results[fast] = json.loads(stream.getvalue())
++            self.assertNotIn("fast_resize", results[False])
++            self.assertTrue(results[True]["fast_resize"])
++            for direction in ("forward", "reverse"):
++                self.assertNotIn("resize_mode", results[False][direction])
++                self.assertEqual(results[True][direction]["resize_mode"], "sparse_area_float32")
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- /dev/null
++++ b/docs/rowscore.md
+@@ -0,0 +1,15 @@
++# Row-score resize modes
++
++`kit rowscore` measures text-row periodicity as a triage aid. An ink map is model output, not a reading. Its default dense area resize and historical output fields are unchanged.
++
++For large maps, the opt-in sparse resize avoids dense overlap matrices and zero-valued matrix products:
++
++```bash
++python -m kit rowscore forward.tif --reverse reverse.tif --voxel-um 9.366 --fast-resize --json
++```
++
++Python callers can use `score_array(array, voxel_um, fast_resize=True)` or `score_files(forward, voxel_um, reverse, fast_resize=True)`. The option requires SciPy. JSON records identify `fast_resize` at file level and each direction's `resize_mode`; the human-readable output also notes the change.
++
++Both modes compute the same output-cell overlaps and float32 coefficients. Sparse multiplication changes their accumulation order. Resized pixels can differ, and even small differences can change a rounded score or the period and angle selected from nearly tied FFT peaks. This option is not an exact-output optimization or a new ink model. Keep the default for strict historical reproduction. No universal error bound or FFT-decision stability is promised. The FFT band, masks, erosion, largest-component selection and peak-selection rule remain the same.
++
++Clipped arrays containing nonfinite values use the original dense path, recorded as `dense_nonfinite_fallback`, to preserve its propagation and error behavior. Do not treat the option as a way to repair invalid inputs.

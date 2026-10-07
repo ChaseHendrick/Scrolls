@@ -1,0 +1,10 @@
+{
+  "projection_files_verified": 28,
+  "all_dtypes_shapes_and_raw_bytes_exact": true,
+  "groups": [
+    "actual_full_correct",
+    "displaced_reference_null",
+    "larger_geometry",
+    "schema1_unchanged"
+  ]
+}

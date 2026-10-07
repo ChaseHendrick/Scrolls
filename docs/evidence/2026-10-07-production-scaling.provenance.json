@@ -1,0 +1,200 @@
+{
+  "code": [
+    {
+      "branch": "codex/production-cpu-scaling",
+      "commit": "a4410a34d9692c390e64a9c87b141e6247feaf8c",
+      "repo": "/workspace/Scrolls",
+      "uncommitted_changes": true
+    }
+  ],
+  "digest": "5cbdada673f3c970803a0555db36b1a2fcf60cc85bd8c23094f1bb952cd288cb",
+  "finished_utc": "2026-10-07T16:53:51Z",
+  "inputs": [
+    {
+      "bytes": 13701,
+      "kind": "file",
+      "path": "kit/_surface_geometry.py",
+      "sha256": "290634636090c9355ddd98d89b008db0cb2de34fd5c66aa6b98abae6e3153721"
+    },
+    {
+      "bytes": 36534,
+      "kind": "file",
+      "path": "kit/cli.py",
+      "sha256": "ca8e31fdd27f8d5106389eb0f70175a8c2692488f2ca317e90063d48595e0b27"
+    },
+    {
+      "bytes": 5268,
+      "kind": "file",
+      "path": "kit/hpscore.py",
+      "sha256": "283753892087eb4f9a005fb1b9f5a6997497f0cf846016843e9d1c2182441abf"
+    },
+    {
+      "bytes": 9232,
+      "kind": "file",
+      "path": "kit/rowscore.py",
+      "sha256": "aed64974ed9315d831e2903a165044b3d13135601f54d25d063e05882f5cd74a"
+    },
+    {
+      "bytes": 25716,
+      "kind": "file",
+      "path": "scripts/mac-w045.sh",
+      "sha256": "cffaa36960e0f333208b9a6ca4919edf81e0827f7ca79ed328b9a4777060b09c"
+    },
+    {
+      "bytes": 6035,
+      "kind": "file",
+      "path": "tests/test_hpscore_reuse.py",
+      "sha256": "b6c8aaa0709192f7d71b1f6d07ab1f7c89e20e579c97bb29da6a6a739856a1d3"
+    },
+    {
+      "bytes": 4191,
+      "kind": "file",
+      "path": "tests/test_repo.py",
+      "sha256": "9dda320a99ff5fb826a7ac46432e82920c816145d4fd8827e26c4199f94c0631"
+    },
+    {
+      "bytes": 5550,
+      "kind": "file",
+      "path": "tests/test_rowscore_fast.py",
+      "sha256": "1946063b5c21d0a9f4aad689ccb8d112e365cc2d01d1fb51c536658daf5a9048"
+    },
+    {
+      "bytes": 11597,
+      "kind": "file",
+      "path": "tests/test_surface_geometry.py",
+      "sha256": "0701f885daa228b6dbf0d1abfa4ebb1e6bd2cfca2f1bd35f7ad3d9771faedddd"
+    }
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "python": "3.12.14",
+    "release": "6.18.44",
+    "system": "Linux"
+  },
+  "models": [],
+  "note": "Frozen performance comparisons and final 229-test integration after public PRs #20 and #22. Sparse resize is opt-in and not universally exact. Local hooks refresh ignored context; the public PR snapshot requires explicit refresh. Public/private routing contains pointers only; private migration receipts and title research remain in Scrolls-private.",
+  "operator": {
+    "login": "agent",
+    "name": "Chase Hendrick"
+  },
+  "outputs": [
+    {
+      "bytes": 10881,
+      "kind": "file",
+      "path": "AGENTS.md",
+      "sha256": "c353e8e41f1f8fa5659a81d7133335573bc0115864085207adc3c75317df29ef"
+    },
+    {
+      "bytes": 20388,
+      "kind": "file",
+      "path": "README.md",
+      "sha256": "9fc1527e9aa9543b3e9483f78f79d8083ab2f907d3cf25acaaf71e649e1d32f1"
+    },
+    {
+      "bytes": 9335,
+      "kind": "file",
+      "path": "docs/HANDOFF.md",
+      "sha256": "6329e61ee84648ae222a932a3394568b0d7a4951da57de70421b58cf143784ab"
+    },
+    {
+      "bytes": 4465,
+      "kind": "file",
+      "path": "docs/WORKFLOW.md",
+      "sha256": "11e828d7a86e73675c33891fffc2c6684a002cf4ab1af4676ce370fec9d8c779"
+    },
+    {
+      "bytes": 367,
+      "kind": "file",
+      "path": "docs/contrib/progress-prize-2026-10-draft.md",
+      "sha256": "9088fe3948a446ad2adab2a8225461985fc5ce3b1f1e17068f201ec0c28fdbed"
+    },
+    {
+      "bytes": 17881,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-community-scan.md",
+      "sha256": "e0bf2131561496ac25a438537e827d10eb8bed00a62e7126e4034a941a0f6f24"
+    },
+    {
+      "bytes": 13929,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-overlap-and-baseline.md",
+      "sha256": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+    },
+    {
+      "bytes": 10143,
+      "kind": "file",
+      "path": "docs/logs/2026-10-07-production-scaling.md",
+      "sha256": "bbd9350716d177616ee8b3e86788a27cb91df8688b9abbd8bd68ccfc48a1f73b"
+    },
+    {
+      "bytes": 15485,
+      "kind": "file",
+      "path": "docs/mac.md",
+      "sha256": "e258ecdecd2d61c15627f2903c2fdf46555961991928fb43bd3d9293ec5f318b"
+    },
+    {
+      "bytes": 5281,
+      "kind": "file",
+      "path": "docs/pipeline.md",
+      "sha256": "c5502e2ac9bf8fdceea5a276a4e18689b2fb244998d4b2ad93e12cfb7cf59a9f"
+    },
+    {
+      "bytes": 4092,
+      "kind": "file",
+      "path": "docs/plans/2026-10-07-training.md",
+      "sha256": "6543a8956e00d12ffffe6488e2295d1c92a037f72cdd2e49222c6873c2c5066f"
+    },
+    {
+      "bytes": 358,
+      "kind": "file",
+      "path": "docs/plans/roadmap.md",
+      "sha256": "e16d45f9918f8abe2996ea8a6b42f594e75fa57ca2c6ce57ae46f4692d7193da"
+    },
+    {
+      "bytes": 373,
+      "kind": "file",
+      "path": "docs/prereg/2026-10-07-v8in-atlas.md",
+      "sha256": "ac8add148420b0b5140c6cb70c20c20beda7ce08eafd22f5c268a32fbf186c1f"
+    },
+    {
+      "bytes": 139400,
+      "kind": "file",
+      "path": "docs/results.json",
+      "sha256": "3c200b10dbba4545a7fa8e4e6579769c0d0968576130265fc1450a4fed17c080"
+    },
+    {
+      "bytes": 1495,
+      "kind": "file",
+      "path": "docs/rowscore.md",
+      "sha256": "da01c1f7c734a1c3eb3259bcf02c269acc2116d5888caa1dfcdd343ff29f70f0"
+    },
+    {
+      "bytes": 25874,
+      "kind": "file",
+      "path": "docs/scan-status.md",
+      "sha256": "edc853b5d3a5d9ff5648e186068b7b97ad003f07540d270c1be1558c303450d0"
+    },
+    {
+      "bytes": 4960,
+      "kind": "file",
+      "path": "docs/start-here.md",
+      "sha256": "ab55660a1ab062a6afb1d0aa030cee8701e7f7a0f059543306d66b67ddb91d13"
+    },
+    {
+      "bytes": 3066,
+      "kind": "file",
+      "path": "llms.txt",
+      "sha256": "c5305cb8ba6ef9013b65bc4f170de684f6009adc98d4be45a916f7fa3c4c5a1c"
+    },
+    {
+      "bytes": 1462014,
+      "files": 206,
+      "kind": "directory",
+      "path": "docs/evidence/2026-10-07-production-scaling",
+      "sha256": "cac691bfb459a8df4712596ddb942b5f91782c95cd9de29c903756b43eb5b73f"
+    }
+  ],
+  "run": "CPU scaling on public PHerc0841",
+  "schema": 1,
+  "started_utc": "2026-10-07T16:06:00Z"
+}

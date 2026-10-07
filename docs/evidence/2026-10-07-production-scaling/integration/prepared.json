@@ -1,0 +1,9 @@
+{
+  "status": "prepared_not_executed",
+  "runner_sha256": "f1cdcf1918b7a682a49e83a476ca5bd10e119cc73b951c7e8a322b66429b9cae",
+  "baseline_commit": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "surfacefix_manifest": "/workspace/scrolls-env/supervised-surfacefix/actual-maps-manifest.json",
+  "hp_inputs": "same frozen supervised real640 baseline forward/reverse, w00 labels and crop2720:3360,2720:3360",
+  "execution_gate": "root GO plus --execute-approved",
+  "syntax_check": "ast.parse passed; no runner/CLI invocation"
+}

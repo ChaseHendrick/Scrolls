@@ -1,0 +1,27 @@
+[
+  {
+    "case": "float16/float32/17/fortran",
+    "changes": [
+      {
+        "field": "distance",
+        "count": 2,
+        "max_abs": 0.00019884109497070312
+      },
+      {
+        "field": "bary",
+        "count": 4,
+        "max_abs": 0.00048828125
+      }
+    ]
+  },
+  {
+    "case": "float16/float128/17/fortran",
+    "changes": [
+      {
+        "field": "bary",
+        "count": 1,
+        "max_abs": 6.103515625e-05
+      }
+    ]
+  }
+]

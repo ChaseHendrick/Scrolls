@@ -1,5 +1,7 @@
 # The pipeline: scan, unwrap, ink, papyrologist
 
+Private operational plans, target outputs and submission material belong in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). This page is public background and general tooling guidance.
+
 The Herculaneum scrolls are **not** an undeciphered script. The language is ancient Greek (mostly Epicurean prose, much of it by Philodemus). The problem is physical: the rolls are carbonized, too brittle to open, and carbon ink has almost the same X-ray density as carbonized papyrus. Background and history: Chase Hendrick's [Undeciphered Texts note on the scrolls](https://github.com/ChaseHendrick/Undeciphered-Texts/blob/main/docs/vesuvius-scrolls.md).
 
 Main technical source: the organizers' [2026 open problems](https://scrollprize.org/2026_open_problems) post ([source](https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/docs/37_2026_open_problems.md)), checked 2026-10-06.

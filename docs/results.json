@@ -5067,5 +5067,332 @@
    "No measured peak-memory improvement; scoring adds O(pixels) temporary workspace.",
    "Geometry still rejects uncertain cases; zero real corrections accepted on the benchmark crop."
   ]
+ },
+ "production_scaling_checks": {
+  "date": "2026-10-07",
+  "log": "docs/logs/2026-10-07-production-scaling.md",
+  "geometry_hp_baseline_commit": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "row_comparison": "Dense and sparse modes in the same updated build; dense algorithm unchanged from PR24.",
+  "geometry": {
+   "evidence": {
+    "path": "docs/evidence/2026-10-07-production-scaling/geometry/benchmark-result.json",
+    "sha256": "c681f8230b1c109c3e083665cb96cd89fa25aef40e7a01e1e5bf13fd3d5f95e3"
+   },
+   "pairs_per_case": 5,
+   "all_exact": true,
+   "medians": {
+    "actual_full_correct": {
+     "baseline": {
+      "process_wall_seconds": 2.513779447000161,
+      "full_seconds": 2.4102645299999494,
+      "geometry_seconds": 1.7768814190003468,
+      "peak_rss_bytes": 84959232
+     },
+     "optimized": {
+      "process_wall_seconds": 2.2761411589999625,
+      "full_seconds": 2.160458063999613,
+      "geometry_seconds": 1.5368202269992253,
+      "peak_rss_bytes": 84955136
+     }
+    },
+    "larger_geometry": {
+     "baseline": {
+      "process_wall_seconds": 7.423814374000358,
+      "full_seconds": 7.285576299999775,
+      "geometry_seconds": 7.285543480000342,
+      "peak_rss_bytes": 69419008
+     },
+     "optimized": {
+      "process_wall_seconds": 6.621332063999944,
+      "full_seconds": 6.483136817999366,
+      "geometry_seconds": 6.483104298999933,
+      "peak_rss_bytes": 69431296
+     }
+    }
+   },
+   "ratios": {
+    "actual_full_correct": {
+     "process_wall_seconds": 1.1044040204011802,
+     "full_seconds": 1.1156266211147254,
+     "geometry_seconds": 1.1562064240069652,
+     "peak_rss_bytes": 1.0000482136830433
+    },
+    "larger_geometry": {
+     "process_wall_seconds": 1.1211965058154227,
+     "full_seconds": 1.1237733375875343,
+     "geometry_seconds": 1.1237739120014143,
+     "peak_rss_bytes": 0.9998230192908973
+    }
+   }
+  },
+  "high_pass": {
+   "evidence": {
+    "path": "docs/evidence/2026-10-07-production-scaling/hp/hp-benchmark-summary.json",
+    "sha256": "b4f5ed98fcf558c00e1b061917ecd3dc24bbbc6cb63a8cf8f8e7d04bd32c1a0a"
+   },
+   "pairs_per_case": 5,
+   "all_exact": true,
+   "cases": {
+    "real640": {
+     "hp_files": {
+      "baseline_median": 0.18018964000020787,
+      "candidate_median": 0.1371999399998458,
+      "ratio_of_medians": 1.3133361428613626,
+      "paired_ratios": [
+       1.351545680010002,
+       1.5613024671954447,
+       1.3133361428613626,
+       1.3795488206472235,
+       1.2274548022665006
+      ]
+     },
+     "cli_process_wall_s": {
+      "baseline_median": 0.6501116549998187,
+      "candidate_median": 0.6024023539994232,
+      "ratio_of_medians": 1.0791983973562647,
+      "paired_ratios": [
+       1.066921659142475,
+       1.1674431254075044,
+       1.186106811397936,
+       1.0871390485213306,
+       1.0636054671578887
+      ]
+     },
+     "cli_hp_operation_s": {
+      "baseline_median": 0.20789358699948934,
+      "candidate_median": 0.15321340199989208,
+      "ratio_of_medians": 1.3568890468187358,
+      "paired_ratios": [
+       1.2932112528689632,
+       1.3568890468187358,
+       1.3962180782799787,
+       1.2555005567327324,
+       1.3161661551187223
+      ]
+     },
+     "cli_peak_rss_kib": {
+      "baseline_median": 88916,
+      "candidate_median": 88600,
+      "ratio_of_medians": 1.003566591422122,
+      "paired_ratios": [
+       1.0099045239582405,
+       0.9988721465307228,
+       1.0020316027088036,
+       1.004471948685518,
+       1.004065224264872
+      ]
+     },
+     "auc_files": {
+      "baseline_median": 0.04066087299997889,
+      "candidate_median": 0.038315881000016816,
+      "ratio_of_medians": 1.0612015680902926,
+      "paired_ratios": [
+       1.0725365083953302,
+       1.348129382683101,
+       1.014937357842189,
+       1.0320942841125011,
+       1.0424968859139783
+      ]
+     },
+     "rows_files": {
+      "baseline_median": 0.020770308000464865,
+      "candidate_median": 0.019737038999664946,
+      "ratio_of_medians": 1.0523517737801227,
+      "paired_ratios": [
+       0.8998853874064952,
+       1.3542975215557833,
+       1.0635062004659013,
+       1.0288675641489178,
+       0.9657737201998209
+      ]
+     },
+     "full_pipeline": {
+      "baseline_median": 0.2543045060001532,
+      "candidate_median": 0.19648761399912473,
+      "ratio_of_medians": 1.2942520946958316,
+      "paired_ratios": [
+       1.1039874327646282,
+       1.3922845317053312,
+       1.2942520946958316,
+       1.2486435166406311,
+       1.1670043412221807
+      ]
+     },
+     "worker_process_wall_s": {
+      "baseline_median": 1.2318850259998726,
+      "candidate_median": 1.0863607210003465,
+      "ratio_of_medians": 1.1339557866796988,
+      "paired_ratios": [
+       1.1410846895775602,
+       1.2783739902017917,
+       1.1219067879023186,
+       1.2203695602518772,
+       1.0445625880558858
+      ]
+     },
+     "process_peak_rss_kib": {
+      "baseline_median": 89684,
+      "candidate_median": 89436,
+      "ratio_of_medians": 1.002772932599848,
+      "paired_ratios": [
+       1.005153715156404,
+       0.9952674345923743,
+       1.0014759157386288,
+       0.9981746950405128,
+       1.0056820723904971
+      ]
+     }
+    },
+    "public2560": {
+     "hp_files": {
+      "baseline_median": 10.755387158999838,
+      "candidate_median": 7.485103060999791,
+      "ratio_of_medians": 1.4369056873831785,
+      "paired_ratios": [
+       1.4645958036323454,
+       1.5138911033034341,
+       1.395900871701165,
+       1.4369056873831785,
+       1.4528855654691133
+      ]
+     },
+     "cli_process_wall_s": {
+      "baseline_median": 11.276090796999597,
+      "candidate_median": 7.9505747089997385,
+      "ratio_of_medians": 1.4182736732522625,
+      "paired_ratios": [
+       1.4431490231440045,
+       1.4856740356287568,
+       1.3725533914379386,
+       1.4182736732522625,
+       1.4330759835235998
+      ]
+     },
+     "cli_hp_operation_s": {
+      "baseline_median": 10.755387158999838,
+      "candidate_median": 7.485103060999791,
+      "ratio_of_medians": 1.4369056873831785,
+      "paired_ratios": [
+       1.4645958036323454,
+       1.5138911033034341,
+       1.395900871701165,
+       1.4369056873831785,
+       1.4528855654691133
+      ]
+     },
+     "cli_peak_rss_kib": {
+      "baseline_median": 532248,
+      "candidate_median": 525868,
+      "ratio_of_medians": 1.0121323221797105,
+      "paired_ratios": [
+       1.0121477199254554,
+       1.0121171092365384,
+       1.0120862236826091,
+       1.0122315784669451,
+       1.0122307411464038
+      ]
+     }
+    }
+   },
+   "large_control": "Synthetic rolled workload control; not a reverse-depth map or accuracy test."
+  },
+  "rows": {
+   "evidence": {
+    "path": "docs/evidence/2026-10-07-production-scaling/rows/benchmark-summary.json",
+    "sha256": "a9779c63211e9557ec763fb8262ce53242bacfde250f5c85a7e24a9614f575e8"
+   },
+   "pairs_per_final_case": 3,
+   "default_dense_unchanged": true,
+   "sparse_opt_in": true,
+   "universal_exactness": false,
+   "cases": {
+    "central8192-three-pairs": {
+     "median": {
+      "baseline": {
+       "worker_operation_seconds": 5.279071661999296,
+       "resize_seconds": 3.917248194000422,
+       "parent_wall_seconds": 5.420129512999665,
+       "peak_rss_bytes_max": 1660817408
+      },
+      "fast": {
+       "worker_operation_seconds": 1.96820784800002,
+       "resize_seconds": 0.4845775860003414,
+       "parent_wall_seconds": 2.1101680850006233,
+       "peak_rss_bytes_max": 1655980032
+      }
+     },
+     "worker_speedup": 2.6821718383876916,
+     "parent_speedup": 2.568577143937832,
+     "resize_float_hashes_equal": true,
+     "old_fields_equal_all_runs": true
+    },
+    "native-full-three-fresh-pairs": {
+     "median": {
+      "baseline": {
+       "worker_operation_seconds": 39.73196149500018,
+       "resize_seconds": 34.403317003000666,
+       "parent_wall_seconds": 39.960150818999864,
+       "peak_rss_bytes_max": 7097917440
+      },
+      "fast": {
+       "worker_operation_seconds": 5.670121790999474,
+       "resize_seconds": 0.38628741899992747,
+       "parent_wall_seconds": 5.924856167000144,
+       "peak_rss_bytes_max": 6536126464
+      }
+     },
+     "worker_speedup": 7.007250101412128,
+     "parent_speedup": 6.744492978845152,
+     "resize_float_hashes_equal": true,
+     "old_fields_equal_all_runs": true
+    }
+   },
+   "timer_scope": "Fresh-worker cli.main operation including imports, reads, scoring and JSON construction; excludes interpreter startup/shutdown, hashing and evidence writes. Parent wall recorded separately.",
+   "memory_scope": "Instrumented worker retains resize array; peak RSS through scoring, before hashing and archival."
+  },
+  "rejected_inference_layout": {
+   "evidence": {
+    "path": "docs/evidence/2026-10-07-production-scaling/inference-layout/screening/result.json",
+    "sha256": "ae9428804d8a9cb1afa29e01f05356cc55432f7f9ce99a0845fae5bfba20b19c"
+   },
+   "pairs": 3,
+   "baseline_median_seconds": 5.35897,
+   "candidate_median_seconds": 6.97131,
+   "shuffled_pixels_changed_per_pair": 1,
+   "maximum_uint8_difference": 1,
+   "default_unchanged": true
+  },
+  "integration": {
+   "repository_tests": 229,
+   "experiment_regressions": 39,
+   "cli_equivalence": {
+    "path": "docs/evidence/2026-10-07-production-scaling/integration/equivalence.json",
+    "sha256": "a2b185bfc68750d3085c50f196daeaf0c9a137ebd286097bcf84aae2f4e0327b"
+   },
+   "rows_cli": {
+    "path": "docs/evidence/2026-10-07-production-scaling/integration/rows-cli-check.json",
+    "sha256": "a9b79eafccd349748bb8a533419dda787beacf179178635634c29e4adfdd3cc4"
+   },
+   "prior_seal_check": {
+    "path": "docs/evidence/2026-10-07-production-scaling/integration/prior-seal-check.json",
+    "sha256": "36047466e0db409cfc3431ceb1c18b0db398501f23dd97c524d7f80a3f837590"
+   },
+   "initial_performance_integration_tests": 210,
+   "final_integrated_base": "a4410a34d9692c390e64a9c87b141e6247feaf8c",
+   "final_cli_equivalence": {
+    "path": "docs/evidence/2026-10-07-production-scaling/integration/after-merge/equivalence.json",
+    "sha256": "2dc179664d21e77c905e9ea8e06ad0d46b3c32a0fe50cc998cf07c4b00f84f52"
+   },
+   "final_rows_cli": {
+    "path": "docs/evidence/2026-10-07-production-scaling/integration/after-merge/rows-cli-check.json",
+    "sha256": "a9b79eafccd349748bb8a533419dda787beacf179178635634c29e4adfdd3cc4"
+   }
+  },
+  "limits": [
+   "Public PHerc0841 workloads, cached local inputs and existing cloud CPUs only.",
+   "Full native row map is 305,497,600 pixels; no full-canvas HP or complete larger-surface correction test.",
+   "Sparse resize can change float32 rounding and near-tied FFT decisions on other inputs.",
+   "No GPU, training, new text, improved correction accuracy or overall reading-pipeline speed claim."
+  ]
  }
 }

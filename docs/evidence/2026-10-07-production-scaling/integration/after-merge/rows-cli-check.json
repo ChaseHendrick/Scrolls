@@ -1,0 +1,125 @@
+{
+  "command": [
+    "/workspace/Scrolls/.venv/bin/python",
+    "-m",
+    "kit",
+    "rowscore",
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif",
+    "--reverse",
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif",
+    "--voxel-um",
+    "9.366",
+    "--json"
+  ],
+  "baseline_ref": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "default_stdout_bytes_identical": true,
+  "input_hashes_unchanged": {
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif": "5482eada009b0df000d2d34b3e9c5e8e35091abd5ade8c884aecffc4fa721a12",
+    "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif": "579c7d0fd214048bb742e1092a0bf7343d89fcc629592bc8f1a6e1269f828ea6"
+  },
+  "fast_historical_field_matches_on_this_input": {
+    "forward": true,
+    "reverse": true
+  },
+  "records": {
+    "baseline": {
+      "voxel_um": 9.366,
+      "forward": {
+        "valid_px": 409600,
+        "largest_piece": true,
+        "score": 11.0,
+        "period_mm": 3.0,
+        "angle_deg": 180.0,
+        "mean_ink": 0.3273,
+        "p99": 1.0,
+        "frac_gt_half": 0.1709
+      },
+      "files": {
+        "forward": [
+          "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        ],
+        "reverse": [
+          "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+        ]
+      },
+      "reverse": {
+        "valid_px": 409600,
+        "largest_piece": true,
+        "score": 2.2,
+        "period_mm": 2.68,
+        "angle_deg": -116.6,
+        "mean_ink": 0.2137,
+        "p99": 0.347,
+        "frac_gt_half": 0.0
+      }
+    },
+    "default": {
+      "voxel_um": 9.366,
+      "forward": {
+        "valid_px": 409600,
+        "largest_piece": true,
+        "score": 11.0,
+        "period_mm": 3.0,
+        "angle_deg": 180.0,
+        "mean_ink": 0.3273,
+        "p99": 1.0,
+        "frac_gt_half": 0.1709
+      },
+      "files": {
+        "forward": [
+          "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        ],
+        "reverse": [
+          "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+        ]
+      },
+      "reverse": {
+        "valid_px": 409600,
+        "largest_piece": true,
+        "score": 2.2,
+        "period_mm": 2.68,
+        "angle_deg": -116.6,
+        "mean_ink": 0.2137,
+        "p99": 0.347,
+        "frac_gt_half": 0.0
+      }
+    },
+    "fast": {
+      "voxel_um": 9.366,
+      "forward": {
+        "valid_px": 409600,
+        "largest_piece": true,
+        "resize_mode": "sparse_area_float32",
+        "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+        "score": 11.0,
+        "period_mm": 3.0,
+        "angle_deg": 180.0,
+        "mean_ink": 0.3273,
+        "p99": 1.0,
+        "frac_gt_half": 0.1709
+      },
+      "files": {
+        "forward": [
+          "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/forward_s42.tif"
+        ],
+        "reverse": [
+          "/workspace/scrolls-env/supervised-surfacefix/reader-baseline/reverse_s42.tif"
+        ]
+      },
+      "reverse": {
+        "valid_px": 409600,
+        "largest_piece": true,
+        "resize_mode": "sparse_area_float32",
+        "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+        "score": 2.2,
+        "period_mm": 2.68,
+        "angle_deg": -116.6,
+        "mean_ink": 0.2137,
+        "p99": 0.347,
+        "frac_gt_half": 0.0
+      },
+      "fast_resize": true
+    }
+  },
+  "note": "Real 640 crop CLI check; not a timing test or general exactness promise for sparse resizing."
+}

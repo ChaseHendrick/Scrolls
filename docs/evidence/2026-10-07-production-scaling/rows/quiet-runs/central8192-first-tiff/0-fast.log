@@ -1,0 +1,54 @@
+{
+  "mode": "fast",
+  "file_path": "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+  "command": [
+    "python",
+    "-m",
+    "kit",
+    "rowscore",
+    "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif",
+    "--voxel-um",
+    "2.403",
+    "--json",
+    "--fast-resize"
+  ],
+  "whole_command_seconds_including_import_and_file_read": 1.7434864340002605,
+  "resize_seconds": [
+    0.4451613940000243
+  ],
+  "peak_rss_bytes": 1655955456,
+  "cpu_affinity": [
+    0
+  ],
+  "score_record": {
+    "voxel_um": 2.403,
+    "forward": {
+      "valid_px": 67108864,
+      "largest_piece": true,
+      "resize_mode": "sparse_area_float32",
+      "resize_note": "Sparse cell overlaps match dense weights, but float32 accumulation and near-tied FFT peaks can differ.",
+      "score": 15.1,
+      "period_mm": 6.56,
+      "angle_deg": -90.0,
+      "mean_ink": 0.1452,
+      "p99": 1.0,
+      "frac_gt_half": 0.1418
+    },
+    "files": {
+      "forward": [
+        "/workspace/scrolls-env/production-speed-v2/large-input-review/central8192.tif"
+      ],
+      "reverse": []
+    },
+    "fast_resize": true
+  },
+  "resized_shape": [
+    2048,
+    2048
+  ],
+  "resized_float_sha256": "c3a49ececb8d3947f8c777a9efe017c73938b00d355ee48b2f6f49913e51e28e",
+  "notes": [
+    "CLI invoked in-process with the exact command arguments; includes package import and file read.",
+    "Timing excludes result hashing/array archival; a retained resize reference may increase later peak RSS."
+  ]
+}

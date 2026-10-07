@@ -1,0 +1,11 @@
+{
+  "reason": "Independentreview foundlongdouble barycentric narrowing; preserve originalinterior/float64edge promotion andfloat64roundingbeforestackpromotion",
+  "old_candidate_sha256": "0299fe7aeb38cde77d0fbeb1e7fde41be05231b5fc67b39cfb0588f3e51cb072",
+  "new_candidate_sha256": "3983fa76efa53275ed4e93de1ce5f088be9c101b8577bba3a2c0482230e1d7f4",
+  "prior_rule_sha256": "1ad40ab3e219753a7a53e61165f2989abb2d1b23121f1af22814c42f157dcb85",
+  "prior_result_sha256": "4f1a339c6978630f76d45bdf44a02c205e0cac976107169398515a09d0d00607",
+  "fixed_rule_sha256": "435560b5222b4133ccd0955d3928473c4a867c0191d84f1586994a754e7cc28b",
+  "fixed_result_sha256": "8ae3d1feb56d664601c81f7a74c6c13e430255216c3b85ca50c00e10f6167729",
+  "prior_records_preserved": true,
+  "no_repeated_timing_before_fix": true
+}

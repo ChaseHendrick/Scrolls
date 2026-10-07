@@ -269,7 +269,7 @@ EOF
   printf -v "T_$name" %s "$(( SECONDS - start ))"
 }
 
-DEV=crop; DEVJSON=v8in_device       # base v8in keeps its original names (mac-atlas-v8in.sh reads them)
+DEV=crop; DEVJSON=v8in_device       # base v8in keeps its original result names for downstream consumers
 [[ "$MODEL" != v8in ]] && { DEV="${MTAG}_crop"; DEVJSON="${MTAG}_device"; }
 [[ "$FP16_ON" == 1 ]] && DEVJSON="${DEVJSON}_fp16"
 CROP_LOG="$WORK/logs/${NAME}_${DEV}_gpu.log"   # per-tile speed for the stride estimate

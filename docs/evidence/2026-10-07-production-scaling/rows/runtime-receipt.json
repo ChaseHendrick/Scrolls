@@ -1,0 +1,19 @@
+{
+  "python": "3.12.14",
+  "platform": "Linux-6.18.44-x86_64-with-glibc2.41",
+  "numpy": "2.5.3",
+  "scipy": "1.18.1",
+  "tifffile": "2026.9.20",
+  "zarr": "3.4.0",
+  "cpu_model": "AMD EPYC 9V74 80-Core Processor",
+  "cgroup_cpu_max": "400000 100000",
+  "numerical_env": {
+    "OPENBLAS_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "MKL_NUM_THREADS": "1"
+  },
+  "worker_cpu_affinity": [
+    0
+  ],
+  "map_source_is_public": true
+}

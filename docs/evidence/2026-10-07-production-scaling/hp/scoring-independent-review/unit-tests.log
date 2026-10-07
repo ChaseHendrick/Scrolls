@@ -1,0 +1,14 @@
+test_noise_scores_near_zero (test_hpscore.HpScoreTest.test_noise_scores_near_zero) ... ok
+test_sharp_read_beats_a_blob_read_with_the_same_pixels_lit (test_hpscore.HpScoreTest.test_sharp_read_beats_a_blob_read_with_the_same_pixels_lit) ... ok
+test_unlabelled_and_unpredicted_pixels_are_left_out (test_hpscore.HpScoreTest.test_unlabelled_and_unpredicted_pixels_are_left_out) ... ok
+test_empty_control_and_empty_supervision_abstain (test_hpscore_reuse.HpReuseTest.test_empty_control_and_empty_supervision_abstain) ... ok
+test_independent_zero_coverage_and_rolled_nulls_match_original (test_hpscore_reuse.HpReuseTest.test_independent_zero_coverage_and_rolled_nulls_match_original) ... ok
+test_no_control_keeps_original_single_map_result (test_hpscore_reuse.HpReuseTest.test_no_control_keeps_original_single_map_result) ... ok
+test_only_label_filters_are_reused_and_validation_remains (test_hpscore_reuse.HpReuseTest.test_only_label_filters_are_reused_and_validation_remains) ... ok
+test_reuse_is_per_call_and_never_caches_changed_labels_or_sigma (test_hpscore_reuse.HpReuseTest.test_reuse_is_per_call_and_never_caches_changed_labels_or_sigma) ... ok
+test_unknown_ink_values_do_not_enter_label_fields (test_hpscore_reuse.HpReuseTest.test_unknown_ink_values_do_not_enter_label_fields) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.417s
+
+OK

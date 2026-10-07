@@ -1,0 +1,20 @@
+[
+  {
+    "repeat": 0,
+    "mode": "baseline",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 56.044335812999634,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-baseline",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-baseline.log"
+  },
+  {
+    "repeat": 0,
+    "mode": "fast",
+    "status": "completed",
+    "returncode": 0,
+    "wall_seconds": 8.137830977999329,
+    "path": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-fast",
+    "log": "/workspace/scrolls-env/production-speed-v2/large-input-review/quiet-runs/native-full-first/0-fast.log"
+  }
+]

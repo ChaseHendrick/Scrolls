@@ -56,6 +56,10 @@ def code_lines(path):
 
 class RepoTest(unittest.TestCase):
     def test_shell_scripts_parse(self):
+        # Public labelled-control entry points remain runnable after private
+        # operational runners move to the private repository.
+        for name in ("mac-w045.sh", "mac-phase0.sh", "mac-verify.sh"):
+            self.assertTrue((ROOT / "scripts" / name).is_file(), name)
         bash = shutil.which("bash")
         if bash is None:
             self.skipTest("no bash")

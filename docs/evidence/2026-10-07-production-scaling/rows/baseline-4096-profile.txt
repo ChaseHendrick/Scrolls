@@ -1,0 +1,38 @@
+         652376 function calls (633448 primitive calls) in 0.944 seconds
+
+   Ordered by: cumulative time
+   List reduced from 1535 to 30 due to restriction <30>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.025    0.025    0.945    0.945 /workspace/scrolls-env/production-speed-v2/large-input-review/baseline_rowscore.py:90(score_array)
+        1    0.451    0.451    0.508    0.508 /workspace/scrolls-env/production-speed-v2/large-input-review/baseline_rowscore.py:50(_area_resize)
+        1    0.002    0.002    0.358    0.358 /workspace/scrolls-env/production-speed-v2/large-input-review/baseline_rowscore.py:74(_largest_piece)
+    280/2    0.001    0.000    0.351    0.175 <frozen importlib._bootstrap>:1349(_find_and_load)
+    276/2    0.001    0.000    0.351    0.175 <frozen importlib._bootstrap>:1304(_find_and_load_unlocked)
+    271/2    0.001    0.000    0.350    0.175 <frozen importlib._bootstrap>:911(_load_unlocked)
+    223/2    0.000    0.000    0.350    0.175 <frozen importlib._bootstrap_external>:993(exec_module)
+    672/4    0.001    0.000    0.350    0.088 <frozen importlib._bootstrap>:480(_call_with_frames_removed)
+    233/2    0.001    0.000    0.350    0.175 {built-in method builtins.exec}
+    174/6    0.000    0.000    0.337    0.056 <frozen importlib._bootstrap>:1390(_handle_fromlist)
+ 2941/231    0.001    0.000    0.336    0.001 {built-in method builtins.hasattr}
+      3/1    0.000    0.000    0.336    0.336 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/__init__.py:135(__getattr__)
+      6/1    0.000    0.000    0.336    0.336 /opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:73(import_module)
+      6/1    0.000    0.000    0.336    0.336 <frozen importlib._bootstrap>:1375(_gcd_import)
+        1    0.000    0.000    0.336    0.336 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/ndimage/__init__.py:1(<module>)
+        1    0.000    0.000    0.335    0.335 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/ndimage/_support_alternative_backends.py:1(<module>)
+    87/29    0.000    0.000    0.188    0.006 {built-in method builtins.__import__}
+        1    0.000    0.000    0.141    0.141 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_lib/_array_api.py:1(<module>)
+      232    0.000    0.000    0.138    0.001 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_lib/_docscrape.py:579(__init__)
+        1    0.000    0.000    0.129    0.129 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/ndimage/_ndimage_api.py:1(<module>)
+      172    0.001    0.000    0.125    0.001 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_lib/_array_api.py:930(decorator)
+        1    0.000    0.000    0.123    0.123 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/ndimage/_interpolation.py:1(<module>)
+        1    0.000    0.000    0.122    0.122 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/special/__init__.py:1(<module>)
+      232    0.001    0.000    0.120    0.001 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_lib/_docscrape.py:140(__init__)
+        1    0.000    0.000    0.112    0.112 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/numpy/__init__.py:1(<module>)
+        3    0.000    0.000    0.105    0.035 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_external/array_api_compat/_internal.py:56(clone_module)
+       10    0.000    0.000    0.104    0.010 /workspace/Scrolls/.venv/lib/python3.12/site-packages/numpy/__init__.py:700(__getattr__)
+      232    0.003    0.000    0.090    0.000 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/_lib/_docscrape.py:388(_parse)
+      223    0.001    0.000    0.066    0.000 <frozen importlib._bootstrap_external>:1066(get_code)
+        1    0.000    0.000    0.061    0.061 /workspace/Scrolls/.venv/lib/python3.12/site-packages/scipy/special/_support_alternative_backends.py:1(<module>)
+
+

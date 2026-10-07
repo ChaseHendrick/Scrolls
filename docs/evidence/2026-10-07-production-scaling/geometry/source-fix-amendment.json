@@ -1,0 +1,13 @@
+{
+  "reason": "Secondreview float16Fortran/mixed reduction mismatch; optimize matchedfloat32/64 only, retain unchanged originalscalarhelper forallotherdtypes/mixed/nonarraypoints",
+  "old_candidate_sha256": "3983fa76efa53275ed4e93de1ce5f088be9c101b8577bba3a2c0482230e1d7f4",
+  "older_candidate_sha256": "0299fe7aeb38cde77d0fbeb1e7fde41be05231b5fc67b39cfb0588f3e51cb072",
+  "new_candidate_sha256": "290634636090c9355ddd98d89b008db0cb2de34fd5c66aa6b98abae6e3153721",
+  "earlier_amendment_sha256": "c3ac38149091eb1593ba110a028efbcf814c9c3ede9a532a7bfb4d30a04b65b0",
+  "earlier_benchmark_rule_sha256": "aba911028dfe58ae7806061371698472095c75de29a33051bbb832f8b2d41614",
+  "final_parity_rule_sha256": "79b2752e8de39e90633a780886d1cf680972ec2568b618f9c354e755bb0dafa2",
+  "final_parity_result_sha256": "eb4a4394502720e32f424e42c40c58a0d8249ba05dcbfd06235183fd507b0f61",
+  "old_candidates_preserved": true,
+  "prior_rules_results_preserved": true,
+  "no_repeated_timing_before_final_fix": true
+}

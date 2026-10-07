@@ -13,6 +13,8 @@ If you are new, **go for Progress Prizes first, then First Letters**. Leave the 
 
 See [scan availability and our processing status](docs/scan-status.md) for completed controls, partial jobs, planned runs and the official CT inventory.
 
+Private research and work that cannot be public live in **[Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private)** (access required). This repository contains public tools, public-data benchmarks and releasable reports.
+
 1. **Read [`docs/start-here.md`](docs/start-here.md).** It is the plain-language path from "no idea" to a first submission, with what each step costs.
 2. **Join the [Vesuvius Challenge Discord](https://discord.gg/V4fJhvtaQn).** Registration there is a condition of winning the Grand Prize, and most announcements land there first.
 3. **On a Mac?** Read [`docs/mac.md`](docs/mac.md). VC3D, rendering and flattening run natively on Apple Silicon; ink inference runs on the CPU unless you use an open villa PR.
@@ -78,9 +80,9 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | --- | --- |
 | [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), [`llms.txt`](llms.txt) | Entry points for AI agents: rules, map, commands, glossary |
 | [`kit/`](kit/) | Planner, doctor, prize snapshot, map scoring (`auc`, `rowscore`, `verify`), `layers`, `provenance`, experiment ledger; CLI `python -m kit` |
-| [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labelled test), `mac-atlas-v8in.sh` (preregistered target run), `mac-verify.sh` |
+| [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labelled test), `mac-phase0.sh` (public model comparisons), `mac-verify.sh` |
 | [`docs/results.json`](docs/results.json) | Every benchmark number with settings and source |
-| [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Roadmap, training plan, preregistrations |
+| [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Public evaluation methodology and access-required private plan pointers |
 | [`kit/data/prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) | Dated prize snapshot: amounts, deadlines, 13 + 22 eligible volumes with S3 names |
 | [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, week by week, with costs |
@@ -151,3 +153,5 @@ A [further adaptive-geometry experiment and PR review](docs/logs/2026-10-07-adap
 ## License note
 
 Code here is Apache-2.0. Vesuvius Challenge data is CC BY-NC 4.0 (newer scans) or the EduceLab data license (older scans); check each volume in the [data browser](https://scrollprize.org/data_browser). Do not commit scroll data, renders or ink maps to this public repository.
+
+[Further CPU scaling checks](docs/logs/2026-10-07-production-scaling.md) make full-map row scoring 7.01x faster on the tested public 305-million-pixel map with optional [`--fast-resize`](docs/rowscore.md). Its numerical mode is explicit; dense defaults remain unchanged. Exact geometry batching and label-filter reuse add smaller measured gains.

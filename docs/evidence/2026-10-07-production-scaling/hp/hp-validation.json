@@ -1,0 +1,25 @@
+{
+  "baseline_commit": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "changed_files": [
+    "kit/hpscore.py",
+    "tests/test_hpscore_reuse.py"
+  ],
+  "focused_tests": {
+    "run": 9,
+    "passed": 9,
+    "failed": 0,
+    "skipped": 0
+  },
+  "independent_review": "scoring-independent-review/evidence.json",
+  "source_sha256": "283753892087eb4f9a005fb1b9f5a6997497f0cf846016843e9d1c2182441abf",
+  "test_sha256": "b6c8aaa0709192f7d71b1f6d07ab1f7c89e20e579c97bb29da6a6a739856a1d3",
+  "benchmark": {
+    "pairs_per_case": 5,
+    "measured_rows": 20,
+    "all_outputs_exact": true,
+    "input_fingerprints_unchanged": true,
+    "summary": "hp-benchmark-summary.json",
+    "baseline_commit": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4"
+  },
+  "production_source_unchanged_after_timings": true
+}

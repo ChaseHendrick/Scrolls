@@ -1,0 +1,13 @@
+{
+  "baseline": "c43c41a59ac3793b9a653fa236165f6f6b9d47a4",
+  "unchanged_function_ast": {
+    "_normalize": true,
+    "_area_weights": true,
+    "_area_resize": true,
+    "_nearest_resize": true,
+    "_erode": true,
+    "_largest_piece": true,
+    "mean_map": true
+  },
+  "default_resize_selector": "fast_resize defaultsFalse; no finite scan or sparse call withoutoptin; oldresultfields remainunchanged asfocusedtests verify"
+}

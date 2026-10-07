@@ -1,0 +1,28 @@
+{
+  "amendment": "After screening nativefullpair, parent authorized4minutes expectedCPU budget for3fresh alternating pairs. No method, input, caps or numerical/FFTpolicy changed.",
+  "prior_rule_sha256": "6d80a2ab3fbcee34ddc5462515ea33487d7612c64e01fdef7590682efbcc92d5",
+  "screening_whole_seconds": {
+    "baseline": 55.84271038799943,
+    "fast": 7.9077532969995445
+  },
+  "fresh_repeats": 3,
+  "order": [
+    [
+      "baseline",
+      "fast"
+    ],
+    [
+      "fast",
+      "baseline"
+    ],
+    [
+      "baseline",
+      "fast"
+    ]
+  ],
+  "expected_cpu_budget_seconds": 240,
+  "per_process_wall_cap_seconds": 120,
+  "per_process_rss_stop_bytes": 10737418240,
+  "per_process_virtual_memory_cap_bytes": 17179869184,
+  "report": "Median and individualtimings fromthese3newpairs only. Screeningpair reportedseparately. Preserveallartifacts, compare resizedfloat hash andeach historicalscorefield; any discrepancy reported, notretuned."
+}

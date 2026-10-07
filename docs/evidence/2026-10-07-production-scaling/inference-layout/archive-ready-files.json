@@ -1,0 +1,61 @@
+{
+  "schema": 1,
+  "scope": "Compact archive-ready negative inference experiment; omit all input arrays, Zarr stores, TIFF maps and weights",
+  "files": [
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/feasibility.md",
+      "destination": "inference-layout/feasibility.md",
+      "bytes": 2665,
+      "sha256": "0e272833769410bc25ebb85a038d3702c64dfdc6d6402ebff7d30432a9bcb2df"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/experiment-plan.json",
+      "destination": "inference-layout/experiment-plan.json",
+      "bytes": 4805,
+      "sha256": "04af40c0a3727338e7888425b4fe3ac14b64e67c4d1a8f322366c33e4bdd7196"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/benchmark_layout.py",
+      "destination": "inference-layout/benchmark_layout.py",
+      "bytes": 11086,
+      "sha256": "9c9f83e22ed4ec89aec53831d6db40445ac11cf4ecf89957dda97984889f9785"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/harness-freeze.json",
+      "destination": "inference-layout/harness-freeze.json",
+      "bytes": 814,
+      "sha256": "c628608b16b9ee280d7d6f66de8238e50ec9db327fd625c01b3dbf77ab5f18ce"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/screening-report.md",
+      "destination": "inference-layout/screening-report.md",
+      "bytes": 2198,
+      "sha256": "5300c9d5c801c353c5545b406a04dba79d154722c772578988b1475c53f74e83"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/screening/result.json",
+      "destination": "inference-layout/screening/result.json",
+      "bytes": 8316,
+      "sha256": "ae9428804d8a9cb1afa29e01f05356cc55432f7f9ce99a0845fae5bfba20b19c"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/screening-findings-sha256.json",
+      "destination": "inference-layout/screening-findings-sha256.json",
+      "bytes": 4483,
+      "sha256": "3cda24fbebf6f872805e17ba797c9f2c4aff7a315c4fd9fc8c695cadc83b173b"
+    },
+    {
+      "source": "/workspace/scrolls-env/production-speed-v2/inference-review/screening-verification.json",
+      "destination": "inference-layout/screening-verification.json",
+      "bytes": 127,
+      "sha256": "9b2d8919b7f89faacccb01121d615d9e4df775a2f0966074b499848301e77f22"
+    }
+  ],
+  "interpretation": "Candidate rejected: slower and one changed shuffle pixel in all pairs. Original defaults unchanged.",
+  "payloads_excluded": [
+    "screening/selected.zarr",
+    "screening/shuffled.zarr",
+    "screening/pair-*/*.tif",
+    "published checkpoint"
+  ]
+}

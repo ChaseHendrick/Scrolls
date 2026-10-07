@@ -1,0 +1,83 @@
+{
+  "source_hashes": {
+    "/workspace/scrolls-env/production-speed-v2/geometry/baseline/kit/_surface_geometry.py": "4590aacfcefbac089abfc31ed03e7dd3ff3ec2f704e4c7047b716df03bfc0baa",
+    "/workspace/scrolls-env/production-speed-v2/geometry/optimized/kit/_surface_geometry.py": "290634636090c9355ddd98d89b008db0cb2de34fd5c66aa6b98abae6e3153721"
+  },
+  "unchanged_functions_ast": [
+    "_cell_bounds",
+    "_child_bounds",
+    "_unique_minimum",
+    "bilinear",
+    "closest_quad",
+    "project",
+    "quad_mask",
+    "sample_geometry"
+  ],
+  "triangle_cases_exact": 212,
+  "explicit_tie_controls": [
+    "first_edge_tie/float16",
+    "second_edge_tie/float16",
+    "collapsed/float16",
+    "vertex/float16",
+    "first_edge_tie/float32",
+    "second_edge_tie/float32",
+    "collapsed/float32",
+    "vertex/float32",
+    "first_edge_tie/float64",
+    "second_edge_tie/float64",
+    "collapsed/float64",
+    "vertex/float64",
+    "first_edge_tie/float128",
+    "second_edge_tie/float128",
+    "collapsed/float128",
+    "vertex/float128"
+  ],
+  "invalid_shape_outcomes": [
+    {
+      "shape": [
+        1,
+        2,
+        3
+      ],
+      "baseline_exception": "builtins.IndexError"
+    },
+    {
+      "shape": [
+        1,
+        4,
+        3
+      ],
+      "baseline_exception": null
+    },
+    {
+      "shape": [
+        3,
+        3
+      ],
+      "baseline_exception": "builtins.IndexError"
+    },
+    {
+      "shape": [
+        1,
+        3,
+        2
+      ],
+      "baseline_exception": "builtins.ValueError"
+    }
+  ],
+  "integer_exception_classes_unchanged": true,
+  "closest_quad_cases_exact": 72,
+  "budget_abstentions": 45,
+  "heap_events_exact": 606,
+  "projection_cases_exact": 21,
+  "projection_flags": {
+    "valid": 7,
+    "ambiguous": 4,
+    "unresolved": 1
+  },
+  "source_arrays_unchanged": true,
+  "defects_in_reviewed_candidate": [],
+  "longdouble_comparison": "Exact values, signs and dtype; ignores non-value x87 padding bytes",
+  "elapsed_seconds": 0.43005185299989535,
+  "review_script_sha256": "8a9e2b6e8bcf1b9724b7e6d57e23314d2d7be2d0ec118eb162e1932e06511e05"
+}

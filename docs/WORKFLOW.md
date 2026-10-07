@@ -1,6 +1,10 @@
 # Experiment workflow: idea, run, null or candidate, submission
 
+**Private work belongs in [ChaseHendrick/Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private)** (user decision, 2026-10-07). Check that repository's handoff and branches before continuing a private investigation. Keep candidate maps, private research notes and submission material there or in its ignored local data directories. The public Scrolls repository is for tools, public-data benchmarks and releasable reports. Do not copy private content into public PRs, documentation or CI logs. The local ledger examples below also apply in the private checkout.
+
 Every experiment moves through the ledger states `planned`, `running`, then `null` or `candidate`, then `submitted` and finally `published`. The ledger enforces the order.
+
+The private repository's `kit.repo_handoff` helper automates continuity between checkouts. Local Git hooks refresh its ignored combined context after commits, merges and checkouts; the public main/PR snapshot requires an explicit refresh. It preserves existing hooks, performs no automatic push, and never writes private context back here. Future sessions should read the private handoff for installation and refresh commands; hosted scheduled jobs are not required.
 
 ```text
 planned ──> running ──> null ──────────────> published   (a null can be shared any time)
@@ -31,7 +35,7 @@ set -o pipefail
 python -m kit run cost p0826-a --usd 7.15 --what "Modal A10, 6.5 h"
 ```
 
-Outputs go under `work/` (gitignored). Record the checkpoint SHA-256, the command lines and the villa commit in the experiment folder.
+For private runs, execute these ledger examples in the private checkout. Outputs go under its `work/` (gitignored). Record the checkpoint SHA-256, the command lines and the villa commit in the experiment folder.
 
 ## 3a. Null
 
