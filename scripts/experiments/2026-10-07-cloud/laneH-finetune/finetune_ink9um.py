@@ -3,37 +3,20 @@
 Targets are either human labels (arm S, supervised) or confident pseudo-labels
 from a base ink_9um map (arm P, self-training). Training windows are drawn only
 where the whole patch lies at least --gap px outside every --exclude box
-(test crops), so no test pixel and no pixel within the gap is ever seen.
+(test crops). Training inputs exclude those pixels; the arm P teacher still
+processes the whole same-segment canvas and is not an independent-scroll audit.
 
 Writes a checkpoint {"config", "state_dict"} that villa's flat inference loads
 unchanged, plus a JSON training log. Weights stay outside git.
 """
 from __future__ import annotations
 
-import argparse, json, math, sys, time
+import argparse, hashlib, json, math, subprocess, sys, time
 from pathlib import Path
 
 import numpy as np
-import torch
-import torch.nn.functional as F
-import zarr
-
-from vesuvius.ink_detection.config import InkConfig
-from vesuvius.ink_detection.inference.infer import (
-    flat_preprocessing_from_config, normalize_flat_patch, select_layer_indices)
-from vesuvius.ink_detection.inference.inference_runtime import TargetModel
-from vesuvius.ink_detection.models.checkpoint import load_checkpoint, select_inference_weights
-from vesuvius.ink_detection.models.model import make_model
-
-
-def allowed_mask(shape, boxes, gap, patch):
-    """True where a patch's top-left corner keeps the patch >= gap px from every box."""
-    ok = np.ones(shape, bool)
-    ok[shape[0] - patch + 1:, :] = False
-    ok[:, shape[1] - patch + 1:] = False
-    for y0, y1, x0, x1 in boxes:
-        ok[max(0, y0 - gap - patch + 1):y1 + gap, max(0, x0 - gap - patch + 1):x1 + gap] = False
-    return ok
+from training_guard import (allowed_mask, exclude_targets, pooled_targets, pseudo_targets,
+                            VILLA_REVISION, CHECKPOINT_SHA256)
 
 
 def main(argv=None):
@@ -55,27 +38,65 @@ def main(argv=None):
     p.add_argument("--min-supervised", type=float, default=0.10)
     p.add_argument("--seed", type=int, default=20261007)
     p.add_argument("--out", required=True, type=Path, help="output directory (outside git)")
-    p.add_argument("--device", default="cuda")
+    p.add_argument("--device", default="cpu")
+    p.add_argument("--execute", action="store_true", help="explicitly run authorized training; default refuses execution")
+    p.add_argument("--allow-gpu", action="store_true", help="explicitly opt in to already authorized CUDA compute")
+    p.add_argument("--villa-root", required=True, type=Path)
     p.add_argument("--smoke", type=int, default=0, help="run only N steps (pipeline test, not a result)")
     a = p.parse_args(argv)
+    if not a.execute:
+        p.error("not run: --execute is required for authorized training")
+    if a.device != "cpu" and not a.allow_gpu:
+        p.error("GPU training requires explicit --allow-gpu and prior budget authorization")
+    if not a.exclude or min(a.epochs, a.steps_per_epoch, a.batch_size) < 1 or a.smoke < 0:
+        p.error("require exclusions, positive training counts and nonnegative smoke steps")
+    if not math.isfinite(a.lr) or a.lr <= 0 or not math.isfinite(a.min_supervised) or not 0 < a.min_supervised <= 1:
+        p.error("require finite positive learning rate and 0 < min-supervised <= 1")
+    if a.out.exists() and any(a.out.iterdir()):
+        p.error("output directory must be empty; do not reuse a historical checkpoint")
+    if a.labels is not None and a.mask is None:
+        p.error("supervised training requires both --labels and --mask")
     if (a.pseudo_map is None) == (a.labels is None):
-        sys.exit("give exactly one of --labels/--mask (arm S) or --pseudo-map (arm P)")
+        p.error("give exactly one of --labels/--mask (arm S) or --pseudo-map (arm P)")
+    import torch
+    import torch.nn.functional as F
+    import zarr
+    from vesuvius.ink_detection.config import InkConfig
+    from vesuvius.ink_detection.inference.infer import (flat_preprocessing_from_config, normalize_flat_patch, select_layer_indices)
+    from vesuvius.ink_detection.inference.inference_runtime import TargetModel
+    from vesuvius.ink_detection.models.checkpoint import load_checkpoint, select_inference_weights, load_model_state
+    from vesuvius.ink_detection.models.model import make_model
+    revision = subprocess.check_output(["git", "-C", str(a.villa_root), "rev-parse", "HEAD"], text=True).strip()
+    if revision != VILLA_REVISION:
+        p.error("villa checkout differs from the pinned compatible revision")
+    digest = hashlib.sha256()
+    with a.checkpoint.open("rb") as checkpoint_file:
+        for block in iter(lambda: checkpoint_file.read(1 << 20), b""):
+            digest.update(block)
+    if digest.hexdigest() != CHECKPOINT_SHA256:
+        p.error("base checkpoint SHA256 differs from the pinned published seed42 artifact")
     rng = np.random.default_rng(a.seed); torch.manual_seed(a.seed)
     dev = torch.device(a.device)
 
     payload = load_checkpoint(a.checkpoint)
     cfg = InkConfig.from_mapping(payload["config"])
     _, state = select_inference_weights(payload, source=a.checkpoint)
-    state = {k[7:] if k.startswith("module.") else k: v for k, v in state.items()}
-    base = make_model(cfg); inc = base.load_state_dict(state, strict=False)
+    if cfg.data.mode != "flat" or cfg.model.crop_size[1] != cfg.model.crop_size[2]:
+        p.error("require a flat checkpoint with square spatial patches")
+    base = make_model(cfg)
+    load_model_state(base, state)  # Official strict loading, including DDP key handling.
     model = TargetModel(base, input_pad_depth_to=cfg.model.input_pad_depth_to).to(dev).train()
     depth, patch, _ = cfg.model.crop_size
     prep = flat_preprocessing_from_config(cfg.data.normalization)
 
     root = zarr.open(a.volume, mode="r"); vol = root["0"] if not hasattr(root, "shape") else root
+    if len(vol.shape) != 3:
+        p.error("volume must have shape depth,height,width")
     D, H, W = vol.shape
     layers = select_layer_indices(D, layer_start=None, layer_end=None, output_depth=depth, direction="forward")
 
+    if len(layers) != depth:
+        p.error("volume has fewer layers than the checkpoint input depth")
     if a.labels:
         sys.path.insert(0, str(Path(__file__).resolve().parents[4]))
         from kit.auc import labels_on_map
@@ -84,25 +105,22 @@ def main(argv=None):
         source = "labels"
     else:
         import tifffile
-        m = np.asarray(tifffile.imread(a.pseudo_map)).astype(np.float32)
-        m = m / 255.0 if m.max() > 1.5 else m
-        assert m.shape == (H, W), (m.shape, (H, W))
-        target = (m >= a.ink_thr).astype(np.float32)
-        weight = ((m >= a.ink_thr) | (m <= a.bg_thr)).astype(np.float32)
+        m = np.asarray(tifffile.imread(a.pseudo_map))
+        if m.shape != (H, W):
+            p.error("pseudo map and full-volume canvas shapes differ")
+        target, weight = pseudo_targets(m, a.ink_thr, a.bg_thr)
         source = f"pseudo ink>={a.ink_thr} bg<={a.bg_thr}"
-    for y0, y1, x0, x1 in a.exclude:  # belt and braces: no target inside the excluded boxes+gap
-        weight[max(0, y0 - a.gap):y1 + a.gap, max(0, x0 - a.gap):x1 + a.gap] = 0
+    weight = exclude_targets(weight, a.exclude, a.gap, patch)
     ok = allowed_mask((H, W), a.exclude, a.gap, patch)
     # candidate corners on a coarse grid with enough supervised pixels
-    step = patch // 4
+    step = max(1, patch // 4)
     cands = [(y, x) for y in range(0, H - patch + 1, step) for x in range(0, W - patch + 1, step)
              if ok[y, x] and weight[y:y + patch, x:x + patch].mean() >= a.min_supervised]
     if not cands:
         sys.exit("no admissible training windows")
     ink_frac = float((target * weight).sum() / max(weight.sum(), 1))
     print(f"{len(cands)} windows, patch {patch}, depth {depth}, layers {layers.tolist()}, "
-          f"target {source}, supervised ink fraction {ink_frac:.3f}, missing/unexpected keys "
-          f"{len(inc.missing_keys)}/{len(inc.unexpected_keys)}", flush=True)
+          f"target {source}, supervised ink fraction {ink_frac:.3f}, strict checkpoint load", flush=True)
 
     opt = torch.optim.AdamW(model.parameters(), lr=a.lr, weight_decay=1e-4)
     total = a.smoke or a.epochs * a.steps_per_epoch
@@ -131,8 +149,8 @@ def main(argv=None):
         logits = logits.float()
         if logits.ndim == 5: logits = logits.mean(2)
         if logits.ndim == 3: logits = logits[:, None]
-        yd = F.adaptive_avg_pool2d(y, logits.shape[-2:]); wd = (F.adaptive_avg_pool2d(w, logits.shape[-2:]) > 0.5).float()
-        loss = (F.binary_cross_entropy_with_logits(logits, (yd > 0.5).float(), pos_weight=pos_w, reduction="none") * wd).sum() / wd.sum().clamp(min=1)
+        yd, wd = pooled_targets(F, y, w, logits.shape[-2:])
+        loss = (F.binary_cross_entropy_with_logits(logits, yd, pos_weight=pos_w, reduction="none") * wd).sum() / wd.sum().clamp(min=1)
         opt.zero_grad(set_to_none=True); loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step(); sched.step()
         if step_i % 20 == 0 or step_i == total - 1:
@@ -143,7 +161,8 @@ def main(argv=None):
             torch.save({"config": payload["config"], "state_dict": model.model.state_dict()}, a.out / f"epoch{ep}.pth")
     torch.save({"config": payload["config"], "state_dict": model.model.state_dict()}, a.out / "last.pth")
     json.dump({"args": {k: str(v) for k, v in vars(a).items()}, "windows": len(cands), "ink_fraction": ink_frac,
-               "seconds": round(time.time() - t0, 1), "log": log}, open(a.out / "train_log.json", "w"), indent=1)
+               "seconds": round(time.time() - t0, 1), "log": log, "smoke": bool(a.smoke),
+               "villa_revision": revision, "base_checkpoint_sha256": digest.hexdigest()}, open(a.out / "train_log.json", "w"), indent=1)
 
 
 if __name__ == "__main__":

@@ -1,6 +1,6 @@
 # Cloud job `laneH-finetune`: fine-tune `ink_9um` seed 42 (2026-10-07)
 
-Preregistration and ready-to-run job spec. Committed before any training. Nothing has been trained or launched; no numbers exist yet. Labels per [`docs/NOVELTY.md`](../../../../docs/NOVELTY.md): every map is model output, not a reading. Public labelled data only (PHerc0841 w00, PHerc0139 w045). No target scroll is touched. PHerc0841 ag405 (the plan's audit segment) is not used at all.
+Draft preregistration and unrun execution scaffold. End-to-end GPU execution is unvalidated. Committed before any training. Nothing has been trained or launched; no numbers exist yet. Labels per [`docs/NOVELTY.md`](../../../../docs/NOVELTY.md): every map is model output, not a reading. Public labelled data only (PHerc0841 w00, PHerc0139 w045). No target scroll is touched. PHerc0841 ag405 (the plan's audit segment) is not used at all.
 
 Follows the rules of [`../README.md`](../README.md) (paths, crops, scoring), with one difference: this job needs one NVIDIA GPU, so it is a Modal GPU job instead of a CPU container.
 
@@ -50,17 +50,31 @@ The first version of this section (one A10G, sequential) is in the preregistrati
 
 ```bash
 pip install modal && modal token new
-modal run scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py --smoke-steps 5   # all 4 variants in parallel, briefly; not results
-modal run --detach scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py          # full job, reuses the cached Volume
-modal volume get scrolls-laneH laneH/results.json scripts/experiments/2026-10-07-cloud/laneH-finetune/results.json
+modal run scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py --allow-gpu --smoke-steps 5   # all 4 variants in parallel, briefly; not results
+modal run --detach scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py --allow-gpu          # full job, reuses the cached Volume
+modal volume get scrolls-laneH laneH/results.json "$HOME/scrolls-work/laneH/results.json"
 ```
 
-Without Modal, any Linux CUDA machine runs the same phases sequentially: `WORK=$HOME/scrolls-work bash scripts/experiments/2026-10-07-cloud/laneH-finetune/run_job.sh` (PHASE=all) from the repo root.
+Without Modal, any Linux CUDA machine runs the same phases sequentially: `LANEH_EXECUTE=1 LANEH_GPU_AUTHORIZED=1 PHASE=all WORK=$HOME/scrolls-work bash scripts/experiments/2026-10-07-cloud/laneH-finetune/run_job.sh` from the repo root.
 
 ## Files
 
 - `finetune_ink9um.py`: the fine-tune loop (villa's model, config and preprocessing; saves villa-loadable checkpoints).
-- `run_job.sh`: setup, crops (stored and shuffled), pseudo-label source map, 4 trainings, inference, scoring. Resumable.
+- `run_job.sh`: setup, crops (stored and shuffled), pseudo-label source map, 4 trainings, inference, scoring. Input/inference caches are bound; training/scoring needs fresh output.
 - `collect.py`: score JSONs to `results.json` rows.
 - `modal_app.py`: Modal launcher (prepare, base, 4 parallel H100 variants, collect).
-- `results.json`: status record now; replaced by real rows after the run.
+- `results.json`: unchanged historical status record; collected rows are written outside the checkout.
+
+## Before-run review amendment, 7 October 2026
+
+Nothing has been trained, inferred or rented for this job. The original status-only `results.json` bytes remain intact. The commands above are future GPU plans and require a separate budget decision; merging this draft authorizes no GPU launch. The current session is CPU-only.
+
+The shell defaults to a non-executing `check` phase. The Modal entrypoint refuses remote work without explicit opt-in. Workers freeze the local Scrolls commit and use separate temporary code checkouts; they do not switch a shared branch. The compatible villa source is pinned to `e0bbb8b40a2db58b1d71864f286eb85717e59e64`, whose package requires Python 3.14. The controller image is Python 3.12, while the actual model environment uses Python 3.14. Preparation now installs/fetches only the ink_9um job's dependencies and inputs, without invoking the separate Mac model queue. Dependency versions and input digests are recorded. Input, crop and inference caches require source/recipe/output binding receipts; partial or unbound historical output is refused. Every GPU phase rechecks crop bindings, and each variant verifies the teacher and base comparator map receipts before training, so skipping preparation cannot adopt an unbound or modified crop. Score/training reruns require a fresh output tree. Results stay outside the tracked job directory.
+
+Implementation corrections before any training: official checkpoint loading is strict; uint8 pseudo probabilities always scale by 255, including maps whose maximum is only 1; stored zero remains unknown without an independent coverage mask; targets are pooled using supervised weights, so unknown labels cannot change a supervised target. Evaluation counts zero predictions on a fixed human-supervised cohort (`--keep-zero`). Crop/gap checks reject malformed or missing exclusions. Model arms, thresholds and historical rules above remain available for review; these corrections change the previously unexecuted implementation, not past numeric results.
+
+P90/P80 remain same-segment adaptation. Their whole-surface teacher map has seen the same sheet; exclusion of training patches does not make them an independent-scroll test. Only the declared S1/S2 primary crops are on the other scroll. Same-sheet ag896 is not an independent audit.
+
+The collector emits descriptive rows with explicit not-run/partial/complete status and marks primary versus reference rows. It emits no success verdict. Before any research launch, freeze a precise family-level decision rule for all four primary contrasts and replace the historical qualitative phrase "far below" with a numeric rule. The historical 95% intervals are per-contrast intervals, not simultaneous family coverage. No positive or groundbreaking fine-tuning result is established.
+
+CPU validation exercises synthetic mask/quantization/loss and safety guards only. It is not a released-model fine-tune or an end-to-end cloud smoke test. Use `python -m unittest discover -s tests -p test_laneh_job.py -v`; Torch-specific cases need the existing CPU reader runtime. GPU/runtime/remote storage behavior remains unvalidated until separately authorized.

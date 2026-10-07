@@ -1,19 +1,19 @@
-"""Modal launcher for lane H: 4 fine-tune variants in parallel, one H100 each. Not launched by the agent.
+"""Unrun Modal plan. Default entrypoint refuses any remote launch.
 
-  pip install modal && modal token new
-  modal run scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py --smoke-steps 5   # all 4 in parallel, briefly; not results
-  modal run --detach scripts/experiments/2026-10-07-cloud/laneH-finetune/modal_app.py          # full job
-  modal volume get scrolls-laneH laneH/results.json scripts/experiments/2026-10-07-cloud/laneH-finetune/results.json
-
-Flow: prepare (CPU container: villa env, ink_9um checkpoints, volumes, labels, test crops; cached on the Volume and
-skipped when present) -> base (1 H100: pseudo-label source map, base crop maps and scores) -> P90, P80, S1, S2 via
-.map (4 H100s at once: train, infer, score) -> collect (CPU). Everything persists on Volume `scrolls-laneH`, so a
-rerun or the full run after the smoke run reuses the environment, data and base maps.
+Future GPU execution requires separate budget authorization and explicit --allow-gpu.
+Each worker checks out the same supplied commit into its own temporary code directory.
+Only immutable environment/data and distinct output files share the Volume.
 """
-import json, subprocess, time
+import json
+import os
+import re
+import subprocess
+import tempfile
+import time
+from pathlib import Path
+
 import modal
 
-BRANCH = "grok/laneH-finetune"
 image = (modal.Image.debian_slim(python_version="3.12")
          .apt_install("git", "curl", "build-essential")
          .run_commands("curl -LsSf https://astral.sh/uv/install.sh | sh",
@@ -23,56 +23,68 @@ app = modal.App("scrolls-laneH-finetune")
 VARIANTS = ["P90", "P80", "S1", "S2"]
 
 
-def _run(phase, smoke_steps, variant=""):
+def _run(phase, smoke_steps, repo_commit, variant=""):
+    if phase not in ('prepare', 'base', 'variant', 'collect') or variant and variant not in VARIANTS:
+        raise ValueError('unsupported phase or variant')
+    if smoke_steps < 0 or not re.fullmatch(r'[0-9a-f]{40}', repo_commit):
+        raise ValueError('require nonnegative smoke steps and a full frozen commit SHA')
     t0 = time.time()
     tag = phase + (f"_{variant}" if variant else "")
-    sh = f"""set -euo pipefail
-    [ -d /work/Scrolls ] || git clone -q -b {BRANCH} https://github.com/ChaseHendrick/Scrolls.git /work/Scrolls
-    cd /work/Scrolls && git fetch -q origin {BRANCH} && git checkout -q FETCH_HEAD
-    mkdir -p /work/logs
-    WORK=/work/scrolls-work OUT=/work/laneH PHASE={phase} VARIANT={variant} SMOKE_STEPS={smoke_steps} \
-      bash scripts/experiments/2026-10-07-cloud/laneH-finetune/run_job.sh 2>&1 | tee /work/logs/{tag}.log"""
+    code = Path(tempfile.mkdtemp(prefix='Scrolls-' + tag + '-')) / 'source'
+    out = Path('/work/laneH' + ('-smoke' if smoke_steps else ''))
     try:
         vol.reload()
-        subprocess.run(["bash", "-c", sh], check=True)
+        subprocess.run(['git', 'clone', '--filter=blob:none', '--no-checkout',
+                        'https://github.com/ChaseHendrick/Scrolls.git', str(code)], check=True)
+        subprocess.run(['git', '-C', str(code), 'fetch', 'origin', repo_commit], check=True)
+        subprocess.run(['git', '-C', str(code), 'checkout', '--detach', repo_commit], check=True)
+        environment = dict(os.environ, WORK='/work/scrolls-work', OUT='/work/laneH', PHASE=phase,
+                           VARIANT=variant, SMOKE_STEPS=str(smoke_steps), LANEH_EXECUTE='1', LANEH_GPU_AUTHORIZED='1')
+        log = Path('/work/logs') / (tag + '.log');log.parent.mkdir(parents=True, exist_ok=True)
+        with log.open('w') as stream:
+            subprocess.run(['bash', str(code/'scripts/experiments/2026-10-07-cloud/laneH-finetune/run_job.sh')],
+                           cwd=code, env=environment, stdout=stream, stderr=subprocess.STDOUT, check=True)
     finally:
-        out = "/work/laneH" + ("-smoke" if smoke_steps else "")
-        rec = {"tag": tag, "container_start_epoch_s": t0, "container_end_epoch_s": time.time()}
-        subprocess.run(["bash", "-c", f"mkdir -p {out}/timing && echo '{json.dumps(rec)}' > {out}/timing/container_{tag}.json"])
+        timing = out/'timing';timing.mkdir(parents=True, exist_ok=True)
+        (timing/('container_' + tag + '.json')).write_text(json.dumps({
+            'tag': tag, 'container_start_epoch_s': t0, 'container_end_epoch_s': time.time(),
+            'scrolls_commit': repo_commit}) + '\n')
         vol.commit()
     return tag
 
 
-# The base checkpoint, volumes and labels are fetched once by prepare and then read from the Volume.
 @app.function(image=image, cpu=8, memory=32768, timeout=3 * 3600, volumes={"/work": vol})
-def prepare(smoke_steps: int = 0):
-    return _run("prepare", smoke_steps)
+def prepare(smoke_steps: int = 0, repo_commit: str = ''):
+    return _run('prepare', smoke_steps, repo_commit)
 
 
 @app.function(image=image, gpu="H100", cpu=8, memory=65536, timeout=2 * 3600, volumes={"/work": vol})
-def base(smoke_steps: int = 0):
-    return _run("base", smoke_steps)
+def base(smoke_steps: int = 0, repo_commit: str = ''):
+    return _run('base', smoke_steps, repo_commit)
 
 
 @app.function(image=image, gpu="H100", cpu=8, memory=65536, timeout=3 * 3600, volumes={"/work": vol})
-def variant(name: str, smoke_steps: int = 0):
-    return _run("variant", smoke_steps, name)
+def variant(name: str, smoke_steps: int = 0, repo_commit: str = ''):
+    return _run('variant', smoke_steps, repo_commit, name)
 
 
 @app.function(image=image, cpu=2, memory=8192, timeout=1800, volumes={"/work": vol})
-def collect(smoke_steps: int = 0):
-    out = "/work/laneH" + ("-smoke" if smoke_steps else "")
-    _run("collect", smoke_steps)
-    subprocess.run(["bash", "-c", f"cp /work/Scrolls/scripts/experiments/2026-10-07-cloud/laneH-finetune/results.json {out}/results.json"])
-    vol.commit()
+def collect(smoke_steps: int = 0, repo_commit: str = ''):
+    return _run('collect', smoke_steps, repo_commit)
 
 
 @app.local_entrypoint()
-def main(smoke_steps: int = 0):
+def main(smoke_steps: int = 0, allow_gpu: bool = False):
+    if not allow_gpu:
+        raise ValueError('Not run: no remote launch without --allow-gpu and separate budget authorization')
+    if smoke_steps < 0:
+        raise ValueError('smoke steps must be nonnegative')
+    source = Path(__file__).resolve().parents[4]
+    commit = subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip()
     t = time.time()
-    print(prepare.remote(smoke_steps), f"{time.time() - t:.0f} s")
-    print(base.remote(smoke_steps), f"{time.time() - t:.0f} s")
-    for tag in variant.map(VARIANTS, kwargs={"smoke_steps": smoke_steps}):
-        print(tag, f"{time.time() - t:.0f} s")
-    collect.remote(smoke_steps)
-    print(f"wall {time.time() - t:.0f} s; results on the Volume under laneH{'-smoke' if smoke_steps else ''}/results.json")
+    print(prepare.remote(smoke_steps, commit), f'{time.time() - t:.0f} s')
+    print(base.remote(smoke_steps, commit), f'{time.time() - t:.0f} s')
+    for tag in variant.map(VARIANTS, kwargs={'smoke_steps': smoke_steps, 'repo_commit': commit}):
+        print(tag, f'{time.time() - t:.0f} s')
+    collect.remote(smoke_steps, commit)
+    print('Results remain outside the source checkout on the Volume; smoke scores are pipeline diagnostics only.')
