@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer
+from . import localcost, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer
 
 
 def cmd_prizes(args):
@@ -267,10 +267,26 @@ def cmd_run(args):
             if problems:
                 return 1
             print(f"{args.slug}: ok")
+        elif args.action == "local":
+            cmd = args.cmd[1:] if args.cmd[:1] == ["--"] else args.cmd
+            code, item = localcost.run(args.slug, cmd, root=root, device=args.device,
+                                       watts=args.watts, rate=args.rate)
+            cpu = "unavailable" if item["cpu_s"] is None else f"{item['cpu_s']:.1f} s"
+            print(f"{args.slug}: {item['wall_s']:.1f} s wall, {cpu} CPU, "
+                  f"{item['kwh']:.4f} kWh, ${item['usd_exact']:.4f} (exit {code})", file=sys.stderr)
+            return code
+        elif args.action == "backfill":
+            try:
+                with open(args.file, encoding="utf-8") as fh:
+                    items = json.load(fh)
+            except (OSError, ValueError) as exc:
+                raise localcost.CostError(f"cannot read backfill {args.file}: {exc}") from exc
+            hours, usd = localcost.backfill(args.slug, items, root=root, rate=args.rate)
+            print(f"{args.slug}: backfilled {len(items)} entries, {hours:.3f} h, ${usd:.4f} (estimated from logs)")
         elif args.action == "list":
             for record in ledger.list_runs(root):
                 print(f"{record['slug']:<28} {record['scroll']:<12} {record['status']:<10} ${ledger.total_cost(record):.2f}")
-    except ledger.LedgerError as exc:
+    except (ledger.LedgerError, localcost.CostError, OSError) as exc:
         print(exc, file=sys.stderr)
         return 2
     return 0
@@ -626,10 +642,32 @@ def build_parser():
     a = actions.add_parser("check")
     a.add_argument("slug")
     actions.add_parser("list")
+    a = actions.add_parser("local", help="run a local command and log wall time, CPU time and electricity cost")
+    a.add_argument("slug")
+    a.add_argument("--device", choices=sorted(localcost.DEVICE_WATTS), help="average-watts class (default: config or platform)")
+    a.add_argument("--watts", type=float, help="override average watts")
+    a.add_argument("--rate", type=float, help="USD per kWh (default: env var or local config)")
+    a.add_argument("cmd", nargs="*", help="put the command after --")
+    a = actions.add_parser("backfill", help="add estimated local-run costs from a JSON list of logged durations")
+    a.add_argument("slug")
+    a.add_argument("--file", required=True)
+    a.add_argument("--rate", type=float)
     p.set_defaults(func=cmd_run)
     return parser
 
 
 def main(argv=None):
-    args = build_parser().parse_args(argv)
+    argv = list(sys.argv[1:] if argv is None else argv)
+    parser = build_parser()
+    # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
+    # Parse the wrapper separately, leaving every child flag and literal intact.
+    if argv[:1] == ["run"] and "--" in argv:
+        split = argv.index("--")
+        args = parser.parse_args(argv[:split])
+        if args.action == "local":
+            args.cmd.extend(argv[split + 1:])
+        else:
+            args = parser.parse_args(argv)
+    else:
+        args = parser.parse_args(argv)
     return args.func(args)

@@ -52,3 +52,19 @@ Lessons from the published, agent-assisted runs:
 - **Build tools from current villa main.** The published VC3D container was months stale and lacked flags the recipe needs ([villa #1588](https://github.com/ScrollPrize/villa/issues/1588)).
 - **Disclose AI assistance** in your report. The published runs do.
 - **Keep positives private.** An agent with push access to a public repo must not commit a candidate image. This repo's `.gitignore` and ledger enforce that; see [`WORKFLOW.md`](WORKFLOW.md).
+
+## Local runs: time and electricity
+
+Initialize the experiment with `python -m kit run init` first. Wrap every local run so its time and electricity cost land in the experiment ledger:
+
+```
+python -m kit run local SLUG -- COMMAND ARGS...
+python -m kit run local SLUG --device apple-silicon-gpu -- COMMAND   # MPS-heavy run
+python -m kit run local SLUG --watts 45 -- COMMAND                   # override the average draw
+```
+
+It records start and end (UTC), wall time, CPU time from the child-process resource counter when available, the device class and its average watts, estimated kWh (watts times hours) and USD (kWh times the rate). Normal child exit codes are passed through and stored. A signalled child returns the shell convention, 128 plus the signal number, and records the original negative return code. Failed command launches are recorded with exit 127 (missing executable) or 126 (other launch error). Wall power is not measured: macOS `powermetrics` needs sudo, so the energy is an estimate from a device-class average (`kit/localcost.py`, `DEVICE_WATTS`).
+
+The rate is the local electricity rate (set in your local config), never in git: env var `SCROLLS_ELECTRICITY_USD_PER_KWH`, or `electricity_usd_per_kwh` in `~/.config/scrolls/local.json` (or a gitignored `scrolls.local.json`). The same file may set `device` and `device_watts`. The run fails before starting if no rate is set. The ledger stores the rate, device assumptions, command arguments, time and estimated energy/cost, without copying the config file. Values must be finite and nonnegative. An explicitly selected config file must exist and contain a JSON object. Default watts are illustrative assumptions, not measured device power.
+
+Past runs can be added from logged durations with `python -m kit run backfill SLUG --file scripts/backfill/2026-10-07-local-runs.json`; each entry is marked "estimated from logs". The full batch is validated before any entries are committed. Sub-cent estimates retain six decimals and are added before the ledger rounds its displayed total to cents. On Mac/Linux, local-cost writers use an advisory lock and atomic ledger replacement; other ledger commands do not share that lock. On other platforms, use serial ledger writes. Do not backfill durations that a wrapper has already recorded.
