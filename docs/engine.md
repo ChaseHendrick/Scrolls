@@ -28,6 +28,7 @@ Small, standard-library helpers for the parts villa does not cover:
 | `plan` | Copies the official commands for a scroll, control first, and prints the 8.64 µm resampling caveat |
 | `run` ledger | Preregistered readout rule with a hash, costs, provenance hashes, attached checks, status history, and a gate against early disclosure |
 | `verify` | CPU vs MPS (or any two runs) map agreement, valid only when a control map is caught |
+| `rowscore` | Text-row periodicity triage score for ink maps (port of Bullo27's), forward vs reverse |
 
 ## Where to grow it
 
@@ -36,6 +37,6 @@ Add to `kit/` only what is specific to running and recording experiments. Anythi
 Candidates, roughly in order of value:
 
 1. Done: `kit run record` (command lines and SHA-256 of checkpoints or outputs) and `kit verify` (map agreement with a control).
-2. A forward/reverse depth readout report (candidate components above a control-derived threshold), building on `kit verify`'s loader.
+2. Done: `kit rowscore`, Bullo27's row-periodicity triage score, forward against reverse and averaged over checkpoints. Still open: candidate components above a control-derived threshold (millerandmuller's method).
 3. A thin wrapper over [`vesuvius-catalog`](https://github.com/Schurkai/vesuvius-catalog) to refresh the volume table instead of the one-off bucket listing.
 4. A Modal or RunPod launcher that enforces a cost cap.

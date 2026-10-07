@@ -113,6 +113,8 @@ class PlanTest(unittest.TestCase):
         self.assertLess(text.index("w045"), text.index("# 2. Target"))
         self.assertIn("windcheck check work/pherc0826/surface.tifxyz", text)
         self.assertIn("YoussefMoNader/ink-8um-v8in", text)
+        target = text[text.index("# 2. Target"):]
+        self.assertIn("--voxel-unit micrometer --flip-normals", target)
         self.assertIn("v8in_reverse.tif --reverse\n", text)
         self.assertIn("--reverse --device mps", plan.first_letters("PHerc0826", mac=True))
 

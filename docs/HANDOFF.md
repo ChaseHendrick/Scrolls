@@ -2,6 +2,24 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (evening): community scan, rowscore, new models
+
+Read 16 winners' and contributors' repositories, Hugging Face, and villa's history and branches. Notes: [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
+
+What changed the plan:
+
+- **v8in** (YoussefMoNader/ink-8um-v8in, 2026-09-28) is newer than every published First Letters null, and no eligible-scroll run of it was found. Use it alongside `ink_9um`. **Hecate** (team, 2026-09-15) was already run over 340 automatic meshes by rodriguescarson, who holds back 5 screen-passing meshes.
+- PHerc0139 **w045 is held out from both** models (`kit fetch w045`). Run it first with both models; that is the generalization baseline.
+- The organizers stopped asking for sheet-switch detectors (#1937, 2026-09-30). Do not build another checker for a Progress Prize; a hand-fixed surface or tracing that avoids switches is what they want.
+
+Added: `kit rowscore` (Bullo27's score, matches the original to float rounding), `kit plan` step 1b (w045), surface QA (windcheck, tifxyz-doctor), v8in commands, `--flip-normals` on the target render. 52 tests.
+
+Next, in order:
+
+1. On the M1 Pro: `kit fetch w045`; `ink_9um` both directions; `kit rowscore` (expect about 73 to 148 forward per Bullo27). Then v8in on w045 with `--device mps` (needs the zarr exported as 24 layer TIFFs; write that step and test it).
+2. Preregister (`kit run init`), then hand-trace and fix one surface on PHerc0826, 0358, 0813 or 1545 in VC3D; check it with windcheck; render with `--flip-normals`; read with v8in and `ink_9um`, both directions.
+3. By 31 Oct: Progress Prize submission (new form on the prizes page).
+
 ## Next steps (set 7 October 2026)
 
 Done: the M1 Pro runs villa ink inference on MPS via PR #1865, verified against CPU (see [`logs/2026-10-07-w035-cpu.md`](logs/2026-10-07-w035-cpu.md)). The draft #1865 comment is in [`contrib/villa-1865-m1pro-comment.md`](contrib/villa-1865-m1pro-comment.md); the user posts it.

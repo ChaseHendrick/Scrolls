@@ -114,7 +114,9 @@ vc_render_tifxyz \\
   --segmentation work/{slug}/surface.tifxyz \\
   --zarr-output work/{slug}/surface_9um.zarr \\
   --scale 1 --group-idx 0 --num-slices 28 --cache-gb 16 \\
-  --voxel-size {voxel} --voxel-unit micrometer
+  --voxel-size {voxel} --voxel-unit micrometer --flip-normals
+#    --flip-normals puts layers in the team's order, as for the control. Without it the
+#    forward and reverse maps swap (pscamillo's eligible-mesh maps, corrected 2026-09-15).
 #    Run both seeds, both depth directions (a surface's facing is unknown):
 uv run --extra models python -m vesuvius.ink_detection.inference.infer \\
   work/{slug}/surface_9um.zarr \\

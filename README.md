@@ -39,6 +39,8 @@ python -m kit run status p0826-a running
 python -m kit run check p0826-a
 python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif   # needs numpy + tifffile (villa's env)
 python -m kit fetch w035 data/w035_9um.zarr   # mirror a public bucket prefix over HTTPS, resumable
+python -m kit fetch w045 data/w045_9um.zarr   # held out from ink_9um and v8in: the generalization check
+python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362   # row triage score
 bash scripts/mac-verify.sh                    # Apple Silicon: CPU vs MPS on the control, one command
 python -m unittest discover -s tests -v
 ```
@@ -74,7 +76,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | --- | --- |
 | [`kit/`](kit/) | Planner, doctor, prize snapshot and experiment ledger + CLI (`python -m kit`) |
 | [`kit/data/prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) | Dated prize snapshot: amounts, deadlines, 13 + 22 eligible volumes with S3 names |
-| [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
+| [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, week by week, with costs |
 | [`docs/prizes.md`](docs/prizes.md) | Every open prize, its submission contents, eligible scrolls |
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
@@ -107,6 +109,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `ledger.py` | `run.json` records, readout hash, legal status transitions, privacy gate, provenance hashes, attached checks |
 | `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
+| `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
 | `cli.py` | `python -m kit` entry point |
 
 ## Guidelines
