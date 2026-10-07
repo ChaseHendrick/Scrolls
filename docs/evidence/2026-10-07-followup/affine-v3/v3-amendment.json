@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "amends_rule_sha256": "84fe84513d069e0eb5da710a031ba9bcb86cfb4a7d506a644f3f5836ea6c9e5d",
+  "new_rule_sha256": "b3ae4daddd7653322b1b4c407b1d766c102fa59b9675f4b000e0da175585bc5e",
+  "new_script_sha256": "f22e8c3abc6b3e6b6044f61e3548cd1a20ac852322d33f45f3d48962dc5a90f4",
+  "reason": "V2 stoppedbeforefreshCT becauseinteger-gridquadratic fractioncontrols failed. ContinuousNCC calibratedonoldcachedcontrols; all16oldcasesnowpass withmaxeval320. Freshfractional/integer/ambiguitycontrols and allfreshCTcorrespondences not yet inspected. Physicalgateunchanged.",
+  "algorithm_calibration_sha256": "39c2501d2c85b096520bd8e8ccd5f08497daa24649561b6396c525986b7a6ae1",
+  "validation_shifts_zyx": [
+    [
+      0.4,
+      0.3,
+      -0.2
+    ],
+    [
+      -0.25,
+      -0.4,
+      0.35
+    ],
+    [
+      0.15,
+      0.45,
+      0.25
+    ],
+    [
+      12,
+      -11,
+      9
+    ]
+  ],
+  "new_validation_checks": 18,
+  "calibration_rerun_checks": 16,
+  "controls_total": 34,
+  "note": "Rule and script are unchanged after freeze; provenance appended separately."
+}

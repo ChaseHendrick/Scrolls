@@ -27,6 +27,8 @@ All four algorithm controls passed: self comparisons recovered zero shift, and d
 
 **Interpretation:** a common scan ID and voxel size did not justify copying a local translation between these two sites. This test does not prove global nonlinear distortion, chemical ink identity, or that no affine registration can work. Two displacements cannot identify a 3D affine transform. No phase-recipe ink comparison was run after the failed gate. A fresh registration experiment needs additional structural correspondences and untouched held-back sites before a fixed-mesh reader comparison.
 
+**Later qualification:** [controlled subpixel tests](2026-10-07-followup-tests.md) showed that integer NCC peaks can differ from a true fractional shift. The two-voxel, 18.724 um discrepancy above is the disagreement between integer-grid peaks, not a calibrated physical distortion measurement. A fresh eight-site affine fit with four held-back sites subsequently failed its own 0.5-voxel audit; no phase reader comparison was performed.
+
 Local rule, source hashes, script and receipts are retained in `/workspace/scrolls-env/phase-reconstruction/`. Aggregate readouts are in [results.json](../results.json). CT chunks and geometry stay outside git.
 
 ## Research directions checked against existing software

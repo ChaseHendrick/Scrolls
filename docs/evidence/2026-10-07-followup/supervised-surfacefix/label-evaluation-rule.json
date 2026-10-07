@@ -1,0 +1,70 @@
+{
+  "schema": 1,
+  "scope": "Public PHerc0841 supervised continuous-correspondence validation; no target data or readings",
+  "source_surface_shape": [
+    4220,
+    4760
+  ],
+  "source_crop_y0_y1_x0_x1": [
+    2720,
+    3360,
+    2720,
+    3360
+  ],
+  "selection": "Source crop selected by labels plus geometry before any reader outputs; reference fixed from source geometry. Neither labels nor reader maps choose UV correspondences.",
+  "geometry_rule_sha256": "2f2bd0fa614a365107a8c9f7580d81b468c31eba1251b5670e59b7dc456637a1",
+  "implementation": "New schema2 bilinear correspondence, distance bound50um, controls/correlation/gain bars unchanged. Require separate code/test freeze amendment before any reader maps; keep legacy schema1 readout distinct.",
+  "reader": {
+    "model": "d9v2",
+    "checkpoint_sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+    "stride": 42,
+    "central_planes": 17,
+    "precision": "fp32",
+    "batch": 1,
+    "tta": false,
+    "directions": [
+      "forward",
+      "reverse",
+      "shuffle"
+    ],
+    "shuffle_seed": 20261007,
+    "order": "Require official-published CT-only orientation/raster comparison on source and reference before maps; no label-based depth-order choice."
+  },
+  "correction_selection": "Apply frozen schema2 on baseline,reference,minus1,plus1 maps only. Existing alternating-row subsets are correlated spatial diagnostics, not independent validation samples. Never select/retry offsets using human labels.",
+  "primary_accuracy": "Only if corrections accepted, rerender combined mesh with official engine and infer all3 matched controls. Compare whole640crop inner64 fixed supervised AUC to baseline, count zeros. Also report fixed edited-support mask and fixed upper/lower halves. No surrogate assembled patch map.",
+  "edited_support": "A pixel is affected if any of the4native corners of its bilinear cell changed; intersect with fixed inner64 supervision. Computed only from accepted geometry, never map scores.",
+  "success_gate": "Combined rerender forward AUC improvement >=.01, paired95%block-bootstrap lower bound>0, positive wholecrop AUC differences in both fixed halves with>=1000pixels of each class, and forward beats reverse/shuffle with simultaneous lower bounds>0. HP improvement requires positive pairedHP lower bound and greaterthan both depthcontrols and displaced-labelnull. No acceptedgeometry or failedgate => no successfulcorrection claim.",
+  "bootstrap": {
+    "draws": 1000,
+    "seed": 20261007,
+    "block_px": 107,
+    "same_weights_all_maps": true,
+    "minimum_usable_fraction": 0.99,
+    "units": "Source-grid blocks; sensitivity intervals for thiscrop, not independent-scroll evidence"
+  },
+  "hp": "Existing48um normalized highpass computed on commonpositive coverage, source supervision eroded as existinghpscore; report counts and rolled-label shifts150,300,-300. Score wholecrop and editedsupport on same smoothing support.",
+  "candidate_audit": "Report all3sourceoffsets x3directions, independent ofacceptance. Simultaneousmax-centeredbootstrap deviation intervals for two candidate-minusbaselineAUC contrasts. Descriptiveonly, never selecta differentcorrection afteraudit.",
+  "nulls": "Run complete unchangedselection algorithm on8no-wrap reference-map shifts (axis0/1 x\u00b1150/\u00b1300px), all3reference depthmaps shiftedtogether; report eligiblepoints/regions andacceptedcounts for everysearch. Dependenttests, noFPRconfidenceclaim.",
+  "coverage": "Identicalfixedsupervision forprimaryAUC, recordpredzero fraction. Shape/frame mismatches refuse. Differenceinpositivepredictioncoverage>1percentagepoint blocks successclaim.",
+  "label_counts": {
+    "all": {
+      "ink": 83199,
+      "background": 178931
+    },
+    "upper": {
+      "ink": 47374,
+      "background": 83684
+    },
+    "lower": {
+      "ink": 35825,
+      "background": 95247
+    }
+  },
+  "input_sha256": {
+    "/workspace/scrolls-env/supervised-surfacefix/source-ink.npy": "316b41f19aad48f140c930c6fc71119c98c1f9e6f459f74a2f8c9d3724994710",
+    "/workspace/scrolls-env/supervised-surfacefix/source-supervision.npy": "aaf86739f8eafc1088e47fe2bce8c40fec636bed8e704c829733f4a37a641b6e",
+    "kit/auc.py": "c76d45bd46d49d7d700469f589d69792cea494455731504df93004d64519a0c7",
+    "kit/hpscore.py": "36da84d7421a3cb05eaae09693377ca355a6da1a10110fc5985aca1ecad47e58"
+  },
+  "hash_policy": "Archive frozenrule,code,inputs,allreadouts includingnegative outcomes andmanifests. Filehashes establishintegrity; gitcommit/push records publication, not independent scientific validation."
+}

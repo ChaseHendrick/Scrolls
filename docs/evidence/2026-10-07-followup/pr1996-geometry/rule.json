@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "scope": "Public PHerc0841 cached mesh resampling/mask behavior; not original track-graph growth, flattening benchmark, ink or targets",
+  "pr_head": "d651f04d2f5c73fc5ba46c5f859392391cc59b43",
+  "factors": [
+    2,
+    4
+  ],
+  "modes": [
+    "erode",
+    "support"
+  ],
+  "input_grid_spacing": "Publishednative grids have scale0.05 (~20vox), so these are40/80voxel coarsening trials, notParis4 spacing5/10 reproductions",
+  "voxel_um": 9.366,
+  "source_hashes": {
+    "/workspace/scrolls-env/pr1996-review/grow_track_graph.py": "e39dda1a8f76e049337703fcda65c7ad1133c509dbf115fd9d978f8f4ec4e3d0",
+    "/workspace/scrolls-env/continuous-correspondence-review/pr1996_mask_geometry.py": "d7a562909adcf5cd68e8bc6f3d8792c40f8c4b13808b4107b4826b385b2cb60a",
+    "/workspace/Scrolls/kit/_surface_geometry.py": "75457b1629e914480cca0be63847f9fc3b004cc5e0c3635a86dde7b42aaae393",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/meta.json": "cd1cb9722578a2fa2af59e3e32b0fdf1a6a9dc154d2169211e5884f9a2a43e5a",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/x.tif": "e9ecdbe1481d9d50303cefe51d83e65dfa129f32e9921a4d28adc5b689326b9e",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/y.tif": "ba2567e70adfa7a12b72448aa3b39f176a4156896085b429938e491507eff97f",
+    "/workspace/scrolls-env/geometry-validation/w00.tifxyz/z.tif": "14a84cadd3a2216b0a32b3d3cc3852877f17a73c3564041779b95d5496c50762",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/meta.json": "30d5863f2dac76c52ea32141f69dd4303e92324dd3de3d86c7588d9612e44e68",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/x.tif": "6da341cd503cc3ceaf96f6f559d7e3c7bc2ef23ddafce6fd60551fb9d070b942",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/y.tif": "44006942ed2c9529369a861c34ce2343be62d2743329ccee702a1b6db4e79d8b",
+    "/workspace/scrolls-env/geometry-validation/ag896.tifxyz/z.tif": "35bcd9970826808800fefe0a62db0e49f0fa4a6f04a1272ca74ef3eae845dfee"
+  },
+  "measurements": [
+    "retainedquadcount",
+    "all-fine-support violations",
+    "representedvalidworkingcell fraction",
+    "failedcoarsequadJacobian certificate",
+    "same-UV3Dposition error versus originalworkingvertices"
+  ],
+  "controls": "Fullvalid plane and missingfinevertex phantom; code support mustneverretainquad withhole underfootprint; forward/reverse/shuffle notapplicable because noinkreader",
+  "resources": {
+    "threads": 1,
+    "max_peak_rss_bytes": 2147483648,
+    "network_bytes": 0
+  },
+  "interpretation": "Support checksoccupancy only; Jacobiannonfold, bilinear interpolation fidelity and ink quality remain separate gates. No physicalarea/CPU/flattenclaim."
+}
