@@ -63,10 +63,12 @@ if [[ "$SEGMENT" == 0841-* ]]; then
   LABELS="$SEG/ink-labels/2.403um-volume-20260319124803/20260918"
   SV="$SEG/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr"; VOXEL=9.366
 fi
-NAME="$SEGMENT"
-ZARR="$WORK/data/${NAME}_9um.zarr"
-LAB="$WORK/data/${NAME}_labels"
+NAME="$SEGMENT"                      # outputs and logs; data below is shared between modes
+[[ "$SMOKE" == "1" ]] && NAME="${SEGMENT}-smoke"   # test maps never land where a real rerun would reuse them
+ZARR="$WORK/data/${SEGMENT}_9um.zarr"
+LAB="$WORK/data/${SEGMENT}_labels"
 OUT="$WORK/$NAME"
+FRESH="${FRESH:-0}"                  # 1: rerun everything; otherwise finished runs are reused (see below)
 
 say() { printf '\n== %s\n' "$*"; }
 sha() { local s; s="$(shasum -a 256 "$1" 2>/dev/null || sha256sum "$1")"; echo "${s%% *}"; }
@@ -132,7 +134,7 @@ INPUT="$ZARR"
 AUC_CROP=(--level 2)   # never empty: bash 3.2 (macOS) treats an empty array as unset under set -u
 if [[ "$SMOKE" == "1" ]]; then   # one small window only, to test the script end to end on any machine
   CROP=($(( CROP[0] + 160 )) $(( CROP[0] + 416 )) $(( CROP[2] + 140 )) $(( CROP[2] + 396 )))   # 256 px inside the crop
-  INPUT="$WORK/data/${NAME}_crop.zarr"
+  INPUT="$WORK/data/${SEGMENT}_crop.zarr"
   "$PY" - "$ZARR" "$INPUT" "${CROP[@]}" <<'EOF'
 import sys, zarr
 src, dst, y0, y1, x0, x1 = sys.argv[1], sys.argv[2], *map(int, sys.argv[3:])
@@ -166,6 +168,13 @@ git -C "$VILLA" checkout -q --detach "pr-$PR"
 for seed in 42 43; do
   log="$WORK/logs/${NAME}_ink9um_s$seed.log"
   start=$SECONDS
+  # Reuse a finished seed: both maps present, and on a Mac its log shows it ran on MPS.
+  if [[ "$FRESH" != "1" && -f "$OUT/maps/ink9um_s$seed.tif" && -f "$OUT/maps/ink9um_s${seed}_reverse.tif" && -f "$log" ]] \
+     && { [[ "$EXPECT_GPU" != "mps" ]] || grep -q "Using MPS device" "$log"; }; then
+    printf -v "T_ink9um_s$seed" %s "earlier"
+    echo "seed $seed: finished in an earlier run, reused (FRESH=1 to redo)"
+    continue
+  fi
   (cd "$WORK" && "$PY" -m vesuvius.ink_detection.inference.infer "$INPUT" \
      "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed$seed/step-075000.pth" "$OUT/maps/ink9um_s$seed.tif" \
      --overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both) >"$log" 2>&1 \
@@ -198,6 +207,17 @@ v8in() {  # v8in NAME LAYERS DEVICE STRIDE fwd|rev [extra args]
   shift 5
   local flags=(--stride "$stride" "$@")
   [[ "$dir" == "rev" ]] && flags+=(--reverse)
+  # Reuse a finished pass: its map exists and its log's last line names the same device, fp16,
+  # direction and stride (v8in_run.py writes "device=... fp16=... reverse=... stride=... done in Ns").
+  local log="$WORK/logs/${NAME}_$name.log" fp16=False reverse=False
+  [[ " ${flags[*]} " == *" --fp16 "* ]] && fp16=True
+  [[ "$dir" == "rev" ]] && reverse=True
+  if [[ "$FRESH" != "1" && -f "$OUT/maps/$name.tif" && -f "$log" ]] \
+     && grep -q "^device=$device fp16=$fp16 reverse=$reverse stride=$stride .*done in [0-9]*s" "$log"; then
+    printf -v "T_$name" %s "$(sed -n 's/.*done in \([0-9]*\)s.*/\1/p' "$log" | tail -1)"
+    echo "v8in $name: finished in an earlier run, reused (FRESH=1 to redo)"
+    return 0
+  fi
   "$PY" "$SCROLLS/scripts/v8in_run.py" --model-dir "$V8IN" --layers "$layers" --output "$OUT/maps/$name.npy" \
     --device "$device" "${flags[@]}" > "$WORK/logs/${NAME}_$name.log" 2>&1 \
     || { echo "v8in $name failed, see $WORK/logs/${NAME}_$name.log" >&2; tail -20 "$WORK/logs/${NAME}_$name.log" >&2; exit 1; }
@@ -220,14 +240,17 @@ set -e
 [[ "$VDEV" == 0 || "$EXPECT_GPU" != "mps" ]] || { echo "v8in on MPS does not match the CPU${V8IN_FP16:+ (fp16 on: try again without V8IN_FP16)}; stopping before the full run" >&2; exit 1; }
 echo "crop: cpu ${T_crop_cpu}s, $V8IN_DEVICE ${T_crop_gpu}s"
 
+V8IN_MAP=v8in
 INK_AUC=("${AUC_CROP[@]}")   # where ink_9um maps are scored; QUICK narrows it to the crop
 INK_TAG=""
 STRIDE="${V8IN_STRIDE:-}"
 if [[ "$QUICK" == "1" ]]; then
   say "6/7 quick: v8in on the crop on $V8IN_DEVICE at full density, both directions"
   STRIDE="${STRIDE:-21}"
-  v8in v8in "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
-  v8in v8in_reverse "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+  V8IN_MAP=v8in_quick   # its own name, so a later full run never reuses a crop-only map
+  v8in v8in_quick "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
+  v8in v8in_quick_reverse "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+  T_v8in="$T_v8in_quick"; T_v8in_reverse="$T_v8in_quick_reverse"
   echo "v8in: ${T_v8in}s and ${T_v8in_reverse}s"
   V8IN_AUC=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}")
   INK_AUC=("${V8IN_AUC[@]}")
@@ -285,10 +308,10 @@ M="$OUT/maps"
 for seed in 42 43; do
   auc "$M/ink9um_s$seed$INK_TAG.tif" "$M/ink9um_s${seed}_reverse$INK_TAG.tif" "${INK_AUC[@]}" > "$OUT/results/auc_ink9um_s$seed.json"
 done
-auc "$M/v8in.tif" "$M/v8in_reverse.tif" "${V8IN_AUC[@]}" > "$OUT/results/auc_v8in.json"
+auc "$M/$V8IN_MAP.tif" "$M/${V8IN_MAP}_reverse.tif" "${V8IN_AUC[@]}" > "$OUT/results/auc_v8in.json"
 rows "$M/ink9um_s42.tif" "$M/ink9um_s43.tif" --reverse "$M/ink9um_s42_reverse.tif" "$M/ink9um_s43_reverse.tif" \
   > "$OUT/results/rows_ink9um.json"
-rows "$M/v8in.tif" --reverse "$M/v8in_reverse.tif" > "$OUT/results/rows_v8in.json"
+rows "$M/$V8IN_MAP.tif" --reverse "$M/${V8IN_MAP}_reverse.tif" > "$OUT/results/rows_v8in.json"
 
 CHIP="$(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m)"
 OS="$(sw_vers -productVersion 2>/dev/null || uname -sr)"
