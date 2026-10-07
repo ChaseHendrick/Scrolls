@@ -39,15 +39,13 @@ def seconds(name):
 # (reader, map, control, settings, seconds log, notes)
 ROWS = [
     ("d9v2", "d9v2.tif", "d9v2_reverse.tif", D9, "d9v2", "pipeline check; bar 0.8230"),
-    ("v8in-1447", "v8in1447_fwd_s21.npy", "v8in1447_rev_s42.npy", {**V8, "stride": 21, "control stride": 42},
-     "v8in1447_fwd_s21", "main run; control is the stride 42 reverse map"),
-    ("v8in-1447", "v8in1447_fwd_s42.npy", "v8in1447_rev_s42.npy", {**V8, "stride": 42, "control stride": 42},
-     "v8in1447_fwd_s42", "reference at stride 42"),
+    ("v8in-1447", "v8in1447_fwd_s42.npy", "v8in1447_rev_s64.npy", {**V8, "stride": 42, "control stride": 64},
+     "v8in1447_fwd_s42", "main run (stride 42 by the coordinator's budget cut); control is the stride 64 reverse map"),
     ("v8in-1447 + d9v2", "ens_v8in1447_d9v2_mean.npy", "ens_v8in1447_d9v2_mean_reverse.npy",
-     {"ensemble method": "mean", "members": ["v8in1447_fwd_s21", "d9v2"], "control members": ["v8in1447_rev_s42", "d9v2_reverse"]},
+     {"ensemble method": "mean", "members": ["v8in1447_fwd_s42", "d9v2"], "control members": ["v8in1447_rev_s64", "d9v2_reverse"]},
      None, "kit ensemble"),
     ("v8in-1447 + d9v2", "ens_v8in1447_d9v2_rank.npy", "ens_v8in1447_d9v2_rank_reverse.npy",
-     {"ensemble method": "rank", "members": ["v8in1447_fwd_s21", "d9v2"], "control members": ["v8in1447_rev_s42", "d9v2_reverse"]},
+     {"ensemble method": "rank", "members": ["v8in1447_fwd_s42", "d9v2"], "control members": ["v8in1447_rev_s64", "d9v2_reverse"]},
      None, "kit ensemble"),
 ]
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Job v8in1447-ag896 (scripts/experiments/2026-10-07-cloud/README.md): v8in-1447 on the PHerc0841
-# ag896 crop (forward s21, reverse s42, forward s42), d9v2 on the same crop (villa, both
+# ag896 crop (forward s42, reverse s64; cut from s21/s42/s42 by the coordinator to save compute), d9v2 on the same crop (villa, both
 # directions), then ensembles v8in-1447 + d9v2 (mean and rank). Resumable: finished outputs are
 # skipped. Needs the SMOKE setup of the README first (venv, villa pr-1865, checkpoints, data).
 #   nohup bash run.sh > $W/job.log 2>&1 &
@@ -56,13 +56,11 @@ $PY "$HERE/score.py" $J > "$HERE/results.json" || true
 
 v8 v8in1447_fwd_s42 42 fwd
 $PY "$HERE/score.py" $J > "$HERE/results.json" || true
-v8 v8in1447_rev_s42 42 rev
-$PY "$HERE/score.py" $J > "$HERE/results.json" || true
-v8 v8in1447_fwd_s21 21 fwd
+v8 v8in1447_rev_s64 64 rev
 
 for m in mean rank; do
-  $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_$m.npy $J/maps/v8in1447_fwd_s21.npy $J/maps/d9v2.tif --method $m
-  $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_${m}_reverse.npy $J/maps/v8in1447_rev_s42.npy $J/maps/d9v2_reverse.tif --method $m
+  $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_$m.npy $J/maps/v8in1447_fwd_s42.npy $J/maps/d9v2.tif --method $m
+  $PY -m kit ensemble $J/maps/ens_v8in1447_d9v2_${m}_reverse.npy $J/maps/v8in1447_rev_s64.npy $J/maps/d9v2_reverse.tif --method $m
 done
 $PY "$HERE/score.py" $J > "$HERE/results.json"
 echo "all done $(date -u +%H:%M:%S)"
