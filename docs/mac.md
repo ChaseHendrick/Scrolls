@@ -100,6 +100,8 @@ v8in logs print `N/total tiles (Xs)` every 30 s and end with a line like `device
 | v8in device check, MPS side (100 tiles each way) | 396 s for the first (includes warm-up), then 132 s |
 | v8in on the 640 px crop at stride 21 (784 tiles each way) | about 15 min per direction (1.1 to 1.2 s per tile) |
 
+Faster step 6 (2026-10-07): the reverse control runs at stride 42 by default (`QUICK_REV_STRIDE`), a quarter of the tiles; the forward pass stays at v8in's stride 21. `V8IN_FP16=1` runs v8in in half precision on MPS (about 1.4x per afraazali's M3 Max numbers); the first fp16 run checks fp16 against fp32 on the GPU on its crop (fp32 must already have passed against the CPU on w045) and stops if they differ beyond `kit verify`'s tolerance; later runs reuse that pass. The fp16 branch has not yet run on a Mac.
+
 Reruns skip finished passes (they print `finished in an earlier run, reused`). `FRESH=1` redoes everything; `DEVICE_CHECK=1` redoes the device check on a non-w045 segment.
 
 ## First Letters target run: v8in on the public meshes of PHerc0813, 0358 and 0826

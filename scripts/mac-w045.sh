@@ -17,7 +17,8 @@
 #   MODEL=v8in-1447 SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh   # Youssef's PHerc1447 fine-tune
 #   V8IN_HOURS=2 bash scripts/mac-w045.sh      # time budget for the full v8in pass (picks the stride)
 #   V8IN_STRIDE=21 bash scripts/mac-w045.sh    # or set the stride (21 is v8in's own default)
-#   V8IN_FP16=1 bash scripts/mac-w045.sh       # fp16 on MPS, kept only if the crop check still passes
+#   V8IN_FP16=1 bash scripts/mac-w045.sh       # fp16 on MPS (about 1.4x), checked once against fp32 on the GPU
+#   QUICK_REV_STRIDE=21 ...                    # reverse control at full density (default 42: 4x fewer tiles)
 #   V8IN_REGION=full bash scripts/mac-w045.sh  # whole segment, not just the labelled box (about 1.5x the tiles)
 #   V8IN_BATCH=4 bash scripts/mac-w045.sh      # tiles per batch (default from memory: fp32 batch 8 needs about 10 GB)
 #
@@ -117,7 +118,8 @@ elif (( MEM_GB <= 16 )); then BATCH=4
 elif (( MEM_GB <= 32 )); then BATCH=8
 else BATCH=16; fi
 FP16=(--batch-size "$BATCH")   # never empty, as AUC_CROP below
-[[ "${V8IN_FP16:-0}" == "1" && "$V8IN_DEVICE" == "mps" ]] && FP16+=(--fp16)
+FP16_ON=0
+[[ "${V8IN_FP16:-0}" == "1" && "$V8IN_DEVICE" == "mps" ]] && { FP16+=(--fp16); FP16_ON=1; }
 echo "memory ${MEM_GB} GB: v8in batch $BATCH${V8IN_FP16:+, fp16 $V8IN_FP16}"
 
 say "2/7 data: $SEGMENT surface volume (0.6 to 1.7 GB), its labels, three checkpoints"
@@ -250,17 +252,36 @@ EOF
 
 DEV=crop; DEVJSON=v8in_device       # base v8in keeps its original names (mac-atlas-v8in.sh reads them)
 [[ "$MODEL" != v8in ]] && { DEV="${MTAG}_crop"; DEVJSON="${MTAG}_device"; }
+[[ "$FP16_ON" == 1 ]] && DEVJSON="${DEVJSON}_fp16"
 CROP_LOG="$WORK/logs/${NAME}_${DEV}_gpu.log"   # per-tile speed for the stride estimate
 W045_DEVICE="$WORK/w045/results/v8in_device.json"
-# The device check answers one question (does v8in on this Mac's GPU match its CPU?), so other
-# segments reuse w045's pass rather than spend another CPU pass (40 min on an M1 Pro) on it.
-# DEVICE_CHECK=1 forces it; fp16 always gets its own check.
-if [[ ( "$SEGMENT" != w045 || "$MODEL" != v8in ) && "${DEVICE_CHECK:-0}" != 1 && "$FRESH" != 1 && "${V8IN_FP16:-0}" != 1 && "$SMOKE" != 1 ]] \
-   && "$PY" -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))["verdict"] == "pass" else 1)' "$W045_DEVICE" 2>/dev/null; then
+[[ "$FP16_ON" == 1 ]] && W045_DEVICE="$WORK/w045/results/v8in_device_fp16.json"
+passed() { "$PY" -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))["verdict"] == "pass" else 1)' "$1" 2>/dev/null; }
+# The device check answers one question (does v8in on this Mac's GPU give the CPU's map?), so other
+# segments and models reuse w045's pass rather than spend another CPU pass (40 min on an M1 Pro).
+# fp16 is checked once against fp32 on the GPU, which w045's pass already tied to the CPU.
+# DEVICE_CHECK=1 forces a fresh check.
+if [[ ( "$SEGMENT" != w045 || "$MODEL" != v8in ) && "${DEVICE_CHECK:-0}" != 1 && "$FRESH" != 1 && "$SMOKE" != 1 ]] \
+   && passed "$W045_DEVICE"; then
   say "5/7 v8in device check: reusing the pass from w045 (DEVICE_CHECK=1 to redo it here)"
   [[ "$W045_DEVICE" -ef "$OUT/results/$DEVJSON.json" ]] || cp "$W045_DEVICE" "$OUT/results/$DEVJSON.json"
   CROP_LOG="$WORK/logs/w045_crop_gpu.log"
   T_crop_cpu="w045"; T_crop_gpu="w045"
+elif [[ "$FP16_ON" == 1 ]]; then
+  say "5/7 fp16 check on a crop: $V8IN_DEVICE fp16 against $V8IN_DEVICE fp32, reverse fp16 as the control"
+  [[ "$SMOKE" == 1 ]] || passed "$WORK/w045/results/v8in_device.json" \
+    || { echo "Run once without V8IN_FP16 first: fp16 is checked against fp32, which must first match the CPU." >&2; exit 2; }
+  v8in "${DEV}_gpu" "$OUT/crop_layers" "$V8IN_DEVICE" 64 fwd --batch-size "$BATCH"
+  v8in "${DEV}_gpu_fp16" "$OUT/crop_layers" "$V8IN_DEVICE" 64 fwd "${FP16[@]}"
+  v8in "${DEV}_gpu_fp16_reverse" "$OUT/crop_layers" "$V8IN_DEVICE" 64 rev "${FP16[@]}"
+  t="T_${DEV}_gpu"; T_crop_cpu="fp32 ${!t}"; t="T_${DEV}_gpu_fp16"; T_crop_gpu="${!t}"
+  CROP_LOG="$WORK/logs/${NAME}_${DEV}_gpu_fp16.log"
+  set +e
+  "$PY" -m kit verify "$OUT/maps/${DEV}_gpu.tif" "$OUT/maps/${DEV}_gpu_fp16.tif" --control "$OUT/maps/${DEV}_gpu_fp16_reverse.tif" \
+    --json > "$OUT/results/$DEVJSON.json"; VDEV=$?
+  set -e
+  [[ "$VDEV" == 0 ]] || { echo "v8in fp16 does not match fp32 on $V8IN_DEVICE; run without V8IN_FP16" >&2; exit 1; }
+  echo "crop: fp32 ${T_crop_cpu#fp32 }s, fp16 ${T_crop_gpu}s"
 else
 say "5/7 v8in device check on a crop ($(( CROP[1] - CROP[0] )) px): CPU vs $V8IN_DEVICE, reverse as the control"
 v8in "${DEV}_cpu" "$OUT/crop_layers" cpu 64 fwd --batch-size "$BATCH"
@@ -283,7 +304,8 @@ if [[ "$QUICK" == "1" ]]; then
   STRIDE="${STRIDE:-21}"
   V8IN_MAP="${MTAG}_quick"   # its own name, so a later full run never reuses a crop-only map
   v8in "${MTAG}_quick" "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
-  v8in "${MTAG}_quick_reverse" "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+  REV_STRIDE="${QUICK_REV_STRIDE:-42}"   # the control only has to show that flipped depth reads no ink
+  v8in "${MTAG}_quick_reverse" "$OUT/crop_layers" "$V8IN_DEVICE" "$REV_STRIDE" rev "${FP16[@]}"
   t="T_${MTAG}_quick"; T_v8in="${!t}"; t="T_${MTAG}_quick_reverse"; T_v8in_reverse="${!t}"
   echo "v8in: ${T_v8in}s and ${T_v8in_reverse}s"
   V8IN_AUC=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}" --inner 64)
@@ -349,7 +371,7 @@ print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE | quick: $QUICK")
 if "$QUICK" == "1":
     print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns) less a 64 px edge, so the models face the same test")
     print("quick: row scores need about 1 cm of map, so the crop has none")
-print(f"villa PR #$PR $PR_SHA on $EXPECT_GPU | $MODEL $V8IN_REV on $V8IN_DEVICE, stride $STRIDE, batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
+print(f"villa PR #$PR $PR_SHA on $EXPECT_GPU | $MODEL $V8IN_REV on $V8IN_DEVICE, stride $STRIDE (reverse ${REV_STRIDE:-$STRIDE}), batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
 print("sha256 seed42 $SHA42 | seed43 $SHA43 | v8in $SHAV8")
 print("times (s): ink_9um s42 ${T_ink9um_s42}, s43 ${T_ink9um_s43} (both directions) | v8in ${T_v8in} + ${T_v8in_reverse}")
 d = j("$DEVJSON"); c = d["candidate"]
