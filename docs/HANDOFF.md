@@ -4,6 +4,8 @@ Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` 
 
 ## Session 7 October 2026: cloud setup, PR repairs and surface correction
 
+Review branch: `codex/cloud-validation-and-scan-status`, pushed to origin. Automatic draft-PR creation returned `Post https://api.github.com/graphql: Forbidden`; no new PR was created. The existing five PRs are updated. The environment draft now includes the GitHub API domain alongside the preserved network destinations; it still needs settings review/publication, and this does not prove a live access change.
+
 The checkout already contains merged PRs #1 to #5. Earlier instructions to merge those branches are stale. The user authorized subagents, fixing the open PRs, community research and real papyrus validation. Microtuning is deferred by the user; this cloud instance has neither CUDA nor MPS, and has no connection to the Mac. Do not start training or rent compute.
 
 [scan-status.md](scan-status.md) now separates our processing from community CT availability: completed controls, partial jobs and the planned 81-mesh atlas queue; 45 scanned samples in the versioned official catalogue and 23 distinct prize volumes. Future CT acquisitions are not publicly documented by these sources. The user requested both views. The October submission draft must name Chase Hendrick. Existing cloud CPUs only; no paid compute.
