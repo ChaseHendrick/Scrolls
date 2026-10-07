@@ -1,0 +1,1849 @@
+{
+ "results": [
+  {
+   "kind": "H3",
+   "sample": "PHerc0009B",
+   "segment_id": "20250511200236",
+   "reference_volume": "20250521125136",
+   "cross_volume": "20250820154339",
+   "x_tif_bytes": [
+    167366,
+    2166242
+   ],
+   "derivation_path": "20250521125136-20250820154339",
+   "grids": [
+    [
+     208,
+     201
+    ],
+    [
+     749,
+     723
+    ]
+   ],
+   "points": 20000,
+   "matched": 19557,
+   "normal_median_um": 0.3319035434203808,
+   "normal_p90_um": 1.1678423389124095,
+   "normal_max_um": 7.240034249658242,
+   "tangential_median_um": 19.23505919217478,
+   "tangential_p90_um": 26.715880994752656,
+   "tangential_max_um": 34.156826556254714,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.9
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0009B",
+   "segment_id": "20250919125302",
+   "reference_volume": "20250521125136",
+   "cross_volume": "20250820154339",
+   "x_tif_bytes": [
+    319022,
+    4136042
+   ],
+   "derivation_path": "20250521125136-20250820154339",
+   "grids": [
+    [
+     309,
+     258
+    ],
+    [
+     1113,
+     929
+    ]
+   ],
+   "points": 20000,
+   "matched": 18388,
+   "normal_median_um": 0.32705210932274975,
+   "normal_p90_um": 0.976794939735745,
+   "normal_max_um": 14.950977810586489,
+   "tangential_median_um": 19.245037646011475,
+   "tangential_p90_um": 26.630477361038153,
+   "tangential_max_um": 41.81635292783441,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 4.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0009B",
+   "segment_id": "20250919130642",
+   "reference_volume": "20250521125136",
+   "cross_volume": "20250820154339",
+   "x_tif_bytes": [
+    377802,
+    4898018
+   ],
+   "derivation_path": "20250521125136-20250820154339",
+   "grids": [
+    [
+     359,
+     263
+    ],
+    [
+     1293,
+     947
+    ]
+   ],
+   "points": 20000,
+   "matched": 18444,
+   "normal_median_um": 0.35395312156186254,
+   "normal_p90_um": 1.0413045309288438,
+   "normal_max_um": 3.2171790327539966,
+   "tangential_median_um": 19.178682522046397,
+   "tangential_p90_um": 26.637029647708292,
+   "tangential_max_um": 33.616465278991456,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 4.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0009B",
+   "segment_id": "20250919131352",
+   "reference_volume": "20250521125136",
+   "cross_volume": "20250820154339",
+   "x_tif_bytes": [
+    435614,
+    5647238
+   ],
+   "derivation_path": "20250521125136-20250820154339",
+   "grids": [
+    [
+     382,
+     285
+    ],
+    [
+     1376,
+     1026
+    ]
+   ],
+   "points": 20000,
+   "matched": 19655,
+   "normal_median_um": 0.2989740048980917,
+   "normal_p90_um": 1.06633541018706,
+   "normal_max_um": 6.303467034088081,
+   "tangential_median_um": 18.624880169668046,
+   "tangential_p90_um": 27.371510945103598,
+   "tangential_max_um": 40.683042204329986,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.8
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0009B",
+   "segment_id": "20250919135915",
+   "reference_volume": "20250521125136",
+   "cross_volume": "20250820154339",
+   "x_tif_bytes": [
+    354138,
+    4588454
+   ],
+   "derivation_path": "20250521125136-20250820154339",
+   "grids": [
+    [
+     329,
+     269
+    ],
+    [
+     1185,
+     968
+    ]
+   ],
+   "points": 20000,
+   "matched": 19625,
+   "normal_median_um": 0.2596422787068149,
+   "normal_p90_um": 0.9605538464994802,
+   "normal_max_um": 5.671998309040806,
+   "tangential_median_um": 19.198831062928036,
+   "tangential_p90_um": 26.687284854004854,
+   "tangential_max_um": 33.7057160210063,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260112000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20250728140407",
+   "x_tif_bytes": [
+    7508294,
+    497078
+   ],
+   "derivation_path": "20260102150214-20250728140407",
+   "grids": [
+    [
+     1188,
+     1580
+    ],
+    [
+     306,
+     406
+    ]
+   ],
+   "points": 20000,
+   "matched": 19688,
+   "normal_median_um": 1.0338573219088518,
+   "normal_p90_um": 4.185181437160517,
+   "normal_max_um": 36.00050258190476,
+   "tangential_median_um": 74.52206141684646,
+   "tangential_p90_um": 104.24830492234798,
+   "tangential_max_um": 131.79488045717468,
+   "frac_normal_over_25um": 0.0005079236082893133,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.0
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260115000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20250728140407",
+   "x_tif_bytes": [
+    7470086,
+    492998
+   ],
+   "derivation_path": "20260102150214-20250728140407",
+   "grids": [
+    [
+     1176,
+     1588
+    ],
+    [
+     302,
+     408
+    ]
+   ],
+   "points": 20000,
+   "matched": 19669,
+   "normal_median_um": 1.0225562451265702,
+   "normal_p90_um": 4.246525260617567,
+   "normal_max_um": 72.02228006352591,
+   "tangential_median_um": 74.78375899776927,
+   "tangential_p90_um": 104.08517430453867,
+   "tangential_max_um": 137.523254006703,
+   "frac_normal_over_25um": 0.0009659870862778992,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260130000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20250728140407",
+   "x_tif_bytes": [
+    8035974,
+    531134
+   ],
+   "derivation_path": "20260102150214-20250728140407",
+   "grids": [
+    [
+     1376,
+     1460
+    ],
+    [
+     354,
+     375
+    ]
+   ],
+   "points": 20000,
+   "matched": 19756,
+   "normal_median_um": 1.0318264429496962,
+   "normal_p90_um": 3.942954206600634,
+   "normal_max_um": 49.68833195810603,
+   "tangential_median_um": 74.30326963960408,
+   "tangential_p90_um": 104.410762486264,
+   "tangential_max_um": 131.75130784775752,
+   "frac_normal_over_25um": 0.00020247013565499088,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260215000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20250728140407",
+   "x_tif_bytes": [
+    7109894,
+    470154
+   ],
+   "derivation_path": "20260102150214-20250728140407",
+   "grids": [
+    [
+     1380,
+     1288
+    ],
+    [
+     355,
+     331
+    ]
+   ],
+   "points": 20000,
+   "matched": 19701,
+   "normal_median_um": 1.2800804783920594,
+   "normal_p90_um": 5.371804404892017,
+   "normal_max_um": 40.97855829198182,
+   "tangential_median_um": 74.10139091172775,
+   "tangential_p90_um": 104.32715027334382,
+   "tangential_max_um": 131.5341148227511,
+   "frac_normal_over_25um": 0.0010151768945738794,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 4.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260219000001",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20250728140407",
+   "x_tif_bytes": [
+    7366022,
+    487478
+   ],
+   "derivation_path": "20260102150214-20250728140407",
+   "grids": [
+    [
+     1112,
+     1656
+    ],
+    [
+     286,
+     426
+    ]
+   ],
+   "points": 20000,
+   "matched": 19683,
+   "normal_median_um": 0.9044976168029814,
+   "normal_p90_um": 3.755857732720642,
+   "normal_max_um": 34.397006883729624,
+   "tangential_median_um": 74.63498331760852,
+   "tangential_p90_um": 104.54008067586474,
+   "tangential_max_um": 132.95312493808657,
+   "frac_normal_over_25um": 0.00020322105370116343,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.7
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20250108000003",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "x_tif_bytes": [
+    8088070,
+    36588686
+   ],
+   "derivation_path": "20260102150214-20260413113053\u207b\u00b9",
+   "grids": [
+    [
+     1412,
+     1432
+    ],
+    [
+     3003,
+     3046
+    ]
+   ],
+   "points": 20000,
+   "matched": 19973,
+   "normal_median_um": 0.005057623807459529,
+   "normal_p90_um": 0.08124959801620511,
+   "normal_max_um": 1.2368986185532795,
+   "tangential_median_um": 8.989389543163147,
+   "tangential_p90_um": 12.558519635447682,
+   "tangential_max_um": 16.017494018960864,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 13.5
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20250223000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "x_tif_bytes": [
+    10940102,
+    49496070
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20250831000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "x_tif_bytes": [
+    7722886,
+    34948502
+   ],
+   "derivation_path": "20260102150214-20260413113053\u207b\u00b9",
+   "grids": [
+    [
+     1244,
+     1552
+    ],
+    [
+     2646,
+     3302
+    ]
+   ],
+   "points": 20000,
+   "matched": 19960,
+   "normal_median_um": 0.005186758903496156,
+   "normal_p90_um": 0.07688390164227357,
+   "normal_max_um": 5.7434824083258516,
+   "tangential_median_um": 9.04845223893912,
+   "tangential_p90_um": 12.610404771063077,
+   "tangential_max_um": 23.123069009175982,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 13.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260227000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "x_tif_bytes": [
+    11369734,
+    51446710
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0139",
+   "segment_id": "20260303000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "x_tif_bytes": [
+    8208134,
+    37143374
+   ],
+   "derivation_path": "20260102150214-20260413113053\u207b\u00b9",
+   "grids": [
+    [
+     1368,
+     1500
+    ],
+    [
+     2910,
+     3191
+    ]
+   ],
+   "points": 20000,
+   "matched": 19966,
+   "normal_median_um": 0.005751604216399687,
+   "normal_p90_um": 0.09183938593252056,
+   "normal_max_um": 2.450692668162083,
+   "tangential_median_um": 9.02970494093659,
+   "tangential_p90_um": 12.61260025370374,
+   "tangential_max_um": 16.690896375739953,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 11.2
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0343P",
+   "segment_id": "20250511003658",
+   "reference_volume": "20250521134555",
+   "cross_volume": "20260304131111",
+   "x_tif_bytes": [
+    70998,
+    1076418
+   ],
+   "derivation_path": "20250521134555-20260304131111",
+   "grids": [
+    [
+     172,
+     103
+    ],
+    [
+     671,
+     401
+    ]
+   ],
+   "points": 14274,
+   "matched": 13711,
+   "normal_median_um": 0.38131128522787167,
+   "normal_p90_um": 1.3548058581248636,
+   "normal_max_um": 6.85411057860164,
+   "tangential_median_um": 17.753790735847424,
+   "tangential_p90_um": 24.78546020027298,
+   "tangential_max_um": 31.38880262438549,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.6
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0343P",
+   "segment_id": "20250902170441",
+   "reference_volume": "20250521134555",
+   "cross_volume": "20260304131111",
+   "x_tif_bytes": [
+    83294,
+    1264950
+   ],
+   "derivation_path": "20250521134555-20260304131111",
+   "grids": [
+    [
+     165,
+     126
+    ],
+    [
+     644,
+     491
+    ]
+   ],
+   "points": 13575,
+   "matched": 13011,
+   "normal_median_um": 0.2738703581056432,
+   "normal_p90_um": 1.1741714391324767,
+   "normal_max_um": 8.61489087433615,
+   "tangential_median_um": 17.556018473077856,
+   "tangential_p90_um": 24.603540948342157,
+   "tangential_max_um": 32.53319945841142,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 4.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0343P",
+   "segment_id": "20250902170447",
+   "reference_volume": "20250521134555",
+   "cross_volume": "20260304131111",
+   "x_tif_bytes": [
+    92694,
+    1407566
+   ],
+   "derivation_path": "20250521134555-20260304131111",
+   "grids": [
+    [
+     178,
+     130
+    ],
+    [
+     694,
+     507
+    ]
+   ],
+   "points": 15995,
+   "matched": 15410,
+   "normal_median_um": 0.24106692185319206,
+   "normal_p90_um": 1.095739929823964,
+   "normal_max_um": 7.846944078774565,
+   "tangential_median_um": 17.556291123122637,
+   "tangential_p90_um": 24.56213854240078,
+   "tangential_max_um": 31.760219255110247,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0343P",
+   "segment_id": "20250904233748",
+   "reference_volume": "20250521134555",
+   "cross_volume": "20260304131111",
+   "x_tif_bytes": [
+    90634,
+    1375422
+   ],
+   "derivation_path": "20250521134555-20260304131111",
+   "grids": [
+    [
+     181,
+     125
+    ],
+    [
+     706,
+     487
+    ]
+   ],
+   "points": 15076,
+   "matched": 14461,
+   "normal_median_um": 0.27020291085106485,
+   "normal_p90_um": 1.116275553391473,
+   "normal_max_um": 8.891847415593991,
+   "tangential_median_um": 17.595636052219884,
+   "tangential_p90_um": 24.653497952386317,
+   "tangential_max_um": 31.628954839312463,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.2
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0343P",
+   "segment_id": "20250905172054",
+   "reference_volume": "20250521134555",
+   "cross_volume": "20260304131111",
+   "x_tif_bytes": [
+    68990,
+    1046198
+   ],
+   "derivation_path": "20250521134555-20260304131111",
+   "grids": [
+    [
+     151,
+     114
+    ],
+    [
+     589,
+     444
+    ]
+   ],
+   "points": 11332,
+   "matched": 10790,
+   "normal_median_um": 0.3021094542801531,
+   "normal_p90_um": 1.1392557753363068,
+   "normal_max_um": 6.744495188132058,
+   "tangential_median_um": 17.716586386260722,
+   "tangential_p90_um": 24.677236009644755,
+   "tangential_max_um": 31.489889670124825,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.9
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250611132918",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250526151718",
+   "x_tif_bytes": [
+    769674,
+    2920006
+   ],
+   "derivation_path": "20250528085330-20250526151718",
+   "grids": [
+    [
+     545,
+     353
+    ],
+    [
+     1061,
+     688
+    ]
+   ],
+   "points": 20000,
+   "matched": 19494,
+   "normal_median_um": 0.1456438251011824,
+   "normal_p90_um": 0.6084579308134206,
+   "normal_max_um": 27.351759827859645,
+   "tangential_median_um": 17.568677312894344,
+   "tangential_p90_um": 24.63913403600979,
+   "tangential_max_um": 241.07919740818605,
+   "frac_normal_over_25um": 5.129783523135324e-05,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.6
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250611153347",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250526151718",
+   "x_tif_bytes": [
+    421934,
+    1600502
+   ],
+   "derivation_path": "20250528085330-20250526151718",
+   "grids": [
+    [
+     475,
+     222
+    ],
+    [
+     924,
+     433
+    ]
+   ],
+   "points": 20000,
+   "matched": 19324,
+   "normal_median_um": 0.21568299895723042,
+   "normal_p90_um": 0.7928048804983542,
+   "normal_max_um": 40.759876029949275,
+   "tangential_median_um": 17.40286011803267,
+   "tangential_p90_um": 25.01874659917539,
+   "tangential_max_um": 257.5272386971753,
+   "frac_normal_over_25um": 0.00041399296211964395,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250716055227",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250526151718",
+   "x_tif_bytes": [
+    219402,
+    831926
+   ],
+   "derivation_path": "20250528085330-20250526151718",
+   "grids": [
+    [
+     287,
+     191
+    ],
+    [
+     559,
+     372
+    ]
+   ],
+   "points": 20000,
+   "matched": 19125,
+   "normal_median_um": 0.1949788058808177,
+   "normal_p90_um": 0.8134305770464255,
+   "normal_max_um": 23.115324364360205,
+   "tangential_median_um": 17.13651447086145,
+   "tangential_p90_um": 24.707920388914108,
+   "tangential_max_um": 219.6837687104042,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250716055228",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250526151718",
+   "x_tif_bytes": [
+    285022,
+    1081254
+   ],
+   "derivation_path": "20250528085330-20250526151718",
+   "grids": [
+    [
+     298,
+     239
+    ],
+    [
+     580,
+     466
+    ]
+   ],
+   "points": 20000,
+   "matched": 19281,
+   "normal_median_um": 0.1574732548382941,
+   "normal_p90_um": 0.6385623591315176,
+   "normal_max_um": 43.83321267614098,
+   "tangential_median_um": 17.29182158738137,
+   "tangential_p90_um": 24.55951801575921,
+   "tangential_max_um": 155.1824725732152,
+   "frac_normal_over_25um": 0.0007779679477205539,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.6
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250825181922",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250526151718",
+   "x_tif_bytes": [
+    934166,
+    3542318
+   ],
+   "derivation_path": "20250528085330-20250526151718",
+   "grids": [
+    [
+     638,
+     366
+    ],
+    [
+     1242,
+     713
+    ]
+   ],
+   "points": 20000,
+   "matched": 19871,
+   "normal_median_um": 0.029476489652371242,
+   "normal_p90_um": 0.307084091899199,
+   "normal_max_um": 3.7575765605484905,
+   "tangential_median_um": 17.715339565169543,
+   "tangential_p90_um": 24.752436714263645,
+   "tangential_max_um": 31.22399594332833,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250609204953",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250820143440",
+   "x_tif_bytes": [
+    658694,
+    141158
+   ],
+   "derivation_path": "20250528085330-20250526151718.20250526151718-20250820143440",
+   "grids": [
+    [
+     490,
+     336
+    ],
+    [
+     226,
+     156
+    ]
+   ],
+   "points": 20000,
+   "matched": 15207,
+   "normal_median_um": 1.3320420298482227,
+   "normal_p90_um": 5.008556737426618,
+   "normal_max_um": 200.99316529667192,
+   "tangential_median_um": 73.68606513893855,
+   "tangential_p90_um": 104.19390500558299,
+   "tangential_max_um": 621.6280435854407,
+   "frac_normal_over_25um": 0.013940948247517591,
+   "frac_normal_over_75um": 0.0018412573157098704,
+   "seconds": 2.0
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250628074500",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250820143440",
+   "x_tif_bytes": [
+    1048510,
+    224958
+   ],
+   "derivation_path": "20250528085330-20250526151718.20250526151718-20250820143440",
+   "grids": [
+    [
+     679,
+     386
+    ],
+    [
+     314,
+     179
+    ]
+   ],
+   "points": 20000,
+   "matched": 19379,
+   "normal_median_um": 1.8930131221755828,
+   "normal_p90_um": 8.181429710833582,
+   "normal_max_um": 62.05636680920128,
+   "tangential_median_um": 74.50029228588238,
+   "tangential_p90_um": 104.35136047287484,
+   "tangential_max_um": 131.99786462698705,
+   "frac_normal_over_25um": 0.006450281232261727,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250825181928",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250820143440",
+   "x_tif_bytes": [
+    791622,
+    169534
+   ],
+   "derivation_path": "20250528085330-20250526151718.20250526151718-20250820143440",
+   "grids": [
+    [
+     596,
+     332
+    ],
+    [
+     275,
+     154
+    ]
+   ],
+   "points": 20000,
+   "matched": 19525,
+   "normal_median_um": 0.9529900246381224,
+   "normal_p90_um": 3.611858513453467,
+   "normal_max_um": 25.35388468613461,
+   "tangential_median_um": 74.38253669895806,
+   "tangential_p90_um": 104.13760991438109,
+   "tangential_max_um": 131.4529843932177,
+   "frac_normal_over_25um": 5.1216389244558256e-05,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250919184429",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250820143440",
+   "x_tif_bytes": [
+    10694,
+    2374
+   ],
+   "derivation_path": "20250528085330-20250526151718.20250526151718-20250820143440",
+   "grids": [
+    [
+     44,
+     60
+    ],
+    [
+     20,
+     28
+    ]
+   ],
+   "points": 1618,
+   "matched": 1181,
+   "normal_median_um": 4.862485311730792,
+   "normal_p90_um": 15.634613697057302,
+   "normal_max_um": 54.67364704968754,
+   "tangential_median_um": 74.28889308400146,
+   "tangential_p90_um": 102.26788869512377,
+   "tangential_max_um": 124.83384379098115,
+   "frac_normal_over_25um": 0.03048264182895851,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 1.5
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0500P2",
+   "segment_id": "20250919184434",
+   "reference_volume": "20250528085330",
+   "cross_volume": "20250820143440",
+   "x_tif_bytes": [
+    40794,
+    8758
+   ],
+   "derivation_path": "20250528085330-20250526151718.20250526151718-20250820143440",
+   "grids": [
+    [
+     107,
+     95
+    ],
+    [
+     49,
+     44
+    ]
+   ],
+   "points": 8168,
+   "matched": 7205,
+   "normal_median_um": 3.804536066899212,
+   "normal_p90_um": 13.139892331886907,
+   "normal_max_um": 57.88635328441843,
+   "tangential_median_um": 74.70457146649466,
+   "tangential_p90_um": 104.747168933547,
+   "tangential_max_um": 131.48019558167329,
+   "frac_normal_over_25um": 0.012491325468424705,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 1.8
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250925204843",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260309142202",
+   "x_tif_bytes": [
+    1478438,
+    22383698
+   ],
+   "derivation_path": "20250804134230-20260309142202\u207b\u00b9",
+   "grids": [
+    [
+     232,
+     1593
+    ],
+    [
+     903,
+     6197
+    ]
+   ],
+   "points": 20000,
+   "matched": 17984,
+   "normal_median_um": 0.36882854380881974,
+   "normal_p90_um": 1.190761417347567,
+   "normal_max_um": 41.83303464450568,
+   "tangential_median_um": 19.074520093681762,
+   "tangential_p90_um": 26.695877022596914,
+   "tangential_max_um": 46.81467839769527,
+   "frac_normal_over_25um": 0.00011120996441281138,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 8.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250925222237",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260309142202",
+   "x_tif_bytes": [
+    466614,
+    7065514
+   ],
+   "derivation_path": "20250804134230-20260309142202\u207b\u00b9",
+   "grids": [
+    [
+     196,
+     595
+    ],
+    [
+     763,
+     2315
+    ]
+   ],
+   "points": 20000,
+   "matched": 17957,
+   "normal_median_um": 0.4136357773032326,
+   "normal_p90_um": 1.291481812071983,
+   "normal_max_um": 20.104980648435802,
+   "tangential_median_um": 19.010549943854073,
+   "tangential_p90_um": 26.79972393823754,
+   "tangential_max_um": 35.18397964392232,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 4.0
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250926051122",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260309142202",
+   "x_tif_bytes": [
+    2796254,
+    42338618
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250926165636",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260309142202",
+   "x_tif_bytes": [
+    1312138,
+    19863222
+   ],
+   "derivation_path": "20250804134230-20260309142202\u207b\u00b9",
+   "grids": [
+    [
+     241,
+     1361
+    ],
+    [
+     938,
+     5294
+    ]
+   ],
+   "points": 20000,
+   "matched": 18008,
+   "normal_median_um": 0.37287083620723815,
+   "normal_p90_um": 1.1951764036840642,
+   "normal_max_um": 32.32518220089394,
+   "tangential_median_um": 19.09393444033649,
+   "tangential_p90_um": 26.71668556630228,
+   "tangential_max_um": 45.86219714424021,
+   "frac_normal_over_25um": 0.0002221235006663705,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 5.7
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250930083742",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260309142202",
+   "x_tif_bytes": [
+    1039458,
+    15724454
+   ],
+   "derivation_path": "20250804134230-20260309142202\u207b\u00b9",
+   "grids": [
+    [
+     253,
+     1027
+    ],
+    [
+     984,
+     3995
+    ]
+   ],
+   "points": 20000,
+   "matched": 17820,
+   "normal_median_um": 0.3940497445782155,
+   "normal_p90_um": 1.2630807340034784,
+   "normal_max_um": 21.34542016858252,
+   "tangential_median_um": 19.13565401774983,
+   "tangential_p90_um": 26.798001000252547,
+   "tangential_max_um": 39.9250689539746,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 5.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250925204843",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    1478438,
+    101237894
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250928235953",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    2659238,
+    182157998
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250929040153",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    377798,
+    25859694
+   ],
+   "derivation_path": "20250804134230-20260309142202\u207b\u00b9.20260309142202-20260521123630\u207b\u00b9",
+   "grids": [
+    [
+     168,
+     562
+    ],
+    [
+     1390,
+     4651
+    ]
+   ],
+   "points": 20000,
+   "matched": 17811,
+   "normal_median_um": 0.19531046428776808,
+   "normal_p90_um": 0.6374152859096897,
+   "normal_max_um": 41.874258192267945,
+   "tangential_median_um": 9.021668653459779,
+   "tangential_p90_um": 12.605082440135583,
+   "tangential_max_um": 84.3413834541738,
+   "frac_normal_over_25um": 5.614507888383583e-05,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 7.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250930083742",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    1039458,
+    71187758
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20251001060526",
+   "reference_volume": "20250804134230",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    1165030,
+    79776278
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250928235954",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20250804134230",
+   "x_tif_bytes": [
+    81566,
+    5534
+   ],
+   "derivation_path": "20260309142202-20250804134230",
+   "grids": [
+    [
+     117,
+     174
+    ],
+    [
+     30,
+     45
+    ]
+   ],
+   "points": 13235,
+   "matched": 11440,
+   "normal_median_um": 11.851076603973704,
+   "normal_p90_um": 42.980574418129244,
+   "normal_max_um": 217.09027886297147,
+   "tangential_median_um": 289.9830549721057,
+   "tangential_p90_um": 405.0693033061978,
+   "tangential_max_um": 514.5871769342093,
+   "frac_normal_over_25um": 0.24353146853146854,
+   "frac_normal_over_75um": 0.024825174825174826,
+   "seconds": 1.6
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260225160055",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20250804134230",
+   "x_tif_bytes": [
+    65158,
+    4490
+   ],
+   "derivation_path": "20260309142202-20250804134230",
+   "grids": [
+    [
+     128,
+     127
+    ],
+    [
+     33,
+     33
+    ]
+   ],
+   "points": 8891,
+   "matched": 7387,
+   "normal_median_um": 9.650019413939706,
+   "normal_p90_um": 35.12313639694426,
+   "normal_max_um": 233.4356880142906,
+   "tangential_median_um": 289.04698879316004,
+   "tangential_p90_um": 404.04735177231333,
+   "tangential_max_um": 509.6345740127003,
+   "frac_normal_over_25um": 0.17436036279951267,
+   "frac_normal_over_75um": 0.018952213347773115,
+   "seconds": 2.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260226110425",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20250804134230",
+   "x_tif_bytes": [
+    85694,
+    5894
+   ],
+   "derivation_path": "20260309142202-20250804134230",
+   "grids": [
+    [
+     115,
+     186
+    ],
+    [
+     30,
+     48
+    ]
+   ],
+   "points": 13206,
+   "matched": 11193,
+   "normal_median_um": 10.671047591862589,
+   "normal_p90_um": 39.58864918610083,
+   "normal_max_um": 233.79138016323245,
+   "tangential_median_um": 286.9909064422481,
+   "tangential_p90_um": 401.7983466061449,
+   "tangential_max_um": 519.6119485939632,
+   "frac_normal_over_25um": 0.22013758599124453,
+   "frac_normal_over_75um": 0.01876172607879925,
+   "seconds": 2.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260226121302",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20250804134230",
+   "x_tif_bytes": [
+    90758,
+    6014
+   ],
+   "derivation_path": "20260309142202-20250804134230",
+   "grids": [
+    [
+     118,
+     192
+    ],
+    [
+     30,
+     49
+    ]
+   ],
+   "points": 13742,
+   "matched": 11553,
+   "normal_median_um": 11.28430468096465,
+   "normal_p90_um": 40.190831018053046,
+   "normal_max_um": 231.0713769184133,
+   "tangential_median_um": 290.7953843815931,
+   "tangential_p90_um": 408.64441891434603,
+   "tangential_max_um": 517.3190063648864,
+   "frac_normal_over_25um": 0.21717302865056695,
+   "frac_normal_over_75um": 0.018696442482472084,
+   "seconds": 2.0
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260226123353",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20250804134230",
+   "x_tif_bytes": [
+    79122,
+    5286
+   ],
+   "derivation_path": "20260309142202-20250804134230",
+   "grids": [
+    [
+     91,
+     217
+    ],
+    [
+     23,
+     56
+    ]
+   ],
+   "points": 13711,
+   "matched": 11333,
+   "normal_median_um": 13.228783833125023,
+   "normal_p90_um": 50.17399341066316,
+   "normal_max_um": 313.3632069143529,
+   "tangential_median_um": 285.7984899844795,
+   "tangential_p90_um": 408.1773226234673,
+   "tangential_max_um": 519.6471426492163,
+   "frac_normal_over_25um": 0.2834201005911939,
+   "frac_normal_over_75um": 0.043677755228094944,
+   "seconds": 2.5
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20250928235954",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    81566,
+    368654
+   ],
+   "derivation_path": "20260309142202-20260521123630\u207b\u00b9",
+   "grids": [
+    [
+     117,
+     174
+    ],
+    [
+     249,
+     370
+    ]
+   ],
+   "points": 13235,
+   "matched": 12694,
+   "normal_median_um": 0.5946890386720607,
+   "normal_p90_um": 1.946675032667965,
+   "normal_max_um": 10.233166987186218,
+   "tangential_median_um": 35.08739719653152,
+   "tangential_p90_um": 49.22166261956401,
+   "tangential_max_um": 62.55223662530206,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260225160055",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    65158,
+    293894
+   ],
+   "derivation_path": "20260309142202-20260521123630\u207b\u00b9",
+   "grids": [
+    [
+     128,
+     127
+    ],
+    [
+     272,
+     270
+    ]
+   ],
+   "points": 8891,
+   "matched": 8436,
+   "normal_median_um": 0.5306622927873733,
+   "normal_p90_um": 1.8308653529382353,
+   "normal_max_um": 9.51759945506796,
+   "tangential_median_um": 35.47015365976047,
+   "tangential_p90_um": 49.960536482506456,
+   "tangential_max_um": 59.793453825256506,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.4
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260226000000",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    1177598,
+    5327414
+   ],
+   "derivation_path": "20260309142202-20260521123630\u207b\u00b9",
+   "grids": [
+    [
+     426,
+     691
+    ],
+    [
+     906,
+     1470
+    ]
+   ],
+   "points": 20000,
+   "matched": 19707,
+   "normal_median_um": 0.06318933169880535,
+   "normal_p90_um": 0.2116953266491572,
+   "normal_max_um": 1.6471694650345048,
+   "tangential_median_um": 8.955673782080414,
+   "tangential_p90_um": 12.545452513422044,
+   "tangential_max_um": 16.01381737276143,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 5.3
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260226110425",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    85694,
+    388214
+   ],
+   "derivation_path": "20260309142202-20260521123630\u207b\u00b9",
+   "grids": [
+    [
+     115,
+     186
+    ],
+    [
+     245,
+     396
+    ]
+   ],
+   "points": 13206,
+   "matched": 12596,
+   "normal_median_um": 0.5230748874498665,
+   "normal_p90_um": 1.7241712596701193,
+   "normal_max_um": 9.404964624154193,
+   "tangential_median_um": 35.26342064881442,
+   "tangential_p90_um": 49.172916416782556,
+   "tangential_max_um": 62.1084511091168,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0814",
+   "segment_id": "20260226113324",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "x_tif_bytes": [
+    89222,
+    403238
+   ],
+   "derivation_path": "20260309142202-20260521123630\u207b\u00b9",
+   "grids": [
+    [
+     116,
+     192
+    ],
+    [
+     247,
+     408
+    ]
+   ],
+   "points": 13634,
+   "matched": 12990,
+   "normal_median_um": 0.5290699559643381,
+   "normal_p90_um": 1.6957814889664686,
+   "normal_max_um": 11.33373356103118,
+   "tangential_median_um": 35.247359267663356,
+   "tangential_p90_um": 48.772229125711604,
+   "tangential_max_um": 60.11877236704352,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.5
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0841",
+   "segment_id": "20260220213127",
+   "reference_volume": "20250821151531",
+   "cross_volume": "20260319124803",
+   "x_tif_bytes": [
+    201006,
+    3055110
+   ],
+   "derivation_path": "20250821151531-20260319124803\u207b\u00b9",
+   "grids": [
+    [
+     211,
+     238
+    ],
+    [
+     823,
+     928
+    ]
+   ],
+   "points": 20000,
+   "matched": 19523,
+   "normal_median_um": 0.5028614160663347,
+   "normal_p90_um": 1.7956886992053576,
+   "normal_max_um": 20.86145394375038,
+   "tangential_median_um": 18.897502916219096,
+   "tangential_p90_um": 26.619086744701356,
+   "tangential_max_um": 36.00283870514007,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.6
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0841",
+   "segment_id": "20260220214732",
+   "reference_volume": "20250821151531",
+   "cross_volume": "20260319124803",
+   "x_tif_bytes": [
+    219142,
+    3326854
+   ],
+   "derivation_path": "20250821151531-20260319124803\u207b\u00b9",
+   "grids": [
+    [
+     232,
+     236
+    ],
+    [
+     904,
+     920
+    ]
+   ],
+   "points": 20000,
+   "matched": 19482,
+   "normal_median_um": 0.5168996623116289,
+   "normal_p90_um": 1.857543288873675,
+   "normal_max_um": 17.533245866914047,
+   "tangential_median_um": 18.860321926231652,
+   "tangential_p90_um": 26.449096322293546,
+   "tangential_max_um": 35.10850677464162,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 2.7
+  },
+  {
+   "kind": "H3",
+   "sample": "PHerc0841",
+   "segment_id": "20260221022814",
+   "reference_volume": "20250821151531",
+   "cross_volume": "20260319124803",
+   "x_tif_bytes": [
+    184374,
+    2800194
+   ],
+   "derivation_path": "20250821151531-20260319124803\u207b\u00b9",
+   "grids": [
+    [
+     188,
+     245
+    ],
+    [
+     733,
+     955
+    ]
+   ],
+   "points": 20000,
+   "matched": 19509,
+   "normal_median_um": 0.464806710896327,
+   "normal_p90_um": 1.7546883665859192,
+   "normal_max_um": 13.590870488194012,
+   "tangential_median_um": 18.875245975072378,
+   "tangential_p90_um": 26.48540600216444,
+   "tangential_max_um": 34.26353640381508,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 3.1
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260603185441",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260310170716",
+   "x_tif_bytes": [
+    10997126,
+    30518
+   ],
+   "derivation_path": "20260411134726-20230205180739.20230205180739-20260310170716\u207b\u00b9",
+   "grids": [
+    [
+     3996,
+     688
+    ],
+    [
+     211,
+     36
+    ]
+   ],
+   "points": 20000,
+   "matched": 17667,
+   "normal_median_um": 19.48214312282355,
+   "normal_p90_um": 73.07164500906882,
+   "normal_max_um": 476.2642065744957,
+   "tangential_median_um": 356.495495928103,
+   "tangential_p90_um": 502.3964375950442,
+   "tangential_max_um": 641.6717582037464,
+   "frac_normal_over_25um": 0.4120110941302994,
+   "frac_normal_over_75um": 0.09520575083488991,
+   "seconds": 3.5
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260603222816",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260310170716",
+   "x_tif_bytes": [
+    11779228,
+    69634
+   ],
+   "derivation_path": "20260411134726-20230205180739.20230205180739-20260310170716\u207b\u00b9",
+   "grids": [
+    [
+     2371,
+     2640
+    ],
+    [
+     125,
+     139
+    ]
+   ],
+   "points": 20000,
+   "matched": 19279,
+   "normal_median_um": 9.069800086881914,
+   "normal_p90_um": 37.55424104464542,
+   "normal_max_um": 226.08009285214249,
+   "tangential_median_um": 361.8646109861969,
+   "tangential_p90_um": 508.5434431322676,
+   "tangential_max_um": 648.8492284517042,
+   "frac_normal_over_25um": 0.18999948130089736,
+   "frac_normal_over_75um": 0.01908812697754033,
+   "seconds": 5.6
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260623154006",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260310170716",
+   "x_tif_bytes": [
+    102903814,
+    285714
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260623155240",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260310170716",
+   "x_tif_bytes": [
+    84575366,
+    235410
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260623165230",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260310170716",
+   "x_tif_bytes": [
+    66302214,
+    184346
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260603185441",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "x_tif_bytes": [
+    10997126,
+    49604006
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260603193311",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "x_tif_bytes": [
+    13612166,
+    61428314
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260623150417",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "x_tif_bytes": [
+    94341766,
+    425649950
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260623154006",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "x_tif_bytes": [
+    102903814,
+    464276814
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3",
+   "sample": "PHercParis4",
+   "segment_id": "20260623155240",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "x_tif_bytes": [
+    84575366,
+    381539350
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3b",
+   "sample": "PHerc1667",
+   "segment_id": "20251206103305",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "x_tif_bytes": [
+    6182794,
+    27900422
+   ],
+   "derivation_path": "20251217075048-20260323082859\u207b\u00b9",
+   "grids": [
+    [
+     1969,
+     785
+    ],
+    [
+     4212,
+     1656
+    ]
+   ],
+   "points": 20000,
+   "matched": 19942,
+   "normal_median_um": 0.01731549787030543,
+   "normal_p90_um": 0.23185206295728145,
+   "normal_max_um": 3.918438565469097,
+   "tangential_median_um": 8.952116917591155,
+   "tangential_p90_um": 12.500692821660978,
+   "tangential_max_um": 16.1224631127316,
+   "frac_normal_over_25um": 0.0,
+   "frac_normal_over_75um": 0.0,
+   "seconds": 10.8
+  },
+  {
+   "kind": "H3b",
+   "sample": "PHerc1667",
+   "segment_id": "20260105050000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "x_tif_bytes": [
+    12491426,
+    56377774
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3b",
+   "sample": "PHerc1667",
+   "segment_id": "20260115160000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "x_tif_bytes": [
+    11646094,
+    52519326
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3b",
+   "sample": "PHerc1667",
+   "segment_id": "20260116230000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "x_tif_bytes": [
+    11943142,
+    53890358
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  },
+  {
+   "kind": "H3b",
+   "sample": "PHerc1667",
+   "segment_id": "20260203210000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "x_tif_bytes": [
+    11069958,
+    49984982
+   ],
+   "skipped": "mesh TIFF over 40 MB"
+  }
+ ]
+}

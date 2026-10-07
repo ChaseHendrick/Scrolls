@@ -1,0 +1,4842 @@
+{
+ "psr_min": 6.0,
+ "tiles": 24,
+ "results": [
+  {
+   "kind": "test",
+   "sample": "PHerc1667",
+   "segment_id": "20251206103305",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "candidates_tried": 58,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 6.97,
+     "measured_um": [
+      340.19,
+      -19.66
+     ],
+     "predicted_um": [
+      -153.21,
+      -103.93
+     ],
+     "predicted_3d_um": 204.5
+    },
+    {
+     "u": 0.26967,
+     "v": 0.88746,
+     "psr": 7.7,
+     "measured_um": [
+      -109.85,
+      -59.34
+     ],
+     "predicted_um": [
+      202.78,
+      183.31
+     ],
+     "predicted_3d_um": 276.77
+    },
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 8.31,
+     "measured_um": [
+      207.66,
+      179.36
+     ],
+     "predicted_um": [
+      213.71,
+      177.16
+     ],
+     "predicted_3d_um": 284.5
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 47.0,
+     "measured_um": [
+      20.52,
+      -8.24
+     ],
+     "predicted_um": [
+      28.9,
+      4.66
+     ],
+     "predicted_3d_um": 29.42
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 25.17,
+     "measured_um": [
+      26.06,
+      1.3
+     ],
+     "predicted_um": [
+      34.84,
+      11.89
+     ],
+     "predicted_3d_um": 39.82
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 6.29,
+     "measured_um": [
+      469.57,
+      121.96
+     ],
+     "predicted_um": [
+      -184.02,
+      -75.08
+     ],
+     "predicted_3d_um": 194.34
+    },
+    {
+     "u": 0.94274,
+     "v": 0.84199,
+     "psr": 25.98,
+     "measured_um": [
+      197.84,
+      187.89
+     ],
+     "predicted_um": [
+      210.44,
+      187.92
+     ],
+     "predicted_3d_um": 284.05
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 4.96,
+     "measured_um": [
+      99.62,
+      639.94
+     ],
+     "predicted_um": [
+      105.14,
+      26.26
+     ],
+     "predicted_3d_um": 124.86
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 6.32,
+     "measured_um": [
+      130.91,
+      -80.49
+     ],
+     "predicted_um": [
+      51.87,
+      21.88
+     ],
+     "predicted_3d_um": 76.65
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 5.5,
+     "measured_um": [
+      -50.52,
+      190.4
+     ],
+     "predicted_um": [
+      -50.15,
+      -46.98
+     ],
+     "predicted_3d_um": 109.69
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 8.76,
+     "measured_um": [
+      631.1,
+      318.73
+     ],
+     "predicted_um": [
+      -108.38,
+      -16.67
+     ],
+     "predicted_3d_um": 170.27
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 6.54,
+     "measured_um": [
+      280.81,
+      -40.49
+     ],
+     "predicted_um": [
+      158.47,
+      2.28
+     ],
+     "predicted_3d_um": 172.01
+    },
+    {
+     "u": 0.1491,
+     "v": 0.75887,
+     "psr": 20.28,
+     "measured_um": [
+      156.55,
+      119.33
+     ],
+     "predicted_um": [
+      168.09,
+      125.53
+     ],
+     "predicted_3d_um": 210.65
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 7.07,
+     "measured_um": [
+      259.28,
+      170.68
+     ],
+     "predicted_um": [
+      80.92,
+      -81.16
+     ],
+     "predicted_3d_um": 139.47
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 9.13,
+     "measured_um": [
+      -19.92,
+      -240.41
+     ],
+     "predicted_um": [
+      -76.51,
+      -8.39
+     ],
+     "predicted_3d_um": 85.5
+    },
+    {
+     "u": 0.04434,
+     "v": 0.54591,
+     "psr": 9.34,
+     "measured_um": [
+      458.95,
+      139.65
+     ],
+     "predicted_um": [
+      43.45,
+      -6.64
+     ],
+     "predicted_3d_um": 83.7
+    },
+    {
+     "u": 0.71222,
+     "v": 0.88888,
+     "psr": 9.24,
+     "measured_um": [
+      262.14,
+      -218.41
+     ],
+     "predicted_um": [
+      343.66,
+      -207.03
+     ],
+     "predicted_3d_um": 462.48
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 49.09,
+     "measured_um": [
+      28.48,
+      -50.3
+     ],
+     "predicted_um": [
+      41.38,
+      -39.41
+     ],
+     "predicted_3d_um": 57.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 8.42,
+     "measured_um": [
+      -90.73,
+      21.48
+     ],
+     "predicted_um": [
+      -60.51,
+      35.59
+     ],
+     "predicted_3d_um": 77.53
+    },
+    {
+     "u": 0.24562,
+     "v": 0.38486,
+     "psr": 6.14,
+     "measured_um": [
+      340.56,
+      -79.33
+     ],
+     "predicted_um": [
+      -198.52,
+      -142.55
+     ],
+     "predicted_3d_um": 264.54
+    },
+    {
+     "u": 0.48996,
+     "v": 0.77498,
+     "psr": 8.28,
+     "measured_um": [
+      156.45,
+      -137.96
+     ],
+     "predicted_um": [
+      155.82,
+      -112.85
+     ],
+     "predicted_3d_um": 196.74
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 5.51,
+     "measured_um": [
+      329.77,
+      -229.42
+     ],
+     "predicted_um": [
+      167.95,
+      166.02
+     ],
+     "predicted_3d_um": 271.86
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 6.93,
+     "measured_um": [
+      -449.66,
+      -389.06
+     ],
+     "predicted_um": [
+      164.38,
+      105.66
+     ],
+     "predicted_3d_um": 211.38
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 67.83,
+     "measured_um": [
+      29.95,
+      20.39
+     ],
+     "predicted_um": [
+      49.27,
+      31.1
+     ],
+     "predicted_3d_um": 58.08
+    }
+   ],
+   "tiles_kept": 21,
+   "median_measured_um": 272.84302758179473,
+   "median_predicted_um": 158.48640099390232,
+   "median_error_vs_prediction_um": 129.33266602061522,
+   "median_measured_vector_um": [
+    156.55,
+    -8.24
+   ],
+   "seconds": 346.0
+  },
+  {
+   "kind": "test",
+   "sample": "PHerc1667",
+   "segment_id": "20260105050000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "candidates_tried": 72,
+   "tiles": [
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 6.0,
+     "measured_um": [
+      88.77,
+      -412.24
+     ],
+     "predicted_um": [
+      142.07,
+      -110.22
+     ],
+     "predicted_3d_um": 235.49
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 7.07,
+     "measured_um": [
+      560.38,
+      -389.47
+     ],
+     "predicted_um": [
+      336.95,
+      -273.15
+     ],
+     "predicted_3d_um": 424.95
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 5.48,
+     "measured_um": [
+      -491.92,
+      -259.03
+     ],
+     "predicted_um": [
+      340.66,
+      -237.67
+     ],
+     "predicted_3d_um": 410.62
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 6.12,
+     "measured_um": [
+      408.86,
+      229.96
+     ],
+     "predicted_um": [
+      -250.37,
+      -130.24
+     ],
+     "predicted_3d_um": 316.98
+    },
+    {
+     "u": 0.94274,
+     "v": 0.84199,
+     "psr": 7.11,
+     "measured_um": [
+      749.78,
+      -181.21
+     ],
+     "predicted_um": [
+      109.71,
+      -1.25
+     ],
+     "predicted_3d_um": 182.38
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 16.06,
+     "measured_um": [
+      -81.75,
+      -58.82
+     ],
+     "predicted_um": [
+      -66.76,
+      -43.91
+     ],
+     "predicted_3d_um": 85.27
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 5.89,
+     "measured_um": [
+      119.75,
+      -370.52
+     ],
+     "predicted_um": [
+      171.33,
+      -236.31
+     ],
+     "predicted_3d_um": 420.54
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 17.22,
+     "measured_um": [
+      -267.48,
+      -150.7
+     ],
+     "predicted_um": [
+      -242.11,
+      -137.97
+     ],
+     "predicted_3d_um": 278.62
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 6.14,
+     "measured_um": [
+      -80.55,
+      -121.35
+     ],
+     "predicted_um": [
+      -197.12,
+      9.9
+     ],
+     "predicted_3d_um": 253.59
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 21.89,
+     "measured_um": [
+      -29.69,
+      -27.15
+     ],
+     "predicted_um": [
+      -18.54,
+      -18.41
+     ],
+     "predicted_3d_um": 32.87
+    },
+    {
+     "u": 0.1491,
+     "v": 0.75887,
+     "psr": 6.95,
+     "measured_um": [
+      129.29,
+      131.26
+     ],
+     "predicted_um": [
+      142.69,
+      -16.8
+     ],
+     "predicted_3d_um": 144.07
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 28.09,
+     "measured_um": [
+      10.03,
+      7.82
+     ],
+     "predicted_um": [
+      24.11,
+      15.97
+     ],
+     "predicted_3d_um": 30.76
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 32.48,
+     "measured_um": [
+      -107.1,
+      -30.88
+     ],
+     "predicted_um": [
+      -77.66,
+      -19.95
+     ],
+     "predicted_3d_um": 80.44
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 7.75,
+     "measured_um": [
+      588.46,
+      249.9
+     ],
+     "predicted_um": [
+      -298.78,
+      -41.55
+     ],
+     "predicted_3d_um": 304.95
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 15.8,
+     "measured_um": [
+      -37.62,
+      -24.34
+     ],
+     "predicted_um": [
+      -23.19,
+      -17.5
+     ],
+     "predicted_3d_um": 33.23
+    },
+    {
+     "u": 0.92265,
+     "v": 0.33546,
+     "psr": 7.42,
+     "measured_um": [
+      -82.0,
+      30.46
+     ],
+     "predicted_um": [
+      -187.12,
+      -15.37
+     ],
+     "predicted_3d_um": 283.58
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 22.33,
+     "measured_um": [
+      150.58,
+      18.77
+     ],
+     "predicted_um": [
+      152.11,
+      30.52
+     ],
+     "predicted_3d_um": 154.66
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 25.0,
+     "measured_um": [
+      6.45,
+      -5.45
+     ],
+     "predicted_um": [
+      5.12,
+      6.76
+     ],
+     "predicted_3d_um": 18.72
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 6.47,
+     "measured_um": [
+      -241.86,
+      159.52
+     ],
+     "predicted_um": [
+      -66.28,
+      -38.03
+     ],
+     "predicted_3d_um": 94.5
+    },
+    {
+     "u": 0.74338,
+     "v": 0.61834,
+     "psr": 83.2,
+     "measured_um": [
+      -38.65,
+      -29.72
+     ],
+     "predicted_um": [
+      -22.26,
+      -18.05
+     ],
+     "predicted_3d_um": 28.67
+    },
+    {
+     "u": 0.82337,
+     "v": 0.85538,
+     "psr": 12.24,
+     "measured_um": [
+      97.73,
+      77.3
+     ],
+     "predicted_um": [
+      81.78,
+      29.41
+     ],
+     "predicted_3d_um": 137.38
+    },
+    {
+     "u": 0.78249,
+     "v": 0.39239,
+     "psr": 5.74,
+     "measured_um": [
+      -968.73,
+      -529.65
+     ],
+     "predicted_um": [
+      -252.93,
+      -140.9
+     ],
+     "predicted_3d_um": 296.44
+    },
+    {
+     "u": 0.93409,
+     "v": 0.74178,
+     "psr": 8.31,
+     "measured_um": [
+      63.17,
+      3.33
+     ],
+     "predicted_um": [
+      70.29,
+      17.12
+     ],
+     "predicted_3d_um": 74.41
+    },
+    {
+     "u": 0.68097,
+     "v": 0.59042,
+     "psr": 15.31,
+     "measured_um": [
+      1.62,
+      4.13
+     ],
+     "predicted_um": [
+      18.27,
+      15.01
+     ],
+     "predicted_3d_um": 27.97
+    }
+   ],
+   "tiles_kept": 21,
+   "median_measured_um": 124.6051479674897,
+   "median_predicted_um": 86.90751693610858,
+   "median_error_vs_prediction_um": 31.403479106621287,
+   "median_measured_vector_um": [
+    6.45,
+    -5.45
+   ],
+   "seconds": 378.4
+  },
+  {
+   "kind": "test",
+   "sample": "PHerc1667",
+   "segment_id": "20260115160000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "candidates_tried": 76,
+   "tiles": [
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 5.71,
+     "measured_um": [
+      -330.39,
+      -350.24
+     ],
+     "predicted_um": [
+      -43.82,
+      -94.17
+     ],
+     "predicted_3d_um": 248.21
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 7.23,
+     "measured_um": [
+      -232.77,
+      -500.49
+     ],
+     "predicted_um": [
+      155.87,
+      -268.66
+     ],
+     "predicted_3d_um": 433.8
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 5.44,
+     "measured_um": [
+      -430.18,
+      131.25
+     ],
+     "predicted_um": [
+      287.45,
+      -252.16
+     ],
+     "predicted_3d_um": 445.92
+    },
+    {
+     "u": 0.90981,
+     "v": 0.24069,
+     "psr": 6.36,
+     "measured_um": [
+      -30.38,
+      10.19
+     ],
+     "predicted_um": [
+      -362.44,
+      -34.08
+     ],
+     "predicted_3d_um": 392.59
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 6.32,
+     "measured_um": [
+      358.55,
+      -48.7
+     ],
+     "predicted_um": [
+      -272.25,
+      -139.37
+     ],
+     "predicted_3d_um": 311.15
+    },
+    {
+     "u": 0.94274,
+     "v": 0.84199,
+     "psr": 6.65,
+     "measured_um": [
+      310.06,
+      199.72
+     ],
+     "predicted_um": [
+      95.4,
+      4.99
+     ],
+     "predicted_3d_um": 160.51
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 8.35,
+     "measured_um": [
+      -158.79,
+      601.4
+     ],
+     "predicted_um": [
+      -56.16,
+      -45.31
+     ],
+     "predicted_3d_um": 73.51
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 6.76,
+     "measured_um": [
+      179.7,
+      -169.55
+     ],
+     "predicted_um": [
+      261.64,
+      -222.55
+     ],
+     "predicted_3d_um": 461.22
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 7.69,
+     "measured_um": [
+      -541.07,
+      -109.93
+     ],
+     "predicted_um": [
+      -224.38,
+      -129.57
+     ],
+     "predicted_3d_um": 273.95
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 6.09,
+     "measured_um": [
+      -120.12,
+      328.47
+     ],
+     "predicted_um": [
+      -176.65,
+      29.78
+     ],
+     "predicted_3d_um": 215.39
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 84.41,
+     "measured_um": [
+      -34.86,
+      -28.2
+     ],
+     "predicted_um": [
+      -26.32,
+      -17.08
+     ],
+     "predicted_3d_um": 32.17
+    },
+    {
+     "u": 0.1491,
+     "v": 0.75887,
+     "psr": 6.28,
+     "measured_um": [
+      377.89,
+      -9.73
+     ],
+     "predicted_um": [
+      144.94,
+      -36.47
+     ],
+     "predicted_3d_um": 162.71
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 6.07,
+     "measured_um": [
+      630.06,
+      270.57
+     ],
+     "predicted_um": [
+      14.52,
+      23.35
+     ],
+     "predicted_3d_um": 50.32
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 6.36,
+     "measured_um": [
+      -38.12,
+      48.79
+     ],
+     "predicted_um": [
+      8.71,
+      -28.79
+     ],
+     "predicted_3d_um": 58.31
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 7.05,
+     "measured_um": [
+      299.88,
+      89.83
+     ],
+     "predicted_um": [
+      -250.79,
+      -53.85
+     ],
+     "predicted_3d_um": 300.95
+    },
+    {
+     "u": 0.05033,
+     "v": 0.26079,
+     "psr": 6.87,
+     "measured_um": [
+      188.83,
+      190.14
+     ],
+     "predicted_um": [
+      -315.63,
+      -10.41
+     ],
+     "predicted_3d_um": 389.31
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 45.6,
+     "measured_um": [
+      -18.3,
+      -13.55
+     ],
+     "predicted_um": [
+      -1.7,
+      -4.2
+     ],
+     "predicted_3d_um": 4.8
+    },
+    {
+     "u": 0.92265,
+     "v": 0.33546,
+     "psr": 7.04,
+     "measured_um": [
+      -51.38,
+      190.08
+     ],
+     "predicted_um": [
+      -252.29,
+      0.66
+     ],
+     "predicted_3d_um": 286.61
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 6.11,
+     "measured_um": [
+      -549.78,
+      -60.41
+     ],
+     "predicted_um": [
+      148.18,
+      35.73
+     ],
+     "predicted_3d_um": 164.78
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 11.51,
+     "measured_um": [
+      19.94,
+      -0.02
+     ],
+     "predicted_um": [
+      -3.89,
+      2.93
+     ],
+     "predicted_3d_um": 29.4
+    },
+    {
+     "u": 0.82337,
+     "v": 0.85538,
+     "psr": 6.69,
+     "measured_um": [
+      -69.47,
+      -171.4
+     ],
+     "predicted_um": [
+      72.37,
+      72.49
+     ],
+     "predicted_3d_um": 126.22
+    },
+    {
+     "u": 0.78249,
+     "v": 0.39239,
+     "psr": 9.54,
+     "measured_um": [
+      -199.55,
+      179.62
+     ],
+     "predicted_um": [
+      -213.57,
+      -158.23
+     ],
+     "predicted_3d_um": 271.08
+    },
+    {
+     "u": 0.93409,
+     "v": 0.74178,
+     "psr": 12.11,
+     "measured_um": [
+      66.83,
+      8.03
+     ],
+     "predicted_um": [
+      52.09,
+      20.07
+     ],
+     "predicted_3d_um": 72.74
+    },
+    {
+     "u": 0.66991,
+     "v": 0.42152,
+     "psr": 15.24,
+     "measured_um": [
+      -78.96,
+      -73.45
+     ],
+     "predicted_um": [
+      -84.3,
+      -48.33
+     ],
+     "predicted_3d_um": 98.81
+    }
+   ],
+   "tiles_kept": 22,
+   "median_measured_um": 268.2288252437398,
+   "median_predicted_um": 150.9423771963559,
+   "median_error_vs_prediction_um": 296.9088178767147,
+   "median_measured_vector_um": [
+    -32.62,
+    4.0
+   ],
+   "seconds": 375.0
+  },
+  {
+   "kind": "test",
+   "sample": "PHerc1667",
+   "segment_id": "20260116230000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "candidates_tried": 91,
+   "tiles": [
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 5.94,
+     "measured_um": [
+      -79.88,
+      -159.88
+     ],
+     "predicted_um": [
+      -17.18,
+      -149.94
+     ],
+     "predicted_3d_um": 257.94
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 8.2,
+     "measured_um": [
+      -659.38,
+      -9.8
+     ],
+     "predicted_um": [
+      359.57,
+      -252.14
+     ],
+     "predicted_3d_um": 442.67
+    },
+    {
+     "u": 0.02124,
+     "v": 0.55158,
+     "psr": 7.55,
+     "measured_um": [
+      -310.16,
+      100.15
+     ],
+     "predicted_um": [
+      -82.83,
+      -22.8
+     ],
+     "predicted_3d_um": 159.21
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 5.22,
+     "measured_um": [
+      -250.76,
+      -430.8
+     ],
+     "predicted_um": [
+      331.21,
+      -294.34
+     ],
+     "predicted_3d_um": 464.36
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 6.49,
+     "measured_um": [
+      -29.65,
+      30.38
+     ],
+     "predicted_um": [
+      -289.99,
+      -81.34
+     ],
+     "predicted_3d_um": 329.02
+    },
+    {
+     "u": 0.93312,
+     "v": 0.3012,
+     "psr": 7.58,
+     "measured_um": [
+      9.47,
+      19.96
+     ],
+     "predicted_um": [
+      -247.26,
+      14.28
+     ],
+     "predicted_3d_um": 334.45
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 7.27,
+     "measured_um": [
+      -229.73,
+      10.87
+     ],
+     "predicted_um": [
+      -64.94,
+      -45.7
+     ],
+     "predicted_3d_um": 84.56
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 6.58,
+     "measured_um": [
+      -159.97,
+      89.23
+     ],
+     "predicted_um": [
+      359.45,
+      -257.92
+     ],
+     "predicted_3d_um": 475.27
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 8.71,
+     "measured_um": [
+      399.65,
+      -19.61
+     ],
+     "predicted_um": [
+      -227.44,
+      -132.63
+     ],
+     "predicted_3d_um": 291.78
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 59.05,
+     "measured_um": [
+      -43.71,
+      -30.36
+     ],
+     "predicted_um": [
+      -33.83,
+      -16.79
+     ],
+     "predicted_3d_um": 40.9
+    },
+    {
+     "u": 0.1491,
+     "v": 0.75887,
+     "psr": 7.06,
+     "measured_um": [
+      179.68,
+      -39.96
+     ],
+     "predicted_um": [
+      178.51,
+      -41.03
+     ],
+     "predicted_3d_um": 183.26
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 12.66,
+     "measured_um": [
+      19.41,
+      20.89
+     ],
+     "predicted_um": [
+      1.11,
+      19.15
+     ],
+     "predicted_3d_um": 38.51
+    },
+    {
+     "u": 0.04434,
+     "v": 0.54591,
+     "psr": 7.86,
+     "measured_um": [
+      240.22,
+      179.74
+     ],
+     "predicted_um": [
+      -118.07,
+      -47.68
+     ],
+     "predicted_3d_um": 147.05
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 6.37,
+     "measured_um": [
+      -50.19,
+      -122.6
+     ],
+     "predicted_um": [
+      -5.43,
+      -31.08
+     ],
+     "predicted_3d_um": 64.03
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 5.97,
+     "measured_um": [
+      81.9,
+      188.99
+     ],
+     "predicted_um": [
+      -235.59,
+      -40.31
+     ],
+     "predicted_3d_um": 326.61
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 48.93,
+     "measured_um": [
+      -24.3,
+      -19.48
+     ],
+     "predicted_um": [
+      -7.2,
+      -10.86
+     ],
+     "predicted_3d_um": 15.69
+    },
+    {
+     "u": 0.92265,
+     "v": 0.33546,
+     "psr": 6.59,
+     "measured_um": [
+      440.3,
+      80.63
+     ],
+     "predicted_um": [
+      -195.82,
+      -9.54
+     ],
+     "predicted_3d_um": 315.49
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 6.33,
+     "measured_um": [
+      161.0,
+      129.9
+     ],
+     "predicted_um": [
+      109.46,
+      -32.84
+     ],
+     "predicted_3d_um": 173.94
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 19.98,
+     "measured_um": [
+      1.3,
+      -7.62
+     ],
+     "predicted_um": [
+      3.99,
+      8.63
+     ],
+     "predicted_3d_um": 21.09
+    },
+    {
+     "u": 0.78249,
+     "v": 0.39239,
+     "psr": 6.63,
+     "measured_um": [
+      -130.88,
+      920.59
+     ],
+     "predicted_um": [
+      -78.9,
+      -158.36
+     ],
+     "predicted_3d_um": 290.35
+    },
+    {
+     "u": 0.93409,
+     "v": 0.74178,
+     "psr": 7.34,
+     "measured_um": [
+      220.77,
+      299.49
+     ],
+     "predicted_um": [
+      27.11,
+      8.19
+     ],
+     "predicted_3d_um": 60.39
+    },
+    {
+     "u": 0.80366,
+     "v": 0.67625,
+     "psr": 87.19,
+     "measured_um": [
+      -28.83,
+      -20.05
+     ],
+     "predicted_um": [
+      -19.74,
+      -10.37
+     ],
+     "predicted_3d_um": 23.12
+    },
+    {
+     "u": 0.92524,
+     "v": 0.7345,
+     "psr": 10.81,
+     "measured_um": [
+      39.79,
+      -13.22
+     ],
+     "predicted_um": [
+      26.6,
+      9.83
+     ],
+     "predicted_3d_um": 43.41
+    },
+    {
+     "u": 0.77762,
+     "v": 0.40045,
+     "psr": 6.32,
+     "measured_um": [
+      -299.3,
+      159.18
+     ],
+     "predicted_um": [
+      -215.87,
+      -129.7
+     ],
+     "predicted_3d_um": 271.28
+    }
+   ],
+   "tiles_kept": 21,
+   "median_measured_um": 184.0698345737291,
+   "median_predicted_um": 114.28016975836184,
+   "median_error_vs_prediction_um": 256.7928256396584,
+   "median_measured_vector_um": [
+    -24.3,
+    19.96
+   ],
+   "seconds": 438.6
+  },
+  {
+   "kind": "test",
+   "sample": "PHerc1667",
+   "segment_id": "20260203210000",
+   "reference_volume": "20251217075048",
+   "cross_volume": "20260323082859",
+   "candidates_tried": 300,
+   "tiles": [
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 8.75,
+     "measured_um": [
+      300.02,
+      79.53
+     ],
+     "predicted_um": [
+      -38.57,
+      -24.75
+     ],
+     "predicted_3d_um": 78.27
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 5.65,
+     "measured_um": [
+      -729.4,
+      209.25
+     ],
+     "predicted_um": [
+      136.81,
+      -107.44
+     ],
+     "predicted_3d_um": 271.28
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 42.82,
+     "measured_um": [
+      -3.25,
+      -10.21
+     ],
+     "predicted_um": [
+      4.09,
+      -0.01
+     ],
+     "predicted_3d_um": 4.9
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 10.76,
+     "measured_um": [
+      -121.86,
+      -63.06
+     ],
+     "predicted_um": [
+      -97.6,
+      -50.13
+     ],
+     "predicted_3d_um": 114.79
+    },
+    {
+     "u": 0.85107,
+     "v": 0.55927,
+     "psr": 12.19,
+     "measured_um": [
+      -220.17,
+      -101.05
+     ],
+     "predicted_um": [
+      -108.45,
+      -56.66
+     ],
+     "predicted_3d_um": 145.96
+    },
+    {
+     "u": 0.87663,
+     "v": 0.51109,
+     "psr": 6.08,
+     "measured_um": [
+      -170.65,
+      311.87
+     ],
+     "predicted_um": [
+      -182.8,
+      -87.89
+     ],
+     "predicted_3d_um": 203.43
+    },
+    {
+     "u": 0.14391,
+     "v": 0.52904,
+     "psr": 14.48,
+     "measured_um": [
+      90.47,
+      -61.34
+     ],
+     "predicted_um": [
+      95.07,
+      -49.2
+     ],
+     "predicted_3d_um": 108.11
+    },
+    {
+     "u": 0.94839,
+     "v": 0.65748,
+     "psr": 20.32,
+     "measured_um": [
+      -34.23,
+      -19.25
+     ],
+     "predicted_um": [
+      -30.13,
+      -14.62
+     ],
+     "predicted_3d_um": 33.72
+    },
+    {
+     "u": 0.90641,
+     "v": 0.73709,
+     "psr": 58.28,
+     "measured_um": [
+      3.07,
+      -9.27
+     ],
+     "predicted_um": [
+      13.62,
+      1.96
+     ],
+     "predicted_3d_um": 15.82
+    },
+    {
+     "u": 0.85199,
+     "v": 0.68786,
+     "psr": 47.32,
+     "measured_um": [
+      -32.88,
+      -20.81
+     ],
+     "predicted_um": [
+      -22.64,
+      -13.94
+     ],
+     "predicted_3d_um": 26.61
+    },
+    {
+     "u": 0.89618,
+     "v": 0.66793,
+     "psr": 10.79,
+     "measured_um": [
+      -41.11,
+      -37.34
+     ],
+     "predicted_um": [
+      -31.35,
+      -18.63
+     ],
+     "predicted_3d_um": 45.17
+    },
+    {
+     "u": 0.0509,
+     "v": 0.80089,
+     "psr": 7.54,
+     "measured_um": [
+      -300.72,
+      10.59
+     ],
+     "predicted_um": [
+      49.72,
+      2.7
+     ],
+     "predicted_3d_um": 137.37
+    },
+    {
+     "u": 0.17183,
+     "v": 0.52851,
+     "psr": 6.18,
+     "measured_um": [
+      -100.15,
+      169.83
+     ],
+     "predicted_um": [
+      137.97,
+      -71.13
+     ],
+     "predicted_3d_um": 157.8
+    },
+    {
+     "u": 0.15298,
+     "v": 0.52861,
+     "psr": 11.97,
+     "measured_um": [
+      99.74,
+      -70.32
+     ],
+     "predicted_um": [
+      108.7,
+      -57.9
+     ],
+     "predicted_3d_um": 123.75
+    },
+    {
+     "u": 0.91983,
+     "v": 0.77093,
+     "psr": 28.39,
+     "measured_um": [
+      53.65,
+      -2.35
+     ],
+     "predicted_um": [
+      39.48,
+      6.9
+     ],
+     "predicted_3d_um": 63.83
+    }
+   ],
+   "tiles_kept": 14,
+   "median_measured_um": 115.67049750532006,
+   "median_predicted_um": 47.81063819237913,
+   "median_error_vs_prediction_um": 19.012283724098154,
+   "median_measured_vector_um": [
+    -33.56,
+    -14.73
+   ],
+   "seconds": 938.2
+  },
+  {
+   "kind": "control",
+   "sample": "PHerc0139",
+   "segment_id": "20250831000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "candidates_tried": 75,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 136.82,
+     "measured_um": [
+      -11.7,
+      -9.41
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.90981,
+     "v": 0.24069,
+     "psr": 162.52,
+     "measured_um": [
+      -10.27,
+      -12.68
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.26575,
+     "v": 0.32098,
+     "psr": 183.41,
+     "measured_um": [
+      -11.11,
+      -10.99
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 156.98,
+     "measured_um": [
+      -11.21,
+      -10.14
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.93312,
+     "v": 0.3012,
+     "psr": 134.88,
+     "measured_um": [
+      -9.93,
+      -13.98
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 99.47,
+     "measured_um": [
+      -12.41,
+      -9.03
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 146.11,
+     "measured_um": [
+      -10.29,
+      -14.06
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.67472,
+     "v": 0.227,
+     "psr": 163.35,
+     "measured_um": [
+      -10.57,
+      -12.48
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 194.53,
+     "measured_um": [
+      -12.56,
+      -9.11
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 152.88,
+     "measured_um": [
+      -11.91,
+      -8.49
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.04434,
+     "v": 0.54591,
+     "psr": 124.32,
+     "measured_um": [
+      -11.8,
+      -11.0
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.28315,
+     "v": 0.19312,
+     "psr": 102.32,
+     "measured_um": [
+      -10.85,
+      -17.04
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 200.05,
+     "measured_um": [
+      -9.31,
+      -11.7
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 147.13,
+     "measured_um": [
+      -10.53,
+      -11.62
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.05033,
+     "v": 0.26079,
+     "psr": 136.86,
+     "measured_um": [
+      -10.14,
+      -14.45
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 181.69,
+     "measured_um": [
+      -13.6,
+      -10.29
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 192.26,
+     "measured_um": [
+      -12.07,
+      -11.49
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.24562,
+     "v": 0.38486,
+     "psr": 185.96,
+     "measured_um": [
+      -11.0,
+      -12.18
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.88279,
+     "v": 0.18844,
+     "psr": 179.28,
+     "measured_um": [
+      -10.34,
+      -10.41
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.92265,
+     "v": 0.33546,
+     "psr": 166.46,
+     "measured_um": [
+      -10.27,
+      -12.77
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55389,
+     "v": 0.19443,
+     "psr": 60.07,
+     "measured_um": [
+      -11.07,
+      -15.4
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.78249,
+     "v": 0.39239,
+     "psr": 132.37,
+     "measured_um": [
+      -11.34,
+      -10.86
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 117.26,
+     "measured_um": [
+      -11.28,
+      -10.01
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55859,
+     "v": 0.54636,
+     "psr": 202.57,
+     "measured_um": [
+      -12.44,
+      -10.0
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 16.046479169421357,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.046479169421357,
+   "median_measured_vector_um": [
+    -11.09,
+    -11.24
+   ],
+   "seconds": 463.8
+  },
+  {
+   "kind": "control",
+   "sample": "PHerc0139",
+   "segment_id": "20260227000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "candidates_tried": 82,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 148.49,
+     "measured_um": [
+      -11.7,
+      -10.79
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.02124,
+     "v": 0.55158,
+     "psr": 153.86,
+     "measured_um": [
+      -12.03,
+      -10.38
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.26575,
+     "v": 0.32098,
+     "psr": 94.81,
+     "measured_um": [
+      -18.07,
+      -10.34
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 83.86,
+     "measured_um": [
+      -11.32,
+      -11.44
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 75.47,
+     "measured_um": [
+      -12.26,
+      -8.88
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 150.95,
+     "measured_um": [
+      -11.43,
+      -11.81
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 162.82,
+     "measured_um": [
+      -9.8,
+      -12.14
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 156.75,
+     "measured_um": [
+      -12.1,
+      -11.54
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 122.04,
+     "measured_um": [
+      -12.54,
+      -10.72
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.04434,
+     "v": 0.54591,
+     "psr": 180.09,
+     "measured_um": [
+      -12.41,
+      -10.68
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 74.11,
+     "measured_um": [
+      -11.89,
+      -16.7
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 172.88,
+     "measured_um": [
+      -11.51,
+      -10.3
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 165.5,
+     "measured_um": [
+      -11.48,
+      -11.82
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.24562,
+     "v": 0.38486,
+     "psr": 103.36,
+     "measured_um": [
+      -16.35,
+      -13.25
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.92265,
+     "v": 0.33546,
+     "psr": 88.55,
+     "measured_um": [
+      -11.87,
+      -12.39
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 116.42,
+     "measured_um": [
+      -12.28,
+      -9.69
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.74338,
+     "v": 0.61834,
+     "psr": 160.89,
+     "measured_um": [
+      -11.35,
+      -7.92
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.78249,
+     "v": 0.39239,
+     "psr": 145.68,
+     "measured_um": [
+      -11.26,
+      -10.22
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 121.06,
+     "measured_um": [
+      -12.84,
+      -11.92
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.68097,
+     "v": 0.59042,
+     "psr": 167.64,
+     "measured_um": [
+      -11.36,
+      -10.03
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55859,
+     "v": 0.54636,
+     "psr": 168.7,
+     "measured_um": [
+      -11.42,
+      -11.97
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.66991,
+     "v": 0.42152,
+     "psr": 190.69,
+     "measured_um": [
+      -11.47,
+      -9.5
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.85413,
+     "v": 0.40858,
+     "psr": 173.64,
+     "measured_um": [
+      -11.31,
+      -11.58
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.34769,
+     "v": 0.33257,
+     "psr": 178.89,
+     "measured_um": [
+      -11.08,
+      -10.3
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 16.140387102744857,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.140387102744857,
+   "median_measured_vector_um": [
+    -11.6,
+    -10.76
+   ],
+   "seconds": 513.0
+  },
+  {
+   "kind": "control",
+   "sample": "PHerc0139",
+   "segment_id": "20260302000000",
+   "reference_volume": "20260102150214",
+   "cross_volume": "20260413113053",
+   "candidates_tried": 98,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 189.46,
+     "measured_um": [
+      -10.71,
+      -10.44
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 153.58,
+     "measured_um": [
+      -11.05,
+      -10.03
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.02124,
+     "v": 0.55158,
+     "psr": 146.31,
+     "measured_um": [
+      -11.83,
+      -12.48
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 103.16,
+     "measured_um": [
+      -10.83,
+      -8.02
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 74.98,
+     "measured_um": [
+      -14.8,
+      -8.99
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 197.75,
+     "measured_um": [
+      -10.45,
+      -9.8
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 70.12,
+     "measured_um": [
+      -12.81,
+      -8.81
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 186.8,
+     "measured_um": [
+      -12.99,
+      -10.79
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 155.41,
+     "measured_um": [
+      -10.78,
+      -8.22
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.04434,
+     "v": 0.54591,
+     "psr": 182.05,
+     "measured_um": [
+      -11.27,
+      -12.28
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 180.81,
+     "measured_um": [
+      -10.13,
+      -13.18
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 123.7,
+     "measured_um": [
+      -13.17,
+      -10.27
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.74338,
+     "v": 0.61834,
+     "psr": 118.91,
+     "measured_um": [
+      -11.3,
+      -10.23
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 141.14,
+     "measured_um": [
+      -11.03,
+      -8.36
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.68097,
+     "v": 0.59042,
+     "psr": 160.06,
+     "measured_um": [
+      -14.96,
+      -9.54
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55859,
+     "v": 0.54636,
+     "psr": 233.01,
+     "measured_um": [
+      -10.54,
+      -11.52
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.66991,
+     "v": 0.42152,
+     "psr": 168.48,
+     "measured_um": [
+      -10.42,
+      -12.52
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.85413,
+     "v": 0.40858,
+     "psr": 225.55,
+     "measured_um": [
+      -10.23,
+      -10.11
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.47203,
+     "v": 0.55567,
+     "psr": 216.69,
+     "measured_um": [
+      -10.47,
+      -10.69
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.77762,
+     "v": 0.40045,
+     "psr": 114.71,
+     "measured_um": [
+      -13.93,
+      -9.91
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.30602,
+     "v": 0.46526,
+     "psr": 209.39,
+     "measured_um": [
+      -10.42,
+      -10.21
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.76667,
+     "v": 0.49999,
+     "psr": 107.33,
+     "measured_um": [
+      -13.37,
+      -11.84
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.85107,
+     "v": 0.55927,
+     "psr": 138.97,
+     "measured_um": [
+      -12.47,
+      -9.73
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.87663,
+     "v": 0.51109,
+     "psr": 149.97,
+     "measured_um": [
+      -10.92,
+      -10.75
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 15.580628215940566,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 15.580628215940566,
+   "median_measured_vector_um": [
+    -11.04,
+    -10.22
+   ],
+   "seconds": 472.8
+  },
+  {
+   "kind": "control",
+   "sample": "PHerc0814",
+   "segment_id": "20250925212701",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "candidates_tried": 60,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 158.32,
+     "measured_um": [
+      -9.54,
+      -12.3
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.26967,
+     "v": 0.88746,
+     "psr": 85.28,
+     "measured_um": [
+      -11.85,
+      -12.6
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.17062,
+     "v": 0.06965,
+     "psr": 217.54,
+     "measured_um": [
+      0.4,
+      -10.43
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 154.76,
+     "measured_um": [
+      -12.65,
+      -9.92
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 130.2,
+     "measured_um": [
+      -11.63,
+      -10.07
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.93312,
+     "v": 0.3012,
+     "psr": 91.21,
+     "measured_um": [
+      -11.85,
+      -10.99
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 170.31,
+     "measured_um": [
+      -11.44,
+      -10.83
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 146.61,
+     "measured_um": [
+      -12.09,
+      -12.18
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 142.71,
+     "measured_um": [
+      -11.37,
+      -12.66
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.67472,
+     "v": 0.227,
+     "psr": 161.23,
+     "measured_um": [
+      -2.04,
+      -10.37
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 126.12,
+     "measured_um": [
+      -10.21,
+      -9.92
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.74291,
+     "v": 0.92668,
+     "psr": 94.18,
+     "measured_um": [
+      -16.9,
+      -9.91
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.71222,
+     "v": 0.88888,
+     "psr": 131.4,
+     "measured_um": [
+      -13.54,
+      -8.75
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.28315,
+     "v": 0.19312,
+     "psr": 93.17,
+     "measured_um": [
+      -11.18,
+      -12.18
+     ],
+     "predicted_um": null,
+     "predicted_3d_um": null
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 164.22,
+     "measured_um": [
+      -12.17,
+      -12.27
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.05033,
+     "v": 0.26079,
+     "psr": 91.96,
+     "measured_um": [
+      -12.71,
+      -14.73
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.43783,
+     "v": 0.15261,
+     "psr": 109.49,
+     "measured_um": [
+      -11.82,
+      -9.33
+     ],
+     "predicted_um": null,
+     "predicted_3d_um": null
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 122.83,
+     "measured_um": [
+      -6.65,
+      -8.17
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55389,
+     "v": 0.19443,
+     "psr": 125.08,
+     "measured_um": [
+      -12.37,
+      -14.85
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.17248,
+     "v": 0.10314,
+     "psr": 138.69,
+     "measured_um": [
+      0.06,
+      -11.0
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 141.37,
+     "measured_um": [
+      -13.28,
+      -10.13
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39864,
+     "v": 0.05808,
+     "psr": 120.26,
+     "measured_um": [
+      -12.53,
+      -9.7
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.92866,
+     "v": 0.1722,
+     "psr": 83.48,
+     "measured_um": [
+      -11.85,
+      -11.31
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.74338,
+     "v": 0.61834,
+     "psr": 149.56,
+     "measured_um": [
+      -9.45,
+      -12.7
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 22,
+   "median_measured_um": 16.098477638240837,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.098477638240837,
+   "median_measured_vector_um": [
+    -11.85,
+    -10.91
+   ],
+   "seconds": 278.0
+  },
+  {
+   "kind": "control",
+   "sample": "PHerc0814",
+   "segment_id": "20250930083742",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "candidates_tried": 85,
+   "tiles": [
+    {
+     "u": 0.24098,
+     "v": 0.09625,
+     "psr": 140.65,
+     "measured_um": [
+      -11.89,
+      -16.08
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.90981,
+     "v": 0.24069,
+     "psr": 90.33,
+     "measured_um": [
+      -15.59,
+      -12.44
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.26575,
+     "v": 0.32098,
+     "psr": 167.06,
+     "measured_um": [
+      -11.51,
+      -11.04
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 77.04,
+     "measured_um": [
+      -13.7,
+      -7.46
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.93312,
+     "v": 0.3012,
+     "psr": 110.55,
+     "measured_um": [
+      -11.87,
+      -13.95
+     ],
+     "predicted_um": null,
+     "predicted_3d_um": null
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 218.31,
+     "measured_um": [
+      -10.52,
+      -11.51
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 114.2,
+     "measured_um": [
+      -12.97,
+      -10.64
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.03451,
+     "v": 0.8747,
+     "psr": 116.65,
+     "measured_um": [
+      -12.41,
+      -9.06
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 122.19,
+     "measured_um": [
+      -10.82,
+      -11.73
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.04434,
+     "v": 0.54591,
+     "psr": 96.72,
+     "measured_um": [
+      -12.18,
+      -10.08
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.28315,
+     "v": 0.19312,
+     "psr": 88.68,
+     "measured_um": [
+      -7.17,
+      -9.73
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.24562,
+     "v": 0.38486,
+     "psr": 146.53,
+     "measured_um": [
+      -13.4,
+      -12.17
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.92265,
+     "v": 0.33546,
+     "psr": 92.72,
+     "measured_um": [
+      -15.67,
+      -16.31
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 125.72,
+     "measured_um": [
+      -12.03,
+      -10.37
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.92866,
+     "v": 0.1722,
+     "psr": 91.03,
+     "measured_um": [
+      -14.42,
+      -13.42
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.43481,
+     "v": 0.08074,
+     "psr": 76.74,
+     "measured_um": [
+      -14.85,
+      -9.83
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 115.89,
+     "measured_um": [
+      -13.62,
+      -8.1
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.68097,
+     "v": 0.59042,
+     "psr": 104.36,
+     "measured_um": [
+      -13.72,
+      -16.47
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.66991,
+     "v": 0.42152,
+     "psr": 88.96,
+     "measured_um": [
+      -12.64,
+      -11.91
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.22754,
+     "v": 0.08234,
+     "psr": 112.08,
+     "measured_um": [
+      -12.38,
+      -17.17
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.85413,
+     "v": 0.40858,
+     "psr": 122.16,
+     "measured_um": [
+      -10.8,
+      -9.97
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.7652,
+     "v": 0.32104,
+     "psr": 153.53,
+     "measured_um": [
+      -12.08,
+      -10.87
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.47203,
+     "v": 0.55567,
+     "psr": 119.12,
+     "measured_um": [
+      -16.0,
+      -16.7
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.70484,
+     "v": 0.07237,
+     "psr": 87.25,
+     "measured_um": [
+      -16.38,
+      -17.48
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 23,
+   "median_measured_um": 16.77589043836422,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.77589043836422,
+   "median_measured_vector_um": [
+    -12.64,
+    -11.51
+   ],
+   "seconds": 351.5
+  },
+  {
+   "kind": "control",
+   "sample": "PHerc0814",
+   "segment_id": "20260225160055",
+   "reference_volume": "20260309142202",
+   "cross_volume": "20260521123630",
+   "candidates_tried": 112,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 203.69,
+     "measured_um": [
+      -11.96,
+      -10.97
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 163.73,
+     "measured_um": [
+      -11.96,
+      -10.57
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 167.03,
+     "measured_um": [
+      -12.05,
+      -10.66
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.26575,
+     "v": 0.32098,
+     "psr": 200.72,
+     "measured_um": [
+      -11.86,
+      -11.27
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 164.72,
+     "measured_um": [
+      -12.11,
+      -10.68
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 167.87,
+     "measured_um": [
+      -11.48,
+      -10.34
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 183.3,
+     "measured_um": [
+      -11.97,
+      -10.69
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 198.22,
+     "measured_um": [
+      -11.77,
+      -11.01
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 183.75,
+     "measured_um": [
+      -11.6,
+      -10.66
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 185.32,
+     "measured_um": [
+      -11.65,
+      -11.18
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.74338,
+     "v": 0.61834,
+     "psr": 163.11,
+     "measured_um": [
+      -11.47,
+      -10.3
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 174.48,
+     "measured_um": [
+      -12.02,
+      -10.52
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.68097,
+     "v": 0.59042,
+     "psr": 159.28,
+     "measured_um": [
+      -11.4,
+      -10.28
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55859,
+     "v": 0.54636,
+     "psr": 160.02,
+     "measured_um": [
+      -11.87,
+      -10.47
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.66991,
+     "v": 0.42152,
+     "psr": 189.62,
+     "measured_um": [
+      -11.61,
+      -10.84
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.34769,
+     "v": 0.33257,
+     "psr": 213.43,
+     "measured_um": [
+      -11.96,
+      -11.07
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.47203,
+     "v": 0.55567,
+     "psr": 156.85,
+     "measured_um": [
+      -12.02,
+      -10.27
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.30602,
+     "v": 0.46526,
+     "psr": 208.61,
+     "measured_um": [
+      -11.89,
+      -11.05
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.71089,
+     "v": 0.75105,
+     "psr": 144.7,
+     "measured_um": [
+      -11.44,
+      -10.38
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.3818,
+     "v": 0.45959,
+     "psr": 189.73,
+     "measured_um": [
+      -12.03,
+      -10.63
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.37847,
+     "v": 0.68857,
+     "psr": 167.06,
+     "measured_um": [
+      -11.97,
+      -10.63
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.50246,
+     "v": 0.72601,
+     "psr": 140.24,
+     "measured_um": [
+      -11.71,
+      -10.1
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55976,
+     "v": 0.31968,
+     "psr": 202.38,
+     "measured_um": [
+      -11.86,
+      -10.88
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.29386,
+     "v": 0.71762,
+     "psr": 178.63,
+     "measured_um": [
+      -11.9,
+      -10.85
+     ],
+     "predicted_um": [
+      -0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 16.028630694035005,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.028630694035005,
+   "median_measured_vector_um": [
+    -11.88,
+    -10.66
+   ],
+   "seconds": 132.7
+  },
+  {
+   "kind": "control",
+   "sample": "PHercParis4",
+   "segment_id": "20260602204401",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "candidates_tried": 172,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 153.53,
+     "measured_um": [
+      -12.53,
+      -13.19
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.67472,
+     "v": 0.227,
+     "psr": 154.27,
+     "measured_um": [
+      -8.64,
+      -9.92
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 123.42,
+     "measured_um": [
+      -12.27,
+      -13.42
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.56893,
+     "v": 0.25668,
+     "psr": 187.2,
+     "measured_um": [
+      -19.19,
+      -12.82
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 180.0,
+     "measured_um": [
+      -12.27,
+      -9.68
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 147.26,
+     "measured_um": [
+      -13.75,
+      -10.18
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 131.77,
+     "measured_um": [
+      -12.1,
+      -12.51
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55859,
+     "v": 0.54636,
+     "psr": 228.79,
+     "measured_um": [
+      -11.69,
+      -9.85
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.66991,
+     "v": 0.42152,
+     "psr": 203.28,
+     "measured_um": [
+      -11.56,
+      -10.12
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.34769,
+     "v": 0.33257,
+     "psr": 115.36,
+     "measured_um": [
+      -13.75,
+      -12.44
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.47203,
+     "v": 0.55567,
+     "psr": 150.0,
+     "measured_um": [
+      -12.83,
+      -10.41
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.30602,
+     "v": 0.46526,
+     "psr": 125.35,
+     "measured_um": [
+      -12.22,
+      -14.98
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.3818,
+     "v": 0.45959,
+     "psr": 121.31,
+     "measured_um": [
+      -12.86,
+      -13.76
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.55976,
+     "v": 0.31968,
+     "psr": 95.85,
+     "measured_um": [
+      -18.5,
+      -14.7
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.50786,
+     "v": 0.51453,
+     "psr": 211.36,
+     "measured_um": [
+      -12.57,
+      -10.2
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.56857,
+     "v": 0.24503,
+     "psr": 140.94,
+     "measured_um": [
+      -18.58,
+      -12.59
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.7317,
+     "v": 0.28997,
+     "psr": 139.21,
+     "measured_um": [
+      -15.62,
+      -11.41
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.25267,
+     "v": 0.44321,
+     "psr": 135.14,
+     "measured_um": [
+      -11.1,
+      -14.46
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.33838,
+     "v": 0.46325,
+     "psr": 122.43,
+     "measured_um": [
+      -12.2,
+      -15.17
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.58249,
+     "v": 0.29287,
+     "psr": 137.65,
+     "measured_um": [
+      -18.3,
+      -13.54
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.24903,
+     "v": 0.48297,
+     "psr": 138.18,
+     "measured_um": [
+      -11.65,
+      -14.02
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.52528,
+     "v": 0.39785,
+     "psr": 141.39,
+     "measured_um": [
+      -13.77,
+      -10.24
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.48284,
+     "v": 0.45742,
+     "psr": 173.56,
+     "measured_um": [
+      -14.2,
+      -10.56
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.51433,
+     "v": 0.45737,
+     "psr": 172.73,
+     "measured_um": [
+      -13.76,
+      -10.56
+     ],
+     "predicted_um": [
+      -0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 18.188269013611205,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 18.188269013611205,
+   "median_measured_vector_um": [
+    -12.7,
+    -12.48
+   ],
+   "seconds": 668.6
+  },
+  {
+   "kind": "control",
+   "sample": "PHercParis4",
+   "segment_id": "20260623151041",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "candidates_tried": 69,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 127.34,
+     "measured_um": [
+      -16.69,
+      -11.59
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 152.35,
+     "measured_um": [
+      -16.8,
+      -10.99
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 169.21,
+     "measured_um": [
+      -17.39,
+      -11.35
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 135.92,
+     "measured_um": [
+      -10.69,
+      -12.16
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 98.95,
+     "measured_um": [
+      -10.44,
+      -13.2
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.89576,
+     "v": 0.91332,
+     "psr": 168.09,
+     "measured_um": [
+      -16.95,
+      -10.09
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 111.87,
+     "measured_um": [
+      -11.44,
+      -12.78
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 157.67,
+     "measured_um": [
+      -11.2,
+      -10.32
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 141.35,
+     "measured_um": [
+      -10.4,
+      -10.92
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 62.04,
+     "measured_um": [
+      -1.78,
+      -10.74
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 115.38,
+     "measured_um": [
+      -14.45,
+      -12.43
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.1491,
+     "v": 0.75887,
+     "psr": 127.48,
+     "measured_um": [
+      -10.8,
+      -12.39
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 154.31,
+     "measured_um": [
+      -12.29,
+      -11.28
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.61398,
+     "v": 0.93665,
+     "psr": 132.57,
+     "measured_um": [
+      -12.86,
+      -11.08
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 173.3,
+     "measured_um": [
+      -10.43,
+      -10.91
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 97.42,
+     "measured_um": [
+      -8.43,
+      -12.04
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 170.03,
+     "measured_um": [
+      -11.13,
+      -13.23
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 143.98,
+     "measured_um": [
+      -10.36,
+      -12.57
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 143.5,
+     "measured_um": [
+      -13.84,
+      -10.87
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 130.1,
+     "measured_um": [
+      -10.96,
+      -11.82
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 131.84,
+     "measured_um": [
+      -14.68,
+      -12.51
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.82337,
+     "v": 0.85538,
+     "psr": 140.33,
+     "measured_um": [
+      -12.98,
+      -10.78
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.78249,
+     "v": 0.39239,
+     "psr": 90.18,
+     "measured_um": [
+      -10.45,
+      -17.28
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 162.79,
+     "measured_um": [
+      -11.21,
+      -12.06
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 16.851134499281713,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.851134499281713,
+   "median_measured_vector_um": [
+    -11.2,
+    -11.7
+   ],
+   "seconds": 431.7
+  },
+  {
+   "kind": "control",
+   "sample": "PHercParis4",
+   "segment_id": "20260623151729",
+   "reference_volume": "20260411134726",
+   "cross_volume": "20260608103018",
+   "candidates_tried": 73,
+   "tiles": [
+    {
+     "u": 0.32991,
+     "v": 0.42899,
+     "psr": 131.92,
+     "measured_um": [
+      -16.71,
+      -11.41
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.16543,
+     "v": 0.83332,
+     "psr": 138.99,
+     "measured_um": [
+      -17.02,
+      -11.31
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.38705,
+     "v": 0.64744,
+     "psr": 174.72,
+     "measured_um": [
+      -18.01,
+      -10.89
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36788,
+     "v": 0.68992,
+     "psr": 138.56,
+     "measured_um": [
+      -10.83,
+      -11.98
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.86982,
+     "v": 0.36234,
+     "psr": 111.65,
+     "measured_um": [
+      -11.6,
+      -13.08
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.89576,
+     "v": 0.91332,
+     "psr": 169.81,
+     "measured_um": [
+      -16.55,
+      -10.11
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.83451,
+     "v": 0.6263,
+     "psr": 106.39,
+     "measured_um": [
+      -11.97,
+      -12.04
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.35796,
+     "v": 0.73366,
+     "psr": 140.71,
+     "measured_um": [
+      -11.43,
+      -10.56
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84112,
+     "v": 0.4228,
+     "psr": 153.32,
+     "measured_um": [
+      -10.03,
+      -11.2
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.10412,
+     "v": 0.35889,
+     "psr": 54.15,
+     "measured_um": [
+      -8.08,
+      -12.88
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.80787,
+     "v": 0.65475,
+     "psr": 117.07,
+     "measured_um": [
+      -13.87,
+      -12.74
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.1491,
+     "v": 0.75887,
+     "psr": 152.34,
+     "measured_um": [
+      -11.05,
+      -12.54
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65392,
+     "v": 0.54434,
+     "psr": 154.26,
+     "measured_um": [
+      -12.0,
+      -11.53
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.61398,
+     "v": 0.93665,
+     "psr": 136.89,
+     "measured_um": [
+      -12.25,
+      -10.83
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.36525,
+     "v": 0.50484,
+     "psr": 165.02,
+     "measured_um": [
+      -10.39,
+      -10.66
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.90149,
+     "v": 0.345,
+     "psr": 137.17,
+     "measured_um": [
+      -9.04,
+      -12.18
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.64241,
+     "v": 0.4652,
+     "psr": 180.33,
+     "measured_um": [
+      -11.2,
+      -12.79
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.65586,
+     "v": 0.34909,
+     "psr": 140.92,
+     "measured_um": [
+      -10.19,
+      -13.04
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.13347,
+     "v": 0.80006,
+     "psr": 161.68,
+     "measured_um": [
+      -12.99,
+      -11.03
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.84867,
+     "v": 0.72828,
+     "psr": 140.53,
+     "measured_um": [
+      -11.04,
+      -11.53
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.88805,
+     "v": 0.60539,
+     "psr": 155.35,
+     "measured_um": [
+      -13.41,
+      -12.32
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.82337,
+     "v": 0.85538,
+     "psr": 139.45,
+     "measured_um": [
+      -12.45,
+      -10.7
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.39112,
+     "v": 0.50525,
+     "psr": 160.52,
+     "measured_um": [
+      -11.19,
+      -11.75
+     ],
+     "predicted_um": [
+      0.0,
+      0.0
+     ],
+     "predicted_3d_um": 0.0
+    },
+    {
+     "u": 0.16382,
+     "v": 0.90646,
+     "psr": 146.22,
+     "measured_um": [
+      -14.61,
+      -9.64
+     ],
+     "predicted_um": [
+      0.0,
+      -0.0
+     ],
+     "predicted_3d_um": 0.0
+    }
+   ],
+   "tiles_kept": 24,
+   "median_measured_um": 16.677715414298344,
+   "median_predicted_um": 0.0,
+   "median_error_vs_prediction_um": 16.677715414298344,
+   "median_measured_vector_um": [
+    -11.78,
+    -11.53
+   ],
+   "seconds": 471.8,
+   "retried_after_error": "IncompleteRead(84197976 bytes read, 1899694 more expected)"
+  }
+ ]
+}

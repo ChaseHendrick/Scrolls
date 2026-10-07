@@ -2,6 +2,17 @@
 
 Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
 
+## Session 7 October 2026 (evening): mesh hypothesis study
+
+The user asked for a deep dive on the mesh question with the data public. Protocol first ([plan](plans/2026-10-07-mesh-hypothesis.md), four dated amendments committed before each measurement), then `kit meshaudit` (26 tests) and runs on existing cloud CPUs. Results: [log](logs/2026-10-07-mesh-hypothesis.md), [data](data/mesh-hypothesis/README.md), README findings 10 and 11.
+
+- All 692 published surface volumes reproduce their canvas from a published mesh (villa #1727's gap is closed in today's bucket).
+- One stored matrix (PHerc1667 1.129 to 2.399 um) misses its own landmarks by 42 to 212 um. Post hoc, the published PHerc1667 1.129 um renders follow the landmark refit, not the matrix: misplaced by a median 158 um on five segments. The pre-registered H5 failed its control bar, so this needs a calibrated rerun.
+- 1.129 um renders on three other scrolls sit a constant 16 um from their 2.4 um renders; the cause is unexplained.
+- 2023 DLS scans appear about 1 % smaller in voxel size than nominal (Interpretation).
+
+Nothing was posted upstream. Reporting the PHerc1667 matrix to the organisers needs the user's go-ahead. The same branch also carries the five 2026-10-07 cloud job record branches ([PR #29](https://github.com/ChaseHendrick/Scrolls/pull/29)).
+
 ## Repository routing
 
 This repository holds tools, public-data benchmarks and material cleared for public release. Private investigations, target-run rules, candidate outputs, operational plans and submission material live in [ChaseHendrick/Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). Read its handoff and relevant branches before continuing private work. Keep private content out of public commits, PRs, documentation and CI logs. Earlier mixed operational history has been preserved privately; public benchmark logs and evidence remain here.
