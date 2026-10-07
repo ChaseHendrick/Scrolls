@@ -2,6 +2,24 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026: cloud setup, PR repairs and surface correction
+
+The checkout already contains merged PRs #1 to #5. Earlier instructions to merge those branches are stale. The user authorized subagents, fixing the open PRs, community research and real papyrus validation. Microtuning is deferred by the user; this cloud instance has neither CUDA nor MPS, and has no connection to the Mac. Do not start training or rent compute.
+
+[scan-status.md](scan-status.md) now separates our processing from community CT availability: completed controls, partial jobs and the planned 81-mesh atlas queue; 45 scanned samples in the versioned official catalogue and 23 distinct prize volumes. Future CT acquisitions are not publicly documented by these sources. The user requested both views. The October submission draft must name Chase Hendrick. Existing cloud CPUs only; no paid compute.
+
+The README findings are now below the quick start and repository information, at the user's request. Findings about trace gaps, benchmark area and collation are qualified as observational or untested where appropriate. The cloud-partial log now reports Reader v2's high-pass controls alongside pixel AUC and marks stride-mismatched v8in controls provisional.
+
+Implemented in commit `cc880c6`: `kit surfacefix prepare/apply`, documented in [surfacefix.md](surfacefix.md). It proposes bounded normal offsets, accepts them only with frozen geometric matches, selection and held-back subsets, matched controls and topology checks, and writes a new corrected surface plus uncertain-region flags. Sources remain intact. 131 tests passed, including 20 surfacefix tests. Real-input rejection tests also completed; successful real correction and accuracy are not established. A combined accepted surface must be rerendered before claiming improvement.
+
+PR repairs preserve historical metrics. #6 fixes independent-sheet calibration, boundary coverage and unknown-label reporting; #7 and #10 use matched strides for future controls and label legacy comparisons provisional; #8 corrects window and Reader v2 interpretations. #9 reports the actual ag405 plan's partial coverage and matched/provisional controls. A separate `v8in-ag896` branch also received partial-status reporting improvements. All five open PR heads were updated and verified by Git read: #6 `814563f`, #7 `c4a5ead`, #8 `a295168`, #9 `97d26e7`, #10 `d288c58`. No PR was merged and nothing was submitted upstream.
+
+CPU development setup: Python 3.12 with map dependencies in `.venv`; no services are required. Setup instructions are saved in the environment draft, which still requires user review/publication. Public S3 mesh and metadata downloads work through approved network commands. Default urllib requests can fail even when an approved command works. GitHub Git read/push works; the GitHub API remains denied. Hugging Face metadata is readable, but its checkpoint CDN/Xet requests were denied. Official d9v2 weights downloaded from the GitHub release, passed checksum and strict CPU load checks, and generated the twelve real maps. Do not confuse a saved allowlist draft with a live runtime change.
+
+Real validation completed on public PHerc0841: 12 actual CT-rendered d9v2 maps, four evaluable regions, zero corrections accepted, 16 flags. Eight full-search translated-reference nulls accepted zero corrections, with evaluable coverage in each. Tangential and excessive edits were rejected; output geometry, holes and metadata were preserved. The frozen patch has zero supervision, so no accuracy or successful recovery claim is supported. See [real validation](logs/2026-10-07-real-surfacefix-validation.md). An additional 82-chunk PHerc0139 reconstruction pilot passed four shift-recovery controls but failed a shared-translation assumption by 18.724 um on held-back CT. No phase ink maps were run; see [reconstruction tests](logs/2026-10-07-reconstruction-tests.md).
+
+Community demand and reusable patterns from GENChase/Undeciphered-Texts are recorded in [the research log](logs/2026-10-07-community-needs.md). Existing Lasagna snapping must be the comparison for future correction evaluation. Worldwide novelty and a groundbreaking result are not established.
+
 ## Session 7 October 2026 (end of day): read this first
 
 **The user had about 8 % of weekly usage left when this was written. Keep the next session small: one task at a time, no fleets of agents, no multi-hour jobs without asking.**

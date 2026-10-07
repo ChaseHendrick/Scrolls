@@ -40,3 +40,5 @@ Accepted candidates are copied into a new mesh. Rejected regions remain unchange
 ## Validation scope
 
 The automated tests use synthetic meshes and maps to exercise a recoverable displacement and failures that must reject a correction. They validate software behavior, not performance on real papyrus. No target scroll data is needed for these tests.
+
+A [bounded real papyrus run](logs/2026-10-07-real-surfacefix-validation.md) completed twelve maps and eight full-search reference nulls. It accepted no changes and flagged 16 regions; four had enough coverage for evaluation. Geometry edits outside the declared offset were rejected. This demonstrates real-input rejection behavior, but the frozen patch had no supervised pixels and no successful real correction was established.
