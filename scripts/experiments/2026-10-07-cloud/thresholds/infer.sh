@@ -9,9 +9,10 @@ OUT="$W/thresholds/maps"; mkdir -p "$OUT" "$W/logs"
 CK="$W/checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth"
 # setup.sh switches villa between main and the PR, so wait until it has finished for all segments.
 until grep -q "setup finished" "$W/logs/thresholds_setup.log" 2>/dev/null; do sleep 60; done
-for seg in 0841-w00 0841-ag896 0841-ag405 w045; do
+for seg in 0841-w00 0841-ag896 0841-ag405; do   # w045 dropped 2026-10-07 (budget)
   map="$OUT/${seg}_ink9um_s42.tif"
   if [[ -f "$map" && -f "${map%.tif}_reverse.tif" ]]; then echo "== $seg: maps exist"; continue; fi
+  [[ "$seg" == 0841-w00 ]] || until [[ -f "$W/data/${seg}_labels/.fetched" ]]; do sleep 60; done   # fetch.sh
   git -C "$W/villa" checkout -q --detach pr-1865
   echo "== $seg: inference start $(date -u +%H:%M:%S)"
   start=$SECONDS

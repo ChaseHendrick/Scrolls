@@ -33,7 +33,7 @@ SEGMENTS = {  # surface shape (H, W) and voxel size (um), from scripts/mac-w045.
     "w045": ((5980, 8240), 9.362),
 }
 P0841 = ["0841-w00", "0841-ag896", "0841-ag405"]
-ACTIVE = list(SEGMENTS)  # --segments narrows parts 2 and 3 (part 1 always needs all four)
+ACTIVE = list(P0841)  # --segments narrows parts 2 and 3 (part 1 always needs all three); w045 dropped for budget
 
 
 def load(work, seg):
@@ -112,7 +112,7 @@ def ink_values(d):
 
 
 def part1(work):
-    data = {s: load(work, s) for s in SEGMENTS}
+    data = {s: load(work, s) for s in P0841}
     rows, med = [], {}
     for s, d in data.items():
         v = ink_values(d)
@@ -122,7 +122,7 @@ def part1(work):
                      "median_forward_on_ink": round(med[s], 4),
                      "median_reverse_on_ink": round(float(np.median(d["R"][d["sup"] & d["ink"] & d["valid"]]) / 255), 4)})
     out = {"segments": rows, "loo": [], "training_threshold_0.7843": {}}
-    for held in SEGMENTS:
+    for held in P0841:
         others = [s for s in P0841 if s != held]
         T = float(np.median(np.concatenate([ink_values(data[s]) for s in others])))
         r = {"held_out": held, "calibrated_on": others, "threshold": round(T, 4),
