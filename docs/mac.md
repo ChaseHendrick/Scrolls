@@ -96,6 +96,10 @@ Measured in the setup container on 2026-10-07: on the published 2.4 µm w035 ink
 
 Adapted from GENChase's three checks. Its third check, exact checkpoint-resume equality, has no counterpart in villa's flat inference, so the runbook checks run-to-run repeatability instead. A torch bug that reads freed memory, like the one reported for 2.12.1 on #1865, would show up there.
 
+## Recorded M1 Pro run (2026-10-07)
+
+CPU vs MPS **pass** (max |diff| 1/255, Pearson 0.99999999), MPS repeat bit-identical, control caught (73.12%), MPS about 4x faster than CPU. Details: [`logs/2026-10-07-w035-cpu.md`](logs/2026-10-07-w035-cpu.md).
+
 ## A useful M1 Pro contribution
 
 A fourth speed benchmark adds little. These would help:
