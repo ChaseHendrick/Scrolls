@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import localcost, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer
+from . import localcost, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer
 
 
 def cmd_prizes(args):
@@ -137,6 +137,49 @@ def cmd_collate(args):
         print(exc, file=sys.stderr)
         return 2
     print(overlap.dumps(result) if args.json else overlap.format_collate(result))
+    return 0
+
+
+def cmd_meshaudit(args):
+    """Mesh and cross-scan render audit (docs/plans/2026-10-07-mesh-hypothesis.md)."""
+    cat = meshaudit.load_catalogue(args.catalogue)
+    if args.action == "transforms":
+        out = meshaudit.transforms_audit(cat)
+        if not args.json:
+            for r in out:
+                loo = "-" if r["loo_rms_um"] is None else "%.1f" % r["loo_rms_um"]
+                print("%-12s %s -> %s  landmarks %2d  LOO RMS %6s um  %s" % (
+                    r["sample"], r["from_volume"], r["to_volume"], r["n_landmarks"], loo, r["tier"]))
+    elif args.action == "canvas":
+        rows, mesh_errors = meshaudit.canvas_audit(cat, samples=args.sample or None, workers=args.workers)
+        out = {"rows": rows, "mesh_errors": mesh_errors}
+        if not args.json:
+            n = len(rows)
+            ok = sum(r["reproducible"] for r in rows)
+            named = sum(r["reproducible_by_named_variant"] for r in rows)
+            print("surface volumes %d, reproducible from a published mesh %d, by a variant naming the volume %d"
+                  % (n, ok, named))
+    elif args.action == "plan":
+        out = meshaudit.plan_depth(cat, per_combo=args.per_combo, seed=args.seed)
+        if not args.json:
+            for p in out:
+                print("%-12s native %s cross %s  %d of %d segments" % (
+                    p["sample"], p["native_volume"], p["cross_volume"], len(p["segments"]), p["segments_available"]))
+    else:  # depth
+        s = cat["samples"][args.sample]
+        seg = s["segments"][args.segment]
+        out = meshaudit.depth_segment(args.base, args.sample, seg, cross_ids=args.cross or None,
+                                      n_tiles=args.tiles, seed=args.seed, reference=args.reference)
+        if not args.json:
+            for p in out["pairs"]:
+                print("%s %s -> %s  tiles %s  median delta %s um  control %s" % (
+                    args.segment, out["native_volume"], p["cross_volume"], p.get("tiles_with_peaks"),
+                    p.get("delta_median_um"), p.get("location_control_pass")))
+    if args.out:
+        with open(args.out, "w", encoding="utf-8") as f:
+            json.dump(out, f, indent=1)
+    if args.json:
+        print(json.dumps(out, indent=1))
     return 0
 
 
@@ -510,6 +553,29 @@ def build_parser():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_collate)
+
+    p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("transforms", help="refit catalogue affines from their landmarks: residual, leave-one-out, round trip")
+    a = actions.add_parser("canvas", help="does a published mesh variant reproduce each surface volume's canvas size?")
+    a.add_argument("--sample", action="append", help="limit to this sample (repeatable)")
+    a.add_argument("--workers", type=int, default=16)
+    a = actions.add_parser("plan", help="choose segments for the depth comparison (seeded)")
+    a.add_argument("--per-combo", type=int, default=5)
+    a.add_argument("--seed", type=int, default=meshaudit.SEED)
+    a = actions.add_parser("depth", help="papyrus depth offset between a segment's native and cross-scan renders")
+    a.add_argument("--sample", required=True)
+    a.add_argument("--segment", required=True, help="catalogue segment id")
+    a.add_argument("--cross", action="append", help="limit to this cross volume id (repeatable)")
+    a.add_argument("--tiles", type=int, default=32)
+    a.add_argument("--seed", type=int, default=meshaudit.SEED)
+    a.add_argument("--base", default=meshaudit.BUCKET)
+    a.add_argument("--reference", help="volume id whose render plays the native role (protocol amendment H3b)")
+    for a in actions.choices.values():
+        a.add_argument("--catalogue", help="metadata.json path or URL (default: the public bucket's)")
+        a.add_argument("--out", help="write the JSON result here")
+        a.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_meshaudit)
 
     p = sub.add_parser("surfacefix", help="experimental region flags and bounded, controlled surface corrections")
     actions = p.add_subparsers(dest="action", required=True)

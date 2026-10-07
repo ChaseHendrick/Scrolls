@@ -64,6 +64,7 @@ When the private checkout is available, refresh the combined session context fro
 | `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
 | `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
+| `kit/meshaudit.py` | `kit meshaudit transforms/canvas/plan/depth`: refit catalogue cross-scan affines from their landmarks, check every surface volume against its mesh, and measure papyrus depth between native and cross renders; [protocol](docs/plans/2026-10-07-mesh-hypothesis.md), [data](docs/data/mesh-hypothesis/README.md) |
 | `kit/surfacefix.py` | Experimental bounded normal-offset suggestions, frozen correspondence checks and uncertain-region flags; see `docs/surfacefix.md` |
 | `docs/scan-status.md` | Our completed/partial/planned processing, plus the dated official CT catalogue and documented acquisition unknowns |
 | `kit/ledger.py` | Local experiment records in `experiments/<slug>/run.json` with readout-rule hash and status gate |

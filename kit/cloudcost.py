@@ -210,7 +210,7 @@ def jobs_table(rates, jobs_doc, region="none", plan="starter"):
     for job in jobs_doc["jobs"]:
         e = estimate(rates, job, profiles, region, plan)
         gh = e["gpu_hours"]
-        lines.append(f"| {e["name"]} | {gh['low']:.2f} / {gh['typical']:.2f} / {gh['high']:.2f} | "
+        lines.append(f"| {e['name']} | {gh['low']:.2f} / {gh['typical']:.2f} / {gh['high']:.2f} | "
                      f"{_usd(e['usd']['low'])} | {_usd(e['usd']['typical'])} | {_usd(e['usd']['high'])} |")
     return "\n".join(lines)
 

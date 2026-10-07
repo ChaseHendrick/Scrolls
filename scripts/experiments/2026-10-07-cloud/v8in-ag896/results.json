@@ -1,0 +1,49 @@
+[
+  {
+    "job": "v8in-ag896",
+    "segment": "0841-ag896",
+    "window": "crop",
+    "inner_px": 64,
+    "map_from": "bare-crop",
+    "device": "cpu",
+    "reader": "ink_9um s42",
+    "settings": {
+      "checkpoint": "scrollprize/ink_9um hybrid_3d2d-seed42/step-075000.pth",
+      "villa": "PR #1865",
+      "overlap": 0.5,
+      "blend": "hann"
+    },
+    "auc_as_stored": 0.6594,
+    "ink_px": 83154,
+    "hp_r": -0.0036,
+    "hp_null_max_abs": 0.0097,
+    "auc_reversed": 0.5579,
+    "hp_r_reversed": 0.0019,
+    "seconds": 58,
+    "notes": "seconds cover both directions"
+  },
+  {
+    "job": "v8in-ag896",
+    "segment": "0841-ag896",
+    "window": "crop",
+    "inner_px": 64,
+    "map_from": "bare-crop",
+    "device": "cpu",
+    "reader": "d9v2",
+    "settings": {
+      "checkpoint": "d9v2_ft-012000.pth (TAUIL-Abd-Elilah v1.0)",
+      "sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+      "villa": "PR #1865",
+      "overlap": 0.5,
+      "blend": "hann"
+    },
+    "auc_as_stored": 0.823,
+    "ink_px": 83154,
+    "hp_r": 0.0167,
+    "hp_null_max_abs": 0.0068,
+    "auc_reversed": 0.5323,
+    "hp_r_reversed": 0.0053,
+    "seconds": 57,
+    "notes": "seconds cover both directions"
+  }
+]
