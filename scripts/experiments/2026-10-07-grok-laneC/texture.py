@@ -90,7 +90,7 @@ for name, s in SEGS.items():
 # Experiment 2: orientation chosen on w045 (seen scroll, held-out segment), applied unchanged
 # to PHerc0841 w00 (unseen scroll); fuse ranks with ink_9um at weights 0.1, 0.25 and 0.5.
 def rank(a):
-    r = np.empty(a.size); r[np.argsort(a, kind="stable").ravel()] = np.arange(a.size); return (r / a.size).reshape(a.shape)
+    r = np.empty(a.size); r[np.argsort(a.ravel(), kind="stable")] = np.arange(a.size); return (r / a.size).reshape(a.shape)
 z = {n: np.load(f"{OUT}.{n}.npz") for n in SEGS}
 fusion = {}
 for k in ["std3d", "laws_L5E5", "grad3d", "autocorr", "brightness"]:
