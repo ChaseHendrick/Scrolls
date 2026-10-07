@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,gate,layers,shuffle,provenance,compute,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,gate,layers,shuffle,provenance,compute,run,phantom,view}."""
 
 import argparse
 import json
@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
+from . import phantom, viewer
 from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify
 
 
@@ -240,6 +241,76 @@ def cmd_run(args):
     return 0
 
 
+def _shape(v):
+    return (v[0], v[1]) if v else (384, 384)
+
+
+def cmd_phantom(args):
+    import numpy as np
+    from .verify import VerifyError
+    try:
+        if args.action == "make":
+            out = Path(args.out)
+            out.mkdir(parents=True, exist_ok=True)
+            p = phantom.make_phantom(_shape(args.shape), args.depth, args.seed, args.letter_px,
+                                     ink_contrast=args.ink_contrast, ink_bump=args.ink_bump, noise=args.noise)
+            np.save(out / "volume.npy", p["volume"])
+            np.save(out / "ink.npy", p["ink"])
+            np.save(out / "mask.npy", p["mask"])
+            (out / "meta.json").write_text(json.dumps(p["meta"], indent=2) + "\n")
+            print(json.dumps(p["meta"], indent=2))
+        elif args.action == "stress":
+            from . import auc
+            rows = []
+            for seed in range(args.seed, args.seed + args.n):
+                p = phantom.make_phantom(_shape(args.shape), args.depth, seed, args.letter_px,
+                                         ink_contrast=args.ink_contrast, ink_bump=args.ink_bump, noise=args.noise)
+                fwd = phantom.surface_detector(p["volume"])
+                rev = phantom.surface_detector(p["volume"][::-1])
+                rows.append({"seed": seed, "auc": auc.score_array(fwd, p["ink"], p["mask"])["auc"],
+                             "auc_reversed": auc.score_array(rev, p["ink"], p["mask"])["auc"]})
+                if args.save_maps:
+                    d = Path(args.save_maps)
+                    d.mkdir(parents=True, exist_ok=True)
+                    np.save(d / f"surface_{seed}.npy", fwd)
+                    np.save(d / f"surface_reversed_{seed}.npy", rev)
+            res = {"detector": "surface_detector", "ink_contrast": args.ink_contrast, "ink_bump": args.ink_bump,
+                   "noise": args.noise, "rows": rows}
+            print(json.dumps(res, indent=2))
+        else:
+            res = phantom.calibrate(args.n, _shape(args.shape), args.letter_px, args.quality, args.draws,
+                                    args.block_px, args.seed)
+            print(json.dumps(res, indent=2) if args.json else
+                  f"AUC over {res['n']} phantoms: mean {res['auc_mean']}, between-phantom 95% half width "
+                  f"{res['empirical_half_width']}; mean block-bootstrap half width {res['bootstrap_half_width_mean']} "
+                  f"(ratio {res['ratio_bootstrap_to_empirical']}); intervals covering the mean {res['intervals_covering_mean']}")
+    except VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
+
+
+def cmd_view(args):
+    from .verify import VerifyError
+    try:
+        maps = []
+        for item in args.maps:
+            name, _, path = item.rpartition("=")
+            maps.append((name or Path(path).stem, viewer.load_array(path)))
+        lab = viewer.load_array(args.labels) if args.labels else None
+        msk = viewer.load_array(args.mask) if args.mask else None
+        page, stats = viewer.build_html(maps, lab, msk, args.title, args.max_side)
+        Path(args.out).write_text(page)
+        if args.png:
+            img, _ = viewer.render_png(maps, lab, msk)
+            Path(args.png).write_bytes(viewer.png_bytes(img))
+        print(json.dumps(stats, indent=2))
+    except VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="python -m kit", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -423,6 +494,34 @@ def build_parser():
     p.add_argument("--level", default="0")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
     p.set_defaults(func=cmd_shuffle)
+
+    p = sub.add_parser("phantom", help="synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise")
+    p.add_argument("action", choices=["make", "stress", "calibrate"])
+    p.add_argument("out", nargs="?", help="make: output folder (volume.npy, ink.npy, mask.npy, meta.json)")
+    p.add_argument("--shape", type=int, nargs=2, metavar=("H", "W"))
+    p.add_argument("--depth", type=int, default=26)
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--n", type=int, default=8, help="stress, calibrate: number of phantoms")
+    p.add_argument("--letter-px", type=int, default=64)
+    p.add_argument("--ink-contrast", type=float, default=0.25)
+    p.add_argument("--ink-bump", type=float, default=0.6)
+    p.add_argument("--noise", type=float, default=1.0)
+    p.add_argument("--quality", type=float, default=1.0, help="calibrate: simulated reader signal to noise")
+    p.add_argument("--draws", type=int, default=200)
+    p.add_argument("--block-px", type=int, default=107)
+    p.add_argument("--save-maps", help="stress: folder for the detector maps (.npy)")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_phantom)
+
+    p = sub.add_parser("view", help="one static HTML page overlaying several ink maps, their disagreement and the labels")
+    p.add_argument("out", help="output .html")
+    p.add_argument("maps", nargs="+", help="NAME=PATH (.npy or .tif), same grid")
+    p.add_argument("--labels", help="ink labels on the maps' grid (.npy or .tif)")
+    p.add_argument("--mask", help="supervision mask on the maps' grid")
+    p.add_argument("--title", default="Ink map viewer")
+    p.add_argument("--max-side", type=int, default=viewer.MAX_SIDE)
+    p.add_argument("--png", help="also write the panels side by side as a PNG")
+    p.set_defaults(func=cmd_view)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
