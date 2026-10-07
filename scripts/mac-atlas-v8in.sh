@@ -159,10 +159,13 @@ say "4/4 triage (row score: a reading order, not a verdict)"
 "$PY" - "$OUT" "$TAG" "$MESHES" <<'EOF' > "$OUT/triage_$TAG.tsv"
 import json, subprocess, sys
 out, tag, meshes = sys.argv[1], sys.argv[2], sys.argv[3].split()
+from kit import prizes                                   # each scroll's own voxel size sets the row band
+snap = prizes.load()
+voxel = lambda key: str(prizes.eligible_entry(snap, key.split("/")[0])["voxel_um"]) if prizes.eligible_entry(snap, key.split("/")[0]) else "9.362"
 print("mesh\trow_fwd\trow_rev\tperiod_fwd_mm\tperiod_rev_mm")
 for key in meshes:
     res = json.loads(subprocess.run([sys.executable, "-m", "kit", "rowscore", f"{out}/{key}/v8in_{tag}_fwd.tif",
-                                     "--reverse", f"{out}/{key}/v8in_{tag}_rev.tif", "--voxel-um", "9.362", "--json"],
+                                     "--reverse", f"{out}/{key}/v8in_{tag}_rev.tif", "--voxel-um", voxel(key), "--json"],
                                     capture_output=True, text=True, check=True).stdout)
     f, r = res["forward"], res["reverse"]
     print(f"{key}\t{f.get('score')}\t{r.get('score')}\t{f.get('period_mm')}\t{r.get('period_mm')}")

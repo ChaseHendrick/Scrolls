@@ -14,6 +14,7 @@
 #                                              # model saw (also 0841-ag896, 0841-ag405)
 #   QUICK=1 bash scripts/mac-w045.sh           # under an hour: v8in on the 640 px crop only (densest
 #                                              # labelled text), every model scored on that same crop
+#   MODEL=v8in-1447 SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh   # Youssef's PHerc1447 fine-tune
 #   V8IN_HOURS=2 bash scripts/mac-w045.sh      # time budget for the full v8in pass (picks the stride)
 #   V8IN_STRIDE=21 bash scripts/mac-w045.sh    # or set the stride (21 is v8in's own default)
 #   V8IN_FP16=1 bash scripts/mac-w045.sh       # fp16 on MPS, kept only if the crop check still passes
@@ -36,9 +37,17 @@ EXPECT_GPU="${EXPECT_GPU:-mps}"
 SMOKE="${SMOKE:-0}"
 QUICK="${QUICK:-0}"
 PR=1865
-V8IN_REPO=YoussefMoNader/ink-8um-v8in
-V8IN_REV=d89166b41a3f5fad7749b3d7c0fdd1bd3695d844   # 2026-09-28 release
-V8IN="$WORK/checkpoints/ink-8um-v8in"
+# MODEL picks the v8in-architecture weights (same code, so the CPU vs MPS check carries over).
+MODEL="${MODEL:-v8in}"
+case "$MODEL" in
+  v8in)        V8IN_REPO=YoussefMoNader/ink-8um-v8in
+               V8IN_REV=d89166b41a3f5fad7749b3d7c0fdd1bd3695d844 ;;   # 2026-09-28 base model
+  v8in-1447)   V8IN_REPO=YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062
+               V8IN_REV=2bf9f421862cda0ed41dcae6e8274c12e295d03a ;;   # 2026-09-28 PHerc1447 fine-tune
+  *) echo "MODEL must be v8in or v8in-1447" >&2; exit 2 ;;
+esac
+MTAG="${MODEL//-/}"                   # v8in, v8in1447: map, log and result names
+V8IN="$WORK/checkpoints/${V8IN_REPO#*/}"
 # SEGMENT picks the labelled test segment. CROP: 640 px fully on the surface with the densest
 # labelled ink (y0 y1 x0 x1), found on the published labels. PHerc0841 is in neither model's
 # training set (Bullo27's unseen-scroll calibration), so it is the harder test.
@@ -142,12 +151,22 @@ data = zarr.open(src, mode="r")["0"][:, y0:y1, x0:x1]
 zarr.open_group(dst, mode="w").create_array("0", data=data, chunks=(data.shape[0], 128, 128))
 EOF
   AUC_CROP=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}")
+elif [[ "$QUICK" == "1" ]]; then   # every quick score is on the crop, so ink_9um reads only the crop too
+  INPUT="$WORK/data/${SEGMENT}_quickcrop_${CROP[0]}_${CROP[2]}.zarr"
+  [[ -d "$INPUT" && "$FRESH" != 1 ]] || "$PY" - "$ZARR" "$INPUT" "${CROP[@]}" <<'EOF'
+import sys, zarr
+src, dst, y0, y1, x0, x1 = sys.argv[1], sys.argv[2], *map(int, sys.argv[3:])
+data = zarr.open(src, mode="r")["0"][:, y0:y1, x0:x1]
+zarr.open_group(dst, mode="w").create_array("0", data=data, chunks=(data.shape[0], 128, 128))
+EOF
+  AUC_CROP=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}")
 fi
+INK=ink9um; [[ "$QUICK" == "1" ]] && INK=ink9um_quick   # crop-only maps are never reused by a full run
 # v8in costs about 50x ink_9um per pixel, and AUC counts only supervised pixels, so by default
 # v8in reads the box around the supervision mask (plus a 256 px margin), not the whole segment.
 V8IN_AUC=("${AUC_CROP[@]}")
 V8IN_CROP=()
-if [[ "$SMOKE" != "1" && "${V8IN_REGION:-labels}" == "labels" ]]; then
+if [[ "$SMOKE" != "1" && "$QUICK" != "1" && "${V8IN_REGION:-labels}" == "labels" ]]; then
   read -r -a V8IN_CROP <<< "$("$PY" - "$LAB/supervision.zarr" "${SURFACE[@]}" <<'EOF'
 import sys, numpy as np, zarr
 m = np.asarray(zarr.open(sys.argv[1], mode="r")["2"]) > 0
@@ -166,17 +185,17 @@ fi
 say "3/7 ink_9um on $EXPECT_GPU (PR #$PR, $PR_SHA): seeds 42 and 43, both directions"
 git -C "$VILLA" checkout -q --detach "pr-$PR"
 for seed in 42 43; do
-  log="$WORK/logs/${NAME}_ink9um_s$seed.log"
+  log="$WORK/logs/${NAME}_${INK}_s$seed.log"
   start=$SECONDS
   # Reuse a finished seed: both maps present, and on a Mac its log shows it ran on MPS.
-  if [[ "$FRESH" != "1" && -f "$OUT/maps/ink9um_s$seed.tif" && -f "$OUT/maps/ink9um_s${seed}_reverse.tif" && -f "$log" ]] \
+  if [[ "$FRESH" != "1" && -f "$OUT/maps/${INK}_s$seed.tif" && -f "$OUT/maps/${INK}_s${seed}_reverse.tif" && -f "$log" ]] \
      && { [[ "$EXPECT_GPU" != "mps" ]] || grep -q "Using MPS device" "$log"; }; then
     printf -v "T_ink9um_s$seed" %s "earlier"
     echo "seed $seed: finished in an earlier run, reused (FRESH=1 to redo)"
     continue
   fi
   (cd "$WORK" && "$PY" -m vesuvius.ink_detection.inference.infer "$INPUT" \
-     "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed$seed/step-075000.pth" "$OUT/maps/ink9um_s$seed.tif" \
+     "$WORK/checkpoints/ink_9um/hybrid_3d2d-seed$seed/step-075000.pth" "$OUT/maps/${INK}_s$seed.tif" \
      --overlap 0.5 --blend-mode hann --batch-size 1 --no-compile --direction both) >"$log" 2>&1 \
     || { echo "ink_9um seed $seed failed, see $log" >&2; tail -20 "$log" >&2; exit 1; }
   printf -v "T_ink9um_s$seed" %s "$(( SECONDS - start ))"
@@ -229,54 +248,46 @@ EOF
   printf -v "T_$name" %s "$(( SECONDS - start ))"
 }
 
-CROP_LOG="$WORK/logs/${NAME}_crop_gpu.log"   # per-tile speed for the stride estimate
+DEV=crop; DEVJSON=v8in_device       # base v8in keeps its original names (mac-atlas-v8in.sh reads them)
+[[ "$MODEL" != v8in ]] && { DEV="${MTAG}_crop"; DEVJSON="${MTAG}_device"; }
+CROP_LOG="$WORK/logs/${NAME}_${DEV}_gpu.log"   # per-tile speed for the stride estimate
 W045_DEVICE="$WORK/w045/results/v8in_device.json"
 # The device check answers one question (does v8in on this Mac's GPU match its CPU?), so other
 # segments reuse w045's pass rather than spend another CPU pass (40 min on an M1 Pro) on it.
 # DEVICE_CHECK=1 forces it; fp16 always gets its own check.
-if [[ "$SEGMENT" != w045 && "${DEVICE_CHECK:-0}" != 1 && "$FRESH" != 1 && "${V8IN_FP16:-0}" != 1 && "$SMOKE" != 1 ]] \
+if [[ ( "$SEGMENT" != w045 || "$MODEL" != v8in ) && "${DEVICE_CHECK:-0}" != 1 && "$FRESH" != 1 && "${V8IN_FP16:-0}" != 1 && "$SMOKE" != 1 ]] \
    && "$PY" -c 'import json,sys; sys.exit(0 if json.load(open(sys.argv[1]))["verdict"] == "pass" else 1)' "$W045_DEVICE" 2>/dev/null; then
   say "5/7 v8in device check: reusing the pass from w045 (DEVICE_CHECK=1 to redo it here)"
-  cp "$W045_DEVICE" "$OUT/results/v8in_device.json"
+  [[ "$W045_DEVICE" -ef "$OUT/results/$DEVJSON.json" ]] || cp "$W045_DEVICE" "$OUT/results/$DEVJSON.json"
   CROP_LOG="$WORK/logs/w045_crop_gpu.log"
   T_crop_cpu="w045"; T_crop_gpu="w045"
 else
 say "5/7 v8in device check on a crop ($(( CROP[1] - CROP[0] )) px): CPU vs $V8IN_DEVICE, reverse as the control"
-v8in crop_cpu "$OUT/crop_layers" cpu 64 fwd --batch-size "$BATCH"
-v8in crop_gpu "$OUT/crop_layers" "$V8IN_DEVICE" 64 fwd "${FP16[@]}"
-v8in crop_gpu_reverse "$OUT/crop_layers" "$V8IN_DEVICE" 64 rev "${FP16[@]}"
+v8in "${DEV}_cpu" "$OUT/crop_layers" cpu 64 fwd --batch-size "$BATCH"
+v8in "${DEV}_gpu" "$OUT/crop_layers" "$V8IN_DEVICE" 64 fwd "${FP16[@]}"
+v8in "${DEV}_gpu_reverse" "$OUT/crop_layers" "$V8IN_DEVICE" 64 rev "${FP16[@]}"
+t="T_${DEV}_cpu"; T_crop_cpu="${!t}"; t="T_${DEV}_gpu"; T_crop_gpu="${!t}"
 set +e
-"$PY" -m kit verify "$OUT/maps/crop_cpu.tif" "$OUT/maps/crop_gpu.tif" --control "$OUT/maps/crop_gpu_reverse.tif" \
-  --json > "$OUT/results/v8in_device.json"; VDEV=$?
+"$PY" -m kit verify "$OUT/maps/${DEV}_cpu.tif" "$OUT/maps/${DEV}_gpu.tif" --control "$OUT/maps/${DEV}_gpu_reverse.tif" \
+  --json > "$OUT/results/$DEVJSON.json"; VDEV=$?
 set -e
 [[ "$VDEV" == 0 || "$EXPECT_GPU" != "mps" ]] || { echo "v8in on MPS does not match the CPU${V8IN_FP16:+ (fp16 on: try again without V8IN_FP16)}; stopping before the full run" >&2; exit 1; }
 echo "crop: cpu ${T_crop_cpu}s, $V8IN_DEVICE ${T_crop_gpu}s"
 fi
 
-V8IN_MAP=v8in
+V8IN_MAP="$MTAG"
 INK_AUC=("${AUC_CROP[@]}")   # where ink_9um maps are scored; QUICK narrows it to the crop
-INK_TAG=""
 STRIDE="${V8IN_STRIDE:-}"
 if [[ "$QUICK" == "1" ]]; then
   say "6/7 quick: v8in on the crop on $V8IN_DEVICE at full density, both directions"
   STRIDE="${STRIDE:-21}"
-  V8IN_MAP=v8in_quick   # its own name, so a later full run never reuses a crop-only map
-  v8in v8in_quick "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
-  v8in v8in_quick_reverse "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
-  T_v8in="$T_v8in_quick"; T_v8in_reverse="$T_v8in_quick_reverse"
+  V8IN_MAP="${MTAG}_quick"   # its own name, so a later full run never reuses a crop-only map
+  v8in "${MTAG}_quick" "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
+  v8in "${MTAG}_quick_reverse" "$OUT/crop_layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+  t="T_${MTAG}_quick"; T_v8in="${!t}"; t="T_${MTAG}_quick_reverse"; T_v8in_reverse="${!t}"
   echo "v8in: ${T_v8in}s and ${T_v8in_reverse}s"
-  V8IN_AUC=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}")
+  V8IN_AUC=(--level 2 --crop "${CROP[@]}" --surface-shape "${SURFACE[@]}" --inner 64)
   INK_AUC=("${V8IN_AUC[@]}")
-  if [[ "$SMOKE" != "1" ]]; then   # cut the full ink_9um maps to the same crop, so all models face one test
-    INK_TAG="_crop"
-    for f in "$OUT"/maps/ink9um_s4[23].tif "$OUT"/maps/ink9um_s4[23]_reverse.tif; do
-      "$PY" - "$f" "${f%.tif}_crop.tif" "${CROP[@]}" <<'EOF'
-import sys, tifffile
-y0, y1, x0, x1 = map(int, sys.argv[3:])
-tifffile.imwrite(sys.argv[2], tifffile.imread(sys.argv[1])[y0:y1, x0:x1], compression="zlib")
-EOF
-    done
-  fi
 else
 say "6/7 v8in over the segment on $V8IN_DEVICE, both directions"
 if [[ -z "$STRIDE" && "$SMOKE" == "1" ]]; then
@@ -306,8 +317,9 @@ EOF
 )"
 fi
 echo "stride $STRIDE"
-v8in v8in "$OUT/layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
-v8in v8in_reverse "$OUT/layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+v8in "$MTAG" "$OUT/layers" "$V8IN_DEVICE" "$STRIDE" fwd "${FP16[@]}"
+v8in "${MTAG}_reverse" "$OUT/layers" "$V8IN_DEVICE" "$STRIDE" rev "${FP16[@]}"
+t="T_$MTAG"; T_v8in="${!t}"; t="T_${MTAG}_reverse"; T_v8in_reverse="${!t}"
 echo "v8in: ${T_v8in}s and ${T_v8in_reverse}s"
 fi
 
@@ -319,12 +331,12 @@ auc() {  # auc MAP CONTROL [crop args]
 rows() { "$PY" -m kit rowscore "$@" --voxel-um "$VOXEL" --json; }
 M="$OUT/maps"
 for seed in 42 43; do
-  auc "$M/ink9um_s$seed$INK_TAG.tif" "$M/ink9um_s${seed}_reverse$INK_TAG.tif" "${INK_AUC[@]}" > "$OUT/results/auc_ink9um_s$seed.json"
+  auc "$M/${INK}_s$seed.tif" "$M/${INK}_s${seed}_reverse.tif" "${INK_AUC[@]}" > "$OUT/results/auc_ink9um_s$seed.json"
 done
-auc "$M/$V8IN_MAP.tif" "$M/${V8IN_MAP}_reverse.tif" "${V8IN_AUC[@]}" > "$OUT/results/auc_v8in.json"
-rows "$M/ink9um_s42.tif" "$M/ink9um_s43.tif" --reverse "$M/ink9um_s42_reverse.tif" "$M/ink9um_s43_reverse.tif" \
+auc "$M/$V8IN_MAP.tif" "$M/${V8IN_MAP}_reverse.tif" "${V8IN_AUC[@]}" > "$OUT/results/auc_$MTAG.json"
+rows "$M/${INK}_s42.tif" "$M/${INK}_s43.tif" --reverse "$M/${INK}_s42_reverse.tif" "$M/${INK}_s43_reverse.tif" \
   > "$OUT/results/rows_ink9um.json"
-rows "$M/$V8IN_MAP.tif" --reverse "$M/${V8IN_MAP}_reverse.tif" > "$OUT/results/rows_v8in.json"
+rows "$M/$V8IN_MAP.tif" --reverse "$M/${V8IN_MAP}_reverse.tif" > "$OUT/results/rows_$MTAG.json"
 
 CHIP="$(sysctl -n machdep.cpu.brand_string 2>/dev/null || uname -m)"
 OS="$(sw_vers -productVersion 2>/dev/null || uname -sr)"
@@ -335,17 +347,18 @@ j = lambda n: json.loads((r / f"{n}.json").read_text())
 print("kit mac-w045 summary for $SEGMENT (paste this)")
 print("chip: $CHIP | os: $OS | torch: $TORCH | smoke: $SMOKE | quick: $QUICK")
 if "$QUICK" == "1":
-    print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns), so the models face the same test")
-print(f"villa PR #$PR $PR_SHA on $EXPECT_GPU | v8in $V8IN_REV on $V8IN_DEVICE, stride $STRIDE, batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
+    print("quick: every AUC below is on the crop ${CROP[*]} (rows, columns) less a 64 px edge, so the models face the same test")
+    print("quick: row scores need about 1 cm of map, so the crop has none")
+print(f"villa PR #$PR $PR_SHA on $EXPECT_GPU | $MODEL $V8IN_REV on $V8IN_DEVICE, stride $STRIDE, batch $BATCH, fp16 ${V8IN_FP16:-0}, region {'crop' if '$QUICK' == '1' else '${V8IN_CROP[*]:-all}'}")
 print("sha256 seed42 $SHA42 | seed43 $SHA43 | v8in $SHAV8")
 print("times (s): ink_9um s42 ${T_ink9um_s42}, s43 ${T_ink9um_s43} (both directions) | v8in ${T_v8in} + ${T_v8in_reverse}")
-d = j("v8in_device"); c = d["candidate"]
+d = j("$DEVJSON"); c = d["candidate"]
 print(f"v8in cpu vs $V8IN_DEVICE (crop): {d['verdict']} | max|diff| {c.get('max_abs_diff')} | pearson {c.get('pearson')}")
-for name in ("ink9um_s42", "ink9um_s43", "v8in"):
+for name in ("ink9um_s42", "ink9um_s43", "$MTAG"):
     a = j(f"auc_{name}")
     f, k = a["forward"], a["control"]
     print(f"AUC {name}: as stored {f['auc']} | reversed {k['auc']} | ink px {f['ink_px']}, background px {f['background_px']}")
-for name in ("ink9um", "v8in"):
+for name in ("ink9um", "$MTAG"):
     s = j(f"rows_{name}")
     print(f"row score {name}: as stored {s['forward'].get('score')} | reversed {s['reverse'].get('score')}")
 EOF

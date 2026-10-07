@@ -37,7 +37,10 @@ def _load(path):
 
 def _levels(path, level):
     zarr = _zarr()
-    node = zarr.open(str(path), mode="r")
+    try:
+        node = zarr.open(str(path), mode="r")
+    except Exception as exc:  # zarr raises several types for a missing or malformed store
+        raise VerifyError(f"cannot open {path} as zarr: {exc}") from exc
     if not hasattr(node, "shape"):
         if level not in node:
             raise VerifyError(f"{path}: no level {level!r}; levels: {sorted(node.keys())}")
@@ -57,12 +60,17 @@ def _quantize(np, values):
 
 
 def auc_scores(ink_scores, background_scores):
-    """Mann-Whitney AUC with ties counted half, from two integer score arrays."""
+    """Mann-Whitney AUC with ties counted half.
+
+    The two arrays must be on one scale. score_array quantizes the whole map once before
+    splitting it, so a float map is never scaled differently for ink and for background."""
     np = _numpy()
     if len(ink_scores) == 0 or len(background_scores) == 0:
         return None
-    a, n = _quantize(np, ink_scores)
-    b, _ = _quantize(np, background_scores)
+    if ink_scores.dtype != np.int64 or background_scores.dtype != np.int64:
+        both, _ = _quantize(np, np.concatenate([ink_scores.ravel(), background_scores.ravel()]))
+        ink_scores, background_scores = both[:ink_scores.size], both[ink_scores.size:]
+    a, b, n = ink_scores, background_scores, 65536
     ha = np.bincount(a, minlength=n).astype(np.float64)
     hb = np.bincount(b, minlength=n).astype(np.float64)
     below = np.concatenate(([0.0], np.cumsum(hb)[:-1]))  # background strictly below each score
@@ -79,6 +87,8 @@ def label_grid(labels_shape, surface_shape, crop, map_shape):
         raise VerifyError(f"labels {labels_shape} and surface {surface_shape} differ in scale between axes "
                           f"({sy:.4f} vs {sx:.4f}); they are not the same grid")
     y0, y1, x0, x1 = crop if crop is not None else (0, surface_shape[0], 0, surface_shape[1])
+    if not (0 <= y0 < y1 <= surface_shape[0] and 0 <= x0 < x1 <= surface_shape[1]):
+        raise VerifyError(f"crop {[y0, y1, x0, x1]} is outside the {surface_shape[0]} x {surface_shape[1]} surface")
     if (y1 - y0, x1 - x0) != tuple(map_shape):
         raise VerifyError(f"map shape {tuple(map_shape)} does not match the window {y1 - y0} x {x1 - x0}")
     rows = np.minimum(((np.arange(y0, y1) + 0.5) * sy).astype(np.int64), labels_shape[0] - 1)
@@ -86,15 +96,27 @@ def label_grid(labels_shape, surface_shape, crop, map_shape):
     return rows, cols
 
 
-def score_array(prediction, ink, mask, keep_zero=False):
-    """AUC of a 2D map against same-shape boolean ink and mask arrays."""
+def score_array(prediction, ink, mask, keep_zero=False, inner=0):
+    """AUC of a 2D map against same-shape boolean ink and mask arrays.
+
+    inner > 0 leaves out that many pixels along every edge of the map, where a map inferred on
+    a cropped input saw less context than the same pixels of a whole-segment map."""
     np = _numpy()
+    if inner:
+        if 2 * inner >= min(prediction.shape):
+            raise VerifyError(f"inner {inner} leaves nothing of a {prediction.shape} map")
+        mask = mask.copy()
+        mask[:inner] = mask[-inner:] = False
+        mask[:, :inner] = mask[:, -inner:] = False
+    q, _ = _quantize(np, prediction)   # one scale for the whole map
     use = mask & (np.ones_like(mask) if keep_zero else prediction != 0)
     result = {
-        "auc": auc_scores(prediction[use & ink], prediction[use & ~ink]),
+        "auc": auc_scores(q[use & ink], q[use & ~ink]),
         "ink_px": int((use & ink).sum()),
         "background_px": int((use & ~ink).sum()),
-        "unpredicted_px_in_mask": int((mask & (prediction == 0)).sum()),
+        "zero_px_in_mask": int((mask & (prediction == 0)).sum()),
+        "zero_px_counted": bool(keep_zero),
+        "inner": inner,
     }
     if result["auc"] is not None:
         result["auc"] = round(result["auc"], 4)
@@ -102,7 +124,7 @@ def score_array(prediction, ink, mask, keep_zero=False):
 
 
 def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None,
-                surface_shape=None, keep_zero=False):
+                surface_shape=None, keep_zero=False, inner=0):
     np = _numpy()
     pred = np.squeeze(_load(prediction))
     if pred.ndim != 2:
@@ -119,7 +141,7 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
     r0, r1, c0, c1 = int(rows.min()), int(rows.max()) + 1, int(cols.min()), int(cols.max()) + 1
     ink = np.asarray(lab[r0:r1, c0:c1])[np.ix_(rows - r0, cols - c0)] > 0
     supervised = np.asarray(msk[r0:r1, c0:c1])[np.ix_(rows - r0, cols - c0)] > 0
-    result = {"forward": score_array(pred, ink, supervised, keep_zero),
+    result = {"forward": score_array(pred, ink, supervised, keep_zero, inner),
               "files": {"prediction": str(prediction), "labels": str(labels), "mask": str(mask),
                         "control": None if control is None else str(control)},
               "level": level, "crop": crop}
@@ -127,7 +149,7 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
         ctrl = np.squeeze(_load(control))
         if ctrl.shape != pred.shape:
             raise VerifyError(f"control shape {ctrl.shape} differs from the map's {pred.shape}")
-        result["control"] = score_array(ctrl, ink, supervised, keep_zero)
+        result["control"] = score_array(ctrl, ink, supervised, keep_zero, inner)
     return result
 
 
@@ -135,8 +157,13 @@ def format_result(result):
     def line(label, r):
         if r["auc"] is None:
             return f"{label}: no AUC (ink {r['ink_px']} px, background {r['background_px']} px in the mask)"
+        zeros = ""
+        if r["zero_px_in_mask"]:
+            zeros = (f" ({r['zero_px_in_mask']} zero px in the mask counted)" if r["zero_px_counted"]
+                     else f" ({r['zero_px_in_mask']} unpredicted px in the mask left out)")
+        edge = f", {r['inner']} px edge left out" if r.get("inner") else ""
         return (f"{label}: AUC {r['auc']:.4f} on {r['ink_px']} ink and {r['background_px']} background px"
-                + (f" ({r['unpredicted_px_in_mask']} unpredicted px in the mask left out)" if r["unpredicted_px_in_mask"] else ""))
+                + edge + zeros)
 
     rows = [line("map    ", result["forward"])]
     if "control" in result:

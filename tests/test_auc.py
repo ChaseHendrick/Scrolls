@@ -94,8 +94,43 @@ class AucFilesTest(unittest.TestCase):
         zeroed[:, :100] = 0
         tifffile.imwrite(self.root / "fwd.tif", zeroed)
         r = self.files()["forward"]
-        self.assertGreater(r["unpredicted_px_in_mask"], 0)
+        self.assertGreater(r["zero_px_in_mask"], 0)
+        self.assertFalse(r["zero_px_counted"])
         self.assertGreater(r["auc"], 0.95)
+
+    def test_float_map_is_scaled_once(self):
+        # A 0..65535-scale float map where ink reaches 300 and background stays under 255:
+        # scaling the two subsets separately would rank all background above all ink.
+        f = np.where(self.forward > 100, 300.0, 200.0).astype(np.float32)
+        np.save(self.root / "f.npy", f)
+        r = auc.score_files(self.root / "f.npy", self.root / "inklabels.zarr", self.root / "supervision.zarr")
+        self.assertGreater(r["forward"]["auc"], 0.95)
+
+    def test_inner_leaves_out_the_edge(self):
+        r0 = self.files()["forward"]
+        r1 = self.files(inner=40)["forward"]
+        self.assertLess(r1["ink_px"] + r1["background_px"], r0["ink_px"] + r0["background_px"])
+        self.assertGreater(r1["auc"], 0.95)
+        with self.assertRaises(verify.VerifyError):
+            self.files(inner=200)
+
+    def test_keep_zero_is_reported_as_counted(self):
+        zeroed = self.forward.copy()
+        zeroed[:, :100] = 0
+        tifffile.imwrite(self.root / "fwd.tif", zeroed)
+        r = self.files(keep_zero=True)
+        self.assertTrue(r["forward"]["zero_px_counted"])
+        self.assertIn("counted", auc.format_result(r))
+
+    def test_crop_outside_the_surface_is_refused(self):
+        with self.assertRaises(verify.VerifyError):
+            auc.label_grid((291, 388), (300, 400), (250, 310, 0, 10), (60, 10))
+        with self.assertRaises(verify.VerifyError):
+            auc.label_grid((291, 388), (300, 400), (-5, 5, 0, 10), (10, 10))
+
+    def test_missing_labels_store_is_a_clean_error(self):
+        with self.assertRaises(verify.VerifyError):
+            auc.score_files(self.root / "fwd.tif", self.root / "nope.zarr", self.root / "supervision.zarr")
 
     def test_anisotropic_grid_is_refused(self):
         with self.assertRaises(verify.VerifyError):

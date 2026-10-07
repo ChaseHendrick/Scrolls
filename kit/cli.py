@@ -78,7 +78,7 @@ def cmd_rowscore(args):
 def cmd_auc(args):
     try:
         result = auc.score_files(args.prediction, args.labels, args.mask, args.control, args.level,
-                                 args.crop, args.surface_shape, args.keep_zero)
+                                 args.crop, args.surface_shape, args.keep_zero, args.inner)
         if args.slug:
             ledger.add_check(args.slug, args.name, result, root=args.root)
     except (verify.VerifyError, ledger.LedgerError) as exc:
@@ -197,6 +197,8 @@ def build_parser():
                    help="the map covers only this window of the surface")
     p.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"), help="full surface shape, with --crop")
     p.add_argument("--keep-zero", action="store_true", help="count pixels where the map is exactly 0")
+    p.add_argument("--inner", type=int, default=0, metavar="PX",
+                   help="leave out this many pixels at every edge (for maps inferred on a cropped input)")
     p.add_argument("--json", action="store_true")
     p.add_argument("--slug", help="attach the result to this experiment")
     p.add_argument("--name", default="label-auc")
