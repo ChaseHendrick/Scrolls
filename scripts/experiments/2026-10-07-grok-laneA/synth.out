@@ -1,0 +1,103 @@
+## 1. Same-sheet reader agreement (w00 vs ag896)
+maps on both: 24
+Kendall tau-a = 0.551 (214 concordant, 62 discordant of 276)
+discordant pairs where both gaps exceed 2x the segment half-width: 20
+   ('d9v2_z0-20', 's42_z5-25', -0.0301, 0.1524, True)
+   ('d9v2_z0-20', 's42_z8-27', -0.0414, 0.1, True)
+   ('d9v2_z0-20', 's42_zmean', -0.0374, 0.0728, True)
+   ('d9v2_z0-20', 'soup42', -0.0273, 0.1226, True)
+   ('d9v2_z0-20', 'soup42_z5-25', -0.0528, 0.1212, True)
+   ('d9v2_z0-20', 'soup42_z8-27', -0.0364, 0.0614, True)
+   ('d9v2_z5-25', 'rv2', -0.0204, 0.0475, True)
+   ('s42', 's42_z0-20', 0.1206, -0.0841, True)
+   ('s42', 'soup42_z0-20', 0.1314, -0.0803, True)
+   ('s42_z0-20', 's42_z3-23', -0.1159, 0.0872, True)
+   ('s42_z0-20', 's42_z5-25', -0.1499, 0.101, True)
+   ('s42_z0-20', 's42_z8-27', -0.1612, 0.0486, True)
+   ('s42_z0-20', 'soup42', -0.1471, 0.0712, True)
+   ('s42_z0-20', 'soup42_z3-23', -0.1309, 0.0826, True)
+   ('s42_z0-20', 'soup42_z5-25', -0.1726, 0.0698, True)
+   ('s42_z3-23', 'soup42_z0-20', 0.1267, -0.0834, True)
+   ('s42_z5-25', 'soup42_z0-20', 0.1607, -0.0972, True)
+   ('soup42', 'soup42_z0-20', 0.1579, -0.0674, True)
+   ('soup42_z0-20', 'soup42_z3-23', -0.1417, 0.0788, True)
+   ('soup42_z0-20', 'soup42_z5-25', -0.1834, 0.066, True)
+
+## 2. Depth-window transfer within the sheet
+s42     pick on w00   -> z8-27; on ag896: transferred 0.6949, default 0.6594, zmean 0.7221, oracle z0-20 0.7435; transfer-default +0.0355, zmean-transfer +0.0272
+s42     pick on ag896 -> z0-20; on w00: transferred 0.6855, default 0.8061, zmean 0.8427, oracle z8-27 0.8467; transfer-default -0.1206, zmean-transfer +0.1572
+soup42  pick on w00   -> z5-25; on ag896: transferred 0.6737, default 0.6723, zmean 0.7564, oracle z0-20 0.7397; transfer-default +0.0014, zmean-transfer +0.0827
+soup42  pick on ag896 -> z0-20; on w00: transferred 0.6747, default 0.8326, zmean 0.8465, oracle z5-25 0.8581; transfer-default -0.1579, zmean-transfer +0.1718
+d9v2    pick on w00   -> z8-27; on ag896: transferred 0.8243, default 0.8230, zmean 0.8317, oracle z5-25 0.8447; transfer-default +0.0013, zmean-transfer +0.0074
+d9v2    pick on ag896 -> z5-25; on w00: transferred 0.9065, default 0.8994, zmean 0.9198, oracle z8-27 0.9280; transfer-default +0.0071, zmean-transfer +0.0133
+
+## 3. Controls: forward minus reversed, forward minus shuffled
+ag405 v8in1447-ag405:d9v2          fwd 0.8319 rev 0.6572 fwd-rev +0.1747 shuf  <- reversed >= 0.65
+ag896 d9v2                         fwd 0.8230 rev 0.5323 fwd-rev +0.2907 shuf 0.4762
+ag896 d9v2+rv2_mean                fwd 0.8164 rev 0.5757 fwd-rev +0.2407 shuf 
+ag896 d9v2+rv2_rank                fwd 0.8150 rev 0.5746 fwd-rev +0.2404 shuf 
+ag896 d9v2+s42_mean                fwd 0.7667 rev 0.5762 fwd-rev +0.1905 shuf 
+ag896 d9v2+s42_rank                fwd 0.7733 rev 0.5544 fwd-rev +0.2189 shuf 
+ag896 d9v2_tta                     fwd 0.8131 rev 0.5491 fwd-rev +0.2640 shuf 
+ag896 d9v2_z0-20                   fwd 0.7949 rev 0.5220 fwd-rev +0.2729 shuf 
+ag896 d9v2_z3-23                   fwd 0.8228 rev 0.5808 fwd-rev +0.2420 shuf 
+ag896 d9v2_z5-25                   fwd 0.8447 rev 0.5329 fwd-rev +0.3118 shuf 
+ag896 d9v2_z8-27                   fwd 0.8243 rev 0.5447 fwd-rev +0.2796 shuf 
+ag896 d9v2_zmean                   fwd 0.8317 rev 0.5508 fwd-rev +0.2809 shuf 
+ag896 rv2                          fwd 0.7972 rev 0.5988 fwd-rev +0.1984 shuf 0.617
+ag896 s42                          fwd 0.6594 rev 0.5579 fwd-rev +0.1015 shuf 0.5578
+ag896 s42_z0-20                    fwd 0.7435 rev 0.5650 fwd-rev +0.1785 shuf 
+ag896 s42_z3-23                    fwd 0.6563 rev 0.5996 fwd-rev +0.0567 shuf 
+ag896 s42_z5-25                    fwd 0.6425 rev 0.5600 fwd-rev +0.0825 shuf 
+ag896 s42_z8-27                    fwd 0.6949 rev 0.5489 fwd-rev +0.1460 shuf 
+ag896 s42_zmean                    fwd 0.7221 rev 0.5735 fwd-rev +0.1486 shuf 
+ag896 soup42                       fwd 0.6723 rev 0.5560 fwd-rev +0.1163 shuf 0.5026
+ag896 soup42_z0-20                 fwd 0.7397 rev 0.5147 fwd-rev +0.2250 shuf 
+ag896 soup42_z3-23                 fwd 0.6609 rev 0.6040 fwd-rev +0.0569 shuf 
+ag896 soup42_z5-25                 fwd 0.6737 rev 0.5560 fwd-rev +0.1177 shuf 
+ag896 soup42_z8-27                 fwd 0.7335 rev 0.5404 fwd-rev +0.1931 shuf 
+ag896 soup42_zmean                 fwd 0.7564 rev 0.5618 fwd-rev +0.1946 shuf 
+w00   d9v2                         fwd 0.8994 rev 0.5855 fwd-rev +0.3139 shuf 0.4906
+w00   d9v2+rv2_mean                fwd 0.9277 rev 0.6774 fwd-rev +0.2503 shuf  <- reversed >= 0.65
+w00   d9v2+rv2_rank                fwd 0.9260 rev 0.6804 fwd-rev +0.2456 shuf  <- reversed >= 0.65
+w00   d9v2+s42_mean                fwd 0.8677 rev 0.5571 fwd-rev +0.3106 shuf 
+w00   d9v2+s42_rank                fwd 0.8750 rev 0.5758 fwd-rev +0.2992 shuf 
+w00   d9v2_tta                     fwd 0.9202 rev 0.5705 fwd-rev +0.3497 shuf 
+w00   d9v2_z0-20                   fwd 0.8053 rev 0.5804 fwd-rev +0.2249 shuf 
+w00   d9v2_z3-23                   fwd 0.8888 rev 0.5596 fwd-rev +0.3292 shuf 
+w00   d9v2_z5-25                   fwd 0.9065 rev 0.5848 fwd-rev +0.3217 shuf 
+w00   d9v2_z8-27                   fwd 0.9280 rev 0.6320 fwd-rev +0.2960 shuf 
+w00   d9v2_zmean                   fwd 0.9198 rev 0.6153 fwd-rev +0.3045 shuf 
+w00   rv2                          fwd 0.9269 rev 0.7294 fwd-rev +0.1975 shuf 0.5681 <- reversed >= 0.65
+w00   s42                          fwd 0.8061 rev 0.5361 fwd-rev +0.2700 shuf 0.4996
+w00   s42_z0-20                    fwd 0.6855 rev 0.4547 fwd-rev +0.2308 shuf 
+w00   s42_z3-23                    fwd 0.8014 rev 0.4770 fwd-rev +0.3244 shuf 
+w00   s42_z5-25                    fwd 0.8354 rev 0.6343 fwd-rev +0.2011 shuf 
+w00   s42_z8-27                    fwd 0.8467 rev 0.6000 fwd-rev +0.2467 shuf 
+w00   s42_zmean                    fwd 0.8427 rev 0.5461 fwd-rev +0.2966 shuf 
+w00   soup42                       fwd 0.8326 rev 0.5045 fwd-rev +0.3281 shuf 0.4807
+w00   soup42_z0-20                 fwd 0.6747 rev 0.4663 fwd-rev +0.2084 shuf 
+w00   soup42_z3-23                 fwd 0.8164 rev 0.4913 fwd-rev +0.3251 shuf 
+w00   soup42_z5-25                 fwd 0.8581 rev 0.5338 fwd-rev +0.3243 shuf 
+w00   soup42_z8-27                 fwd 0.8417 rev 0.4978 fwd-rev +0.3439 shuf 
+w00   soup42_zmean                 fwd 0.8465 rev 0.4995 fwd-rev +0.3470 shuf 
+w00   v8in1447-w00:d9v2            fwd 0.8994 rev 0.5855 fwd-rev +0.3139 shuf 
+w00   v8in1447-w00:v8in1447_d9v2_mean fwd 0.8900 rev 0.6021 fwd-rev +0.2879 shuf 
+w00   v8in1447-w00:v8in1447_d9v2_rank fwd 0.9065 rev 0.6134 fwd-rev +0.2931 shuf 
+w00   v8in1447-w00:v8in1447_s42    fwd 0.8381 rev 0.5932 fwd-rev +0.2449 shuf 
+
+## 4. Published differences against sampling noise (2x half-width rule of thumb)
+w00   Reader v2 over d9v2              diff +0.0275  half-width 0.0085  clear
+ag896 Reader v2 over d9v2              diff -0.0258  half-width 0.0225  marginal
+w00   v8in-1447+d9v2 rank over d9v2    diff +0.0071  half-width 0.0085  within noise
+w00   v8in-1447 over ink_9um s42       diff +0.0320  half-width 0.0085  clear
+w00   soup over seed 42                diff +0.0265  half-width 0.0085  clear
+ag896 soup over seed 42                diff +0.0129  half-width 0.0225  within noise
+w00   s42 4-window mean over default   diff +0.0366  half-width 0.0085  clear
+ag896 s42 4-window mean over default   diff +0.0627  half-width 0.0225  clear
+w00   d9v2 4-window mean over default  diff +0.0204  half-width 0.0085  clear
+ag896 d9v2 4-window mean over default  diff +0.0087  half-width 0.0225  within noise
+w00   d9v2 mirror TTA over default     diff +0.0208  half-width 0.0085  clear
+ag896 d9v2 mirror TTA over default     diff -0.0099  half-width 0.0225  within noise
+w00   d9v2+rv2 mean over rv2           diff +0.0008  half-width 0.0085  within noise
+w00   mixing in s42 hurts d9v2         diff -0.0317  half-width 0.0085  clear
