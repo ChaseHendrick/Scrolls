@@ -48,12 +48,28 @@ Record the PR and commit in your ledger (`--villa-commit`). Before trusting MPS 
 
 ```bash
 git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
-git checkout claude/youthful-heisenberg-gdjttc   # until merged
 brew install uv
 bash scripts/mac-verify.sh
 ```
 
 [`scripts/mac-verify.sh`](../scripts/mac-verify.sh) does the whole runbook below: clones villa, builds a Python 3.14 environment with villa's models stack (without its C++ `volume-cartographer` package, which inference does not need), downloads the published w035 surface volume (`kit fetch`, about 1 GB, no AWS CLI) and the seed42 checkpoint, runs the CPU reference on `main` (both directions), runs PR #1865 twice, checks the logs say `Using MPS device` (no silent CPU fallback), runs both `kit verify` comparisons, and prints a summary to paste. Everything lives in `~/scrolls-work` (override with `WORK=`); nothing is uploaded.
+
+## Generalization check on w045: one command
+
+```bash
+cd Scrolls && git fetch origin && git checkout claude/jolly-rubin-n55p5t   # until merged
+bash scripts/mac-w045.sh
+```
+
+[`scripts/mac-w045.sh`](../scripts/mac-w045.sh) answers the question w035 cannot: does a model find ink it was not trained on? PHerc0139 w045 has published ink labels and is in neither model's training set. In the same `~/scrolls-work` as `mac-verify.sh`, the script:
+
+1. Fetches w045 (1.7 GB) and its labels, plus `ink_9um` seeds 42 and 43 and v8in at a pinned revision.
+2. Runs `ink_9um` on MPS through PR #1865, both seeds, both directions, and checks the logs for `Using MPS device`.
+3. Runs v8in on a 640 px crop on the CPU and on MPS, and stops unless `kit verify` passes, with the reverse map as the control.
+4. Runs v8in on MPS over the box around the labelled region, both directions. It picks the stride from the speed it measured and `V8IN_HOURS` (default 4), and the batch size from your memory: fp32 batch 8 needs about 10 GB.
+5. Prints a summary to paste: `kit auc` for every map against the labels (forward against reverse) and `kit rowscore`.
+
+Knobs: `V8IN_FP16=1` (half precision on MPS; kept only if the crop check still passes), `V8IN_STRIDE`, `V8IN_BATCH`, `V8IN_REGION=full`. What to expect from the AUC: Bullo27 reports 0.74 to 0.81 for `ink_9um` on another scroll it never saw; about 0.5 means the model reads nothing. A forward AUC close to the reverse AUC means it reads brightness, not ink.
 
 ## Runbook: verify MPS against CPU on the control segment
 

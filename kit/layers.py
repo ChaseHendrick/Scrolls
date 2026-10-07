@@ -5,7 +5,10 @@ zarr stores of shape (layers, height, width), uint8, either a bare array or an O
 group whose full-resolution level is "0". v8in (YoussefMoNader/ink-8um-v8in) reads a
 directory of numbered layer images instead, and uses the central 24 when there are more.
 
-Layers are written one at a time, so memory stays near one layer. Depth order is kept as
+Chunks of these stores usually hold every layer (w045: 28 x 128 x 128), so reading one
+layer decompresses the whole volume. The export therefore reads all requested layers in
+row bands into memory when they fit under max_bytes (w045: 1.4 GB, about 14 times faster
+than layer by layer), and falls back to one layer at a time otherwise. Depth order is kept as
 stored; reverse it at inference time (v8in `--reverse`), not here, so one export serves both
 directions. Needs numpy, tifffile and zarr (all in villa's environment).
 """
@@ -39,7 +42,12 @@ def open_volume(path, level="0"):
     return node
 
 
-def export_layers(volume, out_dir, start=0, count=None, compression="zlib", crop=None):
+DEFAULT_MAX_BYTES = 4 * 1024 ** 3
+BAND_ROWS = 1024
+
+
+def export_layers(volume, out_dir, start=0, count=None, compression="zlib", crop=None,
+                  max_bytes=DEFAULT_MAX_BYTES):
     """Write layers start .. start+count-1 of volume as 00.tif, 01.tif, ... in out_dir.
 
     crop is (y0, y1, x0, x1) in full-resolution pixels, or None for the whole layer."""
@@ -51,29 +59,35 @@ def export_layers(volume, out_dir, start=0, count=None, compression="zlib", crop
         count = total - start
     if start < 0 or count < 1 or start + count > total:
         raise VerifyError(f"layers {start}..{start + count - 1} are outside the volume's {total} layers")
-    region = (slice(None), slice(None))
+    h, w = volume.shape[1:]
+    y0, y1, x0, x1 = 0, h, 0, w
     if crop is not None:
         y0, y1, x0, x1 = crop
-        h, w = volume.shape[1:]
         if not (0 <= y0 < y1 <= h and 0 <= x0 < x1 <= w):
             raise VerifyError(f"crop {list(crop)} is outside the {h} x {w} layer")
-        region = (slice(y0, y1), slice(x0, x1))
+    region = (slice(y0, y1), slice(x0, x1))
+    if volume.dtype != np.uint8:
+        raise VerifyError(f"the volume is {volume.dtype}; v8in expects uint8 layers")
+    stack = None
+    if count * (y1 - y0) * (x1 - x0) <= max_bytes:
+        stack = np.empty((count, y1 - y0, x1 - x0), dtype=np.uint8)
+        for band in range(y0, y1, BAND_ROWS):
+            end = min(band + BAND_ROWS, y1)
+            stack[:, band - y0:end - y0] = volume[start:start + count, band:end, x0:x1]
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
     width = max(2, len(str(count - 1)))
     written = []
     for i in range(count):
-        layer = np.asarray(volume[(start + i, *region)])
-        if layer.dtype != np.uint8:
-            raise VerifyError(f"layer {start + i} is {layer.dtype}; v8in expects uint8 (or uint16)")
+        layer = stack[i] if stack is not None else np.asarray(volume[(start + i, *region)])
         path = out / f"{i:0{width}d}.tif"
         tifffile.imwrite(path, layer, compression=compression)
         written.append(path)
     return written
 
 
-def export_file(src, out_dir, start=0, count=None, level="0", crop=None):
+def export_file(src, out_dir, start=0, count=None, level="0", crop=None, max_bytes=DEFAULT_MAX_BYTES):
     volume = open_volume(src, level)
-    written = export_layers(volume, out_dir, start, count, crop=crop)
+    written = export_layers(volume, out_dir, start, count, crop=crop, max_bytes=max_bytes)
     return {"source": str(src), "shape": list(volume.shape), "start": start, "crop": crop,
             "layers": len(written), "out_dir": str(out_dir)}

@@ -66,6 +66,21 @@ class LayersTest(unittest.TestCase):
         with self.assertRaises(verify.VerifyError):
             layers.export_file(src, self.root / "bad", crop=(0, 21, 0, 5))
 
+    def test_banded_and_per_layer_reads_agree(self):
+        rng = np.random.default_rng(0)
+        data = rng.integers(0, 256, size=(5, 2100, 40), dtype=np.uint8)   # more rows than one band
+        src = self.bare(data)
+        layers.export_file(src, self.root / "band", crop=(3, 2050, 1, 39))
+        layers.export_file(src, self.root / "single", crop=(3, 2050, 1, 39), max_bytes=0)
+        for i in range(5):
+            a = tifffile.imread(self.root / "band" / f"{i:02d}.tif")
+            np.testing.assert_array_equal(a, data[i, 3:2050, 1:39])
+            np.testing.assert_array_equal(a, tifffile.imread(self.root / "single" / f"{i:02d}.tif"))
+
+    def test_non_uint8_volume_is_refused(self):
+        with self.assertRaises(verify.VerifyError):
+            layers.export_file(self.bare(volume().astype(np.uint16)), self.root / "out")
+
     def test_out_of_range_is_refused(self):
         with self.assertRaises(verify.VerifyError):
             layers.export_file(self.bare(volume()), self.root / "out", start=4, count=3)
