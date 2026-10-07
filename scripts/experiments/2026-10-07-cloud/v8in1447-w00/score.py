@@ -14,7 +14,7 @@ from kit import auc, ensemble, hpscore  # noqa: E402
 OUT = sys.argv[1]
 W = os.environ.get("W", os.path.expanduser("~/scrolls-work"))
 LAB = f"{W}/data/0841-w00_labels"
-CROP, SHAPE, VOXEL, LEVEL, INNER = (2624, 3264, 2688, 3328), (4220, 4760), 9.366, 2, 64
+CROP, SHAPE, VOXEL, LEVEL, INNER = (2624, 3264, 2688, 3328), (4220, 4760), 9.366, "2", 64
 M = f"{OUT}/maps"
 V8 = "YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062@2bf9f421862cda0ed41dcae6e8274c12e295d03a"
 D9 = "d9v2_ft-012000.pth (TAUIL-Abd-Elilah v1.0, sha256 50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966)"
