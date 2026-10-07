@@ -1,0 +1,112 @@
+{
+  "schema": 1,
+  "accessed": "2026-10-07",
+  "note": "Generic job assumptions for kit/cloudcost.py. Hours are assumptions with stated bases, not measurements. GPU containers are assumed to request 4 physical cores (8 vCPU) and 32 GiB memory unless stated; Modal bills CPU and memory on top of the GPU.",
+  "inference_profiles": {
+    "2p5d_9um": {
+      "description": "2.5D reader at about 9 um (e.g. public ink_9um hybrid 3D-2D checkpoints, Hecate 9.6 um)",
+      "gpu": "A10", "ref_um": 9.4, "scale_power": 2, "layers": 28,
+      "gpu_s_per_cm2": [1, 3, 10],
+      "basis": "Measured on an Apple M1 Pro (MPS): ink_9um, both directions, all of w045 in 649 to 679 s per seed (docs/mac.md) over a 40.0 cm2 map (docs/logs/2026-10-07-novel-checks.md), about 8 s per cm2 per pass. High assumes no GPU speedup over that; typical and low assume 3x and 8x (unverified). 28 slices as in the official 9 um render (https://scrollprize.org/tutorial5).",
+      "stage_mb_per_s": [100, 50, 20],
+      "startup_h": 0.05
+    },
+    "2p5d_2um": {
+      "description": "2.5D reader at 2.4 um (e.g. organiser 2 um canonical model, PHerc. 1667 iteration models, Hecate 2.4 um)",
+      "gpu": "L40S", "ref_um": 2.4, "scale_power": 2, "layers": 65,
+      "gpu_s_per_cm2": [20, 40, 120],
+      "basis": "Official tutorial: 2.5D inference on a full segment takes on the order of an hour on a single GPU (https://scrollprize.org/tutorial5). The tutorial segment's published 2.4 um prediction is 51,960 x 31,960 px, 95.6 cm2 of canvas (TIFF header of the public prediction file linked from the tutorial), so about 38 s per cm2 of canvas or more per surface cm2. High covers test-time mirroring or a slower card. GPU type in the tutorial is not stated.",
+      "stage_mb_per_s": [100, 50, 20],
+      "startup_h": 0.05
+    },
+    "3d_l2": {
+      "description": "Native 3D reader at pyramid level 2 of a 2.4 um scan (9.6 um voxels), e.g. villa full_3d_single_wrap",
+      "gpu": "H100", "ref_um": 9.6, "scale_power": 3, "layers": 80,
+      "gpu_s_per_cm2": [60, 95, 200],
+      "basis": "Official tutorial: about 78,000 patches and about 2.5 h on an H100 for the tutorial segment (https://scrollprize.org/tutorial5); 9,000 s over 95.6 cm2 of canvas is about 94 s per cm2. Staging uses an 80-voxel band (the tutorial patch depth); chunk-aligned reads fetch more.",
+      "stage_mb_per_s": [100, 50, 20],
+      "startup_h": 0.1
+    },
+    "3d_2um": {
+      "description": "Native 3D reader at full 2.4 um resolution (e.g. full_3d at level 0; mesh-free 3D readers such as ink_3d_dino_guided are assumed similar or heavier)",
+      "gpu": "H100", "ref_um": 2.4, "scale_power": 2, "layers": 80,
+      "gpu_s_per_cm2": [300, 760, 1500],
+      "basis": "Interpretation: the tutorial says full resolution plans hundreds of thousands of patches against about 78,000 at level 2, so 3x to 16x the level-2 time per cm2 (about 95 s). Not measured; time one patch batch before any run.",
+      "stage_mb_per_s": [100, 50, 20],
+      "startup_h": 0.1
+    }
+  },
+  "jobs": [
+    {"id": "infer_9um_10", "name": "Inference, 2.5D 9 um-class reader, 10 cm2 at 7.91 um, forward + reversed", "inference": {"profile": "2p5d_9um", "area_cm2": 10, "um": 7.91, "passes": 2}},
+    {"id": "infer_9um_100", "name": "Inference, 2.5D 9 um-class reader, 100 cm2 at 7.91 um, forward + reversed", "inference": {"profile": "2p5d_9um", "area_cm2": 100, "um": 7.91, "passes": 2}},
+    {"id": "infer_2um_10", "name": "Inference, 2.5D 2.4 um reader, 10 cm2 at 2.4 um, forward + reversed", "inference": {"profile": "2p5d_2um", "area_cm2": 10, "um": 2.4, "passes": 2}},
+    {"id": "infer_2um_100", "name": "Inference, 2.5D 2.4 um reader, 100 cm2 at 2.4 um, forward + reversed", "inference": {"profile": "2p5d_2um", "area_cm2": 100, "um": 2.4, "passes": 2}},
+    {"id": "infer_3dl2_100", "name": "Inference, native 3D reader at level 2 (9.6 um), 100 cm2", "inference": {"profile": "3d_l2", "area_cm2": 100, "um": 9.6, "passes": 1}},
+    {"id": "infer_3d2um_10", "name": "Inference, native 3D reader at 2.4 um, 10 cm2", "inference": {"profile": "3d_2um", "area_cm2": 10, "um": 2.4, "passes": 1}},
+    {
+      "id": "finetune_9um_4xh100",
+      "name": "Fine-tune a 9 um 2.5D reader, 4 variants in parallel on 4 x H100 (prepare, base, variants)",
+      "assumptions": "1,200 steps at batch 8 per variant plus crop inference and bootstrap scoring; the official full 78,125-iteration 9 um recipe takes about 5 h on one H100 (https://scrollprize.org/tutorial5), so training compute is minutes and I/O, inference and scoring dominate. Variant wall time 15 / 25 / 45 min.",
+      "phases": [
+        {"name": "image build (CPU, first run only)", "gpu": null, "cpu": 2, "mem_gib": 4, "hours": [0.1, 0.25, 0.5]},
+        {"name": "prepare: env, checkpoints, data, crops (CPU, cached on a Volume)", "gpu": null, "cpu": 4, "mem_gib": 32, "hours": [0.5, 1.0, 1.5]},
+        {"name": "base maps and scores (1 x H100)", "gpu": "H100", "gpus": 1, "cpu": 4, "mem_gib": 32, "hours": [0.15, 0.25, 0.5]},
+        {"name": "4 variants in parallel (4 containers x 1 H100)", "gpu": "H100", "gpus": 1, "containers": 4, "cpu": 4, "mem_gib": 32, "hours": [0.25, 0.42, 0.75]},
+        {"name": "collect (CPU)", "gpu": null, "cpu": 1, "mem_gib": 4, "hours": [0.05, 0.05, 0.1]}
+      ],
+      "volume_gib": [20, 40, 80]
+    },
+    {
+      "id": "finetune_9um_smoke",
+      "name": "Same fine-tune, smoke run (5 steps per variant, warm Volume)",
+      "phases": [
+        {"name": "prepare check (CPU, cached)", "gpu": null, "cpu": 4, "mem_gib": 32, "hours": [0.05, 0.1, 0.25]},
+        {"name": "base (1 x H100)", "gpu": "H100", "gpus": 1, "cpu": 4, "mem_gib": 32, "hours": [0.1, 0.15, 0.25]},
+        {"name": "4 variants (4 x H100)", "gpu": "H100", "gpus": 1, "containers": 4, "cpu": 4, "mem_gib": 32, "hours": [0.08, 0.15, 0.25]}
+      ]
+    },
+    {
+      "id": "finetune_9um_1xa10",
+      "name": "Same fine-tune run sequentially on 1 x A10 (2 to 4 h)",
+      "phases": [
+        {"name": "prepare (CPU)", "gpu": null, "cpu": 4, "mem_gib": 32, "hours": [0.5, 1.0, 1.5]},
+        {"name": "all phases on 1 x A10", "gpu": "A10", "gpus": 1, "cpu": 4, "mem_gib": 32, "hours": [2.0, 2.5, 4.0]}
+      ]
+    },
+    {
+      "id": "scratch_3d_selftrain",
+      "name": "Train a 3D ink model from scratch with pseudo-label self-training (2 x H100 for 6 to 12 h, plus tuning)",
+      "assumptions": "Official native 3D tutorial run: 20,000 iterations at batch 8 take about 10 h on one H100 for one segment (https://scrollprize.org/tutorial5). Here: 4 short tuning runs, pseudo-label inference between rounds, then a main run on one container with 2 H100s (8 cores, 64 GiB).",
+      "phases": [
+        {"name": "image build (CPU)", "gpu": null, "cpu": 2, "mem_gib": 4, "hours": [0.1, 0.25, 0.5]},
+        {"name": "stage volumes and labels to a Volume (CPU)", "gpu": null, "cpu": 8, "mem_gib": 32, "hours": [1.0, 2.0, 4.0]},
+        {"name": "tuning runs (4 containers x 1 H100)", "gpu": "H100", "gpus": 1, "containers": 4, "cpu": 4, "mem_gib": 32, "hours": [0.5, 1.0, 2.0]},
+        {"name": "pseudo-label inference between rounds (1 x H100)", "gpu": "H100", "gpus": 1, "cpu": 4, "mem_gib": 32, "hours": [1.0, 2.0, 4.0]},
+        {"name": "main training (1 container, 2 x H100)", "gpu": "H100", "gpus": 2, "cpu": 8, "mem_gib": 64, "hours": [6.0, 9.0, 12.0]}
+      ],
+      "volume_gib": [100, 200, 400]
+    },
+    {
+      "id": "spiral_fit",
+      "name": "Surface tracing / spiral fit on one scroll region, both winding senses, render and infer (A10)",
+      "assumptions": "Published Modal run: image builds about 25 min CPU, data fetch 16 GiB in about 12 min CPU, spiral fit 30,000 steps x 2 senses 61.0 + 64.9 min on A10, render and inference about 1 h on A10, total 13.53 USD including verification (https://github.com/bnleft/first-light-pherc0211).",
+      "phases": [
+        {"name": "image builds (CPU)", "gpu": null, "cpu": 2, "mem_gib": 8, "hours": [0.25, 0.42, 0.75]},
+        {"name": "fetch and pack (CPU)", "gpu": null, "cpu": 4, "mem_gib": 16, "hours": [0.25, 0.5, 1.0]},
+        {"name": "spiral fit, 2 senses (A10)", "gpu": "A10", "gpus": 1, "cpu": 4, "mem_gib": 32, "hours": [1.0, 2.1, 4.2]},
+        {"name": "render and inference (A10)", "gpu": "A10", "gpus": 1, "cpu": 4, "mem_gib": 32, "hours": [0.5, 1.0, 2.0]}
+      ],
+      "volume_gib": [20, 40, 80]
+    },
+    {
+      "id": "char_lm_cpu",
+      "name": "Character n-gram language model fit (CPU only, 4 cores, 16 GiB)",
+      "phases": [{"name": "fit (CPU)", "gpu": null, "cpu": 4, "mem_gib": 16, "hours": [0.5, 1.0, 3.0]}]
+    },
+    {
+      "id": "small_classifier_t4",
+      "name": "Small CNN classifier on patches (1 x T4, 2 cores, 16 GiB)",
+      "phases": [{"name": "train and evaluate (T4)", "gpu": "T4", "gpus": 1, "cpu": 2, "mem_gib": 16, "hours": [0.25, 0.5, 1.0]}]
+    }
+  ]
+}
