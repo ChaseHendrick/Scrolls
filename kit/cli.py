@@ -1,11 +1,11 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,layers,run}."""
 
 import argparse
 import json
 import sys
 from datetime import date
 
-from . import doctor, fetch, ledger, plan, prizes, rowscore, verify
+from . import auc, doctor, fetch, layers, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -72,6 +72,29 @@ def cmd_rowscore(args):
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2) if args.json else rowscore.format_result(result))
+    return 0
+
+
+def cmd_auc(args):
+    try:
+        result = auc.score_files(args.prediction, args.labels, args.mask, args.control, args.level,
+                                 args.crop, args.surface_shape, args.keep_zero)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else auc.format_result(result))
+    return 0
+
+
+def cmd_layers(args):
+    try:
+        result = layers.export_file(args.volume, args.out_dir, args.start, args.count, args.level, args.crop)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(f"{result['layers']} layers of {result['shape']} from layer {result['start']} -> {result['out_dir']}")
     return 0
 
 
@@ -162,6 +185,32 @@ def build_parser():
     p.add_argument("--name", default="rowscore")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_rowscore)
+
+    p = sub.add_parser("auc", help="pixel AUC of an ink map against a segment's published labels")
+    p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
+    p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
+    p.add_argument("--mask", required=True, help="supervision.zarr: where ink and non-ink were both labelled")
+    p.add_argument("--control", help="reverse-direction map of the same surface")
+    p.add_argument("--level", default=auc.DEFAULT_LEVEL, help="label pyramid level matching the 9 um grid")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="the map covers only this window of the surface")
+    p.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"), help="full surface shape, with --crop")
+    p.add_argument("--keep-zero", action="store_true", help="count pixels where the map is exactly 0")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug", help="attach the result to this experiment")
+    p.add_argument("--name", default="label-auc")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_auc)
+
+    p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
+    p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")
+    p.add_argument("out_dir")
+    p.add_argument("--start", type=int, default=0, help="first layer to export")
+    p.add_argument("--count", type=int, help="number of layers (default: all from --start)")
+    p.add_argument("--level", default="0", help="OME-Zarr level when the store is a group")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="export only this window, in full-resolution pixels")
+    p.set_defaults(func=cmd_layers)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
