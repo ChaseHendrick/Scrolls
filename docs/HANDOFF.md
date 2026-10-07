@@ -2,6 +2,29 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (midday): an agent runs everything from here
+
+**The user does not want to type or paste commands.** Copying commands into the terminal was too much (user, 2026-10-07). Whoever picks this up runs the steps themselves and reports results in plain words. PR [ChaseHendrick/Scrolls#2](https://github.com/ChaseHendrick/Scrolls/pull/2) was merged into `main` at the user's request.
+
+### A. On the user's Mac (needs an agent running on the Mac, such as Claude Code in Terminal: only the Mac has the GPU)
+
+1. Find the checkout: `find ~ -maxdepth 4 -path "*/scripts/mac-w045.sh"`, then `cd` to the folder above `scripts/`. Not `~/scrolls-work`: that is the data folder.
+2. Make sure no old run is going: `ps aux | grep -E "v8in_run|ink_detection" | grep -v grep`. An fp16 run of `SEGMENT=0841-w00` was going at 6.2 s per tile; if it is still alive, stop it (it is safe: maps are recomputed, the lock is taken over).
+3. `git checkout main && git pull`.
+4. `bash scripts/mac-phase0.sh` and let it run (about 2 hours: v8in, then `v8in-1447`, on the three PHerc0841 crops; fp32; resumable; keeps the Mac awake; notification at the end). Do not set `V8IN_FP16` (5x slower on the M1 Pro).
+5. Then `python3 -m kit gate` (Gate A table). Record the Mac numbers: each `~/scrolls-work/0841-*/results/auc_v8in*.json` becomes a row in `docs/results.json` (window `crop`, `inner_px` 64, `map_from` `bare-crop`, device `mps`, reader `v8in d89166b` or `v8in-1447 2bf9f42`); `kit gate` must report "match" for the `ink_9um` check. Update the README's "Novel findings (Chase Hendrick)" (v8in on PHerc0841 is unpublished), `docs/tricks.md` if relevant, `docs/contrib/progress-prize-2026-10-draft.md`, and this handoff. Commit on a new branch and open a PR; tell the user the Gate A line in one sentence.
+
+### B. In a cloud session (no GPU needed)
+
+1. **Tricks results.** A job left running in the 7 Oct container scores every map and pushes `docs/logs/2026-10-07-tricks-results.md` to branch `claude/jolly-rubin-n55p5t` (restarted from `main`). If that file exists, open a PR for it, fold its table into `docs/tricks.md` ("Measured here") and `docs/results.json`, and delete it. If it does not exist, the container was reclaimed before the runs ended: rebuild with `scripts/experiments/2026-10-07-tricks/` (its README lists the layout) and score with `score.py`. Measured so far (w00 crop only): soup plus 4 z windows lifts `ink_9um` 0.806 to 0.847; z windows or mirror TTA lift d9v2 0.899 to 0.920; mixing d9v2 with the weaker `ink_9um` lowers it to 0.868; depth-shuffled input drops all readers to 0.48 to 0.50 (a cleaner null than reverse).
+2. **Fine-tune smoke test** (v8in's PHerc1447 loop on CPU, 2 train and 2 val batches): its status is in the same results file; to redo it, `scripts/experiments/2026-10-07-tricks/finetune_smoke.sh`. It only shows that the loop runs; it matters right before renting a GPU, which needs the user's budget decision.
+3. **Gate A** (after A.5): if d9v2 or an ensemble beats v8in by 0.02 or more, write an atlas script variant on villa's inference and a second preregistration (same readout rule) before any map; the user's Mac then runs it like step A.4.
+4. Open items from the plan: idea 1 depends on `v8in-1447`'s PHerc0841 number (step A.4); ideas 2 and 3 are in `plans/2026-10-07-training.md`. Progress Prize draft: submit near 31 Oct, only with the user's go-ahead.
+
+### New tools this session
+
+`kit gate` (Gate A), `kit ensemble` (map averaging, rank mean across models), `kit hpscore` (Scheirer's letter-scale score), `kit shuffle` and `kit layers --shuffle` (depth-shuffle control), `scripts/soup.py` (checkpoint soup within one run, refuses mixed seeds; rebuilds Nieuwlaar's `soup42_last4` bit-identically), `scripts/mac-phase0.sh` (the Phase 0 queue), `tests/test_repo.py` (repo checks in CI). Community tricks with sources: [`tricks.md`](tricks.md).
+
 ## Session 7 October 2026 (late morning): the plan the user agreed
 
 User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum posting**. The longer view, steps 6 onwards, is in [`plans/roadmap.md`](plans/roadmap.md).
