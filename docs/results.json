@@ -1,0 +1,547 @@
+{
+ "schema": 1,
+ "updated": "2026-10-07",
+ "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
+ "held_out": {
+  "w045": "held out from ink_9um, v8in and d9v2; Reader v2 trained on it",
+  "PHerc0841": "in no candidate's training set"
+ },
+ "segments": {
+  "w045": {
+   "scroll": "PHerc0139",
+   "segment": "20260126000000-w045_2026012619",
+   "voxel_um": 9.362,
+   "surface_shape": [
+    5980,
+    8240
+   ],
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "labels": "ink-labels/2.399um-volume-20260102150214/20260918",
+   "label_level": "2"
+  },
+  "0841-w00": {
+   "segment": "20260220213127-w00",
+   "surface_shape": [
+    4220,
+    4760
+   ],
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "scroll": "PHerc0841",
+   "voxel_um": 9.366,
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "label_level": "2"
+  },
+  "0841-ag896": {
+   "segment": "20260220214732-auto_grown_20260220144552896",
+   "surface_shape": [
+    4640,
+    4720
+   ],
+   "crop": [
+    2496,
+    3136,
+    1600,
+    2240
+   ],
+   "scroll": "PHerc0841",
+   "voxel_um": 9.366,
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "label_level": "2"
+  },
+  "0841-ag405": {
+   "segment": "20260221022814-auto_grown_20260220174252405",
+   "surface_shape": [
+    3760,
+    4900
+   ],
+   "crop": [
+    1024,
+    1664,
+    2496,
+    3136
+   ],
+   "scroll": "PHerc0841",
+   "voxel_um": 9.366,
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "label_level": "2"
+  }
+ },
+ "results": [
+  {
+   "segment": "w045",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.8722,
+   "auc_reversed": 0.4425,
+   "ink_px": 149192,
+   "row_score_as_stored": 79.8,
+   "row_score_reversed": 8.1,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed43",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.8866,
+   "auc_reversed": 0.5024,
+   "ink_px": 149192,
+   "row_score_as_stored": 68.3,
+   "row_score_reversed": 10.6,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seeds 42+43 mean",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "row_score_as_stored": 95.9,
+   "row_score_reversed": 9.5,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.9136,
+   "auc_reversed": 0.3704,
+   "ink_px": 78047,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed43",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.9098,
+   "auc_reversed": 0.4347,
+   "ink_px": 78047,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "mps (M1 Pro, villa PR #1865 6723ad158)",
+   "auc_as_stored": 0.9136,
+   "auc_reversed": 0.3704,
+   "ink_px": 78047,
+   "measured_by": "user's Mac",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed43",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "mps (M1 Pro, villa PR #1865 6723ad158)",
+   "auc_as_stored": 0.9098,
+   "auc_reversed": 0.4347,
+   "ink_px": 78047,
+   "measured_by": "user's Mac",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "v8in d89166b",
+   "settings": "fp32, stride 21 both directions, batch 4",
+   "device": "mps (M1 Pro)",
+   "auc_as_stored": 0.7382,
+   "auc_reversed": 0.3269,
+   "ink_px": 73200,
+   "measured_by": "user's Mac",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.9074,
+   "auc_reversed": 0.3835,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop and full (identical)",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.9199,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "w045",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.86,
+   "auc_reversed": 0.4004,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.7479,
+   "auc_reversed": 0.501,
+   "row_score_as_stored": 13.7,
+   "row_score_reversed": 23.6,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.7195,
+   "auc_reversed": 0.5697,
+   "row_score_as_stored": 17.5,
+   "row_score_reversed": 8.8,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag405",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.7508,
+   "auc_reversed": 0.6012,
+   "row_score_as_stored": 46.4,
+   "row_score_reversed": 7.5,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.7696,
+   "auc_reversed": 0.5143,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.6553,
+   "auc_reversed": 0.5397,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag405",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "full",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.793,
+   "auc_reversed": 0.6527,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.7704,
+   "auc_reversed": 0.4958,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.6604,
+   "auc_reversed": 0.5575,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag405",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.8212,
+   "auc_reversed": 0.6711,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.8755,
+   "auc_reversed": 0.5573,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.8049,
+   "auc_reversed": 0.5129,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag405",
+   "window": "crop",
+   "inner_px": 0,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.8308,
+   "auc_reversed": 0.5883,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.8061,
+   "auc_reversed": 0.5361,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.6594,
+   "auc_reversed": 0.5579,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag405",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "ink_9um seed42",
+   "settings": "step-075000, overlap 0.5, hann, villa e0bbb8b",
+   "device": "cpu",
+   "auc_as_stored": 0.7838,
+   "auc_reversed": 0.6423,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.8994,
+   "auc_reversed": 0.5855,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.823,
+   "auc_reversed": 0.5323,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-ag405",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "d9v2",
+   "settings": "TAUIL v1.0 d9v2_ft-012000, overlap 0.5, hann",
+   "device": "cpu",
+   "auc_as_stored": 0.8319,
+   "auc_reversed": 0.6572,
+   "measured_by": "this repo",
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  }
+ ],
+ "community": [
+  {
+   "reader": "Hecate",
+   "test": "PHerc0841 whole, human labels",
+   "auc": 0.855,
+   "source": "https://huggingface.co/domenicor046/reader-v2"
+  },
+  {
+   "reader": "Reader v2",
+   "test": "PHerc0841 whole, human labels",
+   "auc": 0.824,
+   "source": "https://huggingface.co/domenicor046/reader-v2"
+  },
+  {
+   "reader": "ink_9um",
+   "test": "PHerc0841 whole, human labels",
+   "auc": 0.733,
+   "source": "https://huggingface.co/domenicor046/reader-v2"
+  },
+  {
+   "reader": "Hecate + Reader v2 mean",
+   "test": "PHerc0841 whole, human labels",
+   "auc": 0.866,
+   "source": "https://huggingface.co/domenicor046/reader-v2"
+  },
+  {
+   "reader": "ink_9um seed42",
+   "test": "PHerc0841, TAUIL held-out benchmark",
+   "auc": 0.736,
+   "source": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search"
+  },
+  {
+   "reader": "d9v2",
+   "test": "PHerc0841, TAUIL held-out benchmark",
+   "auc": 0.828,
+   "source": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search"
+  },
+  {
+   "reader": "Reader v2",
+   "test": "PHerc0841, TAUIL held-out benchmark",
+   "auc": 0.826,
+   "source": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search"
+  },
+  {
+   "reader": "Reader v2 + d9v2 mean",
+   "test": "PHerc0841, TAUIL held-out benchmark",
+   "auc": 0.84,
+   "source": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search"
+  }
+ ],
+ "device_checks": [
+  {
+   "what": "ink_9um seed42, CPU vs MPS, w035",
+   "machine": "Apple M1 Pro",
+   "verdict": "pass",
+   "max_abs_diff": 1,
+   "pearson": 0.99999999,
+   "source": "docs/logs/2026-10-07-w035-cpu.md"
+  },
+  {
+   "what": "v8in, CPU vs MPS, w045 crop, stride 64",
+   "machine": "Apple M1 Pro",
+   "verdict": "pass",
+   "max_abs_diff": 1,
+   "pearson": 0.99999998,
+   "source": "docs/logs/2026-10-07-community-scan.md"
+  }
+ ],
+ "pending": [
+  "v8in on 0841-w00, ag896, ag405 (crop, inner 64, fp16) on the user's Mac",
+  "v8in-1447 (Youssef's PHerc1447 fine-tune) on the same crops",
+  "Reader v2 on the PHerc0841 crops"
+ ]
+}

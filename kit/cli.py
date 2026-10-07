@@ -1,11 +1,12 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,run}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,ensemble,gate,layers,shuffle,provenance,compute,run}."""
 
 import argparse
 import json
 import sys
+from pathlib import Path
 from datetime import date
 
-from . import doctor, fetch, ledger, plan, prizes, verify
+from . import auc, compute, ensemble, gate, hpscore, doctor, fetch, layers, provenance, ledger, plan, prizes, rowscore, verify
 
 
 def cmd_prizes(args):
@@ -40,7 +41,7 @@ def cmd_cost(args):
 
 
 def cmd_fetch(args):
-    prefix = fetch.W035_9UM if args.prefix == "w035" else args.prefix
+    prefix = fetch.ALIASES.get(args.prefix, args.prefix)
     try:
         objects, fetched, total = fetch.fetch_prefix(prefix, args.dest, workers=args.workers)
     except (fetch.FetchError, OSError) as exc:
@@ -61,6 +62,127 @@ def cmd_verify(args):
         return 2
     print(json.dumps(result, indent=2) if args.json else verify.format_result(result))
     return {verify.PASS: 0, verify.PASS_UNCONTROLLED: 3}.get(result["verdict"], 1)
+
+
+def cmd_rowscore(args):
+    try:
+        result = rowscore.score_files(args.forward, args.voxel_um, args.reverse)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else rowscore.format_result(result))
+    return 0
+
+
+def cmd_auc(args):
+    try:
+        result = auc.score_files(args.prediction, args.labels, args.mask, args.control, args.level,
+                                 args.crop, args.surface_shape, args.keep_zero, args.inner)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else auc.format_result(result))
+    return 0
+
+
+def cmd_hpscore(args):
+    try:
+        result = hpscore.score_files(args.prediction, args.labels, args.mask, args.voxel_um, args.control,
+                                     args.level, args.crop, args.surface_shape, args.inner)
+        if args.slug:
+            ledger.add_check(args.slug, args.name, result, root=args.root)
+    except (verify.VerifyError, ledger.LedgerError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else hpscore.format_result(result))
+    return 0
+
+
+def cmd_provenance(args):
+    try:
+        if args.action == "write":
+            record = provenance.build(args.run, args.repo, started=args.started, inputs=args.input,
+                                      models=args.model, outputs=args.output, extra_code=args.code_repo,
+                                      note=args.note)
+            path = provenance.write(record, args.path)
+            print(f"{path}: digest {record['digest']}")
+            return 0
+        record = json.loads(open(args.path, encoding="utf-8").read())
+        problems = provenance.verify(record, recheck_files=args.files)
+    except (OSError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    for problem in problems:
+        print(f"problem: {problem}")
+    if problems:
+        return 1
+    print(f"{args.path}: ok (digest {record['digest']}{', files unchanged' if args.files else ''})")
+    return 0
+
+
+def cmd_compute(args):
+    records = compute.collect(args.paths)
+    if not records:
+        print("no provenance records found", file=sys.stderr)
+        return 2
+    r = compute.rows(records, args.watts)
+    print(json.dumps(r, indent=2) if args.json else compute.table(r, args.watts))
+    return 0
+
+
+def cmd_ensemble(args):
+    try:
+        result = ensemble.ensemble_files(args.out, args.maps, args.method, args.weights)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    if args.json:
+        print(json.dumps(result, indent=2))
+    else:
+        print(f"{result['method']} of {len(result['inputs'])} maps -> {result['out']} "
+              f"({result['valid_px']} valid px of {result['shape'][0]} x {result['shape'][1]})")
+    return 0
+
+
+def cmd_gate(args):
+    work = args.work
+    if work is None:
+        default = Path.home() / "scrolls-work"
+        work = str(default) if default.is_dir() else None
+    try:
+        result = gate.run(work, args.results, args.min_lead, args.min_gap)
+    except (OSError, ValueError, KeyError) as exc:
+        print(f"cannot read the scores: {exc}", file=sys.stderr)
+        return 2
+    print(json.dumps(result, indent=2) if args.json else gate.format_result(result))
+    return 1 if any(not c["match"] for c in result["checks"]) else 0
+
+
+def cmd_layers(args):
+    try:
+        result = layers.export_file(args.volume, args.out_dir, args.start, args.count, args.level, args.crop,
+                                shuffle_seed=args.shuffle)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    window = f", rows {args.crop[0]}-{args.crop[1]}, columns {args.crop[2]}-{args.crop[3]}" if args.crop else ""
+    order = f", depth order shuffled (seed {args.shuffle}): {result['order']}" if args.shuffle is not None else ""
+    print(f"{result['layers']} layers of {result['shape']} from layer {result['start']}{window} -> {result['out_dir']}{order}")
+    return 0
+
+
+def cmd_shuffle(args):
+    try:
+        result = layers.shuffle_file(args.volume, args.out, args.seed, args.level, args.crop)
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    print(f"{result['shape'][0]} layers shuffled (seed {result['seed']}, order {result['order']}) -> {result['out']}")
+    return 0
 
 
 def cmd_run(args):
@@ -123,7 +245,7 @@ def build_parser():
     p.set_defaults(func=cmd_cost)
 
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
-    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' for the control surface volume")
+    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 training / held-out surface volumes")
     p.add_argument("dest", help="local directory")
     p.add_argument("--workers", type=int, default=16)
     p.set_defaults(func=cmd_fetch)
@@ -140,6 +262,109 @@ def build_parser():
     p.add_argument("--name", default="device-agreement")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_verify)
+
+    p = sub.add_parser("rowscore", help="text-row periodicity triage score for ink maps (Bullo27's method)")
+    p.add_argument("forward", nargs="+", help="forward-direction map(s); several are averaged, e.g. two checkpoints")
+    p.add_argument("--reverse", nargs="+", default=[], help="reverse-direction map(s), averaged the same way")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.362")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug", help="attach the result to this experiment")
+    p.add_argument("--name", default="rowscore")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_rowscore)
+
+    p = sub.add_parser("auc", help="pixel AUC of an ink map against a segment's published labels")
+    p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
+    p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
+    p.add_argument("--mask", required=True, help="supervision.zarr: where ink and non-ink were both labelled")
+    p.add_argument("--control", help="reverse-direction map of the same surface")
+    p.add_argument("--level", default=auc.DEFAULT_LEVEL, help="label pyramid level matching the 9 um grid")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="the map covers only this window of the surface")
+    p.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"), help="full surface shape, with --crop")
+    p.add_argument("--keep-zero", action="store_true", help="count pixels where the map is exactly 0")
+    p.add_argument("--inner", type=int, default=0, metavar="PX",
+                   help="leave out this many pixels at every edge (for maps inferred on a cropped input)")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug", help="attach the result to this experiment")
+    p.add_argument("--name", default="label-auc")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_auc)
+
+    p = sub.add_parser("hpscore", help="letter-scale score: 48 um high-passed correlation with the labels (Scheirer)")
+    p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
+    p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
+    p.add_argument("--mask", required=True, help="supervision.zarr")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.366")
+    p.add_argument("--control", help="reverse-direction map of the same surface")
+    p.add_argument("--level", default=auc.DEFAULT_LEVEL)
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    p.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"))
+    p.add_argument("--inner", type=int, default=0, metavar="PX", help="leave this many edge pixels out")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--slug")
+    p.add_argument("--name", default="letter-scale")
+    p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.set_defaults(func=cmd_hpscore)
+
+    p = sub.add_parser("provenance", help="who ran what, when, from which inputs: a record and one digest")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("write", help="hash models, inputs and outputs into a provenance record")
+    a.add_argument("path", help="where to write the JSON record")
+    a.add_argument("--run", required=True, help="run name")
+    a.add_argument("--repo", default=".", help="the Scrolls checkout (operator and commit come from it)")
+    a.add_argument("--code-repo", action="append", default=[], help="another git repo used, e.g. villa")
+    a.add_argument("--model", action="append", default=[], help="checkpoint file or directory; repeatable")
+    a.add_argument("--input", action="append", default=[], help="input file or store; repeatable")
+    a.add_argument("--output", action="append", default=[], help="output file; repeatable")
+    a.add_argument("--started", help="UTC start time, e.g. 2026-10-07T08:00:00Z")
+    a.add_argument("--note")
+    a = actions.add_parser("check", help="recompute the digest; --files also rehashes every file")
+    a.add_argument("path")
+    a.add_argument("--files", action="store_true")
+    p.set_defaults(func=cmd_provenance)
+
+    p = sub.add_parser("compute", help="machine time per run, from provenance records (GENChase-style ledger)")
+    p.add_argument("paths", nargs="+", help="provenance JSON files or directories to search")
+    p.add_argument("--watts", type=float, help="assumed average power draw, for a Wh estimate")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_compute)
+
+    p = sub.add_parser("ensemble", help="average several ink maps of one surface (mean, or rank mean across models)")
+    p.add_argument("out", help="output map, .tif (uint16) or .npy (float32)")
+    p.add_argument("maps", nargs="+", help="input maps on the same grid (.tif or .npy)")
+    p.add_argument("--method", choices=ensemble.METHODS, default="mean",
+                   help="mean: same model (seeds, checkpoints, z windows); rank: different models")
+    p.add_argument("--weights", type=float, nargs="+", help="one weight per map (default equal)")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_ensemble)
+
+    p = sub.add_parser("gate", help="Gate A: rank readers on PHerc0841's three crops by the roadmap's rule")
+    p.add_argument("work", nargs="?", help="Mac work directory with <segment>/results/auc_*.json (default ~/scrolls-work if present)")
+    p.add_argument("--results", default=str(gate.RESULTS), help="committed scores (docs/results.json)")
+    p.add_argument("--min-lead", type=float, default=gate.MIN_LEAD, help="mean AUC lead that counts as a win")
+    p.add_argument("--min-gap", type=float, default=gate.MIN_GAP, help="forward minus reverse AUC needed on every crop")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_gate)
+
+    p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
+    p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")
+    p.add_argument("out_dir")
+    p.add_argument("--start", type=int, default=0, help="first layer to export")
+    p.add_argument("--count", type=int, help="number of layers (default: all from --start)")
+    p.add_argument("--level", default="0", help="OME-Zarr level when the store is a group")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="export only this window, in full-resolution pixels")
+    p.add_argument("--shuffle", type=int, metavar="SEED", help="write the layers in a fixed random order (depth-shuffle control)")
+    p.set_defaults(func=cmd_layers)
+
+    p = sub.add_parser("shuffle", help="depth-shuffle control: copy a surface volume with its layers in a fixed random order")
+    p.add_argument("volume", help="surface-volume zarr")
+    p.add_argument("out", help="new zarr to write")
+    p.add_argument("--seed", type=int, default=20261007)
+    p.add_argument("--level", default="0")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    p.set_defaults(func=cmd_shuffle)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))

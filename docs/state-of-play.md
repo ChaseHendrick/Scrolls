@@ -29,7 +29,17 @@ An organizer note on AI: an autonomous agent swarm adapted from karpathy/autores
 
 Related diagnostics: [first-letters-scan-atlas](https://github.com/claudepro1515/first-letters-scan-atlas) (CPU-only sheet visibility per scroll; ranks PHerc0826, 0358, 0813, 1545 most like ink-found scans) and [first-letters-fit-audit](https://github.com/claudepro1515/first-letters-fit-audit) (published spiral fits of eligible scrolls do not detectably sit on sheets).
 
+| [rodriguescarson](https://github.com/rodriguescarson/eligible-scroll-atlas) | 340 automatic meshes, 8 scrolls | No mesh passes all four preregistered screens | `ink_9um` and the team's Hecate 9.6 µm model; maps of 5 screen-passing meshes held back and sent to the team privately |
+| [pscamillo](https://github.com/pscamillo/vesuvius-eligible-meshes) | Same 340 meshes (spiral fits) | Surfaces and `ink_9um` maps | Forward and reverse labels swapped (no `--flip-normals`), corrected 2026-09-15 |
+
 What these nulls say: the public 9 µm model, on automatically traced or spiral-fitted surfaces, did not show letters. What they do not say: that these scrolls have no ink. On PHerc0841, the same public pipeline found ink only as blobs where the team's 2.4 µm predictions show text (Bullo27 calibration). Surface quality and model generalization are the open variables.
+
+## New ink models since the snapshot (checked 2026-10-07)
+
+- [YoussefMoNader/ink-8um-v8in](https://huggingface.co/YoussefMoNader/ink-8um-v8in), 2026-09-28, MIT. Responds next to the team's announced PHerc1447 text without having seen PHerc1447 (Bullo27, Community report). No eligible-scroll run of it was found. PHerc0139 w045 is held out from its training.
+- [scrollprize/hecate](https://huggingface.co/scrollprize/hecate), 2026-09-15. 3D ink with attention across depth; 9.6 µm checkpoint run over 340 automatic meshes by rodriguescarson.
+
+On 2026-09-30 the open-problems page stopped citing community sheet-switch detectors and now asks for tracing that avoids sheet switches ([#1937](https://github.com/ScrollPrize/villa/pull/1937)). Details: [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
 
 ## Apple Silicon support (open PRs, 2026-10-07)
 

@@ -1,0 +1,44 @@
+# Scrolls
+
+> A workbench for the Vesuvius Challenge (reading carbonized Herculaneum scrolls from X-ray CT): tested Python tools to plan official-pipeline runs, score ink maps against published labels with a reverse-depth control, check Mac GPU results against the CPU, and record provenance; plus dated, sourced research notes. It claims no letters in any scroll. Apache-2.0.
+
+Start with AGENTS.md (rules, map, commands, glossary), then the current state in docs/HANDOFF.md.
+
+## Start here
+
+- [AGENTS.md](AGENTS.md): entry point for agents: hard rules, standing user decisions, repository map, commands, glossary
+- [docs/HANDOFF.md](docs/HANDOFF.md): current state and next steps, newest first
+- [docs/plans/roadmap.md](docs/plans/roadmap.md): phases, gates, timeline
+- [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
+- [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
+
+## Research
+
+- [docs/state-of-play.md](docs/state-of-play.md): what has been read, tried and paid, with sources
+- [docs/logs/2026-10-07-literature.md](docs/logs/2026-10-07-literature.md): papers, datasets and code (arXiv, journals, Zenodo, Kaggle) and what they mean here
+- [docs/papers.json](docs/papers.json): the same bibliography, machine-readable
+- [docs/logs/2026-10-07-community-scan.md](docs/logs/2026-10-07-community-scan.md): community repositories, new models, and this repository's measurements
+- [docs/plans/2026-10-07-training.md](docs/plans/2026-10-07-training.md): plan for training a reader three ways
+- [docs/prereg/2026-10-07-v8in-atlas.md](docs/prereg/2026-10-07-v8in-atlas.md): preregistered target run
+- [docs/prizes.md](docs/prizes.md): prize terms and eligible scrolls
+
+## Tools
+
+- [kit/auc.py](kit/auc.py): pixel AUC against labels, reverse control, crop and edge options
+- [kit/gate.py](kit/gate.py): Gate A decision from committed and Mac scores
+- [scripts/mac-phase0.sh](scripts/mac-phase0.sh): the Phase 0 Mac queue in one command
+- [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
+- [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
+- [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run
+- [kit/provenance.py](kit/provenance.py): who ran what, when, from which inputs, with one digest
+- [kit/verify.py](kit/verify.py): two maps agree only if a control map is caught
+- [kit/rowscore.py](kit/rowscore.py): text-row periodicity triage score
+- [kit/layers.py](kit/layers.py): surface-volume zarr to layer TIFFs
+- [scripts/mac-w045.sh](scripts/mac-w045.sh): one-command labelled test of ink models on a Mac GPU
+- [docs/mac.md](docs/mac.md): Apple Silicon guide and timings
+
+## Rules
+
+- [docs/AI-AGENTS.md](docs/AI-AGENTS.md): full rulebook (never publish a possible finding; preregister; cite)
+- [docs/NOVELTY.md](docs/NOVELTY.md): claim labels
+- [docs/WORKFLOW.md](docs/WORKFLOW.md): from run to candidate to submission

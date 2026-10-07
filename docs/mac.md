@@ -48,12 +48,74 @@ Record the PR and commit in your ledger (`--villa-commit`). Before trusting MPS 
 
 ```bash
 git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
-git checkout claude/youthful-heisenberg-gdjttc   # until merged
 brew install uv
 bash scripts/mac-verify.sh
 ```
 
 [`scripts/mac-verify.sh`](../scripts/mac-verify.sh) does the whole runbook below: clones villa, builds a Python 3.14 environment with villa's models stack (without its C++ `volume-cartographer` package, which inference does not need), downloads the published w035 surface volume (`kit fetch`, about 1 GB, no AWS CLI) and the seed42 checkpoint, runs the CPU reference on `main` (both directions), runs PR #1865 twice, checks the logs say `Using MPS device` (no silent CPU fallback), runs both `kit verify` comparisons, and prints a summary to paste. Everything lives in `~/scrolls-work` (override with `WORK=`); nothing is uploaded.
+
+## Generalization check on w045: one command
+
+```bash
+cd Scrolls && git fetch origin && git checkout claude/jolly-rubin-n55p5t   # until merged
+bash scripts/mac-w045.sh
+```
+
+[`scripts/mac-w045.sh`](../scripts/mac-w045.sh) answers the question w035 cannot: does a model find ink it was not trained on? PHerc0139 w045 has published ink labels and is in neither model's training set. In the same `~/scrolls-work` as `mac-verify.sh`, the script:
+
+1. Fetches w045 (1.7 GB) and its labels, plus `ink_9um` seeds 42 and 43 and v8in at a pinned revision.
+2. Runs `ink_9um` on MPS through PR #1865, both seeds, both directions, and checks the logs for `Using MPS device`.
+3. Runs v8in on a 640 px crop on the CPU and on MPS, and stops unless `kit verify` passes, with the reverse map as the control.
+4. Runs v8in on MPS over the box around the labelled region, both directions. It picks the stride from the speed it measured and `V8IN_HOURS` (default 4), and the batch size from your memory: fp32 batch 8 needs about 10 GB.
+5. Prints a summary to paste: `kit auc` for every map against the labels (forward against reverse) and `kit rowscore`.
+
+The harder test: `SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh` runs the same comparison on PHerc0841, a scroll in neither model's training set, where the team traced three segments with labelled text (`0841-w00`, `0841-ag896`, `0841-ag405`; Bullo27's unseen-scroll calibration). Short on time? `QUICK=1 bash scripts/mac-w045.sh` stops after the crop: v8in at full density on the 640 px patch of densest labelled text, and `ink_9um` scored on that same patch, so the models are compared on one test in well under an hour. Knobs: `V8IN_FP16=1` (half precision on MPS; kept only if the crop check still passes and it is faster; on an M1 Pro it is not, see below), `V8IN_STRIDE`, `V8IN_BATCH`, `V8IN_REGION=full`. What to expect from the AUC: Bullo27 reports 0.74 to 0.81 for `ink_9um` on another scroll it never saw; about 0.5 means the model reads nothing. A forward AUC close to the reverse AUC means it reads brightness, not ink.
+
+**All of Phase 0 in one command:** `bash scripts/mac-phase0.sh` runs v8in and then Youssef's PHerc1447 fine-tune (`v8in-1447`) on the three PHerc0841 crops, one job at a time (about 20 min each in fp32 on the M1 Pro), skips any job already scored, and ends with `python -m kit gate`, the Gate A table. Ctrl-C and a rerun lose at most the job in progress. The Mac stays awake while it runs (`caffeinate`; closing the lid still sleeps it), and a notification says when it is done or a job failed. `DRY_RUN=1` shows the queue; `JOBS="v8in:0841-ag896"` picks jobs; `KEEP_GOING=1` continues past a failure. `python -m kit gate` alone prints the current table at any time.
+
+## Watching a run
+
+Both scripts print a header as each stage starts (`== 1/7 ...` to `== 7/7 ...`). Long silences between headers are normal; a problem stops the script with a message and returns you to the prompt without the final summary block. If that happens, paste the last 20 lines.
+
+**Is the GPU working?** Activity Monitor, Window, GPU History (⌘4). It should be busy during the inference steps. During `ink_9um` the script also checks the log for `Using MPS device` and stops if it is missing, so it never quietly finishes on the CPU.
+
+**Where each step logs** (`<seg>` is `w045`, `0841-w00`, `0841-ag896` or `0841-ag405`):
+
+```bash
+ls -lt ~/scrolls-work/logs/ | head                       # newest log = current step
+tail -f ~/scrolls-work/logs/<seg>_ink9um_s42.log         # step 3, ink_9um (then _s43)
+tail -1 ~/scrolls-work/logs/<seg>_crop_cpu.log           # step 5, CPU side of the device check
+grep -h "done in" ~/scrolls-work/logs/<seg>_crop_gpu*.log   # step 5, MPS side, with times
+tail -1 ~/scrolls-work/logs/<seg>_v8in_quick.log         # step 6 with QUICK=1 (then _v8in_quick_reverse)
+tail -1 ~/scrolls-work/logs/<seg>_v8in.log               # step 6 without QUICK (then _v8in_reverse)
+ls -lt ~/scrolls-work/<seg>/maps/                        # new .tif files = finished passes
+```
+
+v8in logs print `N/total tiles (Xs)` every 30 s and end with a line like `device=mps fp16=False reverse=False stride=21 tiles=784 done in 859s`. Time left in a v8in pass is about (total − N) × X / N seconds.
+
+**What to expect on an M1 Pro** (measured 2026-10-07, fp32, batch 4):
+
+| Step | Time |
+| --- | --- |
+| `ink_9um`, both seeds, both directions, all of w045 | about 11 min per seed (649 s and 679 s); PHerc0841 segments are smaller |
+| v8in device check, CPU side (100 tiles) | about 41 min (25 s per tile); runs once, on w045, and other segments reuse its pass |
+| v8in device check, MPS side (100 tiles each way) | 396 s for the first (includes warm-up), then 132 s |
+| v8in on the 640 px crop at stride 21 (784 tiles each way) | about 15 min per direction (1.1 to 1.2 s per tile) |
+
+Faster step 6 (2026-10-07): the reverse control runs at stride 42 by default (`QUICK_REV_STRIDE`), a quarter of the tiles; the forward pass stays at v8in's stride 21. `V8IN_FP16=1` runs v8in in half precision on MPS (about 1.4x per afraazali's M3 Max numbers); the first fp16 run checks fp16 against fp32 on the GPU on its crop (fp32 must already have passed against the CPU on w045) and stops if they differ beyond `kit verify`'s tolerance; later runs reuse that pass. **On the user's M1 Pro, fp16 matched fp32 but ran about 5x slower** (5.5 s per tile in the fp16 check, 6.2 s per tile at stride 21 on 0841 w00, against 1.1 to 1.2 s per tile in fp32; 2026-10-07). The script now compares the two passes' per-tile times after the fp16 check and drops fp16 for the remaining passes when it is slower. On an M1 Pro, leave `V8IN_FP16` unset.
+
+Reruns skip finished passes (they print `finished in an earlier run, reused`). `FRESH=1` redoes everything; `DEVICE_CHECK=1` redoes the device check on a non-w045 segment.
+
+## First Letters target run: v8in on the public meshes of PHerc0813, 0358 and 0826
+
+```bash
+bash scripts/mac-w045.sh          # first; this needs its CPU vs MPS pass
+bash scripts/mac-atlas-v8in.sh    # resumable; ATLAS_HOURS=12 by default
+```
+
+[`scripts/mac-atlas-v8in.sh`](../scripts/mac-atlas-v8in.sh) reads all 81 automatic meshes on these three scrolls with v8in, using rodriguescarson's published renders (about 72 MB per mesh, deleted after use), both depth directions. It does the 5 meshes he holds back first, then the rest in Hecate rank order, so a run you stop early has covered the likeliest ones. Preregistered in [`prereg/2026-10-07-v8in-atlas.md`](prereg/2026-10-07-v8in-atlas.md): the script copies that rule into your ledger before the first inference and stops if the ledger holds a different one. It picks the stride from w045's measured speed and `ATLAS_HOURS`. At the end it prints which meshes the rule says to look at.
+
+**This is a target run.** Maps stay in `~/scrolls-work/atlas`. Do not post the maps or the list publicly; look privately, then record `null` or `candidate` with `python -m kit run status`. For a candidate, follow [`WORKFLOW.md`](WORKFLOW.md) section 3b. The rule's second-stride check: `SECOND_STRIDE=21 ONLY="PHerc0813/<mesh>" bash scripts/mac-atlas-v8in.sh`.
 
 ## Runbook: verify MPS against CPU on the control segment
 

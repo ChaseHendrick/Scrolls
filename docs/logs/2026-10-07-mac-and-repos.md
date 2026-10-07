@@ -34,3 +34,12 @@ Read from README files on 2026-10-07; private repositories were not read.
 
 1. On the M1 Pro: `python -m kit doctor`, install VC3D, run the w035 control on CPU.
 2. Check out #1865, run the control on MPS, apply the three GENChase-style checks, and post the numbers on the PR after asking its author. That is a concrete, reviewable contribution only a Mac owner can make.
+
+## Second pass, 2026-10-07 (later): code read, not just READMEs
+
+Taken now:
+
+- **GENChase compute ledger** ([COMPUTE.md](https://github.com/ChaseHendrick/GENChase/blob/main/COMPUTE.md), generated from job records): became `kit compute`, a time ledger from our provenance records (energy only as a stated estimate).
+- **Undeciphered-Texts promotion gate** (its neural router: a worse candidate fails promotion; an audit set never used to train, select, calibrate or gate): became Gate D in [`../plans/2026-10-07-training.md`](../plans/2026-10-07-training.md): select on PHerc0841 w00 and ag896, audit once on ag405.
+
+Considered and left: GENChase's validation registry (a generated table of each technique's validation status; worth doing later for `kit/`); Undeciphered-Texts' glyph reader and Ancient Greek lookup (its own `image-reading.md` says ink models are not trained on letter identities and OCR on a heatmap is the wrong tool; shape-matching ink maps to letters would be a forced fit); Bob's family classifier and GENChase's volunteer-compute harness (different problems).

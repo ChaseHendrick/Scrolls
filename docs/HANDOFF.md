@@ -2,6 +2,109 @@
 
 Use plain sentences. Do not put U+2014 or U+2013 in new text. Inspect `git log` before quoting a SHA.
 
+## Session 7 October 2026 (midday): an agent runs everything from here
+
+**The user does not want to type or paste commands.** Copying commands into the terminal was too much (user, 2026-10-07). Whoever picks this up runs the steps themselves and reports results in plain words. PR [ChaseHendrick/Scrolls#2](https://github.com/ChaseHendrick/Scrolls/pull/2) was merged into `main` at the user's request.
+
+### A. On the user's Mac (needs an agent running on the Mac, such as Claude Code in Terminal: only the Mac has the GPU)
+
+1. Find the checkout: `find ~ -maxdepth 4 -path "*/scripts/mac-w045.sh"`, then `cd` to the folder above `scripts/`. Not `~/scrolls-work`: that is the data folder.
+2. Make sure no old run is going: `ps aux | grep -E "v8in_run|ink_detection" | grep -v grep`. An fp16 run of `SEGMENT=0841-w00` was going at 6.2 s per tile; if it is still alive, stop it (it is safe: maps are recomputed, the lock is taken over).
+3. `git checkout main && git pull`.
+4. `bash scripts/mac-phase0.sh` and let it run (about 2 hours: v8in, then `v8in-1447`, on the three PHerc0841 crops; fp32; resumable; keeps the Mac awake; notification at the end). Do not set `V8IN_FP16` (5x slower on the M1 Pro).
+5. Then `python3 -m kit gate` (Gate A table). Record the Mac numbers: each `~/scrolls-work/0841-*/results/auc_v8in*.json` becomes a row in `docs/results.json` (window `crop`, `inner_px` 64, `map_from` `bare-crop`, device `mps`, reader `v8in d89166b` or `v8in-1447 2bf9f42`); `kit gate` must report "match" for the `ink_9um` check. Update the README's "Novel findings (Chase Hendrick)" (v8in on PHerc0841 is unpublished), `docs/tricks.md` if relevant, `docs/contrib/progress-prize-2026-10-draft.md`, and this handoff. Commit on a new branch and open a PR; tell the user the Gate A line in one sentence.
+
+### B. In a cloud session (no GPU needed)
+
+1. **Tricks results.** A job left running in the 7 Oct container scores every map and pushes `docs/logs/2026-10-07-tricks-results.md` to branch `claude/jolly-rubin-n55p5t` (restarted from `main`). If that file exists, open a PR for it, fold its table into `docs/tricks.md` ("Measured here") and `docs/results.json`, and delete it. If it does not exist, the container was reclaimed before the runs ended: rebuild with `scripts/experiments/2026-10-07-tricks/` (its README lists the layout) and score with `score.py`. Measured so far (w00 crop only): soup plus 4 z windows lifts `ink_9um` 0.806 to 0.847; z windows or mirror TTA lift d9v2 0.899 to 0.920; mixing d9v2 with the weaker `ink_9um` lowers it to 0.868; depth-shuffled input drops all readers to 0.48 to 0.50 (a cleaner null than reverse).
+2. **Fine-tune smoke test** (v8in's PHerc1447 loop on CPU, 2 train and 2 val batches): its status is in the same results file; to redo it, `scripts/experiments/2026-10-07-tricks/finetune_smoke.sh`. It only shows that the loop runs; it matters right before renting a GPU, which needs the user's budget decision.
+3. **Gate A** (after A.5): if d9v2 or an ensemble beats v8in by 0.02 or more, write an atlas script variant on villa's inference and a second preregistration (same readout rule) before any map; the user's Mac then runs it like step A.4.
+4. Open items from the plan: idea 1 depends on `v8in-1447`'s PHerc0841 number (step A.4); ideas 2 and 3 are in `plans/2026-10-07-training.md`. Progress Prize draft: submit near 31 Oct, only with the user's go-ahead.
+
+### New tools this session
+
+`kit gate` (Gate A), `kit ensemble` (map averaging, rank mean across models), `kit hpscore` (Scheirer's letter-scale score), `kit shuffle` and `kit layers --shuffle` (depth-shuffle control), `scripts/soup.py` (checkpoint soup within one run, refuses mixed seeds; rebuilds Nieuwlaar's `soup42_last4` bit-identically), `scripts/mac-phase0.sh` (the Phase 0 queue), `tests/test_repo.py` (repo checks in CI). Community tricks with sources: [`tricks.md`](tricks.md).
+
+## Session 7 October 2026 (late morning): the plan the user agreed
+
+User decisions (2026-10-07): do steps 1 to 5 below; **no Hugging Face or forum posting**. The longer view, steps 6 onwards, is in [`plans/roadmap.md`](plans/roadmap.md).
+
+1. The user pastes the `SEGMENT=0841-w00` summary (v8in, QUICK; the fp16 run was 6.2 s per tile against 1.1 to 1.2 in fp32, so it was to be restarted without `V8IN_FP16`); compare with the bars on the same crop with a 64 px edge left out: d9v2 0.8994, `ink_9um` seed 42 0.8061 (the summary's `ink_9um` line should match 0.8061 exactly).
+2. The same for `0841-ag896` and `0841-ag405` (bars: d9v2 0.8230 / 0.8319, `ink_9um` 0.6594 / 0.7838), one run at a time.
+3. `MODEL=v8in-1447` on the three crops: Youssef's PHerc1447 fine-tune, idea 1 with no training.
+4. Choose the reader for the targets: the v8in atlas run stays preregistered; if d9v2 stays clearly ahead, propose a second preregistered run with d9v2 on PHerc0813 and 0358 (TAUIL ran it on 0826 only).
+5. Training prep: stage data, CPU smoke test of the fine-tune loop, then ask the user about GPU budget.
+
+Mac runs are guarded by a shared lock (one GPU job at a time) after two concurrent runs swapped the M1 Pro to 56 s per tile.
+
+**Automation (2026-10-07):** steps 1 to 3 are one command, `bash scripts/mac-phase0.sh` (resumable; skips scored jobs; keeps the Mac awake; notifies at the end), and step 4's Gate A table is `python -m kit gate` (reads `docs/results.json` and `~/scrolls-work/*/results/auc_*.json`, applies the 0.02 rule, checks the Mac's `ink_9um` against the CPU bar). `mac-w045.sh` drops fp16 by itself when it is slower, and writes `provenance_v8in1447.json` and `summary_v8in1447.txt` for the fine-tune so it no longer overwrites the base model's record. CI runs `tests/test_repo.py` (scripts parse, bash 3.2, house style, docs JSON, documented commands).
+
+## Session 7 October 2026 (morning, later): training our own reader, all three ideas
+
+The user decided (2026-10-07) to pursue all three training ideas in [`plans/2026-10-07-training.md`](plans/2026-10-07-training.md): (1) train on PHerc1447, the scroll whose text was just found, at the First Letters scan protocol; (2) learn from the team's 1 µm ink maps instead of the 2.4 µm ones every public fine-tune used; (3) self-supervised pre-training on the eligible scans themselves. The plan fixes the test (PHerc0841, labels, reverse control) and the bar (Hecate 0.855, d9v2 0.828, Reader v2 0.824, `ink_9um` about 0.74) before any training.
+
+State: nothing trained. Downloaded and checked: d9v2 (sha256 matches TAUIL's) and Reader v2 (matches its card), both load with `weights_only=True`. v8in's `finetune_loo_w062.py` reads plain layer folders and labels, takes a starting checkpoint and has `--smoke-test`, so each idea mostly needs its data staged. A CPU comparison of `ink_9um` and d9v2 on the four crops (and Reader v2 on PHerc0841's) is running here.
+
+Next: (a) the user's v8in PHerc0841 number decides the base model; (b) score Youssef's released PHerc1447 fine-tune on PHerc0841 (no training); (c) stage data and smoke-test here; (d) renting a GPU needs the user's decision on provider and budget.
+
+## Session 7 October 2026 (morning): where this stands as a contribution
+
+**Nothing has been shared outside this repository yet.** The Challenge pays for work that is released and used, so none of the below counts until it is out. Nothing is posted, commented or submitted without the user's go-ahead.
+
+User decisions (2026-10-07):
+
+- **Progress Prize:** submit near the 31 Oct deadline, not before. The draft is [`contrib/progress-prize-2026-10-draft.md`](contrib/progress-prize-2026-10-draft.md); keep it updated, do not send it.
+- **villa #1865 draft comment** ([`contrib/villa-1865-m1pro-comment.md`](contrib/villa-1865-m1pro-comment.md)): leave it alone.
+- Keep researching and building in the meantime.
+
+What is new and worth sharing once the user agrees:
+
+1. **v8in on Apple Silicon, checked against the CPU** on the user's M1 Pro (`scripts/mac-w045.sh` step 5 passed; MPS about 1.1 to 1.3 s per tile against 25 s on the M1 Pro's CPU). **Not a first:** afraazali42 published v8in MPS vs CPU on an M3 Max on 2026-10-03. Ours is a second-chip confirmation; mention it as that, if at all.
+2. **A labelled, controlled test of ink models** (`kit auc` with a reverse control, `kit rowscore`, one command per segment), with CPU references: w045 (seen scroll) 0.872 / 0.887; PHerc0841 (unseen scroll) 0.720 to 0.751, rows only on ag405. Numbers in [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
+3. **An independent reproduction** of Bullo27's PHerc0841 calibration and his w045 row score.
+
+Ways to contribute, cheapest first (propose each to the user; do none unasked):
+
+- ~~Post on Hugging Face~~: **the user declined (2026-10-07). Do not suggest Hugging Face or forum posts.**
+- **v8in on TAUIL's held-out benchmark segments.** TAUIL-Abd-Elilah's benchmark (8 labelled segments incl. PHerc0841) scores `ink_9um`, d9v2 and Reader v2 but not v8in. Adding v8in to the same segments is the unpublished piece. Consider also running d9v2 (released, loads like `ink_9um`) in `mac-w045.sh` as a third model.
+- **v8in vs `ink_9um` on PHerc0841** (`SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh`, then ag896 and ag405). A clear v8in win on an unseen scroll is news the community would act on; a loss is useful too.
+- **Upstream the scoring tool:** villa has no simple command that scores an ink map against a segment's labels with a reverse control. A small tested PR there is the most "used by others" piece.
+- **Progress Prize write-up** at the deadline.
+
+**w045 result (user's M1 Pro, 2026-10-07):** on the crop, `ink_9um` 0.9136 / 0.9098 (equal to the CPU reference), v8in 0.7382 (reversed 0.3269). v8in reads ink but trails `ink_9um` on this seen-scroll test, which favours `ink_9um`. Details in the log.
+
+Next: `git pull`, then `SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh`, then `0841-ag896` and `0841-ag405`. Other segments reuse w045's device check, so each run is about 20 min of `ink_9um` plus about 30 min of v8in. That decides whether v8in is the better reader on an unseen scroll, and therefore whether the atlas run should use it.
+
+## Session 7 October 2026 (late night): first target run, preregistered
+
+The user chose the target set and the readout rule (2026-10-07): v8in on all 81 public automatic meshes of PHerc0813, 0358 and 0826 (rodriguescarson's atlas renders, which include his 5 held-back meshes), with the rule in [`prereg/2026-10-07-v8in-atlas.md`](prereg/2026-10-07-v8in-atlas.md). One variable changes from published reads of these surfaces: the model. `scripts/mac-atlas-v8in.sh` runs it on the Mac after `scripts/mac-w045.sh` passes; tested here end to end on fake meshes built from w045 (PHerc0139), never on target data. No target map has been made in this repository's sessions.
+
+Next: the user runs `mac-w045.sh`, then `mac-atlas-v8in.sh`. Target results stay private: do not commit triage numbers, maps or verdicts on target meshes before the user decides (WORKFLOW.md 3b). After that, hand-fix whichever surfaces the run points to.
+
+## Session 7 October 2026 (night): the w045 check is one command on the Mac
+
+`bash scripts/mac-w045.sh` (see [`mac.md`](mac.md)) runs `ink_9um` seeds 42 and 43 and v8in on PHerc0139 w045 on the Mac GPU, checks v8in CPU vs MPS on a crop first, and prints AUC against w045's published labels (reverse as control) and row scores. It ran end to end here in CPU smoke mode; numbers and caveats in [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md). New: `kit layers`, `kit auc`, `scripts/v8in_run.py` (fp16 on MPS, opt-in). 71 tests.
+
+Next: the user runs `scripts/mac-w045.sh` and pastes the summary. If v8in's forward AUC on w045 is clearly above `ink_9um`'s, v8in is the reader for the PHerc0826 / 0358 / 0813 / 1545 attempt. If MPS fails the crop check, report it (that is itself useful on the v8in model page).
+
+## Session 7 October 2026 (evening): community scan, rowscore, new models
+
+Read 16 winners' and contributors' repositories, Hugging Face, and villa's history and branches. Notes: [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md).
+
+What changed the plan:
+
+- **v8in** (YoussefMoNader/ink-8um-v8in, 2026-09-28) is newer than every published First Letters null, and no eligible-scroll run of it was found. Use it alongside `ink_9um`. **Hecate** (team, 2026-09-15) was already run over 340 automatic meshes by rodriguescarson, who holds back 5 screen-passing meshes.
+- PHerc0139 **w045 is held out from both** models (`kit fetch w045`). Run it first with both models; that is the generalization baseline.
+- The organizers stopped asking for sheet-switch detectors (#1937, 2026-09-30). Do not build another checker for a Progress Prize; a hand-fixed surface or tracing that avoids switches is what they want.
+
+Added: `kit rowscore` (Bullo27's score, matches the original to float rounding), `kit plan` step 1b (w045), surface QA (windcheck, tifxyz-doctor), v8in commands, `--flip-normals` on the target render. 51 tests.
+
+Next, in order:
+
+1. On the M1 Pro: `kit fetch w045`; `ink_9um` both directions; `kit rowscore` (expect about 73 to 148 forward per Bullo27). Then v8in on w045 with `--device mps` (needs the zarr exported as 24 layer TIFFs; write that step and test it).
+2. Preregister (`kit run init`), then hand-trace and fix one surface on PHerc0826, 0358, 0813 or 1545 in VC3D; check it with windcheck; render with `--flip-normals`; read with v8in and `ink_9um`, both directions.
+3. By 31 Oct: Progress Prize submission (new form on the prizes page).
+
 ## Next steps (set 7 October 2026)
 
 Done: the M1 Pro runs villa ink inference on MPS via PR #1865, verified against CPU (see [`logs/2026-10-07-w035-cpu.md`](logs/2026-10-07-w035-cpu.md)). The draft #1865 comment is in [`contrib/villa-1865-m1pro-comment.md`](contrib/villa-1865-m1pro-comment.md); the user posts it.

@@ -1,5 +1,7 @@
 # Guidelines for AI agents (and humans editing with AI)
 
+Start at [`../AGENTS.md`](../AGENTS.md) (map, commands, standing decisions, glossary). This file is the full rulebook.
+
 This repository mixes **sourced research notes** about the Vesuvius Challenge with a **small tested helper package** (`kit/`) that plans and records runs of the official pipeline. Agents must keep those layers separate, and must never leak a possible discovery.
 
 ## Hard rules
@@ -9,7 +11,7 @@ This repository mixes **sourced research notes** about the Vesuvius Challenge wi
 3. **Cite real URLs** for facts about prizes, scrolls, results and people. Prefer scrollprize.org, the villa source, arXiv, and the organizers' Substack. Do not invent links. Date every prize fact.
 4. **Re-check prizes before acting on them.** Amounts, deadlines and eligible scrolls change (PHerc. 1447 left First Letters on 24 Sep 2026). Update `kit/data/` with a new dated snapshot rather than editing the old one.
 5. **Preregister.** Write the readout rule (`python -m kit run init`) before viewing any target output. Do not edit it afterwards; `run check` will flag it.
-6. **Control first.** Every reported run includes the PHerc0139 w035 control (or another labelled segment) through the identical pipeline.
+6. **Control first, and the right control.** PHerc0139 w035 checks only that a pipeline runs (the model reproduces its training labels there). Generalization claims need a held-out labelled segment through the identical pipeline: w045, or better PHerc0841 (in no candidate's training set), scored with `kit auc` and the reverse-depth control.
 7. **One engine.** villa is the engine. Do not reimplement VC3D, rendering or ink inference here. Useful general fixes go upstream as villa PRs.
 8. **Tools need tests.** Any change to `kit/` adds or updates a test in `tests/`.
 9. **Research logs are not claims.** Dated notes go in `docs/logs/YYYY-MM-DD.md`. Do not promote log speculation into `state-of-play.md` without a source.
