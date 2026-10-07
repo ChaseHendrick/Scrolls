@@ -1,0 +1,9 @@
+[
+  {"what": "grok lane C texture, 2 segments at about 4 s", "wall_s": 8, "device": "apple-silicon-cpu"},
+  {"what": "grok lane D fibre reader, 9 scorings at about 8 s", "wall_s": 72, "device": "apple-silicon-cpu"},
+  {"what": "grok lane F, 6 ink_9um forward runs at about 38 s plus e234 9.5 s", "wall_s": 237.5, "device": "apple-silicon-cpu"},
+  {"what": "grok lane G signals and scoring", "wall_s": 50, "device": "apple-silicon-cpu"},
+  {"what": "w035 mac-verify CPU, both directions", "wall_s": 1740, "device": "apple-silicon-cpu"},
+  {"what": "w035 mac-verify MPS, two forward runs", "wall_s": 430, "device": "apple-silicon-gpu"},
+  {"what": "PHerc0841 ink_9um CPU reference, 3 segments both directions", "wall_s": 4743, "device": "apple-silicon-cpu"}
+]

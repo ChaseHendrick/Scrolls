@@ -26,7 +26,8 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 6. **No scroll data, maps or weights in git.**
 7. **`kit/` changes need tests** in `tests/`.
 8. **Nothing outward without the user's go-ahead:** no posting, submitting, renting compute or opening upstream PRs. **No Hugging Face or forum posts at all** (user decision, 2026-10-07).
-9. **Style:** plain sentences; never U+2014 or U+2013 dashes; commit messages end with the session's attribution lines.
+9. **Log local compute.** Wrap every local run (Mac CPU or MPS) with `python -m kit run local SLUG -- COMMAND` so wall time and electricity cost reach the ledger ([`docs/compute.md`](docs/compute.md)).
+10. **Style:** plain sentences; never U+2014 or U+2013 dashes; commit messages end with the session's attribution lines.
 
 ## Standing user decisions
 

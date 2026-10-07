@@ -25,3 +25,6 @@ venv/
 # Experiment records are local by default. See docs/WORKFLOW.md.
 /experiments/*
 !/experiments/README.md
+
+# Local machine settings (electricity rate, device class). Never commit.
+scrolls.local.json
