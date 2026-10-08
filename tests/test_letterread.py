@@ -275,6 +275,17 @@ class PageTest(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(cli.main(["letterread", str(img), "--weights", str(Path(d) / "missing.npz")]), 2)
 
+    def test_p172_split_is_fixed_and_disjoint(self):
+        sys.path.insert(0, str(ROOT / "scripts" / "letters"))
+        try:
+            import eval_p172
+        finally:
+            sys.path.remove(str(ROOT / "scripts" / "letters"))
+        ids = ["s5", "s1", "s3", "s2", "s4"]
+        dev, test = eval_p172.split_segments(ids, "dev"), eval_p172.split_segments(ids, "test")
+        self.assertEqual((dev, test), (["s1", "s2", "s3"], ["s4", "s5"]))
+        self.assertEqual(eval_p172.split_segments(ids, "all"), sorted(ids))
+
 
 if __name__ == "__main__":
     unittest.main()

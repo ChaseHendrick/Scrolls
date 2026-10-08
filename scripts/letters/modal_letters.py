@@ -66,7 +66,7 @@ def train(run: str, commit: str, steps: int, batch: int, channels: str, dilation
     cmd = ["python", str(code / "scripts/letters/train_linenet.py"), str(root / "data/train"), str(model),
            "--val", str(root / "data/val"), "--steps", str(steps), "--batch", str(batch), "--lr", str(lr),
            "--channels", channels, "--dilations", dilations, "--device", "cuda", "--amp",
-           "--workers", "6", "--threads", "2", "--eval-every", "2000"]
+           "--workers", "6", "--threads", "2", "--eval-every", "2000", "--keep"]
     (model / "command.txt").write_text(" ".join(cmd) + f"\ncommit {commit}\ngpu {GPU}\n")
     t0 = time.time()
     try:

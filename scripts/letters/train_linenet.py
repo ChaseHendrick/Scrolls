@@ -2,11 +2,12 @@
 
 Usage:
   python scripts/letters/train_linenet.py DATA_DIR OUT_DIR --val VAL_DIR [--steps N] [--batch B]
-      [--device cpu|cuda] [--amp] [--channels 32,64,96,128,192] [--dilations 1,2] [--workers 0]
+      [--device cpu|cuda] [--amp] [--channels 32,64,96,128,192] [--dilations 1,2] [--workers 0] [--keep]
 
 DATA_DIR and VAL_DIR hold shards from gen_dataset.py. Writes OUT_DIR/linenet.pt (torch state),
 OUT_DIR/linenet.npz (BatchNorm folded, linenet-v1) and OUT_DIR/train.json (settings, losses and
-validation numbers). Weights stay out of git.
+validation numbers). --keep also saves the weights at every evaluation, so a checkpoint can be chosen
+on real letters (eval_p172.py --split dev) rather than on synthetic validation. Weights stay out of git.
 """
 import argparse
 import glob
@@ -222,6 +223,7 @@ def main():
     ap.add_argument("--channels", default="32,64,96,128,192")
     ap.add_argument("--dilations", default="1,2")
     ap.add_argument("--workers", type=int, default=0, help="DataLoader worker processes for batch assembly")
+    ap.add_argument("--keep", action="store_true", help="also keep each evaluation's weights as OUT_DIR/ckpt/linenet-stepNNNNNN.npz")
     a = ap.parse_args()
     torch.set_num_threads(a.threads)
     torch.manual_seed(a.seed)
@@ -277,6 +279,9 @@ def main():
                 print(f"EVAL step {step} val CER {cer:.3f} letters per blank line {fp:.2f}", flush=True)
                 torch.save(model.state_dict(), out / "linenet.pt")
                 export_npz(model.cpu(), out / "linenet.npz")
+                if a.keep:
+                    (out / "ckpt").mkdir(exist_ok=True)
+                    export_npz(model, out / "ckpt" / f"linenet-step{step:06d}.npz")
                 model.to(a.device)
         epoch += 1
     torch.save(model.state_dict(), out / "linenet.pt")

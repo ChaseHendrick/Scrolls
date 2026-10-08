@@ -42,7 +42,7 @@ python scripts/letters/gen_dataset.py work/letters/data/train --n 36000 --seed 1
 python scripts/letters/gen_dataset.py work/letters/data/val --n 1200 --seed 7
 
 # 2. train (CPU prototype: about 30 minutes on 4 cores; full scale goes to Modal)
-python scripts/letters/train_linenet.py work/letters/data/train work/letters/model --val work/letters/data/val --steps 4000
+python scripts/letters/train_linenet.py work/letters/data/train work/letters/model --val work/letters/data/val --steps 4000 --keep
 
 # 3. language model from PerseusDL canonical-greekLit TEI files (keep Philodemus out)
 python -m kit greeklm build work/letters/greek5.npz tlg0004.tlg001.perseus-grc2.xml tlg0059.tlg030.perseus-grc2.xml
@@ -50,16 +50,17 @@ python -m kit greeklm build work/letters/greek5.npz tlg0004.tlg001.perseus-grc2.
 # 4. read an image (ink bright by default; --polarity dark for photographs)
 python -m kit letterread MAP.tif --weights work/letters/model/linenet.npz [--lm work/letters/greek5.npz] [--json]
 
-# 5. real-letter check on PHerc. 172 drawings (needs Pillow and pdftotext)
+# 5. real-letter check on PHerc. 172 drawings (needs Pillow and pdftotext): choose a checkpoint on dev, report test
 git clone --depth 1 https://github.com/Bodillium/Herculaneum-Scroll-Labels work/bodillium
-python scripts/letters/eval_p172.py work/bodillium --weights work/letters/model/linenet.npz --lm work/letters/greek5.npz
+for w in work/letters/model/ckpt/*.npz; do python scripts/letters/eval_p172.py work/bodillium --weights $w --split dev | tail -1; done
+python scripts/letters/eval_p172.py work/bodillium --weights BEST.npz --split test --lm work/letters/greek5.npz
 ```
 
 ## Plan: from prototype to an automatic reader people can rely on
 
 Each stage has a gate that can fail. A stage that fails its gate is reported as a null, not tuned until it passes.
 
-1. **Prototype (this change).** Synthetic-trained line reader, numpy inference, controls, language model, the PHerc. 172 drawing check. Gate: synthetic character error rate well under the old template reader's (about 0.43, Scrolls-private, Model output) with nulls clean; a first number on real drawn letters.
+1. **Prototype (this change).** Synthetic-trained line reader, numpy inference, controls, language model, the PHerc. 172 drawing check. Gate: synthetic character error rate well under the old template reader's (about 0.43, Scrolls-private, Model output) with nulls clean; a first number on real drawn letters. Result: synthetic 0.112, real drawings 0.760 on the test half (Model output, [log](logs/2026-10-08-letter-reader.md)). Synthetic error kept falling while real-letter error rose after step 1,000, so checkpoints are chosen on the dev half of the drawings, never on synthetic validation.
 2. **Scale the synthetic training (Modal, [spec](compute/modal-specs/2026-10-08-letter-reader-training.md)).** About 600,000 lines, a wider network, three dilations, more Greek fonts. Gate: lower character error on the PHerc. 172 drawings than the CPU prototype, at no more letters on nulls.
 3. **Real letterforms from photographs.** AL-PUB v2 (about 205,800 single-letter crops from Oxyrhynchus papyri, Apache 2.0 on [Kaggle](https://www.kaggle.com/datasets/miswindall/al-pub-v2)) and the ICDAR 2023 Greek letters set (letter boxes on Iliad papyri, CC BY-NC 4.0, [Zenodo](https://zenodo.org/records/13825619)) give real Greek bookhand letters. Compose random lines from real crops, push them through the same map and mask degradations, and mix them with the synthetic lines. Both hosts are blocked from Claude's cloud sessions and need the owner's computer or Modal (Kaggle needs an API token). Gate: lower error on the PHerc. 172 drawings, which none of this data contains.
 4. **Real ink-map letters by forced alignment, on published text only.** PHerc. 1667 has a published column-by-column Greek text of columns 1 to 22, with parts of the first three columns left untranscribed ([arXiv:2606.29085](https://arxiv.org/abs/2606.29085), Methods, Sourced fact) and six segments in the open-data bucket with official ink labels and 2.4 um ink maps on the same pixel grid (checked in the bucket listing on 8 October 2026). Read each label mask, find its lines in the published text by approximate string search, then force-align the matched text to the mask with the CTC network: every letter gets a box with no hand drawing. The same boxes cut the 2.4 um ink map, giving real map crops with letter identities. Fine-tune on some segments, test on the others, and read the reverse-depth map as the control. These six segments (w013, w018, w023, w028, w029, w031) are exactly the PHerc. 1667 segments in `ink_9um`'s training labels ([ink_9um dataset README](https://huggingface.co/buckets/scrollprize/datasets/tree/ink_9um), Sourced fact, read 8 October 2026), so ink models have likely seen their text and their maps may look cleaner than maps of unseen text (Interpretation); that is acceptable for letter training data but rules them out as the test of stage 5. The 2024 PHerc. 172 segments that Bodillium's labels belong to are not in the open-data bucket (checked 8 October 2026); they would come from dl.ash2txt.org through the owner's computer or Modal.

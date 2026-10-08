@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "updated": "2026-10-07",
+ "updated": "2026-10-08",
  "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
  "held_out": {
   "w045": "held out from ink_9um, v8in and d9v2; Reader v2 trained on it",
@@ -5394,5 +5394,333 @@
    "Sparse resize can change float32 rounding and near-tied FFT decisions on other inputs.",
    "No GPU, training, new text, improved correction accuracy or overall reading-pipeline speed claim."
   ]
- }
+ },
+ "letter_reader_checks": [
+  {
+   "date": "2026-10-08",
+   "source": "docs/logs/2026-10-08-letter-reader.md",
+   "claim": "Model output on synthetic images and public community drawings; not a reading, no hidden text",
+   "model": {
+    "format": "linenet-v1",
+    "params": 593849,
+    "channels": [
+     32,
+     64,
+     96,
+     128,
+     192
+    ],
+    "dilations": [
+     1,
+     2
+    ],
+    "train_lines": 36000,
+    "val_lines": 1200,
+    "steps": 4000,
+    "batch": 48,
+    "lr_max": 0.002,
+    "device": "4 CPU threads",
+    "seconds": 1578,
+    "weights_in_git": false
+   },
+   "synthetic_validation": [
+    {
+     "step": 500,
+     "val_cer": 0.206,
+     "letters_per_blank_line": 0.69
+    },
+    {
+     "step": 1000,
+     "val_cer": 0.207,
+     "letters_per_blank_line": 0.5
+    },
+    {
+     "step": 1500,
+     "val_cer": 0.15,
+     "letters_per_blank_line": 0.6
+    },
+    {
+     "step": 2000,
+     "val_cer": 0.14,
+     "letters_per_blank_line": 0.79
+    },
+    {
+     "step": 2500,
+     "val_cer": 0.12,
+     "letters_per_blank_line": 0.94
+    },
+    {
+     "step": 3000,
+     "val_cer": 0.119,
+     "letters_per_blank_line": 0.62
+    },
+    {
+     "step": 3500,
+     "val_cer": 0.111,
+     "letters_per_blank_line": 0.88
+    },
+    {
+     "step": 4000,
+     "val_cer": 0.112,
+     "letters_per_blank_line": 0.9
+    }
+   ],
+   "language_model": {
+    "order": 5,
+    "discount": 0.75,
+    "corpus": "PerseusDL canonical-greekLit tlg0004.tlg001 and tlg0059.tlg030 (CC BY-SA 4.0)",
+    "train_letters": 937054,
+    "bits_per_letter_held_out_chunks": 2.556,
+    "bits_per_letter_xenophon_anabasis": 2.826,
+    "uniform_bits": 4.585
+   },
+   "synthetic_pages": [
+    {
+     "text": "uniform random letters",
+     "pages": 18,
+     "seed": 11,
+     "cer_matched_lines": {
+      "map": {
+       "cer_matched_lines": 0.158,
+       "letters": 672
+      },
+      "mask": {
+       "cer_matched_lines": 0.013,
+       "letters": 306
+      }
+     },
+     "cer_with_lm": null,
+     "lines_found": "81 of 81",
+     "letter_px_ratio_median": 1.036,
+     "blank_pages": [
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        2,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        11,
+        4
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        10,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 1,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 1,
+       "null_kept": [
+        20,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "text": "real Greek",
+     "pages": 18,
+     "seed": 12,
+     "cer_matched_lines": {
+      "map": {
+       "cer_matched_lines": 0.138,
+       "letters": 659
+      },
+      "mask": {
+       "cer_matched_lines": 0.019,
+       "letters": 260
+      }
+     },
+     "cer_with_lm": {
+      "map": 0.108,
+      "mask": 0.008
+     },
+     "lines_found": "76 of 77",
+     "letter_px_ratio_median": 0.981,
+     "blank_pages": [
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 10,
+       "null_kept": [
+        88,
+        11
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        44,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 1,
+       "null_kept": [
+        1,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "pherc172_drawings": {
+    "data": "Bodillium/Herculaneum-Scroll-Labels commit 2266661c, PHerc. 172 hand-drawn ink labels (CC BY-NC-SA 4.0)",
+    "reference": "the labeller's preliminary transcription, marked speculative by its author",
+    "down": 4,
+    "segments": 10,
+    "split": "segments sorted by id; first five dev (checkpoint choice), last five test (report); rule fixed after the all-segment numbers were seen",
+    "chosen_on_dev": 1000,
+    "test_cer_ink_only": 0.76,
+    "test_cer_with_lm": 0.67,
+    "checkpoints": [
+     {
+      "step": 500,
+      "note": "letter size from pitch only, before the scale search",
+      "dev": {
+       "cer_ink_only": 0.745,
+       "ref_letters": 161,
+       "letters_kept": 122,
+       "null_letters_kept": [
+        45,
+        3
+       ]
+      },
+      "test": {
+       "cer_ink_only": 1.113,
+       "ref_letters": 80,
+       "letters_kept": 53,
+       "null_letters_kept": [
+        20,
+        2
+       ]
+      },
+      "all": {
+       "cer_ink_only": 0.867,
+       "ref_letters": 241,
+       "letters_kept": 175,
+       "null_letters_kept": [
+        65,
+        5
+       ]
+      }
+     },
+     {
+      "step": 1000,
+      "dev": {
+       "cer_ink_only": 0.74,
+       "ref_letters": 169,
+       "letters_kept": 122,
+       "null_letters_kept": [
+        20,
+        2
+       ]
+      },
+      "test": {
+       "cer_ink_only": 0.76,
+       "ref_letters": 100,
+       "letters_kept": 94,
+       "null_letters_kept": [
+        13,
+        3
+       ],
+       "cer_with_lm": 0.67,
+       "ref_letters_with_lm": 94
+      },
+      "all": {
+       "cer_ink_only": 0.747,
+       "ref_letters": 269,
+       "letters_kept": 216,
+       "null_letters_kept": [
+        33,
+        5
+       ]
+      }
+     },
+     {
+      "step": 4000,
+      "dev": {
+       "cer_ink_only": 0.886,
+       "ref_letters": 167,
+       "letters_kept": 173,
+       "null_letters_kept": [
+        58,
+        23
+       ]
+      },
+      "test": {
+       "cer_ink_only": 1.102,
+       "ref_letters": 98,
+       "letters_kept": 120,
+       "null_letters_kept": [
+        23,
+        9
+       ]
+      },
+      "all": {
+       "cer_ink_only": 0.966,
+       "ref_letters": 265,
+       "letters_kept": 293,
+       "null_letters_kept": [
+        81,
+        32
+       ],
+       "cer_with_lm": 0.851
+      }
+     }
+    ]
+   }
+  }
+ ]
 }

@@ -13,9 +13,14 @@ Herculaneum letterforms here for the first time, so this is a domain-transfer ch
 
 Every string is model output. Keep --out files in ignored work/ folders.
 
+--split fixes how the segments serve model selection: sorted by id, the first half (rounded up) is
+dev and the rest test. Choose among checkpoints on dev only and report test, so the number reported
+was not used to pick the model. Synthetic validation error alone is not a safe guide: on the CPU
+prototype it kept falling while the error on these drawings rose (docs/logs/2026-10-08-letter-reader.md).
+
 Usage:
   git clone --depth 1 https://github.com/Bodillium/Herculaneum-Scroll-Labels work/bodillium
-  python scripts/letters/eval_p172.py work/bodillium --weights work/letters/linenet.npz [--lm work/letters/greek5.npz]
+  python scripts/letters/eval_p172.py work/bodillium --weights work/letters/linenet.npz [--lm work/letters/greek5.npz] [--split dev]
 Needs numpy, Pillow and pdftotext (poppler-utils).
 """
 import argparse
@@ -94,7 +99,14 @@ def load_mask(path, down):
     return a[:H, :W].reshape(H // down, down, W // down, down).mean(axis=(1, 3))
 
 
-def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2):
+def split_segments(ids, split):
+    """Fixed split for checkpoint choice: sorted segment ids, first half (rounded up) dev, rest test."""
+    ids = sorted(ids)
+    half = (len(ids) + 1) // 2
+    return {"all": ids, "dev": ids[:half], "test": ids[half:]}[split]
+
+
+def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2, split="all"):
     repo = Path(repo)
     pdf = sorted((repo / PDF_DIR).glob("*.pdf"))
     if not pdf:
@@ -104,11 +116,10 @@ def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2):
     net = R.LineNet(weights)
     tot = {"ink_only": [0, 0], "with_lm": [0, 0]}
     rows = []
-    for sid, cols in gt.items():
-        f = repo / LABEL_DIR / f"{sid}_inklabels.png"
-        ref = [r for r in (ln.replace("?", "") for c in cols for ln in c) if r]
-        if not f.exists() or not ref:
-            continue
+    usable = {sid: [r for r in (ln.replace("?", "") for c in cols for ln in c) if r] for sid, cols in gt.items()}
+    usable = {sid: ref for sid, ref in usable.items() if ref and (repo / LABEL_DIR / f"{sid}_inklabels.png").exists()}
+    for sid in split_segments(usable, split):
+        f, ref = repo / LABEL_DIR / f"{sid}_inklabels.png", usable[sid]
         res = R.analyze(load_mask(f, down), net, nulls=nulls, seed=0, lm=lm, lm_weight=lm_weight if lm else 0.0)
         row = {"segment": sid, "letter_px": res["letter_px"], "lines_read": len(res["lines"]), "ref_lines": len(ref),
                "control": res["control"]["verdict"], "kept": res["control"]["letters_kept"],
@@ -127,7 +138,7 @@ def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2):
         rows.append(row)
     summary = {name: {"cer_matched_lines": round(e / n, 3), "ref_letters": n} for name, (e, n) in tot.items() if n}
     return {"note": R.NOTE, "data": "Bodillium/Herculaneum-Scroll-Labels, PHerc. 172 hand-drawn ink labels",
-            "weights": str(weights), "down": down, "summary": summary, "segments": rows}
+            "weights": str(weights), "down": down, "split": split, "summary": summary, "segments": rows}
 
 
 def main():
@@ -137,13 +148,15 @@ def main():
     ap.add_argument("--lm", help="letter language model .npz (python -m kit greeklm build)")
     ap.add_argument("--lm-weight", type=float, default=0.5)
     ap.add_argument("--down", type=int, default=4, help="downsample the label grid by this factor before reading (speed only)")
+    ap.add_argument("--split", choices=("all", "dev", "test"), default="all",
+                    help="segments sorted by id: first half dev (choose checkpoints here), second half test (report)")
     ap.add_argument("--out", help="full result JSON (keep it in work/)")
     a = ap.parse_args()
     lm = None
     if a.lm:
         from kit import greeklm
         lm = greeklm.KNLetterLM.load(a.lm)
-    res = evaluate(a.repo, a.weights, lm, a.lm_weight, a.down)
+    res = evaluate(a.repo, a.weights, lm, a.lm_weight, a.down, split=a.split)
     if a.out:
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     for r in res["segments"]:

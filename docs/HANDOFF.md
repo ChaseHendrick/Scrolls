@@ -1,10 +1,20 @@
 # Public repository handoff
 
-Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
+Updated 8 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
 
 ## Before any long job: GPU work goes to Modal (user decision, 8 October 2026)
 
 The user does not want hours spent on CPU for work a GPU does in minutes. Before starting a job, estimate its time. Anything that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so do not try to sign in from one. Write the exact run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and give the user a short prompt to paste into Codex, or commands to run on their own computer. The rule is AGENTS.md hard rule 11.
+
+## Session 8 October 2026: automatic letter reader (public)
+
+The owner asked for a model that reads letters from ink maps without a person, and for that work to be public. [The guide](letter-reader.md) has the design, the controls and a seven-stage plan; [the log](logs/2026-10-08-letter-reader.md) has the numbers (Model output).
+
+- `python -m kit letterread IMAGE --weights W [--lm LM]` returns letter hypotheses with boxes and confidences, the ink-only string beside any language-model string, null and orientation controls and a verdict. `python -m kit greeklm` builds the letter language model. Weights, language models and data are built locally and never committed.
+- The CPU prototype (593,849 parameters, 36,000 synthetic lines) reaches 0.112 character error on synthetic lines but 0.760 on the test half of the PHerc. 172 drawings (checkpoint chosen on the dev half: step 1,000). Longer synthetic training made real letters worse, so choose checkpoints on the dev half (`train_linenet.py --keep`, `eval_p172.py --split dev`). Real letterforms are the bottleneck.
+- Next: the Modal spec [2026-10-08-letter-reader-training](compute/modal-specs/2026-10-08-letter-reader-training.md) (not run; needs the owner's go-ahead), then real letterforms (plan stage 3) and forced alignment on PHerc. 1667's published text (stage 4).
+- Never commit reader output on a target scroll or on label masks of unpublished text; those belong in Scrolls-private.
+- Found along the way: the `ink_9um` label dataset lists w045's 2.4 um render as a training segment, so "w045 held out from ink_9um" needs revisiting (see the log). Not changed here.
 
 ## Session 8 October 2026: optional development host
 
