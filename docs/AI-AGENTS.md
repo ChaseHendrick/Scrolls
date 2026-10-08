@@ -17,6 +17,7 @@ This repository mixes **sourced research notes** about the Vesuvius Challenge wi
 9. **Research logs are not claims.** Dated notes go in `docs/logs/YYYY-MM-DD.md`. Do not promote log speculation into `state-of-play.md` without a source.
 10. **No scroll data in Git.** No volumes, renders, ink maps, checkpoints or large binaries. They are large and some carry non-commercial licenses.
 11. **Plain style.** Plain sentences. Do not put U+2014 or U+2013 dashes in new text.
+12. **GPU work goes to Modal.** A job that needs a GPU or would take more than about an hour on CPU runs on Modal. Claude's cloud sessions cannot reach Modal (their proxy does not carry its gRPC traffic), so they write a run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and hand it to Codex, or give the user commands to run on their own computer (user decision, 2026-10-08; AGENTS.md hard rule 11).
 
 ## Evidence discipline
 

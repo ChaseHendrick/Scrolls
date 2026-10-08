@@ -2,6 +2,10 @@
 
 Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
 
+## Before any long job: GPU work goes to Modal (user decision, 8 October 2026)
+
+The user does not want hours spent on CPU for work a GPU does in minutes. Before starting a job, estimate its time. Anything that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so do not try to sign in from one. Write the exact run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and give the user a short prompt to paste into Codex, or commands to run on their own computer. The rule is AGENTS.md hard rule 11.
+
 ## Session 8 October 2026: optional development host
 
 [The DigitalOcean workspace guide](compute/digitalocean-workspace.md) records an optional development host for preparing work and controlling Modal jobs. DigitalOcean is not a dependency of Modal. The procedure remains unvalidated end to end; installation and sign-in alone do not prove callable tools or a provisioned workspace. Hosting costs and Modal compute authorization must be checked separately. This documentation does not launch or authorize compute.

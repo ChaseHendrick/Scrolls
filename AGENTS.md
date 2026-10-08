@@ -34,6 +34,7 @@ When the private checkout is available, refresh the combined session context fro
 8. **Nothing outward without the user's go-ahead:** no posting, submitting, renting compute or opening upstream PRs. **No Hugging Face or forum posts at all** (user decision, 2026-10-07).
 9. **Log local compute.** Wrap every local run (Mac CPU or MPS) with `python -m kit run local SLUG -- COMMAND` so wall time and electricity cost reach the ledger ([`docs/compute.md`](docs/compute.md)).
 10. **Style:** plain sentences; never U+2014 or U+2013 dashes; commit messages end with the session's attribution lines.
+11. **GPU work goes to Modal, not hours of CPU** (user decision, 2026-10-08). Before starting any job, estimate its time. A job that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so never try to sign in to Modal from one. Write an exact run spec in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and give the user a short prompt to paste into an agent that runs Modal, such as Codex, or commands to run on their own computer. Costs and rates: [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md). Only generic, public-data jobs get a spec here; anything about a target scroll belongs in Scrolls-private's own `docs/compute/modal-specs/`.
 
 ## Standing user decisions
 
@@ -43,6 +44,7 @@ When the private checkout is available, refresh the combined session context fro
 | 2026-10-07 | Leave `docs/contrib/villa-1865-m1pro-comment.md` alone |
 | 2026-10-07 | No Hugging Face or forum posting |
 | 2026-10-07 | No paid compute without the user's budget decision |
+| 2026-10-08 | Use Modal for any job that needs a GPU or hours of CPU. Claude cloud sessions cannot reach Modal: write a run spec and hand it to Codex, or give the user commands for their computer (rule 11) |
 
 ## Repository map
 
