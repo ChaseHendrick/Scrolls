@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "updated": "2026-10-07",
+ "updated": "2026-10-08",
  "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
  "held_out": {
   "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md",
@@ -471,6 +471,37 @@
    "source": "docs/logs/2026-10-07-community-scan.md"
   }
  ],
+ "finetune_checks": {
+  "about": "Our own fine-tunes of released readers, scored like the readers in results but kept out of that list so kit gate ranks released readers only. Model output.",
+  "results": [
+   {
+    "segment": "0841-w00",
+    "window": "crop",
+    "inner_px": 64,
+    "map_from": "bare-crop",
+    "reader": "d9v2 fine-tune, arm A step 1500",
+    "settings": "fine-tuned from d9v2_ft-012000 on 20260918 human labels of nine public 9.362 um segments (no PHerc0841, no w045): anchor 1.0, depth jitter 5, lr 2e-5, 1500 steps, batch 16, bf16, one seed; best of the 24 sweep checkpoints by selection mean (28 checkpoints tried with two earlier CPU runs); inference overlap 0.5, hann, villa PR #1865 6723ad158",
+    "device": "cuda (Modal B200)",
+    "auc_as_stored": 0.8838,
+    "auc_reversed": 0.5458,
+    "measured_by": "this repo",
+    "source": "docs/logs/2026-10-08-d9v2-finetune-sweep.md"
+   },
+   {
+    "segment": "0841-ag896",
+    "window": "crop",
+    "inner_px": 64,
+    "map_from": "bare-crop",
+    "reader": "d9v2 fine-tune, arm A step 1500",
+    "settings": "fine-tuned from d9v2_ft-012000 on 20260918 human labels of nine public 9.362 um segments (no PHerc0841, no w045): anchor 1.0, depth jitter 5, lr 2e-5, 1500 steps, batch 16, bf16, one seed; best of the 24 sweep checkpoints by selection mean (28 checkpoints tried with two earlier CPU runs); inference overlap 0.5, hann, villa PR #1865 6723ad158",
+    "device": "cuda (Modal B200)",
+    "auc_as_stored": 0.8394,
+    "auc_reversed": 0.5236,
+    "measured_by": "this repo",
+    "source": "docs/logs/2026-10-08-d9v2-finetune-sweep.md"
+   }
+  ]
+ },
  "community": [
   {
    "reader": "Hecate",
