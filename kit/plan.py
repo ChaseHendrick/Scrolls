@@ -71,9 +71,10 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
 """
 
 HELD_OUT = """\
-# 1b. Generalization check: PHerc0139 w045, held out from ink_9um and from v8in training.
-#     Rows of letters here mean the model reads ink it was not trained on. Score it before
-#     you look at any target: Bullo27 reports row scores 73-148 on w045 and w033.
+# 1b. Labelled check: PHerc0139 w045, unseen by v8in. ink_9um trained on its 2.4 um render
+#     (pherc0139-w029), so here it shows cross-scan reading of a training surface, not
+#     generalization; PHerc0841 is the held-out test. Score it before you look at any
+#     target: Bullo27 reports row scores 73-148 on w045 and w033.
 python -m kit fetch w045 ink-dataset/pherc0139/w045/w045_9um.zarr
 uv run --extra models python -m vesuvius.ink_detection.inference.infer \\
   ink-dataset/pherc0139/w045/w045_9um.zarr \\

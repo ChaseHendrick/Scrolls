@@ -61,7 +61,7 @@ cd Scrolls && git fetch origin && git checkout claude/jolly-rubin-n55p5t   # unt
 bash scripts/mac-w045.sh
 ```
 
-[`scripts/mac-w045.sh`](../scripts/mac-w045.sh) answers the question w035 cannot: does a model find ink it was not trained on? PHerc0139 w045 has published ink labels and is in neither model's training set. In the same `~/scrolls-work` as `mac-verify.sh`, the script:
+[`scripts/mac-w045.sh`](../scripts/mac-w045.sh) answers the question w035 cannot: does a model find ink it was not trained on? PHerc0139 w045 has published ink labels and is not in v8in's training set. It is not held out from `ink_9um`, which trained on its 2.4 um render, so for `ink_9um` it is a cross-scan check on a training surface ([log](logs/2026-10-08-w045-not-held-out.md)). In the same `~/scrolls-work` as `mac-verify.sh`, the script:
 
 1. Fetches w045 (1.7 GB) and its labels, plus `ink_9um` seeds 42 and 43 and v8in at a pinned revision.
 2. Runs `ink_9um` on MPS through PR #1865, both seeds, both directions, and checks the logs for `Using MPS device`.

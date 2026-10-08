@@ -433,7 +433,7 @@ def build_parser():
     p.set_defaults(func=cmd_cost)
 
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
-    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 training / held-out surface volumes")
+    p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 surface volumes (w035: an ink_9um training segment; w045: unseen by v8in, but ink_9um trained on its 2.4 um render)")
     p.add_argument("dest", help="local directory")
     p.add_argument("--workers", type=int, default=16)
     p.set_defaults(func=cmd_fetch)
