@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# One command, on an Apple Silicon Mac: do the ink models find ink they were not trained on?
-# PHerc0139 segment w045 has published ink labels and is in neither model's training set
-# (ink_9um: Bullo27's survey; v8in: its patch pack lists w033, w035, w041, w044). Runs, on the
-# Mac GPU:
+# One command, on an Apple Silicon Mac: do the ink models find ink on labelled surfaces?
+# PHerc0139 segment w045 has published ink labels and is not in v8in's training set (its patch
+# pack lists w033, w035, w041, w044). ink_9um trained on w045's 2.4 um render, so for ink_9um
+# it is a cross-scan check on a training surface; PHerc0841 (SEGMENT=0841-*) is held out from
+# both. Runs, on the Mac GPU:
 #   - ink_9um seeds 42 and 43 through villa PR #1865 (MPS), both depth directions;
 #   - v8in (YoussefMoNader/ink-8um-v8in), first on a crop on CPU and MPS (kit verify: same map?),
 #     then over the labelled part of the segment, both directions;

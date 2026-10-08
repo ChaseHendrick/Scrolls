@@ -32,7 +32,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 
 ## Where extra GPU hours help
 
-- Running all 14 released `ink_9um` checkpoints and averaging them. On a held-out PHerc0139 segment this raised Bullo27's row score from 84 and 111 (single checkpoints) to 148, at seven times the inference cost.
+- Running all 14 released `ink_9um` checkpoints and averaging them. On PHerc0139 w045 this raised Bullo27's row score from 84 and 111 (single checkpoints) to 148, at seven times the inference cost.
 - Training or fine-tuning ink models on the public label sets, with real held-out validation.
 - Architecture and hyperparameter search. The organizers report an agent swarm, adapted from karpathy/autoresearch, that nearly doubled pseudo-label validation Dice on PHerc. 1667 while training only on PHerc. 139 ([open problems, section 5](https://scrollprize.org/2026_open_problems)).
 - 3D models (surface prediction, DINO-style pretraining with [dinovol](https://github.com/ScrollPrize/dinovol)) on large volumes.
@@ -47,7 +47,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 Lessons from the published, agent-assisted runs:
 
 - **Preregister.** Write what counts as ink before looking (bnleft's `prereg/readout.md`; `python -m kit run init` here). Agents and humans both see letters in noise.
-- **Run the control first** (PHerc0139 w035) and keep it in every report. It checks the pipeline, not generalization: the letters it shows are memorized training labels ([log](logs/2026-10-07-w035-cpu.md)). For a generalization check use a held-out labelled segment; Bullo27 reports clear rows on held-out PHerc0139 w045.
+- **Run the control first** (PHerc0139 w035) and keep it in every report. It checks the pipeline, not generalization: the letters it shows are memorized training labels ([log](logs/2026-10-07-w035-cpu.md)). For a generalization check use a held-out labelled segment such as PHerc0841. Bullo27 reports clear rows on PHerc0139 w045, but `ink_9um` trained on that surface's 2.4 um render ([log](logs/2026-10-08-w045-not-held-out.md)).
 - **Compare forward and reverse depth.** Ink should appear in one direction, not both.
 - **`set -o pipefail`.** bnleft lost a run when `cmd | tee log` hid a failed render.
 - **Build tools from current villa main.** The published VC3D container was months stale and lacked flags the recipe needs ([villa #1588](https://github.com/ScrollPrize/villa/issues/1588)).

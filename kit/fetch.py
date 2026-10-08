@@ -14,8 +14,10 @@ from pathlib import Path
 BUCKET_URL = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 W035_9UM = ("PHerc0139/segments/20260317000000-w035_2026031718/surface-volumes/"
             "9.362um-1.2m-113keV-volume-20250728140407.zarr")
-# Held out from ink_9um (Bullo27's survey) and from v8in (its patch pack lists w033, w035,
-# w041, w044 for PHerc0139), so it tests whether a model finds ink it was not trained on.
+# Unseen by v8in (its patch pack lists w033, w035, w041, w044 for PHerc0139). Not held out
+# from ink_9um: its 2.4 um render is ink_9um training segment pherc0139-w029, so for ink_9um
+# and its fine-tunes this native 9.362 um render is a cross-scan check on a training surface
+# (docs/logs/2026-10-08-w045-not-held-out.md).
 W045_9UM = ("PHerc0139/segments/20260126000000-w045_2026012619/surface-volumes/"
             "9.362um-1.2m-113keV-volume-20250728140407.zarr")
 ALIASES = {"w035": W035_9UM, "w045": W045_9UM}

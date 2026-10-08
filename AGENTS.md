@@ -106,7 +106,7 @@ Testing the Mac scripts off a Mac: `SMOKE=1 EXPECT_GPU=cpu WORK=<scratch dir> ba
 | v8in | Youssef Nader's ResNet3D-50 ink model (`YoussefMoNader/ink-8um-v8in`, 2026-09-28); `v8in-1447` is its PHerc1447 fine-tune |
 | d9v2, Reader v2 | Community fine-tunes of `ink_9um` (TAUIL-Abd-Elilah; Domenico Russo); drop-in `ink_9um` checkpoints |
 | w035 | PHerc0139 training segment: a pipeline check only (the model reproduces its own labels there) |
-| w045 | PHerc0139 segment held out from `ink_9um`, v8in and d9v2 (Reader v2 trained on it) |
+| w045 | PHerc0139 segment unseen by v8in but not held out from `ink_9um`, which trained on its 2.4 um render (pherc0139-w029); d9v2 and Reader v2 inherit that, and Reader v2 also trained on it ([log](docs/logs/2026-10-08-w045-not-held-out.md)) |
 | PHerc0841 | Scroll in no candidate's training set, with labelled segments w00, ag896, ag405: the fair generalization test |
 | AUC | Probability a labelled ink pixel scores above a labelled background pixel, inside the supervision mask |
 | As stored / reversed | Depth order of the surface volume; reversed is the control and should sit near or below 0.5 |

@@ -5,6 +5,7 @@
 - no em or en dashes in tracked text (house style);
 - every JSON file under docs/ parses;
 - every `python -m kit <command>` written in the docs and scripts is a real subcommand.
+- no live file calls PHerc0139 w045 held out from `ink_9um` (it trained on w045's 2.4 um render).
 """
 
 import json
@@ -18,6 +19,10 @@ from kit import cli
 
 ROOT = Path(__file__).resolve().parent.parent
 TEXT = (".md", ".py", ".sh", ".txt", ".json", ".yml", ".yaml", ".toml")
+# Dated logs, evidence and experiment records keep their original wording; the correction is
+# docs/logs/2026-10-08-w045-not-held-out.md.
+HISTORICAL = ("docs/logs/", "docs/evidence/", "scripts/experiments/")
+W045_HELD_OUT = re.compile(r"(?<!not )held[ -]out from `?ink_9um|held out from both models")
 # Bash 4+ features macOS's /bin/bash 3.2 lacks.
 BASH4 = [
     (re.compile(r"\bdeclare\s+-[a-zA-Z]*A"), "associative arrays (declare -A)"),
@@ -95,6 +100,17 @@ class RepoTest(unittest.TestCase):
                     seen.setdefault(m.group(1), str(f.relative_to(ROOT)))
         missing = {c: where for c, where in seen.items() if c not in commands}
         self.assertEqual(missing, {}, f"documented but not in kit: {missing}")
+
+    def test_w045_is_not_called_held_out_from_ink_9um(self):
+        # The ink_9um label dataset trains on w045's 2.399 um render (its segment pherc0139-w029).
+        for f in tracked():
+            rel = f.relative_to(ROOT).as_posix()
+            if f.suffix not in TEXT or not f.exists() or rel.startswith(HISTORICAL) or rel == "tests/test_repo.py":
+                continue
+            m = W045_HELD_OUT.search(f.read_text(encoding="utf-8", errors="replace"))
+            self.assertIsNone(m, f"{rel} says {m.group(0)!r}" if m else "")
+        held_out = json.loads((ROOT / "docs" / "results.json").read_text(encoding="utf-8"))["held_out"]
+        self.assertTrue(held_out["w045"].startswith("held out from v8in only"), held_out["w045"])
 
 
 if __name__ == "__main__":

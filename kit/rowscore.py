@@ -6,8 +6,8 @@ an ink map that shows text carries a spectral peak at a 2.5 to 8 mm period in on
 direction. The score is the peak power in that band over the band's median power,
 computed on the largest connected piece of the mapped surface.
 
-Reference values reported there (Community report, not checked here): held-out PHerc0139
-w045 and w033 score 73 to 148; 65 automatic patches on eligible scrolls score 2.5 to 33.5;
+Reference values reported there (Community report, not checked here): PHerc0139 w045 and
+w033 score 73 to 148; 65 automatic patches on eligible scrolls score 2.5 to 33.5;
 and 6 cm2 tiles of the controls score 6.8 to 77.4, which overlaps the negatives. So a low
 score on a small patch proves little, and a high score is a place to look, not ink. The
 verdict stays visual.
