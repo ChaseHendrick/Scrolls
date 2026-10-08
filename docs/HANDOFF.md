@@ -6,6 +6,10 @@ Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.
 
 The user does not want hours spent on CPU for work a GPU does in minutes. Before starting a job, estimate its time. Anything that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so do not try to sign in from one. Write the exact run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and give the user a short prompt to paste into Codex, or commands to run on their own computer. The rule is AGENTS.md hard rule 11.
 
+## Session 8 October 2026: optional development host
+
+[The DigitalOcean workspace guide](compute/digitalocean-workspace.md) records an optional development host for preparing work and controlling Modal jobs. DigitalOcean is not a dependency of Modal. The procedure remains unvalidated end to end; installation and sign-in alone do not prove callable tools or a provisioned workspace. Hosting costs and Modal compute authorization must be checked separately. This documentation does not launch or authorize compute.
+
 ## Session 7 October 2026 (evening): mesh hypothesis study
 
 The user asked for a deep dive on the mesh question with the data public. Protocol first ([plan](plans/2026-10-07-mesh-hypothesis.md), four dated amendments committed before each measurement), then `kit meshaudit` (26 tests) and runs on existing cloud CPUs. Results: [log](logs/2026-10-07-mesh-hypothesis.md), [data](data/mesh-hypothesis/README.md), README findings 10 and 11.
