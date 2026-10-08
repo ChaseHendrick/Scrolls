@@ -45,6 +45,7 @@ python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif   # needs numpy +
 python -m kit fetch w035 data/w035_9um.zarr   # mirror a public bucket prefix over HTTPS, resumable
 python -m kit fetch w045 data/w045_9um.zarr   # held out from ink_9um and v8in: the generalization check
 python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362   # row triage score
+python -m kit letterread map.tif --weights linenet.npz   # Greek letter hypotheses with null controls (docs/letter-reader.md)
 bash scripts/mac-verify.sh                    # Apple Silicon: CPU vs MPS on the control, one command
 python -m unittest discover -s tests -v
 ```
@@ -118,6 +119,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
+| `letterread.py`, `greeklm.py` | Learned Greek line reader (CTC, numpy inference) with null, orientation and language-off controls; letter language model ([guide](docs/letter-reader.md)) |
 | `cli.py` | `python -m kit` entry point |
 
 ## Novel findings

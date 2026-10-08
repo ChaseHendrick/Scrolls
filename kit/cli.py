@@ -384,6 +384,47 @@ def cmd_phantom(args):
     return 0
 
 
+def cmd_letterread(args):
+    try:
+        from . import letterread
+        img = letterread.load_image(args.image, args.key)
+        if args.crop:
+            y0, y1, x0, x1 = args.crop
+            img = img[y0:y1, x0:x1]
+        lm = None
+        if args.lm:
+            from . import greeklm
+            lm = greeklm.KNLetterLM.load(args.lm)
+        res = letterread.read(img, args.weights, orientation=not args.no_orientation, letter_px=args.letter_px,
+                              polarity=args.polarity, nulls=args.nulls, seed=args.seed, lines=args.lines,
+                              p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0, beam=args.beam)
+    except (ImportError, OSError, KeyError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    if args.out:
+        Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
+    return 0
+
+
+def cmd_greeklm(args):
+    try:
+        from . import greeklm
+        if args.action == "build":
+            lm, stats = greeklm.build(args.tei, order=args.order)
+            lm.save(args.out)
+            print(json.dumps(dict(stats, out=args.out, order=args.order), indent=2))
+        else:
+            lm = greeklm.KNLetterLM.load(args.model)
+            text = greeklm.clean_text(" ".join(args.text))
+            print(json.dumps({"letters": text, "bits_per_letter": round(lm.bits_per_letter(text), 3) if text else None},
+                             ensure_ascii=False))
+    except (ImportError, OSError, KeyError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
+
+
 def cmd_view(args):
     from .verify import VerifyError
     try:
@@ -684,6 +725,36 @@ def build_parser():
     p.add_argument("--max-side", type=int, default=viewer.MAX_SIDE)
     p.add_argument("--png", help="also write the panels side by side as a PNG")
     p.set_defaults(func=cmd_view)
+
+    p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null and orientation controls")
+    p.add_argument("image", help=".npy, .npz, .tif or .png (ink bright by default)")
+    p.add_argument("--weights", required=True, help="linenet-v1 .npz from scripts/letters/train_linenet.py")
+    p.add_argument("--key", help=".npz: array name (default: the first)")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    p.add_argument("--letter-px", type=float, help="letter height in image pixels (default: estimated from line pitch)")
+    p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright", help="ink bright (maps) or dark (photos)")
+    p.add_argument("--lines", type=float, nargs="+", help="centre rows of the lines, image pixels (default: found)")
+    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4)")
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--p-min", type=float, help="letter confidence floor (default: set from the nulls, at least 0.5)")
+    p.add_argument("--lm", help="letter language model .npz (python -m kit greeklm build); reported beside the ink-only decode")
+    p.add_argument("--lm-weight", type=float, default=0.5)
+    p.add_argument("--beam", type=int, default=32)
+    p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and rotated reads")
+    p.add_argument("--out", help="also write the full result as JSON")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_letterread)
+
+    p = sub.add_parser("greeklm", help="letter n-gram language model for Greek in scriptio continua")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("build", help="fit Kneser-Ney letter n-grams on TEI XML texts (e.g. PerseusDL canonical-greekLit)")
+    a.add_argument("out", help="model .npz (keep it out of git)")
+    a.add_argument("tei", nargs="+")
+    a.add_argument("--order", type=int, default=5)
+    a = actions.add_parser("score", help="bits per letter of a Greek string under a model")
+    a.add_argument("model")
+    a.add_argument("text", nargs="+")
+    p.set_defaults(func=cmd_greeklm)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))

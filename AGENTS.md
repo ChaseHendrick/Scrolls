@@ -62,6 +62,7 @@ When the private checkout is available, refresh the combined session context fro
 | `kit/provenance.py` | Who ran what, when, on which machine, from which inputs; one digest over the record |
 | `kit/ensemble.py` | Average maps of one surface (`python -m kit ensemble OUT MAP MAP ... [--method rank]`); map-level, never cross-seed weights |
 | `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fibre orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](docs/logs/2026-10-07-grok-laneD.md)) |
+| `kit/letterread.py`, `kit/greeklm.py` | Learned Greek letter reader (`python -m kit letterread IMAGE --weights W`): a small CTC line network in numpy, letter boxes and confidences, tile-shuffle and phase nulls, orientation, letter-size search; and a Kneser-Ney letter language model (`python -m kit greeklm build`) reported beside the ink-only decode. Letter hypotheses, not readings ([guide](docs/letter-reader.md)) |
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
 | `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
@@ -73,6 +74,7 @@ When the private checkout is available, refresh the combined session context fro
 | `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
+| `scripts/letters/` | Letter reader training: synthetic Greek lines and pages (`letterdata.py`, `gen_dataset.py`), CTC training with numpy export (`train_linenet.py`), the PHerc. 172 drawn-letter check (`eval_p172.py`), synthetic page check (`eval_pages.py`) and the Modal app (`modal_letters.py`) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
 | `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
