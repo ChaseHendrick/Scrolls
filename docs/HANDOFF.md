@@ -2,6 +2,10 @@
 
 Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
 
+## Before any long job: GPU work goes to Modal (user decision, 8 October 2026)
+
+The user does not want hours spent on CPU for work a GPU does in minutes. Before starting a job, estimate its time. Anything that needs a GPU, or more than about an hour on CPU, runs on Modal when the session has a Modal login, or is suggested to the user. With no login, write the exact run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and give the user a short prompt to paste into an agent that has one, such as Codex. The rule is AGENTS.md hard rule 11.
+
 ## Session 7 October 2026 (evening): mesh hypothesis study
 
 The user asked for a deep dive on the mesh question with the data public. Protocol first ([plan](plans/2026-10-07-mesh-hypothesis.md), four dated amendments committed before each measurement), then `kit meshaudit` (26 tests) and runs on existing cloud CPUs. Results: [log](logs/2026-10-07-mesh-hypothesis.md), [data](data/mesh-hypothesis/README.md), README findings 10 and 11.
