@@ -6,6 +6,10 @@ Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.
 
 The user does not want hours spent on CPU for work a GPU does in minutes. Before starting a job, estimate its time. Anything that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so do not try to sign in from one. Write the exact run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and give the user a short prompt to paste into Codex, or commands to run on their own computer. The rule is AGENTS.md hard rule 11.
 
+## Session 8 October 2026: d9v2 fine-tune sweep
+
+Four short fine-tunes of d9v2 on public human labels (PHerc0841 and w045 excluded) were trained on Modal and all 24 checkpoints scored on the PHerc0841 w00 and ag896 selection crops ([log](logs/2026-10-08-d9v2-finetune-sweep.md)). None beats Reader v2: the best, mean 0.8616, sits between d9v2 (0.8612) and Reader v2 (0.8620), far from the 0.8820 promotion line, and ag405 stays unscored (Model output). Arm A (anchor 1.0, lr 2e-5) held its mean; B and C lost about 0.01 to 0.015; unanchored D fell to 0.8218 (Interpretation). Depth windows of the best checkpoint peaked at 0.8666 (z8-27), below d9v2 at the same window (0.8761).
+
 ## Session 8 October 2026: optional development host
 
 [The DigitalOcean workspace guide](compute/digitalocean-workspace.md) records an optional development host for preparing work and controlling Modal jobs. DigitalOcean is not a dependency of Modal. The procedure remains unvalidated end to end; installation and sign-in alone do not prove callable tools or a provisioned workspace. Hosting costs and Modal compute authorization must be checked separately. This documentation does not launch or authorize compute.
