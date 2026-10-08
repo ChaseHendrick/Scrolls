@@ -4,7 +4,7 @@ Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.
 
 ## Correction 8 October 2026: w045 is not held out from `ink_9um`
 
-`ink_9um` trained on PHerc0139 w045's 2.399 um render, pooled to 9.6 um (segment pherc0139-w029 in its label dataset). Our w045 test scores the native 9.362 um render of the same surface, so for `ink_9um`, d9v2 and Reader v2 it is a cross-scan check on a training surface; it is still unseen by v8in. Use PHerc0841 for held-out claims. Wording is corrected across the live docs and code comments, the numbers are unchanged, and README Novel finding 1 awaits the owner's decision ([log](logs/2026-10-08-w045-not-held-out.md)).
+`ink_9um` trained on PHerc0139 w045's 2.399 um render, pooled to 9.6 um (segment pherc0139-w029 in its label dataset). Our w045 test scores the native 9.362 um render of the same surface, so for `ink_9um`, d9v2 and Reader v2 it is a cross-scan check on a training surface; it is still unseen by v8in. Use PHerc0841 for held-out claims. Wording is corrected across the live docs and code comments, the numbers are unchanged, and The owner chose to keep README Novel finding 1 with its correction until v8in's PHerc0841 crop scores replace it ([log](logs/2026-10-08-w045-not-held-out.md)).
 
 ## Before any long job: GPU work goes to Modal (user decision, 8 October 2026)
 
