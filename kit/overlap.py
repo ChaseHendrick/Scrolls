@@ -18,7 +18,9 @@ displaced matches. A control pair (for example high-passed raw CT, or reverse-de
 agree less, or the agreement is not about ink. `--box` restricts trace A to one window, to ask
 whether a single candidate reappears. On PHerc0841 the team's maps agree 0.86 within 28 um and
 fall to chance beyond about 110 um; a strong ink spot reappears 70 % of the time within 28 um
-against 50 % for CT texture.
+against 50 % for CT texture. Those maps (the team's `new_canon_autoresearch_recipe`) are probably
+in-sample on PHerc0841: the recipe's committed trainer (villa 94602c91) lists w00, ag896 and
+ag405 as training fragments (docs/logs/2026-10-09-pherc0841-hecate.md).
 
 Needs numpy, tifffile, scipy (cKDTree, zoom) and, for labels, zarr: all in villa's environment.
 """

@@ -73,8 +73,10 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
 HELD_OUT = """\
 # 1b. Labelled check: PHerc0139 w045, unseen by v8in. ink_9um trained on its 2.4 um render
 #     (pherc0139-w029), so here it shows cross-scan reading of a training surface, not
-#     generalization; PHerc0841 is the held-out test. Score it before you look at any
-#     target: Bullo27 reports row scores 73-148 on w045 and w033.
+#     generalization; PHerc0841 is the held-out test for ink_9um, v8in, d9v2 and Reader v2
+#     (possibly not for Hecate: its base model's trainer lists all three PHerc0841 segments).
+#     Score it before you look at any target: Bullo27 reports row scores 73-148 on w045
+#     and w033.
 python -m kit fetch w045 ink-dataset/pherc0139/w045/w045_9um.zarr
 uv run --extra models python -m vesuvius.ink_detection.inference.infer \\
   ink-dataset/pherc0139/w045/w045_9um.zarr \\
@@ -132,6 +134,11 @@ RESAMPLE_NOTE = """
 #    Published runs on 8.64 um scans also tried resampling to 9.362 um
 #    (nerln/vesuvius-first-letters-pherc0800). Try both and record which you used."""
 
+AWARDED = """\
+# NOTE: {title} on {date} ({source}; checked {checked}).
+#    villa still lists {scroll} as First Letters eligible, so the plan below is printed anyway.
+#    Read the terms at scrollprize.org/prizes before planning a submission on this scroll."""
+
 RULES = """\
 # 3. Before you look at the target output:
 #    - Write your readout rule in experiments/{slug}/run.json (python -m kit run init).
@@ -157,8 +164,11 @@ def first_letters(scroll, batch=None, snapshot=None, mac=False):
     if abs(entry["voxel_um"] - NATIVE_UM) > 0.1:
         resample = RESAMPLE_NOTE.format(voxel=entry["voxel_um"])
     submit = prizes.find(snapshot, "first-letters-2027")["submit"]
+    awarded = prizes.award(snapshot, canonical)
+    notice = [AWARDED.format(scroll=canonical, **awarded)] if awarded else []
     return "\n".join([
         f"# First Letters plan for {canonical} (prize snapshot {snapshot['checked']}; check scrollprize.org/prizes first)",
+        *notice,
         "",
         SETUP_MAC if mac else SETUP,
         CONTROL.format(batch=batch),

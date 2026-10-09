@@ -1,10 +1,10 @@
 # Tricks and tips from the community, and what they did here (2026-10-07)
 
-What other teams found makes ink readers better, makes a read more trustworthy, or saves time; each with its source, whether this repository has it, and what it measured on PHerc0841, the labelled scroll no released reader trained on. Labels as in [`NOVELTY.md`](NOVELTY.md). Measurements are on the three 640 px crops `scripts/mac-w045.sh` uses, 64 px edge left out, against the 20260918 human labels (`kit auc`); the letter-scale score is `kit hpscore`.
+What other teams found makes ink readers better, makes a read more trustworthy, or saves time; each with its source, whether this repository has it, and what it measured on PHerc0841, a labelled scroll that `ink_9um`, v8in, d9v2 and Reader v2 did not train on (possibly not held out from Hecate, whose base model's committed trainer lists all three PHerc0841 segments: [log](logs/2026-10-09-pherc0841-hecate.md)). Labels as in [`NOVELTY.md`](NOVELTY.md). Measurements are on the three 640 px crops `scripts/mac-w045.sh` uses, 64 px edge left out, against the 20260918 human labels (`kit auc`); the letter-scale score is `kit hpscore`.
 
 ## Measured here on PHerc0841
 
-First crop (w00) only; ag896, ag405 and Reader v2 are running and will replace this table. Forward AUC, reverse in brackets; letter-scale r (`kit hpscore`) after it. CPU, villa PR #1865, 2026-10-07.
+w00 only below. The tricks job stopped early on 2026-10-07 after also scoring ag896 and Reader v2 (default window: forward, reverse and depth-shuffled, on w00 and ag896): see [`tables.md`](../scripts/experiments/2026-10-07-cloud/tricks/tables.md) ([PR #8](https://github.com/ChaseHendrick/Scrolls/pull/8)). ag405 and w045 were not scored. Forward AUC, reverse in brackets; letter-scale r (`kit hpscore`) after it. CPU, villa PR #1865, 2026-10-07.
 
 | Map | 0841 w00 AUC (reverse) | Letter-scale r |
 | --- | --- | ---: |
@@ -19,7 +19,7 @@ First crop (w00) only; ag896, ag405 and Reader v2 are running and will replace t
 | d9v2 + `ink_9um` rank mean | 0.8750 (0.576) | |
 | Depth-shuffled input: `ink_9um`, soup, d9v2 | 0.4996, 0.4807, 0.4906 | -0.011, -0.009, +0.002 |
 
-Model output on one 640 px crop, not yet a result: three crops decide.
+Model output on one 640 px crop, not yet a result: ag405, a different surface, is still unscored.
 
 ## Better maps for free (no training)
 
@@ -28,7 +28,7 @@ Model output on one 640 px crop, not yet a result: three crops decide.
 | **Checkpoint soup**: average the weights of the last few checkpoints of one run | Nieuwlaar, [ink9um-dense-native](https://github.com/Nieuwlaar/ink9um-dense-native) (`soup42_last4`, +0.03 to +0.06 AUC on PHerc0139); Armando Gaona's checkpoint-averaging Progress Prize | `scripts/soup.py` (bit-identical to his file) | Only within one run. **Averaging two seeds' weights broke the model (AUC 0.49)**; average their maps instead. `soup.py` refuses mixed seeds. |
 | **z-window ensemble**: run the same model on several depth windows and average the maps | Nieuwlaar `zavg_infer.sh` (windows `0:20 3:23 5:25 8:27` on 28-layer volumes) | villa's `--layer-start/--layer-end` + `kit ensemble` | Costs one inference per window. |
 | **Mirror test-time augmentation** | villa's own `--tta-mirror` flag | villa | Twice the compute. |
-| **Map ensembles across readers** | Reader v2 model card (Reader v2 + Hecate 0.866 on PHerc0841); TAUIL (d9v2 + Reader v2 0.840) | `kit ensemble` (`--method rank` across models) | Helps only when the members are about equally good; see the table above. |
+| **Map ensembles across readers** | Reader v2 model card (Reader v2 + Hecate 0.866 on PHerc0841, where Hecate may not be held out); TAUIL (d9v2 + Reader v2 0.840) | `kit ensemble` (`--method rank` across models) | Helps only when the members are about equally good; see the table above. |
 | **Depth sharpening** after inference | [villa #1898](https://github.com/ScrollPrize/villa/issues/1898), measured by Bullo27 | Not added | +0.018 to +0.062 pixel AUC on PHerc0841 but only +0.002 to +0.004 letter-scale, and no letter became legible. Blur-type gains look like this. |
 
 ## Measuring honestly
