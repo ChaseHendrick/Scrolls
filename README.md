@@ -83,7 +83,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labelled test), `mac-phase0.sh` (public model comparisons), `mac-verify.sh` |
 | [`docs/results.json`](docs/results.json) | Every benchmark number with settings and source |
 | [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Public evaluation methodology and access-required private plan pointers |
-| [`kit/data/prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) | Dated prize snapshot: amounts, deadlines, 13 + 22 eligible volumes with S3 names |
+| [`kit/data/prizes-2026-10-09.json`](kit/data/prizes-2026-10-09.json) | Dated prize snapshot: amounts, deadlines, 13 + 22 eligible volumes with S3 names, award notes (earlier snapshots kept beside it) |
 | [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, week by week, with costs |
 | [`docs/prizes.md`](docs/prizes.md) | Every open prize, its submission contents, eligible scrolls |
