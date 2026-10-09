@@ -14,7 +14,7 @@ class PrizeSnapshotTest(unittest.TestCase):
         self.snap = prizes.load()
 
     def test_snapshot_matches_prize_page_totals(self):
-        self.assertEqual(self.snap["checked"], "2026-10-06")
+        self.assertEqual(self.snap["checked"], "2026-10-09")
         grand = prizes.find(self.snap, "grand-prize-2027")
         self.assertEqual(grand["total_usd"], 1_000_000)
         self.assertEqual(sum(grand["tiers_usd"].values()), 1_000_000)

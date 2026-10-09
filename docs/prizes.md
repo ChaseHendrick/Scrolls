@@ -2,6 +2,8 @@
 
 **Snapshot checked 2026-10-06** from [scrollprize.org/prizes](https://scrollprize.org/prizes) and its source [`34_prizes.md`](https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/docs/34_prizes.md) and [`prizeEligibility.json`](https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/src/data/prizeEligibility.json) at villa commit `e0bbb8b40a2d`. Machine-readable copy: [`../kit/data/prizes-2026-10-06.json`](../kit/data/prizes-2026-10-06.json). The live page wins on any disagreement. Eligible lists change: PHerc. 1447 left First Letters on 24 Sep 2026 when the team found text in it ([villa #1887](https://github.com/ScrollPrize/villa/pull/1887)).
 
+**Update, 2026-10-09.** Sourced fact: the organisers announced on 8 Oct 2026 that the $50,000 First Letters prize for PHerc. 343 has been awarded (["$50K First Letters Prize awarded for PHerc. 343"](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for), Vesuvius Challenge Substack). On 2026-10-09 villa's `34_prizes.md` and `prizeEligibility.json` on main were byte-identical to `e0bbb8b40a2d`, and the live page still listed PHerc0343. The new snapshot [`../kit/data/prizes-2026-10-09.json`](../kit/data/prizes-2026-10-09.json) keeps the eligible lists as villa has them and marks the award, which `python -m kit prizes` prints. Interpretation: PHerc0343 is no longer open for First Letters, since the prize goes to the first team per scroll.
+
 Label: **Sourced fact** (see [`NOVELTY.md`](NOVELTY.md)).
 
 ## Summary
@@ -43,7 +45,7 @@ The organizers suggest a team: one person on whole-scroll segmentation (start wi
 | PHerc0257 | 20250821151750 | 9.362 |
 | PHerc0268 | 20251110183117 | 8.64 |
 | PHerc0306B | 20250521133212 | 8.64 |
-| PHerc0343 | 20250521140437 | 8.64 |
+| PHerc0343 (awarded 2026-10-08, see the update above) | 20250521140437 | 8.64 |
 | PHerc0358 | 20250821151737 | 9.362 |
 | PHerc0483A | 20250521140913 | 8.64 |
 | PHerc0483B | 20251124083638 | 8.64 |

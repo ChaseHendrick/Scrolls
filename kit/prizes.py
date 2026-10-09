@@ -3,6 +3,10 @@
 The snapshot is a copy of https://scrollprize.org/prizes and villa's
 ``prizeEligibility.json`` on the date in its ``checked`` field. The live page wins
 when they disagree.
+
+Eligible lists stay exactly as villa publishes them. An eligible entry may carry an
+``award`` (date, title, source, label, checked) when the organisers have announced a prize
+for that scroll before villa's list changes; ``format_table`` prints it.
 """
 
 import json
@@ -10,7 +14,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
-SNAPSHOT = DATA_DIR / "prizes-2026-10-06.json"
+SNAPSHOT = DATA_DIR / "prizes-2026-10-09.json"
 DATA_BROWSER = "https://scrollprize.org/data_browser/"
 
 
@@ -50,6 +54,12 @@ def eligible_volume(snapshot, scroll, prize_id="first-letters-2027"):
     return entry["volume"] if entry else None
 
 
+def award(snapshot, scroll, prize_id="first-letters-2027"):
+    """Return the recorded award for ``scroll`` under ``prize_id`` (date, title, source, label, checked), or None."""
+    entry = eligible_entry(snapshot, scroll, prize_id)
+    return entry.get("award") if entry else None
+
+
 def normalize_scroll(name):
     """Map 'PHerc. 826', 'pherc0826' and 'PHerc0826' to 'PHERC0826'."""
     text = name.upper().replace(" ", "").replace(".", "")
@@ -80,8 +90,12 @@ def format_table(snapshot, today=None):
         rows.append(f"{prize['title']:<24} {amount(prize):>14}  {prize['deadline'][:10]}  {when}")
         rows.append(f"    {prize['goal']}")
         if prize["eligible"] and prize["eligible"][0]["volume"] != "any":
-            names = ", ".join(e["scroll"] for e in prize["eligible"])
+            names = ", ".join(e["scroll"] + (" (awarded)" if "award" in e else "") for e in prize["eligible"])
             rows.append(f"    Eligible ({len(prize['eligible'])}): {names}")
+        for e in prize["eligible"]:
+            if "award" in e:
+                rows.append(f"    {e['scroll']}: {prize['title']} awarded {e['award']['date']}, "
+                            f"still on villa's eligible list ({e['award']['source']})")
         rows.append("")
     rows.append(snapshot["note"])
     return "\n".join(rows)
