@@ -15,7 +15,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 When the private checkout is available, refresh the combined session context from that checkout with `python3 -m kit.repo_handoff context --private-root . --public-root ../Scrolls`. Its handoff helper installs local Git hooks in both checkouts and writes combined context only inside the private workspace. Hooks do not push, run hosted jobs or copy private notes into this repository. Read the generated private context before private work; never paste it into public artifacts.
 
 1. [`docs/HANDOFF.md`](docs/HANDOFF.md): current state and the next steps, newest session first.
-2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): phases, gates, timeline.
+2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): pointer to the roadmap, which now lives in Scrolls-private (access required). Gate A's public rule is in `kit/gate.py`.
 3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
    The README section "Novel findings" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
 4. [`docs/logs/`](docs/logs/): dated research notes; the newest explains the latest numbers.
@@ -54,6 +54,7 @@ When the private checkout is available, refresh the combined session context fro
 | `kit/prizes.py`, `kit/data/prizes-*.json` | Dated prize snapshot: amounts, deadlines, eligible volumes with S3 names and voxel sizes |
 | `kit/doctor.py` | Machine check: GPU (CUDA or Apple Silicon), memory, disk, tools |
 | `kit/plan.py` | Prints the official First Letters commands for one scroll (never runs them) |
+| `kit/cli.py`, `kit/__main__.py` | The `python -m kit` entry point: every subcommand and its help text |
 | `kit/fetch.py` | Resumable anonymous download of a bucket prefix; aliases `w035`, `w045` |
 | `kit/layers.py` | Surface-volume zarr to numbered layer TIFFs (v8in's input), banded reads, optional crop; `kit shuffle` and `kit layers --shuffle SEED` write the depth-shuffle control |
 | `kit/verify.py` | Two maps agree within tolerance, valid only if a control map is caught |
@@ -63,11 +64,15 @@ When the private checkout is available, refresh the combined session context fro
 | `kit/ensemble.py` | Average maps of one surface (`python -m kit ensemble OUT MAP MAP ... [--method rank]`); map-level, never cross-seed weights |
 | `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fibre orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](docs/logs/2026-10-07-grok-laneD.md)) |
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
-| `kit/gate.py` | Gate A by the roadmap's rule (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
+| `kit/gate.py` | Gate A, by the rule in its module docstring (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
+| `kit/localcost.py` | `kit run local` and `kit run backfill`: wall time, CPU time and estimated electricity cost of local runs in the ledger (hard rule 9, [compute.md](docs/compute.md)); past durations in `scripts/backfill/` |
+| `kit/cloudcost.py` | Modal cost estimates from dated rates, no network (`python3 -m kit.cloudcost rates/cost/infer/jobs/budget`); rates and job assumptions in `docs/compute/` |
+| `kit/cropscan.py` | Pixel AUC of one map on every window of a grid in one pass (library; used by the lane I experiment): how much a crop's AUC depends on where the crop was put |
 | `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
 | `kit/meshaudit.py` | `kit meshaudit transforms/canvas/plan/depth`: refit catalogue cross-scan affines from their landmarks, check every surface volume against its mesh, and measure papyrus depth between native and cross renders; [protocol](docs/plans/2026-10-07-mesh-hypothesis.md), [data](docs/data/mesh-hypothesis/README.md) |
-| `kit/surfacefix.py` | Experimental bounded normal-offset suggestions, frozen correspondence checks and uncertain-region flags; see `docs/surfacefix.md` |
+| `kit/surfacefix.py`, `kit/_surface_geometry.py` | Experimental bounded normal-offset suggestions, frozen correspondence checks and uncertain-region flags; the helper holds the conservative bilinear-quad correspondence; see `docs/surfacefix.md` |
+| `kit/phantom.py`, `kit/viewer.py`, `scripts/phantom-demo.sh` | `kit phantom`: synthetic ink-on-papyrus volumes with known labels; `kit view`: one-file HTML overlay of several readers' maps and the labels; the demo uses synthetic data only ([guide](docs/phantom-and-viewer.md)) |
 | `docs/scan-status.md` | Our completed/partial/planned processing, plus the dated official CT catalogue and documented acquisition unknowns |
 | `kit/ledger.py` | Local experiment records in `experiments/<slug>/run.json` with readout-rule hash and status gate |
 | `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
@@ -75,13 +80,16 @@ When the private checkout is available, refresh the combined session context fro
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
+| `scripts/experiments/` | Saved scripts, logs and scores of past public-data jobs (2026-10-07 cloud jobs, lanes, tricks); records, keep their wording |
+| `docs/compute/` | Modal pricing, rates, job assumptions, the public Modal ledger and run specs (hard rule 11) |
+| `docs/evidence/` | Frozen evidence archives with hashes; do not edit |
 | `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
 | `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
 | `docs/logs/` | Dated research notes (not claims) |
 | `docs/state-of-play.md`, `docs/prizes.md` | What has been read and tried; prize terms |
 | `docs/mac.md` | Apple Silicon guide: commands, how to watch a run, measured timings |
-| `tests/` | `python -m unittest discover -s tests`; map tests skip without numpy, tifffile, zarr. `test_repo.py` checks the repo itself: scripts parse, Mac scripts stay bash 3.2, no long dashes, docs JSON parses, documented `kit` commands exist |
+| `tests/` | `python -m unittest discover -s tests`; map tests skip without numpy, tifffile, zarr. `test_repo.py` checks the repo itself: scripts parse, Mac scripts stay bash 3.2, no long dashes, docs JSON parses, documented `kit` commands exist, every `kit/*.py` module is in this map, relative links in live Markdown resolve, and the held-out wording stays correct in live files (w045 is not held out from `ink_9um`; a line calling PHerc0841 held out from every reader must name Hecate) |
 | `experiments/` | Local ledger (gitignored except its README) |
 
 ## Commands
@@ -107,7 +115,7 @@ Testing the Mac scripts off a Mac: `SMOKE=1 EXPECT_GPU=cpu WORK=<scratch dir> ba
 | d9v2, Reader v2 | Community fine-tunes of `ink_9um` (TAUIL-Abd-Elilah; Domenico Russo); drop-in `ink_9um` checkpoints |
 | w035 | PHerc0139 training segment: a pipeline check only (the model reproduces its own labels there) |
 | w045 | PHerc0139 segment unseen by v8in but not held out from `ink_9um`, which trained on its 2.4 um render (pherc0139-w029); d9v2 and Reader v2 inherit that, and Reader v2 also trained on it ([log](docs/logs/2026-10-08-w045-not-held-out.md)) |
-| PHerc0841 | Scroll in no candidate's training set, with labelled segments w00, ag896, ag405: the fair generalization test |
+| PHerc0841 | Scroll with labelled segments w00, ag896, ag405, in the training data of none of `ink_9um`, v8in, v8in-1447, d9v2 and Reader v2: the fair generalization test for them. Possibly not held out from Hecate, whose base model's committed trainer lists all three segments ([log](docs/logs/2026-10-09-pherc0841-hecate.md), `held_out` in [results.json](docs/results.json)) |
 | AUC | Probability a labelled ink pixel scores above a labelled background pixel, inside the supervision mask |
 | As stored / reversed | Depth order of the surface volume; reversed is the control and should sit near or below 0.5 |
 | Crop, `--inner 64` | The 640 px window of densest labelled ink per segment; 64 px edge left out so bare-crop and full-map scores match |

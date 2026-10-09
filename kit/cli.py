@@ -630,7 +630,7 @@ def build_parser():
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_ensemble)
 
-    p = sub.add_parser("gate", help="Gate A: rank readers on PHerc0841's three crops by the roadmap's rule")
+    p = sub.add_parser("gate", help="Gate A: rank readers on PHerc0841's three crops by the rule in kit/gate.py")
     p.add_argument("work", nargs="?", help="Mac work directory with <segment>/results/auc_*.json (default ~/scrolls-work if present)")
     p.add_argument("--results", default=str(gate.RESULTS), help="committed scores (docs/results.json)")
     p.add_argument("--min-lead", type=float, default=gate.MIN_LEAD, help="mean AUC lead that counts as a win")

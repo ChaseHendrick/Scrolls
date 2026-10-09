@@ -11,7 +11,7 @@ This repository mixes **sourced research notes** about the Vesuvius Challenge wi
 3. **Cite real URLs** for facts about prizes, scrolls, results and people. Prefer scrollprize.org, the villa source, arXiv, and the organizers' Substack. Do not invent links. Date every prize fact.
 4. **Re-check prizes before acting on them.** Amounts, deadlines and eligible scrolls change (PHerc. 1447 left First Letters on 24 Sep 2026). Update `kit/data/` with a new dated snapshot rather than editing the old one.
 5. **Preregister.** Write the readout rule (`python -m kit run init`) before viewing any target output. Do not edit it afterwards; `run check` will flag it.
-6. **Control first, and the right control.** PHerc0139 w035 checks only that a pipeline runs (the model reproduces its training labels there). Generalization claims need a held-out labelled segment through the identical pipeline: PHerc0841 (in no candidate's training set), scored with `kit auc` and the reverse-depth control. w045 is held out from v8in only; `ink_9um` and its fine-tunes trained on its 2.4 um render ([log](logs/2026-10-08-w045-not-held-out.md)).
+6. **Control first, and the right control.** PHerc0139 w035 checks only that a pipeline runs (the model reproduces its training labels there). Generalization claims need a held-out labelled segment through the identical pipeline: PHerc0841 (in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2; possibly not held out from Hecate, whose base model's committed trainer lists all three PHerc0841 segments: [log](logs/2026-10-09-pherc0841-hecate.md)), scored with `kit auc` and the reverse-depth control. w045 is held out from v8in only; `ink_9um` and its fine-tunes trained on its 2.4 um render ([log](logs/2026-10-08-w045-not-held-out.md)).
 7. **One engine.** villa is the engine. Do not reimplement VC3D, rendering or ink inference here. Useful general fixes go upstream as villa PRs.
 8. **Tools need tests.** Any change to `kit/` adds or updates a test in `tests/`.
 9. **Research logs are not claims.** Dated notes go in `docs/logs/YYYY-MM-DD.md`. Do not promote log speculation into `state-of-play.md` without a source.
@@ -36,7 +36,7 @@ See [`QUALITY.md`](QUALITY.md) and [`NOVELTY.md`](NOVELTY.md).
 
 - Improve docs with citations.
 - Extend `kit/` with tested helpers for planning, recording and checking runs.
-- When the user wants to run the pipeline: use `.claude/skills/scroll-session/SKILL.md`, print the plan, help them run it on their machine or a rented GPU, and record results in the ledger.
+- When the user wants to run the pipeline: use `.claude/skills/scroll-session/SKILL.md`, print the plan, estimate its time, help them run it on their machine or, for GPU work or more than about an hour of CPU, through a Modal run spec (rule 12), and record results in the ledger. Target runs and their records belong in Scrolls-private.
 - Draft villa issues and PRs for bugs hit along the way (the user submits them).
 - Summarize published runs and prize results with links.
 

@@ -8,9 +8,9 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 
 - [AGENTS.md](AGENTS.md): entry point for agents: hard rules, standing user decisions, repository map, commands, glossary
 - [docs/HANDOFF.md](docs/HANDOFF.md): current state and next steps, newest first
-- [docs/plans/roadmap.md](docs/plans/roadmap.md): phases, gates, timeline
+- [docs/plans/roadmap.md](docs/plans/roadmap.md): pointer to the access-required private roadmap
 - [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
-- [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
+- [README.md](README.md): includes "Novel findings", only results not published elsewhere
 
 ## Research
 

@@ -142,6 +142,14 @@ class PlanTest(unittest.TestCase):
         self.assertIn("v8in_reverse.tif --reverse\n", text)
         self.assertIn("--reverse --device mps", plan.first_letters("PHerc0826", mac=True))
 
+    def test_plan_names_hecate_caveat_for_pherc0841(self):
+        # PHerc0841 is held out from the readers this repository scores, but possibly not from
+        # Hecate (docs/logs/2026-10-09-pherc0841-hecate.md).
+        text = plan.first_letters("PHerc0826")
+        step = text[text.index("# 1b."):text.index("python -m kit fetch w045")]
+        self.assertIn("PHerc0841 is the held-out test for ink_9um, v8in, d9v2 and Reader v2", step)
+        self.assertIn("Hecate", step)
+
     def test_fetch_aliases_point_at_9um_surface_volumes(self):
         from kit import fetch
         self.assertIn("w045_2026012619/surface-volumes/9.362um", fetch.ALIASES["w045"])

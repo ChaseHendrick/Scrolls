@@ -1,10 +1,10 @@
 {
  "schema": 1,
- "updated": "2026-10-08",
+ "updated": "2026-10-09",
  "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
  "held_out": {
   "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md",
-  "PHerc0841": "in no candidate's training set"
+  "PHerc0841": "not in the training data of ink_9um (its label dataset has no PHerc0841 segment; docs/logs/2026-10-08-w045-not-held-out.md), v8in or v8in-1447 (v8in's card lists no PHerc0841 segment; v8in-1447 fine-tunes on PHerc1447 w058 and w060 only), d9v2 (TAUIL's README holds out all three PHerc0841 segments, Community report) or Reader v2 (its train_config.json lists no PHerc0841 segment, Community report): the held-out test for those readers. Possibly not held out from Hecate: Hecate's base model scrollprize/ink_canonical_2um (recipe new_canon_autoresearch_recipe, epoch 13, step 113,246) has a committed trainer, ScrollPrize/villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py, that lists w00 and both PHerc0841 auto_grown segments as training fragments (lines 200-207, 292-293) and holds out only l5_0_crop (line 794) (Sourced fact); that the released weights came from that list is Interpretation. Treat Hecate's PHerc0841 scores, and the team's new_canon_autoresearch_recipe maps of PHerc0841, as possibly in-sample. See docs/logs/2026-10-09-pherc0841-hecate.md"
  },
  "segments": {
   "w045": {
@@ -469,6 +469,34 @@
    "auc_reversed": 0.6572,
    "measured_by": "this repo",
    "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "Reader v2",
+   "settings": "domenicor046/reader-v2 reader-v2-step040000.pth (sha256 654ec5ac...d5d3a6), default window, overlap 0.5, hann, villa e0bbb8b40 + PR #1865 (6723ad158)",
+   "device": "cpu",
+   "auc_as_stored": 0.9269,
+   "auc_reversed": 0.7294,
+   "auc_shuffled": 0.5681,
+   "measured_by": "this repo",
+   "source": "scripts/experiments/2026-10-07-cloud/tricks/results.json"
+  },
+  {
+   "segment": "0841-ag896",
+   "window": "crop",
+   "inner_px": 64,
+   "map_from": "bare-crop",
+   "reader": "Reader v2",
+   "settings": "domenicor046/reader-v2 reader-v2-step040000.pth (sha256 654ec5ac...d5d3a6), default window, overlap 0.5, hann, villa e0bbb8b40 + PR #1865 (6723ad158)",
+   "device": "cpu",
+   "auc_as_stored": 0.7972,
+   "auc_reversed": 0.5988,
+   "auc_shuffled": 0.617,
+   "measured_by": "this repo",
+   "source": "scripts/experiments/2026-10-07-cloud/tricks/results.json"
   }
  ],
  "finetune_checks": {
@@ -507,7 +535,8 @@
    "reader": "Hecate",
    "test": "PHerc0841 whole, human labels",
    "auc": 0.855,
-   "source": "https://huggingface.co/domenicor046/reader-v2"
+   "source": "https://huggingface.co/domenicor046/reader-v2",
+   "note": "PHerc0841 may not be held out from Hecate: its base model's committed trainer lists all three PHerc0841 segments (see held_out.PHerc0841)"
   },
   {
    "reader": "Reader v2",
@@ -525,7 +554,8 @@
    "reader": "Hecate + Reader v2 mean",
    "test": "PHerc0841 whole, human labels",
    "auc": 0.866,
-   "source": "https://huggingface.co/domenicor046/reader-v2"
+   "source": "https://huggingface.co/domenicor046/reader-v2",
+   "note": "PHerc0841 may not be held out from Hecate: its base model's committed trainer lists all three PHerc0841 segments (see held_out.PHerc0841)"
   },
   {
    "reader": "ink_9um seed42",
@@ -596,8 +626,8 @@
  ],
  "pending": [
   "v8in on 0841-w00, ag896, ag405 (crop, inner 64) on the user's Mac: a reproduction of Bullo27's v8in-12gb (2026-10-01) and the device check",
-  "v8in-1447 (Youssef's PHerc1447 fine-tune) on the same crops (cloud CPU, stride 42, 2026-10-07)",
-  "Reader v2 and the tricks table on all three PHerc0841 crops (cloud CPU, 2026-10-07)"
+  "v8in-1447 (Youssef's PHerc1447 fine-tune) on the PHerc0841 crops: w00 scored 2026-10-07 (forward 0.8381 at stride 42, reverse 0.5932 at stride 64, so a matched-stride rerun is still needed; PR #7); ag405 interrupted at 172/196 tiles (PR #9); ag896 has scripts only, no saved result (PR #10)",
+  "Reader v2 and the tricks table on PHerc0841 ag405, plus Reader v2 depth windows (w00 and ag896 scored 2026-10-07 in scripts/experiments/2026-10-07-cloud/tricks/, PR #8; that job stopped early before ag405, and w045 was dropped)"
  ],
  "surfacefix_checks": [
   {

@@ -26,6 +26,8 @@ If the prize snapshot is older than about a month, tell the user and suggest re-
 
 Read `docs/state-of-play.md`. Do not propose repeating a published null unchanged. Name the one variable the run will test.
 
+This repository is public. A target run (an eligible scroll without public labels) belongs in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private): do steps 3 to 5 from that checkout, so the preregistration, the ledger record and any candidate record never enter this repository, its PRs or its CI logs. Here, run only public labelled benchmarks (PHerc0841, w045, w035) and generic tools.
+
 ## 3. Plan and preregister
 
 ```sh
@@ -37,7 +39,9 @@ The readout rule is the user's decision. Write it before anyone looks at target 
 
 ## 4. Run
 
-The pipeline runs on the user's GPU machine or a rented one, not in a container without CUDA. Run the control first. Use `set -o pipefail`. Log costs with `python -m kit run cost`.
+Estimate the job's time first (AGENTS.md hard rule 11). A job that needs a GPU, or more than about an hour of CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, so never try to sign in from one: write the exact run spec in `docs/compute/modal-specs/` (inputs, commands, GPU type, expected time and cost, where outputs go, how to verify them) and give the user a short prompt to paste into an agent that runs Modal, such as Codex, or commands to run on their own computer. Only generic, public-data jobs get a spec here; a target-scroll spec goes in Scrolls-private's own `docs/compute/modal-specs/`. Rates: `docs/compute/modal-pricing.md`. Paid compute needs the user's budget decision.
+
+Shorter local jobs (Mac CPU or MPS) run under `python -m kit run local SLUG -- COMMAND`, so wall time and electricity cost reach the ledger (hard rule 9). Run the control first. Use `set -o pipefail`. Log other costs with `python -m kit run cost`.
 
 ## 5. Record the outcome
 
