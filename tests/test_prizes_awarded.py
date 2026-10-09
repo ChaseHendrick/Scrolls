@@ -6,7 +6,7 @@ import json
 import unittest
 from datetime import date
 
-from kit import cli, prizes
+from kit import cli, plan, prizes
 
 POST = "https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for"
 OLD = prizes.DATA_DIR / "prizes-2026-10-06.json"
@@ -80,6 +80,33 @@ class AwardedSnapshotTest(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("snapshot checked 2026-10-09", buf.getvalue())
         self.assertIn(f"First Letters awarded 2026-10-08, still on villa's eligible list ({POST})", buf.getvalue())
+
+
+class PlanAwardNoticeTest(unittest.TestCase):
+    def test_plan_for_pherc0343_carries_the_award_notice(self):
+        text = plan.first_letters("PHerc. 343")
+        lines = text.splitlines()
+        self.assertTrue(lines[0].startswith("# First Letters plan for PHerc0343"))
+        self.assertEqual(lines[1], f"# NOTE: $50K First Letters Prize awarded for PHerc. 343 on 2026-10-08 ({POST}; checked 2026-10-09).")
+        self.assertIn("villa still lists PHerc0343 as First Letters eligible", lines[2])
+        self.assertLess(text.index("# NOTE:"), text.index("# 0. Setup"))
+        self.assertEqual(text.count(POST), 1)
+
+    def test_plans_for_other_scrolls_carry_no_notice(self):
+        for scroll in ("PHerc0826", "PHerc0800", "PHerc0211"):
+            text = plan.first_letters(scroll)
+            self.assertNotIn("# NOTE:", text)
+            self.assertNotIn("awarded", text)
+
+    def test_old_snapshot_plan_carries_no_notice(self):
+        self.assertNotIn("# NOTE:", plan.first_letters("PHerc0343", snapshot=prizes.load(OLD)))
+
+    def test_cli_plan_prints_the_notice(self):
+        buf = io.StringIO()
+        with contextlib.redirect_stdout(buf):
+            code = cli.main(["plan", "PHerc0343"])
+        self.assertEqual(code, 0)
+        self.assertIn("# NOTE: $50K First Letters Prize awarded for PHerc. 343 on 2026-10-08", buf.getvalue())
 
 
 if __name__ == "__main__":

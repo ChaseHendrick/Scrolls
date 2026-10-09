@@ -1,4 +1,4 @@
-# State of play (checked 2026-10-06)
+# State of play (checked 2026-10-06; PHerc. 343 award added 2026-10-09)
 
 What has been read, what has been tried, and who has been paid. Read this before choosing a target so you do not repeat a published run. Each line carries a source. Community repositories are cited for what they report; they are not organizer statements.
 
@@ -14,10 +14,13 @@ What has been read, what has been tried, and who has been paid. Read this before
 | Jun 2026 | PHerc. 1667 (Scroll 4) read end to end: lower parts of about 22 columns of the surviving core. PHerc. 139 title evidence: Philodemus, *On Gods* book 8 | [first scroll](https://scrollprize.org/firstscroll), [arXiv:2606.29085](https://arxiv.org/abs/2606.29085) |
 | Jun 2026 | New $1M 2027 Grand Prize and $50k-per-scroll First Letters launched | [Substack](https://scrollprize.substack.com/p/a-new-1m-grand-prize-for-2027), [prizes](https://scrollprize.org/prizes) |
 | 24 Sep 2026 | PHerc. 1447 removed from First Letters "where letters have now been found"; a new 9 µm ink recipe was announced on Discord, model not released at the time | [villa #1887](https://github.com/ScrollPrize/villa/pull/1887); reported in [nerln](https://github.com/nerln/vesuvius-first-letters-pherc0800) and [Bullo27](https://github.com/Bullo27/first-letters-survey) READMEs |
+| 8 Oct 2026 | First $50k First Letters prize awarded, for PHerc. 343: the first submission to meet the organisers' strict technical and papyrological criteria (10 readable letters in 4 cm²). Other submissions were acknowledged; one did not reach the 10-character target. villa's eligible list still named PHerc0343 on 2026-10-09 | [Substack](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for), [prizes](prizes.md) |
 
 An organizer note on AI: an autonomous agent swarm adapted from karpathy/autoresearch "nearly doubled the validation Dice score (computed on pseudo-labels) on PHerc. 1667 while training only on PHerc. 139 data" ([open problems, section 5](https://scrollprize.org/2026_open_problems)).
 
-## Published First Letters attempts on eligible scrolls (all nulls)
+## Published First Letters attempts on eligible scrolls (nulls; the PHerc. 343 award is the exception)
+
+Every published attempt below reported no letters. The exception so far is PHerc. 343, whose First Letters prize was awarded on 8 Oct 2026 (row above, [Substack](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for)).
 
 | Who | Scroll(s) | Result | Notes |
 | --- | --- | --- | --- |

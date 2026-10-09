@@ -134,6 +134,11 @@ RESAMPLE_NOTE = """
 #    Published runs on 8.64 um scans also tried resampling to 9.362 um
 #    (nerln/vesuvius-first-letters-pherc0800). Try both and record which you used."""
 
+AWARDED = """\
+# NOTE: {title} on {date} ({source}; checked {checked}).
+#    villa still lists {scroll} as First Letters eligible, so the plan below is printed anyway.
+#    Read the terms at scrollprize.org/prizes before planning a submission on this scroll."""
+
 RULES = """\
 # 3. Before you look at the target output:
 #    - Write your readout rule in experiments/{slug}/run.json (python -m kit run init).
@@ -159,8 +164,11 @@ def first_letters(scroll, batch=None, snapshot=None, mac=False):
     if abs(entry["voxel_um"] - NATIVE_UM) > 0.1:
         resample = RESAMPLE_NOTE.format(voxel=entry["voxel_um"])
     submit = prizes.find(snapshot, "first-letters-2027")["submit"]
+    awarded = prizes.award(snapshot, canonical)
+    notice = [AWARDED.format(scroll=canonical, **awarded)] if awarded else []
     return "\n".join([
         f"# First Letters plan for {canonical} (prize snapshot {snapshot['checked']}; check scrollprize.org/prizes first)",
+        *notice,
         "",
         SETUP_MAC if mac else SETUP,
         CONTROL.format(batch=batch),
