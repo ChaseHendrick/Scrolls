@@ -33,6 +33,7 @@ Consolidated URLs, checked 2026-10-06.
 - Complete virtual unwrapping and reading of a rolled Herculaneum papyrus: https://arxiv.org/abs/2606.29085
 - EduceLab-Scrolls: https://arxiv.org/abs/2304.02084
 - Parker et al. 2019, PLOS One: https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0215775
+- Charred-ink review (what was shown, by specimen class), checked 2026-10-11: [logs/2026-10-11-charred-ink.md](logs/2026-10-11-charred-ink.md)
 
 ## Community reports cited
 
