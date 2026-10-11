@@ -1,5 +1,7 @@
 # Scrolls: Vesuvius Challenge workbench
 
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
 ![Hero](docs/assets/readme-hero.svg)
 
 Research notes, a run planner, and an experiment ledger for the [Vesuvius Challenge](https://scrollprize.org/): reading the carbonized Herculaneum papyri from X-ray CT scans.
@@ -150,10 +152,24 @@ A [further adaptive-geometry experiment and PR review](docs/logs/2026-10-07-adap
 - [`docs/QUALITY.md`](docs/QUALITY.md): every claim about prizes or results has a dated source.
 - [`docs/NOVELTY.md`](docs/NOVELTY.md): an ink map is model output, not a reading.
 - [`docs/TESTING.md`](docs/TESTING.md): unittest; what green does and does not mean.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): PR ground rules.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md): setup, checks, PR workflow, and attribution.
+- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md): participation standards and private reporting.
+- [`SECURITY.md`](SECURITY.md): supported code and confidential vulnerability reports.
+- [`SUPPORT.md`](SUPPORT.md): where to get help.
 
-## License note
+## License
 
-Code here is Apache-2.0. Vesuvius Challenge data is CC BY-NC 4.0 (newer scans) or the EduceLab data license (older scans); check each volume in the [data browser](https://scrollprize.org/data_browser). Do not commit scroll data, renders or ink maps to this public repository.
+Original code and documentation are licensed under [Apache-2.0](LICENSE), unless
+otherwise noted. Copyright 2026 Chase Hendrick and Scrolls contributors. This
+permissive license allows use, modification and redistribution, including
+commercial use, subject to its notice requirements and other terms, and includes
+an express contributor patent grant. See [NOTICE](NOTICE) for attribution and
+the separately licensed Contributor Covenant.
+
+Third-party software, datasets, labels, renders and model weights retain their
+own licenses. The code license does not grant rights to those materials.
+Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
+before use or redistribution. Do not commit scroll data, renders or ink maps to
+this public repository.
 
 [Further CPU scaling checks](docs/logs/2026-10-07-production-scaling.md) make full-map row scoring 7.01x faster on the tested public 305-million-pixel map with optional [`--fast-resize`](docs/rowscore.md). Its numerical mode is explicit; dense defaults remain unchanged. Exact geometry batching and label-filter reuse add smaller measured gains.
