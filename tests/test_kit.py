@@ -14,12 +14,30 @@ class PrizeSnapshotTest(unittest.TestCase):
         self.snap = prizes.load()
 
     def test_snapshot_matches_prize_page_totals(self):
-        self.assertEqual(self.snap["checked"], "2026-10-06")
+        self.assertEqual(self.snap["checked"], "2026-10-11")
         grand = prizes.find(self.snap, "grand-prize-2027")
         self.assertEqual(grand["total_usd"], 1_000_000)
+        self.assertEqual(grand["tiers_usd"], {"1st": 800_000, "2nd": 100_000, "3rd": 50_000, "4th": 50_000})
         self.assertEqual(sum(grand["tiers_usd"].values()), 1_000_000)
+        self.assertTrue(grand["deadline"].startswith("2027-06-25T23:59:00"))
         letters = prizes.find(self.snap, "first-letters-2027")
+        self.assertEqual(letters["per_scroll_usd"], 50_000)
+        self.assertEqual(letters["max_scrolls"], 9)
+        self.assertEqual(letters["total_usd"], 450_000)
+        self.assertEqual(letters["awarded_count"], 1)
         self.assertEqual(letters["per_scroll_usd"] * letters["max_scrolls"], letters["total_usd"])
+        self.assertEqual(letters["awarded"][0]["scroll"], "PHerc0343")
+        self.assertEqual(letters["awarded"][0]["winner"], "Erwin Nieuwlaar")
+        self.assertEqual(letters["awarded"][0]["date"], "2026-10-08")
+        self.assertEqual(letters["awarded"][0]["usd"], 50_000)
+        paris = prizes.find(self.snap, "first-title")
+        self.assertEqual(paris["total_usd"], 50_000)
+        self.assertTrue(paris["deadline"].startswith("2027-06-25T23:59:00"))
+        progress = prizes.find(self.snap, "progress-prizes")
+        self.assertEqual(progress["monthly_best_usd"], 20_000)
+        self.assertEqual(progress["typical_tiers_usd"][0], 20_000)
+        self.assertEqual(progress["typical_tiers_usd"][-1], 250)
+        self.assertTrue(progress["deadline"].startswith("2026-10-31T23:59:00"))
 
     def test_every_eligible_volume_has_a_resolved_zarr(self):
         for prize_id in ("grand-prize-2027", "first-letters-2027"):
@@ -29,7 +47,26 @@ class PrizeSnapshotTest(unittest.TestCase):
 
     def test_eligible_counts(self):
         self.assertEqual(len(prizes.find(self.snap, "grand-prize-2027")["eligible"]), 13)
-        self.assertEqual(len(prizes.find(self.snap, "first-letters-2027")["eligible"]), 22)
+        letters = prizes.find(self.snap, "first-letters-2027")["eligible"]
+        self.assertEqual(len(letters), 21)
+        self.assertNotIn("PHerc0343", [entry["scroll"] for entry in letters])
+        self.assertIsNone(prizes.eligible_volume(self.snap, "PHerc0343"))
+
+    def test_october_6_snapshot_still_has_22_including_pherc0343(self):
+        old = prizes.load(prizes.DATA_DIR / "prizes-2026-10-06.json")
+        self.assertEqual(old["checked"], "2026-10-06")
+        letters = prizes.find(old, "first-letters-2027")
+        self.assertEqual(len(letters["eligible"]), 22)
+        self.assertEqual(letters["max_scrolls"], 10)
+        self.assertEqual(letters["total_usd"], 500_000)
+        self.assertEqual(letters["per_scroll_usd"] * letters["max_scrolls"], letters["total_usd"])
+        self.assertEqual(prizes.eligible_volume(old, "PHerc0343"), "20250521140437")
+        self.assertIn("PHerc0343", [entry["scroll"] for entry in letters["eligible"]])
+        grand_old = [entry["scroll"] for entry in prizes.find(old, "grand-prize-2027")["eligible"]]
+        grand_new = [entry["scroll"] for entry in prizes.find(self.snap, "grand-prize-2027")["eligible"]]
+        self.assertEqual(grand_old, grand_new)
+        self.assertEqual(len(grand_new), 13)
+        self.assertIn("PHerc1447", grand_new)
 
     def test_pherc1447_left_first_letters_but_stays_grand_prize(self):
         self.assertIsNone(prizes.eligible_volume(self.snap, "PHerc1447"))
@@ -150,6 +187,8 @@ class PlanTest(unittest.TestCase):
     def test_plan_rejects_ineligible_scroll(self):
         with self.assertRaises(ValueError):
             plan.first_letters("PHerc1667")
+        with self.assertRaises(ValueError):
+            plan.first_letters("PHerc0343")
 
     def test_cost_matches_published_run(self):
         # bnleft/first-light-pherc0211: about 6.5 GPU hours on an A10 at $1.10/h, "about $7".
