@@ -1,6 +1,6 @@
 # Open prizes
 
-**Snapshot checked 2026-10-06** from [scrollprize.org/prizes](https://scrollprize.org/prizes) and its source [`34_prizes.md`](https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/docs/34_prizes.md) and [`prizeEligibility.json`](https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/src/data/prizeEligibility.json) at villa commit `e0bbb8b40a2d`. Machine-readable copy: [`../kit/data/prizes-2026-10-06.json`](../kit/data/prizes-2026-10-06.json). The live page wins on any disagreement. Eligible lists change: PHerc. 1447 left First Letters on 24 Sep 2026 when the team found text in it ([villa #1887](https://github.com/ScrollPrize/villa/pull/1887)).
+**Snapshot checked 2026-10-11** from the [scrollprize.org/prizes](https://scrollprize.org/prizes) page body (not the homepage banner) and its source [`34_prizes.md`](https://github.com/ScrollPrize/villa/blob/34d4b260dd2a281d635227a71ab8bfb5eb45c4cd/scrollprize.org/docs/34_prizes.md) and [`prizeEligibility.json`](https://github.com/ScrollPrize/villa/blob/34d4b260dd2a281d635227a71ab8bfb5eb45c4cd/scrollprize.org/src/data/prizeEligibility.json) at villa commit `34d4b260dd2a` ([#2037](https://github.com/ScrollPrize/villa/pull/2037)). Machine-readable copy: [`../kit/data/prizes-2026-10-11.json`](../kit/data/prizes-2026-10-11.json). The 6 October 2026 snapshot is kept at [`../kit/data/prizes-2026-10-06.json`](../kit/data/prizes-2026-10-06.json): a maximum of 10 First Letters scrolls ($500,000) and 22 eligible volumes, including PHerc0343. The live page wins on any disagreement. Eligible lists change: PHerc. 1447 left First Letters on 24 Sep 2026 when the team found text in it ([villa #1887](https://github.com/ScrollPrize/villa/pull/1887)). PHerc0343 left after its First Letters prize was awarded on 8 Oct 2026.
 
 Label: **Sourced fact** (see [`NOVELTY.md`](NOVELTY.md)).
 
@@ -9,7 +9,7 @@ Label: **Sourced fact** (see [`NOVELTY.md`](NOVELTY.md)).
 | Prize | Money | Deadline (11:59pm Pacific) | Submit |
 | --- | --- | --- | --- |
 | 2027 Grand Prize | $1,000,000: 1st $800k, 2nd $100k, 3rd $50k, 4th $50k | 25 Jun 2027 | grandprize@scrollprize.org |
-| First Letters | $50,000 per scroll, max 10 scrolls ($500k) | 25 Jun 2027 | [form](https://forms.gle/TM5ao8GwC2mDrdLk9) |
+| First Letters | $50,000 per scroll, maximum of 9 more scrolls ($450,000 remaining; one prize already used) | 25 Jun 2027 | [form](https://forms.gle/TM5ao8GwC2mDrdLk9) |
 | PHerc. Paris 4 title | $50,000 | 25 Jun 2027 | [form](https://forms.gle/4zeVPPBtNdSCAQa88) |
 | Progress Prizes | $20,000 best of month guaranteed; others $20k, $10k, $5k, $2,500, $1,000, $500, $250; about $590k per year | monthly; next 31 Oct 2026 | [form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) |
 
@@ -31,7 +31,9 @@ The organizers suggest a team: one person on whole-scroll segmentation (start wi
 
 ## First Letters
 
-10 legible letters within one 4 cm² area of an eligible scroll. 22 eligible volumes:
+10 legible letters within one 4 cm² area of an eligible scroll. 21 eligible volumes remain. The page says prizes will be awarded for a maximum of 9 more scrolls, up to $450,000. One prize was already used.
+
+On 8 October 2026 the $50,000 First Letters prize for PHerc 343 was awarded to Erwin Nieuwlaar ([official post](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for), [@scrollprize](https://x.com/scrollprize/status/2108285044133663084)). That is why PHerc0343 is no longer eligible. The 6 October snapshot listed 22 volumes and a maximum of 10 scrolls ($500,000), and it included PHerc0343 (volume 20250521140437, 8.64 µm).
 
 | Scroll | Volume | Voxel (µm) |
 | --- | --- | --- |
@@ -43,7 +45,6 @@ The organizers suggest a team: one person on whole-scroll segmentation (start wi
 | PHerc0257 | 20250821151750 | 9.362 |
 | PHerc0268 | 20251110183117 | 8.64 |
 | PHerc0306B | 20250521133212 | 8.64 |
-| PHerc0343 | 20250521140437 | 8.64 |
 | PHerc0358 | 20250821151737 | 9.362 |
 | PHerc0483A | 20250521140913 | 8.64 |
 | PHerc0483B | 20251124083638 | 8.64 |
@@ -58,7 +59,7 @@ The organizers suggest a team: one person on whole-scroll segmentation (start wi
 | PHerc1218 | 20250521120456 | 8.64 |
 | PHerc1545 | 20250821151648 | 9.362 |
 
-Voxel sizes come from the volume names in `s3://vesuvius-challenge-open-data/<scroll>/volumes/`, listed on 2026-10-06.
+Voxel sizes come from the volume names in `s3://vesuvius-challenge-open-data/<scroll>/volumes/`, listed on 2026-10-06 and carried forward for volume ids the 11 Oct page still lists.
 
 A submission contains: the tifxyz mesh(es) with flattening; one programmatically generated image with no manual annotation of characters, a 1 cm scale bar and letter sizes in pixels and mm; rows annotated without covering the letters (a baseline or box), ideally over a fiber-visible render; methodology and a way to reproduce it; false-positive mitigation (large model windows can invent letterforms; show it is not hallucinated, for example on a held-out region); held-out validation on public ground truth. No public disclosure before the announcement.
 

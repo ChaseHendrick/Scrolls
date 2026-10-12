@@ -10,7 +10,7 @@ from datetime import date, datetime
 from pathlib import Path
 
 DATA_DIR = Path(__file__).parent / "data"
-SNAPSHOT = DATA_DIR / "prizes-2026-10-06.json"
+SNAPSHOT = DATA_DIR / "prizes-2026-10-11.json"
 DATA_BROWSER = "https://scrollprize.org/data_browser/"
 
 
