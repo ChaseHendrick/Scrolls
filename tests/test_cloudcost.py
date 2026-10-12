@@ -165,3 +165,39 @@ class CliTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ModalDefaultsTest(unittest.TestCase):
+    def test_b300_first_then_fastest_fallbacks(self):
+        self.assertEqual(cc.MODAL_GPU, "B300")
+        self.assertEqual(cc.modal_gpu(), ["B300", "B200", "H200", "H100"])
+        self.assertEqual(cc.modal_gpu(fallback=False), "B300")
+        self.assertEqual(cc.modal_gpu(2), ["B300:2", "B200:2", "H200:2", "H100:2"])
+        self.assertEqual(cc.modal_gpu(cuda13=False), ["B200", "H200", "H100"])
+        with self.assertRaises(ValueError):
+            cc.modal_gpu(fallback=False, cuda13=False)
+        with self.assertRaises(ValueError):
+            cc.modal_gpu(9)
+        with self.assertRaises(ValueError):
+            cc.modal_gpu(0)
+
+    def test_fallbacks_are_known_and_get_cheaper(self):
+        r = cc.load_rates()
+        prices = [r["gpu_usd_per_s"][g] for g in cc.MODAL_GPU_FALLBACK]
+        self.assertEqual(prices, sorted(prices, reverse=True))
+        for g in cc.MODAL_GPU_FALLBACK:
+            self.assertEqual(r["max_gpus_per_container"][g], 8)
+
+    def test_cpu_request_equals_limit(self):
+        self.assertEqual(cc.modal_cpu(), (16.0, 16.0))
+        self.assertEqual(cc.modal_cpu(2), (2.0, 2.0))
+        with self.assertRaises(ValueError):
+            cc.modal_cpu(0.1)
+
+    def test_defaults_command(self):
+        buf = io.StringIO()
+        with redirect_stdout(buf):
+            self.assertEqual(cc.main(["defaults"]), 0)
+        out = json.loads(buf.getvalue())
+        self.assertEqual(out["gpu"][0], "B300")
+        self.assertEqual(out["cpu"], [16.0, 16.0])
