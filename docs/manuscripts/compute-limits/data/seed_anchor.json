@@ -1,0 +1,12 @@
+{
+ "description": "The explicit seed of villa vc_grow_seg_from_seed is free in every solve. Same seed as tracer_cores.json. Numbers as posted in villa issue #2059 and pull request #2063, 12 October 2026.",
+ "issue": "https://github.com/ScrollPrize/villa/issues/2059",
+ "pull_request": "https://github.com/ScrollPrize/villa/pull/2063",
+ "seed_distance_voxels": {"w031": 1.1, "w033": 24.5},
+ "first_step_10_generations": {"vertices": 324, "on_w031": 0, "on_w033": 265, "off": 58, "unscored": 1, "seed_quad_on_w033": 4, "nearest_vertex_to_seed_voxels": 25.3},
+ "anchored_10_generations": {"vertices": 324, "share_w031_4vox": 0.9907, "switch_edges": 0},
+ "generations_60_threads_2": [
+  {"run": "unanchored", "area_cm2": 4.88, "dominant": "w033", "dominant_share": 0.511, "area_on_w031_cm2": 0.0, "trace_s": 960},
+  {"run": "anchored", "area_cm2": 4.88, "dominant": "w031", "dominant_share": 0.972, "area_on_w031_cm2": 4.74, "trace_s": 1635}
+ ]
+}

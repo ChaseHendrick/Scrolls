@@ -83,6 +83,7 @@ When the private checkout is available, refresh the combined session context fro
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
 | `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
 | `docs/logs/` | Dated research notes (not claims) |
+| `docs/manuscripts/` | Paper drafts with their data and number checks; `compute-limits/` is shelved, not released |
 | `docs/state-of-play.md`, `docs/prizes.md` | What has been read and tried; prize terms |
 | `docs/mac.md` | Apple Silicon guide: commands, how to watch a run, measured timings |
 | `tests/` | `python -m unittest discover -s tests`; map tests skip without numpy, tifffile, zarr. `test_repo.py` checks the repo itself: scripts parse, Mac scripts stay bash 3.2, no long dashes, docs JSON parses, documented `kit` commands exist |
