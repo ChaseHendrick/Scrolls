@@ -1,0 +1,270 @@
+{
+ "scope": "two development segments only (0841-w00, 0841-ag896); texture registration (-6,-7) primary; ag405 unread",
+ "targets": {
+  "readerv2_texture_mean": 0.8548,
+  "target_plus_0.02": 0.8748,
+  "dev_go_gate_plus_0.015_from_selftrain.py_GO_LEAD": 0.8698,
+  "final_rule": "ag405 once: lead >= 0.02 over the better of readerv2 and d9v2 under both registrations, every paired 95% interval above 0, reverse at least 0.10 below forward as stored"
+ },
+ "models_texture": {
+  "readerv2": {
+   "w00": 0.8788,
+   "ag896": 0.8308,
+   "mean": 0.8548,
+   "lead_vs_readerv2": 0.0
+  },
+  "d9v2": {
+   "w00": 0.8763,
+   "ag896": 0.8293,
+   "mean": 0.8528,
+   "lead_vs_readerv2": -0.002
+  },
+  "B1-ens": {
+   "w00": 0.8823,
+   "ag896": 0.8254,
+   "mean": 0.85385,
+   "lead_vs_readerv2": -0.00095
+  },
+  "S0-ens": {
+   "w00": 0.8861,
+   "ag896": 0.8281,
+   "mean": 0.8571,
+   "lead_vs_readerv2": 0.0023
+  },
+  "S1-ens": {
+   "w00": 0.8929,
+   "ag896": 0.8277,
+   "mean": 0.8603,
+   "lead_vs_readerv2": 0.0055
+  },
+  "S2-ens": {
+   "w00": 0.8919,
+   "ag896": 0.8199,
+   "mean": 0.8559,
+   "lead_vs_readerv2": 0.0011
+  },
+  "V1-ens": {
+   "w00": 0.8926,
+   "ag896": 0.8246,
+   "mean": 0.8586,
+   "lead_vs_readerv2": 0.0038
+  },
+  "V2-ens": {
+   "w00": 0.8927,
+   "ag896": 0.8227,
+   "mean": 0.8577,
+   "lead_vs_readerv2": 0.0029
+  },
+  "V3-ens": {
+   "w00": 0.8801,
+   "ag896": 0.8175,
+   "mean": 0.8488,
+   "lead_vs_readerv2": -0.006
+  },
+  "rv2+d9v2 rank mean (ranks over all box px)": {
+   "w00": 0.8931,
+   "ag896": 0.8389,
+   "mean": 0.866,
+   "lead_vs_readerv2": 0.0112
+  },
+  "rv2+d9v2 probability mean (teacher proxy)": {
+   "w00": 0.8923,
+   "ag896": 0.8371,
+   "mean": 0.8647,
+   "lead_vs_readerv2": 0.0099
+  },
+  "rv2+d9x3 teacher (diag.json)": {
+   "w00": 0.8975,
+   "ag896": 0.8442,
+   "mean": 0.87085,
+   "lead_vs_readerv2": 0.01605
+  }
+ },
+ "S1_vs_readerv2_bootstrap_texture": {
+  "w00": [
+   0.0141,
+   [
+    0.0051,
+    0.0229
+   ]
+  ],
+  "ag896": [
+   -0.0031,
+   [
+    -0.0116,
+    0.0059
+   ]
+  ],
+  "mean": [
+   0.0055,
+   [
+    -0.0005,
+    0.0115
+   ]
+  ],
+  "between_segment_difference": [
+   0.0171,
+   [
+    0.0044,
+    0.03
+   ]
+  ],
+  "fresh_region_old_crop_plus107_excluded": {
+   "w00": [
+    0.0102,
+    [
+     -0.0005,
+     0.021
+    ]
+   ],
+   "mean": [
+    0.0043,
+    [
+     -0.0023,
+     0.0112
+    ]
+   ]
+  }
+ },
+ "teacher_retention": {
+  "teacher_lead_w00": 0.0187,
+  "teacher_lead_ag896": 0.0134,
+  "teacher_lead_mean": 0.01605,
+  "S1_share_kept_w00": 0.754,
+  "S1_share_kept_ag896": -0.231,
+  "S1_share_kept_mean": 0.343,
+  "three_windows_over_one_window_pair_w00_ag896_mean": [
+   0.0052,
+   0.0071,
+   0.00615
+  ],
+  "S1_rank_change_corr_with_S0": [
+   0.727,
+   0.708
+  ],
+  "S1_rank_change_corr_with_teacher_proxy": [
+   0.457,
+   0.369
+  ],
+  "round2_V1_lead_no_anchor_on_pseudo_6000_steps": 0.0038
+ },
+ "near_copies": {
+  "spearman_finetune_vs_readerv2": [
+   0.885,
+   0.971
+  ],
+  "spearman_seed_vs_seed_S1": [
+   0.983,
+   0.993
+  ],
+  "spearman_readerv2_vs_d9v2_w00_ag896": [
+   0.676,
+   0.858
+  ],
+  "seed_ensemble_minus_best_seed_mean": [
+   -0.0003,
+   0.0008
+  ],
+  "best_lineage_only_ensemble_gain_over_S1": 0.0014
+ },
+ "ensembles_and_postprocessing": {
+  "rv2_d9v2_rank_mean_gain": [
+   0.0107,
+   0.0112
+  ],
+  "rv2_d9v2_gain_fresh_region": [
+   0.0126,
+   [
+    0.0044,
+    0.0218
+   ]
+  ],
+  "rv2_d9v2_bootstrap_w00": [
+   0.0142,
+   [
+    0.0034,
+    0.0262
+   ]
+  ],
+  "rv2_d9v2_bootstrap_ag896": [
+   0.0081,
+   [
+    0.0006,
+    0.0162
+   ]
+  ],
+  "configs_searched": 13058,
+  "configs_reaching_0.8748": 0,
+  "best_in_sample_any": 0.87237,
+  "best_in_sample_no_blur": 0.86743,
+  "blur_sigma16_readerv2_w00_ag896": [
+   0.0209,
+   -0.0048
+  ]
+ },
+ "shared_floor": {
+  "blocks_all_five_below_0.65": {
+   "w00": 13,
+   "ag896": 12
+  },
+  "share_of_pairs": [
+   0.109,
+   0.125
+  ],
+  "share_of_each_model_deficit": [
+   0.2,
+   0.24
+  ],
+  "mean_without_them_readerv2_S1": [
+   0.8897,
+   0.8969
+  ],
+  "lead_without_them": 0.0072,
+  "caveat": "blocks selected on outcome; optimistic"
+ },
+ "ag896_two_fp_regions": {
+  "share_of_readerv2_ag896_loss": 0.236,
+  "ag896_gain_if_removed_all_models": [
+   0.024,
+   0.034
+  ],
+  "S1_minus_rv2_ag896_before_after": [
+   -0.0031,
+   -0.0031
+  ]
+ },
+ "registration": {
+  "best_common_offset_gain_mean": [
+   0.0006,
+   0.001
+  ],
+  "texture_field_vs_offset_max_diff": 0.0007,
+  "tuned_offset_worse_than_texture_on_spatial_holdout": "10 of 10 model-segment pairs",
+  "S1_lead_range_all_registrations": [
+   0.0033,
+   0.0062
+  ]
+ },
+ "label_edges": {
+  "ring5_readerv2_S1": [
+   0.8752,
+   0.8799
+  ],
+  "gap_ring0_ring5": [
+   0.0055,
+   0.0047
+  ],
+  "perfect_edge_ordering_upper_bound_k2_mean": 0.0181
+ },
+ "noise": {
+  "bootstrap_sd_mean_diff_close_models": 0.0031,
+  "bootstrap_sd_mean_diff_unlike_models": 0.0067,
+  "seed_sd_mean": 0.0009
+ },
+ "verdict": "0.875 texture mean is not reached by any existing map or tuned combination; the closest object is the rv2+d9x3 teacher at 0.8709 (+0.0161). A distilled student of that teacher is capped near +0.016 on dev unless it beats its teacher.",
+ "source": {
+  "record": "summary.json",
+  "note": "run record in the author's research log, not public; its sha256 identifies the copy",
+  "sha256": "ace94667a65be58cc01e7401eb4745b401bcea2b97445472b43f2965fdaade46"
+ }
+}

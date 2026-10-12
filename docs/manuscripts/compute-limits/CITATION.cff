@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "If you use these programs or data, please cite the paper."
+title: "More Compute Is Not Enough: Measured Limits of Self-Training, GPU Throughput and Tracer Scaling on Public Vesuvius Challenge Data"
+type: software
+authors:
+  - given-names: "Chase"
+    family-names: "Hendrick"
+    affiliation: "Independent Researcher"
+    orcid: "https://orcid.org/0009-0002-9754-6087"
+license: Apache-2.0
+version: "1.0.0"
+preferred-citation:
+  type: article
+  title: "More Compute Is Not Enough: Measured Limits of Self-Training, GPU Throughput and Tracer Scaling on Public Vesuvius Challenge Data"
+  authors:
+    - given-names: "Chase"
+      family-names: "Hendrick"
+      affiliation: "Independent Researcher"
+      orcid: "https://orcid.org/0009-0002-9754-6087"
+  year: 2026

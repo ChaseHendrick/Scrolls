@@ -1,0 +1,291 @@
+{
+ "started": "2026-10-12T21:33:29Z",
+ "gpu": {
+  "gpu": "NVIDIA B300 SXM6 AC",
+  "torch": "2.14.1+cu132",
+  "cuda": "13.2",
+  "crop": [
+   17,
+   128,
+   128
+  ],
+  "teachers": 1,
+  "runs": [
+   {
+    "batch": 16,
+    "s_per_step": 0.0373761256535848,
+    "patches_per_s": 428.0807526251832,
+    "busy_pct": 76.25,
+    "peak_gib": 2.464597225189209
+   },
+   {
+    "batch": 32,
+    "s_per_step": 0.0592801570892334,
+    "patches_per_s": 539.809635656514,
+    "busy_pct": 93.33333333333333,
+    "peak_gib": 4.067317485809326
+   },
+   {
+    "batch": 64,
+    "s_per_step": 0.0934405247370402,
+    "patches_per_s": 684.9276604568354,
+    "busy_pct": 96.11111111111111,
+    "peak_gib": 7.264419078826904
+   },
+   {
+    "batch": 128,
+    "s_per_step": 0.1667464017868042,
+    "patches_per_s": 767.6327562597488,
+    "busy_pct": 97.82352941176471,
+    "peak_gib": 13.661452770233154
+   },
+   {
+    "batch": 256,
+    "s_per_step": 0.31543567180633547,
+    "patches_per_s": 811.575934116841,
+    "busy_pct": 98.76666666666667,
+    "peak_gib": 26.45050811767578
+   }
+  ]
+ },
+ "gpu_teacher6": {
+  "gpu": "NVIDIA B300 SXM6 AC",
+  "torch": "2.14.1+cu132",
+  "cuda": "13.2",
+  "crop": [
+   17,
+   128,
+   128
+  ],
+  "teachers": 6,
+  "runs": [
+   {
+    "batch": 16,
+    "s_per_step": 0.0800631841023763,
+    "patches_per_s": 199.84216440281588,
+    "busy_pct": 91.625,
+    "peak_gib": 2.465573787689209
+   },
+   {
+    "batch": 64,
+    "s_per_step": 0.2022183338801066,
+    "patches_per_s": 316.4896019662837,
+    "busy_pct": 96.5,
+    "peak_gib": 7.266578197479248
+   },
+   {
+    "batch": 128,
+    "s_per_step": 0.37085827191670734,
+    "patches_per_s": 345.14532826369873,
+    "busy_pct": 97.94285714285714,
+    "peak_gib": 13.66680097579956
+   }
+  ]
+ },
+ "pack": {
+  "batch": 16,
+  "runs": [
+   {
+    "copies": 1,
+    "ok": true,
+    "busy_pct": 40.388888888888886,
+    "patches_per_s": 424.47587053235173,
+    "s_per_step": [
+     0.03769354422887166
+    ]
+   },
+   {
+    "copies": 2,
+    "ok": true,
+    "busy_pct": 60.92307692307692,
+    "patches_per_s": 401.7130154268027,
+    "s_per_step": [
+     0.07965586582819621,
+     0.07966185013453166
+    ]
+   },
+   {
+    "copies": 4,
+    "ok": true,
+    "busy_pct": 70.775,
+    "patches_per_s": 402.4908569989899,
+    "s_per_step": [
+     0.15927628676096597,
+     0.15798709789911905,
+     0.15887147982915242,
+     0.15991675853729248
+    ]
+   },
+   {
+    "copies": 8,
+    "ok": true,
+    "busy_pct": 78.71153846153847,
+    "patches_per_s": 402.7639454774297,
+    "s_per_step": [
+     0.31547396977742515,
+     0.31643129587173463,
+     0.3230047384897868,
+     0.3210153778394063,
+     0.3161617875099182,
+     0.31927602688471474,
+     0.31506481965382893,
+     0.31619051694869993
+    ]
+   }
+  ]
+ },
+ "loader": {
+  "bank_load_s": 18.593875885009766,
+  "cpu_count": 40,
+  "affinity": 40,
+  "threads": [
+   {
+    "batch": 16,
+    "workers": 1,
+    "batches_per_s": 2.6761615662973046
+   },
+   {
+    "batch": 16,
+    "workers": 8,
+    "batches_per_s": 36.243304650357715
+   },
+   {
+    "batch": 16,
+    "workers": 16,
+    "batches_per_s": 37.24002928644099
+   },
+   {
+    "batch": 16,
+    "workers": 22,
+    "batches_per_s": 37.40133927038789
+   },
+   {
+    "batch": 16,
+    "workers": 32,
+    "batches_per_s": 38.54896283670025
+   },
+   {
+    "batch": 16,
+    "workers": 44,
+    "batches_per_s": 38.6737185303208
+   },
+   {
+    "batch": 64,
+    "workers": 1,
+    "batches_per_s": 2.5532951846084595
+   },
+   {
+    "batch": 64,
+    "workers": 8,
+    "batches_per_s": 8.950589323125266
+   },
+   {
+    "batch": 64,
+    "workers": 16,
+    "batches_per_s": 9.072209166966218
+   },
+   {
+    "batch": 64,
+    "workers": 22,
+    "batches_per_s": 8.933713492728957
+   },
+   {
+    "batch": 64,
+    "workers": 32,
+    "batches_per_s": 8.855385790073054
+   },
+   {
+    "batch": 64,
+    "workers": 44,
+    "batches_per_s": 8.845888230791351
+   }
+  ],
+  "procs": [
+   {
+    "batch": 16,
+    "workers": 8,
+    "batches_per_s": 51.08787888153791
+   },
+   {
+    "batch": 16,
+    "workers": 16,
+    "batches_per_s": 52.00011591937157
+   },
+   {
+    "batch": 16,
+    "workers": 22,
+    "batches_per_s": 39.69493708562422
+   },
+   {
+    "batch": 16,
+    "workers": 44,
+    "batches_per_s": 26.494245467753142
+   },
+   {
+    "batch": 64,
+    "workers": 8,
+    "batches_per_s": 15.7384942647215
+   },
+   {
+    "batch": 64,
+    "workers": 16,
+    "batches_per_s": 20.907746147314153
+   },
+   {
+    "batch": 64,
+    "workers": 22,
+    "batches_per_s": 19.45716405714165
+   },
+   {
+    "batch": 64,
+    "workers": 44,
+    "batches_per_s": 14.299796918564272
+   }
+  ]
+ },
+ "real": [
+  {
+   "batch": 16,
+   "loader_threads": 22,
+   "steps": 300,
+   "rc": 0,
+   "wall_s": 35.95663619041443,
+   "s_per_step": 0.06551724137931035,
+   "loop_s": 22,
+   "setup_s": 11.979475259780884,
+   "busy_pct": 52.333333333333336
+  },
+  {
+   "batch": 64,
+   "loader_threads": 44,
+   "steps": 150,
+   "rc": 0,
+   "wall_s": 43.25098419189453,
+   "s_per_step": 0.12142857142857143,
+   "loop_s": 29,
+   "setup_s": 12.362517356872559,
+   "busy_pct": 73.68627450980392
+  }
+ ],
+ "data_wait": [
+  {
+   "batch": 16,
+   "loader_threads": 22,
+   "real_s": 0.06551724137931035,
+   "gpu_s": 0.0373761256535848,
+   "data_wait": 0.429522292655811
+  },
+  {
+   "batch": 64,
+   "loader_threads": 44,
+   "real_s": 0.12142857142857143,
+   "gpu_s": 0.0934405247370402,
+   "data_wait": 0.23048979628319832
+  }
+ ],
+ "source": {
+  "record": "probe.json",
+  "note": "run record in the author's research log, not public; its sha256 identifies the copy",
+  "sha256": "19bb9094bdd8fd2f3835f7a4035037e46e7a25321505ffd295c204766ff2e052"
+ }
+}

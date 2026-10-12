@@ -1,0 +1,47 @@
+{
+ "description": "Modal runs of the ink-detection line on 12 October 2026: per-app cost reports from the run ledger (not settled invoices). GPU names as Modal reported them.",
+ "runs": [
+  {
+   "run": "fine-tune on CT-registered labels, development",
+   "gpu": "mixed",
+   "usd": 2.79925489
+  },
+  {
+   "run": "fine-tune on CT-registered labels, fresh test",
+   "gpu": "mixed",
+   "usd": 0.38280131
+  },
+  {
+   "run": "self-training round 1, teacher check",
+   "gpu": "none",
+   "usd": 0.25996701
+  },
+  {
+   "run": "self-training round 1, nine trainings and maps",
+   "gpu": "L4",
+   "usd": 5.6784822,
+   "wall_min": 50
+  },
+  {
+   "run": "self-training round 2, nine trainings and maps",
+   "gpu": "B300",
+   "usd": 18.83739274,
+   "per_training_min": 11
+  },
+  {
+   "run": "B300 throughput probe",
+   "gpu": "B300",
+   "usd": 1.10391767,
+   "wall_min": 15
+  },
+  {
+   "run": "round 3 launch stopped during its speed test",
+   "gpu": "B300",
+   "usd": 0.09651245
+  }
+ ],
+ "source": {
+  "record": "modal-ledger.csv",
+  "note": "run record in the author's research log, not public; its sha256 identifies the copy"
+ }
+}

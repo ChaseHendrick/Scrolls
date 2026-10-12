@@ -1,0 +1,13 @@
+{
+ "description": "False HTTP 404 answers from the open-data bucket for chunks it holds, measured from one cloud machine on 8 October 2026, and their effect on a VC3D render. Numbers as posted in villa issue #2058 and pull request #2060.",
+ "issue": "https://github.com/ScrollPrize/villa/issues/2058",
+ "pull_request": "https://github.com/ScrollPrize/villa/pull/2060",
+ "gets": [
+  {"setting": "32 workers", "false_404": 102, "requests": 316},
+  {"setting": "1 worker", "false_404": 16, "requests": 80},
+  {"setting": "separate curl processes", "false_404": 19, "requests": 60},
+  {"setting": "one reused connection", "false_404": 0, "requests": 60},
+  {"setting": "HEAD requests", "false_404": 0, "requests": 1580}
+ ],
+ "w035_crop_render": {"empty_markers": 4, "zero_samples_pct": 27.7, "exit_code": 0, "after_removing_false_markers_zero_pct": 0.03}
+}

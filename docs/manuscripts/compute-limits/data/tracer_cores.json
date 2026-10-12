@@ -1,0 +1,39 @@
+{
+ "description": "One unpatched villa vc_grow_seg_from_seed trace on PHerc. 139 (scan 20250728140407, 9.362 um, surface prediction m7 L0), seed [4201, 3186, 4602], 60 generations, repeated with 2, 4, 8 and 16 reserved CPU cores on Modal, 11 October 2026. Winding shares are against the published PHerc. 139 windings within 4 voxels. The 16-core run did not finish.",
+ "seed_winding": "w031",
+ "runs": [
+  {
+   "cores": 2,
+   "trace_s": 960.2,
+   "area_cm2": 4.88,
+   "dominant": "w033",
+   "dominant_share": 0.5105,
+   "finished": true
+  },
+  {
+   "cores": 4,
+   "trace_s": 1494.0,
+   "area_cm2": 4.887,
+   "dominant": "w033",
+   "dominant_share": 0.5161,
+   "finished": true
+  },
+  {
+   "cores": 8,
+   "trace_s": 2118.9,
+   "area_cm2": 4.883,
+   "dominant": "w033",
+   "dominant_share": 0.4298,
+   "finished": true
+  },
+  {
+   "cores": 16,
+   "trace_s": null,
+   "finished": false
+  }
+ ],
+ "source": {
+  "record": "README.md",
+  "note": "run record in the author's research log, not public; its sha256 identifies the copy"
+ }
+}
