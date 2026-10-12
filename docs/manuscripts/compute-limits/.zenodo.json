@@ -1,0 +1,39 @@
+{
+  "title": "More Compute Is Not Enough: Measured Limits of Self-Training, GPU Throughput and Tracer Scaling on Public Vesuvius Challenge Data",
+  "upload_type": "publication",
+  "publication_type": "preprint",
+  "description": "<p>Reading the carbonized Herculaneum scrolls from X-ray CT is often described as a problem that larger GPUs and longer training will solve. We tested that on our own work for the Vesuvius Challenge, on public data, with rules fixed before each run. For ink detection on PHerc. 841, two rounds of self-training from an ensemble of the released readers led the best released reader, Reader v2, by +0.0055 and +0.0038 in pixel AUC on two development segments, against a preregistered gate of +0.015. The second round ran on NVIDIA B300 GPUs, cost about 3.3 times the first, and scored lower. A throughput probe on one B300 showed the training step waiting on data for 43% of its time at batch 16, and that packing up to eight trainings on one card raised no total throughput. An error analysis located the loss: the teacher led Reader v2 on both segments (+0.0187 and +0.0134), but the students kept 75% of that lead on one segment and -23% on the other, and every trained model stayed a near-copy of Reader v2 (per-pixel Spearman 0.885 to 0.971). A plain rank mean of two released readers, with no training, led by +0.0112, more than any trained model. For surface tracing, one 60-generation trace with villa's tracer took 960 s on 2 CPU cores, 1494 s on 4 and 2119 s on 8, and ended on the wrong winding every time; holding the seed fixed in the solver, at no extra compute, moved the same trace from a 0.511 share on the wrong winding to 0.972 on the right one. Compute did help: it turned a round of nine trainings into an hour and gave a negative answer the day each run was planned. Our reading is that the limits we met are how well training transfers signal, what signal the current readers have at all, and constraints that keep a trace on its sheet, and that compute multiplies good ideas without replacing them.</p><p>This record holds the manuscript, a preprint that has not been peer reviewed, with the data behind every table and figure and the programs that check the manuscript against them and redraw its figures. README.md describes each file.</p><p>The manuscript in paper/, including its figures, is all rights reserved. The programs in code/ and the data in data/ are licensed under the Apache License 2.0; that license does not apply to the manuscript or its figures. See LICENSE and NOTICE.</p>",
+  "creators": [
+    {
+      "name": "Hendrick, Chase",
+      "affiliation": "Independent Researcher",
+      "orcid": "0009-0002-9754-6087"
+    }
+  ],
+  "keywords": [
+    "Vesuvius Challenge",
+    "Herculaneum papyri",
+    "ink detection",
+    "self-training",
+    "knowledge distillation",
+    "GPU throughput",
+    "surface tracing",
+    "negative results"
+  ],
+  "license": "other-closed",
+  "version": "1.0.0",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/ScrollPrize/villa/issues/2058",
+      "relation": "references",
+      "resource_type": "other",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/ScrollPrize/villa/issues/2059",
+      "relation": "references",
+      "resource_type": "other",
+      "scheme": "url"
+    }
+  ]
+}
