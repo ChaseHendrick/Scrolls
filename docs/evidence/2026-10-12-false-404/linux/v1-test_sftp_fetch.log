@@ -1,0 +1,4 @@
+SCRATCH/villa/volume-cartographer/core/test/test_sftp_fetch.cpp:284: FAILED: CHECK(client.get(base + "/missing").not_found())
+SCRATCH/villa/volume-cartographer/core/test/test_sftp_fetch.cpp:387: FAILED: CHECK(client.head(base + "/missing").not_found())
+uncaught exception in 'Installed OpenSSH SFTP server serves a real Zarr without network': HTTP 404 fetching .zmetadata: SFTP status 2: No such file
+3 check(s) failed
