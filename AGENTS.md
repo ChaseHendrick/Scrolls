@@ -74,6 +74,7 @@ When the private checkout is available, refresh the combined session context fro
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
+| `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its fix #2060 ([log](docs/logs/2026-10-12-upstream-reports.md)); standard library |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
 | `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |

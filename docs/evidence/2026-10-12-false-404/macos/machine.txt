@@ -1,0 +1,5 @@
+ProductName:		macOS
+ProductVersion:		27.0
+BuildVersion:		26A428
+arm64
+Apple clang version 21.0.0 (clang-2100.3.34.2)

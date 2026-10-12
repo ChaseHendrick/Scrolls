@@ -1,0 +1,75 @@
+{
+ "utc": "2026-10-12T18:40:00Z",
+ "base": "25f3c93c65b492be3b90e402213a1ba6b5fd624c",
+ "commit": "318f56a69fef2e51f119814f0bbd4bda3f597284",
+ "tree": "3f7b6741275aebb5d958c3ffcb6e61ce9f874fb4",
+ "patch_file": "docs/contrib/false-404/patches/villa-false-404-main-25f3c93-v2.patch",
+ "patch_sha256": "de26da8e8e02897a02c6daffc7360917c57cacd24b9ce802aafec7aa1c84ccc0",
+ "change_from_v1": "v1 (villa-false-404-main-25f3c93.patch) made HttpResponse::not_found() require an empty error_message. main's SFTP transport sets error_message on a missing file, so v1 broke SFTP misses: test_sftp_fetch failed 3 checks (v1-test_sftp_fetch.log). v2 marks unconfirmed S3 404s with a separate unconfirmed_404 flag, updates docs/s3-missing-objects.md to match and drops its verification history, and rewrites the commit message; author set to ChaseHendrick's GitHub noreply address.",
+ "machine": "Claude cloud container, Linux x86_64, 4 CPUs, g++ 13.3, Qt 6.4.2 and the apt packages of villa's build_from_src_debian.sh",
+ "build": "cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DBLA_VENDOR=OpenBLAS -DVC_BUILD_APPS=ON -DVC_BUILD_PYTHON=OFF -DVC_TESTING=ON; targets vc_render_tifxyz and the tests below. main built with only the patch's test files added (git apply --include='volume-cartographer/core/test/*')",
+ "tests": {
+  "patched": {
+   "test_http_s3_missing": "15 test cases passed",
+   "test_s3_chunk_cache": "3 test cases passed",
+   "test_sftp_fetch": "3 test cases passed",
+   "test_http_fetch_errors": "16 test cases passed"
+  },
+  "main": {
+   "test_http_s3_missing": "65 checks failed",
+   "test_s3_chunk_cache": "5 checks failed",
+   "test_sftp_fetch": "3 test cases passed",
+   "test_http_fetch_errors": "16 test cases passed"
+  }
+ },
+ "render": {
+  "how": "scripts/false404/render_demo.py: PHerc0139 w035 in the frame of 20260102150214 (2.399 um), crop 256 x 256 at x 9000 y 11000, 109 layers, streamed from the open-data bucket through scripts/false404/fault_relay.py, rate 0.3, seed 1, bad 1: 6 chunk keys got S3's NoSuchBucket 404 on their first GET. reference and faulty on separate empty caches; rerun without false 404s on the faulty run's cache.",
+  "main": {
+   "reference": {
+    "exit": 0,
+    "false_404s_sent": 0,
+    "empty_markers": 0,
+    "zero_share": 0.0003,
+    "same_as_reference": true
+   },
+   "faulty": {
+    "exit": 0,
+    "false_404s_sent": 6,
+    "empty_markers": 12,
+    "zero_share": 0.1918,
+    "same_as_reference": false
+   },
+   "rerun": {
+    "exit": 0,
+    "false_404s_sent": 0,
+    "empty_markers": 12,
+    "zero_share": 0.1918,
+    "same_as_reference": false
+   }
+  },
+  "patched": {
+   "reference": {
+    "exit": 0,
+    "false_404s_sent": 0,
+    "empty_markers": 0,
+    "zero_share": 0.0003,
+    "same_as_reference": true
+   },
+   "faulty": {
+    "exit": 0,
+    "false_404s_sent": 6,
+    "empty_markers": 0,
+    "zero_share": 0.0003,
+    "same_as_reference": true
+   },
+   "rerun": {
+    "exit": 0,
+    "false_404s_sent": 0,
+    "empty_markers": 0,
+    "zero_share": 0.0003,
+    "same_as_reference": true
+   }
+  }
+ },
+ "not_run": "macOS; the VC3D GUI; tracing; SFTP against a remote server (test_sftp_fetch runs the local OpenSSH sftp-server)"
+}

@@ -1,0 +1,5 @@
+SCRATCH/villa-f404-main/volume-cartographer/core/test/test_sftp_fetch.cpp:322: FAILED: CHECK_FALSE(interrupted.ok())
+SCRATCH/villa-f404-main/volume-cartographer/core/test/test_sftp_fetch.cpp:323: FAILED: CHECK(interrupted.error_message.find("cancelled") != std::string::npos)
+SCRATCH/villa-f404-main/volume-cartographer/core/test/test_sftp_fetch.cpp:329: FAILED: CHECK_FALSE(client.get(explicitLogin).ok())
+SCRATCH/villa-f404-main/volume-cartographer/core/test/test_sftp_fetch.cpp:330: FAILED: CHECK_FALSE(client.get(base + "/data").ok())
+4 check(s) failed

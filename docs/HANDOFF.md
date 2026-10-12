@@ -2,6 +2,10 @@
 
 Updated 7 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
 
+## 12 October 2026: findings reported upstream
+
+Three findings went public on ScrollPrize/villa from ChaseHendrick's account on 12 October, with the owner's go-ahead on each: [#2058](https://github.com/ScrollPrize/villa/issues/2058) (VC3D caches a transient S3 404 as a permanent empty chunk), its draft fix [#2060](https://github.com/ScrollPrize/villa/pull/2060), [#2059](https://github.com/ScrollPrize/villa/issues/2059) (the tracer does not hold an explicit seed) and a [comment on #1843](https://github.com/ScrollPrize/villa/issues/1843#issuecomment-6130119937) (a CT check of the PHerc1667 transform). They are README findings 12 and 13 and an update to finding 10; numbers, controls and limits are in [the log](logs/2026-10-12-upstream-reports.md), and the false-404 test and render receipts in [`evidence/2026-10-12-false-404/`](evidence/2026-10-12-false-404/README.md). The relay that replays S3's false 404 is `scripts/false404/fault_relay.py`. #2060 is a draft: a merge, review answers or further upstream posts each need the owner's word. Nothing else was released.
+
 ## 11 October 2026: public community guidance
 
 The existing Apache-2.0 license is retained, with a project NOTICE and explicit
