@@ -1,6 +1,6 @@
 # Experiment workflow: idea, run, null or candidate, submission
 
-**Private work belongs in [ChaseHendrick/Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private)** (user decision, 2026-10-07). Check that repository's handoff and branches before continuing a private investigation. Keep candidate maps, private research notes and submission material there or in its ignored local data directories. The public Scrolls repository is for tools, public-data benchmarks and releasable reports. Do not copy private content into public PRs, documentation or CI logs. The local ledger examples below also apply in the private checkout.
+**Private work belongs in [ChaseHendrick/Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private)** (user decision). Check that repository's handoff and branches before continuing a private investigation. Keep candidate maps, private research notes and submission material there or in its ignored local data directories. The public Scrolls repository is for tools, public-data benchmarks and releasable reports. Do not copy private content into public PRs, documentation or CI logs. The local ledger examples below also apply in the private checkout.
 
 Every experiment moves through the ledger states `planned`, `running`, then `null` or `candidate`, then `submitted` and finally `published`. The ledger enforces the order.
 
