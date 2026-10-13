@@ -14,7 +14,7 @@ Run from the repository root.
 ## 1. Orient
 
 ```sh
-cat docs/HANDOFF.md
+head -40 docs/HANDOFF.md   # the one handoff: its rules and open items come first
 python -m kit prizes
 python -m kit doctor
 python -m kit run list
@@ -43,5 +43,7 @@ The pipeline runs on the user's GPU machine or a rented one, not in a container 
 
 - Null: `python -m kit run status SLUG null --note "..."`, then help write a report with commands, control, costs and limits.
 - Possible letters: `python -m kit run status SLUG candidate --note "..."`. Stop. Do not commit, push, or describe the output anywhere public. Tell the user, point them to `docs/WORKFLOW.md` section 3b, and wait for their decision.
+
+Either way, update the open-items table in `docs/HANDOFF.md` (AGENTS.md rule 14); private outcomes go only in Scrolls-private's handoff.
 
 Never mark a run `published --announced` unless the user gives you the official announcement URL.
