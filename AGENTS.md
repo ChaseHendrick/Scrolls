@@ -53,6 +53,7 @@ When the private checkout is available, refresh the combined session context fro
 | 2026-10-12 | Public writing for villa and the community: clear, specific titles, the community's established terms, short, in the user's own voice, no long dashes; the user posts to villa (rule 12) |
 | 2026-10-13 | Hugging Face uploads, model cards and Spaces are allowed, each with the user's go-ahead like any outward action; forum posts were also lifted later the same day (next row), and hard rule 1 still applies: nothing private and no target-scroll data goes to Hugging Face |
 | 2026-10-13 | The forum ban is lifted too ("lift the ban. we can post.. just ask before doing so", 01:41 UTC): forum, Discord and Hugging Face posts are allowed, but an agent drafts and asks the user before each post. For now the user does not want to post in forums (01:41 UTC), so do not draft or suggest forum posts until he asks. Hard rule 1 still applies: nothing private and no target-scroll data |
+| 2026-10-13 | Call the owner Chase (Chase Hendrick) in docs, commits, PRs and messages. His account may still show the name Bob; never use it |
 
 ## Repository map
 
