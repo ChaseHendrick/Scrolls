@@ -11,7 +11,7 @@ Label: **Sourced fact** (see [`NOVELTY.md`](NOVELTY.md)).
 | 2027 Grand Prize | $1,000,000: 1st $800k, 2nd $100k, 3rd $50k, 4th $50k | 25 Jun 2027 | grandprize@scrollprize.org |
 | First Letters | $50,000 per scroll, maximum of 9 more scrolls ($450,000 remaining; one prize already used) | 25 Jun 2027 | [form](https://forms.gle/TM5ao8GwC2mDrdLk9) |
 | PHerc. Paris 4 title | $50,000 | 25 Jun 2027 | [form](https://forms.gle/4zeVPPBtNdSCAQa88) |
-| Progress Prizes | $20,000 best of month guaranteed; others $20k, $10k, $5k, $2,500, $1,000, $500, $250; about $590k per year | monthly; next 31 Oct 2026 | [form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) |
+| Progress Prizes | $20,000 best of month guaranteed; others $20k, $10k, $5k, $2,500, $1,000, $500, $250; about $590k per year | monthly, several entries a month allowed; next 31 Oct 2026 | [form](https://docs.google.com/forms/d/e/1FAIpQLSc4flEfgK2nyjoczz2_U_XrIGMlgrnSknWatLqrFPnbtKfZwg/viewform) |
 
 ## 2027 Grand Prize
 
@@ -72,6 +72,8 @@ $50,000 for an image of the title of Scroll 1 that the papyrologists can read, f
 ## Progress Prizes
 
 Open-ended monthly awards for open-source contributions. The organizers favor work that is released early, actually used, measured on real data (their public [ink](https://scrollprize.org/data_datasets#ink-labels-2026-07) and [surface](https://scrollprize.org/data_datasets#surface-labels-2026-07) label sets), fixes bugs in tools people use, and is well documented. Anything that eases an [open problem](https://scrollprize.org/2026_open_problems) qualifies. Idea lists: [help wanted](https://github.com/ScrollPrize/villa/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22help%20wanted%22), [VC3D](https://github.com/ScrollPrize/villa/issues?q=is%3Aissue%20state%3Aopen%20label%3AVC3D), [good first issue](https://github.com/ScrollPrize/villa/issues?q=is%3Aissue%20state%3Aopen%20label%3A%22good%20first%20issue%22).
+
+**Several entries a month are allowed.** The prize page says: "Submissions are evaluated monthly, and multiple submissions/awards per month are permitted" ([prizes](https://scrollprize.org/prizes#progress-prizes), read 2026-10-13; Sourced fact). Separate contributions can each be entered in the same month, and one entrant can win more than one award.
 
 Formal requirements: address a specific challenge on scroll data with a demonstration; documentation and usage examples; standard formats (OME-Zarr or Zarr, tifxyz, triangular meshes).
 
