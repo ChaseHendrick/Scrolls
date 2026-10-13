@@ -14,6 +14,7 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 
 When the private checkout is available, refresh the combined session context from that checkout with `python3 -m kit.repo_handoff context --private-root . --public-root ../Scrolls`. Its handoff helper installs local Git hooks in both checkouts and writes combined context only inside the private workspace. Hooks do not push, run hosted jobs or copy private notes into this repository. Read the generated private context before private work; never paste it into public artifacts.
 
+0. [`docs/README.md`](docs/README.md): the docs index, one home per topic. Check it before any research.
 1. [`docs/HANDOFF.md`](docs/HANDOFF.md): current state and the next steps, newest session first.
 2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): phases, gates, timeline.
 3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
@@ -36,6 +37,7 @@ When the private checkout is available, refresh the combined session context fro
 10. **Style:** plain sentences; never U+2014 or U+2013 dashes; commit messages end with the session's attribution lines.
 11. **GPU work goes to Modal, not hours of CPU** (user decision, 2026-10-08). Before starting any job, estimate its time. A job that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so never try to sign in to Modal from one. Write an exact run spec in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and give the user a short prompt to paste into an agent that runs Modal, such as Codex, or commands to run on their own computer. Default machine (user decision, 2026-10-12): B300 with fallbacks, `gpu=["B300", "B200", "H200", "H100"]` (B300 needs a CUDA 13.1 or newer image; a CUDA 12 image drops B300 from the list), and for CPU work 16 reserved cores, `cpu=(16, 16)`, with threads set to match, unless a measurement shows the job scales differently; never past the approved budget without asking with a cost estimate. Costs, rates and the [defaults](docs/compute/modal-pricing.md#default-gpu-and-cpu-for-new-jobs): [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md). Only generic, public-data jobs get a spec here; anything about a target scroll belongs in Scrolls-private's own `docs/compute/modal-specs/`.
 12. **Public writing for villa and the community** (user decision, 2026-10-12). Issues, PRs, comments and prize submissions get a clear, specific title that says what is wrong or what changes. Use the community's established villa and VC3D terms; never our internal names (growcut, arm B, autopipeline and the like) unless the text defines them. Keep it short, in the user's own voice, with no long dashes. Maintainers close issues with unclear titles, invented terms, or text that does not read as written by the person. Agents draft; the user posts to villa. Guide: [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md#public-writing-for-villa-and-the-community).
+13. **Check the docs index before you research or write** (user decision, 2026-10-13). [`docs/README.md`](docs/README.md) names one home per topic. Read the home and grep `docs/` first; extend the existing note instead of starting a new one, and add any new note to the index. Do not repeat research that is already written down.
 
 ## Standing user decisions
 
@@ -81,6 +83,7 @@ When the private checkout is available, refresh the combined session context fro
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
 | `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its fix #2060 ([log](docs/logs/2026-10-12-upstream-reports.md)); standard library |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
+| `docs/README.md` | Docs index: one home per topic; check it before researching |
 | `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
 | `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
