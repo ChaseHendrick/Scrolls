@@ -85,6 +85,8 @@ Pricing FAQ consistency check (Interpretation): the A10G example (1.5 s, 1 core,
 | Log retention | 1 day | 30 days | custom |
 | Environment-level budgets | no | yes | yes |
 
+This project's workspace is on Starter (the owner's plan page, 13 October 2026), so its limits bind every spec here: 10 GPUs and 100 containers at once across all live jobs, and logs for 1 day only.
+
 Sourced fact: [pricing](https://modal.com/pricing). Included compute covers Functions, Sandboxes and Notebooks (CPU, memory, GPU), not per-token Shared Endpoints. Usage is pay as you go; no credit purchase is needed.
 
 - **Credit programs** (Sourced fact): academics (graduate students, labs, researchers) can get up to 10,000 USD of credits ([pricing](https://modal.com/pricing), [academics](https://modal.com/academics)); startups need VC funding from a partner fund or more than 1 million USD raised, one-time grant ([startups](https://modal.com/startups)). AWS, GCP and Azure credits cannot be used ([pricing FAQ](https://modal.com/pricing)).
