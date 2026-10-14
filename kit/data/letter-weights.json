@@ -1,0 +1,14 @@
+{
+ "about": "Released weights of the Greek letter reader (kit/letterread.py). Weights are not in git; kit.letterread.resolve_weights downloads a named model once into ~/.cache/scrolls-kit/letters (or $KIT_LETTER_WEIGHTS) and refuses a file whose SHA-256 differs. Every string the reader returns is model output, not a reading.",
+ "models": {
+  "letters-v2-real": {
+   "file": "letters-v2-real-step030000.npz",
+   "sha256": "44946dadf0195ddb565f097acec0dd1d777af9b6c66d83995c1f4497aa587477",
+   "url": null,
+   "licence": "CC BY-NC 4.0 (trained on lines built from ICDAR 2023 Greek letter crops, CC BY-NC 4.0, and Hell-Char, CC BY 4.0)",
+   "params": 1483241,
+   "letter_px": 16,
+   "card": "docs/letter-reader.md#model-card-letters-v2-real"
+  }
+ }
+}

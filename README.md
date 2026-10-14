@@ -25,6 +25,18 @@ Private research and work that cannot be public live in **[Scrolls-private](http
 
 Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists can read. Raw compute does not buy that by itself. In August and September 2026 at least five independent teams, at least three of them openly Claude-driven, ran the released 9 µm ink models on eligible scrolls (one survey covered all 21 that lacked catalog segments) and published **nulls**. The bottleneck is keeping a surface on one papyrus sheet, and getting ink models to generalize across scrolls. It is not GPU hours. See [`docs/compute.md`](docs/compute.md).
 
+## Greek letter reader
+
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. It runs in numpy on a laptop CPU and reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
+
+```bash
+python -m pip install numpy pillow tifffile
+python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG
+python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+```
+
+Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
+
 ## Quick start (kit)
 
 Python **3.10+**, standard library only (except `verify`, which reads TIFFs with numpy and tifffile from villa's environment). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
@@ -90,6 +102,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, day by day, with costs |
 | [`docs/prizes.md`](docs/prizes.md) | Every open prize, its submission contents, eligible scrolls |
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
+| [`docs/letter-reader.md`](docs/letter-reader.md), [`scripts/letters/`](scripts/letters/) | Greek letter reader: guide, model card, benchmarks, training and demo |
 | [`docs/state-of-play.md`](docs/state-of-play.md) | What has been read, what has been tried, recent winners and published nulls |
 | [`docs/compute.md`](docs/compute.md) | Hardware, cloud costs, and what AI agents can and cannot do here |
 | [`docs/mac.md`](docs/mac.md) | Apple Silicon: what runs locally, the open MPS PRs, useful Mac contributions |
@@ -120,6 +133,8 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
+| `letterread.py` | Greek letter reader: numpy CTC line network, layout, nulls and orientation controls, overlay, released weights (numpy; Pillow and tifffile for images) |
+| `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
 | `cli.py` | `python -m kit` entry point |
 
 ## Novel findings
@@ -169,7 +184,8 @@ an express contributor patent grant. See [NOTICE](NOTICE) for attribution and
 the separately licensed Contributor Covenant.
 
 Third-party software, datasets, labels, renders and model weights retain their
-own licenses. The code license does not grant rights to those materials.
+own licenses. The letter reader's released weights are CC BY-NC 4.0, because part of
+their training data (ICDAR 2023 Greek letters) is. The code license does not grant rights to those materials.
 Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
 before use or redistribution. Do not commit scroll data, renders or ink maps to
 this public repository.

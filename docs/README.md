@@ -36,6 +36,7 @@ Updated 13 October 2026.
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |
+| Greek letter reader (letter hypotheses on ink maps, labels and photographs) | [`letter-reader.md`](letter-reader.md) | [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) (measurements), `results.json` `letter_reader_checks` |
 | Surface correction tool | [`surfacefix.md`](surfacefix.md) | [`logs/2026-10-07-real-surfacefix-validation.md`](logs/2026-10-07-real-surfacefix-validation.md) |
 | Row score fast resize | [`rowscore.md`](rowscore.md) | |
 | Phantoms and the static viewer | [`phantom-and-viewer.md`](phantom-and-viewer.md) | [`logs/2026-10-07-phantom-demo.md`](logs/2026-10-07-phantom-demo.md) |
