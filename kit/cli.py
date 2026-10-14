@@ -438,7 +438,7 @@ def cmd_letterread(args):
             Image.init()
             if Path(args.overlay).suffix.lower() not in Image.registered_extensions():
                 raise ValueError(f"--overlay {args.overlay}: give an image file name such as letters.png")
-        for out in (args.out, args.overlay):
+        for out in (args.out, args.overlay, args.csv, args.page_xml):
             if out and not Path(out).resolve().parent.is_dir():
                 raise OSError(f"no such folder for {out}")
         for image in (args.image, args.control):   # before the weights, which may download
@@ -498,6 +498,8 @@ def cmd_letterread(args):
         if args.control:
             res["control"]["control_map"]["file"] = Path(args.control).name
         res["input_shape"] = list(shape)   # the exact input window, including rows and columns under one block
+        # the whole image's size, which places a --crop window in the image file (the CSV and PAGE exports)
+        res["image_shape"] = list(letterread.image_shape(args.image, args.key)) if args.crop else list(shape)
         if exif != 1:
             res["exif_orientation"] = exif
         if args.letter_mm is not None:
@@ -523,6 +525,14 @@ def cmd_letterread(args):
             Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         except OSError as exc:
             failed.append(exc)
+    if args.csv or args.page_xml:
+        from . import letterexport
+        for out, write in ((args.csv, letterexport.write_csv), (args.page_xml, letterexport.write_page_xml)):
+            if out:
+                try:
+                    write(res, out)
+                except (OSError, ValueError) as exc:
+                    failed.append(exc)
     if args.overlay:
         try:
             # a colour photograph is drawn in colour; other images from the read image in their own polarity
@@ -535,6 +545,60 @@ def cmd_letterread(args):
     for exc in failed:
         print(exc, file=sys.stderr)
     return 2 if failed else 0
+
+
+def cmd_letterlines(args):
+    say = (lambda msg: None) if getattr(args, "quiet", False) else (lambda msg: print(msg, file=sys.stderr, flush=True))
+    try:
+        from . import letterlines, letterread
+        letterread.utf8_console()
+        if args.action == "build":
+            if not args.dry_run and not args.out:
+                raise ValueError("give --out LINES.npz, or --dry-run to check the records and see what would be cut")
+            for out in (args.out, args.preview):
+                if out and not Path(out).resolve().parent.is_dir():
+                    raise OSError(f"no such folder for {out}")
+            if args.max_mpx <= 0:
+                raise ValueError("--max-mpx must be positive")
+            if args.preview:
+                try:
+                    import PIL  # noqa: F401
+                except ImportError as exc:
+                    raise ImportError(f"--preview needs Pillow: {exc}") from exc
+            try:
+                plans, warnings, meta = letterlines.build(args.records, args.out, split=args.split,
+                                                          dry_run=args.dry_run, max_pixels=int(args.max_mpx * 1e6),
+                                                          progress=say)
+            except letterlines.RecordsError as exc:
+                print(f"{len(exc.errors)} problem{'s' if len(exc.errors) > 1 else ''} in the records; nothing was cut:",
+                      file=sys.stderr)
+                for e in exc.errors:
+                    print("error: " + e, file=sys.stderr)
+                return 2
+            if args.dry_run:
+                print(letterlines.plan_text(plans, warnings))
+                print("dry run: nothing was cut or written")
+                return 0
+            for w in warnings:
+                say("warning: " + w)
+            print(f"{args.out}: {meta['lines']} line{'' if meta['lines'] == 1 else 's'}, {meta['letters']} letters and "
+                  f"{meta['wildcards']} '?', from {len(meta['images'])} image(s)")
+            if args.preview:
+                imgs, texts, _, _ = letterlines.load_lines(args.out)
+                letterlines.preview(args.preview, imgs, texts)
+                print(f"{args.preview}: the first {min(100, len(imgs))} bands, each above its text; check that every "
+                      "band holds its line")
+            return 0
+        if args.out and not Path(args.out).resolve().parent.is_dir():
+            raise OSError(f"no such folder for {args.out}")
+        res = letterlines.score_lines(args.lines, args.weights)
+        if args.out:
+            Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterlines.score_text(res))
+    except (ImportError, OSError, KeyError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    return 0
 
 
 def cmd_greeklm(args):
@@ -884,12 +948,42 @@ def build_parser():
     p.add_argument("--beam", type=int, default=32)
     p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and turned reads")
     p.add_argument("--out", help="also write the full result as JSON")
+    p.add_argument("--csv", metavar="OUT.csv",
+                   help="also write one row per letter: column, line, index, letter, p, kept and its box in the image "
+                        "file's pixels (the crop's Y0 and X0 added)")
+    p.add_argument("--page-xml", metavar="OUT.xml",
+                   help="also write PAGE XML (2019 schema): a TextRegion per column, a TextLine per line, a Glyph per "
+                        "letter with its confidence, in the image file's pixels; marked as model output")
     p.add_argument("--overlay", help="also write a PNG of the image with the letters drawn on it (needs Pillow)")
     p.add_argument("--overlay-max-side", type=int, default=4000,
                    help="longest side of the overlay image in pixels (default 4000); the JSON records its scale")
     p.add_argument("--quiet", action="store_true", help="no progress messages on stderr")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_letterread)
+
+    p = sub.add_parser("letterlines", help="training lines for the letter reader from your own transcribed lines, "
+                                           "and scores on lines kept apart")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("build", help="records (JSON or CSV: image, text, y, letter_px, optional x0, x1, crop, key, "
+                                         "polarity, split, id) to LINES.npz, as finetune_maps.py trains on")
+    a.add_argument("records", help="a .json or .csv records file; relative image paths are relative to its folder")
+    a.add_argument("--out", metavar="LINES.npz", help="the training lines to write")
+    a.add_argument("--dry-run", action="store_true", help="check every record and print what would be cut; decode no "
+                                                          "image and write nothing")
+    a.add_argument("--split", help="keep only records whose split is this label (such as train or test)")
+    a.add_argument("--preview", metavar="PNG", help="also write the first 100 bands, each above its text (needs Pillow)")
+    a.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6
+                   help="pixel budget for loading an image, as in letterread (default %(default)g)")
+    a.add_argument("--quiet", action="store_true", help="no progress messages or warnings on stderr")
+    a = actions.add_parser("score", help="character error of one or more models on the lines of a LINES.npz, such "
+                                         "as lines kept apart from fine-tuning")
+    a.add_argument("lines", help="LINES.npz (letterlines build --split test, say)")
+    a.add_argument("--weights", action="append", required=True,
+                   help="a released model name or a linenet-v1 .npz; repeat to compare models (the first is the "
+                        "reference for the differences)")
+    a.add_argument("--out", help="also write the result as JSON")
+    a.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_letterlines)
 
     p = sub.add_parser("greeklm", help="letter n-gram language model for Greek in scriptio continua")
     actions = p.add_subparsers(dest="action", required=True)

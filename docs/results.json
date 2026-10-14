@@ -9406,6 +9406,49 @@
     "auto_extra_time_s": "17 to 28 on reads of about a minute (4-core container, 2 threads, other work running)"
    },
    "w013_regression": "PHerc. 1667 w013 averaged 16 by 16, --letter-px 86: letters, boxes, confidences and control counts identical to the read before this change; orientation as_is 122, mirrored 95, rot180 104 unchanged, with rot90 37 and rot270 30 added"
+  },
+  {
+   "date": "2026-10-14",
+   "source": "docs/letter-reader.md (sections Exports: CSV and PAGE XML, and Fine-tune on your own lines)",
+   "claim": "Software checks, and Model output on synthetic pages; not a reading. The fine-tune run checks that the chain works; it measures nothing about fine-tuning on real lines",
+   "check": "letterread --csv and --page-xml exports: PAGE 2019-07-15 files validated against PRImA's schema with lxml, glyph coordinates in the image file's pixels; kit letterlines build and score, and scripts/letters/finetune_maps.py, run end to end on synthetic pages",
+   "model": "letters-v2-real step 30000 (SHA-256 44946dad...)",
+   "page_xml_schema_validation": {
+    "schema": "http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd",
+    "valid": [
+     "synthetic level page",
+     "synthetic two-column page",
+     "synthetic page read with a quarter turn",
+     "synthetic page read mirrored and turned 270 degrees",
+     "synthetic page with no lines",
+     "command line read with --crop and block-averaging by 2",
+     "PHerc. 1667 w013 averaged 16 by 16, --letter-px 86 (13 lines, 262 glyphs, CSV 262 rows)",
+     "PHerc. 1667 w013 whole 2.4 um map, --crop 2000 30000 1000 60000, --letter-mm 3.3 --um-per-px 2.399, block-averaged by 42"
+    ],
+    "w013_crop_glyphs_at_box_plus_crop_corner": "195 of 195",
+    "w013_crop_page_size_px": [
+     79600,
+     41600
+    ],
+    "w013_regression": "with --csv and --page-xml, letters, boxes, confidences and control counts identical to the read before this change"
+   },
+   "finetune_chain_synthetic": {
+    "machine": "4-core cloud container",
+    "pages": "12 synthetic map-like pages, letters 40 px, 6 level lines of 18 to 26 letters; pages 0 to 8 to train (54 lines), 9 to 11 set apart (18 lines)",
+    "build_s": 2.4,
+    "gen_dataset_12000_lines": "6 min 43 s with 4 processes",
+    "finetune_s_per_step_4_threads": 3.1,
+    "finetune_steps": 50,
+    "score_s_18_lines_2_models": 3.5,
+    "cer_set_apart_before": 0.191,
+    "cer_set_apart_after": 0.186,
+    "diff": -0.005,
+    "ci95_bootstrap_over_lines": [
+     -0.028,
+     0.019
+    ]
+   },
+   "reproduce": "python -m kit letterread MAP.tif --weights W.npz --letter-px 86 --csv OUT.csv --page-xml OUT.xml; python -m kit letterlines build RECORDS.json --split train --out TRAIN.npz; python scripts/letters/finetune_maps.py train TRAIN.npz SHARDS --weights W.npz --out OUT --steps 50; python -m kit letterlines score TEST.npz --weights W.npz --weights OUT/linenet.npz"
   }
  ],
  "orientation_checks": [

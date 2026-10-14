@@ -26,6 +26,8 @@ python -m kit letterread PHOTO.jpg --weights letters-v2-real --letter-px 28 --po
 python -m kit letterread MAP.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 38.4 --json --out MAP-letters.json
 #    with the reverse-depth map of the same surface as a control (see "The status, and what to do")
 python -m kit letterread MAP.tif --weights letters-v2-real --letter-px 86 --control MAP_reverse.tif
+#    the letters as a table and as PAGE XML for eScriptorium (see "Exports: CSV and PAGE XML")
+python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --csv MAP-letters.csv --page-xml MAP-letters.xml
 
 # 3. A whole native 2.4 um villa map as downloaded, here with PHerc. 1667's letter height
 #    (block-averaged while it loads; see "Big maps" below)
@@ -66,6 +68,8 @@ Without a size, the reader estimates one from the line spacing and searches six 
 | `--no-orientation` | Skip the four orientation reads, mirrored and turned 90, 180 and 270 degrees (faster) |
 | `--overlay OUT.png` | The image with kept letters boxed and labelled (green p >= 0.8, yellow below), lower-confidence boxes grey; every outline at least 2 px; a banner above it always carries the whole "Model output ... not a reading" note, wrapped to the width, and under it the status line of the controls with its counts |
 | `--overlay-max-side N` | Longest side of the overlay in pixels (default 4000); the JSON records the overlay's scale |
+| `--csv OUT.csv` | One row per letter: column, line, index, letter, p, kept and its box, in the image file's pixels (see [Exports](#exports-csv-and-page-xml)) |
+| `--page-xml OUT.xml` | PAGE XML (2019 schema): a region per column, a line per line, a glyph per letter with its confidence, in the image file's pixels, marked as model output (see [Exports](#exports-csv-and-page-xml)) |
 | `--quiet` | No progress messages; without it, long steps (loading, scale search, reading, orientation) report on stderr, so `--json` output on stdout stays clean |
 
 ### Big maps
@@ -291,7 +295,7 @@ Top level:
 | `polarity` | `asked` (`bright`, `dark` or `auto`) and `used` (`bright` or `dark`); `background` when the reader normalised the image itself (where its median grey lies between the 0.5th and 99.8th percentiles, 0 to 1; a description, not a rule); `rule` (how auto decides) when auto was asked; `trial` (the quick reads both ways, `polarity_trial()`: `rule`, `letter_px`, `choice`, and for `bright` and `dark` each its `letters_kept`, `null_letters_kept`, `margin` and `status`) when auto decided or the controls did not pass; `hint` when the other polarity reads clearly better |
 | `options` | Every option of the read with the value used (below) |
 
-Added by the command line: `source` (`file`, the image's file name, and `key`), `exif_orientation` (only for a turned JPEG or PNG, 2 to 8), `letter_mm` and `um_per_px` (only when the size was given in units), `crop` (`[Y0, Y1, X0, X1]`, only with `--crop`), `overlay` (only with `--overlay`: `file`, `scale` in overlay pixels per input pixel, `banner_rows`, `size` as `[height, width]` and `max_side`; a box edge at input row y and column x lands at overlay row `banner_rows + y * scale` and column `x * scale`), `control.control_map.file` and `options.max_mpx`. The demo adds `source` with `file`, `map` (the public address of the map it read, `null` when a cached map has no note of it), `grid`, `crop` and `weights` (file name).
+Added by the command line: `source` (`file`, the image's file name, and `key`), `exif_orientation` (only for a turned JPEG or PNG, 2 to 8), `letter_mm` and `um_per_px` (only when the size was given in units), `crop` (`[Y0, Y1, X0, X1]`, only with `--crop`), `image_shape` (`[H, W]` of the whole image file, the array at `--key` for a zarr or `.npz`, a JPEG or PNG the way round a viewer shows it; it places a crop in the file for the exports), `overlay` (only with `--overlay`: `file`, `scale` in overlay pixels per input pixel, `banner_rows`, `size` as `[height, width]` and `max_side`; a box edge at input row y and column x lands at overlay row `banner_rows + y * scale` and column `x * scale`), `control.control_map.file` and `options.max_mpx`. The demo adds `source` with `file`, `map` (the public address of the map it read, `null` when a cached map has no note of it), `grid`, `crop` and `weights` (file name).
 
 A line (`lines[i]`):
 
@@ -325,6 +329,31 @@ The controls (`control`):
 | `control_map` | Only with a control map: `letters_kept`, `ratio` and, from the command line, `file` |
 
 The options (`options`), each with the value the read used, given or default: `letter_px` (given, or `null` when estimated), `polarity` (as asked), `nulls`, `seed`, `deskew_deg` (the search's limit), `lines` (given rows, or `null`), `p_min` (given, or `null` when set from the nulls), `null_rate`, `lm_weight` (`null` without a language model), `beam`, `scale_search`, `columns`, `input_scale`, `letter_px_fallback`, `min_letters`, `shear_fill` (as given, `null` for the default), `lm` (`null`, or the model's `file`, `sha256` and `order`), and for `read()` `rotate`, `mirror`, `orientation` and `control_map` (whether a control map was read); the command line adds `max_mpx`, its pixel budget in millions of pixels.
+
+### Exports: CSV and PAGE XML
+
+`--csv OUT.csv` and `--page-xml OUT.xml` write the letters of a read in two standard forms, beside `--out` (or from Python, `from kit import letterexport as E`, then `E.write_csv(res, "OUT.csv")` and `E.write_page_xml(res, "OUT.xml", image_filename="MAP.png")`). Both hold Model output only: letter hypotheses, not a reading. Their folders are checked before the read, and both are written before the summary is printed.
+
+**Coordinates.** Both write every box in the pixels of the whole image file: the result's boxes (input pixels, already mapped back through block-averaging and through `--rotate` and `--mirror`) plus the crop's Y0 and X0 when `--crop` was given. For a JPEG or PNG with an EXIF orientation tag, those are the pixels of the image as a viewer shows it. The command line records the whole image's size as `image_shape`, which places the crop; in Python, a result read from a window needs `image_shape=(H, W)`.
+
+**CSV.** A header row, then one row per decoded letter, line by line: `column`, `line`, `index` (the letter's place on its line, from 0), `letter`, `p` (its confidence), `kept` (`true` at or above the confidence floor, `false` below it, where the line's `ink_only` writes `·`) and its box `y0`, `y1`, `x0`, `x1` to 0.1 pixel. UTF-8 without a byte-order mark: a spreadsheet may need to be told so (in Excel, Data, From Text/CSV, UTF-8) to show the Greek letters.
+
+**PAGE XML.** The PAGE 2019-07-15 schema of PRImA ([schema](http://schema.primaresearch.org/PAGE/gts/pagecontent/2019-07-15/pagecontent.xsd)), with `imageFilename` the image's file name and `imageWidth` and `imageHeight` its size:
+
+- `Metadata`: the creator (`kit.letterread` and its version), the time, `Comments` holding the model-output note, the status line of the controls and the provenance line (weights, SHA-256, reader version, seed), and a `MetadataItem` of type `processingStep` whose labels repeat them one by one (`output` is "Model output, not a reading").
+- A `TextRegion` per reader column, left to right as read (also listed in `ReadingOrder`), its `Coords` the bounding box of its lines.
+- A `TextLine` per line: `Coords` its band (one letter height along the column, following the column's deskew), `Baseline` the band's lower edge from the line's start to its end as read (so after a turned read it runs the way the text does), `comments` its kept letters beside its chance count, and the language-model decode when one was run (never as its text).
+- One `Word` per line, since Herculaneum texts are written without word division, holding a `Glyph` per letter with its box as `Coords` and a `TextEquiv`: a kept letter with `conf` its p; a letter under the confidence floor as `·`, with no `conf`, and its best letter and p in its `comments`. So the text of every glyph, word and line is the line's `ink_only` string, and an editor shows a `·` where the reader saw a letter it was not confident of.
+- Coordinates are whole pixels clipped to the image; `TextRegion` and `TextLine` also carry Transkribus's `readingOrder {index:N;}` in their `custom` attribute.
+
+The tests check that the file is well-formed XML with every element in the schema's order and every glyph at its box in the image file's pixels, after a crop, block-averaging, two columns and a quarter turn. On 14 October 2026 the PAGE files of those cases and of the w013 read under "Where the letters are" were also checked against PRImA's 2019 schema with lxml, and all were valid (the test suite does not do this, as it would need the schema file). So was the PAGE file of a read of a crop of w013's whole 2.4 um map (`--crop 2000 30000 1000 60000`, block-averaged by 42 while loading): its page is the whole map's 79,600 by 41,600 pixels, and all 195 glyphs sit at their boxes plus the crop's corner, as do the CSV's rows.
+
+**Where they open** (14 October 2026; neither tool was run with these files):
+
+- **eScriptorium** (Sourced fact, from its source code, [`app/apps/imports/parsers.py`](https://gitlab.com/scripta/escriptorium/-/blob/develop/app/apps/imports/parsers.py) on its `develop` branch): its PAGE import accepts the 2013, 2016, 2017, 2018 and 2019 schemas, named by `xsi:schemaLocation`, and validates a file against it; it matches a page to an uploaded image by `imageFilename` ([import guide](https://escriptorium-tutorial.readthedocs.io/en/latest/import/)); it warns that a line without a `Baseline` is very likely not usable; when a line has `Word` elements it takes the line's text from them; and it reads `Word/Glyph` elements as one polygon, letter and confidence per character. This export was shaped to fit that code: a baseline on every line, one word per line, a glyph per letter.
+- **Transkribus** (Sourced fact): its help page on exports ([help.transkribus.org/downloading](https://help.transkribus.org/downloading)) links its PAGE format definition, [`pagecontent_extension.xsd`](https://gitlab.com/readcoop/transkribus/TranskribusCore/-/blob/master/src/main/resources/xsd/pagecontent_extension.xsd), which is the 2013-07-15 schema with Transkribus additions and has `Word` and `Glyph`; its upload interface takes a PAGE file beside each image ([REST upload](https://www.transkribus.org/blog/transkribus/docu/rest-api/upload)). I found no public page saying Transkribus imports the 2019 schema, so a 2019 file may need converting to 2013 before Transkribus reads it (Interpretation, untested).
+
+The exports carry machine letter annotations, like the overlay: keep them out of prize images. Uploading one to a shared eScriptorium or Transkribus server publishes the read, so for a scroll whose text is unpublished keep the files private ([Rules for using it on scrolls](#rules-for-using-it-on-scrolls)).
 
 ## How well it reads
 
@@ -416,7 +445,81 @@ python scripts/letters/train_linenet.py work/letters/data/train work/letters/mod
 for w in work/letters/model/ckpt/*.npz; do echo "$w $(python scripts/letters/eval_p172.py work/bodillium --weights $w --split dev | tail -1)"; done
 ```
 
-A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 48, on 36,000 synthetic lines plus 24,000 drawn only from the Hell-Char bank) takes about half an hour on 4 cores and reads the PHerc. 1667 drawings nearly as well (0.033) and the maps as well (0.344 free ends). `finetune_maps.py train` starts from any exported checkpoint, released weights included.
+A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 48, on 36,000 synthetic lines plus 24,000 drawn only from the Hell-Char bank) takes about half an hour on 4 cores and reads the PHerc. 1667 drawings nearly as well (0.033) and the maps as well (0.344 free ends). `finetune_maps.py train` starts from any exported checkpoint, released weights included; [Fine-tune on your own lines](#fine-tune-on-your-own-lines) gives the whole chain for lines you transcribe yourself.
+
+## Fine-tune on your own lines
+
+When the reader does poorly on a hand or a kind of image it has not seen, and you have lines whose text you know (your own transcription, or a published edition of a papyrus whose images you may use), you can fine-tune it on them. The result is a new model. Its output is still Model output, a hypothesis for a person to check, and the only fair test of it is on lines it did not train on, which you set aside before you train.
+
+**1. Write records.** One record per line, in JSON or CSV. Open the image in any viewer that shows pixel positions (GIMP, Fiji, or the reader's own `--csv` and `--out`: a line's `y` and its first and last letter boxes):
+
+```json
+{
+ "image": "PHOTO.jpg",
+ "letter_px": 28,
+ "polarity": "dark",
+ "lines": [
+  {"text": "ΚΑΙΤΟΥΤΟΝΤΟΝΤΡΟΠΟΝ", "y": 412, "x0": 120, "x1": 905, "split": "train"},
+  {"text": "ΕΠΙ??ΝΤΗϹΑΝΤΩΝ", "y": 466, "x0": 118, "x1": 760, "split": "train"},
+  {"text": "ΟΥΔΕΝΟϹΑΛΛΟΥ", "y": 520, "x0": 121, "x1": 690, "split": "test"}
+ ]
+}
+```
+
+| Field | What to give |
+| --- | --- |
+| `image` | The image file, any format the reader loads; a relative path is relative to the records file's folder |
+| `text` | The line's letters in Greek capitals. Accents, breathings and dots under letters are dropped, every sigma becomes lunate and spaces are dropped, as the reader writes scriptio continua; `?` stands for a letter you cannot see or restore, and training lets it be any one letter or none. Anything else (punctuation, brackets, a Latin letter that looks Greek, the reader's own `·`) stops the build with the character's name |
+| `y` | The line's centre row, halfway between the letters' tops and feet, in image pixels |
+| `letter_px` | The letters' height in image pixels, as for `--letter-px` |
+| `x0`, `x1` | Optional: the columns where the line starts and ends (default the whole width, which may hold other text) |
+| `crop` | Optional: `[Y0, Y1, X0, X1]` as for `--crop`; `y`, `x0` and `x1` are then relative to Y0 and X0, and the image is normalised over the crop, as a read of it is |
+| `key`, `polarity` | Optional: as `--key`, and `bright` (the default, ink maps) or `dark` (dark ink on a light ground, photographs) |
+| `split`, `id` | Optional: a label such as `train` or `test` (`--split` keeps one), and your own name for the line |
+
+A JSON object's keys other than `lines` (`image`, `letter_px`, `crop`, `key`, `polarity`, `split`) are defaults for every line. The same lines as CSV, with a header row (a crop as four numbers separated by spaces):
+
+```
+image,text,y,letter_px,x0,x1,polarity,split
+PHOTO.jpg,ΚΑΙΤΟΥΤΟΝΤΟΝΤΡΟΠΟΝ,412,28,120,905,dark,train
+```
+
+Each line is cut as the reader sees it: the image loaded as the reader loads it (block-averaged while loading when over the pixel budget), normalised once, scaled so the letters are the network's 16 px, and the 36-row band the reader reads on a line given as `--lines Y` with `--deskew 0` (from 1.1 letter heights above the centre to 1.15 below), from `x0` to `x1`. A test checks that the band is exactly the reader's. The band is level, so for a tilted line give `x0` and `x1` close to its letters, or a crop around it.
+
+**2. The chain**, with the released model as the start (about 80 minutes on 4 CPU cores, below):
+
+```bash
+python -m pip install numpy pillow tifffile torch
+# check every record and print what would be cut: every problem at once; no image is decoded and nothing written
+python -m kit letterlines build my-lines.json --dry-run
+# cut the lines to train on, with a picture of them to check by eye, and the lines set apart to test on
+python -m kit letterlines build my-lines.json --split train --out work/letters/mine-train.npz --preview work/letters/mine-train.png
+python -m kit letterlines build my-lines.json --split test --out work/letters/mine-test.npz
+# synthetic lines that fill half of every batch, so the model keeps what it knew (12 files of 1,000 lines)
+python scripts/letters/gen_dataset.py work/letters/data/mix --n 12000 --seed 11
+# fine-tune: 1,500 steps, batch 24, half your lines and half synthetic, a fixed schedule, the last step kept
+python scripts/letters/finetune_maps.py train work/letters/mine-train.npz work/letters/data/mix \
+    --weights letters-v2-real --out work/letters/mine --steps 1500 --threads 4
+# judge it on the lines set apart, against the model it started from
+python -m kit letterlines score work/letters/mine-test.npz --weights letters-v2-real --weights work/letters/mine/linenet.npz
+# read with it as with any weights file
+python -m kit letterread PHOTO.jpg --weights work/letters/mine/linenet.npz --letter-px 28 --polarity dark
+```
+
+`build` stops before cutting anything when a record has a problem, and lists them all: a missing field, a number that is not one, an image that does not exist, a row outside the image, a character the reader does not write, a band too narrow for its letters (the network gives one output per 4 px, and a line needs one per letter plus one between doubled letters). It warns, and still cuts, when the letters would be much narrower or wider than the network's (usually a wrong `letter_px`, or no `x0` and `x1` on a short line), when the band reaches beyond the image (those rows are cut as 0, as the reader reads them) and when two records sit under half a letter apart on one image. `LINES.npz` holds the bands as 8-bit images with their texts, where each came from and the records file's name and SHA-256, in the format `p1667_align.py` writes and `finetune_maps.py` trains on. `finetune_maps.py` writes `linenet.npz` and `finetune.json` (file names and SHA-256 of the start and the result, the lines' record and the settings; no local folder).
+
+`score` decodes every line by best path with every letter (no confidence floor: the reader's `ink_only` before letters under the floor become `·`) and reports each model's character error over the visible letters of your text, where a `?` matches any one letter or none at no cost; with two models or more it gives each later model's error minus the first's, with a 95% interval from a bootstrap over lines. Lines of one image share its hand and its damage, so with test lines from few images that interval is narrower than it should be.
+
+**Time** (measured 14 October 2026 on a 4-core cloud container): the 12,000 synthetic lines took 6 min 43 s with 4 processes; fine-tuning took 3.1 s a step with 4 threads (50 steps in 157 s) on lines 472 to 680 px wide at the network's scale (18 to 26 letters), so the default 1,500 steps take about 80 minutes, longer with longer lines (a step's time follows the widest line in its batch); `build` cut 54 lines from 9 images in 2.4 s, and `score` read 18 lines with two models in 3.5 s. On a CUDA GPU (`--device cuda`) it should take minutes; that was not measured here. That run was a check that the chain works, on synthetic pages the released model already reads well (character error on the set-apart lines 0.191 before and 0.186 after 50 steps, a difference of -0.005 with a 95% interval of -0.028 to +0.019; Model output); it says nothing about how much fine-tuning helps on real lines. The numbers, with the export checks, are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026).
+
+**Limits.**
+
+- The fine-tuned model is a new model. Its letters are hypotheses like the released model's, and the controls (nulls, control map, status) are as necessary with it as without it.
+- Judge it only on lines it did not train on, set apart before training. The schedule is fixed and the last step is kept, so nothing is chosen on the test lines; keep it that way (do not try several step counts and keep the best on them). Test lines from another part of the papyrus, or another papyrus, say more than neighbours of the training lines, which share their hand and damage.
+- With few lines (tens, not hundreds) the gain on set-apart lines can be nothing or a loss: the synthetic half of each batch (`--p-map 0.5`) keeps the model from forgetting, but cannot stop it learning those lines by heart. `score` shows which happened.
+- It learns your transcription, errors included: a wrong letter in a record teaches a wrong letter. Write `?` where you are unsure.
+- The weights inherit the released model's licence, CC BY-NC 4.0 (part of its training data is non-commercial), whatever you train them on.
+- A model trained on lines of an unpublished text carries that text, and so does `LINES.npz`. For a scroll whose text is unpublished, keep both private, as its reads ([Rules for using it on scrolls](#rules-for-using-it-on-scrolls)).
 
 ## How it works
 
@@ -439,18 +542,20 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 | --- | --- |
 | [`kit/letterread.py`](../kit/letterread.py) | The reader: the Python entry point `read()` with its input and option checks, image loading (block-averaged while loading when over the budget; zarr and OME-Zarr; EXIF orientation for JPEG and PNG), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout and deskew, turned and mirrored reads, polarity (auto and the check after a failed read), nulls, control map, status codes per read, column and line, orientation, overlay, released weights (names first, SHA-256 checks, the download's advice), provenance on every result, UTF-8 output for pipes and Windows consoles |
 | [`kit/greeklm.py`](../kit/greeklm.py) | Kneser-Ney letter n-grams for Greek in scriptio continua, from TEI texts |
+| [`kit/letterexport.py`](../kit/letterexport.py) | A read as a CSV of letters and as PAGE XML 2019, in the image file's pixels ([Exports](#exports-csv-and-page-xml)) |
+| [`kit/letterlines.py`](../kit/letterlines.py) | Training lines from your own records (`python -m kit letterlines build`), checked before any image is decoded, and character error on lines kept apart (`letterlines score`) ([Fine-tune on your own lines](#fine-tune-on-your-own-lines)) |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
 | [`scripts/letters/letterdata.py`](../scripts/letters/letterdata.py), [`gen_dataset.py`](../scripts/letters/gen_dataset.py) | Synthetic lines and pages: bookhand skeleton and fonts, map and label degradations, and a photograph look for whole pages (dark ink on a light papyrus ground; tests only, not training) |
 | [`scripts/letters/realforms.py`](../scripts/letters/realforms.py) | Glyph bank from Hell-Char and ICDAR 2023 crops, split by papyrus |
 | [`scripts/letters/train_linenet.py`](../scripts/letters/train_linenet.py) | Training (torch, CPU or CUDA), export to `linenet-v1` |
-| [`scripts/letters/finetune_maps.py`](../scripts/letters/finetune_maps.py) | Fine-tuning on real map lines whose text is published; a '?' in the text is a wildcard |
+| [`scripts/letters/finetune_maps.py`](../scripts/letters/finetune_maps.py) | Fine-tuning on real lines whose text is known (published map lines, or your own from `letterlines build`); a '?' in the text is a wildcard |
 | [`scripts/letters/eval_p172.py`](../scripts/letters/eval_p172.py), [`compare_p172.py`](../scripts/letters/compare_p172.py), [`eval_pages.py`](../scripts/letters/eval_pages.py) | PHerc. 172 drawings, paired bootstrap, whole synthetic pages |
 | [`scripts/letters/eval_controls.py`](../scripts/letters/eval_controls.py) | The control status checked on map windows (as stored and tile-shuffled) and on synthetic pages with no letters |
 | [`scripts/letters/eval_photos.py`](../scripts/letters/eval_photos.py) | Photograph-like pages (dark ink on a light ground, tilted, turned a quarter, on dark and white mounts): polarity bright, dark and auto, the deskew, the orientation reads, and pages with no letters |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py), [`test_letterexport.py`](../tests/test_letterexport.py), [`test_letterlines.py`](../tests/test_letterlines.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model, the CSV and PAGE XML exports, training lines from records and their scores) |
 
 ## Related work
 

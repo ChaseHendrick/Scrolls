@@ -731,6 +731,20 @@ def _pillow_shape(p):
         return (im.width, im.height) if _exif_tag(im) in (5, 6, 7, 8) else (im.height, im.width)
 
 
+def image_shape(path, key=None):
+    """(height, width) of a whole image as the reader loads it, without decoding its pixels where the format allows.
+
+    A PNG or JPEG is measured the way round a viewer shows it (EXIF orientation applied); zarr and
+    .npz: the array at key (load_image's default without one)."""
+    if _is_pillow(path):
+        return tuple(_pillow_shape(path))
+    src = _open(path, key)
+    try:
+        return tuple(int(n) for n in src.shape)
+    finally:
+        src.close()
+
+
 def display_image(path, crop=None, k=1):
     """A colour PNG or JPEG as an RGB uint8 array for the overlay: EXIF orientation applied, cropped, block-averaged by k.
 
