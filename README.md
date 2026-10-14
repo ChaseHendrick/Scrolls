@@ -36,6 +36,22 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
+### Segment stack check
+
+Released 14 October 2026.
+
+Checks a stack of consecutive tifxyz segments of one scroll against the scroll's umbilicus, from segment geometry alone (no CT, no model): order on rays from the umbilicus every degree, missing sectors, skipped windings, turn overlaps and the ends of the stack. It reads local folders or the open-data bucket, writes a JSON report, and writes per-vertex masks to drop before a spiral fit or a relative winding count. On PHerc0139 w023 to w040 it measured that w035 covers a median 258 degrees of its turn, leaving a gap 64 to 121 degrees wide from z 9,400 to 27,600, where w036 lies a median 17 um outside w034 (and inside it on 42 % of rays) against 242 um where w035 is present; that w035 lies inside w034 on 10 % of the rays that cross both; and that w023 to w034 are each traced 28 to 48 degrees past a full turn (66 for w026), with the doubly traced end on the next winding's sheet (measured from the published segments and umbilicus, 14 October 2026). Geometry cannot say which segment left its sheet; that needs the CT.
+
+```bash
+python -m pip install numpy tifffile scipy
+B=https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139; S=""
+for id in 20260219000000-w033_2026021913 20260303000000-w034_2026030317 20260317000000-w035_2026031718 20260316000000-w036_2026031607 20260310000000-w037_2026031015; do w=${id#*-}; S="$S ${w%%_*}=$B/segments/$id/mesh/${id%%-*}-on-20260102150214-2.399um.tifxyz"; done
+python -m kit stackcheck $S --umbilicus $B/representations/umbilicus/20260102150214-umbilicus-20260826112529.json --stride 2 --upsample 1 --plane-z 8600 28800 200 --coincide-um 18.72 --out w033-w037.json --flags w033-w037-flags.npz
+python -m unittest tests.test_stackcheck      # synthetic stacks: a clean spiral passes, each planted defect is flagged
+```
+
+Usage, the PHerc0139 numbers, example vertices for VC3D and limits: [`docs/logs/2026-10-14-pherc0139-segment-defects.md`](docs/logs/2026-10-14-pherc0139-segment-defects.md); each check is described in [`kit/stackcheck.py`](kit/stackcheck.py).
+
 ### AutoPipeline
 
 Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix2`: [`submissions/progress-2026-10-fix2/` at commit `143c54b`](https://github.com/ChaseHendrick/Scrolls/tree/143c54b54804e17acbfdcf032217e6b3964f6ef4/submissions/progress-2026-10-fix2).
