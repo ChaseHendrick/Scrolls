@@ -38,6 +38,7 @@ Updated 14 October 2026.
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |
+| Scroll centre (umbilicus) finder: a centre line from CT, with its held-out error on the 13 published centre lines | [`../scripts/umbilicus/README.md`](../scripts/umbilicus/README.md) | [`evidence/2026-10-14-umbilicus/`](evidence/2026-10-14-umbilicus/README.md) (end-point rule calibration; held-out scores with the end trims; weight hashes), `results.json` `umbilicus_checks` |
 | Greek letter reader (letter hypotheses on ink maps, labels and photographs) | [`letter-reader.md`](letter-reader.md) | [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) (measurements), `results.json` `letter_reader_checks` |
 | Surface correction tool | [`surfacefix.md`](surfacefix.md) | [`logs/2026-10-07-real-surfacefix-validation.md`](logs/2026-10-07-real-surfacefix-validation.md) |
 | Row score fast resize | [`rowscore.md`](rowscore.md) | |
