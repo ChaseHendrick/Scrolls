@@ -30,20 +30,6 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
-### Greek letter reader
-
-Released 14 October 2026.
-
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
-
-```bash
-python -m pip install numpy pillow tifffile
-python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG
-python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
-```
-
-Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
-
 ### AutoPipeline
 
 Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10`: [`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).
@@ -59,6 +45,20 @@ python scripts/demo_synthetic.py                # every step on a synthetic scro
 ```
 
 VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).
+
+### Greek letter reader
+
+Released 14 October 2026.
+
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
+
+```bash
+python -m pip install numpy pillow tifffile
+python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG
+python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+```
+
+Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Quick start (kit)

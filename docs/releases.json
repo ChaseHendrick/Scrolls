@@ -2,6 +2,19 @@
   "schema_version": 1,
   "releases": [
     {
+      "id": "letter-reader",
+      "title": "Greek letter reader",
+      "released": "2026-10-14",
+      "summary": "A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).",
+      "commands": [
+        "python -m pip install numpy pillow tifffile",
+        "python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG",
+        "python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png"
+      ],
+      "details": "Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).",
+      "where": "main"
+    },
+    {
       "id": "autopipeline",
       "title": "AutoPipeline",
       "released": "2026-10-14",
@@ -19,19 +32,6 @@
         "commit": "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284",
         "path": "submissions/progress-2026-10"
       }
-    },
-    {
-      "id": "letter-reader",
-      "title": "Greek letter reader",
-      "released": "2026-10-14",
-      "summary": "A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).",
-      "commands": [
-        "python -m pip install numpy pillow tifffile",
-        "python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG",
-        "python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png"
-      ],
-      "details": "Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).",
-      "where": "main"
     }
   ]
 }
