@@ -1,12 +1,14 @@
 """Tests for kit.stackcheck on synthetic spiral stacks built here (no downloads).
 
 A clean stack of six windings of an Archimedean spiral, each segment exactly one turn, passes every check; each
-planted defect (a missing sector, an inversion, a skipped winding, a turn overlap, a missing stack end) is flagged
-by its own check, so every check can fail."""
+planted defect (a missing sector, two adjacent missing sectors, an inversion, a skipped winding, a turn overlap, a
+missing stack end) is flagged by its own check, so every check can fail; and a check with nothing to look at keeps
+the stack from being reported clean."""
 
 import contextlib
 import io
 import json
+import os
 import tempfile
 import unittest
 from pathlib import Path
@@ -124,6 +126,13 @@ class PlantedDefectTest(unittest.TestCase):
         self.assertLessEqual(ext["z"][1], 305)
         self.assertTrue(98 <= ext["start_deg"][0] <= 105 and 98 <= ext["start_deg"][1] <= 105, ext)
         self.assertTrue(155 <= ext["end_deg"][0] <= 162 and 155 <= ext["end_deg"][1] <= 162, ext)
+        for p in r["per_plane"]:            # the width is the angle from the first gap ray to the last
+            self.assertAlmostEqual(p["width_deg"], (p["end_deg"] - p["start_deg"]) % 360, delta=0.2)
+        self.assertTrue(r["gap_by_height"])
+        for b in r["gap_by_height"]:
+            self.assertAlmostEqual(b["median_um"]["w01 to w03"], 2 * PITCH * VOXEL_UM, delta=3)
+            self.assertAlmostEqual(b["median_um"]["w00 to w03"], 3 * PITCH * VOXEL_UM, delta=3)
+        self.assertEqual(rep["summary"]["flagged"]["missing_runs"], [])
         # the neighbours lie two pitches apart in the gap and elsewhere alike
         sp = r["neighbour_spacing"]
         self.assertGreater(sp["gap"]["rays"], 100)
@@ -157,6 +166,38 @@ class PlantedDefectTest(unittest.TestCase):
         self.assertEqual(g["side"], "outer")
         self.assertAlmostEqual(g["distance_um_q25_50_75"][1], 0.35 * PITCH * VOXEL_UM, delta=4)
         self.assertTrue(masks["w02"]["order"].any() and masks["w03"]["order"].any())
+
+    def test_inversion_within_coincide_distance_is_not_flagged(self):
+        segs = stack()
+        sel = sector(segs[2], 200, 260, 150, 250)
+        radial_move(segs[2], sel, PITCH + 1.3)          # w02 lies 2.6 um outside w03: within --coincide-um
+        rep, _ = check(segs)
+        p = next(x for x in rep["order"]["pairs"] if x["inner"] == "w02")
+        self.assertGreater(p["inverted_rays"], 100)
+        self.assertEqual(p["inverted_beyond_coincide_rays"], 0)
+        self.assertEqual(rep["summary"]["flagged"]["order"], [])
+
+    def test_two_adjacent_missing_sectors(self):
+        segs = stack()
+        for k in (2, 3):
+            segs[k][1] &= ~sector(segs[k], 100, 160, 100, 300)
+        rep, masks = check(segs)
+        f = rep["summary"]["flagged"]
+        self.assertEqual(f["missing_runs"], ["w01/w04"])
+        self.assertEqual(f["missing_sectors"], [])
+        self.assertFalse(rep["summary"]["clean"])
+        r = next(x for x in rep["missing_runs"] if x["between"] == ["w01", "w04"])
+        self.assertEqual(r["missing"], ["w02", "w03"])
+        self.assertTrue(95 <= r["angle_deg"][0] <= 106 and 154 <= r["angle_deg"][1] <= 165, r)
+        self.assertGreaterEqual(r["z"][0], 95)
+        self.assertLessEqual(r["z"][1], 305)
+        self.assertAlmostEqual(r["spacing"]["hole"]["median_um"], 3 * PITCH * VOXEL_UM, delta=3)
+        for name in ("w01", "w04"):
+            self.assertGreater(r["bounding_vertices"][name]["vertices"], 50)
+            self.assertTrue(masks[name]["missing_sector"].any())
+            self.assertTrue(masks[name]["any"].any())
+        for name in ("w00", "w05"):
+            self.assertFalse(masks[name]["missing_sector"].any(), name)
 
     def test_skipped_winding(self):
         segs = stack()
@@ -202,10 +243,23 @@ class PlantedDefectTest(unittest.TestCase):
         self.assertTrue(masks["w03"]["turn_overlap"].any())
         self.assertFalse(masks["w04"]["turn_overlap"].any())
 
+    def test_turn_overlap_across_a_hole_wider_than_half_a_turn(self):
+        segs = stack()
+        segs[2] = list(winding(2, extra_deg=40.0))
+        xyz, valid, T = segs[2]
+        a = T - T[:, :1]                                  # angle along each line from its start
+        valid &= ~((a > 100) & (a < 300) & (xyz[..., 2] >= 100) & (xyz[..., 2] <= 300))
+        rep, masks = check(segs)
+        r = next(x for x in rep["turn_overlaps"] if x["segment"] == "w02")
+        self.assertEqual(r["lines_past_full_turn"], r["lines"])
+        self.assertAlmostEqual(r["past_full_turn_deg_q10_25_50_75_90"][0], 40.0, delta=1.0)
+        self.assertIn("w02", rep["summary"]["flagged"]["turn_overlaps"])
+        self.assertTrue(masks["w03"]["turn_overlap"].any())
+
     def test_missing_stack_end(self):
         segs = stack()
         segs[3][1] &= segs[3][0][..., 2] >= 150
-        rep, _ = check(segs)
+        rep, masks = check(segs)
         f = rep["summary"]["flagged"]
         self.assertEqual(f["stack_ends"], ["w03"])
         self.assertEqual(f["missing_sectors"], [])
@@ -216,6 +270,55 @@ class PlantedDefectTest(unittest.TestCase):
         m = next(x for x in rep["missing_sectors"] if x["segment"] == "w03")
         self.assertEqual(m["gap_rays"], 0)
         self.assertGreater(m["gap_rays_outside_own_height"], 1000)
+        # below w03 its neighbours are simply two windings apart: no gap spacing, no missing-sector mask, but the
+        # neighbours' vertices there are on the stack-end mask
+        self.assertEqual(m["neighbour_spacing"]["gap"]["rays"], 0)
+        self.assertNotIn("gap_by_height", m)
+        for name in masks:
+            self.assertFalse(masks[name]["missing_sector"].any(), name)
+        for name in ("w02", "w04"):
+            z = segs[int(name[1:])][0][..., 2]
+            self.assertTrue(masks[name]["stack_end"][z < 140].all(), name)
+            self.assertFalse(masks[name]["stack_end"][z > 160].any(), name)
+        self.assertFalse(masks["w01"]["stack_end"].any())
+
+    def test_control_pairs_keep_their_spacing(self):
+        segs = stack(8)
+        segs[2][1] &= ~sector(segs[2], 100, 160, 100, 300)
+        rep, _ = check(segs)
+        r = next(x for x in rep["missing_sectors"] if x["segment"] == "w02")
+        c = next(x for x in r["control_pairs"] if x["pair"] == ["w03", "w07"])
+        self.assertGreater(c["gap"]["rays"], 100)
+        self.assertAlmostEqual(c["gap"]["median_um"], 4 * PITCH * VOXEL_UM, delta=3)
+        self.assertAlmostEqual(c["present"]["median_um"], 4 * PITCH * VOXEL_UM, delta=3)
+
+
+@unittest.skipIf(np is None, "numpy, scipy and tifffile are needed")
+class NothingToLookAtTest(unittest.TestCase):
+    def test_planes_outside_the_stack_are_bad_input(self):
+        with self.assertRaises(VerifyError):
+            check(stack(), {"planes": None, "plane_z": (1000, 2000, 10)})
+
+    def test_no_neighbour_along_the_normal_is_not_clean(self):
+        rep, _ = check(stack(), {"max_normal_um": 1.0})
+        self.assertFalse(rep["summary"]["clean"])
+        self.assertTrue(all(v == [] for v in rep["summary"]["flagged"].values()), rep["summary"]["flagged"])
+        self.assertTrue(any("vertex checks" in m for m in rep["summary"]["not_checked"]))
+
+    def test_a_pair_no_ray_crosses_is_not_clean(self):
+        segs = stack()
+        segs[3][1] &= segs[3][0][..., 2] >= 250
+        rep, _ = check(segs, {"planes": None, "plane_z": (20, 200, 20)})
+        self.assertFalse(rep["summary"]["clean"])
+        self.assertIn("order w02/w03: no ray crosses both once", rep["summary"]["not_checked"])
+
+    def test_bad_settings(self):
+        for bad in ({"ray_step_deg": 0}, {"ray_step_deg": -1}, {"planes": 0}, {"planes": -1}, {"upsample": -3},
+                    {"max_normal_um": 0}, {"coincide_um": -1}, {"min_share": 2}, {"skip_frac": 0},
+                    {"planes": 10, "plane_z": (0, 100, 10)}):
+            with self.assertRaises(VerifyError, msg=str(bad)):
+                sc.check_settings(bad)
+        self.assertEqual(sc.check_settings({"planes": 7})["planes"], 7)
 
 
 @unittest.skipIf(np is None, "numpy, scipy and tifffile are needed")
@@ -287,6 +390,84 @@ class InputsTest(unittest.TestCase):
         self.assertIsNone(sc.folder_voxel_um("refs/meshes/w035"))
         with self.assertRaises(VerifyError):
             sc.fetch_tifxyz("https://example.org/a/../b.tifxyz", tempfile.gettempdir())
+
+    def test_a_path_with_an_equals_sign(self):
+        self.assertEqual(sc.split_spec("w035=/data/a/b.tifxyz"), ("w035", "/data/a/b.tifxyz"))
+        self.assertEqual(sc.split_spec("/data/run=1/w0"), (None, "/data/run=1/w0"))
+        self.assertEqual(sc.split_spec("w1=https://x.org/a=b"), ("w1", "https://x.org/a=b"))
+        with tempfile.TemporaryDirectory() as t:
+            here = Path.cwd()
+            try:
+                os.chdir(t)
+                Path("run=1").mkdir()               # an existing folder is a path, even without a separator
+                self.assertEqual(sc.split_spec("run=1"), (None, "run=1"))
+                self.assertEqual(sc.split_spec("w0=run=1"), ("w0", "run=1"))
+            finally:
+                os.chdir(here)
+
+    def test_catalog_transform_and_volume_checks(self):
+        segs = stack()
+        segs[2][1] &= ~sector(segs[2], 100, 160, 100, 300)
+        M = np.array([[2.0, 0.0, 0.0, 10.0], [0.0, 2.0, 0.0, -20.0], [0.0, 0.0, 2.0, 30.0]])
+        cat = {"samples": {"S1": {"sample": {"properties": {"volume_transforms": [
+            {"from_volume_id": "volA", "transforms": [{"to_volume_id": "volB", "matrix": M.tolist()}]}]}}}}}
+        with tempfile.TemporaryDirectory() as t:
+            t = Path(t)
+            args = []
+            for k, (xyz, valid, _) in enumerate(segs):
+                d = t / f"s{k}" / "mesh" / f"s{k}-on-volA-4.000um.tifxyz"
+                write_tifxyz(d, (xyz - M[:, 3]) / 2.0, valid)
+                args.append(f"w{k}={d}")
+            u = dict(umbilicus(), metadata={"voxelsize_um": VOXEL_UM, "volume": "volB-2.000um-x.zarr"})
+            (t / "umb.json").write_text(json.dumps(u))
+            (t / "cat.json").write_text(json.dumps(cat))
+            rep, _, _ = sc.run(args, str(t / "umb.json"), "catalog:S1:volA:volB", str(t / "cat.json"),
+                               settings=SETTINGS)
+            self.assertEqual(rep["summary"]["flagged"]["missing_sectors"], ["w2"])
+            self.assertEqual(rep["frame"]["volumes"], {"segments": "volA", "umbilicus": "volB"})
+            self.assertEqual(np.round(rep["transform"], 6).tolist(), M.tolist())
+            for spec, msg in (("catalog:S1:volA:volC", "ends on volume volC"),
+                              ("catalog:S1:volX:volB", "starts on volume volX"),
+                              ("catalog:S2:volA:volB", None)):
+                with self.assertRaises((VerifyError, KeyError), msg=spec) as cm:
+                    sc.run(args, str(t / "umb.json"), spec, str(t / "cat.json"), settings=SETTINGS)
+                if msg:
+                    self.assertIn(msg, str(cm.exception))
+            # without the transform, the folder names' volume differs from the umbilicus's
+            with self.assertRaises(VerifyError):
+                sc.run(args, str(t / "umb.json"), settings=SETTINGS)
+            # copies on two volumes under one transform
+            mixed = list(args)
+            d = t / "s9" / "mesh" / "s9-on-volZ-4.000um.tifxyz"
+            write_tifxyz(d, segs[0][0], segs[0][1])
+            mixed[0] = f"w0={d}"
+            with self.assertRaises(VerifyError):
+                sc.run(mixed, str(t / "umb.json"), "catalog:S1:volA:volB", str(t / "cat.json"), settings=SETTINGS)
+            # a 4x4 matrix must end in [0, 0, 0, 1]
+            bad = np.vstack([M, [0.5, 0.0, 0.0, 2.0]])
+            (t / "m44.json").write_text(json.dumps(bad.tolist()))
+            with self.assertRaises(VerifyError):
+                sc.load_transform(str(t / "m44.json"))
+            good = np.vstack([M, [0.0, 0.0, 0.0, 1.0]])
+            (t / "m44.json").write_text(json.dumps(good.tolist()))
+            self.assertEqual(sc.load_transform(str(t / "m44.json")).tolist(), M.tolist())
+
+    def test_cli_exit_codes(self):
+        err = io.StringIO()
+        with tempfile.TemporaryDirectory() as t:
+            (Path(t) / "umb.json").write_text(json.dumps(umbilicus()))
+            base = ["stackcheck", "a", "b", "c", "--umbilicus", str(Path(t) / "umb.json")]
+            for extra in (["--ray-step-deg", "0"], ["--planes", "-1"], ["--planes", "5", "--plane-z", "0", "9", "1"]):
+                with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(cli.main(base + extra), 2, extra)
+            real = sc.run
+            try:
+                sc.run = lambda *a, **k: (_ for _ in ()).throw(RuntimeError("boom"))
+                with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                    self.assertEqual(cli.main(base), 2)
+            finally:
+                sc.run = real
+        self.assertIn("unexpected error", err.getvalue())
 
     def test_too_few_segments_and_bad_umbilicus(self):
         with self.assertRaises(VerifyError):

@@ -9433,5 +9433,72 @@
    },
    "limits": "ten of the 13 lines are one annotator's; the settings were chosen while looking at some of the same scrolls; PHerc0268 and PHerc0800 have more than one winding centre at some heights; no head-to-head with other finders on the same slices"
   }
+ ],
+ "stackcheck_checks": [
+  {
+   "date": "2026-10-14",
+   "source": "docs/logs/2026-10-14-pherc0139-segment-defects.md",
+   "tool": "kit/stackcheck.py (python -m kit stackcheck)",
+   "claim": "Measured from the published PHerc0139 segments and umbilicus (geometry only; no CT, model or ink map); the note's CT look at 12 places is Interpretation and is not in these numbers",
+   "frame": "full-resolution voxels of volume 20260102150214 (2.399 um); angles about the umbilicus 20260102150214-umbilicus-20260826112529.json at the same z; distances in um; areas in cm2",
+   "runs": {
+    "A": {
+     "segments": "w033 to w037, 2.399 um copies",
+     "settings": "--stride 2 --upsample 1 --plane-z 8600 28800 200 --coincide-um 18.72",
+     "seconds": 53.3,
+     "flagged": "order: w034/w035; order_vertices: w033, w034, w035, w036, w037; missing_sectors: w035; missing_runs: w034/w037; skipped_windings: w033, w034, w035, w036, w037; turn_overlaps: w033, w034, w036, w037; stack_ends: w035, w036"
+    },
+    "B": {
+     "segments": "w023 to w040, 9.362 um copies mapped with catalog:PHerc0139:20250728140407:20260102150214",
+     "settings": "--plane-z 8600 28800 200 --coincide-um 18.72",
+     "seconds": 151.3,
+     "flagged": "order: w031/w032, w034/w035; order_vertices: w033, w034, w035, w036, w037; missing_sectors: w035; missing_runs: w034/w037, w034/w038; skipped_windings: w028, w031, w032, w033, w034, w035, w036, w037, w038; turn_overlaps: w023, w024, w025, w026, w027, w028, w029, w030, w031, w032, w033, w034, w037, w038, w039, w040; stack_ends: w035, w036, w037, w038, w039"
+    }
+   },
+   "A": {
+    "w035_turn_deg_per_line_q10_50_90": "[190.5, 258.3, 292.5]",
+    "gap_extent": "z 9000 to 27800 (95 planes); start q10/50/90 [327.4, 342.0, 5.0]; end q10/50/90 [71.0, 80.0, 84.6]; width min/median/max [33.0, 98.0, 120.0]",
+    "w034_to_w036_um": {
+     "gap": "7427 rays, median 16.5, q25/q75 -48.8/107.4, inside 0.42",
+     "present": "24349 rays, median 242.1, q25/q75 157.4/365.4, inside 0.012"
+    },
+    "w033_to_w037_um": {
+     "gap": 251.5,
+     "present": 561.2
+    },
+    "gap_by_height_w034_to_w036_median_um": "z 8600 to 10600: -46.5; z 10800 to 12800: -7.0; z 13000 to 14800: 27.0; z 15000 to 16800: 65.0; z 17000 to 18800: 110.4; z 19000 to 20800: 80.2; z 21000 to 22800: -20.8; z 23000 to 24800: -96.4; z 25000 to 26800: -57.7; z 27000 to 28800: 174.0",
+    "gap_vertices_cm2": {
+     "w034": 9.105,
+     "w036": 7.459
+    },
+    "w034_w035_inverted": "24489 rays, inverted share 0.1023 (0.0675 by more than 18.72 um), depth q25/50/75 [13.2, 32.4, 66.8] um",
+    "missing_run_w034_w037": "716 rays (share 0.0203), w034 to w037 median 293.5 um there vs 402.4 um with w035 and w036 present",
+    "w034_skip_to_w036_beyond_coincide_cm2": 1.288
+   },
+   "B": {
+    "w035_turn_deg_per_line_q10_50_90": "[200.3, 257.1, 291.4]",
+    "gap_extent": "z 9000 to 27800 (95 planes); start q10/50/90 [327.0, 341.0, 5.0]; end q10/50/90 [71.0, 80.0, 84.6]; width min/median/max [27.0, 95.0, 122.0]",
+    "w034_to_w036_um": {
+     "gap": "7644 rays, median 18.2, q25/q75 -47.5/111.1, inside 0.415",
+     "present": "24256 rays, median 241.7, q25/q75 157.2/365.1, inside 0.012"
+    },
+    "w033_to_w037_um": {
+     "gap": 255.2,
+     "present": 560.6
+    },
+    "gap_by_height_w034_to_w036_median_um": "z 8600 to 10600: -45.5; z 10800 to 12800: -6.2; z 13000 to 14800: 27.2; z 15000 to 16800: 68.5; z 17000 to 18800: 110.7; z 19000 to 20800: 82.3; z 21000 to 22800: -15.9; z 23000 to 24800: -96.5; z 25000 to 26800: -48.3; z 27000 to 28800: 164.0",
+    "gap_vertices_cm2": {
+     "w034": 9.031,
+     "w036": 7.215
+    },
+    "w034_w035_inverted": "24361 rays, inverted share 0.1004 (0.0667 by more than 18.72 um), depth q25/50/75 [13.1, 31.4, 66.1] um",
+    "missing_run_w034_w037": "725 rays (share 0.0206), w034 to w037 median 301.5 um there vs 401.4 um with w035 and w036 present",
+    "w034_skip_to_w036_beyond_coincide_cm2": 1.277
+   },
+   "control_pairs_four_windings_apart_um_gap_vs_present_B": "w023/w027 858.2 vs 861.0; w024/w028 864.3 vs 771.3; w025/w029 749.8 vs 699.4; w026/w030 744.5 vs 712.3; w027/w031 734.1 vs 715.9; w028/w032 623.7 vs 683.6; w029/w033 636.9 vs 642.6; w030/w034 589.7 vs 616.8; w036/w040 740.9 vs 726.6",
+   "turn_overlaps_B": "w023 28.2 deg past, end within 18.72 um of the next segment 0.744, median 8.3 um; w024 28.4 deg past, end within 18.72 um of the next segment 0.533, median 16.7 um; w025 36.1 deg past, end within 18.72 um of the next segment 0.707, median 8.7 um; w026 65.7 deg past, end within 18.72 um of the next segment 0.733, median 5.1 um; w027 47.9 deg past, end within 18.72 um of the next segment 0.634, median 8.5 um; w028 44.8 deg past, end within 18.72 um of the next segment 0.751, median 2.8 um; w029 41.0 deg past, end within 18.72 um of the next segment 0.75, median 3.4 um; w030 36.2 deg past, end within 18.72 um of the next segment 0.69, median 6.3 um; w031 33.8 deg past, end within 18.72 um of the next segment 0.577, median 13.3 um; w032 32.6 deg past, end within 18.72 um of the next segment 0.438, median 22.8 um; w033 30.0 deg past, end within 18.72 um of the next segment 0.387, median 32.4 um; w034 27.6 deg past, end within 18.72 um of the next segment 0.191, median 75.9 um",
+   "checks": "bucket runs of the note's two commands gave reports and masks identical to runs on local copies of the same files; tests/test_stackcheck.py plants each defect in a synthetic spiral",
+   "limits": "one scroll; the umbilicus is a published line; the ray checks use rays that cross each segment of a pair once; neighbours along a normal are searched up to 600 um at about the same height and angle"
+  }
  ]
 }

@@ -2,16 +2,20 @@
 
 Give the segments inner to outer, one per winding, as local tifxyz folders (x.tif, y.tif, z.tif and meta.json) or
 as folders on the open-data bucket (https:// or s3:// URLs, fetched once into --cache), with the scroll's published
-umbilicus JSON. Five checks, each on the segments' vertex positions and the umbilicus only (no CT, no surface
+umbilicus JSON. Six checks, each on the segments' vertex positions and the umbilicus only (no CT, no surface
 prediction, no ink):
 
   order             rays from the umbilicus every degree on planes of constant z: for each adjacent pair, the
-                    share of the rays crossing both once on which the inner segment lies outside the outer one, and
-                    the signed spacing; per vertex, a nearest other segment along the normal that is out of order (a
-                    lower winding outside, or a higher one inside)
-  missing sectors   heights and angles where a segment has no vertex while both its neighbours do: the neighbours'
-                    spacing on those rays against the rays where the segment is present, the same for the next pair
-                    out, and the neighbours' vertices there
+                    share of the rays crossing both once on which the inner segment lies outside the outer one (all
+                    of them, and those by more than --coincide-um, which decide the flag), and the signed spacing;
+                    per vertex, a nearest other segment along the normal that is out of order (a lower winding
+                    outside, or a higher one inside)
+  missing sectors   heights and angles where a segment has no vertex while both its neighbours do, within the
+                    segment's own z extent: the neighbours' spacing on those rays against the rays where the segment
+                    is present (overall and by height), the same for the next pair out, a control of other pairs as
+                    many windings apart on the same rays, and the neighbours' vertices there
+  missing runs      the same where two or more adjacent windings have no vertex while the windings either side do,
+                    at heights within the z extent of at least one of them
   skipped windings  vertices whose nearest other segment along the normal is two or more windings away, outward or
                     inward, and closer than half the local pitch (so nothing lies between)
   turn overlaps     per grid line along the turn, the angle traced past a full turn; the doubly traced end farther
@@ -19,26 +23,37 @@ prediction, no ink):
   stack ends        heights where a winding between two traced ones has no segment, from each segment's z extent
 
 A check is flagged when what it finds reaches both --min-count (rays or vertices) and --min-share (of the rays or
-vertices it looked at); the exit status is 1 when any check is flagged and 0 when none is.
+vertices it looked at). A check that had nothing to look at (an adjacent pair that no ray crosses once each, a
+segment with a neighbour along the normal for under half of its vertices) is listed under summary.not_checked, and
+the stack is then not reported clean. Exit status: 0 when every check looked and none flagged, 1 when something is
+flagged or not checked, 2 when the run could not be made (bad input or an unexpected error).
 
 Units and frame. Positions are tifxyz values, in voxels of one volume. The umbilicus must be in that volume; when
 the segments are in another one (for example a published 9.362 um copy against a 2.399 um umbilicus), --transform
 maps them into the umbilicus's volume first, with a 3x4 (or 4x4) matrix from a JSON file, or with the catalog's
 sample-level matrix as catalog:SAMPLE:FROM_VOLUME:TO_VOLUME (from --catalog, by default the bucket's
-metadata.json). Every position, z and grid row in the report is then in the umbilicus's volume, except the
-examples' row and column, which are on the input grid. The voxel size is --voxel-um, else the umbilicus's
-metadata.voxelsize_um, else (without --transform) the segment folder name's "-N.NNNum.tifxyz". Angles are degrees
-about the umbilicus at the same z, atan2(y - y_u, x - x_u), 0 to 360, with the umbilicus interpolated linearly
-between control points and held constant beyond them. Distances are micrometres: radial along a ray from the
-umbilicus, or along a vertex normal for the vertex checks. Areas are summed vertex cell areas in cm2.
+metadata.json). The volume ids in the folder names ("-on-VOLUME-N.NNNum.tifxyz"), the transform and the
+umbilicus (its metadata.volume, else its file name) must agree when they are known. Every position, z and grid row
+in the report is then in the umbilicus's volume, except the examples' row and column, which are on the input grid.
+The voxel size is --voxel-um, else the umbilicus's metadata.voxelsize_um, else (without --transform) the segment
+folder name's "-N.NNNum.tifxyz". Angles are degrees about the umbilicus at the same z, atan2(y - y_u, x - x_u),
+0 to 360, with the umbilicus interpolated linearly between control points and held constant beyond them. Distances
+are micrometres: radial along a ray from the umbilicus, or along a vertex normal for the vertex checks. Areas are
+summed vertex cell areas in cm2. A gap's width is the angle from its first ray to its last.
 
 Masks. --flags writes an .npz with one boolean mask per segment and check, on the segment's input grid
-("NAME/order", "NAME/missing_sector", "NAME/skipped_winding", "NAME/turn_overlap", "NAME/coincident" and their
-union "NAME/any"), so flagged vertices can be dropped before a spiral fit or a relative winding count. A
-missing-sector mask marks the neighbours' vertices where the segment between them has no vertex (within 1.5 grid
-steps of height and arc). A turn-overlap mask marks the doubly traced end and the next segment's vertices at the
-same height and angle. A coincident vertex has another segment within --coincide-um along its normal, so the two
-cannot be told apart there; order conflicts leave those out, and leave out the turn-overlap masks.
+("NAME/order", "NAME/missing_sector", "NAME/skipped_winding", "NAME/turn_overlap", "NAME/coincident",
+"NAME/stack_end" and their union "NAME/any"), so flagged vertices can be dropped before a spiral fit or a relative
+winding count. A missing-sector mask marks the vertices of the segments either side of a missing sector or a
+missing run where the segments between have no vertex (within 1.5 grid steps of height and arc), inside their z
+extent. A stack-end mask marks the segments either side at the heights where a winding between them has no
+segment. A turn-overlap mask marks the doubly traced end and the next segment's vertices at the same height and
+angle. A coincident vertex has another segment within --coincide-um along its normal, so the two cannot be told
+apart there; order conflicts leave those out, and leave out the turn-overlap masks.
+
+Memory. Each segment's grid, made --upsample times denser, is indexed for the normal search, and all are held at
+once: at the defaults (--stride 1 --upsample 2) a full 2.399 um copy of one PHerc0139 winding takes about 2 GB, so
+use --stride 2 --upsample 1 for such copies (a 96 um grid; run A of the PHerc0139 note).
 
 Usage:
 
@@ -52,14 +67,14 @@ Usage:
         $B/segments/20260219000000-w033_2026021913/mesh/20260219000000-on-20260102150214-2.399um.tifxyz \\
         ... one URL per segment, inner to outer ... \\
         --umbilicus $B/representations/umbilicus/20260102150214-umbilicus-20260826112529.json \\
-        --stride 2 --out w033-w037.json --flags w033-w037-flags.npz
+        --stride 2 --upsample 1 --out work/stackcheck/w033-w037.json --flags work/stackcheck/w033-w037-flags.npz
 
     # The 9.362 um copies on volume 20250728140407, mapped into 20260102150214 with the catalog's matrix:
     python -m kit stackcheck SEG ... --umbilicus UMBILICUS.json \\
         --transform catalog:PHerc0139:20250728140407:20260102150214
 
-A segment can be named NAME=PATH; otherwise its name is the nearest folder above the path that is neither "mesh" nor
-a ".tifxyz" folder. Needs numpy, tifffile and scipy.
+A segment can be named NAME=PATH (NAME without '/', '\\' or ':'); otherwise its name is the nearest folder above the
+path that is neither "mesh" nor a ".tifxyz" folder. Needs numpy, tifffile and scipy.
 """
 
 import json
@@ -84,8 +99,9 @@ DEFAULTS = {
     "min_count": 10,            # a check is flagged at this many rays or vertices ...
     "min_share": 0.01,          # ... and this share of the rays or vertices it looked at
 }
-MASKS = ("order", "missing_sector", "skipped_winding", "turn_overlap", "coincident")
+MASKS = ("order", "missing_sector", "skipped_winding", "turn_overlap", "coincident", "stack_end")
 FOLDER_UM = re.compile(r"-([0-9]+(?:\.[0-9]+)?)um\.tifxyz/?$")
+FOLDER_VOLUME = re.compile(r"-on-([^/]+?)-[0-9]+(?:\.[0-9]+)?um\.tifxyz/?$")
 
 
 def _np():
@@ -198,13 +214,13 @@ def read_tifxyz(folder):
 class Umbilicus:
     """Control points of a scroll's umbilicus: x and y at z, linear between points and constant beyond."""
 
-    def __init__(self, z, x, y, voxel_um=None, source=None):
+    def __init__(self, z, x, y, voxel_um=None, source=None, volume=None):
         np = _np()
         o = np.argsort(np.asarray(z, float))
         self.z, self.x, self.y = (np.asarray(v, float)[o] for v in (z, x, y))
         if len(self.z) == 0:
             raise VerifyError("the umbilicus has no control points")
-        self.voxel_um, self.source = voxel_um, source
+        self.voxel_um, self.source, self.volume = voxel_um, source, volume
 
     def at(self, z):
         np = _np()
@@ -217,9 +233,10 @@ def parse_umbilicus(data, source=None):
     pts = (data.get("control_points") or data.get("points")) if isinstance(data, dict) else data
     if not isinstance(pts, list) or not pts or not all(isinstance(p, dict) and {"x", "y", "z"} <= set(p) for p in pts):
         raise VerifyError(f"{source or 'umbilicus'}: expected control points with x, y and z keys")
-    um = (data.get("metadata") or {}).get("voxelsize_um") if isinstance(data, dict) else None
+    meta = (data.get("metadata") or {}) if isinstance(data, dict) else {}
+    um = meta.get("voxelsize_um")
     return Umbilicus([p["z"] for p in pts], [p["x"] for p in pts], [p["y"] for p in pts],
-                     float(um) if um else None, source)
+                     float(um) if um else None, source, meta.get("volume"))
 
 
 def load_umbilicus(src):
@@ -259,8 +276,13 @@ def load_transform(spec, catalog=None):
         except (OSError, ValueError) as exc:
             raise VerifyError(f"cannot read the transform {spec}: {exc}") from exc
         m = data.get("matrix") if isinstance(data, dict) else data
-    M = np.asarray(m, float)
+    try:
+        M = np.asarray(m, float)
+    except (TypeError, ValueError) as exc:
+        raise VerifyError("a transform is a 3x4 or 4x4 matrix") from exc
     if M.shape == (4, 4):
+        if not np.allclose(M[3], [0.0, 0.0, 0.0, 1.0]):
+            raise VerifyError("a 4x4 transform must have [0, 0, 0, 1] as its last row")
         M = M[:3]
     if M.shape != (3, 4) or not np.isfinite(M).all():
         raise VerifyError("a transform is a 3x4 or 4x4 matrix")
@@ -335,20 +357,34 @@ def turn_angles(xyz, valid, cx, cy):
     np = _np()
     th = np.where(valid, np.arctan2(xyz[..., 1] - cy, xyz[..., 0] - cx), np.nan)
 
+    def wrap(d):
+        return (d + np.pi) % (2 * np.pi) - np.pi
+
     def turning(a, ax):
-        dd = np.diff(a, axis=ax)
-        dd = (dd + np.pi) % (2 * np.pi) - np.pi
+        dd = wrap(np.diff(a, axis=ax))
         return float(np.nanmedian(np.abs(dd))) if np.isfinite(dd).any() else 0.0
 
     along = 1 if turning(th, 1) >= turning(th, 0) else 0
     T = th if along == 1 else th.T
+    dd = wrap(np.diff(T, axis=1))
+    rate = float(np.nanmedian(dd)) if np.isfinite(dd).any() else 0.0     # signed turn per grid step along the turn
     out = np.full(T.shape, np.nan)
     ref = np.full(T.shape[1], np.nan)          # last unwrapped angle seen in each column
     for i in range(T.shape[0]):
         cols = np.flatnonzero(np.isfinite(T[i]))
         if len(cols) == 0:
             continue
-        t = np.unwrap(T[i, cols])
+        # unwrap each run of adjacent valid columns on its own; across a hole, take the multiple of a turn nearest
+        # the turn rate times the columns skipped, so a hole wider than half a turn is not crossed the short way
+        t = T[i, cols].copy()
+        cut = np.concatenate([[0], np.flatnonzero(np.diff(cols) > 1) + 1, [len(cols)]])
+        for r in range(len(cut) - 1):
+            a, b = cut[r], cut[r + 1]
+            u = np.unwrap(t[a:b])
+            if r:
+                expect = t[a - 1] + rate * (cols[a] - cols[a - 1])
+                u = u - 2 * np.pi * np.round((u[0] - expect) / (2 * np.pi))
+            t[a:b] = u
         have = np.flatnonzero(np.isfinite(ref))
         if len(have):
             prev = np.interp(cols, have, ref[have])
@@ -388,13 +424,22 @@ class Segment:
         self.n = int(self.ok.sum())
 
 
+def split_spec(spec):
+    """(name or None, path) of a NAME=PATH or PATH segment argument. The text before the first '=' is a name only
+    when it holds no path separator or ':' and the whole argument is not an existing path."""
+    s = str(spec)
+    name, sep, rest = s.partition("=")
+    if sep and name and rest and not any(c in name for c in "/\\:") and not Path(s).exists():
+        return name, rest
+    return None, s
+
+
 def load_segments(specs, transform=None, stride=1, cache="work/stackcheck/cache", log=None):
     """Segments from NAME=PATH or PATH specs (local folders or bucket URLs), strided and mapped by the transform."""
     np = _np()
     segs = []
     for spec in specs:
-        spec = str(spec)
-        name, path = (spec.split("=", 1) if "=" in spec and not _is_url(spec.split("=", 1)[0]) else (None, spec))
+        name, path = split_spec(spec)
         folder = fetch_tifxyz(path, cache) if _is_url(path) else Path(path)
         if log and _is_url(path):
             log(f"stackcheck: {path} -> {folder}")
@@ -415,6 +460,21 @@ def load_segments(specs, transform=None, stride=1, cache="work/stackcheck/cache"
 def folder_voxel_um(path):
     m = FOLDER_UM.search(str(path).rstrip("/"))
     return float(m.group(1)) if m else None
+
+
+def folder_volume(path):
+    """The volume id in a tifxyz folder name 'ID-on-VOLUME-N.NNNum.tifxyz', or None."""
+    m = FOLDER_VOLUME.search(str(path).rstrip("/"))
+    return m.group(1) if m else None
+
+
+def umbilicus_volume(umb):
+    """The volume id of an umbilicus: the start of its metadata.volume ('VOLUME-2.399um-....zarr'), else of its
+    file name ('VOLUME-umbilicus-....json'), or None."""
+    if umb.volume:
+        return str(umb.volume).split("-")[0] or None
+    m = re.search(r"([^/]+?)-umbilicus-[^/]*$", str(umb.source or ""))
+    return m.group(1) if m else None
 
 
 # ---------------------------------------------------------------- rays from the umbilicus
@@ -605,8 +665,10 @@ def _candidates(p, n, D, centre, k, bound):
 def normal_hits(P, N, D, maxd, foot, chunk=50000):
     """Signed distances along each unit normal N from points P to the nearest crossing of segment D on each side,
     voxels: (outward, t >= 0; inward, t < 0), NaN where none within maxd. Candidates are D's vertices at the point's
-    height and angle (every layer of D there); each side's nearest is then looked up again around its crossing,
-    where it must lie within `foot` of a vertex of D."""
+    height and angle (every layer of D there), where the normal meets their tangent planes within 3 feet plus the
+    distance along the normal of them (a normal up to 45 degrees off the line to them, as on a sheared or
+    non-circular sheet); each side's nearest is then looked up again around its crossing, where it must lie
+    within `foot` of a vertex of D."""
     np = _np()
     pos, neg = np.full(len(P), np.nan), np.full(len(P), np.nan)
     if not len(P):
@@ -615,7 +677,7 @@ def normal_hits(P, N, D, maxd, foot, chunk=50000):
         p, n = P[s:s + chunk], N[s:s + chunk]
         t, lat = _candidates(p, n, D, p, 8, 3.0 * foot)
         for out, side in ((pos, t >= 0), (neg, t < 0)):
-            sel = side & (lat <= 3.0 * foot) & (np.abs(t) <= maxd)
+            sel = side & (lat <= 3.0 * foot + np.abs(t)) & (np.abs(t) <= maxd)
             has = sel.any(1)
             if not has.any():
                 continue
@@ -696,8 +758,11 @@ def _within(tree, z, ang_deg, rmed, tol):
 
 def sector_mask(mark, absent, present, tol_cells):
     """Vertices of segment `mark` at whose height and angle (mod 360, within tol_cells of mark's grid steps of z
-    and of arc at mark's median radius) segment `absent` has no vertex while segment `present` has one."""
+    and of arc at mark's median radius) no segment in `absent` (one segment or a list) has a vertex while segment
+    `present` has one, at heights within the z extent of at least one absent segment (lower and higher heights are
+    stack ends, not missing sectors)."""
     np = _np()
+    absent = list(absent) if isinstance(absent, (list, tuple)) else [absent]
     out = np.zeros(mark.ok.shape, bool)
     tol = tol_cells * mark.step
     z, th = mark.xyz[mark.ok][:, 2], mark.theta[mark.ok]
@@ -705,7 +770,13 @@ def sector_mask(mark, absent, present, tol_cells):
     def tree(s):
         return _sector_tree(s.xyz[s.ok][:, 2], s.theta[s.ok], mark.rmed, tol)
 
-    miss = ~_within(tree(absent), z, th, mark.rmed, tol) & _within(tree(present), z, th, mark.rmed, tol)
+    inz = np.zeros(len(z), bool)
+    for s in absent:
+        inz |= (z >= s.zmin - tol) & (z <= s.zmax + tol)
+    miss = inz & _within(tree(present), z, th, mark.rmed, tol)
+    for s in absent:
+        if miss.any():
+            miss[miss] = ~_within(tree(s), z[miss], th[miss], mark.rmed, tol)
     out[mark.ok] = miss
     return out
 
@@ -835,11 +906,52 @@ def plane_heights(segs, planes=None, plane_z=None):
     return lo + (np.arange(n) + 0.5) * (hi - lo) / n
 
 
-def check_stack(segs, umb, voxel_um, settings=None, log=None):
-    """Run the five checks on prepared segments (inner to outer). Returns (report, {name: {mask: bool grid}})."""
-    np = _np()
+def check_settings(settings=None):
+    """The defaults updated with the given settings (None keeps a default), checked: VerifyError on a bad value."""
     S = dict(DEFAULTS)
     S.update({k: v for k, v in (settings or {}).items() if v is not None})
+    given = settings or {}
+    if given.get("planes") is not None and given.get("plane_z") is not None:
+        raise VerifyError("give --planes or --plane-z, not both")
+
+    def num(key, lo=None, hi=None, lo_open=False, integer=False):
+        v = S[key]
+        try:
+            x = float(v)
+        except (TypeError, ValueError):
+            x = float("nan")
+        ok = math.isfinite(x) and (not integer or x == int(x))
+        if ok and lo is not None:
+            ok = x > lo if lo_open else x >= lo
+        if ok and hi is not None:
+            ok = x <= hi
+        if not ok:
+            rng = (f"above {lo}" if lo_open else f"at least {lo}") if lo is not None else ""
+            rng += (" and " if rng and hi is not None else "") + (f"at most {hi}" if hi is not None else "")
+            raise VerifyError(f"--{key.replace('_', '-')} must be {'a whole number ' if integer else ''}{rng} "
+                              f"(got {v})")
+        S[key] = int(x) if integer else x
+
+    num("ray_step_deg", 0, 360, lo_open=True)
+    num("planes", 1, integer=True)
+    num("max_normal_um", 0, lo_open=True)
+    num("coincide_um", 0)
+    num("skip_frac", 0, 1, lo_open=True)
+    num("tol_cells", 0, lo_open=True)
+    num("upsample", 1, integer=True)
+    num("min_count", 0, integer=True)
+    num("min_share", 0, 1)
+    if S["plane_z"] is not None:
+        pz = list(S["plane_z"])
+        if len(pz) != 3 or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in pz):
+            raise VerifyError("--plane-z takes START STOP STEP")
+    return S
+
+
+def check_stack(segs, umb, voxel_um, settings=None, log=None):
+    """Run the checks on segments (inner to outer). Returns (report, {name: {mask: bool grid}})."""
+    np = _np()
+    S = check_settings(settings)
     if len(segs) < 3:
         raise VerifyError("a stack needs at least three consecutive segments")
     vu = float(voxel_um)
@@ -850,6 +962,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
     n = len(segs)
     maxd, coincide = S["max_normal_um"] / vu, S["coincide_um"] / vu
     min_count, min_share = int(S["min_count"]), float(S["min_share"])
+    not_checked = []          # checks that had nothing to look at: the stack is then not reported clean
 
     def flagged(k, total):
         return k >= min_count and total > 0 and k / total >= min_share
@@ -858,7 +971,11 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
 
     # rays
     planes = plane_heights(segs, S["planes"], S["plane_z"])
+    zlo, zhi = min(s.zmin for s in segs), max(s.zmax for s in segs)
+    if not ((planes >= zlo) & (planes <= zhi)).any():
+        raise VerifyError(f"no ray plane lies within the stack's heights, z {zlo:.0f} to {zhi:.0f}")
     cnt, rad, angles = cast_rays(segs, umb, planes, S["ray_step_deg"], log)
+    step_deg = 360.0 / len(angles)
     first = rad[..., 0].astype(float)
     Z = np.broadcast_to(planes[:, None], cnt[:, 0].shape)
     A = np.broadcast_to(angles[None, :], cnt[:, 0].shape)
@@ -869,14 +986,19 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         both = (cnt[:, k] == 1) & (cnt[:, k + 1] == 1)
         d = first[:, k + 1] - first[:, k]
         inv = both & (d < 0)
+        deep = both & (d < -coincide)          # inside by more than --coincide-um: not two copies of one sheet
         rec = {"inner": names[k], "outer": names[k + 1], "rays": int(both.sum()), "inverted_rays": int(inv.sum()),
                "inverted_share": _r(inv.sum() / max(both.sum(), 1), 4),
+               "inverted_beyond_coincide_rays": int(deep.sum()),
+               "inverted_beyond_coincide_share": _r(deep.sum() / max(both.sum(), 1), 4),
                "spacing_um_q10_25_50_75_90": _q(d[both] * vu, (10, 25, 50, 75, 90))}
         if inv.any():
             rec["inverted"] = {"z": [_r(Z[inv].min(), 0), _r(Z[inv].max(), 0)], "angle_deg": circ_range(A[inv]),
                                "rays_by_30_deg": np.histogram(A[inv], bins=12, range=(0, 360))[0].tolist(),
                                "depth_um_q25_50_75": _q(-d[inv] * vu)}
-        rec["flagged"] = flagged(int(inv.sum()), int(both.sum()))
+        rec["flagged"] = flagged(int(deep.sum()), int(both.sum()))
+        if not both.any():
+            not_checked.append(f"order {names[k]}/{names[k + 1]}: no ray crosses both once")
         pairs.append(rec)
 
     # neighbours along the normal
@@ -884,6 +1006,10 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
     for s, tb in zip(segs, table):
         near = np.fmin(tb["out_d"], tb["in_d"])
         masks[s.name]["coincident"] = s.ok & (near <= coincide)
+        found = s.ok & ((tb["out_j"] >= 0) | (tb["in_j"] >= 0))
+        if found.sum() < 0.5 * s.n:
+            not_checked.append(f"vertex checks {s.name}: a neighbour along the normal for only "
+                               f"{100 * found.sum() / max(s.n, 1):.0f} % of its vertices")
 
     # d. turn overlaps (first: order conflicts leave the overlap masks out)
     overlaps, own_end = [], {}
@@ -959,26 +1085,63 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         order_v.append(rec)
 
     # b. missing sectors
+    present = cnt >= 1
+    once = cnt == 1
+    bands = [b for b in np.array_split(np.arange(len(planes)), min(10, len(planes))) if len(b)]
     missing = []
     for k in range(1, n - 1):
         s = segs[k]
         inz = (Z >= s.zmin) & (Z <= s.zmax)
-        loose = (cnt[:, k - 1] >= 1) & (cnt[:, k + 1] >= 1)
-        gap_l = loose & (cnt[:, k] == 0)
-        once = (cnt[:, k - 1] == 1) & (cnt[:, k + 1] == 1)
+        loose = present[:, k - 1] & present[:, k + 1]
+        gap_l = loose & ~present[:, k]
+        gap_o = once[:, k - 1] & once[:, k + 1] & inz      # rays for spacing: each neighbour crossed once
         d = first[:, k + 1] - first[:, k - 1]
+        lab = f"{names[k - 1]} to {names[k + 1]}"
         rec = {"segment": s.name, "neighbours": [names[k - 1], names[k + 1]],
                "rays_with_both_neighbours": int((loose & inz).sum()), "gap_rays": int((gap_l & inz).sum()),
                "gap_share": _r((gap_l & inz).sum() / max((loose & inz).sum(), 1), 4),
                "gap_rays_outside_own_height": int((gap_l & ~inz).sum()),
-               "neighbour_spacing": {"gap": _spacing(d[once & (cnt[:, k] == 0)], vu),
-                                     "present": _spacing(d[once & (cnt[:, k] >= 1)], vu)}}
+               "neighbour_spacing": {"gap": _spacing(d[gap_o & ~present[:, k]], vu),
+                                     "present": _spacing(d[gap_o & present[:, k]], vu)}}
+        if not (loose & inz).any():
+            not_checked.append(f"missing sectors {s.name}: no ray at its heights crosses both neighbours")
         if k >= 2 and k + 2 < n:
-            o2 = once & (cnt[:, k - 2] == 1) & (cnt[:, k + 2] == 1)
+            o2 = gap_o & once[:, k - 2] & once[:, k + 2]
             d2 = first[:, k + 2] - first[:, k - 2]
             rec["outer_pair_spacing"] = {"pair": [names[k - 2], names[k + 2]],
-                                         "gap": _spacing(d2[o2 & (cnt[:, k] == 0)], vu),
-                                         "present": _spacing(d2[o2 & (cnt[:, k] == 1)], vu)}
+                                         "gap": _spacing(d2[o2 & ~present[:, k]], vu),
+                                         "present": _spacing(d2[o2 & present[:, k]], vu)}
+        # by height: the neighbours' spacing in the gap, and where the outer neighbour lies against the next inner
+        # segment as well
+        g = gap_o & ~present[:, k]
+        if g.any():
+            by = []
+            for b in bands:
+                gb = g & np.isin(np.arange(len(planes)), b)[:, None]
+                if not gb.any():
+                    continue
+                row = {"z": [_r(planes[b[0]], 0), _r(planes[b[-1]], 0)], "rays": int(gb.sum()),
+                       "median_um": {lab: _r(np.median(d[gb]) * vu)},
+                       "inside_share": _r((d[gb] < 0).mean(), 3)}
+                if k >= 2:
+                    g2 = gb & once[:, k - 2]
+                    if g2.any():
+                        row["median_um"][f"{names[k - 2]} to {names[k - 1]}"] = _r(
+                            np.median(first[:, k - 1][g2] - first[:, k - 2][g2]) * vu)
+                        row["median_um"][f"{names[k - 2]} to {names[k + 1]}"] = _r(
+                            np.median(first[:, k + 1][g2] - first[:, k - 2][g2]) * vu)
+                by.append(row)
+            rec["gap_by_height"] = by
+            # control: pairs the same number of windings apart as the outer pair, both inner or both outer of the
+            # segment, on the gap's rays against the rays at its heights where it is present
+            ctrl = []
+            for a in [a for a in range(n - 4) if a + 4 <= k - 1 or a >= k + 1]:
+                oc = once[:, a] & once[:, a + 4] & inz & loose
+                dc = first[:, a + 4] - first[:, a]
+                ctrl.append({"pair": [names[a], names[a + 4]], "gap": _spacing(dc[oc & ~present[:, k]], vu),
+                             "present": _spacing(dc[oc & present[:, k]], vu)})
+            if ctrl:
+                rec["control_pairs"] = ctrl
         runs = []
         for i, z0 in enumerate(planes):
             if not (s.zmin <= z0 <= s.zmax):
@@ -987,7 +1150,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
             if rr:
                 a, b, w = max(rr, key=lambda x: x[2])
                 runs.append({"plane": i, "z": _r(z0, 0), "start_deg": _r(angles[a]), "end_deg": _r(angles[b]),
-                             "width_deg": _r(w * S["ray_step_deg"])})
+                             "width_deg": _r((w - 1) * step_deg)})
         main = main_sector(runs)
         if main:
             wd = np.array([r["width_deg"] for r in main])
@@ -1014,6 +1177,46 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
             rec["per_plane"] = runs
         missing.append(rec)
 
+    # b2. missing runs: two or more adjacent windings with no segment on a ray while the windings either side have
+    # one, at heights within the z extent of at least one of them (heights beyond all of them are stack ends)
+    npres = np.concatenate([np.zeros(present[:, :1].shape, int), np.cumsum(present, axis=1)], axis=1)
+    missing_runs = []
+    for i in range(n - 3):
+        for j in range(i + 3, n):
+            hole = present[:, i] & present[:, j] & (npres[:, j] - npres[:, i + 1] == 0)
+            if not hole.any():
+                continue
+            mid = segs[i + 1:j]
+            inz = np.zeros(hole.shape, bool)
+            for m in mid:
+                inz |= (Z >= m.zmin) & (Z <= m.zmax)
+            g = hole & inz
+            both = present[:, i] & present[:, j] & inz
+            rec = {"between": [names[i], names[j]], "missing": [m.name for m in mid], "rays": int(g.sum()),
+                   "rays_with_both": int(both.sum()), "share": _r(g.sum() / max(both.sum(), 1), 4),
+                   "rays_beyond_their_heights": int((hole & ~inz).sum())}
+            if g.any():
+                oo = once[:, i] & once[:, j]
+                dd = first[:, j] - first[:, i]
+                allp = (npres[:, j] - npres[:, i + 1]) == (j - i - 1)
+                rec.update({"z": [_r(Z[g].min(), 0), _r(Z[g].max(), 0)], "angle_deg": circ_range(A[g]),
+                            "planes": int(g.any(1).sum()),
+                            "spacing": {"hole": _spacing(dd[g & oo], vu), "all_present": _spacing(dd[both & oo & allp], vu)},
+                            "per_plane": [{"z": _r(planes[p], 0), "rays": int(g[p].sum()), "angle_deg": circ_range(A[p][g[p]])}
+                                          for p in np.flatnonzero(g.any(1))]})
+                verts = {}
+                for m, other in ((segs[i], segs[j]), (segs[j], segs[i])):
+                    sm = sector_mask(m, mid, other, float(S["tol_cells"]))
+                    masks[m.name]["missing_sector"] |= sm
+                    verts[m.name] = _describe(m, sm, vu)
+                    if sm.any():
+                        jm = names.index(m.name)
+                        verts[m.name]["examples"] = _examples(
+                            m, sm, lambda r, c, tb=table[jm], jm=jm: _side(tb, r, c, jm, names, vu))
+                rec["bounding_vertices"] = verts
+            rec["flagged"] = flagged(int(g.sum()), int(both.sum()))
+            missing_runs.append(rec)
+
     # c. skipped windings
     skips = []
     for k, (s, tb) in enumerate(zip(segs, table)):
@@ -1038,10 +1241,14 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
                                       "beyond_coincide": int((g & beyond).sum()),
                                       "beyond_coincide_area_cm2": _r(s.area[g & beyond].sum() * (vu * 1e-4) ** 2, 3),
                                       "beyond_coincide_distance_um_q25_50_75": _q(dist[g & beyond] * vu)})
+        off = beyond & ~masks[s.name]["turn_overlap"]
+        rec["beyond_coincide_off_turn_overlap"] = {"vertices": int(off.sum()),
+                                                   "area_cm2": _r(s.area[off].sum() * (vu * 1e-4) ** 2, 3)}
         if sk.any():
             rec["in_missing_sector_share"] = _r((sk & masks[s.name]["missing_sector"]).sum() / sk.sum(), 3)
             rec["in_turn_overlap_share"] = _r((sk & masks[s.name]["turn_overlap"]).sum() / sk.sum(), 3)
-            rec["examples"] = _examples(s, sk, lambda r, c, tb=tb, k=k: _side(tb, r, c, k, names, vu))
+            rec["examples"] = _examples(s, beyond if beyond.any() else sk,
+                                        lambda r, c, tb=tb, k=k: _side(tb, r, c, k, names, vu))
         rec["flagged"] = flagged(int(sk.sum()), s.n)
         skips.append(rec)
 
@@ -1053,18 +1260,29 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         rec = {"segment": s.name, "z": [_r(s.zmin, 0), _r(s.zmax, 0)]}
         inner = [j for j in range(k) if segs[j].zmin < s.zmin - tolz]
         outer = [j for j in range(k + 1, n) if segs[j].zmin < s.zmin - tolz]
+        bands = []
         if inner and outer:
             i, o = max(inner), min(outer)
-            rec["missing_below"] = {"z": [_r(max(segs[i].zmin, segs[o].zmin), 0), _r(s.zmin, 0)],
+            zb = (max(segs[i].zmin, segs[o].zmin), s.zmin)
+            rec["missing_below"] = {"z": [_r(zb[0], 0), _r(zb[1], 0)],
                                     "between": [names[i], names[o]], "windings_without_segment": o - i - 1}
+            bands.append((i, o, zb))
         inner = [j for j in range(k) if segs[j].zmax > s.zmax + tolz]
         outer = [j for j in range(k + 1, n) if segs[j].zmax > s.zmax + tolz]
         if inner and outer:
             i, o = max(inner), min(outer)
-            rec["missing_above"] = {"z": [_r(s.zmax, 0), _r(min(segs[i].zmax, segs[o].zmax), 0)],
+            za = (s.zmax, min(segs[i].zmax, segs[o].zmax))
+            rec["missing_above"] = {"z": [_r(za[0], 0), _r(za[1], 0)],
                                     "between": [names[i], names[o]], "windings_without_segment": o - i - 1}
+            bands.append((i, o, za))
         rec["flagged"] = any(
             key in rec and rec[key]["z"][1] - rec[key]["z"][0] > tolz for key in ("missing_below", "missing_above"))
+        for i, o, (lo, hi) in bands:          # the segments either side, at the heights where this one has none
+            if hi - lo <= tolz:
+                continue
+            for j in (i, o):
+                zj = segs[j].xyz[..., 2]
+                masks[names[j]]["stack_end"] |= segs[j].ok & (zj >= lo) & (zj <= hi)
         ends.append(rec)
 
     for s in segs:
@@ -1076,6 +1294,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
     flags = {"order": [f"{p['inner']}/{p['outer']}" for p in pairs if p["flagged"]],
              "order_vertices": [r["segment"] for r in order_v if r["flagged"]],
              "missing_sectors": [r["segment"] for r in missing if r["flagged"]],
+             "missing_runs": [f"{r['between'][0]}/{r['between'][1]}" for r in missing_runs if r["flagged"]],
              "skipped_windings": [r["segment"] for r in skips if r["flagged"]],
              "turn_overlaps": [r["segment"] for r in overlaps if r["flagged"]],
              "stack_ends": [r["segment"] for r in ends if r["flagged"]]}
@@ -1086,15 +1305,18 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
                   "distances": "micrometres, radial along rays from the umbilicus or along vertex normals",
                   "rows_cols": "examples' row and col are on each segment's input grid"},
         "umbilicus": umb.source, "settings": {k: (list(v) if isinstance(v, tuple) else v) for k, v in S.items()},
-        "rays": {"planes": len(planes), "z": [_r(planes[0], 0), _r(planes[-1], 0)], "rays_per_plane": len(angles)},
+        "rays": {"planes": len(planes), "z": [_r(planes[0], 0), _r(planes[-1], 0)], "rays_per_plane": len(angles),
+                 "ray_step_deg": _r(step_deg, 6)},
         "segments": [{"name": s.name, "path": s.path, "input_grid": list(s.input_shape), "stride": s.stride,
                       "vertices": s.n, "area_cm2": _r(s.area[s.ok].sum() * (vu * 1e-4) ** 2, 2),
                       "z": [_r(s.zmin, 0), _r(s.zmax, 0)], "median_radius_um": _r(s.rmed * vu, 0),
                       "grid_step_um": _r(s.step * vu), "local_pitch_um": _r(pitch[k] * vu)}
                      for k, s in enumerate(segs)],
-        "summary": {"clean": not any(flags.values()), "flagged": flags},
+        "summary": {"clean": not any(flags.values()) and not not_checked, "flagged": flags,
+                    "not_checked": not_checked},
         "order": {"pairs": pairs, "vertices": order_v},
-        "missing_sectors": missing, "skipped_windings": skips, "turn_overlaps": overlaps, "stack_ends": ends,
+        "missing_sectors": missing, "missing_runs": missing_runs, "skipped_windings": skips,
+        "turn_overlaps": overlaps, "stack_ends": ends,
         "seconds": _r(time.time() - t0),
     }
     return report, masks
@@ -1140,7 +1362,8 @@ def format_report(rep):
         mark = "  FLAG" if p["flagged"] else ""
         sp = p["spacing_um_q10_25_50_75_90"]
         L.append(f"  {p['inner']}/{p['outer']}: {p['inverted_rays']} of {p['rays']} rays inverted "
-                 f"({100 * (p['inverted_share'] or 0):.1f} %), spacing median {sp[2] if sp else None} um{mark}")
+                 f"({100 * (p['inverted_share'] or 0):.1f} %; {100 * (p['inverted_beyond_coincide_share'] or 0):.1f} % "
+                 f"by more than {rep['settings']['coincide_um']} um), spacing median {sp[2] if sp else None} um{mark}")
     for r in rep["order"]["vertices"]:
         if r["vertices"]:
             top = r["groups"][0]
@@ -1159,6 +1382,15 @@ def format_report(rep):
                     f"{ext['start_deg_q10_50_90'][2]} and ends {ext['end_deg_q10_50_90'][0]} to "
                     f"{ext['end_deg_q10_50_90'][2]} deg (10th to 90th percentile)" if ext else "")
                  + ("  FLAG" if r["flagged"] else ""))
+    L.append("b2. missing runs (two or more adjacent windings not crossed, the windings either side crossed)")
+    for r in rep.get("missing_runs", []):
+        if r["rays"]:
+            h = r["spacing"]["hole"]
+            L.append(f"  {r['between'][0]} to {r['between'][1]} ({', '.join(r['missing'])} missing): {r['rays']} rays "
+                     f"({100 * (r['share'] or 0):.1f} %), z {r['z'][0]} to {r['z'][1]}, angle {r['angle_deg'][0]} to "
+                     f"{r['angle_deg'][1]} deg; spacing median {h.get('median_um')} um there vs "
+                     f"{r['spacing']['all_present'].get('median_um')} um with all present"
+                     + ("  FLAG" if r["flagged"] else ""))
     L.append("c. skipped windings (nearest along the normal two or more windings away, under half a pitch)")
     for r in rep["skipped_windings"]:
         if r["vertices"]:
@@ -1183,8 +1415,54 @@ def format_report(rep):
                 L.append(f"  {r['segment']} (z {r['z'][0]} to {r['z'][1]}): none from z {m['z'][0]} to {m['z'][1]} "
                          f"between {m['between'][0]} and {m['between'][1]}{'  FLAG' if r['flagged'] else ''}")
     fl = {k: v for k, v in rep["summary"]["flagged"].items() if v}
-    L.append("clean: no check flagged" if rep["summary"]["clean"] else f"flagged: {json.dumps(fl)}")
+    for msg in rep["summary"].get("not_checked", []):
+        L.append(f"not checked: {msg}")
+    if rep["summary"]["clean"]:
+        L.append("clean: every check looked and none flagged")
+    elif fl:
+        L.append(f"flagged: {json.dumps(fl)}")
+    else:
+        L.append("not clean: nothing flagged, but some checks had nothing to look at")
     return "\n".join(L)
+
+
+def transform_volumes(spec):
+    """(from, to) volume ids a --transform names: catalog:SAMPLE:FROM:TO, or a matrix JSON object's
+    "from_volume_id" and "to_volume_id" when it has them; (None, None) otherwise."""
+    if spec is None:
+        return None, None
+    if str(spec).startswith("catalog:"):
+        bits = str(spec).split(":")
+        return (bits[2], bits[3]) if len(bits) == 4 else (None, None)
+    try:
+        data = json.loads(Path(spec).read_text())
+    except (OSError, ValueError):
+        return None, None
+    return (data.get("from_volume_id"), data.get("to_volume_id")) if isinstance(data, dict) else (None, None)
+
+
+def check_frame(paths, umb, transform):
+    """VerifyError when the segments' folder names, the transform and the umbilicus disagree about volumes."""
+    vols = {folder_volume(p) for p in paths} - {None}
+    sizes = {folder_voxel_um(p) for p in paths} - {None}
+    if len(vols) > 1:
+        raise VerifyError(f"the segments are on different volumes {sorted(vols)}; give copies on one volume")
+    if len(sizes) > 1:
+        raise VerifyError(f"the segments' folder names give different voxel sizes {sorted(sizes)} um")
+    seg_vol = next(iter(vols)) if vols else None
+    umb_vol = umbilicus_volume(umb)
+    t_from, t_to = transform_volumes(transform)
+    if transform is None:
+        if seg_vol and umb_vol and seg_vol != umb_vol:
+            raise VerifyError(f"the segments are on volume {seg_vol} and the umbilicus on {umb_vol}: map the "
+                              f"segments with --transform")
+        return
+    if seg_vol and umb_vol and seg_vol == umb_vol:
+        raise VerifyError(f"the segments are already on the umbilicus's volume {umb_vol}: leave out --transform")
+    if t_from and seg_vol and t_from != seg_vol:
+        raise VerifyError(f"the transform starts on volume {t_from} but the segments are on {seg_vol}")
+    if t_to and umb_vol and t_to != umb_vol:
+        raise VerifyError(f"the transform ends on volume {t_to} but the umbilicus is on {umb_vol}")
 
 
 def run(specs, umbilicus, transform=None, catalog=None, voxel_um=None, stride=1, cache="work/stackcheck/cache",
@@ -1192,10 +1470,13 @@ def run(specs, umbilicus, transform=None, catalog=None, voxel_um=None, stride=1,
     """Load, check and return (report, segments, masks)."""
     if int(stride) < 1:
         raise VerifyError("--stride must be 1 or more")
+    if voxel_um is not None and not (math.isfinite(float(voxel_um)) and float(voxel_um) > 0):
+        raise VerifyError("--voxel-um must be above 0")
+    check_settings(settings)
     umb = load_umbilicus(umbilicus)
+    paths = [split_spec(s)[1] for s in specs]
+    check_frame(paths, umb, transform)
     M = load_transform(transform, catalog)
-    paths = [str(s).split("=", 1)[1] if "=" in str(s) and not _is_url(str(s).split("=", 1)[0]) else str(s)
-             for s in specs]
     seg_um = {folder_voxel_um(p) for p in paths} - {None}
     if M is None and umb.voxel_um and seg_um and any(abs(v / umb.voxel_um - 1) > 0.01 for v in seg_um):
         raise VerifyError(f"the segments are in a {sorted(seg_um)} um volume and the umbilicus in a "
@@ -1209,4 +1490,6 @@ def run(specs, umbilicus, transform=None, catalog=None, voxel_um=None, stride=1,
     report["transform"] = M.round(9).tolist() if M is not None else None
     report["frame"]["voxel_um_from"] = ("--voxel-um" if voxel_um else "umbilicus metadata" if umb.voxel_um
                                         else "segment folder name")
+    report["frame"]["volumes"] = {"segments": folder_volume(paths[0]) if paths else None,
+                                  "umbilicus": umbilicus_volume(umb)}
     return report, segs, masks
