@@ -1,0 +1,260 @@
+{
+ "token": "20261014T161031Z",
+ "provenance": {
+  "files": {
+   "scripts/strokenet/gridpilot.py": "344712bfd3f2ffcaeddd8fbda67643e3ed83c48914cb8d6a99a07d97179b0406",
+   "scripts/strokenet/data.py": "edf1b35fa5c7b0e09497b9252fed9e5535ab62a01575931d2aebd50fba547dcc",
+   "scripts/strokenet/modal_gridpilot.py": "c8f56a13edb631315eef410bd9ae7923f382ee55b720daae4dddfe6aa944d004",
+   "docs/prereg/2026-10-14-gridpilot.md": "8bce02fec79ad0f128abd899a7387eae7ea1a12633ff8810e8158532c0f2d3e8"
+  },
+  "missing": [],
+  "commit": "3eb036e6a923fb1488caefa9bf7ddea5da54d205",
+  "dirty": false
+ },
+ "gpu": "NVIDIA B300 SXM6 AC",
+ "torch": "2.14.1+cu132",
+ "cuda": "13.2",
+ "started": "2026-10-14T16:10:41Z",
+ "segment": "w028-037",
+ "checkpoint": {
+  "repo": "scrollprize/ink_canonical_2um",
+  "revision": "075855bc69317ef6febf39a0d9d687b27d2b7c29",
+  "file": "r152_3ddec_v2_l5_epoch13.ckpt",
+  "bytes": 1549556213,
+  "sha256": "36dd0de84b7b7aa6590184192c7415466cd8a1ba7c1e59f42c6373846373c3e0"
+ },
+ "villa": {
+  "repo": "https://github.com/ScrollPrize/villa",
+  "commit": "a4979b99004934955784ea19b30da66cfe5f9ead",
+  "dir": "ink-detection/optimized_inference",
+  "files": {
+   "model_resnet3d_3d_decoder.py": "7b2b2cfc6c7fb963a3da1bf128543ceadf8ad887f32a319bc0a38fb378f9e2ca",
+   "models/resnetall.py": "2b49ac430d77bae189cf002ed9c2748f940a6cd92b809a23db6f7dba381afbf6",
+   "models/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+ },
+ "stages_s": {
+  "downloads": 34.0,
+  "read": 23.1,
+  "model": 15.9
+ },
+ "region": {
+  "pooled_yx": [
+   224,
+   544
+  ],
+  "size": 192,
+  "native_crop_yx": [
+   4096,
+   10496
+  ],
+  "crop": 4608,
+  "usable": 36864,
+  "text": 36864,
+  "nonzero_columns": 1.0
+ },
+ "tiles_per_s_bench": 128.2,
+ "renders": {
+  "A128": {
+   "stride": 128,
+   "offset": 0,
+   "tiles": 961,
+   "forwarded": 961,
+   "seconds": 9.4,
+   "tiles_per_s": 102.23
+  },
+  "R128": {
+   "stride": 128,
+   "offset": 0,
+   "tiles": 961,
+   "forwarded": 961,
+   "seconds": 9.4,
+   "tiles_per_s": 102.23
+  },
+  "B128": {
+   "stride": 128,
+   "offset": 64,
+   "tiles": 1024,
+   "forwarded": 1024,
+   "seconds": 10.0,
+   "tiles_per_s": 102.4
+  },
+  "A64": {
+   "stride": 64,
+   "offset": 0,
+   "tiles": 3969,
+   "forwarded": 3969,
+   "seconds": 37.1,
+   "tiles_per_s": 106.98
+  },
+  "B64": {
+   "stride": 64,
+   "offset": 32,
+   "tiles": 4096,
+   "forwarded": 4096,
+   "seconds": 38.2,
+   "tiles_per_s": 107.23
+  },
+  "A32": {
+   "stride": 32,
+   "offset": 0,
+   "tiles": 16129,
+   "forwarded": 16129,
+   "seconds": 148.9,
+   "tiles_per_s": 108.32
+  },
+  "B32": {
+   "stride": 32,
+   "offset": 16,
+   "tiles": 16384,
+   "forwarded": 16384,
+   "seconds": 145.4,
+   "tiles_per_s": 112.68
+  }
+ },
+ "verdict": {
+  "strides": {
+   "128": {
+    "effect": 25.759437847861648,
+    "r_stride128": 1.0,
+    "profile": [
+     15.967,
+     15.3668,
+     14.4588,
+     13.457,
+     12.3646,
+     11.6445,
+     11.1745,
+     10.6233,
+     10.4644,
+     10.513,
+     10.6163,
+     10.747,
+     10.9939,
+     10.931,
+     11.2101,
+     11.76,
+     11.4883,
+     10.9857,
+     10.8021,
+     10.9358,
+     10.9062,
+     11.0573,
+     11.0911,
+     10.8663,
+     11.3351,
+     12.1367,
+     12.5972,
+     13.3108,
+     13.8945,
+     14.1506,
+     14.3602,
+     14.5182
+    ]
+   },
+   "64": {
+    "effect": 12.306988596564645,
+    "r_stride128": 0.9832898738653568,
+    "profile": [
+     6.8628,
+     6.5885,
+     6.4349,
+     6.4388,
+     6.3381,
+     5.9779,
+     5.6836,
+     5.3876,
+     5.2235,
+     5.3624,
+     5.6554,
+     5.9839,
+     5.8238,
+     5.5911,
+     5.5694,
+     5.5586,
+     5.5095,
+     5.5616,
+     5.7214,
+     5.8095,
+     5.7687,
+     5.8555,
+     6.1966,
+     6.2587,
+     6.3164,
+     6.4457,
+     6.5907,
+     6.5694,
+     6.4141,
+     6.352,
+     6.2878,
+     6.3411
+    ],
+    "share": 0.4777661946371348,
+    "status": "reduced",
+    "content_kept": true
+   },
+   "32": {
+    "effect": 6.315058526467379,
+    "r_stride128": 0.9804910885772424,
+    "profile": [
+     3.8464,
+     3.4766,
+     3.2192,
+     3.049,
+     2.8728,
+     2.7743,
+     2.7652,
+     2.7622,
+     2.8125,
+     2.8715,
+     2.9497,
+     2.8767,
+     2.8451,
+     2.8867,
+     2.8572,
+     2.7847,
+     2.8255,
+     2.839,
+     2.796,
+     2.806,
+     2.8312,
+     2.9397,
+     2.8637,
+     2.8268,
+     2.9661,
+     3.1536,
+     3.4631,
+     3.6923,
+     3.7096,
+     3.8941,
+     3.8689,
+     3.714
+    ],
+    "share": 0.2451551374593218,
+    "status": "reduced",
+    "content_kept": true
+   }
+  },
+  "noise": 0.0,
+  "r_published": 0.9999989501448535,
+  "rms_published": 0.10635717633678196,
+  "line": "stride 128: tiling effect RMS 25.759 (noise 0.000, r with published 1.000); stride 64: reduced (RMS 12.307, 0.48 of stride 128), r with stride 128 0.983; stride 32: reduced (RMS 6.315, 0.25 of stride 128), r with stride 128 0.980"
+ },
+ "full_rerender": {
+  "128": {
+   "tiles": 17608559,
+   "gpu_hours": 45.7
+  },
+  "64": {
+   "tiles": 70433274,
+   "gpu_hours": 182.9
+  },
+  "32": {
+   "tiles": 281728900,
+   "gpu_hours": 731.5
+  }
+ },
+ "wall_s": 496.1,
+ "ended": "2026-10-14T16:18:53Z",
+ "public_extract": "Public copy of the pilot's result.json; cost fields removed."
+}

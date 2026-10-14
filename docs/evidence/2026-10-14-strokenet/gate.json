@@ -1,0 +1,26 @@
+{
+ "ok": true,
+ "checks": {
+  "released_T1": {
+   "value": 0.9953308734538457,
+   "min": 0.9,
+   "ok": true
+  },
+  "released_mean_T1_T4": {
+   "value": 0.9977115129398868,
+   "min": 0.85,
+   "ok": true
+  },
+  "control_permuted_T1": {
+   "value": 0.764794873307392,
+   "below": 0.95,
+   "ok": true
+  },
+  "numpy_check": {
+   "value": 7.62939453125e-06,
+   "max": 0.001,
+   "ok": true
+  }
+ },
+ "calibration_sha256": "a3f9d8bf8af467850af911f5a3c500ce22e45b6d0d1b28a8ce7c2008aa5c5c35"
+}

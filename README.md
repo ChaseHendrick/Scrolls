@@ -36,6 +36,19 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
+### StrokeNet text-likeness score
+
+Released 14 October 2026.
+
+A small learned score for how much a 6.1 mm window of an organisers' ink map looks like lines of text, with rotation and IAAFT controls reported with every result. It needs only NumPy to run. Its held-out test on six PHerc. Paris 4 tracings, fixed before the read, is published in full: it misses its preregistered bar on two of nine items (blank papyrus against its own 90 degree turn, and blank windows above the threshold), simple scores such as ink density match it on the other items, and it beats every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). A score is model output, not a reading.
+
+```bash
+python -m pip install numpy tifffile
+python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json          # weights downloaded once, SHA-256 checked
+```
+
+Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs/strokenet.md).
+
 ### AutoPipeline
 
 Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix2`: [`submissions/progress-2026-10-fix2/` at commit `143c54b`](https://github.com/ChaseHendrick/Scrolls/tree/143c54b54804e17acbfdcf032217e6b3964f6ef4/submissions/progress-2026-10-fix2).
