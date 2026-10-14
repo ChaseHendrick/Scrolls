@@ -9143,5 +9143,106 @@
    },
    "verdict": "U1 not shown: letters-v2-real passes the reader control but makes 0 ordered pairs on the published text (no decoy makes any) and no read line scores 5 or more on any published line; U2 not resolved (0 against 0); U3 does not count, since letters-v1 fails the reader control (Model output). Post hoc, the same chain read over the six labelled segments' whole maps makes 7 pairs against a decoy maximum of 1, all on w013 and w018, where letters-v2-real's letter error is lowest (0.17 and 0.23 in the region test), and none on w023 (as large as w018), w028, w029 and w031, where it errs on about one letter in two; so the test could pass only if the reader's error on the unlabelled maps were that low, it had little power, and it cannot tell whether maps of unlabelled text are harder to read (Interpretation)."
   }
+ ],
+ "orientation_checks": [
+  {
+   "date": "2026-10-13",
+   "source": "docs/logs/2026-10-14-upright-before-ink.md",
+   "claim": "Model output on development data (PHerc0841 w00 labels); not a reading, not independent confirmation",
+   "reader": "ink_9um seeds 42 and 43",
+   "bootstrap": "paired block bootstrap, 2000 draws of 107 px blocks, 95 % intervals",
+   "ablation_published_w00": {
+    "reader": "ink_9um seed 42",
+    "what": "published w00 surface volume turned in plane and turned back, cost in AUC against the unturned map",
+    "turn_30_degrees": {
+     "cost": 0.155,
+     "ci95": [
+      0.077,
+      0.228
+     ]
+    },
+    "turn_90_degrees": {
+     "cost": 0.027,
+     "ci95": [
+      -0.02,
+      0.078
+     ]
+    },
+    "resampling_only": {
+     "cost": 0.009,
+     "ci95": [
+      -0.004,
+      0.023
+     ]
+    }
+   },
+   "own_trace": {
+    "what": "one AutoPipeline trace of PHerc0841 from a seed near w00, w00 labels carried within 4 voxels and 30 degrees",
+    "labelled_pixels": 352860,
+    "angle_degrees": 49.275,
+    "angle_consistency": 0.983,
+    "published_map_auc_seed42": 0.798,
+    "native_auc_seed42": 0.618,
+    "upright_auc_seed42": 0.874,
+    "upright_minus_native": {
+     "seed42": {
+      "diff": 0.256,
+      "ci95": [
+       0.148,
+       0.368
+      ]
+     },
+     "seed43": {
+      "diff": 0.181,
+      "ci95": [
+       0.084,
+       0.289
+      ]
+     }
+    },
+    "upright_minus_sham_45": {
+     "seed42": {
+      "diff": 0.213,
+      "ci95": [
+       0.078,
+       0.36
+      ]
+     },
+     "seed43": {
+      "diff": 0.208,
+      "ci95": [
+       0.131,
+       0.298
+      ]
+     }
+    },
+    "aa_published_turned_own_angle": {
+     "seed42": {
+      "diff": -0.018,
+      "ci95": [
+       -0.066,
+       0.032
+      ]
+     },
+     "seed43": {
+      "diff": 0.0,
+      "ci95": [
+       -0.051,
+       0.049
+      ]
+     }
+    },
+    "upright_minus_published_seed42": {
+     "diff": -0.076,
+     "ci95": [
+      -0.164,
+      0.015
+     ]
+    },
+    "rule": "preregistered 2026-10-13: seed 42 upright beats native, recovers at least half the gap to the published map, beats the 45 degree sham, and seed 43 upright beats native",
+    "verdict": "GO"
+   },
+   "held_out": "not run (labelled PHerc1447 windings, once); PHerc0841 ag405 labels not opened"
+  }
  ]
 }
