@@ -9,6 +9,9 @@ the share of resamples in which B is worse. Both inputs are model output on publ
 drawings; keep them in ignored work/ folders.
 
   python scripts/letters/compare_p172.py A.json B.json [--key ink_only|with_lm] [--level line|segment]
+
+A reference line outside the reader's alphabet (a result edited by hand with a Latin look-alike or a
+final sigma) stops the comparison with the alphabet printed.
 """
 import argparse
 import json
@@ -18,6 +21,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from kit.letterlines import check_references  # noqa: E402
 from kit.letterread import edit_distance, utf8_console  # noqa: E402
 
 
@@ -30,6 +34,19 @@ def line_units(res, key="ink_only", segments=None):
         for read, ref in r.get(key, {}).get("pairs", []):
             out[(r["segment"], ref)] = (edit_distance(read, ref), len(ref))
     return out
+
+
+def check_result_references(res, key="ink_only", source="result"):
+    """SystemExit when a reference line of an eval_p172 result holds a character outside the reader's alphabet.
+
+    eval_p172.py writes references in the alphabet; a result edited or made by hand with a Latin look-alike
+    or a final sigma would only ever count as errors, so it is refused with the alphabet printed."""
+    refs = {f"{r['segment']} pair {i}": ref for r in res["segments"]
+            for i, (_, ref) in enumerate(r.get(key, {}).get("pairs", []))}
+    try:
+        check_references(refs, wildcard=None, source=source)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
 
 
 def paired_bootstrap(a, b, n=20000, seed=0, level="line"):
@@ -67,6 +84,8 @@ def main(argv=None):
     ap.add_argument("--n", type=int, default=20000)
     x = ap.parse_args(argv)
     ra, rb = (json.loads(Path(p).read_text(encoding="utf-8")) for p in (x.a, x.b))
+    for path, r in ((x.a, ra), (x.b, rb)):
+        check_result_references(r, x.key, Path(path).name)
     segs = {r["segment"] for r in rb["segments"]}       # compare on the segments both results cover
     res = paired_bootstrap(line_units(ra, x.key, segs), line_units(rb, x.key), n=x.n, level=x.level)
     print(json.dumps(res))

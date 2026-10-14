@@ -43,6 +43,9 @@ PAIR_FLOOR pairs and more than every decoy of the PAIR_SETS.
   python scripts/letters/eval_p1667_text.py score READ.json DECOYS.json --out SCORE.json
   python scripts/letters/eval_p1667_text.py compare A_SCORE.json B_SCORE.json
 
+--weights takes a linenet-v1 .npz or a released model name such as letters-v2-real (recorded as given).
+`decoys` refuses a reference line holding a character outside the reader's alphabet ('?' aside).
+
 Every string read is model output on a public ink map, not a reading.
 """
 import argparse
@@ -55,6 +58,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from kit import letterread as R  # noqa: E402
+from kit.letterlines import check_references  # noqa: E402
 
 ALPHABET = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"
 MATCH, MISMATCH, GAP, WILD = 1, -1, -1, 0
@@ -96,7 +100,7 @@ def read_maps(npy_dir, weights, letter_px):
     heights = None
     if letter_px not in ("auto",) and not str(letter_px).replace(".", "", 1).isdigit():
         heights = {s: st["letter_h"] for s, st in json.loads(Path(letter_px).read_text())["stats"].items()}
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz path or a released model name; recorded as given
     segs = {}
     for f in sorted(npy_dir.glob("*.npy")):
         seg = f.stem
@@ -119,6 +123,21 @@ def read_maps(npy_dir, weights, letter_px):
 
 
 # ------------------------------------------------------------------ decoys
+
+def check_reference(reference, source="the reference"):
+    """SystemExit, naming each line and character and printing the alphabet, when a line of a p1667_text.py
+    reference ({"columns": {column: [{"line", "letters"}, ...]}}) holds a character the reader does not write.
+
+    The alignment scores such a character as padding (BLOCK), which no alignment uses, so a Latin
+    look-alike or a final sigma would silently cost the real text its matches; '?' is the wildcard."""
+    lines = {f"column {c} line {L.get('line')}": L["letters"] for c, v in reference["columns"].items()
+             for L in v if L.get("letters")}
+    try:
+        check_references(lines, alphabet=ALPHABET, source=source)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
+    return reference
+
 
 def corpus_letters(xml_files):
     from kit import greeklm
@@ -359,6 +378,8 @@ def main():
     m.add_argument("a")
     m.add_argument("b")
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     if a.cmd == "cut":
         out = Path(a.out_dir)
         out.mkdir(parents=True, exist_ok=True)
@@ -371,7 +392,7 @@ def main():
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False) + "\n", encoding="utf-8")
         print(json.dumps(res["control"]))
     elif a.cmd == "decoys":
-        ref = json.loads(Path(a.reference).read_text(encoding="utf-8"))
+        ref = check_reference(json.loads(Path(a.reference).read_text(encoding="utf-8")), Path(a.reference).name)
         res = make_decoys(ref, corpus_letters(a.corpus))
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False) + "\n", encoding="utf-8")
         print(len(res["real"]), "lines,", res["visible_letters"], "visible letters,", res["word_chunks"],

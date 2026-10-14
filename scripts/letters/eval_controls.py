@@ -98,6 +98,8 @@ def main(argv=None):
     b.add_argument("--seeds", type=int, nargs="+", default=[21, 22])
     b.add_argument("--out")
     args = ap.parse_args(argv)
+    if getattr(args, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
     if args.cmd == "windows":
         res = windows(args.map, args.weights, args.letter_px, tuple(args.window), args.copies)
     else:

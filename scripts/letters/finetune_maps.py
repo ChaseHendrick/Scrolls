@@ -32,6 +32,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from p1667_align import load_lines  # noqa: E402
 from kit import letterread as R  # noqa: E402
+from kit.letterlines import check_references  # noqa: E402
 
 ALPHABET = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"
 WILD = -1
@@ -175,6 +176,12 @@ def augment(a, rng, h=16):
 
 
 def train(lines_npz, shards, weights, out, steps=1500, batch=24, p_map=0.5, lr=3e-4, seed=0, threads=4, device="cpu"):
+    mimgs, mtexts, _, lines_meta = load_lines(lines_npz)
+    try:   # every text in the alphabet, '?' a wildcard: refused before torch loads or a folder is made
+        check_references({f"line {i}": t for i, t in enumerate(mtexts)}, alphabet=ALPHABET,
+                         source=Path(lines_npz).name)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
     import torch
     from gen_dataset import load_shard
     import glob
@@ -183,7 +190,6 @@ def train(lines_npz, shards, weights, out, steps=1500, batch=24, p_map=0.5, lr=3
     rng = np.random.default_rng(seed)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    mimgs, mtexts, _, lines_meta = load_lines(lines_npz)
     simgs, stexts = [], []
     for f in sorted(glob.glob(str(Path(shards) / "*.npz")))[:12]:
         im, tx, _ = load_shard(f)

@@ -127,7 +127,19 @@ def region(groups_dir, maps_dir):
     (groups_dir / "map-region.json").write_text(json.dumps({"REGION_PAD": REGION_PAD, "segments": pads}, indent=1) + "\n")
 
 
+def parse_args(argv=None):
+    """GROUPS_DIR, MAPS_DIR and at most one of --wide and --region; anything else stops with the usage."""
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("groups_dir", help="p1667_groups.py's OUT_DIR, such as work/p1667/groups")
+    ap.add_argument("maps_dir", help="p1667_fetch.py's OUT/maps, holding <wNNN>.tif")
+    mode = ap.add_mutually_exclusive_group()
+    mode.add_argument("--wide", action="store_true", help="windows two letter heights taller (eval_p1667.py --source map-wide)")
+    mode.add_argument("--region", action="store_true", help="each segment's whole labelled region (--source map-region)")
+    return ap.parse_args(argv)
+
+
 if __name__ == "__main__":
     sys.path.insert(0, str(Path(__file__).resolve().parent))
-    mode = region if "--region" in sys.argv[3:] else wide if "--wide" in sys.argv[3:] else main
-    mode(*sys.argv[1:3])
+    a = parse_args()
+    (region if a.region else wide if a.wide else main)(a.groups_dir, a.maps_dir)

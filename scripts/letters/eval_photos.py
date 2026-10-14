@@ -185,6 +185,8 @@ def main():
     ap.add_argument("--nulls", type=int, default=4)
     ap.add_argument("--out")
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     res = evaluate(a.weights, a.pages, a.seed, a.nulls, a.blanks)
     if a.out:
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")

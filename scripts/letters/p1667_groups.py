@@ -26,7 +26,6 @@ LABELS_DIR holds <wNNN>/z/1 (a local copy of level 1 of each inklabels.zarr). Ne
 and Pillow.
 """
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
@@ -125,5 +124,15 @@ def main(labels_dir, out_dir):
     print("groups", len(rows))
 
 
+def parse_args(argv=None):
+    """LABELS_DIR and OUT_DIR; anything else stops with the usage."""
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("labels_dir", help="p1667_fetch.py's OUT/labels: <wNNN>/z/1 of each inklabels.zarr")
+    ap.add_argument("out_dir", help="where groups.json, png/ and npy/ go, such as work/p1667/groups")
+    return ap.parse_args(argv)
+
+
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    a = parse_args()
+    main(a.labels_dir, a.out_dir)

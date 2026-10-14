@@ -71,21 +71,22 @@ Guide, the 14 weight files with their SHA-256, held-out results with their limit
 
 Released 14 October 2026.
 
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text).
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text). On photographs its character error was measured on synthetic pages only; on two public-domain photographs of papyri, read as dark ink, its letters stood above its controls, and how well it names letters on real photographs is untested.
 
 ```bash
-python -m venv letters-env && . letters-env/bin/activate   # its own environment, apart from AutoPipeline's
+python3 -m venv .venv
+. .venv/bin/activate
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
-scrolls-letterdemo                                         # offline check on synthetic letters; prints DEMO PASS
+scrolls-letterdemo
 scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
 ```
 
-Install, the offline demo, the public PHerc. 1667 map demo (from a clone), model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
+`scrolls-letterdemo` checks the install offline on synthetic letters and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the demo's 38 um grid. Give the reader its own virtual environment, apart from AutoPipeline's, since both install a package named `kit`. Windows, the letter size for other images, the public PHerc. 1667 map demo (from a clone), model card, benchmarks and training: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Quick start (kit)
 
-Python **3.10+**, standard library only (except `verify`, which reads TIFFs with numpy and tifffile from villa's environment). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
+Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). The Greek letter reader is not: it needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
 
 ```bash
 # from repo root
@@ -170,6 +171,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`docs/logs/`](docs/logs/) | Dated research notes (not claims) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution ground rules |
 | [`LICENSE`](LICENSE) | Apache-2.0 (permissive, so it meets the prizes' open-source condition) |
+| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as a separate reference, the letter reader's weights (CC BY-NC 4.0, release `letters-v2-real`) |
 
 ## Architecture (kit)
 

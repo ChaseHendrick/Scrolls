@@ -11,7 +11,8 @@ independent sources so a reader cannot overfit one geometry:
   (bilinear capitals, lunate sigma and epsilon, a small floating omicron, descending rho
   and phi), swept with a broad nib at a random pen angle.
 - "font": Greek capitals from whatever TrueType fonts are installed (DejaVu, FreeFont,
-  Liberation, Noto ...), with random weight, width and slant.
+  Liberation, Noto ...), with random weight, width and slant; font_roots() lists the folders
+  searched (system and user font folders, and $LETTER_FONT_DIRS).
 - "bank" (only after use_bank): letters cropped from photographs of real papyri, see realforms.py.
 
 Domains:
@@ -29,6 +30,7 @@ numpy only; Pillow is needed for rendering (optional import).
 """
 
 import math
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -153,11 +155,38 @@ def render_skeleton_glyph(ch, h, rng, style):
     return a, int(cols[0]), int(cols[-1]) + 1, base
 
 
+FONT_DIRS_ENV = "LETTER_FONT_DIRS"
+
+
+def font_roots(env=None, home=None):
+    """Folders searched for .ttf and .otf fonts, in order, each once.
+
+    First the folders in $LETTER_FONT_DIRS (separated by os.pathsep: ':' on Linux and macOS, ';' on
+    Windows), then the system and user font folders of Linux (/usr/share/fonts, /usr/local/share/fonts,
+    ~/.fonts, ~/.local/share/fonts), macOS (/System/Library/Fonts, /Library/Fonts, ~/Library/Fonts)
+    and Windows (%WINDIR%\\Fonts, %LOCALAPPDATA%\\Microsoft\\Windows\\Fonts). Folders that do not exist
+    are skipped by font_files()."""
+    env = os.environ if env is None else env
+    home = Path.home() if home is None else Path(home)
+    roots = [Path(p).expanduser() for p in env.get(FONT_DIRS_ENV, "").split(os.pathsep) if p.strip()]
+    roots += [Path("/usr/share/fonts"), Path("/usr/local/share/fonts"), home / ".fonts", home / ".local" / "share" / "fonts",
+              Path("/System/Library/Fonts"), Path("/Library/Fonts"), home / "Library" / "Fonts"]
+    windir = env.get("WINDIR") or env.get("SystemRoot")
+    if windir:
+        roots.append(Path(windir) / "Fonts")
+    if env.get("LOCALAPPDATA"):
+        roots.append(Path(env["LOCALAPPDATA"]) / "Microsoft" / "Windows" / "Fonts")
+    out = []
+    for r in roots:
+        if r not in out:
+            out.append(r)
+    return out
+
+
 @lru_cache(maxsize=1)
 def font_files():
-    """Installed fonts that draw all 24 capitals (lunate sigma may be drawn as Latin C)."""
-    roots = [Path("/usr/share/fonts"), Path("/usr/local/share/fonts"), Path.home() / ".fonts",
-             Path("/System/Library/Fonts"), Path("/Library/Fonts")]
+    """Installed fonts that draw all 24 capitals (lunate sigma may be drawn as Latin C), from font_roots()."""
+    roots = font_roots()
     out = []
     try:
         from PIL import ImageFont

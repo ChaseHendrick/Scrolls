@@ -7,11 +7,14 @@ Standard library only.
 
   python scripts/letters/p1667_fetch.py OUT [--labels-only]
 
+--labels-only fetches the six label sets alone (under 1 MB, no maps): enough for p1667_groups.py and
+eval_p1667.py --source label, the drawings row of docs/letter-reader.md's table "How well it reads".
+
 Then: p1667_groups.py OUT/labels GROUPS, p1667_mapcrops.py GROUPS OUT/maps [--wide|--region], and
 eval_p1667_text.py cut OUT/maps NPY for whole maps on the 38 um grid (see docs/letter-reader.md).
 """
+import argparse
 import re
-import sys
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -105,7 +108,16 @@ def main(out, labels_only=False):
     print("done:", len(jobs), "files in", out, flush=True)
 
 
+def parse_args(argv=None):
+    """OUT and --labels-only; an unknown option or a missing OUT stops with the usage (so a mistyped
+    --labels-only never starts the 1.9 GB download of every map)."""
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("out", help="folder to write maps/ and labels/ into, such as work/p1667")
+    ap.add_argument("--labels-only", action="store_true",
+                    help="only the six label sets, under 1 MB (enough for the drawings row of the guide)")
+    return ap.parse_args(argv)
+
+
 if __name__ == "__main__":
-    if len(sys.argv) < 2 or sys.argv[1].startswith("-"):
-        raise SystemExit(__doc__)
-    main(sys.argv[1], "--labels-only" in sys.argv[2:])
+    a = parse_args()
+    main(a.out, a.labels_only)

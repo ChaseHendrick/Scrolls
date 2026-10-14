@@ -10,23 +10,52 @@ Everything it prints is **Model output**: letter hypotheses for a person to chec
 
 ## Quick start
 
-You need Python 3.10 or newer and numpy; Pillow reads PNG and JPEG and draws overlays; tifffile reads TIFF maps; zarr (optional) reads zarr and OME-Zarr maps and lets a compressed tiled TIFF be read band by band.
+You need Python 3.10 or newer. Make a virtual environment for the reader, install it there, and check it with the offline demo. The install takes a few minutes (git fetches the repository, and pip fetches numpy, Pillow, tifffile and imagecodecs); the demo then downloads the 6 MB of weights once and runs in about ten seconds.
 
-### Install
-
-Install the package into a virtual environment of its own, then check it with the offline demo:
+**macOS and Linux.** Use `python3`: many systems have no `python` command until a virtual environment is active. Debian, Ubuntu, Homebrew's Python and others refuse `pip install` outside a virtual environment (an `externally-managed-environment` error, [PEP 668](https://peps.python.org/pep-0668/)), which is one more reason to make one; on Debian and Ubuntu, `python3 -m venv` may first need `sudo apt install python3-venv`. Once the environment is active, `python` and `pip` are its own.
 
 ```bash
-python -m venv letters-env && . letters-env/bin/activate        # on Windows: letters-env\Scripts\activate
+python3 -m venv .venv
+. .venv/bin/activate
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
-scrolls-letterdemo        # synthetic letters and a noise image; weights downloaded once; prints DEMO PASS
+scrolls-letterdemo
+```
+
+**Windows** (PowerShell or Command Prompt). `py` is the Python launcher that the python.org installer sets up. Calling the environment's own `python.exe` needs no activation (PowerShell's default execution policy often blocks `Activate.ps1`), and the commands are installed beside it in `.venv\Scripts`:
+
+```powershell
+py -m venv .venv
+.venv\Scripts\python.exe -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
+.venv\Scripts\scrolls-letterdemo.exe
+```
+
+**From a clone**, which you need for the scripts in `scripts/letters/` (the public-map demo, the benchmarks, training) and for the commands that read the repository's `docs/` (`releases`, `gate`). A virtual environment in the clone, then an editable install of it, so the commands follow the clone's files:
+
+```bash
+git clone https://github.com/ChaseHendrick/Scrolls
+cd Scrolls
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[reader]"
+python -m kit letterdemo
+```
+
+On Windows: `git clone https://github.com/ChaseHendrick/Scrolls`, `cd Scrolls`, `py -m venv .venv`, `.venv\Scripts\python.exe -m pip install -e ".[reader]"` and `.venv\Scripts\python.exe -m kit letterdemo`. Every `python ...` command below assumes the environment is active (on Windows, read `python` as `.venv\Scripts\python.exe`) and, for `scripts/...`, that it runs from the clone's root.
+
+Then read an image of your own. Here it is an ink map whose letters are 86 px tall, as PHerc. 1667's are on the demo's 38 um grid ([Letter size matters most](#letter-size-matters-most) gives the size for other images):
+
+```bash
 scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
 ```
 
+The code blocks in this guide hold one command per line, and any comment sits on a line of its own, so a block can be pasted into any shell as it is: stock zsh (macOS) has interactive comments off, so it runs a pasted comment line as a command named `#`, which prints `zsh: command not found: #` and does nothing else (`setopt interactivecomments` silences it). A comment after a command on the same line would be passed to the command as arguments. The comment lines hold plain words only, no quotes, brackets or `>`, which zsh would otherwise act on.
+
+### Install
+
+- **The `git+https` form needs git** (Git for Windows on Windows, the Xcode command line tools on macOS). Without git, install from the archive GitHub serves of the same branch: `python -m pip install "scrolls-workbench[reader] @ https://github.com/ChaseHendrick/Scrolls/archive/refs/heads/main.zip"`.
 - **Commands.** `scrolls-letterread` is `python -m kit letterread`, `scrolls-letterlines` is `python -m kit letterlines` and `scrolls-letterdemo` is `python -m kit letterdemo`; `scrolls-workbench` runs every `python -m kit` command. Every `python -m kit ...` in this guide works either way, from any folder.
-- **Extras.** `reader` installs numpy, Pillow, tifffile and imagecodecs. `all` adds zarr (zarr and OME-Zarr maps, and big tiled TIFFs read band by band) and scipy (the map tools); `maps` is the map tools alone. With no extra, the standard-library core installs (`prizes`, `plan`, the run ledger), and the reader stops with a message that asks for numpy.
+- **Extras.** `reader` installs numpy, Pillow, tifffile and imagecodecs. `all` adds zarr (zarr and OME-Zarr maps, and big tiled TIFFs read band by band) and scipy (the map tools); `maps` is the map tools alone. With no extra, only the standard-library core installs (`prizes`, `plan`, the run ledger), and the reader stops with a message that asks for numpy: the reader itself is not standard library only.
 - **Its own environment, apart from AutoPipeline's.** AutoPipeline's released package (`vc-autopipeline`, with its `scrolls-kit` command, on branch `submission/progress-2026-10`) also installs a top-level package named `kit`, its own cut of this one. In one environment the second install overwrites the first one's `kit`, and uninstalling either removes files the other needs. This package is named `scrolls-workbench` and none of its commands is `scrolls-kit`, so the names do not clash; the `kit` package does, so give each its own environment.
-- **From a clone.** `git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls`, then `python -m pip install -e ".[reader]"`, or only `python -m pip install numpy pillow tifffile` and run `python -m kit ...` from the clone's root, as below. The scripts in `scripts/letters/` (the public-map demo, the benchmarks, training) and the commands that read the repository's `docs/` (`releases`, `gate`) run from a clone only.
 
 ### Check the install: the offline demo
 
@@ -48,29 +77,67 @@ Measured on 14 October 2026 (Model output, synthetic images): with `letters-v2-r
 
 CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) builds and installs the package with the `reader` extra on Linux, macOS and Windows, with Python 3.10 and 3.13, runs the reader's tests, and runs the demo from outside the clone with the weights downloaded from the GitHub release; the standard-library job installs it with no extra and checks that the demo stops with exit code 2.
 
-### First reads
+### Networks, proxies and offline machines
 
-From a clone, with the public-map demo:
+What goes over the network, and to where (checked 14 October 2026):
+
+- **Installing.** `pip install ... @ git+https://github.com/...` runs git against `github.com`; the archive form downloads from `github.com`, which redirects to `codeload.github.com`. pip fetches numpy, Pillow, tifffile and imagecodecs, and setuptools to build the package, from `pypi.org` and `files.pythonhosted.org`.
+- **The weights, once.** The address in [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) is on `github.com`, which redirects the download to GitHub's host for release files, `release-assets.githubusercontent.com` when this was checked; GitHub has also served release files from `objects.githubusercontent.com`, so allow both beside `github.com`.
+- **The public-map demo and the benchmark data.** `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`, the open-data bucket, read anonymously over HTTPS.
+- Nothing else. Reading an image, the exports and the offline demo (with the weights in place) make no connection.
+
+**Proxies.** The reader's downloads use Python's `urllib`, which follows the `HTTPS_PROXY` (or `https_proxy`) and `NO_PROXY` environment variables, or when they are not set the system's proxy settings on macOS and Windows; pip and git follow the same variables.
+
+**Certificates.** A network that inspects HTTPS (many company proxies) signs every site with its own certificate authority. Give its PEM file to Python with `SSL_CERT_FILE=/path/to/ca.pem` (the weights download and the bucket), to pip with `--cert /path/to/ca.pem` or `PIP_CERT`, and to git with `GIT_SSL_CAINFO`. On macOS with Python from python.org, a `CERTIFICATE_VERIFY_FAILED` error usually means its certificates were never installed: run `Install Certificates.command` in its folder under Applications. Do not turn certificate checks off.
+
+**Offline machines.** On a machine with network, in the clone with its environment active, build wheels of the package and its dependencies and fetch the weights; then copy the `wheels` folder and the weights file to the offline machine, which must have the same system and Python version (numpy's wheels are built for each):
 
 ```bash
-git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
-python -m pip install numpy pillow tifffile
+python -m pip wheel ".[reader]" -w wheels
+curl -L -o letters-v2-real-step030000.npz https://github.com/ChaseHendrick/Scrolls/releases/download/letters-v2-real/letters-v2-real-step030000.npz
+```
 
-# 1. Try it on a public PHerc. 1667 ink map (downloads a 3.5 MB image and the weights once)
+On the offline machine:
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install --no-index --find-links wheels "scrolls-workbench[reader]"
+export KIT_LETTER_WEIGHTS="$PWD/letters-v2-real-step030000.npz"
+scrolls-letterdemo
+```
+
+On Windows, `$env:KIT_LETTER_WEIGHTS = "C:\path\to\letters-v2-real-step030000.npz"` in PowerShell, or `set KIT_LETTER_WEIGHTS=C:\path\to\letters-v2-real-step030000.npz` in Command Prompt. The file's SHA-256 is checked before it is read, as for a download. Measured on 14 October 2026: these steps on Python 3.13, with the offline machine's proxy pointed at a closed port so no connection could succeed, installed the package and printed DEMO PASS.
+
+### What it reads, and what it does not
+
+- **Images of ink, not CT.** It reads 2D images on which ink shows as letter shapes: an ink-detection map (the output of villa's ink detection, or of any ink model), a drawn ink label, or a photograph or scan of a papyrus (with `--polarity dark` or `auto`, see [Reading a photograph](#reading-a-photograph)). It was never trained or tested on raw CT: a CT layer or a slice of a surface volume shows ink far too faintly for it, so run ink detection first ([pipeline.md](pipeline.md)).
+- **Greek capitals only.** It proposes the 24 Greek capitals, every sigma as the lunate Ϲ, and nothing else: no small letters, accents, punctuation or numerals. Latin text comes out as Greek look-alikes (A as Α, C as Ϲ, P as Ρ) and other letters as their nearest Greek shapes, so its strings there mean nothing.
+- **Prize scrolls.** Before you read a scroll's maps, check whether it is prize-eligible: `python -m kit prizes` (or `scrolls-workbench prizes`) lists the open prizes and their eligible scrolls from a dated snapshot, and [scrollprize.org/prizes](https://scrollprize.org/prizes) wins where they differ. A read of a prize-eligible scroll is a possible finding, and the prize terms forbid disclosing one before the official announcement: keep it private ([Rules for using it on scrolls](#rules-for-using-it-on-scrolls)).
+
+### First reads
+
+From a clone, in its environment ([Install](#install)). First the public-map demo, which downloads a 3.5 MB image of a PHerc. 1667 ink map and the weights once, keeps the image as `work/letters/demo/w013-ds8.jpg` with its bucket address in `w013-ds8.json`, and writes `w013.json` and `w013-overlay.png` beside a text summary on screen:
+
+```bash
 python scripts/letters/demo_p1667.py --segment w013 --out work/letters/demo
-#    -> work/letters/demo/w013.json, w013-overlay.png and a text summary on screen
+```
 
-# 2. Read your own image (ink bright, as in ink-detection maps; for a photograph see "Reading a photograph")
+The demo reads the map's small JPEG from the bucket averaged 2 by 2 to the 38 um grid. Measured on 14 October 2026 (Model output): on w013 it keeps 122 letters against nulls of 43, 33, 27 and 28, status `weak`, the same counts as the full map averaged 16 by 16 under [Where the letters are](#where-the-letters-are).
+
+Then your own images. The first command is an ink map, ink brighter than its ground; the second a photograph, dark ink on a light ground ([Reading a photograph](#reading-a-photograph)); the third gives the letter size in millimetres and writes the whole result as JSON to a file (`--json` would print it in place of the summary); the fourth reads the reverse-depth map of the same surface as a control ([The control map](#the-control-map)); the fifth writes the letters as a table and as PAGE XML for eScriptorium ([Exports](#exports-csv-and-page-xml)):
+
+```bash
 python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
 python -m kit letterread PHOTO.jpg --weights letters-v2-real --letter-px 28 --polarity auto --overlay PHOTO-letters.png
-python -m kit letterread MAP.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 38.4 --json --out MAP-letters.json
-#    with the reverse-depth map of the same surface as a control (see "The status, and what to do")
+python -m kit letterread MAP.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 38.4 --out MAP-letters.json
 python -m kit letterread MAP.tif --weights letters-v2-real --letter-px 86 --control MAP_reverse.tif
-#    the letters as a table and as PAGE XML for eScriptorium (see "Exports: CSV and PAGE XML")
 python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --csv MAP-letters.csv --page-xml MAP-letters.xml
+```
 
-# 3. A whole native 2.4 um villa map as downloaded, here with PHerc. 1667's letter height
-#    (block-averaged while it loads; see "Big maps" below)
+And a whole native 2.4 um villa map as downloaded, with PHerc. 1667's letter height; it is block-averaged while it loads ([Big maps](#big-maps)):
+
+```bash
 python -m kit letterread MAP-2.4um.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 2.399 --overlay MAP-letters.png
 ```
 
@@ -86,7 +153,22 @@ python -m kit letterread MAP-2.4um.tif --weights letters-v2-real --letter-mm 3.3
 
 ### Letter size matters most
 
-The network reads letters about 16 pixels tall; the reader rescales your image to that. Give the letter height when you know it, either in image pixels with `--letter-px`, or in millimetres with `--letter-mm` together with the pixel size in micrometres, `--um-per-px` (letter_px = letter_mm * 1000 / um_per_px; the reader prints the value it used). PHerc. 1667's letters are about 3.3 mm tall: `--letter-mm 3.3 --um-per-px 2.399` on its native 2.4 um maps (1375.6 px), or `--letter-px 86` on those maps averaged 16 by 16 to about 38 um per pixel. A given size is checked against the line spacing: when the two differ by more than a factor of two, the result carries `letter_px_check.warning` and the summary prints it (the spacing estimate itself can be a factor of two off, when it takes two lines for one).
+The network reads letters about 16 pixels tall; the reader rescales your image to that. Give the letter height when you know it, either in image pixels with `--letter-px`, or in millimetres with `--letter-mm` together with the pixel size in micrometres, `--um-per-px`; the reader works out
+
+letter_px = letter_mm * 1000 / um_per_px
+
+and prints the value it used. PHerc. 1667's letters are about 3.3 mm tall (86 px, the median over its six labelled segments, on a grid of 16 * 2.399 = 38.384 um per pixel). The same 3.3 mm letter on the images you are likely to meet:
+
+| Image | um per pixel | Letter px | Give |
+| --- | --- | --- | --- |
+| A native 2.4 um ink map, as villa writes it for PHerc. 1667 | 2.399 | 1376 | `--letter-mm 3.3 --um-per-px 2.399` (block-averaged while it loads; see [Big maps](#big-maps)) |
+| A map at 7.91 um, the voxel size of PHerc. 172's public scan ([scan status](scan-status.md)) | 7.91 | 417 | `--letter-mm 3.3 --um-per-px 7.91` |
+| The bucket's small JPEG of a 2.4 um map (`...-ds8.jpg`, 8 times smaller each way) | 19.192 | 172 | `--letter-px 172` |
+| The demo's 38 um grid: a 2.4 um map averaged 16 by 16, or that JPEG averaged 2 by 2 | 38.384 | 86 | `--letter-px 86` |
+
+The table is arithmetic for a 3.3 mm letter; other hands differ, so on another scroll measure a letter on your own image (on screen, or from a drawn label) and give that. Checked on 14 October 2026 (Model output) on PHerc. 1667 w013: the bucket's JPEG at `--letter-px 172` and the map averaged 16 by 16 at `--letter-px 86` keep the same 122 letters against nulls of 43, 33, 27 and 28, and the whole 2.4 um map at 1376 px keeps 120 against 29, 22, 28 and 31 ([Big maps](#big-maps)). No PHerc. 172 map was read for the 7.91 um row.
+
+A given size is checked against the line spacing: when the two differ by more than a factor of two, the result carries `letter_px_check.warning` and the summary prints it (the spacing estimate itself can be a factor of two off, when it takes two lines for one).
 
 Without a size, the reader estimates one from the line spacing and searches six scales against its own nulls; the summary prints that search as a table, with the kept scale marked `*`. The search is the weakest step on maps it has not seen (see the limits below). When the image shows no regular line spacing at all, the command stops and asks for `--letter-px` or `--letter-mm` with `--um-per-px` (or a `--crop` that holds several lines); it no longer guesses a quarter of the image height. Python's `analyze()` and `read()` keep that guess for the benchmark scripts, which call them directly, unless given `letter_px_fallback=False`.
 
@@ -190,7 +272,7 @@ The orientation counts of such a read are in the polarity the hint advises again
 
 **Overlay, EXIF and letter size.** The overlay draws the image as given, a colour photograph in colour with its ink dark, turned by its EXIF orientation as it loads (see [EXIF orientation](#tilted-turned-and-mirrored-text)). A whole photograph of a fragment on a plain ground has no regular line spacing for the size estimate (neither photograph below has one, in either polarity), so the command stops and asks for the size: measure a letter on screen and give `--letter-px`, or `--crop` the written area (on P.Oxy. 551, a crop of its written rows gave an estimate of 23.3 px against about 22 px measured by eye). A dark-ink read fills the rows the deskew shears in with the image's median grey, its ground; filled with 0, as before, the sheared-in corners are darker than the ground and pull the deskew to its limit (below).
 
-**Synthetic pages** (Model output, 14 October 2026; `python scripts/letters/eval_photos.py --weights W.npz`, 9 minutes on 2 CPU threads). Twelve photograph-like pages from `letterdata.py` (dark ink on a light papyrus ground, 8-bit grey, 4 to 7 lines of letters 18 to 30 px tall, each page turned 2 to 5 degrees), read at the true letter height with four nulls:
+**Synthetic pages** (Model output, 14 October 2026; `python scripts/letters/eval_photos.py --weights letters-v2-real`, 9 minutes on 2 CPU threads). Twelve photograph-like pages from `letterdata.py` (dark ink on a light papyrus ground, 8-bit grey, 4 to 7 lines of letters 18 to 30 px tall, each page turned 2 to 5 degrees), read at the true letter height with four nulls:
 
 | Read | Status | Character error | Deskew within 1 degree | Deskew at its limit |
 | --- | --- | --- | --- | --- |
@@ -214,10 +296,10 @@ The orientation reads in dark ink kept the most as the photographs are stored: 3
 
 ### Optional language model
 
-The network was trained on random letter strings, so it knows letter shapes and no Greek. A Kneser-Ney letter 5-gram model can be added as a second decode, always shown beside the ink-only string and never replacing it:
+The network was trained on random letter strings, so it knows letter shapes and no Greek. A Kneser-Ney letter 5-gram model can be added as a second decode, always shown beside the ink-only string and never replacing it. The commands build it from Diogenes Laertius and Plato's Republic in the Perseus Digital Library's Greek texts (CC BY-SA 4.0), as in the log, and read with it:
 
 ```bash
-git clone --depth 1 https://github.com/PerseusDL/canonical-greekLit work/perseus     # CC BY-SA 4.0
+git clone --depth 1 https://github.com/PerseusDL/canonical-greekLit work/perseus
 python -m kit greeklm build work/letters/greek5.npz \
     work/perseus/data/tlg0004/tlg001/tlg0004.tlg001.perseus-grc2.xml \
     work/perseus/data/tlg0059/tlg030/tlg0059.tlg030.perseus-grc2.xml
@@ -294,7 +376,7 @@ Check that it can fail (Model output, 14 October 2026, the same w013 map): with 
 
 **`weak` is not a pass** (Model output, 14 October 2026). On 24 synthetic pages with no letters (`eval_pages.py`'s blank pages, 12 papyrus-like texture and 12 clutter, seeds 21 and 22), each read twice with four nulls, once with the size searched and once with the true 24 px given, 47 of the 48 reads are `none`; one texture page read at a searched size kept 134 letters against a largest null of 126 (ratio 1.06), which is `weak`. A page with no text at all can be `weak`, which is why the advice for `weak` starts with the letter size.
 
-The numbers are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026), and both checks rerun with `python scripts/letters/eval_controls.py windows MAP.tif --weights W.npz` (on the w013 map averaged 16 by 16; defaults: 86 px, 520 by 1000 px windows, three shuffled copies) and `python scripts/letters/eval_controls.py blanks --weights W.npz`.
+The numbers are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026), and both checks rerun with `python scripts/letters/eval_controls.py windows MAP.tif --weights letters-v2-real` (on the w013 map averaged 16 by 16; defaults: 86 px, 520 by 1000 px windows, three shuffled copies) and `python scripts/letters/eval_controls.py blanks --weights letters-v2-real`.
 
 ### The result, field by field
 
@@ -397,16 +479,16 @@ The exports carry machine letter annotations, like the overlay: keep them out of
 
 ## How well it reads
 
-All numbers are Model output on public data, measured on CPU with the numpy reader, except the real-letter validation row, which is the trainer's own check on the B200. Character error is edit distance over reference letters; 0.10 means about one edit per ten letters. "Free ends" does not charge letters read before or after the reference, because a map window also shows unlabelled neighbours. Each PHerc. 1667 test's rule was fixed in writing on 9 October 2026 before the readers it compares were run on it; the PHerc. 172 row is a diagnostic, because its column rule was set after that test half had been seen (conditions in the [log](logs/2026-10-14-letter-reader.md)). "Synthetic-only" is letters-v1: the same network, data size and training, with no real letters in its training lines.
+All numbers are Model output on public data, measured on CPU with the numpy reader, except the real-letter validation row (row 6), which is the trainer's own check on the B200. [Reproduce the benchmarks](#reproduce-the-benchmarks) gives the command for each row, and each benchmark script prints the row its settings reproduce before its numbers. Character error is edit distance over reference letters; 0.10 means about one edit per ten letters. "Free ends" does not charge letters read before or after the reference, because a map window also shows unlabelled neighbours. Each PHerc. 1667 test's rule was fixed in writing on 9 October 2026 before the readers it compares were run on it; the PHerc. 172 row is a diagnostic, because its column rule was set after that test half had been seen (conditions in the [log](logs/2026-10-14-letter-reader.md)). "Synthetic-only" is letters-v1: the same network, data size and training, with no real letters in its training lines.
 
-| Test (letters-v2-real, step 30000) | Reference | Letters | Character error | Comparison |
-| --- | --- | --- | --- | --- |
-| PHerc. 1667 official ink labels (drawings), line given | 3 blind machine transcriptions, unanimous groups only | 122 | **0.025** ink only | synthetic-only reader 0.320, prototype 0.402 |
-| Same 87 groups read from the 2.4 um ink maps, line given | same | 122 | **0.369** free ends | synthetic-only 0.705 |
-| Maps, windows about three lines tall, reader finds the line | same | 122 | 0.402 free ends (0.393 with nothing given) | synthetic-only 0.746 |
-| Maps, each segment's whole labelled region read once, nothing given | same | 122 | **0.336** free ends; 52 of 87 groups fully right | synthetic-only 0.590 |
-| PHerc. 172 hand-drawn labels (Bodillium), test half, columns found | the labeller's preliminary transcription | 122 | 0.426 ink only (diagnostic) | prototype 0.625, synthetic-only 0.739 |
-| Real-letter validation lines from 21 papyri it never saw (Hell-Char) | the crops' letter labels | first 600 of 2,000 lines | 0.444 | CPU real-letterform reader about 0.52 |
+| Row | Test (letters-v2-real, step 30000) | Reference | Letters | Character error | Comparison |
+| --- | --- | --- | --- | --- | --- |
+| 1 | PHerc. 1667 official ink labels (drawings), line given | 3 blind machine transcriptions, unanimous groups only | 122 | **0.025** ink only | synthetic-only reader 0.320, prototype 0.402 |
+| 2 | Same 87 groups read from the 2.4 um ink maps, line given | same | 122 | **0.369** free ends | synthetic-only 0.705 |
+| 3 | Maps, windows about three lines tall, reader finds the line | same | 122 | 0.402 free ends (0.393 with nothing given) | synthetic-only 0.746 |
+| 4 | Maps, each segment's whole labelled region read once, nothing given | same | 122 | **0.336** free ends; 52 of 87 groups fully right | synthetic-only 0.590 |
+| 5 | PHerc. 172 hand-drawn labels (Bodillium), test half, columns found | the labeller's preliminary transcription | 122 | 0.426 ink only (diagnostic) | prototype 0.625, synthetic-only 0.739 |
+| 6 | Real-letter validation lines from 21 papyri it never saw (Hell-Char) | the crops' letter labels | first 600 of 2,000 lines | 0.444 | CPU real-letterform reader about 0.52 |
 
 What this supports (Interpretation): with the line and letter height given, naming clean drawn Greek capitals is close to solved for this reader (3 errors in 122 letters). On real ink maps it finds about two of every three letters in order. Maps cost it about 0.33 of error against the drawings; which letters the maps lose, and how much of that gap is the reader rather than the map, has not been measured.
 
@@ -432,60 +514,115 @@ What it does not support:
 
 ## Reproduce the benchmarks
 
+From a clone, in its environment ([Install](#install)). The `all` extra adds what the data steps need (zarr and scipy); the PHerc. 172 check and the published text also need `pdftotext`, from poppler (`brew install poppler` on macOS, `sudo apt install poppler-utils` on Debian and Ubuntu).
+
 ```bash
-python -m pip install numpy scipy pillow tifffile zarr imagecodecs  # pdftotext (poppler) for the published text
-python scripts/letters/p1667_fetch.py work/p1667                     # 19 maps (about 1.9 GB) and 6 label sets
-python scripts/letters/p1667_groups.py work/p1667/labels work/p1667/groups      # 91 letter groups, model-free
-cd scripts/letters
-python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps            # windows for --source map
-python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps --wide     # taller windows, --source map-wide
-python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps --region   # whole regions, --source map-region
-cd ../..
-# references: transcribe work/p1667/groups/png/*.png (three independent transcribers, '?' when unsure) into
-# refs.json as {"agreed": {"w013-g000": "...", ...}} with only the groups all three agree on
-python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source label --out label.json
-python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source map --out map.json
-python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source map-wide --out wide.json
-python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source map-region --out region.json
-python scripts/letters/eval_p1667.py compare A.json B.json --metric free_ends       # paired bootstrap over groups
+python -m pip install -e ".[all]"
+python scripts/letters/p1667_fetch.py work/p1667
+python scripts/letters/p1667_groups.py work/p1667/labels work/p1667/groups
+python scripts/letters/p1667_mapcrops.py work/p1667/groups work/p1667/maps
+python scripts/letters/p1667_mapcrops.py work/p1667/groups work/p1667/maps --wide
+python scripts/letters/p1667_mapcrops.py work/p1667/groups work/p1667/maps --region
 ```
 
-`eval_p1667.py read` needs a weights file path (resolve a released name with `python -c "from kit import letterread as R; print(R.resolve_weights('letters-v2-real'))"`). Its output, `eval_p1667_text.py read`'s and `p1667_align.py read`'s record `--weights` as given, because their formats are those of the tests fixed on 9 October 2026 (and `p1667_align.py`'s digest covers the field), so give them a path inside the repository such as `work/letters/W.npz`, not one under your home folder. `eval_controls.py`, `eval_pages.py`, `eval_photos.py` and `eval_p172.py` take a released name too, and record the weights' file name and SHA-256 (`weights`, `weights_sha256`). The published text (arXiv 2606.29085, columns 5 to 22) parses with `python scripts/letters/p1667_text.py PAPER.pdf text.json` (177 lines, 1752 visible letters; output SHA-256 `f936e457eb047f27014e642f50b750b6ee48c825b9eb372fda324449eec0887c` for the v1 PDF). Whole maps cut to the 38 um grid with `eval_p1667_text.py cut`, and `p1667_align.py read/align/crops` places published lines on them (decoy-tested), which `finetune_maps.py` uses to fine-tune on real map lines.
+- `p1667_fetch.py` downloads the 19 PHerc. 1667 maps at 2.4 um (about 1.9 GB) and the six labelled segments' official ink labels from the open-data bucket; it resumes and keeps no cut-off file. With `--labels-only` it fetches the label sets alone (under 1 MB), which is all row 1 needs: skip the three `p1667_mapcrops.py` lines then.
+- `p1667_groups.py` cuts the labels into 91 letter groups by a rule that never looks at a reader, and writes a PNG of each group for transcription (`work/p1667/groups/png/`).
+- `p1667_mapcrops.py` cuts the same places from the maps: windows for `--source map`, with `--wide` taller windows for `--source map-wide`, and with `--region` each segment's whole labelled region for `--source map-region`.
 
-The PHerc. 172 check reads [Bodillium/Herculaneum-Scroll-Labels](https://github.com/Bodillium/Herculaneum-Scroll-Labels) (CC BY-NC-SA 4.0; nothing from it is copied here):
+**References.** The tests score against transcriptions of the group images, which are not in this repository. Write your own: have three people (or three separate passes) transcribe every PNG in `work/p1667/groups/png/` without seeing any read, writing `?` for a letter they are unsure of, and keep the groups all three agree on in `work/p1667/refs.json` as `{"agreed": {"w013-g000": "ΚΑΙ", ...}}`. Write the reader's alphabet only: the 24 Greek capitals `ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ`, with the lunate `Ϲ` for every sigma. `eval_p1667.py` refuses a scored group that holds anything else, such as a Latin `A`, `C` or `P` typed for the Greek letter it looks like, a `Σ` or a final `ς`, and prints the character's name, what to write instead and the alphabet. Groups with a `?` are not scored. The log's references were three blind machine transcriptions (87 groups, 122 letters), so your numbers will differ somewhat from the table.
+
+The reads, one per row of [How well it reads](#how-well-it-reads):
+
+```bash
+# Row 1, drawings, line given
+python scripts/letters/eval_p1667.py read work/p1667/groups work/p1667/refs.json --weights letters-v2-real --source label --out work/letters/row1-label.json
+# Row 2, the same groups from the maps, line given
+python scripts/letters/eval_p1667.py read work/p1667/groups work/p1667/refs.json --weights letters-v2-real --source map --out work/letters/row2-map.json
+# Row 3, map windows about three lines tall, the reader finds the line
+python scripts/letters/eval_p1667.py read work/p1667/groups work/p1667/refs.json --weights letters-v2-real --source map-wide --out work/letters/row3-wide.json
+# Row 3, its second value, the same windows with nothing given
+python scripts/letters/eval_p1667.py read work/p1667/groups work/p1667/refs.json --weights letters-v2-real --source map-wide --letter-px auto --out work/letters/row3-wide-auto.json
+# Row 4, each segment whole labelled region read once, nothing given
+python scripts/letters/eval_p1667.py read work/p1667/groups work/p1667/refs.json --weights letters-v2-real --source map-region --letter-px auto --out work/letters/row4-region.json
+```
+
+Each read first prints the row its settings reproduce, then the table's measure (the plain character error for the drawings, the free-ends error for the maps) with the other measure, the error against references permuted across groups (the chance floor) and the letters kept against the nulls, and last the summary JSON on one line. `--letter-px auto` is the scale search; without it the segment's measured letter height is given (`--source label` and `map` always give it). `--source map-region` without `--letter-px auto` reads the whole regions with the letter height given, a condition reported in the [log](logs/2026-10-14-letter-reader.md) (0.328), not in the table. `--lm work/letters/greek5.npz` adds the language-model decode as `with_lm` ([Optional language model](#optional-language-model)), except for `map-region`.
+
+To compare two readers on the same groups, read with each and give both results to `compare`, which resamples groups (paired bootstrap) and prints the difference of the second minus the first with a 95% interval; `--metric free_ends` is the maps' measure, `plain` (the default) the drawings':
+
+```bash
+python scripts/letters/eval_p1667.py compare work/letters/row2-map.json work/letters/row2-map-mine.json --metric free_ends
+```
+
+**Row 5**, the PHerc. 172 drawings, reads [Bodillium/Herculaneum-Scroll-Labels](https://github.com/Bodillium/Herculaneum-Scroll-Labels) (CC BY-NC-SA 4.0; nothing from it is copied here) and needs `pdftotext` for its transcription. It prints the row and the character error over the lines matched to the transcription first, one line per segment, and the summary JSON last; `--split dev` is the half for choosing checkpoints, never for reporting, and `compare_p172.py A.json B.json` compares two `--out` results line by line:
 
 ```bash
 git clone --depth 1 https://github.com/Bodillium/Herculaneum-Scroll-Labels work/bodillium
-python scripts/letters/eval_p172.py work/bodillium --weights W.npz --split test --columns auto   # needs pdftotext (poppler)
+python scripts/letters/eval_p172.py work/bodillium --weights letters-v2-real --split test --columns auto --out work/letters/row5-p172.json
 ```
+
+**Row 6** is the trainer's own check, `real_val_cer` in `train.json` and `EVAL ... real-letter val CER` on screen, from the letters-v2-real recipe under [Train your own](#train-your-own).
+
+**Weights.** Every benchmark script takes `--weights letters-v2-real` (downloaded once and checked, as for the reader) or a path to a `linenet-v1` `.npz`. `eval_p1667.py`, `eval_p1667_text.py read` and `p1667_align.py read` record `--weights` as given, because their formats are those of the tests fixed on 9 October 2026 (and `p1667_align.py`'s digest covers the field): give a released name, or a path inside the repository such as `work/letters/W.npz`, so no folder of your own ends up in the record. `eval_controls.py`, `eval_pages.py`, `eval_photos.py` and `eval_p172.py` record the weights' file name and SHA-256 (`weights`, `weights_sha256`).
+
+**The published text and whole maps.** The published text (arXiv 2606.29085, columns 5 to 22) parses with `python scripts/letters/p1667_text.py PAPER.pdf work/p1667/text.json` (177 lines, 1752 visible letters; output SHA-256 `f936e457eb047f27014e642f50b750b6ee48c825b9eb372fda324449eec0887c` for the v1 PDF). Whole maps cut to the 38 um grid with `eval_p1667_text.py cut`, and `p1667_align.py read/align/crops` places published lines on them (decoy-tested), which `finetune_maps.py` uses to fine-tune on real map lines. `eval_p1667_text.py decoys` and `p1667_align.py align` refuse a reference line that holds a character outside the reader's alphabet (`?` aside), as `finetune_maps.py train` refuses such a line in its training lines.
 
 ## Train your own
 
+Training needs a clone ([Install](#install)) and torch; reading never does. Each training line is drawn by [`letterdata.py`](../scripts/letters/letterdata.py) as uniform random Greek capitals, so the network learns letter shapes and no Greek; letters come from a broad-nib bookhand skeleton drawn in numpy, from installed fonts, and, with a glyph bank, from crops of real papyrus letters. Install torch first:
+
+- **Linux, no GPU:** `python -m pip install torch --index-url https://download.pytorch.org/whl/cpu`, the CPU build (the default build from PyPI also carries CUDA libraries of several GB).
+- **Linux with an NVIDIA GPU, macOS and Windows:** `python -m pip install torch`. On macOS and Windows, train on the CPU (`--device cpu`, the default): the trainer was run with `cpu` and with `cuda` on Linux only, and Apple's GPU was not tried.
+
+**A CPU run.** This is the size of the "Real letterforms, CPU" reader in the [log](logs/2026-10-14-letter-reader.md): the trainer's defaults (593,849 parameters, 4,000 steps at batch 48), on 36,000 synthetic lines and 24,000 lines whose letters all come from a bank of the 12,761 Hell-Char letter crops (CC BY 4.0), with checkpoints chosen on the PHerc. 172 dev half. That reader took 25 minutes of training on 4 CPU threads and reads the PHerc. 1667 drawings nearly as well as the released model (0.033) and the maps as well (0.344 free ends). Its seeds were not recorded, so these commands make a reader of that size and recipe, not that reader:
+
 ```bash
-python -m pip install torch numpy pillow
-# real letterforms: a glyph bank from Hell-Char and ICDAR 2023, as in letters-v2-real (about 43,806 glyphs);
-# leave out --icdar for a Hell-Char-only bank (CC BY 4.0 data), which is not the released model's data
+python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+python -m pip install -e ".[reader]"
 git clone https://github.com/ipavlopoulos/diachronic-greek-letterforms work/hellchar
 git -C work/hellchar checkout aeef8466be674403e2dd9b0fc708b95fe7475a00
-curl -sSfL -o work/icdar.zip "https://zenodo.org/records/13825619/files/ICDAR2023_Competition_on_Detection_and_Recognition_of_Greek_Letters_on_Papyri_Dataset.zip?download=1"   # CC BY-NC 4.0, MD5 115645f6864bb922d60309687fcfaa56
+python scripts/letters/realforms.py build work/letters/bank-hc.npz --hellchar work/hellchar/data/hellchar
+python scripts/letters/gen_dataset.py work/letters/data/cpu --n 36000 --seed 11 --procs 4
+python scripts/letters/gen_dataset.py work/letters/data/cpu --n 24000 --seed 12 --bank work/letters/bank-hc.npz --p-bank 1.0 --prefix real --procs 4
+python scripts/letters/gen_dataset.py work/letters/data/val --n 4000 --seed 9001 --procs 4
+python scripts/letters/gen_dataset.py work/letters/data/val-real-hc --n 2000 --seed 9002 --bank work/letters/bank-hc.npz --bank-split val --p-bank 1.0 --prefix real --procs 4
+python scripts/letters/train_linenet.py work/letters/data/cpu work/letters/model-cpu --val work/letters/data/val --val-real work/letters/data/val-real-hc --threads 4 --workers 0 --keep
+```
+
+`train_linenet.py` reads every `.npz` in its data folder, so the two kinds of lines share `work/letters/data/cpu` under their own file name prefixes. The validation lines with `--bank-split val` use only the 21 papyri the bank holds out of training. `--keep` keeps a checkpoint at every evaluation (every 500 steps here) in `work/letters/model-cpu/ckpt/`; choose among them as below, and `work/letters/model-cpu/linenet.npz` is the last step. Read with any of them as `--weights work/letters/model-cpu/ckpt/linenet-step003000.npz`.
+
+**Data generation, time and disk** (measured 14 October 2026 on a 4-core cloud container with 2 processes, on a sample of 2,000 lines of each kind, and extrapolated): a process writes 1,000 synthetic lines in about 137 s, and 1,000 lines drawn from the Hell-Char bank in about 70 s; 1,000 lines take about 10 MB on disk (9 MB for bank lines). So 100,000 lines take about 3.8 process-hours and 1.0 GB when synthetic, about 1.9 process-hours and 0.9 GB from the bank: divide the time by `--procs` (the default is every core) when that many cores are free. The CPU run above is about 30 minutes of data with 4 processes and 0.65 GB, the bank 9.5 MB built in 23 s. The letters-v2-real recipe's 600,000 lines, half of them from the bank, extrapolate to about 17 process-hours and 5.7 GB; that run's bank also holds the ICDAR crops, which were not timed here.
+
+**macOS and Windows.** Keep `--workers 0`, the default, which assembles batches in the training process. With workers, PyTorch on macOS and Windows starts each worker as a new process and sends it a copy of every training line, once per pass over the data. The recipe's `--workers 6` was run on Linux only, and so was all of this section. `gen_dataset.py --procs` uses a process pool and should work on any system, but was likewise run on Linux only.
+
+**Fonts.** About a third of the lines not drawn from a bank use a font that has the Greek capitals, when one is installed; without one every such line uses the skeleton hand. `letterdata.py` looks in the folders listed in `LETTER_FONT_DIRS` (separated by `:` on Linux and macOS, `;` on Windows), then in the system and user font folders of Linux (`/usr/share/fonts`, `/usr/local/share/fonts`, `~/.fonts`, `~/.local/share/fonts`), macOS (`/System/Library/Fonts`, `/Library/Fonts`, `~/Library/Fonts`) and Windows (`%WINDIR%\Fonts`, `%LOCALAPPDATA%\Microsoft\Windows\Fonts`), and keeps fonts that draw the Greek capitals, leaving out monospaced ones. `python -c "import sys; sys.path.insert(0, 'scripts/letters'); import letterdata; print(len(letterdata.font_files()))"` counts the fonts found (64 on the container above). Machines with different fonts draw different lines from the same seed, so a run is repeatable on one machine, not across machines.
+
+**The letters-v2-real recipe** (one GPU). The glyph bank adds the ICDAR 2023 crops (CC BY-NC 4.0; the zip's MD5 is `115645f6864bb922d60309687fcfaa56`) to Hell-Char, about 43,806 letters; `--icdar-optional` skips the two truncated ICDAR photographs, as the release bank did. Leave out `--icdar` and `--icdar-optional` for a Hell-Char-only bank, which is not the released model's data and leaves out the ICDAR crops' non-commercial licence. Training took about 8 minutes on one B200, and `--keep` keeps 15 checkpoints, steps 2,000 to 30,000:
+
+```bash
+python -m pip install torch
+python -m pip install -e ".[reader]"
+git clone https://github.com/ipavlopoulos/diachronic-greek-letterforms work/hellchar
+git -C work/hellchar checkout aeef8466be674403e2dd9b0fc708b95fe7475a00
+curl -sSfL -o work/icdar.zip "https://zenodo.org/records/13825619/files/ICDAR2023_Competition_on_Detection_and_Recognition_of_Greek_Letters_on_Papyri_Dataset.zip?download=1"
 python -c "import zipfile; zipfile.ZipFile('work/icdar.zip').extractall('work/icdar')"
-# --icdar-optional skips the two truncated ICDAR photographs, as the release bank did
 python scripts/letters/realforms.py build work/letters/bank.npz --hellchar work/hellchar/data/hellchar --icdar work/icdar --icdar-optional
 python scripts/letters/realforms.py preview work/letters/bank.npz work/letters/bank-preview.png
-# lines: half from the bank; val-real lines use only papyri held out of training
 python scripts/letters/gen_dataset.py work/letters/data/train --n 600000 --seed 11 --bank work/letters/bank.npz --p-bank 0.5 --prefix real
 python scripts/letters/gen_dataset.py work/letters/data/val --n 4000 --seed 9001
 python scripts/letters/gen_dataset.py work/letters/data/val-real --n 2000 --seed 9002 --bank work/letters/bank.npz --bank-split val --p-bank 1.0 --prefix real
-# the letters-v2-real recipe (one GPU; about 8 minutes of training on a B200)
 python scripts/letters/train_linenet.py work/letters/data/train work/letters/model --val work/letters/data/val \
     --val-real work/letters/data/val-real --steps 30000 --batch 128 --channels 48,96,160,192,256 --dilations 1,2,4 \
-    --device cuda --amp --workers 6 --threads 2 --eval-every 2000 --keep    # keeps 15 checkpoints, steps 2,000 to 30,000
-# choose a checkpoint on the PHerc. 172 dev half, never on the data you report
-# (needs the Bodillium clone from the PHerc. 172 check above and pdftotext)
+    --device cuda --amp --workers 6 --threads 2 --eval-every 2000 --keep
+```
+
+**Choosing a checkpoint.** Choose on the PHerc. 172 dev half, never on the data you report. This needs the Bodillium clone and `pdftotext` from [Reproduce the benchmarks](#reproduce-the-benchmarks) (row 5), and prints each checkpoint's summary JSON, whose `ink_only` `cer_matched_lines` is the dev error (columns off, as the release's choice was made). For the CPU run, read `work/letters/model-cpu/ckpt` in place of `work/letters/model/ckpt`:
+
+```bash
 for w in work/letters/model/ckpt/*.npz; do echo "$w $(python scripts/letters/eval_p172.py work/bodillium --weights $w --split dev | tail -1)"; done
 ```
 
-A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 48, on 36,000 synthetic lines plus 24,000 drawn only from the Hell-Char bank) takes about half an hour on 4 cores and reads the PHerc. 1667 drawings nearly as well (0.033) and the maps as well (0.344 free ends). `finetune_maps.py train` starts from any exported checkpoint, released weights included; [Fine-tune on your own lines](#fine-tune-on-your-own-lines) gives the whole chain for lines you transcribe yourself.
+Then report the chosen checkpoint once on the test half (row 5) and on the PHerc. 1667 rows. `finetune_maps.py train` starts from any exported checkpoint, released weights included; [Fine-tune on your own lines](#fine-tune-on-your-own-lines) gives the whole chain for lines you transcribe yourself. Weights trained on the ICDAR crops inherit their CC BY-NC 4.0 licence.
 
 ## Fine-tune on your own lines
 
@@ -526,18 +663,19 @@ PHOTO.jpg,ΚΑΙΤΟΥΤΟΝΤΟΝΤΡΟΠΟΝ,412,28,120,905,dark,train
 
 Each line is cut as the reader sees it: the image loaded as the reader loads it (block-averaged while loading when over the pixel budget), normalised once, scaled so the letters are the network's 16 px, and the 36-row band the reader reads on a line given as `--lines Y` with `--deskew 0` (from 1.1 letter heights above the centre to 1.15 below), from `x0` to `x1`. A test checks that the band is exactly the reader's. The band is level, so for a tilted line give `x0` and `x1` close to its letters, or a crop around it.
 
-**2. The chain**, with the released model as the start (about 80 minutes on 4 CPU cores, below):
+**2. The chain**, from a clone with the reader installed ([Install](#install)) and the released model as the start (about 80 minutes on 4 CPU cores, below):
 
 ```bash
-python -m pip install numpy pillow tifffile torch
-# check every record and print what would be cut: every problem at once; no image is decoded and nothing written
+python -m pip install torch
+# check every record and list every problem at once, decoding no image and writing nothing
 python -m kit letterlines build my-lines.json --dry-run
-# cut the lines to train on, with a picture of them to check by eye, and the lines set apart to test on
+# cut the lines to train on, with a picture of them to check by eye
 python -m kit letterlines build my-lines.json --split train --out work/letters/mine-train.npz --preview work/letters/mine-train.png
+# cut the lines set apart to test on
 python -m kit letterlines build my-lines.json --split test --out work/letters/mine-test.npz
-# synthetic lines that fill half of every batch, so the model keeps what it knew (12 files of 1,000 lines)
+# synthetic lines for half of every batch, so the model keeps what it knew, 12 files of 1,000 lines
 python scripts/letters/gen_dataset.py work/letters/data/mix --n 12000 --seed 11
-# fine-tune: 1,500 steps, batch 24, half your lines and half synthetic, a fixed schedule, the last step kept
+# fine-tune for 1,500 steps at batch 24 on a fixed schedule, keeping the last step
 python scripts/letters/finetune_maps.py train work/letters/mine-train.npz work/letters/data/mix \
     --weights letters-v2-real --out work/letters/mine --steps 1500 --threads 4
 # judge it on the lines set apart, against the model it started from
@@ -545,6 +683,8 @@ python -m kit letterlines score work/letters/mine-test.npz --weights letters-v2-
 # read with it as with any weights file
 python -m kit letterread PHOTO.jpg --weights work/letters/mine/linenet.npz --letter-px 28 --polarity dark
 ```
+
+On Linux without a GPU, install torch as under [Train your own](#train-your-own) (`--index-url https://download.pytorch.org/whl/cpu`). `finetune_maps.py train` refuses a line whose text holds a character outside the reader's alphabet (`?` aside) before it loads torch; `letterlines build` has already cleaned and checked your texts, so this stops only lines made some other way.
 
 `build` stops before cutting anything when a record has a problem, and lists them all: a missing field, a number that is not one, an image that does not exist, a row outside the image, a character the reader does not write, a band too narrow for its letters (the network gives one output per 4 px, and a line needs one per letter plus one between doubled letters). It warns, and still cuts, when the letters would be much narrower or wider than the network's (usually a wrong `letter_px`, or no `x0` and `x1` on a short line), when the band reaches beyond the image (those rows are cut as 0, as the reader reads them) and when two records sit under half a letter apart on one image. `LINES.npz` holds the bands as 8-bit images with their texts, where each came from and the records file's name and SHA-256, in the format `p1667_align.py` writes and `finetune_maps.py` trains on. `finetune_maps.py` writes `linenet.npz` and `finetune.json` (file names and SHA-256 of the start and the result, the lines' record and the settings; no local folder).
 
@@ -586,6 +726,7 @@ python -m kit letterread PHOTO.jpg --weights work/letters/mine/linenet.npz --let
 | [`kit/letterlines.py`](../kit/letterlines.py) | Training lines from your own records (`python -m kit letterlines build`), checked before any image is decoded, and character error on lines kept apart (`letterlines score`) ([Fine-tune on your own lines](#fine-tune-on-your-own-lines)) |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
 | [`kit/letterdemo.py`](../kit/letterdemo.py) | The offline demo (`python -m kit letterdemo`, `scrolls-letterdemo`): synthetic Greek capitals in the training data's skeleton hand, drawn in numpy, and a noise image, read and judged under a fixed rule ([Check the install](#check-the-install-the-offline-demo)) |
+| [`CITATION.cff`](../CITATION.cff) | How to cite the repository, with the weights as a separate reference under their own licence ([Citing](#citing)) |
 | [`pyproject.toml`](../pyproject.toml) | The installable package `scrolls-workbench`: the `kit` package with its data files, extras `reader`, `maps` and `all`, and the commands `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` and `scrolls-workbench` ([Install](#install)) |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
 | [`scripts/letters/letterdata.py`](../scripts/letters/letterdata.py), [`gen_dataset.py`](../scripts/letters/gen_dataset.py) | Synthetic lines and pages: bookhand skeleton and fonts, map and label degradations, and a photograph look for whole pages (dark ink on a light papyrus ground; tests only, not training) |
@@ -597,7 +738,11 @@ python -m kit letterread PHOTO.jpg --weights work/letters/mine/linenet.npz --let
 | [`scripts/letters/eval_photos.py`](../scripts/letters/eval_photos.py) | Photograph-like pages (dark ink on a light ground, tilted, turned a quarter, on dark and white mounts): polarity bright, dark and auto, the deskew, the orientation reads, and pages with no letters |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py), [`test_letterexport.py`](../tests/test_letterexport.py), [`test_letterlines.py`](../tests/test_letterlines.py), [`test_letterdemo.py`](../tests/test_letterdemo.py), [`test_packaging.py`](../tests/test_packaging.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model, the CSV and PAGE XML exports, training lines from records and their scores, the offline demo's drawing and rule, the package's metadata, data files and commands) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py), [`test_letterexport.py`](../tests/test_letterexport.py), [`test_letterlines.py`](../tests/test_letterlines.py), [`test_letterdemo.py`](../tests/test_letterdemo.py), [`test_packaging.py`](../tests/test_packaging.py), [`test_letter_scripts.py`](../tests/test_letter_scripts.py) | Tests (this guide's commands: no comment after a command and only plain words in comment lines, every script and option it names, the letter-size table; the benchmark scripts' alphabet checks, released weight names and printed rows; numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model, the CSV and PAGE XML exports, training lines from records and their scores, the offline demo's drawing and rule, the package's metadata, data files and commands) |
+
+## Citing
+
+[`CITATION.cff`](../CITATION.cff) says how to cite this repository (GitHub shows it as "Cite this repository"); the code is Apache-2.0. Cite the weights you read with as well: `letters-v2-real` is a separate reference there, with its [release](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real), its SHA-256 and its own licence, CC BY-NC 4.0 ([Model card](#model-card-letters-v2-real)). A read is Model output; quote it as letter hypotheses with the weights' name and SHA-256 from the result's `weights` block, never as a reading.
 
 ## Related work
 

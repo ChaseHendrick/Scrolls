@@ -36,6 +36,15 @@ positions, so it cannot be cut to a group.
 
   python scripts/letters/eval_p1667.py read GROUPS_DIR REFS.json --weights W [--lm LM] [--source label|map|map-wide|map-region] [--letter-px given|auto] --out OUT.json
   python scripts/letters/eval_p1667.py compare A.json B.json [--key ink_only|with_lm] [--level group|segment] [--metric plain|free_ends|free_ends_any]
+
+--weights takes a linenet-v1 .npz or a released model name such as letters-v2-real; the result records it
+as given, as on 9 October 2026. REFS.json is {"agreed": {group id: letters}}: Greek capitals in the
+reader's alphabet, lunate sigma for every sigma, '?' for an unsure letter (its group is not scored); any
+other character in a scored group stops the run with the alphabet printed. read prints which row of
+docs/letter-reader.md's table "How well it reads" the settings reproduce, then the guide's measure first
+(plain character error for the drawings, free ends for the maps), and the summary JSON as its last line.
+The rows: --source label (row 1), map (row 2), map-wide (row 3; with --letter-px auto, row 3's second
+value) and map-region --letter-px auto (row 4).
 """
 import argparse
 import json
@@ -48,6 +57,7 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from kit import letterread as R  # noqa: E402
+from kit.letterlines import check_references  # noqa: E402
 
 NULLS = 2
 LM_WEIGHT = 0.5
@@ -55,9 +65,18 @@ HIT_TOL = 0.5     # map-wide: a read line within this many letter heights of the
 
 
 def references(path):
-    """{group id: reference letters} for groups the three transcriptions agree on, with no '?'."""
+    """{group id: reference letters} for groups the three transcriptions agree on, with no '?'.
+
+    Every text that is scored must be in the reader's alphabet: a Latin look-alike or a final sigma
+    would only ever count as an error, so it stops the run with a message that names it and prints the
+    alphabet (SystemExit). A group with a '?' (an unsure letter) is left out as before, unchecked."""
     data = json.loads(Path(path).read_text(encoding="utf-8"))
-    return {gid: t for gid, t in data["agreed"].items() if t and "?" not in t}
+    refs = {gid: t for gid, t in data["agreed"].items() if t and "?" not in t}
+    try:
+        check_references(refs, wildcard=None, source=f"{Path(path).name} (agreed)")
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
+    return refs
 
 
 def free_ends_distance(read, ref):
@@ -89,7 +108,7 @@ def read(groups_dir, refs_path, weights, lm=None, source="label", letter_px="giv
     groups_dir = Path(groups_dir)
     meta = {g["id"]: g for g in json.loads((groups_dir / "groups.json").read_text())["groups"]}
     refs = references(refs_path)
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz path or a released model name; recorded as given
     rows, tot = [], {}
     for gid in sorted(refs):
         g, ref = meta[gid], refs[gid]
@@ -135,7 +154,7 @@ def read_wide(groups_dir, refs_path, weights, lm=None, letter_px="given"):
     meta = {g["id"]: g for g in json.loads((groups_dir / "groups.json").read_text())["groups"]}
     where = json.loads((groups_dir / "map-wide.json").read_text())["groups"]
     refs = references(refs_path)
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz path or a released model name; recorded as given
     rows, tot = [], {}
     for gid in sorted(refs):
         g, ref, cy = meta[gid], refs[gid], where[gid]["centre_y_in_window"]
@@ -215,7 +234,7 @@ def read_region(groups_dir, refs_path, weights, letter_px="given"):
     meta = json.loads((groups_dir / "groups.json").read_text())
     pads = json.loads((groups_dir / "map-region.json").read_text())["segments"]
     refs = references(refs_path)
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz path or a released model name; recorded as given
     seg_res, rows, segs = {}, [], {}
     for seg, st in meta["stats"].items():
         img = np.load(groups_dir / "map-region-npy" / f"{seg}.npy")
@@ -262,6 +281,41 @@ def read_region(groups_dir, refs_path, weights, letter_px="given"):
             "nulls": NULLS, "lm_weight": None, "summary": summary, "regions": segs, "segments": rows}
 
 
+GUIDE_ROWS = {   # (source, --letter-px): the row of docs/letter-reader.md's table "How well it reads" it reproduces
+    ("label", "given"): "row 1, PHerc. 1667 official ink labels (drawings), line given",
+    ("map", "given"): "row 2, Same 87 groups read from the 2.4 um ink maps, line given",
+    ("map-wide", "given"): "row 3, Maps, windows about three lines tall, reader finds the line",
+    ("map-wide", "auto"): "row 3's second value, the same windows with nothing given",
+    ("map-region", "auto"): "row 4, Maps, each segment's whole labelled region read once, nothing given",
+    ("map-region", "given"): "no row of the table: the whole regions with the letter height given (in the log; "
+                             "row 4 is --letter-px auto)",
+}
+
+
+def headline(res):
+    """Lines printed before the summary JSON: the guide's measure first, then the other, and the controls.
+
+    The guide quotes the plain character error for the drawings (--source label) and the free-ends error
+    for the maps, whose windows also show unlabelled letters beside a group. Printing only; the summary
+    and the --out file are unchanged."""
+    src, summ = res["source"], res["summary"]
+    row = GUIDE_ROWS.get((src, res.get("letter_px", "given")), "no row of the guide's table")
+    out = [f"source {src}, letter height {res.get('letter_px', 'given')}: the guide's {row}"]
+    for key in ("ink_only", "with_lm"):
+        m = summ.get(key)
+        if not m:
+            continue
+        plain = f"character error {m['cer']} ({m['errors']} edits over {m['ref_letters']} reference letters)"
+        free = f"free-ends error {m['cer_free_ends']} ({m['errors_free_ends']} edits)"
+        first, second = (plain, free) if src == "label" else (free, plain)
+        out.append(f"{key}: {first}; {second}; against references permuted across groups "
+                   f"{m['cer_permuted_refs']} plain, {m['cer_free_ends_permuted_refs']} free ends")
+    hits = f", line found for {summ['line_hits']} of them" if "line_hits" in summ else ""
+    out.append(f"{summ['groups']} groups{hits}; letters kept {summ['letters_kept']} against nulls "
+               f"{summ['null_letters_kept']} (Model output, not a reading)")
+    return out
+
+
 def units(res, key, metric="plain"):
     field = {"plain": "errors", "free_ends": "errors_free_ends", "free_ends_any": "errors_free_ends_any"}[metric]
     return {(r["scroll_segment"], r["segment"]): (r[key][field], len(r["ref"])) for r in res["segments"] if key in r}
@@ -286,6 +340,8 @@ def main():
     c.add_argument("--metric", default="plain", choices=("plain", "free_ends", "free_ends_any"))
     c.add_argument("--n", type=int, default=20000)
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     if a.cmd == "read":
         lm = None
         if a.lm:
@@ -294,7 +350,8 @@ def main():
         res = read(a.groups_dir, a.refs, a.weights, lm, a.source, a.letter_px)
         if a.out:
             Path(a.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-        print(json.dumps(res["summary"], ensure_ascii=False))
+        print("\n".join(headline(res)))
+        print(json.dumps(res["summary"], ensure_ascii=False))   # last, so `| tail -1` still gives the JSON
     else:
         from compare_p172 import paired_bootstrap
         A, B = (json.loads(Path(p).read_text(encoding="utf-8")) for p in (a.a, a.b))

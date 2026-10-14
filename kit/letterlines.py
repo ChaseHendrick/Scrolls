@@ -37,6 +37,11 @@ error naming the character: write the letter, or '?' when you cannot see it.
 
 A model fine-tuned on these lines is a new model: its output is still a hypothesis for a person to
 check, and it must be judged on lines it did not train on.
+
+check_references() is the stricter check the benchmark scripts make on reference texts, which are
+compared letter for letter and so are not cleaned: every character must be one the reader writes
+(or '?' where a script allows it); a Latin or Cyrillic look-alike, a final or capital sigma, a small
+letter or an accent stops the run with what to write instead and the reader's alphabet.
 """
 
 import csv
@@ -98,6 +103,82 @@ def clean_text(text):
             if item not in bad:
                 bad.append(item)
     return "".join(out), bad
+
+
+LUNATE_SIGMA = "Ϲ"
+# Latin and Cyrillic capitals that look like a Greek capital, and the Greek capital the reader writes for each
+# (Latin C and Cyrillic С look like the lunate sigma the reader writes for every sigma).
+LOOKALIKES = {"A": "Α", "B": "Β", "C": "Ϲ", "E": "Ε", "H": "Η", "I": "Ι", "K": "Κ", "M": "Μ", "N": "Ν", "O": "Ο",
+              "P": "Ρ", "T": "Τ", "X": "Χ", "Y": "Υ", "Z": "Ζ",
+              "А": "Α", "В": "Β", "Г": "Γ", "Е": "Ε", "К": "Κ", "Л": "Λ", "М": "Μ", "Н": "Η", "О": "Ο", "П": "Π",
+              "Р": "Ρ", "С": "Ϲ", "Т": "Τ", "Ф": "Φ", "Х": "Χ"}
+
+
+def letter_problem(c, alphabet=ALPHABET, wildcard=WILDCARD):
+    """None when the reader writes c (or c is the allowed wildcard); else its Unicode name and what to write instead.
+
+    Reference texts are compared letter for letter, so nothing is cleaned here: a final sigma, a Latin
+    look-alike or an accented letter would only ever count as an error."""
+    if c in alphabet or (wildcard and c == wildcard):
+        return None
+    name = unicodedata.name(c, f"U+{ord(c):04X}")
+    base = "".join(ch for ch in unicodedata.normalize("NFD", c) if not unicodedata.combining(ch)).upper()
+    foreign = "LATIN" in name or "CYRILLIC" in name
+    look = LOOKALIKES.get(c) or LOOKALIKES.get(c.upper())
+    if c in "Σσς" or base in ("Σ", LUNATE_SIGMA):
+        hint = f"the reader writes every sigma as the lunate sigma {LUNATE_SIGMA}"
+    elif foreign and look is not None and look in alphabet:
+        hint = f"a {'Latin' if 'LATIN' in name else 'Cyrillic'} letter that looks Greek: type the Greek {look}"
+    elif foreign:
+        hint = "not a Greek letter: the reader proposes Greek capitals only"
+    elif len(base) == 1 and base in alphabet:
+        hint = f"write the plain capital {base} (no accents, breathings or small letters)"
+    elif c == "·":
+        hint = "the reader's mark for a letter under its confidence floor: write the letter" + (
+            f", or {wildcard!r}" if wildcard else "")
+    elif c.isspace():
+        hint = "references are written without spaces, in scriptio continua"
+    elif c == WILDCARD:
+        hint = "this script scores no unsure letters: leave the line out, or write the letter"
+    else:
+        hint = "not a letter the reader writes"
+    return f"{c!r} ({name}; {hint})"
+
+
+def reference_problems(text, alphabet=ALPHABET, wildcard=WILDCARD):
+    """Each character of text that the reader does not write, once, as "'X' (NAME; what to write instead)"."""
+    out = []
+    for c in str(text):
+        item = letter_problem(c, alphabet, wildcard)
+        if item is not None and item not in out:
+            out.append(item)
+    return out
+
+
+def alphabet_text(alphabet=ALPHABET, wildcard=WILDCARD):
+    """The sentence that tells a person which characters a reference may hold."""
+    s = (f"The reader writes these {len(alphabet)} Greek capitals, every sigma as the lunate sigma "
+         f"{LUNATE_SIGMA}: {alphabet}")
+    return s + (f"; {wildcard!r} marks a letter you cannot see or restore." if wildcard else ".")
+
+
+def check_references(refs, alphabet=ALPHABET, wildcard=WILDCARD, source="references", limit=20):
+    """Raise ValueError when a reference text holds a character the reader does not write; return refs otherwise.
+
+    refs: {id: text}, or (id, text) pairs. The message names each faulty reference (up to limit of them)
+    with every character at fault and what to write instead, then the reader's alphabet. wildcard is
+    the unsure-letter mark the calling script accepts ('?'), or None when it accepts none."""
+    items = list(refs.items()) if isinstance(refs, dict) else list(refs)
+    bad = []
+    for key, text in items:
+        problems = reference_problems(text, alphabet, wildcard)
+        if problems:
+            bad.append(f"  {key}: {text!r}: " + ", ".join(problems))
+    if bad:
+        more = f"\n  ... and {len(bad) - limit} more" if len(bad) > limit else ""
+        raise ValueError(f"{source}: {len(bad)} reference text(s) hold characters outside the reader's alphabet:\n"
+                         + "\n".join(bad[:limit]) + more + "\n" + alphabet_text(alphabet, wildcard))
+    return refs
 
 
 def ctc_frames_needed(text):

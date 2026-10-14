@@ -44,6 +44,43 @@ class TextTest(unittest.TestCase):
         self.assertIn("LEFT SQUARE BRACKET", bad[1])
         self.assertIn("'?'", bad[3])                                         # the reader's '·': write the letter or '?'
 
+    def test_reference_problems_name_each_fault_and_the_fix(self):
+        self.assertEqual(LL.reference_problems("ΚΑΙΤΟΥϹ?"), [])
+        latin = LL.reference_problems("KAI")
+        self.assertEqual(len(latin), 3)
+        self.assertIn("LATIN CAPITAL LETTER K", latin[0])
+        self.assertIn("type the Greek Κ", latin[0])
+        self.assertIn("type the Greek Ϲ", LL.reference_problems("C")[0])               # Latin C looks like lunate sigma
+        self.assertIn("Cyrillic", LL.reference_problems("Р")[0])
+        for sigma in "Σσςϲ":
+            self.assertIn("lunate sigma Ϲ", LL.reference_problems(sigma)[0], sigma)
+        self.assertIn("plain capital Α", LL.reference_problems("ἀ")[0])
+        self.assertIn("plain capital Τ", LL.reference_problems("τ")[0])
+        self.assertIn("without spaces", LL.reference_problems("Α Β")[0])
+        self.assertIn("'?'", LL.reference_problems("Α·")[0])
+        self.assertIn("Greek capitals only", LL.reference_problems("Q")[0])
+        self.assertEqual(len(LL.reference_problems("ςςς")), 1)                              # each character once
+        self.assertEqual(LL.reference_problems("Α?Β", wildcard=None)[0][:3], "'?'")      # no wildcard here
+        self.assertEqual(LL.reference_problems("ΑΒ", alphabet="Α")[0][:3], "'Β'")        # another model's alphabet
+
+    def test_check_references_refuses_with_the_alphabet(self):
+        refs = {"g0": "ΚΑΙ", "g1": "KAI", "g2": "ΤΟΥς"}
+        with self.assertRaises(ValueError) as cm:
+            LL.check_references(refs, source="refs.json")
+        msg = str(cm.exception)
+        self.assertTrue(msg.startswith("refs.json: 2 reference text(s)"), msg)
+        self.assertIn("g1: 'KAI'", msg)
+        self.assertIn("g2: 'ΤΟΥς'", msg)
+        self.assertNotIn("g0", msg)
+        self.assertIn(LL.ALPHABET, msg)
+        ok = {"g0": "ΚΑΙ?"}
+        self.assertIs(LL.check_references(ok), ok)
+        self.assertEqual(LL.check_references([("a", "ΑΒ")]), [("a", "ΑΒ")])
+        with self.assertRaises(ValueError) as cm:
+            LL.check_references({f"g{i}": "A" for i in range(30)}, limit=5)
+        self.assertIn("and 25 more", str(cm.exception))
+        self.assertEqual(len(LL.ALPHABET), 24)
+
     def test_wildcard_edit_distance(self):
         cases = [("ΑΒΓ", "ΑΒΓ", 0), ("ΑΓ", "ΑΒΓ", 1), ("ΑΧΓ", "ΑΒΓ", 1), ("ΑΧΓ", "Α?Γ", 0), ("ΑΓ", "Α?Γ", 0),
                  ("ΑΧΨΓ", "Α?Γ", 1), ("", "??", 0), ("", "Α?Β", 2), ("Α", "", 1), ("ΑΒΓ", "", 3)]

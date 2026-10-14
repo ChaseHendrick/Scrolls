@@ -28,6 +28,9 @@ frozen (its digest recorded) before any model it is used to test reads a crop.
   python scripts/letters/p1667_align.py crops ALIGN.json NPY_DIR --columns 9,10 [--best] --out LINES.npz
   python scripts/letters/p1667_align.py show ALIGN.json
 
+--weights takes a linenet-v1 .npz or a released model name such as letters-v2-real (recorded as given);
+align refuses a published line holding a character outside the reader's alphabet ('?' aside).
+
 Model output on public maps of a published scroll; not a reading.
 """
 import argparse
@@ -40,7 +43,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from eval_p1667_text import local_scores  # noqa: E402
+from eval_p1667_text import check_reference, local_scores  # noqa: E402
 from kit import letterread as R  # noqa: E402
 
 LETTER_PX = 86.0     # letter height on the 38 um grid (median of the labelled segments)
@@ -87,7 +90,7 @@ def split_columns(a, h=LETTER_PX):
 
 
 def read_maps(npy_dir, weights):
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz path or a released model name; recorded as given
     segs = {}
     for f in sorted(Path(npy_dir).glob("*.npy")):
         img = np.load(f)
@@ -388,12 +391,14 @@ def main():
     s_ = sub.add_parser("show")
     s_.add_argument("align")
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     if a.cmd == "read":
         res = read_maps(a.npy_dir, a.weights)
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False) + "\n", encoding="utf-8")
     elif a.cmd == "align":
         rd = json.loads(Path(a.read).read_text(encoding="utf-8"))
-        tx = json.loads(Path(a.text).read_text(encoding="utf-8"))
+        tx = check_reference(json.loads(Path(a.text).read_text(encoding="utf-8")), Path(a.text).name)
         res = align(rd, tx)
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         show(res)

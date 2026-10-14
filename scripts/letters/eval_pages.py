@@ -112,6 +112,8 @@ def main():
                          "(pages are single-column, so this measures what a false split costs)")
     ap.add_argument("--out")
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     lm = None
     if a.lm:
         from kit import greeklm
