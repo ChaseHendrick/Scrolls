@@ -32,6 +32,7 @@ Start with AGENTS.md (rules, commands, glossary), then the current state at the 
 - [kit/gate.py](kit/gate.py): Gate A decision from committed and Mac scores
 - [scripts/mac-phase0.sh](scripts/mac-phase0.sh): the Phase 0 Mac queue in one command
 - [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
+- [scripts/umbilicus/README.md](scripts/umbilicus/README.md): scroll centre (umbilicus) finder from CT, in the published umbilicus format, with its held-out error on the 13 published centre lines; model output
 - [docs/letter-reader.md](docs/letter-reader.md): Greek letter reader for ink maps (`python -m kit letterread`), its model card and measured accuracy on PHerc. 1667; letter hypotheses, not readings
 - [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
 - [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run
