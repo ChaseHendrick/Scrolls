@@ -418,6 +418,8 @@ def cmd_letterread(args):
             raise ValueError(f"--letter-px {letter_px}: the letter height must be positive")
         if args.max_mpx <= 0 or args.overlay_max_side < 16:
             raise ValueError("--max-mpx must be positive and --overlay-max-side at least 16")
+        if args.min_letters < 1:
+            raise ValueError(f"--min-letters {args.min_letters}: give at least 1")
         # Check where the results go before the read, which can take minutes.
         if args.overlay:
             try:
@@ -430,8 +432,9 @@ def cmd_letterread(args):
         for out in (args.out, args.overlay):
             if out and not Path(out).resolve().parent.is_dir():
                 raise OSError(f"no such folder for {out}")
-        if not Path(args.image).exists():   # before the weights, which may download
-            raise OSError(f"{args.image}: no such file or folder")
+        for image in (args.image, args.control):   # before the weights, which may download
+            if image and not Path(image).exists():
+                raise OSError(f"{image}: no such file or folder")
         if args.letter_mm is not None:
             say(f"letter height {args.letter_mm:g} mm at {args.um_per_px:g} um per pixel: {letter_px:.2f} px")
         lm = None
@@ -444,11 +447,27 @@ def cmd_letterread(args):
                                                 progress=say)
         a0 = letterread.normalize_for_reading(img, args.polarity, max_pixels=int(args.max_mpx * 1e6))
         del img
+        c0 = None
+        if args.control:
+            # the same window and the same block size as the image, so its pixels sit on the image's pixels
+            cimg, ck, cshape = letterread.load_reduced(args.control, args.key, crop=args.crop, letter_px=letter_px,
+                                                       net_letter_px=net.letter_px,
+                                                       max_pixels=int(args.max_mpx * 1e6), progress=say)
+            if (cshape, ck) != (shape, k):
+                raise ValueError(f"--control {args.control}: {cshape[0]} x {cshape[1]} px, but the image is {shape[0]} x "
+                                 f"{shape[1]}; give a map of the same surface on the same grid (such as its "
+                                 "reverse-depth map)")
+            c0 = letterread.normalize_for_reading(cimg, args.polarity, max_pixels=int(args.max_mpx * 1e6))
+            del cimg
         res = letterread.read(a0, net, normalized=True, input_scale=k, orientation=not args.no_orientation,
                               letter_px=letter_px, polarity=args.polarity, nulls=args.nulls, seed=args.seed,
                               lines=args.lines, p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0,
-                              beam=args.beam, letter_px_fallback=False, progress=say,
+                              beam=args.beam, letter_px_fallback=False, progress=say, control=c0,
+                              min_letters=args.min_letters,
                               columns=args.columns if args.columns in ("auto", "off") else int(args.columns))
+        del c0
+        if args.control:
+            res["control"]["control_map"]["file"] = str(args.control)
         res["input_shape"] = list(shape)   # the exact input window, including rows and columns under one block
         if args.letter_mm is not None:
             res["letter_mm"], res["um_per_px"] = args.letter_mm, args.um_per_px
@@ -775,7 +794,7 @@ def build_parser():
     p.add_argument("--png", help="also write the panels side by side as a PNG")
     p.set_defaults(func=cmd_view)
 
-    p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null and orientation controls")
+    p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
     p.add_argument("image", help=".npy, .npz, .tif, .png or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
                    help="linenet-v1 .npz, or a released model name such as letters-v2-real (downloaded once, SHA-256 checked)")
@@ -795,6 +814,13 @@ def build_parser():
     p.add_argument("--lines", type=float, nargs="+", help="centre rows of the lines, image pixels (default: found)")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
     p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4)")
+    p.add_argument("--control", metavar="MAP_REVERSE",
+                   help="a second map of the same surface on the same grid, such as its reverse-depth ink map: read on "
+                        "the image's lines at the same letter size and confidence floor; the status needs the image "
+                        "to keep more than 3 times its letters for strong")
+    p.add_argument("--min-letters", type=int, default=10,   # letterread.MIN_LETTERS
+                   help="fewest confident letters a read or a column needs before its controls can pass (default "
+                        "%(default)s; fewer is status too_few)")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--p-min", type=float, help="letter confidence floor (default: set from the nulls, at least 0.5)")
     p.add_argument("--lm", help="letter language model .npz (python -m kit greeklm build); reported beside the ink-only decode")

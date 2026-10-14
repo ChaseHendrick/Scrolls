@@ -23,6 +23,8 @@ python scripts/letters/demo_p1667.py --segment w013 --out work/letters/demo
 # 2. Read your own image (ink bright, as in ink-detection maps; --polarity dark for photographs)
 python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
 python -m kit letterread MAP.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 38.4 --json --out MAP-letters.json
+#    with the reverse-depth map of the same surface as a control (see "The status, and what to do")
+python -m kit letterread MAP.tif --weights letters-v2-real --letter-px 86 --control MAP_reverse.tif
 
 # 3. A whole native 2.4 um villa map as downloaded, here with PHerc. 1667's letter height
 #    (block-averaged while it loads; see "Big maps" below)
@@ -47,8 +49,10 @@ Without a size, the reader estimates one from the line spacing and searches six 
 | `--columns auto` (default), `off` or a number | Split at empty vertical gutters, read the whole width, or ask for that many columns |
 | `--lm greek5.npz` | Add a language-model decode beside the ink-only one (below) |
 | `--nulls N` | Number of null copies for the control (default 4) |
+| `--control MAP_REVERSE` | A second map of the same surface on the same grid, such as its reverse-depth ink map, read on the image's lines at the same letter size and confidence floor; `strong` then also needs more than three times its letters (see [The control map](#the-control-map)) |
+| `--min-letters N` | Fewest confident letters a read or a column needs before its controls can pass (default 10; fewer is `too_few`) |
 | `--no-orientation` | Skip the mirrored and rotated reads (faster) |
-| `--overlay OUT.png` | The image with kept letters boxed and labelled (green p >= 0.8, yellow below), lower-confidence boxes grey; every outline at least 2 px; a banner above it always carries the whole "Model output ... not a reading" note, wrapped to the width |
+| `--overlay OUT.png` | The image with kept letters boxed and labelled (green p >= 0.8, yellow below), lower-confidence boxes grey; every outline at least 2 px; a banner above it always carries the whole "Model output ... not a reading" note, wrapped to the width, and under it the status line of the controls with its counts |
 | `--overlay-max-side N` | Longest side of the overlay in pixels (default 4000); the JSON records the overlay's scale |
 | `--quiet` | No progress messages; without it, long steps (loading, scale search, reading, orientation) report on stderr, so `--json` output on stdout stays clean |
 
@@ -71,6 +75,11 @@ for line in res["lines"]:
     print(line["column"], line["y"], line["ink_only"])   # '·' marks a letter slot under the confidence floor
     for l in line["letters"]:
         l["glyph"], l["p"], l["kept"], l["box"]           # box is [y0, y1, x0, x1] in input pixels
+print(res["control"]["status"], res["control"]["ratio"])  # strong, weak, none, too_few or no_control
+print([c["control"]["status"] for c in res["columns"]])   # one status per column
+res2 = R.read(img, R.resolve_weights("letters-v2-real"), letter_px=86,
+              control=R.load_image("MAP_reverse.png"))    # with a control map of the same shape
+print(res2["control"]["control_map"])                     # its kept letters and the ratio to them
 R.overlay(img, res, "MAP-letters.png")
 
 # a whole map: block-averaged while it loads when over the budget; boxes come back in input pixels
@@ -97,13 +106,73 @@ When the two decodes disagree, the ink-only line is what the image supports. A l
 
 ## What the result means
 
-`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, and each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels. Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. Three controls travel with every result, and each can fail:
+`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels, and the line's `n_kept` beside `chance`, the count the nulls make expected there (below). Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `columns` (each with its own `control` block), `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. These controls travel with the result, and each can fail:
 
-1. **Nulls.** The same reader on tile-shuffled copies (letter-sized tiles with random flips: local texture and grey levels kept, letters and lines broken) and phase-randomised copies (same power spectrum, so the same line spacing, shapes broken). The confidence floor is set so the nulls keep few letters (at most 5% of a line's letter slots, never below p = 0.5), and `control.verdict` compares letters kept on the image with letters kept on each null: "well above every null" (more than three times), "above, but within a factor of three", or "NOT above the nulls: treat every letter here as noise".
-2. **Orientation.** Letters kept as stored, mirrored and turned 180 degrees. Text the right way round should keep the most. This is weak for Greek capitals, many of which are symmetric, so it is evidence, not a gate.
-3. **Language off.** `ink_only` never uses the language model.
+1. **Nulls.** The same reader on tile-shuffled copies (letter-sized tiles with random flips: local texture and grey levels kept, letters and lines broken) and phase-randomised copies (same power spectrum, so the same line spacing, shapes broken). The confidence floor is set so the nulls keep few letters (at most 5% of a line's letter slots, never below p = 0.5). `control.verdict` keeps its old wording, which compares letters kept on the image with each null only: "confident letters well above every null" (more than three times), "more confident letters than every null, but within a factor of three", or "confident letters NOT above the nulls: treat every letter here as noise". The benchmark scripts record it unchanged.
+2. **Control map** (`--control MAP_REVERSE`, or `read(..., control=...)`). A second map of the same surface on the same grid, above all its reverse-depth ink map, read on the image's lines at the same letter size and confidence floor (details below).
+3. **Status** (`control.status`). One code that a person or a pipeline acts on, from the nulls, the control map when there is one, and a minimum count; per column too.
+4. **Orientation.** Letters kept as stored, mirrored and turned 180 degrees. Text the right way round should keep the most. This is weak for Greek capitals, many of which are symmetric, so it is evidence, not a gate; it does not enter the status.
+5. **Language off.** `ink_only` never uses the language model.
 
-For ink maps, also read the reverse-depth map of the same surface: letters that survive depth reversal are not ink.
+### The status, and what to do
+
+`control` holds `letters_kept`, `null_letters_kept`, `nulls`, `verdict`, then `min_letters` (10 by default, `--min-letters`), `ratio` (letters kept over the largest null, a null of 0 counting as 1; `null` in the JSON when no nulls were run), `status`, `status_text` and, with a control map, `control_map` (`letters_kept`, `ratio` and, from the command line, `file`). Each column's `control` block has the same fields for that column, plus `chance`. The rule, in order (`control_status()` in `kit/letterread.py`):
+
+1. no nulls run: `no_control`;
+2. letters kept not above the largest null, or not above the control map: `none`;
+3. fewer than `min_letters` letters kept: `too_few`;
+4. more than three times the largest null (and more than three times the control map, when there is one): `strong`;
+5. otherwise `weak`.
+
+Without a control map and with at least 10 letters, `strong`, `weak` and `none` are exactly the three old verdicts. The summary prints the old line, then the status line; the overlay banner carries the same status line under the model-output note, starting "Controls:". The status line names the code, the counts behind it and a fixed sentence, for example (the PHerc. 1667 w013 map below):
+
+```
+control: 122 letters kept vs nulls [43, 33, 27, 28]: more confident letters than every null, but within a factor of three
+status: weak (122 letters kept; nulls 43, 33, 27, 28, ratio 2.84 to the largest). Confident letters above every control, but not three times above all of them: weak evidence.
+```
+
+With a control map, the summary adds `control map FILE: N letters kept on the same lines at the same confidence floor` and the counts gain `; control map N, ratio R`. The five sentences, exactly as printed, and what to do:
+
+| `status` | Printed sentence | What to do |
+| --- | --- | --- |
+| `strong` | `Confident letters more than three times every control: worth a person's check, still model output and not a reading.` | Open the overlay and check the letters by eye, line by line; a person decides what is legible. On an ink map read without `--control`, read again with the reverse-depth map: the nulls alone do not rule out letters the ink model makes from papyrus structure. A pipeline may pass only `strong` reads (or `strong` columns) on to a person. |
+| `weak` | `Confident letters above every control, but not three times above all of them: weak evidence.` | Do not use single letters. Check the letter size first (the scale-search table, any `letter_px_check` warning; give `--letter-px` or `--letter-mm`). Look at the per-column statuses and the per-line counts: when the letters sit in one column or a block of lines, read that area again as its own crop, chosen on what the map shows (below). Add `--control` if you have the reverse-depth map. |
+| `none` | `Confident letters NOT above the controls: treat every letter here as noise.` | Treat every letter as noise. Common causes: a wrong letter size, the wrong polarity (`--polarity dark` for photographs), or no text the model can see. When `control_map.ratio` is 1 or below, the control map kept as many letters or more, so these letters are not particular to this map. |
+| `too_few` | `Too few confident letters to judge (fewer than 10).` | Nothing can be judged either way. Read a larger area (more lines, or a whole column) and check the letter size. Do not lower `--min-letters` to get a pass. |
+| `no_control` | `No control run (nulls=0): nothing here can be trusted.` | Read again with nulls (the default `--nulls 4`). |
+
+### Where the letters are
+
+Empty papyrus dilutes a whole-segment count: on a map where text fills a corner, the letters there sit among many lines with none. So the result also says where the letters are kept.
+
+- **Per column.** Each column's nulls are scrambles of that column alone, read on its own lines, so each column has real null counts and gets its own `control` block and status by the same rule (with the control map's count in that column, when one is read). With several columns the summary prints one line per column, in the form `column I (x X0 to X1): STATUS (N letters kept; nulls A, B, C, D, ratio R to the largest), chance C`, where `chance` is the column's mean null count.
+- **Per line.** The nulls scramble positions across the whole column (the tile shuffle moves letter-sized tiles anywhere in it, and phase randomisation spreads every shape over all of it), so a null's letters say nothing about which line they came from. The honest chance count for a line is therefore the column's mean null count spread evenly over its lines, `chance` = mean of the column's null counts / its number of lines; every line band spans the column's full width, so each line has the same letter slots. The summary prints it before each line's letters, as in `line  0 y=  209.6 [ 15 kept, chance  2.52]: ··ΝΦΟϹΥ·Ρ·ΗΟΥ····ϹΦ·········ΥΗΙ··Π·` (with `, control map N` added when a control map is read).
+
+Per-line counts are small, so they show where to look; they are not a test. Choosing lines because they beat chance and then calling them text is circular. To test an area, choose it on something other than this read's letter counts (what the map shows, a label, a published column) and read it as its own `--crop`, which gets its own nulls and floor.
+
+Example (Model output, 14 October 2026; PHerc. 1667 w013, a published scroll, its public map averaged to about 38 um, `--letter-px 86`): the whole map is one column of 13 lines, 122 letters kept against nulls of 43, 33, 27 and 28, status `weak`, ratio 2.84. The chance count is 2.52 per line (mean null 32.75 over 13 lines); lines 0 to 9 keep 7 to 16 letters each (110 of the 122) and lines 10 to 12 keep 3 to 6, so the kept letters sit on the upper ten lines.
+
+### The control map
+
+Read the reverse-depth map of the same surface with `--control`: villa's ink inference writes it beside the forward map with `--direction both` (as `NAME_reverse.tif`; see [mac.md](mac.md)). An ink model run on the layers in reverse order sees the same fibres, cracks and sheet edges at the same places, with the ink signal at the wrong depth, so letters that survive depth reversal are not ink.
+
+```bash
+python -m kit letterread MAP.tif --weights letters-v2-real --letter-px 86 --control MAP_reverse.tif --overlay MAP-letters.png
+```
+
+The control map must have the same shape as the image (the same `--crop` and `--key` are applied to it, and the same block size when the image is over the budget); a different shape stops the command before the read. It is normalised on its own, as any image the reader reads, and read on the image's columns, deskew angles and line rows at the image's letter size and confidence floor, with no nulls of its own. Both rules are deliberate: a map without text has no line structure, so read with its own layout it would get fewer lines and fewer chances to keep letters, and scaled by the image's grey levels a fainter control map would keep fewer letters; either would flatter the image. The control changes nothing else: the image's letters, boxes, floor, nulls and orientation counts are the same with and without it. It does not enter the scale search: without a given size, the size is chosen on the nulls alone and the control map is read at that size.
+
+Check that it can fail (Model output, 14 October 2026, the same w013 map): with the map itself as its control, the control map keeps the same 122 letters and the status is `none`, as it must be; with a tile-shuffled copy of the map as a stand-in control (no public reverse-depth map of w013 was at hand), the control keeps 40 letters, ratio 3.05, and the status stays `weak` because of the nulls.
+
+### Why these rules
+
+**More than three times every control for `strong`** (Interpretation). One factor for every control keeps `strong` meaning one thing, and it is the factor the old verdict already used for the nulls. Read as a rate, a control's count estimates how many of the image's confident letters the reader would make without the image's text; more than three times means that estimate is under a third of what the image keeps. The control map is the stricter control for an ink map, since it keeps the surface's real structure in place, so it gets the same factor, not a lower one; it is paired with the image letter slot for letter slot, so its count needs no allowance for a different layout. A control map that keeps as many letters as the image, or more, makes the read `none`, whatever the nulls say.
+
+**At least 10 letters** (a judgement, checked on public data). The factor of three counts a null of 0 as 1, so with quiet nulls any four letters were "well above every null", and a count of n carries about sqrt(n) of counting noise, a third of the count or more below 10. Measured on 14 October 2026 (Model output): the w013 map above cut into 20 windows of 520 by 1000 px (one to three found lines of about ten letter slots), and three tile-shuffled copies of it cut the same way (60 windows whose letter-sized tiles are scrambled, so lines and letters are broken, as in the tile-shuffle null), each read at 86 px with four nulls. On the shuffled windows, where a pass is a false one, the old verdict passed 17 of 60 (15 "more confident letters than every null", 2 "well above every null"), each on 1 to 5 letters; no shuffled window kept more than 5 letters, and the floor, twice that, makes all 17 `too_few`. It has a cost: on the map as stored, the old verdict passed 12 of 20 windows; 4 (10 to 16 letters) are `strong` now and 8 with 1 to 7 letters are `too_few`, 2 of them "well above every null" on 7 letters. Small windows near the floor are better read as part of a larger area. `--min-letters` changes the floor; raise it for a read that must be sure.
+
+**`weak` is not a pass** (Model output, 14 October 2026). On 24 synthetic pages with no letters (`eval_pages.py`'s blank pages, 12 papyrus-like texture and 12 clutter, seeds 21 and 22), each read twice with four nulls, once with the size searched and once with the true 24 px given, 47 of the 48 reads are `none`; one texture page read at a searched size kept 134 letters against a largest null of 126 (ratio 1.06), which is `weak`. A page with no text at all can be `weak`, which is why the advice for `weak` starts with the letter size.
+
+The numbers are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026), and both checks rerun with `python scripts/letters/eval_controls.py windows MAP.tif --weights W.npz` (on the w013 map averaged 16 by 16; defaults: 86 px, 520 by 1000 px windows, three shuffled copies) and `python scripts/letters/eval_controls.py blanks --weights W.npz`.
 
 ## How well it reads
 
@@ -216,7 +285,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 
 | File | What it does |
 | --- | --- |
-| [`kit/letterread.py`](../kit/letterread.py) | The reader: image loading (block-averaged while loading when over the budget; zarr and OME-Zarr), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout, nulls, orientation, overlay, released weights |
+| [`kit/letterread.py`](../kit/letterread.py) | The reader: image loading (block-averaged while loading when over the budget; zarr and OME-Zarr), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout, nulls, control map, status codes per read, column and line, orientation, overlay, released weights |
 | [`kit/greeklm.py`](../kit/greeklm.py) | Kneser-Ney letter n-grams for Greek in scriptio continua, from TEI texts |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
@@ -225,9 +294,10 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 | [`scripts/letters/train_linenet.py`](../scripts/letters/train_linenet.py) | Training (torch, CPU or CUDA), export to `linenet-v1` |
 | [`scripts/letters/finetune_maps.py`](../scripts/letters/finetune_maps.py) | Fine-tuning on real map lines whose text is published; a '?' in the text is a wildcard |
 | [`scripts/letters/eval_p172.py`](../scripts/letters/eval_p172.py), [`compare_p172.py`](../scripts/letters/compare_p172.py), [`eval_pages.py`](../scripts/letters/eval_pages.py) | PHerc. 172 drawings, paired bootstrap, whole synthetic pages |
+| [`scripts/letters/eval_controls.py`](../scripts/letters/eval_controls.py) | The control status checked on map windows (as stored and tile-shuffled) and on synthetic pages with no letters |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls, weights download, big images and their formats, letter size in units, overlay, letter language model) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download, big images and their formats, letter size in units, overlay, letter language model) |
 
 ## Related work
 

@@ -9142,6 +9142,70 @@
     "orientations_read": "as stored, mirrored left to right, turned 180 degrees; the vertical flip was not read"
    },
    "verdict": "U1 not shown: letters-v2-real passes the reader control but makes 0 ordered pairs on the published text (no decoy makes any) and no read line scores 5 or more on any published line; U2 not resolved (0 against 0); U3 does not count, since letters-v1 fails the reader control (Model output). Post hoc, the same chain read over the six labelled segments' whole maps makes 7 pairs against a decoy maximum of 1, all on w013 and w018, where letters-v2-real's letter error is lowest (0.17 and 0.23 in the region test), and none on w023 (as large as w018), w028, w029 and w031, where it errs on about one letter in two; so the test could pass only if the reader's error on the unlabelled maps were that low, it had little power, and it cannot tell whether maps of unlabelled text are harder to read (Interpretation)."
+  },
+  {
+   "date": "2026-10-14",
+   "source": "docs/letter-reader.md (sections The control map and Why these rules)",
+   "claim": "Model output on a published scroll's public map (PHerc. 1667 w013, averaged 16 by 16 to about 38 um) and on synthetic pages with no letters; not a reading, no hidden text",
+   "check": "the reader's control status (kit/letterread.py control_status: floor MIN_LETTERS 10, factor STRONG_FACTOR 3 over the largest null and the control map) and the control map read on the image's lines",
+   "model": "letters-v2-real step 30000 (SHA-256 44946dad...)",
+   "w013_whole_map": {
+    "letter_px": 86,
+    "lines": 13,
+    "letters_kept": 122,
+    "null_letters_kept": [
+     43,
+     33,
+     27,
+     28
+    ],
+    "status": "weak",
+    "ratio": 2.84,
+    "chance_per_line": 2.52,
+    "kept_on_lines_0_to_9": 110,
+    "control_map_same_map": {
+     "letters_kept": 122,
+     "status": "none"
+    },
+    "control_map_tile_shuffled_copy": {
+     "letters_kept": 40,
+     "ratio": 3.05,
+     "status": "weak"
+    },
+    "unchanged": "letters, boxes, confidences and control counts identical to the read before the status was added"
+   },
+   "w013_windows_520_by_1000_px": {
+    "read": "letter_px 86, four nulls, floor from each window's own nulls",
+    "as_stored": {
+     "windows": 20,
+     "old_verdict_passed": 12,
+     "strong": 4,
+     "too_few": 8,
+     "none": 8,
+     "strong_letters_kept": "10 to 16",
+     "too_few_letters_kept": "1 to 7"
+    },
+    "tile_shuffled_copies": {
+     "copies": 3,
+     "windows": 60,
+     "old_verdict_passed": 17,
+     "old_well_above": 2,
+     "letters_kept_where_old_passed": "1 to 5",
+     "max_letters_kept": 5,
+     "too_few": 17,
+     "none": 43
+    }
+   },
+   "synthetic_blank_pages": {
+    "generator": "scripts/letters/eval_pages.py blank_page, letter height 24 px, seeds 21 and 22",
+    "pages": 24,
+    "reads": 48,
+    "reads_per_page": "size searched, and 24 px given; four nulls",
+    "none": 47,
+    "weak": 1,
+    "weak_read": "texture page with the size searched: 134 kept against a largest null of 126"
+   },
+   "reproduce": "python scripts/letters/eval_controls.py windows w013-b16.tif --weights W.npz (defaults 86 px, 520 by 1000 px, 3 copies); python scripts/letters/eval_controls.py blanks --weights W.npz"
   }
  ],
  "orientation_checks": [

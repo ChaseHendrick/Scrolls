@@ -705,6 +705,190 @@ class BigImageTest(unittest.TestCase):
 
 
 @unittest.skipIf(np is None, "numpy not installed")
+class ControlStatusTest(unittest.TestCase):
+    """Status codes, the floor, per-line and per-column counts, the control map and where they are shown."""
+
+    def test_status_codes(self):
+        S = R.control_status
+        self.assertEqual(S(50, []), "no_control")
+        self.assertEqual(S(50, [], control_n=0), "no_control")
+        self.assertEqual(S(40, [2, 5]), "strong")
+        self.assertEqual(S(15, [2, 5]), "weak")                   # above every null, not three times the largest
+        self.assertEqual(S(16, [2, 5]), "strong")
+        self.assertEqual(S(5, [2, 5]), "none")                    # a tie with the largest null is not above it
+        self.assertEqual(S(4, [0, 1]), "too_few")                 # verdict() called this "well above every null"
+        self.assertEqual(S(9, [0, 0]), "too_few")
+        self.assertEqual(S(10, [0, 0]), "strong")                 # a null of 0 counts as 1, as in verdict()
+        self.assertEqual(S(3, [5, 1]), "none")                    # few letters and below a null: noise, not too_few
+        self.assertEqual(S(0, [0, 0]), "none")
+        self.assertEqual(S(4, [0, 1], min_letters=4), "strong")
+        # the control map: more than three times its letters for strong, more than it at all for weak
+        self.assertEqual(S(40, [2, 5], control_n=13), "strong")
+        self.assertEqual(S(40, [2, 5], control_n=14), "weak")
+        self.assertEqual(S(40, [2, 5], control_n=40), "none")
+        self.assertEqual(S(40, [2, 5], control_n=0), "strong")
+        self.assertEqual(S(8, [1, 1], control_n=9), "none")
+        self.assertEqual(S(8, [1, 1], control_n=2), "too_few")
+
+    def test_status_keeps_the_old_verdicts_meaning(self):
+        old = {"confident letters well above every null": "strong",
+               "more confident letters than every null, but within a factor of three": "weak",
+               "confident letters NOT above the nulls: treat every letter here as noise": "none"}
+        for n in range(0, 60):
+            for nulls in ([0], [1, 0], [3, 7], [12], [19, 2, 5, 8]):
+                st = R.control_status(n, nulls)
+                if n >= R.MIN_LETTERS or st == "none":
+                    self.assertEqual(old[R.verdict(n, nulls)], st, (n, nulls))
+                else:
+                    self.assertEqual(st, "too_few")
+                    self.assertNotIn("NOT", R.verdict(n, nulls))
+        self.assertEqual(R.verdict(10, []), "no control run (nulls=0): nothing here can be trusted")
+
+    def test_report_ratio_and_status_line(self):
+        c = R.control_report(122, [43, 33, 27, 28])
+        self.assertEqual((c["ratio"], c["status"], c["min_letters"]), (2.84, "weak", 10))
+        self.assertNotIn("control_map", c)
+        self.assertEqual(R.status_line(c), "weak (122 letters kept; nulls 43, 33, 27, 28, ratio 2.84 to the largest). "
+                                           "Confident letters above every control, but not three times above all of "
+                                           "them: weak evidence.")
+        self.assertEqual(R.status_line(c, sentence=False),
+                         "weak (122 letters kept; nulls 43, 33, 27, 28, ratio 2.84 to the largest)")
+        c = R.control_report(6, [1, 0], control_n=0, min_letters=8)
+        self.assertEqual((c["ratio"], c["control_map"]), (6.0, {"letters_kept": 0, "ratio": 6.0}))
+        self.assertEqual(R.status_line(c), "too_few (6 letters kept; nulls 1, 0, ratio 6 to the largest; control map 0, "
+                                           "ratio 6). Too few confident letters to judge (fewer than 8).")
+        c = R.control_report(30, [])
+        self.assertIsNone(c["ratio"])
+        self.assertEqual(R.status_line(c), "no_control (30 letters kept). No control run (nulls=0): nothing here can be "
+                                           "trusted.")
+        for st, text in R.STATUS_TEXT.items():
+            self.assertFalse(chr(0x2014) in text or chr(0x2013) in text, st)   # no long dashes
+            self.assertEqual(R.control_report(*{"strong": (40, [1]), "weak": (20, [10]), "none": (1, [5]),
+                                                "too_few": (5, [0]), "no_control": (5, [])}[st])["status"], st)
+
+    def test_counts_per_line_and_per_column(self):
+        img = two_column_image(gap=64)
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        res = R.analyze(img, net, letter_px=16, nulls=4, p_min=0.6)
+        c, cols = res["control"], res["columns"]
+        self.assertEqual(len(cols), 2)
+        self.assertEqual(sum(col["control"]["letters_kept"] for col in cols), c["letters_kept"])
+        self.assertEqual([sum(col["control"]["null_letters_kept"][k] for col in cols) for k in range(4)],
+                         c["null_letters_kept"])
+        for ci, col in enumerate(cols):
+            cc = col["control"]
+            self.assertEqual(cc["letters_kept"], sum(r["n_kept"] for r in res["lines"] if r["column"] == ci))
+            self.assertAlmostEqual(cc["chance"], float(np.mean(cc["null_letters_kept"])), places=2)
+            self.assertEqual(cc["status"], R.control_status(cc["letters_kept"], cc["null_letters_kept"]))
+            for r in res["lines"]:
+                if r["column"] == ci:   # the nulls scramble positions within the column: one chance rate per column
+                    self.assertAlmostEqual(r["chance"], cc["chance"] / col["lines"], places=1)
+        self.assertEqual(c["status"], R.control_status(c["letters_kept"], c["null_letters_kept"]))
+        self.assertEqual(c["ratio"], round(c["letters_kept"] / max(1, max(c["null_letters_kept"])), 2))
+        floor = R.analyze(img, net, letter_px=16, nulls=4, p_min=0.6, min_letters=c["letters_kept"] + 1)
+        self.assertIn(floor["control"]["status"], ("too_few", "none"))
+        self.assertEqual(floor["lines"], res["lines"])
+        none = R.analyze(img, net, letter_px=16, nulls=0, p_min=0.6)
+        self.assertEqual(none["control"]["status"], "no_control")
+        self.assertTrue(all(r["chance"] is None for r in none["lines"]))
+        self.assertTrue(all(col["control"]["chance"] is None for col in none["columns"]))
+        text = R.text_summary(res)
+        for words in ("status: " + R.status_line(c), "column 1 (x ", "kept, chance"):
+            self.assertIn(words, text)
+
+    def test_control_map_is_read_on_the_images_lines(self):
+        img = lined_image()
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        res = R.read(img, net, letter_px=16, nulls=2, p_min=0.0, control=img.copy())
+        cm = res["control"]["control_map"]
+        self.assertGreater(cm["letters_kept"], 0)
+        self.assertEqual(cm["letters_kept"], res["control"]["letters_kept"])    # the same map: the check fails
+        self.assertEqual(cm["ratio"], 1.0)
+        self.assertEqual(res["control"]["status"], "none")
+        self.assertEqual([r["control_map_kept"] for r in res["lines"]], [r["n_kept"] for r in res["lines"]])
+        alone = R.read(img, net, letter_px=16, nulls=2, p_min=0.0)
+        self.assertEqual(res["lines"][0]["letters"], alone["lines"][0]["letters"])   # the control changes no letter
+        self.assertEqual(res["p_min"], alone["p_min"])
+        self.assertEqual(res["orientation"], alone["orientation"])
+        # A flat control has no lines of its own; it is still read on every line of the image.
+        flat = R.read(img, net, letter_px=16, nulls=2, control=np.full_like(img, 0.3))
+        self.assertEqual(len([r for r in flat["lines"] if "control_map_kept" in r]), len(flat["lines"]))
+        self.assertEqual(sum(r["control_map_kept"] for r in flat["lines"]), flat["control"]["control_map"]["letters_kept"])
+        self.assertEqual(flat["control"]["status"], R.control_status(
+            flat["control"]["letters_kept"], flat["control"]["null_letters_kept"],
+            flat["control"]["control_map"]["letters_kept"]))
+        with self.assertRaisesRegex(ValueError, "same surface"):
+            R.read(img, net, letter_px=16, nulls=1, control=img[:-1])
+        with mock.patch.object(R, "analyze", wraps=R.analyze) as spy:
+            R.read(img, net, letter_px=16, nulls=1, control=img)
+        self.assertIsNotNone(spy.call_args_list[0].kwargs["control"])
+        self.assertTrue(all("control" not in c.kwargs for c in spy.call_args_list[1:]))   # orientation reads: no control
+        self.assertIn("control map: ", R.text_summary(res))
+
+    def test_cli_control_map_and_floor(self):
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img, rev, short = Path(d) / "img.npy", Path(d) / "rev.npy", Path(d) / "short.npy"
+            np.save(img, lined_image())
+            np.save(rev, lined_image(seed=5)[:, ::-1].copy())
+            np.save(short, lined_image()[:-10])
+            base = ["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "2", "--no-orientation"]
+            code, out, err = run_cli(base + ["--json", "--control", str(rev), "--min-letters", "3"])
+            self.assertEqual(code, 0, err)
+            c = json.loads(out)["control"]
+            self.assertEqual((c["control_map"]["file"], c["min_letters"]), (str(rev), 3))
+            self.assertIn(c["status"], R.STATUS_TEXT)
+            code, out, err = run_cli(base + ["--control", str(rev), "--crop", "0", "90", "0", "300"])
+            self.assertEqual(code, 0, err)
+            self.assertIn(f"control map {rev}: ", out)
+            self.assertIn("status: ", out)
+            for extra, words in ((["--control", str(short)], "same surface"),
+                                 (["--control", str(Path(d) / "missing.npy")], "no such file"),
+                                 (["--min-letters", "0"], "--min-letters")):
+                with mock.patch.object(R, "read", side_effect=AssertionError("read before the checks")):
+                    code, _, err = run_cli(base + extra)
+                self.assertEqual(code, 2, extra)
+                self.assertIn(words, err)
+        args = cli.build_parser().parse_args(["letterread", "x.png", "--weights", "w.npz"])
+        self.assertEqual(args.min_letters, R.MIN_LETTERS)
+
+    def test_eval_controls_windows_script(self):
+        sys.path.insert(0, str(ROOT / "scripts" / "letters"))
+        try:
+            import eval_controls
+        finally:
+            sys.path.remove(str(ROOT / "scripts" / "letters"))
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "img.npy"
+            np.save(img, lined_image())                                           # 150 x 400
+            with contextlib.redirect_stdout(io.StringIO()):
+                res = eval_controls.windows(img, w, letter_px=16, size=(75, 200), copies=1, nulls=1)
+        self.assertEqual((res["summary"]["as_stored"]["windows"], res["summary"]["shuffled"]["windows"]), (4, 4))
+        self.assertTrue(all(r["status"] in R.STATUS_TEXT and r["old"] in ("well above", "above", "NOT above")
+                            for r in res["windows"]))
+
+    def test_banner_shows_the_status_and_its_counts(self):
+        try:
+            from PIL import Image  # noqa: F401
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        res = {"letter_px": 16.0, "input_scale": 1, "lines": [],
+               "control": R.control_report(122, [43, 33, 27, 28], control_n=40)}
+        text = R.banner_text(res)
+        self.assertEqual(text.split("\n"), [R.NOTE, "Controls: " + R.status_line(res["control"])])
+        self.assertEqual(R.banner_text({"lines": []}), R.NOTE)
+        for width in (60, 400, 4000):
+            lines = R.banner_layout(width, text)[1]
+            self.assertEqual(" ".join(lines), " ".join(text.split()), width)
+            self.assertTrue(any(line.startswith("Controls:") for line in lines), width)   # on a line of its own
+        plain = R.overlay_geometry((100, 400), {"letter_px": 16.0, "input_scale": 1, "lines": []})
+        self.assertGreater(R.overlay_geometry((100, 400), res)["banner_rows"], plain["banner_rows"])
+
+
+@unittest.skipIf(np is None, "numpy not installed")
 class WeightsTest(unittest.TestCase):
     def registry(self, d, src, sha, url=True):
         reg = Path(d) / "reg.json"

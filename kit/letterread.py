@@ -10,6 +10,11 @@ Controls travel with every result, and each can fail:
 - nulls: the same reader on tile-shuffled and phase-randomised copies of the image. The
   confidence threshold is set so the nulls give few letters, and the result says how many
   letters the real image kept above it against each null;
+- control map (optional): a second image of the same surface, such as its reverse-depth ink map,
+  read on the same lines at the same confidence floor;
+- status: one code for the whole read and one per column (strong, weak, none, too_few or
+  no_control; control_status), the ratio to the largest null, and per line the count expected by
+  chance from the nulls, so a person or a pipeline can act on the controls;
 - orientation: text the right way round should keep more letters as stored than mirrored or
   turned 180 degrees (weak for Greek capitals, many of which are symmetric);
 - language off: the ink-only decode is always reported, and a language-model decode, when
@@ -50,6 +55,19 @@ NO_LETTER_SIZE = ("no letter size: the image shows no regular line spacing to es
                   "height with --letter-px H (image pixels), or with --letter-mm MM and --um-per-px UM (for "
                   "example --letter-mm 3.3 --um-per-px 38.4), or read a window that holds several lines with "
                   "--crop Y0 Y1 X0 X1")
+# Controls. A read (or a column) needs at least MIN_LETTERS confident letters before its counts can
+# pass, and more than STRONG_FACTOR times every control's count (the largest null, and the control
+# map when one is read) to be "strong"; docs/letter-reader.md says why these values.
+MIN_LETTERS = 10
+STRONG_FACTOR = 3
+STATUS_TEXT = {
+    "strong": "Confident letters more than three times every control: worth a person's check, still model output "
+              "and not a reading.",
+    "weak": "Confident letters above every control, but not three times above all of them: weak evidence.",
+    "none": "Confident letters NOT above the controls: treat every letter here as noise.",
+    "too_few": "Too few confident letters to judge (fewer than {min_letters}).",
+    "no_control": "No control run (nulls=0): nothing here can be trusted.",
+}
 
 
 # ------------------------------------------------------------------ released weights
@@ -851,7 +869,8 @@ def estimate_letter_px(a):
 
 def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0, deskew_deg=6.0, lines=None,
             p_min=None, null_rate=0.05, lm=None, lm_weight=0.0, beam=32, scale_search=True, columns="auto",
-            normalized=False, input_scale=1, letter_px_fallback=True, progress=None):
+            normalized=False, input_scale=1, letter_px_fallback=True, progress=None, control=None,
+            min_letters=MIN_LETTERS):
     """Read every text line of a 2D image. Returns a JSON-able dict with letters, boxes, confidences and controls.
 
     letter_px: letter height in image pixels. When None it is estimated, and with scale_search the
@@ -869,9 +888,20 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
     normalized: img is already normalize()d (read() and the command line normalise once).
     input_scale: img was block-averaged by this integer from the input (load_reduced); letter_px and
     lines are then in input pixels, and so are every row, column, box and letter height returned.
-    progress: optional callable taking a short message, for long reads."""
+    progress: optional callable taking a short message, for long reads.
+    control: a second image of the same shape (the reverse-depth map of the same surface, say),
+    normalised like img; it is read on the image's own columns, deskew and lines at the same letter
+    size and confidence floor, and its kept letters go into the status (control_status).
+    min_letters: the fewest kept letters a read or a column needs before its counts can pass."""
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
     a0 = np.asarray(img, dtype=np.float32) if normalized else normalize(img, polarity)
+    c0 = None
+    if control is not None:
+        if np.shape(control) != np.shape(img):
+            raise ValueError(f"the control image is {' x '.join(map(str, np.shape(control)))} px but the image is "
+                             f"{' x '.join(map(str, np.shape(img)))}; give a map of the same surface on the same grid "
+                             "(such as its reverse-depth map), cropped the same way")
+        c0 = np.asarray(control, dtype=np.float32) if normalized else normalize(control, polarity)
     k_in = input_scale
     if k_in != 1:
         letter_px = None if letter_px is None else float(letter_px) / k_in
@@ -897,9 +927,11 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
             letter_px = best["letter_px"] / k_in if k_in != 1 else best["letter_px"]
             how += ", then scale search"
     if progress:
-        progress(f"reading at letter height {letter_px * k_in:.1f} px, with {nulls} null copies")
+        progress(f"reading at letter height {letter_px * k_in:.1f} px, with {nulls} null copies"
+                 + (" and the control image on the same lines" if c0 is not None else ""))
     res = _analyze_at(a0, net, letter_px, nulls=nulls, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
-                      null_rate=null_rate, lm=lm, lm_weight=lm_weight, beam=beam, columns=columns, scale_out=k_in)
+                      null_rate=null_rate, lm=lm, lm_weight=lm_weight, beam=beam, columns=columns, scale_out=k_in,
+                      control=c0, min_letters=min_letters)
     res["input_shape"] = list(np.shape(img)) if k_in == 1 else [n * k_in for n in np.shape(img)]
     res["input_scale"] = k_in
     if k_in != 1:
@@ -914,8 +946,10 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
 
 
 def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, null_rate, lm=None, lm_weight=0.0,
-                beam=32, max_lines=None, columns="auto", scale_out=1):
-    """One read at one letter height of a normalised image; scale_out multiplies every row, column and box on the way out."""
+                beam=32, max_lines=None, columns="auto", scale_out=1, control=None, min_letters=MIN_LETTERS):
+    """One read at one letter height of a normalised image; scale_out multiplies every row, column and box on the way out.
+
+    control: a normalised image of a0's shape, read on a0's columns, deskew and lines at the same floor."""
     h = float(net.letter_px)
     f = h / float(letter_px)
     so = scale_out
@@ -942,17 +976,31 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
     # Nulls are made column by column, like the data, and pooled by kind (one block: as before).
     per_block = [null_images(sub, h, nulls, seed + bi) for bi, (_, _, _, sub, _) in enumerate(blocks)]
     widest = max(range(len(blocks)), key=lambda bi: blocks[bi][1] - blocks[bi][0])
-    null_lps = [(per_block[widest][k][0], [lp for (_, _, _, _, ys), nb in zip(blocks, per_block)
-                                          for lp in read_bands(net, nb[k][1], ys, h)]) for k in range(nulls)]
+    # null_dec[k][bi]: best-path decodes of null k on column bi's lines
+    null_dec = [[[ctc_greedy(lp, net.alphabet) for lp in read_bands(net, nb[k][1], ys, h)]
+                 for (_, _, _, _, ys), nb in zip(blocks, per_block)] for k in range(nulls)]
     width_letters = sum(max(1.0, sub.shape[1] / (1.15 * h)) * max(1, len(ys)) for _, _, _, sub, ys in blocks)
-    null_conf = sorted((c for _, L in null_lps for lp in L for _, c, _, _ in ctc_greedy(lp, net.alphabet)), reverse=True)
+    null_conf = sorted((c for D in null_dec for col in D for dec in col for _, c, _, _ in dec), reverse=True)
     if p_min is None:
-        allowed = int(null_rate * width_letters * max(1, len(null_lps)))
+        allowed = int(null_rate * width_letters * max(1, nulls))
         p_min = float(null_conf[allowed]) if len(null_conf) > allowed else 0.0
         p_min = max(p_min, 0.5)
+
+    def n_kept(decs):
+        return sum(1 for dec in decs for _, c, _, _ in dec if c >= p_min)
+
+    null_col = [[n_kept(null_dec[k][bi]) for k in range(nulls)] for bi in range(len(blocks))]   # per column, per null
+    ctrl_lines = None                 # per column, per line: the control image's kept letters
+    if control is not None:
+        cr = resize(control, a.shape)
+        ctrl_lines = [[n_kept([ctc_greedy(lp, net.alphabet)]) for lp in read_bands(net, shear(cr[:, x0:x1], angle), ys, h)]
+                      for x0, x1, angle, _, ys in blocks]
     out_lines = []
     for ci, ((x0, _, angle, sub, ys), L) in enumerate(zip(blocks, lps)):
-        for y, lp in zip(ys, L):
+        # The nulls scramble positions across the whole column, so their letters say nothing about which
+        # line they came from: a line's chance count is the column's mean null count over its lines.
+        chance = round(float(np.mean(null_col[ci])) / len(ys), 2) if nulls and ys else None
+        for li, (y, lp) in enumerate(zip(ys, L)):
             letters = []
             for ch, c, t0, t1 in ctc_greedy(lp, net.alphabet):
                 lx0 = (t0 * net.stride - 0.3 * h) / f * so
@@ -963,20 +1011,29 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
                 letters.append({"glyph": ch, "p": round(c, 3), "kept": c >= p_min, "box": box})
             row = {"line": len(out_lines), "column": ci, "y": round(y / f * so, 1),
                    "ink_only": "".join(l["glyph"] if l["kept"] else "·" for l in letters),
-                   "letters": letters, "n_kept": sum(l["kept"] for l in letters)}
+                   "letters": letters, "n_kept": sum(l["kept"] for l in letters), "chance": chance}
+            if ctrl_lines is not None:
+                row["control_map_kept"] = ctrl_lines[ci][li]
             if lm is not None and lm_weight:
                 row["with_lm"], _ = ctc_beam(lp, net.alphabet, lm, lm_weight, beam)
             out_lines.append(row)
-    null_out = [{"kind": kind, "letters_kept": sum(1 for lp in L for _, c, _, _ in ctc_greedy(lp, net.alphabet) if c >= p_min)}
-                for kind, L in null_lps]
     n_data = sum(r["n_kept"] for r in out_lines)
-    n_null = [r["letters_kept"] for r in null_out]
+    n_null = [sum(col[k] for col in null_col) for k in range(nulls)]
+    null_out = [{"kind": per_block[widest][k][0], "letters_kept": n_null[k]} for k in range(nulls)]
+    n_ctrl = None if ctrl_lines is None else sum(map(sum, ctrl_lines))
+    columns_out = []
+    for ci, (x0, x1, angle, _, ys) in enumerate(blocks):
+        col = control_report(sum(r["n_kept"] for r in out_lines if r["column"] == ci), null_col[ci],
+                             None if ctrl_lines is None else sum(ctrl_lines[ci]), min_letters)
+        col["chance"] = round(float(np.mean(null_col[ci])), 2) if nulls else None
+        columns_out.append({"x0": round(x0 / f * so, 1), "x1": round(x1 / f * so, 1), "deskew_deg": angle,
+                            "lines": len(ys), "control": col})
+    control_out = {"letters_kept": n_data, "null_letters_kept": n_null, "nulls": null_out,
+                   "verdict": verdict(n_data, n_null)}
+    control_out.update(control_report(n_data, n_null, n_ctrl, min_letters))
     return {"note": NOTE, "engine": "linenet", "letter_px": round(float(letter_px) * so, 2), "working_scale": round(f / so, 5),
-            "deskew_deg": blocks[0][2], "p_min": round(p_min, 3), "lines": out_lines,
-            "columns": [{"x0": round(x0 / f * so, 1), "x1": round(x1 / f * so, 1), "deskew_deg": angle, "lines": len(ys)}
-                        for x0, x1, angle, _, ys in blocks],
-            "control": {"letters_kept": n_data, "null_letters_kept": n_null, "nulls": null_out,
-                        "verdict": verdict(n_data, n_null)}}
+            "deskew_deg": blocks[0][2], "p_min": round(p_min, 3), "lines": out_lines, "columns": columns_out,
+            "control": control_out}
 
 
 def verdict(n, null_n):
@@ -988,6 +1045,54 @@ def verdict(n, null_n):
     if n > m:
         return "more confident letters than every null, but within a factor of three"
     return "confident letters NOT above the nulls: treat every letter here as noise"
+
+
+def control_status(n, null_n, control_n=None, min_letters=MIN_LETTERS):
+    """Status code of n kept letters against the nulls' counts and, when one was read, the control map's count.
+
+    no_control: no nulls were run. none: n is not above the largest null, or not above the control
+    map. too_few: above them, but fewer than min_letters letters, too few to judge. strong: more
+    than STRONG_FACTOR times every control (a count of 0 counts as 1, as in verdict()). weak: the
+    rest. Without a control map and with at least min_letters letters, none, weak and strong are
+    verdict()'s three cases; verdict() itself is unchanged."""
+    if not null_n:
+        return "no_control"
+    refs = [max(null_n)] + ([control_n] if control_n is not None else [])
+    if any(n <= r for r in refs):
+        return "none"
+    if n < min_letters:
+        return "too_few"
+    if all(n > STRONG_FACTOR * max(1, r) for r in refs):
+        return "strong"
+    return "weak"
+
+
+def control_report(n, null_n, control_n=None, min_letters=MIN_LETTERS):
+    """The controls of one read or one column as JSON: counts, ratio to the largest null, status code and sentence.
+
+    ratio is n / max(1, largest null), so a ratio over STRONG_FACTOR is verdict()'s "well above";
+    control_map (when control_n is given) holds the control image's kept letters and n over them."""
+    st = control_status(n, null_n, control_n, min_letters)
+    out = {"letters_kept": n, "null_letters_kept": list(null_n), "min_letters": min_letters,
+           "ratio": round(n / max(1, max(null_n)), 2) if null_n else None,
+           "status": st, "status_text": STATUS_TEXT[st].format(min_letters=min_letters)}
+    if control_n is not None:
+        out["control_map"] = {"letters_kept": control_n, "ratio": round(n / max(1, control_n), 2)}
+    return out
+
+
+def status_line(c, sentence=True):
+    """One line of text for a control block (res["control"], or a column's "control"): status, counts, sentence.
+
+    For example: weak (122 letters kept; nulls 43, 33, 27, 28, ratio 2.84 to the largest). Confident
+    letters above every control, but not three times above all of them: weak evidence."""
+    bits = [f"{c['letters_kept']} letters kept"]
+    if c["null_letters_kept"]:
+        bits.append(f"nulls {', '.join(map(str, c['null_letters_kept']))}, ratio {c['ratio']:g} to the largest")
+    if "control_map" in c:
+        bits.append(f"control map {c['control_map']['letters_kept']}, ratio {c['control_map']['ratio']:g}")
+    out = f"{c['status']} ({'; '.join(bits)})"
+    return f"{out}. {c['status_text']}" if sentence else out
 
 
 def _unshear_box(x0, x1, y0, y1, angle, width):
@@ -1013,15 +1118,22 @@ def letter_px_check(a0, letter_px, input_scale=1):
     return out
 
 
-def read(img, weights, *, orientation=True, normalized=False, progress=None, **kw):
+def read(img, weights, *, orientation=True, normalized=False, progress=None, control=None, **kw):
     """analyze() plus orientation evidence: confident letters as stored, mirrored and turned 180 degrees.
 
     The image is normalised once (normalize_for_reading) and that one image serves the main read, its
     nulls and the orientation reads. When a letter height is given, it is checked against the
-    line-pitch estimate (letter_px_check; a warning in the result when they differ by over 2x)."""
+    line-pitch estimate (letter_px_check; a warning in the result when they differ by over 2x).
+    control: a second image of the same shape, such as the reverse-depth map of the same surface,
+    normalised on its own (or already normalised, with normalized=True); analyze() reads it on the
+    image's lines at the same letter size and confidence floor, and the status counts it."""
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
-    a0 = np.asarray(img, dtype=np.float32) if normalized else normalize_for_reading(img, kw.get("polarity", "bright"))
-    res = analyze(a0, net, normalized=True, progress=progress, **kw)
+    polarity = kw.get("polarity", "bright")
+    a0 = np.asarray(img, dtype=np.float32) if normalized else normalize_for_reading(img, polarity)
+    c0 = None
+    if control is not None:
+        c0 = np.asarray(control, dtype=np.float32) if normalized else normalize_for_reading(control, polarity)
+    res = analyze(a0, net, normalized=True, progress=progress, control=c0, **kw)
     if res["letter_px_from"] == "given":
         check = letter_px_check(a0, res["letter_px"], kw.get("input_scale", 1))
         if check is not None:
@@ -1068,15 +1180,38 @@ def text_summary(res):
     if multi:
         out.append(f"{len(res['columns'])} columns at x " + ", ".join(f"{c['x0']} to {c['x1']}" for c in res["columns"]))
     for r in res["lines"]:
-        s = (f"col {r['column']} " if multi else "") + f"line {r['line']:>2} y={r['y']:>7}: {r['ink_only'] or '(none)'}"
+        s = (f"col {r['column']} " if multi else "") + f"line {r['line']:>2} y={r['y']:>7}{_line_counts(r)}: " \
+            f"{r['ink_only'] or '(none)'}"
         if "with_lm" in r:
             s += f"   | with LM: {r['with_lm']}"
         out.append(s)
+    if multi and all("control" in col for col in res["columns"]):
+        for i, col in enumerate(res["columns"]):
+            chance = "" if col["control"].get("chance") is None else f", chance {col['control']['chance']:g}"
+            out.append(f"column {i} (x {col['x0']} to {col['x1']}): {status_line(col['control'], sentence=False)}{chance}")
     c = res["control"]
     out.append(f"control: {c['letters_kept']} letters kept vs nulls {c['null_letters_kept']}: {c['verdict']}")
+    if "control_map" in c:
+        name = f" {c['control_map']['file']}" if "file" in c["control_map"] else ""
+        out.append(f"control map{name}: {c['control_map']['letters_kept']} letters kept on the same lines at the same "
+                   "confidence floor")
+    if "status" in c:
+        out.append("status: " + status_line(c))
     if "orientation" in res:
         out.append(f"orientation: {res['orientation']['letters_kept']} (best {res['orientation']['best']})")
     return "\n".join(out)
+
+
+def _line_counts(r):
+    """A line's kept letters beside its chance count for the summary, such as " [ 15 kept, chance  2.52]"; "" for older results."""
+    if "chance" not in r and "control_map_kept" not in r:
+        return ""
+    bits = [f"{r['n_kept']:>3} kept"]
+    if r.get("chance") is not None:
+        bits.append(f"chance {r['chance']:>5.2f}")
+    if "control_map_kept" in r:
+        bits.append(f"control map {r['control_map_kept']:>3}")
+    return " [" + ", ".join(bits) + "]"
 
 
 GREEK_FONTS = ("DejaVuSans.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
@@ -1120,24 +1255,41 @@ def _wrap(text, font, width, draw):
     return lines + [cur] if cur else lines
 
 
+def _wrap_paragraphs(text, font, width, draw):
+    """_wrap() for each paragraph (newline-separated) of text, each starting on a new line; None as _wrap()."""
+    out = []
+    for para in text.split("\n"):
+        lines = _wrap(para, font, width, draw)
+        if lines is None:
+            return None
+        out += lines
+    return out
+
+
+def banner_text(res):
+    """The overlay banner's words: the model-output note, then the status of the controls and its counts when res has them."""
+    c = res.get("control") or {}
+    return NOTE + ("\nControls: " + status_line(c) if "status" in c else "")
+
+
 def banner_layout(width, text=NOTE):
     """(font, lines, line height, top offset, canvas width) that show all of `text` above an image `width` px wide.
 
     The font is about 1.2% of the width (10 to 40 px) and the words wrap onto as many lines as they
-    need; a word too wide for a narrow image first shrinks the font (down to 6 px), then widens the
-    canvas, so the whole note is always there."""
+    need, each paragraph (a newline in text) on new lines; a word too wide for a narrow image first
+    shrinks the font (down to 6 px), then widens the canvas, so the whole text is always there."""
     from PIL import Image, ImageDraw
     d = ImageDraw.Draw(Image.new("RGB", (1, 1)))
     size = max(10, min(40, int(0.012 * width)))
     while True:
         font = _banner_font(size)
-        lines = _wrap(text, font, width - 8, d)
+        lines = _wrap_paragraphs(text, font, width - 8, d)
         if lines is not None or size <= 6:
             break
         size -= 1
     if lines is None:
         width = int(math.ceil(max(d.textlength(w, font=font) for w in text.split()))) + 8
-        lines = _wrap(text, font, width - 8, d)
+        lines = _wrap_paragraphs(text, font, width - 8, d)
     _, top, _, bottom = d.textbbox((0, 0), "MgΩ|", font=font)
     return font, lines, (bottom - top) + max(2, (bottom - top) // 4), top, width
 
@@ -1145,7 +1297,7 @@ def banner_layout(width, text=NOTE):
 def _overlay_layout(shape, res, max_side):
     s = min(1.0, max_side / max(shape))
     H, W = max(1, int(round(shape[0] * s))), max(1, int(round(shape[1] * s)))
-    font, lines, lh, top, cw = banner_layout(W)
+    font, lines, lh, top, cw = banner_layout(W, banner_text(res))
     band = 6 + len(lines) * lh
     reduced = res.get("input_scale", 1) != 1 and list(shape) == res.get("reduced_shape")
     scale = s / res["input_scale"] if reduced else s          # overlay pixels per input pixel
@@ -1168,7 +1320,8 @@ def overlay(img, res, path, polarity="bright", max_side=OVERLAY_MAX_SIDE, normal
 
     Kept letters get a box and their glyph (green when p >= 0.8, yellow below); letters under the
     confidence floor get a grey box and no glyph; every outline is at least 2 px wide. A banner
-    above the image always carries the whole model-output note, wrapped to the width. The image is
+    above the image always carries the whole model-output note, wrapped to the width, and then the
+    status of the controls with its counts (banner_text). The image is
     shrunk to max_side pixels on its longer side; overlay_geometry() gives the scale. img may be the
     block-averaged image of a reduced read (boxes are mapped from input pixels), and normalized=True
     skips normalising it again. Glyphs need a font with Greek (DejaVu, Arial or FreeSans); without

@@ -180,7 +180,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
-| `letterread.py` | Greek letter reader: numpy CTC line network, layout, nulls and orientation controls, whole maps block-averaged while loading, overlay, released weights (numpy; Pillow and tifffile for images, zarr optional) |
+| `letterread.py` | Greek letter reader: numpy CTC line network, layout, null, control-map and orientation controls with a status code, whole maps block-averaged while loading, overlay, released weights (numpy; Pillow and tifffile for images, zarr optional) |
 | `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
 | `releases.py` | The release list and the README section written from it (`python -m kit releases`) |
 | `cli.py` | `python -m kit` entry point |
