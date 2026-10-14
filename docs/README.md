@@ -10,7 +10,7 @@ Updated 14 October 2026.
 
 | Topic | Home | Also see |
 | --- | --- | --- |
-| Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
+| Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
 | New here, from no idea to a first submission | [`start-here.md`](start-here.md) | [`pipeline.md`](pipeline.md) |
 | Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere) |
 | What has been read, tried and paid by everyone | [`state-of-play.md`](state-of-play.md) (checked 6 and 7 October; PHerc. 343 award row 9 and 14 October) | [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md), [`tricks.md`](tricks.md) |
@@ -22,7 +22,8 @@ Updated 14 October 2026.
 
 | Topic | Home | Also see |
 | --- | --- | --- |
-| Agent rules, standing decisions, repo map | [`../AGENTS.md`](../AGENTS.md) | [`AI-AGENTS.md`](AI-AGENTS.md) (full rulebook, public writing guide) |
+| Agent rules and standing decisions | [`../AGENTS.md`](../AGENTS.md) | [`AI-AGENTS.md`](AI-AGENTS.md) (full rulebook, public writing guide) |
+| Repository map, one row per module and script | [`MAP.md`](MAP.md) | The top-level map in [`../AGENTS.md`](../AGENTS.md) |
 | How we measure (controls, AUC, tracing, splits, cost) beside the community's practice | [`STANDARDS.md`](STANDARDS.md) | [`QUALITY.md`](QUALITY.md) (what each kind of claim needs), [`TESTING.md`](TESTING.md) |
 | Claim labels (Sourced fact, Model output, ...) | [`NOVELTY.md`](NOVELTY.md) | |
 | From idea to run to null or candidate | [`WORKFLOW.md`](WORKFLOW.md) | [`prereg/`](prereg/) |
@@ -33,7 +34,7 @@ Updated 14 October 2026.
 
 | Topic | Home | Also see |
 | --- | --- | --- |
-| What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`../AGENTS.md`](../AGENTS.md) repository map |
+| What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |

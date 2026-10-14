@@ -187,7 +187,7 @@ Measurements taken without a written standard, or standards that disagree. Each 
 | This repository keeps no register of which public labelled data has been used for development, by whom and when | Section 5 |
 | No pass criteria for surface QA tools (`kit overlap`, `kit meshaudit`, `kit surfacefix`) beyond their controls | Section 3 |
 | Label vocabularies differ: [`NOVELTY.md`](NOVELTY.md) lists Organizer result, Null and Candidate (private); AGENTS.md rule 5 adds Interpretation; some logs add Measured | Section 1 |
-| The documented test count is not pinned: [`TESTING.md`](TESTING.md) records 193 tests at the 7 October merge review and [`HANDOFF.md`](HANDOFF.md) records 253 in a later combined run | [`TESTING.md`](TESTING.md); [`HANDOFF.md`](HANDOFF.md) |
+| The documented test count is not pinned: [`TESTING.md`](TESTING.md) records 193 tests at the 7 October merge review and [`HANDOFF-archive.md`](HANDOFF-archive.md) records 253 in a later combined run | [`TESTING.md`](TESTING.md); [`HANDOFF-archive.md`](HANDOFF-archive.md) |
 | The Kaggle competitions' metrics and scores could not be read from the session that wrote this page, so the two Kaggle rows carry "not verified" | Sections 2, 3 and 5 |
 | No community standard exists for trace length, winding share, sheet-switch rate, tracer speed, 9 µm scroll ink, intervals or preregistration, so several of our choices have nothing to be compared against | Sections 2 to 4 |
 
