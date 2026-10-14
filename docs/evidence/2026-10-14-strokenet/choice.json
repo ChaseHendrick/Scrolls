@@ -1,0 +1,56 @@
+{
+ "chosen": "F_w16_d5_lr2e-3",
+ "args": [
+  "--depth",
+  "5",
+  "--width",
+  "16",
+  "--lr",
+  "2e-3"
+ ],
+ "rows": [
+  {
+   "name": "A_w16_d4_lr2e-3",
+   "final_select": 0.9315485792631911,
+   "best_select": 0.9429905438620247,
+   "best_step": 2000,
+   "n_params": 293969
+  },
+  {
+   "name": "B_w16_d4_lr1e-3",
+   "final_select": 0.9335402958310303,
+   "best_select": 0.9375256379723403,
+   "best_step": 2000,
+   "n_params": 293969
+  },
+  {
+   "name": "C_w16_d4_lr4e-3",
+   "final_select": 0.9309567760312772,
+   "best_select": 0.9415525229451349,
+   "best_step": 2000,
+   "n_params": 293969
+  },
+  {
+   "name": "D_w8_d4_lr2e-3",
+   "final_select": 0.9314888385861011,
+   "best_select": 0.9370110689491298,
+   "best_step": 1000,
+   "n_params": 73833
+  },
+  {
+   "name": "E_w32_d4_lr2e-3",
+   "final_select": 0.9276673862576047,
+   "best_select": 0.9460594773575984,
+   "best_step": 2000,
+   "n_params": 1173153
+  },
+  {
+   "name": "F_w16_d5_lr2e-3",
+   "final_select": 0.9376600638785335,
+   "best_select": 0.9484218260754043,
+   "best_step": 2000,
+   "n_params": 589393
+  }
+ ],
+ "tie_margin": 0.002
+}

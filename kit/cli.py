@@ -454,6 +454,35 @@ def cmd_greeklm(args):
     return 0
 
 
+def cmd_strokenet(args):
+    try:
+        import numpy as np
+        from . import strokenet
+        net = strokenet.load(args.weights)
+        crop = None
+        with strokenet.open_map(args.map, args.key) as img:          # keeps the dtype: exact pooling of integer maps
+            if args.crop:
+                used, moved = strokenet.snap_crop(args.crop, args.pixel_mm, shape=img.shape)
+                y0, y1, x0, x1 = used
+                img = img[y0:y1, x0:x1]
+                crop = {"requested": list(args.crop), "used": used, "origin_moved_to_lattice": moved}
+            res, grid = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
+                                          seed=args.seed, with_grid=True)
+        if crop:
+            res["crop"] = crop
+        if args.grid:
+            gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
+            np.save(gpath, grid)
+            res["grid_file"] = gpath
+    except (ImportError, OSError, KeyError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    if args.out:
+        Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
+    print(json.dumps(res, indent=1) if args.json else strokenet.text_summary(res))
+    return 0
+
+
 def build_parser():
     parser = argparse.ArgumentParser(prog="python -m kit", description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
@@ -733,6 +762,31 @@ def build_parser():
     p.add_argument("--max-side", type=int, default=viewer.MAX_SIDE)
     p.add_argument("--png", help="also write the panels side by side as a PNG")
     p.set_defaults(func=cmd_view)
+
+    p = sub.add_parser("strokenet", help="learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls")
+    p.add_argument("map", help=".npy, .npz, .tif or .png ink map on the organisers' 0 to 255 scale (ink bright)")
+    p.add_argument("--pixel-mm", type=float, required=True,
+                   help="map pixel size in mm (0.0024 for a 2.4 um map; an integer map at a whole fraction of "
+                        "0.048 mm is pooled exactly as the training windows)")
+    p.add_argument("--weights", default=None,
+                   help="StrokeNet .npz, or a released model name (default strokenet-paris4-v1, downloaded once, SHA-256 checked)")
+    p.add_argument("--key", help=".npz: array name (default: the first)")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="map pixels to keep; for an exact-pooling map the origin moves down to the 32 px training "
+                        "lattice, and the end is clipped to the map (the result records both boxes). The window rule "
+                        "then sees the crop alone; score the whole map for exactly the training rule")
+    p.add_argument("--stride", type=int, default=32,
+                   help="window step in 0.048 mm pixels (default 32, 1.5 mm, the training lattice)")
+    p.add_argument("--sample", type=int, default=64,
+                   help="kept windows drawn at random (with --seed) for the rotation and IAAFT controls (default 64)")
+    p.add_argument("--top", type=int, dest="sample", default=argparse.SUPPRESS, help=argparse.SUPPRESS)  # old name
+    p.add_argument("--seed", type=int, default=0)
+    p.add_argument("--grid", help="also save the window logit grid as .npy (NaN where a window was skipped); its "
+                                  "row and column starts are window_y_px and window_x_px in the result, every stride "
+                                  "except the last, which ends at the map's edge")
+    p.add_argument("--out", help="also write the result as JSON")
+    p.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_strokenet)
 
     p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null and orientation controls")
     p.add_argument("image", help=".npy, .npz, .tif or .png (ink bright by default)")
