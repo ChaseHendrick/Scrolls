@@ -1,21 +1,27 @@
 # Scrolls: Vesuvius Challenge workbench
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](#quick-start-kit)
+[![Vesuvius Challenge](https://img.shields.io/badge/Vesuvius_Challenge-scrollprize.org-b4965a.svg)](https://scrollprize.org/)
 
 ![Hero](docs/assets/readme-hero.svg)
 
 Research notes, a run planner, and an experiment ledger for the [Vesuvius Challenge](https://scrollprize.org/): reading the carbonized Herculaneum papyri from X-ray CT scans.
 
-**This repository does not claim that any letters have been found in any scroll.**
+> [!IMPORTANT]
+> **This repository does not claim that any letters have been found in any scroll.**
+
 The `kit/` package plans and records runs of the official open-source pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)). It does not reimplement that pipeline. Prize amounts, deadlines and eligible scrolls are a dated snapshot (checked 2026-10-11); [scrollprize.org/prizes](https://scrollprize.org/prizes) wins if they disagree.
 
 ## Start here (recommendation)
 
-If you are new, **go for Progress Prizes first, then First Letters**. Leave the Grand Prize for later.
+> [!TIP]
+> If you are new, **go for Progress Prizes first, then First Letters**. Leave the Grand Prize for later.
 
 See [scan availability and our processing status](docs/scan-status.md) for completed controls, partial jobs, planned runs and the official CT inventory.
 
-Private research and work that cannot be public live in **[Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private)** (access required). This repository contains public tools, public-data benchmarks and releasable reports.
+> [!NOTE]
+> Private research and work that cannot be public live in **[Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private)** (access required). This repository contains public tools, public-data benchmarks and releasable reports.
 
 1. **Read [`docs/start-here.md`](docs/start-here.md).** It is the plain-language path from "no idea" to a first submission, with what each step costs.
 2. **Join the [Vesuvius Challenge Discord](https://discord.gg/V4fJhvtaQn).** Registration there is a condition of winning the Grand Prize, and most announcements land there first.
@@ -108,7 +114,8 @@ bash scripts/mac-verify.sh                    # Apple Silicon: CPU vs MPS on the
 python -m unittest discover -s tests -v
 ```
 
-`plan` prints commands; it never runs them. They are copied from the official [ink detection tutorial](https://scrollprize.org/tutorial5), with each eligible volume's real S3 path resolved from the public bucket. The `run` ledger writes `experiments/<slug>/run.json`, which is gitignored. It hashes your readout rule when the run is created, so a rule edited after you looked is caught by `check`. It refuses to mark a submitted candidate `published` until the prize has been announced: the prize terms forbid going public first.
+> [!NOTE]
+> `plan` prints commands; it never runs them. They are copied from the official [ink detection tutorial](https://scrollprize.org/tutorial5), with each eligible volume's real S3 path resolved from the public bucket. The `run` ledger writes `experiments/<slug>/run.json`, which is gitignored. It hashes your readout rule when the run is created, so a rule edited after you looked is caught by `check`. It refuses to mark a submitted candidate `published` until the prize has been announced: the prize terms forbid going public first.
 
 ## The open prizes (snapshot 2026-10-11)
 
@@ -119,11 +126,12 @@ python -m unittest discover -s tests -v
 | [PHerc. Paris 4 title](https://scrollprize.org/prizes#first-title-prize) | $50k | 25 Jun 2027 | A papyrologist-readable image of Scroll 1's title |
 | [Progress Prizes](https://scrollprize.org/prizes#progress-prizes) | $20k best of month, plus $250 to $20k awards | monthly, several entries a month allowed (next: 31 Oct 2026) | Open-source tools, models, datasets, fixes, reports that help read the scrolls |
 
-All prizes require open-sourcing your method (permissive license) to accept the money. Details, submission contents and the eligible-scroll lists: [`docs/prizes.md`](docs/prizes.md).
+> [!IMPORTANT]
+> All prizes require open-sourcing your method (permissive license) to accept the money. Details, submission contents and the eligible-scroll lists: [`docs/prizes.md`](docs/prizes.md).
 
 ## What this repo does / does not
 
-| Does | Does not |
+| ✅ Does | ❌ Does not |
 | --- | --- |
 | Keep a dated, tested snapshot of open prizes and eligible volumes (`kit/data/`) | Replace the live prize page |
 | Print the official control and First Letters commands per eligible scroll, with resolved S3 paths | Run VC3D, render surfaces, or run ink models itself |
@@ -187,7 +195,8 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 
 ## Novel findings
 
-**Latest evidence review: 14 October 2026.** The newest public results come first. Earlier measurements keep their original dates, corrections and limits. Each finding keeps its number, so a reference elsewhere to "finding N" still points at the right one. Every number with its settings and source is in [`docs/results.json`](docs/results.json).
+> [!NOTE]
+> **Latest evidence review: 14 October 2026.** The newest public results come first. Earlier measurements keep their original dates, corrections and limits. Each finding keeps its number, so a reference elsewhere to "finding N" still points at the right one. Every number with its settings and source is in [`docs/results.json`](docs/results.json).
 
 14. **A traced surface's render comes out turned, and `ink_9um` reads it much worse until it is turned upright** (2026-10-13, model output on development data; the test's rule was fixed before the maps). Published segments are rendered with the scroll's axis down the rows, but a traced surface's render keeps whatever in-plane angle its grid has, and `ink_9um` was trained with right-angle turns only. On PHerc0841's published w00, a 30 degree turn cost `ink_9um` 0.155 AUC [0.077, 0.228], while a 90 degree turn cost 0.027 [-0.020, 0.078]. On one of my own traces of the same papyrus, whose render sat 49 degrees off, `ink_9um` scored 0.618 against 0.798 for the published map on the same 352,860 labelled pixels. Turning the render upright first, by an angle measured from the mesh alone, and the map back after, raised it by 0.256 [0.148, 0.368] to 0.874 (seed 42; seed 43 +0.181), and beat a sham turned 45 degrees past upright by 0.21 for both seeds. One trace on one scroll, on pixels scored before, so not independent confirmation; the held-out test is still to come. AutoPipeline's `ink.orient` setting and `kit canvasorient` do the turn. [Log](docs/logs/2026-10-14-upright-before-ink.md).
 
@@ -247,5 +256,7 @@ own licenses. The letter reader's released weights are CC BY-NC 4.0, because par
 their training data (ICDAR 2023 Greek letters) is. The code license does not grant rights to those materials.
 The scroll centre finder's released weights (release `umbilicus-v1`) are CC BY-NC 4.0, because the CT they learned from is.
 Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
-before use or redistribution. Do not commit scroll data, renders or ink maps to
-this public repository.
+before use or redistribution.
+
+> [!WARNING]
+> Do not commit scroll data, renders or ink maps to this public repository.
