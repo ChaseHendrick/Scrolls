@@ -11,7 +11,8 @@ independent sources so a reader cannot overfit one geometry:
   (bilinear capitals, lunate sigma and epsilon, a small floating omicron, descending rho
   and phi), swept with a broad nib at a random pen angle.
 - "font": Greek capitals from whatever TrueType fonts are installed (DejaVu, FreeFont,
-  Liberation, Noto ...), with random weight, width and slant.
+  Liberation, Noto ...), with random weight, width and slant; font_roots() lists the folders
+  searched (system and user font folders, and $LETTER_FONT_DIRS).
 - "bank" (only after use_bank): letters cropped from photographs of real papyri, see realforms.py.
 
 Domains:
@@ -19,6 +20,8 @@ Domains:
   ghost text one line away, saturating tone, contrast compression and noise, like the
   output of an ink model.
 - "mask": thresholded strokes of a fairly even width, like hand-drawn ink labels.
+- "photo" (whole pages only, make_page; not used in training): dark ink on a light papyrus
+  ground with fibres, uneven light and holes, like a photograph of an opened papyrus.
 
 Text is uniform random letters by default, so a reader trained on it learns letter shapes
 and not Greek: language belongs in a separate, switchable language model.
@@ -27,6 +30,7 @@ numpy only; Pillow is needed for rendering (optional import).
 """
 
 import math
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -151,31 +155,75 @@ def render_skeleton_glyph(ch, h, rng, style):
     return a, int(cols[0]), int(cols[-1]) + 1, base
 
 
-@lru_cache(maxsize=1)
-def font_files():
-    """Installed fonts that draw all 24 capitals (lunate sigma may be drawn as Latin C)."""
-    roots = [Path("/usr/share/fonts"), Path("/usr/local/share/fonts"), Path.home() / ".fonts",
-             Path("/System/Library/Fonts"), Path("/Library/Fonts")]
+FONT_DIRS_ENV = "LETTER_FONT_DIRS"
+
+
+def font_roots(env=None, home=None):
+    """Folders searched for .ttf and .otf fonts, in order, each once.
+
+    First the folders in $LETTER_FONT_DIRS (separated by os.pathsep: ':' on Linux and macOS, ';' on
+    Windows), then the system and user font folders of Linux (/usr/share/fonts, /usr/local/share/fonts,
+    ~/.fonts, ~/.local/share/fonts), macOS (/System/Library/Fonts, /Library/Fonts, ~/Library/Fonts)
+    and Windows (%WINDIR%\\Fonts, %LOCALAPPDATA%\\Microsoft\\Windows\\Fonts). Folders that do not exist
+    are skipped by font_files()."""
+    env = os.environ if env is None else env
+    home = Path.home() if home is None else Path(home)
+    roots = [Path(p).expanduser() for p in env.get(FONT_DIRS_ENV, "").split(os.pathsep) if p.strip()]
+    roots += [Path("/usr/share/fonts"), Path("/usr/local/share/fonts"), home / ".fonts", home / ".local" / "share" / "fonts",
+              Path("/System/Library/Fonts"), Path("/Library/Fonts"), home / "Library" / "Fonts"]
+    windir = env.get("WINDIR") or env.get("SystemRoot")
+    if windir:
+        roots.append(Path(windir) / "Fonts")
+    if env.get("LOCALAPPDATA"):
+        roots.append(Path(env["LOCALAPPDATA"]) / "Microsoft" / "Windows" / "Fonts")
     out = []
-    try:
-        from PIL import ImageFont
-    except ImportError:
-        return ()
+    for r in roots:
+        if r not in out:
+            out.append(r)
+    return out
+
+
+def font_candidates(roots):
+    """The .ttf and .otf files under the roots, in root order and sorted within each, each file once.
+
+    A file is listed once even when two roots overlap (a $LETTER_FONT_DIRS folder inside a default one,
+    or ~/.fonts linked to ~/.local/share/fonts): a file seen again through another folder path (its
+    folder resolved) is dropped, so it does not weight the font sampling. Files that are links to
+    other files keep their own entry, as before, so the list from the default folders is unchanged.
+    Monospaced fonts and Unifont are left out."""
+    seen, out = set(), []
     for r in roots:
         if not r.exists():
             continue
         for p in sorted(r.rglob("*")):
             if p.suffix.lower() not in (".ttf", ".otf") or "mono" in p.name.lower() or "unifont" in p.name.lower():
                 continue
-            try:
-                f = ImageFont.truetype(str(p), 48)
-                ok = all(f.getmask(c).getbbox() for c in "ΑΒΓΔΘΛΞΠΣΦΨΩ")
-                # a font without Greek often draws the same .notdef box for every letter
-                ok = ok and f.getmask("Ψ").getbbox() != f.getmask("Ξ").getbbox()
-            except Exception:
-                ok = False
-            if ok:
-                out.append(str(p))
+            key = (p.parent.resolve(), p.name)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(p)
+    return out
+
+
+@lru_cache(maxsize=1)
+def font_files():
+    """Installed fonts that draw all 24 capitals (lunate sigma may be drawn as Latin C), from font_roots()."""
+    out = []
+    try:
+        from PIL import ImageFont
+    except ImportError:
+        return ()
+    for p in font_candidates(font_roots()):
+        try:
+            f = ImageFont.truetype(str(p), 48)
+            ok = all(f.getmask(c).getbbox() for c in "ΑΒΓΔΘΛΞΠΣΦΨΩ")
+            # a font without Greek often draws the same .notdef box for every letter
+            ok = ok and f.getmask("Ψ").getbbox() != f.getmask("Ξ").getbbox()
+        except Exception:
+            ok = False
+        if ok:
+            out.append(str(p))
     return tuple(out)
 
 
@@ -466,6 +514,38 @@ def to_map_domain(clean, h, rng, ghost=None):
     return img.astype(np.float32)
 
 
+def to_photo_domain(clean, h, rng):
+    """Photograph look: dark ink on a light papyrus ground (values roughly 0..1, ink LOW), as in a photo of an opened papyrus.
+
+    The opposite polarity of an ink map, for testing the reader's --polarity dark and auto; never
+    used in training. Ink is slightly blurred and abraded; the ground has horizontal and vertical
+    fibres, uneven light, a few light holes where the mount shows through, and camera noise.
+
+    Every noise field is centred on its own mean: smooth_noise keeps the mean of its white noise, and
+    with a correlation length near the page size that mean, divided by the small spread left, would
+    make most of a page white or black."""
+    H, W = clean.shape
+
+    def field(corr):
+        n = smooth_noise((H, W), corr, rng)
+        return n - n.mean()
+
+    ink = gaussian(clean, rng.uniform(0.01, 0.05) * h)
+    if rng.random() < 0.6:   # abraded ink
+        ink = ink * np.clip(0.75 + 0.35 * field(rng.uniform(0.05, 0.2) * h), 0.2, 1)
+    fib_h = field((rng.uniform(0.02, 0.06) * h, rng.uniform(1.0, 4.0) * h))
+    fib_v = field((rng.uniform(1.0, 4.0) * h, rng.uniform(0.02, 0.06) * h))
+    light = field(rng.uniform(3.0, 8.0) * h)
+    ground = (rng.uniform(0.6, 0.85) + rng.uniform(0.02, 0.06) * fib_h + rng.uniform(0.01, 0.04) * fib_v
+              + rng.uniform(0.02, 0.08) * light)
+    img = ground * (1 - rng.uniform(0.55, 0.85) * np.clip(ink, 0, 1))
+    if rng.random() < 0.5:   # holes: the light mount shows through
+        holes = field(rng.uniform(0.3, 1.0) * h) > rng.uniform(2.2, 3.0)
+        img[holes] = rng.uniform(0.9, 1.0)
+    img = img + rng.uniform(0.005, 0.03) * rng.standard_normal((H, W))
+    return np.clip(img, 0, 1).astype(np.float32)
+
+
 def normalize(a):
     """The reader's own normalisation: 0.5 and 99.8 percentiles to [0, 1], clipped."""
     lo, hi = np.percentile(a, [0.5, 99.8])
@@ -569,7 +649,8 @@ def make_page(rng, n_lines=6, h=40.0, n_letters=(8, 16), domain="map", lm=None, 
     """A synthetic column: (float32 image, [line texts], [centre rows], letter height in px).
 
     One style per page, lines pitch_ratio * h apart, the whole page tilted by tilt_deg. For testing
-    the full reader (scale estimate, deskew, line finding) rather than the band network alone."""
+    the full reader (scale estimate, deskew, line finding) rather than the band network alone.
+    domain: "map" (ink bright), "mask" (drawn label) or "photo" (dark ink on a light ground)."""
     style = style or random_style(rng)
     pitch_ratio = pitch_ratio or float(rng.uniform(1.6, 2.3))
     tilt = float(rng.normal(0, 1.5)) if tilt_deg is None else float(tilt_deg)
@@ -596,5 +677,8 @@ def make_page(rng, n_lines=6, h=40.0, n_letters=(8, 16), domain="map", lm=None, 
         g, _, cg = render_line(random_text(rng, 40), rng, style, hs)
         ghost = np.zeros_like(page)
         _paste(ghost, g, int(rng.uniform(0.5, 1.5) * pitch - cg), int(rng.uniform(-2, 2) * hs))
-    page = to_mask_domain(page, hs, rng) if domain == "mask" else to_map_domain(page, hs, rng, ghost)
+    if domain == "photo":
+        page = to_photo_domain(page, hs, rng)
+    else:
+        page = to_mask_domain(page, hs, rng) if domain == "mask" else to_map_domain(page, hs, rng, ghost)
     return downsample(page, SS).astype(np.float32), lines, centres, float(h)

@@ -252,7 +252,14 @@ def add_arguments(p):
     actions.add_parser("list", help="one line per release, newest first")
 
 
+CLONE_HINT = ("it reads the repository's docs/releases.json and README.md, which an installed package does not have: "
+              "run it from a clone (git clone https://github.com/ChaseHendrick/Scrolls), or give --list and --readme")
+
+
 def run(args):
+    if not Path(args.registry).is_file():
+        print(f"releases: no release list at {args.registry}; {CLONE_HINT}", file=sys.stderr)
+        return 2
     try:
         if args.action == "check":
             problems = check(args.registry, args.readme)

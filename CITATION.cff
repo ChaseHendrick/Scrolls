@@ -1,0 +1,68 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite it as below. The letter reader's weights
+  are separate works with their own licences: cite the weights you read with as
+  their reference below.
+type: software
+title: "Scrolls: Vesuvius Challenge workbench"
+abstract: >-
+  A workbench for the Vesuvius Challenge: a Greek letter reader for ink-detection
+  maps, drawn ink labels and photographs of papyri (numpy inference, with null
+  and orientation controls and a status code on every result, and a control map
+  when one is given), ink-map scoring against published labels, run planning and
+  provenance records. Everything the letter reader prints is model output, letter
+  hypotheses for a person to check, not a reading.
+authors:
+  - given-names: Chase
+    family-names: Hendrick
+repository-code: "https://github.com/ChaseHendrick/Scrolls"
+url: "https://github.com/ChaseHendrick/Scrolls"
+license: Apache-2.0
+version: 0.1.0
+keywords:
+  - Vesuvius Challenge
+  - Herculaneum papyri
+  - Greek letter recognition
+  - ink detection
+  - OCR
+references:
+  - type: data
+    title: "letters-v2-ccby: weights of the Greek letter reader"
+    authors:
+      - given-names: Chase
+        family-names: Hendrick
+    url: "https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-ccby"
+    repository-code: "https://github.com/ChaseHendrick/Scrolls"
+    license: CC-BY-4.0
+    notes: >-
+      The file letters-v2-ccby-step026000.npz (SHA-256
+      b14988852fc721cce71e80a66db0a8ea99a1de914ef2b724ecc6e711baa9ed8c), released
+      on GitHub as letters-v2-ccby, the reader's default weights; its model card is
+      in docs/letter-reader.md. The weights are licensed CC BY 4.0, not Apache-2.0.
+      Part of their training lines' glyphs are letter crops from Hell-Char (the
+      paper https://arxiv.org/abs/2606.24984; the dataset at
+      https://github.com/ipavlopoulos/diachronic-greek-letterforms, commit
+      aeef8466be674403e2dd9b0fc708b95fe7475a00, which its authors license under
+      CC BY 4.0), a curated subset of Hell-Date
+      (https://doi.org/10.5281/zenodo.15830980); the model card gives the full
+      credits. Credit it as: letters-v2-ccby by Chase Hendrick,
+      https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-ccby,
+      CC BY 4.0.
+  - type: data
+    title: "letters-v2-real: weights of the Greek letter reader"
+    authors:
+      - given-names: Chase
+        family-names: Hendrick
+    url: "https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real"
+    repository-code: "https://github.com/ChaseHendrick/Scrolls"
+    license: CC-BY-NC-4.0
+    notes: >-
+      The file letters-v2-real-step030000.npz (SHA-256
+      44946dadf0195ddb565f097acec0dd1d777af9b6c66d83995c1f4497aa587477), released
+      on GitHub as letters-v2-real; its model card is in docs/letter-reader.md.
+      The weights are licensed CC BY-NC 4.0, not Apache-2.0, because part of their
+      training data is: letter crops from the ICDAR 2023 Greek letters dataset
+      (https://zenodo.org/records/13825619, CC BY-NC 4.0), beside crops from
+      Hell-Char (the paper https://arxiv.org/abs/2606.24984; the dataset at
+      https://github.com/ipavlopoulos/diachronic-greek-letterforms, commit
+      aeef8466be674403e2dd9b0fc708b95fe7475a00, whose LICENSE is CC BY 4.0).
