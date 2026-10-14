@@ -2,7 +2,7 @@
 
 Give the segments inner to outer, one per winding, as local tifxyz folders (x.tif, y.tif, z.tif and meta.json) or
 as folders on the open-data bucket (https:// or s3:// URLs, fetched once into --cache), with the scroll's published
-umbilicus JSON. Six checks, each on the segments' vertex positions and the umbilicus only (no CT, no surface
+umbilicus JSON. Seven checks, each on the segments' vertex positions and the umbilicus only (no CT, no surface
 prediction, no ink):
 
   order             rays from the umbilicus every degree on planes of constant z: for each adjacent pair, the
@@ -10,6 +10,11 @@ prediction, no ink):
                     of them, and those by more than --coincide-um, which decide the flag), and the signed spacing;
                     per vertex, a nearest other segment along the normal that is out of order (a lower winding
                     outside, or a higher one inside)
+  pair spacing      on the same rays, for each adjacent pair: the rays on which the two lie within --coincide-um of
+                    each other (one sheet traced twice, or sheets pressed closer than the traces can be told apart),
+                    and the pair's median spacing against the median over the pairs up to two places away (itself
+                    included), flagged below 0.5 or above 1.75 times it (a winding counted twice, or one missing
+                    all the way)
   missing sectors   heights and angles where a segment has no vertex while both its neighbours do, within the
                     segment's own z extent: the neighbours' spacing on those rays against the rays where the segment
                     is present (overall and by height), the same for the next pair out, a control of other pairs as
@@ -18,15 +23,22 @@ prediction, no ink):
                     at heights within the z extent of at least one of them
   skipped windings  vertices whose nearest other segment along the normal is two or more windings away, outward or
                     inward, and closer than half the local pitch (so nothing lies between)
-  turn overlaps     per grid line along the turn, the angle traced past a full turn; the doubly traced end farther
-                    from the umbilicus, where it is, and its distance along the normal to the next segment
+  turn overlaps     per grid line along the turn, the angle traced past a full turn, and the doubly traced end:
+                    the piece farther from the umbilicus (the turn ran on onto the next winding's sheet), unless the
+                    nearer piece lies on the previous winding's sheet (its median distance to that segment under half
+                    the rest of the segment's, and closer in that ratio than the far piece to the next) where no
+                    doubly traced end of the previous segment is marked already; where it is, and its distance
+                    along the normal to the segment whose sheet it lies on
   stack ends        heights where a winding between two traced ones has no segment, from each segment's z extent
 
 A check is flagged when what it finds reaches both --min-count (rays or vertices) and --min-share (of the rays or
 vertices it looked at). A check that had nothing to look at (an adjacent pair that no ray crosses once each, a
-segment with a neighbour along the normal for under half of its vertices) is listed under summary.not_checked, and
-the stack is then not reported clean. Exit status: 0 when every check looked and none flagged, 1 when something is
-flagged or not checked, 2 when the run could not be made (bad input or an unexpected error).
+segment with a neighbour along the normal for under half of its vertices, or whose order check keeps under half of
+its vertices) is listed under summary.not_checked, and the stack is then not reported clean. The innermost and
+outermost segments have a neighbour on one side only, so they get no missing-sector check and a missing run that
+includes them cannot be seen; summary.not_covered says so in every report. Exit status: 0 when every check looked
+and none flagged, 1 when something is flagged or not checked, 2 when the run could not be made (bad input, an
+unwritable output or an unexpected error).
 
 Units and frame. Positions are tifxyz values, in voxels of one volume. The umbilicus must be in that volume; when
 the segments are in another one (for example a published 9.362 um copy against a 2.399 um umbilicus), --transform
@@ -36,10 +48,11 @@ metadata.json). The volume ids in the folder names ("-on-VOLUME-N.NNNum.tifxyz")
 umbilicus (its metadata.volume, else its file name) must agree when they are known. Every position, z and grid row
 in the report is then in the umbilicus's volume, except the examples' row and column, which are on the input grid.
 The voxel size is --voxel-um, else the umbilicus's metadata.voxelsize_um, else (without --transform) the segment
-folder name's "-N.NNNum.tifxyz". Angles are degrees about the umbilicus at the same z, atan2(y - y_u, x - x_u),
-0 to 360, with the umbilicus interpolated linearly between control points and held constant beyond them. Distances
-are micrometres: radial along a ray from the umbilicus, or along a vertex normal for the vertex checks. Areas are
-summed vertex cell areas in cm2. A gap's width is the angle from its first ray to its last.
+folder name's "-N.NNNum.tifxyz"; any two of these that are known must agree to 1 %. Angles are degrees about the
+umbilicus at the same z, atan2(y - y_u, x - x_u), 0 to 360, with the umbilicus interpolated linearly between
+control points and held constant beyond them. Distances are micrometres: radial along a ray from the umbilicus, or
+along a vertex normal for the vertex checks. Areas are summed vertex cell areas in cm2. A gap's width is the angle
+from its first ray to its last.
 
 Masks. --flags writes an .npz with one boolean mask per segment and check, on the segment's input grid
 ("NAME/order", "NAME/missing_sector", "NAME/skipped_winding", "NAME/turn_overlap", "NAME/coincident",
@@ -48,8 +61,10 @@ winding count. A missing-sector mask marks the vertices of the segments either s
 missing run where the segments between have no vertex (within 1.5 grid steps of height and arc), inside their z
 extent. A stack-end mask marks the segments either side at the heights where a winding between them has no
 segment. A turn-overlap mask marks the doubly traced end and the next segment's vertices at the same height and
-angle. A coincident vertex has another segment within --coincide-um along its normal, so the two cannot be told
-apart there; order conflicts leave those out, and leave out the turn-overlap masks.
+angle, or the previous segment's when the doubly traced end lies on the previous winding's sheet. A coincident
+vertex has another segment within --coincide-um along its normal, so the two cannot be told apart there; order
+conflicts leave those out, and leave out the turn-overlap masks. The .npz suffix is added to a --flags path that
+lacks it, and the report's flags_file names the file written.
 
 Memory. Each segment's grid, made --upsample times denser, is indexed for the normal search, and all are held at
 once: at the defaults (--stride 1 --upsample 2) a full 2.399 um copy of one PHerc0139 winding takes about 2 GB, so
@@ -99,6 +114,7 @@ DEFAULTS = {
     "min_count": 10,            # a check is flagged at this many rays or vertices ...
     "min_share": 0.01,          # ... and this share of the rays or vertices it looked at
 }
+PAIR_SPACING = (0.5, 1.75)      # adjacent pair's median ray spacing over the nearby pairs' median: flagged outside
 MASKS = ("order", "missing_sector", "skipped_winding", "turn_overlap", "coincident", "stack_end")
 FOLDER_UM = re.compile(r"-([0-9]+(?:\.[0-9]+)?)um\.tifxyz/?$")
 FOLDER_VOLUME = re.compile(r"-on-([^/]+?)-[0-9]+(?:\.[0-9]+)?um\.tifxyz/?$")
@@ -235,8 +251,21 @@ def parse_umbilicus(data, source=None):
         raise VerifyError(f"{source or 'umbilicus'}: expected control points with x, y and z keys")
     meta = (data.get("metadata") or {}) if isinstance(data, dict) else {}
     um = meta.get("voxelsize_um")
-    return Umbilicus([p["z"] for p in pts], [p["x"] for p in pts], [p["y"] for p in pts],
-                     float(um) if um else None, source, meta.get("volume"))
+    if um is not None:
+        try:
+            um = float(um)
+        except (TypeError, ValueError):
+            um = float("nan")
+        if not (math.isfinite(um) and um > 0):
+            raise VerifyError(f"{source or 'umbilicus'}: metadata.voxelsize_um must be a number above 0 "
+                              f"(got {meta.get('voxelsize_um')!r})")
+    try:
+        cols = [[float(p[c]) for p in pts] for c in "zxy"]
+    except (TypeError, ValueError) as exc:
+        raise VerifyError(f"{source or 'umbilicus'}: control points must be numbers") from exc
+    if not all(math.isfinite(v) for col in cols for v in col):
+        raise VerifyError(f"{source or 'umbilicus'}: control points must be finite")
+    return Umbilicus(cols[0], cols[1], cols[2], um, source, meta.get("volume"))
 
 
 def load_umbilicus(src):
@@ -784,8 +813,10 @@ def sector_mask(mark, absent, present, tol_cells):
 # ---------------------------------------------------------------- the checks
 
 def turn_overlap(seg):
-    """Per line along the turn, the angle traced past a full turn (over half a grid step of arc), and the doubly
-    traced end farther from the umbilicus, as (spans, past, outer mask, which end)."""
+    """Per line along the turn, the angle traced past a full turn (over half a grid step of arc), and the two pieces
+    traced at the same angles, as (spans, past, outer piece mask, inner piece mask, which end of the turn the outer
+    piece is). The outer piece is the one farther from the umbilicus; check_stack decides which piece is the
+    doubly traced one from the neighbours."""
     np = _np()
     T = seg.turn if seg.along == 1 else seg.turn.T
     Rr = seg.radius if seg.along == 1 else seg.radius.T
@@ -810,10 +841,10 @@ def turn_overlap(seg):
         o = np.argsort(ul)
         dr.extend((Rr[i, cols[hi]] - np.interp(u[hi] - 360.0, ul[o], rl[o])).tolist())
     end = "end" if (np.median(dr) if dr else 1.0) > 0 else "start"
-    outer = hi_m if end == "end" else lo_m
+    outer, inner = (hi_m, lo_m) if end == "end" else (lo_m, hi_m)
     if seg.along == 0:
-        outer = outer.T
-    return np.array(spans), np.array(past), outer & seg.ok, end
+        outer, inner = outer.T, inner.T
+    return np.array(spans), np.array(past), outer & seg.ok, inner & seg.ok, end
 
 
 def _components(mask):
@@ -932,19 +963,21 @@ def check_settings(settings=None):
                               f"(got {v})")
         S[key] = int(x) if integer else x
 
-    num("ray_step_deg", 0, 360, lo_open=True)
-    num("planes", 1, integer=True)
+    num("ray_step_deg", 0, 10, lo_open=True)        # at least 36 rays per plane
+    if S["plane_z"] is None:
+        num("planes", 1, integer=True)
     num("max_normal_um", 0, lo_open=True)
     num("coincide_um", 0)
     num("skip_frac", 0, 1, lo_open=True)
     num("tol_cells", 0, lo_open=True)
     num("upsample", 1, integer=True)
-    num("min_count", 0, integer=True)
+    num("min_count", 1, integer=True)                # 0 would flag a check that found nothing
     num("min_share", 0, 1)
     if S["plane_z"] is not None:
         pz = list(S["plane_z"])
         if len(pz) != 3 or not all(isinstance(v, (int, float)) and math.isfinite(v) for v in pz):
             raise VerifyError("--plane-z takes START STOP STEP")
+        S["planes"] = None                            # the report then names the plane heights, not a count
     return S
 
 
@@ -987,19 +1020,37 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         d = first[:, k + 1] - first[:, k]
         inv = both & (d < 0)
         deep = both & (d < -coincide)          # inside by more than --coincide-um: not two copies of one sheet
+        close = both & (np.abs(d) <= coincide)  # within --coincide-um either way: the two cannot be told apart
         rec = {"inner": names[k], "outer": names[k + 1], "rays": int(both.sum()), "inverted_rays": int(inv.sum()),
                "inverted_share": _r(inv.sum() / max(both.sum(), 1), 4),
                "inverted_beyond_coincide_rays": int(deep.sum()),
                "inverted_beyond_coincide_share": _r(deep.sum() / max(both.sum(), 1), 4),
+               "within_coincide_rays": int(close.sum()),
+               "within_coincide_share": _r(close.sum() / max(both.sum(), 1), 4),
                "spacing_um_q10_25_50_75_90": _q(d[both] * vu, (10, 25, 50, 75, 90))}
         if inv.any():
             rec["inverted"] = {"z": [_r(Z[inv].min(), 0), _r(Z[inv].max(), 0)], "angle_deg": circ_range(A[inv]),
                                "rays_by_30_deg": np.histogram(A[inv], bins=12, range=(0, 360))[0].tolist(),
                                "depth_um_q25_50_75": _q(-d[inv] * vu)}
         rec["flagged"] = flagged(int(deep.sum()), int(both.sum()))
+        rec["coincident_flagged"] = flagged(int(close.sum()), int(both.sum()))
         if not both.any():
             not_checked.append(f"order {names[k]}/{names[k + 1]}: no ray crosses both once")
         pairs.append(rec)
+    # each pair's median spacing on its rays against the median over the pairs up to two places away (itself
+    # included, so that one odd pair does not move its neighbours' reference)
+    ray_med = []
+    for k, p in enumerate(pairs):
+        both = (cnt[:, k] == 1) & (cnt[:, k + 1] == 1)
+        ray_med.append(float(np.median(first[:, k + 1][both] - first[:, k][both])) if both.any() else float("nan"))
+    for k, p in enumerate(pairs):
+        near_pairs = [v for v in ray_med[max(0, k - 2):k + 3] if math.isfinite(v)]
+        ref = float(np.median(near_pairs)) if len(near_pairs) >= 2 else float("nan")
+        ratio = ray_med[k] / ref if math.isfinite(ray_med[k]) and math.isfinite(ref) and ref > 0 else float("nan")
+        p["spacing_against_nearby_pairs"] = _r(ratio, 3)
+        p["spacing_flagged"] = bool(math.isfinite(ratio) and not PAIR_SPACING[0] <= ratio <= PAIR_SPACING[1])
+        if p["rays"] and len(near_pairs) < 2:
+            not_checked.append(f"pair spacing {p['inner']}/{p['outer']}: no other pair nearby to compare with")
 
     # neighbours along the normal
     table = neighbour_table(segs, umb, int(S["upsample"]), maxd, float(S["tol_cells"]), log)
@@ -1013,34 +1064,66 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
 
     # d. turn overlaps (first: order conflicts leave the overlap masks out)
     overlaps, own_end = [], {}
+
+    def med_adj(k, j, mask):
+        """Median distance along the normal from segment k's vertices in mask to adjacent segment j (NaN if none)."""
+        d = table[k]["adj"].get(j)
+        if d is None or not mask.any():
+            return float("nan")
+        v = d[mask]
+        v = v[np.isfinite(v)]
+        return float(np.median(v)) if len(v) else float("nan")
+
+    def ratio(a, b):
+        return a / b if math.isfinite(a) and math.isfinite(b) and b > 0 else float("nan")
+
     for k, s in enumerate(segs):
-        spans, past, outer, end = turn_overlap(s)
-        masks[s.name]["turn_overlap"] |= outer
-        own_end[s.name] = outer
+        spans, past, outer_p, inner_p, end = turn_overlap(s)
+        rest = s.ok & ~outer_p & ~inner_p
+        # each piece against the rest of the segment: a piece on a neighbour's sheet lies much closer to it
+        r_out = ratio(med_adj(k, k + 1, outer_p), med_adj(k, k + 1, rest)) if k + 1 < n else float("nan")
+        r_in = ratio(med_adj(k, k - 1, inner_p), med_adj(k, k - 1, rest)) if k >= 1 else float("nan")
+        # the far piece, as a rule (the turn ran on onto the next winding's sheet); the near piece when it lies on
+        # the previous winding's sheet where no doubly traced end of the previous segment is marked already (with
+        # seams in line, every near piece has the previous segment's far piece on it, which is handled there)
+        covered = (masks[s.name]["turn_overlap"] & inner_p).sum() / max(inner_p.sum(), 1)
+        use_inner = (math.isfinite(r_in) and r_in < 0.5 and covered < 0.5
+                     and not (math.isfinite(r_out) and r_out <= r_in))
+        chosen = inner_p if use_inner else outer_p
+        j = k - 1 if use_inner else k + 1
+        masks[s.name]["turn_overlap"] |= chosen
+        own_end[s.name] = chosen
+        dte = {"end_of_turn": (("start" if end == "end" else "end") if use_inner else end),
+               "piece": "inner" if use_inner else "outer"}
+        if chosen.any():
+            dte.update({"outer_piece_to_next_against_rest": _r(r_out, 3),
+                        "inner_piece_to_previous_against_rest": _r(r_in, 3),
+                        "inner_piece_on_previous_segments_mask_share": _r(covered, 3)})
         rec = {"segment": s.name, "lines": int(len(spans)),
                "turn_deg_per_line_q10_50_90": _q(spans, (10, 50, 90)) if len(spans) else None,
                "turn_deg_per_line_max": _r(spans.max()) if len(spans) else None,
                "lines_past_full_turn": int(len(past)),
                "past_full_turn_deg_q10_25_50_75_90": _q(past, (10, 25, 50, 75, 90)) if len(past) else None,
                "past_full_turn_deg_max": _r(past.max()) if len(past) else None,
-               "doubly_traced_end": {"end_of_turn": end, **_describe(s, outer, vu)}}
-        if k + 1 < n and outer.any():
-            nx = segs[k + 1]
+               "doubly_traced_end": {**dte, **_describe(s, chosen, vu)}}
+        if 0 <= j < n and chosen.any():
+            nx = segs[j]
             tol = float(S["tol_cells"]) * s.step
-            st = _sector_tree(s.xyz[outer][:, 2], s.theta[outer], s.rmed, tol)
+            st = _sector_tree(s.xyz[chosen][:, 2], s.theta[chosen], s.rmed, tol)
             hit = np.zeros(nx.ok.shape, bool)
             hit[nx.ok] = _within(st, nx.xyz[nx.ok][:, 2], nx.theta[nx.ok], s.rmed, tol)
             masks[nx.name]["turn_overlap"] |= hit
-            dn = table[k]["adj"].get(k + 1, np.full(s.ok.shape, np.nan))[outer]
+            dn = table[k]["adj"].get(j, np.full(s.ok.shape, np.nan))[chosen]
             fin = dn[np.isfinite(dn)]
             far = fin[fin > coincide]
-            rec["next"] = {"segment": nx.name, "matched_share": _r(np.isfinite(dn).mean(), 3),
-                           "distance_um_q5_25_50_75_95": _q(fin * vu, (5, 25, 50, 75, 95)) if len(fin) else None,
-                           "within_coincide_share": _r((fin <= coincide).mean(), 3) if len(fin) else None,
-                           "beyond_coincide_share": _r((fin > coincide).mean(), 3) if len(fin) else None,
-                           "beyond_coincide_median_um": _r(np.median(far) * vu) if len(far) else None,
-                           "next_vertices_at_same_height_and_angle": int(hit.sum())}
-        rec["flagged"] = flagged(int(outer.sum()), s.n)
+            rec["neighbour"] = {"segment": nx.name, "side": "inner" if use_inner else "outer",
+                                "matched_share": _r(np.isfinite(dn).mean(), 3),
+                                "distance_um_q5_25_50_75_95": _q(fin * vu, (5, 25, 50, 75, 95)) if len(fin) else None,
+                                "within_coincide_share": _r((fin <= coincide).mean(), 3) if len(fin) else None,
+                                "beyond_coincide_share": _r((fin > coincide).mean(), 3) if len(fin) else None,
+                                "beyond_coincide_median_um": _r(np.median(far) * vu) if len(far) else None,
+                                "vertices_at_same_height_and_angle": int(hit.sum())}
+        rec["flagged"] = flagged(int(chosen.sum()), s.n)
         overlaps.append(rec)
 
     # the local pitch: spacing of adjacent segments along the vertex normals (both ways, outside the turn-overlap
@@ -1067,6 +1150,9 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
     order_v = []
     for k, (s, tb) in enumerate(zip(segs, table)):
         keep = s.ok & ~masks[s.name]["coincident"] & ~masks[s.name]["turn_overlap"]
+        if keep.sum() < 0.5 * s.n:
+            not_checked.append(f"order per vertex {s.name}: only {100 * keep.sum() / max(s.n, 1):.0f} % of its "
+                               f"vertices are neither coincident nor on a turn-overlap mask")
         outer_low = keep & (tb["out_j"] >= 0) & (tb["out_j"] < k)
         inner_high = keep & (tb["in_j"] > k)
         conf = outer_low | inner_high
@@ -1223,7 +1309,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         lim = float(S["skip_frac"]) * pitch[k]
         out_a = s.ok & (tb["out_j"] >= k + 2) & (tb["out_d"] < lim)
         in_a = s.ok & (tb["in_j"] >= 0) & (tb["in_j"] <= k - 2) & (tb["in_d"] < lim)
-        ov = own_end[s.name]           # the segment's own doubly traced end carries its winding one turn out
+        ov = own_end[s.name]           # the segment's own doubly traced end carries its winding one turn out or in
         out_s, in_s = out_a & ~ov, in_a & ~ov
         sk = out_s | in_s
         masks[s.name]["skipped_winding"] = sk
@@ -1293,6 +1379,8 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
 
     flags = {"order": [f"{p['inner']}/{p['outer']}" for p in pairs if p["flagged"]],
              "order_vertices": [r["segment"] for r in order_v if r["flagged"]],
+             "coincident_pairs": [f"{p['inner']}/{p['outer']}" for p in pairs if p["coincident_flagged"]],
+             "pair_spacing": [f"{p['inner']}/{p['outer']}" for p in pairs if p["spacing_flagged"]],
              "missing_sectors": [r["segment"] for r in missing if r["flagged"]],
              "missing_runs": [f"{r['between'][0]}/{r['between'][1]}" for r in missing_runs if r["flagged"]],
              "skipped_windings": [r["segment"] for r in skips if r["flagged"]],
@@ -1304,7 +1392,9 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
                   "angles": "degrees about the umbilicus at the same z, atan2(y - y_u, x - x_u), 0 to 360",
                   "distances": "micrometres, radial along rays from the umbilicus or along vertex normals",
                   "rows_cols": "examples' row and col are on each segment's input grid"},
-        "umbilicus": umb.source, "settings": {k: (list(v) if isinstance(v, tuple) else v) for k, v in S.items()},
+        "umbilicus": umb.source,
+        "settings": {**{k: (list(v) if isinstance(v, tuple) else v) for k, v in S.items()},
+                     "pair_spacing_ratio": list(PAIR_SPACING)},
         "rays": {"planes": len(planes), "z": [_r(planes[0], 0), _r(planes[-1], 0)], "rays_per_plane": len(angles),
                  "ray_step_deg": _r(step_deg, 6)},
         "segments": [{"name": s.name, "path": s.path, "input_grid": list(s.input_shape), "stride": s.stride,
@@ -1313,7 +1403,10 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
                       "grid_step_um": _r(s.step * vu), "local_pitch_um": _r(pitch[k] * vu)}
                      for k, s in enumerate(segs)],
         "summary": {"clean": not any(flags.values()) and not not_checked, "flagged": flags,
-                    "not_checked": not_checked},
+                    "not_checked": not_checked,
+                    "not_covered": [f"missing sectors of {names[0]} and {names[-1]}: the innermost and outermost "
+                                    f"segments have a neighbour on one side only",
+                                    f"missing runs that include {names[0]} or {names[-1]}"]},
         "order": {"pairs": pairs, "vertices": order_v},
         "missing_sectors": missing, "missing_runs": missing_runs, "skipped_windings": skips,
         "turn_overlaps": overlaps, "stack_ends": ends,
@@ -1335,7 +1428,7 @@ def _side(tb, r, c, k, names, vu):
 
 def write_flags(path, segs, masks, voxel_um):
     """One boolean mask per segment and check on the segment's input grid (a strided vertex's flag covers the
-    stride x stride block starting at it)."""
+    stride x stride block starting at it). Returns the path written, with .npz added when it lacks it."""
     np = _np()
     out = {"names": np.array([s.name for s in segs]), "voxel_um": np.float64(voxel_um)}
     for s in segs:
@@ -1343,9 +1436,12 @@ def write_flags(path, segs, masks, voxel_um):
         for key, m in masks[s.name].items():
             full = np.repeat(np.repeat(m, s.stride, 0), s.stride, 1)[:H, :W] if s.stride > 1 else m
             out[f"{s.name}/{key}"] = full
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    path = Path(path)
+    if path.suffix != ".npz":
+        path = path.with_name(path.name + ".npz")      # numpy would add it anyway: name the file actually written
+    path.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(path, **out)
-    return path
+    return str(path)
 
 
 def format_report(rep):
@@ -1369,6 +1465,13 @@ def format_report(rep):
             top = r["groups"][0]
             L.append(f"  {r['segment']}: {r['vertices']} vertices out of order ({r['area_cm2']} cm2), most with "
                      f"{top['neighbour']} on the {top['side']} side{'  FLAG' if r['flagged'] else ''}")
+    L.append("a2. pair spacing (rays crossing both once; within --coincide-um, and median against nearby pairs)")
+    for p in rep["order"]["pairs"]:
+        mark = "".join(f"  FLAG {w}" for w, f in (("coincident", p["coincident_flagged"]),
+                                                   ("spacing", p["spacing_flagged"])) if f)
+        L.append(f"  {p['inner']}/{p['outer']}: within {rep['settings']['coincide_um']} um on "
+                 f"{100 * (p['within_coincide_share'] or 0):.1f} % of rays; median "
+                 f"{p['spacing_against_nearby_pairs']} times the nearby pairs'{mark}")
     L.append("b. missing sectors (neighbours crossed, segment not)")
     for r in rep["missing_sectors"]:
         if not r["gap_rays"] and not r["gap_rays_outside_own_height"]:
@@ -1401,10 +1504,11 @@ def format_report(rep):
     for r in rep["turn_overlaps"]:
         if r["lines_past_full_turn"]:
             q = r["past_full_turn_deg_q10_25_50_75_90"]
-            nx = r.get("next") or {}
+            nx = r.get("neighbour") or {}
             dq = nx.get("distance_um_q5_25_50_75_95")
             L.append(f"  {r['segment']}: {r['lines_past_full_turn']} of {r['lines']} lines, median {q[2]} deg past; "
-                     f"doubly traced end at {(r['doubly_traced_end'].get('angle_deg') or [None])[:2]} deg"
+                     f"doubly traced end ({r['doubly_traced_end']['piece']} piece) at "
+                     f"{(r['doubly_traced_end'].get('angle_deg') or [None])[:2]} deg"
                      + (f", median {dq[2]} um from {nx['segment']}" if dq else "")
                      + ("  FLAG" if r["flagged"] else ""))
     L.append("e. stack ends (a winding between traced ones has no segment)")
@@ -1417,8 +1521,10 @@ def format_report(rep):
     fl = {k: v for k, v in rep["summary"]["flagged"].items() if v}
     for msg in rep["summary"].get("not_checked", []):
         L.append(f"not checked: {msg}")
+    for msg in rep["summary"].get("not_covered", []):
+        L.append(f"not covered by any check: {msg}")
     if rep["summary"]["clean"]:
-        L.append("clean: every check looked and none flagged")
+        L.append("clean: every check looked and none flagged (see 'not covered' above)")
     elif fl:
         L.append(f"flagged: {json.dumps(fl)}")
     else:
@@ -1481,6 +1587,11 @@ def run(specs, umbilicus, transform=None, catalog=None, voxel_um=None, stride=1,
     if M is None and umb.voxel_um and seg_um and any(abs(v / umb.voxel_um - 1) > 0.01 for v in seg_um):
         raise VerifyError(f"the segments are in a {sorted(seg_um)} um volume and the umbilicus in a "
                           f"{umb.voxel_um} um one: map the segments with --transform")
+    if voxel_um is not None and umb.voxel_um and abs(float(voxel_um) / umb.voxel_um - 1) > 0.01:
+        raise VerifyError(f"--voxel-um {voxel_um} differs from the umbilicus's metadata.voxelsize_um {umb.voxel_um}")
+    if voxel_um is not None and M is None and seg_um and any(abs(v / float(voxel_um) - 1) > 0.01 for v in seg_um):
+        raise VerifyError(f"--voxel-um {voxel_um} differs from the segments' folder names ({sorted(seg_um)} um): "
+                          f"map the segments with --transform")
     vu = voxel_um or umb.voxel_um or (min(seg_um) if M is None and len(seg_um) == 1 else None)
     if not vu:
         raise VerifyError("give --voxel-um: the umbilicus has no metadata.voxelsize_um")

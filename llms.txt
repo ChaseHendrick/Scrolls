@@ -34,7 +34,7 @@ Start with AGENTS.md (rules, commands, glossary), then the current state at the 
 - [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
 - [scripts/umbilicus/README.md](scripts/umbilicus/README.md): scroll centre (umbilicus) finder from CT, in the published umbilicus format, with its held-out error on the 13 published centre lines; model output
 - [docs/letter-reader.md](docs/letter-reader.md): Greek letter reader for ink maps (`python -m kit letterread`), its model card and measured accuracy on PHerc. 1667; letter hypotheses, not readings
-- [kit/stackcheck.py](kit/stackcheck.py): `python -m kit stackcheck`, geometry checks of consecutive tifxyz segments against the umbilicus (order, missing sectors, skipped windings, turn overlaps, stack ends) with per-vertex masks; [PHerc0139 note](docs/logs/2026-10-14-pherc0139-segment-defects.md)
+- [kit/stackcheck.py](kit/stackcheck.py): `python -m kit stackcheck`, geometry checks of consecutive tifxyz segments against the umbilicus (order, coincident or oddly spaced pairs, missing sectors, skipped windings, turn overlaps, stack ends) with per-vertex masks; [PHerc0139 note](docs/logs/2026-10-14-pherc0139-segment-defects.md)
 - [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
 - [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run
 - [kit/provenance.py](kit/provenance.py): who ran what, when, from which inputs, with one digest

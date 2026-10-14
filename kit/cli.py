@@ -151,20 +151,22 @@ def cmd_stackcheck(args):
         rep, segs, masks = stackcheck.run(args.segments, args.umbilicus, args.transform, args.catalog, args.voxel_um,
                                           args.stride, args.cache, settings, log)
         if args.flags:
-            stackcheck.write_flags(args.flags, segs, masks, rep["frame"]["voxel_um"])
-            rep["flags_file"] = str(args.flags)
+            rep["flags_file"] = stackcheck.write_flags(args.flags, segs, masks, rep["frame"]["voxel_um"])
+        if args.out:
+            Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.out).write_text(json.dumps(rep, indent=1))
+        print(json.dumps(rep, indent=1) if args.json else stackcheck.format_report(rep))
     except verify.VerifyError as exc:
         print(exc, file=sys.stderr)
+        return 2
+    except OSError as exc:  # an output that cannot be written: exit 1 would read as flagged
+        print(f"kit stackcheck could not read or write a file: {exc}", file=sys.stderr)
         return 2
     except Exception:  # noqa: BLE001  exit 1 means flagged, so an unexpected error must not exit 1
         import traceback
         traceback.print_exc()
         print("kit stackcheck stopped on an unexpected error (above)", file=sys.stderr)
         return 2
-    if args.out:
-        Path(args.out).parent.mkdir(parents=True, exist_ok=True)
-        Path(args.out).write_text(json.dumps(rep, indent=1))
-    print(json.dumps(rep, indent=1) if args.json else stackcheck.format_report(rep))
     return 0 if rep["summary"]["clean"] else 1
 
 
@@ -643,16 +645,16 @@ def build_parser():
     p.add_argument("--planes", type=int, help="planes of constant z for the rays, evenly over the stack (default 50)")
     p.add_argument("--plane-z", type=float, nargs=3, metavar=("START", "STOP", "STEP"),
                    help="explicit plane heights, instead of --planes")
-    p.add_argument("--ray-step-deg", type=float, help="degrees between rays (default 1)")
+    p.add_argument("--ray-step-deg", type=float, help="degrees between rays, at most 10 (default 1)")
     p.add_argument("--max-normal-um", type=float, help="farthest neighbour along a normal (default 600)")
     p.add_argument("--coincide-um", type=float, help="two segments this close cannot be told apart (default 20)")
     p.add_argument("--skip-frac", type=float, help="skipped winding: closer than this share of the pitch (default 0.5)")
-    p.add_argument("--min-count", type=int, help="rays or vertices for a flag (default 10)")
+    p.add_argument("--min-count", type=int, help="rays or vertices for a flag, at least 1 (default 10)")
     p.add_argument("--min-share", type=float, help="share of rays or vertices for a flag (default 0.01)")
     p.add_argument("--upsample", type=int, help="neighbour grids made this much denser for the normal search (default 2)")
     p.add_argument("--cache", default="work/stackcheck/cache", help="where bucket segments are kept")
     p.add_argument("--out", help="write the JSON report here (work/ is git-ignored)")
-    p.add_argument("--flags", help="write per-vertex flag masks (.npz) on each segment's input grid")
+    p.add_argument("--flags", help="write per-vertex flag masks (.npz, added if missing) on each segment's input grid")
     p.add_argument("--json", action="store_true")
     p.add_argument("--verbose", action="store_true", help="progress to stderr")
     p.set_defaults(func=cmd_stackcheck)
