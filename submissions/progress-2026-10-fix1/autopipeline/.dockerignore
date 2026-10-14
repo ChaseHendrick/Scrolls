@@ -1,0 +1,12 @@
+# Copied into the release as .dockerignore: runs, environments and VC3D downloads stay out of the image.
+.git/
+work/
+experiments/
+checkpoints/
+.venv/
+venv/
+**/__pycache__/
+*.egg-info/
+squashfs-root/
+vc3d-bin/
+*.AppImage
