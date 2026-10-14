@@ -40,7 +40,7 @@
       "id": "autopipeline",
       "title": "AutoPipeline",
       "released": "2026-10-14",
-      "summary": "AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.2, the second fix release; no result has changed since the first release, 0.1.0, and the earlier releases stay on their own branches.",
+      "summary": "AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.2, the second fix release; no result has changed since the first release, 0.1.0, and the earlier releases stay on their own branches. Its last step, ink detection with the reversed-layer control, also runs in a browser: the [AutoPipeline ink Space](https://huggingface.co/spaces/SharpMeow/autopipeline-ink) maps a crop of a released segment, or a small surface volume you upload, and scores the crop where it has published ink labels.",
       "commands": [
         "git clone --branch submission/progress-2026-10-fix2 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
         "cd scrolls-autopipeline/submissions/progress-2026-10-fix2/autopipeline",
@@ -54,6 +54,18 @@
         "commit": "143c54b54804e17acbfdcf032217e6b3964f6ef4",
         "path": "submissions/progress-2026-10-fix2"
       }
+    },
+    {
+      "id": "strokenet",
+      "title": "StrokeNet text-likeness score",
+      "released": "2026-10-14",
+      "summary": "A small learned score for how much a 6.1 mm window of an organisers' ink map looks like lines of text, with rotation and IAAFT controls reported with every result. It needs only NumPy to run. Its held-out test on six PHerc. Paris 4 tracings, fixed before the read, is published in full: it misses its preregistered bar on two of nine items (blank papyrus against its own 90 degree turn, and blank windows above the threshold), simple scores such as ink density match it on the other items, and it beats every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). A score is model output, not a reading.",
+      "commands": [
+        "python -m pip install numpy tifffile",
+        "python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json          # weights downloaded once, SHA-256 checked"
+      ],
+      "details": "Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs/strokenet.md).",
+      "where": "main"
     }
   ]
 }
