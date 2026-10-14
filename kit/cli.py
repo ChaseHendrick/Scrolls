@@ -408,10 +408,19 @@ def cmd_view(args):
 def cmd_letterread(args):
     try:
         from . import letterread
-        img = letterread.load_image(args.image, args.key)
-        if args.crop:
-            y0, y1, x0, x1 = args.crop
-            img = img[y0:y1, x0:x1]
+        # Check where the results go before the read, which can take minutes.
+        if args.overlay:
+            try:
+                from PIL import Image
+            except ImportError as exc:
+                raise ImportError(f"--overlay needs Pillow: {exc}") from exc
+            Image.init()
+            if Path(args.overlay).suffix.lower() not in Image.registered_extensions():
+                raise ValueError(f"--overlay {args.overlay}: give an image file name such as letters.png")
+        for out in (args.out, args.overlay):
+            if out and not Path(out).resolve().parent.is_dir():
+                raise OSError(f"no such folder for {out}")
+        img = letterread.load_image(args.image, args.key, crop=args.crop)
         lm = None
         if args.lm:
             from . import greeklm
@@ -421,18 +430,20 @@ def cmd_letterread(args):
                               polarity=args.polarity, nulls=args.nulls, seed=args.seed, lines=args.lines,
                               p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0, beam=args.beam,
                               columns=args.columns if args.columns in ("auto", "off") else int(args.columns))
+        if args.crop:
+            res["crop"] = list(args.crop)  # [Y0, Y1, X0, X1]; every row, column and box is relative to Y0, X0
     except (ImportError, OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
-    if args.out:
-        Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    if args.overlay:
-        try:
-            letterread.overlay(img, res, args.overlay, polarity=args.polarity)
-        except ImportError as exc:
-            print(f"--overlay needs Pillow: {exc}", file=sys.stderr)
-            return 2
     print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
+    try:
+        if args.out:
+            Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        if args.overlay:
+            letterread.overlay(img, res, args.overlay, polarity=args.polarity)
+    except (ImportError, OSError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
     return 0
 
 
@@ -739,7 +750,8 @@ def build_parser():
     p.add_argument("--weights", required=True,
                    help="linenet-v1 .npz, or a released model name such as letters-v2-real (downloaded once, SHA-256 checked)")
     p.add_argument("--key", help=".npz: array name (default: the first)")
-    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="read only these rows and columns; every row, box and --lines value is then relative to Y0, X0")
     p.add_argument("--letter-px", type=float, help="letter height in image pixels (default: estimated from line pitch)")
     p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright", help="ink bright (maps) or dark (photos)")
     p.add_argument("--lines", type=float, nargs="+", help="centre rows of the lines, image pixels (default: found)")

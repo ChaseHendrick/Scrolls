@@ -22,7 +22,8 @@ transcription (black letters on white, 96 px per letter height). Model-free: run
 reader touches the data.
 
   python scripts/letters/p1667_groups.py LABELS_DIR OUT_DIR
-LABELS_DIR holds <wNNN>/z/1 (a local copy of level 1 of each inklabels.zarr).
+LABELS_DIR holds <wNNN>/z/1 (a local copy of level 1 of each inklabels.zarr). Needs numpy, scipy, zarr
+and Pillow.
 """
 import json
 import sys

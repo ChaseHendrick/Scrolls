@@ -25,8 +25,8 @@ lines), poured into the reference's visible places in reading order:
 Reads that carry the published text should score higher on it than on every decoy; reads that only
 carry Greek letter statistics or the reader's letter habits should not. Greek-like strings with no
 link to the text (samples of the letter language model) beat the shuffled decoys every time and
-often the word and corpus decoys, but not the shifted ones (the dry run in
-of 9 October 2026, docs/logs/2026-10-14-letter-reader.md), so `shifted` is the decisive set and a line's
+often the word and corpus decoys, and the shifted ones only rarely (the dry run of 9 October 2026,
+summarized in docs/logs/2026-10-14-letter-reader.md), so `shifted` is the decisive set and a line's
 excess is measured against it. p = (1 + decoys with T at least the real T) / (1 + N_DECOYS).
 
 The sums above reward any Greek-like read a little more on the real text than on any decoy built

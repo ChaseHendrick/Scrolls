@@ -238,6 +238,45 @@ class PageTest(unittest.TestCase):
         self.assertGreater(R.normalize(a, "bright")[9, 9], 0.9)
         self.assertLess(R.normalize(a, "dark")[9, 9], 0.1)
 
+    def test_normalize_sparse_binary_label(self):
+        a = np.zeros((1000, 1000), np.uint8)
+        a[500:516, 100:200] = 255                       # 0.16% ink, under the 99.8th percentile
+        n = R.normalize(a)
+        self.assertEqual((float(n[505, 150]), float(n[0, 0])), (1.0, 0.0))
+        self.assertGreater(R.normalize(255 - a, "auto")[505, 150], 0.9)   # dark ink on a light ground
+        self.assertFalse(R.normalize(np.full((50, 50), 7.0)).any())        # a constant image stays blank
+
+    def test_load_image_crop(self):
+        with tempfile.TemporaryDirectory() as d:
+            a = np.arange(60 * 80, dtype=np.uint16).reshape(60, 80)
+            np.save(Path(d) / "a.npy", a)
+            got = R.load_image(Path(d) / "a.npy", crop=(10, 30, 5, 45))
+            self.assertEqual((got.shape, got.dtype), ((20, 40), np.float32))
+            self.assertEqual(float(got[0, 0]), float(a[10, 5]))
+            with self.assertRaisesRegex(ValueError, "empty"):
+                R.load_image(Path(d) / "a.npy", crop=(70, 90, 0, 10))
+            try:
+                import tifffile
+            except ImportError:
+                return
+            tifffile.imwrite(Path(d) / "a.tif", a)
+            self.assertTrue(np.array_equal(R.load_image(Path(d) / "a.tif", crop=(10, 30, 5, 45)), got))
+
+    def test_orientation_reads_leave_the_language_model_off(self):
+        try:
+            from kit import greeklm
+        except ImportError:
+            self.skipTest("kit.greeklm not importable")
+        from unittest import mock
+        lm = greeklm.KNLetterLM(order=3).fit(["ΚΑΙΤΟΝΘΕΟΝ" * 50])
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            with mock.patch.object(R, "analyze", wraps=R.analyze) as spy:
+                R.read(lined_image(), w, letter_px=16, nulls=1, lm=lm, lm_weight=0.5)
+        self.assertEqual(spy.call_count, 3)
+        self.assertIs(spy.call_args_list[0].kwargs["lm"], lm)
+        self.assertTrue(all(c.kwargs["lm"] is None for c in spy.call_args_list[1:]))
+
     def test_verdict_needs_nulls(self):
         self.assertIn("no control", R.verdict(10, []))
         self.assertIn("NOT above", R.verdict(3, [3, 1]))
@@ -335,6 +374,30 @@ class PageTest(unittest.TestCase):
             with contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(cli.main(["letterread", str(img), "--weights", str(Path(d) / "missing.npz")]), 2)
 
+    def test_cli_checks_outputs_before_reading_and_records_the_crop(self):
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "img.npy"
+            np.save(img, lined_image())
+            base = ["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "1",
+                    "--no-orientation"]
+            bad = [["--out", str(Path(d) / "missing" / "res.json")]]
+            try:
+                import PIL  # noqa: F401
+                bad.append(["--overlay", str(Path(d) / "letters")])   # no image extension
+            except ImportError:
+                pass
+            for extra in bad:
+                with mock.patch.object(R, "read", side_effect=AssertionError("read before checking outputs")), \
+                        contextlib.redirect_stderr(io.StringIO()) as err:
+                    self.assertEqual(cli.main(base + extra), 2)
+                self.assertNotIn("read before", err.getvalue())
+            out = Path(d) / "res.json"
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(cli.main(base + ["--crop", "0", "90", "0", "300", "--out", str(out)]), 0)
+            self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["crop"], [0, 90, 0, 300])
+
     def test_p172_split_is_fixed_and_disjoint(self):
         sys.path.insert(0, str(ROOT / "scripts" / "letters"))
         try:
@@ -388,6 +451,35 @@ class WeightsTest(unittest.TestCase):
             cache = Path(d) / "cache"
             with self.assertRaises(ValueError):
                 R.resolve_weights("tiny", cache=cache, registry=reg)
+            self.assertEqual(list(cache.iterdir()), [])
+
+    def test_interrupted_download_leaves_nothing(self):
+        from unittest import mock
+
+        class Broken:
+            def __init__(self, *a, **kw):
+                self.calls, self.kw = 0, kw
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *exc):
+                return False
+
+            def read(self, n):
+                self.calls += 1
+                if self.calls > 1:
+                    raise TimeoutError("stalled")
+                return b"x" * 100
+
+        with tempfile.TemporaryDirectory() as d:
+            src = random_weights(Path(d) / "src.npz")
+            reg = self.registry(d, src, R._sha256(src))
+            cache = Path(d) / "cache"
+            with mock.patch("urllib.request.urlopen", side_effect=Broken) as opened:
+                with self.assertRaises(TimeoutError):
+                    R.resolve_weights("tiny", cache=cache, registry=reg)
+            self.assertEqual(opened.call_args.kwargs["timeout"], R.DOWNLOAD_TIMEOUT)
             self.assertEqual(list(cache.iterdir()), [])
 
     def test_unknown_name_and_missing_url(self):

@@ -1,4 +1,5 @@
-"""Fine-tune the letter reader on real ink-map lines whose text is published (guide, stage 4).
+"""Fine-tune the letter reader on real ink-map lines whose text is published
+(docs/letter-reader.md, Reproduce the benchmarks).
 
 Training lines are the crops of p1667_align.py (each published line of a training column, cut from the map
 along its fitted row at the reader's working scale), labelled with the published line.

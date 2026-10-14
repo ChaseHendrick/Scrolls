@@ -33,7 +33,7 @@ The network reads letters about 16 pixels tall; the reader rescales your image t
 
 | Option | Use |
 | --- | --- |
-| `--crop Y0 Y1 X0 X1` | Read part of a large image |
+| `--crop Y0 Y1 X0 X1` | Read part of a large image (a `.npy` or uncompressed TIFF is memory-mapped, so only the window is loaded); rows, boxes and `--lines` are then relative to Y0, X0, and the result records the crop as `crop` |
 | `--lines Y [Y ...]` | Line centre rows, when you know them (one column) |
 | `--columns auto` (default), `off` or a number | Split at empty vertical gutters, read the whole width, or ask for that many columns |
 | `--lm greek5.npz` | Add a language-model decode beside the ink-only one (below) |
@@ -81,7 +81,7 @@ For ink maps, also read the reverse-depth map of the same surface: letters that 
 
 ## How well it reads
 
-All numbers are Model output on public data, measured on CPU. Character error is edit distance over reference letters; 0.10 means about one edit per ten letters. "Free ends" does not charge letters read before or after the reference, because a map window also shows unlabelled neighbours. Each PHerc. 1667 test's rule was fixed in writing on 9 October 2026 before the readers it compares were run on it; the PHerc. 172 row is a diagnostic, because its column rule was set after that test half had been seen (conditions in the [log](logs/2026-10-14-letter-reader.md)). "Synthetic-only" is letters-v1: the same network, data size and training, with no real letters in its training lines.
+All numbers are Model output on public data, measured on CPU with the numpy reader, except the real-letter validation row, which is the trainer's own check on the B200. Character error is edit distance over reference letters; 0.10 means about one edit per ten letters. "Free ends" does not charge letters read before or after the reference, because a map window also shows unlabelled neighbours. Each PHerc. 1667 test's rule was fixed in writing on 9 October 2026 before the readers it compares were run on it; the PHerc. 172 row is a diagnostic, because its column rule was set after that test half had been seen (conditions in the [log](logs/2026-10-14-letter-reader.md)). "Synthetic-only" is letters-v1: the same network, data size and training, with no real letters in its training lines.
 
 | Test (letters-v2-real, step 30000) | Reference | Letters | Character error | Comparison |
 | --- | --- | --- | --- | --- |
@@ -90,13 +90,13 @@ All numbers are Model output on public data, measured on CPU. Character error is
 | Maps, windows about three lines tall, reader finds the line | same | 122 | 0.402 free ends (0.393 with nothing given) | synthetic-only 0.746 |
 | Maps, each segment's whole labelled region read once, nothing given | same | 122 | **0.336** free ends; 52 of 87 groups fully right | synthetic-only 0.590 |
 | PHerc. 172 hand-drawn labels (Bodillium), test half, columns found | the labeller's preliminary transcription | 122 | 0.426 ink only (diagnostic) | prototype 0.625, synthetic-only 0.739 |
-| Real-letter validation lines from 21 papyri it never saw (Hell-Char) | the crops' letter labels | 2,000 lines | 0.444 | CPU real-letterform reader about 0.52 |
+| Real-letter validation lines from 21 papyri it never saw (Hell-Char) | the crops' letter labels | first 600 of 2,000 lines | 0.444 | CPU real-letterform reader about 0.52 |
 
-What this supports (Interpretation): with the line found, naming clean drawn Greek capitals is close to solved for this reader (3 errors in 122 letters). On real ink maps it finds about two of every three letters in order. The gap between drawings and maps is the reader's, not the signal's: these six PHerc. 1667 segments are legible by eye on their maps.
+What this supports (Interpretation): with the line and letter height given, naming clean drawn Greek capitals is close to solved for this reader (3 errors in 122 letters). On real ink maps it finds about two of every three letters in order. Maps cost it about 0.33 of error against the drawings; which letters the maps lose, and how much of that gap is the reader rather than the map, has not been measured.
 
 What it does not support:
 
-- **Maps of text no ink model has seen.** The six labelled PHerc. 1667 segments are in `ink_9um`'s training labels, so their maps may be cleaner than maps of new text. On the thirteen PHerc. 1667 segments without labels, whole-map reads gave no ordered pairs of lines matching the published text (a test with little power, since it found pairs only on the two labelled segments where the letter error is lowest).
+- **Maps of text no ink model has seen.** The six labelled PHerc. 1667 segments are in `ink_9um`'s training labels, and the training set of the 2.4 um model that made their maps is not checked, so their maps may be cleaner than maps of new text. On the thirteen PHerc. 1667 segments without labels, whole-map reads gave no ordered pairs of lines matching the published text (a test with little power, since it found pairs only on the two labelled segments where the letter error is lowest).
 - **A reading.** The references are machine transcriptions of drawings and one labeller's preliminary transcription, not a papyrologist's reading, and 122 letters cannot show an accuracy finer than about 1 to 3 percent.
 - **Letter size found automatically on new maps.** On the unlabelled segments the scale search chose letter heights of 32 to 615 grid pixels against 74 to 103.5 measured on the labelled ones. Give `--letter-px` when you can.
 
@@ -111,22 +111,25 @@ What it does not support:
 | Training | `scripts/letters/train_linenet.py`, 30,000 steps, batch 128, AdamW one-cycle to 0.002, on one NVIDIA B200 (469 s of training), 9 October 2026 |
 | Checkpoint choice | the best of 15 kept checkpoints on the dev half of the PHerc. 172 drawings (0.482; all 15 were 0.482 to 0.599); no PHerc. 1667 data was used to train or choose it |
 | Intended use | Letter hypotheses on images of Greek capital text, for a person to check: triage of where letters are, review layers, research on reading ink maps |
-| Not for | Claiming that a scroll says something; prize images (they must not carry character annotations); publishing reads of a prize-eligible scroll before its prize is awarded (prize disclosure terms) |
+| Not for | Claiming that a scroll says something; prize images (they must be generated programmatically without manual character annotations; whether machine letter overlays are allowed is not stated, so keep them out); publishing reads of a prize-eligible scroll before its prize is awarded (prize disclosure terms) |
 | Licence | CC BY-NC 4.0, because part of its training data is CC BY-NC 4.0 (ICDAR 2023); the code is Apache-2.0 |
 
 ## Reproduce the benchmarks
 
 ```bash
-python -m pip install numpy pillow tifffile zarr imagecodecs        # pdftotext (poppler) for the published text
+python -m pip install numpy scipy pillow tifffile zarr imagecodecs  # pdftotext (poppler) for the published text
 python scripts/letters/p1667_fetch.py work/p1667                     # 19 maps (about 1.9 GB) and 6 label sets
 python scripts/letters/p1667_groups.py work/p1667/labels work/p1667/groups      # 91 letter groups, model-free
 cd scripts/letters
-python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps          # also --wide and --region
+python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps            # windows for --source map
+python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps --wide     # taller windows, --source map-wide
+python p1667_mapcrops.py ../../work/p1667/groups ../../work/p1667/maps --region   # whole regions, --source map-region
 cd ../..
 # references: transcribe work/p1667/groups/png/*.png (three independent transcribers, '?' when unsure) into
 # refs.json as {"agreed": {"w013-g000": "...", ...}} with only the groups all three agree on
 python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source label --out label.json
 python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source map --out map.json
+python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source map-wide --out wide.json
 python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights W.npz --source map-region --out region.json
 python scripts/letters/eval_p1667.py compare A.json B.json --metric free_ends       # paired bootstrap over groups
 ```
@@ -137,16 +140,21 @@ The PHerc. 172 check reads [Bodillium/Herculaneum-Scroll-Labels](https://github.
 
 ```bash
 git clone --depth 1 https://github.com/Bodillium/Herculaneum-Scroll-Labels work/bodillium
-python scripts/letters/eval_p172.py work/bodillium --weights W.npz --split test --columns auto
+python scripts/letters/eval_p172.py work/bodillium --weights W.npz --split test --columns auto   # needs pdftotext (poppler)
 ```
 
 ## Train your own
 
 ```bash
 python -m pip install torch numpy pillow
-# real letterforms: a glyph bank from Hell-Char (ICDAR 2023 can be added with --icdar)
-git clone --depth 1 https://github.com/ipavlopoulos/diachronic-greek-letterforms work/hellchar
-python scripts/letters/realforms.py build work/letters/bank.npz --hellchar work/hellchar/data/hellchar
+# real letterforms: a glyph bank from Hell-Char and ICDAR 2023, as in letters-v2-real (about 43,806 glyphs);
+# leave out --icdar for a Hell-Char-only bank (CC BY 4.0 data), which is not the released model's data
+git clone https://github.com/ipavlopoulos/diachronic-greek-letterforms work/hellchar
+git -C work/hellchar checkout aeef8466be674403e2dd9b0fc708b95fe7475a00
+curl -sSfL -o work/icdar.zip "https://zenodo.org/records/13825619/files/ICDAR2023_Competition_on_Detection_and_Recognition_of_Greek_Letters_on_Papyri_Dataset.zip?download=1"   # CC BY-NC 4.0, MD5 115645f6864bb922d60309687fcfaa56
+python -c "import zipfile; zipfile.ZipFile('work/icdar.zip').extractall('work/icdar')"
+# --icdar-optional skips the two truncated ICDAR photographs, as the release bank did
+python scripts/letters/realforms.py build work/letters/bank.npz --hellchar work/hellchar/data/hellchar --icdar work/icdar --icdar-optional
 python scripts/letters/realforms.py preview work/letters/bank.npz work/letters/bank-preview.png
 # lines: half from the bank; val-real lines use only papyri held out of training
 python scripts/letters/gen_dataset.py work/letters/data/train --n 600000 --seed 11 --bank work/letters/bank.npz --p-bank 0.5 --prefix real
@@ -155,9 +163,10 @@ python scripts/letters/gen_dataset.py work/letters/data/val-real --n 2000 --seed
 # the letters-v2-real recipe (one GPU; about 8 minutes of training on a B200)
 python scripts/letters/train_linenet.py work/letters/data/train work/letters/model --val work/letters/data/val \
     --val-real work/letters/data/val-real --steps 30000 --batch 128 --channels 48,96,160,192,256 --dilations 1,2,4 \
-    --device cuda --amp --keep
+    --device cuda --amp --workers 6 --threads 2 --eval-every 2000 --keep    # keeps 15 checkpoints, steps 2,000 to 30,000
 # choose a checkpoint on the PHerc. 172 dev half, never on the data you report
-for w in work/letters/model/ckpt/*.npz; do python scripts/letters/eval_p172.py work/bodillium --weights $w --split dev | tail -1; done
+# (needs the Bodillium clone from the PHerc. 172 check above and pdftotext)
+for w in work/letters/model/ckpt/*.npz; do echo "$w $(python scripts/letters/eval_p172.py work/bodillium --weights $w --split dev | tail -1)"; done
 ```
 
 A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 48, on 36,000 synthetic lines plus 24,000 drawn only from the Hell-Char bank) takes about half an hour on 4 cores and reads the PHerc. 1667 drawings nearly as well (0.033) and the maps as well (0.344 free ends). `finetune_maps.py train` starts from any exported checkpoint, released weights included.
@@ -165,7 +174,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 ## How it works
 
 - **Lines, not single letters.** Herculaneum texts are written without word spaces and letter edges on an ink map are unclear, so segmenting letters first is the hard part. A CTC line reader needs only each line's letter string to train, and learns where the letters are by itself.
-- **Random letters, separate language model.** Training on uniform random strings means the network learns shapes and cannot learn Greek, so it cannot invent plausible words; Greek enters only through the optional language model, shown beside the ink-only decode. The organisers' own ink models use no OCR or language model for the same reason ([grand prize page](https://scrollprize.org/grandprize)).
+- **Random letters, separate language model.** Training on uniform random strings means the network learns shapes and cannot learn Greek, so it cannot invent plausible words; Greek enters only through the optional language model, shown beside the ink-only decode. The organisers' own ink models use no OCR or language model for the same reason ([grand prize page](https://scrollprize.org/grandprize), Sourced fact).
 - **Real letterforms.** Synthetic glyphs alone did not transfer to real letters (more synthetic data gave no gain on drawings); half the training letters cut from photographs of real papyri cut the error on drawn PHerc. 1667 letters from 0.320 to 0.025.
 - **Page layout.** The reader normalises the image, estimates or takes the letter size, splits columns at empty gutters, deskews, finds lines from the row profile and reads each line band; boxes come back in input pixels.
 - **numpy inference**, tested against torch, so reading needs no deep-learning install.
@@ -173,7 +182,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 ## Rules for using it on scrolls
 
 - Its output is a hypothesis. Never write that letters were found or read on the strength of it.
-- The prizes require prize images to be generated programmatically without manual character annotations ([prizes](https://scrollprize.org/prizes)); keep machine letter overlays out of prize images.
+- The prizes require prize images to be generated programmatically without manual character annotations ([prizes](https://scrollprize.org/prizes), Sourced fact); keep machine letter overlays out of prize images.
 - Reading a prize-eligible scroll's maps produces a possible finding; the prize terms forbid disclosing one before the official announcement. Keep such reads private.
 - Ink-label masks are text too: reading the labels of a scroll whose text is unpublished produces letters of unpublished text. Treat those reads like reads of a map.
 
@@ -192,8 +201,8 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 | [`scripts/letters/eval_p172.py`](../scripts/letters/eval_p172.py), [`compare_p172.py`](../scripts/letters/compare_p172.py), [`eval_pages.py`](../scripts/letters/eval_pages.py) | PHerc. 172 drawings, paired bootstrap, whole synthetic pages |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls, weights download, overlay) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls, weights download, overlay, letter language model) |
 
 ## Related work
 
-Published Greek papyrus work classifies single letters on photographs well (about 93% on letter crops, [Swindall et al. 2021](https://scholars.uky.edu/en/publications/exploring-learning-approaches-for-ancient-greek-character-recogni/)), and the best detector on whole papyrus photographs reached mAP 42% ([Turnbull and Mannix 2024](https://arxiv.org/abs/2401.12513)). PHerc. 1667's text and its virtual unwrapping are published in [arXiv 2606.29085](https://arxiv.org/abs/2606.29085). Community tools are listed in [`external.md`](external.md).
+Published Greek papyrus work classifies single letters on photographs well (about 93% on letter crops, [Swindall et al. 2021](https://scholars.uky.edu/en/publications/exploring-learning-approaches-for-ancient-greek-character-recogni/)), and the best detector on whole papyrus photographs reached mAP 42% ([Turnbull and Mannix 2024](https://arxiv.org/abs/2401.12513)); both are Sourced facts, the authors' own numbers. PHerc. 1667's text and its virtual unwrapping are published in [arXiv 2606.29085](https://arxiv.org/abs/2606.29085). Community tools are listed in [`external.md`](external.md).

@@ -5892,7 +5892,7 @@
    "date": "2026-10-08",
    "source": "docs/logs/2026-10-14-letter-reader.md",
    "claim": "Model output on synthetic lines, lines composed from public papyrus letter photographs and public community drawings; not a reading, no hidden text",
-   "check": "plan stage 3 on CPU: real papyrus letterforms mixed into training, same network and schedule as the prototype",
+   "check": "on CPU: real papyrus letterforms mixed into training, same network and schedule as the prototype",
    "model": {
     "format": "linenet-v1",
     "params": 593849,
@@ -6150,7 +6150,7 @@
    "date": "2026-10-09",
    "source": "docs/logs/2026-10-14-letter-reader.md",
    "claim": "Model output on synthetic lines and public community drawings; not a reading, no hidden text",
-   "check": "plan stage 2 on Modal: full-scale synthetic training (letters-v1)",
+   "check": "on Modal (one B200): full-scale synthetic training (letters-v1)",
    "run": {
     "gpu": "B200",
     "wall_seconds": 1670,
@@ -6471,7 +6471,7 @@
    "date": "2026-10-09",
    "source": "docs/logs/2026-10-14-letter-reader.md",
    "claim": "Model output on synthetic lines, public papyrus photographs and public community drawings; not a reading, no hidden text",
-   "check": "plan stage 3 on Modal: real letterforms (letters-v2-real)",
+   "check": "on Modal (one B200): real letterforms (letters-v2-real)",
    "run": {
     "gpu": "B200",
     "wall_seconds": 1460,

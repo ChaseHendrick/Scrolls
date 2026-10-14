@@ -1,5 +1,6 @@
 """Place PHerc. 1667's published lines on its ink maps with no person: the step that turns the published
-text into real ink-map lines for training and testing the letter reader (guide, stage 4).
+text into real ink-map lines for training and testing the letter reader
+(docs/letter-reader.md, Reproduce the benchmarks).
 
 1. read: each segment's 2.4 um map (on the 38 um grid of eval_p1667_text.py cut) is split into text columns
    at gutters (split_columns: a dip in the papyrus-normalised column profile, at least GUTTER_DEPTH below

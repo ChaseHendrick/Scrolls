@@ -124,7 +124,11 @@ class KNLetterLM:
                 vals = np.stack(list(d.values())).astype(np.float32)
                 arrs[f"{kind}{n}_k"], arrs[f"{kind}{n}_v"] = keys, vals
                 meta["tables"].append([kind, n])
-        np.savez_compressed(path, meta=np.array(json.dumps(meta)), **arrs)
+        # Written through a file handle, so the file is exactly `path` (numpy adds .npz to a bare name),
+        # into a folder made if missing.
+        Path(path).parent.mkdir(parents=True, exist_ok=True)
+        with open(path, "wb") as f:
+            np.savez_compressed(f, meta=np.array(json.dumps(meta)), **arrs)
 
     @classmethod
     def load(cls, path):

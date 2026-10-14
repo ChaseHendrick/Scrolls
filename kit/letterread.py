@@ -35,6 +35,7 @@ WEIGHTS_REGISTRY = Path(__file__).parent / "data" / "letter-weights.json"
 # Default line pitch in letter heights (6.6 / 3.5, about 1.89), used only when the image gives no
 # line pitch of its own.
 PITCH_PER_H = 6.6 / 3.5
+DOWNLOAD_TIMEOUT = 120  # seconds without data before a weights download gives up
 
 
 # ------------------------------------------------------------------ released weights
@@ -78,16 +79,22 @@ def resolve_weights(spec, cache=None, registry=None, download=True):
             raise ValueError(f"{spec}: not in {dest.parent}")
         if not m.get("url"):
             raise ValueError(f"{spec}: no download address yet; see docs/letter-reader.md for where to get it")
+        import tempfile
         import urllib.request
         dest.parent.mkdir(parents=True, exist_ok=True)
-        tmp = dest.with_name(dest.name + ".part")
-        with urllib.request.urlopen(m["url"]) as r, open(tmp, "wb") as f:
-            for block in iter(lambda: r.read(1 << 20), b""):
-                f.write(block)
-        if _sha256(tmp) != m["sha256"]:
-            tmp.unlink()
-            raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
-        tmp.replace(dest)
+        # A file of this process's own, so two first runs never write one file, and no partial file is
+        # left behind on any error; the timeout turns a stalled connection into an error.
+        fd, tmp = tempfile.mkstemp(dir=dest.parent, prefix=dest.name + ".", suffix=".part")
+        tmp = Path(tmp)
+        try:
+            with os.fdopen(fd, "wb") as f, urllib.request.urlopen(m["url"], timeout=DOWNLOAD_TIMEOUT) as r:
+                for block in iter(lambda: r.read(1 << 20), b""):
+                    f.write(block)
+            if _sha256(tmp) != m["sha256"]:
+                raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
+            os.replace(tmp, dest)
+        finally:
+            tmp.unlink(missing_ok=True)
     if _sha256(dest) != m["sha256"]:
         raise ValueError(f"{spec}: {dest} does not match its SHA-256 {m['sha256']}; delete it and retry")
     return dest
@@ -324,23 +331,37 @@ def edit_distance(a, b):
 
 # ------------------------------------------------------------------ image and page geometry
 
-def load_image(path, key=None):
-    """2D float array from .npy, .npz (first or named array), .tif/.tiff (tifffile) or .png/.jpg (Pillow)."""
+def load_image(path, key=None, crop=None):
+    """2D float array from .npy, .npz (first or named array), .tif/.tiff (tifffile) or .png/.jpg (Pillow).
+
+    crop: (Y0, Y1, X0, X1), applied before the conversion to float; a .npy file and an uncompressed
+    TIFF are memory-mapped, so only the window is read."""
     p = Path(path)
     suf = p.suffix.lower()
     if suf == ".npy":
-        a = np.load(p, allow_pickle=False)
+        a = np.load(p, allow_pickle=False, mmap_mode="r" if crop else None)
     elif suf == ".npz":
         z = np.load(p, allow_pickle=False)
         a = z[key or z.files[0]]
     elif suf in (".tif", ".tiff"):
         import tifffile
-        a = tifffile.imread(str(p))
+        try:
+            a = tifffile.memmap(str(p), mode="r") if crop else tifffile.imread(str(p))
+        except ValueError:  # a compressed TIFF cannot be memory-mapped
+            a = tifffile.imread(str(p))
     else:
         from PIL import Image
         Image.MAX_IMAGE_PIXELS = None
         a = np.asarray(Image.open(p).convert("F"))
-    a = np.squeeze(np.asarray(a))
+    a = np.squeeze(a)
+    if crop:
+        if a.ndim < 2:
+            raise ValueError(f"{path}: expected a 2D image, got shape {a.shape}")
+        y0, y1, x0, x1 = crop
+        shape, a = a.shape, a[y0:y1, x0:x1]
+        if a.size == 0:
+            raise ValueError(f"{path}: crop {list(crop)} is empty for an image of shape {shape}")
+    a = np.asarray(a)
     if a.ndim == 3 and a.shape[-1] in (3, 4):
         a = a[..., :3].mean(axis=-1)
     if a.ndim != 2:
@@ -356,8 +377,10 @@ def normalize(a, polarity="bright"):
         raise ValueError("image has no finite values")
     a = np.where(finite, a, np.median(a[finite]))
     lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
-    if hi <= lo:
-        return np.zeros_like(a, dtype=np.float32)
+    if hi <= lo:  # sparse binary or quantised image, such as an ink label with under 0.2% ink
+        lo, hi = float(a.min()), float(a.max())
+        if hi <= lo:
+            return np.zeros_like(a, dtype=np.float32)
     if polarity == "auto":
         polarity = "dark" if (med - lo) > (hi - med) else "bright"
     a = np.clip((a - lo) / (hi - lo), 0, 1)
@@ -691,7 +714,8 @@ def read(img, weights, *, orientation=True, **kw):
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
     res = analyze(img, net, **kw)
     if orientation:
-        kw2 = dict(kw, nulls=0, p_min=res["p_min"], letter_px=res["letter_px"])
+        # Only the ink-only letter count is used here, so the language model stays off.
+        kw2 = dict(kw, nulls=0, p_min=res["p_min"], letter_px=res["letter_px"], lm=None, lm_weight=0.0)
         kw2.pop("lines", None)
         ev = {"as_is": res["control"]["letters_kept"]}
         img = np.asarray(img)
