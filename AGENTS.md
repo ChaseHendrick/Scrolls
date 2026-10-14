@@ -14,14 +14,20 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 
 When the private checkout is available, refresh the combined session context from that checkout with `python3 -m kit.repo_handoff context --private-root . --public-root ../Scrolls`. Its handoff helper installs local Git hooks in both checkouts and writes combined context only inside the private workspace. Hooks do not push, run hosted jobs or copy private notes into this repository. Read the generated private context before private work; never paste it into public artifacts.
 
-0. [`docs/README.md`](docs/README.md): the docs index, one home per topic. Check it before any research.
-1. [`docs/HANDOFF.md`](docs/HANDOFF.md): **the one handoff**, open items first, then dated sections, newest first (rule 14).
-2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): pointer to the roadmap, which now lives in Scrolls-private (access required). Gate A's public rule is in `kit/gate.py`.
-3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
-   The README section "Novel findings" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
-4. [`docs/logs/`](docs/logs/): dated research notes; the newest explains the latest numbers.
-   Literature (arXiv, journals, Zenodo, Kaggle): [`docs/logs/2026-10-07-literature.md`](docs/logs/2026-10-07-literature.md) and machine-readable [`docs/papers.json`](docs/papers.json).
-5. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
+Many files here are long: read the top of each and search the rest.
+
+1. [`docs/HANDOFF.md`](docs/HANDOFF.md): **the one handoff**, open items first, then recent dated sections, newest first (rule 14). Older sections are in [`docs/HANDOFF-archive.md`](docs/HANDOFF-archive.md); search it, do not read it whole.
+2. [`docs/README.md`](docs/README.md): the docs index, one home per topic. Check it before any research or writing (rule 13).
+3. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
+4. [`docs/MAP.md`](docs/MAP.md): the repository map, one row per module and script. Search it for a tool or a path.
+
+Open these when the task needs them:
+
+- [`docs/plans/roadmap.md`](docs/plans/roadmap.md): pointer to the roadmap, which now lives in Scrolls-private (access required). Gate A's public rule is in `kit/gate.py`.
+- [`docs/results.json`](docs/results.json): every benchmark number with its settings and source. It is over 200 KB, so print only the part you need; `python3 -c "import json; print(list(json.load(open('docs/results.json'))))"` lists its sections.
+  The README section "Novel findings" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
+- [`docs/logs/`](docs/logs/): dated research notes; open the one a handoff row or the docs index names, and the newest for the latest numbers.
+  Literature (arXiv, journals, Zenodo, Kaggle): [`docs/logs/2026-10-07-literature.md`](docs/logs/2026-10-07-literature.md) and machine-readable [`docs/papers.json`](docs/papers.json).
 
 ## Hard rules (short form)
 
@@ -61,56 +67,15 @@ When the private checkout is available, refresh the combined session context fro
 
 ## Repository map
 
+The full map, one row per module and script, is [`docs/MAP.md`](docs/MAP.md); search it for a tool or a path. The top level:
+
 | Path | What it is |
 | --- | --- |
-| `kit/` | Standard-library Python package, `python -m kit` (numpy, tifffile, zarr only for map tools) |
-| `kit/prizes.py`, `kit/data/prizes-*.json` | Dated prize snapshot: amounts, deadlines, eligible volumes with S3 names and voxel sizes |
-| `kit/doctor.py` | Machine check: GPU (CUDA or Apple Silicon), memory, disk, tools |
-| `kit/plan.py` | Prints the official First Letters commands for one scroll (never runs them) |
-| `kit/cli.py`, `kit/__main__.py` | The `python -m kit` entry point: every subcommand and its help text |
-| `kit/fetch.py` | Resumable anonymous download of a bucket prefix; aliases `w035`, `w045` |
-| `kit/layers.py` | Surface-volume zarr to numbered layer TIFFs (v8in's input), banded reads, optional crop; `kit shuffle` and `kit layers --shuffle SEED` write the depth-shuffle control |
-| `kit/verify.py` | Two maps agree within tolerance, valid only if a control map is caught |
-| `kit/auc.py` | Pixel AUC against a segment's `inklabels.zarr` inside `supervision.zarr`; reverse map as control; `--crop`, `--inner` |
-| `kit/rowscore.py` | Text-row periodicity triage score (port of Bullo27's); a reading order, not a verdict |
-| `kit/provenance.py` | Who ran what, when, on which machine, from which inputs; one digest over the record |
-| `kit/ensemble.py` | Average maps of one surface (`python -m kit ensemble OUT MAP MAP ... [--method rank]`); map-level, never cross-seed weights |
-| `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fibre orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](docs/logs/2026-10-07-grok-laneD.md)) |
-| `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
-| `kit/releases.py`, `docs/releases.json` | The list of tools released from private work and the README section written from it, newest first: `python -m kit releases add ENTRY.json`, `render`, `check`, `list` (rule 15). Scrolls-private's exporter carries an identical copy of the module |
-| `kit/letterread.py`, `kit/greeklm.py` | Greek letter reader (`python -m kit letterread IMAGE --weights letters-v2-real [--letter-px H] [--overlay PNG]`): numpy CTC line network, columns and lines, null and orientation controls, overlay, released weights downloaded once and SHA-256 checked (`kit/data/letter-weights.json`); and a Kneser-Ney letter language model (`python -m kit greeklm build`) reported beside the ink-only decode. Letter hypotheses, not readings ([guide](docs/letter-reader.md)) |
-| `scripts/letters/` | Letter reader training data (synthetic lines, real letterforms from Hell-Char and ICDAR 2023), training (torch), fine-tuning on map lines, PHerc. 172 and PHerc. 1667 benchmarks, `demo_p1667.py` |
-| `kit/gate.py` | Gate A, by the rule in its module docstring (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
-| `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
-| `kit/localcost.py` | `kit run local` and `kit run backfill`: wall time, CPU time and estimated electricity cost of local runs in the ledger (hard rule 9, [compute.md](docs/compute.md)); past durations in `scripts/backfill/` |
-| `kit/cloudcost.py` | Modal cost estimates from dated rates, no network (`python3 -m kit.cloudcost rates/cost/infer/jobs/budget/defaults`); rates and job assumptions in `docs/compute/` |
-| `kit/cropscan.py` | Pixel AUC of one map on every window of a grid in one pass (library; used by the lane I experiment): how much a crop's AUC depends on where the crop was put |
-| `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
-| `kit/meshaudit.py` | `kit meshaudit transforms/canvas/plan/depth`: refit catalogue cross-scan affines from their landmarks, check every surface volume against its mesh, and measure papyrus depth between native and cross renders; [protocol](docs/plans/2026-10-07-mesh-hypothesis.md), [data](docs/data/mesh-hypothesis/README.md) |
-| `kit/surfacefix.py`, `kit/_surface_geometry.py` | Experimental bounded normal-offset suggestions, frozen correspondence checks and uncertain-region flags; the helper holds the conservative bilinear-quad correspondence; see `docs/surfacefix.md` |
-| `kit/phantom.py`, `kit/viewer.py`, `scripts/phantom-demo.sh` | `kit phantom`: synthetic ink-on-papyrus volumes with known labels; `kit view`: one-file HTML overlay of several readers' maps and the labels; the demo uses synthetic data only ([guide](docs/phantom-and-viewer.md)) |
-| `docs/scan-status.md` | Our completed/partial/planned processing, plus the dated official CT catalogue and documented acquisition unknowns |
-| `kit/ledger.py` | Local experiment records in `experiments/<slug>/run.json` with readout-rule hash and status gate |
-| `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
-| `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
-| `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
-| `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
-| `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its fix #2060 ([log](docs/logs/2026-10-12-upstream-reports.md)); standard library |
-| `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
-| `scripts/experiments/` | Saved scripts, logs and scores of past public-data jobs (2026-10-07 cloud jobs, lanes, tricks); records, keep their wording |
-| `docs/compute/` | Modal pricing, rates, job assumptions, the public Modal ledger and run specs (hard rule 11) |
-| `docs/evidence/` | Frozen evidence archives with hashes; do not edit |
-| `docs/README.md` | Docs index: one home per topic; check it before researching |
-| `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
-| `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
-| `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
-| `docs/logs/` | Dated research notes (not claims) |
-| `docs/manuscripts/` | Paper drafts with their data and number checks; `compute-limits/` is shelved, not released |
-| `docs/STANDARDS.md` | The standards every measurement here follows (controls, preregistration, AUC, tracing, speed and cost, data splits, prize criteria), each set beside the community's practice with dated sources |
-| `docs/state-of-play.md`, `docs/prizes.md` | What has been read and tried; prize terms |
-| `docs/mac.md` | Apple Silicon guide: commands, how to watch a run, measured timings |
-| `tests/` | `python -m unittest discover -s tests`; map tests skip without numpy, tifffile, zarr. `test_repo.py` checks the repo itself: scripts parse, Mac scripts stay bash 3.2, no long dashes, docs JSON parses, documented `kit` commands exist, every `kit/*.py` module is in this map, relative links in live Markdown resolve, and the held-out wording stays correct in live files (w045 is not held out from `ink_9um`; a line calling PHerc0841 held out from every reader must name Hecate) |
-| `experiments/` | Local ledger (gitignored except its README) |
+| `kit/` | The `python -m kit` package: standard library only, except numpy, tifffile and zarr for the map tools; every subcommand is in `kit/cli.py` |
+| `scripts/` | Mac GPU scripts (bash 3.2), the letter reader's training and benchmarks, and `scripts/experiments/`: saved records of past public-data jobs, keep their wording |
+| `docs/` | Docs, indexed by [`docs/README.md`](docs/README.md): the handoff, benchmark numbers (`docs/results.json`), dated logs, Modal pricing and specs, and frozen evidence archives with hashes in `docs/evidence/` (do not edit) |
+| `tests/` | `python -m unittest discover -s tests`; `tests/test_repo.py` checks the repository itself |
+| `experiments/`, `templates/` | The local experiment ledger (gitignored except its README) and its record template |
 
 ## Commands
 
