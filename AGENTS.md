@@ -57,6 +57,7 @@ When the private checkout is available, refresh the combined session context fro
 | 2026-10-13 | The forum ban is lifted too ("lift the ban. we can post.. just ask before doing so", 01:41 UTC): forum, Discord and Hugging Face posts are allowed, but an agent drafts and asks the user before each post. For now the user does not want to post in forums (01:41 UTC), so do not draft or suggest forum posts until he asks. Hard rule 1 still applies: nothing private and no target-scroll data |
 | 2026-10-13 | Call the owner Chase (Chase Hendrick) in docs, commits, PRs and messages. His account may still show the name Bob; never use it |
 | 2026-10-14 | The README updates itself when something is released from private to public: each release adds its entry to `docs/releases.json`, and the README's "Released tools" section is generated from that list (rule 15) |
+| 2026-10-14 | AutoPipeline's short name is AP, not APL ("we should change the acronym from APL to AP", "since ya know, its Pipeline", Chase, 01:57 UTC). Define it once per document as "AutoPipeline (AP)". In text for villa and the community write AutoPipeline in full, because AP there usually means average precision. Files already published or approved, such as the released copy at `faada83` and its approved file lists, keep APL; the next fix release, under a new submission id, carries AP |
 
 ## Repository map
 
