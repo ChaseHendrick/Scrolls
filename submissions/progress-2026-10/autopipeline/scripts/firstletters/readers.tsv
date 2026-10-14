@@ -1,0 +1,13 @@
+name	kind	file	sha256	url
+ink9-42	villa	fl/hybrid_3d2d-seed42_step-075000.pth	e635558ae6a1a807a7e5ec1e83adfd45bc3c0ac53883ea43f1d4e085d62a9cab	https://huggingface.co/scrollprize/ink_9um/resolve/main/hybrid_3d2d-seed42/step-075000.pth
+ink9-43	villa	fl/hybrid_3d2d-seed43_step-075000.pth	2aeaa85a35ef28d7bc7bf3e848c4a6a91385e9132710927fdba41133c4ecb28f	https://huggingface.co/scrollprize/ink_9um/resolve/main/hybrid_3d2d-seed43/step-075000.pth
+dnative	villa	fl/dense_native-016000.rebuilt.pth	-	rebuild:fl/dense_native_016000.safetensors+fl/train_dense_native.json
+dnative-weights	part	fl/dense_native_016000.safetensors	d3d95dc41dcb24ed76b84b5e12ca5dae25d7fb34edf1dfbb93e0186f91e6fc6d	https://huggingface.co/Nieuwlaar/ink9um-dense-native/resolve/main/weights/dense_native_016000.safetensors
+dnative-config	part	fl/train_dense_native.json	5d8459030b36cd3980a03610c684365a7407d497173eff433efdb37f75840c86	https://huggingface.co/Nieuwlaar/ink9um-dense-native/resolve/main/training/configs/train_dense_native.json
+klavis	villa	fl/dense9um-w016excluded-step075000.pth	tofu	https://huggingface.co/domenicor046/ink9um-dense/resolve/main/dense9um-w016excluded-step075000.pth
+readerv2	villa	reader_v2/reader-v2-step040000.pth	654ec5acec2b6c4788d9cb326e2f0b8c2c730584949a934ef775db7f6ab5d3a6	https://huggingface.co/domenicor046/reader-v2/resolve/main/reader-v2-step040000.pth
+d9v2	villa	d9v2/d9v2_ft-012000.pth	50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966	https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search/releases/download/v1.0/d9v2_ft-012000.pth
+d9v4c	villa	fl/d9v4C_ft-006000.pth	39360873b5379d28e2ed61c6fdf477a2bef7247ab51b95d4aea6b542757f0ac0	https://github.com/TAUIL-Abd-Elilah/9um-reader-letter-shape/releases/download/v1.0/d9v4C_ft-006000.pth
+scheirer	villa	fl/ink9um_ft_s42_step12000.pth	tofu	https://github.com/ShribyrLabs/vesuvius-reports/releases/download/reader-ft-s42/ink9um_ft_s42_step12000.pth
+hecate	hecate	fl/hecate_9.6um.pth	809f4f10f7cb7afa19b4bee0f7d2ab31edd7e11b664f9f210cc9c17f22fcfe5d	https://huggingface.co/scrollprize/hecate/resolve/main/hecate_9.6um.pth
+hecate-code	part	fl/hecate.py	c232c18a1a86cfb91257a00db13288202bb8ae33732ba26f7291a9b8adb8da59	https://huggingface.co/scrollprize/hecate/resolve/main/hecate.py

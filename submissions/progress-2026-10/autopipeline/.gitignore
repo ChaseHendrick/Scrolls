@@ -1,0 +1,29 @@
+# Copied into the release as .gitignore. Everything kit writes in this folder stays out of git: runs and caches
+# (work/, including the unpacked VC3D AppImage), the experiment ledger (experiments/), downloaded models
+# (checkpoints/), scroll data and maps, the Python environment and VC3D downloads. The patterns that start with /
+# hold for this folder wherever it sits, also inside another repository.
+/work/
+/experiments/*
+!/experiments/README.md
+/checkpoints/
+/predictions/
+/volume-cache/
+/ink-dataset/
+*.zarr/
+*.tifxyz/
+*.tif
+*.tiff
+*.npy
+*.pt
+*.pth
+*.ckpt
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
+squashfs-root/
+*.AppImage
+*.dmg
