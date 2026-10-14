@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,releases}."""
 
 import argparse
 import json
@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import localcost, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer
+from . import localcost, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases
 
 
 def cmd_prizes(args):
@@ -766,6 +766,10 @@ def build_parser():
     a.add_argument("model")
     a.add_argument("text", nargs="+")
     p.set_defaults(func=cmd_greeklm)
+
+    p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
+    releases.add_arguments(p)
+    p.set_defaults(func=releases.run)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))

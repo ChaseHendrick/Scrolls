@@ -4,7 +4,7 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 13 October 2026.
+Updated 14 October 2026.
 
 ## Where things stand
 
@@ -16,6 +16,7 @@ Updated 13 October 2026.
 | What has been read, tried and paid by everyone | [`state-of-play.md`](state-of-play.md) (checked 6 and 7 October) | [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md), [`tricks.md`](tricks.md) |
 | Which scans exist and what we processed | [`scan-status.md`](scan-status.md) | |
 | Prize terms, amounts, deadlines, eligible scrolls | [`prizes.md`](prizes.md), `python -m kit prizes` | |
+| What has been released from private work | [`releases.json`](releases.json), shown as the README's "Released tools" section | `python -m kit releases list`; AGENTS.md rule 15 |
 
 ## Rules and standards
 
