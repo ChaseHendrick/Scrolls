@@ -1,10 +1,10 @@
-"""Gate A, automatically: which released reader is best on PHerc0841, by the roadmap's rule.
+"""Gate A, automatically: which released reader is best on PHerc0841, by the Phase 0 rule below.
 
-The rule (docs/plans/roadmap.md, Phase 0): rank readers by mean forward AUC over PHerc0841's
-three 640 px crops (64 px edge left out), with the reverse AUC well below the forward AUC on
-each; one reader beats another only by at least 0.02 mean AUC. "Well below" is read here as
-forward minus reverse of at least 0.10 on every crop (`min_gap`; every released reader we
-scored clears it by 0.14 or more).
+The roadmap itself now lives in Scrolls-private; this docstring is the public statement of the
+rule: rank readers by mean forward AUC over PHerc0841's three 640 px crops (64 px edge left out),
+with the reverse AUC well below the forward AUC on each; one reader beats another only by at
+least 0.02 mean AUC. "Well below" is read here as forward minus reverse of at least 0.10 on every
+crop (`min_gap`; the smallest committed gap is 0.1015, `ink_9um` seed 42 on ag896).
 
 Scores come from two places: the bars committed in docs/results.json (CPU runs here), and the
 `auc_*.json` files the Mac script writes under WORK/<segment>/results/. A Mac file counts only

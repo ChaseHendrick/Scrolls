@@ -1,7 +1,8 @@
 """Pixel AUC of an ink map against a segment's published ink labels.
 
-On a labelled segment no model was trained on (PHerc0841 for the released readers; PHerc0139
-w045 for v8in only, since ink_9um trained on its 2.4 um render), this is the generalization
+On a labelled segment no model was trained on (PHerc0841 for `ink_9um`, v8in, d9v2 and Reader
+v2, but possibly not for Hecate, whose base model's trainer lists all three PHerc0841 segments;
+PHerc0139 w045 for v8in only, since ink_9um trained on its 2.4 um render), this is the generalization
 number: the chance that a labelled ink pixel scores above a
 labelled non-ink pixel. Only pixels inside the supervision mask count, because the
 labellers marked ink and non-ink there and nowhere else. Reference values (Community

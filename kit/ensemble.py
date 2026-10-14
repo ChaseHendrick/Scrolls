@@ -1,8 +1,10 @@
 """Average several ink maps of the same surface into one (a prediction-level ensemble).
 
-The cheapest gain the community reports: Reader v2 and Hecate averaged reach 0.866 AUC on
-PHerc0841 against 0.855 and 0.824 alone (Reader v2 model card); d9v2 and Reader v2
-averaged, 0.840 against 0.828 and 0.826 (TAUIL's benchmark); two seeds' maps averaged,
+The cheapest gain the community reports: Hecate and Reader v2 averaged reach 0.866 AUC on
+PHerc0841 against 0.855 and 0.824 alone (Reader v2 model card; PHerc0841 may not be held out
+from Hecate, whose base model's committed trainer lists its three labelled segments:
+docs/logs/2026-10-09-pherc0841-hecate.md); d9v2 and Reader v2 averaged, 0.840 against 0.828
+and 0.826 (TAUIL's benchmark); two seeds' maps averaged,
 0.866 against 0.840 on the PHerc0139 title (Nieuwlaar), where averaging the two seeds'
 weights instead gave 0.49. Maps of different models or seeds are combined here; weights
 only within one training run (`scripts/soup.py`).

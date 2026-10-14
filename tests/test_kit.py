@@ -179,6 +179,14 @@ class PlanTest(unittest.TestCase):
         self.assertIn("v8in_reverse.tif --reverse\n", text)
         self.assertIn("--reverse --device mps", plan.first_letters("PHerc0826", mac=True))
 
+    def test_plan_names_hecate_caveat_for_pherc0841(self):
+        # PHerc0841 is held out from the readers this repository scores, but possibly not from
+        # Hecate (docs/logs/2026-10-09-pherc0841-hecate.md).
+        text = plan.first_letters("PHerc0826")
+        step = text[text.index("# 1b."):text.index("python -m kit fetch w045")]
+        self.assertIn("PHerc0841 is the held-out test for ink_9um, v8in, v8in-1447, d9v2 and\n#     Reader v2", step)
+        self.assertIn("Hecate", step)
+
     def test_fetch_aliases_point_at_9um_surface_volumes(self):
         from kit import fetch
         self.assertIn("w045_2026012619/surface-volumes/9.362um", fetch.ALIASES["w045"])
@@ -189,6 +197,25 @@ class PlanTest(unittest.TestCase):
             plan.first_letters("PHerc1667")
         with self.assertRaises(ValueError):
             plan.first_letters("PHerc0343")
+
+    def test_plan_names_the_award_when_it_rejects_an_awarded_scroll(self):
+        # The 2026-10-11 snapshot records PHerc0343's award in First Letters' "awarded" list.
+        with self.assertRaisesRegex(ValueError, r"awarded on 2026-10-08 \(https://scrollprize\.substack\.com/"):
+            plan.first_letters("PHerc. 343")
+        # A scroll that was never eligible gets no award sentence, so the check can fail.
+        with self.assertRaises(ValueError) as ctx:
+            plan.first_letters("PHerc1667")
+        self.assertNotIn("awarded", str(ctx.exception))
+
+    def test_plan_award_sentence_survives_an_entry_without_sources(self):
+        # A snapshot entry missing its date or sources still gives the clean refusal, not a KeyError.
+        import copy
+        from kit import prizes
+        snapshot = copy.deepcopy(prizes.load())
+        letters = prizes.find(snapshot, "first-letters-2027")
+        letters["awarded"] = [{"scroll": "PHerc0343"}]
+        with self.assertRaisesRegex(ValueError, r"awarded on an unrecorded date \(no source recorded\)"):
+            plan.first_letters("PHerc0343", snapshot=snapshot)
 
     def test_cost_matches_published_run(self):
         # bnleft/first-light-pherc0211: about 6.5 GPU hours on an A10 at $1.10/h, "about $7".
