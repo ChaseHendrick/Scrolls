@@ -55,6 +55,7 @@ Updated 14 October 2026.
 | Surface geometry speed and resolution | [`logs/2026-10-07-adaptive-resolution.md`](logs/2026-10-07-adaptive-resolution.md) | [`logs/2026-10-07-production-speed.md`](logs/2026-10-07-production-speed.md), [`logs/2026-10-07-production-scaling.md`](logs/2026-10-07-production-scaling.md), [`logs/2026-10-07-coarse-support-mask.md`](logs/2026-10-07-coarse-support-mask.md), [`logs/2026-10-07-ufsm-review.md`](logs/2026-10-07-ufsm-review.md) |
 | CT reconstruction | [`logs/2026-10-07-reconstruction-tests.md`](logs/2026-10-07-reconstruction-tests.md) | |
 | Where GPUs help villa users | [`logs/2026-10-12-b300-gpu-stages.md`](logs/2026-10-12-b300-gpu-stages.md) | [`manuscripts/compute-limits/`](manuscripts/compute-limits/README.md) (shelved, not released) |
+| Turning a traced render upright before ink detection | [`logs/2026-10-14-upright-before-ink.md`](logs/2026-10-14-upright-before-ink.md) | `results.json` `orientation_checks` |
 | Findings reported to villa (false 404, seed drift, #1843) | [`logs/2026-10-12-upstream-reports.md`](logs/2026-10-12-upstream-reports.md) | [`evidence/2026-10-12-false-404/`](evidence/2026-10-12-false-404/README.md), [`contrib/`](contrib/) |
 | Setup history (6 and 7 October) | [`logs/2026-10-06.md`](logs/2026-10-06.md) | [`logs/2026-10-07-mac-and-repos.md`](logs/2026-10-07-mac-and-repos.md), [`logs/2026-10-07-merged-review-closure.md`](logs/2026-10-07-merged-review-closure.md) |
 
