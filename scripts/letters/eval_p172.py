@@ -20,8 +20,12 @@ prototype it kept falling while the error on these drawings rose (docs/logs/2026
 
 Usage:
   git clone --depth 1 https://github.com/Bodillium/Herculaneum-Scroll-Labels work/bodillium
-  python scripts/letters/eval_p172.py work/bodillium --weights work/letters/linenet.npz [--lm work/letters/greek5.npz] [--split dev]
-Needs numpy, Pillow and pdftotext (poppler-utils).
+  python scripts/letters/eval_p172.py work/bodillium --weights letters-v2-real [--lm work/letters/greek5.npz] [--split dev]
+Needs numpy, Pillow and pdftotext (poppler-utils). --weights takes a released model name or a linenet-v1 .npz.
+The guide's PHerc. 172 row is --split test --columns auto, its "ink_only" "cer_matched_lines" (a diagnostic).
+It prints which row the settings reproduce and that error first, then one line per segment, and the summary
+JSON as its last line (so `| tail -1` gives the JSON). A transcription line holding a letter the weights do
+not write (weights of your own with a smaller alphabet) stops the run with the alphabet printed.
 """
 import argparse
 import json
@@ -35,6 +39,7 @@ import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from kit import letterread as R  # noqa: E402
+from kit.letterlines import check_references  # noqa: E402
 
 LETTERS = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"
 LABEL_DIR = "P.Herc. 172 (Scroll 5) Ink Labels"
@@ -106,18 +111,31 @@ def split_segments(ids, split):
     return {"all": ids, "dev": ids[:half], "test": ids[half:]}[split]
 
 
+def check_alphabet(refs, alphabet, source="the transcription"):
+    """SystemExit, printing the alphabet, when a reference line ({segment: [line, ...]}) holds a letter the reader
+    (alphabet: its weights' letters) does not write. parse_transcription keeps LETTERS only, so with the
+    released weights this never stops a run; it stops weights of your own whose alphabet lacks a letter."""
+    try:
+        check_references({f"{sid} line {i}": r for sid, ref in refs.items() for i, r in enumerate(ref)},
+                         alphabet=alphabet, wildcard=None, source=source)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
+
+
 def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2, split="all", columns="off"):
     repo = Path(repo)
     pdf = sorted((repo / PDF_DIR).glob("*.pdf"))
     if not pdf:
         raise SystemExit(f"no transcription PDF under {repo / PDF_DIR}")
-    text = subprocess.run(["pdftotext", "-layout", str(pdf[0]), "-"], capture_output=True, text=True, check=True).stdout
+    text = subprocess.run(["pdftotext", "-layout", str(pdf[0]), "-"], capture_output=True, encoding="utf-8",
+                          check=True).stdout
     gt = parse_transcription(text)
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz file or a released model name
     tot = {"ink_only": [0, 0], "with_lm": [0, 0]}
     rows = []
     usable = {sid: [r for r in (ln.replace("?", "") for c in cols for ln in c) if r] for sid, cols in gt.items()}
     usable = {sid: ref for sid, ref in usable.items() if ref and (repo / LABEL_DIR / f"{sid}_inklabels.png").exists()}
+    check_alphabet(usable, net.alphabet, f"{pdf[0].name} against {net.file}")
     for sid in split_segments(usable, split):
         f, ref = repo / LABEL_DIR / f"{sid}_inklabels.png", usable[sid]
         res = R.analyze(load_mask(f, down), net, nulls=nulls, seed=0, lm=lm, lm_weight=lm_weight if lm else 0.0,
@@ -140,7 +158,32 @@ def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2, split="all"
         rows.append(row)
     summary = {name: {"cer_matched_lines": round(e / n, 3), "ref_letters": n} for name, (e, n) in tot.items() if n}
     return {"note": R.NOTE, "data": "Bodillium/Herculaneum-Scroll-Labels, PHerc. 172 hand-drawn ink labels",
-            "weights": str(weights), "down": down, "split": split, "columns": columns, "summary": summary, "segments": rows}
+            "weights": net.file, "weights_sha256": net.sha256, "down": down, "split": split, "columns": columns,
+            "summary": summary, "segments": rows}
+
+
+def headline(res):
+    """Lines printed before the per-segment lines: which row of the guide the settings reproduce, then its measure.
+
+    The guide's PHerc. 172 row is --split test --columns auto, ink only: the character error over the
+    lines matched to the transcription (summary "ink_only" "cer_matched_lines"), a diagnostic because
+    the column rule was set after the test half had been seen. --split dev is for choosing checkpoints.
+    Printing only: the summary JSON stays the last line, and the --out file is unchanged."""
+    split, cols = res.get("split", "all"), res.get("columns", "off")
+    if (split, cols) == ("test", "auto"):
+        row = "the guide's PHerc. 172 row (test half, columns found; a diagnostic)"
+    elif split == "dev":
+        row = "the dev half, for choosing a checkpoint, never for reporting"
+    else:
+        row = "no row of the guide's table (its PHerc. 172 row is --split test --columns auto)"
+    out = [f"split {split}, columns {cols}: {row}"]
+    for key in ("ink_only", "with_lm"):
+        m = res["summary"].get(key)
+        if m:
+            out.append(f"{key}: character error over matched lines {m['cer_matched_lines']} "
+                       f"({m['ref_letters']} reference letters)")
+    out.append(f"{len(res['segments'])} segments; Model output, not a reading")
+    return out
 
 
 def main():
@@ -158,6 +201,8 @@ def main():
                          "match pairs with the transcription's column blocks in order")
     ap.add_argument("--out", help="full result JSON (keep it in work/)")
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     lm = None
     if a.lm:
         from kit import greeklm
@@ -165,6 +210,7 @@ def main():
     res = evaluate(a.repo, a.weights, lm, a.lm_weight, a.down, split=a.split, columns=a.columns)
     if a.out:
         Path(a.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print("\n".join(headline(res)))
     for r in res["segments"]:
         print(f"{r['segment']}: CER {r['ink_only']['cer']} on {r['ink_only']['ref_letters']} letters"
               + (f", with LM {r['with_lm']['cer']}" if "with_lm" in r else "")
@@ -173,4 +219,5 @@ def main():
 
 
 if __name__ == "__main__":
+    R.utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

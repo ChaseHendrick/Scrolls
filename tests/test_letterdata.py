@@ -55,6 +55,22 @@ class LetterDataTest(unittest.TestCase):
         self.assertEqual(centres, sorted(centres))
         self.assertTrue(img.shape[0] > 3 * h)
 
+    def test_photo_page_is_dark_ink_on_a_light_ground(self):
+        for seed in range(6):
+            rng = np.random.default_rng(seed)
+            img, lines, centres, h = L.make_page(rng, n_lines=4, h=20.0, domain="photo", tilt_deg=0,
+                                                 style=L.random_style(rng, "skeleton"))
+            self.assertTrue(0.0 <= img.min() and img.max() <= 1.0)
+            ground = float(np.median(img))
+            self.assertTrue(0.45 < ground < 0.95, (seed, ground))          # a light ground, never washed out
+            self.assertLess(float((img >= 0.999).mean()), 0.05)
+            on_lines = np.mean([img[int(round(c)) - 2:int(round(c)) + 3].mean() for c in centres])
+            between = np.mean([img[int(round(0.5 * (a + b)))].mean() for a, b in zip(centres, centres[1:])])
+            self.assertLess(on_lines, between)                              # the ink is darker than the ground
+        a = L.make_page(np.random.default_rng(9), n_lines=2, h=16.0, domain="photo")
+        b = L.make_page(np.random.default_rng(9), n_lines=2, h=16.0, domain="photo")
+        self.assertTrue(np.array_equal(a[0], b[0]))
+
     def test_shard_round_trip(self):
         with tempfile.TemporaryDirectory() as d:
             out = gen_dataset.shard((str(Path(d) / "s.npz"), 3, 5, None))

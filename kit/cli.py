@@ -1,4 +1,9 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,releases}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,letterread,letterlines,letterdemo,greeklm,releases}.
+
+An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
+gate and releases read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
+scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
+"""
 
 import argparse
 import json
@@ -285,6 +290,11 @@ def cmd_gate(args):
     if work is None:
         default = Path.home() / "scrolls-work"
         work = str(default) if default.is_dir() else None
+    if not Path(args.results).is_file():
+        print(f"cannot read the scores: no {args.results}. The gate reads the repository's docs/results.json, which "
+              "an installed package does not have: run it from a clone (git clone "
+              "https://github.com/ChaseHendrick/Scrolls), or give --results", file=sys.stderr)
+        return 2
     try:
         result = gate.run(work, args.results, args.min_lead, args.min_gap)
     except (OSError, ValueError, KeyError) as exc:
@@ -435,40 +445,239 @@ def cmd_view(args):
     return 0
 
 
+READER_INSTALL = 'python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)'
+
+
+def import_advice(exc):
+    """An ImportError's text, with the reader extra's install line when the missing module is one it brings."""
+    names = {getattr(exc, "name", None), getattr(exc.__cause__, "name", None)}
+    if any(n and n.split(".")[0] in ("numpy", "PIL", "tifffile", "imagecodecs") for n in names):
+        return f"{exc}; {READER_INSTALL}"
+    if any(n and n.split(".")[0] == "zarr" for n in names):
+        return f'{exc}; python -m pip install zarr (or "scrolls-workbench[all]", Python 3.11 or newer)'
+    return str(exc)
+
+
 def cmd_letterread(args):
+    say = (lambda msg: None) if args.quiet else (lambda msg: print(msg, file=sys.stderr, flush=True))
+    letter_px = net = None
     try:
         from . import letterread
-        img = letterread.load_image(args.image, args.key)
-        if args.crop:
-            y0, y1, x0, x1 = args.crop
-            img = img[y0:y1, x0:x1]
+        letterread.utf8_console()       # Greek letters print in a pipe and on a Windows console too
+        if args.letter_px is not None and (args.letter_mm is not None or args.um_per_px is not None):
+            raise ValueError("give the letter height once: --letter-px, or --letter-mm with --um-per-px")
+        letter_px = args.letter_px
+        if args.letter_mm is not None or args.um_per_px is not None:
+            letter_px = letterread.letter_px_from_units(args.letter_mm, args.um_per_px)
+        elif letter_px is not None and letter_px <= 0:
+            raise ValueError(f"--letter-px {letter_px}: the letter height must be positive")
+        if args.max_mpx <= 0 or args.overlay_max_side < 16:
+            raise ValueError("--max-mpx must be positive and --overlay-max-side at least 16")
+        if args.min_letters < 1:
+            raise ValueError(f"--min-letters {args.min_letters}: give at least 1")
+        if not 0 <= args.deskew < 45:
+            raise ValueError(f"--deskew {args.deskew}: give an angle from 0 (off) to under 45 degrees")
+        if args.nulls < 0 or args.beam < 1 or args.lm_weight < 0:
+            raise ValueError("--nulls must be 0 or more, --beam at least 1 and --lm-weight 0 or more")
+        if args.p_min is not None and not 0 <= args.p_min <= 1:
+            raise ValueError(f"--p-min {args.p_min}: give a confidence from 0 to 1")
+        if args.columns not in ("auto", "off") and not (args.columns.isdigit() and int(args.columns) >= 1):
+            raise ValueError(f"--columns {args.columns}: give auto, off or a number of columns, at least 1")
+        # Check where the results go before the read, which can take minutes.
+        if args.overlay:
+            try:
+                from PIL import Image
+            except ImportError as exc:
+                raise ImportError(f"--overlay needs Pillow: {exc}") from exc
+            Image.init()
+            if Path(args.overlay).suffix.lower() not in Image.registered_extensions():
+                raise ValueError(f"--overlay {args.overlay}: give an image file name such as letters.png")
+        for out in (args.out, args.overlay, args.csv, args.page_xml):
+            if out and not Path(out).resolve().parent.is_dir():
+                raise OSError(f"no such folder for {out}")
+        for image in (args.image, args.control):   # before the weights, which may download
+            if image and not Path(image).exists():
+                raise OSError(f"{image}: no such file or folder")
+        if args.letter_mm is not None:
+            say(f"letter height {args.letter_mm:g} mm at {args.um_per_px:g} um per pixel: {letter_px:.2f} px")
+        # the weights before the image, so a failed download costs no load
+        net = letterread.load_weights(args.weights)
         lm = None
         if args.lm:
             from . import greeklm
             lm = greeklm.KNLetterLM.load(args.lm)
-        weights = letterread.resolve_weights(args.weights)
-        res = letterread.read(img, weights, orientation=not args.no_orientation, letter_px=args.letter_px,
-                              polarity=args.polarity, nulls=args.nulls, seed=args.seed, lines=args.lines,
-                              p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0, beam=args.beam,
-                              columns=args.columns if args.columns in ("auto", "off") else int(args.columns))
-    except (ImportError, OSError, KeyError, ValueError) as exc:
+        exif = letterread.exif_orientation(args.image)
+        if exif != 1:
+            say(f"{Path(args.image).name}: EXIF orientation {exif} applied, so pixels, --crop and boxes are those of "
+                "the image as a viewer shows it")
+        img, k, shape = letterread.load_reduced(args.image, args.key, crop=args.crop, letter_px=letter_px,
+                                                net_letter_px=net.letter_px, max_pixels=int(args.max_mpx * 1e6),
+                                                progress=say)
+        columns = args.columns if args.columns in ("auto", "off") else int(args.columns)
+        if args.polarity == "auto":   # a quick read both ways decides (letterread.polarity_trial)
+            say("polarity auto: a quick read as bright ink and as dark ink")
+            a0, pinfo = letterread.normalize_auto(img, net, max_pixels=int(args.max_mpx * 1e6), letter_px=letter_px,
+                                                  input_scale=k, seed=args.seed, columns=columns,
+                                                  deskew_deg=args.deskew, lines=args.lines, rotate=args.rotate,
+                                                  mirror=args.mirror, letter_px_fallback=False,
+                                                  min_letters=args.min_letters)
+            say(f"polarity auto: {pinfo['used']} ink ({letterread.trial_text(pinfo['trial'])})")
+        else:
+            a0, pinfo = letterread.normalize_for_reading(img, args.polarity, max_pixels=int(args.max_mpx * 1e6),
+                                                         with_info=True)
+        del img
+        c0 = None
+        if args.control:
+            # the same window and the same block size as the image, so its pixels sit on the image's pixels
+            cimg, ck, cshape = letterread.load_reduced(args.control, args.key, crop=args.crop, letter_px=letter_px,
+                                                       net_letter_px=net.letter_px,
+                                                       max_pixels=int(args.max_mpx * 1e6), progress=say)
+            if (cshape, ck) != (shape, k):
+                raise ValueError(f"--control {args.control}: {cshape[0]} x {cshape[1]} px, but the image is {shape[0]} x "
+                                 f"{shape[1]}; give a map of the same surface on the same grid (such as its "
+                                 "reverse-depth map)")
+            # in the image's polarity, so --polarity auto cannot read the control map the other way round
+            c0 = letterread.normalize_for_reading(cimg, pinfo["used"], max_pixels=int(args.max_mpx * 1e6))
+            del cimg
+        res = letterread.read(a0, net, normalized=True, input_scale=k, orientation=not args.no_orientation,
+                              rotate=args.rotate, mirror=args.mirror, deskew_deg=args.deskew, polarity_info=pinfo,
+                              letter_px=letter_px, polarity=pinfo["used"], nulls=args.nulls, seed=args.seed,
+                              lines=args.lines, p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0,
+                              beam=args.beam, letter_px_fallback=False, progress=say, control=c0,
+                              min_letters=args.min_letters, columns=columns)
+        del c0
+        # file names only, never a folder, so a result can be shared without a local path
+        res["source"] = {"file": Path(args.image).name, "key": args.key}
+        res["options"]["max_mpx"] = args.max_mpx
+        if args.control:
+            res["control"]["control_map"]["file"] = Path(args.control).name
+        res["input_shape"] = list(shape)   # the exact input window, including rows and columns under one block
+        # the whole image's size, which places a --crop window in the image file (the CSV and PAGE exports)
+        res["image_shape"] = list(letterread.image_shape(args.image, args.key)) if args.crop else list(shape)
+        if exif != 1:
+            res["exif_orientation"] = exif
+        if args.letter_mm is not None:
+            res["letter_mm"], res["um_per_px"] = args.letter_mm, args.um_per_px
+        if args.crop:
+            res["crop"] = list(args.crop)  # [Y0, Y1, X0, X1]; every row, column and box is relative to Y0, X0
+        if args.overlay:
+            res["overlay"] = dict(file=Path(args.overlay).name,
+                                  **letterread.overlay_geometry(a0.shape, res, args.overlay_max_side))
+    except MemoryError:
+        net_px = getattr(net, "letter_px", 16)
+        if letter_px is not None and float(letter_px) // (2 * net_px) <= 1:
+            # block-averaging stops at letters twice the network's height (reduce_factor), so only a window helps
+            print(f"out of memory reading {args.image}. Its letters ({float(letter_px):g} px tall) are too small to "
+                  f"block-average (that needs letters at least {4 * net_px} px tall), so the image is loaded whole: "
+                  "read a window with --crop Y0 Y1 X0 X1, or check the letter size.", file=sys.stderr)
+        else:
+            print(f"out of memory reading {args.image}. Give the letter size (--letter-px, or --letter-mm with "
+                  "--um-per-px) so a big image is block-averaged while it loads, lower the budget with --max-mpx, "
+                  "or read a window with --crop Y0 Y1 X0 X1.", file=sys.stderr)
+        return 2
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
+    # The files first (their folders were checked before the read), then the screen: a console that
+    # fails on a letter never loses a finished read.
+    failed, wrote = [], []
     if args.out:
-        Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        try:
+            Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            wrote.append(args.out)
+        except OSError as exc:
+            failed.append(exc)
+    if args.csv or args.page_xml:
+        from . import letterexport
+        for out, write in ((args.csv, letterexport.write_csv), (args.page_xml, letterexport.write_page_xml)):
+            if out:
+                try:
+                    write(res, out)
+                    wrote.append(out)
+                except (OSError, ValueError) as exc:
+                    failed.append(exc)
     if args.overlay:
         try:
-            letterread.overlay(img, res, args.overlay, polarity=args.polarity)
-        except ImportError as exc:
-            print(f"--overlay needs Pillow: {exc}", file=sys.stderr)
-            return 2
+            # a colour photograph is drawn in colour; other images from the read image in their own polarity
+            base = letterread.display_image(args.image, args.crop, k)
+            letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True,
+                               base=base if base is not None and base.shape[:2] == a0.shape else None)
+            wrote.append(args.overlay)
+        except (ImportError, OSError, ValueError) as exc:
+            failed.append(exc)
+    for out in wrote:
+        say(f"wrote {out}")
     print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
+    for exc in failed:
+        print(exc, file=sys.stderr)
+    return 2 if failed else 0
+
+
+def cmd_letterlines(args):
+    say = (lambda msg: None) if getattr(args, "quiet", False) else (lambda msg: print(msg, file=sys.stderr, flush=True))
+    try:
+        from . import letterlines, letterread
+        letterread.utf8_console()
+        if args.action == "build":
+            if not args.dry_run and not args.out:
+                raise ValueError("give --out LINES.npz, or --dry-run to check the records and see what would be cut")
+            for out in (args.out, args.preview):   # their folders are made once the records pass
+                if out and Path(out).is_dir():
+                    raise OSError(f"{out} is a folder; give a file name")
+            if args.max_mpx <= 0:
+                raise ValueError("--max-mpx must be positive")
+            if args.preview:
+                try:
+                    import PIL  # noqa: F401
+                except ImportError as exc:
+                    raise ImportError(f"--preview needs Pillow: {exc}") from exc
+            try:
+                plans, warnings, meta = letterlines.build(args.records, args.out, split=args.split,
+                                                          dry_run=args.dry_run, max_pixels=int(args.max_mpx * 1e6),
+                                                          progress=say)
+            except letterlines.RecordsError as exc:
+                print(f"{len(exc.errors)} problem{'s' if len(exc.errors) > 1 else ''} in the records; nothing was cut:",
+                      file=sys.stderr)
+                for e in exc.errors:
+                    print("error: " + e, file=sys.stderr)
+                return 2
+            if args.dry_run:
+                print(letterlines.plan_text(plans, warnings))
+                print("dry run: nothing was cut or written")
+                return 0
+            for w in warnings:
+                say("warning: " + w)
+            print(f"{args.out}: {meta['lines']} line{'' if meta['lines'] == 1 else 's'}, {meta['letters']} letters and "
+                  f"{meta['wildcards']} '?', from {len(meta['images'])} image(s)")
+            if args.preview:
+                imgs, texts, _, _ = letterlines.load_lines(args.out)
+                Path(args.preview).parent.mkdir(parents=True, exist_ok=True)
+                letterlines.preview(args.preview, imgs, texts)
+                print(f"{args.preview}: the first {min(100, len(imgs))} bands, each above its text; check that every "
+                      "band holds its line")
+            return 0
+        if args.out and not Path(args.out).resolve().parent.is_dir():
+            raise OSError(f"no such folder for {args.out}")
+        res = letterlines.score_lines(args.lines, args.weights)
+        if args.out:
+            Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+        print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterlines.score_text(res))
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
     return 0
 
 
 def cmd_greeklm(args):
     try:
-        from . import greeklm
+        from . import greeklm, letterread
+        letterread.utf8_console()
         if args.action == "build":
             lm, stats = greeklm.build(args.tei, order=args.order)
             lm.save(args.out)
@@ -482,6 +691,20 @@ def cmd_greeklm(args):
         print(exc, file=sys.stderr)
         return 2
     return 0
+
+
+def cmd_letterdemo(args):
+    try:
+        from . import letterdemo   # numpy; the core kit is standard library only
+    except ImportError as exc:
+        print(f"DEMO ERROR: the letter reader needs numpy ({exc}); {READER_INSTALL}", file=sys.stderr)
+        return 2
+    return letterdemo.run_cli(args)
+
+
+# Console scripts that run one command (pyproject.toml's [project.scripts]): script name -> command.
+CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines",
+                   "scrolls-letterdemo": "letterdemo"}
 
 
 def cmd_strokenet(args):
@@ -513,8 +736,10 @@ def cmd_strokenet(args):
     return 0
 
 
-def build_parser():
-    parser = argparse.ArgumentParser(prog="python -m kit", description=__doc__)
+def build_parser(prog="python -m kit", sub_progs=None):
+    """The parser of every command; sub_progs maps a command to the program name its usage and errors show."""
+    sub_progs = sub_progs or {}
+    parser = argparse.ArgumentParser(prog=prog, description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("prizes", help="open prizes from the dated snapshot")
@@ -844,27 +1069,101 @@ def build_parser():
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
 
-    p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null and orientation controls")
-    p.add_argument("image", help=".npy, .npz, .tif or .png (ink bright by default)")
+    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
+    p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
-                   help="linenet-v1 .npz, or a released model name such as letters-v2-real (downloaded once, SHA-256 checked)")
-    p.add_argument("--key", help=".npz: array name (default: the first)")
-    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
-    p.add_argument("--letter-px", type=float, help="letter height in image pixels (default: estimated from line pitch)")
-    p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright", help="ink bright (maps) or dark (photos)")
-    p.add_argument("--lines", type=float, nargs="+", help="centre rows of the lines, image pixels (default: found)")
+                   help="a released model name such as letters-v2-ccby (downloaded once, SHA-256 checked; a name is "
+                        "looked up before any file of that name), or a linenet-v1 .npz path")
+    p.add_argument("--key", help=".npz: array name (default: the first); zarr: array path or OME-Zarr level (default: "
+                                 "level 0, full resolution); pixel values are then in that level's pixels")
+    p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="read only these rows and columns; every row, box and --lines value is then relative to Y0, X0")
+    p.add_argument("--letter-px", type=float,
+                   help="letter height in image pixels (default: estimated from the line pitch, with a scale search; "
+                        "the read stops when the image shows no line pitch)")
+    p.add_argument("--letter-mm", type=float, help="letter height in millimetres; needs --um-per-px")
+    p.add_argument("--um-per-px", type=float, help="pixel size in micrometres (with --letter-mm)")
+    p.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6; letterread needs numpy
+                   help="pixel budget in millions of pixels: a bigger image is block-averaged while it loads "
+                        "(default %(default)g)")
+    p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright",
+                   help="bright: ink brighter than the ground, as in ink maps (default); dark: dark ink on a light "
+                        "ground, as in photographs; auto: read quickly both ways and keep the polarity whose letters "
+                        "stand further above its nulls")
+    p.add_argument("--rotate", type=int, choices=[0, 90, 180, 270], default=0,
+                   help="turn the image this many degrees clockwise before reading (after --mirror); boxes stay in "
+                        "input pixels")
+    p.add_argument("--mirror", action="store_true", help="flip the image left to right before reading")
+    p.add_argument("--deskew", type=float, default=6.0, metavar="MAX_DEG",   # letterread.DESKEW_DEG
+                   help="largest line tilt searched, degrees either way (default %(default)g; 0 turns deskew off)")
+    p.add_argument("--lines", type=float, nargs="+",
+                   help="centre rows of the lines in image pixels (in the turned image with --rotate or --mirror), "
+                        "each its row at the image's horizontal middle, which the deskew turns about (give --deskew 0 "
+                        "for level bands); default: found")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
     p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4)")
+    p.add_argument("--control", metavar="MAP_REVERSE",
+                   help="a second map of the same surface on the same grid, such as its reverse-depth ink map: read on "
+                        "the image's lines at the same letter size and confidence floor; the status needs the image "
+                        "to keep more than 3 times its letters for strong")
+    p.add_argument("--min-letters", type=int, default=10,   # letterread.MIN_LETTERS
+                   help="fewest confident letters a read or a column needs before its controls can pass (default "
+                        "%(default)s; fewer is status too_few)")
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--p-min", type=float, help="letter confidence floor (default: set from the nulls, at least 0.5)")
     p.add_argument("--lm", help="letter language model .npz (python -m kit greeklm build); reported beside the ink-only decode")
-    p.add_argument("--lm-weight", type=float, default=0.5)
+    p.add_argument("--lm-weight", type=float, default=0.5,   # letterread.LM_WEIGHT
+                   help="weight of the language model in its decode (default %(default)g)")
     p.add_argument("--beam", type=int, default=32)
-    p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and rotated reads")
+    p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and turned reads")
     p.add_argument("--out", help="also write the full result as JSON")
+    p.add_argument("--csv", metavar="OUT.csv",
+                   help="also write one row per letter: column, line, index, letter, p, kept and its box in the image "
+                        "file's pixels (the crop's Y0 and X0 added)")
+    p.add_argument("--page-xml", metavar="OUT.xml",
+                   help="also write PAGE XML (2019 schema): a TextRegion per column, a TextLine per line, a Glyph per "
+                        "letter with its confidence, in the image file's pixels; marked as model output")
     p.add_argument("--overlay", help="also write a PNG of the image with the letters drawn on it (needs Pillow)")
+    p.add_argument("--overlay-max-side", type=int, default=4000,
+                   help="longest side of the overlay image in pixels (default 4000); the JSON records its scale")
+    p.add_argument("--quiet", action="store_true", help="no progress messages on stderr")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_letterread)
+
+    p = sub.add_parser("letterlines", prog=sub_progs.get("letterlines"), help="training lines for the letter reader from your own transcribed lines, "
+                                           "and scores on lines kept apart")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("build", help="records (JSON or CSV: image, text, y, letter_px, optional x0, x1, crop, key, "
+                                         "polarity, split, id) to LINES.npz, as finetune_maps.py trains on")
+    a.add_argument("records", help="a .json or .csv records file; relative image paths are relative to its folder")
+    a.add_argument("--out", metavar="LINES.npz", help="the training lines to write")
+    a.add_argument("--dry-run", action="store_true", help="check every record and print what would be cut; decode no "
+                                                          "image and write nothing")
+    a.add_argument("--split", help="keep only records whose split is this label (such as train or test)")
+    a.add_argument("--preview", metavar="PNG", help="also write the first 100 bands, each above its text (needs Pillow)")
+    a.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6
+                   help="pixel budget for loading an image, as in letterread (default %(default)g)")
+    a.add_argument("--quiet", action="store_true", help="no progress messages or warnings on stderr")
+    a = actions.add_parser("score", help="character error of one or more models on the lines of a LINES.npz, such "
+                                         "as lines kept apart from fine-tuning")
+    a.add_argument("lines", help="LINES.npz (letterlines build --split test, say)")
+    a.add_argument("--weights", action="append", required=True,
+                   help="a released model name or a linenet-v1 .npz; repeat to compare models (the first is the "
+                        "reference for the differences)")
+    a.add_argument("--out", help="also write the result as JSON")
+    a.add_argument("--json", action="store_true")
+    p.set_defaults(func=cmd_letterlines)
+
+    p = sub.add_parser("letterdemo", prog=sub_progs.get("letterdemo"),
+                       help="offline check of the letter reader: synthetic Greek capitals and a noise image, "
+                            "DEMO PASS or DEMO FAIL")
+    p.add_argument("--weights", default="letters-v2-ccby",   # letterread.DEFAULT_WEIGHTS; letterread needs numpy
+                   help="a released model name (downloaded once, SHA-256 checked) or a linenet-v1 .npz path "
+                        "(default %(default)s)")
+    p.add_argument("--out", help="folder for demo.json and, with Pillow, demo-page.png and demo-overlay.png")
+    p.add_argument("--json", action="store_true", help="print the numbers as JSON instead of the report")
+    p.add_argument("--quiet", action="store_true", help="no progress messages on stderr")
+    p.set_defaults(func=cmd_letterdemo)
 
     p = sub.add_parser("greeklm", help="letter n-gram language model for Greek in scriptio continua")
     actions = p.add_subparsers(dest="action", required=True)
@@ -920,9 +1219,9 @@ def build_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv=None, prog="python -m kit", sub_progs=None):
     argv = list(sys.argv[1:] if argv is None else argv)
-    parser = build_parser()
+    parser = build_parser(prog, sub_progs)
     # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
     # Parse the wrapper separately, leaving every child flag and literal intact.
     if argv[:1] == ["run"] and "--" in argv:
@@ -935,3 +1234,32 @@ def main(argv=None):
     else:
         args = parser.parse_args(argv)
     return args.func(args)
+
+
+def _console(script, argv=None):
+    """Run the one command of a console script in CONSOLE_SCRIPTS, with its usage and errors under the script's name."""
+    command = CONSOLE_SCRIPTS[script]
+    parser = build_parser(sub_progs={command: script})
+    commands = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    args = commands.choices[command].parse_args(sys.argv[1:] if argv is None else argv)
+    return args.func(args)
+
+
+def workbench_main(argv=None):
+    """Console script scrolls-workbench: every command of python -m kit."""
+    return main(argv, prog="scrolls-workbench")
+
+
+def letterread_main(argv=None):
+    """Console script scrolls-letterread: python -m kit letterread."""
+    return _console("scrolls-letterread", argv)
+
+
+def letterlines_main(argv=None):
+    """Console script scrolls-letterlines: python -m kit letterlines."""
+    return _console("scrolls-letterlines", argv)
+
+
+def letterdemo_main(argv=None):
+    """Console script scrolls-letterdemo: python -m kit letterdemo."""
+    return _console("scrolls-letterdemo", argv)

@@ -17,7 +17,7 @@ The glyph bank splits papyri 123 to 21 into train and val by a fixed hash, so va
 
 ## Synthetic and real-letter validation
 
-| Reader | Synthetic val error, last step | Real-letter val error (21 unseen papyri) |
+| Reader | Synthetic val error, last step | Real-letter val error (21 unseen papyri, first 600 lines) |
 | --- | --- | --- |
 | Prototype | 0.112 | 0.82 to 0.91 |
 | Real letterforms, CPU | 0.128 | 0.516 |
@@ -52,6 +52,8 @@ Six PHerc. 1667 segments in the open-data bucket (w013, w018, w023, w028, w029, 
 | letters-v1 | 0.320 (39) | 0.311 | 1.205 | 105; 17, 1 |
 | letters-v2-real | **0.025** (3) | 0.041 | 1.172 | 119; 22, 4 |
 
+Deviation (recorded before the corrected read): the first read was void because `p1667_groups.py` stored each line centre in the segment's rows instead of the crop's, so most groups were read outside their crop (ink-only error 0.885 to 0.967 for all four readers). The code was fixed with crops, transcriber images and references byte-identical and no rule changed; the table is the corrected read.
+
 Paired bootstrap over groups: letters-v2-real minus the prototype -0.377 (-0.471 to -0.292), minus letters-v1 -0.295 (-0.380 to -0.213): both preregistered comparisons confirmed. letters-v2-real minus the CPU real-letterform reader -0.008 (-0.046 to +0.025): not separable. letters-v2-real's three errors: `ΓΝΚ` read `ΡΝΚ`, `ΤΩ` read `ΡΩ`, `ΕΙΚΑΙ` read `ΕΙΚΒΙ`.
 
 Re-measured on 13 October with fresh blind transcriptions (86 groups, 119 letters agree): 0.017 (2 of 119).
@@ -67,13 +69,17 @@ Each labelled segment's 2.4 um ink-detection map has exactly its label's grid (t
 | letters-v1 | 0.705 | 0.746 | 0.697 | 0.680 | 0.590 | 23 |
 | letters-v2-real | 0.369 | 0.402 | **0.393** | **0.328** | **0.336** | **52** |
 
-Every reader passes both controls in every condition (more confident letters on the maps than on each null; error against the right references below the error against permuted ones). The preregistered comparisons, letters-v2-real against the prototype and against letters-v1, are confirmed in every condition: for example -0.311 (-0.415 to -0.210) and -0.336 (-0.430 to -0.243) with the line given, -0.426 (-0.529 to -0.325) and -0.352 (-0.452 to -0.250) for the whole regions. Re-measured on 13 October: 0.370 with the line given, 0.328 for the whole regions.
+Every reader passes both controls in every condition (more than three times as many confident letters on the maps as on the larger of the two nulls; error against the right references below the error against permuted ones). The preregistered comparisons, letters-v2-real against the prototype and against letters-v1, are confirmed in each primary read (line given; lines found and whole regions with the letter height given): for example -0.311 (-0.415 to -0.210) and -0.336 (-0.430 to -0.243) with the line given, -0.426 (-0.529 to -0.325) and -0.352 (-0.452 to -0.250) for the whole regions. The fully automatic reads were preregistered as reported beside them, not decisive, and point the same way: -0.352 (-0.448 to -0.256) and -0.303 (-0.410 to -0.194) for lines found, -0.467 (-0.562 to -0.372) and -0.254 (-0.354 to -0.154) for whole regions. Re-measured on 13 October: 0.370 with the line given, 0.328 for the whole regions.
 
-Interpretation: on real ink maps the two real-letterform readers find about two of every three letters in order, and finding the columns, lines and letter size themselves costs letters-v2-real nothing measurable. The maps cost about 0.33 against the drawings. These six segments are in `ink_9um`'s training labels, so their maps may be cleaner than maps of new text.
+Interpretation: on real ink maps the two real-letterform readers find about two of every three letters in order, and finding the columns, lines and letter size themselves costs letters-v2-real nothing measurable. The maps cost about 0.33 against the drawings. These six segments are in `ink_9um`'s training labels, and the training set of the 2.4 um model that made their maps is not checked, so their maps may be cleaner than maps of new text.
 
 ## Unlabelled PHerc. 1667 segments against the published text (preregistered 9 October)
 
-The thirteen PHerc. 1667 segments with maps and no labels (w011, w012, w030, w032 to w041) were each read whole and scored against the published text of columns 5 to 22 (`p1667_text.py` on the PDF's word boxes: 177 lines, 1752 visible letters, 586 unknown). The decisive statistic counted ordered pairs: two consecutive read lines whose best published lines score at least 5 and sit 1 or 2 lines apart, in order, against 297 decoy texts of the same shape. Result: **0 pairs for every reader**, so the test did not show that the reader places the published text on these maps. The same chain on the six labelled segments' whole maps makes 7 pairs for letters-v2-real against a decoy maximum of 1, all on w013 and w018, where its letter error is lowest (0.17 and 0.23), and none on the four where it errs on about one letter in two. So the test had little power, and lowering the letter error on maps is what would give it power (Interpretation).
+The thirteen PHerc. 1667 segments with maps and no labels (w011, w012, w030, w032 to w041) were each read whole and scored against the published text of columns 5 to 22 (`p1667_text.py` on the PDF's word boxes: 177 lines, 1752 visible letters, 586 unknown). The decisive statistic counted ordered pairs: two consecutive read lines whose best published lines score at least 5 and sit 1 or 2 lines apart, in order, against 297 decoy texts of the same shape.
+
+A dry run before the rule was fixed (9 October) gave the scorer strings in place of reads on 107 found lines. Uniform random letters (10 draws) made 0 pairs and fit the real text worse than the decoys (fit p at least 0.25 against every decoy set). Samples of the Greek letter language model (40 draws) made at most 1 pair, so the pairs rule passed in none of the 40. But their fit beat every shuffled decoy in all 40 draws (p = 0.01), every word-order decoy in 13, every corpus decoy in 2 and every shifted decoy in 3. So pairs decide and fit is only reported.
+
+Result: **0 pairs for every reader**, so the test did not show that the reader places the published text on these maps. Post hoc (after the result, not preregistered): the same chain on the six labelled segments' whole maps makes 7 pairs for letters-v2-real against a decoy maximum of 1 (Model output), all on w013 and w018, where its letter error is lowest (0.17 and 0.23), and none on the four where it errs on about one letter in two. So the test had little power, and lowering the letter error on maps is what would give it power (Interpretation).
 
 ## What is not shown
 

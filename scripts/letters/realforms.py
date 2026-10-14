@@ -1,10 +1,10 @@
 """Real Greek letterforms for the line reader: letter crops from papyrus photographs, turned into
 ink-high glyphs that letterdata.py composes into lines and degrades like any synthetic line.
 
-Plan stage 3 (docs/letter-reader.md). The prototype read synthetic letters well and drawn PHerc. 172
+Training recipe: docs/letter-reader.md, Train your own. The prototype read synthetic letters well and drawn PHerc. 172
 letters badly, so the gap is letterform realism; these crops are hands written on papyrus by scribes.
 
-Sources (public; downloaded by the Modal step or by hand, never committed):
+Sources (public; downloaded by hand, never committed):
 - Hell-Char (Pavlopoulos et al., arXiv 2606.24984, github.com/ipavlopoulos/diachronic-greek-letterforms,
   CC BY 4.0): 13,046 single-letter crops from 144 securely dated papyri, 310 to 3 BCE, 24 letter classes
   plus 32 "Unknown". hellchar.csv has filename, letter (English name), TM (Trismegistos id), year, region.
@@ -356,6 +356,7 @@ def main(argv=None):
     if a.cmd == "build":
         if not (a.hellchar or a.icdar):
             ap.error("give --hellchar and/or --icdar")
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)   # before the long build, not after
 
         items, notes = collect(a.hellchar, a.icdar, a.icdar_optional)
         print(json.dumps(build(items, a.out, notes=notes), ensure_ascii=False, indent=1))
@@ -367,4 +368,10 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    try:   # Greek prints in a pipe and on a Windows console (kit is not needed for anything else here)
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from kit.letterread import utf8_console
+        utf8_console()
+    except ImportError:
+        pass
     main()

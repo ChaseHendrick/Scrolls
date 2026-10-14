@@ -22,10 +22,10 @@ transcription (black letters on white, 96 px per letter height). Model-free: run
 reader touches the data.
 
   python scripts/letters/p1667_groups.py LABELS_DIR OUT_DIR
-LABELS_DIR holds <wNNN>/z/1 (a local copy of level 1 of each inklabels.zarr).
+LABELS_DIR holds <wNNN>/z/1 (a local copy of level 1 of each inklabels.zarr). Needs numpy, scipy, zarr
+and Pillow.
 """
 import json
-import sys
 from pathlib import Path
 
 import numpy as np
@@ -38,7 +38,11 @@ SEGMENTS = ("w013", "w018", "w023", "w028", "w029", "w031")
 
 
 def downsample(path):
-    import zarr
+    try:
+        import zarr
+    except ImportError as exc:
+        raise SystemExit(f"p1667_groups.py reads the ink labels with zarr ({exc}): python -m pip install -e \".[all]\" "
+                         "(Python 3.11 or newer), or python -m pip install zarr") from None
     x = zarr.open_array(str(path), mode="r")
     full = np.asarray(x[:]) > 0
     rows, cols = np.nonzero(full.any(axis=1))[0], np.nonzero(full.any(axis=0))[0]
@@ -124,5 +128,15 @@ def main(labels_dir, out_dir):
     print("groups", len(rows))
 
 
+def parse_args(argv=None):
+    """LABELS_DIR and OUT_DIR; anything else stops with the usage."""
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("labels_dir", help="p1667_fetch.py's OUT/labels: <wNNN>/z/1 of each inklabels.zarr")
+    ap.add_argument("out_dir", help="where groups.json, png/ and npy/ go, such as work/p1667/groups")
+    return ap.parse_args(argv)
+
+
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    a = parse_args()
+    main(a.labels_dir, a.out_dir)

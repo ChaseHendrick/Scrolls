@@ -27,8 +27,8 @@ import html
 import json
 import re
 import subprocess
-import sys
 import unicodedata
+from pathlib import Path
 
 ALPHABET = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"
 START = "Coll. 1-4 traces"
@@ -154,7 +154,7 @@ def bbox_layout(pdf):
     the letter before it and stays free. Lines carry no indentation (the parse tells line numbers
     from apparatus entries by the gap after the number), and lines that start in the translation
     column are left out."""
-    raw = subprocess.run(["pdftotext", "-bbox", pdf, "-"], capture_output=True, text=True, check=True).stdout
+    raw = subprocess.run(["pdftotext", "-bbox", pdf, "-"], capture_output=True, encoding="utf-8", check=True).stdout
     out = []
     for page in raw.split("<page ")[1:]:
         words = sorted(((float(y), float(x0), float(x1), html.unescape(w)) for x0, y, x1, w in WORD.findall(page)))
@@ -202,5 +202,17 @@ def main(pdf, out):
           f"{unknown} unknown; problems: {problems or 'none'}")
 
 
+def parse_args(argv=None):
+    """PAPER.pdf and OUT.json; anything else stops with the usage."""
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("pdf", help="a local copy of arXiv 2606.29085 (v1)")
+    ap.add_argument("out", help="the reference JSON to write, such as work/p1667/text.json")
+    return ap.parse_args(argv)
+
+
 if __name__ == "__main__":
-    main(*sys.argv[1:3])
+    a = parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
+    main(a.pdf, a.out)

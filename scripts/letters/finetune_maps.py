@@ -1,4 +1,5 @@
-"""Fine-tune the letter reader on real ink-map lines whose text is published (guide, stage 4).
+"""Fine-tune the letter reader on real ink-map lines whose text is published
+(docs/letter-reader.md, Reproduce the benchmarks).
 
 Training lines are the crops of p1667_align.py (each published line of a training column, cut from the map
 along its fitted row at the reader's working scale), labelled with the published line.
@@ -8,10 +9,12 @@ Every batch mixes map lines with synthetic and real-letterform lines from gen_da
 reader keeps what it knew. The schedule is fixed in advance and the last step is the model (no checkpoint is
 chosen on held-out text).
 
-Starts from any linenet-v1 .npz (BatchNorm already folded, so the network trains as plain convolutions)
-and writes one.
+Starts from any linenet-v1 .npz (BatchNorm already folded, so the network trains as plain convolutions), or
+a released model's name such as letters-v2-real, and writes one (OUT_DIR/linenet.npz) with finetune.json, its
+record: file names and SHA-256 of the start and the result, never a local folder.
 
   python scripts/letters/p1667_align.py crops ALIGN.json NPY_DIR --columns 9,10,12 --out LINES.npz
+  python -m kit letterlines build RECORDS.json --split train --out LINES.npz      # your own lines instead
   python scripts/letters/finetune_maps.py train LINES.npz SHARDS_DIR --weights W --out OUT_DIR [--steps N]
 
 Weights and map lines stay out of git (maps of a published scroll, but large and derived).
@@ -28,6 +31,8 @@ import numpy as np
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from p1667_align import load_lines  # noqa: E402
+from kit import letterread as R  # noqa: E402
+from kit.letterlines import check_references  # noqa: E402
 
 ALPHABET = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"
 WILD = -1
@@ -171,6 +176,12 @@ def augment(a, rng, h=16):
 
 
 def train(lines_npz, shards, weights, out, steps=1500, batch=24, p_map=0.5, lr=3e-4, seed=0, threads=4, device="cpu"):
+    mimgs, mtexts, _, lines_meta = load_lines(lines_npz)
+    try:   # every text in the alphabet, '?' a wildcard: refused before torch loads or a folder is made
+        check_references({f"line {i}": t for i, t in enumerate(mtexts)}, alphabet=ALPHABET,
+                         source=Path(lines_npz).name)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from None
     import torch
     from gen_dataset import load_shard
     import glob
@@ -179,12 +190,13 @@ def train(lines_npz, shards, weights, out, steps=1500, batch=24, p_map=0.5, lr=3
     rng = np.random.default_rng(seed)
     out = Path(out)
     out.mkdir(parents=True, exist_ok=True)
-    mimgs, mtexts, _, _ = load_lines(lines_npz)
     simgs, stexts = [], []
     for f in sorted(glob.glob(str(Path(shards) / "*.npz")))[:12]:
         im, tx, _ = load_shard(f)
         simgs += im
         stexts += tx
+    if not simgs and round(batch * p_map) < batch:
+        raise SystemExit(f"{shards}: no shard .npz files; make the synthetic lines with scripts/letters/gen_dataset.py")
     model = torch_net(weights).to(device)
     opt = torch.optim.AdamW(model.parameters(), lr=lr, weight_decay=1e-4)
     sched = torch.optim.lr_scheduler.OneCycleLR(opt, max_lr=lr, total_steps=steps, pct_start=0.1)
@@ -212,10 +224,15 @@ def train(lines_npz, shards, weights, out, steps=1500, batch=24, p_map=0.5, lr=3
         if step % 25 == 0:
             print(f"step {step} loss {np.mean(hist[-25:]):.3f} {time.time() - t0:.0f}s", flush=True)
     model.export(out / "linenet.npz")
-    info = {"device": device, "base": str(weights), "lines": str(lines_npz), "map_lines": len(mimgs), "shards": str(shards),
-            "steps": steps, "batch": batch, "p_map": p_map, "lr": lr, "seed": seed,
-            "seconds": round(time.time() - t0, 1), "loss_last_100": round(float(np.mean(hist[-100:])), 4)}
-    (out / "finetune.json").write_text(json.dumps(info, indent=1) + "\n")
+    # file names and SHA-256 only, so the record can be shared without a local folder
+    info = {"device": device, "base": Path(weights).name, "base_sha256": R._sha256(weights),
+            "lines": Path(lines_npz).name, "lines_meta": lines_meta, "map_lines": len(mimgs),
+            "shards": Path(shards).name, "steps": steps, "batch": batch, "p_map": p_map, "lr": lr, "seed": seed,
+            "seconds": round(time.time() - t0, 1), "loss_last_100": round(float(np.mean(hist[-100:])), 4),
+            "model": "linenet.npz", "model_sha256": R._sha256(out / "linenet.npz"),
+            "note": "A fine-tuned letter reader: a new model whose output is still a hypothesis for a person to check; "
+                    "judge it on lines it did not train on (python -m kit letterlines score)."}
+    (out / "finetune.json").write_text(json.dumps(info, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     print("done", info, flush=True)
 
 
@@ -225,7 +242,8 @@ def main():
     t = sub.add_parser("train")
     t.add_argument("lines")
     t.add_argument("shards")
-    t.add_argument("--weights", required=True)
+    t.add_argument("--weights", required=True, help="the model to start from: a released name such as "
+                                                    "letters-v2-real, or a linenet-v1 .npz")
     t.add_argument("--out", required=True)
     t.add_argument("--steps", type=int, default=1500)
     t.add_argument("--batch", type=int, default=24)
@@ -236,7 +254,10 @@ def main():
     t.add_argument("--device", default="cpu")
     a = ap.parse_args()
     if a.cmd == "train":
-        train(a.lines, a.shards, a.weights, a.out, a.steps, a.batch, a.p_map, a.lr, a.seed, a.threads, a.device)
+        if a.steps < 20:
+            ap.error("--steps: give at least 20 (the one-cycle schedule warms up over a tenth of them)")
+        weights = R.resolve_weights(a.weights)      # a released name is downloaded once and SHA-256 checked
+        train(a.lines, a.shards, weights, a.out, a.steps, a.batch, a.p_map, a.lr, a.seed, a.threads, a.device)
 
 
 if __name__ == "__main__":

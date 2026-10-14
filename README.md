@@ -106,28 +106,35 @@ Guide, the 14 weight files with their SHA-256, held-out results with their limit
 
 Released 14 October 2026.
 
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. Its default weights, `letters-v2-ccby`, are released under CC BY 4.0; the earlier `letters-v2-real` (CC BY-NC 4.0) stays available. With `letters-v2-ccby`, on PHerc. 1667's official ink labels it names drawn letters at a character error of 0.043 with the line given, and on the same places of PHerc. 1667's ink maps its free-ends error is 0.31 to 0.48, measured under rules fixed before the reads (Model output; 117 letters in 84 groups, scored against machine transcriptions of the drawings). Those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text. On these tests `letters-v2-ccby` has not been shown to read better than `letters-v2-real`, and it errs more on one of the map rows; it is the default for its licence (Interpretation). How well it names letters on real photographs is untested.
 
 ```bash
-python -m pip install numpy pillow tifffile
-python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG
-python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
+scrolls-letterdemo
+scrolls-letterread MAP.png --weights letters-v2-ccby --letter-px 86 --overlay MAP-letters.png
 ```
 
-Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
+`scrolls-letterdemo` checks the install on synthetic letters (it downloads the 6 MB of weights once) and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the 38 um grid of the public-map demo, `scripts/letters/demo_p1667.py`. Give the reader its own virtual environment, apart from AutoPipeline's: both install a package named `kit`. Windows, other letter sizes, that demo, both model cards and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Quick start (kit)
 
-Python **3.10+**, standard library only (except `verify`, which reads TIFFs with numpy and tifffile from villa's environment). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
+Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). The Greek letter reader is not: it needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
 
 ```bash
-# from repo root
-python -m kit prizes                      # open prizes, deadlines, eligible scrolls (dated snapshot)
-python -m kit doctor                      # GPU, disk, uv/docker/git, VILLA and VC_BIN paths
-python -m kit plan PHerc0826              # control + target commands for one eligible scroll
-python -m kit plan PHerc0800 --batch 1    # 8.64 um scan: prints the resampling note
-python -m kit plan PHerc0826 --mac        # Apple Silicon: VC3D.app tools, CPU or MPS inference
+# from the repository root
+# open prizes, deadlines and eligible scrolls, from a dated snapshot
+python -m kit prizes
+# GPU, disk, uv, docker and git, and the VILLA and VC_BIN paths
+python -m kit doctor
+# control and target commands for one eligible scroll
+python -m kit plan PHerc0826
+# an 8.64 um scan: prints the resampling note
+python -m kit plan PHerc0800 --batch 1
+# Apple Silicon: VC3D.app tools, CPU or MPS inference
+python -m kit plan PHerc0826 --mac
 python -m kit cost --gpu-hours 6.5 --rate 1.10
 python -m kit run init p0826-a --scroll PHerc0826 \
   --question "Does ink_9um show rows on a hand-refined GrowPatch near the outer wraps?" \
@@ -135,11 +142,16 @@ python -m kit run init p0826-a --scroll PHerc0826 \
 python -m kit run cost p0826-a --usd 7.15 --what "A10, 6.5 h"
 python -m kit run status p0826-a running
 python -m kit run check p0826-a
-python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif   # needs numpy + tifffile (villa's env)
-python -m kit fetch w035 data/w035_9um.zarr   # mirror a public bucket prefix over HTTPS, resumable
-python -m kit fetch w045 data/w045_9um.zarr   # unseen by v8in; ink_9um trained on its 2.4 um render
-python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362   # row triage score
-bash scripts/mac-verify.sh                    # Apple Silicon: CPU vs MPS on the control, one command
+# needs numpy and tifffile, as in the villa environment
+python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif
+# mirror a public bucket prefix over HTTPS, resumable
+python -m kit fetch w035 data/w035_9um.zarr
+# w045 is unseen by v8in, but ink_9um trained on its 2.4 um render
+python -m kit fetch w045 data/w045_9um.zarr
+# the row triage score
+python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362
+# Apple Silicon: CPU against MPS on the control, one command
+bash scripts/mac-verify.sh
 python -m unittest discover -s tests -v
 ```
 
@@ -187,6 +199,7 @@ python -m unittest discover -s tests -v
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
 | [`docs/letter-reader.md`](docs/letter-reader.md), [`scripts/letters/`](scripts/letters/) | Greek letter reader: guide, model card, benchmarks, training and demo |
 | [`scripts/umbilicus/`](scripts/umbilicus/README.md) | Scroll centre (umbilicus) finder: guide, released weights, held-out results, training, end-point rule and tests |
+| [`pyproject.toml`](pyproject.toml) | The installable package `scrolls-workbench`: `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` gives the letter reader's commands (`scrolls-letterread`, `scrolls-letterdemo`) and every `python -m kit` command as `scrolls-workbench`; install it in its own virtual environment, apart from AutoPipeline's ([guide](docs/letter-reader.md#install)) |
 | [`docs/state-of-play.md`](docs/state-of-play.md) | What has been read, what has been tried, recent winners and published nulls |
 | [`docs/compute.md`](docs/compute.md) | Hardware, cloud costs, and what AI agents can and cannot do here |
 | [`docs/mac.md`](docs/mac.md) | Apple Silicon: what runs locally, the open MPS PRs, useful Mac contributions |
@@ -205,6 +218,7 @@ python -m unittest discover -s tests -v
 | [`docs/logs/`](docs/logs/) | Dated research notes (not claims) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution ground rules |
 | [`LICENSE`](LICENSE) | Apache-2.0 (permissive, so it meets the prizes' open-source condition) |
+| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as separate references, the letter reader's weights: `letters-v2-ccby` (CC BY 4.0, the default) and `letters-v2-real` (CC BY-NC 4.0) |
 
 ## Architecture (kit)
 
@@ -217,8 +231,10 @@ python -m unittest discover -s tests -v
 | `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
-| `letterread.py` | Greek letter reader: numpy CTC line network, layout, nulls and orientation controls, overlay, released weights (numpy; Pillow and tifffile for images) |
+| `letterread.py` | Greek letter reader: numpy CTC line network, layout, null, control-map and orientation controls with a status code, whole maps block-averaged while loading, turned, mirrored and tilted text, photographs (polarity by a quick read both ways, EXIF orientation), overlay, released weights (numpy; Pillow and tifffile for images, zarr optional) |
 | `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
+| `letterexport.py` | The letter reader's exports: a CSV of letters and PAGE XML (2019 schema, for eScriptorium), in the image file's pixels |
+| `letterlines.py` | Training lines for fine-tuning the letter reader from your own transcribed lines, and character error on lines kept apart |
 | `releases.py` | The release list and the README section written from it (`python -m kit releases`) |
 | `stackcheck.py` | Geometry checks of consecutive tifxyz segments against the umbilicus (`python -m kit stackcheck`), with per-vertex masks to drop before a winding count (numpy, tifffile, scipy) |
 | `cli.py` | `python -m kit` entry point |

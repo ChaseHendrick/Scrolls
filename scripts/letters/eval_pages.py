@@ -52,7 +52,7 @@ def blank_page(rng, h, kind):
 
 
 def evaluate(weights, pages=24, seed=11, lm=None, lm_weight=0.5, nulls=2, text=None, columns="off"):
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz file or a released model name
     rng = np.random.default_rng(seed)
     tot = {"map": [0, 0], "mask": [0, 0]}
     tot_lm = {"map": [0, 0], "mask": [0, 0]}
@@ -93,7 +93,8 @@ def evaluate(weights, pages=24, seed=11, lm=None, lm_weight=0.5, nulls=2, text=N
     summary["blank_pages_letters_kept"] = [b["letters_kept"] for b in blanks]
     summary["letter_px_ratio_median"] = round(float(np.median([r["letter_px_used"] / r["letter_px_true"] for r in rows])), 3)
     summary["lines_found"] = f"{sum(r['lines_matched'] for r in rows)} of {sum(r['lines_true'] for r in rows)}"
-    return {"note": R.NOTE + " Synthetic pages only.", "weights": str(weights), "seed": seed, "columns": columns,
+    return {"note": R.NOTE + " Synthetic pages only.", "weights": net.file, "weights_sha256": net.sha256,
+            "seed": seed, "columns": columns,
             "text": "real Greek" if text is not None else "uniform random letters", "summary": summary,
             "pages": rows, "blank_pages": blanks}
 
@@ -111,6 +112,8 @@ def main():
                          "(pages are single-column, so this measures what a false split costs)")
     ap.add_argument("--out")
     a = ap.parse_args()
+    if getattr(a, "out", None):   # the folder first, so a long read never ends on a missing folder
+        Path(a.out).parent.mkdir(parents=True, exist_ok=True)
     lm = None
     if a.lm:
         from kit import greeklm
@@ -123,4 +126,5 @@ def main():
 
 
 if __name__ == "__main__":
+    R.utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

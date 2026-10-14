@@ -27,9 +27,16 @@ if np is None:
 centrenet = None
 
 
+_SHADOWED = {}   # same-named modules another test imported (scripts/strokenet/pipeline.py), put back afterwards
+
+
 def setUpModule():
     global centrenet
     sys.path.insert(0, UMB)
+    for name in MODULES:
+        m = sys.modules.get(name)
+        if m is not None and os.path.dirname(os.path.abspath(getattr(m, "__file__", None) or "")) != UMB:
+            _SHADOWED[name] = sys.modules.pop(name)
     if torch is not None:
         import centrenet as module
         centrenet = module
@@ -42,6 +49,8 @@ def tearDownModule():
         m = sys.modules.get(name)
         if m is not None and os.path.dirname(os.path.abspath(getattr(m, "__file__", None) or "")) == UMB:
             del sys.modules[name]
+    sys.modules.update(_SHADOWED)
+    _SHADOWED.clear()
 
 
 @unittest.skipIf(torch is None, "numpy or torch unavailable")

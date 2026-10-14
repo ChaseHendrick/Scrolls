@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+# The distribution is named scrolls-workbench, not kit or scrolls-kit: AutoPipeline's released package
+# (the README's AutoPipeline entry names its current release branch) is the distribution vc-autopipeline with a scrolls-kit script, and
+# both install a top-level package named kit, so install each in its own virtual environment
+# (docs/letter-reader.md, "Install").
+name = "scrolls-workbench"
+dynamic = ["version"]   # kit.__version__
+description = "Vesuvius Challenge workbench: a Greek letter reader for ink maps and photographs, ink-map scoring, run planning and provenance"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.10"
+authors = [{ name = "Chase Hendrick" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+# The core (prizes, plan, cost, fetch, run ledger, provenance) is standard library only.
+dependencies = []
+
+[project.optional-dependencies]
+# The letter reader: numpy reads; Pillow reads PNG and JPEG and draws overlays; tifffile and imagecodecs read
+# (compressed) TIFF maps. zarr, in "maps", also reads zarr and OME-Zarr maps and big tiled TIFFs band by band.
+reader = ["numpy", "pillow", "tifffile", "imagecodecs"]
+# Map scoring and checks (auc, verify, rowscore, hpscore, overlap, layers): the set the CI's map job installs.
+# zarr 3 needs Python 3.11; on 3.10 pip would pick zarr 2.18, whose missing create_array breaks kit shuffle and the
+# zarr outputs, so on 3.10 these extras leave zarr out (the zarr inputs and outputs then need Python 3.11 or newer).
+maps = ["numpy", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
+all = ["numpy", "pillow", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
+
+[project.scripts]
+scrolls-workbench = "kit.cli:workbench_main"     # every python -m kit command (gate and releases need a clone)
+scrolls-letterread = "kit.cli:letterread_main"   # python -m kit letterread
+scrolls-letterlines = "kit.cli:letterlines_main" # python -m kit letterlines
+scrolls-letterdemo = "kit.cli:letterdemo_main"   # python -m kit letterdemo: DEMO PASS or DEMO FAIL
+
+[project.urls]
+Source = "https://github.com/ChaseHendrick/Scrolls"
+"Letter reader guide" = "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/letter-reader.md"
+
+[tool.setuptools]
+packages = ["kit"]
+
+[tool.setuptools.package-data]
+# Everything kit reads from its own folder at run time: the prize snapshots and the letter-weights registry.
+kit = ["data/*.json"]
+
+[tool.setuptools.dynamic]
+version = { attr = "kit.__version__" }
