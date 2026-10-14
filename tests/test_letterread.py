@@ -1887,7 +1887,7 @@ class ApiTest(unittest.TestCase):
             def isatty(self):
                 return True
 
-        pipe = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")
+        pipe = io.TextIOWrapper(io.BytesIO(), encoding="cp1252", newline="\n")   # "\n" stays "\n" on Windows too
         self.assertEqual(R.utf8_console(pipe), [pipe])
         self.assertEqual((pipe.encoding, pipe.errors), ("utf-8", "backslashreplace"))
         pipe.write("ΚΑΙ·Ϲ\n")
@@ -2001,7 +2001,7 @@ class OverlayTest(unittest.TestCase):
             self.assertTrue(all(d.textlength(line, font=font) <= canvas_w - 8 for line in lines), width)
             self.assertGreater(lh, 0)
         self.assertGreater(len(R.banner_layout(400)[1]), 1)        # wrapped, not cut off
-        self.assertGreater(R.banner_layout(40)[4], 40)             # too narrow for a word: the canvas widens
+        self.assertGreater(R.banner_layout(10)[4], 10)             # too narrow for any word at 6 px: the canvas widens
 
     def test_overlay_outlines_scale_and_reduced_images(self):
         try:
