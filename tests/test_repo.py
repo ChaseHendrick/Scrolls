@@ -28,6 +28,9 @@ TEXT = (".md", ".py", ".sh", ".txt", ".json", ".yml", ".yaml", ".toml")
 # Dated logs, evidence and experiment records keep their original wording; the correction is
 # docs/logs/2026-10-08-w045-not-held-out.md.
 HISTORICAL = ("docs/logs/", "docs/evidence/", "scripts/experiments/")
+# Preregistrations whose bytes a published run recorded by SHA-256 (its results.json provenance):
+# published verbatim, so the wording and link checks leave them as they were frozen.
+FROZEN = ("docs/prereg/2026-10-14-strokenet.md", "docs/prereg/2026-10-14-gridpilot.md")
 W045_HELD_OUT = re.compile(r"(?<!not )held[ -]out from `?ink_9um|held out from both models")
 # PHerc0841 is held out from ink_9um, v8in, d9v2 and Reader v2, but possibly not from Hecate, whose
 # base model's committed trainer lists w00, ag896 and ag405; docs/logs/2026-10-09-pherc0841-hecate.md.
@@ -129,7 +132,8 @@ class RepoTest(unittest.TestCase):
         # that line or the next. Dated logs and records (HISTORICAL) keep their original wording.
         for f in tracked():
             rel = f.relative_to(ROOT).as_posix()
-            if f.suffix not in TEXT or not f.exists() or rel.startswith(HISTORICAL) or rel == "tests/test_repo.py":
+            if (f.suffix not in TEXT or not f.exists() or rel.startswith(HISTORICAL) or rel in FROZEN
+                    or rel == "tests/test_repo.py"):
                 continue
             lines = f.read_text(encoding="utf-8", errors="replace").splitlines()
             for n, line in enumerate(lines):
@@ -180,7 +184,7 @@ class RepoTest(unittest.TestCase):
         missing = []
         for f in tracked():
             rel = f.relative_to(ROOT).as_posix()
-            if f.suffix != ".md" or not f.exists() or rel.startswith(HISTORICAL):
+            if f.suffix != ".md" or not f.exists() or rel.startswith(HISTORICAL) or rel in FROZEN:
                 continue
             text = re.sub(r"```.*?```", "", f.read_text(encoding="utf-8", errors="replace"), flags=re.S)
             for target in MD_LINK.findall(text):

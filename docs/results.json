@@ -9434,6 +9434,58 @@
    "limits": "ten of the 13 lines are one annotator's; the settings were chosen while looking at some of the same scrolls; PHerc0268 and PHerc0800 have more than one winding centre at some heights; no head-to-head with other finders on the same slices"
   }
  ],
+ "strokenet_checks": [
+  {
+   "date": "2026-10-14",
+   "source": "docs/strokenet.md",
+   "evidence": "docs/evidence/2026-10-14-strokenet/",
+   "claim": "Model output on six held-out PHerc. Paris 4 segments (one scroll, one ink model, rule-made labels), read once under docs/prereg/2026-10-14-strokenet.md",
+   "run": "20261014T141348Z",
+   "verdict": "StrokeNet misses its bar on T6_dev, FPR_blank; simple scores meet 9 of 9 counted bar items; bar met by 0 of 3 seeds; adds over simple scores on T4 of the primary measures (T2, T4, T8); not interpretable as text structure: T2, T2_20, T3, T3_raw, T7, T7_raw",
+   "released": {
+    "T1": 0.9899,
+    "T1_AP": 0.9518,
+    "T2": 0.9999,
+    "T3": 1.0,
+    "T4": 0.9936,
+    "T4_paired": 0.9741,
+    "T6": 0.6393,
+    "T7": 0.9666,
+    "T8": 0.6433,
+    "ECE": 0.0422,
+    "FPR_blank": 0.0213,
+    "FPR_dense": 0.8842
+   },
+   "adds_over_simple_scores": {
+    "T4": {
+     "reference": "lines",
+     "difference": 0.1412,
+     "segments_positive": "6 of 6",
+     "sign_flip_p": 0.015625
+    }
+   },
+   "controls_test": {
+    "permuted_T1": 0.6647,
+    "artifact_T2": 0.9987,
+    "artifact_T4": 0.5589
+   }
+  },
+  {
+   "date": "2026-10-14",
+   "source": "docs/strokenet.md",
+   "evidence": "docs/evidence/2026-10-14-strokenet/gridpilot-result.json",
+   "claim": "Model output: one 9.2 mm region of PHerc. Paris 4 w028-037 re-rendered with the organisers' checkpoint (scrollprize/ink_canonical_2um r152_3ddec_v2_l5_epoch13) and villa's recipe at a4979b99, under docs/prereg/2026-10-14-gridpilot.md",
+   "run": "20261014T161031Z",
+   "verdict": "stride 128: tiling effect RMS 25.759 (noise 0.000, r with published 1.000); stride 64: reduced (RMS 12.307, 0.48 of stride 128), r with stride 128 0.983; stride 32: reduced (RMS 6.315, 0.25 of stride 128), r with stride 128 0.980",
+   "reproduction_r": 0.999999,
+   "tiling_effect_rms_of_255": {
+    "128": 25.759,
+    "64": 12.307,
+    "32": 6.315
+   },
+   "tiles_per_s_b300": 107.0
+  }
+ ],
  "stackcheck_checks": [
   {
    "date": "2026-10-14",

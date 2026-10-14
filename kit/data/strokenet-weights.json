@@ -1,0 +1,16 @@
+{
+ "about": "Released StrokeNet weights (kit/strokenet.py). Weights are not in git; kit.strokenet.resolve_weights downloads a named model once into ~/.cache/scrolls-kit/strokenet (or $KIT_STROKENET_WEIGHTS) and refuses a file whose SHA-256 differs. Every score is model output, not a reading.",
+ "models": {
+  "strokenet-paris4-v1": {
+   "file": "strokenet-paris4-v1.npz",
+   "sha256": "e9c486bebf1ded3d2bc24878025b04c4cad37e8c6e8eaf0b88d13c1b99731d92",
+   "url": "https://github.com/ChaseHendrick/Scrolls/releases/download/strokenet-paris4-v1/strokenet-paris4-v1.npz",
+   "licence": "CC BY-NC 4.0",
+   "params": 589393,
+   "pixel_mm": 0.048,
+   "window_px": 128,
+   "input": "the organisers' ink predictions on their 0 to 255 scale; an integer map at a whole fraction of 0.048 mm is pooled exactly as the training windows, and windows under 99 % core papyrus are skipped",
+   "card": "docs/strokenet.md"
+  }
+ }
+}
