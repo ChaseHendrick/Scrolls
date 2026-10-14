@@ -2,13 +2,15 @@
 
 > A workbench for the Vesuvius Challenge (reading carbonized Herculaneum scrolls from X-ray CT): tested Python tools to plan official-pipeline runs, score ink maps against published labels with a reverse-depth control, check Mac GPU results against the CPU, and record provenance; plus dated, sourced research notes. It claims no letters in any scroll. Apache-2.0.
 
-Start with AGENTS.md (rules, map, commands, glossary), then the current state in docs/HANDOFF.md.
+Start with AGENTS.md (rules, commands, glossary), then the current state at the top of docs/HANDOFF.md. Search large files instead of reading them whole: docs/results.json, docs/HANDOFF-archive.md, docs/MAP.md.
 
 ## Start here
 
-- [AGENTS.md](AGENTS.md): entry point for agents: hard rules, standing user decisions, repository map, commands, glossary
+- [AGENTS.md](AGENTS.md): entry point for agents: hard rules, standing user decisions, top-level map, commands, glossary
+- [docs/MAP.md](docs/MAP.md): repository map, one row per module and script
 - [docs/README.md](docs/README.md): docs index, one home per topic; check it before researching
-- [docs/HANDOFF.md](docs/HANDOFF.md): the one handoff for every agent: open items first, then dated sections, newest first
+- [docs/HANDOFF.md](docs/HANDOFF.md): the one handoff for every agent: open items first, then recent dated sections, newest first
+- [docs/HANDOFF-archive.md](docs/HANDOFF-archive.md): older handoff sections, newest first; search, do not read whole
 - [docs/plans/roadmap.md](docs/plans/roadmap.md): pointer to the access-required private roadmap
 - [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
 - [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
