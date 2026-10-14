@@ -30,6 +30,22 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
+### AutoPipeline
+
+Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix2`: [`submissions/progress-2026-10-fix2/` at commit `143c54b`](https://github.com/ChaseHendrick/Scrolls/tree/143c54b54804e17acbfdcf032217e6b3964f6ef4/submissions/progress-2026-10-fix2).
+
+AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.2, the second fix release; no result has changed since the first release, 0.1.0, and the earlier releases stay on their own branches.
+
+```bash
+git clone --branch submission/progress-2026-10-fix2 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix2/autopipeline
+python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
+python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
+python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
+```
+
+Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/autopipeline/README.md). What changed: [in 0.1.2](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/CHANGES.md) and [in 0.1.1](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/CHANGES.md).
+
 ### Scroll centre (umbilicus) finder
 
 Released 14 October 2026.
@@ -50,55 +66,6 @@ python -m unittest tests.test_umbilicus          # synthetic data, CPU
 ```
 
 Guide, the 14 weight files with their SHA-256, held-out results with their limits, the end-point rule, training and licences: [`scripts/umbilicus/README.md`](scripts/umbilicus/README.md); evidence: [`docs/evidence/2026-10-14-umbilicus/`](docs/evidence/2026-10-14-umbilicus/README.md).
-
-### AutoPipeline 0.1.2, fix 2
-
-Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix2`: [`submissions/progress-2026-10-fix2/` at commit `143c54b`](https://github.com/ChaseHendrick/Scrolls/tree/143c54b54804e17acbfdcf032217e6b3964f6ef4/submissions/progress-2026-10-fix2).
-
-The second fix release of AutoPipeline: the whole package again, with five fixes and two additions since 0.1.1, and no result changed. A plan can no longer name a reserved segment (such as PHerc0841's ag405, the report surface of an ink comparison), and a plan made by an earlier version that names one refuses to run. qa.repair cuts a trace only for a sheet switch that was measured. A misspelt ink model name is refused when the plan is made, not at ink. Parallel downloads of one file no longer share a temporary name. The guides no longer give commands for the Modal runners, which the release does not include. New: the render tool refuses a lossy volcomp copy of a scan unless asked, for geometry checks only, and each ink record carries a direction readout of the forward map against its reversed control, kept as a record, not as ink evidence. Releases 0.1.0 and 0.1.1 stay as they were.
-
-```bash
-git clone --branch submission/progress-2026-10-fix2 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix2/autopipeline
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
-python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
-```
-
-What changed: [CHANGES.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/CHANGES.md). Setup, the monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/autopipeline/README.md).
-
-### AutoPipeline 0.1.1, fix 1
-
-Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix1`: [`submissions/progress-2026-10-fix1/` at commit `1534136`](https://github.com/ChaseHendrick/Scrolls/tree/153413691ec2ca794acdb3bf5784c0882a43e228/submissions/progress-2026-10-fix1).
-
-The first fix release of AutoPipeline: the whole package again, with three bug fixes, changes to its run monitor and to its Hugging Face Space page since 0.1.0, and no result changed. Running the same folder again on a machine that can run ink now finishes a run that stopped at ink, as the README says; the ink device (KIT_AUTOPIPE_DEVICE) is documented, and each ink record keeps the device asked for and the one the engine used; the monitor now shows a passed snap check. The run monitor draws a 3D wireframe of each traced mesh that you turn by dragging, loads its images under a grey shimmer, and gains a text view that prints a run in a terminal with each ink map beside its reversed control, drawn in characters on the same scale. Inline code on the Hugging Face Space's page is now readable in a dark-mode browser. The first release, 0.1.0, stays as it was.
-
-```bash
-git clone --branch submission/progress-2026-10-fix1 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix1/autopipeline
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
-python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
-scrolls-kit autopipeline monitor RUN_FOLDER --text   # a run as text, its ink maps drawn in characters
-```
-
-What changed: [CHANGES.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/CHANGES.md). Setup, the monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/autopipeline/README.md).
-
-### AutoPipeline
-
-Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10`: [`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).
-
-AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet.
-
-```bash
-git clone --branch submission/progress-2026-10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10/autopipeline
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
-python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
-```
-
-VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).
 
 ### Greek letter reader
 
