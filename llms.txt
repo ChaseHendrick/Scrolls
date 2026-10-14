@@ -12,7 +12,7 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 - [docs/plans/roadmap.md](docs/plans/roadmap.md): phases, gates, timeline
 - [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
 - [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
-- [docs/releases.json](docs/releases.json): every tool released from private work, newest first; the README's "Released tools" section is generated from it
+- [docs/releases.json](docs/releases.json): tools released from private work since the list began on 14 October 2026, newest first; the README's "Released tools" section is generated from it
 
 ## Research
 

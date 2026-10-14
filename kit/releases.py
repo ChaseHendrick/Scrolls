@@ -1,7 +1,8 @@
 """The list of tools released from private work, and the README section made from it.
 
-docs/releases.json lists every tool or package released from the private repository into this one, and README.md's
-"Released tools" section, between the two marker lines below, is written from it, newest first:
+docs/releases.json lists the tools and packages released from the private repository into this one since the list
+began on 14 October 2026, and README.md's "Released tools" section, between the two marker lines below, is written
+from it, newest first:
 
   python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
   python -m kit releases render           rewrite the section from the list
@@ -13,7 +14,8 @@ An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2
            "details": "One line of links, such as the guide.",           (optional)
            "where": "main"}
 "where" is "main" for files merged here, or {"branch": B, "commit": C, "path": P} for a reviewed package that lives on
-its own branch (the Progress Prize exporter's submission/<id> branches), which the section links at that commit.
+its own branch (the Progress Prize exporter's submission/<submission_id> branches), which the section links at that
+commit.
 
 The private repository's submission exporter carries an identical copy of this module and writes the entry of each
 package it releases with it, so keep the two copies the same. Standard library only.
@@ -39,6 +41,13 @@ REQUIRED = ("id", "title", "released", "summary", "where")
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
 LONG_DASHES = (chr(0x2014), chr(0x2013))
+# Summary and details start their own Markdown paragraph. A code fence, an HTML block or an indented code block opened
+# there would run on past the end marker and swallow the rest of the README, so a value may not start with one.
+BLOCK_OPENER = re.compile(r"\s|```|~~~|<")
+# A package keeps its own kit; public tests check every "python -m kit X" in README.md against this repository's kit.
+KIT_COMMAND = re.compile(r"python3? -m kit ")
+# A package's files are not on main, so a relative link in its entry would point at the wrong tree.
+RELATIVE_LINK = re.compile(r"\]\((?!https://)")
 
 
 class ReleaseListError(ValueError):
@@ -80,8 +89,10 @@ def validate(entry):
     if not isinstance(entry["id"], str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", entry["id"]):
         raise ReleaseListError(f"id {entry['id']!r} must be lowercase letters, digits and hyphens")
     _text(entry, "title", 80)
-    _text(entry, "summary", 1500)
-    _text(entry, "details", 500, required=False)
+    for key, limit in (("summary", 1500), ("details", 500)):
+        value = _text(entry, key, limit, required=key == "summary")
+        if value is not None and BLOCK_OPENER.match(value):
+            raise ReleaseListError(f"{entry['id']}: {key} may not start with a space, a code fence or an HTML tag")
     released = entry["released"]
     try:
         if not isinstance(released, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", released):
@@ -111,6 +122,11 @@ def validate(entry):
         if not isinstance(path, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*", path) \
                 or any(part in (".", "..") for part in path.split("/")):
             raise ReleaseListError(f"{entry['id']}: where.path must be a simple relative path")
+        if any(KIT_COMMAND.search(text) for text in [entry["summary"], entry.get("details") or "", *commands]):
+            raise ReleaseListError(f"{entry['id']}: a package's commands run its own files (python scripts/...), never "
+                                   "\"python -m kit\", which the README checks against this repository's kit")
+        if any(RELATIVE_LINK.search(text) for text in (entry["summary"], entry.get("details") or "")):
+            raise ReleaseListError(f"{entry['id']}: a package's links are full https:// URLs at its commit")
     return entry
 
 

@@ -33,7 +33,10 @@ class ValidateTest(unittest.TestCase):
     def test_good_entries_pass(self):
         r.validate(entry())
         r.validate(entry(commands=None, details=None))
-        r.validate(entry(where=PACKAGE))
+        r.validate(entry(where=PACKAGE, details=None))
+        r.validate(entry(where=PACKAGE, details="Guide: [README](https://github.com/ChaseHendrick/Scrolls/blob/"
+                                                 "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/README.md)."))
+        r.validate(entry(commands=["python -m kit prizes"], summary="Under 5 minutes, see <https://example.org>."))
 
     def test_bad_entries_fail(self):
         bad = [entry(id="Demo"), entry(id="-x"), entry(id="a" * 64), entry(title=""), entry(title="a\nb"),
@@ -46,7 +49,13 @@ class ValidateTest(unittest.TestCase):
                entry(where=dict(PACKAGE, path="../x")), entry(where=dict(PACKAGE, path="/abs")),
                entry(where=dict(PACKAGE, branch="main")), entry(where=dict(PACKAGE, branch="-x")),
                entry(where=dict(PACKAGE, branch="a..b")), entry(where=dict(PACKAGE, extra=1)),
-               entry(unknown="field"), {k: v for k, v in entry().items() if k != "summary"}, ["not", "an", "object"]]
+               entry(unknown="field"), {k: v for k, v in entry().items() if k != "summary"}, ["not", "an", "object"],
+               entry(summary="~~~ approximate"), entry(summary="``` x"), entry(summary="<pre> shows the layout"),
+               entry(summary="<?xml version"), entry(summary="    indented code"), entry(details="\tTabbed"),
+               entry(details="<details> more"),
+               entry(where=PACKAGE, commands=["cd pkg && python -m kit " + "autopipeline defaults"]),
+               entry(where=PACKAGE, details="Then run python3 -m kit " + "demo."),
+               entry(where=PACKAGE, details="Guide: [README](README.md)."), entry(where=PACKAGE, summary="See [x](http://a.b).")]
         for e in bad:
             with self.subTest(entry=e), self.assertRaises(r.ReleaseListError):
                 r.validate(e)
@@ -112,7 +121,7 @@ class ApplyTest(unittest.TestCase):
 
     def test_updated_gives_both_files(self):
         registry_text = r.dumps({"schema_version": 1, "releases": []})
-        new_registry, new_readme, action = r.updated(registry_text, README, entry(where=PACKAGE))
+        new_registry, new_readme, action = r.updated(registry_text, README, entry(where=PACKAGE, details=None))
         self.assertEqual(action, "added")
         self.assertEqual(json.loads(new_registry)["releases"][0]["where"], PACKAGE)
         self.assertEqual(new_readme, r.apply(README, json.loads(new_registry)))
