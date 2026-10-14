@@ -12,6 +12,46 @@ Everything it prints is **Model output**: letter hypotheses for a person to chec
 
 You need Python 3.10 or newer and numpy; Pillow reads PNG and JPEG and draws overlays; tifffile reads TIFF maps; zarr (optional) reads zarr and OME-Zarr maps and lets a compressed tiled TIFF be read band by band.
 
+### Install
+
+Install the package into a virtual environment of its own, then check it with the offline demo:
+
+```bash
+python -m venv letters-env && . letters-env/bin/activate        # on Windows: letters-env\Scripts\activate
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
+scrolls-letterdemo        # synthetic letters and a noise image; weights downloaded once; prints DEMO PASS
+scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+```
+
+- **Commands.** `scrolls-letterread` is `python -m kit letterread`, `scrolls-letterlines` is `python -m kit letterlines` and `scrolls-letterdemo` is `python -m kit letterdemo`; `scrolls-workbench` runs every `python -m kit` command. Every `python -m kit ...` in this guide works either way, from any folder.
+- **Extras.** `reader` installs numpy, Pillow, tifffile and imagecodecs. `all` adds zarr (zarr and OME-Zarr maps, and big tiled TIFFs read band by band) and scipy (the map tools); `maps` is the map tools alone. With no extra, the standard-library core installs (`prizes`, `plan`, the run ledger), and the reader stops with a message that asks for numpy.
+- **Its own environment, apart from AutoPipeline's.** AutoPipeline's released package (`vc-autopipeline`, with its `scrolls-kit` command, on branch `submission/progress-2026-10`) also installs a top-level package named `kit`, its own cut of this one. In one environment the second install overwrites the first one's `kit`, and uninstalling either removes files the other needs. This package is named `scrolls-workbench` and none of its commands is `scrolls-kit`, so the names do not clash; the `kit` package does, so give each its own environment.
+- **From a clone.** `git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls`, then `python -m pip install -e ".[reader]"`, or only `python -m pip install numpy pillow tifffile` and run `python -m kit ...` from the clone's root, as below. The scripts in `scripts/letters/` (the public-map demo, the benchmarks, training) and the commands that read the repository's `docs/` (`releases`, `gate`) run from a clone only.
+
+### Check the install: the offline demo
+
+`scrolls-letterdemo` (from a clone, `python -m kit letterdemo`) checks that the package, its weights and numpy work together, with nothing to download but the weights and nothing to configure; it took 6 to 12 seconds on a 4-core cloud container. It draws four lines of Greek capitals, each line the 24 letters in an order fixed by a seed, 32 px tall, with the bookhand skeleton of the training data ([`scripts/letters/letterdata.py`](../scripts/letters/letterdata.py), drawn in numpy with no font), blurred and set on a noisy ground like a clean ink map, and an image of the same ground with no letters. It reads both at that letter height with the usual nulls and prints the letters drawn and decoded, line by line, both statuses and its verdict:
+
+```
+text page:   strong (96 letters kept; nulls 7, 0, 13, 2, ratio 7.38); character error 0.000 over 96 letters; 4 lines found of 4
+noise image: none (0 letters kept; nulls 2, 0, 2, 1, ratio 0)
+DEMO PASS: the text page is strong at a character error of 0.000, and the noise image is none.
+```
+
+The rule is fixed in [`kit/letterdemo.py`](../kit/letterdemo.py) (`RULE`): DEMO PASS when the text page's status is `strong` (more than three times the letters of every null, and at least ten letters), the character error of every letter decoded, line by line from the top, against the 96 drawn is at most 0.25, and the noise image's status is `none` or `too_few`. Otherwise DEMO FAIL, with the checks that failed and the numbers. The exit code is 0 on a pass, 1 on a fail and 2 when the demo cannot run (`DEMO ERROR`: no numpy, or no weights).
+
+- `--weights PATH` reads with a weights file you already have, such as one downloaded by hand; a file named like the released one is checked by its SHA-256, and `KIT_LETTER_WEIGHTS` works as for the reader (below).
+- `--out DIR` writes `demo.json` (the numbers, the letters drawn and both full results) and, with Pillow, `demo-page.png` and `demo-overlay.png`; `--json` prints the numbers as JSON.
+- A pass shows that the install reads clean letters in the hand it was trained on and that its controls stop noise. It says nothing about how well it reads a scroll (Interpretation); for that see [How well it reads](#how-well-it-reads) and the public-map demo below.
+
+Measured on 14 October 2026 (Model output, synthetic images): with `letters-v2-real`, the numbers above, identical on Python 3.10 with numpy 2.2.6 and on Python 3.13 with numpy 2.5.3. Twelve other seeds of the page and the noise all passed: character error 0.000 each time, 95 or 96 letters kept, ratios 6.86 to 10.67 to the largest null, and 0 letters kept on the noise. With random weights (the tests' small random network, three seeds) the demo fails, as it must: text page weak or none, character error 0.91 to 3.87.
+
+CI ([`.github/workflows/check.yml`](../.github/workflows/check.yml)) builds and installs the package with the `reader` extra on Linux, macOS and Windows, with Python 3.10 and 3.13, runs the reader's tests, and runs the demo from outside the clone with the weights downloaded from the GitHub release; the standard-library job installs it with no extra and checks that the demo stops with exit code 2.
+
+### First reads
+
+From a clone, with the public-map demo:
+
 ```bash
 git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
 python -m pip install numpy pillow tifffile
@@ -545,6 +585,8 @@ python -m kit letterread PHOTO.jpg --weights work/letters/mine/linenet.npz --let
 | [`kit/letterexport.py`](../kit/letterexport.py) | A read as a CSV of letters and as PAGE XML 2019, in the image file's pixels ([Exports](#exports-csv-and-page-xml)) |
 | [`kit/letterlines.py`](../kit/letterlines.py) | Training lines from your own records (`python -m kit letterlines build`), checked before any image is decoded, and character error on lines kept apart (`letterlines score`) ([Fine-tune on your own lines](#fine-tune-on-your-own-lines)) |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
+| [`kit/letterdemo.py`](../kit/letterdemo.py) | The offline demo (`python -m kit letterdemo`, `scrolls-letterdemo`): synthetic Greek capitals in the training data's skeleton hand, drawn in numpy, and a noise image, read and judged under a fixed rule ([Check the install](#check-the-install-the-offline-demo)) |
+| [`pyproject.toml`](../pyproject.toml) | The installable package `scrolls-workbench`: the `kit` package with its data files, extras `reader`, `maps` and `all`, and the commands `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` and `scrolls-workbench` ([Install](#install)) |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
 | [`scripts/letters/letterdata.py`](../scripts/letters/letterdata.py), [`gen_dataset.py`](../scripts/letters/gen_dataset.py) | Synthetic lines and pages: bookhand skeleton and fonts, map and label degradations, and a photograph look for whole pages (dark ink on a light papyrus ground; tests only, not training) |
 | [`scripts/letters/realforms.py`](../scripts/letters/realforms.py) | Glyph bank from Hell-Char and ICDAR 2023 crops, split by papyrus |
@@ -555,7 +597,7 @@ python -m kit letterread PHOTO.jpg --weights work/letters/mine/linenet.npz --let
 | [`scripts/letters/eval_photos.py`](../scripts/letters/eval_photos.py) | Photograph-like pages (dark ink on a light ground, tilted, turned a quarter, on dark and white mounts): polarity bright, dark and auto, the deskew, the orientation reads, and pages with no letters |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py), [`test_letterexport.py`](../tests/test_letterexport.py), [`test_letterlines.py`](../tests/test_letterlines.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model, the CSV and PAGE XML exports, training lines from records and their scores) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py), [`test_letterexport.py`](../tests/test_letterexport.py), [`test_letterlines.py`](../tests/test_letterlines.py), [`test_letterdemo.py`](../tests/test_letterdemo.py), [`test_packaging.py`](../tests/test_packaging.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model, the CSV and PAGE XML exports, training lines from records and their scores, the offline demo's drawing and rule, the package's metadata, data files and commands) |
 
 ## Related work
 

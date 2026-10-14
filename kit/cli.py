@@ -1,4 +1,8 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,releases}."""
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,letterread,letterlines,letterdemo,greeklm,releases}.
+
+An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command),
+and scrolls-letterread, scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
+"""
 
 import argparse
 import json
@@ -620,8 +624,24 @@ def cmd_greeklm(args):
     return 0
 
 
-def build_parser():
-    parser = argparse.ArgumentParser(prog="python -m kit", description=__doc__)
+def cmd_letterdemo(args):
+    try:
+        from . import letterdemo   # numpy; the core kit is standard library only
+    except ImportError as exc:
+        print(f"DEMO ERROR: the letter reader needs numpy ({exc}); python -m pip install numpy", file=sys.stderr)
+        return 2
+    return letterdemo.run_cli(args)
+
+
+# Console scripts that run one command (pyproject.toml's [project.scripts]): script name -> command.
+CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines",
+                   "scrolls-letterdemo": "letterdemo"}
+
+
+def build_parser(prog="python -m kit", sub_progs=None):
+    """The parser of every command; sub_progs maps a command to the program name its usage and errors show."""
+    sub_progs = sub_progs or {}
+    parser = argparse.ArgumentParser(prog=prog, description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
 
     p = sub.add_parser("prizes", help="open prizes from the dated snapshot")
@@ -900,7 +920,7 @@ def build_parser():
     p.add_argument("--png", help="also write the panels side by side as a PNG")
     p.set_defaults(func=cmd_view)
 
-    p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
+    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
     p.add_argument("image", help=".npy, .npz, .tif, .png or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
                    help="a released model name such as letters-v2-real (downloaded once, SHA-256 checked; a name is "
@@ -961,7 +981,7 @@ def build_parser():
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_letterread)
 
-    p = sub.add_parser("letterlines", help="training lines for the letter reader from your own transcribed lines, "
+    p = sub.add_parser("letterlines", prog=sub_progs.get("letterlines"), help="training lines for the letter reader from your own transcribed lines, "
                                            "and scores on lines kept apart")
     actions = p.add_subparsers(dest="action", required=True)
     a = actions.add_parser("build", help="records (JSON or CSV: image, text, y, letter_px, optional x0, x1, crop, key, "
@@ -984,6 +1004,17 @@ def build_parser():
     a.add_argument("--out", help="also write the result as JSON")
     a.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_letterlines)
+
+    p = sub.add_parser("letterdemo", prog=sub_progs.get("letterdemo"),
+                       help="offline check of the letter reader: synthetic Greek capitals and a noise image, "
+                            "DEMO PASS or DEMO FAIL")
+    p.add_argument("--weights", default="letters-v2-real",
+                   help="a released model name (downloaded once, SHA-256 checked) or a linenet-v1 .npz path "
+                        "(default %(default)s)")
+    p.add_argument("--out", help="folder for demo.json and, with Pillow, demo-page.png and demo-overlay.png")
+    p.add_argument("--json", action="store_true", help="print the numbers as JSON instead of the report")
+    p.add_argument("--quiet", action="store_true", help="no progress messages on stderr")
+    p.set_defaults(func=cmd_letterdemo)
 
     p = sub.add_parser("greeklm", help="letter n-gram language model for Greek in scriptio continua")
     actions = p.add_subparsers(dest="action", required=True)
@@ -1039,9 +1070,9 @@ def build_parser():
     return parser
 
 
-def main(argv=None):
+def main(argv=None, prog="python -m kit", sub_progs=None):
     argv = list(sys.argv[1:] if argv is None else argv)
-    parser = build_parser()
+    parser = build_parser(prog, sub_progs)
     # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
     # Parse the wrapper separately, leaving every child flag and literal intact.
     if argv[:1] == ["run"] and "--" in argv:
@@ -1054,3 +1085,32 @@ def main(argv=None):
     else:
         args = parser.parse_args(argv)
     return args.func(args)
+
+
+def _console(script, argv=None):
+    """Run the one command of a console script in CONSOLE_SCRIPTS, with its usage and errors under the script's name."""
+    command = CONSOLE_SCRIPTS[script]
+    parser = build_parser(sub_progs={command: script})
+    commands = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    args = commands.choices[command].parse_args(sys.argv[1:] if argv is None else argv)
+    return args.func(args)
+
+
+def workbench_main(argv=None):
+    """Console script scrolls-workbench: every command of python -m kit."""
+    return main(argv, prog="scrolls-workbench")
+
+
+def letterread_main(argv=None):
+    """Console script scrolls-letterread: python -m kit letterread."""
+    return _console("scrolls-letterread", argv)
+
+
+def letterlines_main(argv=None):
+    """Console script scrolls-letterlines: python -m kit letterlines."""
+    return _console("scrolls-letterlines", argv)
+
+
+def letterdemo_main(argv=None):
+    """Console script scrolls-letterdemo: python -m kit letterdemo."""
+    return _console("scrolls-letterdemo", argv)

@@ -1,0 +1,17 @@
+# Every text file is checked out with LF line endings on every system, Windows included, so shell scripts run
+# under bash, files with recorded SHA-256 sums (docs/evidence) keep them, and tests read the same bytes everywhere.
+* text=auto eol=lf
+
+# Binary files are never converted.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.npy binary
+*.npz binary
+*.tif binary
+*.tiff binary
+*.zip binary
+*.gz binary
+*.whl binary

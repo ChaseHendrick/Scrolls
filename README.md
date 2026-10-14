@@ -74,12 +74,13 @@ Released 14 October 2026.
 A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text).
 
 ```bash
-python -m pip install numpy pillow tifffile
-python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG
-python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+python -m venv letters-env && . letters-env/bin/activate   # its own environment, apart from AutoPipeline's
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
+scrolls-letterdemo                                         # offline check on synthetic letters; prints DEMO PASS
+scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
 ```
 
-Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
+Install, the offline demo, the public PHerc. 1667 map demo (from a clone), model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Quick start (kit)
@@ -150,6 +151,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
 | [`docs/letter-reader.md`](docs/letter-reader.md), [`scripts/letters/`](scripts/letters/) | Greek letter reader: guide, model card, benchmarks, training and demo |
 | [`scripts/umbilicus/`](scripts/umbilicus/README.md) | Scroll centre (umbilicus) finder: guide, released weights, held-out results, training, end-point rule and tests |
+| [`pyproject.toml`](pyproject.toml) | The installable package `scrolls-workbench`: `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` gives the letter reader's commands (`scrolls-letterread`, `scrolls-letterdemo`) and every `python -m kit` command as `scrolls-workbench`; install it in its own virtual environment, apart from AutoPipeline's ([guide](docs/letter-reader.md#install)) |
 | [`docs/state-of-play.md`](docs/state-of-play.md) | What has been read, what has been tried, recent winners and published nulls |
 | [`docs/compute.md`](docs/compute.md) | Hardware, cloud costs, and what AI agents can and cannot do here |
 | [`docs/mac.md`](docs/mac.md) | Apple Silicon: what runs locally, the open MPS PRs, useful Mac contributions |
