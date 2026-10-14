@@ -67,6 +67,13 @@ class ValidateTest(unittest.TestCase):
             with self.subTest(registry=registry), self.assertRaises(r.ReleaseListError):
                 r.validate_list(registry)
 
+    def test_pins_name_listed_entries_once(self):
+        r.validate_list({"schema_version": 1, "pinned": ["demo-tool"], "releases": [entry()]})
+        r.validate_list({"schema_version": 1, "pinned": [], "releases": [entry()]})
+        for pinned in (["other"], ["demo-tool", "demo-tool"], "demo-tool", [["demo-tool"]], [7], None):
+            with self.subTest(pinned=pinned), self.assertRaises(r.ReleaseListError):
+                r.validate_list({"schema_version": 1, "pinned": pinned, "releases": [entry()]})
+
 
 class RenderTest(unittest.TestCase):
     def test_main_entry(self):
@@ -86,6 +93,18 @@ class RenderTest(unittest.TestCase):
         registry = {"schema_version": 1, "releases": [entry(id="old", released="2026-09-01"), entry(id="a"),
                                                       entry(id="b"), entry(id="mid", released="2026-10-01")]}
         self.assertEqual([e["id"] for e in r.ordered(registry["releases"])], ["b", "a", "mid", "old"])
+
+    def test_pinned_entries_come_first_and_the_intro_says_so(self):
+        releases = [entry(id="old", title="Old", released="2026-09-01"), entry(id="a", title="A"),
+                    entry(id="b", title="B"), entry(id="mid", title="Mid", released="2026-10-01")]
+        self.assertEqual([e["id"] for e in r.ordered(releases, ["old"])], ["old", "b", "a", "mid"])
+        self.assertEqual([e["id"] for e in r.ordered(releases, ["mid", "a"])], ["mid", "a", "b", "old"])
+        lines = r.render({"schema_version": 1, "pinned": ["old"], "releases": releases}).split("\n")
+        self.assertEqual(lines[1], "Tools released from private work, Old first and the rest newest first. "
+                                   "Each entry comes from [`docs/releases.json`](docs/releases.json).")
+        self.assertEqual([x for x in lines if x.startswith("### ")], ["### Old", "### B", "### A", "### Mid"])
+        two = r.intro({"schema_version": 1, "pinned": ["mid", "a"], "releases": releases})
+        self.assertTrue(two.startswith("Tools released from private work, Mid and A first and the rest newest first."))
 
     def test_render_is_wrapped_in_the_markers(self):
         block = r.render({"schema_version": 1, "releases": [entry()]})
@@ -118,6 +137,19 @@ class ApplyTest(unittest.TestCase):
         registry3, action = r.upsert(registry2, entry(title="Demo tool 2"))
         self.assertEqual((action, [e["title"] for e in registry3["releases"]]), ("replaced", ["Demo tool", "Demo tool 2"]))
         self.assertEqual(len(registry["releases"]), 1, "the input list is not changed")
+
+    def test_a_pin_belongs_to_the_list_and_survives_a_new_version(self):
+        registry = r.pin({"schema_version": 1, "releases": [entry(id="first"), entry()]}, "demo-tool")
+        self.assertEqual(r.dumps(registry).split("\n")[1:3], ['  "schema_version": 1,', '  "pinned": ['])
+        registry2, action = r.upsert(registry, entry(title="Demo tool 2"))
+        self.assertEqual((action, registry2["pinned"]), ("replaced", ["demo-tool"]))
+        registry3, _ = r.upsert(registry2, entry(id="newer", released="2026-10-15"))
+        self.assertEqual([e["id"] for e in r.ordered(registry3["releases"], registry3["pinned"])],
+                         ["demo-tool", "newer", "first"])
+        self.assertNotIn("pinned", r.pin(registry3, "demo-tool", on=False))
+        self.assertNotIn('"pinned"', r.dumps({"schema_version": 1, "pinned": [], "releases": []}))
+        with self.assertRaises(r.ReleaseListError):
+            r.pin(registry3, "missing")
 
     def test_updated_gives_both_files(self):
         registry_text = r.dumps({"schema_version": 1, "releases": []})
@@ -167,6 +199,28 @@ class CommandTest(unittest.TestCase):
         self.assertEqual((code, json.loads(out)["action"]), (0, "replaced"))
         self.assertIn("### Renamed", self.readme.read_text())
         self.assertIn("demo-tool", self.call("list")[1])
+
+    def test_pin_and_unpin(self):
+        self.call("render")
+        f = self.dir / "entry.json"
+        for e in (entry(id="first", title="First", released="2026-10-01"), entry()):
+            f.write_text(json.dumps(e))
+            self.call("add", str(f))
+        self.assertEqual(self.call("pin", "first")[0], 0)
+        text = self.readme.read_text()
+        self.assertIn("First first and the rest newest first.", text)
+        self.assertLess(text.index("### First"), text.index("### Demo tool"))
+        self.assertEqual(self.call("check")[0], 0)
+        self.assertEqual(self.call("list")[1].split("\n")[0], "2026-10-01  first                    First  (pinned)")
+        before = (self.registry.read_text(), self.readme.read_text())
+        code, _, err = self.call("pin", "missing")
+        self.assertEqual((code, before), (2, (self.registry.read_text(), self.readme.read_text())))
+        self.assertIn("no entry with that id", err)
+        self.assertEqual(self.call("unpin", "first")[0], 0)
+        text = self.readme.read_text()
+        self.assertIn(r.INTRO, text)
+        self.assertLess(text.index("### Demo tool"), text.index("### First"))
+        self.assertNotIn("pinned", self.registry.read_text())
 
     def test_hand_edits_are_caught(self):
         self.call("render")

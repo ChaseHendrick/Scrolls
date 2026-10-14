@@ -34,7 +34,23 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 ## Released tools
 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
-Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
+Tools released from private work, AutoPipeline first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
+
+### AutoPipeline
+
+Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix2`: [`submissions/progress-2026-10-fix2/` at commit `143c54b`](https://github.com/ChaseHendrick/Scrolls/tree/143c54b54804e17acbfdcf032217e6b3964f6ef4/submissions/progress-2026-10-fix2).
+
+AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.2, the second fix release; no result has changed since the first release, 0.1.0, and the earlier releases stay on their own branches. Its last step, ink detection with the reversed-layer control, also runs in a browser: the [AutoPipeline ink Space](https://huggingface.co/spaces/SharpMeow/autopipeline-ink) maps a crop of a released segment, or a small surface volume you upload, and scores the crop where it has published ink labels.
+
+```bash
+git clone --branch submission/progress-2026-10-fix2 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix2/autopipeline
+python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
+python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
+python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
+```
+
+Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/autopipeline/README.md). What changed: [in 0.1.2](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/CHANGES.md) and [in 0.1.1](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/CHANGES.md).
 
 ### Segment stack check
 
@@ -64,22 +80,6 @@ python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json          # weights down
 ```
 
 Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs/strokenet.md).
-
-### AutoPipeline
-
-Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix2`: [`submissions/progress-2026-10-fix2/` at commit `143c54b`](https://github.com/ChaseHendrick/Scrolls/tree/143c54b54804e17acbfdcf032217e6b3964f6ef4/submissions/progress-2026-10-fix2).
-
-AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.2, the second fix release; no result has changed since the first release, 0.1.0, and the earlier releases stay on their own branches. Its last step, ink detection with the reversed-layer control, also runs in a browser: the [AutoPipeline ink Space](https://huggingface.co/spaces/SharpMeow/autopipeline-ink) maps a crop of a released segment, or a small surface volume you upload, and scores the crop where it has published ink labels.
-
-```bash
-git clone --branch submission/progress-2026-10-fix2 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix2/autopipeline
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
-python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
-```
-
-Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/autopipeline/README.md). What changed: [in 0.1.2](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/CHANGES.md) and [in 0.1.1](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/CHANGES.md).
 
 ### Scroll centre (umbilicus) finder
 
