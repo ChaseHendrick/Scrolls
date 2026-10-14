@@ -34,7 +34,7 @@ Tools released from private work, newest first. Each entry comes from [`docs/rel
 
 Released 14 October 2026.
 
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. It runs in numpy on a laptop CPU and reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
 
 ```bash
 python -m pip install numpy pillow tifffile
