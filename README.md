@@ -47,6 +47,22 @@ scrolls-kit autopipeline monitor RUN_FOLDER --text   # a run as text, its ink ma
 
 What changed: [CHANGES.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/CHANGES.md). Setup, the monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix1/submissions/progress-2026-10-fix1/autopipeline/README.md).
 
+### AutoPipeline
+
+Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10`: [`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).
+
+AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet.
+
+```bash
+git clone --branch submission/progress-2026-10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10/autopipeline
+python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
+python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
+python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
+```
+
+VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).
+
 ### Greek letter reader
 
 Released 14 October 2026.
@@ -60,22 +76,6 @@ python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --over
 ```
 
 Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
-
-### AutoPipeline
-
-Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10`: [`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).
-
-AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. It is the package prepared for the October 2026 Progress Prize.
-
-```bash
-git clone --branch submission/progress-2026-10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10/autopipeline
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
-python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
-```
-
-VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).
 <!-- releases:end -->
 
 ## Quick start (kit)

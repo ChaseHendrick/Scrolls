@@ -8,7 +8,8 @@
 - no live file calls PHerc0139 w045 held out from `ink_9um` (it trained on w045's 2.4 um render).
 - no live file says no candidate or released reader trained on PHerc0841 without naming Hecate,
   whose base model's committed trainer lists all three PHerc0841 segments;
-- every `kit/*.py` module has a row in the AGENTS.md repository map;
+- every `kit/*.py` module has a row in the repository map, docs/MAP.md;
+- AGENTS.md and docs/HANDOFF.md stay short, since every agent reads them first;
 - every relative link in live Markdown resolves to a tracked file or directory.
 """
 
@@ -148,9 +149,9 @@ class RepoTest(unittest.TestCase):
         self.assertIsNone(PHERC0841_HELD_OUT.search("no candidate with usable selection variation"))
 
     def test_agents_map_lists_every_kit_module(self):
-        # Every kit module has a row in the AGENTS.md repository map; a row may name several.
-        text = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
-        section = text.split("## Repository map", 1)[1].split("\n## ", 1)[0]
+        # Every kit module has a row in the repository map, docs/MAP.md (AGENTS.md points there); a row
+        # may name several.
+        section = (ROOT / "docs" / "MAP.md").read_text(encoding="utf-8")
         mapped = set(re.findall(r"`(kit/[A-Za-z0-9_]+\.py)`", section))
         modules = set()
         for f in tracked():
@@ -158,7 +159,15 @@ class RepoTest(unittest.TestCase):
             if re.fullmatch(r"kit/[A-Za-z0-9_]+\.py", rel) and rel != "kit/__init__.py":
                 modules.add(rel)
         self.assertTrue(modules)
-        self.assertEqual(sorted(modules - mapped), [], "kit modules missing from the AGENTS.md repository map")
+        self.assertEqual(sorted(modules - mapped), [], "kit modules missing from the repository map, docs/MAP.md")
+
+    def test_agent_entry_files_stay_short(self):
+        # Every agent reads AGENTS.md (Claude loads it each session) and docs/HANDOFF.md first, so both stay
+        # short. Over the limit: move the handoff's oldest dated sections, unchanged, to the top of
+        # docs/HANDOFF-archive.md, and keep per-module rows in docs/MAP.md rather than AGENTS.md.
+        for rel, limit in {"AGENTS.md": 20_000, "docs/HANDOFF.md": 40_000}.items():
+            size = len((ROOT / rel).read_bytes())
+            self.assertLessEqual(size, limit, f"{rel} is {size} bytes, over {limit}; see the comment above")
 
     def test_relative_links_resolve(self):
         # Live Markdown only. Dated logs, evidence and experiment records (HISTORICAL) are frozen as

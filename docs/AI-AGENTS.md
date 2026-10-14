@@ -1,6 +1,6 @@
 # Guidelines for AI agents (and humans editing with AI)
 
-Start at [`../AGENTS.md`](../AGENTS.md) (map, commands, standing decisions, glossary). This file is the full rulebook.
+Start at [`../AGENTS.md`](../AGENTS.md) (rules, standing decisions, commands, glossary; the full repository map is [`MAP.md`](MAP.md)). This file is the full rulebook.
 
 This repository mixes **sourced research notes** about the Vesuvius Challenge with a **small tested helper package** (`kit/`) that plans and records runs of the official pipeline. Agents must keep those layers separate, and must never leak a possible discovery.
 
