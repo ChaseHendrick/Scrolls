@@ -105,7 +105,7 @@ What it does not support:
 | | |
 | --- | --- |
 | File | `letters-v2-real-step030000.npz`, format `linenet-v1` (BatchNorm folded into the convolutions), SHA-256 `44946dadf0195ddb565f097acec0dd1d777af9b6c66d83995c1f4497aa587477` |
-| Where | see [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) (the `url` field) |
+| Where | the [`letters-v2-real` release](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real) of this repository; the address is in [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) |
 | Network | 2D convolutions (channels 48, 96, 160, 192, 256) over a 36-row band at a letter height of 16 px, collapsed to one row, then dilated 1D residual convolutions (dilations 1, 2, 4) and a 25-way head (24 capitals with lunate sigma, plus the CTC blank); 1,483,241 parameters; one output frame per 4 px; each frame sees about five letters, so it cannot carry a word across a line |
 | Training data | 600,000 lines of uniform random letter strings (no Greek words), rendered with a broad-nib bookhand skeleton and installed fonts, with half the letters cut from a bank of 43,806 real letter crops: 12,761 from 144 dated papyri of 310 to 3 BCE (Hell-Char, [Pavlopoulos et al., arXiv 2606.24984](https://arxiv.org/abs/2606.24984), CC BY 4.0) and 31,045 from 152 photographs (ICDAR 2023 Greek letters, [Zenodo 13825619](https://zenodo.org/records/13825619), CC BY-NC 4.0); every line degraded to look like an ink-detection map or a drawn ink label |
 | Training | `scripts/letters/train_linenet.py`, 30,000 steps, batch 128, AdamW one-cycle to 0.002, on one NVIDIA B200 (469 s of training), 9 October 2026 |
