@@ -25,7 +25,14 @@ Private research and work that cannot be public live in **[Scrolls-private](http
 
 Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists can read. Raw compute does not buy that by itself. In August and September 2026 at least five independent teams, at least three of them openly Claude-driven, ran the released 9 µm ink models on eligible scrolls (one survey covered all 21 that lacked catalog segments) and published **nulls**. The bottleneck is keeping a surface on one papyrus sheet, and getting ink models to generalize across scrolls. It is not GPU hours. See [`docs/compute.md`](docs/compute.md).
 
-## Greek letter reader
+## Released tools
+
+<!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
+Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
+
+### Greek letter reader
+
+Released 14 October 2026.
 
 A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. It runs in numpy on a laptop CPU and reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
 
@@ -36,6 +43,23 @@ python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --over
 ```
 
 Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
+
+### AutoPipeline
+
+Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10`: [`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).
+
+AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. It is the package prepared for the October 2026 Progress Prize.
+
+```bash
+git clone --branch submission/progress-2026-10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10/autopipeline
+python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
+python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
+python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
+```
+
+VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).
+<!-- releases:end -->
 
 ## Quick start (kit)
 
@@ -96,6 +120,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`kit/`](kit/) | Planner, doctor, prize snapshot, map scoring (`auc`, `rowscore`, `verify`), `layers`, `provenance`, experiment ledger; CLI `python -m kit` |
 | [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labelled test), `mac-phase0.sh` (public model comparisons), `mac-verify.sh`; `false404/fault_relay.py` replays S3's false 404 for villa #2058 |
 | [`docs/results.json`](docs/results.json) | Every benchmark number with settings and source |
+| [`docs/releases.json`](docs/releases.json) | Tools released from private work since the list began on 14 October 2026; the "Released tools" section above is generated from it |
 | [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Public evaluation methodology and access-required private plan pointers |
 | [`kit/data/prizes-2026-10-11.json`](kit/data/prizes-2026-10-11.json) | Current prize snapshot (checked 2026-10-11): amounts, deadlines, 13 Grand Prize and 21 First Letters volumes with S3 names. [`prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) is the previous snapshot (22 First Letters volumes, including PHerc0343, maximum 10) |
 | [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
@@ -135,9 +160,17 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
 | `letterread.py` | Greek letter reader: numpy CTC line network, layout, nulls and orientation controls, overlay, released weights (numpy; Pillow and tifffile for images) |
 | `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
+| `releases.py` | The release list and the README section written from it (`python -m kit releases`) |
 | `cli.py` | `python -m kit` entry point |
 
 ## Novel findings
+
+**Latest evidence review: 14 October 2026.** The newest public results come first. Earlier measurements keep their original dates, corrections and limits. Each finding keeps its number, so a reference elsewhere to "finding N" still points at the right one. Every number with its settings and source is in [`docs/results.json`](docs/results.json).
+
+12. **A transient 404 from S3 becomes a permanent hole of zeros in VC3D's renders and traces** (measured 2026-10-08, reported 2026-10-12 as [villa #2058](https://github.com/ScrollPrize/villa/issues/2058), fix in draft [villa #2060](https://github.com/ScrollPrize/villa/pull/2060)). From one machine, the open-data bucket answered `404 NoSuchBucket` for keys it holds on 11 to 32 % of new connections. VC3D caches any 404 as an empty chunk and serves it as zeros in every later run: a PHerc0139 w035 crop rendered with 27.7 % zero samples, exit code 0 and no warning. With the draft fix on villa `main` at `25f3c93`, the same crop with 6 replayed false 404s matches the clean render, where `main` leaves 12 empty markers and 19.18 % zeros that survive a rerender; the new tests pass with the fix and fail 70 checks on `main`, on Linux and macOS. The false 404s in those renders are replayed by a local relay ([`scripts/false404/fault_relay.py`](scripts/false404/fault_relay.py)); the fix is not merged, and markers already in users' caches stay wrong. [Log](docs/logs/2026-10-12-upstream-reports.md), [receipts](docs/evidence/2026-10-12-false-404/README.md).
+13. **villa's tracer does not hold an explicit seed, so a trace can start on the next winding** (measured 2026-10-11 and 2026-10-12 on public geometry, no ink; reported 2026-10-12 as [villa #2059](https://github.com/ScrollPrize/villa/issues/2059)). On PHerc0139, a `vc_grow_seg_from_seed` seed 1.1 voxels from published winding w031 ends its first 10 generations with none of 324 vertices on w031 and 265 on w033, while `meta.json` still records the seed. Holding one vertex fixed at the seed kept a 60-generation trace on w031 (dominant share 0.972 within 4 voxels, 4.74 of 4.88 cm²) where the unanchored run from the same seed was dominant on w033 (0.511) with nothing on w031. One seed on one scroll, scored against the published windings; an anchor holds one point, not the sheet, and the anchor change is not public as code. [Log](docs/logs/2026-10-12-upstream-reports.md).
+
+### Earlier measurements and corrections
 
 Measurements from this work, with related prior work and limits where known. Novelty remains provisional within our searches (web and the community repositories we read; GitHub search and Discord were not searchable from here). Public labelled data only, never target scrolls; model output, not readings. Proposed uses are untested ideas rather than findings. Reproductions of others' results are in [`docs/results.json`](docs/results.json) and the [log](docs/logs/2026-10-07-community-scan.md).
 
@@ -152,8 +185,6 @@ Measurements from this work, with related prior work and limits where known. Nov
 9. **Cross-trace agreement suggests a label-free triage experiment** (2026-10-07, model output and untested idea). On PHerc0841, a spot in the top 20 % of one ink map also lies in the other's top 20 % about 70 % of the time within 28 um, compared with 50 % for letter-scale CT texture and a 20 % independent-match expectation. The margin decreases with trace separation. Using this agreement to flag target surfaces is an untested hypothesis, requiring preregistration and held-out false-positive and sensitivity checks. Disagreement alone does not identify which trace is correctly placed or justify a correction. Related geometry and window studies are cited in the log; no claim of priority for agreement-based filtering is established. [Log](docs/logs/2026-10-07-overlap-and-baseline.md).
 10. **Every published surface volume now matches a published mesh, but one stored cross-scan matrix contradicts its own landmarks** (2026-10-07, measurement on public geometry, no ink). All 692 surface volumes in the bucket catalogue reproduce their canvas exactly from a mesh variant naming the rendered volume, closing the gap reported in [villa #1727](https://github.com/ScrollPrize/villa/issues/1727). Of 29 stored transforms, PHerc1667 1.129 um to 2.399 um misses its six landmarks by 42 to 212 um, while a refit of the same landmarks fits them within 4 um. Transforms into the 2023 7.91 um scans imply scales 0.7 to 1.5 % above the nominal voxel ratio (Paris 4, PHerc0332, PHerc1667), which suggests those voxels are about 1 % smaller than stated. Cross meshes are exact affine images of the traced mesh, and where measurable they put the papyrus within a few micrometres of the native render. [Log](docs/logs/2026-10-07-mesh-hypothesis.md), [data](docs/data/mesh-hypothesis/README.md). Related prior work, found later: kadenpool reported the PHerc1667 matrix in [villa #1843](https://github.com/ScrollPrize/villa/issues/1843) (20 September 2026) with a refit. Update 2026-10-12: a check in the CT itself agrees with the landmarks, not the matrix. Cubes around the six landmarks, carried through the published matrix, sit 42 to 216 um from where the 2.399 um scan matches them, within a few micrometres of the landmark residuals, and the landmarks sit 3.3 to 5.7 um from the CT's match; swapped landmark pairs match 0 of 6, and two other stored transforms pass the same check. Posted as a [comment on villa #1843](https://github.com/ScrollPrize/villa/issues/1843#issuecomment-6130119937) ([log](docs/logs/2026-10-12-upstream-reports.md)).
 11. **PHerc1667's published 1.129 um renders appear misplaced, and 1.129 um renders on three other scrolls sit about 16 um from their 2.4 um renders** (2026-10-07, measurement; the PHerc1667 result is post hoc). Phase correlation of centre layers on 3 mm tiles: on three control scrolls the 1.129 um renders are offset by a constant (-11.9, -11.0) um from the 2.4 um renders (216 tiles, spread 1.7 um). On five PHerc1667 segments, tiles with clear matches follow the shift predicted if the landmarks are right and the matrix wrong (median miss 7.7 um, slope 0.93), and matches vanish where that predicted displacement is large (median 158 um, up to 475 um). The pre-registered version of this test failed its own control bar, so this needs a calibrated rerun before anyone relies on it. [Log](docs/logs/2026-10-07-mesh-hypothesis.md).
-12. **A transient 404 from S3 becomes a permanent hole of zeros in VC3D's renders and traces** (measured 2026-10-08, reported 2026-10-12 as [villa #2058](https://github.com/ScrollPrize/villa/issues/2058), fix in draft [villa #2060](https://github.com/ScrollPrize/villa/pull/2060)). From one machine, the open-data bucket answered `404 NoSuchBucket` for keys it holds on 11 to 32 % of new connections. VC3D caches any 404 as an empty chunk and serves it as zeros in every later run: a PHerc0139 w035 crop rendered with 27.7 % zero samples, exit code 0 and no warning. With the draft fix on villa `main` at `25f3c93`, the same crop with 6 replayed false 404s matches the clean render, where `main` leaves 12 empty markers and 19.18 % zeros that survive a rerender; the new tests pass with the fix and fail 70 checks on `main`, on Linux and macOS. The false 404s in those renders are replayed by a local relay ([`scripts/false404/fault_relay.py`](scripts/false404/fault_relay.py)); the fix is not merged, and markers already in users' caches stay wrong. [Log](docs/logs/2026-10-12-upstream-reports.md), [receipts](docs/evidence/2026-10-12-false-404/README.md).
-13. **villa's tracer does not hold an explicit seed, so a trace can start on the next winding** (measured 2026-10-11 and 2026-10-12 on public geometry, no ink; reported 2026-10-12 as [villa #2059](https://github.com/ScrollPrize/villa/issues/2059)). On PHerc0139, a `vc_grow_seg_from_seed` seed 1.1 voxels from published winding w031 ends its first 10 generations with none of 324 vertices on w031 and 265 on w033, while `meta.json` still records the seed. Holding one vertex fixed at the seed kept a 60-generation trace on w031 (dominant share 0.972 within 4 voxels, 4.74 of 4.88 cm²) where the unanchored run from the same seed was dominant on w033 (0.511) with nothing on w031. One seed on one scroll, scored against the published windings; an anchor holds one point, not the sheet, and the anchor change is not public as code. [Log](docs/logs/2026-10-12-upstream-reports.md).
 
 Further controlled tests repaired a continuous-surface matching defect and completed real labelled correction and reconstruction audits, including negative results. See the [follow-up evidence](docs/logs/2026-10-07-followup-tests.md) and [review of villa support masking](docs/logs/2026-10-07-coarse-support-mask.md). These do not establish a new reading or successful real correction.
 
@@ -162,6 +193,8 @@ Partial results: the PHerc1447 fine-tune on w00 is recorded in [PR #7](https://g
 A [further adaptive-geometry experiment and PR review](docs/logs/2026-10-07-adaptive-resolution.md) preserves a failed primary retention test alongside promising local coarsening results. Frozen evidence and an independent hash audit accompany it.
 
 [Measured CPU optimizations](docs/logs/2026-10-07-production-speed.md) make the complete surface-correction process 2.07x faster on the real PHerc0841 test crop with identical outputs; fresh AUC CLI scoring is 1.25x faster. These measure the named operations, not total scroll-reading throughput.
+
+[Further CPU scaling checks](docs/logs/2026-10-07-production-scaling.md) make full-map row scoring 7.01x faster on the tested public 305-million-pixel map with optional [`--fast-resize`](docs/rowscore.md). Its numerical mode is explicit; dense defaults remain unchanged. Exact geometry batching and label-filter reuse add smaller measured gains.
 
 ## Guidelines
 
@@ -189,5 +222,3 @@ their training data (ICDAR 2023 Greek letters) is. The code license does not gra
 Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
 before use or redistribution. Do not commit scroll data, renders or ink maps to
 this public repository.
-
-[Further CPU scaling checks](docs/logs/2026-10-07-production-scaling.md) make full-map row scoring 7.01x faster on the tested public 305-million-pixel map with optional [`--fast-resize`](docs/rowscore.md). Its numerical mode is explicit; dense defaults remain unchanged. Exact geometry batching and label-filter reuse add smaller measured gains.
