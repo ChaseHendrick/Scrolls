@@ -16,9 +16,17 @@ Controls travel with every result, and each can fail:
   no_control; control_status), the ratio to the largest null, and per line the count expected by
   chance from the nulls, so a person or a pipeline can act on the controls;
 - orientation: text the right way round should keep more letters as stored than mirrored or
-  turned 180 degrees (weak for Greek capitals, many of which are symmetric);
+  turned 90, 180 or 270 degrees (weak for Greek capitals, many of which are symmetric);
 - language off: the ink-only decode is always reported, and a language-model decode, when
   asked for, sits beside it and never replaces it.
+
+Photographs: polarity "auto" reads the image quickly both ways, as bright ink and as dark ink, and
+keeps the polarity whose letters stand further above its own nulls (polarity_trial; grey levels
+alone fail on a photograph of papyrus on a white ground); a read in a given polarity that the
+controls do not pass gets the same quick check and a hint when the other polarity reads clearly
+better. JPEG and PNG files are turned by their EXIF orientation as they load, read(rotate=...,
+mirror=...) reads a turned image and maps every box back to input pixels, and the overlay is drawn
+on the image the way round and in the polarity it was given (in colour for a colour photograph).
 
 Weights are a .npz exported by the training script (format linenet-v1, BatchNorm folded into
 the convolutions). They are not in git: pass a file, or the name of a released model in
@@ -68,6 +76,21 @@ STATUS_TEXT = {
     "too_few": "Too few confident letters to judge (fewer than {min_letters}).",
     "no_control": "No control run (nulls=0): nothing here can be trusted.",
 }
+# Deskew: the largest shear angle searched, degrees either way, in steps of DESKEW_STEP.
+DESKEW_DEG = 6.0
+DESKEW_STEP = 0.5
+# Polarity "auto" in read(), analyze() and the command line (polarity_trial): a quick read both ways.
+AUTO_RULE = ("auto: the image is read quickly as bright ink and as dark ink (one step of the scale search: up to 8 "
+             "lines at the letter size, 2 nulls each), and the polarity whose letters kept exceed its own largest "
+             "null by more is used; bright on a tie")
+# normalize(a, "auto") alone, without a reader (resolve_polarity): a grey-level guess, kept for callers that
+# normalise without reading. It fails on a photograph of papyrus on a white ground, whose median is the papyrus.
+POLARITY_RULE = ("grey levels: dark ink when the median grey lies in the upper half of the range from the 0.5th to "
+                 "the 99.8th percentile (a light ground), else bright ink (a dark ground)")
+# Orientation reads: name -> (rotate, mirror) of orient(), applied to the image as read.
+ORIENTATIONS = {"as_is": (0, False), "mirrored": (0, True), "rot180": (180, False), "rot90": (90, False),
+                "rot270": (270, False)}
+ROTATIONS = (0, 90, 180, 270)
 
 
 # ------------------------------------------------------------------ released weights
@@ -489,9 +512,7 @@ def _open(path, key=None, whole=False):
             store.close()
             raise
         return _Source(arr, p, chunk_rows=_chunk_rows(arr), store=store)
-    from PIL import Image
-    Image.MAX_IMAGE_PIXELS = None
-    im = Image.open(p)
+    im = _pillow_image(p)
     if whole:
         return _Source(np.asarray(im.convert("F")), p)
     if im.mode in ("1", "LA"):
@@ -503,6 +524,66 @@ def _open(path, key=None, whole=False):
 
 def _is_pillow(p):
     return not _is_zarr(p) and Path(p).suffix.lower() not in (".npy", ".npz", ".tif", ".tiff")
+
+
+EXIF_ORIENTATION_TAG = 0x0112
+
+
+def _exif_tag(im):
+    """The EXIF orientation of an open Pillow image: 1 (as stored) to 8; 1 when it has none or it is unreadable."""
+    try:
+        n = int(im.getexif().get(EXIF_ORIENTATION_TAG, 1))
+    except Exception:   # a damaged EXIF block must not stop the read; the pixels are then read as stored
+        return 1
+    return n if 1 <= n <= 8 else 1
+
+
+def exif_orientation(path):
+    """EXIF orientation tag of a PNG or JPEG file (1 to 8; 5 to 8 swap height and width), 1 for other formats.
+
+    The reader applies it as it loads such a file, so input pixels are the image as a viewer shows it."""
+    if not _is_pillow(path):
+        return 1
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    with Image.open(path) as im:
+        return _exif_tag(im)
+
+
+def _pillow_image(p):
+    """A PNG, JPEG or other Pillow image, turned by its EXIF orientation (ImageOps.exif_transpose) when it has one."""
+    from PIL import Image, ImageOps
+    Image.MAX_IMAGE_PIXELS = None
+    im = Image.open(p)
+    if _exif_tag(im) != 1:
+        im = ImageOps.exif_transpose(im)
+    return im
+
+
+def _pillow_shape(p):
+    """(height, width) of a Pillow image as a viewer shows it (EXIF orientation applied), without decoding its pixels."""
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    with Image.open(p) as im:
+        return (im.width, im.height) if _exif_tag(im) in (5, 6, 7, 8) else (im.height, im.width)
+
+
+def display_image(path, crop=None, k=1):
+    """A colour PNG or JPEG as an RGB uint8 array for the overlay: EXIF orientation applied, cropped, block-averaged by k.
+
+    The shape is that of load_reduced's image for the same crop and k. None for a grey image and for
+    other formats, whose overlay is drawn from the read image in its own polarity."""
+    if not _is_pillow(path):
+        return None
+    im = _pillow_image(path)
+    if im.mode in ("1", "L", "LA", "I", "F") or im.mode.startswith("I;"):
+        return None
+    y0, y1, x0, x1 = _window(crop, (im.height, im.width), path)
+    ny, nx = (y1 - y0) // k, (x1 - x0) // k
+    im = im.convert("RGB").crop((x0, y0, x0 + nx * k, y0 + ny * k))
+    if k > 1:
+        im = im.reduce(k)
+    return np.asarray(im)
 
 
 def _window(crop, shape, name):
@@ -520,6 +601,8 @@ def _window(crop, shape, name):
 def load_image(path, key=None, crop=None):
     """2D float array from .npy, .npz (first or named array), .tif/.tiff (tifffile), .png/.jpg (Pillow) or zarr.
 
+    A PNG or JPEG with an EXIF orientation tag is turned by it first, so its pixels are the image as
+    a viewer shows it (exif_orientation() gives the tag).
     crop: (Y0, Y1, X0, X1), applied before the conversion to float; a .npy file and an uncompressed
     TIFF are memory-mapped, and a zarr or (with zarr installed) a compressed tiled TIFF is read by
     chunk, so only the window is read. zarr: key is the array path, or the OME-Zarr level ("0" is
@@ -599,10 +682,7 @@ def load_reduced(path, key=None, crop=None, letter_px=None, net_letter_px=16, ma
     The crop is applied in input pixels, before the reduction, so boxes stay relative to Y0, X0."""
     p = Path(path)
     if _is_pillow(p):          # Pillow reads the size without decoding; the pixels are decoded once, below
-        from PIL import Image
-        Image.MAX_IMAGE_PIXELS = None
-        with Image.open(p) as im:
-            shape, src = (im.height, im.width), None
+        shape, src = _pillow_shape(p), None
     else:
         src = _open(p, key)
         shape = src.shape
@@ -634,7 +714,34 @@ def normalize(a, polarity="bright", dtype=np.float64):
     """Robust 0..1 scaling with ink bright. polarity: bright (ink maps), dark (photographs) or auto.
 
     dtype is the arithmetic precision; the result is always float32. normalize_for_reading uses
-    float32 arithmetic for images over the pixel budget, to halve the memory."""
+    float32 arithmetic for images over the pixel budget, to halve the memory. auto here is the
+    grey-level guess POLARITY_RULE (resolve_polarity), for callers without a reader; read(),
+    analyze() and the command line decide auto with quick reads instead (polarity_trial).
+    normalize_info() also says which polarity was used."""
+    return normalize_info(a, polarity, dtype)[0]
+
+
+def resolve_polarity(lo, med, hi, polarity="auto"):
+    """The polarity ("bright" or "dark") from the image's 0.5th, 50th and 99.8th percentiles: POLARITY_RULE.
+
+    bright and dark are kept as asked. auto is dark when the median lies in the upper half of the
+    range (more than halfway from lo to hi), as when a light ground fills most of the image, else
+    bright. This is normalize()'s guess without a reader; it fails on photographs of papyrus on a
+    white ground (the white fills the top of the range and the brown papyrus sits in its lower half),
+    which is why reads decide auto with polarity_trial."""
+    if polarity not in ("bright", "dark", "auto"):
+        raise ValueError(f"polarity {polarity!r}: give bright, dark or auto")
+    if polarity != "auto":
+        return polarity
+    return "dark" if (med - lo) > (hi - med) else "bright"
+
+
+def normalize_info(a, polarity="bright", dtype=np.float64):
+    """normalize() and the polarity it used: (image, info).
+
+    info: asked (the polarity given), used (bright or dark), background (where the median grey lies
+    between the 0.5th and 99.8th percentiles, 0 to 1, None for a constant image; a description of
+    the image, not a rule) and, for auto, rule (POLARITY_RULE)."""
     a = np.asarray(a, dtype=dtype)
     finite = np.isfinite(a)
     if not finite.any():
@@ -643,20 +750,102 @@ def normalize(a, polarity="bright", dtype=np.float64):
     lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
     if hi <= lo:  # sparse binary or quantised image, such as an ink label with under 0.2% ink
         lo, hi = float(a.min()), float(a.max())
-        if hi <= lo:
-            return np.zeros_like(a, dtype=np.float32)
+    info = {"asked": polarity}
     if polarity == "auto":
-        polarity = "dark" if (med - lo) > (hi - med) else "bright"
+        info["rule"] = POLARITY_RULE
+    if hi <= lo:
+        info.update(used=resolve_polarity(lo, med, hi, polarity) if polarity != "auto" else "bright", background=None)
+        return np.zeros_like(a, dtype=np.float32), info
+    used = resolve_polarity(lo, med, hi, polarity)
+    info.update(used=used, background=round(float((med - lo) / (hi - lo)), 3))
     a = np.clip((a - lo) / (hi - lo), 0, 1)
-    return (1.0 - a if polarity == "dark" else a).astype(np.float32)
+    return (1.0 - a if used == "dark" else a).astype(np.float32), info
 
 
-def normalize_for_reading(a, polarity="bright", max_pixels=MAX_PIXELS):
+def normalize_for_reading(a, polarity="bright", max_pixels=MAX_PIXELS, with_info=False):
     """normalize() once for a whole read: float64 arithmetic within the pixel budget (as analyze() does), float32 above it.
 
     read() and the command line normalise once and hand the result to the main read, its nulls, the
-    orientation reads and the overlay (each with normalized=True)."""
-    return normalize(a, polarity, dtype=np.float64 if np.size(a) <= max_pixels else np.float32)
+    orientation reads and the overlay (each with normalized=True). with_info=True returns
+    (image, info) as normalize_info() does."""
+    out = normalize_info(a, polarity, dtype=np.float64 if np.size(a) <= max_pixels else np.float32)
+    return out if with_info else out[0]
+
+
+def polarity_trial(a, weights, polarity="bright", *, letter_px=None, input_scale=1, seed=0, columns="auto",
+                   deskew_deg=DESKEW_DEG, lines=None, rotate=0, mirror=False, letter_px_fallback=True,
+                   min_letters=MIN_LETTERS):
+    """Quick reads of a normalised image both ways, as it is and inverted: which polarity shows letters above its nulls.
+
+    a is normalised in `polarity` (ink bright in the array either way); it is read as given and as
+    1 - a, the other polarity, each once at the working scale like one step of the scale search (up
+    to 8 lines, 2 nulls with seed + 1, the confidence floor from those nulls), after rotate and
+    mirror and on the given lines (input pixels, in the turned image) when there are any. letter_px
+    is in input pixels; None takes the line-pitch estimate (estimate_letter_px; without a line pitch
+    that raises ValueError(NO_LETTER_SIZE) when letter_px_fallback is False). A dark-ink read fills
+    rows the deskew shears in with its median grey, as read() does.
+
+    Returns {"rule", "letter_px", "bright": {...}, "dark": {...}, "choice"}: per polarity the letters
+    kept, the nulls' counts, the margin (kept minus the largest null, as the scale search ranks)
+    and the status those counts give (control_status, min_letters); choice is the polarity with the
+    larger margin, bright on a tie (AUTO_RULE). The choice uses letter counts, so a read in the
+    chosen polarity is the better of two looks: on an image without text it is a little more likely
+    to pass its controls than a read in a polarity fixed beforehand (docs/letter-reader.md has the
+    measured rate)."""
+    if polarity not in ("bright", "dark"):
+        raise ValueError(f"polarity {polarity!r}: the image's own polarity, bright or dark")
+    net = weights if isinstance(weights, LineNet) else LineNet(weights)
+    a = np.asarray(a, dtype=np.float32)
+    k = input_scale
+    if letter_px is None:
+        h0, how = estimate_letter_px(a)
+        if how != "line pitch" and not letter_px_fallback:
+            raise ValueError(NO_LETTER_SIZE)
+    else:
+        h0 = float(letter_px) / k
+    h = float(net.letter_px)
+    f = h / h0
+    small = orient(resize(a, (max(8, int(round(a.shape[0] * f))), max(8, int(round(a.shape[1] * f))))), rotate, mirror)
+    ys = None if lines is None else [float(y) / k * f for y in lines]
+    out = {}
+    for pol, arr in ((polarity, small), ("dark" if polarity == "bright" else "bright", 1.0 - small)):
+        fill = float(np.median(arr)) if pol == "dark" else 0.0
+        c = _analyze_at(arr, net, h, nulls=2, seed=seed + 1, deskew_deg=deskew_deg, lines=ys, p_min=None,
+                        null_rate=0.05, max_lines=8, columns=columns, fill=fill)["control"]
+        out[pol] = {"letters_kept": c["letters_kept"], "null_letters_kept": c["null_letters_kept"],
+                    "margin": c["letters_kept"] - max(c["null_letters_kept"]),
+                    "status": control_status(c["letters_kept"], c["null_letters_kept"], None, min_letters)}
+    choice = "dark" if out["dark"]["margin"] > out["bright"]["margin"] else "bright"
+    return {"rule": AUTO_RULE, "letter_px": round(h0 * k, 2), "bright": out["bright"], "dark": out["dark"],
+            "choice": choice}
+
+
+def normalize_auto(img, weights, max_pixels=MAX_PIXELS, **trial_kw):
+    """Polarity auto for a whole read: (image normalised in the chosen polarity, info).
+
+    The image is normalised as bright ink, polarity_trial reads it both ways (trial_kw: its
+    keywords), and when dark ink wins it is normalised again as dark ink, so the result is exactly
+    normalize_for_reading(img, choice). info is that call's info with asked "auto" and the trial."""
+    a, info = normalize_for_reading(img, "bright", max_pixels, with_info=True)
+    trial = polarity_trial(a, weights, "bright", **trial_kw)
+    if trial["choice"] == "dark":
+        del a
+        a, info = normalize_for_reading(img, "dark", max_pixels, with_info=True)
+    info.update(asked="auto", rule=AUTO_RULE, trial=trial)
+    return a, info
+
+
+def polarity_hint(trial, used):
+    """A one-line hint when a quick read in the other polarity is strong and beats the polarity used, else None."""
+    other = "dark" if used == "bright" else "bright"
+    t, u = trial[other], trial[used]
+    if trial["choice"] != other or t["status"] != "strong":
+        return None
+    kind = ("dark ink on a light ground (a photograph or a page scan)" if other == "dark" else
+            "bright ink on a dark ground (an ink map)")
+    return (f"this image reads better as {kind}: a quick read as {other} ink keeps {t['letters_kept']} letters against "
+            f"nulls of {', '.join(map(str, t['null_letters_kept']))}, as {used} ink {u['letters_kept']} against "
+            f"{', '.join(map(str, u['null_letters_kept']))}; read it again with --polarity {other} (or auto)")
 
 
 def letter_px_from_units(letter_mm, um_per_px):
@@ -716,29 +905,99 @@ def line_pitch(a, lo=8):
     return None
 
 
-def shear(a, deg):
-    """Vertical shear: out[y, x] = a[y + (x - w/2) tan(deg), x]."""
+def shear(a, deg, fill=0.0):
+    """Vertical shear: out[y, x] = a[y + (x - w/2) tan(deg), x]; rows sheared in from beyond the image are `fill`."""
     if not deg:
         return a
     h, w = a.shape
     shift = np.round((np.arange(w) - w / 2) * math.tan(math.radians(deg))).astype(int)
     rows = np.arange(h)[:, None] + shift[None, :]
     ok = (rows >= 0) & (rows < h)
-    out = np.zeros_like(a)
+    out = np.full_like(a, fill)
     cols = np.broadcast_to(np.arange(w)[None, :], (h, w))
     out[ok] = a[rows[ok], cols[ok]]
     return out
 
 
-def deskew(a, h, max_deg=6.0, step=0.5):
-    """Shear angle that makes the row profile most peaked (lines level)."""
+def deskew_angles(max_deg=DESKEW_DEG, step=DESKEW_STEP):
+    """The shear angles deskew() tries, in degrees, in increasing order: whole steps from 0 out to max_deg, and +-max_deg.
+
+    Symmetric about 0 and ending at the limit either way, so --deskew 5.2 searches -5.2 to 5.2. For
+    a limit that is a whole number of steps (the default 6 in steps of 0.5) these are exactly the
+    angles np.arange(-max_deg, max_deg + 1e-9, step) always gave, both ends included and in the same
+    order, so reads do not change."""
+    max_deg = abs(float(max_deg))
+    n = int(math.floor(max_deg / step + 1e-9))
+    grid = [k * step for k in range(-n, n + 1)]
+    if max_deg - n * step > 1e-9:
+        grid = [-max_deg] + grid + [max_deg]
+    return np.array(grid, dtype=float)
+
+
+def deskew_at_limit(angle, max_deg=DESKEW_DEG, step=DESKEW_STEP):
+    """True when deskew() chose the first or last angle it tried: the lines may be tilted beyond the search."""
+    grid = deskew_angles(max_deg, step)
+    return bool(max_deg) and len(grid) > 1 and float(angle) in (float(grid[0]), float(grid[-1]))
+
+
+def deskew(a, h, max_deg=DESKEW_DEG, step=DESKEW_STEP, fill=0.0):
+    """Shear angle that makes the row profile most peaked (lines level), and the sheared image.
+
+    fill is the grey of rows sheared in from beyond the image. It should be the image's ground: with
+    0 on an image whose ground is well above 0 (a photograph read dark), those rows add a ramp to the
+    row profile at the top and bottom that grows with the angle, and the search drifts to its limit."""
     best = (0.0, -1.0)
-    for ang in np.arange(-max_deg, max_deg + 1e-9, step):
-        prof = _smooth1d(shear(a, ang).mean(axis=1), 0.1 * h)
+    for ang in deskew_angles(max_deg, step):
+        prof = _smooth1d(shear(a, ang, fill).mean(axis=1), 0.1 * h)
         v = float(prof.var())
         if v > best[1] + 1e-12:
             best = (float(ang), v)
-    return best[0], shear(a, best[0])
+    return best[0], shear(a, best[0], fill)
+
+
+def orient(a, rotate=0, mirror=False):
+    """The image as read with --rotate and --mirror: flipped left to right when mirror, then turned rotate degrees clockwise.
+
+    rotate is 0, 90, 180 or 270. Returns a contiguous copy, or a itself when neither is asked."""
+    if rotate not in ROTATIONS:
+        raise ValueError(f"rotate {rotate}: give 0, 90, 180 or 270 (degrees clockwise)")
+    if not rotate and not mirror:
+        return a
+    b = a[:, ::-1] if mirror else a
+    if rotate:
+        b = np.rot90(b, k=-(rotate // 90))
+    return np.ascontiguousarray(b)
+
+
+def view_box_to_input(box, rotate, mirror, shape):
+    """A box [y0, y1, x0, x1] in the turned image orient(a, rotate, mirror) as a box in a, whose (H, W) is shape.
+
+    Coordinates are pixel edges (0 to H, 0 to W), in whatever unit shape is given in (input pixels
+    after a block-averaged read: the read image's shape times the block size)."""
+    H, W = shape
+
+    def back(y, x):
+        if rotate == 90:
+            y, x = H - x, y
+        elif rotate == 180:
+            y, x = H - y, W - x
+        elif rotate == 270:
+            y, x = x, W - y
+        return y, (W - x if mirror else x)
+
+    (ya, xa), (yb, xb) = back(box[0], box[2]), back(box[1], box[3])
+    return [round(min(ya, yb), 1), round(max(ya, yb), 1), round(min(xa, xb), 1), round(max(xa, xb), 1)]
+
+
+def compose_view(rotate, mirror, name):
+    """(rotate, mirror) relative to the input of the orientation read `name` (ORIENTATIONS) of an image read turned by (rotate, mirror).
+
+    orient(orient(a, rotate, mirror), *ORIENTATIONS[name]) equals orient(a, *compose_view(rotate, mirror, name)),
+    so the result is the --rotate and --mirror that read the input as that orientation read did."""
+    r2, m2 = ORIENTATIONS[name]
+    if not m2:
+        return (rotate + r2) % 360, bool(mirror)
+    return (r2 - rotate) % 360, not mirror
 
 
 def find_lines(a, h, pitch):
@@ -867,10 +1126,10 @@ def estimate_letter_px(a):
     return a.shape[0] / 4.0, "image height / 4"
 
 
-def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0, deskew_deg=6.0, lines=None,
+def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0, deskew_deg=DESKEW_DEG, lines=None,
             p_min=None, null_rate=0.05, lm=None, lm_weight=0.0, beam=32, scale_search=True, columns="auto",
             normalized=False, input_scale=1, letter_px_fallback=True, progress=None, control=None,
-            min_letters=MIN_LETTERS):
+            min_letters=MIN_LETTERS, shear_fill=None):
     """Read every text line of a 2D image. Returns a JSON-able dict with letters, boxes, confidences and controls.
 
     letter_px: letter height in image pixels. When None it is estimated, and with scale_search the
@@ -879,6 +1138,22 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
     the result. Without a line pitch the estimate is a quarter of the image height; with
     letter_px_fallback=False that raises ValueError(NO_LETTER_SIZE) instead (the command line does).
     lines: centre rows of the lines in image pixels (found from the row profile when None).
+    deskew_deg: each column is sheared by the angle within +-deskew_deg (steps of DESKEW_STEP) that
+    makes its lines level (deskew); 0 or None turns that off. The shear turns about the column's
+    middle, so a line's y, found or given, is its row at the horizontal middle of its column
+    ((x0 + x1) / 2 of the column; the whole width when lines are given), and at column x the line
+    lies at row y + (x - (x0 + x1) / 2) * tan(deskew_deg of the column). When the angle chosen is the
+    limit of the search, the column has deskew_at_limit and the result a deskew_warning.
+    polarity: bright (ink brighter than the ground, as in ink maps; the default), dark (dark ink on a
+    light ground, as in photographs) or auto, which reads the image quickly both ways and keeps the
+    polarity whose letters stand further above its nulls (normalize_auto, polarity_trial; the
+    result's polarity block holds the trial). With normalized=True, polarity names the polarity img
+    was normalised in (bright or dark), which sets the default shear_fill.
+    shear_fill: the grey of rows the deskew shears in from beyond the image (and its control map):
+    a number, or "median", the normalised image's median grey. None (the default) is 0.0 for bright
+    ink, near an ink map's normalised ground and as the benchmarks were run, and "median" for dark
+    ink, whose ground lies well above 0 once inverted; with 0.0 there the rows sheared in add a
+    ramp to the row profile that grows with the angle, and the search drifts to its limit.
     columns: "auto" splits the image at empty vertical gutters (find_columns) and finds lines in each
     column, so a line never runs across two columns; an integer asks for that many columns (a known
     layout); "off" (or 1) reads the whole width as one column. Lines come out column by column, left
@@ -894,14 +1169,33 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
     size and confidence floor, and its kept letters go into the status (control_status).
     min_letters: the fewest kept letters a read or a column needs before its counts can pass."""
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
-    a0 = np.asarray(img, dtype=np.float32) if normalized else normalize(img, polarity)
+    pinfo = None
+    if normalized:
+        a0 = np.asarray(img, dtype=np.float32)
+    elif polarity == "auto":       # float64 arithmetic, as normalize() does
+        a0, pinfo = normalize_auto(img, net, max_pixels=math.inf, letter_px=letter_px, input_scale=input_scale,
+                                   seed=seed, columns=columns, deskew_deg=deskew_deg, lines=lines,
+                                   letter_px_fallback=letter_px_fallback, min_letters=min_letters)
+        polarity = pinfo["used"]
+        if progress:
+            progress(f"polarity auto: {polarity} ink ({trial_text(pinfo['trial'])})")
+    else:
+        a0 = normalize(img, polarity)
     c0 = None
     if control is not None:
         if np.shape(control) != np.shape(img):
             raise ValueError(f"the control image is {' x '.join(map(str, np.shape(control)))} px but the image is "
                              f"{' x '.join(map(str, np.shape(img)))}; give a map of the same surface on the same grid "
                              "(such as its reverse-depth map), cropped the same way")
+        # in the image's polarity, so auto cannot read the control map the other way round
         c0 = np.asarray(control, dtype=np.float32) if normalized else normalize(control, polarity)
+    if shear_fill is None:
+        shear_fill = "median" if polarity == "dark" else 0.0
+    if shear_fill == "median":     # on at most about 4 Mpx: the ground's grey, not an exact statistic
+        st = max(1, int(math.sqrt(a0.size / 4e6)))
+        fill = float(np.median(a0[::st, ::st]))
+    else:
+        fill = float(shear_fill or 0.0)
     k_in = input_scale
     if k_in != 1:
         letter_px = None if letter_px is None else float(letter_px) / k_in
@@ -918,7 +1212,7 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
                 if progress:
                     progress(f"scale search {i + 1}/{len(SCALE_STEPS)}: letter height {h0 * k * k_in:.1f} px")
                 r = _analyze_at(a0, net, h0 * k, nulls=2, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
-                                null_rate=null_rate, max_lines=8, columns=columns)
+                                null_rate=null_rate, max_lines=8, columns=columns, fill=fill)
                 c = r["control"]
                 search.append({"letter_px": round(h0 * k * k_in, 2), "letters_kept": c["letters_kept"],
                                "null_letters_kept": c["null_letters_kept"],
@@ -931,7 +1225,7 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
                  + (" and the control image on the same lines" if c0 is not None else ""))
     res = _analyze_at(a0, net, letter_px, nulls=nulls, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
                       null_rate=null_rate, lm=lm, lm_weight=lm_weight, beam=beam, columns=columns, scale_out=k_in,
-                      control=c0, min_letters=min_letters)
+                      control=c0, min_letters=min_letters, fill=fill)
     res["input_shape"] = list(np.shape(img)) if k_in == 1 else [n * k_in for n in np.shape(img)]
     res["input_scale"] = k_in
     if k_in != 1:
@@ -942,11 +1236,32 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
         res["letter_px_first_guess"] = round(h0 * k_in, 2)
     if search is not None:
         res["scale_search"] = search
+    res["deskew_max_deg"] = deskew_deg or 0
+    res["shear_fill"] = round(fill, 4)
+    if pinfo is not None:
+        res["polarity"] = pinfo
+    warning = deskew_warning(res)
+    if warning:
+        res["deskew_warning"] = warning
+        if progress:
+            progress("warning: " + warning)
     return res
 
 
+def deskew_warning(res):
+    """A warning when a column's deskew angle is the largest the search tried (deskew_at_limit), else None."""
+    cols = [i for i, c in enumerate(res.get("columns", [])) if c.get("deskew_at_limit")]
+    if not cols:
+        return None
+    m = res["deskew_max_deg"]
+    where = "" if len(res["columns"]) == 1 else f" in column{'s' if len(cols) > 1 else ''} {', '.join(map(str, cols))}"
+    return (f"the deskew angle{where} is the limit of its search ({m:g} degrees either way), so the lines may be "
+            f"tilted more: read again with a larger --deskew (such as --deskew {min(2 * m, 44):g}), or turn the "
+            "image with --rotate when its lines run up and down")
+
+
 def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, null_rate, lm=None, lm_weight=0.0,
-                beam=32, max_lines=None, columns="auto", scale_out=1, control=None, min_letters=MIN_LETTERS):
+                beam=32, max_lines=None, columns="auto", scale_out=1, control=None, min_letters=MIN_LETTERS, fill=0.0):
     """One read at one letter height of a normalised image; scale_out multiplies every row, column and box on the way out.
 
     control: a normalised image of a0's shape, read on a0's columns, deskew and lines at the same floor."""
@@ -960,7 +1275,7 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
         spans = find_columns(a, h, n=None if columns == "auto" else int(columns))
     blocks = []                       # per column: x offset, deskew angle, deskewed image, line centres
     for x0, x1 in spans:
-        angle, sub = deskew(a[:, x0:x1], h, deskew_deg) if deskew_deg else (0.0, a[:, x0:x1])
+        angle, sub = deskew(a[:, x0:x1], h, deskew_deg, fill=fill) if deskew_deg else (0.0, a[:, x0:x1])
         if lines is None:
             pitch = line_pitch(sub, lo=int(0.9 * h)) or PITCH_PER_H * h
             ys = find_lines(sub, h, min(pitch, 2.4 * h))
@@ -993,7 +1308,7 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
     ctrl_lines = None                 # per column, per line: the control image's kept letters
     if control is not None:
         cr = resize(control, a.shape)
-        ctrl_lines = [[n_kept([ctc_greedy(lp, net.alphabet)]) for lp in read_bands(net, shear(cr[:, x0:x1], angle), ys, h)]
+        ctrl_lines = [[n_kept([ctc_greedy(lp, net.alphabet)]) for lp in read_bands(net, shear(cr[:, x0:x1], angle, fill), ys, h)]
                       for x0, x1, angle, _, ys in blocks]
     out_lines = []
     for ci, ((x0, _, angle, sub, ys), L) in enumerate(zip(blocks, lps)):
@@ -1027,6 +1342,7 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
                              None if ctrl_lines is None else sum(ctrl_lines[ci]), min_letters)
         col["chance"] = round(float(np.mean(null_col[ci])), 2) if nulls else None
         columns_out.append({"x0": round(x0 / f * so, 1), "x1": round(x1 / f * so, 1), "deskew_deg": angle,
+                            "deskew_at_limit": deskew_at_limit(angle, deskew_deg) if deskew_deg else False,
                             "lines": len(ys), "control": col})
     control_out = {"letters_kept": n_data, "null_letters_kept": n_null, "nulls": null_out,
                    "verdict": verdict(n_data, n_null)}
@@ -1118,21 +1434,67 @@ def letter_px_check(a0, letter_px, input_scale=1):
     return out
 
 
-def read(img, weights, *, orientation=True, normalized=False, progress=None, control=None, **kw):
-    """analyze() plus orientation evidence: confident letters as stored, mirrored and turned 180 degrees.
+def read(img, weights, *, orientation=True, normalized=False, progress=None, control=None, rotate=0, mirror=False,
+         polarity_info=None, **kw):
+    """analyze() plus orientation evidence: confident letters as read, mirrored, and turned 90, 180 and 270 degrees.
 
     The image is normalised once (normalize_for_reading) and that one image serves the main read, its
     nulls and the orientation reads. When a letter height is given, it is checked against the
     line-pitch estimate (letter_px_check; a warning in the result when they differ by over 2x).
     control: a second image of the same shape, such as the reverse-depth map of the same surface,
-    normalised on its own (or already normalised, with normalized=True); analyze() reads it on the
-    image's lines at the same letter size and confidence floor, and the status counts it."""
+    normalised on its own in the image's polarity (or already normalised, with normalized=True);
+    analyze() reads it on the image's lines at the same letter size and confidence floor, and the
+    status counts it.
+    rotate, mirror: read the image flipped left to right (mirror) and then turned rotate degrees
+    clockwise (orient()), as when its lines run up and down. Every letter's box is mapped back to
+    input pixels, and its box in the turned image is kept as view_box; lines' y, columns' x0 and x1,
+    the given lines and the orientation reads are in the turned image, which the result's view
+    block describes.
+    Orientation reads (orientation=True): the image as read, mirrored left to right, and turned 90,
+    180 and 270 degrees clockwise, each at the main read's letter size and confidence floor with no
+    nulls; best_view gives the rotate and mirror that read the input as the best of them.
+    Polarity (polarity=, bright by default): auto is decided by normalize_auto (quick reads both
+    ways, polarity_trial). The result's polarity block holds asked, used and, for auto, the trial.
+    When a read in a given polarity ends none or too_few, the same quick check runs on the image
+    both ways; its counts go into the block as trial, and when the other polarity reads clearly
+    better (polarity_hint) a hint too. polarity_info: with normalized=True, the info of the
+    normalisation (the command line passes normalize_info's or normalize_auto's), whose used
+    polarity the read takes; without it a normalised image is taken as normalised in `polarity`,
+    and auto runs the trial on it as bright ink and inverts it when dark ink wins. A dark-ink read
+    fills rows the deskew shears in with the image's median grey (analyze's shear_fill), unless
+    shear_fill is given."""
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
     polarity = kw.get("polarity", "bright")
-    a0 = np.asarray(img, dtype=np.float32) if normalized else normalize_for_reading(img, polarity)
+    pinfo = dict(polarity_info) if polarity_info else None
+    trial_kw = dict(letter_px=kw.get("letter_px"), input_scale=kw.get("input_scale", 1), seed=kw.get("seed", 0),
+                    columns=kw.get("columns", "auto"), deskew_deg=kw.get("deskew_deg", DESKEW_DEG),
+                    lines=kw.get("lines"), rotate=rotate, mirror=mirror,
+                    letter_px_fallback=kw.get("letter_px_fallback", True), min_letters=kw.get("min_letters", MIN_LETTERS))
+    decided = pinfo is None and polarity == "auto"   # auto decided here, by a quick read both ways
+    if normalized:
+        a0 = np.asarray(img, dtype=np.float32)
+        if decided:
+            trial = polarity_trial(a0, net, "bright", **trial_kw)
+            if trial["choice"] == "dark":
+                a0 = 1.0 - a0
+            pinfo = {"asked": "auto", "used": trial["choice"], "rule": AUTO_RULE, "trial": trial}
+        elif pinfo is None:
+            pinfo = {"asked": polarity, "used": polarity}
+    elif polarity == "auto":
+        a0, pinfo = normalize_auto(img, net, **trial_kw)
+    else:
+        a0, pinfo = normalize_for_reading(img, polarity, with_info=True)
+    used = pinfo["used"]
+    if decided and progress:
+        progress(f"polarity auto: {used} ink ({trial_text(pinfo['trial'])})")
+    kw["polarity"] = used
     c0 = None
-    if control is not None:
-        c0 = np.asarray(control, dtype=np.float32) if normalized else normalize_for_reading(control, polarity)
+    if control is not None:   # in the image's polarity, so auto cannot read the control map the other way round
+        c0 = np.asarray(control, dtype=np.float32) if normalized else normalize_for_reading(control, used)
+    shape_read = a0.shape                             # the image as given (block-averaged when k > 1)
+    if rotate or mirror:
+        a0 = orient(a0, rotate, mirror)
+        c0 = None if c0 is None else orient(c0, rotate, mirror)
     res = analyze(a0, net, normalized=True, progress=progress, control=c0, **kw)
     if res["letter_px_from"] == "given":
         check = letter_px_check(a0, res["letter_px"], kw.get("input_scale", 1))
@@ -1140,20 +1502,65 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
             res["letter_px_check"] = check
             if "warning" in check and progress:
                 progress("warning: " + check["warning"])
+    if pinfo.get("asked") != "auto" and res["control"]["status"] in ("none", "too_few"):
+        # the same quick check as auto, on the image as read: does the other polarity read clearly better?
+        if progress:
+            progress(f"status {res['control']['status']}: a quick read both ways, as bright and as dark ink")
+        trial = polarity_trial(a0, net, used, **dict(trial_kw, letter_px=res["letter_px"], rotate=0, mirror=False))
+        pinfo["trial"] = trial
+        hint = polarity_hint(trial, used)
+        if hint:
+            pinfo["hint"] = hint
+            if progress:
+                progress("hint: " + hint)
     if orientation:
         # Only the ink-only letter count is used here, so the language model stays off.
         kw2 = dict(kw, nulls=0, p_min=res["p_min"], letter_px=res["letter_px"], lm=None, lm_weight=0.0)
         kw2.pop("lines", None)
         ev = {"as_is": res["control"]["letters_kept"]}
-        for name, flip in (("mirrored", (slice(None), slice(None, None, -1))),
-                           ("rot180", (slice(None, None, -1), slice(None, None, -1)))):
+        for name, (r, m) in ORIENTATIONS.items():
+            if name == "as_is":
+                continue
             if progress:
                 progress(f"orientation read: {name}")
-            # A contiguous copy, so the flipped read sees exactly the array normalising the flipped input gives.
-            ev[name] = analyze(np.ascontiguousarray(a0[flip]), net, normalized=True, **kw2)["control"]["letters_kept"]
-        res["orientation"] = {"letters_kept": ev, "best": max(ev, key=ev.get),
-                              "note": "text the right way round should keep the most letters as_is"}
+            # A contiguous copy, so the turned read sees exactly the array normalising the turned input gives.
+            ev[name] = analyze(orient(a0, r, m), net, normalized=True, **kw2)["control"]["letters_kept"]
+        best = max(ev, key=ev.get)
+        br, bm = compose_view(rotate, mirror, best)
+        res["orientation"] = {"letters_kept": ev, "best": best,
+                              "note": "text the right way round should keep the most letters as_is",
+                              "turns": "mirrored flips the image as read left to right; rot90, rot180 and rot270 "
+                                       "turn it clockwise",
+                              "best_view": {"rotate": br, "mirror": bm}}
+    if rotate or mirror:
+        _boxes_to_input(res, shape_read, rotate, mirror, kw.get("input_scale", 1))
+    res["polarity"] = pinfo
     return res
+
+
+def trial_text(trial):
+    """polarity_trial's counts in words, such as "quick read at 28.8 px: as dark ink 51 letters kept, nulls 8, 2; as bright ink 6, nulls 7, 4"."""
+    def one(pol):
+        t = trial[pol]
+        return f"as {pol} ink {t['letters_kept']} letters kept, nulls {', '.join(map(str, t['null_letters_kept']))}"
+    first = trial["choice"]
+    return f"quick read at {trial['letter_px']:g} px: {one(first)}; {one('bright' if first == 'dark' else 'dark')}"
+
+
+def _boxes_to_input(res, shape_read, rotate, mirror, k=1):
+    """After a read of orient(image, rotate, mirror): every letter's box back in input pixels, the view block, the input shape."""
+    H, W = shape_read[0] * k, shape_read[1] * k        # input pixels covered by the read image
+    for line in res["lines"]:
+        for letter in line["letters"]:
+            letter["view_box"] = letter["box"]
+            letter["box"] = view_box_to_input(letter["box"], rotate, mirror, (H, W))
+    res["view"] = {"rotate": rotate, "mirror": bool(mirror), "shape": list(res["input_shape"]),
+                   "note": "the image was read flipped left to right (mirror) and then turned rotate degrees "
+                           "clockwise: lines' y, columns' x0 and x1 and each letter's view_box are in that turned "
+                           "image; each letter's box is in input pixels"}
+    res["input_shape"] = [H, W] if k == 1 else [n * k for n in shape_read]
+    if k != 1:
+        res["reduced_shape"] = list(shape_read)
 
 
 def text_summary(res):
@@ -1176,6 +1583,21 @@ def text_summary(res):
                        f"{t['null_letters_kept']}, margin {t['margin']}")
     if "warning" in res.get("letter_px_check", {}):
         out.append("warning: " + res["letter_px_check"]["warning"])
+    if res.get("deskew_warning"):
+        out.append("warning: " + res["deskew_warning"])
+    if res.get("exif_orientation", 1) != 1:
+        out.append(f"EXIF orientation {res['exif_orientation']} applied: input pixels are the image as a viewer shows it")
+    if "view" in res:
+        v = res["view"]
+        out.append(f"read turned ({view_options(v['rotate'], v['mirror'])}): lines' y and columns' x are in the turned "
+                   "image, letter boxes in input pixels")
+    pol = res.get("polarity") or {}
+    if pol.get("asked") == "auto" and "trial" in pol:
+        out.append(f"polarity auto: {pol['used']} ink ({trial_text(pol['trial'])})")
+    elif "trial" in pol:
+        out.append(f"polarity check, as the controls did not pass: {trial_text(pol['trial'])}")
+    if pol.get("hint"):
+        out.append("hint: " + pol["hint"])
     multi = len(res.get("columns", [])) > 1
     if multi:
         out.append(f"{len(res['columns'])} columns at x " + ", ".join(f"{c['x0']} to {c['x1']}" for c in res["columns"]))
@@ -1198,8 +1620,20 @@ def text_summary(res):
     if "status" in c:
         out.append("status: " + status_line(c))
     if "orientation" in res:
-        out.append(f"orientation: {res['orientation']['letters_kept']} (best {res['orientation']['best']})")
+        o = res["orientation"]
+        line = f"orientation: {o['letters_kept']} (best {o['best']})"
+        if o["best"] != "as_is" and "best_view" in o:
+            line += (f"; weak evidence, check by eye: to read the image as {o['best']}, give "
+                     f"{view_options(o['best_view']['rotate'], o['best_view']['mirror']) or 'neither --rotate nor --mirror'}")
+            if pol.get("hint"):
+                line += " (but first the polarity hint above: these counts are in the polarity it advises against)"
+        out.append(line)
     return "\n".join(out)
+
+
+def view_options(rotate, mirror):
+    """The command-line options for a turned read, such as "--rotate 90 --mirror"; "" for the image as stored."""
+    return " ".join(([f"--rotate {rotate}"] if rotate else []) + (["--mirror"] if mirror else []))
 
 
 def _line_counts(r):
@@ -1315,7 +1749,7 @@ def overlay_geometry(shape, res, max_side=OVERLAY_MAX_SIDE):
             "max_side": max_side}
 
 
-def overlay(img, res, path, polarity="bright", max_side=OVERLAY_MAX_SIDE, normalized=False):
+def overlay(img, res, path, polarity="bright", max_side=OVERLAY_MAX_SIDE, normalized=False, base=None):
     """Write a PNG of the image with the reader's letters drawn on it, for a person to check.
 
     Kept letters get a box and their glyph (green when p >= 0.8, yellow below); letters under the
@@ -1326,14 +1760,27 @@ def overlay(img, res, path, polarity="bright", max_side=OVERLAY_MAX_SIDE, normal
     block-averaged image of a reduced read (boxes are mapped from input pixels), and normalized=True
     skips normalising it again. Glyphs need a font with Greek (DejaVu, Arial or FreeSans); without
     one only the boxes are drawn. Never use this image as a prize image: it carries machine letter
-    annotations."""
+    annotations.
+    The image is drawn in its own polarity, the way round it was given: a dark-ink read (res's
+    polarity used, or `polarity`) is drawn dark ink on a light ground, not as the inverted array the
+    reader reads, and boxes are in input pixels whatever rotate and mirror the read used. base: an
+    image to draw instead, of img's height and width, grey (H, W) or colour (H, W, 3), uint8 or
+    float in 0..1, such as display_image()'s colour photograph."""
     from PIL import Image, ImageDraw
-    a = np.asarray(img, dtype=np.float32) if normalized else normalize(img, polarity)
+    if normalized:
+        a = np.asarray(img, dtype=np.float32)
+        used = (res.get("polarity") or {}).get("used", polarity)
+    else:
+        a, info = normalize_info(img, polarity)
+        used = info["used"]
     g = _overlay_layout(a.shape, res, max_side)
     H, W, band, sb = g["H"], g["W"], g["band"], g["scale"]
-    base = Image.fromarray((resize(a, (H, W)) * 255).round().astype(np.uint8)).convert("RGB")
+    if base is not None and tuple(np.shape(base)[:2]) != tuple(a.shape):
+        raise ValueError(f"overlay base is {np.shape(base)[0]} x {np.shape(base)[1]} px but the image is "
+                         f"{a.shape[0]} x {a.shape[1]}")
+    shown = (1.0 - a) if base is None and used == "dark" else (a if base is None else base)
     canvas = Image.new("RGB", g["canvas"], (255, 255, 255))
-    canvas.paste(base, (0, band))
+    canvas.paste(_overlay_base(shown, H, W), (0, band))
     d = ImageDraw.Draw(canvas)
     for i, text in enumerate(g["lines"]):
         d.text((4, 3 + i * g["lh"] - g["top"]), text, fill=(0, 0, 0), font=g["font"])
@@ -1353,3 +1800,14 @@ def overlay(img, res, path, polarity="bright", max_side=OVERLAY_MAX_SIDE, normal
                 d.rectangle([x0, y0, x1, y1], outline=(120, 120, 120), width=max(2, lw - 1))
     canvas.save(path)
     return path
+
+
+def _overlay_base(a, H, W):
+    """A grey or colour image (uint8, or float in 0..1) resized to H x W as an RGB Pillow image."""
+    from PIL import Image
+    a = np.asarray(a)
+    scale = 1.0 if a.dtype.kind == "f" else 1.0 / 255.0
+    chans = [a] if a.ndim == 2 else [a[..., c] for c in range(3)]
+    out = [(np.clip(resize(np.asarray(c, np.float32) * scale, (H, W)), 0, 1) * 255).round().astype(np.uint8)
+           for c in chans]
+    return Image.fromarray(out[0]).convert("RGB") if a.ndim == 2 else Image.fromarray(np.stack(out, axis=-1), "RGB")

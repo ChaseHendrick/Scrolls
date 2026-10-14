@@ -9206,6 +9206,206 @@
     "weak_read": "texture page with the size searched: 134 kept against a largest null of 126"
    },
    "reproduce": "python scripts/letters/eval_controls.py windows w013-b16.tif --weights W.npz (defaults 86 px, 520 by 1000 px, 3 copies); python scripts/letters/eval_controls.py blanks --weights W.npz"
+  },
+  {
+   "date": "2026-10-14",
+   "source": "docs/letter-reader.md (sections Reading a photograph and Tilted, turned and mirrored text)",
+   "claim": "Model output on synthetic photograph-like pages and on two public-domain photographs of published papyri; not a reading. No character error was measured on a real photograph, so letter accuracy on whole photographs is untested",
+   "check": "ink polarity (--polarity bright, dark and auto, auto choosing by a quick read both ways: up to 8 lines, 2 nulls each, the larger margin of letters kept over the largest null, bright on a tie), the polarity hint after a failed read, the deskew fill for dark ink, and the quarter-turn orientation read",
+   "model": "letters-v2-real step 30000 (SHA-256 44946dad...)",
+   "reproduce": "python scripts/letters/eval_photos.py --weights W.npz (defaults: 12 pages, 12 blank pages of each kind, seed 31, four nulls); 9 min 7 s on 2 CPU threads",
+   "synthetic_photo_pages": {
+    "pages": 12,
+    "letters_per_page_px": "18 to 30",
+    "lines_per_page": "4 to 7",
+    "turned_deg": "2 to 5 either way",
+    "read": "true letter height given, four nulls, 8-bit grey, dark ink on a light ground",
+    "bright": {
+     "status": {
+      "none": 11,
+      "too_few": 1
+     },
+     "cer": 0.895,
+     "hints": 12,
+     "deskew_within_1_deg": 1,
+     "deskew_at_limit": 11
+    },
+    "dark": {
+     "status": {
+      "strong": 11,
+      "weak": 1
+     },
+     "cer": 0.055,
+     "letters": 732,
+     "deskew_within_1_deg": 8,
+     "deskew_at_limit": 0
+    },
+    "auto": {
+     "chose_dark": 12,
+     "same_reads_as_dark": true
+    },
+    "dark_rows_sheared_in_filled_with_0": {
+     "status": {
+      "strong": 12
+     },
+     "cer": 0.076,
+     "deskew_within_1_deg": 2,
+     "deskew_at_limit": 10
+    },
+    "quarter_turn_read_with_auto": {
+     "best_rot90": 10,
+     "quick_read_chose_bright": 3,
+     "quick_read_with_rotate_90_chose_dark": 12
+    },
+    "white_mount_250_of_255_60_percent": {
+     "auto_chose_dark": 12,
+     "grey_level_guess_dark": 12
+    },
+    "dark_mount_20_of_255_60_percent": {
+     "auto_chose_dark": 8,
+     "dark_quick_read_letters_kept": 0,
+     "bright_quick_read_letters_kept": "2 to 17",
+     "bright_quick_read_largest_null": "5 to 16",
+     "grey_level_guess_dark": 0,
+     "note": "neither polarity reads; crop to the papyrus"
+    }
+   },
+   "blank_pages": {
+    "photo_like": {
+     "pages": 12,
+     "auto_none": 12,
+     "dark_none": 12
+    },
+    "ink_map_like": {
+     "pages": 12,
+     "auto_none": 12,
+     "bright_none": 12
+    },
+    "read": "24 px given, four nulls"
+   },
+   "photographs": {
+    "source": "Wikimedia Commons, marked public domain, Princeton University Library; downloaded 2026-10-14, not committed",
+    "P.Oxy. 551": {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/b/bf/Papyrus_Oxyrhynchus_551_-_Princeton_University_Library%2C_AM_4405_-_Homer%2C_Iliad_XIV%2C227%E2%80%93253%2C256%E2%80%93263.jpg",
+     "sha256": "feac2ca61462d85f36d094e78593493bfd85f7fefc1d22ff2218475dbdc826b5",
+     "size_px": [
+      1939,
+      2148
+     ],
+     "letter_px": 22,
+     "bright": {
+      "status": "none",
+      "letters_kept": 4,
+      "null_letters_kept": [
+       45,
+       10,
+       38,
+       24
+      ],
+      "hint": true,
+      "quick_read_dark": [
+       155,
+       [
+        41,
+        18
+       ]
+      ],
+      "quick_read_bright": [
+       1,
+       [
+        11,
+        8
+       ]
+      ]
+     },
+     "dark": {
+      "status": "strong",
+      "letters_kept": 394,
+      "null_letters_kept": [
+       105,
+       19,
+       122,
+       33
+      ],
+      "ratio": 3.23,
+      "lines": 20,
+      "columns": 1,
+      "orientation": {
+       "as_is": 394,
+       "mirrored": 294,
+       "rot180": 307,
+       "rot90": 113,
+       "rot270": 122
+      }
+     },
+     "auto": {
+      "chose": "dark",
+      "same_read_as_dark": true
+     },
+     "no_letter_size": "stops: no regular line spacing in either polarity; a crop of the written rows estimates 23.3 px"
+    },
+    "P.Oxy. 1183": {
+     "url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Papyrus_Oxyrhynchus_1183_-_Princeton_University_Library%2C_AM_4097_-_Isocrates%2C_Trapeziticus_44%E2%80%9348.jpg",
+     "sha256": "d35d4a1a430caf596b53954728fd40f9193bf9237295544b20a1bbcdb47de27d",
+     "size_px": [
+      2571,
+      1750
+     ],
+     "letter_px": 28,
+     "bright": {
+      "status": "none",
+      "letters_kept": 3,
+      "null_letters_kept": [
+       21,
+       17,
+       29,
+       15
+      ],
+      "hint": true,
+      "quick_read_dark": [
+       81,
+       [
+        18,
+        8
+       ]
+      ],
+      "quick_read_bright": [
+       1,
+       [
+        10,
+        8
+       ]
+      ]
+     },
+     "dark": {
+      "status": "weak",
+      "letters_kept": 188,
+      "null_letters_kept": [
+       76,
+       49,
+       84,
+       38
+      ],
+      "ratio": 2.24,
+      "lines": 26,
+      "columns": 1,
+      "orientation": {
+       "as_is": 188,
+       "mirrored": 160,
+       "rot180": 181,
+       "rot90": 98,
+       "rot270": 127
+      }
+     },
+     "auto": {
+      "chose": "dark",
+      "same_read_as_dark": true
+     },
+     "no_letter_size": "stops: no regular line spacing in either polarity"
+    },
+    "auto_extra_time_s": "17 to 28 on reads of about a minute (4-core container, 2 threads, other work running)"
+   },
+   "w013_regression": "PHerc. 1667 w013 averaged 16 by 16, --letter-px 86: letters, boxes, confidences and control counts identical to the read before this change; orientation as_is 122, mirrored 95, rot180 104 unchanged, with rot90 37 and rot270 30 added"
   }
  ],
  "orientation_checks": [

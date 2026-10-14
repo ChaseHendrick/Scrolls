@@ -20,8 +20,9 @@ python -m pip install numpy pillow tifffile
 python scripts/letters/demo_p1667.py --segment w013 --out work/letters/demo
 #    -> work/letters/demo/w013.json, w013-overlay.png and a text summary on screen
 
-# 2. Read your own image (ink bright, as in ink-detection maps; --polarity dark for photographs)
+# 2. Read your own image (ink bright, as in ink-detection maps; for a photograph see "Reading a photograph")
 python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+python -m kit letterread PHOTO.jpg --weights letters-v2-real --letter-px 28 --polarity auto --overlay PHOTO-letters.png
 python -m kit letterread MAP.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 38.4 --json --out MAP-letters.json
 #    with the reverse-depth map of the same surface as a control (see "The status, and what to do")
 python -m kit letterread MAP.tif --weights letters-v2-real --letter-px 86 --control MAP_reverse.tif
@@ -45,13 +46,16 @@ Without a size, the reader estimates one from the line spacing and searches six 
 | `--crop Y0 Y1 X0 X1` | Read part of a large image (a `.npy`, an uncompressed TIFF and a zarr are read by window, and so is a compressed tiled TIFF when zarr is installed); rows, boxes and `--lines` are then relative to Y0, X0, and the result records the crop as `crop`, so full-image rows are Y0 plus the result's rows |
 | `--key K` | `.npz`: the array name; zarr: the array path, or the OME-Zarr level (default level 0, full resolution). Every pixel value, `--letter-px` and `--um-per-px` included, is then in that array's pixels |
 | `--max-mpx M` | Pixel budget in millions of pixels (default 64); see "Big maps" |
-| `--lines Y [Y ...]` | Line centre rows, when you know them (one column) |
+| `--lines Y [Y ...]` | Line centre rows, when you know them (one column). Each is the line's row at the horizontal middle of the image; the deskew still turns the lines about that middle (see [Tilted, turned and mirrored text](#tilted-turned-and-mirrored-text)), so give `--deskew 0` for level bands. With `--rotate` or `--mirror` the rows are in the turned image |
+| `--deskew MAX_DEG` | Largest line tilt searched, in degrees either way (default 6, in steps of 0.5; 0 turns the deskew off). A warning says when the angle found is the limit |
+| `--polarity bright`, `dark` or `auto` | `bright` (default): ink brighter than the ground, as in ink maps; `dark`: dark ink on a light ground, as in photographs; `auto`: read quickly both ways and keep the polarity whose letters stand further above its nulls (see [Reading a photograph](#reading-a-photograph)) |
+| `--rotate 0/90/180/270`, `--mirror` | Read the image flipped left to right (`--mirror`) and then turned that many degrees clockwise, as when its lines run up and down; boxes stay in input pixels |
 | `--columns auto` (default), `off` or a number | Split at empty vertical gutters, read the whole width, or ask for that many columns |
 | `--lm greek5.npz` | Add a language-model decode beside the ink-only one (below) |
 | `--nulls N` | Number of null copies for the control (default 4) |
 | `--control MAP_REVERSE` | A second map of the same surface on the same grid, such as its reverse-depth ink map, read on the image's lines at the same letter size and confidence floor; `strong` then also needs more than three times its letters (see [The control map](#the-control-map)) |
 | `--min-letters N` | Fewest confident letters a read or a column needs before its controls can pass (default 10; fewer is `too_few`) |
-| `--no-orientation` | Skip the mirrored and rotated reads (faster) |
+| `--no-orientation` | Skip the four orientation reads, mirrored and turned 90, 180 and 270 degrees (faster) |
 | `--overlay OUT.png` | The image with kept letters boxed and labelled (green p >= 0.8, yellow below), lower-confidence boxes grey; every outline at least 2 px; a banner above it always carries the whole "Model output ... not a reading" note, wrapped to the width, and under it the status line of the controls with its counts |
 | `--overlay-max-side N` | Longest side of the overlay in pixels (default 4000); the JSON records the overlay's scale |
 | `--quiet` | No progress messages; without it, long steps (loading, scale search, reading, orientation) report on stderr, so `--json` output on stdout stays clean |
@@ -88,7 +92,63 @@ a = R.normalize_for_reading(img)                  # normalise once
 res = R.read(a, R.resolve_weights("letters-v2-real"), normalized=True, input_scale=k,
              letter_px=R.letter_px_from_units(3.3, 2.399), letter_px_fallback=False)
 R.overlay(a, res, "MAP-letters.png", normalized=True)    # draws the reduced image; boxes are mapped
+
+# a photograph (EXIF orientation applied as it loads), read the way its polarity reads best, turned a quarter
+img = R.load_image("PHOTO.jpg")
+res = R.read(img, R.resolve_weights("letters-v2-real"), letter_px=28, polarity="auto", rotate=90)
+print(res["polarity"]["used"], res["polarity"]["trial"]["dark"])  # dark or bright, and the quick read's counts
+R.overlay(img, res, "PHOTO-letters.png")                  # drawn as given; boxes in input pixels
 ```
+
+### Tilted, turned and mirrored text
+
+**Tilt.** Each column is sheared by the angle, within `--deskew` degrees either way (default 6, in steps of 0.5, symmetric about 0), that makes its row profile most peaked, so its lines run level. The shear turns about the column's horizontal middle: a line's `y`, found or given, is its row at that middle, and at column x the line lies at row y + (x - (x0 + x1) / 2) * tan(deskew_deg), with x0 and x1 the column's edges (the whole image width when `--lines` is given). Letter boxes are mapped back through the shear, so they sit on the tilted line. When the angle found is the limit of the search, the column has `deskew_at_limit: true`, the result a `deskew_warning`, and the summary and stderr say so: the lines may be tilted more, so read again with a larger `--deskew`, or with `--rotate` when the lines run up and down. `--deskew 0` reads level bands.
+
+**Given lines.** `--lines Y ...` are rows at the image's horizontal middle and follow the deskew like found lines (Python's `analyze()` has always done this, and the PHerc. 1667 benchmarks were run that way). On a tilted image, give the row where each line crosses the middle of the image, or give `--deskew 0` and the bands stay level, so a tilted line drifts out of its band away from the middle. A test shears a page by 3 degrees and checks both: with the deskew, the letters on the given rows are those of the level page; with `--deskew 0` they are not.
+
+**Turned and mirrored images.** `--rotate 90` (or 180, 270) turns the image that many degrees clockwise before reading, and `--mirror` flips it left to right first; use them when the lines run up and down, or when an image was stored mirrored. Letter boxes come back in input pixels, the pixels of the file as given (after its EXIF orientation, below); each letter's `view_box` is its box in the turned image, and lines' `y`, columns' `x0` and `x1` and any `--lines` are in the turned image, which the result's `view` block describes. The overlay draws the image as given, with the boxes on it. The orientation reads are made on the turned image, and `orientation.best_view` names the `--rotate` and `--mirror` that would read the input as their best.
+
+**EXIF orientation.** A JPEG or PNG with an EXIF orientation tag (cameras and phones set one) is turned by it as it loads, so its pixels, `--crop` and the boxes are those of the image as a viewer shows it; the result records `exif_orientation`, and the reader says so on stderr. TIFF, `.npy` and zarr images are read as stored.
+
+### Reading a photograph
+
+A photograph of a papyrus shows dark ink on a light ground, the opposite of an ink map, and the network only ever sees bright ink: `--polarity dark` inverts the image before reading, and the default, `--polarity bright`, does not. A photograph read with the default keeps no more letters than its nulls.
+
+**`--polarity auto`** first reads the image quickly both ways, as one step of the scale search: at the letter size, up to 8 lines, two nulls each, as it is and inverted. It keeps the polarity whose letters kept exceed its own largest null by more (bright on a tie) and then reads the image exactly as that `--polarity` would; the result records both quick reads as `polarity.trial`, and the summary prints them. On the two photographs below it added 17 to 28 s to reads of about a minute. The polarity is chosen on the image as given (after `--rotate` and `--mirror`), so for an image whose lines run up and down give `--rotate` as well.
+
+Why not grey levels (Interpretation, from the measurements below). The earlier guess, which Python's `normalize(a, "auto")` still makes, calls an image dark ink when its median grey sits nearer the light end. That fails for a fragment of brown papyrus on a white background, the usual museum photograph: the median falls on the papyrus, nearer its dark ink than the white, and the guess called both photographs below bright ink. A quick read asks only which way letters appear.
+
+**A failed read checks the other polarity.** When a read with a given polarity ends `none` or `too_few`, the reader makes the same quick read both ways and records it as `polarity.trial`. When the other polarity's quick read is `strong` and beats the one used, the result carries `polarity.hint`, printed on stderr and in the summary, as here for P.Oxy. 1183 read with the default:
+
+```
+hint: this image reads better as dark ink on a light ground (a photograph or a page scan): a quick read as dark ink keeps 81 letters against nulls of 18, 8, as bright ink 1 against 10, 8; read it again with --polarity dark (or auto)
+```
+
+The orientation counts of such a read are in the polarity the hint advises against, and the summary says so beside them.
+
+**Overlay, EXIF and letter size.** The overlay draws the image as given, a colour photograph in colour with its ink dark, turned by its EXIF orientation as it loads (see [EXIF orientation](#tilted-turned-and-mirrored-text)). A whole photograph of a fragment on a plain ground has no regular line spacing for the size estimate (neither photograph below has one, in either polarity), so the command stops and asks for the size: measure a letter on screen and give `--letter-px`, or `--crop` the written area (on P.Oxy. 551, a crop of its written rows gave an estimate of 23.3 px against about 22 px measured by eye). A dark-ink read fills the rows the deskew shears in with the image's median grey, its ground; filled with 0, as before, the sheared-in corners are darker than the ground and pull the deskew to its limit (below).
+
+**Synthetic pages** (Model output, 14 October 2026; `python scripts/letters/eval_photos.py --weights W.npz`, 9 minutes on 2 CPU threads). Twelve photograph-like pages from `letterdata.py` (dark ink on a light papyrus ground, 8-bit grey, 4 to 7 lines of letters 18 to 30 px tall, each page turned 2 to 5 degrees), read at the true letter height with four nulls:
+
+| Read | Status | Character error | Deskew within 1 degree | Deskew at its limit |
+| --- | --- | --- | --- | --- |
+| `--polarity bright` (default) | `none` 11, `too_few` 1; hint on all 12 | 0.895 | 1 of 12 | 11 of 12 |
+| `--polarity dark` | `strong` 11, `weak` 1 | 0.055 (732 letters) | 8 of 12 | 0 of 12 |
+| `--polarity auto` | chose dark on all 12; the same reads as dark | 0.055 | 8 of 12 | 0 of 12 |
+| dark, sheared-in rows filled with 0 (as before) | `strong` 12 | 0.076 | 2 of 12 | 10 of 12 |
+
+Turned a quarter turn, so the lines run up and down, and read with auto: the orientation reads named `rot90` the best on 10 of 12 pages. Auto's quick read on these turned pages chose bright ink on 3 of 12, and on 2 of those the orientation reads named another view; with `--rotate 90` the quick read chose dark on all 12. On a white mount (grey 250 of 255, 60% of the frame) auto and the grey-level guess both chose dark on all 12. On a dark mount (grey 20, 60% of the frame) neither works: the dark-ink quick read kept no letters on any page, the bright one 2 to 17 against largest nulls of 5 to 16, so auto's choice (dark on 8 of 12) rests on counts no better than chance, and the grey-level guess chose bright on all 12. Crop a photograph on a dark mount to the papyrus. On 24 pages with no letters (12 photograph-like, 12 ink-map-like from `eval_pages.py`), every read was `none`, with auto and with the fixed polarity (dark for photographs, bright for maps); 24 pages show only that choosing the polarity by letter counts does not make false passes common.
+
+**Two real photographs** (Model output, 14 October 2026). Both are on Wikimedia Commons, marked public domain, from Princeton University Library (Sourced fact): P.Oxy. 551, AM 4405, Homer, Iliad XIV ([image](https://upload.wikimedia.org/wikipedia/commons/b/bf/Papyrus_Oxyrhynchus_551_-_Princeton_University_Library%2C_AM_4405_-_Homer%2C_Iliad_XIV%2C227%E2%80%93253%2C256%E2%80%93263.jpg), 2148 by 1939 px, SHA-256 `feac2ca61462d85f36d094e78593493bfd85f7fefc1d22ff2218475dbdc826b5`), and P.Oxy. 1183, AM 4097, Isocrates, Trapeziticus ([image](https://upload.wikimedia.org/wikipedia/commons/6/6c/Papyrus_Oxyrhynchus_1183_-_Princeton_University_Library%2C_AM_4097_-_Isocrates%2C_Trapeziticus_44%E2%80%9348.jpg), 1750 by 2571 px, SHA-256 `d35d4a1a430caf596b53954728fd40f9193bf9237295544b20a1bbcdb47de27d`). The images are not in this repository. Each is brown papyrus on white with no EXIF orientation, read whole with the letter height measured by eye and four nulls:
+
+| Photograph | `--polarity bright` (default) | `--polarity dark` | `--polarity auto` |
+| --- | --- | --- | --- |
+| P.Oxy. 551, `--letter-px 22` | `none`: 4 letters kept, nulls 45, 10, 38, 24; hint (quick read as dark ink 155 against 41, 18; as bright 1 against 11, 8) | `strong`: 394 kept, nulls 105, 19, 122, 33, ratio 3.23; 20 lines in one column | chose dark; letters, boxes and controls the same as dark |
+| P.Oxy. 1183, `--letter-px 28` | `none`: 3 kept, nulls 21, 17, 29, 15; hint (dark 81 against 18, 8; bright 1 against 10, 8) | `weak`: 188 kept, nulls 76, 49, 84, 38, ratio 2.24; 26 lines in one column | chose dark; the same as dark |
+
+The orientation reads in dark ink kept the most as the photographs are stored: 394, against 294 mirrored, 307 turned 180 degrees and 113 and 122 turned 90 and 270 (P.Oxy. 551); 188, against 160, 181, 98 and 127 (P.Oxy. 1183). By eye (Interpretation): on P.Oxy. 551 the boxes sit on written lines, but its two columns were read as one, since the space between them is not empty from top to bottom, and the written lines between rows 590 and 968 got no line at all; on P.Oxy. 1183 boxes sit on parts of many written lines and many others got none.
+
+**Untested.** No character error was measured on a real photograph: no reference transcription aligned with these lines was at hand, so how well the reader names letters on whole photographs is untested. The statuses above say only that confident letters stand above the nulls; the measured character errors are for synthetic pages. Fragments with ragged edges and columns also defeat the line and column finding; `--crop` one column at a time, or give `--columns N`. The numbers are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026).
 
 ### Optional language model
 
@@ -106,12 +166,12 @@ When the two decodes disagree, the ink-only line is what the image supports. A l
 
 ## What the result means
 
-`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels, and the line's `n_kept` beside `chance`, the count the nulls make expected there (below). Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `columns` (each with its own `control` block), `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. These controls travel with the result, and each can fail:
+`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels, and the line's `n_kept` beside `chance`, the count the nulls make expected there (below). Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `columns` (each with its own `control` block, `deskew_deg` and `deskew_at_limit`), `deskew_deg` (the first column's), `deskew_max_deg`, `deskew_warning` when a column's angle is the limit of the search, `shear_fill`, `polarity` (`asked`, `used`, and the quick read both ways as `trial` when auto decided or the controls did not pass, with `hint` when the other polarity reads clearly better), `view` and each letter's `view_box` after a turned read, `exif_orientation` for a turned JPEG or PNG, `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. These controls travel with the result, and each can fail:
 
 1. **Nulls.** The same reader on tile-shuffled copies (letter-sized tiles with random flips: local texture and grey levels kept, letters and lines broken) and phase-randomised copies (same power spectrum, so the same line spacing, shapes broken). The confidence floor is set so the nulls keep few letters (at most 5% of a line's letter slots, never below p = 0.5). `control.verdict` keeps its old wording, which compares letters kept on the image with each null only: "confident letters well above every null" (more than three times), "more confident letters than every null, but within a factor of three", or "confident letters NOT above the nulls: treat every letter here as noise". The benchmark scripts record it unchanged.
 2. **Control map** (`--control MAP_REVERSE`, or `read(..., control=...)`). A second map of the same surface on the same grid, above all its reverse-depth ink map, read on the image's lines at the same letter size and confidence floor (details below).
 3. **Status** (`control.status`). One code that a person or a pipeline acts on, from the nulls, the control map when there is one, and a minimum count; per column too.
-4. **Orientation.** Letters kept as stored, mirrored and turned 180 degrees. Text the right way round should keep the most. This is weak for Greek capitals, many of which are symmetric, so it is evidence, not a gate; it does not enter the status.
+4. **Orientation.** Letters kept as read, mirrored left to right, and turned 90, 180 and 270 degrees clockwise (`orientation.letters_kept`, keys `as_is`, `mirrored`, `rot180`, `rot90`, `rot270`), each at the main read's letter size and confidence floor with no nulls. Text the right way round should keep the most. This is weak for Greek capitals, many of which are symmetric, so it is evidence, not a gate; it does not enter the status. `orientation.best_view` gives the `--rotate` and `--mirror` that would read the input as the best of them, and the summary prints them when the best is not `as_is`; check by eye before reading again that way. On the w013 map below: 122 as read, 95 mirrored, 104 turned 180 degrees, 37 and 30 turned 90 and 270 (Model output).
 5. **Language off.** `ink_only` never uses the language model.
 
 ### The status, and what to do
@@ -137,7 +197,7 @@ With a control map, the summary adds `control map FILE: N letters kept on the sa
 | --- | --- | --- |
 | `strong` | `Confident letters more than three times every control: worth a person's check, still model output and not a reading.` | Open the overlay and check the letters by eye, line by line; a person decides what is legible. On an ink map read without `--control`, read again with the reverse-depth map: the nulls alone do not rule out letters the ink model makes from papyrus structure. A pipeline may pass only `strong` reads (or `strong` columns) on to a person. |
 | `weak` | `Confident letters above every control, but not three times above all of them: weak evidence.` | Do not use single letters. Check the letter size first (the scale-search table, any `letter_px_check` warning; give `--letter-px` or `--letter-mm`). Look at the per-column statuses and the per-line counts: when the letters sit in one column or a block of lines, read that area again as its own crop, chosen on what the map shows (below). Add `--control` if you have the reverse-depth map. |
-| `none` | `Confident letters NOT above the controls: treat every letter here as noise.` | Treat every letter as noise. Common causes: a wrong letter size, the wrong polarity (`--polarity dark` for photographs), or no text the model can see. When `control_map.ratio` is 1 or below, the control map kept as many letters or more, so these letters are not particular to this map. |
+| `none` | `Confident letters NOT above the controls: treat every letter here as noise.` | Treat every letter as noise. Common causes: a wrong letter size, the wrong polarity (`--polarity dark` or `auto` for photographs; the reader then checks the other polarity itself and prints a hint when it reads clearly better, see [Reading a photograph](#reading-a-photograph)), or no text the model can see. When `control_map.ratio` is 1 or below, the control map kept as many letters or more, so these letters are not particular to this map. |
 | `too_few` | `Too few confident letters to judge (fewer than 10).` | Nothing can be judged either way. Read a larger area (more lines, or a whole column) and check the letter size. Do not lower `--min-letters` to get a pass. |
 | `no_control` | `No control run (nulls=0): nothing here can be trusted.` | Read again with nulls (the default `--nulls 4`). |
 
@@ -271,7 +331,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 - **Lines, not single letters.** Herculaneum texts are written without word spaces and letter edges on an ink map are unclear, so segmenting letters first is the hard part. A CTC line reader needs only each line's letter string to train, and learns where the letters are by itself.
 - **Random letters, separate language model.** Training on uniform random strings means the network learns shapes and cannot learn Greek, so it cannot invent plausible words; Greek enters only through the optional language model, shown beside the ink-only decode. The organisers' own ink models use no OCR or language model for the same reason ([grand prize page](https://scrollprize.org/grandprize), Sourced fact).
 - **Real letterforms.** Synthetic glyphs alone did not transfer to real letters (more synthetic data gave no gain on drawings); half the training letters cut from photographs of real papyri cut the error on drawn PHerc. 1667 letters from 0.320 to 0.025.
-- **Page layout.** The reader block-averages an image over the pixel budget while loading it, normalises it once, estimates or takes the letter size, splits columns at empty gutters, deskews, finds lines from the row profile and reads each line band; boxes come back in input pixels.
+- **Page layout.** The reader block-averages an image over the pixel budget while loading it, normalises it once (inverting dark ink on a light ground, so the network always sees bright ink), turns it when asked, estimates or takes the letter size, splits columns at empty gutters, deskews, finds lines from the row profile and reads each line band; boxes come back in input pixels.
 - **numpy inference**, tested against torch, so reading needs no deep-learning install.
 
 ## Rules for using it on scrolls
@@ -285,19 +345,20 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 
 | File | What it does |
 | --- | --- |
-| [`kit/letterread.py`](../kit/letterread.py) | The reader: image loading (block-averaged while loading when over the budget; zarr and OME-Zarr), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout, nulls, control map, status codes per read, column and line, orientation, overlay, released weights |
+| [`kit/letterread.py`](../kit/letterread.py) | The reader: image loading (block-averaged while loading when over the budget; zarr and OME-Zarr; EXIF orientation for JPEG and PNG), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout and deskew, turned and mirrored reads, polarity (auto and the check after a failed read), nulls, control map, status codes per read, column and line, orientation, overlay, released weights |
 | [`kit/greeklm.py`](../kit/greeklm.py) | Kneser-Ney letter n-grams for Greek in scriptio continua, from TEI texts |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
-| [`scripts/letters/letterdata.py`](../scripts/letters/letterdata.py), [`gen_dataset.py`](../scripts/letters/gen_dataset.py) | Synthetic lines and pages: bookhand skeleton and fonts, map and label degradations |
+| [`scripts/letters/letterdata.py`](../scripts/letters/letterdata.py), [`gen_dataset.py`](../scripts/letters/gen_dataset.py) | Synthetic lines and pages: bookhand skeleton and fonts, map and label degradations, and a photograph look for whole pages (dark ink on a light papyrus ground; tests only, not training) |
 | [`scripts/letters/realforms.py`](../scripts/letters/realforms.py) | Glyph bank from Hell-Char and ICDAR 2023 crops, split by papyrus |
 | [`scripts/letters/train_linenet.py`](../scripts/letters/train_linenet.py) | Training (torch, CPU or CUDA), export to `linenet-v1` |
 | [`scripts/letters/finetune_maps.py`](../scripts/letters/finetune_maps.py) | Fine-tuning on real map lines whose text is published; a '?' in the text is a wildcard |
 | [`scripts/letters/eval_p172.py`](../scripts/letters/eval_p172.py), [`compare_p172.py`](../scripts/letters/compare_p172.py), [`eval_pages.py`](../scripts/letters/eval_pages.py) | PHerc. 172 drawings, paired bootstrap, whole synthetic pages |
 | [`scripts/letters/eval_controls.py`](../scripts/letters/eval_controls.py) | The control status checked on map windows (as stored and tile-shuffled) and on synthetic pages with no letters |
+| [`scripts/letters/eval_photos.py`](../scripts/letters/eval_photos.py) | Photograph-like pages (dark ink on a light ground, tilted, turned a quarter, on dark and white mounts): polarity bright, dark and auto, the deskew, the orientation reads, and pages with no letters |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download, big images and their formats, letter size in units, overlay, letter language model) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model) |
 
 ## Related work
 

@@ -297,7 +297,7 @@ class PageTest(unittest.TestCase):
             w = random_weights(Path(d) / "w.npz")
             with mock.patch.object(R, "analyze", wraps=R.analyze) as spy:
                 R.read(lined_image(), w, letter_px=16, nulls=1, lm=lm, lm_weight=0.5)
-        self.assertEqual(spy.call_count, 3)
+        self.assertEqual(spy.call_count, 1 + len(R.ORIENTATIONS) - 1)    # the read, then mirrored and three turns
         self.assertIs(spy.call_args_list[0].kwargs["lm"], lm)
         self.assertTrue(all(c.kwargs["lm"] is None for c in spy.call_args_list[1:]))
 
@@ -312,7 +312,7 @@ class PageTest(unittest.TestCase):
             res = R.read(lined_image(), w, letter_px=16, nulls=2)
         self.assertIn("not a reading", res["note"])
         self.assertEqual(len(res["control"]["nulls"]), 2)
-        self.assertEqual(set(res["orientation"]["letters_kept"]), {"as_is", "mirrored", "rot180"})
+        self.assertEqual(list(res["orientation"]["letters_kept"]), ["as_is", "mirrored", "rot180", "rot90", "rot270"])
         self.assertGreaterEqual(res["p_min"], 0.5)
         for line in res["lines"]:
             self.assertEqual(len(line["ink_only"]), len(line["letters"]))
@@ -676,12 +676,13 @@ class BigImageTest(unittest.TestCase):
         img = lined_image()
         with tempfile.TemporaryDirectory() as d:
             net = R.LineNet(random_weights(Path(d) / "w.npz"))
-        with mock.patch.object(R, "normalize", wraps=R.normalize) as spy:
+        with mock.patch.object(R, "normalize_info", wraps=R.normalize_info) as spy:
             res = R.read(img, net, letter_px=16, nulls=2)
         self.assertEqual(spy.call_count, 1)
         ref = R.analyze(img, net, letter_px=16, nulls=2)
         self.assertEqual((res["lines"], res["control"]), (ref["lines"], ref["control"]))
-        for name, flipped in (("mirrored", img[:, ::-1]), ("rot180", img[::-1, ::-1])):
+        for name, flipped in (("mirrored", img[:, ::-1]), ("rot180", img[::-1, ::-1]),
+                              ("rot90", np.rot90(img, -1)), ("rot270", np.rot90(img, 1))):   # turned clockwise
             alone = R.analyze(flipped, net, letter_px=16, nulls=0, p_min=res["p_min"])
             self.assertEqual(res["orientation"]["letters_kept"][name], alone["control"]["letters_kept"])
 
@@ -886,6 +887,495 @@ class ControlStatusTest(unittest.TestCase):
             self.assertTrue(any(line.startswith("Controls:") for line in lines), width)   # on a line of its own
         plain = R.overlay_geometry((100, 400), {"letter_px": 16.0, "input_scale": 1, "lines": []})
         self.assertGreater(R.overlay_geometry((100, 400), res)["banner_rows"], plain["banner_rows"])
+
+
+def unturn(v, rotate, mirror):
+    """The input that orient(input, rotate, mirror) turns into v."""
+    b = np.rot90(v, k=rotate // 90)
+    return np.ascontiguousarray(b[:, ::-1] if mirror else b)
+
+
+def save_png(path, a, exif_tag=None):
+    from PIL import Image
+    kw = {}
+    if exif_tag is not None:
+        ex = Image.Exif()
+        ex[R.EXIF_ORIENTATION_TAG] = exif_tag
+        kw["exif"] = ex
+    Image.fromarray(np.ascontiguousarray(a)).save(path, **kw)
+    return path
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class TurnsAndPhotosTest(unittest.TestCase):
+    """Deskew limit and the frame of y, turned reads (rotate, mirror), polarity auto, EXIF orientation, overlay."""
+
+    VIEWS = [(r, m) for r in (0, 90, 180, 270) for m in (False, True)]
+
+    def net(self):
+        with tempfile.TemporaryDirectory() as d:
+            return R.LineNet(random_weights(Path(d) / "w.npz"))
+
+    def test_orient_and_view_boxes_round_trip(self):
+        a = np.random.default_rng(0).random((5, 7))
+        self.assertIs(R.orient(a), a)
+        with self.assertRaisesRegex(ValueError, "rotate"):
+            R.orient(a, 45)
+        self.assertTrue(np.array_equal(R.orient(a, 90), np.rot90(a, -1)))           # clockwise
+        self.assertTrue(np.array_equal(R.orient(a, 0, True), a[:, ::-1]))
+        self.assertTrue(np.array_equal(R.orient(a, 180), a[::-1, ::-1]))           # the old rot180 read
+        for r, m in self.VIEWS:
+            v = R.orient(a, r, m)
+            self.assertTrue(np.array_equal(R.orient(unturn(v, r, m), r, m), v))
+            for i in range(v.shape[0]):
+                for j in range(v.shape[1]):
+                    y0, y1, x0, x1 = R.view_box_to_input([i, i + 1, j, j + 1], r, m, a.shape)
+                    self.assertEqual((y1 - y0, x1 - x0), (1, 1))
+                    self.assertEqual(a[int(y0), int(x0)], v[i, j], (r, m, i, j))
+
+    def test_compose_view_matches_turning_twice(self):
+        a = np.arange(12.0).reshape(3, 4)
+        for r, m in self.VIEWS:
+            for name, (r2, m2) in R.ORIENTATIONS.items():
+                twice = R.orient(R.orient(a, r, m), r2, m2)
+                self.assertTrue(np.array_equal(twice, R.orient(a, *R.compose_view(r, m, name))), (r, m, name))
+        self.assertEqual(R.view_options(90, True), "--rotate 90 --mirror")
+        self.assertEqual(R.view_options(0, False), "")
+
+    def test_turned_read_maps_boxes_to_input_pixels(self):
+        img = R.normalize(lined_image())                                  # 150 x 400, lines level
+        net = self.net()
+        ref = R.read(img, net, letter_px=16, nulls=1, normalized=True)
+        letters = lambda res, key: [[(l["glyph"], l["p"], l[key]) for l in L["letters"]] for L in res["lines"]]
+        for r, m in ((90, False), (0, True), (270, True), (180, False)):
+            given = unturn(img, r, m)                                     # the image stored turned
+            res = R.read(given, net, letter_px=16, nulls=1, normalized=True, rotate=r, mirror=m)
+            self.assertEqual(letters(res, "view_box"), letters(ref, "box"), (r, m))
+            self.assertEqual(res["control"], ref["control"])
+            self.assertEqual(res["orientation"]["letters_kept"], ref["orientation"]["letters_kept"])
+            self.assertEqual(res["orientation"]["best_view"],
+                             dict(zip(("rotate", "mirror"), R.compose_view(r, m, ref["orientation"]["best"]))))
+            self.assertEqual((res["view"]["rotate"], res["view"]["mirror"], res["view"]["shape"]), (r, m, [150, 400]))
+            self.assertEqual(res["input_shape"], list(given.shape))
+            for L in res["lines"]:
+                for l in L["letters"]:
+                    self.assertEqual(l["box"], R.view_box_to_input(l["view_box"], r, m, given.shape))
+        # by hand for a quarter turn: a box [y0, y1, x0, x1] of the upright image lies at rows W - x1 to W - x0 and
+        # columns y0 to y1 of the image stored turned a quarter counter-clockwise
+        res = R.read(np.rot90(img, 1), net, letter_px=16, nulls=1, normalized=True, rotate=90, orientation=False)
+        for L, Lref in zip(res["lines"], ref["lines"]):
+            for l, lref in zip(L["letters"], Lref["letters"]):
+                y0, y1, x0, x1 = lref["box"]
+                self.assertEqual(l["box"], [round(400 - x1, 1), round(400 - x0, 1), y0, y1])
+        self.assertIn("read turned (--rotate 90)", R.text_summary(res))
+        # a block-averaged read: boxes in input pixels through the block size
+        red = R.read(np.rot90(img, 1), net, letter_px=32, nulls=1, normalized=True, rotate=90, orientation=False,
+                     input_scale=2)
+        self.assertEqual((red["input_shape"], red["reduced_shape"], red["view"]["shape"]), ([800, 300], [400, 150], [300, 800]))
+        for L in red["lines"]:
+            for l in L["letters"]:
+                self.assertEqual(l["box"], R.view_box_to_input(l["view_box"], 90, False, (800, 300)))
+
+    def test_deskew_angles_are_symmetric_and_unchanged_for_whole_steps(self):
+        for m in (R.DESKEW_DEG, 3, 0.5, 12):           # the angles np.arange always gave, in the same order
+            self.assertEqual(R.deskew_angles(m).tolist(), np.arange(-m, m + 1e-9, R.DESKEW_STEP).tolist())
+        odd = R.deskew_angles(5.2).tolist()            # arange gave -5.2 to 4.8: lopsided, and never 5.2
+        self.assertEqual((odd[:3], odd[-3:]), ([-5.2, -5.0, -4.5], [4.5, 5.0, 5.2]))
+        self.assertEqual(odd, sorted(-a for a in odd))
+        self.assertEqual(R.deskew_angles(0.3).tolist(), [-0.3, 0.0, 0.3])
+
+    def test_deskew_limit_warning_and_off(self):
+        self.assertTrue(R.deskew_at_limit(6.0) and R.deskew_at_limit(-6.0, 6.0))
+        self.assertFalse(R.deskew_at_limit(5.5, 6.0) or R.deskew_at_limit(0.0, 0))
+        self.assertTrue(R.deskew_at_limit(5.2, 5.2) and R.deskew_at_limit(-5.2, 5.2))
+        self.assertFalse(R.deskew_at_limit(5.0, 5.2))
+        tilted = R.shear(R.normalize(lined_image(n_lines=5)), -5.0)
+        net = self.net()
+        kw = dict(letter_px=16, nulls=1, normalized=True)
+        msgs = []
+        lim = R.analyze(tilted, net, deskew_deg=3, progress=msgs.append, **kw)
+        self.assertEqual((lim["deskew_deg"], lim["deskew_max_deg"], lim["columns"][0]["deskew_at_limit"]), (3.0, 3, True))
+        self.assertIn("--deskew 6", lim["deskew_warning"])
+        self.assertIn("warning: " + lim["deskew_warning"], msgs)
+        self.assertIn("warning: " + lim["deskew_warning"], R.text_summary(lim))
+        wide = R.analyze(tilted, net, deskew_deg=8, **kw)
+        self.assertEqual((wide["deskew_deg"], wide["columns"][0]["deskew_at_limit"]), (5.0, False))
+        self.assertNotIn("deskew_warning", wide)
+        off = R.analyze(tilted, net, deskew_deg=0, **kw)
+        self.assertEqual((off["deskew_deg"], off["deskew_max_deg"], off["columns"][0]["deskew_at_limit"]), (0.0, 0, False))
+
+    def test_given_lines_are_rows_at_the_middle_and_follow_the_deskew(self):
+        a = R.normalize(lined_image(n_lines=4, pitch=30))                 # 150 x 400, lines centred on rows 30 to 120
+        tilted = R.shear(a, -3.0)                    # a line centred on row c now lies at row c + (x - 200) tan 3 deg
+        ys = [30, 60, 90, 120]                       # the rows of the lines at the middle column, x = 200
+        net = self.net()
+        kw = dict(letter_px=16, lines=ys, nulls=1, normalized=True, p_min=0.5)
+        on = R.analyze(tilted, net, **kw)
+        level = R.analyze(a, net, deskew_deg=0, **kw)
+        off = R.analyze(tilted, net, deskew_deg=0, **kw)
+        letters = lambda res: [[(l["glyph"], l["p"]) for l in L["letters"]] for L in res["lines"]]
+        self.assertEqual(on["deskew_deg"], 3.0)
+        self.assertEqual([L["y"] for L in on["lines"]], [30.0, 60.0, 90.0, 120.0])
+        self.assertEqual(letters(on), letters(level))        # each band follows its tilted line
+        self.assertNotEqual(letters(off), letters(level))    # level bands cut across the tilted lines
+        t = math.tan(math.radians(3.0))
+        for L in on["lines"]:
+            for l in L["letters"]:
+                y0, y1, x0, x1 = l["box"]
+                self.assertAlmostEqual(0.5 * (y0 + y1), L["y"] + (0.5 * (x0 + x1) - 200) * t, delta=0.2)
+        for L in off["lines"]:
+            for l in L["letters"]:
+                self.assertAlmostEqual(0.5 * (l["box"][0] + l["box"][1]), L["y"], delta=0.1)
+
+    @staticmethod
+    def fake_trial_reads(right=40, wrong=4):
+        """A stand-in for _analyze_at in polarity_trial, for these sparse test images: an array the right way round
+        (ink bright on a dark ground, mean under 0.5) keeps `right` letters against nulls of 6 and 2, an inverted one
+        `wrong`; records each call."""
+        calls = []
+
+        def fake(arr, net, letter_px, **kw):
+            calls.append((arr, letter_px, kw))
+            kept = right if float(np.mean(arr)) < 0.5 else wrong
+            return {"control": {"letters_kept": kept, "null_letters_kept": [6, 2]}}
+        return fake, calls
+
+    def test_polarity_trial_reads_both_ways_and_keeps_the_larger_margin(self):
+        net = self.net()
+        a = R.normalize(1.0 - lined_image())             # a photo normalised as bright ink: the wrong way round
+        fake, calls = self.fake_trial_reads()
+        with mock.patch.object(R, "_analyze_at", side_effect=fake):
+            t = R.polarity_trial(a, net, "bright", letter_px=32, seed=5)
+        self.assertEqual(t["choice"], "dark")
+        self.assertEqual((t["rule"], t["letter_px"]), (R.AUTO_RULE, 32.0))
+        self.assertEqual(t["dark"], {"letters_kept": 40, "null_letters_kept": [6, 2], "margin": 34, "status": "strong"})
+        self.assertEqual((t["bright"]["margin"], t["bright"]["status"]), (-2, "none"))
+        (first, h1, kw1), (second, h2, kw2) = calls
+        self.assertEqual(first.shape, (75, 200))                           # at the working scale, 16 / 32
+        self.assertTrue(np.allclose(second, 1.0 - first))                  # the other polarity: the same image inverted
+        self.assertEqual((h1, kw1["nulls"], kw1["seed"], kw1["max_lines"], kw1["fill"]), (16.0, 2, 6, 8, 0.0))
+        self.assertAlmostEqual(kw2["fill"], float(np.median(second)))       # dark ink: the ground's grey
+        fake, calls = self.fake_trial_reads(right=4, wrong=4)
+        with mock.patch.object(R, "_analyze_at", side_effect=fake):
+            self.assertEqual(R.polarity_trial(a, net, "bright", letter_px=32)["choice"], "bright")   # a tie: bright
+            t = R.polarity_trial(1.0 - a, net, "dark", letter_px=32, rotate=90, lines=[40, 80])
+        self.assertEqual(calls[-2][0].shape, (200, 75))                    # turned, as the read will be
+        self.assertEqual(calls[-2][2]["lines"], [20.0, 40.0])
+        with self.assertRaisesRegex(ValueError, "polarity"):
+            R.polarity_trial(a, net, "auto")
+        with self.assertRaisesRegex(ValueError, "no letter size"):
+            R.polarity_trial(np.zeros((40, 40), np.float32), net, letter_px_fallback=False)
+
+    def test_auto_reads_exactly_as_the_chosen_polarity(self):
+        net = self.net()
+        photo = 1.0 - lined_image()                                       # dark ink on a light ground
+        for img, choice in ((photo, "dark"), (lined_image(), "bright")):
+            fake, _ = self.fake_trial_reads()
+            with mock.patch.object(R, "_analyze_at", side_effect=fake):
+                a, info = R.normalize_auto(img, net, letter_px=16)
+            self.assertTrue(np.array_equal(a, R.normalize_for_reading(img, choice)))     # exactly, not 1 - a
+            self.assertEqual((info["asked"], info["used"], info["trial"]["choice"]), ("auto", choice, choice))
+        trial = {"rule": R.AUTO_RULE, "letter_px": 16.0, "choice": "dark",
+                 "dark": {"letters_kept": 40, "null_letters_kept": [6, 2], "margin": 34, "status": "strong"},
+                 "bright": {"letters_kept": 4, "null_letters_kept": [6, 2], "margin": -2, "status": "none"}}
+        msgs = []
+        with mock.patch.object(R, "polarity_trial", return_value=trial):
+            auto = R.read(photo, net, letter_px=16, nulls=1, polarity="auto", orientation=False, progress=msgs.append)
+            ana = R.analyze(photo, net, letter_px=16, nulls=1, polarity="auto")
+            norm = R.read(R.normalize(photo, "bright"), net, letter_px=16, nulls=1, polarity="auto", normalized=True,
+                          orientation=False)
+        dark = R.read(photo, net, letter_px=16, nulls=1, polarity="dark", orientation=False)
+        for res in (auto, ana, norm):
+            self.assertEqual((res["lines"], res["control"]), (dark["lines"], dark["control"]))
+            self.assertEqual((res["polarity"]["asked"], res["polarity"]["used"]), ("auto", "dark"))
+            self.assertEqual(res["polarity"]["trial"], trial)
+            self.assertEqual(res["shear_fill"], dark["shear_fill"])
+        self.assertIn("polarity auto: dark ink (quick read at 16 px: as dark ink 40 letters kept, nulls 6, 2; "
+                      "as bright ink 4 letters kept, nulls 6, 2)", msgs)
+        self.assertIn("polarity auto: dark ink (quick read at 16 px", R.text_summary(auto))
+
+    def test_a_failed_read_checks_the_other_polarity(self):
+        net = self.net()
+        photo = 1.0 - lined_image()
+        trial = {"rule": R.AUTO_RULE, "letter_px": 16.0, "choice": "dark",
+                 "dark": {"letters_kept": 40, "null_letters_kept": [6, 2], "margin": 34, "status": "strong"},
+                 "bright": {"letters_kept": 4, "null_letters_kept": [6, 2], "margin": -2, "status": "none"}}
+        msgs = []
+        with mock.patch.object(R, "polarity_trial", return_value=trial) as spy:
+            res = R.read(photo, net, letter_px=16, nulls=1, orientation=False, min_letters=10 ** 6, progress=msgs.append)
+            self.assertIn(res["control"]["status"], ("none", "too_few"))
+            self.assertEqual(spy.call_count, 1)
+            self.assertEqual((spy.call_args.args[2], spy.call_args.kwargs["letter_px"]), ("bright", res["letter_px"]))
+            hint = res["polarity"]["hint"]
+            self.assertIn("reads better as dark ink on a light ground", hint)
+            self.assertIn("--polarity dark", hint)
+            self.assertIn("hint: " + hint, msgs)
+            text = R.text_summary(res)
+            self.assertIn("polarity check, as the controls did not pass: quick read at 16 px", text)
+            self.assertIn("hint: this image reads better as dark ink", text)
+            res["orientation"] = {"letters_kept": {"as_is": 1, "rot90": 5}, "best": "rot90",
+                                  "best_view": {"rotate": 90, "mirror": False}}
+            self.assertIn("give --rotate 90 (but first the polarity hint above", R.text_summary(res))
+            R.read(photo, net, letter_px=16, nulls=0, orientation=False)          # no_control: nothing to check
+            auto = R.read(photo, net, letter_px=16, nulls=1, orientation=False, polarity="auto", min_letters=10 ** 6)
+            self.assertEqual(spy.call_count, 2)                                   # auto checked once, before the read
+            self.assertNotIn("hint", auto["polarity"])
+        # the hint needs the other polarity to win and to be strong on its own
+        self.assertIsNone(R.polarity_hint(trial, "dark"))
+        weak = dict(trial, dark=dict(trial["dark"], status="weak"))
+        self.assertIsNone(R.polarity_hint(weak, "bright"))
+        back = dict(trial, choice="bright", bright=dict(trial["dark"]), dark=dict(trial["bright"]))
+        self.assertIn("bright ink on a dark ground (an ink map)", R.polarity_hint(back, "dark"))
+
+    def test_normalize_auto_alone_is_a_grey_level_guess(self):
+        ink_map = lined_image()                                           # bright ink on a dark ground
+        photo = 1.0 - ink_map
+        self.assertEqual(R.resolve_polarity(0, 0.8, 1, "auto"), "dark")
+        self.assertEqual(R.resolve_polarity(0, 0.2, 1, "auto"), "bright")
+        self.assertEqual(R.resolve_polarity(0, 0.8, 1, "bright"), "bright")
+        with self.assertRaisesRegex(ValueError, "polarity"):
+            R.resolve_polarity(0, 0.5, 1, "light")
+        for img, used in ((ink_map, "bright"), (photo, "dark")):
+            out, info = R.normalize_info(img, "auto")
+            self.assertEqual((info["used"], info["rule"]), (used, R.POLARITY_RULE))
+            self.assertTrue(np.array_equal(out, R.normalize(img, used)))
+        self.assertLess(R.normalize_info(ink_map)[1]["background"], 0.2)
+        self.assertGreater(R.normalize_info(photo)[1]["background"], 0.8)
+        # papyrus on a white ground: the median is the papyrus, low in the range, so grey levels say bright
+        page = np.full((200, 300), 250.0)
+        page[20:170, 30:270] = 110.0 + 5 * np.random.default_rng(0).standard_normal((150, 240))   # 60% papyrus
+        page[60:64, 60:240] = 30.0                                        # a dark stroke
+        self.assertEqual(R.normalize_info(page, "auto")[1]["used"], "bright")
+        self.assertIsNone(R.normalize_info(np.full((9, 9), 3.0), "auto")[1]["background"])
+
+    def test_cli_polarity_auto_and_control_map(self):
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img, ctrl = Path(d) / "img.npy", Path(d) / "ctrl.npy"
+            np.save(img, 1.0 - lined_image())
+            np.save(ctrl, lined_image(seed=5))
+            base = ["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "1", "--json",
+                    "--no-orientation"]
+            trial = {"rule": R.AUTO_RULE, "letter_px": 16.0, "choice": "dark",
+                     "dark": {"letters_kept": 40, "null_letters_kept": [6, 2], "margin": 34, "status": "strong"},
+                     "bright": {"letters_kept": 4, "null_letters_kept": [6, 2], "margin": -2, "status": "none"}}
+            with mock.patch.object(R, "polarity_trial", return_value=trial) as tr, \
+                    mock.patch.object(R, "normalize_info", wraps=R.normalize_info) as spy:
+                code, out, err = run_cli(base + ["--polarity", "auto", "--control", str(ctrl), "--seed", "3",
+                                                 "--deskew", "4", "--lines", "30", "60"])
+            self.assertEqual(tr.call_count, 1)
+            self.assertEqual(tr.call_args.args[2], "bright")
+            kw = tr.call_args.kwargs
+            self.assertEqual((kw["letter_px"], kw["seed"], kw["deskew_deg"], kw["lines"], kw["letter_px_fallback"]),
+                             (16.0, 3, 4.0, [30.0, 60.0], False))
+            self.assertEqual(code, 0, err)
+            res = json.loads(out)
+            self.assertEqual((res["polarity"]["asked"], res["polarity"]["used"]), ("auto", "dark"))
+            self.assertIn("polarity auto: dark ink (quick read at 16 px: as dark ink 40", err)
+            # bright for the trial, dark for the read, then the control map in the image's polarity
+            self.assertEqual([c.args[1] for c in spy.call_args_list], ["bright", "dark", "dark"])
+
+    def test_cli_rotate_mirror_and_deskew_options(self):
+        args = cli.build_parser().parse_args(["letterread", "x.png", "--weights", "w.npz"])
+        self.assertEqual((args.deskew, args.rotate, args.mirror), (R.DESKEW_DEG, 0, False))
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            up, turned = Path(d) / "up.npy", Path(d) / "turned.npy"
+            np.save(up, lined_image())
+            np.save(turned, unturn(lined_image(), 270, True))
+            base = ["--weights", str(w), "--letter-px", "16", "--nulls", "1", "--json"]
+            code, out, err = run_cli(["letterread", str(up)] + base)
+            ref = json.loads(out)
+            code, out, err = run_cli(["letterread", str(turned), "--rotate", "270", "--mirror"] + base)
+            self.assertEqual(code, 0, err)
+            res = json.loads(out)
+            self.assertEqual([L["ink_only"] for L in res["lines"]], [L["ink_only"] for L in ref["lines"]])
+            self.assertEqual(res["input_shape"], [400, 150])                # the image as stored
+            self.assertEqual((res["view"]["rotate"], res["view"]["mirror"]), (270, True))
+            self.assertEqual(res["orientation"]["letters_kept"], ref["orientation"]["letters_kept"])
+            code, out, err = run_cli(["letterread", str(up), "--deskew", "0", "--no-orientation"] + base)
+            self.assertEqual((json.loads(out)["deskew_deg"], json.loads(out)["deskew_max_deg"]), (0.0, 0))
+            code, out, err = run_cli(["letterread", str(up), "--deskew", "50"] + base)
+            self.assertEqual(code, 2)
+            self.assertIn("--deskew 50", err)
+
+    def test_cli_turned_read_draws_boxes_on_the_image_as_stored(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "turned.npy"
+            np.save(img, np.rot90(lined_image(), 1))                     # 400 x 150: lines run up and down
+            png = Path(d) / "o.png"
+            code, out, err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "1",
+                                      "--rotate", "90", "--json", "--no-orientation", "--overlay", str(png),
+                                      "--crop", "0", "400", "0", "150"])
+            self.assertEqual(code, 0, err)
+            res = json.loads(out)
+            self.assertEqual((res["input_shape"], res["view"]["shape"], res["crop"]), ([400, 150], [150, 400],
+                                                                                       [0, 400, 0, 150]))
+            boxes = [l["box"] for L in res["lines"] for l in L["letters"]]
+            self.assertTrue(boxes)
+            for y0, y1, x0, x1 in boxes:          # centred on the image as stored (a box may reach past its edge)
+                self.assertTrue(0 < (y0 + y1) / 2 < 400 and 0 < (x0 + x1) / 2 < 150, (y0, y1, x0, x1))
+            for _, _, x0, x1 in boxes:                       # each letter's height runs across the stored image
+                self.assertAlmostEqual(x1 - x0, 16.0, places=6)
+            px = Image.open(png)
+            self.assertEqual([px.height, px.width], res["overlay"]["size"])
+            self.assertEqual(px.height - res["overlay"]["banner_rows"], 400)     # drawn the way round it was given
+
+    def test_read_fills_sheared_rows_with_the_ground(self):
+        net = self.net()
+        photo = 1.0 - lined_image()
+        dark = R.read(photo, net, letter_px=16, nulls=1, polarity="dark", orientation=False)
+        a = R.normalize(photo, "dark")
+        self.assertAlmostEqual(dark["shear_fill"], round(float(np.median(a)), 4), places=4)
+        self.assertGreater(dark["shear_fill"], 0)
+        bright = R.read(lined_image(), net, letter_px=16, nulls=1, orientation=False)
+        self.assertEqual(bright["shear_fill"], 0.0)                       # ink maps: as before
+        given = R.read(photo, net, letter_px=16, nulls=1, polarity="dark", orientation=False, shear_fill=0.0)
+        self.assertEqual(given["shear_fill"], 0.0)
+        tilted = R.shear(a, -4.0, float(np.median(a)))
+        out = R.analyze(tilted, net, letter_px=16, nulls=1, normalized=True, shear_fill="median")
+        self.assertEqual(out["deskew_deg"], 4.0)
+
+    def test_exif_orientation_is_applied_when_loading(self):
+        try:
+            from PIL import Image  # noqa: F401
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        a = (np.arange(40 * 64) % 251).astype(np.uint8).reshape(40, 64)
+        with tempfile.TemporaryDirectory() as d:
+            for tag, shown in ((6, np.rot90(a, -1)), (8, np.rot90(a, 1)), (3, a[::-1, ::-1]), (2, a[:, ::-1])):
+                p = save_png(Path(d) / f"t{tag}.png", a, tag)
+                self.assertEqual(R.exif_orientation(p), tag)
+                self.assertTrue(np.array_equal(R.load_image(p), shown.astype(np.float32)), tag)
+                self.assertTrue(np.array_equal(R.load_image(p, crop=(2, 10, 3, 20)), shown[2:10, 3:20].astype(np.float32)))
+                img, k, shape = R.load_reduced(p, letter_px=64, max_pixels=100)
+                self.assertEqual((k, shape), (2, shown.shape))
+                self.assertTrue(np.allclose(img, block_mean(shown, 2)))
+            from PIL import Image
+            ex = Image.Exif()
+            ex[R.EXIF_ORIENTATION_TAG] = 6
+            Image.fromarray(a).save(Path(d) / "t.jpg", exif=ex)
+            self.assertEqual(R.load_image(Path(d) / "t.jpg").shape, (64, 40))
+            plain = save_png(Path(d) / "plain.png", a)
+            self.assertEqual(R.exif_orientation(plain), 1)
+            self.assertTrue(np.array_equal(R.load_image(plain), a.astype(np.float32)))
+            self.assertEqual(R.exif_orientation(Path(d) / "x.npy"), 1)
+            # the colour image for the overlay: turned the same way, cropped and averaged like the read image
+            rgb = np.zeros((40, 64, 3), np.uint8)
+            rgb[..., 0] = 200
+            rgb[:10, :, 1] = 250
+            p = save_png(Path(d) / "c.png", rgb, 6)
+            self.assertTrue(np.array_equal(R.display_image(p), np.rot90(rgb, -1)))
+            self.assertEqual(R.display_image(p, crop=(0, 63, 0, 40), k=2).shape, (31, 20, 3))
+            self.assertEqual(R.load_reduced(p, crop=(0, 63, 0, 40), letter_px=64, max_pixels=100)[0].shape, (31, 20))
+            self.assertIsNone(R.display_image(plain))                                  # grey: drawn from the read image
+            self.assertIsNone(R.display_image(Path(d) / "x.npy"))
+
+    def test_overlay_draws_the_image_in_its_own_polarity(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        photo = 1.0 - lined_image()                                       # 150 x 400, dark ink on a light ground
+        a = R.normalize(photo, "dark")                                    # what the reader reads: ink bright
+        res = {"letter_px": 16.0, "input_scale": 1, "lines": [], "polarity": {"used": "dark"}}
+        b = R.overlay_geometry(a.shape, res)["banner_rows"]
+
+        def drawn(path, *args, **kw):
+            return np.asarray(Image.open(R.overlay(*args, path, **kw)).convert("RGB")).astype(int)[b:b + 150, :400]
+
+        with tempfile.TemporaryDirectory() as d:
+            self.assertGreater(np.median(drawn(Path(d) / "o.png", a, res, normalized=True)), 200)   # light ground
+            self.assertGreater(np.median(drawn(Path(d) / "p.png", photo, {k: v for k, v in res.items() if k != "polarity"},
+                                               polarity="dark")), 200)
+            self.assertLess(np.median(drawn(Path(d) / "q.png", a, dict(res, polarity={"used": "bright"}),
+                                            normalized=True)), 60)                                   # an ink map
+            base = np.zeros(photo.shape + (3,), np.uint8)
+            base[..., 0] = 220
+            px = drawn(Path(d) / "c.png", a, res, normalized=True, base=base)
+            self.assertTrue((px[..., 0] > 200).all() and (px[..., 1] < 30).all())
+            with self.assertRaisesRegex(ValueError, "base"):
+                R.overlay(a, res, Path(d) / "x.png", normalized=True, base=np.zeros((5, 5)))
+
+    def test_cli_reads_an_exif_turned_colour_photo(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        up = 1.0 - lined_image()                                          # 150 x 400, dark ink on a light ground
+        rgb = np.stack([up * 230, up * 200, up * 150], axis=-1).round().astype(np.uint8)
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            stored = save_png(Path(d) / "stored.png", np.rot90(rgb, 1), 6)   # stored turned; EXIF 6 shows it upright
+            upright = save_png(Path(d) / "upright.png", rgb)
+            png = Path(d) / "o.png"
+            base = ["--weights", str(w), "--letter-px", "16", "--nulls", "1", "--polarity", "auto", "--json",
+                    "--no-orientation"]
+            code, out, err = run_cli(["letterread", str(stored), "--overlay", str(png)] + base)
+            self.assertEqual(code, 0, err)
+            res = json.loads(out)
+            self.assertIn("EXIF orientation 6", err)
+            self.assertEqual((res["exif_orientation"], res["input_shape"], res["polarity"]["used"]), (6, [150, 400], "dark"))
+            ref = json.loads(run_cli(["letterread", str(upright)] + base)[1])
+            self.assertEqual(res["lines"], ref["lines"])
+            self.assertNotIn("exif_orientation", ref)
+            px = np.asarray(Image.open(png).convert("RGB")).astype(int)
+            self.assertEqual(list(px.shape[:2]), res["overlay"]["size"])
+            body = px[res["overlay"]["banner_rows"]:, :400]
+            self.assertGreater(np.median(body[..., 0]) - np.median(body[..., 2]), 40)   # drawn in colour, light ground
+
+    def test_summary_names_turns_warnings_and_the_best_turn(self):
+        c = R.control_report(0, [0])
+        c["verdict"] = R.verdict(0, [0])
+        res = {"note": R.NOTE, "letter_px": 16.0, "letter_px_from": "given", "deskew_deg": 6.0, "p_min": 0.5,
+               "lines": [], "control": c, "deskew_max_deg": 6.0,
+               "columns": [{"x0": 0, "x1": 10, "deskew_deg": 6.0, "deskew_at_limit": True, "lines": 0}],
+               "view": {"rotate": 90, "mirror": True}, "exif_orientation": 8,
+               "orientation": {"letters_kept": {"as_is": 1, "rot90": 5}, "best": "rot90",
+                               "best_view": {"rotate": 180, "mirror": True}}}
+        res["deskew_warning"] = R.deskew_warning(res)
+        text = R.text_summary(res)
+        self.assertIn("warning: the deskew angle is the limit of its search (6 degrees", text)
+        self.assertIn("read turned (--rotate 90 --mirror)", text)
+        self.assertIn("EXIF orientation 8 applied", text)
+        self.assertIn("give --rotate 180 --mirror", text)
+
+    def test_eval_photos_script(self):
+        try:
+            import PIL  # noqa: F401
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        sys.path.insert(0, str(ROOT / "scripts" / "letters"))
+        try:
+            import eval_photos
+        finally:
+            sys.path.remove(str(ROOT / "scripts" / "letters"))
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            with contextlib.redirect_stdout(io.StringIO()):
+                res = eval_photos.evaluate(w, pages=1, nulls=1, blanks=2)
+        page, summary = res["pages"][0], res["summary"]
+        self.assertEqual((page["bright"]["used"], page["dark"]["used"], page["dark_fill0"]["used"]),
+                         ("bright", "dark", "dark"))
+        self.assertIn(page["auto"]["used"], ("bright", "dark"))
+        self.assertEqual(set(page["auto"]["trial"]), {"bright", "dark"})
+        self.assertIn(page["quarter_turn"]["best"], R.ORIENTATIONS)
+        self.assertEqual(page["deskew_true"], -page["tilt_deg"])
+        for mount in ("dark_mount", "white_mount"):
+            self.assertIn(page[mount]["auto"], ("bright", "dark"))
+        self.assertEqual(page["dark_mount"]["grey_level_guess"], "bright")     # the mount is most of the frame
+        self.assertEqual((summary["blank_photo_pages"]["pages"], summary["blank_map_pages"]["pages"]), (2, 2))
+        self.assertEqual(set(res["blank_map_pages"][0]), {"auto", "bright"})
+        img = eval_photos.photo_page(np.random.default_rng(0), 20.0, 3, 3.0)[0]
+        self.assertEqual(img.dtype, np.float32)
+        self.assertTrue(np.array_equal(img, np.round(img)) and img.max() <= 255)   # 8-bit grey levels
+        mounted = eval_photos.on_mount(img, frac=0.6)
+        self.assertAlmostEqual(img.size / mounted.size, 0.4, delta=0.02)
 
 
 @unittest.skipIf(np is None, "numpy not installed")

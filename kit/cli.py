@@ -420,6 +420,8 @@ def cmd_letterread(args):
             raise ValueError("--max-mpx must be positive and --overlay-max-side at least 16")
         if args.min_letters < 1:
             raise ValueError(f"--min-letters {args.min_letters}: give at least 1")
+        if not 0 <= args.deskew < 45:
+            raise ValueError(f"--deskew {args.deskew}: give an angle from 0 (off) to under 45 degrees")
         # Check where the results go before the read, which can take minutes.
         if args.overlay:
             try:
@@ -442,10 +444,25 @@ def cmd_letterread(args):
             from . import greeklm
             lm = greeklm.KNLetterLM.load(args.lm)
         net = letterread.LineNet(letterread.resolve_weights(args.weights))
+        exif = letterread.exif_orientation(args.image)
+        if exif != 1:
+            say(f"{Path(args.image).name}: EXIF orientation {exif} applied, so pixels, --crop and boxes are those of "
+                "the image as a viewer shows it")
         img, k, shape = letterread.load_reduced(args.image, args.key, crop=args.crop, letter_px=letter_px,
                                                 net_letter_px=net.letter_px, max_pixels=int(args.max_mpx * 1e6),
                                                 progress=say)
-        a0 = letterread.normalize_for_reading(img, args.polarity, max_pixels=int(args.max_mpx * 1e6))
+        columns = args.columns if args.columns in ("auto", "off") else int(args.columns)
+        if args.polarity == "auto":   # a quick read both ways decides (letterread.polarity_trial)
+            say("polarity auto: a quick read as bright ink and as dark ink")
+            a0, pinfo = letterread.normalize_auto(img, net, max_pixels=int(args.max_mpx * 1e6), letter_px=letter_px,
+                                                  input_scale=k, seed=args.seed, columns=columns,
+                                                  deskew_deg=args.deskew, lines=args.lines, rotate=args.rotate,
+                                                  mirror=args.mirror, letter_px_fallback=False,
+                                                  min_letters=args.min_letters)
+            say(f"polarity auto: {pinfo['used']} ink ({letterread.trial_text(pinfo['trial'])})")
+        else:
+            a0, pinfo = letterread.normalize_for_reading(img, args.polarity, max_pixels=int(args.max_mpx * 1e6),
+                                                         with_info=True)
         del img
         c0 = None
         if args.control:
@@ -457,18 +474,21 @@ def cmd_letterread(args):
                 raise ValueError(f"--control {args.control}: {cshape[0]} x {cshape[1]} px, but the image is {shape[0]} x "
                                  f"{shape[1]}; give a map of the same surface on the same grid (such as its "
                                  "reverse-depth map)")
-            c0 = letterread.normalize_for_reading(cimg, args.polarity, max_pixels=int(args.max_mpx * 1e6))
+            # in the image's polarity, so --polarity auto cannot read the control map the other way round
+            c0 = letterread.normalize_for_reading(cimg, pinfo["used"], max_pixels=int(args.max_mpx * 1e6))
             del cimg
         res = letterread.read(a0, net, normalized=True, input_scale=k, orientation=not args.no_orientation,
-                              letter_px=letter_px, polarity=args.polarity, nulls=args.nulls, seed=args.seed,
+                              rotate=args.rotate, mirror=args.mirror, deskew_deg=args.deskew, polarity_info=pinfo,
+                              letter_px=letter_px, polarity=pinfo["used"], nulls=args.nulls, seed=args.seed,
                               lines=args.lines, p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0,
                               beam=args.beam, letter_px_fallback=False, progress=say, control=c0,
-                              min_letters=args.min_letters,
-                              columns=args.columns if args.columns in ("auto", "off") else int(args.columns))
+                              min_letters=args.min_letters, columns=columns)
         del c0
         if args.control:
             res["control"]["control_map"]["file"] = str(args.control)
         res["input_shape"] = list(shape)   # the exact input window, including rows and columns under one block
+        if exif != 1:
+            res["exif_orientation"] = exif
         if args.letter_mm is not None:
             res["letter_mm"], res["um_per_px"] = args.letter_mm, args.um_per_px
         if args.crop:
@@ -489,7 +509,10 @@ def cmd_letterread(args):
         if args.out:
             Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         if args.overlay:
-            letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True)
+            # a colour photograph is drawn in colour; other images from the read image in their own polarity
+            base = letterread.display_image(args.image, args.crop, k)
+            letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True,
+                               base=base if base is not None and base.shape[:2] == a0.shape else None)
     except (ImportError, OSError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -810,8 +833,20 @@ def build_parser():
     p.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6; letterread needs numpy
                    help="pixel budget in millions of pixels: a bigger image is block-averaged while it loads "
                         "(default %(default)g)")
-    p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright", help="ink bright (maps) or dark (photos)")
-    p.add_argument("--lines", type=float, nargs="+", help="centre rows of the lines, image pixels (default: found)")
+    p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright",
+                   help="bright: ink brighter than the ground, as in ink maps (default); dark: dark ink on a light "
+                        "ground, as in photographs; auto: read quickly both ways and keep the polarity whose letters "
+                        "stand further above its nulls")
+    p.add_argument("--rotate", type=int, choices=[0, 90, 180, 270], default=0,
+                   help="turn the image this many degrees clockwise before reading (after --mirror); boxes stay in "
+                        "input pixels")
+    p.add_argument("--mirror", action="store_true", help="flip the image left to right before reading")
+    p.add_argument("--deskew", type=float, default=6.0, metavar="MAX_DEG",   # letterread.DESKEW_DEG
+                   help="largest line tilt searched, degrees either way (default %(default)g; 0 turns deskew off)")
+    p.add_argument("--lines", type=float, nargs="+",
+                   help="centre rows of the lines in image pixels (in the turned image with --rotate or --mirror), "
+                        "each its row at the image's horizontal middle, which the deskew turns about (give --deskew 0 "
+                        "for level bands); default: found")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
     p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4)")
     p.add_argument("--control", metavar="MAP_REVERSE",
@@ -826,7 +861,7 @@ def build_parser():
     p.add_argument("--lm", help="letter language model .npz (python -m kit greeklm build); reported beside the ink-only decode")
     p.add_argument("--lm-weight", type=float, default=0.5)
     p.add_argument("--beam", type=int, default=32)
-    p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and rotated reads")
+    p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and turned reads")
     p.add_argument("--out", help="also write the full result as JSON")
     p.add_argument("--overlay", help="also write a PNG of the image with the letters drawn on it (needs Pillow)")
     p.add_argument("--overlay-max-side", type=int, default=4000,
