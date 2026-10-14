@@ -511,6 +511,7 @@ def build(records_path, out=None, split=None, dry_run=False, max_pixels=R.MAX_PI
         return plans, warnings, meta
     if out is None:
         raise ValueError("give the output file (LINES.npz), or a dry run")
+    Path(out).parent.mkdir(parents=True, exist_ok=True)   # once the records pass, as the guide's work/letters/
     imgs, texts, where = cut_lines(plans, max_pixels=max_pixels, progress=progress)
     save_lines(out, imgs, texts, where, meta)
     return plans, warnings, meta
@@ -549,7 +550,8 @@ def score_lines(path, weights, boot=2000, seed=0):
     path with every letter (no confidence floor: the reader's ink_only before letters under the
     floor become '·'), and the character error is wild_edit_distance() over the text's visible
     letters, summed over lines. With two models or more, diff is each later model's error minus the
-    first's, with a 95% interval from a bootstrap over lines (boot draws, seed)."""
+    first's, with a 95% interval from a bootstrap over lines (boot draws, seed); with one line the
+    difference has no interval (ci95 None, and a note says so)."""
     imgs, texts, where, meta = load_lines(path)
     vis = [sum(1 for c in t if c != WILDCARD) for t in texts]
     models, per = [], []
@@ -568,20 +570,23 @@ def score_lines(path, weights, boot=2000, seed=0):
               "reads": [p[0][i] for p in per], "errors": [p[1][i] for p in per]} for i, t in enumerate(texts)]
     out = {"note": R.NOTE, "lines_file": {"file": Path(path).name, "meta": meta}, "models": models, "lines": lines,
            "decode": "best path, every letter (no confidence floor); '?' in the text matches any one letter or none"}
-    if len(per) > 1 and len(texts) > 1:
+    if len(per) > 1:
         rng = np.random.default_rng(seed)
         v = np.array(vis, float)
         d0 = np.array(per[0][1], float)
         out["diff"] = []
         for j in range(1, len(per)):
             dj = np.array(per[j][1], float)
+            d = {"model": j, "minus_model": 0, "cer_diff": round((dj.sum() - d0.sum()) / max(1, v.sum()), 4)}
+            if len(texts) < 2:     # a bootstrap over one line has nothing to resample
+                out["diff"].append(dict(d, ci95=None, note="one test line: no interval; give two lines or more"))
+                continue
             draws = []
             for _ in range(boot):
                 i = rng.integers(0, len(texts), len(texts))
                 draws.append((dj[i].sum() - d0[i].sum()) / max(1.0, v[i].sum()))
             lo, hi = np.percentile(draws, [2.5, 97.5])
-            out["diff"].append({"model": j, "minus_model": 0, "cer_diff": round((dj.sum() - d0.sum()) / max(1, v.sum()), 4),
-                                "ci95": [round(float(lo), 4), round(float(hi), 4)], "boot": boot, "seed": seed})
+            out["diff"].append(dict(d, ci95=[round(float(lo), 4), round(float(hi), 4)], boot=boot, seed=seed))
     return out
 
 
@@ -598,6 +603,7 @@ def score_text(res):
         for j, (s, e) in enumerate(zip(L["reads"], L["errors"])):
             out.append(f"   model {j}: {s or '(none)'}  [{e} edits]")
     for d in res.get("diff", []):
-        out.append(f"model {d['model']} minus model {d['minus_model']}: {d['cer_diff']:+.4f} character error "
-                   f"(95% interval {d['ci95'][0]:+.4f} to {d['ci95'][1]:+.4f}, bootstrap over lines)")
+        why = (f"95% interval {d['ci95'][0]:+.4f} to {d['ci95'][1]:+.4f}, bootstrap over lines" if d.get("ci95")
+               else d.get("note", "no interval"))
+        out.append(f"model {d['model']} minus model {d['minus_model']}: {d['cer_diff']:+.4f} character error ({why})")
     return "\n".join(out)

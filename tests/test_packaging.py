@@ -17,7 +17,12 @@ except ImportError:  # Python 3.10
 
 ROOT = Path(__file__).resolve().parent.parent
 PYPROJECT = ROOT / "pyproject.toml"
-AUTOPIPELINE = {"name": "vc-autopipeline", "scripts": {"scrolls-kit"}}   # its pyproject on submission/progress-2026-10
+AUTOPIPELINE = {"name": "vc-autopipeline", "scripts": {"scrolls-kit"}}   # its pyproject on every release branch so far
+
+
+def req_name(requirement):
+    """The distribution name of a requirement string such as "zarr>=3; python_version >= '3.11'"."""
+    return re.split(r"[\s;<>=!~\[]", requirement, maxsplit=1)[0]
 
 
 @unittest.skipIf(tomllib is None, "tomllib needs Python 3.11 or newer")
@@ -44,8 +49,12 @@ class PyprojectTest(unittest.TestCase):
         self.assertEqual(self.project["dependencies"], [])
         extras = self.project["optional-dependencies"]
         self.assertTrue({"numpy", "pillow", "tifffile"} <= set(extras["reader"]))
-        self.assertTrue({"numpy", "tifffile", "zarr"} <= set(extras["maps"]))
+        self.assertTrue({"numpy", "tifffile", "zarr"} <= {req_name(r) for r in extras["maps"]})
         self.assertEqual(set(extras["all"]), set(extras["reader"]) | set(extras["maps"]))
+        # zarr 2 lacks create_array (kit shuffle, the zarr outputs): only zarr 3, which needs Python 3.11
+        for extra in ("maps", "all"):
+            (z,) = [r for r in extras[extra] if req_name(r) == "zarr"]
+            self.assertEqual(z.replace(" ", ""), "zarr>=3;python_version>='3.11'", extra)
 
     def test_console_scripts_exist_and_do_not_clash_with_autopipeline(self):
         scripts = self.project["scripts"]

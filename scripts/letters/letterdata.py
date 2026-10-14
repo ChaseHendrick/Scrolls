@@ -183,30 +183,47 @@ def font_roots(env=None, home=None):
     return out
 
 
-@lru_cache(maxsize=1)
-def font_files():
-    """Installed fonts that draw all 24 capitals (lunate sigma may be drawn as Latin C), from font_roots()."""
-    roots = font_roots()
-    out = []
-    try:
-        from PIL import ImageFont
-    except ImportError:
-        return ()
+def font_candidates(roots):
+    """The .ttf and .otf files under the roots, in root order and sorted within each, each file once.
+
+    A file is listed once even when two roots overlap (a $LETTER_FONT_DIRS folder inside a default one,
+    or ~/.fonts linked to ~/.local/share/fonts): a file seen again through another folder path (its
+    folder resolved) is dropped, so it does not weight the font sampling. Files that are links to
+    other files keep their own entry, as before, so the list from the default folders is unchanged.
+    Monospaced fonts and Unifont are left out."""
+    seen, out = set(), []
     for r in roots:
         if not r.exists():
             continue
         for p in sorted(r.rglob("*")):
             if p.suffix.lower() not in (".ttf", ".otf") or "mono" in p.name.lower() or "unifont" in p.name.lower():
                 continue
-            try:
-                f = ImageFont.truetype(str(p), 48)
-                ok = all(f.getmask(c).getbbox() for c in "ΑΒΓΔΘΛΞΠΣΦΨΩ")
-                # a font without Greek often draws the same .notdef box for every letter
-                ok = ok and f.getmask("Ψ").getbbox() != f.getmask("Ξ").getbbox()
-            except Exception:
-                ok = False
-            if ok:
-                out.append(str(p))
+            key = (p.parent.resolve(), p.name)
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(p)
+    return out
+
+
+@lru_cache(maxsize=1)
+def font_files():
+    """Installed fonts that draw all 24 capitals (lunate sigma may be drawn as Latin C), from font_roots()."""
+    out = []
+    try:
+        from PIL import ImageFont
+    except ImportError:
+        return ()
+    for p in font_candidates(font_roots()):
+        try:
+            f = ImageFont.truetype(str(p), 48)
+            ok = all(f.getmask(c).getbbox() for c in "ΑΒΓΔΘΛΞΠΣΦΨΩ")
+            # a font without Greek often draws the same .notdef box for every letter
+            ok = ok and f.getmask("Ψ").getbbox() != f.getmask("Ξ").getbbox()
+        except Exception:
+            ok = False
+        if ok:
+            out.append(str(p))
     return tuple(out)
 
 

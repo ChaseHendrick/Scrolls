@@ -766,6 +766,8 @@ def display_image(path, crop=None, k=1):
 def _window(crop, shape, name):
     """(y0, y1, x0, x1) of a crop inside an image of this shape, with numpy's slicing rules."""
     H, W = shape
+    if not H or not W:
+        raise ValueError(f"{name}: the image is empty ({H} x {W} px)")
     if not crop:
         return 0, H, 0, W
     y0, y1, x0, x1 = crop
@@ -958,9 +960,9 @@ def polarity_trial(a, weights, polarity="bright", *, letter_px=None, input_scale
     1 - a, the other polarity, each once at the working scale like one step of the scale search (up
     to 8 lines, 2 nulls with seed + 1, the confidence floor from those nulls), after rotate and
     mirror and on the given lines (input pixels, in the turned image) when there are any. letter_px
-    is in input pixels; None takes the line-pitch estimate (estimate_letter_px; without a line pitch
-    that raises ValueError(NO_LETTER_SIZE) when letter_px_fallback is False). A dark-ink read fills
-    rows the deskew shears in with its median grey, as read() does.
+    is in input pixels; None takes the line-pitch estimate of the turned image (estimate_letter_px;
+    without a line pitch that raises ValueError(NO_LETTER_SIZE) when letter_px_fallback is False).
+    A dark-ink read fills rows the deskew shears in with its median grey, as read() does.
 
     Returns {"rule", "letter_px", "bright": {...}, "dark": {...}, "choice"}: per polarity the letters
     kept, the nulls' counts, the margin (kept minus the largest null, as the scale search ranks)
@@ -974,8 +976,8 @@ def polarity_trial(a, weights, polarity="bright", *, letter_px=None, input_scale
     net = load_weights(weights)
     a = np.asarray(a, dtype=np.float32)
     k = input_scale
-    if letter_px is None:
-        h0, how = estimate_letter_px(a)
+    if letter_px is None:   # on the image as read (turned), where the line pitch runs down the rows
+        h0, how = estimate_letter_px(orient(a, rotate, mirror) if rotate or mirror else a)
         if how != "line pitch" and not letter_px_fallback:
             raise ValueError(NO_LETTER_SIZE)
     else:
@@ -1829,12 +1831,14 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
                     lines=kw.get("lines"), rotate=rotate, mirror=mirror,
                     letter_px_fallback=kw.get("letter_px_fallback", True), min_letters=kw.get("min_letters", MIN_LETTERS))
     decided = pinfo is None and polarity == "auto"   # auto decided here, by a quick read both ways
+    flipped = False                                   # a normalised image inverted here, as its control map must be
     if normalized:
         a0 = np.asarray(img, dtype=np.float32)
         if decided:
             trial = polarity_trial(a0, net, "bright", **trial_kw)
             if trial["choice"] == "dark":
                 a0 = 1.0 - a0
+                flipped = True
             pinfo = {"asked": "auto", "used": trial["choice"], "rule": AUTO_RULE, "trial": trial}
         elif pinfo is None:
             pinfo = {"asked": polarity, "used": polarity}
@@ -1849,6 +1853,8 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
     c0 = None
     if control is not None:   # in the image's polarity, so auto cannot read the control map the other way round
         c0 = np.asarray(control, dtype=np.float32) if normalized else normalize_for_reading(control, used)
+        if flipped:
+            c0 = 1.0 - c0
     shape_read = a0.shape                             # the image as given (block-averaged when k > 1)
     if rotate or mirror:
         a0 = orient(a0, rotate, mirror)

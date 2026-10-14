@@ -24,6 +24,9 @@ venv/
 *.pth
 *.pt
 *.ckpt
+# The letter reader's weights and the offline install's wheels, downloaded into the clone by docs/letter-reader.md
+letters-v2-*.npz
+/wheels/
 
 # Experiment records are local by default. See docs/WORKFLOW.md.
 /experiments/*

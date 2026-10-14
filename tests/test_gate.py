@@ -78,5 +78,12 @@ class GateTest(unittest.TestCase):
         self.assertIn("0841-ag896: Mac ink_9um s42 0.6600 vs CPU 0.6600: match", out.getvalue())
 
 
+    def test_no_scores_file_points_to_a_clone(self):
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err):
+            code = cli.main(["gate", str(self.work), "--results", str(self.work / "docs" / "results.json")])
+        self.assertEqual(code, 2)
+        self.assertIn("run it from a clone", err.getvalue())
+
 if __name__ == "__main__":
     unittest.main()

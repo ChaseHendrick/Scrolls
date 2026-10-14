@@ -7,7 +7,8 @@ and an --out folder is made before the read. Guide: every shell command runs as 
 (no trailing comments, which stock zsh passes to the command, and comment lines of plain words only,
 since zsh runs a pasted comment line as a command and would act on quotes, brackets or '>' in it),
 every script and option it names exists, the Quick start opens with the virtual environment, and its
-letter-size table follows the formula. CITATION.cff: the fields GitHub and the guide rely on.
+letter-size table follows the formula. README.md: the shell blocks of its hand-written parts follow the
+same two comment rules. CITATION.cff: the fields GitHub and the guide rely on.
 Synthetic images and random weights only; no network.
 """
 import contextlib
@@ -125,6 +126,20 @@ class GuideCommandsTest(unittest.TestCase):
                if n in self.zsh_blocks() and unsafe_comment(line)]
         self.assertEqual(bad, [], "a comment line in a shell block may hold letters, digits, spaces and .,:/+%- only")
 
+    def test_readme_shell_blocks_run_when_pasted(self):
+        # The README's hand-written parts; its Released tools section is generated from docs/releases.json,
+        # whose letter-reader entry test_no_trailing_comments_in_the_readme_entry checks.
+        text = (ROOT / "README.md").read_text(encoding="utf-8")
+        start, end = text.index("<!-- releases:start"), text.index("<!-- releases:end -->")
+        hand = text[:start] + text[end:]
+        lines = [line for m in SHELL_BLOCK.finditer(hand) if m.group(1) in ("bash", "sh", "shell", "console")
+                 for line in m.group(2).splitlines()]
+        self.assertGreater(len(lines), 20)
+        self.assertEqual([line.strip() for line in lines if unsafe_comment(line)], [],
+                         "a comment line in a shell block may hold letters, digits, spaces and .,:/+%- only")
+        self.assertEqual([line for line in lines if trailing_comment(line)], [],
+                         "put each comment on its own line, above its command")
+
     def zsh_blocks(self):
         return {n for n, m in enumerate(SHELL_BLOCK.finditer(GUIDE.read_text(encoding="utf-8")))
                 if m.group(1) in ("bash", "sh", "shell", "console")}
@@ -186,10 +201,11 @@ class GuideCommandsTest(unittest.TestCase):
         text = GUIDE.read_text(encoding="utf-8")
         part = text[text.index("### Letter size matters most"):]
         part = part[:part.index("\n### ", 5)]
-        rows = re.findall(r"^\|[^|\n]+\| ([0-9.]+) \| ([0-9]+) \|", part, re.M)
+        rows = re.findall(r"^\|[^|\n]+\| ([0-9.]+) \| ([0-9.]+) \|", part, re.M)
         self.assertGreaterEqual(len(rows), 4)
-        for um, px in rows:
-            self.assertEqual(round(3.3 * 1000 / float(um)), int(px), (um, px))
+        for um, px in rows:          # a whole number of pixels, or the value to one decimal (1375.6)
+            digits = len(px.partition(".")[2])
+            self.assertEqual(round(3.3 * 1000 / float(um), digits), float(px), (um, px))
         if R is not None:
             self.assertEqual(round(R.letter_px_from_units(3.3, 2.399)), 1376)
 
@@ -237,6 +253,13 @@ class BenchmarkScriptsTest(unittest.TestCase):
         unsure.write_text(json.dumps({"agreed": {"w001-g000": "ΑΒΓΔ", "w001-g001": "C?Σ"}}, ensure_ascii=False),
                           encoding="utf-8")
         self.assertEqual(E.references(unsure), {"w001-g000": "ΑΒΓΔ"})
+        with self.assertRaises(SystemExit) as cm:              # no references yet: where the guide says how
+            E.references(self.d / "refs-missing.json")
+        self.assertIn("References paragraph", str(cm.exception.code))
+        G = load_script("p1667_groups")
+        with mock.patch.dict(sys.modules, {"zarr": None}), self.assertRaises(SystemExit) as cm:
+            G.downsample(self.d / "labels.zarr")
+        self.assertIn("pip install zarr", str(cm.exception.code))
 
     def test_eval_p1667_takes_a_released_name_and_prints_the_guide_measure_first(self):
         E = load_script("eval_p1667")
@@ -382,6 +405,28 @@ class BenchmarkScriptsTest(unittest.TestCase):
             self.assertIn(p, roots)
         self.assertNotIn(Path("C:/Windows") / "Fonts", L.font_roots({}, home="/home/me"))
 
+
+    def test_font_candidates_lists_each_file_once(self):
+        try:
+            L = load_script("letterdata")
+        except ImportError:
+            self.skipTest("letterdata needs numpy")
+        root = self.d / "fonts"
+        (root / "truetype").mkdir(parents=True)
+        for name in ("truetype/A.ttf", "truetype/B-Mono.ttf", "C.otf", "notes.txt"):
+            (root / name).write_bytes(b"")
+        inner = root / "truetype"
+        # a $LETTER_FONT_DIRS folder inside a default one, and that default one given twice by another path
+        got = L.font_candidates([inner, root, root / "truetype" / "..", self.d / "missing"])
+        self.assertEqual(got, [inner / "A.ttf", root / "C.otf"])
+        if hasattr(os, "symlink"):
+            try:
+                os.symlink(inner, self.d / "linked", target_is_directory=True)   # ~/.fonts linked to another folder
+            except OSError:
+                return
+            self.assertEqual(L.font_candidates([inner, self.d / "linked"]), [inner / "A.ttf"])
+            os.symlink(inner / "A.ttf", inner / "Alias.ttf")          # a file link keeps its entry, as before
+            self.assertEqual(L.font_candidates([inner, root]), [inner / "A.ttf", inner / "Alias.ttf", root / "C.otf"])
 
 class CitationTest(unittest.TestCase):
     """CITATION.cff: the fields GitHub's citation box and the guide's Citing section rely on.

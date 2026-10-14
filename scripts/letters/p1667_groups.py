@@ -38,7 +38,11 @@ SEGMENTS = ("w013", "w018", "w023", "w028", "w029", "w031")
 
 
 def downsample(path):
-    import zarr
+    try:
+        import zarr
+    except ImportError as exc:
+        raise SystemExit(f"p1667_groups.py reads the ink labels with zarr ({exc}): python -m pip install -e \".[all]\" "
+                         "(Python 3.11 or newer), or python -m pip install zarr") from None
     x = zarr.open_array(str(path), mode="r")
     full = np.asarray(x[:]) > 0
     rows, cols = np.nonzero(full.any(axis=1))[0], np.nonzero(full.any(axis=0))[0]

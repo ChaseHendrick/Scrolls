@@ -64,6 +64,8 @@ jobs:
       - name: Install the package with the reader extra
         run: python -m pip install ".[reader]"
       - name: Reader tests
+        # These import kit from the checkout (the current folder comes first on sys.path); the demo step below
+        # runs the installed copy from outside the clone.
         run: |
           python -m unittest discover -s tests -p "test_letter*.py" -v
           python -m unittest discover -s tests -p "test_greeklm.py" -v
@@ -83,8 +85,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - name: Install map-reading and reader dependencies
-        run: python -m pip install numpy tifffile imagecodecs scipy zarr pillow
+      - name: Install the package with every extra (the map tools and the reader)
+        run: python -m pip install ".[all]"
       - name: Unit tests including kit verify
         run: python -m unittest discover -s tests -v
       - name: Experiment regression tests

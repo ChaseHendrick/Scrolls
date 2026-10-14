@@ -1,7 +1,8 @@
 """Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,letterread,letterlines,letterdemo,greeklm,releases}.
 
-An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command),
-and scrolls-letterread, scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
+An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
+gate and releases read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
+scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
 """
 
 import argparse
@@ -259,6 +260,11 @@ def cmd_gate(args):
     if work is None:
         default = Path.home() / "scrolls-work"
         work = str(default) if default.is_dir() else None
+    if not Path(args.results).is_file():
+        print(f"cannot read the scores: no {args.results}. The gate reads the repository's docs/results.json, which "
+              "an installed package does not have: run it from a clone (git clone "
+              "https://github.com/ChaseHendrick/Scrolls), or give --results", file=sys.stderr)
+        return 2
     try:
         result = gate.run(work, args.results, args.min_lead, args.min_gap)
     except (OSError, ValueError, KeyError) as exc:
@@ -409,8 +415,22 @@ def cmd_view(args):
     return 0
 
 
+READER_INSTALL = 'python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)'
+
+
+def import_advice(exc):
+    """An ImportError's text, with the reader extra's install line when the missing module is one it brings."""
+    names = {getattr(exc, "name", None), getattr(exc.__cause__, "name", None)}
+    if any(n and n.split(".")[0] in ("numpy", "PIL", "tifffile", "imagecodecs") for n in names):
+        return f"{exc}; {READER_INSTALL}"
+    if any(n and n.split(".")[0] == "zarr" for n in names):
+        return f'{exc}; python -m pip install zarr (or "scrolls-workbench[all]", Python 3.11 or newer)'
+    return str(exc)
+
+
 def cmd_letterread(args):
     say = (lambda msg: None) if args.quiet else (lambda msg: print(msg, file=sys.stderr, flush=True))
+    letter_px = net = None
     try:
         from . import letterread
         letterread.utf8_console()       # Greek letters print in a pipe and on a Windows console too
@@ -514,19 +534,30 @@ def cmd_letterread(args):
             res["overlay"] = dict(file=Path(args.overlay).name,
                                   **letterread.overlay_geometry(a0.shape, res, args.overlay_max_side))
     except MemoryError:
-        print(f"out of memory reading {args.image}. Give the letter size (--letter-px, or --letter-mm with "
-              "--um-per-px) so a big image is block-averaged while it loads, lower the budget with --max-mpx, "
-              "or read a window with --crop Y0 Y1 X0 X1.", file=sys.stderr)
+        net_px = getattr(net, "letter_px", 16)
+        if letter_px is not None and float(letter_px) // (2 * net_px) <= 1:
+            # block-averaging stops at letters twice the network's height (reduce_factor), so only a window helps
+            print(f"out of memory reading {args.image}. Its letters ({float(letter_px):g} px tall) are too small to "
+                  f"block-average (that needs letters at least {4 * net_px} px tall), so the image is loaded whole: "
+                  "read a window with --crop Y0 Y1 X0 X1, or check the letter size.", file=sys.stderr)
+        else:
+            print(f"out of memory reading {args.image}. Give the letter size (--letter-px, or --letter-mm with "
+                  "--um-per-px) so a big image is block-averaged while it loads, lower the budget with --max-mpx, "
+                  "or read a window with --crop Y0 Y1 X0 X1.", file=sys.stderr)
         return 2
-    except (ImportError, OSError, KeyError, ValueError) as exc:
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
     # The files first (their folders were checked before the read), then the screen: a console that
     # fails on a letter never loses a finished read.
-    failed = []
+    failed, wrote = [], []
     if args.out:
         try:
             Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+            wrote.append(args.out)
         except OSError as exc:
             failed.append(exc)
     if args.csv or args.page_xml:
@@ -535,6 +566,7 @@ def cmd_letterread(args):
             if out:
                 try:
                     write(res, out)
+                    wrote.append(out)
                 except (OSError, ValueError) as exc:
                     failed.append(exc)
     if args.overlay:
@@ -543,8 +575,11 @@ def cmd_letterread(args):
             base = letterread.display_image(args.image, args.crop, k)
             letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True,
                                base=base if base is not None and base.shape[:2] == a0.shape else None)
+            wrote.append(args.overlay)
         except (ImportError, OSError, ValueError) as exc:
             failed.append(exc)
+    for out in wrote:
+        say(f"wrote {out}")
     print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
     for exc in failed:
         print(exc, file=sys.stderr)
@@ -559,9 +594,9 @@ def cmd_letterlines(args):
         if args.action == "build":
             if not args.dry_run and not args.out:
                 raise ValueError("give --out LINES.npz, or --dry-run to check the records and see what would be cut")
-            for out in (args.out, args.preview):
-                if out and not Path(out).resolve().parent.is_dir():
-                    raise OSError(f"no such folder for {out}")
+            for out in (args.out, args.preview):   # their folders are made once the records pass
+                if out and Path(out).is_dir():
+                    raise OSError(f"{out} is a folder; give a file name")
             if args.max_mpx <= 0:
                 raise ValueError("--max-mpx must be positive")
             if args.preview:
@@ -589,6 +624,7 @@ def cmd_letterlines(args):
                   f"{meta['wildcards']} '?', from {len(meta['images'])} image(s)")
             if args.preview:
                 imgs, texts, _, _ = letterlines.load_lines(args.out)
+                Path(args.preview).parent.mkdir(parents=True, exist_ok=True)
                 letterlines.preview(args.preview, imgs, texts)
                 print(f"{args.preview}: the first {min(100, len(imgs))} bands, each above its text; check that every "
                       "band holds its line")
@@ -599,7 +635,10 @@ def cmd_letterlines(args):
         if args.out:
             Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterlines.score_text(res))
-    except (ImportError, OSError, KeyError, ValueError) as exc:
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
     return 0
@@ -628,7 +667,7 @@ def cmd_letterdemo(args):
     try:
         from . import letterdemo   # numpy; the core kit is standard library only
     except ImportError as exc:
-        print(f"DEMO ERROR: the letter reader needs numpy ({exc}); python -m pip install numpy", file=sys.stderr)
+        print(f"DEMO ERROR: the letter reader needs numpy ({exc}); {READER_INSTALL}", file=sys.stderr)
         return 2
     return letterdemo.run_cli(args)
 
@@ -921,7 +960,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.set_defaults(func=cmd_view)
 
     p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
-    p.add_argument("image", help=".npy, .npz, .tif, .png or zarr (ink bright by default)")
+    p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
                    help="a released model name such as letters-v2-real (downloaded once, SHA-256 checked; a name is "
                         "looked up before any file of that name), or a linenet-v1 .npz path")

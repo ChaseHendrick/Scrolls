@@ -6,11 +6,11 @@ type: software
 title: "Scrolls: Vesuvius Challenge workbench"
 abstract: >-
   A workbench for the Vesuvius Challenge: a Greek letter reader for ink-detection
-  maps, drawn ink labels and photographs of papyri (numpy inference, with null,
-  control-map and orientation controls on every result), ink-map scoring against
-  published labels, run planning and provenance records. Everything the letter
-  reader prints is model output, letter hypotheses for a person to check, not a
-  reading.
+  maps, drawn ink labels and photographs of papyri (numpy inference, with null
+  and orientation controls and a status code on every result, and a control map
+  when one is given), ink-map scoring against published labels, run planning and
+  provenance records. Everything the letter reader prints is model output, letter
+  hypotheses for a person to check, not a reading.
 authors:
   - given-names: Chase
     family-names: Hendrick
@@ -40,4 +40,6 @@ references:
       The weights are licensed CC BY-NC 4.0, not Apache-2.0, because part of their
       training data is: letter crops from the ICDAR 2023 Greek letters dataset
       (https://zenodo.org/records/13825619, CC BY-NC 4.0), beside crops from
-      Hell-Char (https://arxiv.org/abs/2606.24984, CC BY 4.0).
+      Hell-Char (the paper https://arxiv.org/abs/2606.24984; the dataset at
+      https://github.com/ipavlopoulos/diachronic-greek-letterforms, commit
+      aeef8466be674403e2dd9b0fc708b95fe7475a00, whose LICENSE is CC BY 4.0).

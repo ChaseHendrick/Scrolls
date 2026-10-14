@@ -70,6 +70,9 @@ def references(path):
     Every text that is scored must be in the reader's alphabet: a Latin look-alike or a final sigma
     would only ever count as an error, so it stops the run with a message that names it and prints the
     alphabet (SystemExit). A group with a '?' (an unsure letter) is left out as before, unchecked."""
+    if not Path(path).is_file():
+        raise SystemExit(f"{path}: no such file. Write the references first: docs/letter-reader.md, the References "
+                         "paragraph under the PHerc. 1667 tests, says how ({\"agreed\": {\"w013-g000\": \"ΚΑΙ\", ...}})")
     data = json.loads(Path(path).read_text(encoding="utf-8"))
     refs = {gid: t for gid, t in data["agreed"].items() if t and "?" not in t}
     try:

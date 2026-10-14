@@ -143,6 +143,15 @@ class CommandTest(unittest.TestCase):
             code = r.main(["--list", str(self.registry), "--readme", str(self.readme), *argv])
         return code, out.getvalue(), err.getvalue()
 
+    def test_no_list_points_to_a_clone(self):
+        """An installed package has no docs/: the command says it needs a clone, not a bare file error."""
+        self.registry = self.dir / "docs" / "releases.json"
+        for action in ("check", "render", "list"):
+            code, _, err = self.call(action)
+            self.assertEqual(code, 2, action)
+            self.assertIn("run it from a clone", err)
+        self.assertEqual(self.readme.read_text(), README)
+
     def test_check_render_add_list(self):
         self.assertEqual(self.call("check")[0], 1)
         self.assertEqual(self.call("render")[0], 0)

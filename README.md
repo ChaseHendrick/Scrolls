@@ -71,7 +71,7 @@ Guide, the 14 weight files with their SHA-256, held-out results with their limit
 
 Released 14 October 2026.
 
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text). On photographs its character error was measured on synthetic pages only; on two public-domain photographs of papyri, read as dark ink, its letters stood above its controls, and how well it names letters on real photographs is untested.
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.34 to 0.40), measured under rules fixed before the reads (Model output; those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text). On photographs its character error was measured on synthetic pages only; on two public-domain photographs of papyri, read as dark ink, its letters stood above its controls, and how well it names letters on real photographs is untested.
 
 ```bash
 python3 -m venv .venv
@@ -81,7 +81,7 @@ scrolls-letterdemo
 scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
 ```
 
-`scrolls-letterdemo` checks the install offline on synthetic letters and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the demo's 38 um grid. Give the reader its own virtual environment, apart from AutoPipeline's, since both install a package named `kit`. Windows, the letter size for other images, the public PHerc. 1667 map demo (from a clone), model card, benchmarks and training: [`docs/letter-reader.md`](docs/letter-reader.md).
+`scrolls-letterdemo` checks the install on synthetic letters (it downloads the 6 MB of weights once) and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the 38 um grid of the public-map demo, `scripts/letters/demo_p1667.py`. Give the reader its own virtual environment, apart from AutoPipeline's: both install a package named `kit`. Windows, other letter sizes, that demo (from a clone), model card, benchmarks and training: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Quick start (kit)
@@ -89,12 +89,17 @@ scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MA
 Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). The Greek letter reader is not: it needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
 
 ```bash
-# from repo root
-python -m kit prizes                      # open prizes, deadlines, eligible scrolls (dated snapshot)
-python -m kit doctor                      # GPU, disk, uv/docker/git, VILLA and VC_BIN paths
-python -m kit plan PHerc0826              # control + target commands for one eligible scroll
-python -m kit plan PHerc0800 --batch 1    # 8.64 um scan: prints the resampling note
-python -m kit plan PHerc0826 --mac        # Apple Silicon: VC3D.app tools, CPU or MPS inference
+# from the repository root
+# open prizes, deadlines and eligible scrolls, from a dated snapshot
+python -m kit prizes
+# GPU, disk, uv, docker and git, and the VILLA and VC_BIN paths
+python -m kit doctor
+# control and target commands for one eligible scroll
+python -m kit plan PHerc0826
+# an 8.64 um scan: prints the resampling note
+python -m kit plan PHerc0800 --batch 1
+# Apple Silicon: VC3D.app tools, CPU or MPS inference
+python -m kit plan PHerc0826 --mac
 python -m kit cost --gpu-hours 6.5 --rate 1.10
 python -m kit run init p0826-a --scroll PHerc0826 \
   --question "Does ink_9um show rows on a hand-refined GrowPatch near the outer wraps?" \
@@ -102,11 +107,16 @@ python -m kit run init p0826-a --scroll PHerc0826 \
 python -m kit run cost p0826-a --usd 7.15 --what "A10, 6.5 h"
 python -m kit run status p0826-a running
 python -m kit run check p0826-a
-python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif   # needs numpy + tifffile (villa's env)
-python -m kit fetch w035 data/w035_9um.zarr   # mirror a public bucket prefix over HTTPS, resumable
-python -m kit fetch w045 data/w045_9um.zarr   # unseen by v8in; ink_9um trained on its 2.4 um render
-python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362   # row triage score
-bash scripts/mac-verify.sh                    # Apple Silicon: CPU vs MPS on the control, one command
+# needs numpy and tifffile, as in the villa environment
+python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif
+# mirror a public bucket prefix over HTTPS, resumable
+python -m kit fetch w035 data/w035_9um.zarr
+# w045 is unseen by v8in, but ink_9um trained on its 2.4 um render
+python -m kit fetch w045 data/w045_9um.zarr
+# the row triage score
+python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362
+# Apple Silicon: CPU against MPS on the control, one command
+bash scripts/mac-verify.sh
 python -m unittest discover -s tests -v
 ```
 

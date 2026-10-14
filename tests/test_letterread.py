@@ -698,11 +698,48 @@ class BigImageTest(unittest.TestCase):
             self.assertIn("orientation read: mirrored", err)
             json.loads(out)                                                     # stdout stays clean JSON
             self.assertEqual(run_cli(base + ["--quiet"])[2], "")
+            self.assertEqual(run_cli(base + ["--out", str(Path(d) / "r.json")])[2].splitlines()[-1],
+                             f"wrote {Path(d) / 'r.json'}")                     # each file written is named
+            self.assertNotIn("wrote", run_cli(base + ["--quiet", "--out", str(Path(d) / "r.json")])[2])
+            no_size = [a for a in base if a not in ("--letter-px", "16")]
             with mock.patch.object(R, "load_reduced", side_effect=MemoryError()):
-                code, _, err = run_cli(base)
+                code, _, err = run_cli(no_size)
+                self.assertEqual(code, 2)
+                for words in ("out of memory", "--letter-px", "--max-mpx", "--crop"):
+                    self.assertIn(words, err)
+                # letters too small to block-average: only a window (or a better letter size) helps
+                for px, small in (("16", True), ("63", True), ("64", False)):
+                    code, _, err = run_cli(no_size + ["--letter-px", px])
+                    self.assertEqual(code, 2)
+                    self.assertIn("--crop", err)
+                    self.assertEqual("too small to block-average" in err, small, px)
+                    self.assertEqual("--max-mpx" in err, not small, px)
+
+    def test_command_line_errors_name_the_fix(self):
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            empty = Path(d) / "empty.npy"
+            np.save(empty, np.zeros((0, 5), np.float32))
+            code, _, err = run_cli(["letterread", str(empty), "--weights", str(w), "--letter-px", "16"])
             self.assertEqual(code, 2)
-            for words in ("out of memory", "--letter-px", "--max-mpx", "--crop"):
-                self.assertIn(words, err)
+            self.assertIn("the image is empty (0 x 5 px)", err)
+            img = Path(d) / "img.npy"
+            np.save(img, lined_image())
+            for module in ("numpy", "PIL", "tifffile"):
+                missing = ImportError(f"No module named {module!r}", name=module)
+                with mock.patch.object(R, "load_reduced", side_effect=missing):
+                    code, _, err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])
+                self.assertEqual(code, 2)
+                self.assertIn(f"No module named {module!r}", err)
+                self.assertIn('python -m pip install "scrolls-workbench[reader]"', err)
+            with mock.patch.object(R, "load_reduced", side_effect=ImportError("No module named 'zarr'", name="zarr")):
+                err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])[2]
+            self.assertIn("python -m pip install zarr", err)
+            with mock.patch.object(R, "load_reduced", side_effect=ImportError("something else")):
+                err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])[2]
+            self.assertEqual(err.strip(), "something else")
+        with self.assertRaisesRegex(ValueError, r"the image is empty \(3 x 0 px\)"):
+            R._window(None, (3, 0), "x")
 
 
 @unittest.skipIf(np is None, "numpy not installed")
@@ -1094,6 +1131,40 @@ class TurnsAndPhotosTest(unittest.TestCase):
                       "as bright ink 4 letters kept, nulls 6, 2)", msgs)
         self.assertIn("polarity auto: dark ink (quick read at 16 px", R.text_summary(auto))
 
+    def test_normalized_auto_inverts_the_control_map_with_the_image(self):
+        """A normalised image that auto inverts to dark ink takes its control map with it, so the map stays a control."""
+        net = self.net()
+        photo = 1.0 - lined_image()                                       # dark ink on a light ground
+        trial = {"rule": R.AUTO_RULE, "letter_px": 16.0, "choice": "dark",
+                 "dark": {"letters_kept": 40, "null_letters_kept": [6, 2], "margin": 34, "status": "strong"},
+                 "bright": {"letters_kept": 4, "null_letters_kept": [6, 2], "margin": -2, "status": "none"}}
+        b = R.normalize(photo, "bright")
+        with mock.patch.object(R, "polarity_trial", return_value=trial):
+            res = R.read(b, net, letter_px=16, nulls=1, p_min=0.0, polarity="auto", normalized=True,
+                         orientation=False, control=b)
+        dark = R.read(photo, net, letter_px=16, nulls=1, p_min=0.0, polarity="dark", orientation=False, control=photo)
+        wrong = R.read(photo, net, letter_px=16, nulls=1, p_min=0.0, polarity="dark", orientation=False,
+                       control=1.0 - photo)                               # the control map the other way round
+        self.assertEqual(res["control"], dark["control"])
+        c = res["control"]
+        self.assertGreater(c["letters_kept"], 0)
+        self.assertEqual(c["control_map"]["letters_kept"], c["letters_kept"])   # the image is its own control map
+        self.assertNotEqual(wrong["control"]["control_map"]["letters_kept"], c["letters_kept"])  # the check can fail
+
+    def test_polarity_trial_measures_the_letter_size_on_the_turned_image(self):
+        net = self.net()
+        a = R.normalize(lined_image(n_lines=8, width=600))
+        fake, calls = self.fake_trial_reads()
+        with mock.patch.object(R, "_analyze_at", side_effect=fake):
+            flat = R.polarity_trial(a, net, "bright", letter_px_fallback=False)
+            turned = R.polarity_trial(np.rot90(a), net, "bright", rotate=90, letter_px_fallback=False)
+            mirrored = R.polarity_trial(np.rot90(a)[:, ::-1], net, "bright", rotate=90, mirror=True,
+                                        letter_px_fallback=False)
+        self.assertEqual(R.estimate_letter_px(a)[1], "line pitch")
+        self.assertAlmostEqual(turned["letter_px"], flat["letter_px"], delta=0.03 * flat["letter_px"])
+        self.assertAlmostEqual(mirrored["letter_px"], flat["letter_px"], delta=0.03 * flat["letter_px"])
+        self.assertEqual(calls[2][0].shape, calls[0][0].shape)              # read at the same size, the right way up
+
     def test_a_failed_read_checks_the_other_polarity(self):
         net = self.net()
         photo = 1.0 - lined_image()
@@ -1229,9 +1300,10 @@ class TurnsAndPhotosTest(unittest.TestCase):
                 self.assertTrue(0 < (y0 + y1) / 2 < 400 and 0 < (x0 + x1) / 2 < 150, (y0, y1, x0, x1))
             for _, _, x0, x1 in boxes:                       # each letter's height runs across the stored image
                 self.assertAlmostEqual(x1 - x0, 16.0, places=6)
-            px = Image.open(png)
-            self.assertEqual([px.height, px.width], res["overlay"]["size"])
-            self.assertEqual(px.height - res["overlay"]["banner_rows"], 400)     # drawn the way round it was given
+            with Image.open(png) as px:      # closed before the folder goes (Windows cannot delete an open file)
+                size = [px.height, px.width]
+            self.assertEqual(size, res["overlay"]["size"])
+            self.assertEqual(size[0] - res["overlay"]["banner_rows"], 400)     # drawn the way round it was given
 
     def test_read_fills_sheared_rows_with_the_ground(self):
         net = self.net()
@@ -1849,10 +1921,10 @@ class OverlayTest(unittest.TestCase):
             img = lined_image()
             res = R.analyze(img, w, letter_px=16, nulls=1, p_min=0.0)
             out = R.overlay(img, res, Path(d) / "o.png")
-            im = Image.open(out)
-            self.assertEqual(im.size[0], img.shape[1])
-            self.assertGreater(im.size[1], img.shape[0])        # the banner sits above the image
-            px = np.asarray(im.convert("RGB"))[-img.shape[0]:].astype(int)
+            with Image.open(out) as im:
+                self.assertEqual(im.size[0], img.shape[1])
+                self.assertGreater(im.size[1], img.shape[0])        # the banner sits above the image
+                px = np.asarray(im.convert("RGB"))[-img.shape[0]:].astype(int)
             coloured = (np.abs(px[..., 0] - px[..., 1]) > 30).sum()
             self.assertGreater(coloured, 0)                      # letter boxes were drawn
             npy = Path(d) / "img.npy"

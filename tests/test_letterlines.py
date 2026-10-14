@@ -1,5 +1,6 @@
 """Training lines from your own records (kit/letterlines.py), on synthetic images with random weights."""
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -334,6 +335,52 @@ class BuildTest(unittest.TestCase):
         code, stdout, _ = run_cli(["letterlines", "score", str(test), "--weights", str(w1)])
         self.assertIn("model 0: w1.npz: character error", stdout)
 
+
+    def test_build_makes_its_folders_as_the_guide_runs_it(self):
+        """The guide's chain in a fresh clone, which has no work/ folder: build makes work/letters/ itself."""
+        empty = self.d / "clone"
+        empty.mkdir()
+        one = self.d / "one.json"
+        one.write_text(json.dumps({"image": str(self.d / "page.npy"), "letter_px": 16, "lines": [
+            {"text": "ΑΒΓΔΕΖΗΘΙΚ", "y": 30, "split": "train"}, {"text": "ΦΧΨΩΑΒΓΔΕΖ", "y": 90, "split": "test"}]},
+            ensure_ascii=False), encoding="utf-8")
+        here = os.getcwd()
+        os.chdir(empty)
+        try:
+            args = ["letterlines", "build", str(one), "--split", "test", "--out", "work/letters/mine-test.npz"]
+            try:
+                import PIL  # noqa: F401
+                args += ["--preview", "work/previews/mine-test.png"]
+            except ImportError:
+                pass
+            code, stdout, err = run_cli(args)
+            self.assertEqual(code, 0, err)
+            self.assertTrue((empty / "work" / "letters" / "mine-test.npz").is_file())
+            if "--preview" in args:
+                self.assertTrue((empty / "work" / "previews" / "mine-test.png").is_file())
+            code, _, err = run_cli(["letterlines", "build", str(self.recs), "--out", "work/letters"])
+            self.assertEqual(code, 2)
+            self.assertIn("is a folder", err)
+            # bad records make no folder
+            code, _, _ = run_cli(["letterlines", "build", str(self.d / "missing.json"), "--out", "new/x.npz"])
+            self.assertEqual(code, 2)
+            self.assertFalse((empty / "new").exists())
+            # one test line and two models: the plain difference, and a note that one line gives no interval
+            w1, w2 = random_weights(self.d / "w1.npz"), random_weights(self.d / "w2.npz", seed=1)
+            code, stdout, err = run_cli(["letterlines", "score", "work/letters/mine-test.npz", "--weights", str(w1),
+                                         "--weights", str(w2), "--json"])
+            self.assertEqual(code, 0, err)
+            res = json.loads(stdout)
+            (d,) = res["diff"]
+            self.assertAlmostEqual(d["cer_diff"], res["models"][1]["cer"] - res["models"][0]["cer"], places=3)
+            self.assertIsNone(d["ci95"])
+            self.assertIn("one test line: no interval", d["note"])
+            code, stdout, _ = run_cli(["letterlines", "score", "work/letters/mine-test.npz", "--weights", str(w1),
+                                       "--weights", str(w2)])
+            self.assertIn("model 1 minus model 0: ", stdout)
+            self.assertIn("(one test line: no interval; give two lines or more)", stdout)
+        finally:
+            os.chdir(here)
 
 if __name__ == "__main__":
     unittest.main()

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 # The distribution is named scrolls-workbench, not kit or scrolls-kit: AutoPipeline's released package
-# (branch submission/progress-2026-10) is the distribution vc-autopipeline with a scrolls-kit script, and
+# (the README's AutoPipeline entry names its current release branch) is the distribution vc-autopipeline with a scrolls-kit script, and
 # both install a top-level package named kit, so install each in its own virtual environment
 # (docs/letter-reader.md, "Install").
 name = "scrolls-workbench"
@@ -28,11 +28,13 @@ dependencies = []
 # (compressed) TIFF maps. zarr, in "maps", also reads zarr and OME-Zarr maps and big tiled TIFFs band by band.
 reader = ["numpy", "pillow", "tifffile", "imagecodecs"]
 # Map scoring and checks (auc, verify, rowscore, hpscore, overlap, layers): the set the CI's map job installs.
-maps = ["numpy", "tifffile", "imagecodecs", "zarr", "scipy"]
-all = ["numpy", "pillow", "tifffile", "imagecodecs", "zarr", "scipy"]
+# zarr 3 needs Python 3.11; on 3.10 pip would pick zarr 2.18, whose missing create_array breaks kit shuffle and the
+# zarr outputs, so on 3.10 these extras leave zarr out (the zarr inputs and outputs then need Python 3.11 or newer).
+maps = ["numpy", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
+all = ["numpy", "pillow", "tifffile", "imagecodecs", "zarr>=3; python_version >= '3.11'", "scipy"]
 
 [project.scripts]
-scrolls-workbench = "kit.cli:workbench_main"     # every python -m kit command
+scrolls-workbench = "kit.cli:workbench_main"     # every python -m kit command (gate and releases need a clone)
 scrolls-letterread = "kit.cli:letterread_main"   # python -m kit letterread
 scrolls-letterlines = "kit.cli:letterlines_main" # python -m kit letterlines
 scrolls-letterdemo = "kit.cli:letterdemo_main"   # python -m kit letterdemo: DEMO PASS or DEMO FAIL
