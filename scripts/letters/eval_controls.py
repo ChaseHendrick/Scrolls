@@ -35,7 +35,7 @@ OLD = {"confident letters well above every null": "well above",
 
 def windows(path, weights, letter_px=86.0, size=(520, 1000), copies=3, nulls=4):
     img = R.normalize(R.load_image(path))
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz file or a released model name
     H, W = img.shape
     wh, ww = size
     maps = [("as_stored", img)] + [(f"shuffled{s}", R.null_images(img, letter_px, n=1, seed=100 + s)[0][1])
@@ -57,13 +57,13 @@ def windows(path, weights, letter_px=86.0, size=(520, 1000), copies=3, nulls=4):
                          "kept_where_old_passed_under_floor": sorted(r["kept"] for r in rs
                                                                      if r["old"] != "NOT above" and r["kept"] < R.MIN_LETTERS),
                          "max_kept": max((r["kept"] for r in rs), default=None)}
-    return {"note": R.NOTE, "map": str(path), "letter_px": letter_px, "window": list(size), "nulls": nulls,
-            "summary": summary, "windows": rows}
+    return {"note": R.NOTE, "map": Path(path).name, "weights": net.file, "weights_sha256": net.sha256,
+            "letter_px": letter_px, "window": list(size), "nulls": nulls, "summary": summary, "windows": rows}
 
 
 def blanks(weights, pages=12, seeds=(21, 22), nulls=4, h=24.0):
     from eval_pages import blank_page
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz file or a released model name
     rows = []
     for seed in seeds:
         rng = np.random.default_rng(seed)
@@ -76,7 +76,8 @@ def blanks(weights, pages=12, seeds=(21, 22), nulls=4, h=24.0):
                              "kept": c["letters_kept"], "nulls": c["null_letters_kept"], "old": OLD[c["verdict"]],
                              "status": c["status"]})
                 print(json.dumps(rows[-1]), flush=True)
-    return {"note": R.NOTE + " Synthetic pages with no letters.", "summary": {
+    return {"note": R.NOTE + " Synthetic pages with no letters.", "weights": net.file, "weights_sha256": net.sha256,
+            "summary": {
         "reads": len(rows), "status": dict(Counter(r["status"] for r in rows)),
         "old": dict(Counter(r["old"] for r in rows))}, "reads": rows}
 
@@ -86,13 +87,13 @@ def main(argv=None):
     sub = ap.add_subparsers(dest="cmd", required=True)
     a = sub.add_parser("windows", help="windows of a map, as stored and tile-shuffled")
     a.add_argument("map")
-    a.add_argument("--weights", required=True, help="linenet-v1 .npz file")
+    a.add_argument("--weights", required=True, help="linenet-v1 .npz file, or a released model name such as letters-v2-real")
     a.add_argument("--letter-px", type=float, default=86.0)
     a.add_argument("--window", type=int, nargs=2, default=(520, 1000), metavar=("H", "W"))
     a.add_argument("--copies", type=int, default=3)
     a.add_argument("--out")
     b = sub.add_parser("blanks", help="synthetic pages with no letters")
-    b.add_argument("--weights", required=True, help="linenet-v1 .npz file")
+    b.add_argument("--weights", required=True, help="linenet-v1 .npz file, or a released model name such as letters-v2-real")
     b.add_argument("--pages", type=int, default=12)
     b.add_argument("--seeds", type=int, nargs="+", default=[21, 22])
     b.add_argument("--out")
@@ -107,4 +108,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    R.utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

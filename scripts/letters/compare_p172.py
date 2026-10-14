@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from kit.letterread import edit_distance  # noqa: E402
+from kit.letterread import edit_distance, utf8_console  # noqa: E402
 
 
 def line_units(res, key="ink_only", segments=None):
@@ -73,4 +73,5 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

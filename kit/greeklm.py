@@ -11,8 +11,10 @@ Model files (.npz) hold n-gram counts derived from those editions; keep them out
 rebuild them with `python -m kit greeklm build`.
 """
 
+import hashlib
 import json
 import math
+import os
 import re
 import unicodedata
 from pathlib import Path
@@ -47,6 +49,7 @@ class KNLetterLM:
         self.counts = [dict() for _ in range(order + 1)]     # counts[n][context] -> np.array(24)
         self.cont = [dict() for _ in range(order + 1)]       # continuation counts for lower orders
         self._cache = {}
+        self.file = self.sha256 = None                       # set by load(): the file's name (never its folder), SHA-256
 
     def fit(self, texts):
         for t in texts:
@@ -140,6 +143,13 @@ class KNLetterLM:
             T = getattr(lm, kind)[n]
             for k, v in zip(keys, vals):
                 T[tuple(int(x) for x in k if x >= 0)] = v
+        if isinstance(path, (str, os.PathLike)):
+            # provenance for the letter reader's results (letterread.lm_info): file name and SHA-256, no folder
+            h = hashlib.sha256()
+            with open(path, "rb") as f:
+                for block in iter(lambda: f.read(1 << 20), b""):
+                    h.update(block)
+            lm.file, lm.sha256 = Path(path).name, h.hexdigest()
         return lm
 
 

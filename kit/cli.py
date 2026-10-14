@@ -409,6 +409,7 @@ def cmd_letterread(args):
     say = (lambda msg: None) if args.quiet else (lambda msg: print(msg, file=sys.stderr, flush=True))
     try:
         from . import letterread
+        letterread.utf8_console()       # Greek letters print in a pipe and on a Windows console too
         if args.letter_px is not None and (args.letter_mm is not None or args.um_per_px is not None):
             raise ValueError("give the letter height once: --letter-px, or --letter-mm with --um-per-px")
         letter_px = args.letter_px
@@ -422,6 +423,12 @@ def cmd_letterread(args):
             raise ValueError(f"--min-letters {args.min_letters}: give at least 1")
         if not 0 <= args.deskew < 45:
             raise ValueError(f"--deskew {args.deskew}: give an angle from 0 (off) to under 45 degrees")
+        if args.nulls < 0 or args.beam < 1 or args.lm_weight < 0:
+            raise ValueError("--nulls must be 0 or more, --beam at least 1 and --lm-weight 0 or more")
+        if args.p_min is not None and not 0 <= args.p_min <= 1:
+            raise ValueError(f"--p-min {args.p_min}: give a confidence from 0 to 1")
+        if args.columns not in ("auto", "off") and not (args.columns.isdigit() and int(args.columns) >= 1):
+            raise ValueError(f"--columns {args.columns}: give auto, off or a number of columns, at least 1")
         # Check where the results go before the read, which can take minutes.
         if args.overlay:
             try:
@@ -439,11 +446,12 @@ def cmd_letterread(args):
                 raise OSError(f"{image}: no such file or folder")
         if args.letter_mm is not None:
             say(f"letter height {args.letter_mm:g} mm at {args.um_per_px:g} um per pixel: {letter_px:.2f} px")
+        # the weights before the image, so a failed download costs no load
+        net = letterread.load_weights(args.weights)
         lm = None
         if args.lm:
             from . import greeklm
             lm = greeklm.KNLetterLM.load(args.lm)
-        net = letterread.LineNet(letterread.resolve_weights(args.weights))
         exif = letterread.exif_orientation(args.image)
         if exif != 1:
             say(f"{Path(args.image).name}: EXIF orientation {exif} applied, so pixels, --crop and boxes are those of "
@@ -484,8 +492,11 @@ def cmd_letterread(args):
                               beam=args.beam, letter_px_fallback=False, progress=say, control=c0,
                               min_letters=args.min_letters, columns=columns)
         del c0
+        # file names only, never a folder, so a result can be shared without a local path
+        res["source"] = {"file": Path(args.image).name, "key": args.key}
+        res["options"]["max_mpx"] = args.max_mpx
         if args.control:
-            res["control"]["control_map"]["file"] = str(args.control)
+            res["control"]["control_map"]["file"] = Path(args.control).name
         res["input_shape"] = list(shape)   # the exact input window, including rows and columns under one block
         if exif != 1:
             res["exif_orientation"] = exif
@@ -494,7 +505,7 @@ def cmd_letterread(args):
         if args.crop:
             res["crop"] = list(args.crop)  # [Y0, Y1, X0, X1]; every row, column and box is relative to Y0, X0
         if args.overlay:
-            res["overlay"] = dict(file=str(args.overlay),
+            res["overlay"] = dict(file=Path(args.overlay).name,
                                   **letterread.overlay_geometry(a0.shape, res, args.overlay_max_side))
     except MemoryError:
         print(f"out of memory reading {args.image}. Give the letter size (--letter-px, or --letter-mm with "
@@ -504,24 +515,32 @@ def cmd_letterread(args):
     except (ImportError, OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
-    print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
-    try:
-        if args.out:
+    # The files first (their folders were checked before the read), then the screen: a console that
+    # fails on a letter never loses a finished read.
+    failed = []
+    if args.out:
+        try:
             Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-        if args.overlay:
+        except OSError as exc:
+            failed.append(exc)
+    if args.overlay:
+        try:
             # a colour photograph is drawn in colour; other images from the read image in their own polarity
             base = letterread.display_image(args.image, args.crop, k)
             letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True,
                                base=base if base is not None and base.shape[:2] == a0.shape else None)
-    except (ImportError, OSError, ValueError) as exc:
+        except (ImportError, OSError, ValueError) as exc:
+            failed.append(exc)
+    print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
+    for exc in failed:
         print(exc, file=sys.stderr)
-        return 2
-    return 0
+    return 2 if failed else 0
 
 
 def cmd_greeklm(args):
     try:
-        from . import greeklm
+        from . import greeklm, letterread
+        letterread.utf8_console()
         if args.action == "build":
             lm, stats = greeklm.build(args.tei, order=args.order)
             lm.save(args.out)
@@ -820,7 +839,8 @@ def build_parser():
     p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
     p.add_argument("image", help=".npy, .npz, .tif, .png or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
-                   help="linenet-v1 .npz, or a released model name such as letters-v2-real (downloaded once, SHA-256 checked)")
+                   help="a released model name such as letters-v2-real (downloaded once, SHA-256 checked; a name is "
+                        "looked up before any file of that name), or a linenet-v1 .npz path")
     p.add_argument("--key", help=".npz: array name (default: the first); zarr: array path or OME-Zarr level (default: "
                                  "level 0, full resolution); pixel values are then in that level's pixels")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
@@ -859,7 +879,8 @@ def build_parser():
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--p-min", type=float, help="letter confidence floor (default: set from the nulls, at least 0.5)")
     p.add_argument("--lm", help="letter language model .npz (python -m kit greeklm build); reported beside the ink-only decode")
-    p.add_argument("--lm-weight", type=float, default=0.5)
+    p.add_argument("--lm-weight", type=float, default=0.5,   # letterread.LM_WEIGHT
+                   help="weight of the language model in its decode (default %(default)g)")
     p.add_argument("--beam", type=int, default=32)
     p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and turned reads")
     p.add_argument("--out", help="also write the full result as JSON")

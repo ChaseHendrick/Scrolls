@@ -114,7 +114,7 @@ def passes(rows, pol):
 
 
 def evaluate(weights, pages=12, seed=31, nulls=4, blanks=12):
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz file or a released model name
     rng = np.random.default_rng(seed)
     rows = []
     for i in range(pages):
@@ -170,7 +170,8 @@ def evaluate(weights, pages=12, seed=31, nulls=4, blanks=12):
     summary["blank_map_pages"] = {"pages": len(blank_map), "auto": statuses(blank_map, "auto"),
                                   "bright": statuses(blank_map, "bright"),
                                   "passed_auto": passes(blank_map, "auto"), "passed_bright": passes(blank_map, "bright")}
-    return {"note": R.NOTE + " Synthetic photograph-like pages only.", "weights": str(weights), "seed": seed,
+    return {"note": R.NOTE + " Synthetic photograph-like pages only.", "weights": net.file,
+            "weights_sha256": net.sha256, "seed": seed,
             "nulls": nulls, "summary": summary, "pages": rows, "blank_photo_pages": blank_photo,
             "blank_map_pages": blank_map}
 
@@ -191,4 +192,5 @@ def main():
 
 
 if __name__ == "__main__":
+    R.utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

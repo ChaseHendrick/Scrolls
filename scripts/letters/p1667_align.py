@@ -410,4 +410,5 @@ def main():
 
 
 if __name__ == "__main__":
+    R.utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

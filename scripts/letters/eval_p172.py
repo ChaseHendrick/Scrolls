@@ -111,9 +111,10 @@ def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2, split="all"
     pdf = sorted((repo / PDF_DIR).glob("*.pdf"))
     if not pdf:
         raise SystemExit(f"no transcription PDF under {repo / PDF_DIR}")
-    text = subprocess.run(["pdftotext", "-layout", str(pdf[0]), "-"], capture_output=True, text=True, check=True).stdout
+    text = subprocess.run(["pdftotext", "-layout", str(pdf[0]), "-"], capture_output=True, encoding="utf-8",
+                          check=True).stdout
     gt = parse_transcription(text)
-    net = R.LineNet(weights)
+    net = R.load_weights(weights)   # a .npz file or a released model name
     tot = {"ink_only": [0, 0], "with_lm": [0, 0]}
     rows = []
     usable = {sid: [r for r in (ln.replace("?", "") for c in cols for ln in c) if r] for sid, cols in gt.items()}
@@ -140,7 +141,8 @@ def evaluate(repo, weights, lm=None, lm_weight=0.5, down=4, nulls=2, split="all"
         rows.append(row)
     summary = {name: {"cer_matched_lines": round(e / n, 3), "ref_letters": n} for name, (e, n) in tot.items() if n}
     return {"note": R.NOTE, "data": "Bodillium/Herculaneum-Scroll-Labels, PHerc. 172 hand-drawn ink labels",
-            "weights": str(weights), "down": down, "split": split, "columns": columns, "summary": summary, "segments": rows}
+            "weights": net.file, "weights_sha256": net.sha256, "down": down, "split": split, "columns": columns,
+            "summary": summary, "segments": rows}
 
 
 def main():
@@ -173,4 +175,5 @@ def main():
 
 
 if __name__ == "__main__":
+    R.utf8_console()   # Greek prints in a pipe and on a Windows console
     main()

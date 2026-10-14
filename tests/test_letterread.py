@@ -839,11 +839,11 @@ class ControlStatusTest(unittest.TestCase):
             code, out, err = run_cli(base + ["--json", "--control", str(rev), "--min-letters", "3"])
             self.assertEqual(code, 0, err)
             c = json.loads(out)["control"]
-            self.assertEqual((c["control_map"]["file"], c["min_letters"]), (str(rev), 3))
+            self.assertEqual((c["control_map"]["file"], c["min_letters"]), (rev.name, 3))   # the name, no folder
             self.assertIn(c["status"], R.STATUS_TEXT)
             code, out, err = run_cli(base + ["--control", str(rev), "--crop", "0", "90", "0", "300"])
             self.assertEqual(code, 0, err)
-            self.assertIn(f"control map {rev}: ", out)
+            self.assertIn(f"control map {rev.name}: ", out)
             self.assertIn("status: ", out)
             for extra, words in ((["--control", str(short)], "same surface"),
                                  (["--control", str(Path(d) / "missing.npy")], "no such file"),
@@ -1172,6 +1172,13 @@ class TurnsAndPhotosTest(unittest.TestCase):
             res = json.loads(out)
             self.assertEqual((res["polarity"]["asked"], res["polarity"]["used"]), ("auto", "dark"))
             self.assertIn("polarity auto: dark ink (quick read at 16 px: as dark ink 40", err)
+            # the options as asked on the command line, and file names without their folder
+            o = res["options"]
+            self.assertEqual((o["polarity"], o["seed"], o["deskew_deg"], o["lines"], o["letter_px_fallback"]),
+                             ("auto", 3, 4.0, [30.0, 60.0], False))
+            self.assertEqual((res["source"]["file"], res["control"]["control_map"]["file"]), ("img.npy", "ctrl.npy"))
+            self.assertNotIn(str(Path(d).resolve()), out)
+            self.assertNotIn(str(d), out)
             # bright for the trial, dark for the read, then the control map in the image's polarity
             self.assertEqual([c.args[1] for c in spy.call_args_list], ["bright", "dark", "dark"])
 
@@ -1445,10 +1452,17 @@ class WeightsTest(unittest.TestCase):
             reg = self.registry(d, src, R._sha256(src))
             cache = Path(d) / "cache"
             with mock.patch("urllib.request.urlopen", side_effect=Broken) as opened:
-                with self.assertRaises(TimeoutError):
+                with self.assertRaises(R.WeightsError) as cm:
                     R.resolve_weights("tiny", cache=cache, registry=reg)
             self.assertEqual(opened.call_args.kwargs["timeout"], R.DOWNLOAD_TIMEOUT)
             self.assertEqual(list(cache.iterdir()), [])
+            # an OSError (the command line prints it) that names the model, the URL and the cache folder,
+            # and says a file downloaded by hand can go into that folder
+            self.assertIsInstance(cm.exception, OSError)
+            self.assertIsInstance(cm.exception.__cause__, TimeoutError)
+            msg = str(cm.exception)
+            for part in ("tiny", src.resolve().as_uri(), str(cache), "by hand", "tiny.npz", "SHA-256"):
+                self.assertIn(part, msg)
 
     def test_unknown_name_and_missing_url(self):
         with tempfile.TemporaryDirectory() as d:
@@ -1458,6 +1472,369 @@ class WeightsTest(unittest.TestCase):
                 R.resolve_weights("nope", cache=Path(d), registry=reg)
             with self.assertRaisesRegex(ValueError, "no download address"):
                 R.resolve_weights("tiny", cache=Path(d) / "c", registry=reg)
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class WeightsLookupTest(unittest.TestCase):
+    """Names before paths, files named like a release, $KIT_LETTER_WEIGHTS, the cache file's mode."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self.tmp.name)
+        self.src = random_weights(self.d / "src.npz")
+        self.reg = self.d / "reg.json"
+        self.reg.write_text(json.dumps({"models": {"tiny": {"file": "tiny.npz", "sha256": R._sha256(self.src),
+                                                            "url": self.src.resolve().as_uri()}}}))
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def test_names_come_before_paths(self):
+        import os
+        other = random_weights(self.d / "x.npz", seed=7).rename(self.d / "tiny")   # called like the model, other weights
+        cache = self.d / "cache"
+        here = os.getcwd()
+        os.chdir(self.d)
+        try:
+            got = R.resolve_weights("tiny", cache=cache, registry=self.reg)
+        finally:
+            os.chdir(here)
+        self.assertEqual(got, cache / "tiny.npz")
+        self.assertEqual(R._sha256(got), R._sha256(self.src))
+        self.assertNotEqual(R._sha256(other), R._sha256(self.src))
+        self.assertEqual(R.resolve_weights(str(other), registry=self.reg), other)   # a path is still a path
+
+    def test_a_file_named_like_a_release_is_hash_checked(self):
+        good = self.d / "good" / "tiny.npz"
+        good.parent.mkdir()
+        good.write_bytes(self.src.read_bytes())
+        self.assertEqual(R.resolve_weights(str(good), registry=self.reg), good)
+        bad = random_weights(self.d / "tiny.npz", seed=3)
+        with self.assertRaisesRegex(ValueError, "file name of the released model tiny"):
+            R.resolve_weights(str(bad), registry=self.reg)
+        self.assertEqual(R.resolve_weights(str(self.src), registry=self.reg), self.src)   # another name: no check
+
+    def test_env_names_a_folder_or_a_file(self):
+        from unittest import mock
+        with mock.patch.dict("os.environ", {"KIT_LETTER_WEIGHTS": "~/letters-folder"}):
+            self.assertEqual(R.weights_cache(), Path.home() / "letters-folder")
+        mine = self.d / "keep" / "my-copy.npz"
+        mine.parent.mkdir()
+        mine.write_bytes(self.src.read_bytes())
+        with mock.patch.dict("os.environ", {"KIT_LETTER_WEIGHTS": str(mine)}), \
+                mock.patch("urllib.request.urlopen", side_effect=AssertionError("no download")):
+            self.assertEqual(R.weights_cache(), mine.parent)
+            self.assertEqual(R.resolve_weights("tiny", registry=self.reg), mine)   # used as it is, SHA-256 checked
+        with mock.patch.dict("os.environ", {"KIT_LETTER_WEIGHTS": str(self.d / "not-yet.npz")}):
+            self.assertEqual(R.weights_cache(), self.d)                            # a file to come: its folder
+
+    @unittest.skipIf(sys.platform == "win32", "POSIX file modes")
+    def test_downloaded_file_is_readable_by_all(self):
+        got = R.resolve_weights("tiny", cache=self.d / "cache", registry=self.reg)
+        self.assertEqual(got.stat().st_mode & 0o777, 0o644)
+
+    def test_failed_download_says_where_a_hand_copy_goes(self):
+        reg = self.d / "reg2.json"
+        reg.write_text(json.dumps({"models": {"tiny": {"file": "tiny.npz", "sha256": R._sha256(self.src),
+                                                       "url": (self.d / "gone.npz").resolve().as_uri()}}}))
+        cache = self.d / "cache"
+        with self.assertRaises(R.WeightsError) as cm:
+            R.resolve_weights("tiny", cache=cache, registry=reg)
+        msg = str(cm.exception)
+        for part in ("tiny", "gone.npz", str(cache), "by hand", "copy it into", "SHA-256"):
+            self.assertIn(part, msg)
+        self.assertEqual(list(cache.iterdir()), [])
+        # copied in by hand, the file is used (and checked)
+        (cache / "tiny.npz").write_bytes(self.src.read_bytes())
+        self.assertEqual(R.resolve_weights("tiny", cache=cache, registry=reg), cache / "tiny.npz")
+        with self.assertRaisesRegex(ValueError, "no download address yet.*by hand"):
+            reg.write_text(json.dumps({"models": {"tiny": {"file": "tiny.npz", "sha256": "0" * 64, "url": None}}}))
+            R.resolve_weights("tiny", cache=self.d / "other", registry=reg)
+
+    def test_linenet_records_where_its_weights_came_from(self):
+        from unittest import mock
+        with mock.patch.object(R, "WEIGHTS_REGISTRY", self.reg):
+            net = R.LineNet(self.src)
+            self.assertEqual(R.weights_info(net), {"name": "tiny", "file": "src.npz", "sha256": R._sha256(self.src),
+                                                   "format": R.FORMAT})
+            other = R.LineNet(random_weights(self.d / "o.npz", seed=2))
+            self.assertIsNone(other.name)
+        self.assertIsNone(R.released_name(R._sha256(self.src), registry=self.d / "missing.json"))
+
+    def test_cli_resolves_the_weights_before_loading_the_image(self):
+        from unittest import mock
+        img = self.d / "img.npy"
+        np.save(img, lined_image())
+        with mock.patch.object(R, "load_reduced", side_effect=AssertionError("image loaded first")), \
+                mock.patch.object(R, "WEIGHTS_REGISTRY", self.reg), \
+                mock.patch.dict("os.environ", {"KIT_LETTER_WEIGHTS": str(self.d / "empty-cache")}), \
+                mock.patch("urllib.request.urlopen", side_effect=OSError("network is down")):
+            code, out, err = run_cli(["letterread", str(img), "--weights", "tiny", "--letter-px", "16"])
+        self.assertEqual(code, 2)
+        self.assertNotIn("image loaded first", err)
+        self.assertIn("could not download the weights tiny", err)
+        self.assertIn(str(self.d / "empty-cache"), err)
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class ApiTest(unittest.TestCase):
+    """read() as a Python API: what it takes, what it checks, and the provenance every result carries."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.d = Path(self.tmp.name)
+        self.w = random_weights(self.d / "w.npz")
+        self.net = R.LineNet(self.w)
+        self.img = lined_image()
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def read(self, img, weights=None, **kw):
+        kw = dict(dict(letter_px=16, nulls=1, orientation=False), **kw)
+        return R.read(img, self.net if weights is None else weights, **kw)
+
+    @staticmethod
+    def letters(res):
+        return [(L["y"], [(l["glyph"], l["p"], l["box"]) for l in L["letters"]]) for L in res["lines"]]
+
+    def test_weights_as_a_name_a_path_or_a_linenet(self):
+        from unittest import mock
+        reg = self.d / "reg.json"
+        reg.write_text(json.dumps({"models": {"tiny": {"file": "tiny.npz", "sha256": R._sha256(self.w),
+                                                       "url": self.w.resolve().as_uri()}}}))
+        with mock.patch.object(R, "WEIGHTS_REGISTRY", reg), \
+                mock.patch.dict("os.environ", {"KIT_LETTER_WEIGHTS": str(self.d / "cache")}):
+            by = {"name": self.read(self.img, "tiny"), "path": self.read(self.img, str(self.w)),
+                  "Path": self.read(self.img, self.w), "LineNet": self.read(self.img, R.LineNet(self.w))}
+        first = self.letters(by["name"])
+        for how, res in by.items():
+            self.assertEqual(self.letters(res), first, how)
+            self.assertEqual((res["weights"]["name"], res["weights"]["sha256"]), ("tiny", R._sha256(self.w)), how)
+        self.assertEqual(by["name"]["weights"]["file"], "tiny.npz")
+        self.assertEqual(by["path"]["weights"]["file"], "w.npz")
+        with self.assertRaisesRegex(ValueError, "not a released model"):
+            self.read(self.img, "no-such-model")
+        with self.assertRaisesRegex(TypeError, "released model name"):
+            self.read(self.img, 42)
+
+    def test_image_is_squeezed_and_colour_made_grey(self):
+        base = self.letters(self.read(self.img))
+        for shape in ((1,) + self.img.shape, self.img.shape + (1,), (1, 1) + self.img.shape):
+            self.assertEqual(self.letters(self.read(self.img.reshape(shape))), base, shape)
+        rgb = np.stack([self.img * 0.5, self.img, self.img * 1.5], axis=-1)
+        rgba = np.concatenate([rgb, np.full(self.img.shape + (1,), 7.0, np.float32)], axis=-1)
+        grey = R.as_image(rgb)
+        self.assertEqual(grey.dtype, np.float32)
+        self.assertTrue(np.allclose(grey, self.img, atol=1e-6))      # the mean of the three channels, as load_image
+        self.assertTrue(np.array_equal(R.as_image(rgba), grey))      # alpha left out
+        self.assertEqual(self.letters(self.read(rgba)), self.letters(self.read(grey)))
+        u8 = (np.clip(self.img, 0, 1) * 255).astype(np.uint8)
+        self.assertIs(R.as_image(u8), u8)                             # a 2D array is not copied
+        with tempfile.TemporaryDirectory() as d:                      # as load_image greys a colour .npy
+            np.save(Path(d) / "c.npy", (rgb * 100).astype(np.uint16))
+            self.assertTrue(np.array_equal(R.load_image(Path(d) / "c.npy"),
+                                           R.as_image((rgb * 100).astype(np.uint16))))
+
+    def test_bad_images_are_refused_clearly(self):
+        cases = [(np.stack([self.img] * 3), ValueError, "channels"),          # channels first
+                 (np.zeros((4, 5, 6)), ValueError, "2D image"),
+                 (np.zeros(50), ValueError, "2D image"),
+                 (np.zeros((0, 30)), ValueError, "empty"),
+                 (np.array([["a", "b"], ["c", "d"]]), ValueError, "numbers"),
+                 ("page.png", TypeError, "load_image")]
+        for img, exc, words in cases:
+            with self.assertRaisesRegex(exc, words):
+                self.read(img)
+        with self.assertRaisesRegex(ValueError, "control image: expected a 2D image"):
+            self.read(self.img, control=np.zeros((2, 3, 4, 5)))
+
+    def test_options_are_checked_before_any_work(self):
+        from unittest import mock
+        bad = [dict(letter_px=0), dict(letter_px=-3), dict(letter_px=float("nan")), dict(letter_px="16"),
+               dict(polarity="Bright"), dict(polarity="light"), dict(columns="two"), dict(columns=0),
+               dict(nulls=-1), dict(nulls=1.5), dict(min_letters=0), dict(deskew_deg=50), dict(rotate=45),
+               dict(p_min=2), dict(lm_weight=-1), dict(beam=0), dict(lines=[]), dict(lines=["a"]),
+               dict(input_scale=0), dict(seed=0.5)]
+        with mock.patch.object(R, "normalize_info", side_effect=AssertionError("work began")), \
+                mock.patch.object(R, "_analyze_at", side_effect=AssertionError("work began")):
+            for kw in bad:
+                name = next(iter(kw))
+                with self.assertRaisesRegex(ValueError, f"^{name}") as cm:
+                    self.read(self.img, **kw)
+                self.assertNotIn("work began", str(cm.exception))
+            with self.assertRaisesRegex(TypeError, "unknown option letterpx"):
+                self.read(self.img, letterpx=16)
+        for kw in (dict(polarity="dark"), dict(polarity="auto"), dict(columns="off"), dict(columns=2),
+                   dict(columns="2"), dict(deskew_deg=0), dict(deskew_deg=None), dict(letter_px=np.float32(16))):
+            self.read(self.img, **kw)                                  # good values pass
+        with self.assertRaisesRegex(ValueError, "^letter_px"):
+            R.analyze(self.img, self.net, letter_px=0, nulls=1)        # analyze() checks the same
+
+    def test_language_model_weight_defaults_as_on_the_command_line(self):
+        try:
+            from kit import greeklm
+        except ImportError:
+            self.skipTest("kit.greeklm not importable")
+        lm = greeklm.KNLetterLM(order=3).fit(["ΚΑΙΤΟΝΘΕΟΝ" * 50])
+        args = cli.build_parser().parse_args(["letterread", "x.png", "--weights", "w.npz"])
+        self.assertEqual(args.lm_weight, R.LM_WEIGHT)
+        res = self.read(self.img, lm=lm)
+        self.assertTrue(res["lines"] and all("with_lm" in L for L in res["lines"]))
+        self.assertEqual(res["options"]["lm_weight"], R.LM_WEIGHT)
+        self.assertEqual(res["options"]["lm"], {"file": None, "sha256": None, "order": 3})
+        explicit = self.read(self.img, lm=lm, lm_weight=R.LM_WEIGHT)
+        self.assertEqual([L["with_lm"] for L in res["lines"]], [L["with_lm"] for L in explicit["lines"]])
+        off = self.read(self.img, lm=lm, lm_weight=0)
+        self.assertTrue(all("with_lm" not in L for L in off["lines"]))
+        self.assertEqual(self.read(self.img)["options"]["lm_weight"], None)
+        a = R.analyze(self.img, self.net, letter_px=16, nulls=1, lm=lm)
+        self.assertTrue(all("with_lm" in L for L in a["lines"]))
+        with tempfile.TemporaryDirectory() as d:                     # a loaded model records its file name
+            lm.save(Path(d) / "greek3.npz")
+            loaded = greeklm.KNLetterLM.load(Path(d) / "greek3.npz")
+            self.assertEqual(R.lm_info(loaded), {"file": "greek3.npz", "sha256": R._sha256(Path(d) / "greek3.npz"),
+                                                 "order": 3})
+
+    def test_every_result_carries_its_provenance(self):
+        import kit
+        ctrl = lined_image(seed=4)
+        res = R.read(self.img, self.w, letter_px=16, nulls=1, seed=5, control=ctrl, rotate=180, mirror=True)
+        ana = R.analyze(self.img, self.w, letter_px=16, nulls=1, seed=5)
+        for r in (res, ana):
+            self.assertEqual(r["schema"], R.SCHEMA)
+            self.assertEqual(r["reader"], {"module": "kit.letterread", "version": kit.__version__})
+            self.assertEqual(r["weights"], {"name": None, "file": "w.npz", "sha256": R._sha256(self.w),
+                                            "format": R.FORMAT})
+            self.assertEqual(r["seed"], 5)
+            self.assertEqual(list(r)[:2], ["note", "schema"])
+            self.assertEqual(list(r)[-1], "options")
+            self.assertTrue(set(R.OPTION_NAMES) <= set(r["options"]))
+            text = json.dumps(r, ensure_ascii=False)                   # plain JSON
+            self.assertNotIn(str(self.d), text)
+        o = res["options"]
+        self.assertEqual((o["rotate"], o["mirror"], o["orientation"], o["control_map"], o["seed"], o["polarity"]),
+                         (180, True, True, True, 5, "bright"))
+        self.assertTrue(set(R.OPTION_NAMES) <= set(R.ANALYZE_OPTIONS))
+        self.assertIn("weights w.npz, sha256 " + R._sha256(self.w)[:12], R.text_summary(res))
+        auto = self.read(1.0 - self.img, polarity="auto")
+        self.assertEqual((auto["options"]["polarity"], auto["polarity"]["asked"]), ("auto", "auto"))
+        # an orientation read is a read like any other: rerunning with the recorded options gives the same letters
+        again = R.read(self.img, self.w, **{k: v for k, v in o.items() if k in R.ANALYZE_OPTIONS and k != "lm"},
+                       rotate=o["rotate"], mirror=o["mirror"], control=ctrl)
+        self.assertEqual(self.letters(again), self.letters(res))
+
+    def test_cli_result_has_file_names_only(self):
+        img, ctrl, out, png = (self.d / n for n in ("img.npy", "ctrl.npy", "res.json", "o.png"))
+        np.save(img, self.img)
+        np.save(ctrl, lined_image(seed=2))
+        extra = []
+        try:
+            import PIL  # noqa: F401
+            extra = ["--overlay", str(png)]
+        except ImportError:
+            pass
+        code, stdout, err = run_cli(["letterread", str(img), "--weights", str(self.w), "--letter-px", "16",
+                                     "--nulls", "1", "--no-orientation", "--json", "--out", str(out),
+                                     "--control", str(ctrl)] + extra)
+        self.assertEqual(code, 0, err)
+        res = json.loads(out.read_text(encoding="utf-8"))
+        self.assertEqual(res, json.loads(stdout))
+        self.assertEqual(res["source"], {"file": "img.npy", "key": None})
+        self.assertEqual(res["weights"]["file"], "w.npz")
+        self.assertEqual(res["options"]["max_mpx"], 64)
+        if extra:
+            self.assertEqual(res["overlay"]["file"], "o.png")
+        self.assertNotIn(str(self.d), out.read_text(encoding="utf-8"))
+
+    def test_cli_writes_its_files_before_printing(self):
+        from unittest import mock
+        img, out, png = self.d / "img.npy", self.d / "res.json", self.d / "o.png"
+        np.save(img, self.img)
+        args = ["letterread", str(img), "--weights", str(self.w), "--letter-px", "16", "--nulls", "1",
+                "--no-orientation", "--out", str(out)]
+        try:
+            import PIL  # noqa: F401
+            args += ["--overlay", str(png)]
+        except ImportError:
+            png = None
+        broken = UnicodeEncodeError("charmap", "Α", 0, 1, "character maps to <undefined>")
+        with mock.patch.object(R, "text_summary", side_effect=broken), self.assertRaises(UnicodeEncodeError):
+            run_cli(args)
+        self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["schema"], R.SCHEMA)
+        if png is not None:
+            self.assertTrue(png.exists())
+        # a file that cannot be written after the read: the other file and the summary still come out
+        with mock.patch.object(Path, "write_text", side_effect=PermissionError("read-only")):
+            code, stdout, err = run_cli(args)
+        self.assertEqual(code, 2)
+        self.assertIn("read-only", err)
+        self.assertIn("control:", stdout)
+
+    def test_utf8_console(self):
+        class Tty(io.TextIOWrapper):
+            def isatty(self):
+                return True
+
+        pipe = io.TextIOWrapper(io.BytesIO(), encoding="cp1252")
+        self.assertEqual(R.utf8_console(pipe), [pipe])
+        self.assertEqual((pipe.encoding, pipe.errors), ("utf-8", "backslashreplace"))
+        pipe.write("ΚΑΙ·Ϲ\n")
+        pipe.flush()
+        self.assertEqual(pipe.buffer.getvalue().decode("utf-8"), "ΚΑΙ·Ϲ\n")
+        greek_tty = Tty(io.BytesIO(), encoding="utf-8")
+        ascii_tty = Tty(io.BytesIO(), encoding="ascii")
+        self.assertEqual(R.utf8_console(greek_tty, ascii_tty), [ascii_tty])   # a terminal that shows Greek is kept
+        self.assertEqual((greek_tty.errors, ascii_tty.encoding), ("strict", "utf-8"))
+        self.assertEqual(R.utf8_console(io.StringIO()), [])                   # nothing to reconfigure
+        with mock.patch.object(R, "utf8_console") as called:
+            run_cli(["letterread", str(self.d / "missing.npy"), "--weights", str(self.w)])
+        self.assertEqual(called.call_count, 1)
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class ScriptsTest(unittest.TestCase):
+    """The demo's cached map, and pdftotext read as UTF-8."""
+
+    def load(self, name):
+        sys.path.insert(0, str(ROOT / "scripts" / "letters"))
+        try:
+            return __import__(name)
+        finally:
+            sys.path.remove(str(ROOT / "scripts" / "letters"))
+
+    def test_demo_uses_a_cached_map_without_listing_the_bucket(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        demo = self.load("demo_p1667")
+        with tempfile.TemporaryDirectory() as d:
+            Image.fromarray((lined_image() * 255).clip(0, 255).astype(np.uint8)).save(Path(d) / "w013-ds8.jpg")
+            with mock.patch.object(demo, "keys", side_effect=AssertionError("listed")), \
+                    mock.patch.object(demo, "download", side_effect=AssertionError("downloaded")):
+                a, url = demo.small_map("w013", d)
+                self.assertIsNone(url)                                   # no note beside it
+                (Path(d) / "w013-ds8.json").write_text(json.dumps({"url": "https://example.org/m.jpg"}))
+                self.assertEqual(demo.small_map("w013", d)[1], "https://example.org/m.jpg")
+        self.assertEqual(a.shape, (lined_image().shape[0] // 2, lined_image().shape[1] // 2))
+
+    def test_pdftotext_is_read_as_utf8(self):
+        import types
+        p1667_text = self.load("p1667_text")
+        with mock.patch.object(p1667_text.subprocess, "run", return_value=types.SimpleNamespace(stdout="")) as run:
+            p1667_text.bbox_layout("x.pdf")
+        self.assertEqual(run.call_args.kwargs["encoding"], "utf-8")
+        eval_p172 = self.load("eval_p172")
+        with tempfile.TemporaryDirectory() as d:
+            pdf = Path(d) / eval_p172.PDF_DIR / "t.pdf"
+            pdf.parent.mkdir(parents=True)
+            pdf.write_bytes(b"%PDF")
+            w = random_weights(Path(d) / "w.npz")
+            with mock.patch.object(eval_p172.subprocess, "run", return_value=types.SimpleNamespace(stdout="")) as run:
+                res = eval_p172.evaluate(d, w)
+            self.assertEqual((res["weights"], res["weights_sha256"]), ("w.npz", R._sha256(w)))   # its name, no folder
+        self.assertEqual(run.call_args.kwargs["encoding"], "utf-8")
 
 
 @unittest.skipIf(np is None, "numpy not installed")
@@ -1547,7 +1924,7 @@ class OverlayTest(unittest.TestCase):
                                       "--no-orientation", "--json", "--overlay", str(png), "--overlay-max-side", "200"])
             self.assertEqual(code, 0, err)
             geo = json.loads(out)["overlay"]
-            self.assertEqual((geo["file"], geo["scale"], geo["max_side"]), (str(png), 0.5, 200))
+            self.assertEqual((geo["file"], geo["scale"], geo["max_side"]), (png.name, 0.5, 200))
             with Image.open(png) as im:
                 self.assertEqual([im.size[1], im.size[0]], geo["size"])
                 self.assertEqual(im.size[0], 200)

@@ -32,6 +32,12 @@ Weights are a .npz exported by the training script (format linenet-v1, BatchNorm
 the convolutions). They are not in git: pass a file, or the name of a released model in
 kit/data/letter-weights.json, which resolve_weights() downloads once and checks by SHA-256.
 
+Python use: read(image, "letters-v2-real", letter_px=86) takes a 2D array (an RGB or RGBA array is
+averaged to grey), a released model name, a path or a LineNet, checks its options and returns a
+JSON-able dict. Every result carries the schema number SCHEMA, the reader's version, the weights'
+released name, file name and SHA-256, the seed and the options used (docs/letter-reader.md, "The
+result, field by field"); no result holds a local folder.
+
 Big images: load_reduced() block-averages an image over MAX_PIXELS by an integer factor while
 loading it in row bands (memory maps, zarr, or the stored integer type; never a float copy of the
 whole image), so a whole native ink map can be read; analyze() and read() take that factor as
@@ -39,17 +45,28 @@ input_scale and report every row, column, box and letter height in input pixels.
 """
 
 import hashlib
+import inspect
+import io
 import json
 import math
 import os
+import sys
 from pathlib import Path
 
 import numpy as np
 
+from . import __version__ as KIT_VERSION
+
 NOTE = ("Model output: letter hypotheses from a learned line reader, not a reading. "
         "A papyrologist decides what is legible.")
 FORMAT = "linenet-v1"
+# The result's schema number: raised when a field is renamed or removed or changes its meaning; new fields
+# keep it. docs/letter-reader.md ("The result, field by field") lists every field of schema 1.
+SCHEMA = 1
 WEIGHTS_REGISTRY = Path(__file__).parent / "data" / "letter-weights.json"
+# Weight of the language model in its beam decode when a model is given without a weight (the command line's
+# --lm-weight default).
+LM_WEIGHT = 0.5
 # Default line pitch in letter heights (6.6 / 3.5, about 1.89), used only when the image gives no
 # line pitch of its own.
 PITCH_PER_H = 6.6 / 3.5
@@ -95,16 +112,48 @@ ROTATIONS = (0, 90, 180, 270)
 
 # ------------------------------------------------------------------ released weights
 
-def weights_cache():
-    """Folder for downloaded weights: $KIT_LETTER_WEIGHTS, else ~/.cache/scrolls-kit/letters."""
+class WeightsError(OSError):
+    """Released weights could not be downloaded; the message names the model, the URL and the cache folder."""
+
+
+def _env_weights_file():
+    """The file $KIT_LETTER_WEIGHTS names (~ expanded), when it names a file rather than a folder, else None.
+
+    It names a file when it is an existing file, or a path ending in .npz."""
     env = os.environ.get("KIT_LETTER_WEIGHTS")
-    return Path(env) if env else Path.home() / ".cache" / "scrolls-kit" / "letters"
+    if not env:
+        return None
+    p = Path(env).expanduser()
+    return p if p.is_file() or p.suffix.lower() == ".npz" else None
+
+
+def weights_cache():
+    """Folder for downloaded weights: $KIT_LETTER_WEIGHTS (~ expanded), else ~/.cache/scrolls-kit/letters.
+
+    When $KIT_LETTER_WEIGHTS names a weights file, the folder is the one that holds it (resolve_weights
+    uses that file itself when its SHA-256 is the released model's)."""
+    f = _env_weights_file()
+    if f is not None:
+        return f.parent
+    env = os.environ.get("KIT_LETTER_WEIGHTS")
+    return Path(env).expanduser() if env else Path.home() / ".cache" / "scrolls-kit" / "letters"
 
 
 def released_weights(registry=None):
     """{name: entry} of released reader weights (file, sha256, url, licence, notes)."""
     data = json.loads(Path(registry or WEIGHTS_REGISTRY).read_text(encoding="utf-8"))
     return data["models"]
+
+
+def released_name(sha256, registry=None):
+    """The released model name whose SHA-256 is sha256, or None (also when the registry cannot be read)."""
+    if not sha256:
+        return None
+    try:
+        models = released_weights(registry)
+    except (OSError, ValueError, KeyError, TypeError):
+        return None
+    return next((name for name, m in sorted(models.items()) if m.get("sha256") == sha256), None)
 
 
 def _sha256(path):
@@ -115,44 +164,152 @@ def _sha256(path):
     return h.hexdigest()
 
 
-def resolve_weights(spec, cache=None, registry=None, download=True):
-    """A weights file path from a path or a released model name.
+def _by_hand(name, m, folder):
+    """The sentence that says how to put a released model's file into the cache folder by hand."""
+    return (f"download {m['file']} by hand (from {m.get('url') or 'the address in docs/letter-reader.md'}, in a "
+            f"browser or with: curl -L -o {m['file']} URL) and copy it into {folder}; the reader checks its SHA-256 "
+            f"({m['sha256']}) there as for a download. Set KIT_LETTER_WEIGHTS to another folder, or to the file "
+            "itself, to keep it elsewhere")
 
-    A name from kit/data/letter-weights.json is looked up in the cache folder and downloaded from its
-    URL when missing; either way its SHA-256 must match the registry, so a damaged or swapped file is
-    refused. An existing path is returned unchanged."""
-    p = Path(spec)
-    if p.exists():
-        return p
+
+def resolve_weights(spec, cache=None, registry=None, download=True):
+    """A weights file path from a released model name or a path.
+
+    Names come first: a string that names a released model in kit/data/letter-weights.json is that
+    model, even when a file of that name exists. The model is the file $KIT_LETTER_WEIGHTS names when
+    that is a file with the model's SHA-256 (and no cache is given); otherwise the registry's file in
+    the cache folder (cache, else weights_cache()), downloaded from its URL once when missing, into a
+    file of mode 0644. Anything else is a path (~ expanded): returned as it is, except that a file
+    named like a released model's file must have that model's SHA-256. A file whose SHA-256 differs
+    is refused (ValueError), so a damaged or swapped file is never read. A failed download raises
+    WeightsError (an OSError) naming the model, the URL and the cache folder, and saying that a file
+    downloaded by hand can be copied into that folder."""
     models = released_weights(registry)
-    if spec not in models:
+    if isinstance(spec, str) and spec in models:
+        return _released_file(spec, models[spec], cache, download)
+    if not isinstance(spec, (str, os.PathLike)):
+        raise TypeError(f"weights {spec!r}: give a released model name ({', '.join(sorted(models))}), a path to a "
+                        f"{FORMAT} .npz file, or a LineNet")
+    p = Path(spec).expanduser()
+    if not p.is_file():
+        if p.exists():
+            raise ValueError(f"{spec}: a folder, not a {FORMAT} weights file")
         raise ValueError(f"{spec}: no such file, and not a released model ({', '.join(sorted(models))})")
-    m = models[spec]
-    dest = Path(cache or weights_cache()) / m["file"]
+    for name, m in sorted(models.items()):
+        if p.name == m["file"] and _sha256(p) != m["sha256"]:
+            raise ValueError(f"{spec}: has the file name of the released model {name} but not its SHA-256 "
+                             f"{m['sha256']}, so it is damaged or another file; download it again (python -m kit "
+                             f"letterread IMAGE --weights {name} does), or rename it if it is weights of your own")
+    return p
+
+
+def _released_file(name, m, cache=None, download=True):
+    """The checked local file of the released model `name` (registry entry m): see resolve_weights."""
+    env = _env_weights_file() if cache is None else None
+    if env is not None and env.is_file() and _sha256(env) == m["sha256"]:
+        return env
+    folder = Path(cache).expanduser() if cache else weights_cache()
+    dest = folder / m["file"]
     if not dest.exists():
         if not download:
-            raise ValueError(f"{spec}: not in {dest.parent}")
+            raise ValueError(f"{name}: not in {folder}")
         if not m.get("url"):
-            raise ValueError(f"{spec}: no download address yet; see docs/letter-reader.md for where to get it")
-        import tempfile
-        import urllib.request
-        dest.parent.mkdir(parents=True, exist_ok=True)
+            raise ValueError(f"{name}: no download address yet; {_by_hand(name, m, folder)}")
+        _download(name, m, dest)
+    if _sha256(dest) != m["sha256"]:
+        raise ValueError(f"{name}: {dest} does not match its SHA-256 {m['sha256']}; delete it and retry, or "
+                         f"{_by_hand(name, m, folder)}")
+    return dest
+
+
+def _download(name, m, dest):
+    """Download a released model's file to dest (mode 0644), keeping nothing unless its SHA-256 matches."""
+    import http.client
+    import tempfile
+    import urllib.request
+    folder = dest.parent
+
+    def failed(exc):
+        return WeightsError(f"could not download the weights {name} from {m['url']} into {folder}: {exc}. "
+                            f"Check the connection and retry, or {_by_hand(name, m, folder)}")
+
+    try:
+        folder.mkdir(parents=True, exist_ok=True)
         # A file of this process's own, so two first runs never write one file, and no partial file is
         # left behind on any error; the timeout turns a stalled connection into an error.
-        fd, tmp = tempfile.mkstemp(dir=dest.parent, prefix=dest.name + ".", suffix=".part")
-        tmp = Path(tmp)
+        fd, tmp = tempfile.mkstemp(dir=folder, prefix=dest.name + ".", suffix=".part")
+    except OSError as exc:
+        raise failed(exc) from exc
+    tmp = Path(tmp)
+    try:
         try:
             with os.fdopen(fd, "wb") as f, urllib.request.urlopen(m["url"], timeout=DOWNLOAD_TIMEOUT) as r:
                 for block in iter(lambda: r.read(1 << 20), b""):
                     f.write(block)
-            if _sha256(tmp) != m["sha256"]:
-                raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
-            os.replace(tmp, dest)
-        finally:
-            tmp.unlink(missing_ok=True)
-    if _sha256(dest) != m["sha256"]:
-        raise ValueError(f"{spec}: {dest} does not match its SHA-256 {m['sha256']}; delete it and retry")
-    return dest
+        except (OSError, http.client.HTTPException, ValueError) as exc:   # URLError, HTTPError, timeouts, cut-offs
+            raise failed(exc) from exc
+        if _sha256(tmp) != m["sha256"]:
+            raise ValueError(f"{name}: download from {m['url']} does not match its SHA-256; nothing kept. Retry, or "
+                             f"{_by_hand(name, m, folder)}")
+        os.chmod(tmp, 0o644)        # mkstemp makes the file private (0600); a cache file is for every user
+        os.replace(tmp, dest)
+    finally:
+        tmp.unlink(missing_ok=True)
+
+
+def weights_info(net):
+    """Where a LineNet's weights came from, as JSON: released name (None when not a released model), file name and SHA-256.
+
+    Only the file name is kept, never its folder, so a result never holds a local path."""
+    return {"name": getattr(net, "name", None), "file": getattr(net, "file", None),
+            "sha256": getattr(net, "sha256", None), "format": FORMAT}
+
+
+def load_weights(weights):
+    """A LineNet from a LineNet (returned as it is), a released model name or a path (resolve_weights)."""
+    if isinstance(weights, LineNet):
+        return weights
+    return LineNet(resolve_weights(weights))
+
+
+# ------------------------------------------------------------------ console
+
+def _encodes(encoding, text="ΑΩϹ·"):
+    """True when `encoding` can encode Greek capitals, lunate sigma and the middle dot."""
+    try:
+        text.encode(encoding or "ascii")
+        return True
+    except (LookupError, UnicodeError):
+        return False
+
+
+def utf8_console(*streams):
+    """Let text streams print Greek: a stream that is not a terminal, or cannot encode Greek, becomes UTF-8.
+
+    Each stream (default: sys.stdout and sys.stderr) that is not a terminal (a pipe or a file, where
+    Windows uses a code page such as cp1252) or whose encoding cannot encode Greek letters is
+    reconfigured to encoding="utf-8", errors="backslashreplace", so printing a read never fails on
+    a letter. A terminal that shows Greek is left as it is, and so is a stream without reconfigure()
+    (io.StringIO, as tests use). Returns the streams changed."""
+    changed = []
+    for s in streams or (sys.stdout, sys.stderr):
+        if s is None:
+            continue
+        try:
+            tty = bool(s.isatty())
+        except (AttributeError, ValueError, OSError):
+            tty = False
+        if tty and _encodes(getattr(s, "encoding", None)):
+            continue
+        reconf = getattr(s, "reconfigure", None)
+        if reconf is None:
+            continue
+        try:
+            reconf(encoding="utf-8", errors="backslashreplace")
+        except (AttributeError, ValueError, OSError, io.UnsupportedOperation):
+            continue
+        changed.append(s)
+    return changed
 
 
 # ------------------------------------------------------------------ numpy network
@@ -170,6 +327,12 @@ class LineNet:
         self.letter_px = int(self.meta["letter_px"])
         self.band = tuple(self.meta["band"])
         self.stride = int(self.meta["stride"])
+        # Provenance for every result (weights_info): the file's name, never its folder, its SHA-256 and,
+        # when that is a released model's, the model's name.
+        self.file = self.sha256 = self.name = None
+        if isinstance(path, (str, os.PathLike)):
+            self.file, self.sha256 = Path(path).name, _sha256(path)
+            self.name = released_name(self.sha256)
 
     @property
     def band_rows(self):
@@ -794,7 +957,7 @@ def polarity_trial(a, weights, polarity="bright", *, letter_px=None, input_scale
     measured rate)."""
     if polarity not in ("bright", "dark"):
         raise ValueError(f"polarity {polarity!r}: the image's own polarity, bright or dark")
-    net = weights if isinstance(weights, LineNet) else LineNet(weights)
+    net = load_weights(weights)
     a = np.asarray(a, dtype=np.float32)
     k = input_scale
     if letter_px is None:
@@ -1112,6 +1275,136 @@ def read_bands(net, a, ys, h):
 SCALE_STEPS = (0.5, 0.63, 0.8, 1.0, 1.25, 1.6)
 
 
+# ------------------------------------------------------------------ input and options of a read
+
+def as_image(img, name="image"):
+    """img as a 2D array of numbers to read, or a clear error.
+
+    Size-1 axes are dropped (np.squeeze), and a colour image with its channels last, (H, W, 3) or
+    (H, W, 4), becomes grey as load_image makes a colour TIFF or .npy grey: the mean of its first
+    three channels, as float32. A 2D array comes back as it is, with no copy. A file name is refused
+    with a pointer to load_image() and load_reduced(), which read files."""
+    if isinstance(img, (str, os.PathLike)):
+        raise TypeError(f"{name} {img!r}: read() and analyze() take an image array; read a file with "
+                        "load_image(path) or, for a big map, load_reduced(path) (its block size goes in as input_scale)")
+    a = np.asarray(img)
+    if a.dtype.kind not in "biuf":
+        raise ValueError(f"{name}: expected an array of numbers, got one of {a.dtype}")
+    if a.ndim != 2:
+        a = np.squeeze(a)
+        if a.ndim == 3 and a.shape[-1] in (3, 4):
+            a = a[..., :3].mean(axis=-1).astype(np.float32)
+        if a.ndim != 2:
+            raise ValueError(f"{name}: expected a 2D image (H, W), or a colour image (H, W, 3 or 4) with its channels "
+                             f"last; got shape {tuple(np.shape(img))}")
+    if a.size == 0:
+        raise ValueError(f"{name}: the image is empty ({a.shape[0]} x {a.shape[1]} px)")
+    return a
+
+
+def _number(v):
+    return isinstance(v, (int, float, np.integer, np.floating)) and not isinstance(v, (bool, np.bool_)) \
+        and math.isfinite(float(v))
+
+
+def _whole(v):
+    return isinstance(v, (int, np.integer)) and not isinstance(v, (bool, np.bool_))
+
+
+def check_options(*, letter_px=None, polarity="bright", columns="auto", nulls=4, seed=0, min_letters=MIN_LETTERS,
+                  deskew_deg=DESKEW_DEG, rotate=0, input_scale=1, p_min=None, null_rate=0.05, lm_weight=None,
+                  beam=32, lines=None, shear_fill=None, **_):
+    """A ValueError naming the option and what to give, for a value read() and analyze() cannot use; else None.
+
+    The command line checks the same values with the same limits before it loads anything."""
+    def bad(what, want):
+        raise ValueError(f"{what}: {want}")
+
+    if letter_px is not None and not (_number(letter_px) and float(letter_px) > 0):
+        bad(f"letter_px {letter_px!r}", "the letter height must be a positive number of image pixels (or None to "
+            "estimate it from the line spacing)")
+    if polarity not in ("bright", "dark", "auto"):
+        bad(f"polarity {polarity!r}", "give bright (ink brighter than the ground, as in ink maps), dark (dark ink on "
+            "a light ground, as in photographs) or auto (read quickly both ways)")
+    ok_cols = columns in (None, "auto", "off") or (_whole(columns) and columns >= 1) or \
+        (isinstance(columns, str) and columns.isdigit() and int(columns) >= 1)
+    if not ok_cols:
+        bad(f"columns {columns!r}", "give auto (split at empty vertical gutters), off (the whole width as one "
+            "column) or a number of columns, at least 1")
+    if not (_whole(nulls) and nulls >= 0):
+        bad(f"nulls {nulls!r}", "give a whole number of null copies, 0 or more (4 is the default; 0 runs no control)")
+    if not _whole(seed):
+        bad(f"seed {seed!r}", "give a whole number")
+    if not (_whole(min_letters) and min_letters >= 1):
+        bad(f"min_letters {min_letters!r}", "give a whole number, at least 1")
+    if deskew_deg is not None and not (_number(deskew_deg) and 0 <= float(deskew_deg) < 45):
+        bad(f"deskew_deg {deskew_deg!r}", "give an angle from 0 (off) to under 45 degrees")
+    if rotate not in ROTATIONS:
+        bad(f"rotate {rotate!r}", "give 0, 90, 180 or 270 (degrees clockwise)")
+    if not (_whole(input_scale) and input_scale >= 1):
+        bad(f"input_scale {input_scale!r}", "give the whole block size the image was averaged by, 1 or more")
+    if p_min is not None and not (_number(p_min) and 0 <= float(p_min) <= 1):
+        bad(f"p_min {p_min!r}", "give a confidence from 0 to 1 (or None to set it from the nulls)")
+    if not (_number(null_rate) and 0 <= float(null_rate) <= 1):
+        bad(f"null_rate {null_rate!r}", "give a rate from 0 to 1 (0.05 is the default)")
+    if lm_weight is not None and not (_number(lm_weight) and float(lm_weight) >= 0):
+        bad(f"lm_weight {lm_weight!r}", f"give a weight of 0 or more ({LM_WEIGHT} is the default with a language model)")
+    if not (_whole(beam) and beam >= 1):
+        bad(f"beam {beam!r}", "give a whole beam width, at least 1")
+    if lines is not None:
+        try:
+            ok_lines = len(lines) > 0 and all(_number(y) for y in lines)
+        except TypeError:
+            ok_lines = False
+        if not ok_lines:
+            bad("lines", "give a list of line centre rows in image pixels (or None to find them)")
+    if shear_fill is not None and shear_fill != "median" and not _number(shear_fill):
+        bad(f"shear_fill {shear_fill!r}", "give a grey level, \"median\" or None")
+
+
+# Options a result records (options), each with the value the read used: given, or analyze()'s default.
+OPTION_NAMES = ("letter_px", "polarity", "nulls", "seed", "deskew_deg", "lines", "p_min", "null_rate", "lm_weight",
+                "beam", "scale_search", "columns", "input_scale", "letter_px_fallback", "min_letters", "shear_fill")
+
+
+def _jsonable(v):
+    if isinstance(v, (np.bool_, bool)):
+        return bool(v)
+    if isinstance(v, np.integer):
+        return int(v)
+    if isinstance(v, np.floating):
+        return float(v)
+    if isinstance(v, (list, tuple, np.ndarray)):
+        return [_jsonable(x) for x in v]
+    return v
+
+
+def lm_info(lm):
+    """A language model's provenance as JSON (file name, SHA-256 and order, as greeklm.KNLetterLM.load records them), or None."""
+    if lm is None:
+        return None
+    return {"file": getattr(lm, "file", None), "sha256": getattr(lm, "sha256", None), "order": getattr(lm, "order", None)}
+
+
+def read_options(kw, **extra):
+    """The options of a read as JSON: every name in OPTION_NAMES with the value used (kw's, else analyze()'s default).
+
+    lm is lm_info()'s record, lm_weight the weight used (LM_WEIGHT when a model came without one, None
+    without a model); extra (such as rotate, mirror, orientation and control_map) is added as given."""
+    out = {name: _jsonable(kw.get(name, ANALYZE_OPTIONS[name])) for name in OPTION_NAMES}
+    lm = kw.get("lm")
+    out["lm"] = lm_info(lm)
+    out["lm_weight"] = None if lm is None else (LM_WEIGHT if out["lm_weight"] is None else out["lm_weight"])
+    out.update({k: _jsonable(v) for k, v in extra.items()})
+    return out
+
+
+def provenance(net, seed=0):
+    """The provenance every result starts with: schema number, reader version, weights (weights_info) and seed."""
+    return {"schema": SCHEMA, "reader": {"module": "kit.letterread", "version": KIT_VERSION},
+            "weights": weights_info(net), "seed": _jsonable(seed)}
+
+
 def estimate_letter_px(a):
     """First guess of the letter height (px) of a normalised image, and how it was made.
 
@@ -1127,10 +1420,16 @@ def estimate_letter_px(a):
 
 
 def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0, deskew_deg=DESKEW_DEG, lines=None,
-            p_min=None, null_rate=0.05, lm=None, lm_weight=0.0, beam=32, scale_search=True, columns="auto",
+            p_min=None, null_rate=0.05, lm=None, lm_weight=None, beam=32, scale_search=True, columns="auto",
             normalized=False, input_scale=1, letter_px_fallback=True, progress=None, control=None,
             min_letters=MIN_LETTERS, shear_fill=None):
     """Read every text line of a 2D image. Returns a JSON-able dict with letters, boxes, confidences and controls.
+
+    img: a 2D array (as_image: size-1 axes dropped, an RGB or RGBA array averaged to grey). weights: a
+    LineNet, a released model name or a path (load_weights). Options are checked first
+    (check_options), and the result starts with provenance() (schema, reader version, weights, seed)
+    and ends with options (read_options). lm: a letter language model (kit/greeklm.py), decoded
+    beside the ink-only string with lm_weight (LM_WEIGHT when not given).
 
     letter_px: letter height in image pixels. When None it is estimated, and with scale_search the
     reader is run at SCALE_STEPS times the estimate (up to 8 lines, at least one per column, 2 nulls
@@ -1168,7 +1467,20 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
     normalised like img; it is read on the image's own columns, deskew and lines at the same letter
     size and confidence floor, and its kept letters go into the status (control_status).
     min_letters: the fewest kept letters a read or a column needs before its counts can pass."""
-    net = weights if isinstance(weights, LineNet) else LineNet(weights)
+    check_options(letter_px=letter_px, polarity=polarity, columns=columns, nulls=nulls, seed=seed,
+                  min_letters=min_letters, deskew_deg=deskew_deg, input_scale=input_scale, p_min=p_min,
+                  null_rate=null_rate, lm_weight=lm_weight, beam=beam, lines=lines, shear_fill=shear_fill)
+    opts = read_options(dict(letter_px=letter_px, polarity=polarity, nulls=nulls, seed=seed, deskew_deg=deskew_deg,
+                             lines=lines, p_min=p_min, null_rate=null_rate, lm=lm, lm_weight=lm_weight, beam=beam,
+                             scale_search=scale_search, columns=columns, input_scale=input_scale,
+                             letter_px_fallback=letter_px_fallback, min_letters=min_letters, shear_fill=shear_fill),
+                        control_map=control is not None)
+    if lm_weight is None:
+        lm_weight = LM_WEIGHT if lm is not None else 0.0
+    net = load_weights(weights)
+    img = as_image(img)
+    if control is not None:
+        control = as_image(control, "control image")
     pinfo = None
     if normalized:
         a0 = np.asarray(img, dtype=np.float32)
@@ -1245,7 +1557,15 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
         res["deskew_warning"] = warning
         if progress:
             progress("warning: " + warning)
+    res = {"note": res["note"], **provenance(net, seed), **res}
+    res["options"] = opts
     return res
+
+
+# analyze()'s options with their defaults, taken once as the module loads: read() checks option names against
+# them, and read_options() fills in the defaults.
+ANALYZE_OPTIONS = {n: q.default for n, q in inspect.signature(analyze).parameters.items()
+                   if q.kind is q.KEYWORD_ONLY and n not in ("normalized", "progress", "control")}
 
 
 def deskew_warning(res):
@@ -1438,6 +1758,16 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
          polarity_info=None, **kw):
     """analyze() plus orientation evidence: confident letters as read, mirrored, and turned 90, 180 and 270 degrees.
 
+    The Python entry point. img: a 2D array of numbers (as_image: size-1 axes dropped, an RGB or
+    RGBA array averaged to grey; read files with load_image or load_reduced). weights: a released
+    model name such as "letters-v2-real" (downloaded once, SHA-256 checked), a path to a linenet-v1
+    .npz or a LineNet (load_weights). kw: analyze()'s options, checked before any work
+    (check_options; an unknown name is a TypeError); with a language model (lm=) and no lm_weight,
+    lm_weight is LM_WEIGHT, as on the command line. The result is a JSON-able dict: provenance()
+    first (schema, reader version, weights' name, file and SHA-256, seed), options last
+    (read_options, with rotate, mirror, orientation and control_map); docs/letter-reader.md lists
+    every field.
+
     The image is normalised once (normalize_for_reading) and that one image serves the main read, its
     nulls and the orientation reads. When a letter height is given, it is checked against the
     line-pitch estimate (letter_px_check; a warning in the result when they differ by over 2x).
@@ -1463,7 +1793,21 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
     and auto runs the trial on it as bright ink and inverts it when dark ink wins. A dark-ink read
     fills rows the deskew shears in with the image's median grey (analyze's shear_fill), unless
     shear_fill is given."""
-    net = weights if isinstance(weights, LineNet) else LineNet(weights)
+    known = list(ANALYZE_OPTIONS)
+    unknown = sorted(set(kw) - set(known))
+    if unknown:
+        raise TypeError(f"read(): unknown option{'s' if len(unknown) > 1 else ''} {', '.join(unknown)}; the options "
+                        f"are {', '.join(known)}, orientation, normalized, progress, control, rotate, mirror and "
+                        "polarity_info")
+    check_options(rotate=rotate, **kw)
+    if kw.get("lm") is not None and kw.get("lm_weight") is None:
+        kw["lm_weight"] = LM_WEIGHT                    # as the command line's --lm-weight default
+    opts = read_options(kw, rotate=rotate, mirror=bool(mirror), orientation=bool(orientation),
+                        control_map=control is not None)
+    net = load_weights(weights)
+    img = as_image(img)
+    if control is not None:
+        control = as_image(control, "control image")
     polarity = kw.get("polarity", "bright")
     pinfo = dict(polarity_info) if polarity_info else None
     trial_kw = dict(letter_px=kw.get("letter_px"), input_scale=kw.get("input_scale", 1), seed=kw.get("seed", 0),
@@ -1535,6 +1879,9 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
     if rotate or mirror:
         _boxes_to_input(res, shape_read, rotate, mirror, kw.get("input_scale", 1))
     res["polarity"] = pinfo
+    opts["polarity"] = pinfo.get("asked", opts["polarity"])     # what was asked; res["polarity"]["used"] says how it read
+    res.pop("options", None)                                     # analyze()'s, of the normalised image; last, as there
+    res["options"] = opts
     return res
 
 
@@ -1568,7 +1915,10 @@ def text_summary(res):
     size = f"{res['letter_px']} px ({res['letter_px_from']}"
     if "letter_mm" in res:
         size += f", {res['letter_mm']:g} mm at {res['um_per_px']:g} um per pixel"
-    out = [res["note"], f"letter height {size}), deskew {res['deskew_deg']} deg, confidence floor {res['p_min']}"]
+    out = [res["note"]]
+    if "weights" in res:
+        out.append(provenance_line(res))
+    out.append(f"letter height {size}), deskew {res['deskew_deg']} deg, confidence floor {res['p_min']}")
     if res.get("input_scale", 1) != 1:
         shape = " x ".join(str(n) for n in res["input_shape"])
         red = " x ".join(str(n) for n in res.get("reduced_shape", []))
@@ -1629,6 +1979,17 @@ def text_summary(res):
                 line += " (but first the polarity hint above: these counts are in the polarity it advises against)"
         out.append(line)
     return "\n".join(out)
+
+
+def provenance_line(res):
+    """One line naming the weights, their SHA-256 (first 12 hex digits), the reader version, the seed and the schema."""
+    w = res["weights"]
+    name = w.get("name") or w.get("file") or "(no file name)"
+    if w.get("name") and w.get("file"):
+        name += f" ({w['file']})"
+    sha = f", sha256 {w['sha256'][:12]}" if w.get("sha256") else ""
+    return (f"weights {name}{sha}; reader {res['reader']['version']}, seed {res['seed']}, result schema "
+            f"{res['schema']}")
 
 
 def view_options(rotate, mirror):

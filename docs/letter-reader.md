@@ -32,7 +32,15 @@ python -m kit letterread MAP.tif --weights letters-v2-real --letter-px 86 --cont
 python -m kit letterread MAP-2.4um.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 2.399 --overlay MAP-letters.png
 ```
 
-`--weights letters-v2-real` names a released model in [`kit/data/letter-weights.json`](../kit/data/letter-weights.json): the reader downloads it once into `~/.cache/scrolls-kit/letters/` (or `$KIT_LETTER_WEIGHTS`) and refuses a file whose SHA-256 differs. A path to any `linenet-v1` `.npz` works too.
+`--weights letters-v2-real` names a released model in [`kit/data/letter-weights.json`](../kit/data/letter-weights.json): the reader downloads it once into `~/.cache/scrolls-kit/letters/` (or `$KIT_LETTER_WEIGHTS`) and refuses a file whose SHA-256 differs. A path to any `linenet-v1` `.npz` works too. In detail:
+
+- **Names first.** An argument that is a released model's name is that model, even when a file of that name sits in the current folder; anything else is a path (`~` is expanded).
+- **Checked files.** The cached file is checked against the registry's SHA-256 on every read, and so is any file you give by path whose file name is a released model's (`letters-v2-real-step030000.npz`), so a damaged or swapped copy is refused, not read.
+- **`KIT_LETTER_WEIGHTS`** (with `~` expanded) is either the cache folder or a weights file: a file with the model's SHA-256 is used as it is, otherwise its folder is the cache.
+- **The weights come before the image.** The command (and the demo) resolves the weights, downloading them if needed, before it loads any image, so a failed download costs no load.
+- **When the download fails** (no network, a proxy, a firewall), the message names the model, its address and the cache folder. Download the file by hand, in a browser or with `curl -L -o letters-v2-real-step030000.npz URL`, and copy it into that folder (or point `KIT_LETTER_WEIGHTS` at it); its SHA-256 is checked there as for a download. Downloaded files are written readable by everyone (mode 0644), so a shared cache works.
+
+**Windows consoles and pipes.** The command line, the demo and the letter scripts switch standard output and standard error to UTF-8 (with backslash escapes for anything UTF-8 cannot encode) when they are not a terminal (a pipe, or `> out.txt`) or their encoding cannot hold Greek letters, so printing never stops a read on a letter; a console set to another code page may show the letters garbled, and `--out` still holds them correctly. `--out` and `--overlay` are written before the summary is printed, and their folders are checked before the read, so a console error never loses a finished read; when one of the two files cannot be written, the other and the summary still come out and the command exits with 2. The JSON is always UTF-8.
 
 ### Letter size matters most
 
@@ -68,37 +76,47 @@ Everything in the result stays in input pixels: rows, columns, boxes, `letter_px
 
 Measured on 14 October 2026 on a 4-core cloud container, 2 threads, under a 10 GB address-space limit (`ulimit -v 10000000`), reading w013's whole 2.4 um map (a 269 MB deflate-compressed tiled TIFF) with `--letter-px 1376` and an overlay: block-averaged by 43 to 967 by 1,851 pixels, 35 to 36 s wall time and about 250 MB peak resident memory (two runs), with 120 letters kept against nulls of 29, 22, 28 and 31 (Model output). The same command before this change stopped with a MemoryError after 23 s, asking for a 12.3 GiB float32 array. The same map averaged 16 by 16 (`--letter-px 86`, 2,600 by 4,975 pixels, under the budget) reads exactly as before, with the same letters, boxes, confidences and control counts: 20 to 23 s and 420 MB, against 23 s and 443 MB before.
 
-From Python:
+### From Python
+
+`read(image, weights, **options)` is the entry point, with a fixed contract:
+
+- **image**: a 2D array of numbers. Size-1 axes are dropped, and a colour array with its channels last, `(H, W, 3)` or `(H, W, 4)`, is made grey as `load_image` makes a colour TIFF: the mean of its first three channels (alpha left out). Anything else (channels first, 1D, empty, text, a file name) stops with an error that says what to give. Files are read with `load_image(path)`, or `load_reduced(path)` for big maps.
+- **weights**: a released model name (`"letters-v2-real"`, downloaded once and checked as on the command line), a path to a `linenet-v1` `.npz`, or a `LineNet` already loaded (`load_weights(name or path)`), which is fastest for many reads.
+- **options**: `analyze()`'s keyword options, the command line's options under their Python names (`letter_px`, `polarity`, `columns`, `nulls`, `seed`, `deskew_deg`, `lines`, `p_min`, `min_letters`, `lm`, `lm_weight`, `beam`, ...), plus `control`, `rotate`, `mirror` and `orientation`. They are checked before any work: a letter height that is not a positive number, a polarity other than `bright`, `dark` or `auto`, a `columns` other than `auto`, `off` or a whole number of at least 1, an unknown option name, and the like stop with an error naming the option and what to give (`check_options()`). With a language model (`lm=`) and no `lm_weight`, the weight is 0.5, as on the command line (`LM_WEIGHT`).
+- **result**: a dict that `json.dumps` writes as it is, starting with the model-output note and its provenance (schema number, reader version, the weights' released name, file name and SHA-256, the seed) and ending with the options used; [The result, field by field](#the-result-field-by-field) lists every field. `text_summary(res)` prints it as the command line does, with a provenance line under the note.
 
 ```python
 from kit import letterread as R
+net = R.load_weights("letters-v2-real")           # once; a name, a path, or pass the name to read() each time
 img = R.load_image("MAP.png")                     # .npy, .npz, .tif or .png/.jpg; 2D float array
-res = R.read(img, R.resolve_weights("letters-v2-real"), letter_px=86)
+res = R.read(img, net, letter_px=86)
 print(R.text_summary(res))
+print(res["weights"]["name"], res["weights"]["sha256"], res["schema"])   # what read it, for the record
 for line in res["lines"]:
     print(line["column"], line["y"], line["ink_only"])   # '·' marks a letter slot under the confidence floor
     for l in line["letters"]:
         l["glyph"], l["p"], l["kept"], l["box"]           # box is [y0, y1, x0, x1] in input pixels
 print(res["control"]["status"], res["control"]["ratio"])  # strong, weak, none, too_few or no_control
 print([c["control"]["status"] for c in res["columns"]])   # one status per column
-res2 = R.read(img, R.resolve_weights("letters-v2-real"), letter_px=86,
-              control=R.load_image("MAP_reverse.png"))    # with a control map of the same shape
+res2 = R.read(img, net, letter_px=86, control=R.load_image("MAP_reverse.png"))   # a control map of the same shape
 print(res2["control"]["control_map"])                     # its kept letters and the ratio to them
 R.overlay(img, res, "MAP-letters.png")
 
 # a whole map: block-averaged while it loads when over the budget; boxes come back in input pixels
 img, k, shape = R.load_reduced("MAP-2.4um.tif", letter_px=R.letter_px_from_units(3.3, 2.399))
 a = R.normalize_for_reading(img)                  # normalise once
-res = R.read(a, R.resolve_weights("letters-v2-real"), normalized=True, input_scale=k,
+res = R.read(a, net, normalized=True, input_scale=k,
              letter_px=R.letter_px_from_units(3.3, 2.399), letter_px_fallback=False)
 R.overlay(a, res, "MAP-letters.png", normalized=True)    # draws the reduced image; boxes are mapped
 
 # a photograph (EXIF orientation applied as it loads), read the way its polarity reads best, turned a quarter
 img = R.load_image("PHOTO.jpg")
-res = R.read(img, R.resolve_weights("letters-v2-real"), letter_px=28, polarity="auto", rotate=90)
+res = R.read(img, net, letter_px=28, polarity="auto", rotate=90)
 print(res["polarity"]["used"], res["polarity"]["trial"]["dark"])  # dark or bright, and the quick read's counts
 R.overlay(img, res, "PHOTO-letters.png")                  # drawn as given; boxes in input pixels
 ```
+
+A read can be repeated from its own record: on the same image, `R.read(img, net, **{k: v for k, v in res["options"].items() if k in R.ANALYZE_OPTIONS and k != "lm"}, rotate=res["options"]["rotate"], mirror=res["options"]["mirror"])` gives the same letters (a test checks it). Give `normalized=True` again if you normalised the image yourself, and pass the language model and the control map again; the record holds their names, not the objects.
 
 ### Tilted, turned and mirrored text
 
@@ -166,7 +184,7 @@ When the two decodes disagree, the ink-only line is what the image supports. A l
 
 ## What the result means
 
-`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels, and the line's `n_kept` beside `chance`, the count the nulls make expected there (below). Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `columns` (each with its own `control` block, `deskew_deg` and `deskew_at_limit`), `deskew_deg` (the first column's), `deskew_max_deg`, `deskew_warning` when a column's angle is the limit of the search, `shear_fill`, `polarity` (`asked`, `used`, and the quick read both ways as `trial` when auto decided or the controls did not pass, with `hint` when the other polarity reads clearly better), `view` and each letter's `view_box` after a turned read, `exif_orientation` for a turned JPEG or PNG, `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. These controls travel with the result, and each can fail:
+`read()` returns, and `--json` prints, a JSON record whose every field is listed in [The result, field by field](#the-result-field-by-field), below; in short, one record per found line: its column, centre row `y`, the `ink_only` string, each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels, and the line's `n_kept` beside `chance`, the count the nulls make expected there (below). Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `columns` (each with its own `control` block, `deskew_deg` and `deskew_at_limit`), `deskew_deg` (the first column's), `deskew_max_deg`, `deskew_warning` when a column's angle is the limit of the search, `shear_fill`, `polarity` (`asked`, `used`, and the quick read both ways as `trial` when auto decided or the controls did not pass, with `hint` when the other polarity reads clearly better), `view` and each letter's `view_box` after a turned read, `exif_orientation` for a turned JPEG or PNG, `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. These controls travel with the result, and each can fail:
 
 1. **Nulls.** The same reader on tile-shuffled copies (letter-sized tiles with random flips: local texture and grey levels kept, letters and lines broken) and phase-randomised copies (same power spectrum, so the same line spacing, shapes broken). The confidence floor is set so the nulls keep few letters (at most 5% of a line's letter slots, never below p = 0.5). `control.verdict` keeps its old wording, which compares letters kept on the image with each null only: "confident letters well above every null" (more than three times), "more confident letters than every null, but within a factor of three", or "confident letters NOT above the nulls: treat every letter here as noise". The benchmark scripts record it unchanged.
 2. **Control map** (`--control MAP_REVERSE`, or `read(..., control=...)`). A second map of the same surface on the same grid, above all its reverse-depth ink map, read on the image's lines at the same letter size and confidence floor (details below).
@@ -234,6 +252,80 @@ Check that it can fail (Model output, 14 October 2026, the same w013 map): with 
 
 The numbers are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026), and both checks rerun with `python scripts/letters/eval_controls.py windows MAP.tif --weights W.npz` (on the w013 map averaged 16 by 16; defaults: 86 px, 520 by 1000 px windows, three shuffled copies) and `python scripts/letters/eval_controls.py blanks --weights W.npz`.
 
+### The result, field by field
+
+Schema 1 (14 October 2026). `schema` is raised when a field is renamed or removed or changes its meaning; new fields keep the number, so read fields by name and ignore ones you do not know. The tables cover `read()`, which the command line calls; `analyze()` (no orientation reads) returns the same fields except `orientation`, `letter_px_check` and `view`, has `polarity` only when it decided `auto`, and its `options` lack `rotate`, `mirror` and `orientation`. Units are input pixels: the pixels of the image as given, after its `--crop` (rows and columns relative to Y0, X0) and its EXIF orientation, before any block-averaging. No field holds a local folder: files are named by their file name only.
+
+**Every box's height is the line band.** A letter's `box` is `[y0, y1, x0, x1]`. Its rows are the line's band, one letter height (`letter_px`) centred on the line's row, moved by the column's deskew at the box's horizontal centre: every letter on a line has the same height, set by the line, not measured on the letter, so a box says which line a letter is on, not how tall its ink is. Its columns come from the letter's own output frames, widened by 0.3 letter heights on each side, so boxes of neighbouring letters overlap. After a read turned by 90 or 270 degrees the lines run up and down in input pixels, so there the band is the box's width; `view_box` keeps the box in the turned image.
+
+Top level:
+
+| Field | Meaning |
+| --- | --- |
+| `note` | "Model output: letter hypotheses from a learned line reader, not a reading. A papyrologist decides what is legible." |
+| `schema` | The result's schema number, 1 |
+| `reader` | `module` (`kit.letterread`) and `version`, the kit package's version (`kit.__version__`) |
+| `weights` | `name` (the released model whose SHA-256 the file has, or `null`), `file` (file name only), `sha256` and `format` (`linenet-v1`) |
+| `seed` | Seed of the null copies (the quick polarity reads use seed + 1) |
+| `engine` | `linenet` |
+| `letter_px` | Letter height the read used |
+| `working_scale` | Network pixels per input pixel |
+| `deskew_deg` | The first column's deskew angle in degrees (each column has its own in `columns`) |
+| `p_min` | Confidence floor: letters at or above it are kept |
+| `lines` | One record per line, column by column, left to right (below) |
+| `columns` | One record per column (below) |
+| `control` | The controls of the whole read (below) |
+| `input_shape` | `[H, W]` of the input window |
+| `input_scale` | Block size k the image was averaged by while loading (1 when it fit the budget) |
+| `reduced_shape` | `[H, W]` of the image read, only when `input_scale` is over 1 |
+| `letter_px_from` | `given`, `line pitch` or `image height / 4`, with `, then scale search` when the size was searched |
+| `letter_px_estimated` | `true` unless the size was given |
+| `letter_px_first_guess` | The estimate the scale search started from (only when estimated) |
+| `scale_search` | Only when estimated: per scale `letter_px`, `letters_kept`, `null_letters_kept` (two nulls) and `margin` (kept minus the largest null); the largest margin was kept |
+| `deskew_max_deg` | The deskew search's limit, degrees either way (0: off) |
+| `shear_fill` | Grey of rows the deskew shears in (0 for bright ink, the image's median for dark ink) |
+| `deskew_warning` | Only when a column's angle is the limit of the search: what to do |
+| `letter_px_check` | Only when the size was given and the image shows a line pitch: `line_pitch_estimate`, `ratio` (given over estimate) and, beyond 2x either way, `warning` |
+| `orientation` | `letters_kept` as read and turned (`as_is`, `mirrored`, `rot180`, `rot90`, `rot270`), `best`, `best_view` (`rotate`, `mirror` that read the input as the best), `note` and `turns` (fixed sentences) |
+| `view` | Only after `--rotate` or `--mirror`: `rotate`, `mirror`, `shape` (of the turned image, in input pixels) and `note` |
+| `polarity` | `asked` (`bright`, `dark` or `auto`) and `used` (`bright` or `dark`); `background` when the reader normalised the image itself (where its median grey lies between the 0.5th and 99.8th percentiles, 0 to 1; a description, not a rule); `rule` (how auto decides) when auto was asked; `trial` (the quick reads both ways, `polarity_trial()`: `rule`, `letter_px`, `choice`, and for `bright` and `dark` each its `letters_kept`, `null_letters_kept`, `margin` and `status`) when auto decided or the controls did not pass; `hint` when the other polarity reads clearly better |
+| `options` | Every option of the read with the value used (below) |
+
+Added by the command line: `source` (`file`, the image's file name, and `key`), `exif_orientation` (only for a turned JPEG or PNG, 2 to 8), `letter_mm` and `um_per_px` (only when the size was given in units), `crop` (`[Y0, Y1, X0, X1]`, only with `--crop`), `overlay` (only with `--overlay`: `file`, `scale` in overlay pixels per input pixel, `banner_rows`, `size` as `[height, width]` and `max_side`; a box edge at input row y and column x lands at overlay row `banner_rows + y * scale` and column `x * scale`), `control.control_map.file` and `options.max_mpx`. The demo adds `source` with `file`, `map` (the public address of the map it read, `null` when a cached map has no note of it), `grid`, `crop` and `weights` (file name).
+
+A line (`lines[i]`):
+
+| Field | Meaning |
+| --- | --- |
+| `line` | Index over the whole read |
+| `column` | Index of its column |
+| `y` | Centre row of its band at its column's horizontal middle (in the turned image after a turned read) |
+| `ink_only` | The letters decoded from the ink alone, `·` for a letter slot under the floor |
+| `letters` | One record per decoded letter (below) |
+| `n_kept` | Letters kept on the line |
+| `chance` | The column's mean null count over its lines: the count the nulls make expected on one line (`null` with no nulls) |
+| `control_map_kept` | Only with a control map: its letters kept on the same line |
+| `with_lm` | Only with a language model and a weight over 0: the beam decode with it, beside `ink_only`, never replacing it |
+
+A letter (`lines[i].letters[j]`): `glyph` (one of the 24 capitals, lunate sigma for sigma), `p` (its confidence, 0 to 1), `kept` (`p` at or above `p_min`), `box` (above), and `view_box` after a turned read.
+
+A column (`columns[i]`): `x0` and `x1` (its edges, in the turned image after a turned read), `deskew_deg`, `deskew_at_limit`, `lines` (how many) and `control`, a block like the read's without `nulls` and `verdict`, with `chance` (its mean null count).
+
+The controls (`control`):
+
+| Field | Meaning |
+| --- | --- |
+| `letters_kept` | Letters kept on the image |
+| `null_letters_kept` | Letters kept on each null copy, at the same floor |
+| `nulls` | Per null its `kind` (`tile_shuffle` or `phase`) and `letters_kept` |
+| `verdict` | The old wording, kept unchanged for the benchmark scripts |
+| `min_letters` | The floor of letters a read needs before it can pass (10 by default) |
+| `ratio` | `letters_kept` over the largest null (a null of 0 counting as 1); `null` without nulls |
+| `status`, `status_text` | `strong`, `weak`, `none`, `too_few` or `no_control`, and its fixed sentence ([The status, and what to do](#the-status-and-what-to-do)) |
+| `control_map` | Only with a control map: `letters_kept`, `ratio` and, from the command line, `file` |
+
+The options (`options`), each with the value the read used, given or default: `letter_px` (given, or `null` when estimated), `polarity` (as asked), `nulls`, `seed`, `deskew_deg` (the search's limit), `lines` (given rows, or `null`), `p_min` (given, or `null` when set from the nulls), `null_rate`, `lm_weight` (`null` without a language model), `beam`, `scale_search`, `columns`, `input_scale`, `letter_px_fallback`, `min_letters`, `shear_fill` (as given, `null` for the default), `lm` (`null`, or the model's `file`, `sha256` and `order`), and for `read()` `rotate`, `mirror`, `orientation` and `control_map` (whether a control map was read); the command line adds `max_mpx`, its pixel budget in millions of pixels.
+
 ## How well it reads
 
 All numbers are Model output on public data, measured on CPU with the numpy reader, except the real-letter validation row, which is the trainer's own check on the B200. Character error is edit distance over reference letters; 0.10 means about one edit per ten letters. "Free ends" does not charge letters read before or after the reference, because a map window also shows unlabelled neighbours. Each PHerc. 1667 test's rule was fixed in writing on 9 October 2026 before the readers it compares were run on it; the PHerc. 172 row is a diagnostic, because its column rule was set after that test half had been seen (conditions in the [log](logs/2026-10-14-letter-reader.md)). "Synthetic-only" is letters-v1: the same network, data size and training, with no real letters in its training lines.
@@ -289,7 +381,7 @@ python scripts/letters/eval_p1667.py read work/p1667/groups refs.json --weights 
 python scripts/letters/eval_p1667.py compare A.json B.json --metric free_ends       # paired bootstrap over groups
 ```
 
-`eval_p1667.py read` needs a weights file path (resolve a released name with `python -c "from kit import letterread as R; print(R.resolve_weights('letters-v2-real'))"`). The published text (arXiv 2606.29085, columns 5 to 22) parses with `python scripts/letters/p1667_text.py PAPER.pdf text.json` (177 lines, 1752 visible letters; output SHA-256 `f936e457eb047f27014e642f50b750b6ee48c825b9eb372fda324449eec0887c` for the v1 PDF). Whole maps cut to the 38 um grid with `eval_p1667_text.py cut`, and `p1667_align.py read/align/crops` places published lines on them (decoy-tested), which `finetune_maps.py` uses to fine-tune on real map lines.
+`eval_p1667.py read` needs a weights file path (resolve a released name with `python -c "from kit import letterread as R; print(R.resolve_weights('letters-v2-real'))"`). Its output, `eval_p1667_text.py read`'s and `p1667_align.py read`'s record `--weights` as given, because their formats are those of the tests fixed on 9 October 2026 (and `p1667_align.py`'s digest covers the field), so give them a path inside the repository such as `work/letters/W.npz`, not one under your home folder. `eval_controls.py`, `eval_pages.py`, `eval_photos.py` and `eval_p172.py` take a released name too, and record the weights' file name and SHA-256 (`weights`, `weights_sha256`). The published text (arXiv 2606.29085, columns 5 to 22) parses with `python scripts/letters/p1667_text.py PAPER.pdf text.json` (177 lines, 1752 visible letters; output SHA-256 `f936e457eb047f27014e642f50b750b6ee48c825b9eb372fda324449eec0887c` for the v1 PDF). Whole maps cut to the 38 um grid with `eval_p1667_text.py cut`, and `p1667_align.py read/align/crops` places published lines on them (decoy-tested), which `finetune_maps.py` uses to fine-tune on real map lines.
 
 The PHerc. 172 check reads [Bodillium/Herculaneum-Scroll-Labels](https://github.com/Bodillium/Herculaneum-Scroll-Labels) (CC BY-NC-SA 4.0; nothing from it is copied here):
 
@@ -345,7 +437,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 
 | File | What it does |
 | --- | --- |
-| [`kit/letterread.py`](../kit/letterread.py) | The reader: image loading (block-averaged while loading when over the budget; zarr and OME-Zarr; EXIF orientation for JPEG and PNG), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout and deskew, turned and mirrored reads, polarity (auto and the check after a failed read), nulls, control map, status codes per read, column and line, orientation, overlay, released weights |
+| [`kit/letterread.py`](../kit/letterread.py) | The reader: the Python entry point `read()` with its input and option checks, image loading (block-averaged while loading when over the budget; zarr and OME-Zarr; EXIF orientation for JPEG and PNG), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout and deskew, turned and mirrored reads, polarity (auto and the check after a failed read), nulls, control map, status codes per read, column and line, orientation, overlay, released weights (names first, SHA-256 checks, the download's advice), provenance on every result, UTF-8 output for pipes and Windows consoles |
 | [`kit/greeklm.py`](../kit/greeklm.py) | Kneser-Ney letter n-grams for Greek in scriptio continua, from TEI texts |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
@@ -358,7 +450,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 | [`scripts/letters/eval_photos.py`](../scripts/letters/eval_photos.py) | Photograph-like pages (dark ink on a light ground, tilted, turned a quarter, on dark and white mounts): polarity bright, dark and auto, the deskew, the orientation reads, and pages with no letters |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls and status codes, control map, weights download and lookup, the Python API's input and option checks, provenance and file names in results, UTF-8 output and files written before the summary, big images and their formats, letter size in units, deskew limit and given lines, turned and mirrored reads, polarity auto and the polarity check, EXIF orientation, overlay, letter language model) |
 
 ## Related work
 

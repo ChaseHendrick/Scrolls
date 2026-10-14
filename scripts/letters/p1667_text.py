@@ -154,7 +154,7 @@ def bbox_layout(pdf):
     the letter before it and stays free. Lines carry no indentation (the parse tells line numbers
     from apparatus entries by the gap after the number), and lines that start in the translation
     column are left out."""
-    raw = subprocess.run(["pdftotext", "-bbox", pdf, "-"], capture_output=True, text=True, check=True).stdout
+    raw = subprocess.run(["pdftotext", "-bbox", pdf, "-"], capture_output=True, encoding="utf-8", check=True).stdout
     out = []
     for page in raw.split("<page ")[1:]:
         words = sorted(((float(y), float(x0), float(x1), html.unescape(w)) for x0, y, x1, w in WORD.findall(page)))

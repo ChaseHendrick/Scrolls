@@ -368,4 +368,10 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
+    try:   # Greek prints in a pipe and on a Windows console (kit is not needed for anything else here)
+        sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+        from kit.letterread import utf8_console
+        utf8_console()
+    except ImportError:
+        pass
     main()
