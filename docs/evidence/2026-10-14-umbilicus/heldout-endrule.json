@@ -1,0 +1,295 @@
+{
+ "what": "Held-out scores of the scroll centre finder over all scored slices, over the slices the mount and cap trim keeps, and over the slices both end trims keep (the mount and cap trim, then the end-point rule), for the first stage alone and for both stages. Each of the 13 published scrolls was scored by models trained without it (four groups by scroll, pipeline.FOLDS).",
+ "claim": "Model output",
+ "date": "2026-10-14",
+ "answers": "the held-out answers of the two training runs of 13 October 2026 (first stage: pipeline.py job fold<k>s<seed>, two seeds averaged; both stages: refine.py chain fold<k> on those answers), smoothed along z as pipeline.collect and refine.chain_collect do",
+ "made_with": "python scripts/umbilicus/endcheck.py score RUN_DIR --cache CACHE, one stage per folder, slices read from the open-data bucket (no --data): the mount and cap trim from level-5 planes, a stand-in for the level-3 papyrus area predict.py uses; the end-point rule from level-3 windows round each centre",
+ "scored_slices": "every slice (one every 64 level-0 voxels) inside the published line's height range: 3,414 over the 13 scrolls",
+ "references": "the open-data bucket umbilicus files for PHerc0125, PHerc0211 and PHerc0826, and Alexey Drobkov's herculaneum-umbilici at de7642ac9b38266e95192489e22fb13b7e2d13b6 for the other ten",
+ "rule": {
+  "radius_mm": 4.0,
+  "min_support": 0.75,
+  "run_mm": 2.0,
+  "rays": 32,
+  "cap_mm": 3.0,
+  "area_frac": 0.3
+ },
+ "gate": {
+  "check": "pooled.all must equal the run records' pooled scores (0.730 mm for both stages and 1.197 mm for the first stage over 3,414 slices) before the trimmed scores are read",
+  "both_stages_all": {
+   "n": 3414,
+   "median_mm": 0.73
+  },
+  "first_stage_all": {
+   "n": 3414,
+   "median_mm": 1.197
+  },
+  "passed": true
+ },
+ "weights": {
+  "umbilicus-first-all.pt": {
+   "sha256": "c9b50aae2876e00f50b7ade5cf9a6facc84fb0f8ad9667dddf5565e5f06ae854",
+   "bytes": 13342891,
+   "run_file": "alls0.pt"
+  },
+  "umbilicus-zoom-all.pt": {
+   "sha256": "0a06fe2e108fbb5f252455f93862336ec4013a535eb922676ae8f846406fb4bb",
+   "bytes": 13349699,
+   "run_file": "refine_all.pt"
+  },
+  "umbilicus-first-fold0s0.pt": {
+   "sha256": "fe143f783b7a18be048b5a1a66a291c5055acb3163839810684f495fb8644ea4",
+   "bytes": 13348827,
+   "run_file": "fold0s0.pt"
+  },
+  "umbilicus-first-fold0s1.pt": {
+   "sha256": "2d9ea4a8bd25d6a8f105bd580b48d61bcb28c94fef69557f42fd28cae069c677",
+   "bytes": 13348827,
+   "run_file": "fold0s1.pt"
+  },
+  "umbilicus-first-fold1s0.pt": {
+   "sha256": "9f48a7d47c14a2520ddc9d53d33cc127089484c2266670660145810fe10f0134",
+   "bytes": 13348827,
+   "run_file": "fold1s0.pt"
+  },
+  "umbilicus-first-fold1s1.pt": {
+   "sha256": "351a683eb53a5773be469dbe8c6db411ca98fe5fd10d06c94f8565f689f95129",
+   "bytes": 13348827,
+   "run_file": "fold1s1.pt"
+  },
+  "umbilicus-first-fold2s0.pt": {
+   "sha256": "7ddd179508ed9982b45eb59998f027d4e192ac299ece0d884f8b0a6cd7379299",
+   "bytes": 13348827,
+   "run_file": "fold2s0.pt"
+  },
+  "umbilicus-first-fold2s1.pt": {
+   "sha256": "f7b60c6af3fca19b4f518932c25dc2990cd77637765ae341a1962286ef9391df",
+   "bytes": 13348827,
+   "run_file": "fold2s1.pt"
+  },
+  "umbilicus-first-fold3s0.pt": {
+   "sha256": "4325d729582a556299684437366caa47a00e27cbb423cba769fdf536ade15aa1",
+   "bytes": 13348827,
+   "run_file": "fold3s0.pt"
+  },
+  "umbilicus-first-fold3s1.pt": {
+   "sha256": "bb433ec36a56ee0ba3a6c7746ac3b8960c5b44c13c431237b8fea61b01c4bbb5",
+   "bytes": 13348827,
+   "run_file": "fold3s1.pt"
+  },
+  "umbilicus-zoom-fold0.pt": {
+   "sha256": "f33153471b0a00d18f6ea205496393fc81e7ea4c7f9093396c299c5fbd76cdef",
+   "bytes": 13349939,
+   "run_file": "refine_fold0.pt"
+  },
+  "umbilicus-zoom-fold1.pt": {
+   "sha256": "f47e525d04064b0f27b888425cdd900a426baa08b879ac1aa4bafcccc1dcfe13",
+   "bytes": 13349939,
+   "run_file": "refine_fold1.pt"
+  },
+  "umbilicus-zoom-fold2.pt": {
+   "sha256": "421d39b11db1fe98f6ab19af1496f11661904bd950ce38b262a1e63ca46c25e3",
+   "bytes": 13349939,
+   "run_file": "refine_fold2.pt"
+  },
+  "umbilicus-zoom-fold3.pt": {
+   "sha256": "4c5c819c8e36c365427329253c23eecd224b60784af97729ccc7b1ad153a6d32",
+   "bytes": 13349939,
+   "run_file": "refine_fold3.pt"
+  }
+ },
+ "weights_note": "SHA-256 and size of the 14 released files (release umbilicus-v1); run_file is each file's name in the training run, as the commands under Reproduce in the guide write it. The fold files made the held-out answers scored here",
+ "fields": {
+  "pooled": "n slices, median, 90th percentile, and share within 1 and 2 mm of the published line, in mm",
+  "all": "every scored slice",
+  "keep_band": "scored slices the mount and cap trim keeps",
+  "end_rule": "scored slices both trims keep",
+  "median_mm_all": "the scroll's median over all its scored slices",
+  "end_rule_dropped_scored": "scored slices the mount and cap trim keeps and the end-point rule drops",
+  "end_rule_dropped_median_error_mm": "median error of those dropped slices; null when none"
+ },
+ "both_stages": {
+  "pooled": {
+   "all": {
+    "n": 3414,
+    "median_mm": 0.73,
+    "p90_mm": 3.371,
+    "within_1mm": 0.603,
+    "within_2mm": 0.796
+   },
+   "keep_band": {
+    "n": 3373,
+    "median_mm": 0.717,
+    "p90_mm": 3.206,
+    "within_1mm": 0.61,
+    "within_2mm": 0.804
+   },
+   "end_rule": {
+    "n": 3243,
+    "median_mm": 0.686,
+    "p90_mm": 2.97,
+    "within_1mm": 0.624,
+    "within_2mm": 0.818
+   }
+  },
+  "per_scroll": {
+   "PHerc0125": {
+    "median_mm_all": 0.456,
+    "end_rule_dropped_scored": 0,
+    "end_rule_dropped_median_error_mm": null
+   },
+   "PHerc0211": {
+    "median_mm_all": 0.861,
+    "end_rule_dropped_scored": 0,
+    "end_rule_dropped_median_error_mm": null
+   },
+   "PHerc0826": {
+    "median_mm_all": 1.292,
+    "end_rule_dropped_scored": 0,
+    "end_rule_dropped_median_error_mm": null
+   },
+   "PHerc0191": {
+    "median_mm_all": 1.351,
+    "end_rule_dropped_scored": 10,
+    "end_rule_dropped_median_error_mm": 0.763
+   },
+   "PHerc0257": {
+    "median_mm_all": 0.649,
+    "end_rule_dropped_scored": 17,
+    "end_rule_dropped_median_error_mm": 2.764
+   },
+   "PHerc0268": {
+    "median_mm_all": 3.478,
+    "end_rule_dropped_scored": 9,
+    "end_rule_dropped_median_error_mm": 4.895
+   },
+   "PHerc0358": {
+    "median_mm_all": 0.251,
+    "end_rule_dropped_scored": 9,
+    "end_rule_dropped_median_error_mm": 1.281
+   },
+   "PHerc0800": {
+    "median_mm_all": 1.43,
+    "end_rule_dropped_scored": 21,
+    "end_rule_dropped_median_error_mm": 4.944
+   },
+   "PHerc0813": {
+    "median_mm_all": 0.82,
+    "end_rule_dropped_scored": 15,
+    "end_rule_dropped_median_error_mm": 3.721
+   },
+   "PHerc1203": {
+    "median_mm_all": 0.387,
+    "end_rule_dropped_scored": 12,
+    "end_rule_dropped_median_error_mm": 1.37
+   },
+   "PHerc1218": {
+    "median_mm_all": 0.366,
+    "end_rule_dropped_scored": 10,
+    "end_rule_dropped_median_error_mm": 0.738
+   },
+   "PHerc1447": {
+    "median_mm_all": 0.446,
+    "end_rule_dropped_scored": 15,
+    "end_rule_dropped_median_error_mm": 2.053
+   },
+   "PHerc1545": {
+    "median_mm_all": 1.337,
+    "end_rule_dropped_scored": 12,
+    "end_rule_dropped_median_error_mm": 4.519
+   }
+  }
+ },
+ "first_stage": {
+  "pooled": {
+   "all": {
+    "n": 3414,
+    "median_mm": 1.197,
+    "p90_mm": 3.997,
+    "within_1mm": 0.431,
+    "within_2mm": 0.719
+   },
+   "keep_band": {
+    "n": 3373,
+    "median_mm": 1.177,
+    "p90_mm": 3.877,
+    "within_1mm": 0.437,
+    "within_2mm": 0.727
+   },
+   "end_rule": {
+    "n": 3242,
+    "median_mm": 1.146,
+    "p90_mm": 3.638,
+    "within_1mm": 0.445,
+    "within_2mm": 0.738
+   }
+  },
+  "per_scroll": {
+   "PHerc0125": {
+    "median_mm_all": 1.374,
+    "end_rule_dropped_scored": 0,
+    "end_rule_dropped_median_error_mm": null
+   },
+   "PHerc0211": {
+    "median_mm_all": 0.991,
+    "end_rule_dropped_scored": 0,
+    "end_rule_dropped_median_error_mm": null
+   },
+   "PHerc0826": {
+    "median_mm_all": 1.5,
+    "end_rule_dropped_scored": 0,
+    "end_rule_dropped_median_error_mm": null
+   },
+   "PHerc0191": {
+    "median_mm_all": 2.036,
+    "end_rule_dropped_scored": 10,
+    "end_rule_dropped_median_error_mm": 0.556
+   },
+   "PHerc0257": {
+    "median_mm_all": 1.238,
+    "end_rule_dropped_scored": 17,
+    "end_rule_dropped_median_error_mm": 2.899
+   },
+   "PHerc0268": {
+    "median_mm_all": 4.044,
+    "end_rule_dropped_scored": 8,
+    "end_rule_dropped_median_error_mm": 4.834
+   },
+   "PHerc0358": {
+    "median_mm_all": 0.821,
+    "end_rule_dropped_scored": 10,
+    "end_rule_dropped_median_error_mm": 1.247
+   },
+   "PHerc0800": {
+    "median_mm_all": 1.561,
+    "end_rule_dropped_scored": 21,
+    "end_rule_dropped_median_error_mm": 5.493
+   },
+   "PHerc0813": {
+    "median_mm_all": 1.307,
+    "end_rule_dropped_scored": 14,
+    "end_rule_dropped_median_error_mm": 5.051
+   },
+   "PHerc1203": {
+    "median_mm_all": 0.505,
+    "end_rule_dropped_scored": 12,
+    "end_rule_dropped_median_error_mm": 1.128
+   },
+   "PHerc1218": {
+    "median_mm_all": 0.689,
+    "end_rule_dropped_scored": 11,
+    "end_rule_dropped_median_error_mm": 1.761
+   },
+   "PHerc1447": {
+    "median_mm_all": 1.074,
+    "end_rule_dropped_scored": 15,
+    "end_rule_dropped_median_error_mm": 1.736
+   },
+   "PHerc1545": {
+    "median_mm_all": 1.376,
+    "end_rule_dropped_scored": 13,
+    "end_rule_dropped_median_error_mm": 4.703
+   }
+  }
+ }
+}

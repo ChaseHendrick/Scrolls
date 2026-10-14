@@ -20,6 +20,7 @@ venv/
 *.tif
 *.tiff
 *.pth
+*.pt
 *.ckpt
 
 # Experiment records are local by default. See docs/WORKFLOW.md.

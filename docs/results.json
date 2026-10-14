@@ -9244,5 +9244,194 @@
    },
    "held_out": "not run (labelled PHerc1447 windings, once); PHerc0841 ag405 labels not opened"
   }
+ ],
+ "umbilicus_checks": [
+  {
+   "date": "2026-10-13",
+   "source": "scripts/umbilicus/README.md",
+   "evidence": "docs/evidence/2026-10-14-umbilicus/",
+   "claim": "Model output on the 13 published centre lines, each scroll held out of its own models' training; not an untouched test set, and the reference is one person's line per scroll",
+   "what": "in-plane distance between the smoothed centre line and the published line at every slice (one every 64 level-0 voxels) inside the published line's height range, pooled over 13 scrolls",
+   "references": "the three open-data bucket umbilicus files (PHerc0125, PHerc0211, PHerc0826) and Alexey Drobkov's ten lines, herculaneum-umbilici at de7642ac9b38266e95192489e22fb13b7e2d13b6",
+   "folds": [
+    [
+     "PHerc0125",
+     "PHerc0268",
+     "PHerc1203"
+    ],
+    [
+     "PHerc0211",
+     "PHerc0800",
+     "PHerc0191",
+     "PHerc1545"
+    ],
+    [
+     "PHerc0826",
+     "PHerc1218",
+     "PHerc0257"
+    ],
+    [
+     "PHerc1447",
+     "PHerc0358",
+     "PHerc0813"
+    ]
+   ],
+   "models": "first stage: U-Net, 3.3 million parameters, three slices in a 256 px frame, two seeds per fold averaged; zoom stage: the same U-Net on a 176 px level-3 window round the first answer, one per fold, two rounds; held-out answers computed on NVIDIA GPUs under bfloat16 autocast",
+   "weights": {
+    "release": "https://github.com/ChaseHendrick/Scrolls/releases/tag/umbilicus-v1",
+    "files": 14,
+    "sha256": "scripts/umbilicus/README.md and docs/evidence/2026-10-14-umbilicus/heldout-endrule.json",
+    "in_git": false
+   },
+   "slices": 3414,
+   "pooled": {
+    "centroid_control": {
+     "median_mm": 3.98,
+     "p90_mm": 9.97,
+     "within_1mm_pct": 7,
+     "within_2mm_pct": 25
+    },
+    "first_stage": {
+     "median_mm": 1.2,
+     "p90_mm": 4.0,
+     "within_1mm_pct": 43,
+     "within_2mm_pct": 72
+    },
+    "both_stages": {
+     "median_mm": 0.73,
+     "p90_mm": 3.37,
+     "within_1mm_pct": 60,
+     "within_2mm_pct": 80
+    }
+   },
+   "per_scroll_median_mm": {
+    "PHerc0125": {
+     "centroid_control": 2.36,
+     "first_stage": 1.37,
+     "both_stages": 0.46
+    },
+    "PHerc0211": {
+     "centroid_control": 2.84,
+     "first_stage": 0.99,
+     "both_stages": 0.86
+    },
+    "PHerc0826": {
+     "centroid_control": 3.25,
+     "first_stage": 1.5,
+     "both_stages": 1.29
+    },
+    "PHerc0191": {
+     "centroid_control": 6.45,
+     "first_stage": 2.04,
+     "both_stages": 1.35
+    },
+    "PHerc0257": {
+     "centroid_control": 3.41,
+     "first_stage": 1.24,
+     "both_stages": 0.65
+    },
+    "PHerc0268": {
+     "centroid_control": 14.66,
+     "first_stage": 4.04,
+     "both_stages": 3.48
+    },
+    "PHerc0358": {
+     "centroid_control": 5.79,
+     "first_stage": 0.82,
+     "both_stages": 0.25
+    },
+    "PHerc0800": {
+     "centroid_control": 6.93,
+     "first_stage": 1.56,
+     "both_stages": 1.43
+    },
+    "PHerc0813": {
+     "centroid_control": 7.0,
+     "first_stage": 1.31,
+     "both_stages": 0.82
+    },
+    "PHerc1203": {
+     "centroid_control": 4.64,
+     "first_stage": 0.51,
+     "both_stages": 0.39
+    },
+    "PHerc1218": {
+     "centroid_control": 1.8,
+     "first_stage": 0.69,
+     "both_stages": 0.37
+    },
+    "PHerc1447": {
+     "centroid_control": 2.74,
+     "first_stage": 1.07,
+     "both_stages": 0.45
+    },
+    "PHerc1545": {
+     "centroid_control": 3.03,
+     "first_stage": 1.38,
+     "both_stages": 1.34
+    }
+   },
+   "median_of_scroll_medians_mm": {
+    "first_stage": 1.31,
+    "both_stages": 0.82
+   },
+   "rule": "written 13 October 2026 before each run: the first stage works if its pooled held-out median is at most 2.0 mm and it beats the centroid on at least 10 of 13 scrolls; the zoom stage is adopted if its pooled median is at least 0.1 mm lower than the first stage's and it is not worse on at least 9 of 13 scrolls",
+   "verdict": "both passed: the first stage beats the centroid on 13 of 13 scrolls, and adding the zoom stage is not worse on 13 of 13",
+   "end_trims": {
+    "date": "2026-10-14",
+    "calibration": "docs/evidence/2026-10-14-umbilicus/calibrate.json: the end-point rule fixed on the published centres of the 13 published scrolls; radius 4 mm, the smallest of 2, 3, 4 and 5 mm at which at most 0.5 % of middle slices fall under the bar (5.7, 1.2, 0.18 and 0.11 %); bar three quarters of 32 directions and run 2 mm set by meaning",
+    "held_out": "docs/evidence/2026-10-14-umbilicus/heldout-endrule.json: the same held-out answers scored over all slices, over the slices the mount and cap trim keeps (keep_band) and over the slices both trims keep (end_rule, what predict.py writes), with endcheck.py score reading the bucket (mount and cap trim from level-5 planes, a stand-in for the level-3 area)",
+    "check": "the all-slices scores equal the run records: 0.730 mm (both stages) and 1.197 mm (first stage) over 3,414 slices",
+    "both_stages": {
+     "all": {
+      "slices": 3414,
+      "median_mm": 0.73,
+      "p90_mm": 3.371,
+      "within_1mm_pct": 60.3,
+      "within_2mm_pct": 79.6
+     },
+     "keep_band": {
+      "slices": 3373,
+      "median_mm": 0.717,
+      "p90_mm": 3.206,
+      "within_1mm_pct": 61.0,
+      "within_2mm_pct": 80.4
+     },
+     "end_rule": {
+      "slices": 3243,
+      "median_mm": 0.686,
+      "p90_mm": 2.97,
+      "within_1mm_pct": 62.4,
+      "within_2mm_pct": 81.8
+     }
+    },
+    "first_stage": {
+     "all": {
+      "slices": 3414,
+      "median_mm": 1.197,
+      "p90_mm": 3.997,
+      "within_1mm_pct": 43.1,
+      "within_2mm_pct": 71.9
+     },
+     "keep_band": {
+      "slices": 3373,
+      "median_mm": 1.177,
+      "p90_mm": 3.877,
+      "within_1mm_pct": 43.7,
+      "within_2mm_pct": 72.7
+     },
+     "end_rule": {
+      "slices": 3242,
+      "median_mm": 1.146,
+      "p90_mm": 3.638,
+      "within_1mm_pct": 44.5,
+      "within_2mm_pct": 73.8
+     }
+    },
+    "dropped_slices": "the end-point rule dropped scored slices on 10 scrolls (130 slices for both stages, 131 for the first stage; none on PHerc0125, 0211 and 0826); on 9 of the 10, in both arms, their median error was above the scroll's median over all its scored slices; the exception is PHerc0191",
+    "primary": "the all-slices score stays the main score, because there the finder does not choose which slices count"
+   },
+   "limits": "ten of the 13 lines are one annotator's; the settings were chosen while looking at some of the same scrolls; PHerc0268 and PHerc0800 have more than one winding centre at some heights; no head-to-head with other finders on the same slices"
+  }
  ]
 }
