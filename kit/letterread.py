@@ -18,6 +18,11 @@ Controls travel with every result, and each can fail:
 Weights are a .npz exported by the training script (format linenet-v1, BatchNorm folded into
 the convolutions). They are not in git: pass a file, or the name of a released model in
 kit/data/letter-weights.json, which resolve_weights() downloads once and checks by SHA-256.
+
+Big images: load_reduced() block-averages an image over MAX_PIXELS by an integer factor while
+loading it in row bands (memory maps, zarr, or the stored integer type; never a float copy of the
+whole image), so a whole native ink map can be read; analyze() and read() take that factor as
+input_scale and report every row, column, box and letter height in input pixels.
 """
 
 import hashlib
@@ -36,6 +41,15 @@ WEIGHTS_REGISTRY = Path(__file__).parent / "data" / "letter-weights.json"
 # line pitch of its own.
 PITCH_PER_H = 6.6 / 3.5
 DOWNLOAD_TIMEOUT = 120  # seconds without data before a weights download gives up
+# Pixel budget. An image with more pixels than this is block-averaged while it loads (load_reduced):
+# 64 Mpx is 256 MB as float32, and normalising it takes a few such copies, which fits a laptop.
+MAX_PIXELS = 64_000_000
+BAND_PIXELS = 64_000_000   # input pixels per band read while block-averaging (rounded up to whole tiles)
+OVERLAY_MAX_SIDE = 4000
+NO_LETTER_SIZE = ("no letter size: the image shows no regular line spacing to estimate it from. Give the letter "
+                  "height with --letter-px H (image pixels), or with --letter-mm MM and --um-per-px UM (for "
+                  "example --letter-mm 3.3 --um-per-px 38.4), or read a window that holds several lines with "
+                  "--crop Y0 Y1 X0 X1")
 
 
 # ------------------------------------------------------------------ released weights
@@ -331,47 +345,279 @@ def edit_distance(a, b):
 
 # ------------------------------------------------------------------ image and page geometry
 
-def load_image(path, key=None, crop=None):
-    """2D float array from .npy, .npz (first or named array), .tif/.tiff (tifffile) or .png/.jpg (Pillow).
+RGB_MEAN = (1 / 3, 1 / 3, 1 / 3)        # colour TIFF and .npy: the plain mean of the first three channels
+RGB_LUMA = (0.299, 0.587, 0.114)        # colour PNG and JPEG: Pillow's grey ("F") conversion
 
-    crop: (Y0, Y1, X0, X1), applied before the conversion to float; a .npy file and an uncompressed
-    TIFF are memory-mapped, so only the window is read."""
+
+class _Source:
+    """A 2D image (or a 2D colour image) read window by window in its stored type.
+
+    arr is anything with .shape and numpy slicing: an array, a memory map or a zarr array. Size-1
+    axes are dropped as np.squeeze would, without reading the data; chunk_rows is the height of the
+    source's tiles or chunks, when it has them."""
+
+    def __init__(self, arr, name, weights=RGB_MEAN, chunk_rows=None, store=None):
+        self.arr, self.name, self.weights, self.chunk_rows, self.store = arr, name, weights, chunk_rows, store
+        self.full = tuple(int(n) for n in arr.shape)
+        kept = tuple(n for n in self.full if n != 1)
+        self.rgb = len(kept) == 3 and kept[-1] in (3, 4)
+        if len(kept) != 2 and not self.rgb:
+            raise ValueError(f"{name}: expected a 2D image, got shape {kept}")
+        self.shape = kept[:2]
+
+    def read(self, y0, y1, x0, x1):
+        """Rows y0:y1 and columns x0:x1 as a numpy array in the stored type: (h, w), or (h, w, c) in colour."""
+        sl = [slice(y0, y1), slice(x0, x1), slice(None)]
+        return np.asarray(self.arr[tuple(0 if n == 1 else sl.pop(0) for n in self.full)])
+
+    def as_float(self, y0, y1, x0, x1):
+        """The window as float32 grey, exactly as load_image has always converted it."""
+        a = self.read(y0, y1, x0, x1)
+        if a.ndim == 3:
+            a = a[..., :3].mean(axis=-1)
+        return a.astype(np.float32)
+
+    def close(self):
+        """Close the file a TIFF's zarr view keeps open."""
+        if self.store is not None and hasattr(self.store, "close"):
+            self.store.close()
+
+
+def _is_zarr(p):
+    p = Path(p)
+    return p.suffix.lower() == ".zarr" or (p.is_dir() and any((p / n).exists() for n in (".zarray", ".zgroup", "zarr.json")))
+
+
+def _ome_level0(attrs):
+    """Path of an OME-Zarr group's full-resolution level (its first dataset), or None."""
+    try:
+        ms = attrs.get("multiscales") or (attrs.get("ome") or {}).get("multiscales")
+        return str(ms[0]["datasets"][0]["path"]) if ms else None
+    except (AttributeError, IndexError, KeyError, TypeError):
+        return None
+
+
+def _zarr_array(store, key, name, strict_key=True):
+    """The zarr array at `key` (an array path, or an OME-Zarr level such as "0") of a store or path.
+
+    Without a key: the array itself, an OME-Zarr group's full-resolution level, or a group's only array."""
+    try:
+        import zarr
+    except ImportError as exc:
+        raise ImportError(f"{name}: reading zarr needs the zarr package (python -m pip install zarr)") from exc
+    z = zarr.open(store, mode="r")
+    if not isinstance(z, zarr.Group):
+        if key and strict_key:
+            raise ValueError(f"{name}: a single zarr array, so --key {key} does not apply")
+        return z
+    names = sorted(z.array_keys())
+    if not key:
+        key = _ome_level0(z.attrs) or (names[0] if len(names) == 1 else None)
+        if key is None:
+            raise ValueError(f"{name}: a zarr group with arrays {names or 'none'}; pick one with --key "
+                             "(an array path, or an OME-Zarr level such as 0)")
+    try:
+        arr = z[key]
+    except KeyError:
+        raise ValueError(f"{name}: no array {key!r} in this zarr (arrays: {', '.join(names) or 'none'})") from None
+    if isinstance(arr, zarr.Group):
+        raise ValueError(f"{name}: {key!r} is a zarr group, not an array; give its level, such as {key}/0")
+    return arr
+
+
+def _chunk_rows(arr):
+    chunks = getattr(arr, "chunks", None)
+    try:
+        return int(chunks[-2]) if chunks and len(chunks) >= 2 else None
+    except (TypeError, ValueError):
+        return None
+
+
+def _open(path, key=None, whole=False):
+    """A _Source for an image file or zarr; whole=True when every pixel will be read at full resolution.
+
+    Windows and bands are read without decoding the rest where the format allows: .npy and
+    uncompressed TIFF by memory map, zarr (and OME-Zarr levels) by chunk, compressed tiled TIFF
+    through tifffile's zarr view when zarr is installed. A compressed TIFF without zarr, a .npz and
+    a PNG or JPEG are decoded whole, in their stored type."""
     p = Path(path)
+    if _is_zarr(p):
+        if not p.exists():
+            raise FileNotFoundError(f"{p}: no such file or folder")
+        arr = _zarr_array(str(p), key, p)
+        return _Source(arr, p, chunk_rows=_chunk_rows(arr))
     suf = p.suffix.lower()
     if suf == ".npy":
-        a = np.load(p, allow_pickle=False, mmap_mode="r" if crop else None)
-    elif suf == ".npz":
+        return _Source(np.load(p, allow_pickle=False, mmap_mode="r"), p)
+    if suf == ".npz":
         z = np.load(p, allow_pickle=False)
-        a = z[key or z.files[0]]
-    elif suf in (".tif", ".tiff"):
+        return _Source(z[key or z.files[0]], p)
+    if suf in (".tif", ".tiff"):
         import tifffile
+        if whole:
+            return _Source(tifffile.imread(str(p)), p)
         try:
-            a = tifffile.memmap(str(p), mode="r") if crop else tifffile.imread(str(p))
+            return _Source(tifffile.memmap(str(p), mode="r"), p)
         except ValueError:  # a compressed TIFF cannot be memory-mapped
-            a = tifffile.imread(str(p))
-    else:
+            pass
+        try:
+            import zarr  # noqa: F401
+        except ImportError:
+            return _Source(tifffile.imread(str(p)), p)
+        store = tifffile.imread(str(p), aszarr=True)
+        try:
+            arr = _zarr_array(store, key, p, strict_key=False)
+        except BaseException:
+            store.close()
+            raise
+        return _Source(arr, p, chunk_rows=_chunk_rows(arr), store=store)
+    from PIL import Image
+    Image.MAX_IMAGE_PIXELS = None
+    im = Image.open(p)
+    if whole:
+        return _Source(np.asarray(im.convert("F")), p)
+    if im.mode in ("1", "LA"):
+        im = im.convert("L")
+    elif im.mode not in ("L", "I", "F") and not im.mode.startswith("I;16"):
+        im = im.convert("RGB")
+    return _Source(np.asarray(im), p, weights=RGB_LUMA)
+
+
+def _is_pillow(p):
+    return not _is_zarr(p) and Path(p).suffix.lower() not in (".npy", ".npz", ".tif", ".tiff")
+
+
+def _window(crop, shape, name):
+    """(y0, y1, x0, x1) of a crop inside an image of this shape, with numpy's slicing rules."""
+    H, W = shape
+    if not crop:
+        return 0, H, 0, W
+    y0, y1, x0, x1 = crop
+    ys, xs = range(H)[slice(y0, y1)], range(W)[slice(x0, x1)]
+    if not len(ys) or not len(xs):
+        raise ValueError(f"{name}: crop {list(crop)} is empty for an image of shape {tuple(shape)}")
+    return ys.start, ys.stop, xs.start, xs.stop
+
+
+def load_image(path, key=None, crop=None):
+    """2D float array from .npy, .npz (first or named array), .tif/.tiff (tifffile), .png/.jpg (Pillow) or zarr.
+
+    crop: (Y0, Y1, X0, X1), applied before the conversion to float; a .npy file and an uncompressed
+    TIFF are memory-mapped, and a zarr or (with zarr installed) a compressed tiled TIFF is read by
+    chunk, so only the window is read. zarr: key is the array path, or the OME-Zarr level ("0" is
+    full resolution, the default)."""
+    src = _open(path, key, whole=not crop or _is_pillow(path))    # Pillow images: always its grey ("F") conversion
+    try:
+        return src.as_float(*_window(crop, src.shape, path))
+    finally:
+        src.close()
+
+
+def reduce_factor(shape, letter_px=None, net_letter_px=16, max_pixels=MAX_PIXELS):
+    """Integer block size for reading an image of this shape: 1 within the pixel budget.
+
+    Over the budget with a known letter height: the largest factor that keeps letters at least
+    twice the network's working letter height (net_letter_px), so the reader's own resize still
+    averages several pixels into each of its pixels; with small letters that can leave the image
+    over the budget. Over the budget with no letter height: the smallest factor that fits it."""
+    n = int(shape[0]) * int(shape[1])
+    if n <= max_pixels:
+        return 1
+    if letter_px:
+        return max(1, int(float(letter_px) // (2 * net_letter_px)))
+    return max(1, math.ceil(math.sqrt(n / max_pixels)))
+
+
+def _block_mean(src, y0, y1, x0, x1, k, progress=None, band_pixels=BAND_PIXELS):
+    """Block mean by k of src's window, float32, read in row bands (rows left over from the last block are dropped).
+
+    Bands follow the source's tiles, so each tile is decoded once; the rows of a band that do not
+    fill a block are carried into the next band."""
+    ny, nx = (y1 - y0) // k, (x1 - x0) // k
+    out = np.empty((ny, nx), np.float32)
+    yend, xend = y0 + ny * k, x0 + nx * k
+    rows = max(k, band_pixels // (8 if src.rgb else 1) // max(1, xend - x0))   # colour is summed in float64
+    if src.chunk_rows:
+        rows = max(1, -(-rows // src.chunk_rows)) * src.chunk_rows
+    done, carry, r, tick = 0, None, y0, y0
+    while r < yend:
+        r1 = min(yend, (r // rows + 1) * rows)
+        part = src.read(r, r1, x0, xend)
+        if src.rgb:
+            part = sum(part[..., c].astype(np.float64) * w for c, w in enumerate(src.weights))
+        if carry is not None:
+            part = np.concatenate([carry, part])
+        n = part.shape[0] // k
+        if n:
+            out[done:done + n] = _blocks(part[:n * k], k, nx)
+            done += n
+        carry = part[n * k:].copy()
+        r = r1
+        if progress and (r - tick >= 0.1 * (yend - y0) or r >= yend):
+            tick = r
+            progress(f"block-averaging: rows {r - y0} of {y1 - y0}")
+    return out
+
+
+def _blocks(part, k, nx, piece_bytes=64 << 20):
+    """Block means by k of a band k * n rows tall and k * nx columns wide, summed in float64 a few rows at a time."""
+    n = part.shape[0] // k
+    out = np.empty((n, nx), np.float32)
+    step = max(1, piece_bytes // (8 * k * nx * k))
+    for i in range(0, n, step):
+        piece = part[i * k:(i + step) * k]
+        s = piece.reshape(-1, k, nx, k).sum(axis=3, dtype=np.float64).sum(axis=1)
+        out[i:i + step] = s / (k * k)
+    return out
+
+
+def load_reduced(path, key=None, crop=None, letter_px=None, net_letter_px=16, max_pixels=MAX_PIXELS, progress=None):
+    """An image for reading, block-averaged while it loads when it is over the pixel budget.
+
+    Returns (image, k, shape): the float32 image, the integer block size k (reduce_factor; 1 when
+    the image fits the budget, and then the image is exactly load_image's) and the (H, W) of the
+    input window in input pixels. Pass k to analyze() or read() as input_scale, with letter_px and
+    lines in input pixels; they report rows, columns, boxes and letter heights in input pixels.
+    The crop is applied in input pixels, before the reduction, so boxes stay relative to Y0, X0."""
+    p = Path(path)
+    if _is_pillow(p):          # Pillow reads the size without decoding; the pixels are decoded once, below
         from PIL import Image
         Image.MAX_IMAGE_PIXELS = None
-        a = np.asarray(Image.open(p).convert("F"))
-    a = np.squeeze(a)
-    if crop:
-        if a.ndim < 2:
-            raise ValueError(f"{path}: expected a 2D image, got shape {a.shape}")
-        y0, y1, x0, x1 = crop
-        shape, a = a.shape, a[y0:y1, x0:x1]
-        if a.size == 0:
-            raise ValueError(f"{path}: crop {list(crop)} is empty for an image of shape {shape}")
-    a = np.asarray(a)
-    if a.ndim == 3 and a.shape[-1] in (3, 4):
-        a = a[..., :3].mean(axis=-1)
-    if a.ndim != 2:
-        raise ValueError(f"{path}: expected a 2D image, got shape {a.shape}")
-    return a.astype(np.float32)
+        with Image.open(p) as im:
+            shape, src = (im.height, im.width), None
+    else:
+        src = _open(p, key)
+        shape = src.shape
+    try:
+        y0, y1, x0, x1 = _window(crop, shape, path)
+        h, w = y1 - y0, x1 - x0
+        k = min(reduce_factor((h, w), letter_px, net_letter_px, max_pixels), h, w)
+        if k == 1:
+            if progress and h * w > max_pixels:
+                progress(f"{p.name}: {h} x {w} px is over the {max_pixels / 1e6:g} Mpx budget, but its letters are "
+                         "too small to block-average; loading it whole")
+            img = load_image(p, key, crop) if src is None else src.as_float(y0, y1, x0, x1)
+            return img, 1, (h, w)
+        if progress:
+            why = (f"letters {float(letter_px) / k:.1f} px tall after it" if letter_px else
+                   f"letter size unknown, so only enough to fit the budget; if letters are under "
+                   f"{2 * net_letter_px * k} px tall in the input, give their size")
+            progress(f"{p.name}: {h} x {w} px is over the {max_pixels / 1e6:g} Mpx budget: block-averaging by {k} "
+                     f"while loading ({why})")
+        if src is None:
+            src = _open(p, key)
+        return _block_mean(src, y0, y1, x0, x1, k, progress), k, (h, w)
+    finally:
+        if src is not None:
+            src.close()
 
 
-def normalize(a, polarity="bright"):
-    """Robust 0..1 scaling with ink bright. polarity: bright (ink maps), dark (photographs) or auto."""
-    a = np.asarray(a, dtype=np.float64)
+def normalize(a, polarity="bright", dtype=np.float64):
+    """Robust 0..1 scaling with ink bright. polarity: bright (ink maps), dark (photographs) or auto.
+
+    dtype is the arithmetic precision; the result is always float32. normalize_for_reading uses
+    float32 arithmetic for images over the pixel budget, to halve the memory."""
+    a = np.asarray(a, dtype=dtype)
     finite = np.isfinite(a)
     if not finite.any():
         raise ValueError("image has no finite values")
@@ -385,6 +631,24 @@ def normalize(a, polarity="bright"):
         polarity = "dark" if (med - lo) > (hi - med) else "bright"
     a = np.clip((a - lo) / (hi - lo), 0, 1)
     return (1.0 - a if polarity == "dark" else a).astype(np.float32)
+
+
+def normalize_for_reading(a, polarity="bright", max_pixels=MAX_PIXELS):
+    """normalize() once for a whole read: float64 arithmetic within the pixel budget (as analyze() does), float32 above it.
+
+    read() and the command line normalise once and hand the result to the main read, its nulls, the
+    orientation reads and the overlay (each with normalized=True)."""
+    return normalize(a, polarity, dtype=np.float64 if np.size(a) <= max_pixels else np.float32)
+
+
+def letter_px_from_units(letter_mm, um_per_px):
+    """Letter height in image pixels from a letter height in millimetres and the pixel size in micrometres."""
+    if letter_mm is None or um_per_px is None:
+        raise ValueError("give the letter height in millimetres and the pixel size in micrometres together "
+                         "(--letter-mm MM --um-per-px UM)")
+    if not (letter_mm > 0 and um_per_px > 0):
+        raise ValueError(f"letter height ({letter_mm} mm) and pixel size ({um_per_px} um) must both be positive")
+    return float(letter_mm) * 1000.0 / float(um_per_px)
 
 
 def resize(a, shape):
@@ -586,52 +850,75 @@ def estimate_letter_px(a):
 
 
 def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0, deskew_deg=6.0, lines=None,
-            p_min=None, null_rate=0.05, lm=None, lm_weight=0.0, beam=32, scale_search=True, columns="auto"):
+            p_min=None, null_rate=0.05, lm=None, lm_weight=0.0, beam=32, scale_search=True, columns="auto",
+            normalized=False, input_scale=1, letter_px_fallback=True, progress=None):
     """Read every text line of a 2D image. Returns a JSON-able dict with letters, boxes, confidences and controls.
 
     letter_px: letter height in image pixels. When None it is estimated, and with scale_search the
     reader is run at SCALE_STEPS times the estimate (up to 8 lines, at least one per column, 2 nulls
     each) and the scale with the most confident letters above its own nulls is kept; the table is in
-    the result.
+    the result. Without a line pitch the estimate is a quarter of the image height; with
+    letter_px_fallback=False that raises ValueError(NO_LETTER_SIZE) instead (the command line does).
     lines: centre rows of the lines in image pixels (found from the row profile when None).
     columns: "auto" splits the image at empty vertical gutters (find_columns) and finds lines in each
     column, so a line never runs across two columns; an integer asks for that many columns (a known
     layout); "off" (or 1) reads the whole width as one column. Lines come out column by column, left
     to right. Given `lines` always means one column.
     p_min: letters below this confidence are dropped ('·'); when None it is set from the nulls so
-    they keep at most null_rate letters per letter-width of line, and never below 0.5."""
+    they keep at most null_rate letters per letter-width of line, and never below 0.5.
+    normalized: img is already normalize()d (read() and the command line normalise once).
+    input_scale: img was block-averaged by this integer from the input (load_reduced); letter_px and
+    lines are then in input pixels, and so are every row, column, box and letter height returned.
+    progress: optional callable taking a short message, for long reads."""
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
-    a0 = normalize(img, polarity)
-    how, search = "given", None
+    a0 = np.asarray(img, dtype=np.float32) if normalized else normalize(img, polarity)
+    k_in = input_scale
+    if k_in != 1:
+        letter_px = None if letter_px is None else float(letter_px) / k_in
+        lines = None if lines is None else [float(y) / k_in for y in lines]
+    how, search, h0 = "given", None, None
     if letter_px is None:
         h0, how = estimate_letter_px(a0)
+        if how != "line pitch" and not letter_px_fallback:
+            raise ValueError(NO_LETTER_SIZE)
         letter_px = h0
         if scale_search:
             search = []
-            for k in SCALE_STEPS:
+            for i, k in enumerate(SCALE_STEPS):
+                if progress:
+                    progress(f"scale search {i + 1}/{len(SCALE_STEPS)}: letter height {h0 * k * k_in:.1f} px")
                 r = _analyze_at(a0, net, h0 * k, nulls=2, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
                                 null_rate=null_rate, max_lines=8, columns=columns)
                 c = r["control"]
-                search.append({"letter_px": round(h0 * k, 2), "letters_kept": c["letters_kept"],
+                search.append({"letter_px": round(h0 * k * k_in, 2), "letters_kept": c["letters_kept"],
                                "null_letters_kept": c["null_letters_kept"],
                                "margin": c["letters_kept"] - max(c["null_letters_kept"])})
-            best = max(search, key=lambda t: (t["margin"], -abs(math.log(t["letter_px"] / h0))))
-            letter_px = best["letter_px"]
+            best = max(search, key=lambda t: (t["margin"], -abs(math.log(t["letter_px"] / (h0 * k_in)))))
+            letter_px = best["letter_px"] / k_in if k_in != 1 else best["letter_px"]
             how += ", then scale search"
+    if progress:
+        progress(f"reading at letter height {letter_px * k_in:.1f} px, with {nulls} null copies")
     res = _analyze_at(a0, net, letter_px, nulls=nulls, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
-                      null_rate=null_rate, lm=lm, lm_weight=lm_weight, beam=beam, columns=columns)
-    res["input_shape"] = list(np.shape(img))
+                      null_rate=null_rate, lm=lm, lm_weight=lm_weight, beam=beam, columns=columns, scale_out=k_in)
+    res["input_shape"] = list(np.shape(img)) if k_in == 1 else [n * k_in for n in np.shape(img)]
+    res["input_scale"] = k_in
+    if k_in != 1:
+        res["reduced_shape"] = list(np.shape(img))
     res["letter_px_from"] = how
     res["letter_px_estimated"] = how != "given"
+    if h0 is not None:
+        res["letter_px_first_guess"] = round(h0 * k_in, 2)
     if search is not None:
         res["scale_search"] = search
     return res
 
 
 def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, null_rate, lm=None, lm_weight=0.0,
-                beam=32, max_lines=None, columns="auto"):
+                beam=32, max_lines=None, columns="auto", scale_out=1):
+    """One read at one letter height of a normalised image; scale_out multiplies every row, column and box on the way out."""
     h = float(net.letter_px)
     f = h / float(letter_px)
+    so = scale_out
     a = resize(a0, (max(8, int(round(a0.shape[0] * f))), max(8, int(round(a0.shape[1] * f)))))
     if lines is not None or columns in (None, "off", 1, "1"):
         spans = [(0, a.shape[1])]
@@ -668,13 +955,13 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
         for y, lp in zip(ys, L):
             letters = []
             for ch, c, t0, t1 in ctc_greedy(lp, net.alphabet):
-                lx0 = (t0 * net.stride - 0.3 * h) / f
-                lx1 = ((t1 + 1) * net.stride + 0.3 * h) / f
-                box = _unshear_box(lx0, lx1, (y - 0.5 * h) / f, (y + 0.5 * h) / f, angle, sub.shape[1] / f)
+                lx0 = (t0 * net.stride - 0.3 * h) / f * so
+                lx1 = ((t1 + 1) * net.stride + 0.3 * h) / f * so
+                box = _unshear_box(lx0, lx1, (y - 0.5 * h) / f * so, (y + 0.5 * h) / f * so, angle, sub.shape[1] / f * so)
                 if x0:
-                    box[2], box[3] = round(box[2] + x0 / f, 1), round(box[3] + x0 / f, 1)
+                    box[2], box[3] = round(box[2] + x0 / f * so, 1), round(box[3] + x0 / f * so, 1)
                 letters.append({"glyph": ch, "p": round(c, 3), "kept": c >= p_min, "box": box})
-            row = {"line": len(out_lines), "column": ci, "y": round(y / f, 1),
+            row = {"line": len(out_lines), "column": ci, "y": round(y / f * so, 1),
                    "ink_only": "".join(l["glyph"] if l["kept"] else "·" for l in letters),
                    "letters": letters, "n_kept": sum(l["kept"] for l in letters)}
             if lm is not None and lm_weight:
@@ -684,9 +971,9 @@ def _analyze_at(a0, net, letter_px, *, nulls, seed, deskew_deg, lines, p_min, nu
                 for kind, L in null_lps]
     n_data = sum(r["n_kept"] for r in out_lines)
     n_null = [r["letters_kept"] for r in null_out]
-    return {"note": NOTE, "engine": "linenet", "letter_px": round(float(letter_px), 2), "working_scale": round(f, 5),
+    return {"note": NOTE, "engine": "linenet", "letter_px": round(float(letter_px) * so, 2), "working_scale": round(f / so, 5),
             "deskew_deg": blocks[0][2], "p_min": round(p_min, 3), "lines": out_lines,
-            "columns": [{"x0": round(x0 / f, 1), "x1": round(x1 / f, 1), "deskew_deg": angle, "lines": len(ys)}
+            "columns": [{"x0": round(x0 / f * so, 1), "x1": round(x1 / f * so, 1), "deskew_deg": angle, "lines": len(ys)}
                         for x0, x1, angle, _, ys in blocks],
             "control": {"letters_kept": n_data, "null_letters_kept": n_null, "nulls": null_out,
                         "verdict": verdict(n_data, n_null)}}
@@ -709,18 +996,49 @@ def _unshear_box(x0, x1, y0, y1, angle, width):
     return [round(y0 + dy, 1), round(y1 + dy, 1), round(x0, 1), round(x1, 1)]
 
 
-def read(img, weights, *, orientation=True, **kw):
-    """analyze() plus orientation evidence: confident letters as stored, mirrored and turned 180 degrees."""
+def letter_px_check(a0, letter_px, input_scale=1):
+    """A given letter height against the line-pitch estimate of a normalised image, or None without a pitch.
+
+    The estimate (estimate_letter_px) is often a factor of two off, when it takes the spacing of
+    two lines for one, so only a difference over 2x carries a warning."""
+    est, how = estimate_letter_px(a0)
+    if how != "line pitch":
+        return None
+    est *= input_scale
+    ratio = float(letter_px) / est
+    out = {"line_pitch_estimate": round(est, 2), "ratio": round(ratio, 3)}
+    if ratio > 2 or ratio < 0.5:
+        out["warning"] = (f"the given letter height ({float(letter_px):g} px) is {ratio:.2f} times the line-pitch "
+                          f"estimate ({est:.1f} px); check it (the estimate itself can be 2x off)")
+    return out
+
+
+def read(img, weights, *, orientation=True, normalized=False, progress=None, **kw):
+    """analyze() plus orientation evidence: confident letters as stored, mirrored and turned 180 degrees.
+
+    The image is normalised once (normalize_for_reading) and that one image serves the main read, its
+    nulls and the orientation reads. When a letter height is given, it is checked against the
+    line-pitch estimate (letter_px_check; a warning in the result when they differ by over 2x)."""
     net = weights if isinstance(weights, LineNet) else LineNet(weights)
-    res = analyze(img, net, **kw)
+    a0 = np.asarray(img, dtype=np.float32) if normalized else normalize_for_reading(img, kw.get("polarity", "bright"))
+    res = analyze(a0, net, normalized=True, progress=progress, **kw)
+    if res["letter_px_from"] == "given":
+        check = letter_px_check(a0, res["letter_px"], kw.get("input_scale", 1))
+        if check is not None:
+            res["letter_px_check"] = check
+            if "warning" in check and progress:
+                progress("warning: " + check["warning"])
     if orientation:
         # Only the ink-only letter count is used here, so the language model stays off.
         kw2 = dict(kw, nulls=0, p_min=res["p_min"], letter_px=res["letter_px"], lm=None, lm_weight=0.0)
         kw2.pop("lines", None)
         ev = {"as_is": res["control"]["letters_kept"]}
-        img = np.asarray(img)
-        for name, b in (("mirrored", img[:, ::-1]), ("rot180", img[::-1, ::-1])):
-            ev[name] = analyze(b, net, **kw2)["control"]["letters_kept"]
+        for name, flip in (("mirrored", (slice(None), slice(None, None, -1))),
+                           ("rot180", (slice(None, None, -1), slice(None, None, -1)))):
+            if progress:
+                progress(f"orientation read: {name}")
+            # A contiguous copy, so the flipped read sees exactly the array normalising the flipped input gives.
+            ev[name] = analyze(np.ascontiguousarray(a0[flip]), net, normalized=True, **kw2)["control"]["letters_kept"]
         res["orientation"] = {"letters_kept": ev, "best": max(ev, key=ev.get),
                               "note": "text the right way round should keep the most letters as_is"}
     return res
@@ -728,8 +1046,24 @@ def read(img, weights, *, orientation=True, **kw):
 
 def text_summary(res):
     """Plain-text rendering of an analyze()/read() result."""
-    out = [res["note"], f"letter height {res['letter_px']} px ({res['letter_px_from']}), "
-           f"deskew {res['deskew_deg']} deg, confidence floor {res['p_min']}"]
+    size = f"{res['letter_px']} px ({res['letter_px_from']}"
+    if "letter_mm" in res:
+        size += f", {res['letter_mm']:g} mm at {res['um_per_px']:g} um per pixel"
+    out = [res["note"], f"letter height {size}), deskew {res['deskew_deg']} deg, confidence floor {res['p_min']}"]
+    if res.get("input_scale", 1) != 1:
+        shape = " x ".join(str(n) for n in res["input_shape"])
+        red = " x ".join(str(n) for n in res.get("reduced_shape", []))
+        out.append(f"input {shape} px block-averaged by {res['input_scale']} while loading (read as {red}); "
+                   "rows, columns and boxes are in input pixels")
+    if "scale_search" in res:
+        out.append(f"scale search around the first guess of {res.get('letter_px_first_guess', '?')} px "
+                   "(* = kept: most letters above its own nulls):")
+        for t in res["scale_search"]:
+            mark = "*" if t["letter_px"] == res["letter_px"] else " "
+            out.append(f"  {mark} {t['letter_px']:>9} px: {t['letters_kept']:>4} kept, nulls "
+                       f"{t['null_letters_kept']}, margin {t['margin']}")
+    if "warning" in res.get("letter_px_check", {}):
+        out.append("warning: " + res["letter_px_check"]["warning"])
     multi = len(res.get("columns", [])) > 1
     if multi:
         out.append(f"{len(res['columns'])} columns at x " + ", ".join(f"{c['x0']} to {c['x1']}" for c in res["columns"]))
@@ -760,35 +1094,109 @@ def _greek_font(size):
     return None
 
 
-def overlay(img, res, path, polarity="bright", max_side=4000):
+def _banner_font(size):
+    font = _greek_font(size)
+    if font is None:
+        from PIL import ImageFont
+        try:
+            font = ImageFont.load_default(size=size)
+        except TypeError:  # Pillow before 10.1 has one bitmap size
+            font = ImageFont.load_default()
+    return font
+
+
+def _wrap(text, font, width, draw):
+    """Lines of whole words, each at most width pixels wide; None when a word alone is wider."""
+    lines, cur = [], ""
+    for word in text.split():
+        trial = f"{cur} {word}" if cur else word
+        if draw.textlength(trial, font=font) <= width:
+            cur = trial
+        elif not cur or draw.textlength(word, font=font) > width:
+            return None
+        else:
+            lines.append(cur)
+            cur = word
+    return lines + [cur] if cur else lines
+
+
+def banner_layout(width, text=NOTE):
+    """(font, lines, line height, top offset, canvas width) that show all of `text` above an image `width` px wide.
+
+    The font is about 1.2% of the width (10 to 40 px) and the words wrap onto as many lines as they
+    need; a word too wide for a narrow image first shrinks the font (down to 6 px), then widens the
+    canvas, so the whole note is always there."""
+    from PIL import Image, ImageDraw
+    d = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+    size = max(10, min(40, int(0.012 * width)))
+    while True:
+        font = _banner_font(size)
+        lines = _wrap(text, font, width - 8, d)
+        if lines is not None or size <= 6:
+            break
+        size -= 1
+    if lines is None:
+        width = int(math.ceil(max(d.textlength(w, font=font) for w in text.split()))) + 8
+        lines = _wrap(text, font, width - 8, d)
+    _, top, _, bottom = d.textbbox((0, 0), "MgΩ|", font=font)
+    return font, lines, (bottom - top) + max(2, (bottom - top) // 4), top, width
+
+
+def _overlay_layout(shape, res, max_side):
+    s = min(1.0, max_side / max(shape))
+    H, W = max(1, int(round(shape[0] * s))), max(1, int(round(shape[1] * s)))
+    font, lines, lh, top, cw = banner_layout(W)
+    band = 6 + len(lines) * lh
+    reduced = res.get("input_scale", 1) != 1 and list(shape) == res.get("reduced_shape")
+    scale = s / res["input_scale"] if reduced else s          # overlay pixels per input pixel
+    return {"s": s, "H": H, "W": W, "font": font, "lines": lines, "lh": lh, "top": top, "band": band,
+            "canvas": (max(W, cw), H + band), "scale": scale}
+
+
+def overlay_geometry(shape, res, max_side=OVERLAY_MAX_SIDE):
+    """Where overlay() puts things, as JSON: overlay pixels per input pixel, banner rows and PNG size.
+
+    shape is the shape of the image to be drawn (the block-averaged one, after a reduced read). A box
+    edge at input row y and column x lands at overlay row banner_rows + y * scale, column x * scale."""
+    g = _overlay_layout(shape, res, max_side)
+    return {"scale": round(g["scale"], 6), "banner_rows": g["band"], "size": [g["canvas"][1], g["canvas"][0]],
+            "max_side": max_side}
+
+
+def overlay(img, res, path, polarity="bright", max_side=OVERLAY_MAX_SIDE, normalized=False):
     """Write a PNG of the image with the reader's letters drawn on it, for a person to check.
 
     Kept letters get a box and their glyph (green when p >= 0.8, yellow below); letters under the
-    confidence floor get a thin grey box and no glyph. A banner says the drawing is model output.
-    Glyphs need a font with Greek (DejaVu, Arial or FreeSans); without one only the boxes are drawn.
-    Never use this image as a prize image: it carries machine letter annotations."""
+    confidence floor get a grey box and no glyph; every outline is at least 2 px wide. A banner
+    above the image always carries the whole model-output note, wrapped to the width. The image is
+    shrunk to max_side pixels on its longer side; overlay_geometry() gives the scale. img may be the
+    block-averaged image of a reduced read (boxes are mapped from input pixels), and normalized=True
+    skips normalising it again. Glyphs need a font with Greek (DejaVu, Arial or FreeSans); without
+    one only the boxes are drawn. Never use this image as a prize image: it carries machine letter
+    annotations."""
     from PIL import Image, ImageDraw
-    a = normalize(img, polarity)
-    s = min(1.0, max_side / max(a.shape))
-    H, W = max(1, int(round(a.shape[0] * s))), max(1, int(round(a.shape[1] * s)))
+    a = np.asarray(img, dtype=np.float32) if normalized else normalize(img, polarity)
+    g = _overlay_layout(a.shape, res, max_side)
+    H, W, band, sb = g["H"], g["W"], g["band"], g["scale"]
     base = Image.fromarray((resize(a, (H, W)) * 255).round().astype(np.uint8)).convert("RGB")
-    band = max(18, int(0.02 * W))
-    canvas = Image.new("RGB", (W, H + band), (255, 255, 255))
+    canvas = Image.new("RGB", g["canvas"], (255, 255, 255))
     canvas.paste(base, (0, band))
     d = ImageDraw.Draw(canvas)
-    font = _greek_font(max(10, int(res["letter_px"] * s * 0.6)))
-    small = _greek_font(max(10, band - 6))
-    d.text((4, 2), NOTE, fill=(0, 0, 0), font=small)
+    for i, text in enumerate(g["lines"]):
+        d.text((4, 3 + i * g["lh"] - g["top"]), text, fill=(0, 0, 0), font=g["font"])
+    letter = res["letter_px"] * sb                   # letter height in overlay pixels
+    font = _greek_font(max(10, int(letter * 0.6)))
+    lw = max(2, int(round(letter / 24)))
     for L in res["lines"]:
         for l in L["letters"]:
-            y0, y1, x0, x1 = (v * s for v in l["box"])
+            y0, y1, x0, x1 = (v * sb for v in l["box"])
             y0, y1 = y0 + band, y1 + band
             if l["kept"]:
                 col = (40, 200, 70) if l["p"] >= 0.8 else (230, 190, 40)
-                d.rectangle([x0, y0, x1, y1], outline=col, width=max(1, int(2 * s + 0.5)))
+                d.rectangle([x0, y0, x1, y1], outline=col, width=lw)
                 if font is not None:
                     d.text((x0 + 1, max(band, y0 - font.size - 1)), l["glyph"], fill=col, font=font)
             else:
-                d.rectangle([x0, y0, x1, y1], outline=(120, 120, 120), width=1)
+                d.rectangle([x0, y0, x1, y1], outline=(120, 120, 120), width=max(2, lw - 1))
     canvas.save(path)
     return path

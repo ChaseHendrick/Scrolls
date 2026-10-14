@@ -10,7 +10,7 @@ Everything it prints is **Model output**: letter hypotheses for a person to chec
 
 ## Quick start
 
-You need Python 3.10 or newer and numpy; Pillow reads PNG and JPEG and draws overlays; tifffile reads TIFF maps.
+You need Python 3.10 or newer and numpy; Pillow reads PNG and JPEG and draws overlays; tifffile reads TIFF maps; zarr (optional) reads zarr and OME-Zarr maps and lets a compressed tiled TIFF be read band by band.
 
 ```bash
 git clone https://github.com/ChaseHendrick/Scrolls && cd Scrolls
@@ -22,24 +22,43 @@ python scripts/letters/demo_p1667.py --segment w013 --out work/letters/demo
 
 # 2. Read your own image (ink bright, as in ink-detection maps; --polarity dark for photographs)
 python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
-python -m kit letterread MAP.tif --weights letters-v2-real --json --out MAP-letters.json
+python -m kit letterread MAP.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 38.4 --json --out MAP-letters.json
+
+# 3. A whole native 2.4 um villa map as downloaded, here with PHerc. 1667's letter height
+#    (block-averaged while it loads; see "Big maps" below)
+python -m kit letterread MAP-2.4um.tif --weights letters-v2-real --letter-mm 3.3 --um-per-px 2.399 --overlay MAP-letters.png
 ```
 
 `--weights letters-v2-real` names a released model in [`kit/data/letter-weights.json`](../kit/data/letter-weights.json): the reader downloads it once into `~/.cache/scrolls-kit/letters/` (or `$KIT_LETTER_WEIGHTS`) and refuses a file whose SHA-256 differs. A path to any `linenet-v1` `.npz` works too.
 
 ### Letter size matters most
 
-The network reads letters about 16 pixels tall; the reader rescales your image to that. Give the letter height in image pixels with `--letter-px` when you know it (PHerc. 1667's letters, about 3.3 mm tall, are about 86 pixels tall on its 2.4 um maps averaged 16 by 16 to about 38 um per pixel). Without it, the reader estimates the size from the line spacing and searches six scales against its own nulls; that search is the weakest step on maps it has not seen (see the limits below). Other options:
+The network reads letters about 16 pixels tall; the reader rescales your image to that. Give the letter height when you know it, either in image pixels with `--letter-px`, or in millimetres with `--letter-mm` together with the pixel size in micrometres, `--um-per-px` (letter_px = letter_mm * 1000 / um_per_px; the reader prints the value it used). PHerc. 1667's letters are about 3.3 mm tall: `--letter-mm 3.3 --um-per-px 2.399` on its native 2.4 um maps (1375.6 px), or `--letter-px 86` on those maps averaged 16 by 16 to about 38 um per pixel. A given size is checked against the line spacing: when the two differ by more than a factor of two, the result carries `letter_px_check.warning` and the summary prints it (the spacing estimate itself can be a factor of two off, when it takes two lines for one).
+
+Without a size, the reader estimates one from the line spacing and searches six scales against its own nulls; the summary prints that search as a table, with the kept scale marked `*`. The search is the weakest step on maps it has not seen (see the limits below). When the image shows no regular line spacing at all, the command stops and asks for `--letter-px` or `--letter-mm` with `--um-per-px` (or a `--crop` that holds several lines); it no longer guesses a quarter of the image height. Python's `analyze()` and `read()` keep that guess for the benchmark scripts, which call them directly, unless given `letter_px_fallback=False`.
 
 | Option | Use |
 | --- | --- |
-| `--crop Y0 Y1 X0 X1` | Read part of a large image (a `.npy` or uncompressed TIFF is memory-mapped, so only the window is loaded); rows, boxes and `--lines` are then relative to Y0, X0, and the result records the crop as `crop` |
+| `--letter-px H`, or `--letter-mm MM --um-per-px UM` | Letter height, in image pixels or in physical units (give one form, not both) |
+| `--crop Y0 Y1 X0 X1` | Read part of a large image (a `.npy`, an uncompressed TIFF and a zarr are read by window, and so is a compressed tiled TIFF when zarr is installed); rows, boxes and `--lines` are then relative to Y0, X0, and the result records the crop as `crop`, so full-image rows are Y0 plus the result's rows |
+| `--key K` | `.npz`: the array name; zarr: the array path, or the OME-Zarr level (default level 0, full resolution). Every pixel value, `--letter-px` and `--um-per-px` included, is then in that array's pixels |
+| `--max-mpx M` | Pixel budget in millions of pixels (default 64); see "Big maps" |
 | `--lines Y [Y ...]` | Line centre rows, when you know them (one column) |
 | `--columns auto` (default), `off` or a number | Split at empty vertical gutters, read the whole width, or ask for that many columns |
 | `--lm greek5.npz` | Add a language-model decode beside the ink-only one (below) |
 | `--nulls N` | Number of null copies for the control (default 4) |
 | `--no-orientation` | Skip the mirrored and rotated reads (faster) |
-| `--overlay OUT.png` | The image with kept letters boxed and labelled (green p >= 0.8, yellow below), lower-confidence boxes grey |
+| `--overlay OUT.png` | The image with kept letters boxed and labelled (green p >= 0.8, yellow below), lower-confidence boxes grey; every outline at least 2 px; a banner above it always carries the whole "Model output ... not a reading" note, wrapped to the width |
+| `--overlay-max-side N` | Longest side of the overlay in pixels (default 4000); the JSON records the overlay's scale |
+| `--quiet` | No progress messages; without it, long steps (loading, scale search, reading, orientation) report on stderr, so `--json` output on stdout stays clean |
+
+### Big maps
+
+A whole native ink map is large: PHerc. 1667 w013 at 2.4 um is 41,600 by 79,600 pixels (3.3 billion), 13 GB as float32. The reader never makes a float copy of such an image. When an image (or its `--crop`) has more pixels than the budget, 64 million by default (`--max-mpx`; 256 MB as float32, and normalising it takes a few such copies), and the letter size is given, it block-averages the image by an integer factor k while it loads: the largest k that keeps letters at least 32 pixels tall, twice the network's working letter height, so the reader's own resize still averages several pixels into each of its pixels. It reads in row bands that follow the file's tiles: a `.npy` or uncompressed TIFF through a memory map, a zarr or OME-Zarr level by chunk, a compressed tiled TIFF through tifffile's zarr view (with zarr installed; without it the TIFF is decoded whole in its stored integer type, 1 or 2 bytes a pixel, and averaged band by band), a PNG or JPEG decoded in its stored type. Rows and columns left over from the last whole block (fewer than k) are not read.
+
+Everything in the result stays in input pixels: rows, columns, boxes, `letter_px` and the scale-search table are mapped back through k, and the JSON records `input_scale` (k), `input_shape` (the input window) and `reduced_shape` (what was read). Below the budget nothing changes: the image is loaded and read exactly as before. Without a letter size, an image over the budget is reduced only as far as the budget needs, and the reader says so; if its letters are small that can leave them too small to read, so give the size. With letters too small to reduce (under 64 px), the image is loaded whole and the reader says it is over the budget. The image is normalised once (in float32 above the budget, float64 within it, as before) and that one image serves the main read, its nulls, the orientation reads and the overlay. Out of memory, the command stops with this advice: give the letter size, lower `--max-mpx`, or `--crop` a window.
+
+Measured on 14 October 2026 on a 4-core cloud container, 2 threads, under a 10 GB address-space limit (`ulimit -v 10000000`), reading w013's whole 2.4 um map (a 269 MB deflate-compressed tiled TIFF) with `--letter-px 1376` and an overlay: block-averaged by 43 to 967 by 1,851 pixels, 35 to 36 s wall time and about 250 MB peak resident memory (two runs), with 120 letters kept against nulls of 29, 22, 28 and 31 (Model output). The same command before this change stopped with a MemoryError after 23 s, asking for a 12.3 GiB float32 array. The same map averaged 16 by 16 (`--letter-px 86`, 2,600 by 4,975 pixels, under the budget) reads exactly as before, with the same letters, boxes, confidences and control counts: 20 to 23 s and 420 MB, against 23 s and 443 MB before.
 
 From Python:
 
@@ -53,6 +72,13 @@ for line in res["lines"]:
     for l in line["letters"]:
         l["glyph"], l["p"], l["kept"], l["box"]           # box is [y0, y1, x0, x1] in input pixels
 R.overlay(img, res, "MAP-letters.png")
+
+# a whole map: block-averaged while it loads when over the budget; boxes come back in input pixels
+img, k, shape = R.load_reduced("MAP-2.4um.tif", letter_px=R.letter_px_from_units(3.3, 2.399))
+a = R.normalize_for_reading(img)                  # normalise once
+res = R.read(a, R.resolve_weights("letters-v2-real"), normalized=True, input_scale=k,
+             letter_px=R.letter_px_from_units(3.3, 2.399), letter_px_fallback=False)
+R.overlay(a, res, "MAP-letters.png", normalized=True)    # draws the reduced image; boxes are mapped
 ```
 
 ### Optional language model
@@ -71,7 +97,7 @@ When the two decodes disagree, the ink-only line is what the image supports. A l
 
 ## What the result means
 
-`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, and each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box. Three controls travel with every result, and each can fail:
+`read()` returns, and `--json` prints, one record per found line: its column, centre row `y`, the `ink_only` string, and each letter's glyph, probability `p`, whether it cleared the confidence floor (`kept`) and its box `[y0, y1, x0, x1]`, all in input pixels. Beside them: `letter_px` and where it came from (`letter_px_from`; `letter_px_first_guess` and the `scale_search` table when it was estimated; `letter_mm` and `um_per_px` when given in units), `letter_px_check` (a given size against the line spacing), `input_scale`, `input_shape` and `reduced_shape` (see "Big maps"), `working_scale` (network pixels per input pixel), `crop`, and, with `--overlay`, `overlay`: its file, `scale` (overlay pixels per input pixel), `banner_rows` and `size`, so a box edge at input row y and column x lands at overlay row banner_rows + y * scale and column x * scale. Three controls travel with every result, and each can fail:
 
 1. **Nulls.** The same reader on tile-shuffled copies (letter-sized tiles with random flips: local texture and grey levels kept, letters and lines broken) and phase-randomised copies (same power spectrum, so the same line spacing, shapes broken). The confidence floor is set so the nulls keep few letters (at most 5% of a line's letter slots, never below p = 0.5), and `control.verdict` compares letters kept on the image with letters kept on each null: "well above every null" (more than three times), "above, but within a factor of three", or "NOT above the nulls: treat every letter here as noise".
 2. **Orientation.** Letters kept as stored, mirrored and turned 180 degrees. Text the right way round should keep the most. This is weak for Greek capitals, many of which are symmetric, so it is evidence, not a gate.
@@ -98,7 +124,7 @@ What it does not support:
 
 - **Maps of text no ink model has seen.** The six labelled PHerc. 1667 segments are in `ink_9um`'s training labels, and the training set of the 2.4 um model that made their maps is not checked, so their maps may be cleaner than maps of new text. On the thirteen PHerc. 1667 segments without labels, whole-map reads gave no ordered pairs of lines matching the published text (a test with little power, since it found pairs only on the two labelled segments where the letter error is lowest).
 - **A reading.** The references are machine transcriptions of drawings and one labeller's preliminary transcription, not a papyrologist's reading, and 122 letters cannot show an accuracy finer than about 1 to 3 percent.
-- **Letter size found automatically on new maps.** On the unlabelled segments the scale search chose letter heights of 32 to 615 grid pixels against 74 to 103.5 measured on the labelled ones. Give `--letter-px` when you can.
+- **Letter size found automatically on new maps.** On the unlabelled segments the scale search chose letter heights of 32 to 615 grid pixels against 74 to 103.5 measured on the labelled ones. Give `--letter-px`, or `--letter-mm` with `--um-per-px`, when you can.
 
 ## Model card: letters-v2-real
 
@@ -176,7 +202,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 - **Lines, not single letters.** Herculaneum texts are written without word spaces and letter edges on an ink map are unclear, so segmenting letters first is the hard part. A CTC line reader needs only each line's letter string to train, and learns where the letters are by itself.
 - **Random letters, separate language model.** Training on uniform random strings means the network learns shapes and cannot learn Greek, so it cannot invent plausible words; Greek enters only through the optional language model, shown beside the ink-only decode. The organisers' own ink models use no OCR or language model for the same reason ([grand prize page](https://scrollprize.org/grandprize), Sourced fact).
 - **Real letterforms.** Synthetic glyphs alone did not transfer to real letters (more synthetic data gave no gain on drawings); half the training letters cut from photographs of real papyri cut the error on drawn PHerc. 1667 letters from 0.320 to 0.025.
-- **Page layout.** The reader normalises the image, estimates or takes the letter size, splits columns at empty gutters, deskews, finds lines from the row profile and reads each line band; boxes come back in input pixels.
+- **Page layout.** The reader block-averages an image over the pixel budget while loading it, normalises it once, estimates or takes the letter size, splits columns at empty gutters, deskews, finds lines from the row profile and reads each line band; boxes come back in input pixels.
 - **numpy inference**, tested against torch, so reading needs no deep-learning install.
 
 ## Rules for using it on scrolls
@@ -190,7 +216,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 
 | File | What it does |
 | --- | --- |
-| [`kit/letterread.py`](../kit/letterread.py) | The reader: numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout, nulls, orientation, overlay, released weights |
+| [`kit/letterread.py`](../kit/letterread.py) | The reader: image loading (block-averaged while loading when over the budget; zarr and OME-Zarr), numpy network, CTC decoding (best path and prefix beam with a language model), forced alignment, layout, nulls, orientation, overlay, released weights |
 | [`kit/greeklm.py`](../kit/greeklm.py) | Kneser-Ney letter n-grams for Greek in scriptio continua, from TEI texts |
 | [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) | Released weights: file, SHA-256, address, licence |
 | [`scripts/letters/demo_p1667.py`](../scripts/letters/demo_p1667.py) | End-to-end demo on a public PHerc. 1667 map |
@@ -201,7 +227,7 @@ A CPU-sized run (the trainer's defaults: 593,849 parameters, 4,000 steps, batch 
 | [`scripts/letters/eval_p172.py`](../scripts/letters/eval_p172.py), [`compare_p172.py`](../scripts/letters/compare_p172.py), [`eval_pages.py`](../scripts/letters/eval_pages.py) | PHerc. 172 drawings, paired bootstrap, whole synthetic pages |
 | [`scripts/letters/p1667_fetch.py`](../scripts/letters/p1667_fetch.py), [`p1667_groups.py`](../scripts/letters/p1667_groups.py), [`p1667_mapcrops.py`](../scripts/letters/p1667_mapcrops.py), [`eval_p1667.py`](../scripts/letters/eval_p1667.py) | PHerc. 1667 data, letter groups from the official labels, map windows, scorer |
 | [`scripts/letters/p1667_text.py`](../scripts/letters/p1667_text.py), [`eval_p1667_text.py`](../scripts/letters/eval_p1667_text.py), [`p1667_align.py`](../scripts/letters/p1667_align.py) | Published text as a reference, whole-map reads against it, placing published lines on maps |
-| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls, weights download, overlay, letter language model) |
+| [`tests/test_letterread.py`](../tests/test_letterread.py), [`test_greeklm.py`](../tests/test_greeklm.py), [`test_letterdata.py`](../tests/test_letterdata.py), [`test_eval_p1667_text.py`](../tests/test_eval_p1667_text.py) | Tests (numpy against torch, decoding, layout, controls, weights download, big images and their formats, letter size in units, overlay, letter language model) |
 
 ## Related work
 

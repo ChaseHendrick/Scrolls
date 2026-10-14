@@ -6,6 +6,7 @@ import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from kit import cli
 
@@ -69,6 +70,29 @@ def two_column_image(gap=64, seed=0):
     a[:left.shape[0], :200] = left
     a[:, 200 + gap:] = right
     return a
+
+
+def block_mean(a, k):
+    ny, nx = a.shape[0] // k, a.shape[1] // k
+    return a[:ny * k, :nx * k].astype(np.float64).reshape(ny, k, nx, k).mean(axis=(1, 3))
+
+
+def write_zarr_level(group, name, data, chunks=(16, 16)):
+    """One array in a zarr group, with zarr 3's or zarr 2's call."""
+    try:
+        arr = group.create_array(name, shape=data.shape, dtype=data.dtype, chunks=chunks)
+    except AttributeError:
+        arr = group.create_dataset(name, shape=data.shape, dtype=data.dtype, chunks=chunks)
+    arr[:] = data
+    return arr
+
+
+def run_cli(argv):
+    """(exit code, stdout, stderr) of python -m kit ARGV."""
+    out, err = io.StringIO(), io.StringIO()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+        code = cli.main(argv)
+    return code, out.getvalue(), err.getvalue()
 
 
 @unittest.skipIf(np is None, "numpy not installed")
@@ -358,7 +382,7 @@ class PageTest(unittest.TestCase):
             np.save(img, lined_image())
             out = Path(d) / "res.json"
             buf = io.StringIO()
-            with contextlib.redirect_stdout(buf):
+            with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
                 code = cli.main(["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "2",
                                  "--no-orientation", "--json", "--out", str(out)])
             self.assertEqual(code, 0)
@@ -366,7 +390,7 @@ class PageTest(unittest.TestCase):
             for cols, n in (("off", 1), ("2", 2)):
                 buf = io.StringIO()
                 np.save(img, two_column_image())
-                with contextlib.redirect_stdout(buf):
+                with contextlib.redirect_stdout(buf), contextlib.redirect_stderr(io.StringIO()):
                     code = cli.main(["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "2",
                                      "--no-orientation", "--json", "--columns", cols])
                 self.assertEqual((code, len(json.loads(buf.getvalue())["columns"])), (0, n))
@@ -394,7 +418,7 @@ class PageTest(unittest.TestCase):
                     self.assertEqual(cli.main(base + extra), 2)
                 self.assertNotIn("read before", err.getvalue())
             out = Path(d) / "res.json"
-            with contextlib.redirect_stdout(io.StringIO()):
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 self.assertEqual(cli.main(base + ["--crop", "0", "90", "0", "300", "--out", str(out)]), 0)
             self.assertEqual(json.loads(out.read_text(encoding="utf-8"))["crop"], [0, 90, 0, 300])
 
@@ -408,6 +432,276 @@ class PageTest(unittest.TestCase):
         dev, test = eval_p172.split_segments(ids, "dev"), eval_p172.split_segments(ids, "test")
         self.assertEqual((dev, test), (["s1", "s2", "s3"], ["s4", "s5"]))
         self.assertEqual(eval_p172.split_segments(ids, "all"), sorted(ids))
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class BigImageTest(unittest.TestCase):
+    """Block-averaging while loading, input pixels in the result, physical units, no-size stop."""
+
+    def image_files(self, d, a):
+        """The same uint16 image as .npy, plain TIFF, compressed tiled TIFF, PNG and zarr, where the libraries exist."""
+        files = {"npy": Path(d) / "a.npy"}
+        np.save(files["npy"], a)
+        try:
+            import tifffile
+            files["tif"] = Path(d) / "a.tif"
+            tifffile.imwrite(files["tif"], a)
+            files["tif-tiled-zlib"] = Path(d) / "b.tif"
+            tifffile.imwrite(files["tif-tiled-zlib"], a, tile=(32, 32), compression="zlib")
+        except ImportError:
+            pass
+        try:
+            from PIL import Image
+            files["png"] = Path(d) / "a.png"
+            Image.fromarray(a).save(files["png"])
+        except ImportError:
+            pass
+        try:
+            import zarr
+            g = zarr.open_group(str(Path(d) / "a.zarr"), mode="w")
+            write_zarr_level(g, "0", a)
+            write_zarr_level(g, "1", block_mean(a, 2).astype(a.dtype))
+            g.attrs["multiscales"] = [{"version": "0.4", "datasets": [{"path": "0"}, {"path": "1"}]}]
+            files["zarr"] = Path(d) / "a.zarr"
+        except ImportError:
+            pass
+        return files
+
+    def test_reduce_factor(self):
+        self.assertEqual(R.reduce_factor((100, 100), 64, 16, max_pixels=10_000), 1)      # within the budget
+        self.assertEqual(R.reduce_factor((100, 101), 64, 16, max_pixels=10_000), 2)      # letters stay 32 px tall
+        self.assertEqual(R.reduce_factor((100, 101), 95.9, 16, max_pixels=10_000), 2)
+        self.assertEqual(R.reduce_factor((1000, 1000), 31, 16, max_pixels=10_000), 1)    # letters too small to reduce
+        self.assertEqual(R.reduce_factor((1000, 1000), None, 16, max_pixels=10_000), 10)  # no size: fit the budget
+        self.assertEqual(R.reduce_factor((41600, 79600), 1376), 43)                      # a whole 2.4 um map
+        self.assertEqual(R.reduce_factor((2600, 4975), 86), 1)
+
+    def test_load_reduced_block_averages_every_format(self):
+        a = np.random.default_rng(0).integers(0, 60000, (203, 310)).astype(np.uint16)
+        want = block_mean(a[3:200, 5:300], 4)
+        with tempfile.TemporaryDirectory() as d:
+            files = self.image_files(d, a)
+            for kind, f in files.items():
+                img, k, shape = R.load_reduced(f, crop=(3, 200, 5, 300), letter_px=128, max_pixels=1000)
+                self.assertEqual((k, shape, img.shape, img.dtype), (4, (197, 295), want.shape, np.float32), kind)
+                np.testing.assert_allclose(img, want, rtol=1e-6, err_msg=kind)
+                # within the budget nothing changes: exactly load_image's array
+                img, k, shape = R.load_reduced(f, crop=(3, 200, 5, 300), letter_px=128)
+                self.assertEqual((k, shape), (1, (197, 295)), kind)
+                self.assertTrue(np.array_equal(img, R.load_image(f, crop=(3, 200, 5, 300))), kind)
+                self.assertTrue(np.array_equal(R.load_reduced(f)[0], R.load_image(f)), kind)
+            if "tif-tiled-zlib" in files:   # a compressed TIFF without zarr: decoded in its stored type, then banded
+                with mock.patch.dict(sys.modules, {"zarr": None}):
+                    img, k, _ = R.load_reduced(files["tif-tiled-zlib"], letter_px=128, max_pixels=1000)
+                np.testing.assert_allclose(img, block_mean(a, 4), rtol=1e-6)
+
+    def test_block_mean_reads_tile_aligned_bands(self):
+        a = np.random.default_rng(1).random((101, 47)).astype(np.float32)
+        reads = []
+
+        class Spy:
+            shape, dtype, chunks = a.shape, a.dtype, (10, 47)
+
+            def __getitem__(self, idx):
+                reads.append((idx[0].start, idx[0].stop))
+                return a[idx]
+
+        src = R._Source(Spy(), "spy", chunk_rows=10)
+        got = R._block_mean(src, 2, 101, 1, 47, 3, band_pixels=200)
+        np.testing.assert_allclose(got, block_mean(a[2:101, 1:47], 3), rtol=1e-6)
+        self.assertEqual(reads[0][0], 2)
+        for (r0, r1), (n0, _) in zip(reads, reads[1:]):
+            self.assertEqual(r1, n0)                   # contiguous, nothing read twice
+            self.assertEqual(r1 % 10, 0)               # every band ends on a tile edge
+        self.assertTrue(all(r1 - r0 <= 10 for r0, r1 in reads))
+
+    def test_colour_png_is_reduced_to_pillow_grey(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        rgb = np.random.default_rng(2).integers(0, 256, (64, 96, 3)).astype(np.uint8)
+        with tempfile.TemporaryDirectory() as d:
+            f = Path(d) / "c.png"
+            Image.fromarray(rgb).save(f)
+            img, k, _ = R.load_reduced(f, letter_px=64, max_pixels=100)
+            grey = np.asarray(Image.open(f).convert("F"), np.float64)
+        self.assertEqual(k, 2)
+        np.testing.assert_allclose(img, block_mean(grey, 2), atol=1e-3)
+
+    def test_zarr_input_and_levels(self):
+        try:
+            import zarr
+        except ImportError:
+            self.skipTest("zarr not installed")
+        a = np.arange(40 * 64, dtype=np.uint16).reshape(40, 64)
+        with tempfile.TemporaryDirectory() as d:
+            g = Path(self.image_files(d, a)["zarr"])
+            self.assertTrue(np.array_equal(R.load_image(g), a))                      # OME-Zarr: level 0
+            self.assertTrue(np.array_equal(R.load_image(g, key="1"), block_mean(a, 2).astype(np.uint16)))
+            self.assertTrue(np.array_equal(R.load_image(g, crop=(5, 9, 10, 20)), a[5:9, 10:20]))
+            with self.assertRaisesRegex(ValueError, "no array 'x'"):
+                R.load_image(g, key="x")
+            plain = zarr.open_group(str(Path(d) / "two.zarr"), mode="w")
+            write_zarr_level(plain, "ink", a)
+            write_zarr_level(plain, "mask", a)
+            with self.assertRaisesRegex(ValueError, "pick one with --key"):
+                R.load_image(Path(d) / "two.zarr")
+            self.assertTrue(np.array_equal(R.load_image(Path(d) / "two.zarr", key="mask"), a))
+            arr = zarr.open_array(str(Path(d) / "one.zarr"), mode="w", shape=a.shape, dtype=a.dtype, chunks=(8, 8))
+            arr[:] = a
+            self.assertTrue(np.array_equal(R.load_image(Path(d) / "one.zarr"), a))
+            with self.assertRaisesRegex(ValueError, "does not apply"):
+                R.load_image(Path(d) / "one.zarr", key="0")
+            with mock.patch.dict(sys.modules, {"zarr": None}):
+                with self.assertRaisesRegex(ImportError, "pip install zarr"):
+                    R.load_image(g)
+
+    def test_reduced_read_reports_input_pixels(self):
+        small = lined_image()
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        ref = R.analyze(small, net, letter_px=16, nulls=2, p_min=0.0)
+        big = R.analyze(small, net, letter_px=48, nulls=2, p_min=0.0, input_scale=3)
+        given = R.analyze(small, net, letter_px=48, nulls=2, p_min=0.0, input_scale=3, lines=[3 * L["y"] for L in ref["lines"]])
+        self.assertEqual((big["letter_px"], big["input_scale"], big["reduced_shape"], big["input_shape"]),
+                         (48.0, 3, [150, 400], [450, 1200]))
+        self.assertEqual(ref["input_scale"], 1)
+        self.assertNotIn("reduced_shape", ref)
+        self.assertAlmostEqual(big["working_scale"], ref["working_scale"] / 3, places=4)
+        self.assertEqual(big["control"], ref["control"])
+        self.assertTrue(ref["lines"] and sum(len(L["letters"]) for L in ref["lines"]))
+        for res in (big, given):
+            self.assertEqual(len(res["lines"]), len(ref["lines"]))
+            for L, R0 in zip(res["lines"], ref["lines"]):
+                self.assertAlmostEqual(L["y"], 3 * R0["y"], delta=0.2)
+                self.assertEqual([(l["glyph"], l["p"], l["kept"]) for l in L["letters"]],
+                                 [(l["glyph"], l["p"], l["kept"]) for l in R0["letters"]])
+                for l, l0 in zip(L["letters"], R0["letters"]):
+                    np.testing.assert_allclose(l["box"], [3 * v for v in l0["box"]], atol=0.2)
+        self.assertEqual([c["x1"] for c in big["columns"]], [3 * c["x1"] for c in ref["columns"]])
+        self.assertIn("block-averaged by 3", R.text_summary(big))
+
+    def test_cli_reads_a_big_image_block_averaged(self):
+        big = np.kron(lined_image(), np.ones((4, 4), np.float32))          # letters 64 px tall
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "big.npy"
+            np.save(img, big)
+            code, out, err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "64", "--nulls", "1",
+                                      "--max-mpx", "0.5", "--json"])
+            self.assertEqual(code, 0, err)
+            res = json.loads(out)
+            self.assertEqual((res["input_scale"], res["input_shape"], res["reduced_shape"], res["letter_px"]),
+                             (2, [600, 1600], [300, 800], 64.0))
+            self.assertIn("block-averaging by 2", err)
+            self.assertIn("orientation", res)
+            # the same as reading the half-size image with every number doubled
+            net = R.LineNet(w)
+            ref = R.read(np.kron(lined_image(), np.ones((2, 2), np.float32)), net, letter_px=32, nulls=1)
+            self.assertEqual([L["ink_only"] for L in res["lines"]], [L["ink_only"] for L in ref["lines"]])
+            self.assertEqual(res["control"]["null_letters_kept"], ref["control"]["null_letters_kept"])
+            self.assertEqual(res["orientation"]["letters_kept"], ref["orientation"]["letters_kept"])
+            for L, L0 in zip(res["lines"], ref["lines"]):
+                for l, l0 in zip(L["letters"], L0["letters"]):
+                    np.testing.assert_allclose(l["box"], [2 * v for v in l0["box"]], atol=0.2)
+
+    def test_cli_budget_default_matches_the_module(self):
+        args = cli.build_parser().parse_args(["letterread", "x.png", "--weights", "w.npz"])
+        self.assertEqual(args.max_mpx * 1e6, R.MAX_PIXELS)
+        self.assertEqual(args.overlay_max_side, R.OVERLAY_MAX_SIDE)
+
+    def test_letter_size_in_physical_units(self):
+        self.assertAlmostEqual(R.letter_px_from_units(3.3, 38.4), 85.9375)
+        for mm, um in ((3.3, None), (None, 38.4), (0, 38.4), (3.3, -1)):
+            with self.assertRaises(ValueError):
+                R.letter_px_from_units(mm, um)
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "img.npy"
+            np.save(img, lined_image())
+            base = ["letterread", str(img), "--weights", str(w), "--nulls", "1", "--no-orientation", "--json"]
+            code, out, err = run_cli(base + ["--letter-mm", "0.16", "--um-per-px", "10"])
+            self.assertEqual(code, 0, err)
+            res = json.loads(out)
+            self.assertEqual((res["letter_px"], res["letter_mm"], res["um_per_px"]), (16.0, 0.16, 10.0))
+            self.assertIn("16.00 px", err)                                      # the value used is printed
+            self.assertIn("0.16 mm at 10 um per pixel", R.text_summary(res))
+            for extra, words in ((["--letter-mm", "3.3"], "--um-per-px"), (["--um-per-px", "10"], "--letter-mm"),
+                                 (["--letter-px", "16", "--letter-mm", "3.3", "--um-per-px", "10"], "once")):
+                with mock.patch.object(R, "read", side_effect=AssertionError("read without a clear letter size")):
+                    code, _, err = run_cli(base + extra)
+                self.assertEqual(code, 2)
+                self.assertIn(words, err)
+
+    def test_no_letter_size_stops_the_command_line_only(self):
+        blank = np.zeros((150, 400), np.float32)            # no line pitch to estimate from
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "blank.npy"
+            np.save(img, blank)
+            code, out, err = run_cli(["letterread", str(img), "--weights", str(w), "--nulls", "1"])
+            self.assertEqual((code, out), (2, ""))
+            self.assertIn("--letter-px", err)
+            self.assertIn("--letter-mm", err)
+            net = R.LineNet(w)
+        # Python callers (the benchmark scripts) keep the old fallback unless they ask otherwise.
+        self.assertEqual(R.analyze(blank, net, nulls=1, scale_search=False)["letter_px_from"], "image height / 4")
+        with self.assertRaisesRegex(ValueError, "no letter size"):
+            R.analyze(blank, net, nulls=1, letter_px_fallback=False)
+
+    def test_scale_search_table_in_the_summary(self):
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        res = R.analyze(lined_image(), net, nulls=2)
+        text = R.text_summary(res)
+        self.assertIn("scale search around the first guess of", text)
+        self.assertEqual(res["letter_px_first_guess"], round(R.estimate_letter_px(R.normalize(lined_image()))[0], 2))
+        for t in res["scale_search"]:
+            self.assertIn(f"{t['letter_px']:>9} px: {t['letters_kept']:>4} kept", text)
+        self.assertEqual(sum(1 for line in text.splitlines() if line.startswith("  * ")), 1)
+
+    def test_given_letter_size_is_checked_against_the_line_pitch(self):
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        ok = R.read(lined_image(), net, letter_px=16, nulls=1, orientation=False)
+        self.assertNotIn("warning", ok["letter_px_check"])
+        self.assertAlmostEqual(ok["letter_px_check"]["ratio"], 16 / R.estimate_letter_px(R.normalize(lined_image()))[0], 2)
+        off = R.read(lined_image(), net, letter_px=40, nulls=1, orientation=False)
+        self.assertIn("2.5", off["letter_px_check"]["warning"])
+        self.assertIn("warning:", R.text_summary(off))
+        self.assertNotIn("letter_px_check", R.read(np.zeros((150, 400)), net, letter_px=16, nulls=1, orientation=False))
+
+    def test_read_normalizes_once_and_matches_separate_reads(self):
+        img = lined_image()
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        with mock.patch.object(R, "normalize", wraps=R.normalize) as spy:
+            res = R.read(img, net, letter_px=16, nulls=2)
+        self.assertEqual(spy.call_count, 1)
+        ref = R.analyze(img, net, letter_px=16, nulls=2)
+        self.assertEqual((res["lines"], res["control"]), (ref["lines"], ref["control"]))
+        for name, flipped in (("mirrored", img[:, ::-1]), ("rot180", img[::-1, ::-1])):
+            alone = R.analyze(flipped, net, letter_px=16, nulls=0, p_min=res["p_min"])
+            self.assertEqual(res["orientation"]["letters_kept"][name], alone["control"]["letters_kept"])
+
+    def test_cli_progress_and_memory_advice_on_stderr(self):
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            img = Path(d) / "img.npy"
+            np.save(img, lined_image())
+            base = ["letterread", str(img), "--weights", str(w), "--letter-px", "16", "--nulls", "1", "--json"]
+            code, out, err = run_cli(base)
+            self.assertEqual(code, 0)
+            self.assertIn("reading at letter height 16.0 px", err)
+            self.assertIn("orientation read: mirrored", err)
+            json.loads(out)                                                     # stdout stays clean JSON
+            self.assertEqual(run_cli(base + ["--quiet"])[2], "")
+            with mock.patch.object(R, "load_reduced", side_effect=MemoryError()):
+                code, _, err = run_cli(base)
+            self.assertEqual(code, 2)
+            for words in ("out of memory", "--letter-px", "--max-mpx", "--crop"):
+                self.assertIn(words, err)
 
 
 @unittest.skipIf(np is None, "numpy not installed")
@@ -512,12 +806,77 @@ class OverlayTest(unittest.TestCase):
             self.assertGreater(coloured, 0)                      # letter boxes were drawn
             npy = Path(d) / "img.npy"
             np.save(npy, img)
-            with contextlib.redirect_stdout(io.StringIO()):
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
                 code = cli.main(["letterread", str(npy), "--weights", str(w), "--letter-px", "16", "--nulls", "1",
                                  "--no-orientation", "--overlay", str(Path(d) / "cli.png")])
             self.assertEqual(code, 0)
             self.assertTrue((Path(d) / "cli.png").exists())
 
+
+    def test_banner_always_holds_the_whole_note(self):
+        try:
+            from PIL import Image, ImageDraw
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        d = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+        for width in (40, 400, 1851, 4000):
+            font, lines, lh, top, canvas_w = R.banner_layout(width)
+            self.assertEqual(" ".join(lines), " ".join(R.NOTE.split()), width)
+            self.assertGreaterEqual(canvas_w, width)
+            self.assertTrue(all(d.textlength(line, font=font) <= canvas_w - 8 for line in lines), width)
+            self.assertGreater(lh, 0)
+        self.assertGreater(len(R.banner_layout(400)[1]), 1)        # wrapped, not cut off
+        self.assertGreater(R.banner_layout(40)[4], 40)             # too narrow for a word: the canvas widens
+
+    def test_overlay_outlines_scale_and_reduced_images(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        box = [40.0, 60.0, 100.0, 140.0]
+        res = {"letter_px": 16.0, "input_scale": 1, "lines": [{"letters": [
+            {"glyph": "Α", "p": 0.9, "kept": True, "box": box},
+            {"glyph": "Β", "p": 0.3, "kept": False, "box": [40.0, 60.0, 200.0, 240.0]}]}]}
+        img = np.zeros((100, 300), np.float32)
+        with tempfile.TemporaryDirectory() as d:
+            geo = R.overlay_geometry(img.shape, res)
+            px = np.asarray(Image.open(R.overlay(img, res, Path(d) / "o.png")).convert("RGB")).astype(int)
+            self.assertEqual(list(px.shape[:2]), geo["size"])
+            self.assertEqual(geo["scale"], 1.0)
+            b = geo["banner_rows"]
+            green = (px[..., 1] > 150) & (px[..., 0] < 100)
+            self.assertGreaterEqual(int(green[b + 35:b + 46, 135].sum()), 2)      # top edge of the kept box
+            grey = (np.abs(px[..., 0] - 120) < 10) & (np.abs(px[..., 1] - 120) < 10)
+            self.assertGreaterEqual(int(grey[b + 35:b + 46, 220].sum()), 2)       # and of the grey one
+            self.assertTrue((px[:b, :, 0] < 100).any())                           # banner text
+            # a reduced read: the block-averaged image is drawn and boxes come in through input_scale
+            reduced = dict(res, input_scale=2, reduced_shape=[50, 150])
+            geo2 = R.overlay_geometry((50, 150), reduced, max_side=120)
+            self.assertAlmostEqual(geo2["scale"], 0.8 / 2, places=6)
+            px2 = np.asarray(Image.open(R.overlay(img[::2, ::2], reduced, Path(d) / "r.png", max_side=120)).convert("RGB"))
+            self.assertEqual(list(px2.shape[:2]), geo2["size"])
+            self.assertEqual(px2.shape[1], max(120, geo2["size"][1]))
+            # the full-size image with the same result: boxes are not divided again
+            self.assertEqual(R.overlay_geometry(img.shape, reduced, max_side=300)["scale"], 1.0)
+
+    def test_cli_overlay_max_side_is_recorded(self):
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest("Pillow not installed")
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            npy = Path(d) / "img.npy"
+            np.save(npy, lined_image())                                           # 150 x 400
+            png = Path(d) / "o.png"
+            code, out, err = run_cli(["letterread", str(npy), "--weights", str(w), "--letter-px", "16", "--nulls", "1",
+                                      "--no-orientation", "--json", "--overlay", str(png), "--overlay-max-side", "200"])
+            self.assertEqual(code, 0, err)
+            geo = json.loads(out)["overlay"]
+            self.assertEqual((geo["file"], geo["scale"], geo["max_side"]), (str(png), 0.5, 200))
+            with Image.open(png) as im:
+                self.assertEqual([im.size[1], im.size[0]], geo["size"])
+                self.assertEqual(im.size[0], 200)
 
 if __name__ == "__main__":
     unittest.main()

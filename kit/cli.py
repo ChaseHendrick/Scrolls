@@ -406,8 +406,18 @@ def cmd_view(args):
 
 
 def cmd_letterread(args):
+    say = (lambda msg: None) if args.quiet else (lambda msg: print(msg, file=sys.stderr, flush=True))
     try:
         from . import letterread
+        if args.letter_px is not None and (args.letter_mm is not None or args.um_per_px is not None):
+            raise ValueError("give the letter height once: --letter-px, or --letter-mm with --um-per-px")
+        letter_px = args.letter_px
+        if args.letter_mm is not None or args.um_per_px is not None:
+            letter_px = letterread.letter_px_from_units(args.letter_mm, args.um_per_px)
+        elif letter_px is not None and letter_px <= 0:
+            raise ValueError(f"--letter-px {letter_px}: the letter height must be positive")
+        if args.max_mpx <= 0 or args.overlay_max_side < 16:
+            raise ValueError("--max-mpx must be positive and --overlay-max-side at least 16")
         # Check where the results go before the read, which can take minutes.
         if args.overlay:
             try:
@@ -420,18 +430,38 @@ def cmd_letterread(args):
         for out in (args.out, args.overlay):
             if out and not Path(out).resolve().parent.is_dir():
                 raise OSError(f"no such folder for {out}")
-        img = letterread.load_image(args.image, args.key, crop=args.crop)
+        if not Path(args.image).exists():   # before the weights, which may download
+            raise OSError(f"{args.image}: no such file or folder")
+        if args.letter_mm is not None:
+            say(f"letter height {args.letter_mm:g} mm at {args.um_per_px:g} um per pixel: {letter_px:.2f} px")
         lm = None
         if args.lm:
             from . import greeklm
             lm = greeklm.KNLetterLM.load(args.lm)
-        weights = letterread.resolve_weights(args.weights)
-        res = letterread.read(img, weights, orientation=not args.no_orientation, letter_px=args.letter_px,
-                              polarity=args.polarity, nulls=args.nulls, seed=args.seed, lines=args.lines,
-                              p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0, beam=args.beam,
+        net = letterread.LineNet(letterread.resolve_weights(args.weights))
+        img, k, shape = letterread.load_reduced(args.image, args.key, crop=args.crop, letter_px=letter_px,
+                                                net_letter_px=net.letter_px, max_pixels=int(args.max_mpx * 1e6),
+                                                progress=say)
+        a0 = letterread.normalize_for_reading(img, args.polarity, max_pixels=int(args.max_mpx * 1e6))
+        del img
+        res = letterread.read(a0, net, normalized=True, input_scale=k, orientation=not args.no_orientation,
+                              letter_px=letter_px, polarity=args.polarity, nulls=args.nulls, seed=args.seed,
+                              lines=args.lines, p_min=args.p_min, lm=lm, lm_weight=args.lm_weight if lm else 0.0,
+                              beam=args.beam, letter_px_fallback=False, progress=say,
                               columns=args.columns if args.columns in ("auto", "off") else int(args.columns))
+        res["input_shape"] = list(shape)   # the exact input window, including rows and columns under one block
+        if args.letter_mm is not None:
+            res["letter_mm"], res["um_per_px"] = args.letter_mm, args.um_per_px
         if args.crop:
             res["crop"] = list(args.crop)  # [Y0, Y1, X0, X1]; every row, column and box is relative to Y0, X0
+        if args.overlay:
+            res["overlay"] = dict(file=str(args.overlay),
+                                  **letterread.overlay_geometry(a0.shape, res, args.overlay_max_side))
+    except MemoryError:
+        print(f"out of memory reading {args.image}. Give the letter size (--letter-px, or --letter-mm with "
+              "--um-per-px) so a big image is block-averaged while it loads, lower the budget with --max-mpx, "
+              "or read a window with --crop Y0 Y1 X0 X1.", file=sys.stderr)
+        return 2
     except (ImportError, OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -440,7 +470,7 @@ def cmd_letterread(args):
         if args.out:
             Path(args.out).write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         if args.overlay:
-            letterread.overlay(img, res, args.overlay, polarity=args.polarity)
+            letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True)
     except (ImportError, OSError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -746,13 +776,21 @@ def build_parser():
     p.set_defaults(func=cmd_view)
 
     p = sub.add_parser("letterread", help="learned Greek letter reader for a 2D image, with null and orientation controls")
-    p.add_argument("image", help=".npy, .npz, .tif or .png (ink bright by default)")
+    p.add_argument("image", help=".npy, .npz, .tif, .png or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
                    help="linenet-v1 .npz, or a released model name such as letters-v2-real (downloaded once, SHA-256 checked)")
-    p.add_argument("--key", help=".npz: array name (default: the first)")
+    p.add_argument("--key", help=".npz: array name (default: the first); zarr: array path or OME-Zarr level (default: "
+                                 "level 0, full resolution); pixel values are then in that level's pixels")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
                    help="read only these rows and columns; every row, box and --lines value is then relative to Y0, X0")
-    p.add_argument("--letter-px", type=float, help="letter height in image pixels (default: estimated from line pitch)")
+    p.add_argument("--letter-px", type=float,
+                   help="letter height in image pixels (default: estimated from the line pitch, with a scale search; "
+                        "the read stops when the image shows no line pitch)")
+    p.add_argument("--letter-mm", type=float, help="letter height in millimetres; needs --um-per-px")
+    p.add_argument("--um-per-px", type=float, help="pixel size in micrometres (with --letter-mm)")
+    p.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6; letterread needs numpy
+                   help="pixel budget in millions of pixels: a bigger image is block-averaged while it loads "
+                        "(default %(default)g)")
     p.add_argument("--polarity", choices=["bright", "dark", "auto"], default="bright", help="ink bright (maps) or dark (photos)")
     p.add_argument("--lines", type=float, nargs="+", help="centre rows of the lines, image pixels (default: found)")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
@@ -765,6 +803,9 @@ def build_parser():
     p.add_argument("--no-orientation", action="store_true", help="skip the mirrored and rotated reads")
     p.add_argument("--out", help="also write the full result as JSON")
     p.add_argument("--overlay", help="also write a PNG of the image with the letters drawn on it (needs Pillow)")
+    p.add_argument("--overlay-max-side", type=int, default=4000,
+                   help="longest side of the overlay image in pixels (default 4000); the JSON records its scale")
+    p.add_argument("--quiet", action="store_true", help="no progress messages on stderr")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_letterread)
 
