@@ -25,7 +25,14 @@ Private research and work that cannot be public live in **[Scrolls-private](http
 
 Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists can read. Raw compute does not buy that by itself. In August and September 2026 at least five independent teams, at least three of them openly Claude-driven, ran the released 9 µm ink models on eligible scrolls (one survey covered all 21 that lacked catalog segments) and published **nulls**. The bottleneck is keeping a surface on one papyrus sheet, and getting ink models to generalize across scrolls. It is not GPU hours. See [`docs/compute.md`](docs/compute.md).
 
-## Greek letter reader
+## Released tools
+
+<!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
+Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
+
+### Greek letter reader
+
+Released 14 October 2026.
 
 A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. It runs in numpy on a laptop CPU and reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).
 
@@ -36,6 +43,23 @@ python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --over
 ```
 
 Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).
+
+### AutoPipeline
+
+Released 14 October 2026 as a reviewed package on branch `submission/progress-2026-10`: [`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).
+
+AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. It is the package prepared for the October 2026 Progress Prize.
+
+```bash
+git clone --branch submission/progress-2026-10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10/autopipeline
+python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
+python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
+python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
+```
+
+VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).
+<!-- releases:end -->
 
 ## Quick start (kit)
 
@@ -96,6 +120,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`kit/`](kit/) | Planner, doctor, prize snapshot, map scoring (`auc`, `rowscore`, `verify`), `layers`, `provenance`, experiment ledger; CLI `python -m kit` |
 | [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labelled test), `mac-phase0.sh` (public model comparisons), `mac-verify.sh`; `false404/fault_relay.py` replays S3's false 404 for villa #2058 |
 | [`docs/results.json`](docs/results.json) | Every benchmark number with settings and source |
+| [`docs/releases.json`](docs/releases.json) | Every tool released from private work; the "Released tools" section above is generated from it |
 | [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Public evaluation methodology and access-required private plan pointers |
 | [`kit/data/prizes-2026-10-11.json`](kit/data/prizes-2026-10-11.json) | Current prize snapshot (checked 2026-10-11): amounts, deadlines, 13 Grand Prize and 21 First Letters volumes with S3 names. [`prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) is the previous snapshot (22 First Letters volumes, including PHerc0343, maximum 10) |
 | [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
@@ -135,6 +160,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
 | `letterread.py` | Greek letter reader: numpy CTC line network, layout, nulls and orientation controls, overlay, released weights (numpy; Pillow and tifffile for images) |
 | `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
+| `releases.py` | The release list and the README section written from it (`python -m kit releases`) |
 | `cli.py` | `python -m kit` entry point |
 
 ## Novel findings

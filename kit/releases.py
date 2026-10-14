@@ -1,0 +1,273 @@
+"""The list of tools released from private work, and the README section made from it.
+
+docs/releases.json lists every tool or package released from the private repository into this one, and README.md's
+"Released tools" section, between the two marker lines below, is written from it, newest first:
+
+  python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
+  python -m kit releases render           rewrite the section from the list
+  python -m kit releases check            exit 1 when the section and the list disagree (a unit test runs this)
+
+An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2026-10-14",
+           "summary": "One paragraph: what it does, the measured result with its claim label, the main limit.",
+           "commands": ["python -m pip install numpy", "..."],          (optional; shown as a bash block)
+           "details": "One line of links, such as the guide.",           (optional)
+           "where": "main"}
+"where" is "main" for files merged here, or {"branch": B, "commit": C, "path": P} for a reviewed package that lives on
+its own branch (the Progress Prize exporter's submission/<id> branches), which the section links at that commit.
+
+The private repository's submission exporter carries an identical copy of this module and writes the entry of each
+package it releases with it, so keep the two copies the same. Standard library only.
+"""
+
+import argparse
+import json
+import re
+import sys
+from datetime import date
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+REGISTRY = ROOT / "docs" / "releases.json"
+README = ROOT / "README.md"
+REPO_URL = "https://github.com/ChaseHendrick/Scrolls"
+START = ("<!-- releases:start (generated from docs/releases.json by python -m kit releases render; "
+         "edit that list, not this section) -->")
+END = "<!-- releases:end -->"
+INTRO = "Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
+FIELDS = {"id", "title", "released", "summary", "commands", "details", "where"}
+REQUIRED = ("id", "title", "released", "summary", "where")
+MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
+          "November", "December")
+LONG_DASHES = (chr(0x2014), chr(0x2013))
+
+
+class ReleaseListError(ValueError):
+    pass
+
+
+def _text(entry, key, limit, required=True):
+    value = entry.get(key)
+    if value is None and not required:
+        return None
+    if not isinstance(value, str) or not value.strip():
+        raise ReleaseListError(f"{entry.get('id', '?')}: {key} must be a non-empty string")
+    if len(value) > limit:
+        raise ReleaseListError(f"{entry.get('id', '?')}: {key} is longer than {limit} characters")
+    if "\n" in value or "\r" in value:
+        raise ReleaseListError(f"{entry.get('id', '?')}: {key} must be one line or one paragraph")
+    _plain(entry, key, value)
+    return value
+
+
+def _plain(entry, key, value):
+    if "<!--" in value or "-->" in value:
+        raise ReleaseListError(f"{entry.get('id', '?')}: {key} may not hold an HTML comment")
+    for ch in LONG_DASHES:
+        if ch in value:
+            raise ReleaseListError(f"{entry.get('id', '?')}: {key} has a long dash (house style: none)")
+
+
+def validate(entry):
+    """Return the entry if it is well formed, else raise ReleaseListError naming the field."""
+    if not isinstance(entry, dict):
+        raise ReleaseListError("an entry must be a JSON object")
+    unknown = set(entry) - FIELDS
+    if unknown:
+        raise ReleaseListError(f"{entry.get('id', '?')}: unknown fields {sorted(unknown)}")
+    missing = [k for k in REQUIRED if k not in entry]
+    if missing:
+        raise ReleaseListError(f"{entry.get('id', '?')}: missing {missing}")
+    if not isinstance(entry["id"], str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", entry["id"]):
+        raise ReleaseListError(f"id {entry['id']!r} must be lowercase letters, digits and hyphens")
+    _text(entry, "title", 80)
+    _text(entry, "summary", 1500)
+    _text(entry, "details", 500, required=False)
+    released = entry["released"]
+    try:
+        if not isinstance(released, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", released):
+            raise ValueError
+        date.fromisoformat(released)
+    except ValueError:
+        raise ReleaseListError(f"{entry['id']}: released must be a date, YYYY-MM-DD") from None
+    commands = entry.get("commands", [])
+    if not isinstance(commands, list) or len(commands) > 12:
+        raise ReleaseListError(f"{entry['id']}: commands must be a list of at most 12 lines")
+    for line in commands:
+        if not isinstance(line, str) or not line.strip() or "\n" in line or "\r" in line or "```" in line:
+            raise ReleaseListError(f"{entry['id']}: each command is one non-empty line with no code fence")
+        if len(line) > 300:
+            raise ReleaseListError(f"{entry['id']}: a command is longer than 300 characters")
+        _plain(entry, "commands", line)
+    where = entry["where"]
+    if where != "main":
+        if not isinstance(where, dict) or set(where) != {"branch", "commit", "path"}:
+            raise ReleaseListError(f"{entry['id']}: where is \"main\" or {{branch, commit, path}}")
+        if not isinstance(where["branch"], str) or not re.fullmatch(r"[A-Za-z0-9_][A-Za-z0-9_./-]{0,99}", where["branch"]) \
+                or ".." in where["branch"] or where["branch"] == "main":
+            raise ReleaseListError(f"{entry['id']}: where.branch is not a plain branch name")
+        if not isinstance(where["commit"], str) or not re.fullmatch(r"[0-9a-f]{40}", where["commit"]):
+            raise ReleaseListError(f"{entry['id']}: where.commit must be a full 40-character commit")
+        path = where["path"]
+        if not isinstance(path, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*", path) \
+                or any(part in (".", "..") for part in path.split("/")):
+            raise ReleaseListError(f"{entry['id']}: where.path must be a simple relative path")
+    return entry
+
+
+def validate_list(registry):
+    if not isinstance(registry, dict) or registry.get("schema_version") != 1 or set(registry) != {"schema_version", "releases"}:
+        raise ReleaseListError("the list is {\"schema_version\": 1, \"releases\": [...]}")
+    entries = registry["releases"]
+    if not isinstance(entries, list):
+        raise ReleaseListError("releases must be a list")
+    seen = set()
+    for entry in entries:
+        validate(entry)
+        if entry["id"] in seen:
+            raise ReleaseListError(f"{entry['id']}: listed twice")
+        seen.add(entry["id"])
+    return registry
+
+
+def dumps(registry):
+    """The list as written to docs/releases.json (both copies of this module write it the same way)."""
+    return json.dumps(validate_list(registry), indent=2, ensure_ascii=False) + "\n"
+
+
+def upsert(registry, entry):
+    """A new list with entry added at the end, or in place of the entry with its id; and "added" or "replaced"."""
+    validate(entry)
+    entries = [dict(e) for e in validate_list(registry)["releases"]]
+    for i, old in enumerate(entries):
+        if old["id"] == entry["id"]:
+            entries[i] = dict(entry)
+            return {"schema_version": 1, "releases": entries}, "replaced"
+    return {"schema_version": 1, "releases": entries + [dict(entry)]}, "added"
+
+
+def _day(iso):
+    d = date.fromisoformat(iso)
+    return f"{d.day} {MONTHS[d.month - 1]} {d.year}"
+
+
+def render_entry(entry):
+    """One entry's part of the section, as markdown lines."""
+    validate(entry)
+    where = entry["where"]
+    if where == "main":
+        when = f"Released {_day(entry['released'])}."
+    else:
+        url = f"{REPO_URL}/tree/{where['commit']}/{where['path']}"
+        when = (f"Released {_day(entry['released'])} as a reviewed package on branch `{where['branch']}`: "
+                f"[`{where['path']}/` at commit `{where['commit'][:7]}`]({url}).")
+    lines = [f"### {entry['title']}", "", when, "", entry["summary"]]
+    if entry.get("commands"):
+        lines += ["", "```bash", *entry["commands"], "```"]
+    if entry.get("details"):
+        lines += ["", entry["details"]]
+    return lines
+
+
+def ordered(entries):
+    """Newest first; on the same day, the entry added to the list later comes first."""
+    return [e for _, _, e in sorted(((e["released"], i, e) for i, e in enumerate(entries)), key=lambda t: t[:2],
+                                    reverse=True)]
+
+
+def render(registry):
+    """The whole generated section, marker lines included."""
+    lines = [START, INTRO]
+    for entry in ordered(validate_list(registry)["releases"]):
+        lines += [""] + render_entry(entry)
+    return "\n".join(lines + [END])
+
+
+def _span(readme):
+    lines = readme.split("\n")
+    starts = [i for i, line in enumerate(lines) if line.startswith("<!-- releases:start")]
+    ends = [i for i, line in enumerate(lines) if line.strip() == END]
+    if len(starts) != 1 or len(ends) != 1 or ends[0] < starts[0]:
+        raise ReleaseListError("README needs exactly one releases:start line followed by one releases:end line")
+    return lines, starts[0], ends[0]
+
+
+def apply(readme, registry):
+    """README text with its generated section rewritten from the list; everything outside the markers kept."""
+    lines, start, end = _span(readme)
+    return "\n".join(lines[:start] + render(registry).split("\n") + lines[end + 1:])
+
+
+def updated(registry_text, readme_text, entry):
+    """(new docs/releases.json text, new README text, "added" or "replaced") with entry in the list."""
+    registry, action = upsert(json.loads(registry_text), entry)
+    return dumps(registry), apply(readme_text, registry), action
+
+
+def check(registry_path=REGISTRY, readme_path=README):
+    """Problems, as a list of strings; empty when the README section matches the list."""
+    try:
+        registry = json.loads(Path(registry_path).read_text(encoding="utf-8"))
+        readme = Path(readme_path).read_text(encoding="utf-8")
+        if apply(readme, registry) != readme:
+            return [f"{readme_path}'s releases section is not what {registry_path} gives; "
+                    "run python -m kit releases render"]
+        if Path(registry_path).read_text(encoding="utf-8") != dumps(registry):
+            return [f"{registry_path} is not in its written form; run python -m kit releases render"]
+    except (OSError, ValueError) as exc:
+        return [str(exc)]
+    return []
+
+
+def write(registry_path, readme_path, registry):
+    readme = Path(readme_path).read_text(encoding="utf-8")
+    new_readme = apply(readme, registry)
+    Path(registry_path).write_text(dumps(registry), encoding="utf-8")
+    Path(readme_path).write_text(new_readme, encoding="utf-8")
+
+
+def add_arguments(p):
+    p.add_argument("--list", dest="registry", default=str(REGISTRY), help="the release list (default docs/releases.json)")
+    p.add_argument("--readme", default=str(README), help="the README to rewrite (default README.md)")
+    actions = p.add_subparsers(dest="action", required=True)
+    a = actions.add_parser("add", help="add an entry from a JSON file (- for stdin), or replace the one with its id")
+    a.add_argument("entry")
+    actions.add_parser("render", help="rewrite the README's releases section from the list")
+    actions.add_parser("check", help="exit 1 when the README's releases section and the list disagree")
+    actions.add_parser("list", help="one line per release, newest first")
+
+
+def run(args):
+    try:
+        if args.action == "check":
+            problems = check(args.registry, args.readme)
+            for problem in problems:
+                print(problem, file=sys.stderr)
+            return 1 if problems else 0
+        registry = json.loads(Path(args.registry).read_text(encoding="utf-8"))
+        if args.action == "list":
+            for e in ordered(validate_list(registry)["releases"]):
+                print(f"{e['released']}  {e['id']:<24} {e['title']}")
+            return 0
+        if args.action == "add":
+            raw = sys.stdin.read() if args.entry == "-" else Path(args.entry).read_text(encoding="utf-8")
+            registry, action = upsert(registry, json.loads(raw))
+            entry_id = json.loads(raw)["id"]
+        write(args.registry, args.readme, registry)
+        out = {"releases": len(registry["releases"]), "readme": args.readme}
+        if args.action == "add":
+            out.update(id=entry_id, action=action)
+        print(json.dumps(out))
+        return 0
+    except (OSError, ValueError) as exc:
+        print(f"releases: {exc}", file=sys.stderr)
+        return 2
+
+
+def main(argv=None):
+    p = argparse.ArgumentParser(prog="python -m kit releases", description=__doc__.split("\n")[0])
+    add_arguments(p)
+    return run(p.parse_args(argv))
+
+
+if __name__ == "__main__":
+    sys.exit(main())
