@@ -82,7 +82,7 @@ When the private checkout is available, refresh the combined session context fro
 | `kit/gate.py` | Gate A, by the rule in its module docstring (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
 | `kit/localcost.py` | `kit run local` and `kit run backfill`: wall time, CPU time and estimated electricity cost of local runs in the ledger (hard rule 9, [compute.md](docs/compute.md)); past durations in `scripts/backfill/` |
-| `kit/cloudcost.py` | Modal cost estimates from dated rates, no network (`python3 -m kit.cloudcost rates/cost/infer/jobs/budget`); rates and job assumptions in `docs/compute/` |
+| `kit/cloudcost.py` | Modal cost estimates from dated rates, no network (`python3 -m kit.cloudcost rates/cost/infer/jobs/budget/defaults`); rates and job assumptions in `docs/compute/` |
 | `kit/cropscan.py` | Pixel AUC of one map on every window of a grid in one pass (library; used by the lane I experiment): how much a crop's AUC depends on where the crop was put |
 | `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
 | `kit/meshaudit.py` | `kit meshaudit transforms/canvas/plan/depth`: refit catalogue cross-scan affines from their landmarks, check every surface volume against its mesh, and measure papyrus depth between native and cross renders; [protocol](docs/plans/2026-10-07-mesh-hypothesis.md), [data](docs/data/mesh-hypothesis/README.md) |

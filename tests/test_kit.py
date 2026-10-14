@@ -184,7 +184,7 @@ class PlanTest(unittest.TestCase):
         # Hecate (docs/logs/2026-10-09-pherc0841-hecate.md).
         text = plan.first_letters("PHerc0826")
         step = text[text.index("# 1b."):text.index("python -m kit fetch w045")]
-        self.assertIn("PHerc0841 is the held-out test for ink_9um, v8in, d9v2 and Reader v2", step)
+        self.assertIn("PHerc0841 is the held-out test for ink_9um, v8in, v8in-1447, d9v2 and\n#     Reader v2", step)
         self.assertIn("Hecate", step)
 
     def test_fetch_aliases_point_at_9um_surface_volumes(self):
@@ -206,6 +206,16 @@ class PlanTest(unittest.TestCase):
         with self.assertRaises(ValueError) as ctx:
             plan.first_letters("PHerc1667")
         self.assertNotIn("awarded", str(ctx.exception))
+
+    def test_plan_award_sentence_survives_an_entry_without_sources(self):
+        # A snapshot entry missing its date or sources still gives the clean refusal, not a KeyError.
+        import copy
+        from kit import prizes
+        snapshot = copy.deepcopy(prizes.load())
+        letters = prizes.find(snapshot, "first-letters-2027")
+        letters["awarded"] = [{"scroll": "PHerc0343"}]
+        with self.assertRaisesRegex(ValueError, r"awarded on an unrecorded date \(no source recorded\)"):
+            plan.first_letters("PHerc0343", snapshot=snapshot)
 
     def test_cost_matches_published_run(self):
         # bnleft/first-light-pherc0211: about 6.5 GPU hours on an A10 at $1.10/h, "about $7".

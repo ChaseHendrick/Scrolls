@@ -73,10 +73,10 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
 HELD_OUT = """\
 # 1b. Labelled check: PHerc0139 w045, unseen by v8in. ink_9um trained on its 2.4 um render
 #     (pherc0139-w029), so here it shows cross-scan reading of a training surface, not
-#     generalization; PHerc0841 is the held-out test for ink_9um, v8in, d9v2 and Reader v2
-#     (possibly not for Hecate: its base model's trainer lists all three PHerc0841 segments).
-#     Score it before you look at any target: Bullo27 reports row scores 73-148 on w045
-#     and w033.
+#     generalization; PHerc0841 is the held-out test for ink_9um, v8in, v8in-1447, d9v2 and
+#     Reader v2 (possibly not for Hecate: its base model's trainer lists all three PHerc0841
+#     segments). Score w045 before you look at any target: Bullo27 reports row scores 73-148
+#     on w045 and w033.
 python -m kit fetch w045 ink-dataset/pherc0139/w045/w045_9um.zarr
 uv run --extra models python -m vesuvius.ink_detection.inference.infer \\
   ink-dataset/pherc0139/w045/w045_9um.zarr \\
@@ -153,7 +153,10 @@ def first_letters(scroll, batch=None, snapshot=None, mac=False):
         names = ", ".join(e["scroll"] for e in letters["eligible"])
         wanted = prizes.normalize_scroll(scroll)
         won = [a for a in letters.get("awarded", []) if prizes.normalize_scroll(a["scroll"]) == wanted]
-        why = f" Its First Letters prize was awarded on {won[0]['date']} ({won[0]['sources'][0]})." if won else ""
+        why = ""
+        if won:
+            source = (won[0].get("sources") or ["no source recorded"])[0]
+            why = f" Its First Letters prize was awarded on {won[0].get('date', 'an unrecorded date')} ({source})."
         raise ValueError(f"{scroll} is not First Letters eligible in the {snapshot['checked']} snapshot.{why} Eligible: {names}")
     canonical = entry["scroll"]
     slug = canonical.lower()

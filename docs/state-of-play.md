@@ -1,4 +1,4 @@
-# State of play (checked 2026-10-06; PHerc. 343 award added 2026-10-09)
+# State of play (checked 2026-10-06; PHerc. 343 award added 2026-10-09, updated 2026-10-14)
 
 What has been read, what has been tried, and who has been paid. Read this before choosing a target so you do not repeat a published run. Each line carries a source. Community repositories are cited for what they report; they are not organizer statements.
 
