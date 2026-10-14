@@ -1,0 +1,163 @@
+{
+ "label": "after",
+ "render": "SCRATCH/vcbuild-fix/bin/vc_render_tifxyz",
+ "segment": "SCRATCH/f404demo/w035-on-20260102150214.tifxyz",
+ "volume": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/",
+ "crop": [
+  9000,
+  11000,
+  256,
+  256
+ ],
+ "layers": 109,
+ "rate": 0.3,
+ "seed": "1",
+ "bad": 1,
+ "utc": "2026-10-12T18:39:15Z",
+ "runs": [
+  {
+   "step": "reference",
+   "argv": [
+    "SCRATCH/vcbuild-fix/bin/vc_render_tifxyz",
+    "--volume",
+    "http://127.0.0.1:38123/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/",
+    "--segmentation",
+    "SCRATCH/f404demo/w035-on-20260102150214.tifxyz",
+    "--scale",
+    "1",
+    "--group-idx",
+    "0",
+    "--num-slices",
+    "109",
+    "--slice-step",
+    "1",
+    "--cache-gb",
+    "2",
+    "--crop-x",
+    "9000",
+    "--crop-y",
+    "11000",
+    "--crop-width",
+    "256",
+    "--crop-height",
+    "256",
+    "--tif-output",
+    "SCRATCH/f404demo/run1/after/reference/layers"
+   ],
+   "exit": 0,
+   "seconds": 18.4,
+   "cache": "SCRATCH/f404demo/run1/after/cache-ref",
+   "relay": {
+    "requests": 97,
+    "injected": 0,
+    "injected_keys": 0,
+    "upstream_false_404": 0,
+    "upstream_404": 31,
+    "upstream_errors": 0
+   },
+   "log_lines": [
+    "Rendering: SCRATCH/f404demo/w035-on-20260102150214.tifxyz -> SCRATCH/f404demo/run1/after/reference/layers (tif)"
+   ],
+   "markers": [],
+   "digest": "ce73b7891ead91cf9e9d8bab43d0cf37be25091e8ffe530fbc811d2af001edc1",
+   "zero_share": 0.0003,
+   "same_as_reference": true
+  },
+  {
+   "step": "faulty",
+   "argv": [
+    "SCRATCH/vcbuild-fix/bin/vc_render_tifxyz",
+    "--volume",
+    "http://127.0.0.1:38123/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/",
+    "--segmentation",
+    "SCRATCH/f404demo/w035-on-20260102150214.tifxyz",
+    "--scale",
+    "1",
+    "--group-idx",
+    "0",
+    "--num-slices",
+    "109",
+    "--slice-step",
+    "1",
+    "--cache-gb",
+    "2",
+    "--crop-x",
+    "9000",
+    "--crop-y",
+    "11000",
+    "--crop-width",
+    "256",
+    "--crop-height",
+    "256",
+    "--tif-output",
+    "SCRATCH/f404demo/run1/after/faulty/layers"
+   ],
+   "exit": 0,
+   "seconds": 21.9,
+   "cache": "SCRATCH/f404demo/run1/after/cache-faulty",
+   "relay": {
+    "requests": 103,
+    "injected": 6,
+    "injected_keys": 6,
+    "upstream_false_404": 0,
+    "upstream_404": 31,
+    "upstream_errors": 0
+   },
+   "log_lines": [
+    "Rendering: SCRATCH/f404demo/w035-on-20260102150214.tifxyz -> SCRATCH/f404demo/run1/after/faulty/layers (tif)"
+   ],
+   "markers": [],
+   "digest": "ce73b7891ead91cf9e9d8bab43d0cf37be25091e8ffe530fbc811d2af001edc1",
+   "zero_share": 0.0003,
+   "same_as_reference": true
+  },
+  {
+   "step": "rerun",
+   "argv": [
+    "SCRATCH/vcbuild-fix/bin/vc_render_tifxyz",
+    "--volume",
+    "http://127.0.0.1:38123/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/",
+    "--segmentation",
+    "SCRATCH/f404demo/w035-on-20260102150214.tifxyz",
+    "--scale",
+    "1",
+    "--group-idx",
+    "0",
+    "--num-slices",
+    "109",
+    "--slice-step",
+    "1",
+    "--cache-gb",
+    "2",
+    "--crop-x",
+    "9000",
+    "--crop-y",
+    "11000",
+    "--crop-width",
+    "256",
+    "--crop-height",
+    "256",
+    "--tif-output",
+    "SCRATCH/f404demo/run1/after/rerun/layers"
+   ],
+   "exit": 0,
+   "seconds": 17.6,
+   "cache": "SCRATCH/f404demo/run1/after/cache-faulty",
+   "relay": {
+    "requests": 72,
+    "injected": 0,
+    "injected_keys": 0,
+    "upstream_false_404": 0,
+    "upstream_404": 31,
+    "upstream_errors": 0
+   },
+   "log_lines": [
+    "Rendering: SCRATCH/f404demo/w035-on-20260102150214.tifxyz -> SCRATCH/f404demo/run1/after/rerun/layers (tif)"
+   ],
+   "markers": [],
+   "digest": "ce73b7891ead91cf9e9d8bab43d0cf37be25091e8ffe530fbc811d2af001edc1",
+   "zero_share": 0.0003,
+   "same_as_reference": true
+  }
+ ]
+}

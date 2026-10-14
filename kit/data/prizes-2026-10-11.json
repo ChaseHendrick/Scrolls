@@ -1,10 +1,10 @@
 {
-  "checked": "2026-10-09",
+  "checked": "2026-10-11",
   "source": "https://scrollprize.org/prizes",
-  "source_repo_file": "https://github.com/ScrollPrize/villa/blob/main/scrollprize.org/src/data/prizeEligibility.json",
-  "source_commit": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
-  "source_main_check": "2026-10-09: prizeEligibility.json (sha256 d549d8e8e0e20a6b4a7f7548287c6d0631d825c8a4063c78ac0bd86bdc9e30a7) and docs/34_prizes.md on villa main are byte-identical to source_commit, and scrollprize.org/prizes lists the same 22 First Letters scrolls, PHerc0343 included.",
-  "note": "Snapshot. The live page wins if it disagrees. Re-check before starting work on a prize. Eligible lists are copied as villa publishes them; an award note records an organisers' announcement for a scroll that villa still lists.",
+  "source_repo_file": "https://github.com/ScrollPrize/villa/blob/34d4b260dd2a281d635227a71ab8bfb5eb45c4cd/scrollprize.org/src/data/prizeEligibility.json",
+  "source_prizes_md": "https://github.com/ScrollPrize/villa/blob/34d4b260dd2a281d635227a71ab8bfb5eb45c4cd/scrollprize.org/docs/34_prizes.md",
+  "source_commit": "34d4b260dd2a281d635227a71ab8bfb5eb45c4cd",
+  "note": "Snapshot of the prizes page body on 2026-10-11, not the homepage banner. The live page wins if it disagrees. Re-check before starting work on a prize. First Letters: one prize was already used (PHerc0343, awarded 8 Oct 2026 to Erwin Nieuwlaar). The page says a maximum of 9 more scrolls, up to $450,000. The same villa file's frontmatter, which feeds the homepage banner, still said $500,000 and max 10 at commit 34d4b260; this snapshot follows the page body. Zarr names are carried from the 6 Oct 2026 bucket listing for volume ids the page still lists. The 6 Oct file remains the previous snapshot: 22 First Letters volumes, including PHerc0343, maximum 10, $500,000.",
   "prizes": [
     {
       "id": "grand-prize-2027",
@@ -103,9 +103,23 @@
     {
       "id": "first-letters-2027",
       "title": "First Letters",
-      "total_usd": 500000,
+      "total_usd": 450000,
       "per_scroll_usd": 50000,
-      "max_scrolls": 10,
+      "max_scrolls": 9,
+      "awarded_count": 1,
+      "awarded": [
+        {
+          "scroll": "PHerc0343",
+          "volume": "20250521140437",
+          "usd": 50000,
+          "date": "2026-10-08",
+          "winner": "Erwin Nieuwlaar",
+          "sources": [
+            "https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for",
+            "https://x.com/scrollprize/status/2108285044133663084"
+          ]
+        }
+      ],
       "deadline": "2027-06-25T23:59:00-07:00",
       "goal": "First team to show 10 legible letters within a single 4 cm2 area of an eligible scroll.",
       "submit": "https://forms.gle/TM5ao8GwC2mDrdLk9",
@@ -157,19 +171,6 @@
           "volume": "20250521133212",
           "zarr": "20250521133212-8.640um-1.2m-116keV-masked.zarr",
           "voxel_um": 8.64
-        },
-        {
-          "scroll": "PHerc0343",
-          "volume": "20250521140437",
-          "zarr": "20250521140437-8.640um-1.2m-116keV-masked.zarr",
-          "voxel_um": 8.64,
-          "award": {
-            "date": "2026-10-08",
-            "title": "$50K First Letters Prize awarded for PHerc. 343",
-            "source": "https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for",
-            "label": "Sourced fact",
-            "checked": "2026-10-09"
-          }
         },
         {
           "scroll": "PHerc0358",
@@ -287,5 +288,5 @@
     }
   ],
   "bucket": "s3://vesuvius-challenge-open-data",
-  "bucket_checked": "2026-10-09"
+  "bucket_checked": "2026-10-06"
 }

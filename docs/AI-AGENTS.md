@@ -17,7 +17,7 @@ This repository mixes **sourced research notes** about the Vesuvius Challenge wi
 9. **Research logs are not claims.** Dated notes go in `docs/logs/YYYY-MM-DD.md`. Do not promote log speculation into `state-of-play.md` without a source.
 10. **No scroll data in Git.** No volumes, renders, ink maps, checkpoints or large binaries. They are large and some carry non-commercial licenses.
 11. **Plain style.** Plain sentences. Do not put U+2014 or U+2013 dashes in new text.
-12. **GPU work goes to Modal.** A job that needs a GPU or would take more than about an hour on CPU runs on Modal. Claude's cloud sessions cannot reach Modal (their proxy does not carry its gRPC traffic), so they write a run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and hand it to Codex, or give the user commands to run on their own computer (user decision, 2026-10-08; AGENTS.md hard rule 11).
+12. **GPU work goes to Modal.** A job that needs a GPU or would take more than about an hour on CPU runs on Modal. Claude's cloud sessions cannot reach Modal (their proxy does not carry its gRPC traffic), so they write a run spec in [`compute/modal-specs/`](compute/modal-specs/README.md) and hand it to Codex, or give the user commands to run on their own computer (user decision, 2026-10-08; AGENTS.md hard rule 11). Default to a B300 (with fallbacks) and, for CPU work, 16 reserved cores; see [the defaults](compute/modal-pricing.md#default-gpu-and-cpu-for-new-jobs).
 
 ## Evidence discipline
 
@@ -37,7 +37,7 @@ See [`QUALITY.md`](QUALITY.md) and [`NOVELTY.md`](NOVELTY.md).
 - Improve docs with citations.
 - Extend `kit/` with tested helpers for planning, recording and checking runs.
 - When the user wants to run the pipeline: use `.claude/skills/scroll-session/SKILL.md`, print the plan, estimate its time, help them run it on their machine or, for GPU work or more than about an hour of CPU, through a Modal run spec (rule 12), and record results in the ledger. Target runs and their records belong in Scrolls-private.
-- Draft villa issues and PRs for bugs hit along the way (the user submits them).
+- Draft villa issues and PRs for bugs hit along the way (the user submits them), following [Public writing for villa and the community](#public-writing-for-villa-and-the-community).
 - Summarize published runs and prize results with links.
 
 ## Disallowed work
@@ -46,3 +46,13 @@ See [`QUALITY.md`](QUALITY.md) and [`NOVELTY.md`](NOVELTY.md).
 - Shipping stub tools that do not do what their docs say.
 - Treating an LLM's or an agent's visual judgment as a legibility verdict.
 - Submitting to the Vesuvius Challenge, posting on Discord, or opening upstream PRs without the user's explicit go-ahead.
+
+## Public writing for villa and the community
+
+User decision, 2026-10-12. This covers anything meant for villa or the wider Vesuvius community: issues, PRs, review comments, forum-style replies and prize submissions. Agents draft it; the user posts to villa.
+
+- **Title.** Clear and specific: name the component and what is wrong or what changes, for example "VC3D caches a chunk as empty after a 404 from S3". A reader should know what the issue is about from the title alone.
+- **Terms.** Use the community's established terms (villa, VC3D, tifxyz, surface volume, segment, winding, ink detection, the official tool and flag names). Never use our internal names (growcut, arm B, autopipeline, lane letters and the like) unless the text defines them in plain words.
+- **Voice.** Short, in the user's own voice, as a person writing to maintainers. Lead with what happens, how to reproduce it and what you expected. No headings or boilerplate a person would not write for a short report, and no long dashes.
+- **Why.** Maintainers close issues with unclear titles, invented terminology, or text that does not read as written by the person. A closed issue costs the fix and the user's standing with the team.
+- **Before handing a draft over,** reread it as a maintainer who has never seen this repository: is every term one they use, and does the title alone say what the report is about?

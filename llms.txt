@@ -7,10 +7,12 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 ## Start here
 
 - [AGENTS.md](AGENTS.md): entry point for agents: hard rules, standing user decisions, repository map, commands, glossary
-- [docs/HANDOFF.md](docs/HANDOFF.md): current state and next steps, newest first
+- [docs/README.md](docs/README.md): docs index, one home per topic; check it before researching
+- [docs/HANDOFF.md](docs/HANDOFF.md): the one handoff for every agent: open items first, then dated sections, newest first
 - [docs/plans/roadmap.md](docs/plans/roadmap.md): pointer to the access-required private roadmap
 - [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
-- [README.md](README.md): includes "Novel findings", only results not published elsewhere
+- [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
+- [docs/releases.json](docs/releases.json): tools released from private work since the list began on 14 October 2026, newest first; the README's "Released tools" section is generated from it
 
 ## Research
 
@@ -28,6 +30,7 @@ Start with AGENTS.md (rules, map, commands, glossary), then the current state in
 - [kit/gate.py](kit/gate.py): Gate A decision from committed and Mac scores
 - [scripts/mac-phase0.sh](scripts/mac-phase0.sh): the Phase 0 Mac queue in one command
 - [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
+- [docs/letter-reader.md](docs/letter-reader.md): Greek letter reader for ink maps (`python -m kit letterread`), its model card and measured accuracy on PHerc. 1667; letter hypotheses, not readings
 - [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
 - [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run
 - [kit/provenance.py](kit/provenance.py): who ran what, when, from which inputs, with one digest

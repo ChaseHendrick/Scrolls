@@ -10,7 +10,19 @@ python3 -m kit.cloudcost jobs                  # every job below, low / typical 
 python3 -m kit.cloudcost infer --profile 2p5d_2um --area 25 --um 2.4 --passes 2
 python3 -m kit.cloudcost cost --gpu H100 --gpus 1 --containers 4 --hours 0.5 --cpu 4 --mem 32
 python3 -m kit.cloudcost budget 30 100 500
+python3 -m kit.cloudcost defaults              # default GPU (B300 first) and CPU request
 ```
+
+## Default GPU and CPU for new jobs
+
+Owner decision, 12 October 2026: speed comes before saving money, inside the approved budget. `python3 -m kit.cloudcost defaults` prints these values, and `kit.cloudcost.modal_gpu()` and `modal_cpu()` return them for a Modal app.
+
+- **GPU: B300.** Request `gpu=["B300", "B200", "H200", "H100"]` (for several GPUs per container, `"B300:2"` and so on, up to 8). Modal tries the list in order and falls back when a B300 is not available, so the job still starts on the fastest card free (Sourced fact, [GPU guide](https://modal.com/docs/guide/gpu), read 2026-10-12). B300 needs CUDA 13.1 or newer in the image and libraries (Sourced fact, same guide): build new images for CUDA 13 (for PyTorch, a cu130 or later wheel), which the fallbacks also run. An image built for CUDA 12 (cu128 and older) does not run on a B300; until it is rebuilt, request `gpu=["B200", "H200", "H100"]` (`modal_gpu(cuda13=False)`). Use plain `"B300"` only when the code checks for a B300 by name. Do not use `"B200+"`: it may run on a B300 but is billed as and sized for a B200.
+- **Price a fallback list at the B300 rate**, its dearest entry: 7.10 USD/h per GPU, about 7.73 USD/h with 8 cores and 32 GiB (Sourced fact, [pricing](https://modal.com/pricing), read 2026-10-12).
+- **CPU: more reserved cores, not a faster chip.** Modal does not let a Function choose its CPU model or vendor; `cpu=` is a number of physical cores, each 2 vCPU (Sourced fact, [resources](https://modal.com/docs/guide/resources), read 2026-10-12). The default for CPU work is `cpu=(16, 16)`, request equal to limit, with the code's threads (OpenMP, BLAS, solver) set to 16. GPU containers default to `cpu=(8, 8)` for the data loader. 16 cores and 32 GiB cost about 1.01 USD/h.
+- **Measure before raising cores.** Use the count a job has been measured to scale to, when one exists; a single-threaded or poorly scaling tool gains nothing from more cores and still pays for them. For independent pieces, run several containers at once instead of one large one. Leave `region` unset: pinning a region multiplies every rate by 1.15 or 1.75 and does not make the CPU faster.
+- **Budget.** These defaults never raise a cap. Estimate the cost before launching, stay inside the approved budget, and ask the owner with the estimate before going past it.
+- **Frozen specs keep their machine.** A run spec or script already written, or a job already running, keeps the GPU and cores it was approved with until its owner changes it.
 
 ## Summary
 
@@ -72,6 +84,8 @@ Pricing FAQ consistency check (Interpretation): the A10G example (1.5 s, 1 core,
 | GPU concurrency | 10 | 50 | custom |
 | Log retention | 1 day | 30 days | custom |
 | Environment-level budgets | no | yes | yes |
+
+This project's workspace is on Starter (the owner's plan page, 13 October 2026), so its limits bind every spec here: 10 GPUs and 100 containers at once across all live jobs, and logs for 1 day only.
 
 Sourced fact: [pricing](https://modal.com/pricing). Included compute covers Functions, Sandboxes and Notebooks (CPU, memory, GPU), not per-token Shared Endpoints. Usage is pay as you go; no credit purchase is needed.
 

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "releases": [
+    {
+      "id": "autopipeline",
+      "title": "AutoPipeline",
+      "released": "2026-10-14",
+      "summary": "AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. On PHerc0841 w00, from the released scan and the published segment, `ink_9um` seed 42 scored AUC 0.7479 forward, 0.5012 reversed and 0.4851 shuffled, the same forward score as on the published surface volume (Model output, 9 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. It is the package prepared for the October 2026 Progress Prize.",
+      "commands": [
+        "git clone --branch submission/progress-2026-10 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
+        "cd scrolls-autopipeline/submissions/progress-2026-10/autopipeline",
+        "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
+        "python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy",
+        "python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS"
+      ],
+      "details": "VC3D's tools, ink detection, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md).",
+      "where": {
+        "branch": "submission/progress-2026-10",
+        "commit": "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284",
+        "path": "submissions/progress-2026-10"
+      }
+    },
+    {
+      "id": "letter-reader",
+      "title": "Greek letter reader",
+      "released": "2026-10-14",
+      "summary": "A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps, drawn ink labels and papyrus photographs. Reading needs only NumPy, with no GPU or deep-learning framework, and it reports null and orientation controls with every result. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.33 to 0.40), measured under rules fixed before the reads (Model output; those segments' maps came from an ink model trained on their labels).",
+      "commands": [
+        "python -m pip install numpy pillow tifffile",
+        "python scripts/letters/demo_p1667.py --segment w013          # public map, weights downloaded once, overlay PNG",
+        "python -m kit letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png"
+      ],
+      "details": "Guide, model card, benchmarks and training recipe: [`docs/letter-reader.md`](docs/letter-reader.md).",
+      "where": "main"
+    }
+  ]
+}

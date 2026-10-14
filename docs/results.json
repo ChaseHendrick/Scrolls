@@ -1,7 +1,7 @@
 {
  "schema": 1,
- "updated": "2026-10-09",
- "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
+ "updated": "2026-10-14",
+ "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. auc_shuffled: a map made with the depth layers shuffled, a second control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
  "held_out": {
   "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md",
   "PHerc0841": "not in the training data of ink_9um (its label dataset has no PHerc0841 segment; docs/logs/2026-10-08-w045-not-held-out.md), v8in or v8in-1447 (v8in's card lists no PHerc0841 segment; v8in-1447 fine-tunes on PHerc1447 w058 and w060 only), d9v2 (TAUIL's README holds out all three PHerc0841 segments, Community report) or Reader v2 (its train_config.json lists no PHerc0841 segment, Community report): the held-out test for those readers. Possibly not held out from Hecate: Hecate's base model scrollprize/ink_canonical_2um (recipe new_canon_autoresearch_recipe, epoch 13, step 113,246) has a committed trainer, ScrollPrize/villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py, that lists w00 and both PHerc0841 auto_grown segments as training fragments (lines 200-207, 292-293) and holds out only l5_0_crop (line 794) (Sourced fact); that the released weights came from that list is Interpretation. Treat Hecate's PHerc0841 scores, and the team's new_canon_autoresearch_recipe maps of PHerc0841, as possibly in-sample. See docs/logs/2026-10-09-pherc0841-hecate.md"
@@ -244,6 +244,20 @@
    "row_score_reversed": 23.6,
    "measured_by": "this repo",
    "source": "docs/logs/2026-10-07-community-scan.md"
+  },
+  {
+   "segment": "0841-w00",
+   "window": "whole",
+   "inner_px": 0,
+   "map_from": "AutoPipeline render, from the released scan and the published segment",
+   "reader": "ink_9um seed42",
+   "settings": "AutoPipeline package defaults, ink on one L4 on Modal, 9 October 2026",
+   "device": "cuda",
+   "auc_as_stored": 0.7479,
+   "auc_reversed": 0.5012,
+   "auc_shuffled": 0.4851,
+   "measured_by": "this repo",
+   "source": "https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md"
   },
   {
    "segment": "0841-ag896",
@@ -5455,5 +5469,3679 @@
    "Sparse resize can change float32 rounding and near-tied FFT decisions on other inputs.",
    "No GPU, training, new text, improved correction accuracy or overall reading-pipeline speed claim."
   ]
- }
+ },
+ "upstream_reports": [
+  {
+   "what": "VC3D caches an unconfirmed S3 404 as an empty chunk: w035 crop render, villa main 25f3c93, 6 false 404s replayed by scripts/false404/fault_relay.py (rate 0.3, seed 1, bad 1)",
+   "measurement": "public data, no ink",
+   "main": {
+    "empty_markers": 12,
+    "zero_share": 0.1918,
+    "same_as_clean": false,
+    "rerender_zero_share": 0.1918
+   },
+   "fix": {
+    "empty_markers": 0,
+    "zero_share": 0.0003,
+    "same_as_clean": true,
+    "rerender_zero_share": 0.0003
+   },
+   "tests": {
+    "fix": "test_http_s3_missing 15 cases pass, test_s3_chunk_cache 3 cases pass",
+    "main": "65 and 5 checks fail"
+   },
+   "machines": [
+    "Linux x86_64, g++ 13.3",
+    "Apple Silicon, macOS 27.0, Apple clang 21"
+   ],
+   "issue": "https://github.com/ScrollPrize/villa/issues/2058",
+   "pr": "https://github.com/ScrollPrize/villa/pull/2060",
+   "pr_state": "draft, 2026-10-12",
+   "source": "docs/evidence/2026-10-12-false-404/README.md",
+   "date": "2026-10-12"
+  },
+  {
+   "what": "vc_grow_seg_from_seed does not hold an explicit seed: PHerc0139 scan 20250728140407, seed (4201, 3186, 4602) on published winding w031, villa e0bbb8b, scored against published windings w023 to w040",
+   "measurement": "public geometry, no ink",
+   "unanchored_10_generations": {
+    "vertices": 324,
+    "on_w031": 0,
+    "on_w033": 265,
+    "off": 58,
+    "unscored": 1
+   },
+   "anchored_10_generations": {
+    "vertices": 324,
+    "share_on_w031_4vox": 0.9907,
+    "switch_edges": 0
+   },
+   "unanchored_60_generations": {
+    "area_cm2": 4.88,
+    "dominant": "w033",
+    "dominant_share_4vox": 0.511,
+    "area_on_w031_cm2": 0.0
+   },
+   "anchored_60_generations": {
+    "area_cm2": 4.88,
+    "dominant": "w031",
+    "dominant_share_4vox": 0.972,
+    "area_on_w031_cm2": 4.74,
+    "switch_edges": 30,
+    "edges": 26612
+   },
+   "issue": "https://github.com/ScrollPrize/villa/issues/2059",
+   "source": "docs/logs/2026-10-12-upstream-reports.md",
+   "date": "2026-10-12"
+  },
+  {
+   "what": "PHerc1667 transform 20260323082859 (1.129 um) to 20251217075048 (2.399 um): CT check at the six landmarks",
+   "measurement": "public CT and geometry, no ink",
+   "ct_offset_from_published_matrix_um": [
+    61.0,
+    73.7,
+    215.9,
+    43.8,
+    42.3,
+    181.8
+   ],
+   "landmark_residual_um": [
+    60.2,
+    76.3,
+    212.5,
+    43.8,
+    41.9,
+    181.4
+   ],
+   "landmark_to_ct_um": "3.3 to 5.7 (4.8 um, 8 October); median 6.8 (9.6 um, 12 October catalogue)",
+   "control_swapped_pairs_matched": "0 of 6",
+   "other_transforms_passing": "14 of 14 landmarks (median 13.4 um) and 16 of 16 (median 3.8 um)",
+   "comment": "https://github.com/ScrollPrize/villa/issues/1843#issuecomment-6130119937",
+   "prior_report": "https://github.com/ScrollPrize/villa/issues/1843",
+   "source": "docs/logs/2026-10-12-upstream-reports.md",
+   "date": "2026-10-12"
+  }
+ ],
+ "letter_reader_checks": [
+  {
+   "date": "2026-10-08",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "claim": "Model output on synthetic images and public community drawings; not a reading, no hidden text",
+   "model": {
+    "format": "linenet-v1",
+    "params": 593849,
+    "channels": [
+     32,
+     64,
+     96,
+     128,
+     192
+    ],
+    "dilations": [
+     1,
+     2
+    ],
+    "train_lines": 36000,
+    "val_lines": 1200,
+    "steps": 4000,
+    "batch": 48,
+    "lr_max": 0.002,
+    "device": "4 CPU threads",
+    "seconds": 1578,
+    "weights_in_git": false
+   },
+   "synthetic_validation": [
+    {
+     "step": 500,
+     "val_cer": 0.206,
+     "letters_per_blank_line": 0.69
+    },
+    {
+     "step": 1000,
+     "val_cer": 0.207,
+     "letters_per_blank_line": 0.5
+    },
+    {
+     "step": 1500,
+     "val_cer": 0.15,
+     "letters_per_blank_line": 0.6
+    },
+    {
+     "step": 2000,
+     "val_cer": 0.14,
+     "letters_per_blank_line": 0.79
+    },
+    {
+     "step": 2500,
+     "val_cer": 0.12,
+     "letters_per_blank_line": 0.94
+    },
+    {
+     "step": 3000,
+     "val_cer": 0.119,
+     "letters_per_blank_line": 0.62
+    },
+    {
+     "step": 3500,
+     "val_cer": 0.111,
+     "letters_per_blank_line": 0.88
+    },
+    {
+     "step": 4000,
+     "val_cer": 0.112,
+     "letters_per_blank_line": 0.9
+    }
+   ],
+   "language_model": {
+    "order": 5,
+    "discount": 0.75,
+    "corpus": "PerseusDL canonical-greekLit tlg0004.tlg001 and tlg0059.tlg030 (CC BY-SA 4.0)",
+    "train_letters": 937054,
+    "bits_per_letter_held_out_chunks": 2.556,
+    "bits_per_letter_xenophon_anabasis": 2.826,
+    "uniform_bits": 4.585
+   },
+   "synthetic_pages": [
+    {
+     "text": "uniform random letters",
+     "pages": 18,
+     "seed": 11,
+     "cer_matched_lines": {
+      "map": {
+       "cer_matched_lines": 0.158,
+       "letters": 672
+      },
+      "mask": {
+       "cer_matched_lines": 0.013,
+       "letters": 306
+      }
+     },
+     "cer_with_lm": null,
+     "lines_found": "81 of 81",
+     "letter_px_ratio_median": 1.036,
+     "blank_pages": [
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        2,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        11,
+        4
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        10,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 1,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 1,
+       "null_kept": [
+        20,
+        0
+       ]
+      }
+     ]
+    },
+    {
+     "text": "real Greek",
+     "pages": 18,
+     "seed": 12,
+     "cer_matched_lines": {
+      "map": {
+       "cer_matched_lines": 0.138,
+       "letters": 659
+      },
+      "mask": {
+       "cer_matched_lines": 0.019,
+       "letters": 260
+      }
+     },
+     "cer_with_lm": {
+      "map": 0.108,
+      "mask": 0.008
+     },
+     "lines_found": "76 of 77",
+     "letter_px_ratio_median": 0.981,
+     "blank_pages": [
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 10,
+       "null_kept": [
+        88,
+        11
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 0,
+       "null_kept": [
+        0,
+        0
+       ]
+      },
+      {
+       "kind": "texture",
+       "letters_kept": 0,
+       "null_kept": [
+        44,
+        0
+       ]
+      },
+      {
+       "kind": "clutter",
+       "letters_kept": 1,
+       "null_kept": [
+        1,
+        0
+       ]
+      }
+     ]
+    }
+   ],
+   "pherc172_drawings": {
+    "data": "Bodillium/Herculaneum-Scroll-Labels commit 2266661c, PHerc. 172 hand-drawn ink labels (CC BY-NC-SA 4.0)",
+    "reference": "the labeller's preliminary transcription, marked speculative by its author",
+    "down": 4,
+    "segments": 10,
+    "split": "segments sorted by id; first five dev (checkpoint choice), last five test (report); rule fixed after the all-segment numbers were seen",
+    "chosen_on_dev": 1000,
+    "test_cer_ink_only": 0.76,
+    "test_cer_with_lm": 0.67,
+    "checkpoints": [
+     {
+      "step": 500,
+      "note": "letter size from pitch only, before the scale search",
+      "dev": {
+       "cer_ink_only": 0.745,
+       "ref_letters": 161,
+       "letters_kept": 122,
+       "null_letters_kept": [
+        45,
+        3
+       ]
+      },
+      "test": {
+       "cer_ink_only": 1.113,
+       "ref_letters": 80,
+       "letters_kept": 53,
+       "null_letters_kept": [
+        20,
+        2
+       ]
+      },
+      "all": {
+       "cer_ink_only": 0.867,
+       "ref_letters": 241,
+       "letters_kept": 175,
+       "null_letters_kept": [
+        65,
+        5
+       ]
+      }
+     },
+     {
+      "step": 1000,
+      "dev": {
+       "cer_ink_only": 0.74,
+       "ref_letters": 169,
+       "letters_kept": 122,
+       "null_letters_kept": [
+        20,
+        2
+       ]
+      },
+      "test": {
+       "cer_ink_only": 0.76,
+       "ref_letters": 100,
+       "letters_kept": 94,
+       "null_letters_kept": [
+        13,
+        3
+       ],
+       "cer_with_lm": 0.67,
+       "ref_letters_with_lm": 94
+      },
+      "all": {
+       "cer_ink_only": 0.747,
+       "ref_letters": 269,
+       "letters_kept": 216,
+       "null_letters_kept": [
+        33,
+        5
+       ]
+      }
+     },
+     {
+      "step": 4000,
+      "dev": {
+       "cer_ink_only": 0.886,
+       "ref_letters": 167,
+       "letters_kept": 173,
+       "null_letters_kept": [
+        58,
+        23
+       ]
+      },
+      "test": {
+       "cer_ink_only": 1.102,
+       "ref_letters": 98,
+       "letters_kept": 120,
+       "null_letters_kept": [
+        23,
+        9
+       ]
+      },
+      "all": {
+       "cer_ink_only": 0.966,
+       "ref_letters": 265,
+       "letters_kept": 293,
+       "null_letters_kept": [
+        81,
+        32
+       ],
+       "cer_with_lm": 0.851
+      }
+     }
+    ]
+   }
+  },
+  {
+   "date": "2026-10-08",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "claim": "Model output on synthetic lines, lines composed from public papyrus letter photographs and public community drawings; not a reading, no hidden text",
+   "check": "plan stage 3 on CPU: real papyrus letterforms mixed into training, same network and schedule as the prototype",
+   "model": {
+    "format": "linenet-v1",
+    "params": 593849,
+    "channels": [
+     32,
+     64,
+     96,
+     128,
+     192
+    ],
+    "dilations": [
+     1,
+     2
+    ],
+    "train_lines": 60000,
+    "train_lines_real_letterforms": 24000,
+    "steps": 4000,
+    "batch": 48,
+    "lr_max": 0.002,
+    "device": "4 CPU threads",
+    "seconds": 1528,
+    "weights_in_git": false
+   },
+   "bank": {
+    "source": "Hell-Char (github.com/ipavlopoulos/diachronic-greek-letterforms at aeef8466, CC BY 4.0)",
+    "glyphs": 12761,
+    "papyri": 144,
+    "val_papyri": 21,
+    "val_glyphs": 1904,
+    "icdar_2023": "not included (Zenodo unreachable from this session)"
+   },
+   "validation": [
+    {
+     "step": 500,
+     "val_cer": 0.373,
+     "letters_per_blank_line": 0.65,
+     "real_val_cer": 0.747
+    },
+    {
+     "step": 1000,
+     "val_cer": 0.202,
+     "letters_per_blank_line": 0.67,
+     "real_val_cer": 0.644
+    },
+    {
+     "step": 1500,
+     "val_cer": 0.18,
+     "letters_per_blank_line": 0.67,
+     "real_val_cer": 0.598
+    },
+    {
+     "step": 2000,
+     "val_cer": 0.158,
+     "letters_per_blank_line": 0.75,
+     "real_val_cer": 0.564
+    },
+    {
+     "step": 2500,
+     "val_cer": 0.154,
+     "letters_per_blank_line": 0.65,
+     "real_val_cer": 0.542
+    },
+    {
+     "step": 3000,
+     "val_cer": 0.138,
+     "letters_per_blank_line": 0.71,
+     "real_val_cer": 0.528
+    },
+    {
+     "step": 3500,
+     "val_cer": 0.13,
+     "letters_per_blank_line": 0.81,
+     "real_val_cer": 0.514
+    },
+    {
+     "step": 4000,
+     "val_cer": 0.128,
+     "letters_per_blank_line": 0.75,
+     "real_val_cer": 0.516
+    }
+   ],
+   "real_letter_val_prototype": {
+    "note": "same 600 real-letter val lines (5,839 letters, held-out papyri), greedy decode",
+    "prototype_step_500": 0.852,
+    "prototype_step_1000": 0.909,
+    "prototype_step_4000": 0.821,
+    "mixed_step_1000": 0.644,
+    "mixed_step_3000": 0.527,
+    "mixed_step_4000": 0.516
+   },
+   "p172_dev": [
+    {
+     "step": 500,
+     "cer_ink_only": 0.982,
+     "ref_letters": 167,
+     "letters_kept": 158,
+     "null_letters_kept": [
+      42,
+      26
+     ]
+    },
+    {
+     "step": 1000,
+     "cer_ink_only": 0.732,
+     "ref_letters": 164,
+     "letters_kept": 152,
+     "null_letters_kept": [
+      42,
+      9
+     ]
+    },
+    {
+     "step": 1500,
+     "cer_ink_only": 0.695,
+     "ref_letters": 167,
+     "letters_kept": 141,
+     "null_letters_kept": [
+      43,
+      15
+     ]
+    },
+    {
+     "step": 2000,
+     "cer_ink_only": 0.579,
+     "ref_letters": 164,
+     "letters_kept": 169,
+     "null_letters_kept": [
+      44,
+      6
+     ]
+    },
+    {
+     "step": 2500,
+     "cer_ink_only": 0.591,
+     "ref_letters": 164,
+     "letters_kept": 172,
+     "null_letters_kept": [
+      43,
+      6
+     ]
+    },
+    {
+     "step": 3000,
+     "cer_ink_only": 0.549,
+     "ref_letters": 164,
+     "letters_kept": 165,
+     "null_letters_kept": [
+      40,
+      10
+     ]
+    },
+    {
+     "step": 3500,
+     "cer_ink_only": 0.573,
+     "ref_letters": 164,
+     "letters_kept": 163,
+     "null_letters_kept": [
+      40,
+      9
+     ]
+    },
+    {
+     "step": 4000,
+     "cer_ink_only": 0.622,
+     "ref_letters": 164,
+     "letters_kept": 159,
+     "null_letters_kept": [
+      36,
+      15
+     ]
+    }
+   ],
+   "p172_prototype_dev": {
+    "step_500": 0.745,
+    "step_1000": 0.74,
+    "step_4000": 0.886
+   },
+   "p172_test_chosen_on_dev": {
+    "chosen_step": 3000,
+    "cer_ink_only": 0.867,
+    "cer_with_lm": 0.777,
+    "ref_letters": 98,
+    "letters_kept": 119,
+    "null_letters_kept": [
+     22,
+     10
+    ],
+    "prototype": {
+     "cer_ink_only": 0.76,
+     "cer_with_lm": 0.67,
+     "letters_kept": 94,
+     "null_letters_kept": [
+      13,
+      3
+     ]
+    }
+   },
+   "verdict": "null on the gate: better on the dev half (0.549 against 0.740), worse on the test half (0.867 against 0.760); paired bootstrap over lines on the test half: +0.107, 95% interval -0.093 to +0.338, so the halves cannot separate the two models",
+   "p172_paired_bootstrap": {
+    "tool": "scripts/letters/compare_p172.py",
+    "resamples": 20000,
+    "diff": "mixed step 3000 minus prototype step 1000",
+    "test_ink_only": {
+     "diff": 0.107,
+     "ci95_lines": [
+      -0.093,
+      0.338
+     ],
+     "ci95_segments": [
+      -0.088,
+      0.364
+     ],
+     "lines": 19,
+     "share_mixed_worse": 0.839
+    },
+    "test_with_lm": {
+     "diff": 0.106,
+     "ci95_lines": [
+      -0.118,
+      0.368
+     ],
+     "ci95_segments": [
+      -0.035,
+      0.316
+     ],
+     "lines": 22
+    },
+    "dev_ink_only_selection_biased": {
+     "diff": -0.191,
+     "ci95_lines": [
+      -0.293,
+      -0.07
+     ],
+     "ci95_segments": [
+      -0.214,
+      0.005
+     ],
+     "lines": 25
+    },
+    "pooled_ink_only": {
+     "diff": -0.079,
+     "ci95_lines": [
+      -0.191,
+      0.049
+     ],
+     "ci95_segments": [
+      -0.182,
+      0.148
+     ],
+     "lines": 44
+    }
+   }
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "claim": "Model output on synthetic lines and public community drawings; not a reading, no hidden text",
+   "check": "plan stage 2 on Modal: full-scale synthetic training (letters-v1)",
+   "run": {
+    "gpu": "B200",
+    "wall_seconds": 1670,
+    "train_seconds": 472.5,
+    "est_cost_usd": 2.4
+   },
+   "model": {
+    "format": "linenet-v1",
+    "params": 1483241,
+    "channels": [
+     48,
+     96,
+     160,
+     192,
+     256
+    ],
+    "dilations": [
+     1,
+     2,
+     4
+    ],
+    "train_lines": 600000,
+    "val_lines": 4000,
+    "steps": 30000,
+    "batch": 128,
+    "lr_max": 0.002,
+    "weights_in_git": false
+   },
+   "validation": [
+    {
+     "step": 2000,
+     "val_cer": 0.1355,
+     "letters_per_blank_line": 0.955
+    },
+    {
+     "step": 4000,
+     "val_cer": 0.1214,
+     "letters_per_blank_line": 0.886
+    },
+    {
+     "step": 6000,
+     "val_cer": 0.0947,
+     "letters_per_blank_line": 0.477
+    },
+    {
+     "step": 8000,
+     "val_cer": 0.089,
+     "letters_per_blank_line": 0.659
+    },
+    {
+     "step": 10000,
+     "val_cer": 0.0885,
+     "letters_per_blank_line": 0.318
+    },
+    {
+     "step": 12000,
+     "val_cer": 0.0815,
+     "letters_per_blank_line": 0.477
+    },
+    {
+     "step": 14000,
+     "val_cer": 0.0778,
+     "letters_per_blank_line": 0.432
+    },
+    {
+     "step": 16000,
+     "val_cer": 0.0789,
+     "letters_per_blank_line": 0.409
+    },
+    {
+     "step": 18000,
+     "val_cer": 0.0774,
+     "letters_per_blank_line": 0.318
+    },
+    {
+     "step": 20000,
+     "val_cer": 0.0767,
+     "letters_per_blank_line": 0.455
+    },
+    {
+     "step": 22000,
+     "val_cer": 0.0756,
+     "letters_per_blank_line": 0.295
+    },
+    {
+     "step": 24000,
+     "val_cer": 0.0749,
+     "letters_per_blank_line": 0.386
+    },
+    {
+     "step": 26000,
+     "val_cer": 0.0751,
+     "letters_per_blank_line": 0.386
+    },
+    {
+     "step": 28000,
+     "val_cer": 0.074,
+     "letters_per_blank_line": 0.386
+    },
+    {
+     "step": 30000,
+     "val_cer": 0.0742,
+     "letters_per_blank_line": 0.386
+    }
+   ],
+   "p172_dev": [
+    {
+     "step": 2000,
+     "cer_ink_only": 0.958,
+     "ref_letters": 168,
+     "letters_kept": 169,
+     "null_letters_kept": [
+      45,
+      19
+     ]
+    },
+    {
+     "step": 4000,
+     "cer_ink_only": 0.79,
+     "ref_letters": 167,
+     "letters_kept": 129,
+     "null_letters_kept": [
+      26,
+      8
+     ]
+    },
+    {
+     "step": 6000,
+     "cer_ink_only": 0.641,
+     "ref_letters": 167,
+     "letters_kept": 137,
+     "null_letters_kept": [
+      21,
+      4
+     ]
+    },
+    {
+     "step": 8000,
+     "cer_ink_only": 0.689,
+     "ref_letters": 164,
+     "letters_kept": 175,
+     "null_letters_kept": [
+      36,
+      7
+     ]
+    },
+    {
+     "step": 10000,
+     "cer_ink_only": 0.652,
+     "ref_letters": 164,
+     "letters_kept": 145,
+     "null_letters_kept": [
+      27,
+      1
+     ]
+    },
+    {
+     "step": 12000,
+     "cer_ink_only": 0.634,
+     "ref_letters": 164,
+     "letters_kept": 170,
+     "null_letters_kept": [
+      41,
+      7
+     ]
+    },
+    {
+     "step": 14000,
+     "cer_ink_only": 0.689,
+     "ref_letters": 164,
+     "letters_kept": 151,
+     "null_letters_kept": [
+      23,
+      4
+     ]
+    },
+    {
+     "step": 16000,
+     "cer_ink_only": 0.726,
+     "ref_letters": 164,
+     "letters_kept": 166,
+     "null_letters_kept": [
+      33,
+      6
+     ]
+    },
+    {
+     "step": 18000,
+     "cer_ink_only": 0.744,
+     "ref_letters": 164,
+     "letters_kept": 162,
+     "null_letters_kept": [
+      32,
+      4
+     ]
+    },
+    {
+     "step": 20000,
+     "cer_ink_only": 0.726,
+     "ref_letters": 164,
+     "letters_kept": 166,
+     "null_letters_kept": [
+      38,
+      5
+     ]
+    },
+    {
+     "step": 22000,
+     "cer_ink_only": 0.701,
+     "ref_letters": 164,
+     "letters_kept": 156,
+     "null_letters_kept": [
+      31,
+      7
+     ]
+    },
+    {
+     "step": 24000,
+     "cer_ink_only": 0.726,
+     "ref_letters": 164,
+     "letters_kept": 165,
+     "null_letters_kept": [
+      30,
+      4
+     ]
+    },
+    {
+     "step": 26000,
+     "cer_ink_only": 0.726,
+     "ref_letters": 164,
+     "letters_kept": 155,
+     "null_letters_kept": [
+      33,
+      5
+     ]
+    },
+    {
+     "step": 28000,
+     "cer_ink_only": 0.738,
+     "ref_letters": 164,
+     "letters_kept": 160,
+     "null_letters_kept": [
+      35,
+      6
+     ]
+    },
+    {
+     "step": 30000,
+     "cer_ink_only": 0.732,
+     "ref_letters": 164,
+     "letters_kept": 154,
+     "null_letters_kept": [
+      35,
+      6
+     ]
+    }
+   ],
+   "p172_test_chosen_on_dev": {
+    "chosen_step": 12000,
+    "cer_ink_only": 0.933,
+    "cer_with_lm": 0.831,
+    "ref_letters": 90,
+    "letters_kept": 111,
+    "null_letters_kept": [
+     17,
+     6
+    ],
+    "verdicts": [
+     "confident letters well above every null"
+    ]
+   },
+   "spec_checks": {
+    "1_training_sound": true,
+    "2_synthetic_below_0.112": true,
+    "3_test_below_0.760": false
+   },
+   "p172_paired_bootstrap": {
+    "tool": "scripts/letters/compare_p172.py",
+    "resamples": 20000,
+    "diff": "letters-v1 step 12000 minus prototype step 1000, test half",
+    "test_ink_only": {
+     "diff": 0.173,
+     "ci95_lines": [
+      -0.046,
+      0.444
+     ],
+     "ci95_segments_5_units": [
+      0.06,
+      0.332
+     ],
+     "lines": 21,
+     "share_v1_worse": 0.938
+    },
+    "test_with_lm": {
+     "diff": 0.161,
+     "ci95_lines": [
+      -0.069,
+      0.458
+     ],
+     "ci95_segments_5_units": [
+      0.062,
+      0.342
+     ],
+     "lines": 22
+    },
+    "against_cpu_real_letterforms_step_3000_ink_only": {
+     "diff": 0.066,
+     "ci95_lines": [
+      -0.221,
+      0.36
+     ],
+     "lines": 20
+    }
+   },
+   "verdict": "null on the gate: synthetic error 0.074 against the prototype's 0.112 and dev half 0.634 against 0.740, but test half 0.933 against 0.760 (paired bootstrap over lines +0.173, 95% interval -0.046 to +0.444); scale does not close the gap to drawn letters"
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "claim": "Model output on synthetic lines, public papyrus photographs and public community drawings; not a reading, no hidden text",
+   "check": "plan stage 3 on Modal: real letterforms (letters-v2-real)",
+   "run": {
+    "gpu": "B200",
+    "wall_seconds": 1460,
+    "train_seconds": 468.9,
+    "est_cost_usd": 2.24
+   },
+   "bank": {
+    "glyphs": 43806,
+    "papyri": 296,
+    "papyri_note": "144 Hell-Char papyri plus 152 ICDAR photographs, each photograph counted as its own id; several photographs may show one papyrus",
+    "per_source": {
+     "hellchar": 12761,
+     "icdar": 31045
+    },
+    "icdar_included": true,
+    "icdar_skipped": 2,
+    "icdar_skipped_first": [
+     "P.Corn.Inv.MSS.A.101.XIII.jpg: OSError('image file is truncated (3 bytes not processed)')",
+     "PSI_XIII_1298_15a_r_1.jpg: OSError('image file is truncated (6 bytes not processed)')"
+    ],
+    "icdar_passed_over": {
+     "boxes_not_a_letter": 1,
+     "photographs_not_found": 1,
+     "boxes_too_small": 846,
+     "json_unreadable": 3
+    },
+    "val_papyri": 21,
+    "val_glyphs": 1904,
+    "dropped": {
+     "flat": 189,
+     "size": 130,
+     "texture": 3508
+    }
+   },
+   "model": {
+    "format": "linenet-v1",
+    "channels": [
+     48,
+     96,
+     160,
+     192,
+     256
+    ],
+    "dilations": [
+     1,
+     2,
+     4
+    ],
+    "train_lines": 600000,
+    "p_bank": 0.5,
+    "val_lines": 4000,
+    "val_real_lines": 2000,
+    "steps": 30000,
+    "batch": 128,
+    "lr_max": 0.002,
+    "weights_in_git": false,
+    "params": 1483241
+   },
+   "validation": [
+    {
+     "step": 2000,
+     "val_cer": 0.191,
+     "letters_per_blank_line": 0.409,
+     "real_val_cer": 0.6213
+    },
+    {
+     "step": 4000,
+     "val_cer": 0.1246,
+     "letters_per_blank_line": 0.477,
+     "real_val_cer": 0.5267
+    },
+    {
+     "step": 6000,
+     "val_cer": 0.1061,
+     "letters_per_blank_line": 0.864,
+     "real_val_cer": 0.5003
+    },
+    {
+     "step": 8000,
+     "val_cer": 0.1098,
+     "letters_per_blank_line": 0.5,
+     "real_val_cer": 0.4947
+    },
+    {
+     "step": 10000,
+     "val_cer": 0.0899,
+     "letters_per_blank_line": 0.636,
+     "real_val_cer": 0.478
+    },
+    {
+     "step": 12000,
+     "val_cer": 0.1027,
+     "letters_per_blank_line": 0.636,
+     "real_val_cer": 0.4869
+    },
+    {
+     "step": 14000,
+     "val_cer": 0.0913,
+     "letters_per_blank_line": 0.591,
+     "real_val_cer": 0.4774
+    },
+    {
+     "step": 16000,
+     "val_cer": 0.0888,
+     "letters_per_blank_line": 0.409,
+     "real_val_cer": 0.4643
+    },
+    {
+     "step": 18000,
+     "val_cer": 0.0858,
+     "letters_per_blank_line": 0.409,
+     "real_val_cer": 0.4575
+    },
+    {
+     "step": 20000,
+     "val_cer": 0.0856,
+     "letters_per_blank_line": 0.477,
+     "real_val_cer": 0.4524
+    },
+    {
+     "step": 22000,
+     "val_cer": 0.0869,
+     "letters_per_blank_line": 0.5,
+     "real_val_cer": 0.4541
+    },
+    {
+     "step": 24000,
+     "val_cer": 0.0858,
+     "letters_per_blank_line": 0.409,
+     "real_val_cer": 0.4434
+    },
+    {
+     "step": 26000,
+     "val_cer": 0.0849,
+     "letters_per_blank_line": 0.386,
+     "real_val_cer": 0.4456
+    },
+    {
+     "step": 28000,
+     "val_cer": 0.084,
+     "letters_per_blank_line": 0.364,
+     "real_val_cer": 0.4473
+    },
+    {
+     "step": 30000,
+     "val_cer": 0.0842,
+     "letters_per_blank_line": 0.364,
+     "real_val_cer": 0.4444
+    }
+   ],
+   "p172_dev": {
+    "checkpoints": 15,
+    "cer_ink_only_range": [
+     0.482,
+     0.599
+    ],
+    "chosen_step": 30000,
+    "chosen_cer_ink_only": 0.482,
+    "per_step": [
+     {
+      "step": 2000,
+      "cer_ink_only": 0.512,
+      "ref_letters": 164,
+      "letters_kept": 162,
+      "null_letters_kept": [
+       30,
+       11
+      ]
+     },
+     {
+      "step": 4000,
+      "cer_ink_only": 0.599,
+      "ref_letters": 167,
+      "letters_kept": 178,
+      "null_letters_kept": [
+       18,
+       25
+      ]
+     },
+     {
+      "step": 6000,
+      "cer_ink_only": 0.561,
+      "ref_letters": 164,
+      "letters_kept": 188,
+      "null_letters_kept": [
+       37,
+       12
+      ]
+     },
+     {
+      "step": 8000,
+      "cer_ink_only": 0.549,
+      "ref_letters": 164,
+      "letters_kept": 176,
+      "null_letters_kept": [
+       32,
+       11
+      ]
+     },
+     {
+      "step": 10000,
+      "cer_ink_only": 0.549,
+      "ref_letters": 164,
+      "letters_kept": 183,
+      "null_letters_kept": [
+       32,
+       17
+      ]
+     },
+     {
+      "step": 12000,
+      "cer_ink_only": 0.555,
+      "ref_letters": 164,
+      "letters_kept": 184,
+      "null_letters_kept": [
+       38,
+       12
+      ]
+     },
+     {
+      "step": 14000,
+      "cer_ink_only": 0.524,
+      "ref_letters": 164,
+      "letters_kept": 184,
+      "null_letters_kept": [
+       33,
+       14
+      ]
+     },
+     {
+      "step": 16000,
+      "cer_ink_only": 0.543,
+      "ref_letters": 164,
+      "letters_kept": 180,
+      "null_letters_kept": [
+       35,
+       14
+      ]
+     },
+     {
+      "step": 18000,
+      "cer_ink_only": 0.518,
+      "ref_letters": 164,
+      "letters_kept": 175,
+      "null_letters_kept": [
+       33,
+       17
+      ]
+     },
+     {
+      "step": 20000,
+      "cer_ink_only": 0.5,
+      "ref_letters": 164,
+      "letters_kept": 179,
+      "null_letters_kept": [
+       35,
+       15
+      ]
+     },
+     {
+      "step": 22000,
+      "cer_ink_only": 0.533,
+      "ref_letters": 167,
+      "letters_kept": 171,
+      "null_letters_kept": [
+       36,
+       27
+      ]
+     },
+     {
+      "step": 24000,
+      "cer_ink_only": 0.494,
+      "ref_letters": 164,
+      "letters_kept": 173,
+      "null_letters_kept": [
+       33,
+       18
+      ]
+     },
+     {
+      "step": 26000,
+      "cer_ink_only": 0.5,
+      "ref_letters": 164,
+      "letters_kept": 169,
+      "null_letters_kept": [
+       34,
+       17
+      ]
+     },
+     {
+      "step": 28000,
+      "cer_ink_only": 0.488,
+      "ref_letters": 164,
+      "letters_kept": 169,
+      "null_letters_kept": [
+       34,
+       17
+      ]
+     },
+     {
+      "step": 30000,
+      "cer_ink_only": 0.482,
+      "ref_letters": 164,
+      "letters_kept": 170,
+      "null_letters_kept": [
+       34,
+       17
+      ]
+     }
+    ]
+   },
+   "p172_test_chosen_on_dev": {
+    "chosen_step": 30000,
+    "cer_ink_only": 0.806,
+    "cer_with_lm": 0.761,
+    "ref_letters": 93,
+    "ref_letters_with_lm": 88,
+    "letters_kept": 121,
+    "null_letters_kept": [
+     19,
+     9
+    ],
+    "verdicts": [
+     "confident letters well above every null"
+    ]
+   },
+   "spec_checks": {
+    "1_bank_at_least_12000_and_icdar_reported": true,
+    "1_params_1483241_and_loss_falls": true,
+    "1_no_error": true,
+    "2_real_val_cer_falls": true,
+    "3_test_below_0.760": false,
+    "beats_v1_0.933": true
+   },
+   "p172_paired_bootstrap": {
+    "tool": "scripts/letters/compare_p172.py",
+    "resamples": 20000,
+    "scorer": "as recorded (columns off), test half",
+    "v2_minus_v1": {
+     "ink_only": {
+      "diff": -0.127,
+      "ci95_lines": [
+       -0.482,
+       0.199
+      ],
+      "lines": 19,
+      "share_worse": 0.22
+     },
+     "with_lm": {
+      "diff": -0.07,
+      "ci95_lines": [
+       -0.323,
+       0.167
+      ],
+      "lines": 20
+     }
+    },
+    "v2_minus_prototype": {
+     "ink_only": {
+      "diff": 0.046,
+      "ci95_lines": [
+       -0.187,
+       0.283
+      ],
+      "lines": 21,
+      "share_worse": 0.666
+     },
+     "with_lm": {
+      "diff": 0.091,
+      "ci95_lines": [
+       -0.125,
+       0.357
+      ],
+      "lines": 20
+     }
+    },
+    "v2_minus_cpu_real_letterforms": {
+     "ink_only": {
+      "diff": -0.061,
+      "ci95_lines": [
+       -0.298,
+       0.146
+      ],
+      "lines": 19
+     },
+     "with_lm": {
+      "diff": -0.015,
+      "ci95_lines": [
+       -0.199,
+       0.178
+      ],
+      "lines": 21
+     }
+    }
+   },
+   "post_hoc_layout_split": {
+    "note": "Interpretation, found after the scores were seen: test segments 20241113070770, 20241113080880 and 20241113090990 are two-column strips read as single lines across both columns; errors over matched reference letters, ink only",
+    "single_column_test_segments": [
+     "20241108115232",
+     "20241108120732"
+    ],
+    "single_column": {
+     "prototype": [
+      34,
+      54
+     ],
+     "cpu_real_letterforms_step3000": [
+      28,
+      52
+     ],
+     "letters_v1": [
+      40,
+      52
+     ],
+     "letters_v2_real": [
+      25,
+      52
+     ]
+    },
+    "two_column_strips": {
+     "prototype": [
+      42,
+      46
+     ],
+     "cpu_real_letterforms_step3000": [
+      57,
+      46
+     ],
+     "letters_v1": [
+      44,
+      38
+     ],
+     "letters_v2_real": [
+      50,
+      41
+     ]
+    }
+   },
+   "verdict": "Gate failed: 0.806 on the test half against the prototype's 0.760, null control holding; better than letters-v1 (0.933). Post hoc, the test half's prototype lead came from two-column strips read as one line; the 2026-10-09 column re-score (next entry) reads the test half at 0.426 against 0.625; next is a fresh test set"
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "claim": "Model output on public community drawings and synthetic pages; not a reading, no hidden text",
+   "check": "diagnostic re-score with the reader's column step (kit/letterread.py find_columns, analyze(columns='auto')); scorer unchanged; checkpoints already chosen on the dev half; rule written before the re-score, gutter threshold set after the test strips had been seen, so not a gate",
+   "p172": {
+    "prototype_step1000": {
+     "off": {
+      "dev_ink_only": 0.74,
+      "dev_with_lm": 0.707,
+      "test_ink_only": 0.76,
+      "test_with_lm": 0.67,
+      "test_ref_letters": 100
+     },
+     "auto": {
+      "dev_ink_only": 0.639,
+      "dev_with_lm": 0.686,
+      "test_ink_only": 0.625,
+      "test_with_lm": 0.622,
+      "test_ref_letters": 120
+     }
+    },
+    "cpu_real_letterforms_step3000": {
+     "off": {
+      "dev_ink_only": 0.549,
+      "dev_with_lm": 0.5,
+      "test_ink_only": 0.867,
+      "test_with_lm": 0.777,
+      "test_ref_letters": 98
+     },
+     "auto": {
+      "dev_ink_only": 0.479,
+      "dev_with_lm": 0.462,
+      "test_ink_only": 0.525,
+      "test_with_lm": 0.508,
+      "test_ref_letters": 122
+     }
+    },
+    "letters_v1_step12000": {
+     "off": {
+      "dev_ink_only": 0.634,
+      "dev_with_lm": 0.585,
+      "test_ink_only": 0.933,
+      "test_with_lm": 0.831,
+      "test_ref_letters": 90
+     },
+     "auto": {
+      "dev_ink_only": 0.612,
+      "dev_with_lm": 0.594,
+      "test_ink_only": 0.739,
+      "test_with_lm": 0.631,
+      "test_ref_letters": 111
+     }
+    },
+    "letters_v2_real_step30000": {
+     "off": {
+      "dev_ink_only": 0.482,
+      "dev_with_lm": 0.409,
+      "test_ink_only": 0.806,
+      "test_with_lm": 0.761,
+      "test_ref_letters": 93
+     },
+     "auto": {
+      "dev_ink_only": 0.471,
+      "dev_with_lm": 0.4,
+      "test_ink_only": 0.426,
+      "test_with_lm": 0.451,
+      "test_ref_letters": 122
+     }
+    },
+    "off_reproduces_recorded": "all four, including both Modal runs' dev and test numbers on CPU"
+   },
+   "p172_paired_bootstrap_auto": {
+    "tool": "scripts/letters/compare_p172.py",
+    "resamples": 20000,
+    "both_with_columns": true,
+    "v2_minus_prototype": {
+     "test_ink_only": [
+      -0.199,
+      -0.337,
+      -0.042
+     ],
+     "test_with_lm": [
+      -0.171,
+      -0.329,
+      0.007
+     ],
+     "dev_ink_only": [
+      -0.168,
+      -0.282,
+      -0.034
+     ],
+     "dev_with_lm": [
+      -0.286,
+      -0.407,
+      -0.148
+     ],
+     "test_ink_only_segment_level_ci95": [
+      -0.456,
+      -0.019
+     ]
+    },
+    "v2_minus_v1": {
+     "test_ink_only": [
+      -0.313,
+      -0.558,
+      -0.105
+     ],
+     "test_with_lm": [
+      -0.18,
+      -0.322,
+      -0.058
+     ],
+     "dev_ink_only": [
+      -0.141,
+      -0.252,
+      -0.012
+     ],
+     "dev_with_lm": [
+      -0.194,
+      -0.306,
+      -0.072
+     ]
+    },
+    "v2_minus_cpu_real_letterforms": {
+     "test_ink_only": [
+      -0.098,
+      -0.204,
+      0.009
+     ],
+     "test_with_lm": [
+      -0.057,
+      -0.146,
+      0.038
+     ],
+     "dev_ink_only": [
+      -0.009,
+      -0.109,
+      0.09
+     ],
+     "dev_with_lm": [
+      -0.062,
+      -0.163,
+      0.04
+     ]
+    },
+    "cpu_real_letterforms_minus_prototype": {
+     "test_ink_only": [
+      -0.1,
+      -0.204,
+      0.022
+     ],
+     "test_with_lm": [
+      -0.114,
+      -0.237,
+      0.034
+     ],
+     "dev_ink_only": [
+      -0.16,
+      -0.267,
+      -0.043
+     ],
+     "dev_with_lm": [
+      -0.225,
+      -0.335,
+      -0.105
+     ]
+    },
+    "format": "[difference, ci95 low, ci95 high] over lines (22 to 25 per comparison); dev half chose every checkpoint"
+   },
+   "column_step_effect_test_ink_only": {
+    "prototype": [
+     -0.135,
+     -0.265,
+     -0.009
+    ],
+    "cpu_real_letterforms": [
+     -0.343,
+     -0.654,
+     -0.069
+    ],
+    "letters_v1": [
+     -0.195,
+     -0.49,
+     0.029
+    ],
+    "letters_v2_real": [
+     -0.38,
+     -0.675,
+     -0.113
+    ]
+   },
+   "synthetic_pages_seed11_prototype": {
+    "text_pages_off_and_auto_identical": true,
+    "map": 0.278,
+    "mask": 0.064,
+    "lines_found": "106 of 106",
+    "blank_pages_letters_kept": [
+     0,
+     0,
+     0,
+     0,
+     0,
+     0
+    ],
+    "blank_pages_split_by_column_step": "2 of 6 (texture page 10 to 84 lines read, null letters 3 to 37; clutter page 16 to 28 lines)"
+   },
+   "find_columns_false_splits_200_synthetic_pages": {
+    "split": 6,
+    "note": "find_columns alone at the first letter-size estimate, no scale search; 3 at ragged line ends, 3 with the estimate several times too small"
+   },
+   "verdict": "Model output: with columns read separately, both PHerc. 172 halves put the two real-letterform models ahead of the two synthetic-only ones, and letters-v2-real has the lowest error (test 0.426 against the prototype's 0.625 and letters-v1's 0.739; intervals exclude zero against both; against the CPU real-letterform run neither half resolves the difference). Interpretation: real letterforms help at full scale where more synthetic data did not, and the dev-test disagreement came mostly from lines read across two columns. Diagnostic only; the next claim needs a fresh test set"
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "prereg": "rule fixed in writing on 2026-10-09 before the compared readers ran (preregistration kept in the private workbench; summarized in the source log)",
+   "claim": "Model output on public official ink-label drawings; references are unanimous machine transcriptions of the drawings, not a papyrologist's reading; not an ink-map test",
+   "check": "fresh preregistered letter-recognition test: PHerc. 1667 official ink labels (w013, w018, w023, w028, w029, w031), 91 groups by a model-free rule, 87 scored (122 letters) where three blind transcriptions agree; each group read with its line centre and letter height given; four checkpoints chosen earlier on the PHerc. 172 dev half; paired bootstrap over groups, 20,000 resamples",
+   "data": {
+    "groups": 91,
+    "scored_groups": 87,
+    "scored_letters": 122,
+    "groups_json_sha256": "1104ba0b5260a188ea44b4aa7286ef7e482c16213ce1b0e777a9c54b4e7b30d5",
+    "refs_sha256": "0347c8f58d9453d0ba3da2ac255c8013ea2763146ffcd48a44f64fc1c98cd520"
+   },
+   "deviation_1": {
+    "what": "first read void: line centres stored in segment rows, so most groups were read outside their crop; fixed before the corrected read, crops and references byte-identical",
+    "void_first_read_ink_only": {
+     "prototype_step1000": 0.967,
+     "real_letterforms_cpu_step3000": 0.91,
+     "letters_v1_step12000": 0.926,
+     "letters_v2_real_step30000": 0.885
+    }
+   },
+   "reads": {
+    "prototype_step1000": {
+     "ink_only": 0.402,
+     "ink_only_errors": 49,
+     "with_lm": 0.492,
+     "cer_permuted_refs_ink_only": 1.09,
+     "letters_kept": 77,
+     "null_letters_kept": [
+      7,
+      0
+     ],
+     "controls_pass": true
+    },
+    "real_letterforms_cpu_step3000": {
+     "ink_only": 0.033,
+     "ink_only_errors": 4,
+     "with_lm": 0.025,
+     "cer_permuted_refs_ink_only": 1.164,
+     "letters_kept": 114,
+     "null_letters_kept": [
+      33,
+      2
+     ],
+     "controls_pass": true
+    },
+    "letters_v1_step12000": {
+     "ink_only": 0.32,
+     "ink_only_errors": 39,
+     "with_lm": 0.311,
+     "cer_permuted_refs_ink_only": 1.205,
+     "letters_kept": 105,
+     "null_letters_kept": [
+      17,
+      1
+     ],
+     "controls_pass": true
+    },
+    "letters_v2_real_step30000": {
+     "ink_only": 0.025,
+     "ink_only_errors": 3,
+     "with_lm": 0.041,
+     "cer_permuted_refs_ink_only": 1.172,
+     "letters_kept": 119,
+     "null_letters_kept": [
+      22,
+      4
+     ],
+     "controls_pass": true
+    }
+   },
+   "paired_bootstrap": {
+    "H1_v2_minus_prototype": {
+     "ink_only_groups": {
+      "diff": -0.377,
+      "ci95": [
+       -0.471,
+       -0.292
+      ]
+     },
+     "with_lm_groups": {
+      "diff": -0.451,
+      "ci95": [
+       -0.546,
+       -0.362
+      ]
+     },
+     "ink_only_segments": {
+      "diff": -0.377,
+      "ci95": [
+       -0.433,
+       -0.301
+      ]
+     }
+    },
+    "H2_v2_minus_v1": {
+     "ink_only_groups": {
+      "diff": -0.295,
+      "ci95": [
+       -0.38,
+       -0.213
+      ]
+     },
+     "with_lm_groups": {
+      "diff": -0.27,
+      "ci95": [
+       -0.365,
+       -0.179
+      ]
+     },
+     "ink_only_segments": {
+      "diff": -0.295,
+      "ci95": [
+       -0.354,
+       -0.253
+      ]
+     }
+    },
+    "cpu_real_minus_prototype": {
+     "ink_only_groups": {
+      "diff": -0.369,
+      "ci95": [
+       -0.463,
+       -0.28
+      ]
+     },
+     "with_lm_groups": {
+      "diff": -0.467,
+      "ci95": [
+       -0.562,
+       -0.376
+      ]
+     },
+     "ink_only_segments": {
+      "diff": -0.369,
+      "ci95": [
+       -0.41,
+       -0.298
+      ]
+     }
+    },
+    "v2_minus_cpu_real": {
+     "ink_only_groups": {
+      "diff": -0.008,
+      "ci95": [
+       -0.046,
+       0.025
+      ]
+     },
+     "with_lm_groups": {
+      "diff": 0.016,
+      "ci95": [
+       -0.016,
+       0.048
+      ]
+     },
+     "ink_only_segments": {
+      "diff": -0.008,
+      "ci95": [
+       -0.033,
+       0.0
+      ]
+     }
+    },
+    "v1_minus_prototype": {
+     "ink_only_groups": {
+      "diff": -0.082,
+      "ci95": [
+       -0.177,
+       0.008
+      ]
+     },
+     "with_lm_groups": {
+      "diff": -0.18,
+      "ci95": [
+       -0.283,
+       -0.084
+      ]
+     },
+     "ink_only_segments": {
+      "diff": -0.082,
+      "ci95": [
+       -0.103,
+       -0.031
+      ]
+     }
+    }
+   },
+   "verdict": "H1 confirmed (letters-v2-real minus prototype -0.377, -0.471 to -0.292) and H2 confirmed (minus letters-v1 -0.295, -0.380 to -0.213); all four readers pass both controls. The two real-letterform readers are near the ceiling of this set (3 and 4 errors in 122) and are not separated. Letter recognition only, with the line given"
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "prereg": "rule fixed in writing on 2026-10-09 before the compared readers ran (preregistration kept in the private workbench; summarized in the source log)",
+   "claim": "Model output on public PHerc. 1667 2.4 um ink-detection maps (a published scroll); references are the drawing test's unanimous machine transcriptions; line and letter size given",
+   "check": "the drawing test's 87 groups cut from the same places of each segment's 2.4 um ink map (same grid as the labels; alignment checked), read with the same checkpoints and settings; primary measure free-ends error (letters before and after the reference not charged), paired bootstrap over groups",
+   "maps": "PHerc1667/segments/<segment>/ink-detection/...2.399um...volume-20251217075048-20260417190342-new_canon_autoresearch_recipe-tile256-stride128.tif",
+   "alignment": {
+    "map_under_labels": [
+     0.623,
+     0.806
+    ],
+    "map_elsewhere_in_windows": [
+     0.194,
+     0.277
+    ],
+    "best_shift_grid_px_max": 1
+   },
+   "map_windows_manifest_sha256": "f2c69ba7705685f5f9883de2b8c6ceccce36f1bbc438a1750667a044b7039b3a",
+   "reads": {
+    "prototype_step1000": {
+     "free_ends_ink_only": 0.68,
+     "free_ends_with_lm": 0.738,
+     "plain_ink_only": 0.795,
+     "plain_with_lm": 0.779,
+     "free_ends_permuted_refs_ink_only": 0.934,
+     "groups_fully_right_free_ends": 15,
+     "letters_kept": 59,
+     "null_letters_kept": [
+      6,
+      0
+     ],
+     "controls_pass": true
+    },
+    "real_letterforms_cpu_step3000": {
+     "free_ends_ink_only": 0.344,
+     "free_ends_with_lm": 0.328,
+     "plain_ink_only": 1.0,
+     "plain_with_lm": 0.73,
+     "free_ends_permuted_refs_ink_only": 0.885,
+     "groups_fully_right_free_ends": 50,
+     "letters_kept": 126,
+     "null_letters_kept": [
+      27,
+      7
+     ],
+     "controls_pass": true
+    },
+    "letters_v1_step12000": {
+     "free_ends_ink_only": 0.705,
+     "free_ends_with_lm": 0.73,
+     "plain_ink_only": 0.959,
+     "plain_with_lm": 0.844,
+     "free_ends_permuted_refs_ink_only": 0.926,
+     "groups_fully_right_free_ends": 14,
+     "letters_kept": 74,
+     "null_letters_kept": [
+      8,
+      4
+     ],
+     "controls_pass": true
+    },
+    "letters_v2_real_step30000": {
+     "free_ends_ink_only": 0.369,
+     "free_ends_with_lm": 0.369,
+     "plain_ink_only": 0.721,
+     "plain_with_lm": 0.541,
+     "free_ends_permuted_refs_ink_only": 0.91,
+     "groups_fully_right_free_ends": 45,
+     "letters_kept": 107,
+     "null_letters_kept": [
+      12,
+      8
+     ],
+     "controls_pass": true
+    }
+   },
+   "paired_bootstrap": {
+    "M1_v2_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.311,
+      "ci95": [
+       -0.415,
+       -0.21
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.369,
+      "ci95": [
+       -0.476,
+       -0.26
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.074,
+      "ci95": [
+       -0.217,
+       0.073
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.311,
+      "ci95": [
+       -0.45,
+       -0.222
+      ]
+     }
+    },
+    "M2_v2_minus_v1": {
+     "free_ends_ink_only": {
+      "diff": -0.336,
+      "ci95": [
+       -0.43,
+       -0.243
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.361,
+      "ci95": [
+       -0.459,
+       -0.263
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.238,
+      "ci95": [
+       -0.371,
+       -0.096
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.336,
+      "ci95": [
+       -0.374,
+       -0.262
+      ]
+     }
+    },
+    "cpu_real_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.336,
+      "ci95": [
+       -0.427,
+       -0.246
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.41,
+      "ci95": [
+       -0.5,
+       -0.32
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.205,
+      "ci95": [
+       0.055,
+       0.36
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.336,
+      "ci95": [
+       -0.45,
+       -0.274
+      ]
+     }
+    },
+    "v2_minus_cpu_real": {
+     "free_ends_ink_only": {
+      "diff": 0.025,
+      "ci95": [
+       -0.06,
+       0.107
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": 0.041,
+      "ci95": [
+       -0.042,
+       0.123
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.279,
+      "ci95": [
+       -0.426,
+       -0.139
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": 0.025,
+      "ci95": [
+       -0.034,
+       0.068
+      ]
+     }
+    },
+    "v1_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": 0.025,
+      "ci95": [
+       -0.044,
+       0.094
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.008,
+      "ci95": [
+       -0.087,
+       0.067
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.164,
+      "ci95": [
+       0.05,
+       0.279
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": 0.025,
+      "ci95": [
+       -0.1,
+       0.099
+      ]
+     }
+    }
+   },
+   "verdict": "M1 confirmed (letters-v2-real minus prototype, free-ends -0.311, -0.415 to -0.210) and M2 confirmed (minus letters-v1 -0.336, -0.430 to -0.243); all four readers pass both controls. The real-letterform readers find about two of three reference letters on the map with the line given (free-ends 0.344 CPU, 0.369 letters-v2-real; not separated)"
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "prereg": "rule fixed in writing on 2026-10-09 before the compared readers ran (preregistration kept in the private workbench; summarized in the source log)",
+   "claim": "Model output on public PHerc. 1667 2.4 um ink-detection maps (a published scroll); references are the drawing test's unanimous machine transcriptions; the reader finds the lines itself",
+   "check": "the map test's 87 groups in windows two letter heights taller above and below (about three lines each), read with lines=None; a group is scored on the found line nearest its true centre within 0.5 letter heights, else every reference letter is an error; primary read letter height given, secondary fully automatic (scale search); primary measure free-ends error, paired bootstrap over groups",
+   "wide_windows_manifest_sha256": "d87c368a4045d234b859753f778a5f567c62e6fadaf4e9454e22ff2dbcd73646",
+   "missed_lines_primary": [
+    "w023-g005",
+    "w029-g000",
+    "w031-g008",
+    "w031-g010"
+   ],
+   "reads_letter_height_given": {
+    "prototype_step1000": {
+     "free_ends_ink_only": 0.754,
+     "free_ends_with_lm": 0.811,
+     "best_line_free_ends_ink_only": 0.738,
+     "plain_ink_only": 0.844,
+     "plain_with_lm": 0.836,
+     "free_ends_permuted_refs_ink_only": 0.934,
+     "groups_fully_right_free_ends": 10,
+     "line_hits": 83,
+     "lines_per_window": 2.98,
+     "letters_kept": 130,
+     "null_letters_kept": [
+      8,
+      7
+     ],
+     "controls_pass": true
+    },
+    "real_letterforms_cpu_step3000": {
+     "free_ends_ink_only": 0.344,
+     "free_ends_with_lm": 0.361,
+     "best_line_free_ends_ink_only": 0.287,
+     "plain_ink_only": 1.016,
+     "plain_with_lm": 0.811,
+     "free_ends_permuted_refs_ink_only": 0.861,
+     "groups_fully_right_free_ends": 49,
+     "line_hits": 83,
+     "lines_per_window": 2.98,
+     "letters_kept": 302,
+     "null_letters_kept": [
+      54,
+      39
+     ],
+     "controls_pass": true
+    },
+    "letters_v1_step12000": {
+     "free_ends_ink_only": 0.746,
+     "free_ends_with_lm": 0.762,
+     "best_line_free_ends_ink_only": 0.738,
+     "plain_ink_only": 0.959,
+     "plain_with_lm": 0.869,
+     "free_ends_permuted_refs_ink_only": 0.951,
+     "groups_fully_right_free_ends": 10,
+     "line_hits": 83,
+     "lines_per_window": 2.98,
+     "letters_kept": 161,
+     "null_letters_kept": [
+      23,
+      17
+     ],
+     "controls_pass": true
+    },
+    "letters_v2_real_step30000": {
+     "free_ends_ink_only": 0.402,
+     "free_ends_with_lm": 0.459,
+     "best_line_free_ends_ink_only": 0.369,
+     "plain_ink_only": 0.754,
+     "plain_with_lm": 0.648,
+     "free_ends_permuted_refs_ink_only": 0.918,
+     "groups_fully_right_free_ends": 44,
+     "line_hits": 83,
+     "lines_per_window": 2.98,
+     "letters_kept": 279,
+     "null_letters_kept": [
+      27,
+      17
+     ],
+     "controls_pass": true
+    }
+   },
+   "reads_fully_automatic": {
+    "prototype_step1000": {
+     "free_ends_ink_only": 0.746,
+     "free_ends_with_lm": 0.795,
+     "best_line_free_ends_ink_only": 0.738,
+     "plain_ink_only": 0.959,
+     "plain_with_lm": 0.869,
+     "free_ends_permuted_refs_ink_only": 0.902,
+     "groups_fully_right_free_ends": 12,
+     "line_hits": 83,
+     "lines_per_window": 3.02,
+     "letters_kept": 228,
+     "null_letters_kept": [
+      13,
+      2
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "median": 0.81,
+      "range": [
+       0.43,
+       1.96
+      ]
+     }
+    },
+    "real_letterforms_cpu_step3000": {
+     "free_ends_ink_only": 0.451,
+     "free_ends_with_lm": 0.475,
+     "best_line_free_ends_ink_only": 0.385,
+     "plain_ink_only": 1.205,
+     "plain_with_lm": 0.926,
+     "free_ends_permuted_refs_ink_only": 0.861,
+     "groups_fully_right_free_ends": 38,
+     "line_hits": 84,
+     "lines_per_window": 3.01,
+     "letters_kept": 406,
+     "null_letters_kept": [
+      41,
+      25
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "median": 0.9,
+      "range": [
+       0.39,
+       2.06
+      ]
+     }
+    },
+    "letters_v1_step12000": {
+     "free_ends_ink_only": 0.697,
+     "free_ends_with_lm": 0.73,
+     "best_line_free_ends_ink_only": 0.656,
+     "plain_ink_only": 1.016,
+     "plain_with_lm": 0.934,
+     "free_ends_permuted_refs_ink_only": 0.926,
+     "groups_fully_right_free_ends": 16,
+     "line_hits": 84,
+     "lines_per_window": 3.05,
+     "letters_kept": 270,
+     "null_letters_kept": [
+      26,
+      9
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "median": 0.89,
+      "range": [
+       0.42,
+       1.8
+      ]
+     }
+    },
+    "letters_v2_real_step30000": {
+     "free_ends_ink_only": 0.393,
+     "free_ends_with_lm": 0.402,
+     "best_line_free_ends_ink_only": 0.361,
+     "plain_ink_only": 0.787,
+     "plain_with_lm": 0.648,
+     "free_ends_permuted_refs_ink_only": 0.918,
+     "groups_fully_right_free_ends": 44,
+     "line_hits": 84,
+     "lines_per_window": 3.05,
+     "letters_kept": 373,
+     "null_letters_kept": [
+      30,
+      17
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "median": 0.92,
+      "range": [
+       0.42,
+       1.71
+      ]
+     }
+    }
+   },
+   "paired_bootstrap_letter_height_given": {
+    "L1_v2_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.352,
+      "ci95": [
+       -0.459,
+       -0.248
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.352,
+      "ci95": [
+       -0.458,
+       -0.246
+      ]
+     },
+     "best_line_free_ends_ink_only": {
+      "diff": -0.369,
+      "ci95": [
+       -0.476,
+       -0.266
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.09,
+      "ci95": [
+       -0.243,
+       0.068
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.352,
+      "ci95": [
+       -0.444,
+       -0.241
+      ]
+     }
+    },
+    "L2_v2_minus_v1": {
+     "free_ends_ink_only": {
+      "diff": -0.344,
+      "ci95": [
+       -0.439,
+       -0.252
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.303,
+      "ci95": [
+       -0.395,
+       -0.212
+      ]
+     },
+     "best_line_free_ends_ink_only": {
+      "diff": -0.369,
+      "ci95": [
+       -0.467,
+       -0.273
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.205,
+      "ci95": [
+       -0.328,
+       -0.073
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.344,
+      "ci95": [
+       -0.417,
+       -0.191
+      ]
+     }
+    },
+    "cpu_real_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.41,
+      "ci95": [
+       -0.5,
+       -0.319
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.451,
+      "ci95": [
+       -0.54,
+       -0.362
+      ]
+     },
+     "best_line_free_ends_ink_only": {
+      "diff": -0.451,
+      "ci95": [
+       -0.548,
+       -0.358
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.172,
+      "ci95": [
+       0.032,
+       0.324
+      ]
+     }
+    },
+    "v2_minus_cpu_real": {
+     "free_ends_ink_only": {
+      "diff": 0.057,
+      "ci95": [
+       -0.026,
+       0.142
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": 0.098,
+      "ci95": [
+       0.017,
+       0.181
+      ]
+     },
+     "best_line_free_ends_ink_only": {
+      "diff": 0.082,
+      "ci95": [
+       -0.008,
+       0.171
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.262,
+      "ci95": [
+       -0.388,
+       -0.142
+      ]
+     }
+    },
+    "v1_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.008,
+      "ci95": [
+       -0.089,
+       0.07
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.049,
+      "ci95": [
+       -0.128,
+       0.027
+      ]
+     },
+     "best_line_free_ends_ink_only": {
+      "diff": 0.0,
+      "ci95": [
+       -0.076,
+       0.074
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.115,
+      "ci95": [
+       0.0,
+       0.23
+      ]
+     }
+    }
+   },
+   "cost_of_finding_the_line_free_ends_ink_only": {
+    "prototype_step1000": {
+     "diff": 0.074,
+     "ci95": [
+      0.008,
+      0.143
+     ]
+    },
+    "real_letterforms_cpu_step3000": {
+     "diff": 0.0,
+     "ci95": [
+      -0.073,
+      0.07
+     ]
+    },
+    "letters_v1_step12000": {
+     "diff": 0.041,
+     "ci95": [
+      -0.007,
+      0.09
+     ]
+    },
+    "letters_v2_real_step30000": {
+     "diff": 0.033,
+     "ci95": [
+      -0.031,
+      0.096
+     ]
+    }
+   },
+   "paired_bootstrap_fully_automatic": {
+    "v2_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.352,
+      "ci95": [
+       -0.448,
+       -0.256
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.393,
+      "ci95": [
+       -0.487,
+       -0.297
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.352,
+      "ci95": [
+       -0.421,
+       -0.276
+      ]
+     }
+    },
+    "v2_minus_v1": {
+     "free_ends_ink_only": {
+      "diff": -0.303,
+      "ci95": [
+       -0.41,
+       -0.194
+      ]
+     },
+     "free_ends_with_lm": {
+      "diff": -0.328,
+      "ci95": [
+       -0.429,
+       -0.225
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.303,
+      "ci95": [
+       -0.345,
+       -0.261
+      ]
+     }
+    },
+    "cpu_real_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.295,
+      "ci95": [
+       -0.393,
+       -0.193
+      ]
+     }
+    },
+    "v2_minus_cpu_real": {
+     "free_ends_ink_only": {
+      "diff": -0.057,
+      "ci95": [
+       -0.157,
+       0.038
+      ]
+     }
+    },
+    "v1_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.049,
+      "ci95": [
+       -0.138,
+       0.036
+      ]
+     }
+    }
+   },
+   "cost_of_scale_search_free_ends_ink_only": {
+    "prototype_step1000": {
+     "diff": -0.008,
+     "ci95": [
+      -0.089,
+      0.068
+     ]
+    },
+    "real_letterforms_cpu_step3000": {
+     "diff": 0.107,
+     "ci95": [
+      0.032,
+      0.187
+     ]
+    },
+    "letters_v1_step12000": {
+     "diff": -0.049,
+     "ci95": [
+      -0.111,
+      0.008
+     ]
+    },
+    "letters_v2_real_step30000": {
+     "diff": -0.008,
+     "ci95": [
+      -0.085,
+      0.068
+     ]
+    }
+   },
+   "verdict": "L1 and L2 confirmed: with the lines found by the reader, letters-v2-real has lower free-ends error than the prototype and than letters-v1 (Model output). Finding the line costs the real-letterform readers little on these windows, and the fully automatic read keeps the ranking; windows are centred on known letter groups, so finding where text is in a whole column is not yet tested (Interpretation)."
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "prereg": "rule fixed in writing on 2026-10-09 before the compared readers ran (preregistration kept in the private workbench; summarized in the source log)",
+   "claim": "Model output on public PHerc. 1667 2.4 um ink-detection maps (a published scroll); references are the drawing test's unanimous machine transcriptions; the reader reads each segment's whole labelled region and finds columns, lines and letter positions itself",
+   "check": "each segment's labelled frame plus one letter height read once (columns auto, lines found); each of the 87 groups scored on the letters whose boxes centre in its window span on the found line nearest its line (within 0.5 letter heights after undoing the column's deskew), else every reference letter is an error; ink only; primary read letter height given, secondary fully automatic; primary measure free-ends error, paired bootstrap over groups",
+   "region_files_manifest_sha256": "6f61867f4ffc5f3efccdfa74a8d408eb14eab4cbf53c2b5387a250285085c0c6",
+   "missed_lines_primary": [
+    "w028-g000",
+    "w028-g001",
+    "w029-g003",
+    "w031-g002"
+   ],
+   "reads_letter_height_given": {
+    "prototype_step1000": {
+     "free_ends_ink_only": 0.754,
+     "plain_ink_only": 0.984,
+     "best_candidate_line_free_ends_ink_only": 0.639,
+     "best_candidate_line_permuted_refs": 0.746,
+     "free_ends_permuted_refs_ink_only": 0.926,
+     "groups_fully_right_free_ends": 11,
+     "line_hits": 83,
+     "lines_read": 76,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 3,
+      "w023": 2,
+      "w028": 1,
+      "w029": 1,
+      "w031": 1
+     },
+     "letters_kept": 249,
+     "null_letters_kept": [
+      24,
+      7
+     ],
+     "controls_pass": true
+    },
+    "real_letterforms_cpu_step3000": {
+     "free_ends_ink_only": 0.402,
+     "plain_ink_only": 1.443,
+     "best_candidate_line_free_ends_ink_only": 0.279,
+     "best_candidate_line_permuted_refs": 0.451,
+     "free_ends_permuted_refs_ink_only": 0.852,
+     "groups_fully_right_free_ends": 43,
+     "line_hits": 83,
+     "lines_read": 76,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 3,
+      "w023": 2,
+      "w028": 1,
+      "w029": 1,
+      "w031": 1
+     },
+     "letters_kept": 550,
+     "null_letters_kept": [
+      104,
+      63
+     ],
+     "controls_pass": true
+    },
+    "letters_v1_step12000": {
+     "free_ends_ink_only": 0.68,
+     "plain_ink_only": 1.484,
+     "best_candidate_line_free_ends_ink_only": 0.508,
+     "best_candidate_line_permuted_refs": 0.582,
+     "free_ends_permuted_refs_ink_only": 0.893,
+     "groups_fully_right_free_ends": 16,
+     "line_hits": 83,
+     "lines_read": 76,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 3,
+      "w023": 2,
+      "w028": 1,
+      "w029": 1,
+      "w031": 1
+     },
+     "letters_kept": 465,
+     "null_letters_kept": [
+      84,
+      46
+     ],
+     "controls_pass": true
+    },
+    "letters_v2_real_step30000": {
+     "free_ends_ink_only": 0.328,
+     "plain_ink_only": 1.451,
+     "best_candidate_line_free_ends_ink_only": 0.189,
+     "best_candidate_line_permuted_refs": 0.426,
+     "free_ends_permuted_refs_ink_only": 0.828,
+     "groups_fully_right_free_ends": 51,
+     "line_hits": 83,
+     "lines_read": 76,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 3,
+      "w023": 2,
+      "w028": 1,
+      "w029": 1,
+      "w031": 1
+     },
+     "letters_kept": 585,
+     "null_letters_kept": [
+      111,
+      57
+     ],
+     "controls_pass": true
+    }
+   },
+   "reads_fully_automatic": {
+    "prototype_step1000": {
+     "free_ends_ink_only": 0.803,
+     "plain_ink_only": 1.156,
+     "best_candidate_line_free_ends_ink_only": 0.672,
+     "best_candidate_line_permuted_refs": 0.713,
+     "free_ends_permuted_refs_ink_only": 0.934,
+     "groups_fully_right_free_ends": 8,
+     "line_hits": 83,
+     "lines_read": 69,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 2,
+      "w023": 2,
+      "w028": 1,
+      "w029": 1,
+      "w031": 1
+     },
+     "letters_kept": 342,
+     "null_letters_kept": [
+      41,
+      22
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "w013": 1.18,
+      "w018": 0.68,
+      "w023": 0.58,
+      "w028": 0.5,
+      "w029": 0.73,
+      "w031": 0.62
+     }
+    },
+    "real_letterforms_cpu_step3000": {
+     "free_ends_ink_only": 0.443,
+     "plain_ink_only": 1.459,
+     "best_candidate_line_free_ends_ink_only": 0.254,
+     "best_candidate_line_permuted_refs": 0.451,
+     "free_ends_permuted_refs_ink_only": 0.852,
+     "groups_fully_right_free_ends": 43,
+     "line_hits": 82,
+     "lines_read": 65,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 1,
+      "w023": 2,
+      "w028": 1,
+      "w029": 2,
+      "w031": 1
+     },
+     "letters_kept": 524,
+     "null_letters_kept": [
+      105,
+      63
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "w013": 1.18,
+      "w018": 1.36,
+      "w023": 0.74,
+      "w028": 0.8,
+      "w029": 0.92,
+      "w031": 1.24
+     }
+    },
+    "letters_v1_step12000": {
+     "free_ends_ink_only": 0.59,
+     "plain_ink_only": 1.426,
+     "best_candidate_line_free_ends_ink_only": 0.459,
+     "best_candidate_line_permuted_refs": 0.615,
+     "free_ends_permuted_refs_ink_only": 0.885,
+     "groups_fully_right_free_ends": 23,
+     "line_hits": 83,
+     "lines_read": 74,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 2,
+      "w023": 2,
+      "w028": 1,
+      "w029": 2,
+      "w031": 1
+     },
+     "letters_kept": 566,
+     "null_letters_kept": [
+      120,
+      66
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "w013": 1.18,
+      "w018": 1.09,
+      "w023": 0.58,
+      "w028": 0.99,
+      "w029": 0.92,
+      "w031": 0.99
+     }
+    },
+    "letters_v2_real_step30000": {
+     "free_ends_ink_only": 0.336,
+     "plain_ink_only": 1.279,
+     "best_candidate_line_free_ends_ink_only": 0.197,
+     "best_candidate_line_permuted_refs": 0.451,
+     "free_ends_permuted_refs_ink_only": 0.861,
+     "groups_fully_right_free_ends": 52,
+     "line_hits": 82,
+     "lines_read": 57,
+     "columns_per_segment": {
+      "w013": 1,
+      "w018": 1,
+      "w023": 2,
+      "w028": 1,
+      "w029": 1,
+      "w031": 1
+     },
+     "letters_kept": 557,
+     "null_letters_kept": [
+      107,
+      36
+     ],
+     "controls_pass": true,
+     "chosen_over_drawn_letter_size": {
+      "w013": 1.18,
+      "w018": 1.36,
+      "w023": 0.92,
+      "w028": 1.24,
+      "w029": 1.15,
+      "w031": 0.62
+     }
+    }
+   },
+   "paired_bootstrap_letter_height_given": {
+    "W1_v2_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.426,
+      "ci95": [
+       -0.529,
+       -0.325
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.426,
+      "ci95": [
+       -0.47,
+       -0.333
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.467,
+      "ci95": [
+       0.299,
+       0.664
+      ]
+     }
+    },
+    "W2_v2_minus_v1": {
+     "free_ends_ink_only": {
+      "diff": -0.352,
+      "ci95": [
+       -0.452,
+       -0.25
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.352,
+      "ci95": [
+       -0.393,
+       -0.295
+      ]
+     },
+     "plain_ink_only": {
+      "diff": -0.033,
+      "ci95": [
+       -0.206,
+       0.15
+      ]
+     }
+    },
+    "cpu_real_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.352,
+      "ci95": [
+       -0.443,
+       -0.266
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.459,
+      "ci95": [
+       0.31,
+       0.634
+      ]
+     }
+    },
+    "v2_minus_cpu_real": {
+     "free_ends_ink_only": {
+      "diff": -0.074,
+      "ci95": [
+       -0.153,
+       0.008
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.008,
+      "ci95": [
+       -0.124,
+       0.137
+      ]
+     }
+    },
+    "v1_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.074,
+      "ci95": [
+       -0.154,
+       0.0
+      ]
+     },
+     "plain_ink_only": {
+      "diff": 0.5,
+      "ci95": [
+       0.333,
+       0.684
+      ]
+     }
+    }
+   },
+   "region_minus_centred_window_free_ends_ink_only": {
+    "prototype_step1000": {
+     "diff": 0.0,
+     "ci95": [
+      -0.065,
+      0.063
+     ]
+    },
+    "real_letterforms_cpu_step3000": {
+     "diff": 0.057,
+     "ci95": [
+      -0.009,
+      0.128
+     ]
+    },
+    "letters_v1_step12000": {
+     "diff": -0.066,
+     "ci95": [
+      -0.136,
+      0.007
+     ]
+    },
+    "letters_v2_real_step30000": {
+     "diff": -0.074,
+     "ci95": [
+      -0.146,
+      -0.007
+     ]
+    }
+   },
+   "paired_bootstrap_fully_automatic": {
+    "v2_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.467,
+      "ci95": [
+       -0.562,
+       -0.372
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.467,
+      "ci95": [
+       -0.574,
+       -0.292
+      ]
+     }
+    },
+    "v2_minus_v1": {
+     "free_ends_ink_only": {
+      "diff": -0.254,
+      "ci95": [
+       -0.354,
+       -0.154
+      ]
+     },
+     "free_ends_ink_only_segments": {
+      "diff": -0.254,
+      "ci95": [
+       -0.304,
+       -0.19
+      ]
+     }
+    },
+    "cpu_real_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.361,
+      "ci95": [
+       -0.463,
+       -0.259
+      ]
+     }
+    },
+    "v2_minus_cpu_real": {
+     "free_ends_ink_only": {
+      "diff": -0.107,
+      "ci95": [
+       -0.192,
+       -0.024
+      ]
+     }
+    },
+    "v1_minus_prototype": {
+     "free_ends_ink_only": {
+      "diff": -0.213,
+      "ci95": [
+       -0.305,
+       -0.119
+      ]
+     }
+    }
+   },
+   "verdict": "W1 and W2 confirmed: reading whole map regions with columns, lines and letter positions found by the reader, letters-v2-real has lower free-ends error than the prototype and than letters-v1 (Model output). It does no worse than in centred windows and is the best reader with nothing given (0.336, 52 of 87 groups fully right); the regions are the boxes around labelled letters, so where text is was partly given (Interpretation)."
+  },
+  {
+   "date": "2026-10-09",
+   "source": "docs/logs/2026-10-14-letter-reader.md",
+   "prereg": "rule fixed in writing on 2026-10-09 before the compared readers ran (preregistration kept in the private workbench; summarized in the source log)",
+   "claim": "Model output on public PHerc. 1667 2.4 um ink-detection maps of the 13 segments with no ink labels (w011, w012, w030, w032 to w041; a published scroll); the reference is the published transcription of columns 5 to 22 (arXiv 2606.29085, Methods), parsed by scripts/letters/p1667_text.py from the PDF's word boxes",
+   "check": "each segment's whole map read once (columns auto, lines found, ink only); every read line aligned to every published line (local alignment: match +1, mismatch -1, gap -1, '?' 0); decisive statistic: ordered pairs, consecutive read lines of one reader column whose unique best published lines score at least 5 and are 1 or 2 lines apart in one column, in order; U1 needs at least 3 pairs, more than every one of 297 decoy texts (words, corpus, shuffled; shifted reported only) and a passing reader control; fit (sum of best scores) reported only",
+   "reference_sha256": "f936e457eb047f27014e642f50b750b6ee48c825b9eb372fda324449eec0887c",
+   "reference": {
+    "columns": 18,
+    "lines": 177,
+    "visible_letters": 1752,
+    "unknown_letters": 586
+   },
+   "decoys_sha256": "a8bda3815e043f89ab59e1a09bdfd85fa192b605d37c3dc447b204bbf23b145b",
+   "cut_maps_manifest_sha256": "632419002cfde2c8bea929707b07246e968b9bf87f29a3d1d33bfe131be9efa8",
+   "scorer_check_labelled_regions": {
+    "prototype_step1000": {
+     "lines": 76,
+     "letters_read": 352,
+     "letters_kept": 249,
+     "null_letters_kept": [
+      24,
+      7
+     ],
+     "reader_control_passes": true,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 153,
+     "fit_p": {
+      "shifted": 0.92,
+      "words": 0.41,
+      "corpus": 0.06,
+      "shuffled": 0.16
+     },
+     "summed_excess_over_shifted": -2.6,
+     "letter_px_given_range": [
+      74.0,
+      103.5
+     ]
+    },
+    "real_letterforms_cpu_step3000": {
+     "lines": 76,
+     "letters_read": 1154,
+     "letters_kept": 550,
+     "null_letters_kept": [
+      104,
+      63
+     ],
+     "reader_control_passes": true,
+     "pairs": 5,
+     "pairs_decoy_max": 1,
+     "pairs_shifted_max": 5,
+     "fit_T": 300,
+     "fit_p": {
+      "shifted": 0.01,
+      "words": 0.01,
+      "corpus": 0.01,
+      "shuffled": 0.01
+     },
+     "summed_excess_over_shifted": 27.2,
+     "letter_px_given_range": [
+      74.0,
+      103.5
+     ]
+    },
+    "letters_v1_step12000": {
+     "lines": 76,
+     "letters_read": 854,
+     "letters_kept": 465,
+     "null_letters_kept": [
+      84,
+      46
+     ],
+     "reader_control_passes": true,
+     "pairs": 0,
+     "pairs_decoy_max": 1,
+     "pairs_shifted_max": 1,
+     "fit_T": 202,
+     "fit_p": {
+      "shifted": 0.9,
+      "words": 0.09,
+      "corpus": 0.05,
+      "shuffled": 0.29
+     },
+     "summed_excess_over_shifted": -3.2,
+     "letter_px_given_range": [
+      74.0,
+      103.5
+     ]
+    },
+    "letters_v2_real_step30000": {
+     "lines": 76,
+     "letters_read": 1269,
+     "letters_kept": 585,
+     "null_letters_kept": [
+      111,
+      57
+     ],
+     "reader_control_passes": true,
+     "pairs": 11,
+     "pairs_decoy_max": 1,
+     "pairs_shifted_max": 10,
+     "fit_T": 329,
+     "fit_p": {
+      "shifted": 0.01,
+      "words": 0.01,
+      "corpus": 0.01,
+      "shuffled": 0.01
+     },
+     "summed_excess_over_shifted": 31.6,
+     "letter_px_given_range": [
+      74.0,
+      103.5
+     ]
+    }
+   },
+   "reads_letter_height_given": {
+    "prototype_step1000": {
+     "lines": 107,
+     "letters_read": 41,
+     "letters_kept": 27,
+     "null_letters_kept": [
+      3,
+      1
+     ],
+     "reader_control_passes": true,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 33,
+     "fit_p": {
+      "shifted": 0.99,
+      "words": 0.95,
+      "corpus": 0.71,
+      "shuffled": 0.84
+     },
+     "summed_excess_over_shifted": -0.0,
+     "per_segment": {
+      "w011": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w012": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w030": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.03
+      },
+      "w032": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w033": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.01
+      },
+      "w034": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w035": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w036": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.01
+      },
+      "w037": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w038": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w039": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w040": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w041": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      }
+     }
+    },
+    "real_letterforms_cpu_step3000": {
+     "lines": 107,
+     "letters_read": 473,
+     "letters_kept": 184,
+     "null_letters_kept": [
+      90,
+      45
+     ],
+     "reader_control_passes": false,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 169,
+     "fit_p": {
+      "shifted": 1.0,
+      "words": 0.87,
+      "corpus": 0.42,
+      "shuffled": 1.0
+     },
+     "summed_excess_over_shifted": -3.6,
+     "per_segment": {
+      "w011": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.02
+      },
+      "w012": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.01
+      },
+      "w030": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.586
+      },
+      "w032": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -2.121
+      },
+      "w033": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.141
+      },
+      "w034": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.727
+      },
+      "w035": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.707
+      },
+      "w036": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.152
+      },
+      "w037": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 1.212
+      },
+      "w038": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.808
+      },
+      "w039": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w040": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.131
+      },
+      "w041": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      }
+     }
+    },
+    "letters_v1_step12000": {
+     "lines": 107,
+     "letters_read": 238,
+     "letters_kept": 129,
+     "null_letters_kept": [
+      53,
+      84
+     ],
+     "reader_control_passes": false,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 99,
+     "fit_p": {
+      "shifted": 0.98,
+      "words": 0.99,
+      "corpus": 0.8,
+      "shuffled": 1.0
+     },
+     "summed_excess_over_shifted": -2.4,
+     "per_segment": {
+      "w011": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.929
+      },
+      "w012": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.061
+      },
+      "w030": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.303
+      },
+      "w032": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.101
+      },
+      "w033": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.848
+      },
+      "w034": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.03
+      },
+      "w035": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.172
+      },
+      "w036": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.939
+      },
+      "w037": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w038": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w039": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w040": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w041": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      }
+     }
+    },
+    "letters_v2_real_step30000": {
+     "lines": 107,
+     "letters_read": 613,
+     "letters_kept": 196,
+     "null_letters_kept": [
+      60,
+      59
+     ],
+     "reader_control_passes": true,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 182,
+     "fit_p": {
+      "shifted": 0.68,
+      "words": 0.86,
+      "corpus": 0.82,
+      "shuffled": 0.83
+     },
+     "summed_excess_over_shifted": -0.3,
+     "per_segment": {
+      "w011": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w012": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.061
+      },
+      "w030": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.444
+      },
+      "w032": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -1.02
+      },
+      "w033": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.333
+      },
+      "w034": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.141
+      },
+      "w035": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.444
+      },
+      "w036": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.02
+      },
+      "w037": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.101
+      },
+      "w038": {
+       "pairs": 0,
+       "summed_excess_over_shifted": -0.869
+      },
+      "w039": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.04
+      },
+      "w040": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.0
+      },
+      "w041": {
+       "pairs": 0,
+       "summed_excess_over_shifted": 0.01
+      }
+     }
+    }
+   },
+   "reads_fully_automatic": {
+    "prototype_step1000": {
+     "lines": 111,
+     "letters_read": 95,
+     "letters_kept": 61,
+     "null_letters_kept": [
+      6,
+      7
+     ],
+     "reader_control_passes": true,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 62,
+     "fit_p": {
+      "shifted": 0.96,
+      "words": 0.3,
+      "corpus": 0.28,
+      "shuffled": 0.67
+     },
+     "summed_excess_over_shifted": -1.0,
+     "letter_px_chosen_range": [
+      32.6,
+      615.2
+     ]
+    },
+    "real_letterforms_cpu_step3000": {
+     "lines": 110,
+     "letters_read": 443,
+     "letters_kept": 196,
+     "null_letters_kept": [
+      70,
+      70
+     ],
+     "reader_control_passes": false,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 163,
+     "fit_p": {
+      "shifted": 0.78,
+      "words": 0.74,
+      "corpus": 0.8,
+      "shuffled": 1.0
+     },
+     "summed_excess_over_shifted": -1.1,
+     "letter_px_chosen_range": [
+      40.7,
+      615.2
+     ]
+    },
+    "letters_v1_step12000": {
+     "lines": 83,
+     "letters_read": 220,
+     "letters_kept": 135,
+     "null_letters_kept": [
+      55,
+      71
+     ],
+     "reader_control_passes": false,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 97,
+     "fit_p": {
+      "shifted": 0.92,
+      "words": 0.95,
+      "corpus": 0.67,
+      "shuffled": 0.95
+     },
+     "summed_excess_over_shifted": -1.1,
+     "letter_px_chosen_range": [
+      41.9,
+      615.2
+     ]
+    },
+    "letters_v2_real_step30000": {
+     "lines": 111,
+     "letters_read": 538,
+     "letters_kept": 187,
+     "null_letters_kept": [
+      57,
+      58
+     ],
+     "reader_control_passes": true,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 171,
+     "fit_p": {
+      "shifted": 0.93,
+      "words": 0.83,
+      "corpus": 0.66,
+      "shuffled": 0.98
+     },
+     "summed_excess_over_shifted": -2.4,
+     "letter_px_chosen_range": [
+      32.1,
+      615.2
+     ]
+    }
+   },
+   "paired_bootstrap_letter_height_given": {
+    "U2_v2_minus_prototype": {
+     "pairs": {
+      "diff": 0.0,
+      "ci95": [
+       0.0,
+       0.0
+      ]
+     },
+     "summed_excess": {
+      "diff": -0.3,
+      "ci95": [
+       -3.6,
+       2.4
+      ]
+     }
+    },
+    "U3_v2_minus_v1": {
+     "pairs": {
+      "diff": 0.0,
+      "ci95": [
+       0.0,
+       0.0
+      ]
+     },
+     "summed_excess": {
+      "diff": 2.0,
+      "ci95": [
+       -2.1,
+       6.1
+      ]
+     },
+     "counts": false,
+     "why": "letters-v1 fails the reader control"
+    }
+   },
+   "post_hoc_not_decisive": {
+    "letters_v2_real_mirrored_maps": {
+     "lines": 107,
+     "letters_read": 566,
+     "letters_kept": 149,
+     "null_letters_kept": [
+      60,
+      61
+     ],
+     "reader_control_passes": false,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 172,
+     "fit_p": {
+      "shifted": 0.99,
+      "words": 0.84,
+      "corpus": 0.63,
+      "shuffled": 1.0
+     },
+     "summed_excess_over_shifted": -3.8
+    },
+    "letters_v2_real_maps_turned_180": {
+     "lines": 110,
+     "letters_read": 598,
+     "letters_kept": 168,
+     "null_letters_kept": [
+      62,
+      71
+     ],
+     "reader_control_passes": false,
+     "pairs": 0,
+     "pairs_decoy_max": 0,
+     "pairs_shifted_max": 0,
+     "fit_T": 175,
+     "fit_p": {
+      "shifted": 0.97,
+      "words": 0.92,
+      "corpus": 0.9,
+      "shuffled": 1.0
+     },
+     "summed_excess_over_shifted": -3.0
+    },
+    "letters_v2_real_labelled_segments_whole": {
+     "lines": 88,
+     "letters_read": 1704,
+     "letters_kept": 782,
+     "null_letters_kept": [
+      159,
+      105
+     ],
+     "reader_control_passes": true,
+     "pairs": 7,
+     "pairs_decoy_max": 1,
+     "pairs_shifted_max": 6,
+     "fit_T": 342,
+     "fit_p": {
+      "shifted": 0.01,
+      "words": 0.01,
+      "corpus": 0.01,
+      "shuffled": 0.01
+     },
+     "summed_excess_over_shifted": 31.9,
+     "pairs_by_segment": {
+      "w013": 5,
+      "w018": 2,
+      "w023": 0,
+      "w028": 0,
+      "w029": 0,
+      "w031": 0
+     }
+    },
+    "papyrus_grid_px_millions": {
+     "unlabelled_13": 25.1,
+     "labelled_6": 50.5,
+     "w013": 11.6,
+     "w018": 14.2,
+     "w023": 14.1,
+     "w028_w029_w031": [
+      3.7,
+      3.7,
+      3.2
+     ],
+     "unlabelled_range": [
+      0.5,
+      3.6
+     ]
+    },
+    "letters_v2_real_region_test_free_ends_error_by_segment": {
+     "w013": [
+      3,
+      18,
+      0.167
+     ],
+     "w018": [
+      13,
+      57,
+      0.228
+     ],
+     "w023": [
+      10,
+      18,
+      0.556
+     ],
+     "w028": [
+      3,
+      6,
+      0.5
+     ],
+     "w029": [
+      5,
+      9,
+      0.556
+     ],
+     "w031": [
+      6,
+      14,
+      0.429
+     ],
+     "format": "errors, reference letters, rate; region test, letter height given per segment"
+    },
+    "orientations_read": "as stored, mirrored left to right, turned 180 degrees; the vertical flip was not read"
+   },
+   "verdict": "U1 not shown: letters-v2-real passes the reader control but makes 0 ordered pairs on the published text (no decoy makes any) and no read line scores 5 or more on any published line; U2 not resolved (0 against 0); U3 does not count, since letters-v1 fails the reader control (Model output). Post hoc, the same chain read over the six labelled segments' whole maps makes 7 pairs against a decoy maximum of 1, all on w013 and w018, where letters-v2-real's letter error is lowest (0.17 and 0.23 in the region test), and none on w023 (as large as w018), w028, w029 and w031, where it errs on about one letter in two; so the test could pass only if the reader's error on the unlabelled maps were that low, it had little power, and it cannot tell whether maps of unlabelled text are harder to read (Interpretation)."
+  }
+ ]
 }

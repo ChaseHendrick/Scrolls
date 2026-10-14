@@ -1,0 +1,14 @@
+More Compute Is Not Enough: Measured Limits of Self-Training, GPU Throughput and Tracer Scaling on Public Vesuvius Challenge Data:
+data, and the programs that check the manuscript and draw its figures.
+Copyright 2026 Chase Hendrick
+
+The programs in code/ and the data in data/ are licensed under the Apache License, Version 2.0
+(http://www.apache.org/licenses/LICENSE-2.0).
+
+code/make_figures.py uses matplotlib, installed separately (code/requirements.txt). code/check_numbers.py
+uses the Python standard library only.
+
+The numbers in data/ were copied from run records of the author's own experiments on the Vesuvius Challenge's
+open data. No CT, segment, label, ink map or model weight is included; those remain under their own licences.
+
+The text of the manuscript (paper/) is not licensed for reuse.

@@ -14,7 +14,8 @@ A workbench for the [Vesuvius Challenge](https://scrollprize.org/): reading carb
 
 When the private checkout is available, refresh the combined session context from that checkout with `python3 -m kit.repo_handoff context --private-root . --public-root ../Scrolls`. Its handoff helper installs local Git hooks in both checkouts and writes combined context only inside the private workspace. Hooks do not push, run hosted jobs or copy private notes into this repository. Read the generated private context before private work; never paste it into public artifacts.
 
-1. [`docs/HANDOFF.md`](docs/HANDOFF.md): current state and the next steps, newest session first.
+0. [`docs/README.md`](docs/README.md): the docs index, one home per topic. Check it before any research.
+1. [`docs/HANDOFF.md`](docs/HANDOFF.md): **the one handoff**, open items first, then dated sections, newest first (rule 14).
 2. [`docs/plans/roadmap.md`](docs/plans/roadmap.md): pointer to the roadmap, which now lives in Scrolls-private (access required). Gate A's public rule is in `kit/gate.py`.
 3. [`docs/results.json`](docs/results.json): every benchmark number with its settings and source.
    The README section "Novel findings" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
@@ -31,10 +32,14 @@ When the private checkout is available, refresh the combined session context fro
 5. **Cite real URLs and dates** for facts about prizes, people and published results. Label claims: Sourced fact, Community report, Model output, Interpretation, Untested idea ([`docs/NOVELTY.md`](docs/NOVELTY.md)).
 6. **No scroll data, maps or weights in git.**
 7. **`kit/` changes need tests** in `tests/`.
-8. **Nothing outward without the user's go-ahead:** no posting, submitting, renting compute or opening upstream PRs. **No Hugging Face or forum posts at all** (user decision, 2026-10-07).
+8. **Nothing outward without the user's go-ahead:** no posting, submitting, renting compute or opening upstream PRs. Forum posts, Hugging Face uploads and Spaces are allowed, each only after the user says yes to that post, and never with private work or target-scroll data (user decision, 2026-10-13; it lifts the 2026-10-07 ban).
 9. **Log local compute.** Wrap every local run (Mac CPU or MPS) with `python -m kit run local SLUG -- COMMAND` so wall time and electricity cost reach the ledger ([`docs/compute.md`](docs/compute.md)).
 10. **Style:** plain sentences; never U+2014 or U+2013 dashes; commit messages end with the session's attribution lines.
-11. **GPU work goes to Modal, not hours of CPU** (user decision, 2026-10-08). Before starting any job, estimate its time. A job that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so never try to sign in to Modal from one. Write an exact run spec in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and give the user a short prompt to paste into an agent that runs Modal, such as Codex, or commands to run on their own computer. Costs and rates: [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md). Only generic, public-data jobs get a spec here; anything about a target scroll belongs in Scrolls-private's own `docs/compute/modal-specs/`.
+11. **GPU work goes to Modal, not hours of CPU** (user decision, 2026-10-08). Before starting any job, estimate its time. A job that needs a GPU, or more than about an hour on CPU, runs on Modal. Claude's cloud sessions cannot reach Modal, even with the CLI installed, because their proxy does not carry Modal's gRPC traffic, so never try to sign in to Modal from one. Write an exact run spec in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and give the user a short prompt to paste into an agent that runs Modal, such as Codex, or commands to run on their own computer. Default machine (user decision, 2026-10-12): B300 with fallbacks, `gpu=["B300", "B200", "H200", "H100"]` (B300 needs a CUDA 13.1 or newer image; a CUDA 12 image drops B300 from the list), and for CPU work 16 reserved cores, `cpu=(16, 16)`, with threads set to match, unless a measurement shows the job scales differently; never past the approved budget without asking with a cost estimate. The workspace is on Modal's Starter plan (checked 2026-10-13): at most 10 GPUs and 100 containers at once, counting every live job, so no spec fans out wider; logs are kept 1 day, so anything a check needs goes to a Volume or is copied within a day; never pin a region (1.15 to 1.75 times base prices) or ask for non-preemptible containers (3 times), and price estimates at the plain preemptible rates ([plan limits](docs/compute/modal-pricing.md#2-plans-credits-limits-and-budgets)). Costs, rates and the [defaults](docs/compute/modal-pricing.md#default-gpu-and-cpu-for-new-jobs): [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md). Only generic, public-data jobs get a spec here; anything about a target scroll belongs in Scrolls-private's own `docs/compute/modal-specs/`.
+12. **Public writing for villa and the community** (user decision, 2026-10-12). Issues, PRs, comments and prize submissions get a clear, specific title that says what is wrong or what changes. Use the community's established villa and VC3D terms; never our internal names (growcut, arm B, autopipeline and the like) unless the text defines them. Keep it short, in the user's own voice, with no long dashes. Maintainers close issues with unclear titles, invented terms, or text that does not read as written by the person. Agents draft; the user posts to villa. Guide: [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md#public-writing-for-villa-and-the-community).
+13. **Check the docs index before you research or write** (user decision, 2026-10-13). [`docs/README.md`](docs/README.md) names one home per topic. Read the home and grep `docs/` first; extend the existing note instead of starting a new one, and add any new note to the index. Do not repeat research that is already written down.
+14. **One handoff** (user decision, 2026-10-13). [`docs/HANDOFF.md`](docs/HANDOFF.md) is the only handoff for this repository and every agent: update its open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once. Private work hands off only in Scrolls-private's `docs/HANDOFF.md`.
+15. **Releases list themselves in the README** (user decision, 2026-10-14). Whatever is released from Scrolls-private into this repository adds its entry to [`docs/releases.json`](docs/releases.json) in the same change, with `python -m kit releases add ENTRY.json`, which rewrites the README's "Released tools" section from that list. Never edit the section by hand: `python -m kit releases check`, run by the tests, fails when it and the list disagree. The entry is part of the file list the user approves. For a Progress Prize package, the private exporter writes the entry itself and pushes it as a `release-readme/<submission_id>` branch for a PR into `main`.
 
 ## Standing user decisions
 
@@ -42,9 +47,16 @@ When the private checkout is available, refresh the combined session context fro
 | --- | --- |
 | 2026-10-07 | Private operational plans and submission material live in Scrolls-private |
 | 2026-10-07 | Leave `docs/contrib/villa-1865-m1pro-comment.md` alone |
-| 2026-10-07 | No Hugging Face or forum posting |
+| 2026-10-07 | No Hugging Face or forum posting (lifted on 2026-10-13) |
 | 2026-10-07 | No paid compute without the user's budget decision |
 | 2026-10-08 | Use Modal for any job that needs a GPU or hours of CPU. Claude cloud sessions cannot reach Modal: write a run spec and hand it to Codex, or give the user commands for their computer (rule 11) |
+| 2026-10-12 | Default Modal GPU is B300, falling back to the fastest card free; CPU jobs reserve more cores (16 by default) because Modal offers no faster CPU model. Speed over saving money, inside the approved budget (rule 11) |
+| 2026-10-13 | Modal runs fit the Starter plan: at most 10 GPUs and 100 containers at once, 1 day of logs, no region selection and no non-preemptible containers (rule 11) |
+| 2026-10-12 | Public writing for villa and the community: clear, specific titles, the community's established terms, short, in the user's own voice, no long dashes; the user posts to villa (rule 12) |
+| 2026-10-13 | Hugging Face uploads, model cards and Spaces are allowed, each with the user's go-ahead like any outward action; forum posts were also lifted later the same day (next row), and hard rule 1 still applies: nothing private and no target-scroll data goes to Hugging Face |
+| 2026-10-13 | The forum ban is lifted too ("lift the ban. we can post.. just ask before doing so", 01:41 UTC): forum, Discord and Hugging Face posts are allowed, but an agent drafts and asks the user before each post. For now the user does not want to post in forums (01:41 UTC), so do not draft or suggest forum posts until he asks. Hard rule 1 still applies: nothing private and no target-scroll data |
+| 2026-10-13 | Call the owner Chase (Chase Hendrick) in docs, commits, PRs and messages. His account may still show the name Bob; never use it |
+| 2026-10-14 | The README updates itself when something is released from private to public: each release adds its entry to `docs/releases.json`, and the README's "Released tools" section is generated from that list (rule 15) |
 
 ## Repository map
 
@@ -64,6 +76,9 @@ When the private checkout is available, refresh the combined session context fro
 | `kit/ensemble.py` | Average maps of one surface (`python -m kit ensemble OUT MAP MAP ... [--method rank]`); map-level, never cross-seed weights |
 | `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fibre orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](docs/logs/2026-10-07-grok-laneD.md)) |
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
+| `kit/releases.py`, `docs/releases.json` | The list of tools released from private work and the README section written from it, newest first: `python -m kit releases add ENTRY.json`, `render`, `check`, `list` (rule 15). Scrolls-private's exporter carries an identical copy of the module |
+| `kit/letterread.py`, `kit/greeklm.py` | Greek letter reader (`python -m kit letterread IMAGE --weights letters-v2-real [--letter-px H] [--overlay PNG]`): numpy CTC line network, columns and lines, null and orientation controls, overlay, released weights downloaded once and SHA-256 checked (`kit/data/letter-weights.json`); and a Kneser-Ney letter language model (`python -m kit greeklm build`) reported beside the ink-only decode. Letter hypotheses, not readings ([guide](docs/letter-reader.md)) |
+| `scripts/letters/` | Letter reader training data (synthetic lines, real letterforms from Hell-Char and ICDAR 2023), training (torch), fine-tuning on map lines, PHerc. 172 and PHerc. 1667 benchmarks, `demo_p1667.py` |
 | `kit/gate.py` | Gate A, by the rule in its module docstring (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
 | `kit/localcost.py` | `kit run local` and `kit run backfill`: wall time, CPU time and estimated electricity cost of local runs in the ledger (hard rule 9, [compute.md](docs/compute.md)); past durations in `scripts/backfill/` |
@@ -79,14 +94,18 @@ When the private checkout is available, refresh the combined session context fro
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
+| `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its fix #2060 ([log](docs/logs/2026-10-12-upstream-reports.md)); standard library |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
 | `scripts/experiments/` | Saved scripts, logs and scores of past public-data jobs (2026-10-07 cloud jobs, lanes, tricks); records, keep their wording |
 | `docs/compute/` | Modal pricing, rates, job assumptions, the public Modal ledger and run specs (hard rule 11) |
 | `docs/evidence/` | Frozen evidence archives with hashes; do not edit |
+| `docs/README.md` | Docs index: one home per topic; check it before researching |
 | `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
 | `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
 | `docs/logs/` | Dated research notes (not claims) |
+| `docs/manuscripts/` | Paper drafts with their data and number checks; `compute-limits/` is shelved, not released |
+| `docs/STANDARDS.md` | The standards every measurement here follows (controls, preregistration, AUC, tracing, speed and cost, data splits, prize criteria), each set beside the community's practice with dated sources |
 | `docs/state-of-play.md`, `docs/prizes.md` | What has been read and tried; prize terms |
 | `docs/mac.md` | Apple Silicon guide: commands, how to watch a run, measured timings |
 | `tests/` | `python -m unittest discover -s tests`; map tests skip without numpy, tifffile, zarr. `test_repo.py` checks the repo itself: scripts parse, Mac scripts stay bash 3.2, no long dashes, docs JSON parses, documented `kit` commands exist, every `kit/*.py` module is in this map, relative links in live Markdown resolve, and the held-out wording stays correct in live files (w045 is not held out from `ink_9um`; a line calling PHerc0841 held out from every reader must name Hecate) |

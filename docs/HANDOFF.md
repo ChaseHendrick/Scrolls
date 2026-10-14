@@ -1,6 +1,29 @@
 # Public repository handoff
 
-Updated 9 October 2026. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
+**This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes.
+
+## Open items (checked 14 October 2026)
+
+| Item | State | Next step | Waits on | Where |
+| --- | --- | --- | --- | --- |
+| Reports to villa | Issues [#2058](https://github.com/ScrollPrize/villa/issues/2058) and [#2059](https://github.com/ScrollPrize/villa/issues/2059), draft fix [#2060](https://github.com/ScrollPrize/villa/pull/2060) and seed-anchor PR [#2063](https://github.com/ScrollPrize/villa/pull/2063) are open upstream | Answer maintainers' reviews; any further post needs the owner's word | villa maintainers, then the owner | [`logs/2026-10-12-upstream-reports.md`](logs/2026-10-12-upstream-reports.md) |
+| AutoPipeline public release | Released 14 October with Chase's approval of the exact file list: branch [`submission/progress-2026-10`](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10), commit `faada83` | Fixes go out as new file lists, each approved by Chase first | Chase | Branch `submission/progress-2026-10`; Scrolls-private |
+| Greek letter reader | Released 14 October with Chase's approval in [PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57): `kit letterread`, `kit greeklm`, training and benchmark scripts in `scripts/letters/`; review fixes in [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58). The weights are not in git: they are the release asset `letters-v2-real-step030000.npz` on tag [`letters-v2-real`](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real) (sha256 `44946dad...587477`, CC BY-NC 4.0), pinned in `kit/data/letter-weights.json`. Do not re-tag or delete it, because `--weights letters-v2-real` downloads from it | Merge #58; any new weights get a new tag and registry entry | Chase | [`letter-reader.md`](letter-reader.md), [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) |
+| Released tools in the README | **Done** 14 October: [PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60) merged (`d1a34ff`) after Chase approved it (01:51 UTC). The README's "Released tools" section is generated from `docs/releases.json` | Nothing left open. Every later release from private work adds its entry with `python -m kit releases add` (AGENTS.md rule 15); Progress Prize releases arrive as a `release-readme/<submission_id>` branch from the private exporter, for a PR into `main` | None | [`releases.json`](releases.json), [PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60) |
+| PHerc0841 Hecate caveat and README finding 1 like for like | PR [#37](https://github.com/ChaseHendrick/Scrolls/pull/37) names Hecate wherever PHerc0841 is called held out, and sets finding 1 like for like (v8in 0.738 against `ink_9um` 0.907, both on the same bare w045 crop) | Chase reviews both edits, then the PR leaves draft and merges | Chase | [`logs/2026-10-09-pherc0841-hecate.md`](logs/2026-10-09-pherc0841-hecate.md) |
+
+## 12 October 2026: findings reported upstream
+
+Three findings went public on ScrollPrize/villa from ChaseHendrick's account on 12 October, with the owner's go-ahead on each: [#2058](https://github.com/ScrollPrize/villa/issues/2058) (VC3D caches a transient S3 404 as a permanent empty chunk), its draft fix [#2060](https://github.com/ScrollPrize/villa/pull/2060), [#2059](https://github.com/ScrollPrize/villa/issues/2059) (the tracer does not hold an explicit seed) and a [comment on #1843](https://github.com/ScrollPrize/villa/issues/1843#issuecomment-6130119937) (a CT check of the PHerc1667 transform). They are README findings 12 and 13 and an update to finding 10; numbers, controls and limits are in [the log](logs/2026-10-12-upstream-reports.md), and the false-404 test and render receipts in [`evidence/2026-10-12-false-404/`](evidence/2026-10-12-false-404/README.md). The relay that replays S3's false 404 is `scripts/false404/fault_relay.py`. #2060 is a draft: a merge, review answers or further upstream posts each need the owner's word. Nothing else was released.
+
+## 11 October 2026: public community guidance
+
+The existing Apache-2.0 license is retained, with a project NOTICE and explicit
+README scope for code versus third-party data and models. Contributor Covenant
+2.1 uses the owner's approved public reporting address. Contribution, support
+and security guidance, issue templates, a PR template and CODEOWNERS are in
+standard GitHub locations. Private vulnerability reporting is enabled. These
+community changes do not release private research or authorize compute.
 
 ## Correction 9 October 2026: PHerc0841 may not be held out from Hecate
 

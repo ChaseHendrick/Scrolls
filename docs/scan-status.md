@@ -1,6 +1,6 @@
 # Scan availability and our processing status
 
-Snapshot assembled 2026-10-07; processing table last updated 2026-10-09. This page answers two different questions: which physical CT scans the organizers publicly list, and which processing jobs this repository has recorded. A published CT scan can still have no completed segmentation or ink test here. A completed benchmark crop is not a completed scroll.
+Snapshot assembled 2026-10-07; the d9v2 fine-tune sweep row was added on 2026-10-09. This page answers two different questions: which physical CT scans the organizers publicly list, and which processing jobs this repository has recorded. A published CT scan can still have no completed segmentation or ink test here. A completed benchmark crop is not a completed scroll.
 
 ## Our processing
 

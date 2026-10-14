@@ -11,6 +11,7 @@ Usage (from the repository root):
     python3 -m kit.cloudcost infer --profile 2p5d_9um --area 40 --um 7.91 --passes 2
     python3 -m kit.cloudcost jobs                        # table for every job in modal-jobs.json
     python3 -m kit.cloudcost budget 30 100 500           # GPU hours a budget buys
+    python3 -m kit.cloudcost defaults                    # default Modal GPU and CPU request
 
 Standard library only. Prices are list prices on the access date; check
 https://modal.com/pricing before spending.
@@ -26,6 +27,16 @@ RATES = ROOT / "docs" / "compute" / "modal-rates.json"
 JOBS = ROOT / "docs" / "compute" / "modal-jobs.json"
 LEVELS = ("low", "typical", "high")
 
+# Default Modal resources for new jobs (owner decision, 12 October 2026: B300 first, speed over
+# saving money, inside the approved budget). Modal tries a list of GPUs in order
+# (https://modal.com/docs/guide/gpu). B300 needs CUDA 13.1 or newer in the image; the fallbacks
+# run the same CUDA 13 image. Modal offers no choice of CPU model, so the fastest CPU request is
+# more reserved physical cores (request equal to limit), with the code's threads set to match.
+MODAL_GPU = "B300"
+MODAL_GPU_FALLBACK = ("B300", "B200", "H200", "H100")
+MODAL_CPU_CORES = 16
+MODAL_GPU_CPU_CORES = 8
+
 
 def load(path):
     with open(path, encoding="utf-8") as f:
@@ -38,6 +49,31 @@ def load_rates(path=None):
 
 def load_jobs(path=None):
     return load(path or JOBS)
+
+
+def modal_gpu(count=1, fallback=True, cuda13=True):
+    """The `gpu=` value for a new Modal Function: B300 first, then the fallbacks, `count` per container.
+
+    B300 runs only images built for CUDA 13.1 or newer (torch cu130 or later). For an image built
+    for CUDA 12 (cu128 and older) pass cuda13=False: the list then starts at B200 and leaves B300 out.
+    """
+    if not 1 <= count <= 8:
+        raise ValueError("Modal allows 1 to 8 of these GPUs per container")
+    if not cuda13:
+        if not fallback:
+            raise ValueError("B300 needs a CUDA 13.1 or newer image")
+        names = MODAL_GPU_FALLBACK[1:]
+    else:
+        names = MODAL_GPU_FALLBACK if fallback else (MODAL_GPU,)
+    out = [n if count == 1 else f"{n}:{count}" for n in names]
+    return out if fallback else out[0]
+
+
+def modal_cpu(cores=MODAL_CPU_CORES):
+    """The `cpu=` value: `cores` physical cores reserved, request equal to limit."""
+    if cores < 0.125:
+        raise ValueError("Modal's minimum is 0.125 cores")
+    return (float(cores), float(cores))
 
 
 def gpu_per_hour(rates, gpu):
@@ -259,6 +295,7 @@ def build_parser():
     b.add_argument("budgets", nargs="+", type=float)
     b.add_argument("--cpu", type=float, default=4)
     b.add_argument("--mem", type=float, default=32)
+    sub.add_parser("defaults", help="default Modal GPU and CPU request for new jobs")
     return p
 
 
@@ -289,6 +326,13 @@ def main(argv=None):
             print(jobs_table(rates, doc))
     elif args.command == "budget":
         print(budget_table(rates, args.budgets, cpu=args.cpu, mem_gib=args.mem))
+    elif args.command == "defaults":
+        per_h = container_cost(rates, 1.0, gpu=MODAL_GPU, cpu=MODAL_GPU_CPU_CORES, mem_gib=32)["total"]
+        cpu_h = container_cost(rates, 1.0, cpu=MODAL_CPU_CORES, mem_gib=32)["total"]
+        print(json.dumps({"gpu": modal_gpu(), "gpu_container_cpu": modal_cpu(MODAL_GPU_CPU_CORES),
+                          "cpu": modal_cpu(), "usd_per_h_one_b300_8_cores_32_gib": round(per_h, 4),
+                          "usd_per_h_cpu_16_cores_32_gib": round(cpu_h, 4),
+                          "estimate_rate": "price a fallback list at its dearest entry (B300)"}, indent=1))
     return 0
 
 

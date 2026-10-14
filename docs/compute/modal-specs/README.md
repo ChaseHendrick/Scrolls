@@ -9,7 +9,7 @@ Name: `YYYY-MM-DD-<slug>.md`. Each spec says:
 1. **Goal**, and the preregistration if the job produces a map that needs one (rule 3).
 2. **Inputs**: public URLs, with checksums where known.
 3. **Code**: repository, branch and commit, plus the exact commands.
-4. **Machine**: GPU type and count, expected wall time and cost ([pricing](../modal-pricing.md)), and the cap past which to stop and ask.
+4. **Machine**: GPU type and count, CPU cores and memory, expected wall time and cost ([pricing](../modal-pricing.md)), and the cap past which to stop and ask. Default to B300 with fallbacks, `gpu=["B300", "B200", "H200", "H100"]`, and for CPU work `cpu=(16, 16)` with threads set to match, unless a measurement says otherwise ([defaults](../modal-pricing.md#default-gpu-and-cpu-for-new-jobs)). Price the run at the B300 rate.
 5. **Outputs**: where they go (never git) and what to copy back.
 6. **Checks**: how to tell the run worked, including its control (rule 4).
 7. **Prompt for the runner**: a few lines the user can paste as is.

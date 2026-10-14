@@ -1,0 +1,6 @@
+SCRATCH/villa-main/volume-cartographer/core/test/test_s3_chunk_cache.cpp:50: FAILED: CHECK(result.status == ChunkStatus::Error)
+SCRATCH/villa-main/volume-cartographer/core/test/test_s3_chunk_cache.cpp:54: FAILED: CHECK_FALSE(hasEmptyMarker(path))
+SCRATCH/villa-main/volume-cartographer/core/test/test_s3_chunk_cache.cpp:59: FAILED: REQUIRE(result.status == ChunkStatus::Data)
+SCRATCH/villa-main/volume-cartographer/core/test/test_s3_chunk_cache.cpp:95: FAILED: CHECK_THROWS_AS((vc::httpGetString(server.url())), std::runtime_error)
+SCRATCH/villa-main/volume-cartographer/core/test/test_s3_chunk_cache.cpp:96: FAILED: CHECK_THROWS_AS((vc::httpGetBytes(server.url())), std::runtime_error)
+5 check(s) failed
