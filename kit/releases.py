@@ -7,6 +7,7 @@ from it, newest first:
   python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
   python -m kit releases render           rewrite the section from the list
   python -m kit releases check            exit 1 when the section and the list disagree (a unit test runs this)
+  python -m kit releases pin ID           show that entry first, above newer ones, until unpinned; unpin ID undoes it
 
 An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2026-10-14",
            "summary": "One paragraph: what it does, the measured result with its claim label, the main limit.",
@@ -16,6 +17,10 @@ An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2
 "where" is "main" for files merged here, or {"branch": B, "commit": C, "path": P} for a reviewed package that lives on
 its own branch (the Progress Prize exporter's submission/<submission_id> branches), which the section links at that
 commit.
+
+The list's optional "pinned" holds entry ids shown first, in that order, above the newest (Chase, 14 October 2026:
+keep AutoPipeline on top "so people see it"). A pin belongs to the list, not the entry, so a new version that replaces
+a pinned entry stays pinned.
 
 The private repository's submission exporter carries an identical copy of this module and writes the entry of each
 package it releases with it, so keep the two copies the same. Standard library only.
@@ -131,8 +136,9 @@ def validate(entry):
 
 
 def validate_list(registry):
-    if not isinstance(registry, dict) or registry.get("schema_version") != 1 or set(registry) != {"schema_version", "releases"}:
-        raise ReleaseListError("the list is {\"schema_version\": 1, \"releases\": [...]}")
+    if not isinstance(registry, dict) or registry.get("schema_version") != 1 \
+            or set(registry) - {"pinned"} != {"schema_version", "releases"}:
+        raise ReleaseListError("the list is {\"schema_version\": 1, \"pinned\": [ids, optional], \"releases\": [...]}")
     entries = registry["releases"]
     if not isinstance(entries, list):
         raise ReleaseListError("releases must be a list")
@@ -142,23 +148,46 @@ def validate_list(registry):
         if entry["id"] in seen:
             raise ReleaseListError(f"{entry['id']}: listed twice")
         seen.add(entry["id"])
+    pinned = registry.get("pinned", [])
+    if not isinstance(pinned, list) or not all(isinstance(i, str) and i in seen for i in pinned) \
+            or len(set(pinned)) != len(pinned):
+        raise ReleaseListError("pinned must list ids of entries in the list, each once")
     return registry
 
 
 def dumps(registry):
     """The list as written to docs/releases.json (both copies of this module write it the same way)."""
-    return json.dumps(validate_list(registry), indent=2, ensure_ascii=False) + "\n"
+    validate_list(registry)
+    written = {"schema_version": 1, **({"pinned": registry["pinned"]} if registry.get("pinned") else {}),
+               "releases": registry["releases"]}
+    return json.dumps(written, indent=2, ensure_ascii=False) + "\n"
+
+
+def _with(registry, entries):
+    """A new list holding entries, with registry's pins kept."""
+    pinned = list(registry.get("pinned", []))
+    return {"schema_version": 1, **({"pinned": pinned} if pinned else {}), "releases": entries}
 
 
 def upsert(registry, entry):
-    """A new list with entry added at the end, or in place of the entry with its id; and "added" or "replaced"."""
+    """A new list with entry added at the end, or in place of the entry with its id (keeping its pin); and "added" or
+    "replaced"."""
     validate(entry)
     entries = [dict(e) for e in validate_list(registry)["releases"]]
     for i, old in enumerate(entries):
         if old["id"] == entry["id"]:
             entries[i] = dict(entry)
-            return {"schema_version": 1, "releases": entries}, "replaced"
-    return {"schema_version": 1, "releases": entries + [dict(entry)]}, "added"
+            return _with(registry, entries), "replaced"
+    return _with(registry, entries + [dict(entry)]), "added"
+
+
+def pin(registry, entry_id, on=True):
+    """A new list with entry_id pinned after any earlier pins, or unpinned."""
+    registry = validate_list(registry)
+    if entry_id not in {e["id"] for e in registry["releases"]}:
+        raise ReleaseListError(f"{entry_id}: no entry with that id")
+    pinned = [i for i in registry.get("pinned", []) if i != entry_id] + ([entry_id] if on else [])
+    return validate_list(_with({"pinned": pinned}, [dict(e) for e in registry["releases"]]))
 
 
 def _day(iso):
@@ -184,16 +213,29 @@ def render_entry(entry):
     return lines
 
 
-def ordered(entries):
-    """Newest first; on the same day, the entry added to the list later comes first."""
-    return [e for _, _, e in sorted(((e["released"], i, e) for i, e in enumerate(entries)), key=lambda t: t[:2],
-                                    reverse=True)]
+def ordered(entries, pinned=()):
+    """Pinned entries first, in pin order; then newest first, and on the same day the entry added to the list later."""
+    by_id = {e["id"]: e for e in entries}
+    rest = [e for e in entries if e["id"] not in pinned]
+    return [by_id[i] for i in pinned] + [e for _, _, e in sorted(((e["released"], i, e) for i, e in enumerate(rest)),
+                                                                key=lambda t: t[:2], reverse=True)]
+
+
+def intro(registry):
+    """The section's first line, which says what comes first."""
+    title = {e["id"]: e["title"] for e in registry["releases"]}
+    titles = [title[i] for i in registry.get("pinned", [])]
+    if not titles:
+        return INTRO
+    names = titles[0] if len(titles) == 1 else ", ".join(titles[:-1]) + " and " + titles[-1]
+    return INTRO.replace(", newest first.", f", {names} first and the rest newest first.")
 
 
 def render(registry):
     """The whole generated section, marker lines included."""
-    lines = [START, INTRO]
-    for entry in ordered(validate_list(registry)["releases"]):
+    registry = validate_list(registry)
+    lines = [START, intro(registry)]
+    for entry in ordered(registry["releases"], registry.get("pinned", [])):
         lines += [""] + render_entry(entry)
     return "\n".join(lines + [END])
 
@@ -249,7 +291,9 @@ def add_arguments(p):
     a.add_argument("entry")
     actions.add_parser("render", help="rewrite the README's releases section from the list")
     actions.add_parser("check", help="exit 1 when the README's releases section and the list disagree")
-    actions.add_parser("list", help="one line per release, newest first")
+    actions.add_parser("list", help="one line per release, in the section's order")
+    for name, text in (("pin", "show this entry first, above newer ones"), ("unpin", "stop showing this entry first")):
+        actions.add_parser(name, help=text).add_argument("id")
 
 
 CLONE_HINT = ("it reads the repository's docs/releases.json and README.md, which an installed package does not have: "
@@ -268,9 +312,12 @@ def run(args):
             return 1 if problems else 0
         registry = json.loads(Path(args.registry).read_text(encoding="utf-8"))
         if args.action == "list":
-            for e in ordered(validate_list(registry)["releases"]):
-                print(f"{e['released']}  {e['id']:<24} {e['title']}")
+            pinned = validate_list(registry).get("pinned", [])
+            for e in ordered(registry["releases"], pinned):
+                print(f"{e['released']}  {e['id']:<24} {e['title']}" + ("  (pinned)" if e["id"] in pinned else ""))
             return 0
+        if args.action in ("pin", "unpin"):
+            registry = pin(registry, args.id, on=args.action == "pin")
         if args.action == "add":
             raw = sys.stdin.read() if args.entry == "-" else Path(args.entry).read_text(encoding="utf-8")
             registry, action = upsert(registry, json.loads(raw))
