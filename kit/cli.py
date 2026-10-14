@@ -962,7 +962,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
     p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
     p.add_argument("--weights", required=True,
-                   help="a released model name such as letters-v2-real (downloaded once, SHA-256 checked; a name is "
+                   help="a released model name such as letters-v2-ccby (downloaded once, SHA-256 checked; a name is "
                         "looked up before any file of that name), or a linenet-v1 .npz path")
     p.add_argument("--key", help=".npz: array name (default: the first); zarr: array path or OME-Zarr level (default: "
                                  "level 0, full resolution); pixel values are then in that level's pixels")
@@ -1047,7 +1047,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("letterdemo", prog=sub_progs.get("letterdemo"),
                        help="offline check of the letter reader: synthetic Greek capitals and a noise image, "
                             "DEMO PASS or DEMO FAIL")
-    p.add_argument("--weights", default="letters-v2-real",
+    p.add_argument("--weights", default="letters-v2-ccby",   # letterread.DEFAULT_WEIGHTS; letterread needs numpy
                    help="a released model name (downloaded once, SHA-256 checked) or a linenet-v1 .npz path "
                         "(default %(default)s)")
     p.add_argument("--out", help="folder for demo.json and, with Pillow, demo-page.png and demo-overlay.png")

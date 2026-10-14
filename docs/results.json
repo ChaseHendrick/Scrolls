@@ -9527,6 +9527,651 @@
    },
    "w013_regression": "letters, boxes, confidences and control counts identical to the read before this change",
    "reproduce": "python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"; scrolls-letterdemo --out DIR; scrolls-letterdemo --weights RANDOM.npz (exit 1)"
+  },
+  {
+   "date": "2026-10-14",
+   "source": "https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-ccby (release notes) and docs/letter-reader.md (Model card: letters-v2-ccby, Benchmarks: letters-v2-ccby against letters-v2-real)",
+   "claim": "Model output on public data (PHerc. 1667 official ink labels and 2.4 um ink maps, PHerc. 172 community drawings, synthetic pages, Hell-Char validation lines); not a reading, no hidden text",
+   "check": "letters-v2-ccby, the letter reader's default weights from 14 October 2026 (CC BY 4.0), against letters-v2-real (CC BY-NC 4.0) on the same inputs: CPU, numpy reader, public code at commit 7dc92e8",
+   "model": {
+    "letters-v2-ccby": {
+     "file": "letters-v2-ccby-step026000.npz",
+     "sha256": "b14988852fc721cce71e80a66db0a8ea99a1de914ef2b724ecc6e711baa9ed8c",
+     "step": 26000,
+     "params": 1483241,
+     "licence": "CC BY 4.0",
+     "chosen_on": "lowest character error of 15 checkpoints on the first 600 Hell-Char validation lines (0.416 at step 26000)"
+    },
+    "letters-v2-real": {
+     "file": "letters-v2-real-step030000.npz",
+     "sha256": "44946dadf0195ddb565f097acec0dd1d777af9b6c66d83995c1f4497aa587477",
+     "step": 30000,
+     "params": 1483241,
+     "licence": "CC BY-NC 4.0",
+     "chosen_on": "the PHerc. 172 dev half"
+    },
+    "weights_in_git": false
+   },
+   "settings": {
+    "pherc1667_references": "rebuilt on 14 October 2026 because the 9 October transcriptions were lost: three blind machine transcriptions of each of the same 91 label groups, only the 84 unanimous groups scored, 117 letters; letters-v2-real's PHerc. 1667 numbers here therefore differ from its first published card. Machine transcriptions of the drawings, not a papyrologist's reading",
+    "pherc1667_reads": "scripts/letters/eval_p1667.py read with --source label, map, map-wide (letter height given) and map-region --letter-px auto",
+    "pherc172": "Bodillium/Herculaneum-Scroll-Labels at commit 2266661, scripts/letters/eval_p172.py --columns auto, test half (with and without the letter language model) and dev half",
+    "synthetic_pages": "scripts/letters/eval_pages.py defaults (24 pages, seed 11, columns off)",
+    "hellchar": "2,000 validation lines of gen_dataset.py seed 9002 from a Hell-Char-only bank (Hell-Char at aeef846, 21 held-out papyri), scored in the trainer's order; letters-v2-ccby's error on the first 600 reproduces its training record's 0.416",
+    "paired_comparison": "letters-v2-ccby minus letters-v2-real, computed before rounding; paired bootstrap, 20,000 resamples, 95% interval, over groups (PHerc. 1667), lines (PHerc. 172) or text lines (Hell-Char)",
+    "verdict_rule": "interval wholly below zero: ccby errs less; wholly above zero: ccby errs more; otherwise not resolved",
+    "controls_rule": "a read's number counts only when its error against references permuted across groups or lines is above its real error and its confident letters kept are above three times the larger null total; no read failed. On the PHerc. 172 and page reads the permuted-reference check was added after the test plan was fixed",
+    "multiplicity": "the six scroll comparisons fixed in advance (four PHerc. 1667 rows, two PHerc. 172 test-half rows) carry no correction for multiplicity; the Hell-Char and dev-half comparisons were not fixed in advance"
+   },
+   "rows": [
+    {
+     "row": 1,
+     "test": "PHerc. 1667 official ink labels (drawings), line and letter height given",
+     "metric": "character error, ink only (plain)",
+     "status": "scored readout",
+     "units": "84 groups",
+     "letters_v2_ccby": 0.043,
+     "letters_v2_real": 0.017,
+     "errors_ccby": 5,
+     "errors_real": 2,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": 0.026,
+     "ci95": [
+      -0.018,
+      0.079
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.137,
+       "letters_kept": 112,
+       "null_letters_kept": [
+        19,
+        8
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.128,
+       "letters_kept": 115,
+       "null_letters_kept": [
+        20,
+        4
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 2,
+     "test": "PHerc. 1667 2.4 um ink map windows, the same groups, line and letter height given",
+     "metric": "free-ends error, ink only",
+     "status": "scored readout",
+     "units": "84 groups",
+     "letters_v2_ccby": 0.462,
+     "letters_v2_real": 0.376,
+     "errors_ccby": 54,
+     "errors_real": 44,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": 0.085,
+     "ci95": [
+      0.017,
+      0.155
+     ],
+     "verdict": "ccby errs more",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 0.872,
+       "letters_kept": 86,
+       "null_letters_kept": [
+        17,
+        6
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 0.889,
+       "letters_kept": 103,
+       "null_letters_kept": [
+        12,
+        7
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 3,
+     "test": "PHerc. 1667 ink maps, windows about three lines tall, the reader finds the line (letter height given)",
+     "metric": "free-ends error, ink only",
+     "status": "scored readout",
+     "units": "84 groups",
+     "letters_v2_ccby": 0.479,
+     "letters_v2_real": 0.41,
+     "errors_ccby": 56,
+     "errors_real": 48,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": 0.068,
+     "ci95": [
+      0.0,
+      0.142
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 0.906,
+       "letters_kept": 248,
+       "null_letters_kept": [
+        31,
+        25
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 0.889,
+       "letters_kept": 265,
+       "null_letters_kept": [
+        27,
+        15
+       ],
+       "result": "PASS"
+      }
+     },
+     "note": "On the decision boundary: the interval's lower end is exactly 0.000, so not wholly above zero; not resolved"
+    },
+    {
+     "row": 4,
+     "test": "PHerc. 1667 ink maps, each segment's whole labelled region read once, nothing given (--letter-px auto)",
+     "metric": "free-ends error, ink only",
+     "status": "scored readout",
+     "units": "84 groups",
+     "letters_v2_ccby": 0.308,
+     "letters_v2_real": 0.342,
+     "errors_ccby": 36,
+     "errors_real": 40,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": -0.034,
+     "ci95": [
+      -0.118,
+      0.048
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 0.812,
+       "letters_kept": 551,
+       "null_letters_kept": [
+        124,
+        51
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 0.838,
+       "letters_kept": 557,
+       "null_letters_kept": [
+        107,
+        36
+       ],
+       "result": "PASS"
+      }
+     },
+     "note": "Passes the letters-kept control on totals; two of letters-v2-ccby's six segments are under three times their larger null on their own"
+    },
+    {
+     "row": 5,
+     "test": "PHerc. 172 hand-drawn labels, test half, columns found (--columns auto)",
+     "metric": "character error over matched lines, ink only",
+     "status": "scored readout, diagnostic: the column rule was set after this half was seen",
+     "units": "22 lines",
+     "letters_v2_ccby": 0.541,
+     "letters_v2_real": 0.426,
+     "reference_letters": 122,
+     "difference_ccby_minus_real": 0.115,
+     "ci95": [
+      -0.023,
+      0.265
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.139,
+       "letters_kept": 118,
+       "null_letters_kept": [
+        18,
+        13
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.045,
+       "letters_kept": 120,
+       "null_letters_kept": [
+        23,
+        5
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 6,
+     "test": "PHerc. 172 hand-drawn labels, test half, columns found, with the letter language model",
+     "metric": "character error over matched lines, with language model",
+     "status": "scored readout, diagnostic: the column rule was set after this half was seen",
+     "units": "22 lines",
+     "letters_v2_ccby": 0.5,
+     "letters_v2_real": 0.451,
+     "reference_letters": 122,
+     "difference_ccby_minus_real": 0.049,
+     "ci95": [
+      -0.048,
+      0.155
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.104,
+       "letters_kept": 118,
+       "null_letters_kept": [
+        18,
+        13
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.064,
+       "letters_kept": 120,
+       "null_letters_kept": [
+        23,
+        5
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 7,
+     "test": "Whole synthetic pages (eval_pages.py defaults: 24 pages, seed 11, columns off)",
+     "metric": "character error over matched lines: ink-map look, drawn-label look, pooled",
+     "status": "side by side; no paired tool exists for pages",
+     "units": "24 text pages, 106 lines; 6 blank pages",
+     "letters_v2_ccby": {
+      "ink_map_look": 0.098,
+      "drawn_label_look": 0.012,
+      "pooled": 0.071
+     },
+     "letters_v2_real": {
+      "ink_map_look": 0.087,
+      "drawn_label_look": 0.012,
+      "pooled": 0.064
+     },
+     "verdict": "no paired comparison",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 0.983,
+       "letters_kept": 1213,
+       "null_letters_kept": [
+        142,
+        62
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 0.978,
+       "letters_kept": 1222,
+       "null_letters_kept": [
+        117,
+        84
+       ],
+       "result": "PASS"
+      }
+     },
+     "blank_pages": {
+      "pages": 6,
+      "letters_v2_ccby_letters_kept": 1,
+      "letters_v2_real_letters_kept": 39,
+      "note": "letters-v2-real's 39 all fell on one texture page, where its own scrambled-copy control marked them as noise"
+     },
+     "note": "Fonts of the container that ran the benchmark, the same pages for both readers"
+    },
+    {
+     "row": 8,
+     "test": "Hell-Char validation lines (seed 9002, 21 held-out papyri), lines 601 to 2,000, used to choose neither checkpoint",
+     "metric": "character error",
+     "status": "supplementary comparison, not fixed in advance",
+     "units": "1288 text lines",
+     "letters_v2_ccby": 0.404,
+     "letters_v2_real": 0.43,
+     "errors_ccby": 5435,
+     "errors_real": 5785,
+     "reference_letters": 13452,
+     "difference_ccby_minus_real": -0.026,
+     "ci95": [
+      -0.034,
+      -0.018
+     ],
+     "verdict": "ccby errs less",
+     "controls": "no letters-kept control for shard lines; the error against shuffled references, checked after the plan was fixed, is above the real error for both readers"
+    },
+    {
+     "row": 9,
+     "test": "Hell-Char validation lines, the first 600, which letters-v2-ccby was chosen on",
+     "metric": "character error",
+     "status": "supplementary comparison, biased toward letters-v2-ccby",
+     "units": "549 text lines",
+     "letters_v2_ccby": 0.416,
+     "letters_v2_real": 0.444,
+     "errors_ccby": 2408,
+     "errors_real": 2570,
+     "reference_letters": 5783,
+     "difference_ccby_minus_real": -0.028,
+     "ci95": [
+      -0.039,
+      -0.017
+     ],
+     "verdict": "ccby errs less",
+     "controls": "no letters-kept control for shard lines; the error against shuffled references, checked after the plan was fixed, is above the real error for both readers"
+    },
+    {
+     "row": 10,
+     "test": "PHerc. 1667 2.4 um ink map windows, line and letter height given (as row 2)",
+     "metric": "plain character error, ink only",
+     "status": "secondary metric",
+     "units": "84 groups",
+     "letters_v2_ccby": 0.786,
+     "letters_v2_real": 0.709,
+     "errors_ccby": 92,
+     "errors_real": 83,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": 0.077,
+     "ci95": [
+      -0.026,
+      0.178
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.359,
+       "letters_kept": 86,
+       "null_letters_kept": [
+        17,
+        6
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.359,
+       "letters_kept": 103,
+       "null_letters_kept": [
+        12,
+        7
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 11,
+     "test": "PHerc. 1667 ink maps, windows about three lines tall (as row 3)",
+     "metric": "plain character error, ink only",
+     "status": "secondary metric",
+     "units": "84 groups",
+     "letters_v2_ccby": 0.761,
+     "letters_v2_real": 0.761,
+     "errors_ccby": 89,
+     "errors_real": 89,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": 0.0,
+     "ci95": [
+      -0.105,
+      0.102
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.359,
+       "letters_kept": 248,
+       "null_letters_kept": [
+        31,
+        25
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.359,
+       "letters_kept": 265,
+       "null_letters_kept": [
+        27,
+        15
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 12,
+     "test": "PHerc. 1667 ink maps, whole labelled regions (as row 4)",
+     "metric": "plain character error, ink only",
+     "status": "secondary metric",
+     "units": "84 groups",
+     "letters_v2_ccby": 1.385,
+     "letters_v2_real": 1.308,
+     "errors_ccby": 162,
+     "errors_real": 153,
+     "reference_letters": 117,
+     "difference_ccby_minus_real": 0.077,
+     "ci95": [
+      -0.085,
+      0.237
+     ],
+     "verdict": "not resolved",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.983,
+       "letters_kept": 551,
+       "null_letters_kept": [
+        124,
+        51
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.906,
+       "letters_kept": 557,
+       "null_letters_kept": [
+        107,
+        36
+       ],
+       "result": "PASS"
+      }
+     }
+    },
+    {
+     "row": 13,
+     "test": "PHerc. 172 hand-drawn labels, dev half, columns found",
+     "metric": "character error over matched lines, ink only",
+     "status": "supplementary comparison, biased toward letters-v2-real, which was chosen on this half",
+     "units": "25 lines",
+     "letters_v2_ccby": 0.58,
+     "letters_v2_real": 0.471,
+     "reference_letters": {
+      "ccby": 169,
+      "real": 170
+     },
+     "difference_ccby_minus_real": 0.109,
+     "ci95": [
+      0.006,
+      0.204
+     ],
+     "verdict": "ccby errs more",
+     "controls": {
+      "letters_v2_ccby": {
+       "error_against_permuted_references": 1.184,
+       "letters_kept": 160,
+       "null_letters_kept": [
+        23,
+        21
+       ],
+       "result": "PASS"
+      },
+      "letters_v2_real": {
+       "error_against_permuted_references": 1.171,
+       "letters_kept": 174,
+       "null_letters_kept": [
+        24,
+        16
+       ],
+       "result": "PASS"
+      }
+     },
+     "note": "One small segment is within a factor of three of its nulls for both readers; the half passes on totals"
+    }
+   ],
+   "verdict": "Model output: on scroll data letters-v2-ccby has not been shown to read better than letters-v2-real. It errs more on one of the four PHerc. 1667 scored rows (map windows with the line given, +0.085, 95% interval +0.017 to +0.155) and on the PHerc. 172 dev half that chose letters-v2-real; the other scroll comparisons are not resolved. It errs less on Hell-Char validation lines from held-out papyri, whose dataset gave it all of its real letters (that may favour it there; untested). It is the default for its licence, not because it reads better (Interpretation)",
+   "reproduce": "docs/letter-reader.md, Reproduce the benchmarks (letters-v2-ccby against letters-v2-real): each read with --weights letters-v2-ccby and --weights letters-v2-real; eval_p1667.py compare REAL.json CCBY.json --n 20000 --level group --metric plain or free_ends; compare_p172.py REAL.json CCBY.json --n 20000 --level line --key ink_only or with_lm"
+  },
+  {
+   "date": "2026-10-14",
+   "source": "docs/letter-reader.md (Check the install: the offline demo, First reads, Letter size matters most, Big maps, The status, Where the letters are, The control map)",
+   "claim": "Software checks, and Model output on synthetic images and on a published scroll's public map (PHerc. 1667 w013); not a reading, no hidden text",
+   "check": "the guide's quoted outputs rerun with letters-v2-ccby when it became the default weights (kit letterdemo, scripts/letters/demo_p1667.py and the CLI default name it); letters-v2-real's earlier outputs stay in the entries above",
+   "model": "letters-v2-ccby step 26000 (SHA-256 b1498885...), read from a local copy of the release file through KIT_LETTER_WEIGHTS; Python 3.13, numpy 2.5.3, 2 threads",
+   "demo": {
+    "text_page": {
+     "status": "strong",
+     "letters_kept": 96,
+     "letters_drawn": 96,
+     "null_letters_kept": [
+      9,
+      0,
+      11,
+      2
+     ],
+     "ratio": 8.73,
+     "character_error": 0.0,
+     "lines_found": 4
+    },
+    "noise_image": {
+     "status": "none",
+     "letters_kept": 0,
+     "null_letters_kept": [
+      8,
+      0,
+      6,
+      1
+     ]
+    },
+    "verdict": "DEMO PASS, exit code 0",
+    "ci_step": "scrolls-letterread on the demo page PNG at --letter-px 32: 96 letters kept, strong"
+   },
+   "demo_other_seeds": {
+    "seeds": 12,
+    "seed_rule": "page seed SEED + 100k and noise seed NOISE_SEED + 100k, k = 1 to 12",
+    "passed": 12,
+    "character_error": 0.0,
+    "text_letters_kept": [
+     94,
+     96
+    ],
+    "text_ratio_range": [
+     6.71,
+     9.6
+    ],
+    "noise_letters_kept": [
+     0,
+     1
+    ],
+    "noise_status": "none"
+   },
+   "w013_map_averaged_16_by_16": {
+    "letter_px": 86,
+    "lines": 13,
+    "letters_kept": 120,
+    "null_letters_kept": [
+     31,
+     20,
+     33,
+     47
+    ],
+    "status": "weak",
+    "ratio": 2.55,
+    "chance_per_line": 2.52,
+    "kept_on_lines_0_to_9": 108,
+    "orientation_letters_kept": {
+     "as_is": 120,
+     "mirrored": 96,
+     "rot180": 96,
+     "rot90": 29,
+     "rot270": 27
+    },
+    "control_map_same_map": {
+     "letters_kept": 120,
+     "status": "none"
+    },
+    "control_map_tile_shuffled_copy": {
+     "copy": "letterread.null_images(img, 86, n=1, seed=100)",
+     "letters_kept": 42,
+     "ratio": 2.86,
+     "status": "weak",
+     "letters_v2_real_same_copy": {
+      "letters_kept": 37,
+      "ratio": 3.3,
+      "status": "weak"
+     }
+    }
+   },
+   "w013_demo_jpeg": {
+    "read": "scripts/letters/demo_p1667.py: the bucket's ds8 JPEG averaged 2 by 2, --letter-px 86",
+    "letters_kept": 121,
+    "null_letters_kept": [
+     30,
+     20,
+     34,
+     47
+    ],
+    "status": "weak",
+    "ratio": 2.57,
+    "same_jpeg_at_letter_px_172": {
+     "letters_kept": 121,
+     "null_letters_kept": [
+      30,
+      20,
+      34,
+      47
+     ],
+     "status": "weak"
+    }
+   },
+   "w013_whole_2_4um_map": {
+    "letter_px_1376": {
+     "block": 43,
+     "letters_kept": 128,
+     "null_letters_kept": [
+      27,
+      24,
+      35,
+      45
+     ],
+     "status": "weak",
+     "peak_rss_mb": 248
+    },
+    "letter_mm_3_3_um_per_px_2_399": {
+     "block": 42,
+     "letters_kept": 120,
+     "null_letters_kept": [
+      30,
+      25,
+      41,
+      35
+     ],
+     "status": "weak",
+     "peak_rss_mb": 243
+    },
+    "note": "with zarr installed; wall times not isolated (another read ran beside them)"
+   },
+   "w013_regression_letters_v2_real": "letters, boxes, confidences and control counts with letters-v2-real identical to the read before this change (122 kept against 43, 33, 27, 28)",
+   "reproduce": "KIT_LETTER_WEIGHTS=letters-v2-ccby-step026000.npz python -m kit letterdemo; python -m kit letterread w013-b16.tif --weights letters-v2-ccby --letter-px 86 [--control w013-b16.tif]; python scripts/letters/demo_p1667.py --segment w013"
   }
  ],
  "orientation_checks": [

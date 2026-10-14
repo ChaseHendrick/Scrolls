@@ -439,14 +439,16 @@ class CitationTest(unittest.TestCase):
     def test_fields(self):
         for line in ("cff-version: 1.2.0", "type: software", "license: Apache-2.0",
                      'repository-code: "https://github.com/ChaseHendrick/Scrolls"', "family-names: Hendrick",
-                     "given-names: Chase", "license: CC-BY-NC-4.0",
-                     'url: "https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real"'):
+                     "given-names: Chase", "license: CC-BY-NC-4.0", "license: CC-BY-4.0",
+                     'url: "https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real"',
+                     'url: "https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-ccby"'):
             self.assertIn(line, self.text)
         version = re.search(r"^version: (\S+)$", self.text, re.M).group(1)
         init = (ROOT / "kit" / "__init__.py").read_text(encoding="utf-8")
         self.assertIn(f'__version__ = "{version}"', init)            # the package's version, kit.__version__
         registry = json.loads((ROOT / "kit" / "data" / "letter-weights.json").read_text(encoding="utf-8"))
-        self.assertIn(registry["models"]["letters-v2-real"]["sha256"], " ".join(self.text.split()))
+        for name in ("letters-v2-ccby", "letters-v2-real"):                     # one reference per released model
+            self.assertIn(registry["models"][name]["sha256"], " ".join(self.text.split()))
         for ch in (chr(0x2014), chr(0x2013), "\t"):
             self.assertNotIn(ch, self.text)
 
@@ -459,9 +461,13 @@ class CitationTest(unittest.TestCase):
         self.assertEqual(d["cff-version"], "1.2.0")
         self.assertEqual(d["authors"], [{"given-names": "Chase", "family-names": "Hendrick"}])
         self.assertEqual(d["license"], "Apache-2.0")
-        ref = d["references"][0]
-        self.assertEqual((ref["license"], ref["type"]), ("CC-BY-NC-4.0", "data"))
-        self.assertIn("letters-v2-real-step030000.npz", ref["notes"])
+        refs = {r["title"].split(":")[0]: r for r in d["references"]}
+        self.assertEqual(list(refs), ["letters-v2-ccby", "letters-v2-real"])     # the default weights first
+        for name, licence, file in (("letters-v2-ccby", "CC-BY-4.0", "letters-v2-ccby-step026000.npz"),
+                                    ("letters-v2-real", "CC-BY-NC-4.0", "letters-v2-real-step030000.npz")):
+            self.assertEqual((refs[name]["license"], refs[name]["type"]), (licence, "data"))
+            self.assertIn(file, refs[name]["notes"])
+            self.assertEqual(refs[name]["url"], f"https://github.com/ChaseHendrick/Scrolls/releases/tag/{name}")
         for key in ("message", "title", "abstract", "version"):
             self.assertIsInstance(d[key], str)
 

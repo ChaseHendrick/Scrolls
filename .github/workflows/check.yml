@@ -75,7 +75,7 @@ jobs:
         run: |
           python -c "import kit, pathlib; assert 'site-packages' in pathlib.Path(kit.__file__).parts, kit.__file__"
           scrolls-letterdemo --out letterdemo
-          scrolls-letterread letterdemo/demo-page.png --weights letters-v2-real --letter-px 32 --quiet --no-orientation
+          scrolls-letterread letterdemo/demo-page.png --weights letters-v2-ccby --letter-px 32 --quiet --no-orientation
 
   verify:
     runs-on: ubuntu-latest

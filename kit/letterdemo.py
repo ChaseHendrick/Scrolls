@@ -1,6 +1,6 @@
 """An offline check that the letter reader works: synthetic Greek capitals, a noise image, and a pass rule.
 
-  python -m kit letterdemo [--weights letters-v2-real] [--out DIR] [--json]
+  python -m kit letterdemo [--weights letters-v2-ccby] [--out DIR] [--json]
   scrolls-letterdemo ...                 (the same, from an installed package)
 
 The demo draws four lines of Greek capitals, each line the 24 letters in an order fixed by a seed,
@@ -231,7 +231,7 @@ def judge(text_res, noise_res, truth, max_cer=MAX_CER):
     return all(checks.values()), numbers
 
 
-def run(weights="letters-v2-real", progress=None):
+def run(weights=R.DEFAULT_WEIGHTS, progress=None):
     """Draw the page and the noise image, read both with the weights and judge them: a JSON-able dict.
 
     weights: a released model name, a path or a LineNet (letterread.load_weights). The dict holds

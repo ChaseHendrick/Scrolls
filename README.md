@@ -71,17 +71,17 @@ Guide, the 14 weight files with their SHA-256, held-out results with their limit
 
 Released 14 October 2026.
 
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. On PHerc. 1667's official ink labels it names drawn letters at a character error of 0.025 with the line given, and on the same places of PHerc. 1667's ink maps it finds about two of every three letters in order (free-ends error 0.34 to 0.40), measured under rules fixed before the reads (Model output; those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text). On photographs its character error was measured on synthetic pages only; on two public-domain photographs of papyri, read as dark ink, its letters stood above its controls, and how well it names letters on real photographs is untested.
+A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. Its default weights, `letters-v2-ccby`, are released under CC BY 4.0; the earlier `letters-v2-real` (CC BY-NC 4.0) stays available. With `letters-v2-ccby`, on PHerc. 1667's official ink labels it names drawn letters at a character error of 0.043 with the line given, and on the same places of PHerc. 1667's ink maps its free-ends error is 0.31 to 0.48, measured under rules fixed before the reads (Model output; 117 letters in 84 groups, scored against machine transcriptions of the drawings). Those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text. On these tests `letters-v2-ccby` has not been shown to read better than `letters-v2-real`, and it errs more on one of the map rows; it is the default for its licence (Interpretation). How well it names letters on real photographs is untested.
 
 ```bash
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
 scrolls-letterdemo
-scrolls-letterread MAP.png --weights letters-v2-real --letter-px 86 --overlay MAP-letters.png
+scrolls-letterread MAP.png --weights letters-v2-ccby --letter-px 86 --overlay MAP-letters.png
 ```
 
-`scrolls-letterdemo` checks the install on synthetic letters (it downloads the 6 MB of weights once) and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the 38 um grid of the public-map demo, `scripts/letters/demo_p1667.py`. Give the reader its own virtual environment, apart from AutoPipeline's: both install a package named `kit`. Windows, other letter sizes, that demo (from a clone), model card, benchmarks and training: [`docs/letter-reader.md`](docs/letter-reader.md).
+`scrolls-letterdemo` checks the install on synthetic letters (it downloads the 6 MB of weights once) and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the 38 um grid of the public-map demo, `scripts/letters/demo_p1667.py`. Give the reader its own virtual environment, apart from AutoPipeline's: both install a package named `kit`. Windows, other letter sizes, that demo, both model cards and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Quick start (kit)
@@ -181,7 +181,7 @@ All prizes require open-sourcing your method (permissive license) to accept the 
 | [`docs/logs/`](docs/logs/) | Dated research notes (not claims) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution ground rules |
 | [`LICENSE`](LICENSE) | Apache-2.0 (permissive, so it meets the prizes' open-source condition) |
-| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as a separate reference, the letter reader's weights (CC BY-NC 4.0, release `letters-v2-real`) |
+| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as separate references, the letter reader's weights: `letters-v2-ccby` (CC BY 4.0, the default) and `letters-v2-real` (CC BY-NC 4.0) |
 
 ## Architecture (kit)
 

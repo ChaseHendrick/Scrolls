@@ -12,7 +12,7 @@ per pixel, where PHerc. 1667's letters are about 86 pixels tall; this matches th
 PHerc. 1667's Greek text is published (arXiv 2606.29085), so the letters can be checked against
 the edition. Every string is model output, a hypothesis for a person to check, not a reading.
 
-  python scripts/letters/demo_p1667.py [--segment w013] [--weights letters-v2-real] [--out DIR]
+  python scripts/letters/demo_p1667.py [--segment w013] [--weights letters-v2-ccby] [--out DIR]
                                        [--crop Y0 Y1 X0 X1] [--letter-px 86|auto] [--lm LM.npz]
 
 Needs numpy and Pillow. --weights takes a file or a released model name (kit/data/letter-weights.json),
@@ -66,7 +66,8 @@ def small_map(seg, cache):
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--segment", default="w013", help="PHerc. 1667 segment id, w011 to w041 (default w013)")
-    ap.add_argument("--weights", default="letters-v2-real")
+    ap.add_argument("--weights", default=R.DEFAULT_WEIGHTS,
+                    help="a released model name or a linenet-v1 .npz (default %(default)s)")
     ap.add_argument("--out", default="work/letters/demo")
     ap.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"), help="rows and columns on the 38 um grid")
     ap.add_argument("--letter-px", default=str(LETTER_PX), help="letter height in grid pixels, or auto to estimate it")

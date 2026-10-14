@@ -9,6 +9,15 @@
    "params": 1483241,
    "letter_px": 16,
    "card": "docs/letter-reader.md#model-card-letters-v2-real"
+  },
+  "letters-v2-ccby": {
+   "file": "letters-v2-ccby-step026000.npz",
+   "sha256": "b14988852fc721cce71e80a66db0a8ea99a1de914ef2b724ecc6e711baa9ed8c",
+   "url": "https://github.com/ChaseHendrick/Scrolls/releases/download/letters-v2-ccby/letters-v2-ccby-step026000.npz",
+   "licence": "CC BY 4.0 (trained on lines built from Hell-Char letter crops, which the Hell-Char authors license under CC BY 4.0, and from synthetic glyphs; no ICDAR 2023 data; credits in the model card)",
+   "params": 1483241,
+   "letter_px": 16,
+   "card": "docs/letter-reader.md#model-card-letters-v2-ccby"
   }
  }
 }

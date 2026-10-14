@@ -1,4 +1,5 @@
 import contextlib
+import inspect
 import io
 import json
 import math
@@ -1467,10 +1468,48 @@ class WeightsTest(unittest.TestCase):
 
     def test_released_registry_is_well_formed(self):
         models = R.released_weights()
-        self.assertIn("letters-v2-real", models)
-        for m in models.values():
+        self.assertTrue({"letters-v2-real", "letters-v2-ccby"} <= set(models))   # the old release stays listed
+        guide = (ROOT / "docs" / "letter-reader.md").read_text(encoding="utf-8")
+        for name, m in models.items():
             self.assertRegex(m["sha256"], r"^[0-9a-f]{64}$")
             self.assertTrue(m["file"].endswith(".npz") and m["licence"])
+            self.assertEqual(m["url"], f"https://github.com/ChaseHendrick/Scrolls/releases/download/{name}/{m['file']}")
+            self.assertEqual((m["params"], m["letter_px"]), (1483241, 16))
+            self.assertEqual(m["card"], f"docs/letter-reader.md#model-card-{name}")
+            self.assertIn(f"\n## Model card: {name}\n", guide)             # the card's heading makes that anchor
+        self.assertEqual(len({m["sha256"] for m in models.values()}), len(models))
+        self.assertEqual(len({m["file"] for m in models.values()}), len(models))
+
+    def test_letters_v2_ccby_is_the_default(self):
+        from kit import letterdemo as D
+        self.assertEqual(R.DEFAULT_WEIGHTS, "letters-v2-ccby")
+        m = R.released_weights()[R.DEFAULT_WEIGHTS]
+        self.assertEqual((m["file"], m["sha256"]), ("letters-v2-ccby-step026000.npz",
+                                                    "b14988852fc721cce71e80a66db0a8ea99a1de914ef2b724ecc6e711baa9ed8c"))
+        self.assertTrue(m["licence"].startswith("CC BY 4.0 ") and "NC" not in m["licence"])
+        self.assertTrue(R.released_weights()["letters-v2-real"]["licence"].startswith("CC BY-NC 4.0"))
+        self.assertEqual(R.released_name(m["sha256"]), "letters-v2-ccby")
+        self.assertEqual(cli.build_parser().parse_args(["letterdemo"]).weights, R.DEFAULT_WEIGHTS)
+        self.assertEqual(inspect.signature(D.run).parameters["weights"].default, R.DEFAULT_WEIGHTS)
+        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
+            cli.build_parser().parse_args(["letterread", "x.png"])        # the reader itself names no default
+
+    def test_released_name_is_checked_offline(self):
+        """letters-v2-ccby by name, with no network: a missing file is not fetched, a wrong one is refused."""
+        m = R.released_weights()["letters-v2-ccby"]
+        with tempfile.TemporaryDirectory() as d, mock.patch("urllib.request.urlopen",
+                                                            side_effect=AssertionError("network")):
+            with self.assertRaisesRegex(ValueError, "not in"):
+                R.resolve_weights("letters-v2-ccby", cache=d, download=False)
+            fake = random_weights(Path(d) / m["file"])          # the released file name, other bytes
+            with self.assertRaisesRegex(ValueError, "SHA-256"):
+                R.resolve_weights("letters-v2-ccby", cache=d)    # in the cache, refused
+            with self.assertRaisesRegex(ValueError, "letters-v2-ccby"):
+                R.resolve_weights(str(fake))                     # by path, refused too
+            reg = Path(d) / "reg.json"                           # the same entry, with this file's hash
+            reg.write_text(json.dumps({"models": {"letters-v2-ccby": dict(m, sha256=R._sha256(fake))}}))
+            self.assertEqual(R.resolve_weights("letters-v2-ccby", cache=d, registry=reg), fake)
+            self.assertEqual(R.released_name(R._sha256(fake), registry=reg), "letters-v2-ccby")
 
     def test_path_passes_through(self):
         with tempfile.TemporaryDirectory() as d:
@@ -1890,6 +1929,19 @@ class ScriptsTest(unittest.TestCase):
                 (Path(d) / "w013-ds8.json").write_text(json.dumps({"url": "https://example.org/m.jpg"}))
                 self.assertEqual(demo.small_map("w013", d)[1], "https://example.org/m.jpg")
         self.assertEqual(a.shape, (lined_image().shape[0] // 2, lined_image().shape[1] // 2))
+
+    def test_demo_reads_with_the_default_weights(self):
+        demo = self.load("demo_p1667")
+
+        class Stop(Exception):
+            pass
+
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(demo.R, "load_weights", side_effect=Stop) as load, \
+                mock.patch.object(sys, "argv", ["demo_p1667.py", "--out", d]):
+            with self.assertRaises(Stop):                       # the weights come first, before any map
+                demo.main()
+        self.assertEqual(load.call_args.args, (R.DEFAULT_WEIGHTS,))
 
     def test_pdftotext_is_read_as_utf8(self):
         import types

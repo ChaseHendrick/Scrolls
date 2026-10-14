@@ -134,7 +134,8 @@ class LineEndingsTest(unittest.TestCase):
     def test_ci_runs_the_reader_and_its_demo_on_three_systems(self):
         text = (ROOT / ".github" / "workflows" / "check.yml").read_text(encoding="utf-8")
         self.assertNotIn("\t", text)
-        for needed in ("ubuntu-latest", "macos-latest", "windows-latest", "scrolls-letterdemo", ".[reader]"):
+        for needed in ("ubuntu-latest", "macos-latest", "windows-latest", "scrolls-letterdemo", ".[reader]",
+                       "--weights letters-v2-ccby"):                     # the default weights, from the release
             self.assertIn(needed, text)
         try:
             import yaml

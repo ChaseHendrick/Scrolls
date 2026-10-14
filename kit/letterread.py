@@ -32,7 +32,7 @@ Weights are a .npz exported by the training script (format linenet-v1, BatchNorm
 the convolutions). They are not in git: pass a file, or the name of a released model in
 kit/data/letter-weights.json, which resolve_weights() downloads once and checks by SHA-256.
 
-Python use: read(image, "letters-v2-real", letter_px=86) takes a 2D array (an RGB or RGBA array is
+Python use: read(image, "letters-v2-ccby", letter_px=86) takes a 2D array (an RGB or RGBA array is
 averaged to grey), a released model name, a path or a LineNet, checks its options and returns a
 JSON-able dict. Every result carries the schema number SCHEMA, the reader's version, the weights'
 released name, file name and SHA-256, the seed and the options used (docs/letter-reader.md, "The
@@ -64,6 +64,9 @@ FORMAT = "linenet-v1"
 # keep it. docs/letter-reader.md ("The result, field by field") lists every field of schema 1.
 SCHEMA = 1
 WEIGHTS_REGISTRY = Path(__file__).parent / "data" / "letter-weights.json"
+# The released model the demo, the public-map demo and the guide use when none is named: letters-v2-ccby, for
+# its CC BY 4.0 licence (letters-v2-real, CC BY-NC 4.0, stays released). The reader itself names no default.
+DEFAULT_WEIGHTS = "letters-v2-ccby"
 # Weight of the language model in its beam decode when a model is given without a weight (the command line's
 # --lm-weight default).
 LM_WEIGHT = 0.5
@@ -1776,7 +1779,7 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
 
     The Python entry point. img: a 2D array of numbers (as_image: size-1 axes dropped, an RGB or
     RGBA array averaged to grey; read files with load_image or load_reduced). weights: a released
-    model name such as "letters-v2-real" (downloaded once, SHA-256 checked), a path to a linenet-v1
+    model name such as "letters-v2-ccby" (downloaded once, SHA-256 checked), a path to a linenet-v1
     .npz or a LineNet (load_weights). kw: analyze()'s options, checked before any work
     (check_options; an unknown name is a TypeError); with a language model (lm=) and no lm_weight,
     lm_weight is LM_WEIGHT, as on the command line. The result is a JSON-able dict: provenance()
