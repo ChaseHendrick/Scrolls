@@ -66,6 +66,7 @@ class ProvenanceTest(unittest.TestCase):
         self.assertEqual(out["missing"], sorted(absent))
 
 
+@unittest.skipIf(D is None, "numpy not installed")
 class DataTest(unittest.TestCase):
     def test_splits_follow_the_rule(self):
         sp = D.splits()

@@ -7,7 +7,10 @@ from pathlib import Path
 import sys
 import unittest
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:  # the core kit is standard library only
+    raise unittest.SkipTest("numpy is needed for the grid pilot")
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO / "scripts" / "strokenet"))
