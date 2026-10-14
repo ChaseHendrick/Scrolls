@@ -10515,5 +10515,717 @@
    },
    "tiles_per_s_b300": 107.0
   }
+ ],
+ "stackcheck_checks": [
+  {
+   "date": "2026-10-14",
+   "source": "docs/logs/2026-10-14-pherc0139-segment-defects.md",
+   "tool": "kit/stackcheck.py (python -m kit stackcheck)",
+   "claim": "Measured from the published PHerc0139 segments and umbilicus (geometry only; no CT, model or ink map); the note's CT look at 12 places is Interpretation and is not in these numbers",
+   "frame": "full-resolution voxels of volume 20260102150214 (2.399 um); angles about the umbilicus 20260102150214-umbilicus-20260826112529.json at the same z; distances in um; areas in cm2",
+   "runs": {
+    "A": {
+     "segments": "w033 to w037, 2.399 um copies",
+     "settings": "--stride 2 --upsample 1 --plane-z 8600 28800 200 --coincide-um 18.72",
+     "seconds": 49.8,
+     "flagged": {
+      "order": [
+       "w034/w035"
+      ],
+      "order_vertices": [
+       "w033",
+       "w034",
+       "w035",
+       "w036",
+       "w037"
+      ],
+      "coincident_pairs": [
+       "w034/w035"
+      ],
+      "missing_sectors": [
+       "w035"
+      ],
+      "missing_runs": [
+       "w034/w037"
+      ],
+      "skipped_windings": [
+       "w033",
+       "w034",
+       "w035",
+       "w036",
+       "w037"
+      ],
+      "turn_overlaps": [
+       "w033",
+       "w034",
+       "w036",
+       "w037"
+      ],
+      "stack_ends": [
+       "w035",
+       "w036"
+      ]
+     },
+     "not_checked": []
+    },
+    "B": {
+     "segments": "w023 to w040, 9.362 um copies mapped with catalog:PHerc0139:20250728140407:20260102150214",
+     "settings": "--plane-z 8600 28800 200 --coincide-um 18.72",
+     "seconds": 144.8,
+     "flagged": {
+      "order": [
+       "w031/w032",
+       "w034/w035"
+      ],
+      "order_vertices": [
+       "w033",
+       "w034",
+       "w035",
+       "w036",
+       "w037"
+      ],
+      "coincident_pairs": [
+       "w031/w032",
+       "w034/w035"
+      ],
+      "missing_sectors": [
+       "w035"
+      ],
+      "missing_runs": [
+       "w034/w037",
+       "w034/w038"
+      ],
+      "skipped_windings": [
+       "w028",
+       "w031",
+       "w032",
+       "w033",
+       "w034",
+       "w035",
+       "w036",
+       "w037",
+       "w038"
+      ],
+      "turn_overlaps": [
+       "w023",
+       "w024",
+       "w025",
+       "w026",
+       "w027",
+       "w028",
+       "w029",
+       "w030",
+       "w031",
+       "w032",
+       "w033",
+       "w034",
+       "w037",
+       "w038",
+       "w039",
+       "w040"
+      ],
+      "stack_ends": [
+       "w035",
+       "w036",
+       "w037",
+       "w038",
+       "w039"
+      ]
+     },
+     "not_checked": []
+    },
+    "B_defaults": {
+     "segments": "as run B",
+     "settings": "the defaults: 50 planes over the stack's height, --coincide-um 20",
+     "seconds": 161.6,
+     "flagged": {
+      "order": [
+       "w031/w032",
+       "w034/w035"
+      ],
+      "order_vertices": [
+       "w034",
+       "w035",
+       "w036",
+       "w037"
+      ],
+      "coincident_pairs": [
+       "w031/w032",
+       "w032/w033",
+       "w034/w035"
+      ],
+      "missing_sectors": [
+       "w035"
+      ],
+      "missing_runs": [
+       "w034/w037",
+       "w034/w038",
+       "w034/w039",
+       "w034/w040"
+      ],
+      "skipped_windings": [
+       "w028",
+       "w031",
+       "w032",
+       "w033",
+       "w034",
+       "w035",
+       "w036",
+       "w037",
+       "w038"
+      ],
+      "turn_overlaps": [
+       "w023",
+       "w024",
+       "w025",
+       "w026",
+       "w027",
+       "w028",
+       "w029",
+       "w030",
+       "w031",
+       "w032",
+       "w033",
+       "w034",
+       "w037",
+       "w038",
+       "w039",
+       "w040"
+      ],
+      "stack_ends": [
+       "w035",
+       "w036",
+       "w037",
+       "w038",
+       "w039"
+      ]
+     },
+     "not_checked": []
+    }
+   },
+   "A": {
+    "w035_turn_deg_per_line_q10_50_90": [
+     190.5,
+     258.3,
+     292.5
+    ],
+    "gap_extent": {
+     "z": [
+      9000.0,
+      27800.0
+     ],
+     "planes": 95,
+     "start_deg_q10_50_90": [
+      327.4,
+      342.0,
+      5.0
+     ],
+     "end_deg_q10_50_90": [
+      71.0,
+      80.0,
+      84.6
+     ],
+     "width_deg_min_median_max": [
+      33.0,
+      98.0,
+      120.0
+     ]
+    },
+    "w034_to_w036_um": {
+     "gap": {
+      "rays": 7427,
+      "median_um": 16.5,
+      "q25_75_um": [
+       -48.8,
+       107.4
+      ],
+      "inside_share": 0.42
+     },
+     "present": {
+      "rays": 24349,
+      "median_um": 242.1,
+      "q25_75_um": [
+       157.4,
+       365.4
+      ],
+      "inside_share": 0.012
+     }
+    },
+    "w033_to_w037_median_um": {
+     "gap": 251.5,
+     "present": 561.2
+    },
+    "gap_by_height_w034_to_w036_median_um": [
+     {
+      "z": [
+       8600.0,
+       10600.0
+      ],
+      "median_um": -46.5
+     },
+     {
+      "z": [
+       10800.0,
+       12800.0
+      ],
+      "median_um": -7.0
+     },
+     {
+      "z": [
+       13000.0,
+       14800.0
+      ],
+      "median_um": 27.0
+     },
+     {
+      "z": [
+       15000.0,
+       16800.0
+      ],
+      "median_um": 65.0
+     },
+     {
+      "z": [
+       17000.0,
+       18800.0
+      ],
+      "median_um": 110.4
+     },
+     {
+      "z": [
+       19000.0,
+       20800.0
+      ],
+      "median_um": 80.2
+     },
+     {
+      "z": [
+       21000.0,
+       22800.0
+      ],
+      "median_um": -20.8
+     },
+     {
+      "z": [
+       23000.0,
+       24800.0
+      ],
+      "median_um": -96.4
+     },
+     {
+      "z": [
+       25000.0,
+       26800.0
+      ],
+      "median_um": -57.7
+     },
+     {
+      "z": [
+       27000.0,
+       28800.0
+      ],
+      "median_um": 174.0
+     }
+    ],
+    "gap_vertices_cm2": {
+     "w034": 9.105,
+     "w036": 7.459
+    },
+    "w034_w035_rays": {
+     "rays": 24489,
+     "inverted_share": 0.1023,
+     "inverted_beyond_coincide_share": 0.0675,
+     "inverted_depth_um_q25_50_75": [
+      13.2,
+      32.4,
+      66.8
+     ],
+     "within_coincide_share": 0.092
+    },
+    "missing_run_w034_w037": {
+     "rays": 716,
+     "share": 0.0203,
+     "w034_to_w037_median_um": 293.5,
+     "all_present_median_um": 402.4
+    },
+    "w034_skip_to_w036_beyond_coincide_cm2": 1.288,
+    "pair_spacing_against_nearby_pairs_min_max": [
+     0.732,
+     1.016
+    ]
+   },
+   "B": {
+    "w035_turn_deg_per_line_q10_50_90": [
+     200.3,
+     257.1,
+     291.4
+    ],
+    "gap_extent": {
+     "z": [
+      9000.0,
+      27800.0
+     ],
+     "planes": 95,
+     "start_deg_q10_50_90": [
+      327.0,
+      341.0,
+      5.0
+     ],
+     "end_deg_q10_50_90": [
+      71.0,
+      80.0,
+      84.6
+     ],
+     "width_deg_min_median_max": [
+      27.0,
+      95.0,
+      122.0
+     ]
+    },
+    "w034_to_w036_um": {
+     "gap": {
+      "rays": 7644,
+      "median_um": 18.2,
+      "q25_75_um": [
+       -47.5,
+       111.1
+      ],
+      "inside_share": 0.415
+     },
+     "present": {
+      "rays": 24256,
+      "median_um": 241.7,
+      "q25_75_um": [
+       157.2,
+       365.1
+      ],
+      "inside_share": 0.012
+     }
+    },
+    "w033_to_w037_median_um": {
+     "gap": 255.2,
+     "present": 560.6
+    },
+    "gap_by_height_w034_to_w036_median_um": [
+     {
+      "z": [
+       8600.0,
+       10600.0
+      ],
+      "median_um": -45.5
+     },
+     {
+      "z": [
+       10800.0,
+       12800.0
+      ],
+      "median_um": -6.2
+     },
+     {
+      "z": [
+       13000.0,
+       14800.0
+      ],
+      "median_um": 27.2
+     },
+     {
+      "z": [
+       15000.0,
+       16800.0
+      ],
+      "median_um": 68.5
+     },
+     {
+      "z": [
+       17000.0,
+       18800.0
+      ],
+      "median_um": 110.7
+     },
+     {
+      "z": [
+       19000.0,
+       20800.0
+      ],
+      "median_um": 82.3
+     },
+     {
+      "z": [
+       21000.0,
+       22800.0
+      ],
+      "median_um": -15.9
+     },
+     {
+      "z": [
+       23000.0,
+       24800.0
+      ],
+      "median_um": -96.5
+     },
+     {
+      "z": [
+       25000.0,
+       26800.0
+      ],
+      "median_um": -48.3
+     },
+     {
+      "z": [
+       27000.0,
+       28800.0
+      ],
+      "median_um": 164.0
+     }
+    ],
+    "gap_vertices_cm2": {
+     "w034": 9.031,
+     "w036": 7.215
+    },
+    "w034_w035_rays": {
+     "rays": 24361,
+     "inverted_share": 0.1004,
+     "inverted_beyond_coincide_share": 0.0667,
+     "inverted_depth_um_q25_50_75": [
+      13.1,
+      31.4,
+      66.1
+     ],
+     "within_coincide_share": 0.0913
+    },
+    "missing_run_w034_w037": {
+     "rays": 725,
+     "share": 0.0206,
+     "w034_to_w037_median_um": 301.5,
+     "all_present_median_um": 401.4
+    },
+    "w034_skip_to_w036_beyond_coincide_cm2": 1.277,
+    "pair_spacing_against_nearby_pairs_min_max": [
+     0.727,
+     1.242
+    ]
+   },
+   "control_pairs_four_windings_apart_B": {
+    "note": "pairs four windings apart lying wholly inside or wholly outside w035; median spacing on the gap's rays against the rays at w035's heights where it is present",
+    "pairs": [
+     {
+      "pair": [
+       "w023",
+       "w027"
+      ],
+      "gap_median_um": 858.2,
+      "present_median_um": 861.0,
+      "ratio": 0.997
+     },
+     {
+      "pair": [
+       "w024",
+       "w028"
+      ],
+      "gap_median_um": 864.3,
+      "present_median_um": 771.3,
+      "ratio": 1.121
+     },
+     {
+      "pair": [
+       "w025",
+       "w029"
+      ],
+      "gap_median_um": 749.8,
+      "present_median_um": 699.4,
+      "ratio": 1.072
+     },
+     {
+      "pair": [
+       "w026",
+       "w030"
+      ],
+      "gap_median_um": 744.5,
+      "present_median_um": 712.3,
+      "ratio": 1.045
+     },
+     {
+      "pair": [
+       "w027",
+       "w031"
+      ],
+      "gap_median_um": 734.1,
+      "present_median_um": 715.9,
+      "ratio": 1.025
+     },
+     {
+      "pair": [
+       "w028",
+       "w032"
+      ],
+      "gap_median_um": 623.7,
+      "present_median_um": 683.6,
+      "ratio": 0.912
+     },
+     {
+      "pair": [
+       "w029",
+       "w033"
+      ],
+      "gap_median_um": 636.9,
+      "present_median_um": 642.6,
+      "ratio": 0.991
+     },
+     {
+      "pair": [
+       "w030",
+       "w034"
+      ],
+      "gap_median_um": 589.7,
+      "present_median_um": 616.8,
+      "ratio": 0.956
+     },
+     {
+      "pair": [
+       "w036",
+       "w040"
+      ],
+      "gap_median_um": 740.9,
+      "present_median_um": 726.6,
+      "ratio": 1.02
+     }
+    ],
+    "w033_w037_ratio": 0.455
+   },
+   "coincident_pairs_within_coincide_share_B": {
+    "w023/w024": 0.0005,
+    "w024/w025": 0.0002,
+    "w025/w026": 0.0005,
+    "w026/w027": 0.0006,
+    "w027/w028": 0.0011,
+    "w028/w029": 0.0016,
+    "w029/w030": 0.0067,
+    "w030/w031": 0.0021,
+    "w031/w032": 0.0386,
+    "w032/w033": 0.0083,
+    "w033/w034": 0.0074,
+    "w034/w035": 0.0913,
+    "w035/w036": 0.0042,
+    "w036/w037": 0.0076,
+    "w037/w038": 0.0022,
+    "w038/w039": 0.0004,
+    "w039/w040": 0.0016
+   },
+   "turn_overlaps_B": {
+    "note": "past_full_turn_deg_median is the median per grid line; within_coincide_share and distance_um_median are of the part of the doubly traced end that has the neighbour along its normal (matched_share)",
+    "segments": [
+     {
+      "segment": "w023",
+      "past_full_turn_deg_median": 28.2,
+      "piece": "outer",
+      "lies_on": "w024",
+      "matched_share": 0.995,
+      "within_coincide_share": 0.744,
+      "distance_um_median": 8.3
+     },
+     {
+      "segment": "w024",
+      "past_full_turn_deg_median": 28.4,
+      "piece": "outer",
+      "lies_on": "w025",
+      "matched_share": 0.993,
+      "within_coincide_share": 0.533,
+      "distance_um_median": 16.7
+     },
+     {
+      "segment": "w025",
+      "past_full_turn_deg_median": 36.1,
+      "piece": "outer",
+      "lies_on": "w026",
+      "matched_share": 1.0,
+      "within_coincide_share": 0.707,
+      "distance_um_median": 8.7
+     },
+     {
+      "segment": "w026",
+      "past_full_turn_deg_median": 65.7,
+      "piece": "outer",
+      "lies_on": "w027",
+      "matched_share": 0.993,
+      "within_coincide_share": 0.733,
+      "distance_um_median": 5.1
+     },
+     {
+      "segment": "w027",
+      "past_full_turn_deg_median": 47.9,
+      "piece": "outer",
+      "lies_on": "w028",
+      "matched_share": 0.994,
+      "within_coincide_share": 0.634,
+      "distance_um_median": 8.5
+     },
+     {
+      "segment": "w028",
+      "past_full_turn_deg_median": 44.8,
+      "piece": "outer",
+      "lies_on": "w029",
+      "matched_share": 0.997,
+      "within_coincide_share": 0.751,
+      "distance_um_median": 2.8
+     },
+     {
+      "segment": "w029",
+      "past_full_turn_deg_median": 41.0,
+      "piece": "outer",
+      "lies_on": "w030",
+      "matched_share": 0.996,
+      "within_coincide_share": 0.75,
+      "distance_um_median": 3.4
+     },
+     {
+      "segment": "w030",
+      "past_full_turn_deg_median": 36.2,
+      "piece": "outer",
+      "lies_on": "w031",
+      "matched_share": 0.998,
+      "within_coincide_share": 0.69,
+      "distance_um_median": 6.3
+     },
+     {
+      "segment": "w031",
+      "past_full_turn_deg_median": 33.8,
+      "piece": "outer",
+      "lies_on": "w032",
+      "matched_share": 0.999,
+      "within_coincide_share": 0.577,
+      "distance_um_median": 13.3
+     },
+     {
+      "segment": "w032",
+      "past_full_turn_deg_median": 32.6,
+      "piece": "outer",
+      "lies_on": "w033",
+      "matched_share": 1.0,
+      "within_coincide_share": 0.438,
+      "distance_um_median": 22.8
+     },
+     {
+      "segment": "w033",
+      "past_full_turn_deg_median": 30.0,
+      "piece": "outer",
+      "lies_on": "w034",
+      "matched_share": 0.997,
+      "within_coincide_share": 0.387,
+      "distance_um_median": 32.4
+     },
+     {
+      "segment": "w034",
+      "past_full_turn_deg_median": 27.6,
+      "piece": "outer",
+      "lies_on": "w035",
+      "matched_share": 0.232,
+      "within_coincide_share": 0.191,
+      "distance_um_median": 75.9
+     }
+    ]
+   },
+   "checks": "bucket runs of the note's two commands gave reports and masks identical to runs on local copies of the same files; tests/test_stackcheck.py plants each defect in a synthetic spiral",
+   "limits": "one scroll; the umbilicus is a published line; the ray checks use rays that cross each segment of a pair once; neighbours along a normal are searched up to 600 um at about the same height and angle; the innermost and outermost segments get no missing-sector check"
+  }
  ]
 }

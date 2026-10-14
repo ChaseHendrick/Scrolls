@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,letterread,letterlines,letterdemo,greeklm,releases}.
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,letterread,letterlines,letterdemo,greeklm,releases}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate and releases read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -143,6 +143,36 @@ def cmd_collate(args):
         return 2
     print(overlap.dumps(result) if args.json else overlap.format_collate(result))
     return 0
+
+
+def cmd_stackcheck(args):
+    """Geometry checks of a stack of consecutive tifxyz segments against the umbilicus (kit/stackcheck.py)."""
+    from . import stackcheck
+    settings = {"planes": args.planes, "plane_z": args.plane_z, "ray_step_deg": args.ray_step_deg,
+                "max_normal_um": args.max_normal_um, "coincide_um": args.coincide_um, "skip_frac": args.skip_frac,
+                "min_count": args.min_count, "min_share": args.min_share, "upsample": args.upsample}
+    log = (lambda m: print(m, file=sys.stderr, flush=True)) if args.verbose else None
+    try:
+        rep, segs, masks = stackcheck.run(args.segments, args.umbilicus, args.transform, args.catalog, args.voxel_um,
+                                          args.stride, args.cache, settings, log)
+        if args.flags:
+            rep["flags_file"] = stackcheck.write_flags(args.flags, segs, masks, rep["frame"]["voxel_um"])
+        if args.out:
+            Path(args.out).parent.mkdir(parents=True, exist_ok=True)
+            Path(args.out).write_text(json.dumps(rep, indent=1))
+        print(json.dumps(rep, indent=1) if args.json else stackcheck.format_report(rep))
+    except verify.VerifyError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    except OSError as exc:  # an output that cannot be written: exit 1 would read as flagged
+        print(f"kit stackcheck could not read or write a file: {exc}", file=sys.stderr)
+        return 2
+    except Exception:  # noqa: BLE001  exit 1 means flagged, so an unexpected error must not exit 1
+        import traceback
+        traceback.print_exc()
+        print("kit stackcheck stopped on an unexpected error (above)", file=sys.stderr)
+        return 2
+    return 0 if rep["summary"]["clean"] else 1
 
 
 def cmd_meshaudit(args):
@@ -856,6 +886,32 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_collate)
+
+    p = sub.add_parser("stackcheck", help="check consecutive tifxyz segments against the umbilicus: order, missing "
+                                          "sectors, skipped windings, turn overlaps, stack ends (geometry only)")
+    p.add_argument("segments", nargs="+", help="tifxyz folders or bucket URLs, inner to outer; NAME=PATH names one")
+    p.add_argument("--umbilicus", required=True, help="the scroll's umbilicus JSON (path or URL)")
+    p.add_argument("--transform", help="matrix JSON, or catalog:SAMPLE:FROM:TO, taking the segments into the "
+                                       "umbilicus's volume")
+    p.add_argument("--catalog", help="metadata.json path or URL for catalog:... (default: the public bucket's)")
+    p.add_argument("--voxel-um", type=float, help="voxel size of the umbilicus's volume (default: its metadata)")
+    p.add_argument("--stride", type=int, default=1, help="use every Nth grid row and column (default 1)")
+    p.add_argument("--planes", type=int, help="planes of constant z for the rays, evenly over the stack (default 50)")
+    p.add_argument("--plane-z", type=float, nargs=3, metavar=("START", "STOP", "STEP"),
+                   help="explicit plane heights, instead of --planes")
+    p.add_argument("--ray-step-deg", type=float, help="degrees between rays, at most 10 (default 1)")
+    p.add_argument("--max-normal-um", type=float, help="farthest neighbour along a normal (default 600)")
+    p.add_argument("--coincide-um", type=float, help="two segments this close cannot be told apart (default 20)")
+    p.add_argument("--skip-frac", type=float, help="skipped winding: closer than this share of the pitch (default 0.5)")
+    p.add_argument("--min-count", type=int, help="rays or vertices for a flag, at least 1 (default 10)")
+    p.add_argument("--min-share", type=float, help="share of rays or vertices for a flag (default 0.01)")
+    p.add_argument("--upsample", type=int, help="neighbour grids made this much denser for the normal search (default 2)")
+    p.add_argument("--cache", default="work/stackcheck/cache", help="where bucket segments are kept")
+    p.add_argument("--out", help="write the JSON report here (work/ is git-ignored)")
+    p.add_argument("--flags", help="write per-vertex flag masks (.npz, added if missing) on each segment's input grid")
+    p.add_argument("--json", action="store_true")
+    p.add_argument("--verbose", action="store_true", help="progress to stderr")
+    p.set_defaults(func=cmd_stackcheck)
 
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
     actions = p.add_subparsers(dest="action", required=True)
