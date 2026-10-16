@@ -344,10 +344,16 @@ def render_default(act, positional=False):
 
 
 def _value(default):
-    if default is None or default == argparse.SUPPRESS:
+    """A default as the page writes it: none for None, "" or an empty list; a path inside the checkout relative to it."""
+    if default is None or default == argparse.SUPPRESS or default == "" or (isinstance(default, (list, tuple)) and not default):
         return "none"
     if isinstance(default, (list, tuple)):
         return " ".join(str(v) for v in default)
+    if isinstance(default, (str, Path)) and Path(default).is_absolute():
+        try:
+            return Path(default).relative_to(ROOT).as_posix()
+        except ValueError:
+            pass
     return str(default)
 
 
@@ -477,8 +483,10 @@ def _constants(tree):
     return out
 
 
-def env_names_py(tree):
-    consts = _constants(tree)
+def env_names_py(tree, consts=None):
+    """Environment variables read with os.environ or os.getenv; consts maps module constants to their strings."""
+    if consts is None:
+        consts = _constants(tree) if isinstance(getattr(tree, "body", None), list) else {}
     names = []
 
     def name_of(node):
@@ -818,7 +826,7 @@ def _check_code(page, ctx, detail=True):
                     problems.append(f"error message {frag[:60]!r} from {f} is not in '## Failure modes'")
                 elif _collapse(frag) not in failures:
                     problems.append(f"error message {frag[:60]!r} from {f} is on the page but not in '## Failure modes'")
-            for env in [e for t in scope for e in env_names_py(t)]:
+            for env in [e for t in scope for e in env_names_py(t, _constants(tree))]:
                 if not re.search(r"(?<![A-Z0-9_])" + env + r"(?![A-Z0-9_])", code):
                     problems.append(f"environment variable `{env}`, read by {f}, is not on the page in code")
             if f.startswith("scripts/") or (rel != f):
@@ -1405,7 +1413,7 @@ def new_page(page_id, kind="kit command", status="Current", root=ROOT, today=Non
         for c in commands:
             command, _ = command_parser.target("python -m kit " + c)
             func = command_parser.parsers[command][None].get_default("func")
-            if func is not None and func.__name__ not in funcs:
+            if func is not None and func.__name__ != "<lambda>" and func.__name__ not in funcs:
                 funcs.append(func.__name__)
         if funcs and "kit/cli.py" not in code:
             items.append(("kit/cli.py", funcs))

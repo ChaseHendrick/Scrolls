@@ -528,6 +528,14 @@ class IndexAndNew(unittest.TestCase):
                        "not in '## Python API'", "is not on the page in code"):
             self.assertNotIn(absent, problems)
 
+    def test_new_page_skips_a_command_whose_func_is_a_lambda(self):
+        p = argparse.ArgumentParser(prog=KIT)
+        sub = p.add_subparsers(dest="command")
+        sub.add_parser("demo").set_defaults(func=lambda a: 0)
+        path = tooldocs.new_page("demo", "kit command", root=self.repo.root, area="Scoring and controls",
+                                 commands=["demo"], command_parser=tooldocs.Commands(p))
+        self.assertNotIn("<lambda>", path.read_text(encoding="utf-8"))
+
     def test_new_page_refuses_bad_input(self):
         tooldocs.new_page("fresh-tool", "kit module", root=self.repo.root, code=["kit/demo.py"])
         for kwargs in ({"page_id": "fresh-tool"}, {"page_id": "Bad_Id"}, {"page_id": "x", "kind": "gadget"},
@@ -572,6 +580,21 @@ class CodeScanners(unittest.TestCase):
         self.assertEqual(tooldocs.env_names_py(tree), ["A_VAR", "B_VAR", "C_VAR"])
         self.assertEqual(tooldocs.env_names_sh('W="${WORK:-/tmp}"\nX=${EXPECT_GPU:=mps}\necho $PLAIN\n'),
                          ["WORK", "EXPECT_GPU"])
+
+    def test_defaults_render_as_the_page_writes_them(self):
+        self.assertEqual(tooldocs._value([]), "none")
+        self.assertEqual(tooldocs._value(""), "none")
+        self.assertEqual(tooldocs._value(("a", "b")), "a b")
+        self.assertEqual(tooldocs._value(str(tooldocs.ROOT / "docs" / "results.json")), "docs/results.json")
+        self.assertEqual(tooldocs._value("/elsewhere/x.json"), "/elsewhere/x.json")
+        self.assertTrue(tooldocs._default_ok("none (an empty list)", tooldocs._value([])))
+
+    def test_a_constant_named_in_code_is_scanned_without_error(self):
+        import ast
+        tree = ast.parse("import os\nNAME = 'B_VAR'\nLEVEL = 2\ndef f():\n    return os.environ.get(NAME)\n")
+        scope = tooldocs._scoped(tree, ["LEVEL", "f"])
+        self.assertEqual([e for t in scope for e in tooldocs.env_names_py(t, tooldocs._constants(tree))], ["B_VAR"])
+        self.assertEqual(tooldocs.env_names_py(scope[0]), [])
 
     def test_error_messages(self):
         import ast

@@ -169,6 +169,3862 @@
      "applicable": true
     }
    ]
+  },
+  {
+   "id": "cropscan",
+   "name": "cropscan",
+   "tagline": "pixel AUC of one ink map on every window of a grid",
+   "summary": "`kit.cropscan.scan` scores one ink map against boolean ink and supervision arrays on every full window of a regular grid (by default 640 px windows every 320 px, 64 px edge left out), to show how much a single crop's AUC depends on where the crop was put.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "cropscan.scan(...)"
+   ],
+   "imports": [
+    "from kit import cropscan"
+   ],
+   "code": [
+    {
+     "path": "kit/cropscan.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/auc.py",
+     "symbols": [
+      "_quantize",
+      "_auc_hist"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "_numpy",
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_cropscan.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`cropscan`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Scoring and controls",
+    "Run": "None (library): `from kit import cropscan`, then `cropscan.scan(...)`",
+    "Code": "`kit/cropscan.py`, `kit/auc.py` (`_quantize`, `_auc_hist`), `kit/verify.py` (`_numpy`, `VerifyError`)",
+    "Tests": "`tests/test_cropscan.py`",
+    "Needs": "Python 3.10 or newer, numpy. Labels must already be boolean arrays on the map's grid (for example from `kit.auc.labels_on_map`, which needs zarr)",
+    "Runs on": "Any CPU. A 4,220 x 4,760 uint8 map (the size of PHerc0841 w00) took 4.1 s for 156 windows, peak process memory 877 MB including the inputs (measured 2026-10-16, 4-core Xeon cloud container, synthetic data). Not faster than scoring each crop directly ([lane I log](../logs/2026-10-07-grok-laneI.md))",
+    "Network": "None",
+    "Writes": "Nothing (returns a list)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 ([PR #26](https://github.com/ChaseHendrick/Scrolls/pull/26))",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/cropscan.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 84,
+     "end_line": 113,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 114,
+     "end_line": 122,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 123,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 134,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 157,
+     "end_line": 166,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 167,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 179,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 189,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 197,
+     "end_line": 201,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 202,
+     "end_line": 208,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "doctor",
+   "name": "doctor",
+   "tagline": "check whether this machine can run villa's First Letters workflow",
+   "summary": "`python -m kit doctor` checks this machine for what villa's First Letters workflow needs (an NVIDIA GPU with 12 GB, 16 GB of memory, 25 GB of free disk, git, uv and docker, a villa checkout and VC3D's tools) and prints pass, warn or fail for each.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Planning and prizes",
+   "commands": [
+    "python -m kit doctor"
+   ],
+   "imports": [
+    "from kit import doctor"
+   ],
+   "code": [
+    {
+     "path": "kit/doctor.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_doctor"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_kit.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`doctor`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Planning and prizes",
+    "Run": "`python -m kit doctor`, `from kit import doctor`",
+    "Code": "`kit/doctor.py`, `kit/cli.py` (`cmd_doctor`)",
+    "Tests": "`tests/test_kit.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) when it is on `PATH`, and reads the environment variables `VILLA` and `VC_BIN`",
+    "Runs on": "Any machine. 0.34 to 0.43 s per call with no `nvidia-smi` installed (5 runs, measured 2026-10-16, 4-core Xeon cloud container). With `nvidia-smi`, add its run time, at most 20 s (the timeout)",
+    "Network": "None",
+    "Writes": "Nothing (prints only). It runs `nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits` when that program is on `PATH`",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`)",
+    "Guide": "[mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/doctor.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 84,
+     "end_line": 92,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 93,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 113,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 138,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 149,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 170,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 189,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 199,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 203,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 213,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 221,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 227,
+     "end_line": 235,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "ensemble",
+   "name": "ensemble",
+   "tagline": "average several ink maps of one surface into one map",
+   "summary": "`python -m kit ensemble` combines two or more ink maps of the same surface on the same grid into one map, by a weighted mean of their scores or of their pixel ranks, keeping out every pixel where any input made no prediction.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "python -m kit ensemble"
+   ],
+   "imports": [
+    "from kit import ensemble"
+   ],
+   "code": [
+    {
+     "path": "kit/ensemble.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_ensemble"
+     ]
+    },
+    {
+     "path": "kit/auc.py",
+     "symbols": [
+      "_load"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "load_map",
+      "_numpy",
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_ensemble.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63753fa"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`ensemble`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Ink maps and models",
+    "Run": "`python -m kit ensemble`, `from kit import ensemble`",
+    "Code": "`kit/ensemble.py`, `kit/cli.py` (`cmd_ensemble`), `kit/auc.py` (`_load`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`)",
+    "Tests": "`tests/test_ensemble.py`",
+    "Needs": "Python 3.10 or newer, numpy; tifffile to read or write `.tif` maps (imagecodecs for LZW or zstd TIFFs). `.npy` in and out needs numpy only",
+    "Runs on": "Any CPU. Two 600 x 800 maps take about 2 s including start-up; two 4,220 x 4,760 maps (the size of PHerc0841 w00) took 11.9 s with `mean` and 86.4 s with `rank` on a heavily loaded machine (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, synthetic maps; see Cost and time)",
+    "Network": "None",
+    "Writes": "The output map `OUT` (`.npy` as float32, anything else as a uint16 TIFF), replacing any file of that name. Nothing else",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`ebd4ae3`). The AutoPipeline release package carries its own larger `ensemble` (with a `zscore` method and per-model decoding), described with that release, not here",
+    "Guide": "[tricks.md](../tricks.md) (map ensembles and z windows, with the community sources and the PHerc0841 numbers)",
+    "Checked": "2026-10-16 against commit `63753fa`"
+   },
+   "page": "docs/tools/ensemble.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 83,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 101,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 117,
+     "end_line": 134,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 135,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 163,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 179,
+     "end_line": 190,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 191,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 203,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 213,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 221,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 226,
+     "end_line": 234,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "fetch",
+   "name": "fetch",
+   "tagline": "mirror one folder of the public bucket over HTTPS, resumably",
+   "summary": "`python -m kit fetch` copies every file under one prefix of the Vesuvius Challenge open-data bucket to a local folder over anonymous HTTPS, with no AWS CLI, and skips files already there at the listed size, so an interrupted fetch resumes.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit fetch"
+   ],
+   "imports": [
+    "from kit import fetch"
+   ],
+   "code": [
+    {
+     "path": "kit/fetch.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_fetch"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_kit.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: anonymous downloads of public data; nothing is posted or rented"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`fetch`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit fetch`, `from kit import fetch`",
+    "Code": "`kit/fetch.py`, `kit/cli.py` (`cmd_fetch`)",
+    "Tests": "`tests/test_kit.py`",
+    "Needs": "Python 3.10 or newer, standard library only (urllib, concurrent.futures); outbound HTTPS to the bucket. Reading what it fetched needs zarr (the map tools)",
+    "Runs on": "Any machine with network access. 33 objects (14.7 MB) took 3.9 s and 13 objects (0.12 MB) 6.8 s; a rerun with nothing to download 3.5 s (measured 2026-10-16, 4-core Xeon cloud container behind an HTTPS proxy). A whole surface volume (1.0 to 1.7 GB): Not measured",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honours `HTTPS_PROXY`",
+    "Writes": "The folder `DEST` and every subfolder it needs; one file per bucket object at `DEST/` plus the key minus the prefix, each written first as `NAME.part` and then renamed. Files already there at the listed size are left alone, files of another size are replaced, nothing is deleted",
+    "Go-ahead": "Not needed: anonymous downloads of public data; nothing is posted or rented",
+    "Released": "Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package",
+    "Guide": "[mac.md](../mac.md) (the w035 download in the Mac runbook)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/fetch.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 99,
+     "end_line": 113,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 114,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 124,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 147,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 161,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 171,
+     "end_line": 184,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 185,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 195,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 203,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 209,
+     "end_line": 219,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "fibertensor",
+   "name": "fibertensor",
+   "tagline": "a retired CPU ink reader built on fibre-orientation features",
+   "summary": "`python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fibre orientation) and brightness features of one labelled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun.",
+   "status": "Retired",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "python -m kit fibertensor train",
+    "python -m kit fibertensor predict"
+   ],
+   "imports": [
+    "from kit import fibertensor"
+   ],
+   "code": [
+    {
+     "path": "kit/fibertensor.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_fibertensor"
+     ]
+    },
+    {
+     "path": "kit/auc.py",
+     "symbols": [
+      "labels_on_map",
+      "label_grid",
+      "_levels"
+     ]
+    },
+    {
+     "path": "kit/layers.py",
+     "symbols": [
+      "_zarr"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "_numpy",
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_fibertensor.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`fibertensor`",
+    "Status": "Retired",
+    "Kind": "kit command, kit module",
+    "Area": "Ink maps and models",
+    "Run": "`python -m kit fibertensor train`, `python -m kit fibertensor predict`, `from kit import fibertensor`",
+    "Code": "`kit/fibertensor.py`, `kit/cli.py` (`cmd_fibertensor`), `kit/auc.py` (`labels_on_map`, `label_grid`, `_levels`), `kit/layers.py` (`_zarr`), `kit/verify.py` (`_numpy`, `VerifyError`)",
+    "Tests": "`tests/test_fibertensor.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), zarr (3.x on Python 3.11 or newer) to read the volume and labels, tifffile for `predict`. Data: a 9 um surface volume zarr of a labelled public segment and its label folder",
+    "Runs on": "Any CPU. On a 640 px crop of 28 layers, `train` took 33 s and `predict` 11 s with one BLAS thread (measured 2026-10-16, 4-core Xeon cloud container under load, synthetic data); the lane D log gives about 8 s per pair on Chase's Mac",
+    "Network": "None",
+    "Writes": "`train`: the model at `-o` (numpy adds `.npz` when the name lacks it). `predict`: a float32 TIFF map at `-o`. Both overwrite and print JSON",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 ([PR #14](https://github.com/ChaseHendrick/Scrolls/pull/14)); since 2026-10-14 also in the `scrolls-workbench` package installed from this repository",
+    "Replaced by": "Nothing. For ink maps use a released ink model such as `ink_9um` or v8in ([v8in-run](v8in-run.md), [mac-w045](mac-w045.md))",
+    "Guide": "[The lane D log](../logs/2026-10-07-grok-laneD.md) (method, evaluation, result)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/fibertensor.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 105,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 106,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 150,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 177,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 187,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 221,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 247,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 263,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 277,
+     "end_line": 286,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 287,
+     "end_line": 294,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 295,
+     "end_line": 301,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 302,
+     "end_line": 311,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "gate",
+   "name": "gate",
+   "tagline": "rank released ink readers on PHerc0841 by the Gate A rule",
+   "summary": "`python -m kit gate` ranks ink readers by mean forward AUC on PHerc0841's three standard crops, from the committed CPU scores and any Mac results, requires each crop to beat its reverse-depth control, and says whether the leader wins by Gate A's 0.02 rule.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit gate"
+   ],
+   "imports": [
+    "from kit import gate"
+   ],
+   "code": [
+    {
+     "path": "kit/gate.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_gate"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_gate.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63753fa"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`gate`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit gate`, `from kit import gate`",
+    "Code": "`kit/gate.py`, `kit/cli.py` (`cmd_gate`)",
+    "Tests": "`tests/test_gate.py`",
+    "Needs": "Python 3.10 or newer, standard library only. A clone of the repository, because it reads `docs/results.json` (an installed `scrolls-workbench` package does not have it). For Mac rows, the `auc_*.json` files that `scripts/mac-w045.sh` writes",
+    "Runs on": "Any CPU, about 0.1 s (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, committed scores only)",
+    "Network": "None",
+    "Writes": "Nothing (prints only). `scripts/mac-phase0.sh` saves what it prints to `WORK/phase0-gate.txt`",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`bec6fb9`). The AutoPipeline release package carries the module (same code, older docstring) but no `gate` command",
+    "Guide": "[STANDARDS.md](../STANDARDS.md) (the Gate A row and its known gap), [mac.md](../mac.md) (the Phase 0 queue that ends with this table)",
+    "Checked": "2026-10-16 against commit `63753fa`"
+   },
+   "page": "docs/tools/gate.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 91,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 109,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 129,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 138,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 172,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 189,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 200,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 204,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 214,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 222,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 228,
+     "end_line": 237,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "greeklm",
+   "name": "greeklm",
+   "tagline": "letter language model for Greek in scriptio continua",
+   "summary": "`python -m kit greeklm` builds a Kneser-Ney letter n-gram model of Greek written as capitals with no spaces from TEI editions, and scores strings in bits per letter; the letter reader can add a decode with it beside its ink-only letters.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit greeklm build",
+    "python -m kit greeklm score"
+   ],
+   "imports": [
+    "from kit import greeklm"
+   ],
+   "code": [
+    {
+     "path": "kit/greeklm.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_greeklm"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_greeklm.py",
+    "tests/test_letterread.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`greeklm`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit greeklm build`, `python -m kit greeklm score`, `from kit import greeklm`",
+    "Code": "`kit/greeklm.py`, `kit/cli.py` (`cmd_greeklm`)",
+    "Tests": "`tests/test_greeklm.py`, `tests/test_letterread.py`",
+    "Needs": "Python 3.10 or newer and numpy (the `reader` extra of the `scrolls-workbench` package installs it); Greek TEI XML texts in Unicode, such as the PerseusDL canonical-greekLit editions (CC BY-SA 4.0), fetched by you",
+    "Runs on": "Any CPU. Building from two Perseus texts (937,054 training letters) took 9.7 s with a peak of 89 MB, and scoring a short string 1.0 s from the command line (measured 2026-10-16, 4-core Intel Xeon cloud container shared with other jobs)",
+    "Network": "None. It reads local files only; you download the TEI texts yourself",
+    "Writes": "`build`: the model file OUT, at exactly that path (its folder made if missing), replacing any file there. `score`: nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57), with the Greek letter reader); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day",
+    "Guide": "[letter-reader.md, Optional language model](../letter-reader.md#optional-language-model)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/greeklm.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 70,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 71,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 105,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 106,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 132,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 140,
+     "end_line": 166,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 167,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 182,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 194,
+     "end_line": 206,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 207,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 217,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 226,
+     "end_line": 232,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 233,
+     "end_line": 241,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "hpscore",
+   "name": "hpscore",
+   "tagline": "letter-scale score of an ink map against a segment's labels",
+   "summary": "`python -m kit hpscore` correlates an ink map with a segment's published ink labels after removing a 48 um blur from both, so strokes count and blobs do not, with a rolled-label null and an optional reverse-depth control.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit hpscore"
+   ],
+   "imports": [
+    "from kit import hpscore"
+   ],
+   "code": [
+    {
+     "path": "kit/hpscore.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_hpscore"
+     ]
+    },
+    {
+     "path": "kit/auc.py",
+     "symbols": [
+      "_load",
+      "_levels",
+      "labels_on_map",
+      "label_grid"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "load_map",
+      "_numpy",
+      "VerifyError"
+     ]
+    },
+    {
+     "path": "kit/layers.py",
+     "symbols": [
+      "_zarr"
+     ]
+    },
+    {
+     "path": "kit/ledger.py",
+     "symbols": [
+      "add_check",
+      "load",
+      "path_for"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_hpscore.py",
+    "tests/test_hpscore_reuse.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`hpscore`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit hpscore`, `from kit import hpscore`",
+    "Code": "`kit/hpscore.py`, `kit/cli.py` (`cmd_hpscore`), `kit/auc.py` (`_load`, `_levels`, `labels_on_map`, `label_grid`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/layers.py` (`_zarr`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
+    "Tests": "`tests/test_hpscore.py`, `tests/test_hpscore_reuse.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer). The `maps` extra of `pyproject.toml` installs all of them",
+    "Runs on": "Any CPU. A 640 px crop with its control takes about 0.6 s as a fresh command; a 2,560 px crop about 8 s ([production scaling log](../logs/2026-10-07-production-scaling.md), one core). A full segment has not been measured",
+    "Network": "None",
+    "Writes": "Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[STANDARDS.md](../STANDARDS.md) (where the letter-scale score sits among the measures), [tricks.md](../tricks.md) (where it came from and what it measured)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/hpscore.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 76,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 87,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 118,
+     "end_line": 134,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 135,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 148,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 174,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 201,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 213,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 224,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 234,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 242,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 247,
+     "end_line": 256,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "layers",
+   "name": "layers",
+   "tagline": "export a surface volume to layer TIFFs, and write the depth-shuffle control",
+   "summary": "`python -m kit layers` writes a surface-volume zarr as numbered layer TIFFs (`00.tif`, `01.tif`, ...), the input v8in reads; `--shuffle SEED`, and `python -m kit shuffle` for a zarr copy, write the depth-shuffle control: the same layers in a fixed random order.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit layers",
+    "python -m kit shuffle"
+   ],
+   "imports": [
+    "from kit import layers"
+   ],
+   "code": [
+    {
+     "path": "kit/layers.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_layers",
+      "cmd_shuffle"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "_numpy",
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_layers.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`layers`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit layers`, `python -m kit shuffle`, `from kit import layers`",
+    "Code": "`kit/layers.py`, `kit/cli.py` (`cmd_layers`, `cmd_shuffle`), `kit/verify.py` (`_numpy`, `VerifyError`)",
+    "Tests": "`tests/test_layers.py`",
+    "Needs": "Python 3.11 or newer with numpy, tifffile and zarr 3 (checked with numpy 2.5.3, tifffile 2026.10.15, zarr 3.4.1). `kit shuffle` writes with zarr 3's `create_array`, which zarr 2.18 lacks (`pyproject.toml`); `kit layers` only reads zarr. No imagecodecs needed: the TIFFs are zlib-compressed",
+    "Runs on": "Any CPU. A 28 x 2,048 x 2,048 synthetic volume (117 MB) took 9.7 s to export and 7.2 s to shuffle (measured 2026-10-16, 4-core Xeon cloud container); the whole PHerc0139 w045 volume (28 x 5,980 x 8,240) exported in 23 s (commit `6081aab`, machine not recorded)",
+    "Network": "None",
+    "Writes": "`kit layers`: the folder `OUT_DIR` (created when missing) and one TIFF per layer in it, replacing files of the same names and leaving any other files there. `kit shuffle`: a zarr group at `OUT`; anything already at `OUT` is deleted first",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`1caa69e`; the shuffle control since `bd18778`); also in the AutoPipeline release copy at `faada83`",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/layers.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 68,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 77,
+     "end_line": 113,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 114,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 130,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 138,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 170,
+     "end_line": 190,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 191,
+     "end_line": 206,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 207,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 217,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 227,
+     "end_line": 234,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 235,
+     "end_line": 242,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 243,
+     "end_line": 252,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "letterdemo",
+   "name": "letterdemo",
+   "tagline": "check a letter reader install on synthetic Greek capitals and noise",
+   "summary": "`python -m kit letterdemo` draws four lines of Greek capitals and a noise image in numpy, reads both with the letter reader's released weights, and prints DEMO PASS or DEMO FAIL under a fixed rule: an offline check that the reader, its weights and numpy work together.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit letterdemo",
+    "scrolls-letterdemo"
+   ],
+   "imports": [
+    "from kit import letterdemo"
+   ],
+   "code": [
+    {
+     "path": "kit/letterdemo.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_letterdemo",
+      "letterdemo_main"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_letterdemo.py",
+    "tests/test_letterread.py",
+    "tests/test_packaging.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it downloads public weights and posts nothing"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`letterdemo`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit letterdemo`, `scrolls-letterdemo` (the installed package's console script), `from kit import letterdemo`",
+    "Code": "`kit/letterdemo.py`, `kit/cli.py` (`cmd_letterdemo`, `letterdemo_main`)",
+    "Tests": "`tests/test_letterdemo.py`, `tests/test_letterread.py`, `tests/test_packaging.py`",
+    "Needs": "Python 3.10 or newer and numpy; Pillow only for the PNG files of `--out`. The reader's weights: a released model (`letters-v2-ccby` by default, 5,933,674 bytes, downloaded once) or a `linenet-v1` `.npz` file. No torch, no GPU, no system font",
+    "Runs on": "Any CPU. 5.4 s of CPU time with one BLAS thread, 18.5 s wall while other jobs held the 4 cores at a load average of about 14 (measured 2026-10-16, 4-core 2.8 GHz Xeon cloud container, weights cached); the guide measured 6 to 12 s on a 4-core cloud container on 2026-10-14",
+    "Network": "On the first run only, unless the weights are already in place: the weights download from `github.com`, which redirects to GitHub's release file host (`release-assets.githubusercontent.com` or `objects.githubusercontent.com`). None after that",
+    "Writes": "The weights file into the cache folder on the first run (`~/.cache/scrolls-kit/letters/`, or `KIT_LETTER_WEIGHTS`). With `--out DIR`: `DIR/demo.json`, and with Pillow `DIR/demo-page.png` and `DIR/demo-overlay.png`, overwritten on a rerun. Otherwise it prints only",
+    "Go-ahead": "Not needed: it downloads public weights and posts nothing",
+    "Released": "Public `main` since 2026-10-14 ([PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58)); part of the letter reader release and of the installable package `scrolls-workbench`",
+    "Guide": "[Check the install: the offline demo](../letter-reader.md#check-the-install-the-offline-demo) in the letter reader guide",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/letterdemo.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 79,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 103,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 128,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 138,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 168,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 183,
+     "end_line": 190,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 191,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 204,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 214,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 222,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 228,
+     "end_line": 235,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "letterlines",
+   "name": "letterlines",
+   "tagline": "training lines for the letter reader from your own transcriptions, and their scores",
+   "summary": "`python -m kit letterlines build` checks records of lines you transcribed and cuts each line as the letter reader sees it into a `LINES.npz` for fine-tuning; `letterlines score` gives one or more models' character error on lines kept apart, with a paired interval.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit letterlines build",
+    "python -m kit letterlines score",
+    "scrolls-letterlines"
+   ],
+   "imports": [
+    "from kit import letterlines"
+   ],
+   "code": [
+    {
+     "path": "kit/letterlines.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_letterlines",
+      "letterlines_main"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_letterlines.py",
+    "tests/test_letter_scripts.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run. Lines cut from a text that is not published carry that text: keep their `LINES.npz`, previews and any model trained on them private, and never upload them without Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`letterlines`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit letterlines build`, `python -m kit letterlines score`, `scrolls-letterlines` (the installed package's console script), `from kit import letterlines`",
+    "Code": "`kit/letterlines.py`, `kit/cli.py` (`cmd_letterlines`, `letterlines_main`)",
+    "Tests": "`tests/test_letterlines.py`, `tests/test_letter_scripts.py`",
+    "Needs": "Python 3.10 or newer and numpy; the image libraries the reader loads your images with (tifffile and imagecodecs for TIFF, Pillow for PNG and JPEG, zarr for zarr), which the `reader` extra brings except zarr; Pillow for `--preview`. `score` needs the reader's weights: a released name (downloaded once) or a `linenet-v1` `.npz`. No torch: training on the lines is `scripts/letters/finetune_maps.py`, which needs torch",
+    "Runs on": "Any CPU, in seconds. On 2026-10-16 (4-core 2.8 GHz Xeon cloud container shared with other jobs, one BLAS thread): a dry run of 4 records in 1.1 s, `build` of 2 lines with a preview in 1.4 s, `score` of 2 lines with two cached models in 1.8 s. The guide measured `build` cutting 54 lines from 9 images in 2.4 s and `score` reading 18 lines with two models in 3.5 s (2026-10-14)",
+    "Network": "`build`: none. `score`: the first use of a released weights name downloads it from `github.com`, which redirects to GitHub's release file host (`release-assets.githubusercontent.com` or `objects.githubusercontent.com`)",
+    "Writes": "`build`: the `--out` file (`LINES.npz`) and the `--preview` PNG, making their folders once the records pass; `--dry-run` writes nothing. `score`: the `--out` JSON when given, and the weights file in the cache folder on a released name's first use",
+    "Go-ahead": "Not needed to run. Lines cut from a text that is not published carry that text: keep their `LINES.npz`, previews and any model trained on them private, and never upload them without Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-14 ([PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58)); part of the letter reader release and of the installable package `scrolls-workbench`",
+    "Guide": "[Fine-tune on your own lines](../letter-reader.md#fine-tune-on-your-own-lines) in the letter reader guide",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/letterlines.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 132,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 162,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 183,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 224,
+     "end_line": 268,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 269,
+     "end_line": 275,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 276,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 289,
+     "end_line": 298,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 299,
+     "end_line": 306,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 307,
+     "end_line": 313,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 314,
+     "end_line": 321,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "meshaudit",
+   "name": "meshaudit",
+   "tagline": "audit published cross-scan transforms, meshes and render depth",
+   "summary": "`python -m kit meshaudit` checks the public catalogue's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit meshaudit transforms",
+    "python -m kit meshaudit canvas",
+    "python -m kit meshaudit plan",
+    "python -m kit meshaudit depth"
+   ],
+   "imports": [
+    "from kit import meshaudit"
+   ],
+   "code": [
+    {
+     "path": "kit/meshaudit.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_meshaudit"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_meshaudit.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63753fa"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`meshaudit`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit meshaudit transforms`, `python -m kit meshaudit canvas`, `python -m kit meshaudit plan`, `python -m kit meshaudit depth`, `from kit import meshaudit`",
+    "Code": "`kit/meshaudit.py`, `kit/cli.py` (`cmd_meshaudit`)",
+    "Tests": "`tests/test_meshaudit.py`",
+    "Needs": "Python 3.10 or newer; numpy for `transforms`, `plan` and `depth`; tifffile (and imagecodecs for LZW meshes) for the mesh functions the study scripts use; zarr only for compressed surface volumes. The rest is the standard library. Checked with Python 3.13 and numpy 2.5",
+    "Runs on": "Any CPU. `transforms` on the live catalogue took 6 s and `plan` on a local copy 2 s; `canvas` for one scroll (PHerc0841) 17 s, almost all network reads (measured 2026-10-16, 4-core Xeon cloud container, shared). The whole 2026-10-07 study took about an hour on 4 CPUs ([data README](../data/mesh-hypothesis/README.md))",
+    "Network": "The open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over plain HTTPS: `metadata.json` (the catalogue, 1.4 MB gzipped) unless `--catalogue` is a local file; for `canvas`, each mesh's `meta.json` and two small range reads of its `x.tif`, and each surface volume's `.zattrs`; for `depth`, the surface volumes' `.zattrs`, `.zarray` and the chunks the tiles touch, from `--base`",
+    "Writes": "Nothing (prints only). With `--out OUT`, the JSON result to OUT",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`e14b033`)",
+    "Guide": "[The mesh hypothesis protocol](../plans/2026-10-07-mesh-hypothesis.md), [its log](../logs/2026-10-07-mesh-hypothesis.md) and [its data](../data/mesh-hypothesis/README.md)",
+    "Checked": "2026-10-16 against commit `63753fa`"
+   },
+   "page": "docs/tools/meshaudit.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 37,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 38,
+     "end_line": 51,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 52,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 84,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 158,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 200,
+     "end_line": 209,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 210,
+     "end_line": 259,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 260,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 277,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 289,
+     "end_line": 300,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 301,
+     "end_line": 310,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 311,
+     "end_line": 318,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 319,
+     "end_line": 322,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 323,
+     "end_line": 332,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "overlap",
+   "name": "overlap",
+   "tagline": "do two segments trace the same papyrus, and do their ink maps agree there",
+   "summary": "`python -m kit overlap` measures how close two tifxyz meshes run (one sheet traced twice, or two surfaces) and how well their human labels agree there against displaced matches; `python -m kit collate` compares two traces' ink maps by gap, against a control.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit overlap",
+    "python -m kit collate"
+   ],
+   "imports": [
+    "from kit import overlap"
+   ],
+   "code": [
+    {
+     "path": "kit/overlap.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_overlap",
+      "cmd_collate"
+     ]
+    },
+    {
+     "path": "kit/auc.py",
+     "symbols": [
+      "_levels"
+     ]
+    },
+    {
+     "path": "kit/layers.py",
+     "symbols": [
+      "_zarr"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "load_map",
+      "_numpy",
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_overlap.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63753fa"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`overlap`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit overlap`, `python -m kit collate`, `from kit import overlap`",
+    "Code": "`kit/overlap.py`, `kit/cli.py` (`cmd_overlap`, `cmd_collate`), `kit/auc.py` (`_levels`), `kit/layers.py` (`_zarr`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`)",
+    "Tests": "`tests/test_overlap.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (`cKDTree`, `ndimage.zoom`), tifffile; zarr for `--labels-a` and `--labels-b`; imagecodecs for LZW or zstd TIFF maps. Checked with Python 3.13, numpy 2.5, scipy 1.18, zarr 3.4",
+    "Runs on": "Any CPU. PHerc0841 w00 against ag896 with labels takes 38 s and 254 MB; a full-size synthetic pair takes 9 s without labels, and `collate` with a control 37 s and 509 MB (measured 2026-10-16, 4-core Xeon cloud container, shared)",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`25070df`)",
+    "Guide": "[The overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md), sections 1, 4 and 6",
+    "Checked": "2026-10-16 against commit `63753fa`"
+   },
+   "page": "docs/tools/overlap.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 87,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 96,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 147,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 166,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 175,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 220,
+     "end_line": 243,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 244,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 255,
+     "end_line": 268,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 269,
+     "end_line": 278,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 279,
+     "end_line": 286,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 287,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 292,
+     "end_line": 303,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "phantom",
+   "name": "phantom",
+   "tagline": "synthetic carbon-ink volumes with known truth, to test detectors and AUC noise",
+   "summary": "`python -m kit phantom` makes small synthetic papyrus surface volumes carrying carbon-ink strokes whose truth is known at every pixel, stress-tests a baseline detector against its depth-reversed control, and compares the AUC spread between phantoms with the one-segment block bootstrap.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "script"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit phantom",
+    "bash scripts/phantom-demo.sh"
+   ],
+   "imports": [
+    "from kit import phantom"
+   ],
+   "code": [
+    {
+     "path": "kit/phantom.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/phantom-demo.sh",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_phantom",
+      "_shape"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "_numpy",
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_phantom.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`phantom`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, script",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit phantom`, `bash scripts/phantom-demo.sh`, `from kit import phantom`",
+    "Code": "`kit/phantom.py`, `scripts/phantom-demo.sh`, `kit/cli.py` (`cmd_phantom`, `_shape`), `kit/verify.py` (`_numpy`, `VerifyError`)",
+    "Tests": "`tests/test_phantom.py`",
+    "Needs": "Python 3.10 or newer and numpy (no scipy: the blur is a numpy FFT). `stress` and `calibrate` score with `kit.auc`, which needs only numpy here. The demo script needs bash and must run from the repository root, since it calls `python3 -m kit`",
+    "Runs on": "Any CPU. `make` at the command's default size (26 x 384 x 384) took 2.1 s, `stress` with its defaults (8 phantoms) 14.2 s, `calibrate` with its defaults 8.2 s, and the whole demo 14.2 s (measured 2026-10-16, 4-core Xeon cloud container)",
+    "Network": "None",
+    "Writes": "`make`: the folder `OUT` (created before the phantom is checked, so it is left empty on a refusal) and `volume.npy`, `ink.npy`, `mask.npy`, `meta.json` in it, replacing earlier ones. `stress --save-maps DIR`: `DIR/surface_SEED.npy` and `DIR/surface_reversed_SEED.npy` per phantom. `calibrate`: nothing. The demo: everything under `$OUT` (default `/tmp/phantom-demo`), listed under Outputs",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`eeacf6a`); `kit/phantom.py` is also in the AutoPipeline release copy at `faada83`",
+    "Guide": "[phantom-and-viewer.md](../phantom-and-viewer.md); results of the demo in the [phantom demo log](../logs/2026-10-07-phantom-demo.md)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/phantom.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 79,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 139,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 159,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 163,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 222,
+     "end_line": 238,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 239,
+     "end_line": 252,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 253,
+     "end_line": 270,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 271,
+     "end_line": 280,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 281,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 289,
+     "end_line": 293,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 294,
+     "end_line": 301,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "plan",
+   "name": "plan",
+   "tagline": "print a First Letters run plan for one eligible scroll, and price a run",
+   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labelled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Planning and prizes",
+   "commands": [
+    "python -m kit plan",
+    "python -m kit cost"
+   ],
+   "imports": [
+    "from kit import plan"
+   ],
+   "code": [
+    {
+     "path": "kit/plan.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_plan",
+      "cmd_cost"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_kit.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`plan`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Planning and prizes",
+    "Run": "`python -m kit plan`, `python -m kit cost`, `from kit import plan`",
+    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`)",
+    "Tests": "`tests/test_kit.py`",
+    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`",
+    "Runs on": "Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes \"on the order of an hour on a single GPU\" ([tutorial5](https://scrollprize.org/tutorial5))",
+    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data`",
+    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `volume-cache/`, `predictions/`, `work/SCROLL_SLUG/`); see Outputs",
+    "Go-ahead": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)",
+    "Released": "Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`)",
+    "Guide": "[WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/plan.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 40,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 55,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 87,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 117,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 130,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 138,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 161,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 173,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 182,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 186,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 196,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 204,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 215,
+     "end_line": 225,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "prizes",
+   "name": "prizes",
+   "tagline": "list the open Vesuvius Challenge prizes from a dated snapshot",
+   "summary": "`python -m kit prizes` prints each open Vesuvius Challenge prize with its money, deadline, days left and eligible scrolls, from a dated copy of scrollprize.org/prizes kept in `kit/data/`; `--json` prints the copy itself. The live page wins where they differ.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Planning and prizes",
+   "commands": [
+    "python -m kit prizes"
+   ],
+   "imports": [
+    "from kit import prizes"
+   ],
+   "code": [
+    {
+     "path": "kit/prizes.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/prizes-2026-10-11.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/prizes-2026-10-06.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_prizes"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_kit.py",
+    "tests/test_packaging.py",
+    "tests/test_cli_parser_cache.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`prizes`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Planning and prizes",
+    "Run": "`python -m kit prizes`, `from kit import prizes`",
+    "Code": "`kit/prizes.py`, `kit/data/prizes-2026-10-11.json`, `kit/data/prizes-2026-10-06.json`, `kit/cli.py` (`cmd_prizes`)",
+    "Tests": "`tests/test_kit.py`, `tests/test_packaging.py`, `tests/test_cli_parser_cache.py`",
+    "Needs": "Python 3.10 or newer, standard library only (json, datetime, pathlib)",
+    "Runs on": "Any machine. 0.31 to 0.56 s per call for the table and 0.45 to 0.60 s for `--json`, almost all of it Python start-up and importing `kit.cli` (5 runs each, measured 2026-10-16, 4-core Xeon cloud container)",
+    "Network": "None. It never contacts scrollprize.org: the snapshot is a file in the repository",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-06 (`2daee8e`); the 11 October snapshot since 2026-10-11 ([PR #40](https://github.com/ChaseHendrick/Scrolls/pull/40)). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench prizes` in the installable package since 2026-10-14 (`2582ab7`)",
+    "Guide": "[prizes.md](../prizes.md) (the prize terms in prose, from the same snapshot)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/prizes.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 86,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 99,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 122,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 129,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 159,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 171,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 180,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 184,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 194,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 203,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 209,
+     "end_line": 216,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "releases",
+   "name": "releases",
+   "tagline": "keep the README's Released tools section in step with the release list",
+   "summary": "`python -m kit releases` keeps `docs/releases.json`, the list of tools released from private work into this repository, and writes the README's \"Released tools\" section from it: pinned entries first, then newest first.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "kit entry point"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m kit releases add",
+    "python -m kit releases render",
+    "python -m kit releases check",
+    "python -m kit releases list",
+    "python -m kit releases pin",
+    "python -m kit releases unpin",
+    "python -m kit.releases"
+   ],
+   "imports": [
+    "from kit import releases"
+   ],
+   "code": [
+    {
+     "path": "kit/releases.py",
+     "symbols": []
+    },
+    {
+     "path": "docs/releases.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_releases.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`releases`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, kit entry point",
+    "Area": "Releases and repository",
+    "Run": "`python -m kit releases add`, `python -m kit releases render`, `python -m kit releases check`, `python -m kit releases list`, `python -m kit releases pin`, `python -m kit releases unpin`, `python -m kit.releases`, `from kit import releases`",
+    "Code": "`kit/releases.py`, `docs/releases.json`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_releases.py`",
+    "Needs": "Python 3.10 or newer, standard library only. A clone of this repository (it reads `docs/releases.json` and `README.md` next to `kit/`), or `--list` and `--readme` pointing at the two files",
+    "Runs on": "Any machine. `python -m kit releases check` takes about 0.5 s and `python -m kit.releases check` about 0.14 s, almost all of it Python start-up and imports (measured 2026-10-16, 4-core Xeon cloud container, on the 6-entry list)",
+    "Network": "None. Links in an entry are written into the README, never fetched",
+    "Writes": "`check` and `list` write nothing. `add`, `render`, `pin` and `unpin` rewrite the release list (`docs/releases.json`, or `--list`) in its written form and the README (`README.md`, or `--readme`) between its two marker lines; the rest of the README is kept byte for byte",
+    "Go-ahead": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module",
+    "Guide": "[AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/releases.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 83,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 92,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 164,
+     "end_line": 191,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 192,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 224,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 250,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 292,
+     "end_line": 316,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 317,
+     "end_line": 320,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 321,
+     "end_line": 330,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 331,
+     "end_line": 338,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 339,
+     "end_line": 346,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 347,
+     "end_line": 355,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "rowscore",
+   "name": "rowscore",
+   "tagline": "text-row periodicity triage score for ink maps",
+   "summary": "`python -m kit rowscore` measures how strongly an ink map repeats at a 2.5 to 8 mm period in one direction, as rows of Greek text do, for forward and reverse maps: a triage aid that says where to look first, not a verdict.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit rowscore"
+   ],
+   "imports": [
+    "from kit import rowscore"
+   ],
+   "code": [
+    {
+     "path": "kit/rowscore.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_rowscore"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "load_map",
+      "_numpy",
+      "VerifyError"
+     ]
+    },
+    {
+     "path": "kit/ledger.py",
+     "symbols": [
+      "add_check",
+      "load",
+      "path_for"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_rowscore.py",
+    "tests/test_rowscore_fast.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`rowscore`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit rowscore`, `from kit import rowscore`",
+    "Code": "`kit/rowscore.py`, `kit/cli.py` (`cmd_rowscore`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
+    "Tests": "`tests/test_rowscore.py`, `tests/test_rowscore_fast.py`",
+    "Needs": "Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs); scipy for the largest-piece step (skipped without it) and for `--fast-resize`",
+    "Runs on": "Any CPU. A 305-million-pixel public map took 39.7 s, or 5.7 s with `--fast-resize` ([production scaling log](../logs/2026-10-07-production-scaling.md), one core); a 9 um segment takes seconds to under a minute",
+    "Network": "None",
+    "Writes": "Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[rowscore.md](../rowscore.md) (the `--fast-resize` option and its numerical limits)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/rowscore.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 68,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 78,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 101,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 118,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 129,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 160,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 179,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 193,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 204,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 214,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 222,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 228,
+     "end_line": 239,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "soup",
+   "name": "soup",
+   "tagline": "average the weights of several checkpoints of one training run",
+   "summary": "`scripts/soup.py` writes a checkpoint soup, the uniform mean of the weights of two or more checkpoints from one training run (such as `ink_9um` seed 42 at steps 40k to 75k), and refuses checkpoints whose `config.seed` differs, because a cross-seed weight average breaks the model.",
+   "status": "Current",
+   "kind": [
+    "script"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "python scripts/soup.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/soup.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/",
+    "scripts/experiments/2026-10-07-cloud/tricks/soup_check.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to make a soup. Uploading one (such as to Hugging Face) needs Chase's yes first (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`soup`",
+    "Status": "Current",
+    "Kind": "script",
+    "Area": "Ink maps and models",
+    "Run": "`python scripts/soup.py`",
+    "Code": "`scripts/soup.py`",
+    "Tests": "None: no test in `tests/` runs it. The saved one-off check `scripts/experiments/2026-10-07-cloud/tricks/soup_check.py` compared its output with Nieuwlaar's published soup (see Checks and controls)",
+    "Needs": "Python 3 and PyTorch (`torch`), which the script imports at the top, so even `--help` fails without it. The 2026-10-07 run used Python 3.14 and torch 2.14.1+cpu (`scripts/experiments/2026-10-07-cloud/tricks/notes.md`). Checkpoints saved with `torch.save`",
+    "Runs on": "Any CPU; every tensor is loaded with `map_location=\"cpu\"` and nothing uses a GPU. Wall time Not measured: the 2026-10-07 soup of four `ink_9um` checkpoints recorded no time",
+    "Network": "None. Downloading the checkpoints is a separate step (Quick start)",
+    "Writes": "The file `OUT` (replaced if it exists), nothing else",
+    "Go-ahead": "Not needed to make a soup. Uploading one (such as to Hugging Face) needs Chase's yes first (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-07 (`ebd4ae3`)",
+    "Guide": "[tricks.md](../tricks.md) (the community tricks, with the soup's measured numbers)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/soup.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 104,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 117,
+     "end_line": 125,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 126,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 157,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 172,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 183,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 187,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 197,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 208,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 213,
+     "end_line": 221,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "stackcheck",
+   "name": "stackcheck",
+   "tagline": "check consecutive segments of one scroll against its umbilicus, from geometry alone",
+   "summary": "`python -m kit stackcheck` checks a stack of consecutive tifxyz segments, inner to outer, against the scroll's umbilicus: winding order, coincident or oddly spaced pairs, missing sectors and runs, skipped windings, turn overlaps and stack ends, with masks of the flagged vertices.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit stackcheck"
+   ],
+   "imports": [
+    "from kit import stackcheck"
+   ],
+   "code": [
+    {
+     "path": "kit/stackcheck.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_stackcheck"
+     ]
+    },
+    {
+     "path": "kit/meshaudit.py",
+     "symbols": [
+      "_get",
+      "get_json",
+      "load_catalogue",
+      "sample_matrix"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "VerifyError"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_stackcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63753fa"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`stackcheck`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit stackcheck`, `from kit import stackcheck`",
+    "Code": "`kit/stackcheck.py`, `kit/cli.py` (`cmd_stackcheck`), `kit/meshaudit.py` (`_get`, `get_json`, `load_catalogue`, `sample_matrix`), `kit/verify.py` (`VerifyError`)",
+    "Tests": "`tests/test_stackcheck.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (`cKDTree`, `ndimage.label`), tifffile. Inputs: the segments' tifxyz folders and the scroll's published umbilicus JSON. Checked with Python 3.13, numpy 2.5, scipy 1.18",
+    "Runs on": "One CPU core. PHerc0139 run A (5 segments) took 49.8 s and 0.75 GB, run B (18 segments) 144.8 s and 1.7 GB (`stackcheck_checks` in `results.json`, 2026-10-14); a synthetic six-winding stack takes 13 to 16 s and 166 MB (measured 2026-10-16, 4-core Xeon cloud container, shared)",
+    "Network": "None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog`",
+    "Writes": "Fetched segments under `--cache` (default `work/stackcheck/cache/HOST/PATH/`, kept for reuse); the JSON report with `--out`; the masks `.npz` with `--flags`. Otherwise it prints only",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-14 (`47cd607`); listed in the README's \"Released tools\" as the release `stackcheck` (Segment stack check)",
+    "Guide": "[The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits",
+    "Checked": "2026-10-16 against commit `63753fa`"
+   },
+   "page": "docs/tools/stackcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 44,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 58,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 90,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 99,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 146,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 194,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 206,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 242,
+     "end_line": 290,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 291,
+     "end_line": 307,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 308,
+     "end_line": 318,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 319,
+     "end_line": 328,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 329,
+     "end_line": 336,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 337,
+     "end_line": 342,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 343,
+     "end_line": 351,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "surfacefix",
+   "name": "surfacefix",
+   "tagline": "suggest bounded normal shifts of a surface from two traces' ink maps",
+   "summary": "`python -m kit surfacefix` writes copies of a traced surface shifted along its normal, then, from one ink model's maps of those copies and of a second trace of the same sheet, flags regions where the traces disagree and copies only control-passing shifts into a new surface.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit surfacefix prepare",
+    "python -m kit surfacefix apply"
+   ],
+   "imports": [
+    "from kit import surfacefix"
+   ],
+   "code": [
+    {
+     "path": "kit/surfacefix.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/_surface_geometry.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_surfacefix"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "load_map",
+      "_numpy",
+      "VerifyError"
+     ]
+    },
+    {
+     "path": "kit/hpscore.py",
+     "symbols": [
+      "high_pass",
+      "_r"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_surface_geometry.py",
+    "tests/test_surfacefix.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it. The renders and model runs it needs happen outside it; GPU inference goes to Modal (the Modal rule, hard rule 11)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`surfacefix`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit surfacefix prepare`, `python -m kit surfacefix apply`, `from kit import surfacefix`",
+    "Code": "`kit/surfacefix.py`, `kit/_surface_geometry.py`, `kit/cli.py` (`cmd_surfacefix`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/hpscore.py` (`high_pass`, `_r`)",
+    "Tests": "`tests/test_surface_geometry.py`, `tests/test_surfacefix.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy (`cKDTree`, `map_coordinates`, `gaussian_filter`), tifffile (imagecodecs for compressed TIFF maps). The ink maps come from outside: villa's `vc_render_tifxyz` to render each mesh and an ink model run three ways on each render",
+    "Runs on": "Any CPU. `prepare` on a 32 x 32 vertex mesh took 0.6 s; `apply` on that mesh with 320 x 320 maps took 2.3 s of CPU (3.5 to 6.8 s wall on a busy machine), and on a 64 x 64 mesh with 640 x 640 maps 6.9 s of CPU (measured 2026-10-16, 4-core Xeon cloud container, synthetic data). The real 32 x 32 PHerc0841 crop took a median 2.28 s on one core ([production scaling log](../logs/2026-10-07-production-scaling.md))",
+    "Network": "None",
+    "Writes": "`prepare`: a new folder OUT with `manifest.json` and one `offset-NNN.tifxyz/` per offset. `apply`: a new folder OUT with `corrected.tifxyz/` and `report.json`. Both refuse an OUT that exists or overlaps an input; inputs are never changed",
+    "Go-ahead": "Not needed to run it. The renders and model runs it needs happen outside it; GPU inference goes to Modal (the Modal rule, hard rule 11)",
+    "Released": "Public `main` since 2026-10-07 ([PR #17](https://github.com/ChaseHendrick/Scrolls/pull/17))",
+    "Guide": "[surfacefix.md](../surfacefix.md) (workflow, acceptance checks, validation scope)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/surfacefix.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 39,
+     "end_line": 52,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 53,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 92,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 113,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 159,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 179,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 208,
+     "end_line": 264,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 265,
+     "end_line": 319,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 320,
+     "end_line": 343,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 344,
+     "end_line": 351,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 352,
+     "end_line": 361,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 362,
+     "end_line": 369,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 370,
+     "end_line": 377,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 378,
+     "end_line": 386,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "v8in-run",
+   "name": "v8in-run",
+   "tagline": "run the v8in ink model on a layer folder, with opt-in fp16 on the Mac GPU",
+   "summary": "`scripts/v8in_run.py` runs Youssef Nader's v8in ink model, or its PHerc1447 fine-tune, on a folder of numbered layer images and writes one ink probability map, with an optional fp16 autocast on Apple's MPS GPU and a final log line the Mac scripts parse.",
+   "status": "Current",
+   "kind": [
+    "script"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "python scripts/v8in_run.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/v8in_run.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/",
+    "scripts/mac-w045.sh"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for a local run on public data. Renting a GPU for it on Modal needs Chase's yes and a run spec (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`v8in-run`",
+    "Status": "Current",
+    "Kind": "script",
+    "Area": "Ink maps and models",
+    "Run": "`python scripts/v8in_run.py`",
+    "Code": "`scripts/v8in_run.py`",
+    "Tests": "None: no test in `tests/` runs it. Its end-to-end check is the CPU against MPS crop comparison in `scripts/mac-w045.sh` (step 5, `kit verify` with the reverse map as the control)",
+    "Needs": "Python 3 with the packages of v8in's `requirements.txt`: torch 2.1 or newer, numpy, tifffile, imagecodecs, opencv-python-headless, safetensors, huggingface_hub 0.25 or newer (the runs here used torch 2.14.1). A local snapshot of the model repository, `YoussefMoNader/ink-8um-v8in` at `d89166b` (MIT, `model.safetensors` 333,532,180 bytes) or `YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062` at `2bf9f42`. `--fp16` needs an Apple Silicon Mac with MPS",
+    "Runs on": "CPU, Apple MPS or CUDA. About 8 s per tile on 4 CPU cores of a Linux container (base v8in; [community scan log](../logs/2026-10-07-community-scan.md)) and 7.4 s per tile for the fine-tune (196 tiles in 1,444 s, `scripts/experiments/2026-10-07-cloud/v8in1447-w00/notes.md`); on Chase's M1 Pro, 1.1 to 1.2 s per tile on MPS in fp32, 5.5 to 6.2 s in fp16, and 25 s on its CPU ([mac.md](../mac.md)). All 2026-10-07. Whole segments are GPU jobs",
+    "Network": "None. The model loads from the local `--model-dir`; downloading that snapshot from huggingface.co is a separate step",
+    "Writes": "The map at `--output` (replaced if it exists) and any missing parent folders. Progress and the final line go to stdout",
+    "Go-ahead": "Not needed for a local run on public data. Renting a GPU for it on Modal needs Chase's yes and a run spec (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11)",
+    "Released": "Public `main` since 2026-10-07 (`6081aab`)",
+    "Guide": "[mac.md](../mac.md) (the Mac runs that call it, with their times)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/v8in-run.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 43,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 57,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 94,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 103,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 127,
+     "end_line": 130,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 131,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 140,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 173,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 193,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 208,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 224,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 234,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 245,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 250,
+     "end_line": 261,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "verify",
+   "name": "verify",
+   "tagline": "check that two ink maps of the same input agree, with a control",
+   "summary": "`python -m kit verify` compares a candidate ink map (such as an Apple GPU run) with a reference map (such as the CPU run) pixel by pixel, and counts agreement as a pass only when a control map that should differ is caught by the same test.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit verify"
+   ],
+   "imports": [
+    "from kit import verify"
+   ],
+   "code": [
+    {
+     "path": "kit/verify.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_verify"
+     ]
+    },
+    {
+     "path": "kit/ledger.py",
+     "symbols": [
+      "add_check",
+      "load",
+      "path_for"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_verify.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`verify`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit verify`, `from kit import verify`",
+    "Code": "`kit/verify.py`, `kit/cli.py` (`cmd_verify`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
+    "Tests": "`tests/test_verify.py`",
+    "Needs": "Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. villa's environment has all three",
+    "Runs on": "Any CPU. A 2.4 um w035 ink map of 22,640 x 20,400 px with a control took 36 s and 2.25 GB ([mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment), 2026-10-07); a 5,980 x 8,240 uint8 map with a control took 17 s and 512 MB (measured 2026-10-16, shared 4-core cloud container, synthetic maps)",
+    "Network": "None",
+    "Writes": "Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
+    "Go-ahead": "Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[mac.md, \"Runbook: verify MPS against CPU on the control segment\"](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/verify.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 67,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 77,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 100,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 119,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 127,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 160,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 178,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 189,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 199,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 209,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 217,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 221,
+     "end_line": 229,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "view",
+   "name": "view",
+   "tagline": "one offline HTML page that overlays several ink maps and the labels",
+   "summary": "`python -m kit view` writes one self-contained HTML file (no server, no network) that shows several readers' ink maps of one crop, percentile ranked so different scales compare, with their disagreement, the label outline and the mask, plus a JSON summary.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python -m kit view"
+   ],
+   "imports": [
+    "from kit import viewer"
+   ],
+   "code": [
+    {
+     "path": "kit/viewer.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_view"
+     ]
+    },
+    {
+     "path": "kit/verify.py",
+     "symbols": [
+      "load_map",
+      "_numpy",
+      "VerifyError"
+     ]
+    },
+    {
+     "path": "kit/auc.py",
+     "symbols": [
+      "score_array"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_phantom.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "29e7e8c"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`view`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Viewers and apps",
+    "Run": "`python -m kit view`, `from kit import viewer`",
+    "Code": "`kit/viewer.py`, `kit/cli.py` (`cmd_view`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/auc.py` (`score_array`)",
+    "Tests": "`tests/test_phantom.py` (class `ViewerTest`)",
+    "Needs": "Python 3.10 or newer, numpy; tifffile for `.tif` maps (imagecodecs too for LZW or zstd TIFFs). A web browser with JavaScript to open the page; nothing else",
+    "Runs on": "Any CPU. Two 256 x 256 maps take about 1 s; three full-size 5,980 x 8,240 float32 maps with labels and mask take about 11 s and 765 MB peak memory (measured 2026-10-16, 4-core Xeon cloud container under load from other jobs, synthetic data)",
+    "Network": "None. The page loads nothing: every image is a PNG data URI inside the file",
+    "Writes": "`OUT.html` (overwritten if it exists); with `--png PNG`, that PNG file. Prints a JSON summary to stdout",
+    "Go-ahead": "Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1)",
+    "Released": "Public `main` since 2026-10-07 ([PR #13](https://github.com/ChaseHendrick/Scrolls/pull/13)); since 2026-10-14 also in the `scrolls-workbench` package installed from this repository, as `scrolls-workbench view`",
+    "Guide": "[phantom-and-viewer.md](../phantom-and-viewer.md) (the phantoms and this viewer), [the phantom and viewer demo log](../logs/2026-10-07-phantom-demo.md)",
+    "Checked": "2026-10-16 against commit `29e7e8c`"
+   },
+   "page": "docs/tools/view.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 84,
+     "end_line": 92,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 93,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 113,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 132,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 153,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 176,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 198,
+     "end_line": 210,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 211,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 222,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 232,
+     "end_line": 239,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 240,
+     "end_line": 245,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 246,
+     "end_line": 254,
+     "applicable": true
+    }
+   ]
   }
  ]
 }
