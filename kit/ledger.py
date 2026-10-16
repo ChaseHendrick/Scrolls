@@ -13,6 +13,7 @@ Two rules from the prize page and from published First Letters runs are enforced
 
 import hashlib
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -107,6 +108,8 @@ def set_status(slug, status, note="", announced=False, root=DEFAULT_ROOT):
 
 
 def add_cost(slug, usd, what, root=DEFAULT_ROOT):
+    if not math.isfinite(usd):
+        raise LedgerError(f"cost must be a finite number of US dollars, not {usd}")
     if usd < 0:
         raise LedgerError("cost cannot be negative")
     record = load(slug, root)

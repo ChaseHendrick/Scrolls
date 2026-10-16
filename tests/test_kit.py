@@ -277,6 +277,12 @@ class LedgerTest(unittest.TestCase):
         path.write_text(json.dumps(record))
         self.assertIn("history does not start at planned", ledger.check("t1", self.root))
 
+    def test_cost_must_be_a_finite_number(self):
+        for usd in (float("nan"), float("inf")):
+            with self.assertRaises(ledger.LedgerError):
+                ledger.add_cost("t1", usd, "bad", root=self.root)
+        self.assertEqual(ledger.load("t1", self.root)["costs"], [])
+
     def test_requires_readout_and_safe_slug(self):
         with self.assertRaises(ledger.LedgerError):
             ledger.init("t2", "PHerc0826", "q", "  ", root=self.root)
