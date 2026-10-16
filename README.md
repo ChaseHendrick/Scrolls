@@ -33,6 +33,10 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 
 ## Released tools
 
+![AutoPipeline's live monitor during the synthetic demo: stages turn green one by one, the run finishes, then a traced surface is turned in 3D](docs/assets/autopipeline/monitor-run.gif)
+
+*AutoPipeline 0.1.4's live monitor following `scripts/demo_synthetic.py`, recorded in real time: a synthetic scroll with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. More views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
+
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Tools released from private work, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
@@ -56,7 +60,7 @@ Setup, the run monitor and the limits: the package's [README](https://github.com
 
 Released 16 October 2026.
 
-[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, and an agent API. Status: released. Version: 1.1.0 (the Space's `version.json` and `CHANGELOG.md`). Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and since 1.1.0 it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
+[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, CT tools and an agent API. Status: released. Version: 1.5.0 (the Space's `version.json` and `CHANGELOG.md`). It shows nine scrolls from the Vesuvius Challenge open data, each as its traced segments with an X-ray layer, plus the published ink detection where the open data has it; PHerc. 139 also has an ink_9um (9 µm) layer over all 37 windings. The CT tools (1.2.0 to 1.5.0) add X-ray window and level with auto contrast, a CT volume view that shows a cube of the raw scan around any point of the papyrus, the traced segments drawn into that cube, and streaming from the open data bucket. Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
