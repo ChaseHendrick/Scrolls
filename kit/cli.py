@@ -416,6 +416,11 @@ def cmd_run(args):
             cpu = "unavailable" if item["cpu_s"] is None else f"{item['cpu_s']:.1f} s"
             print(f"{args.slug}: {item['wall_s']:.1f} s wall, {cpu} CPU, "
                   f"{item['kwh']:.4f} kWh, ${item['usd_exact']:.4f} (exit {code})", file=sys.stderr)
+            if "ledger_error" in item:
+                print(f"{args.slug}: the command exited {code}, but its cost was not written to the ledger: "
+                      f"{item['ledger_error']}. Record it with kit run backfill, using the wall time above.",
+                      file=sys.stderr)
+                return code or 2
             return code
         elif args.action == "backfill":
             try:
