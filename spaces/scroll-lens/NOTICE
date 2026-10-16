@@ -1,0 +1,28 @@
+Scroll Lens
+Copyright 2026 Chase Hendrick and Scrolls contributors
+
+The Scroll Lens code (app.py, lens.py and the tools/ scripts) is licensed under the Apache License, Version 2.0.
+See LICENSE.
+
+Scroll Lens copies no third-party code. When it starts, it downloads the following at pinned versions and uses them
+under their own licenses, which still apply:
+
+- dinovol, https://github.com/ScrollPrize/dinovol at commit a72fda2b1e02389a8711b3dc6a26215237f35eca:
+  MIT License, Copyright (c) 2024 Vesuvius Challenge. Parts of it are derived from DINOv2 (Apache License 2.0,
+  Meta Platforms, Inc. and affiliates) and DINOv3 (DINOv3 License Agreement, Meta Platforms, Inc. and affiliates);
+  see that repository's THIRD_PARTY_NOTICES.md and LICENSES/.
+- villa's vesuvius package, https://github.com/ScrollPrize/villa at commit
+  b29f310957c7b29e7d332f9876e0e487819cfaa3: MIT License, Copyright (c) Vesuvius Challenge.
+- Model weights from the Hugging Face Hub, each MIT licensed by the Vesuvius Challenge (scrollprize):
+  scrollprize/dinovol_v2_ps8_with_paris4_352500, scrollprize/ink_3d_dino_guided (including its
+  avg_ref_embedding.npy) and scrollprize/surface_recto_3dunet. The three models are described in Angelotti et al.
+  2026, https://arxiv.org/abs/2606.29085.
+
+Scan data: Scroll Lens reads CT scans from the Vesuvius Challenge open data, licensed CC BY-NC 4.0
+(https://creativecommons.org/licenses/by-nc/4.0/). Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael
+Dal Prà, Johannes Rudolph, Paul Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald,
+David Josey, Youssef Nader, C. Seth Parker, W. Brent Seales. Vesuvius Challenge: CT Scans of Herculaneum Papyri.
+Vesuvius Challenge. https://scrollprize.org/data
+
+The gallery cubes in gallery/ are model outputs computed from that data, so they are derived data under
+CC BY-NC 4.0 as well. They hold no scan voxels: the page reads the scan again from the open-data bucket.
