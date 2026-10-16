@@ -162,6 +162,18 @@ class CliTest(unittest.TestCase):
         self.assertEqual(len(json.loads(self.run_cli("jobs", "--json"))), len(cc.load_jobs()["jobs"]))
         self.assertIn("30 USD", self.run_cli("budget", "30", "100"))
 
+    def test_unknown_gpu_or_profile_is_a_message_not_a_traceback(self):
+        from contextlib import redirect_stderr
+        with self.assertRaises(ValueError):
+            cc.container_cost(cc.load_rates(), 1.0, gpu="X100")
+        for argv, needle in ((["cost", "--gpu", "X100", "--hours", "1"], "unknown GPU 'X100'"),
+                             (["infer", "--profile", "nosuch", "--area", "1", "--um", "9"],
+                              "unknown inference profile 'nosuch'")):
+            err = io.StringIO()
+            with redirect_stdout(io.StringIO()), redirect_stderr(err):
+                self.assertEqual(cc.main(argv), 2)
+            self.assertIn(needle, err.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()
