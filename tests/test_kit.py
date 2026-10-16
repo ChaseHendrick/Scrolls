@@ -266,6 +266,17 @@ class LedgerTest(unittest.TestCase):
         with self.assertRaises(ledger.LedgerError):
             ledger.add_cost("t1", -1, "refund", root=self.root)
 
+    def test_history_must_start_at_planned(self):
+        path = ledger.path_for("t1", self.root)
+        record = json.loads(path.read_text())
+        record["history"] = [{"at": "x", "status": "running", "note": ""}, {"at": "y", "status": "candidate", "note": ""}]
+        record["status"] = "candidate"
+        path.write_text(json.dumps(record))
+        self.assertIn("history does not start at planned", ledger.check("t1", self.root))
+        record["history"] = []
+        path.write_text(json.dumps(record))
+        self.assertIn("history does not start at planned", ledger.check("t1", self.root))
+
     def test_requires_readout_and_safe_slug(self):
         with self.assertRaises(ledger.LedgerError):
             ledger.init("t2", "PHerc0826", "q", "  ", root=self.root)

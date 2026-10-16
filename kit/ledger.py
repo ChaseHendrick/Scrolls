@@ -157,6 +157,8 @@ def check(slug, root=DEFAULT_ROOT):
     if record.get("status") not in STATUSES:
         problems.append(f"unknown status {record.get('status')!r}")
     seen = [h["status"] for h in record.get("history", [])]
+    if not seen or seen[0] != "planned":
+        problems.append("history does not start at planned")
     for before, after in zip(seen, seen[1:]):
         if after not in TRANSITIONS.get(before, set()):
             problems.append(f"history has an illegal step {before} -> {after}")
