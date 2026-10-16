@@ -22,6 +22,10 @@ Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 tr
 - A "Destroy" mode lets a visitor tear, crush, burn or soak the papyrus, rolled up or unrolled, with damage that stays as the scroll is rolled and unrolled. It is a visual toy, not a model of real damage or a real unrolling.
 - A "Roll up" button (or `U`) rolls the scroll back up.
 
+## Install app
+
+Since version 1.1.0 Unroll is also a progressive web app. Open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) (the Space page shows the app in a frame, where browsers do not offer installation, so its Install app button opens this page) and press **Install app** in the View panel or in Settings, or use the browser's install icon. In Safari on iPhone and iPad: Share, then Add to Home Screen. The installed app opens in its own window; the page, three.js and the default scroll are kept on the device and work offline, and other scrolls are kept after one visit.
+
 ## Credits
 
 - Data: Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael Dal Prà, Johannes Rudolph, Paul Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald, David Josey, Youssef Nader, C. Seth Parker, W. Brent Seales. *Vesuvius Challenge: CT Scans of Herculaneum Papyri.* Vesuvius Challenge. [Data browser for PHerc. 139](https://scrollprize.org/data_browser/PHerc0139). Licensed [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/).
