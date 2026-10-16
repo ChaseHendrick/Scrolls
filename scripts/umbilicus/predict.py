@@ -4,7 +4,8 @@
                       [--volume PATH] [--device cpu] [--no-end-rule]
 
 For each scroll: the slices the models were trained on (every 8th level-3 plane of the scan, read from the
-open-data bucket with range requests into DIR/<scroll>.npz unless that file exists), the first-stage centre of each
+open-data bucket with range requests into DIR/<scroll>.npz unless that file exists; an existing file is used only
+when it holds the scan asked for, --volume or by default slices.volume(), and holds some CT), the first-stage centre of each
 --first model (median over models), then each --zoom model moves that guess onto the centre (median over models),
 then the line is smoothed along z and the ends are trimmed (mount and caps by pipeline.keep_band, then the
 end-point rule unless --no-end-rule). Writes OUT/<scroll>_umbilicus.json in the format of the published umbilicus
@@ -74,12 +75,17 @@ def predict(s, first, zoom, data, out, device="cpu", end_rule=True, vol=None):
         except (IndexError, ValueError):
             raise SystemExit(f"{vol}: no voxel size in the scan name (<timestamp>-<size>um-...)")
         check_um(vum, vol)
+    want = (vol or slices.volume(s)).rstrip("/")    # the scan to use; a slice file of another scan is never reused
     if not os.path.exists(npz):
-        slices.extract_ranged(s, npz + ".tmp.npz", vol=vol); os.replace(npz + ".tmp.npz", npz)
+        slices.extract_ranged(s, npz + ".tmp.npz", vol=want); os.replace(npz + ".tmp.npz", npz)
     d = np.load(npz); ct = d["ct"]; z = np.asarray(d["z_l0"]); um = float(d["um"])
     level = int(d["level"]) if "level" in d.files else 3
-    if vol and str(d["vol"]).rstrip("/") != vol.rstrip("/"):
-        raise SystemExit(f"{npz} holds slices of {d['vol']}, not --volume {vol}: use another --data folder or remove the file")
+    held = str(d["vol"]).rstrip("/") if "vol" in d.files else None
+    if held != want:
+        raise SystemExit(f"{npz} holds slices of {held}, not {'--volume ' if vol else 'the default scan '}{want}: "
+                         "use another --data folder or remove the file")
+    if not ct.any() or ("missing" in d.files and "chunks" in d.files and int(d["missing"]) >= int(d["chunks"])):
+        raise SystemExit(f"{npz} holds no CT (every chunk read was absent or zero): remove the file and check the scan path")
     check_um(um, npz)
     Y1, present = first_stage(npz, first, device)
     yx = np.median(Y1, 0); Y = Y1

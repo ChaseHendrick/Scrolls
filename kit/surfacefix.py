@@ -12,6 +12,7 @@ from pathlib import Path
 import shutil
 
 from .hpscore import HIGH_PASS_UM, high_pass, _r
+from .meshaudit import imread_capped
 from .verify import VerifyError, _numpy, load_map
 
 KINDS = ("forward", "reverse", "shuffle")
@@ -64,7 +65,7 @@ def _mesh(path):
     if not path.is_dir():
         raise VerifyError(f"missing native tifxyz directory: {path}")
     try:
-        arrays = [tifffile.imread(path / f"{c}.tif") for c in "xyz"]
+        arrays = [imread_capped(path / f"{c}.tif") for c in "xyz"]
         xyz = np.stack(arrays, axis=-1).astype(float)
         meta = json.loads((path / "meta.json").read_text())
         scale = np.asarray(meta["scale"], dtype=float)
@@ -142,7 +143,7 @@ def _write_mesh(source, destination, xyz):
     import tifffile
     shutil.copytree(source, destination)
     for axis, c in enumerate("xyz"):
-        dtype = tifffile.imread(Path(source) / f"{c}.tif").dtype
+        dtype = imread_capped(Path(source) / f"{c}.tif").dtype
         # Preserve native coordinate precision and sidecar metadata.
         tifffile.imwrite(destination / f"{c}.tif", xyz[..., axis].astype(dtype))
 

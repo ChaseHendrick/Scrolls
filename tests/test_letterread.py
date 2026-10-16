@@ -772,7 +772,8 @@ class BigImageTest(unittest.TestCase):
                     code, _, err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])
                 self.assertEqual(code, 2)
                 self.assertIn(f"No module named {module!r}", err)
-                self.assertIn('python -m pip install "scrolls-workbench[reader]"', err)
+                self.assertIn("python -m pip install numpy pillow tifffile imagecodecs", err)
+                self.assertNotIn("scrolls-workbench", err)   # not on PyPI: a bare name there could be anyone's
             with mock.patch.object(R, "load_reduced", side_effect=ImportError("No module named 'zarr'", name="zarr")):
                 err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])[2]
             self.assertIn("python -m pip install zarr", err)
@@ -891,8 +892,9 @@ class ControlStatusTest(unittest.TestCase):
         self.assertEqual(res["lines"][0]["letters"], alone["lines"][0]["letters"])   # the control changes no letter
         self.assertEqual(res["p_min"], alone["p_min"])
         self.assertEqual(res["orientation"], alone["orientation"])
-        # A flat control has no lines of its own; it is still read on every line of the image.
-        flat = R.read(img, net, letter_px=16, nulls=2, control=np.full_like(img, 0.3))
+        # A control with no lines of its own (noise) is still read on every line of the image.
+        flat = R.read(img, net, letter_px=16, nulls=2,
+                      control=np.random.default_rng(3).normal(0.3, 0.01, img.shape))
         self.assertEqual(len([r for r in flat["lines"] if "control_map_kept" in r]), len(flat["lines"]))
         self.assertEqual(sum(r["control_map_kept"] for r in flat["lines"]), flat["control"]["control_map"]["letters_kept"])
         self.assertEqual(flat["control"]["status"], R.control_status(
@@ -905,6 +907,42 @@ class ControlStatusTest(unittest.TestCase):
         self.assertIsNotNone(spy.call_args_list[0].kwargs["control"])
         self.assertTrue(all("control" not in c.kwargs for c in spy.call_args_list[1:]))   # orientation reads: no control
         self.assertIn("control map: ", R.text_summary(res))
+
+    def test_constant_control_map_is_refused(self):
+        # A constant map normalises to zeros and keeps no letters, so as a control it could never fail.
+        img = lined_image()
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        nan = np.full(img.shape, np.nan)
+        nan[3, 4] = 7.0                                          # one finite value: nothing varies either
+        for c in (np.full_like(img, 0.3), np.zeros(img.shape, np.uint8), np.full(img.shape, 7.0), nan,
+                  np.ones(img.shape, bool)):
+            with mock.patch.object(R, "_analyze_at", side_effect=AssertionError("read before the check")):
+                for call in (lambda c=c: R.read(img, net, letter_px=16, nulls=1, control=c),
+                             lambda c=c: R.analyze(img, net, letter_px=16, nulls=1, control=c),
+                             lambda c=c: R.read(R.normalize(img), net, letter_px=16, nulls=1, normalized=True,
+                                                control=R.normalize(c))):
+                    with self.assertRaisesRegex(ValueError, "constant .*could never fail"):
+                        call()
+        with self.assertRaisesRegex(ValueError, "no finite values"):
+            R.check_control(np.full(img.shape, np.nan))
+        varied = np.full(img.shape, 0.3)
+        varied[-1, -1] = 0.31                                    # one pixel that differs is enough
+        self.assertIsNone(R.check_control(varied))
+        inf = np.full(img.shape, 0.3)
+        inf[::7, ::5] = np.inf                                   # infinite values are not values that vary
+        with self.assertRaisesRegex(ValueError, "constant"):
+            R.check_control(inf)
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            src, flat = Path(d) / "img.npy", Path(d) / "flat.npy"
+            np.save(src, img)
+            np.save(flat, np.full_like(img, 7.0))
+            with mock.patch.object(R, "read", side_effect=AssertionError("read before the check")):
+                code, _, err = run_cli(["letterread", str(src), "--weights", str(w), "--letter-px", "16",
+                                        "--nulls", "1", "--control", str(flat)])
+        self.assertEqual(code, 2)
+        self.assertIn(f"--control {flat} is constant (every finite value is 7)", err)
 
     def test_cli_control_map_and_floor(self):
         with tempfile.TemporaryDirectory() as d:
@@ -1821,6 +1859,43 @@ class ApiTest(unittest.TestCase):
             self.read(self.img, **kw)                                  # good values pass
         with self.assertRaisesRegex(ValueError, "^letter_px"):
             R.analyze(self.img, self.net, letter_px=0, nulls=1)        # analyze() checks the same
+
+    def test_tiny_images_letters_and_too_many_nulls(self):
+        from unittest import mock
+        # resize never divides by zero, so a strip of an image has a size estimate and reads
+        self.assertEqual(R.resize(np.ones((3, 20)), (0, 5)).shape, (1, 5))
+        rng = np.random.default_rng(0)
+        for shape in ((1, 5000), (3, 20000), (5000, 1)):
+            self.assertGreater(R.estimate_letter_px(rng.random(shape))[0], 0, shape)
+        res = R.read(rng.random((3, 20000)), self.net, nulls=1, orientation=False)
+        # the size guess (3 / 4 px) is under the smallest letter read, so the search reads at MIN_LETTER_PX alone
+        self.assertEqual([t["letter_px"] for t in res["scale_search"]], [R.MIN_LETTER_PX])
+        self.assertEqual((res["letter_px"], res["letter_px_first_guess"]), (R.MIN_LETTER_PX, 0.75))
+        searched = R.read(self.img, self.net, nulls=1, orientation=False)["scale_search"]   # letters of 16 px
+        self.assertEqual(len(searched), len(R.SCALE_STEPS))         # a search above the floor is as before
+        trial = R.polarity_trial(R.normalize(rng.random((3, 20000))), self.net)
+        self.assertEqual(trial["letter_px"], R.MIN_LETTER_PX)
+        # letters under MIN_LETTER_PX in the image read, and more than MAX_NULLS nulls, are refused before any work
+        with mock.patch.object(R, "normalize_info", side_effect=AssertionError("work began")), \
+                mock.patch.object(R, "_analyze_at", side_effect=AssertionError("work began")):
+            for kw in (dict(letter_px=3.9), dict(letter_px=1), dict(letter_px=1e-6), dict(letter_px=12, input_scale=4),
+                       dict(nulls=R.MAX_NULLS + 1), dict(nulls=200)):
+                with self.assertRaisesRegex(ValueError, f"^{next(iter(kw))}"):
+                    self.read(self.img, **kw)
+        self.assertEqual(R.MIN_LETTER_PX * 4, 16)                    # a quarter of the network's working height
+        self.assertIsNone(R.check_options(letter_px=R.MIN_LETTER_PX, nulls=R.MAX_NULLS))
+        self.assertIsNone(R.check_options(letter_px=16, input_scale=4))
+        with tempfile.TemporaryDirectory() as d:
+            img = Path(d) / "img.npy"
+            np.save(img, self.img)
+            base = ["letterread", str(img), "--weights", str(self.w)]
+            with mock.patch.object(R, "load_weights", side_effect=AssertionError("weights before the checks")):
+                for extra, words in ((["--letter-px", "2"], "at least 4"), (["--letter-px", "nan"], "at least 4"),
+                                     (["--letter-mm", "3.3", "--um-per-px", "38400"], "under the 4 px"),
+                                     (["--nulls", "65"], "--nulls must be 0 to 64")):
+                    code, _, err = run_cli(base + extra)
+                    self.assertEqual(code, 2, extra)
+                    self.assertIn(words, err, extra)
 
     def test_language_model_weight_defaults_as_on_the_command_line(self):
         try:

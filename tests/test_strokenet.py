@@ -9,6 +9,7 @@ import tracemalloc
 import unittest
 from unittest import mock
 from pathlib import Path
+from unittest import mock
 
 from kit import cli
 
@@ -260,6 +261,27 @@ class StrokeNetTest(unittest.TestCase):
             N.to_working(a, 0)
         with self.assertRaises(ValueError):
             N.to_working(a[0], N.PIXEL_MM)
+
+    def test_absurd_pixel_sizes_are_refused_clearly(self):
+        a = np.zeros((300, 300), np.uint8)
+        for bad in (float("inf"), float("-inf"), float("nan"), 5e-324, 1e-300, 1e-7, 0, -0.0024, 2.0, 1e6, None, "x"):
+            with self.assertRaisesRegex(ValueError, "^pixel_mm .*give the map's pixel size in mm", msg=repr(bad)):
+                N.to_working(a, bad)
+            with self.assertRaisesRegex(ValueError, "^pixel_mm", msg=repr(bad)):
+                N.snap_crop((0, 200, 0, 200), bad)
+        for good in (N.MIN_PIXEL_MM, 0.0024, N.PIXEL_MM, N.MAX_PIXEL_MM):
+            self.assertIsNone(N.check_pixel_mm(good))
+        self.assertEqual(N.to_working(np.zeros((3, 3)), N.MAX_PIXEL_MM).shape, (62, 62))      # 21 times enlarged
+        with tempfile.TemporaryDirectory() as d:
+            mp = os.path.join(d, "map.npy")
+            np.save(mp, a)
+            for value in ("inf", "1e6", "5e-324"):
+                err = io.StringIO()
+                with contextlib.redirect_stderr(err), \
+                        mock.patch.object(N, "load", side_effect=AssertionError("weights before the check")):
+                    rc = cli.main(["strokenet", mp, "--pixel-mm", value, "--weights", self.path])
+                self.assertEqual(rc, 2, value)
+                self.assertIn("give the map's pixel size in mm", err.getvalue(), value)
 
     def test_integer_block_mean_rounds_half_to_even(self):
         a = np.zeros((10, 10), np.uint8)
@@ -626,6 +648,37 @@ class StrokeNetTest(unittest.TestCase):
             (cache / "net.npz").unlink()
             with self.assertRaises(ValueError):                  # no address yet
                 N.resolve_weights("demo", cache=cache, registry=reg)
+
+    def test_released_name_beats_a_file_of_that_name_and_download_leaves_nothing_behind(self):
+        import io
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            cache = d / "cache"
+            cache.mkdir()
+            data = Path(self.path).read_bytes()
+            reg = d / "reg.json"
+            entry = {"file": "net.npz", "sha256": hashlib.sha256(data).hexdigest(), "url": "https://example.org/net.npz"}
+            reg.write_text(json.dumps({"models": {"demo": entry}}))
+            victim = d / "victim"
+            victim.write_bytes(b"keep")
+            (cache / "net.npz.part").symlink_to(victim)          # the old fixed temporary name, planted as a link
+            cwd = os.getcwd()
+            os.chdir(d)
+            try:
+                Path("demo").write_bytes(b"planted weights")
+                with mock.patch("urllib.request.urlopen", return_value=io.BytesIO(b"wrong")):
+                    with self.assertRaises(ValueError):
+                        N.resolve_weights("demo", cache=cache, registry=reg)
+                with mock.patch("urllib.request.urlopen", return_value=io.BytesIO(data)):
+                    got = N.resolve_weights("demo", cache=cache, registry=reg)
+                self.assertEqual(got, cache / "net.npz")         # the released file, not ./demo
+                self.assertEqual(got.read_bytes(), data)
+                self.assertEqual(N.resolve_weights("./demo", registry=reg), Path("./demo"))
+            finally:
+                os.chdir(cwd)
+            self.assertEqual(victim.read_bytes(), b"keep")
+            self.assertEqual(sorted(p.name for p in cache.iterdir()), ["net.npz", "net.npz.part"])
 
     def test_registry_names_a_default_model(self):
         models = N.released_weights()

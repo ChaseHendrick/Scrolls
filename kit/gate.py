@@ -4,13 +4,17 @@ The roadmap itself now lives in Scrolls-private; this docstring is the public st
 rule: rank readers by mean forward AUC over PHerc0841's three 640 px crops (64 px edge left out),
 with the reverse AUC well below the forward AUC on each; one reader beats another only by at
 least 0.02 mean AUC. "Well below" is read here as forward minus reverse of at least 0.10 on every
-crop (`min_gap`; the smallest committed gap is 0.1015, `ink_9um` seed 42 on ag896).
+crop (`min_gap`). The 0.10 was set after the committed gaps had been seen, not fixed in advance:
+the smallest committed gap is 0.1015 (`ink_9um` seed 42 on ag896), so that reader clears the bar
+by 0.0015, and a slightly higher bar would have dropped it.
 
 Scores come from two places: the bars committed in docs/results.json (CPU runs here), and the
 `auc_*.json` files the Mac script writes under WORK/<segment>/results/. A Mac file counts only
 if it was scored on the same crop with the same edge. The Mac's `ink_9um` seed 42 score must
 equal the committed CPU bar to four decimals (one unit of slack for rounding); a mismatch means the crop, labels or code differ,
-and is reported.
+and is reported, and it blocks the verdict: no winner is named until it is explained. A Mac file whose control was scored
+with another edge is skipped like one on another crop. A Mac result for a reader and crop that already has a committed bar
+replaces that bar, and the output names every bar so replaced.
 
 Standard library only.
 """
@@ -51,6 +55,9 @@ def from_mac(work, crops):
                 continue
             if list(a.get("crop") or []) != list(crops[seg]) or fwd.get("inner") != INNER:
                 skipped.append(f"{f}: not the standard crop with a {INNER} px edge (crop {a.get('crop')}, inner {fwd.get('inner')})")
+                continue
+            if ctrl and ctrl.get("inner", INNER) != INNER:
+                skipped.append(f"{f}: control scored with a {ctrl.get('inner')} px edge, not {INNER}")
                 continue
             table.setdefault(name, {})[seg] = (fwd.get("auc"), ctrl.get("auc"), str(f))
     return table, skipped
@@ -101,12 +108,24 @@ def consistency(bars, mac):
 def run(work=None, results=RESULTS, min_lead=MIN_LEAD, min_gap=MIN_GAP):
     bars, crops = committed(results)
     mac, skipped = from_mac(work, crops) if work else ({}, [])
-    table = {**bars}
+    table = {reader: dict(cells) for reader, cells in bars.items()}
+    replaced = []
     for reader, cells in mac.items():
+        for seg, cell in cells.items():
+            if seg in bars.get(reader, {}):
+                replaced.append({"reader": reader, "segment": seg, "committed": bars[reader][seg][0],
+                                 "local": cell[0], "file": cell[2]})
         table.setdefault(reader, {}).update(cells)
     result = decide(table, min_lead, min_gap)
     result["checks"] = consistency(bars, mac)
     result["skipped"] = skipped
+    result["replaced"] = replaced
+    bad = [c["segment"] for c in result["checks"] if not c["match"]]
+    if bad:
+        result["verdict"].update(
+            winner=None, lead=None, clear=False, blocked=True,
+            text="blocked: the Mac's ink_9um seed 42 does not match the committed CPU bar on " + ", ".join(bad)
+                 + " (crop, labels or code differ); explain the mismatch before ranking")
     return result
 
 
@@ -125,6 +144,10 @@ def format_result(result):
     for c in result["checks"]:
         lines.append(f"check {c['segment']}: Mac ink_9um s42 {c['mac']:.4f} vs CPU {c['cpu']:.4f}: "
                      + ("match" if c["match"] else "MISMATCH (crop, labels or code differ; do not rank until explained)"))
+    for r in result.get("replaced", []):
+        local = "none" if r["local"] is None else f"{r['local']:.4f}"
+        lines.append(f"replaced committed bar: {r['reader']} on {r['segment']}, results.json {r['committed']:.4f}, "
+                     f"now the local WORK result {local} from {r['file']}")
     for s in result["skipped"]:
         lines.append(f"skipped {s}")
     lines.append("Gate A: " + result["verdict"]["text"])

@@ -23,6 +23,8 @@ they made no prediction); elsewhere the output is 0, and valid pixels are kept a
 (1..65535 on valid pixels); `.npy` is float32, the same scale divided by 65535.
 """
 
+import math
+
 from .verify import VerifyError, _numpy
 
 METHODS = ("mean", "rank")
@@ -84,8 +86,9 @@ def combine(arrays, method="mean", weights=None):
         raise VerifyError(f"maps differ in shape: {sorted(shapes)}")
     if weights is None:
         weights = [1.0] * len(arrays)
-    if len(weights) != len(arrays) or any(w < 0 for w in weights) or sum(weights) <= 0:
-        raise VerifyError("give one non-negative weight per map, not all zero")
+    if len(weights) != len(arrays) or any(not math.isfinite(w) or w < 0 for w in weights) \
+            or sum(weights) <= 0:
+        raise VerifyError("give one finite, non-negative weight per map, not all zero")
     valid = np.ones(arrays[0].shape, bool)
     for a in arrays:
         valid &= a != 0

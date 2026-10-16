@@ -11,7 +11,7 @@ Writes OUT/<scroll>_ct_check.png (one sheet), OUT/<scroll>/<scroll>_z<z>.png (on
 OUT/summary.json. The pictures show CT from the open-data bucket (CC BY-NC 4.0); keep OUT out of Git like other scan
 data. Needs numpy, requests, matplotlib and Pillow (pip install matplotlib brings Pillow).
 """
-import argparse, json, os, sys, time
+import argparse, hashlib, json, os, sys, time
 import numpy as np
 import requests
 from concurrent.futures import ThreadPoolExecutor
@@ -203,11 +203,12 @@ def main():
         Bp, _ = load_umb(os.path.join(a.b, f"{s}_umbilicus.json"))
         vol = meta["source_volume"]; um = float(meta["voxelsize_um"])
         L2, L1, L0 = Level(vol, 2), Level(vol, 1), Level(vol, 0)
+        tag = hashlib.sha256(str(vol).rstrip("/").encode()).hexdigest()[:12]
         picks, gap, speed = pick_slices(A, Bp, a.n)
         rows = []
         for z, why in picks:
             ca, cb = at(A, z), at(Bp, z)           # (y, x) level 0
-            key = os.path.join(cache, f"{s}_z{z}")
+            key = os.path.join(cache, f"{s}_{tag}_z{z}")   # per scan: two scans of one scroll never share a cache file
 
             def cached(name, fn):
                 f = f"{key}_{name}.npy"

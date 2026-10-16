@@ -3,6 +3,7 @@
 import copy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -333,6 +334,12 @@ class SurfaceFixTests(unittest.TestCase):
         (self.base / "meta.json").write_text("{}")
         with self.assertRaisesRegex(VerifyError, "scale"):
             prepare(self.base, self.root / "other", 10, (1,))
+
+    def test_mesh_declaring_too_many_elements_is_refused(self):
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"KIT_MAX_TIFF_ELEMENTS": str(32 * 32 - 1)}):
+            with self.assertRaisesRegex(VerifyError, "KIT_MAX_TIFF_ELEMENTS"):
+                prepare(self.base, self.root / "other", 10, (1,))
 
     def test_fractional_geometry_matches_recover_shifted_dense_maps_and_legacy_abstains(self):
         path, manifest = self._manifest()
