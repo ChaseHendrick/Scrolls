@@ -7,6 +7,8 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/` | Standard-library Python package, `python -m kit` (numpy, tifffile, zarr only for map tools) |
 | `kit/prizes.py`, `kit/data/prizes-*.json` | Dated prize snapshot: amounts, deadlines, eligible volumes with S3 names and voxel sizes |
 | `kit/doctor.py` | Machine check: GPU (CUDA or Apple Silicon), memory, disk, tools |
+| `kit/scancatalog.py` | Catalog of every scan volume in the vesuvius-challenge-open-data S3 bucket, with per-scan config |
+| `kit/autobatch.py` | Priced dry-run batch over the catalog (`kit run all`) and the new-scan watcher (`kit run watch`); launches nothing |
 | `kit/plan.py` | Prints the official First Letters commands for one scroll (never runs them) |
 | `kit/cli.py`, `kit/__main__.py` | The `python -m kit` entry point: every subcommand and its help text |
 | `kit/fetch.py` | Resumable anonymous download of a bucket prefix; aliases `w035`, `w045` |
