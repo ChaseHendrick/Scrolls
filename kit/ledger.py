@@ -49,12 +49,22 @@ def path_for(slug, root=DEFAULT_ROOT):
     return Path(root) / slug / "run.json"
 
 
+def _read(path):
+    with open(path, encoding="utf-8") as fh:
+        try:
+            record = json.load(fh)
+        except ValueError as exc:
+            raise LedgerError(f"cannot read {path}: {exc}; fix the file or restore it from a backup") from exc
+    if not isinstance(record, dict):
+        raise LedgerError(f"{path} is not a run record (a JSON object); fix the file or restore it from a backup")
+    return record
+
+
 def load(slug, root=DEFAULT_ROOT):
     path = path_for(slug, root)
     if not path.exists():
         raise LedgerError(f"no experiment at {path}")
-    with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
+    return _read(path)
 
 
 def save(record, root=DEFAULT_ROOT):
@@ -91,9 +101,12 @@ def init(slug, scroll, question, readout, root=DEFAULT_ROOT, villa_commit=None, 
 
 def set_status(slug, status, note="", announced=False, root=DEFAULT_ROOT):
     record = load(slug, root)
-    current = record["status"]
+    current = record.get("status")
     if status not in STATUSES:
         raise LedgerError(f"unknown status {status!r}; use one of {', '.join(STATUSES)}")
+    if current not in TRANSITIONS:
+        raise LedgerError(f"{slug} has the unknown status {current!r} in its run.json; "
+                          f"it must be one of {', '.join(STATUSES)}")
     if status not in TRANSITIONS[current]:
         raise LedgerError(f"cannot go from {current} to {status}")
     if status == "published" and current == "submitted" and not announced:
@@ -176,6 +189,5 @@ def list_runs(root=DEFAULT_ROOT):
         return []
     out = []
     for path in sorted(root.glob("*/run.json")):
-        with open(path, encoding="utf-8") as fh:
-            out.append(json.load(fh))
+        out.append(_read(path))
     return out

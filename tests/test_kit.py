@@ -283,6 +283,19 @@ class LedgerTest(unittest.TestCase):
                 ledger.add_cost("t1", usd, "bad", root=self.root)
         self.assertEqual(ledger.load("t1", self.root)["costs"], [])
 
+    def test_corrupt_record_and_unknown_status_are_ledger_errors(self):
+        path = ledger.path_for("t1", self.root)
+        record = json.loads(path.read_text())
+        record["status"] = "Running"
+        path.write_text(json.dumps(record))
+        with self.assertRaisesRegex(ledger.LedgerError, "Running"):
+            ledger.set_status("t1", "null", root=self.root)
+        for text in ("{not json", "[]"):
+            path.write_text(text)
+            for call in (lambda: ledger.load("t1", self.root), lambda: ledger.list_runs(self.root)):
+                with self.assertRaisesRegex(ledger.LedgerError, "run.json"):
+                    call()
+
     def test_requires_readout_and_safe_slug(self):
         with self.assertRaises(ledger.LedgerError):
             ledger.init("t2", "PHerc0826", "q", "  ", root=self.root)
@@ -311,6 +324,13 @@ class CliTest(unittest.TestCase):
             self.assertEqual(self.run_cli("run", "--root", tmp, "check", "x"), (0, "x: ok\n"))
             code, out = self.run_cli("run", "--root", tmp, "list")
             self.assertIn("planned", out)
+
+    def test_run_reports_a_corrupt_record_without_a_traceback(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            self.run_cli("run", "--root", tmp, "init", "x", "--scroll", "PHerc0211", "--question", "q", "--readout", "r")
+            (Path(tmp) / "x" / "run.json").write_text("{not json")
+            for argv in (("check", "x"), ("status", "x", "running"), ("cost", "x", "--usd", "1", "--what", "w"), ("list",)):
+                self.assertEqual(self.run_cli("run", "--root", tmp, *argv)[0], 2, argv)
 
 
 if __name__ == "__main__":
