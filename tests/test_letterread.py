@@ -2172,6 +2172,18 @@ class FastPathTest(unittest.TestCase):
             self.assertSameBits(a, before)
         with self.assertRaises(ValueError):
             R.normalize_info(np.full((3, 3), np.nan))
+        for shape in ((0, 5), (0, 0), (3, 0)):     # vacuously all finite, but still no finite values
+            with self.assertRaises(ValueError):
+                R.normalize_info(np.zeros(shape))
+            with self.assertRaises(ValueError):
+                R.normalize_info(np.zeros(shape, np.float32), "auto", np.float32)
+        mask = rng.random((50, 50)) < 0.3            # a bool image becomes float through the fill
+        for dtype in (None, bool):
+            for polarity in ("bright", "dark", "auto"):
+                img, info = R.normalize_info(mask, polarity, dtype)
+                want_img, want_info = reference(mask, polarity, dtype)
+                self.assertSameBits(img, want_img)
+                self.assertEqual(info, want_info)
 
     def test_shear_matches_gather(self):
         def reference(a, deg, fill=0.0):

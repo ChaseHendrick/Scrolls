@@ -940,7 +940,9 @@ def normalize_info(a, polarity="bright", dtype=np.float64):
     the image, not a rule) and, for auto, rule (POLARITY_RULE)."""
     a = np.asarray(a, dtype=dtype)
     finite = np.isfinite(a)
-    if not finite.all():  # only then is the fill needed: the median of a full image costs a copy and a partition
+    # Only then is the fill needed: the median of a full image costs a copy and a partition. An empty image
+    # still raises the ValueError below, and a bool image still becomes float through np.where.
+    if a.size == 0 or a.dtype == bool or not finite.all():
         if not finite.any():
             raise ValueError("image has no finite values")
         a = np.where(finite, a, np.median(a[finite]))
