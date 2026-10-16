@@ -18,6 +18,7 @@ The first tagged version. It holds everything released from this repository from
 - **AutoPipeline on every scan, planning only** (`python -m kit run all --dry-run`, `python -m kit run watch`): a catalog of every scan volume in the open-data bucket, per-scan settings, a priced plan and a watcher for new or changed volumes. It launches nothing.
 - **Release list** (`python -m kit releases`): the README's "Released tools" section is written from `docs/releases.json`, and `kit releases check` fails when they disagree.
 - The command line builds its parser once per process, so repeated calls are much faster.
+- The Modal rates (`kit/data/modal-rates.json`) ship with the package, so `kit run all` and `python -m kit.cloudcost` work after a pip install.
 - `python -m kit run modal-row` appends one row to a Modal ledger; the public ledger takes a row only with `--public-generic` and a run marked generic.
 
 ## 0.1.0 (14 October 2026)
