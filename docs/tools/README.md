@@ -17,6 +17,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [false404-relay](false404-relay.md) | Current | `python3 scripts/false404/fault_relay.py` | Not needed | `scripts/false404/fault_relay.py` is a local HTTP relay in front of the open-data bucket that answers the first GETs of a fixed, seeded share of zarr chunk keys with the 404 `NoSuchBucket` S3 once sent, so VC3D's caching of false 404s (villa #2058) can be shown and its fix tested. |
 | [fetch](fetch.md) | Current | `python -m kit fetch` | Not needed | `python -m kit fetch` copies every file under one prefix of the Vesuvius Challenge open-data bucket to a local folder over anonymous HTTPS, with no AWS CLI, and skips files already there at the listed size, so an interrupted fetch resumes. |
 | [layers](layers.md) | Current | `python -m kit layers` | Not needed | `python -m kit layers` writes a surface-volume zarr as numbered layer TIFFs (`00.tif`, `01.tif`, ...), the input v8in reads; `--shuffle SEED`, and `python -m kit shuffle` for a zarr copy, write the depth-shuffle control: the same layers in a fixed random order. |
 
@@ -58,6 +59,18 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | [letterdemo](letterdemo.md) | Current | `python -m kit letterdemo` | Not needed | `python -m kit letterdemo` draws four lines of Greek capitals and a noise image in numpy, reads both with the letter reader's released weights, and prints DEMO PASS or DEMO FAIL under a fixed rule: an offline check that the reader, its weights and numpy work together. |
 | [letterlines](letterlines.md) | Current | `python -m kit letterlines build` | Not needed | `python -m kit letterlines build` checks records of lines you transcribed and cuts each line as the letter reader sees it into a `LINES.npz` for fine-tuning; `letterlines score` gives one or more models' character error on lines kept apart, with a paired interval. |
 
+### Compute and cost
+
+| Tool | Status | Run | Go-ahead | What it does |
+| --- | --- | --- | --- | --- |
+| [compute](compute.md) | Current | `python -m kit compute` | Not needed | `python -m kit compute` finds the `provenance*.json` records that runs leave behind and prints one row per run with its operator, machine, start time, wall-clock hours and digest, plus an optional energy estimate from an assumed power draw. |
+
+### Records and provenance
+
+| Tool | Status | Run | Go-ahead | What it does |
+| --- | --- | --- | --- | --- |
+| [run-ledger](run-ledger.md) | Current | `python -m kit run init` | Not needed | `python -m kit run init`, `status`, `cost`, `record`, `check` and `list` keep one `run.json` per experiment under `experiments/`: the question, a readout rule hashed before any output is seen, a status that cannot jump to published, costs, file hashes and checks. |
+
 ### Planning and prizes
 
 | Tool | Status | Run | Go-ahead | What it does |
@@ -70,6 +83,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [cli](cli.md) | Current | `python -m kit` | Not needed | `python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts. |
 | [releases](releases.md) | Current | `python -m kit releases add` | Not needed | `python -m kit releases` keeps `docs/releases.json`, the list of tools released from private work into this repository, and writes the README's "Released tools" section from it: pinned entries first, then newest first. |
 
 ### Viewers and apps

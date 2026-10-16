@@ -171,6 +171,335 @@
    ]
   },
   {
+   "id": "cli",
+   "name": "cli",
+   "tagline": "the kit command line (python -m kit) and its list of commands",
+   "summary": "`python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m kit",
+    "scrolls-workbench",
+    "scrolls-letterread",
+    "scrolls-letterlines",
+    "scrolls-letterdemo"
+   ],
+   "imports": [
+    "from kit import cli"
+   ],
+   "code": [
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser",
+      "_parser",
+      "_parse",
+      "main",
+      "_console",
+      "workbench_main",
+      "letterread_main",
+      "letterlines_main",
+      "letterdemo_main",
+      "import_advice",
+      "_shape",
+      "CONSOLE_SCRIPTS",
+      "READER_INSTALL",
+      "_PARSERS"
+     ]
+    },
+    {
+     "path": "kit/__main__.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/__init__.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_cli_parser_cache.py",
+    "tests/test_packaging.py",
+    "tests/test_localcost_regressions.py",
+    "tests/test_repo.py",
+    "tests/test_letterdemo.py",
+    "tests/test_letter_scripts.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run the entry point. A command that posts, uploads or rents compute needs Chase's yes first (the go-ahead rule, hard rule 8); its page says so"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`cli`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Releases and repository",
+    "Run": "`python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` (the installed package's console scripts), `from kit import cli`",
+    "Code": "`kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py`",
+    "Tests": "`tests/test_cli_parser_cache.py`, `tests/test_packaging.py`, `tests/test_localcost_regressions.py`, `tests/test_repo.py`, `tests/test_letterdemo.py`, `tests/test_letter_scripts.py`",
+    "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`). The entry point and every module it imports at start are standard library only; a command that needs numpy, tifffile, zarr, Pillow or scipy imports them when it runs (see its page)",
+    "Runs on": "Any machine. `python -m kit prizes --json` took 0.19 s wall (measured 2026-10-16, cloud container, Python 3.13.16); building the parser once and reusing it brought a repeated `main()` from 13 ms to 2 ms per call (commit `88fbee4`'s message; machine not recorded)",
+    "Network": "None of its own. Some commands contact hosts (such as `fetch` and `run all --refresh`); each command's page says which",
+    "Writes": "Nothing of its own. Each command's writes are on its page",
+    "Go-ahead": "Not needed to run the entry point. A command that posts, uploads or rents compute needs Chase's yes first (the go-ahead rule, hard rule 8); its page says so",
+    "Released": "Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`)",
+    "Guide": "[CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/cli.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 64,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 75,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 150,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 172,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 176,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 187,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 200,
+     "end_line": 209,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 210,
+     "end_line": 213,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 214,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 224,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 232,
+     "end_line": 239,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 240,
+     "end_line": 246,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "compute",
+   "name": "compute",
+   "tagline": "tabulate machine time per run from provenance records",
+   "summary": "`python -m kit compute` finds the `provenance*.json` records that runs leave behind and prints one row per run with its operator, machine, start time, wall-clock hours and digest, plus an optional energy estimate from an assumed power draw.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit compute"
+   ],
+   "imports": [
+    "from kit import compute"
+   ],
+   "code": [
+    {
+     "path": "kit/compute.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_compute"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_compute.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`compute`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit compute`, `from kit import compute`",
+    "Code": "`kit/compute.py`, `kit/cli.py` (`cmd_compute`)",
+    "Tests": "`tests/test_compute.py`",
+    "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only. Input: provenance records written by `python -m kit provenance write`",
+    "Runs on": "Any CPU. Time not measured; two synthetic records returned at once in a cloud container on 2026-10-16",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-07 (`da58d07`)",
+    "Guide": "[compute.md](../compute.md) (what compute the work needs and what it costs)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/compute.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 65,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 73,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 87,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 101,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 115,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 137,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 147,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 155,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 159,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 169,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 177,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 181,
+     "end_line": 187,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "cropscan",
    "name": "cropscan",
    "tagline": "pixel AUC of one ink map on every window of a grid",
@@ -636,6 +965,149 @@
      "name": "Related",
      "start_line": 226,
      "end_line": 234,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "false404-relay",
+   "name": "false404-relay",
+   "tagline": "replay S3's false 404 on chosen zarr chunks, on demand",
+   "summary": "`scripts/false404/fault_relay.py` is a local HTTP relay in front of the open-data bucket that answers the first GETs of a fixed, seeded share of zarr chunk keys with the 404 `NoSuchBucket` S3 once sent, so VC3D's caching of false 404s (villa #2058) can be shown and its fix tested.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python3 scripts/false404/fault_relay.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/false404/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_false404_relay.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it. Posting what it shows, such as a comment or a new render on villa #2058 or #2060, needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`false404-relay`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Data and downloads",
+    "Run": "`python3 scripts/false404/fault_relay.py`",
+    "Code": "`scripts/false404/`",
+    "Tests": "`tests/test_false404_relay.py`",
+    "Needs": "Python 3.10 or newer, standard library only. To show the bug: a VC3D (villa) build that streams zarr volumes over HTTP, pointed at the relay instead of the bucket",
+    "Runs on": "Any machine; it serves on `127.0.0.1` only. On a fake local bucket it answered 11 requests in about 2.7 s, start and stop included (measured 2026-10-16, cloud container, synthetic data). Speed against the real bucket: Not measured",
+    "Network": "The upstream it relays to, by default `https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (`BUCKET`), one new connection per request; it listens on `127.0.0.1`",
+    "Writes": "Nothing by default (prints two JSON lines). With `--log LOG`, appends one JSON line per request to LOG",
+    "Go-ahead": "Not needed to run it. Posting what it shows, such as a comment or a new render on villa #2058 or #2060, needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-12",
+    "Guide": "[the upstream reports log](../logs/2026-10-12-upstream-reports.md) (section 1), [the false-404 receipts](../evidence/2026-10-12-false-404/README.md)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/false404-relay.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 91,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 100,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 120,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 141,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 150,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 186,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 198,
+     "end_line": 206,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 207,
+     "end_line": 210,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 211,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 221,
+     "end_line": 228,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 229,
+     "end_line": 232,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 233,
+     "end_line": 238,
      "applicable": true
     }
    ]
@@ -3068,6 +3540,172 @@
      "name": "Related",
      "start_line": 228,
      "end_line": 239,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "run-ledger",
+   "name": "run-ledger",
+   "tagline": "the local experiment ledger, one run.json per experiment",
+   "summary": "`python -m kit run init`, `status`, `cost`, `record`, `check` and `list` keep one `run.json` per experiment under `experiments/`: the question, a readout rule hashed before any output is seen, a status that cannot jump to published, costs, file hashes and checks.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit run init",
+    "python -m kit run status",
+    "python -m kit run cost",
+    "python -m kit run record",
+    "python -m kit run check",
+    "python -m kit run list"
+   ],
+   "imports": [
+    "from kit import ledger"
+   ],
+   "code": [
+    {
+     "path": "kit/ledger.py",
+     "symbols": []
+    },
+    {
+     "path": "templates/experiment.json",
+     "symbols": []
+    },
+    {
+     "path": "experiments/README.md",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_run"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_kit.py",
+    "tests/test_verify.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to keep the ledger. Moving a record into git, or making a `candidate` or `submitted` one public, is never allowed before the official announcement (the no-findings rule, hard rule 1)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`run-ledger`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit run init`, `python -m kit run status`, `python -m kit run cost`, `python -m kit run record`, `python -m kit run check`, `python -m kit run list`, `from kit import ledger`",
+    "Code": "`kit/ledger.py`, `templates/experiment.json`, `experiments/README.md`, `kit/cli.py` (`cmd_run`)",
+    "Tests": "`tests/test_kit.py`, `tests/test_verify.py`",
+    "Needs": "Python 3.10 or newer, standard library only. `run init` reads the dated prize snapshot `kit/data/prizes-2026-10-11.json` through `kit/prizes.py`",
+    "Runs on": "Any CPU. Each action took about 0.13 s wall on a one-record ledger, almost all of it Python start-up (measured 2026-10-16, 4-core cloud container, synthetic record). `run record` hashes every `--file` in full, so it grows with file size; not measured on large files",
+    "Network": "None",
+    "Writes": "`experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`): `init` creates it and its folder; `status`, `cost` and `record` rewrite it in place. `check` and `list` write nothing",
+    "Go-ahead": "Not needed to keep the ledger. Moving a record into git, or making a `candidate` or `submitted` one public, is never allowed before the official announcement (the no-findings rule, hard rule 1)",
+    "Released": "Public `main` since 2026-10-06 (`2daee8e`)",
+    "Guide": "[WORKFLOW.md](../WORKFLOW.md) (plan, run, null or candidate, with these commands)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/run-ledger.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 79,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 87,
+     "end_line": 179,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 180,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 206,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 217,
+     "end_line": 245,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 246,
+     "end_line": 268,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 269,
+     "end_line": 290,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 291,
+     "end_line": 294,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 295,
+     "end_line": 304,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 305,
+     "end_line": 313,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 314,
+     "end_line": 318,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 319,
+     "end_line": 326,
      "applicable": true
     }
    ]

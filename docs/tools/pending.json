@@ -17,33 +17,16 @@
     "python -m kit run catalog"
    ]
   },
-  "cli": {
-   "group": "pub-planning",
-   "covers": []
-  },
   "cloudcost": {
    "group": "pub-ledger",
    "covers": [
     "kit/cloudcost.py"
    ]
   },
-  "compute": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/compute.py",
-    "python -m kit compute"
-   ]
-  },
   "experiment-records": {
    "group": "pub-scripts-apps",
    "covers": [
     "scripts/experiments"
-   ]
-  },
-  "false404-relay": {
-   "group": "pub-scripts-apps",
-   "covers": [
-    "scripts/false404"
    ]
   },
   "letterread": {
@@ -97,18 +80,6 @@
   "quickstart-wip": {
    "group": "pub-released",
    "covers": []
-  },
-  "run-ledger": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/ledger.py",
-    "python -m kit run init",
-    "python -m kit run status",
-    "python -m kit run cost",
-    "python -m kit run record",
-    "python -m kit run check",
-    "python -m kit run list"
-   ]
   },
   "run-local": {
    "group": "pub-ledger",
