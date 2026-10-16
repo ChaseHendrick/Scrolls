@@ -1085,7 +1085,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
 
     p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
     p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")
-    p.add_argument("out_dir")
+    p.add_argument("out_dir", help="folder for the layer TIFFs; it must not already hold numbered TIFFs")
     p.add_argument("--start", type=int, default=0, help="first layer to export")
     p.add_argument("--count", type=int, help="number of layers (default: all from --start)")
     p.add_argument("--level", default="0", help="OME-Zarr level when the store is a group")
