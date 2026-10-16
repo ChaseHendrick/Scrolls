@@ -36,6 +36,7 @@ Updated 14 October 2026.
 | --- | --- | --- |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
+| AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package lives on branch `submission/progress-2026-10-fix4`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |
 | Scroll centre (umbilicus) finder: a centre line from CT, with its held-out error on the 13 published centre lines | [`../scripts/umbilicus/README.md`](../scripts/umbilicus/README.md) | [`evidence/2026-10-14-umbilicus/`](evidence/2026-10-14-umbilicus/README.md) (end-point rule calibration; held-out scores with the end trims; weight hashes), `results.json` `umbilicus_checks` |
