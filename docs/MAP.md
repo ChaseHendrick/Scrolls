@@ -42,6 +42,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `scripts/mac-w045.sh` | Mac GPU: score `ink_9um` and v8in-family models on a labelled segment (`SEGMENT=w045` or `0841-w00/ag896/ag405`; `QUICK=1`; `MODEL=v8in|v8in-1447`; `V8IN_FP16=1`) |
 | `scripts/mac-phase0.sh` | Mac GPU: the whole Phase 0 queue (v8in and v8in-1447 on the three PHerc0841 crops), resumable, then `kit gate` |
 | `scripts/mac-verify.sh` | Mac GPU: `ink_9um` CPU vs MPS on w035 (villa PR #1865) |
+| `scripts/heldout/hecate_split.py`, `tests/test_hecate_split.py` | Applies the train and validation split rule of Hecate's published trainer (villa `distilled_3d_ink` 5ff00ca0, numpy port) to a segment's label masks from the ink dataset and reports training patches and the share of supervised pixels under them; reads masks only ([log](logs/2026-10-16-reader-exposure.md)) |
 | `scripts/soup.py` | Weight average of checkpoints from ONE run (Nieuwlaar's soup42_last4, bit-identical); refuses mixed seeds |
 | `scripts/false404/fault_relay.py` | Local relay in front of the open-data bucket that replays S3's false 404 on chosen chunk keys, for villa #2058 and its fix #2060 ([log](logs/2026-10-12-upstream-reports.md)); standard library |
 | `scripts/v8in_run.py` | v8in inference wrapper with opt-in fp16 on MPS; logs `tiles=N done in Ns` |
