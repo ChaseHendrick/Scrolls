@@ -486,16 +486,48 @@ def _conv3(x, w, b):
     xp = np.pad(x, ((0, 0), (0, 0), (1, 1), (1, 1)))
     out = np.empty((N, O, H, W), np.float32)
     wm = w.reshape(O, C * 9).T
+    # im2col: one row per pixel (y, x), columns in (c, dy, dx) order. Nine block copies from the channel-last
+    # image fill the same matrix that sliding_window_view(...).transpose(1, 2, 0, 3, 4).reshape gathered, faster,
+    # and the matrix product is the same call on the same matrices, so the output is the same bit for bit.
+    cols = np.empty((H, W, C, 3, 3), xp.dtype)
     for n in range(N):
-        cols = np.lib.stride_tricks.sliding_window_view(xp[n], (3, 3), axis=(1, 2))
-        cols = cols.transpose(1, 2, 0, 3, 4).reshape(H * W, C * 9)
-        out[n] = (cols @ wm + b).T.reshape(O, H, W)
+        xt = xp[n].transpose(1, 2, 0)
+        for dy in range(3):
+            for dx in range(3):
+                cols[:, :, :, dy, dx] = xt[dy:dy + H, dx:dx + W]
+        out[n] = (cols.reshape(H * W, C * 9) @ wm + b).T.reshape(O, H, W)
     return out
 
 
 def _pool2(x):
+    """2 x 2 max pooling of (N, C, H, W), dropping an odd last row or column.
+
+    The elementwise maximum of the four strided slices: the same values as a max over the reshaped
+    2 x 2 blocks, which numpy reduces over the strided axes many times more slowly. They match bit for bit
+    for a C-contiguous x, which StrokeNet always passes (np.maximum output). For other layouts the old
+    reduction's choice between -0.0 and +0.0 in a block whose maximum is a tie of the two depends on memory
+    order, so only the sign of a zero can differ, and the output here is always C-ordered."""
     N, C, H, W = x.shape
-    return x[:, :, :H // 2 * 2, :W // 2 * 2].reshape(N, C, H // 2, 2, W // 2, 2).max(axis=(3, 5))
+    h2, w2 = H // 2 * 2, W // 2 * 2
+    out = x[:, :, 0:h2:2, 0:w2:2].copy()
+    np.maximum(out, x[:, :, 0:h2:2, 1:w2:2], out=out)
+    np.maximum(out, x[:, :, 1:h2:2, 0:w2:2], out=out)
+    np.maximum(out, x[:, :, 1:h2:2, 1:w2:2], out=out)
+    return out
+
+
+def _argsort_rows(z):
+    """np.argsort(z, axis=1, kind="stable") of a 2D array, through the faster default sort where that is the same.
+
+    A row with no ties and no NaN has only one sorting order, which any sort finds; a row with a tie
+    (-0.0 and 0.0 count as one) or a NaN is sorted again with the stable sort, so its ties stay in
+    position order."""
+    order = np.argsort(z, axis=1)
+    s = np.take_along_axis(z, order, axis=1)
+    redo = (s[:, 1:] == s[:, :-1]).any(axis=1) | np.isnan(s).any(axis=1)
+    if redo.any():
+        order[redo] = np.argsort(z[redo], axis=1, kind="stable")
+    return order
 
 
 def iaaft(windows, rng, iters=IAAFT_ITERS):
@@ -520,13 +552,10 @@ def iaaft(windows, rng, iters=IAAFT_ITERS):
     vals = np.sort(flat, axis=1)
     amp = np.abs(np.fft.rfft2(x))
     y = np.stack([f[rng.permutation(size)] for f in flat])
-    rows, ar = np.arange(N)[:, None], np.broadcast_to(np.arange(size), (N, size))
-    ranks = np.empty((N, size), np.intp)
     for _ in range(iters):
         Y = np.fft.rfft2(y.reshape(x.shape))
         z = np.fft.irfft2(amp * np.exp(1j * np.angle(Y)), s=shape).reshape(N, -1)
-        ranks[rows, np.argsort(z, axis=1, kind="stable")] = ar
-        y = np.take_along_axis(vals, ranks, axis=1)
+        np.put_along_axis(y, _argsort_rows(z), vals, axis=1)   # the k-th smallest of z gets the k-th value
     y = y.reshape(x.shape)
     return y[0] if single else y
 

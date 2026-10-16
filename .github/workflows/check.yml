@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+# A new push to a pull request cancels that pull request's run still in progress, since only the newest
+# commit's result counts. Runs on main are never cancelled, so every merge keeps its own complete record.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     # The core is standard library only: the whole suite with no third-party package installed. The letter
@@ -19,8 +25,8 @@ jobs:
       matrix:
         python-version: ['3.10', '3.13']
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
       - name: Unit tests
@@ -57,10 +63,14 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: ${{ matrix.python-version }}
+          # Keeps pip's download cache between runs. pip still resolves every dependency against the index, so
+          # the newest releases are installed as before; only the downloads of unchanged files are skipped.
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install the package with the reader extra
         run: python -m pip install ".[reader]"
       - name: Reader tests
@@ -81,10 +91,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: '3.13'
+          cache: pip
+          cache-dependency-path: pyproject.toml
       - name: Install the package with every extra (the map tools and the reader)
         run: python -m pip install ".[all]"
       - name: Unit tests including kit verify
