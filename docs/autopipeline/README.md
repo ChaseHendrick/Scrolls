@@ -331,8 +331,19 @@ runner used for the measured runs is not part of the release.
 
 **Modal ledger.** Modal spend is recorded in [`docs/compute/modal-ledger.csv`](../compute/modal-ledger.csv) with
 columns `date_time_et, purpose, gpu_type, gpu_count, gpu_seconds, cpu_seconds, est_cost_usd,
-actual_cost_usd_if_known, cumulative_usd, notes`. On this branch it holds only the header. Rows are added by hand after
-each job; no runner writes it. Estimates come from `kit/cloudcost.py` on `main`:
+actual_cost_usd_if_known, cumulative_usd, notes`. On this branch it holds only the header. No runner in this
+repository writes it. `kit/modalledger.py` (proposed in
+[pull request 90](https://github.com/ChaseHendrick/Scrolls/pull/90), not yet on `main`) adds a row from a JSON file
+`{"key": ..., "row": {column: value}, "generic": true}`:
+
+```bash
+python -m kit run modal-row row.json --ledger docs/compute/modal-ledger.csv --public-generic
+```
+
+A row is written once per key: the key is kept in the notes as `autoledger KEY`, and a key or `app_id` already in the
+ledger writes nothing, so a rerun adds no duplicate. Because this ledger is public, a row needs both the explicit
+`--public-generic` flag and `"generic": true`, and a row that names non-generic work is refused. Estimates come from
+`kit/cloudcost.py` on `main`:
 
 ```bash
 python3 -m kit.cloudcost defaults
@@ -429,6 +440,8 @@ Run tests through `discover -s tests`; they import each other's helpers. For thi
 - **0.1.2** (`progress-2026-10-fix2`, 143c54b), **0.1.1** (`progress-2026-10-fix1`, 1534136), **0.1.0**
   (`progress-2026-10`, faada83).
 - Plan version 2 added `trace.normal_grids`; version 1 plans still read.
+- Not yet released: `python -m kit run modal-row` and `kit/modalledger.py` (pull request 90). The next release cut
+  keeps the `run` command, so `run local`, `run backfill` and `run modal-row` would ship with it.
 
 ## 18. Agent section
 
@@ -482,7 +495,8 @@ Rules in short form: [`AGENTS.md`](AGENTS.md).
 2. A target run needs a ledger experiment that is planned or running; its outputs stay in the git-ignored folder.
 3. Maps and scores are model output, not readings.
 4. The monitor stays on 127.0.0.1; snapshots of unpublished scrolls are not shared.
-5. Every Modal job gets a ledger row; electricity rates stay in local config.
+5. Every Modal job gets a ledger row, written once per key; only a generic run goes into the public ledger, and only
+   with `--public-generic`. Electricity rates stay in local config.
 6. Reserved segments are never planned.
 
 ### Test commands

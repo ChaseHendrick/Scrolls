@@ -10,8 +10,9 @@ Read [`README.md`](README.md) first; section 18 is the machine-readable part. Th
 3. Never edit `plan.json` or `state.json`; a changed rule is a new plan in a new folder.
 4. A target run needs a preregistered ledger experiment; target maps, triage lists and snapshots never leave the
    git-ignored run folder.
-5. Add a row to `docs/compute/modal-ledger.csv` after any Modal job. Wrap local runs with `python -m kit run local`;
-   keep the electricity rate in local config.
+5. Add a row to `docs/compute/modal-ledger.csv` after any Modal job (with `python -m kit run modal-row` once it is on
+   `main`: generic runs only, behind `--public-generic`). Wrap local runs with `python -m kit run local`; keep the
+   electricity rate in local config.
 6. Keep the monitor on 127.0.0.1.
 7. Maps and scores are model output, not readings.
 8. Do not edit the README's "Released tools" section by hand (root AGENTS.md rule 15).
