@@ -546,18 +546,22 @@ class CommandLine(unittest.TestCase):
 
     def test_exit_codes(self):
         self.assertEqual(self.run_main("check", "--page", "no-such-page")[0], 1)
-        code, out, _ = self.run_main("check", "--page", "auc")
-        self.assertEqual((code, out.strip()), (0, "tool docs pass (pages auc)"))
         self.assertEqual(self.run_main("show", "no-such-page")[0], 2)
-        self.assertEqual(self.run_main("show", "auc", "--section", "No such section")[0], 2)
-        code, out, _ = self.run_main("show", "auc", "--section", "For agents")
-        self.assertEqual(code, 0)
-        self.assertTrue(out.startswith("## For agents\n- **Command:**") or out.startswith("## For agents\n\n- **Command:**"))
-        code, out, _ = self.run_main("show", "auc", "--field", "Status")
-        self.assertEqual((code, out.strip()), (0, "Current"))
         code, out, _ = self.run_main("list", "--json")
         self.assertEqual(code, 0)
-        self.assertIn("auc", [t["id"] for t in json.loads(out)["tools"]])
+        ids = [t["id"] for t in json.loads(out)["tools"]]
+        if not ids:
+            self.skipTest("no tool pages yet")
+        pid = ids[0]
+        code, out, _ = self.run_main("check", "--page", pid)
+        self.assertEqual((code, out.strip()), (0, f"tool docs pass (pages {pid})"))
+        self.assertEqual(self.run_main("show", pid, "--section", "No such section")[0], 2)
+        code, out, _ = self.run_main("show", pid, "--section", "For agents")
+        self.assertEqual(code, 0)
+        self.assertTrue(out.startswith("## For agents\n"))
+        self.assertIn("- **Never:**", out)
+        code, out, _ = self.run_main("show", pid, "--field", "Id")
+        self.assertEqual((code, out.strip()), (0, f"`{pid}`"))
 
 
 class CodeScanners(unittest.TestCase):

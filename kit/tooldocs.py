@@ -1416,7 +1416,7 @@ def new_page(page_id, kind="kit command", status="Current", root=ROOT, today=Non
     sha = head.stdout.strip() if head is not None and head.returncode == 0 and head.stdout.strip() else "COMMIT"
     code_cell = ", ".join(f"`{c}`" + (" (" + ", ".join(f"`{s}`" for s in symbols) + ")" if symbols else "")
                           for c, symbols in items)
-    tests = tests_for(root, [c for c, _ in items])
+    tests = tests_for(root, plain)
     runnable = any(k in RUNNABLE for k in kinds)
     subs = {
         "{id}": page_id, "{kind}": kind, "{status}": status,
