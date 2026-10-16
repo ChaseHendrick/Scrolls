@@ -23,7 +23,7 @@ row; docs/autopipeline/README.md section 11). plan.json lists the command for ea
 Privacy: batch runs are purpose "benchmark" or "smoke" on public scans. The batch never takes title settings and
 writes nothing public (state lives in the git-ignored work/ folder); a config naming title work is refused.
 
-Prices are Modal list rates (docs/compute/modal-rates.json through kit/cloudcost.py) times stage hours from the
+Prices are Modal list rates (kit/data/modal-rates.json through kit/cloudcost.py) times stage hours from the
 assumptions in COST_MODEL, calibrated on the billed PHerc0841 w00 run (0.27 USD: 249 L4 seconds, 4892 CPU seconds).
 They are estimates (low, typical, high), not quotes. Standard library only.
 """
