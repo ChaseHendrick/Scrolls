@@ -516,7 +516,9 @@ def cmd_view(args):
     return 0
 
 
-READER_INSTALL = 'python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)'
+# The packages by name: scrolls-workbench is not on PyPI, so "pip install scrolls-workbench[reader]" from a clone would
+# fetch whatever someone else published under that name
+READER_INSTALL = "python -m pip install numpy pillow tifffile imagecodecs (the reader extra's packages)"
 
 
 def import_advice(exc):
@@ -525,7 +527,7 @@ def import_advice(exc):
     if any(n and n.split(".")[0] in ("numpy", "PIL", "tifffile", "imagecodecs") for n in names):
         return f"{exc}; {READER_INSTALL}"
     if any(n and n.split(".")[0] == "zarr" for n in names):
-        return f'{exc}; python -m pip install zarr (or "scrolls-workbench[all]", Python 3.11 or newer)'
+        return f'{exc}; python -m pip install zarr (Python 3.11 or newer)'
     return str(exc)
 
 

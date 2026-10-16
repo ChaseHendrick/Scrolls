@@ -96,13 +96,14 @@ def resolve_weights(spec=None, cache=None, registry=None, download=True):
     """A weights file path from a path or a released model name (default DEFAULT).
 
     A released name is looked up in the cache folder and downloaded from its URL when missing;
-    either way its SHA-256 must match the registry, so a damaged or swapped file is refused."""
+    either way its SHA-256 must match the registry, so a damaged or swapped file is refused. A released name
+    always means the released file, even when the working folder holds a file of that name; write ./NAME
+    to use such a file instead."""
     spec = str(spec or DEFAULT)
-    p = Path(spec)
-    if p.exists():
-        return p
     models = released_weights(registry)
     if spec not in models:
+        if Path(spec).exists():
+            return Path(spec)
         raise ValueError(f"{spec}: no such file, and not a released model ({', '.join(sorted(models))})")
     m = models[spec]
     dest = Path(cache or weights_cache()) / m["file"]
@@ -111,16 +112,21 @@ def resolve_weights(spec=None, cache=None, registry=None, download=True):
             raise ValueError(f"{spec}: not in {dest.parent}")
         if not m.get("url"):
             raise ValueError(f"{spec}: no download address yet; see docs/strokenet.md")
+        import tempfile
         import urllib.request
         dest.parent.mkdir(parents=True, exist_ok=True)
-        tmp = dest.with_name(dest.name + ".part")
-        with urllib.request.urlopen(m["url"]) as r, open(tmp, "wb") as f:
-            for block in iter(lambda: r.read(1 << 20), b""):
-                f.write(block)
-        if _sha256(tmp) != m["sha256"]:
-            tmp.unlink()
-            raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
-        tmp.replace(dest)
+        # a new file of its own (O_EXCL), not a fixed .part name another user could have made a link
+        fd, name = tempfile.mkstemp(dir=dest.parent, prefix=dest.name + ".", suffix=".part")
+        tmp = Path(name)
+        try:
+            with os.fdopen(fd, "wb") as f, urllib.request.urlopen(m["url"], timeout=120) as r:
+                for block in iter(lambda: r.read(1 << 20), b""):
+                    f.write(block)
+            if _sha256(tmp) != m["sha256"]:
+                raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
+            tmp.replace(dest)
+        finally:
+            tmp.unlink(missing_ok=True)
     if _sha256(dest) != m["sha256"]:
         raise ValueError(f"{spec}: {dest} does not match its SHA-256 {m['sha256']}; delete it and retry")
     return dest

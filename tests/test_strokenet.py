@@ -648,6 +648,37 @@ class StrokeNetTest(unittest.TestCase):
             with self.assertRaises(ValueError):                  # no address yet
                 N.resolve_weights("demo", cache=cache, registry=reg)
 
+    def test_released_name_beats_a_file_of_that_name_and_download_leaves_nothing_behind(self):
+        import io
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            cache = d / "cache"
+            cache.mkdir()
+            data = Path(self.path).read_bytes()
+            reg = d / "reg.json"
+            entry = {"file": "net.npz", "sha256": hashlib.sha256(data).hexdigest(), "url": "https://example.org/net.npz"}
+            reg.write_text(json.dumps({"models": {"demo": entry}}))
+            victim = d / "victim"
+            victim.write_bytes(b"keep")
+            (cache / "net.npz.part").symlink_to(victim)          # the old fixed temporary name, planted as a link
+            cwd = os.getcwd()
+            os.chdir(d)
+            try:
+                Path("demo").write_bytes(b"planted weights")
+                with mock.patch("urllib.request.urlopen", return_value=io.BytesIO(b"wrong")):
+                    with self.assertRaises(ValueError):
+                        N.resolve_weights("demo", cache=cache, registry=reg)
+                with mock.patch("urllib.request.urlopen", return_value=io.BytesIO(data)):
+                    got = N.resolve_weights("demo", cache=cache, registry=reg)
+                self.assertEqual(got, cache / "net.npz")         # the released file, not ./demo
+                self.assertEqual(got.read_bytes(), data)
+                self.assertEqual(N.resolve_weights("./demo", registry=reg), Path("./demo"))
+            finally:
+                os.chdir(cwd)
+            self.assertEqual(victim.read_bytes(), b"keep")
+            self.assertEqual(sorted(p.name for p in cache.iterdir()), ["net.npz", "net.npz.part"])
+
     def test_registry_names_a_default_model(self):
         models = N.released_weights()
         self.assertIn(N.DEFAULT, models)

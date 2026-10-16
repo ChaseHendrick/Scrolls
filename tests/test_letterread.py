@@ -732,7 +732,8 @@ class BigImageTest(unittest.TestCase):
                     code, _, err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])
                 self.assertEqual(code, 2)
                 self.assertIn(f"No module named {module!r}", err)
-                self.assertIn('python -m pip install "scrolls-workbench[reader]"', err)
+                self.assertIn("python -m pip install numpy pillow tifffile imagecodecs", err)
+                self.assertNotIn("scrolls-workbench", err)   # not on PyPI: a bare name there could be anyone's
             with mock.patch.object(R, "load_reduced", side_effect=ImportError("No module named 'zarr'", name="zarr")):
                 err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])[2]
             self.assertIn("python -m pip install zarr", err)
