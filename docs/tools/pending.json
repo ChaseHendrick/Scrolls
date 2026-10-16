@@ -1,4 +1,0 @@
-{
- "about": "Tool pages still to be written, each with the coverage targets it will cover (kit modules, packages, scripts, commands, releases, skills and workflows). python -m kit.tooldocs check accepts these targets and links to these pages until the page exists; then it asks for the entry to be removed, so this list can only shrink. Delete the file when it is empty. The standard is docs/TOOL-DOCS.md.",
- "pages": {}
-}

@@ -377,7 +377,7 @@ python -m unittest tests.test_tooldocs -v
 ## Related
 
 - [TOOL-DOCS.md](../TOOL-DOCS.md): the standard this tool enforces.
-- [Tool pages index](README.md) and [index.json](index.json): what `index` writes; [pending.json](pending.json): pages still to be written.
+- [Tool pages index](README.md) and [index.json](index.json): what `index` writes; `pending.json`, when it exists, lists pages still to be written.
 - [cli](cli.md): the `python -m kit` parser that the command checks read.
 - [releases](releases.md): the other generated README section, for released tools.
 - [AGENTS.md](../../AGENTS.md): the tool-pages rule (hard rule 16) and the docs-index rule.

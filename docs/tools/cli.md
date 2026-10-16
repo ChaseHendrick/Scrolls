@@ -90,7 +90,7 @@ usage: python -m kit [-h]
 
 ### Every command and its page
 
-Each command's `--help` line, its actions, its handler and the page that documents it. A page shown as pending is listed in [`pending.json`](pending.json) and not yet written.
+Each command's `--help` line, its actions, its handler and the page that documents it.
 
 | Command | Actions | Handler | Page | What it does (`--help`) |
 | --- | --- | --- | --- | --- |
@@ -117,7 +117,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `shuffle` | none | `cmd_shuffle` | [layers](layers.md) | depth-shuffle control: copy a surface volume with its layers in a fixed random order |
 | `phantom` | none | `cmd_phantom` | [phantom](phantom.md) | synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise |
 | `view` | none | `cmd_view` | [view](view.md) | one static HTML page overlaying several ink maps, their disagreement and the labels |
-| `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) (pending) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
+| `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
 | `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | learned Greek letter reader for a 2D image, with null, control-map and orientation controls |
 | `letterlines` | `build`, `score` | `cmd_letterlines` | [letterlines](letterlines.md) | training lines for the letter reader from your own transcribed lines, and scores on lines kept apart |
 | `letterdemo` | none | `cmd_letterdemo` | [letterdemo](letterdemo.md) | offline check of the letter reader: synthetic Greek capitals and a noise image, DEMO PASS or DEMO FAIL |
@@ -126,7 +126,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `run` | `init`, `status`, `cost`, `record`, `check`, `list` | `cmd_run` | [run-ledger](run-ledger.md) | local experiment ledger (experiments/, gitignored) |
 | `run` | `local`, `backfill` | `cmd_run` | [run-local](run-local.md) | `local`: run a local command and log wall time, CPU time and electricity cost; `backfill`: add estimated local-run costs from a JSON list of logged durations |
 | `run` | `modal-row` | `cmd_run` | [modal-row](modal-row.md) | append one Modal job's row to a Modal ledger CSV, once per key (kit/modalledger.py) |
-| `run` | `all`, `watch`, `catalog` | `cmd_run` | [batch](batch.md) (pending) | `all`: AutoPipeline over every released scan: catalog, per-scan config, priced plan, resumable queue (kit/autobatch.py); launches nothing. `watch`: for a scheduled routine: find new or changed volumes in the bucket, queue them priced in dry run, print them (launches nothing). `catalog`: write the catalog of every volume in the open-data bucket |
+| `run` | `all`, `watch`, `catalog` | `cmd_run` | [batch](batch.md) | `all`: AutoPipeline over every released scan: catalog, per-scan config, priced plan, resumable queue (kit/autobatch.py); launches nothing. `watch`: for a scheduled routine: find new or changed volumes in the bucket, queue them priced in dry run, print them (launches nothing). `catalog`: write the catalog of every volume in the open-data bucket |
 
 `run` takes one option of its own before the action, `--root ROOT` (default `experiments`, `ledger.DEFAULT_ROOT`), the ledger folder, as in `python -m kit run --root ROOT local SLUG -- COMMAND`. AutoPipeline (AP) is the released tool that runs villa's pipeline from a released scan to a scored ink map; its page is pending.
 
