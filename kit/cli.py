@@ -540,16 +540,22 @@ def cmd_letterread(args):
         letter_px = args.letter_px
         if args.letter_mm is not None or args.um_per_px is not None:
             letter_px = letterread.letter_px_from_units(args.letter_mm, args.um_per_px)
-        elif letter_px is not None and letter_px <= 0:
-            raise ValueError(f"--letter-px {letter_px}: the letter height must be positive")
+            if letter_px < letterread.MIN_LETTER_PX:
+                raise ValueError(f"--letter-mm {args.letter_mm:g} at --um-per-px {args.um_per_px:g} is a letter "
+                                 f"{letter_px:.3g} px tall, under the {letterread.MIN_LETTER_PX} px the reader can read; "
+                                 "check the units (the letter height in millimetres, the pixel size in micrometres)")
+        elif letter_px is not None and not letter_px >= letterread.MIN_LETTER_PX:
+            raise ValueError(f"--letter-px {letter_px}: give the letter height in image pixels, at least "
+                             f"{letterread.MIN_LETTER_PX} (the network reads letters 16 px tall, so smaller letters "
+                             "have no shape left to read)")
         if args.max_mpx <= 0 or args.overlay_max_side < 16:
             raise ValueError("--max-mpx must be positive and --overlay-max-side at least 16")
         if args.min_letters < 1:
             raise ValueError(f"--min-letters {args.min_letters}: give at least 1")
         if not 0 <= args.deskew < 45:
             raise ValueError(f"--deskew {args.deskew}: give an angle from 0 (off) to under 45 degrees")
-        if args.nulls < 0 or args.beam < 1 or args.lm_weight < 0:
-            raise ValueError("--nulls must be 0 or more, --beam at least 1 and --lm-weight 0 or more")
+        if not 0 <= args.nulls <= letterread.MAX_NULLS or args.beam < 1 or args.lm_weight < 0:
+            raise ValueError(f"--nulls must be 0 to {letterread.MAX_NULLS}, --beam at least 1 and --lm-weight 0 or more")
         if args.p_min is not None and not 0 <= args.p_min <= 1:
             raise ValueError(f"--p-min {args.p_min}: give a confidence from 0 to 1")
         if args.columns not in ("auto", "off") and not (args.columns.isdigit() and int(args.columns) >= 1):
@@ -607,6 +613,7 @@ def cmd_letterread(args):
                 raise ValueError(f"--control {args.control}: {cshape[0]} x {cshape[1]} px, but the image is {shape[0]} x "
                                  f"{shape[1]}; give a map of the same surface on the same grid (such as its "
                                  "reverse-depth map)")
+            letterread.check_control(cimg, f"--control {args.control}")
             # in the image's polarity, so --polarity auto cannot read the control map the other way round
             c0 = letterread.normalize_for_reading(cimg, pinfo["used"], max_pixels=int(args.max_mpx * 1e6))
             del cimg
@@ -782,6 +789,7 @@ def cmd_strokenet(args):
     try:
         import numpy as np
         from . import strokenet
+        strokenet.check_pixel_mm(args.pixel_mm)                        # before the weights, which may download
         net = strokenet.load(args.weights)
         crop = None
         with strokenet.open_map(args.map, args.key) as img:          # keeps the dtype: exact pooling of integer maps
@@ -1150,8 +1158,8 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
                    help="read only these rows and columns; every row, box and --lines value is then relative to Y0, X0")
     p.add_argument("--letter-px", type=float,
-                   help="letter height in image pixels (default: estimated from the line pitch, with a scale search; "
-                        "the read stops when the image shows no line pitch)")
+                   help="letter height in image pixels, at least 4 (default: estimated from the line pitch, with a "
+                        "scale search; the read stops when the image shows no line pitch)")
     p.add_argument("--letter-mm", type=float, help="letter height in millimetres; needs --um-per-px")
     p.add_argument("--um-per-px", type=float, help="pixel size in micrometres (with --letter-mm)")
     p.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6; letterread needs numpy
@@ -1172,7 +1180,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
                         "each its row at the image's horizontal middle, which the deskew turns about (give --deskew 0 "
                         "for level bands); default: found")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
-    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4)")
+    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4, at most 64)")
     p.add_argument("--control", metavar="MAP_REVERSE",
                    help="a second map of the same surface on the same grid, such as its reverse-depth ink map: read on "
                         "the image's lines at the same letter size and confidence floor; the status needs the image "

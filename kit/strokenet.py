@@ -48,6 +48,7 @@ kit/data/strokenet-weights.json, which resolve_weights() downloads once and chec
 import contextlib
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 
@@ -65,6 +66,10 @@ USABLE_MIN = 3                 # usable papyrus: map value above this (0 to 255 
 MIN_USABLE_FRAC = 0.99         # windows with fewer core pixels are skipped
 CORE_MM = 1.5                  # core papyrus: more than this from any unusable pixel
 STRIP_PX = 1 << 22             # source pixels read at a time by to_working
+# Map pixel sizes StrokeNet takes, in mm. 1 mm is 21 times its 0.048 mm working pixel: a 6.1 mm window
+# then spans about 6 source pixels and a letter 2 to 4, so no stroke is left to see, and a coarser map
+# is only enlarged further. 0.0001 mm (0.1 um) is ten times finer than any scroll scan.
+MIN_PIXEL_MM, MAX_PIXEL_MM = 1e-4, 1.0
 
 
 # ------------------------------------------------------------------ released weights
@@ -214,6 +219,17 @@ def _finite(blk):
     return blk
 
 
+def check_pixel_mm(pixel_mm):
+    """A ValueError when pixel_mm is not a map pixel size StrokeNet can use (MIN_PIXEL_MM to MAX_PIXEL_MM); else None."""
+    try:
+        ok = math.isfinite(float(pixel_mm)) and MIN_PIXEL_MM <= float(pixel_mm) <= MAX_PIXEL_MM
+    except (TypeError, ValueError):
+        ok = False
+    if not ok:
+        raise ValueError(f"pixel_mm {pixel_mm!r}: give the map's pixel size in mm, from {MIN_PIXEL_MM:g} to "
+                         f"{MAX_PIXEL_MM:g} (0.0024 for a 2.4 um map; StrokeNet works at {PIXEL_MM} mm)")
+
+
 def to_working(ink, pixel_mm, strip=None):
     """Resample a 2D map (array or array-like such as zarr) to 0.048 mm per pixel; float32.
 
@@ -223,8 +239,7 @@ def to_working(ink, pixel_mm, strip=None):
     averaging, then np.rint for an integer map. NaN and infinite source values read as 0. The source
     is read `strip` rows at a time (default about STRIP_PX pixels per strip), so no full float copy
     of it is made."""
-    if not pixel_mm > 0:
-        raise ValueError("pixel_mm must be positive")
+    check_pixel_mm(pixel_mm)
     z, shape, dtype = _source(ink)
     if len(shape) != 2:
         raise ValueError(f"expected a 2D map, got shape {shape}")
@@ -391,6 +406,7 @@ def snap_crop(crop, pixel_mm, shape=None):
     The window rule is then applied to the crop alone: papyrus edges outside it are not seen, and
     the corners of the crop lose about 1.5 mm of core papyrus. For exactly the training rule, score
     the whole map and read the windows needed from the grid."""
+    check_pixel_mm(pixel_mm)
     y0, y1, x0, x1 = (int(v) for v in crop)
     if shape is not None:
         y1, x1 = min(y1, int(shape[0])), min(x1, int(shape[1]))
