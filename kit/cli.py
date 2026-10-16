@@ -844,11 +844,11 @@ def cmd_strokenet(args):
             gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
             np.save(gpath, grid)
             res["grid_file"] = gpath
+        if args.out:
+            Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
     except (ImportError, OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
-    if args.out:
-        Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
     print(json.dumps(res, indent=1) if args.json else strokenet.text_summary(res))
     return 0
 

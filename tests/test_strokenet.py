@@ -768,6 +768,17 @@ class StrokeNetTest(unittest.TestCase):
                 self.assertEqual(rc, 2)
                 self.assertTrue(err.getvalue())
 
+    def test_cli_out_that_cannot_be_written_is_an_error_not_a_traceback(self):
+        with tempfile.TemporaryDirectory() as d:
+            mp = os.path.join(d, "map.npy")
+            np.save(mp, self.ink((200, 200), 9))
+            err = io.StringIO()
+            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+                rc = cli.main(["strokenet", mp, "--pixel-mm", "0.048", "--weights", self.path, "--sample", "1",
+                               "--out", os.path.join(d, "missing", "res.json")])
+            self.assertEqual(rc, 2)
+            self.assertIn("res.json", err.getvalue())
+
 
 
 def reference_conv3(x, w, b):
