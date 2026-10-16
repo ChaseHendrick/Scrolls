@@ -113,3 +113,7 @@ for name, code in (("cpu_vs_gpu", $V1), ("gpu_repeat", $V2)):
 EOF
 say "summary (also in $WORK/results/summary.txt)"
 cat "$WORK/results/summary.txt"
+if [[ "$V1" != 0 || "$V2" != 0 ]]; then   # the summary above says why; the exit code must say it too
+  echo "kit verify did not pass (cpu_vs_gpu exit $V1, gpu_repeat exit $V2); see the summary above and $WORK/results" >&2
+  exit 1
+fi
