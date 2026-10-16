@@ -91,5 +91,25 @@ class MacVerifyTest(unittest.TestCase):
         self.assertFalse(lock.exists())
 
 
+
+@unittest.skipIf(shutil.which("bash") is None or shutil.which("python3") is None, "needs bash and python3")
+class MacPhase0Test(unittest.TestCase):
+    def dry_run(self, jobs):
+        with tempfile.TemporaryDirectory() as work:
+            env = dict(os.environ, WORK=work, JOBS=jobs, DRY_RUN="1")
+            return subprocess.run(["bash", str(ROOT / "scripts" / "mac-phase0.sh")], env=env, capture_output=True,
+                                  text=True, timeout=120)
+
+    def test_refuses_the_segments_mac_w045_refuses(self):
+        r = self.dry_run("v8in:0841-w00")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertIn("would run MODEL=v8in SEGMENT=0841-w00", r.stdout)
+        for job in ("v8in:0841-w01", "v8in-1447:0841-ag"):
+            r = self.dry_run(f"v8in:0841-w00 {job}")
+            self.assertEqual(r.returncode, 2, r.stdout + r.stderr)
+            self.assertIn(f"unknown job {job}", r.stderr)
+            self.assertNotIn("would run", r.stdout)
+
+
 if __name__ == "__main__":
     unittest.main()
