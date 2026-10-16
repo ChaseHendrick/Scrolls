@@ -1,6 +1,6 @@
 """Modal cost calculator for scroll compute jobs: rates from a dated JSON, no network.
 
-Rates, limits and their source URLs live in docs/compute/modal-rates.json (access date
+Rates, limits and their source URLs live in kit/data/modal-rates.json (access date
 inside the file). Job assumptions live in docs/compute/modal-jobs.json. Every estimate is
 low / typical / high, because GPU hours for these jobs are assumptions, not measurements.
 
@@ -23,7 +23,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-RATES = ROOT / "docs" / "compute" / "modal-rates.json"
+# Packaged with kit (pyproject package-data), so a pip install can price plans.
+RATES = Path(__file__).resolve().parent / "data" / "modal-rates.json"
 JOBS = ROOT / "docs" / "compute" / "modal-jobs.json"
 LEVELS = ("low", "typical", "high")
 
@@ -268,7 +269,7 @@ def budget_table(rates, budgets, gpus=None, cpu=4, mem_gib=32):
 
 def build_parser():
     p = argparse.ArgumentParser(prog="python3 -m kit.cloudcost", description=__doc__.split("\n")[0])
-    p.add_argument("--rates", help="rates JSON (default docs/compute/modal-rates.json)")
+    p.add_argument("--rates", help="rates JSON (default kit/data/modal-rates.json)")
     sub = p.add_subparsers(dest="command", required=True)
     r = sub.add_parser("rates", help="hourly rates per GPU type")
     r.add_argument("--cpu", type=float, default=4)

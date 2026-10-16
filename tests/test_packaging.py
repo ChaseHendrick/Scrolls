@@ -78,6 +78,13 @@ class PyprojectTest(unittest.TestCase):
         for f in files:
             self.assertTrue(any(fnmatch.fnmatch(f, g) for g in globs), f"{f} is not in the package data")
 
+    def test_modal_rates_ship_with_the_package(self):
+        # `kit run all` prices its plan from these rates, so they must be inside kit, not docs/.
+        from kit import cloudcost
+        rel = cloudcost.RATES.relative_to(ROOT / "kit").as_posix()
+        self.assertTrue(any(fnmatch.fnmatch(rel, g) for g in self.data["tool"]["setuptools"]["package-data"]["kit"]))
+        self.assertIn("gpu_usd_per_s", cloudcost.load_rates())
+
     def test_licence_files_exist(self):
         for name in self.project["license-files"]:
             self.assertTrue((ROOT / name).is_file(), name)
