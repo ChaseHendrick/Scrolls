@@ -49,6 +49,15 @@ class ComputeTest(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(cli.main(["compute", str(self.root / "missing")]), 2)
 
+    def test_timestamp_without_z_is_reported_not_a_traceback(self):
+        (self.root / "b" / "provenance_odd.json").write_text(
+            json.dumps(record("odd", "2026-10-07T08:00:00+00:00", "2026-10-07T09:00:00Z")))
+        err = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+            self.assertEqual(cli.main(["compute", str(self.root)]), 2)
+        self.assertIn("provenance_odd.json", err.getvalue())
+        self.assertIn("2026-10-07T08:00:00+00:00", err.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

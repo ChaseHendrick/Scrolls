@@ -295,7 +295,11 @@ def cmd_compute(args):
     if not records:
         print("no provenance records found", file=sys.stderr)
         return 2
-    r = compute.rows(records, args.watts)
+    try:
+        r = compute.rows(records, args.watts)
+    except ValueError as exc:
+        print(f"{exc}; leave that record out of the paths given", file=sys.stderr)
+        return 2
     print(json.dumps(r, indent=2) if args.json else compute.table(r, args.watts))
     return 0
 
