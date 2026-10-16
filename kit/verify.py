@@ -71,9 +71,17 @@ def compare(reference, candidate, tolerance=DEFAULT_TOLERANCE):
         a = reference[start:start + ROWS_PER_BLOCK].astype(np.float64)
         b = candidate[start:start + ROWS_PER_BLOCK].astype(np.float64)
         d = np.abs(b - a)
+        # NaN or inf in one map and not the other is a disagreement: d is then NaN or inf, and
+        # max() and "d > tolerance" would both pass a NaN by. Equal values (inf and inf) or NaN in
+        # both maps at the same pixel agree.
+        same = (a == b) | (np.isnan(a) & np.isnan(b))
+        bad = ~(d <= tolerance) & ~same
+        d = np.where(same, 0.0, d)
+        if bad.any() and not np.isfinite(d[bad]).all():
+            max_abs = math.inf
         max_abs = max(max_abs, float(d.max()))
         sum_abs += float(d.sum())
-        over += int((d > tolerance).sum())
+        over += int(bad.sum())
         sx += float(a.sum())
         sy += float(b.sum())
         sxx += float((a * a).sum())
@@ -112,10 +120,20 @@ def verdict(candidate_agrees, control_agrees=None):
 
 def verify_arrays(reference, candidate, control=None, tolerance=DEFAULT_TOLERANCE,
                   max_fraction=DEFAULT_MAX_FRACTION):
+    np = _numpy()
+    if reference.dtype.kind == "f" and reference.size and not np.isfinite(reference).any():
+        # NaN at the same pixel counts as agreement, so an all-NaN candidate (both devices overflowing,
+        # say) would agree with an all-NaN reference and any finite control would look caught
+        raise VerifyError("the reference map has no finite values; a broken reference cannot show agreement")
     result = {"candidate": compare(reference, candidate, tolerance), "max_fraction": max_fraction}
     result["candidate_agrees"] = agrees(result["candidate"], max_fraction)
     control_agrees = None
     if control is not None:
+        if control.shape != reference.shape:
+            # A control of another shape would "disagree" by shape alone and turn any candidate
+            # into a pass; it shows nothing about whether the comparison can fail.
+            raise VerifyError(f"control shape {tuple(control.shape)} differs from the reference's "
+                              f"{tuple(reference.shape)}; the control must be the same map made wrongly")
         result["control"] = compare(reference, control, tolerance)
         control_agrees = agrees(result["control"], max_fraction)
         result["control_agrees"] = control_agrees

@@ -187,14 +187,19 @@ def extract(s, out, level=3, every=8):
 
 def extract_ranged(s, out, level=3, every=8, vol=None, threads=16):
     """extract's output (every `every`-th plane of level `level`, z in level-0 voxels) read plane by plane with
-    range requests (PlaneReader): about 1 MB per level-3 plane, instead of whole 128-plane chunks."""
+    range requests (PlaneReader): about 1 MB per level-3 plane, instead of whole 128-plane chunks. The file also holds
+    `missing` (chunk reads the bucket answered with NoSuchKey, read as 0) and `chunks` (all chunk reads). Nothing is
+    written when every chunk read was absent: the scan is not at that path (or not at that level)."""
     vol = (vol or volume(s)).rstrip("/")
     r = PlaneReader(vol, level); Z = r.shape[0]
     zs = np.arange(every // 2, Z, every)
     with ThreadPoolExecutor(max(1, threads // 8)) as ex:
         ct = np.stack(list(ex.map(lambda z: r.plane(int(z), threads=8), zs)))
+    chunks = len(zs) * -(-r.shape[1] // r.C) * -(-r.shape[2] // r.C)
+    if r.missing >= chunks:
+        raise RuntimeError(f"{vol}/{level}: all {chunks} chunk reads were absent (NoSuchKey); no slice file written")
     um = float(vol.split("/")[-1].split("-")[1].replace("um", ""))
-    np.savez_compressed(out, ct=ct, z_l0=zs * 2 ** level, vol=vol, um=um, level=level)
+    np.savez_compressed(out, ct=ct, z_l0=zs * 2 ** level, vol=vol, um=um, level=level, missing=r.missing, chunks=chunks)
     return out
 
 if __name__ == "__main__":

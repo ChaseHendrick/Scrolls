@@ -500,6 +500,39 @@ class InputsTest(unittest.TestCase):
         with self.assertRaises(VerifyError):
             sc.fetch_tifxyz("https://example.org/a/../b.tifxyz", tempfile.gettempdir())
 
+    def test_fetch_stays_inside_the_cache(self):
+        """A URL host of '..' or no host, or a scheme other than http(s), is refused before any folder is made."""
+        with tempfile.TemporaryDirectory() as t:
+            cache = Path(t) / "cache"
+            for url in ("https://../escaped/seg.tifxyz", "https://./x/seg.tifxyz", "http:///etc/seg.tifxyz",
+                        "file:///etc/seg.tifxyz", "ftp://example.org/seg.tifxyz", "https://user@../e/seg.tifxyz"):
+                with self.assertRaises(VerifyError, msg=url):
+                    sc.fetch_tifxyz(url, cache)
+            self.assertEqual(sorted(p.name for p in Path(t).rglob("*")), [])
+
+    def test_cache_host_folder_may_be_a_link_to_another_disk(self):
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as t:
+            cache, other = Path(t) / "cache", Path(t) / "external"
+            cache.mkdir()
+            other.mkdir()
+            (cache / "example.org").symlink_to(other, target_is_directory=True)
+            with mock.patch("kit.meshaudit._get", return_value=b"tif"):
+                got = sc.fetch_tifxyz("https://example.org/PHerc0139/seg.tifxyz", cache)
+            self.assertEqual(got, cache / "example.org" / "PHerc0139" / "seg.tifxyz")
+            self.assertEqual((other / "PHerc0139" / "seg.tifxyz" / "x.tif").read_bytes(), b"tif")
+
+    def test_read_tifxyz_refuses_a_declared_size_past_the_ceiling(self):
+        import tifffile
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as t:
+            for c in "xyz":
+                tifffile.imwrite(Path(t) / f"{c}.tif", np.ones((10, 12), np.float32))
+            self.assertEqual(sc.read_tifxyz(t)[0].shape, (10, 12, 3))
+            with mock.patch.dict(os.environ, {"KIT_MAX_TIFF_ELEMENTS": "100"}):
+                with self.assertRaisesRegex(VerifyError, "KIT_MAX_TIFF_ELEMENTS"):
+                    sc.read_tifxyz(t)
+
     def test_a_path_with_an_equals_sign(self):
         self.assertEqual(sc.split_spec("w035=/data/a/b.tifxyz"), ("w035", "/data/a/b.tifxyz"))
         self.assertEqual(sc.split_spec("/data/run=1/w0"), (None, "/data/run=1/w0"))

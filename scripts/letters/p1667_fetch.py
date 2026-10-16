@@ -61,6 +61,19 @@ def segment_prefix(seg, prefixes):
     return p[0]
 
 
+def label_path(root, base, key):
+    """Where a listed label key goes under root: refused unless it is a plain relative path below base (the listing
+    comes from the network, and a key such as BASE/../../x would otherwise write outside OUT)."""
+    tail = key[len(base):] if key.startswith(base) else ""
+    parts = tail.split("/")
+    if not tail or tail.startswith("/") or "\\" in tail or any(p in ("", ".", "..") for p in parts):
+        raise SystemExit(f"refusing unsafe key {key!r}")
+    dest = Path(root) / tail
+    if not dest.resolve().is_relative_to(Path(root).resolve()):
+        raise SystemExit(f"refusing key {key!r}: it leaves {root}")
+    return dest
+
+
 def download(key, dest, size=None):
     """Fetch one key unless dest is already complete: its size, when the listing gave one, else not empty.
     A body shorter than its Content-Length (or than size) is refused, so a cut-off file is never kept."""
@@ -101,7 +114,7 @@ def main(out, labels_only=False):
             print(seg, tif[0], flush=True)
         if seg in LABELLED:
             base = pre + LABELS
-            jobs += [(k, out / "labels" / seg / "z" / "1" / k[len(base) + 2:], n)
+            jobs += [(k, label_path(out / "labels" / seg / "z" / "1", base + "1/", k), n)
                      for k, n in keys(base + "1/", sizes=True).items()]
     with ThreadPoolExecutor(6) as ex:
         list(ex.map(lambda j: download(*j), jobs))
