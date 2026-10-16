@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases
+from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases
 
 
 def cmd_prizes(args):
@@ -327,7 +327,54 @@ def cmd_shuffle(args):
     return 0
 
 
+def cmd_batch(args):
+    try:
+        if args.action == "catalog":
+            doc = scancatalog.fetch(prizes.load(), live=not args.no_live_prizes)
+            scancatalog.write(doc, args.out)
+            print(json.dumps(scancatalog.summary(doc), indent=1))
+            print(f"wrote {args.out}")
+            return 0
+        if args.action == "watch":
+            res = autobatch.watch(args.state)
+            if args.json:
+                print(json.dumps(res, indent=1))
+            else:
+                for q in res["queued"]:
+                    print(f"{q['change']:<8} {q['key']:<32} {q['status']:<8} {q['voxel_um']} um "
+                          f"{' '.join(q['readers']) or '-'} typical {q['usd']['typical']} USD"
+                          + (f" ({q['reason']})" if q["reason"] else ""))
+                print(f"{len(res['queued'])} queued (dry run, nothing launched), {len(res['gone'])} gone, "
+                      f"{res['catalog_volumes']} volumes in the catalog" + (" (first run: all are new)" if res["first_run"] else ""))
+            return 3 if (args.exit_code and res["queued"]) else 0
+        if args.status:
+            rows = autobatch.status_table(args.state)
+            for r in rows:
+                print(f"{r['key']:<32} {r['status']:<9} {r['typical_usd']:>7} USD  {r['reason'] or ''}")
+            print(f"{len(rows)} scans, typical total {round(sum(r['typical_usd'] for r in rows if r['status'] in ('planned', 'approved')), 2)} USD to run")
+            return 0
+        if args.approve:
+            n = autobatch.approve(args.state, args.approve)
+            print(f"approved {n} scans of plan {args.approve}; nothing launched")
+            return 0
+        if args.refresh:
+            autobatch.load_catalog(args.state, refresh=True)
+        plan = autobatch.plan_all(args.state, only=args.only, include_superseded=args.include_superseded)
+        if args.json:
+            print(json.dumps(plan, indent=1))
+        else:
+            print(autobatch.plan_markdown(plan))
+            print(f"counts {plan['counts']}; plan digest {plan['digest']} (approve with: python -m kit run all "
+                  f"--approve {plan['digest']}); nothing launched")
+        return 0
+    except (autobatch.BatchError, scancatalog.ScanCatalogError, OSError, ValueError) as exc:
+        print(exc, file=sys.stderr)
+        return 2
+
+
 def cmd_run(args):
+    if args.action in ("all", "watch", "catalog"):
+        return cmd_batch(args)
     root = args.root
     try:
         if args.action == "init":
@@ -1234,6 +1281,25 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("--public-generic", action="store_true",
                    help="write the public ledger: refused unless the row is marked generic and names no title, "
                         "target, preregistered or held-out work")
+    a = actions.add_parser("all", help="AutoPipeline over every released scan: catalog, per-scan config, priced plan, "
+                                        "resumable queue (kit/autobatch.py); launches nothing")
+    a.add_argument("--state", default=str(autobatch.STATE), help="batch folder (default work/autobatch, git-ignored)")
+    g = a.add_mutually_exclusive_group()
+    g.add_argument("--dry-run", action="store_true", help="plan and price every scan (the default action)")
+    g.add_argument("--status", action="store_true", help="per-scan status and totals")
+    g.add_argument("--approve", metavar="DIGEST", help="record the owner's approval of that priced plan")
+    a.add_argument("--refresh", action="store_true", help="rebuild the catalog from the bucket first")
+    a.add_argument("--only", help="SAMPLE or SAMPLE/VOLUME")
+    a.add_argument("--include-superseded", action="store_true", help="plan superseded volumes too")
+    a.add_argument("--json", action="store_true")
+    a = actions.add_parser("watch", help="for a scheduled routine: find new or changed volumes in the bucket, queue "
+                                          "them priced in dry run, print them (launches nothing)")
+    a.add_argument("--state", default=str(autobatch.STATE))
+    a.add_argument("--json", action="store_true")
+    a.add_argument("--exit-code", action="store_true", help="exit 3 when something new was queued")
+    a = actions.add_parser("catalog", help="write the catalog of every volume in the open-data bucket")
+    a.add_argument("--out", default=str(autobatch.STATE / "catalog.json"))
+    a.add_argument("--no-live-prizes", action="store_true", help="use the dated prizes snapshot only")
     p.set_defaults(func=cmd_run)
     return parser
 
