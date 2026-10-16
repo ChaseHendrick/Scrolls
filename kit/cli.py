@@ -6,6 +6,7 @@ scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
 """
 
 import argparse
+import copy
 import json
 import sys
 from pathlib import Path
@@ -1238,20 +1239,38 @@ def build_parser(prog="python -m kit", sub_progs=None):
     return parser
 
 
+_PARSERS = {}
+
+
+def _parser(prog="python -m kit", sub_progs=None):
+    """build_parser, built once per (prog, sub_progs) in a process: it is over a thousand
+    add_argument calls, and pipelines and tests call main() many times in one process."""
+    key = (prog, tuple(sorted((sub_progs or {}).items())))
+    if key not in _PARSERS:
+        _PARSERS[key] = build_parser(prog, sub_progs)
+    return _PARSERS[key]
+
+
+def _parse(parser, argv):
+    # deep-copy the namespace so a command that mutates a list default (default=[]) cannot
+    # leak it into the next call, exactly as with a freshly built parser
+    return copy.deepcopy(parser.parse_args(argv))
+
+
 def main(argv=None, prog="python -m kit", sub_progs=None):
     argv = list(sys.argv[1:] if argv is None else argv)
-    parser = build_parser(prog, sub_progs)
+    parser = _parser(prog, sub_progs)
     # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
     # Parse the wrapper separately, leaving every child flag and literal intact.
     if argv[:1] == ["run"] and "--" in argv:
         split = argv.index("--")
-        args = parser.parse_args(argv[:split])
+        args = _parse(parser, argv[:split])
         if args.action == "local":
             args.cmd.extend(argv[split + 1:])
         else:
-            args = parser.parse_args(argv)
+            args = _parse(parser, argv)
     else:
-        args = parser.parse_args(argv)
+        args = _parse(parser, argv)
     return args.func(args)
 
 
