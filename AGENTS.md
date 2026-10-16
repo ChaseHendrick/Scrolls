@@ -21,6 +21,8 @@ Many files here are long: read the top of each and search the rest.
 3. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
 4. [`docs/MAP.md`](docs/MAP.md): the repository map, one row per module and script. Search it for a tool or a path.
 
+Terms used in the code and docs are defined, A to Z, in [`GLOSSARY.md`](GLOSSARY.md). Add a term there when you introduce one.
+
 Open these when the task needs them:
 
 - [`docs/plans/roadmap.md`](docs/plans/roadmap.md): pointer to the roadmap, which now lives in Scrolls-private (access required). Gate A's public rule is in `kit/gate.py`.
