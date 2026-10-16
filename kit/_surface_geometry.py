@@ -222,12 +222,24 @@ def project(source, reference, max_distance, tolerance):
     centers = corners.mean(1)
     radii = np.linalg.norm(corners - centers[:, None], axis=-1).max(1)
     lower_corner, upper_corner = corners.min(1), corners.max(1)
-    tree = cKDTree(centers)
     radius = max_distance + float(radii.max()) + tolerance
+    # A quad that passes the box test below has its centre within max_distance + tolerance + reach of the point
+    # (reach: centre to the farthest box corner). The tree holds the quads of ordinary reach and is searched with
+    # their largest reach; the few far larger quads (one stray vertex) are always tried. Both filters below then
+    # apply as before, so the quads tried are the same, without every point listing every quad.
+    reach = np.linalg.norm(np.maximum(upper_corner - centers, centers - lower_corner), axis=-1)
+    large = reach > 8 * float(np.median(reach)) + tolerance
+    small = np.nonzero(~large)[0]
+    always = np.nonzero(large)[0]
+    tree = cKDTree(centers[small]) if len(small) else None
+    search = (max_distance + tolerance + (float(reach[small].max()) if len(small) else 0.)) * (1 + 1e-9) + 1e-9
     for r, c in zip(*np.nonzero(source["valid"])):
         point = source["xyz"][r, c]
         numerical_epsilon = 64 * np.finfo(float).eps * max(1., float(np.linalg.norm(point)), max_distance)
-        candidates = sorted(tree.query_ball_point(point, radius))
+        near = small[tree.query_ball_point(point, search)] if tree is not None else small
+        near = np.concatenate([near, always])
+        near = near[((centers[near] - point) ** 2).sum(-1) <= radius * radius]
+        candidates = sorted(near.tolist())
         matches = []
         unknown_lower = np.inf
         for index in candidates:
