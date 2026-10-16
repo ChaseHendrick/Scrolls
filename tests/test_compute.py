@@ -58,6 +58,13 @@ class ComputeTest(unittest.TestCase):
         self.assertIn("provenance_odd.json", err.getvalue())
         self.assertIn("2026-10-07T08:00:00+00:00", err.getvalue())
 
+    def test_missing_path_is_reported(self):
+        err = io.StringIO()
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(err):
+            code = cli.main(["compute", str(self.root), str(self.root / "missing")])
+        self.assertEqual(code, 2)
+        self.assertIn("missing", err.getvalue())
+
 
 if __name__ == "__main__":
     unittest.main()

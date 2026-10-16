@@ -291,6 +291,10 @@ def cmd_provenance(args):
 
 
 def cmd_compute(args):
+    missing = [p for p in args.paths if not Path(p).exists()]
+    if missing:
+        print(f"no such file or folder: {', '.join(missing)}; check the paths", file=sys.stderr)
+        return 2
     records = compute.collect(args.paths)
     if not records:
         print("no provenance records found", file=sys.stderr)
