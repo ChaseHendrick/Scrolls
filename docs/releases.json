@@ -90,7 +90,7 @@
       "id": "unroll",
       "title": "Unroll (interactive 3D scroll viewer)",
       "released": "2026-10-16",
-      "summary": "[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, and an agent API. Status: released. Version: v1.0 (release candidate; the Space has no version.json or CHANGELOG yet). Licence: Apache 2.0 for the code (the Ink Bench and its bundle format are Apache 2.0 under `LICENSE-APACHE` and `NOTICE`; the Space's `LICENSE` file still covers the rest of the viewer code as MIT); the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account. The ink layers are model output, not readings.",
+      "summary": "[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, and an agent API. Status: released. Version: 1.0.0 (the Space's `version.json` and `CHANGELOG.md`). Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account. The ink layers are model output, not readings.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).",
       "where": "main"
     }
