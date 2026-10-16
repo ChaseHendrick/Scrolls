@@ -72,6 +72,11 @@ class MacVerifyTest(unittest.TestCase):
         self.assertNotEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertIn("cpu_vs_gpu: verdict fail (exit 1)", r.stdout)   # the summary still prints in full
 
+    def test_mps_fallback_is_off_for_every_inference(self):
+        r = self.run_script("pass", PYTORCH_ENABLE_MPS_FALLBACK="1")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertEqual(self.runs.read_text().split(), ["unset"] * 3)
+
 
 if __name__ == "__main__":
     unittest.main()

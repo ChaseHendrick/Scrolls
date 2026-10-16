@@ -10,6 +10,7 @@
 # Needs: git, uv (brew install uv), about 3 GB free in $WORK. Nothing is uploaded.
 # EXPECT_GPU=cpu lets the script run on a machine without MPS (used to test the script itself).
 set -euo pipefail
+unset PYTORCH_ENABLE_MPS_FALLBACK   # an op MPS lacks must fail, not quietly run on the CPU
 
 SCROLLS="$(cd "$(dirname "$0")/.." && pwd)"
 WORK="${WORK:-$HOME/scrolls-work}"
