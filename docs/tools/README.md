@@ -17,6 +17,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [batch](batch.md) | Current | `python -m kit run all` | Not needed | `python -m kit run catalog`, `run all` and `run watch` list every volume of the Vesuvius Challenge open-data bucket, give each one an AutoPipeline config and a Modal price, and queue them in a resumable, approvable dry-run plan; they never launch anything. |
 | [scroll-session](scroll-session.md) | Current | `/scroll-session` | Needed | The project skill `.claude/skills/scroll-session/` tells an agent how to start or continue Vesuvius Challenge work here: read the handoff, check prizes and the machine, plan and preregister a run, run it in the right place, and record the outcome without publishing a finding. |
 
 ### Data and downloads

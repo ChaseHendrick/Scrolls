@@ -171,6 +171,164 @@
    ]
   },
   {
+   "id": "batch",
+   "name": "batch",
+   "tagline": "plan, price and queue AutoPipeline over every scan in the open-data bucket",
+   "summary": "`python -m kit run catalog`, `run all` and `run watch` list every volume of the Vesuvius Challenge open-data bucket, give each one an AutoPipeline config and a Modal price, and queue them in a resumable, approvable dry-run plan; they never launch anything.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit run all",
+    "python -m kit run watch",
+    "python -m kit run catalog"
+   ],
+   "imports": [
+    "from kit import autobatch, scancatalog"
+   ],
+   "code": [
+    {
+     "path": "kit/autobatch.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/scancatalog.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_batch"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_autobatch.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for `catalog`, `watch`, `--dry-run` or `--status`: they launch, post and spend nothing. Needed for `--approve`: run it only with the digest Chase approved, and each approved scan's Modal launch needs his yes and budget (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "e49ec32"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`batch`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit run all`, `python -m kit run watch`, `python -m kit run catalog`, `from kit import autobatch, scancatalog`",
+    "Code": "`kit/autobatch.py`, `kit/scancatalog.py`, `kit/cli.py` (`cmd_batch`)",
+    "Tests": "`tests/test_autobatch.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Reads `docs/compute/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-10-11.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call",
+    "Runs on": "Any CPU. A dry run of a 5-volume synthetic catalog took 0.19 s (measured 2026-10-16, cloud container). A catalog of the real bucket: Not measured; it is a few hundred small HTTPS requests",
+    "Network": "`run catalog`, `run watch`, and `run all` with `--refresh` or with no saved catalog: anonymous HTTPS GETs of `https://vesuvius-challenge-open-data.s3.amazonaws.com/metadata.json`, the bucket's S3 listing (root and each `SAMPLE/volumes/`) and `https://scrollprize.org/prizes` (skipped by `run catalog --no-live-prizes`). `run all` and `run watch` also GET each in-bucket volume's `.zattrs`, and `0/.zarray` when the shape is missing, once (cached). `dl.ash2txt.org` is refused. Nothing is posted",
+    "Writes": "`run catalog`: `--out` only (default `work/autobatch/catalog.json`). `run all` and `run watch`: under `--state` (default `work/autobatch/`, git-ignored): `catalog.json`, `plan.json`, `plan.md`, `batch-ledger.csv`, `approval.json`, `scans/SAMPLE/VOLUME/status.json` and `settings.json`, `zattrs/` caches. `run all --status` writes nothing",
+    "Go-ahead": "Not needed for `catalog`, `watch`, `--dry-run` or `--status`: they launch, post and spend nothing. Needed for `--approve`: run it only with the digest Chase approved, and each approved scan's Modal launch needs his yes and budget (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-16 ([PR #93](https://github.com/ChaseHendrick/Scrolls/pull/93))",
+    "Guide": "[AutoPipeline reference, section 19](../autopipeline/README.md#19-every-scan-catalog-batch-and-watcher)",
+    "Checked": "2026-10-16 against commit `e49ec32`"
+   },
+   "page": "docs/tools/batch.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 132,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 186,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 197,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 252,
+     "end_line": 270,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 271,
+     "end_line": 280,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 281,
+     "end_line": 284,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 285,
+     "end_line": 294,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 295,
+     "end_line": 302,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 303,
+     "end_line": 306,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 307,
+     "end_line": 315,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "cli",
    "name": "cli",
    "tagline": "the kit command line (python -m kit) and its list of commands",

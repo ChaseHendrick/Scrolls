@@ -7,16 +7,6 @@
     "release autopipeline"
    ]
   },
-  "batch": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/autobatch.py",
-    "kit/scancatalog.py",
-    "python -m kit run all",
-    "python -m kit run watch",
-    "python -m kit run catalog"
-   ]
-  },
   "letters-training": {
    "group": "pub-letters",
    "covers": [
