@@ -3,6 +3,7 @@ import io
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from kit import cli, ensemble, verify
 
@@ -72,6 +73,71 @@ class EnsembleTest(unittest.TestCase):
                 self.assertEqual(got[0, 1], 0)
                 self.assertTrue((got[np.array([[1, 0], [1, 1]], bool)] > 0).all())
                 self.assertGreater(got[1, 1], got[1, 0])
+
+
+
+def reference_ranks(np, v, valid, a=None):
+    """ensemble._ranks as it was: a stable argsort, then np.unique and bincount for the tie means."""
+    out = np.zeros_like(v)
+    x = v[valid]
+    if x.size:
+        order = np.argsort(x, kind="stable")
+        r = np.empty(x.size, np.float64)
+        r[order] = np.arange(x.size, dtype=np.float64)
+        uniq, inv = np.unique(x, return_inverse=True)
+        sums = np.bincount(inv, weights=r, minlength=uniq.size)
+        counts = np.bincount(inv, minlength=uniq.size)
+        r = (sums / counts)[inv]
+        out[valid] = r / max(x.size - 1, 1)
+    return out
+
+
+@unittest.skipIf(np is None, "numpy is needed for kit ensemble")
+class RankFastPathTest(unittest.TestCase):
+    """The histogram ranks of integer maps give the same bits as the sort they replace."""
+
+    def assertSameBits(self, got, want):
+        self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+        self.assertEqual(got.tobytes(), want.tobytes())
+
+    def maps(self):
+        rng = np.random.default_rng(21)
+        yield rng.integers(0, 256, (60, 70)).astype(np.uint8)
+        yield rng.integers(0, 65536, (60, 70)).astype(np.uint16)
+        yield rng.integers(0, 3, (40, 40)).astype(np.uint16)            # heavy ties
+        yield np.full((9, 9), 200, np.uint8)                             # constant
+        yield np.zeros((5, 5), np.uint8)                                 # nothing valid
+        one = np.zeros((4, 4), np.uint16)
+        one[2, 1] = 40000
+        yield one                                                        # one valid pixel
+
+    def test_ranks_match_the_sort(self):
+        rng = np.random.default_rng(22)
+        for a in self.maps():
+            for valid in (a != 0, (a != 0) & (rng.random(a.shape) < 0.5)):
+                v = ensemble._unit(np, a)
+                with mock.patch("numpy.unique", side_effect=AssertionError("the sort path ran")):
+                    got = ensemble._ranks(np, v, valid, a)
+                self.assertSameBits(got, reference_ranks(np, v, valid))
+                with mock.patch.object(ensemble, "_EXACT_SUM", 0):   # group sums too big: the sort path
+                    self.assertSameBits(ensemble._ranks(np, v, valid, a), reference_ranks(np, v, valid))
+                self.assertSameBits(ensemble._ranks(np, v, valid), reference_ranks(np, v, valid))
+
+    def test_rank_combine_matches_the_sort(self):
+        rng = np.random.default_rng(23)
+        f = rng.random((60, 70)).astype(np.float32)
+        f[5, 5] = np.nan
+        f[::9] = 0.0
+        maps = list(self.maps())[:3]
+        mixed = [maps[0], maps[1], f]
+        ties = [maps[2], maps[2][::-1].copy()]
+        for arrays in (mixed, ties):
+            for weights in (None, [2.0] + [1.0] * (len(arrays) - 1)):
+                got = ensemble.combine(arrays, "rank", weights)
+                with mock.patch.object(ensemble, "_ranks", reference_ranks):
+                    want = ensemble.combine(arrays, "rank", weights)
+                self.assertSameBits(got[0], want[0])
+                self.assertSameBits(got[1], want[1])
 
 
 if __name__ == "__main__":
