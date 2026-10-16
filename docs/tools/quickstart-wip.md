@@ -32,7 +32,7 @@ The ink preview is model output, not a reading, and w035 is in the released ink 
 
 ## Where the code is
 
-Branch `grok/quickstart-wip` of public Scrolls, one commit on top of `main` at `0d34f92`: `8681ef9` ("WIP: QUICKSTART guide and scripts (not reviewed, do not merge as is)", 2026-10-16). Files: `scripts/quickstart/first_look.py` (149 lines), `scripts/quickstart/terminal_gif.py` (87 lines), `docs/QUICKSTART.md` (366 lines), and small additions to `GLOSSARY.md` (Ink Bench, `original_volume_downscale`, `torch.compile`), `README.md` (a tip linking the guide), `docs/MAP.md` and `docs/README.md`. No PR is recorded. The GIF and `tests/test_quickstart.py` that the guide and the map row name are not in the commit.
+Branch `grok/quickstart-wip` of public Scrolls, one commit on top of `main` at `0d34f92`: `8681ef9` ("WIP: QUICKSTART guide and scripts (not reviewed, do not merge as is)", 2026-10-16). Files: `scripts/quickstart/first_look.py` (149 lines), `scripts/quickstart/terminal_gif.py` (87 lines), `docs/QUICKSTART.md` (366 lines), and small additions to `GLOSSARY.md` (Ink Bench, `original_volume_downscale`, `torch.compile`), `README.md` (a tip linking the guide), `docs/MAP.md` and `docs/README.md`. No PR had been opened for it by 2026-10-16 (GitHub API). The GIF and `tests/test_quickstart.py` that the guide and the map row name are not in the commit.
 
 ```bash
 git fetch origin grok/quickstart-wip

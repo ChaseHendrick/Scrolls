@@ -45,6 +45,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
 | [ensemble](ensemble.md) | Current | `python -m kit ensemble` | Not needed | `python -m kit ensemble` combines two or more ink maps of the same surface on the same grid into one map, by a weighted mean of their scores or of their pixel ranks, keeping out every pixel where any input made no prediction. |
+| [mac-w045](mac-w045.md) | Current | `bash scripts/mac-w045.sh` | Not needed | `scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labelled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record. |
 | [soup](soup.md) | Current | `python scripts/soup.py` | Not needed | `scripts/soup.py` writes a checkpoint soup, the uniform mean of the weights of two or more checkpoints from one training run (such as `ink_9um` seed 42 at steps 40k to 75k), and refuses checkpoints whose `config.seed` differs, because a cross-seed weight average breaks the model. |
 | [v8in-run](v8in-run.md) | Current | `python scripts/v8in_run.py` | Not needed | `scripts/v8in_run.py` runs Youssef Nader's v8in ink model, or its PHerc1447 fine-tune, on a folder of numbered layer images and writes one ink probability map, with an optional fp16 autocast on Apple's MPS GPU and a final log line the Mac scripts parse. |
 | [fibertensor](fibertensor.md) | Retired | `python -m kit fibertensor train` | Not needed | `python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fibre orientation) and brightness features of one labelled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun. |
@@ -111,6 +112,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [unroll](unroll.md) | Current | `python inkbench.py compare PRED.png --segment WNNN -o BUNDLE.json` | Not needed | Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench). |
 | [view](view.md) | Current | `python -m kit view` | Not needed | `python -m kit view` writes one self-contained HTML file (no server, no network) that shows several readers' ink maps of one crop, percentile ranked so different scales compare, with their disagreement, the label outline and the mask, plus a JSON summary. |
 
 <!-- tooldocs:end -->

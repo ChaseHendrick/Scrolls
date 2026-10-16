@@ -3636,6 +3636,149 @@
    ]
   },
   {
+   "id": "mac-w045",
+   "name": "mac-w045",
+   "tagline": "run ink_9um and v8in on a labelled segment on the Mac GPU and score them with controls",
+   "summary": "`scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labelled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record.",
+   "status": "Current",
+   "kind": [
+    "script"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "bash scripts/mac-w045.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/mac-w045.sh",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_repo.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it on your own Mac. Posting its summary or scores needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "0747c06"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`mac-w045`",
+    "Status": "Current",
+    "Kind": "script",
+    "Area": "Ink maps and models",
+    "Run": "`bash scripts/mac-w045.sh`",
+    "Code": "`scripts/mac-w045.sh`",
+    "Tests": "`tests/test_repo.py` (only that the script parses with `bash -n` and uses no bash 4 syntax)",
+    "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 6 GB free in `WORK` (script header). The script builds the rest: villa (`main` and PR #1865), a Python 3.14 environment with villa's `models` extra (minus `volume-cartographer`, `cucim`, `nnunetv2`, `batchgeneratorsv2`) plus tifffile, imagecodecs, scipy, opencv-python-headless, safetensors and huggingface_hub; the segment's surface volume and labels; the `ink_9um` seed 42 and 43 checkpoints; v8in or v8in-1447 at a pinned revision. It also runs `scripts/v8in_run.py` ([v8in-run](v8in-run.md)) and the kit commands `fetch`, `layers`, `verify`, `auc`, `rowscore` and `provenance`",
+    "Runs on": "Apple Silicon Mac only (any machine with `EXPECT_GPU=cpu`, to test the script). `QUICK=1` is meant to finish in under an hour once w045's device check exists (script header; the recorded steps are under Cost and time); a full run spends up to `V8IN_HOURS` (default 4) on v8in plus about 11 min per `ink_9um` seed ([mac.md](../mac.md#watching-a-run), [community scan log](../logs/2026-10-07-community-scan.md), 2026-10-07)",
+    "Network": "`github.com` (villa); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (surface volume and labels, through `kit fetch`); `huggingface.co` (`scrollprize/ink_9um`, and `YoussefMoNader/ink-8um-v8in` or `YoussefMoNader/ink-8um-v8in-pherc1447-loo-w062`); the Python package index and uv's Python downloads. Nothing is uploaded",
+    "Writes": "Under `WORK` (default `~/scrolls-work`): shared `villa/`, `venv/`, `models-reqs.txt`, `checkpoints/`, `data/`, `logs/`, and the lock folder `.gpu-job.lock/` while it runs; per run, `WORK/NAME/maps/`, `WORK/NAME/layers/`, `WORK/NAME/crop_layers/` and `WORK/NAME/results/` (see Outputs). `NAME` is the segment, with `-smoke` added under `SMOKE=1`",
+    "Go-ahead": "Not needed to run it on your own Mac. Posting its summary or scores needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[mac.md, \"Generalization check on w045: one command\"](../mac.md#generalization-check-on-w045-one-command) and [\"Watching a run\"](../mac.md#watching-a-run)",
+    "Checked": "2026-10-16 against commit `0747c06`"
+   },
+   "page": "docs/tools/mac-w045.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 79,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 90,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 118,
+     "end_line": 121,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 122,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 133,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 176,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 198,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 213,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 227,
+     "end_line": 236,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 237,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 245,
+     "end_line": 259,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 260,
+     "end_line": 269,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "meshaudit",
    "name": "meshaudit",
    "tagline": "audit published cross-scan transforms, meshes and render depth",
@@ -6475,6 +6618,143 @@
      "name": "Related",
      "start_line": 352,
      "end_line": 358,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "unroll",
+   "name": "unroll",
+   "tagline": "view and virtually unroll Herculaneum scrolls in 3D in the browser, and score ink maps",
+   "summary": "Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench).",
+   "status": "Current",
+   "kind": [
+    "app"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python inkbench.py compare PRED.png --segment WNNN -o BUNDLE.json"
+   ],
+   "imports": [],
+   "code": [],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "7be3185"
+   },
+   "license": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT licence",
+   "fields": {
+    "Id": "`unroll`",
+    "Status": "Current",
+    "Kind": "app",
+    "Area": "Viewers and apps",
+    "Run": "[huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) (the Space page); [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) (the app alone, installable); Ink Bench on the command line: `python inkbench.py compare PRED.png --segment WNNN -o BUNDLE.json`",
+    "Code": "Not in this repository: the Space's own git repository, [huggingface.co/spaces/SharpMeow/unroll/tree/main](https://huggingface.co/spaces/SharpMeow/unroll/tree/main) (page code in index.html, app.js, ui.js and the lib folder; build tools and [inkbench.py](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/tools/inkbench.py) in the tools folder; one manifest per scroll in the scrolls folder), read at Space commit e31bb23",
+    "Tests": "None in this repository. The Space has its own in its [tests folder](https://huggingface.co/spaces/SharpMeow/unroll/tree/main/tests); not run for this page",
+    "Needs": "A browser with WebGL; three.js 0.160, loaded from jsDelivr. The CT volume view needs float render targets for exact picking (it falls back to picking on the CPU). `inkbench.py`: Python 3 with numpy and Pillow",
+    "Runs on": "The viewer runs in the visitor's browser, on any device; load and frame times are Not measured. Ink Bench's three Quick start commands, with the reference fetched over the network: 15.5 s wall together on a 4-core cloud container, Python 3.13 (measured 2026-10-16 for this page)",
+    "Network": "The page and its data from `huggingface.co` and `sharpmeow-unroll.static.hf.space`; three.js from `cdn.jsdelivr.net`; the CT volume view streams OME-Zarr from the open-data bucket `s3://vesuvius-challenge-open-data`; Open your own fetches only a URL you give (the server must allow CORS). `inkbench.py` fetches `data/bench/` from the Space unless `--root` names a local checkout",
+    "Writes": "In the browser only: settings in `localStorage` under `unroll.settings.v1`; the installed app's service-worker caches `unroll-shell-<tag>`, `unroll-data-<tag>` and `unroll-runtime-<tag>`; scrolls opened with Open your own in browser storage; downloads you ask for (a picture, an Ink Bench bundle). Nothing is uploaded. `inkbench.py` writes the bundle given by `-o` (else prints it) and, with `adapt`, a 16-bit PNG",
+    "Go-ahead": "Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data",
+    "Released": "Hugging Face Space `SharpMeow/unroll`, version 1.5.0 of 2026-10-16 (the Space's `version.json`); in this README's \"Released tools\" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release",
+    "License": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT licence",
+    "Guide": "[`docs/unroll-space.md`](../unroll-space.md)",
+    "Checked": "2026-10-16 against commit `7be3185`"
+   },
+   "page": "docs/tools/unroll.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 51,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 79,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 189,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 190,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 200,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 208,
+     "end_line": 229,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 230,
+     "end_line": 243,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 244,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 252,
+     "end_line": 261,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 262,
+     "end_line": 271,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 272,
+     "end_line": 275,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 276,
+     "end_line": 283,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 284,
+     "end_line": 290,
      "applicable": true
     }
    ]
