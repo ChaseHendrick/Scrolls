@@ -11,6 +11,9 @@ Research notes, a run planner, and an experiment ledger for the [Vesuvius Challe
 > [!IMPORTANT]
 > **This repository does not claim that any letters have been found in any scroll.**
 
+> [!TIP]
+> **New here? Start with the [Quick start guide](docs/QUICKSTART.md)**: a CT slice, a segment and a scored ink layer in about 15 minutes and 10 MB, on Mac, Windows or Linux, then the advanced path (tracing, ink models, fast inference, AutoPipeline over every scan, Ink Bench) with gotchas and troubleshooting.
+
 The `kit/` package plans and records runs of the official open-source pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)). It does not reimplement that pipeline. Prize amounts, deadlines and eligible scrolls are a dated snapshot (checked 2026-10-11); [scrollprize.org/prizes](https://scrollprize.org/prizes) wins if they disagree.
 
 ## Start here (recommendation)

@@ -11,6 +11,7 @@ Updated 14 October 2026.
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
+| Quick start: install, open data, a first slice, segment and ink layer, then the advanced path, gotchas and troubleshooting | [`QUICKSTART.md`](QUICKSTART.md) | [`start-here.md`](start-here.md), [`../GLOSSARY.md`](../GLOSSARY.md) |
 | New here, from no idea to a first submission | [`start-here.md`](start-here.md) | [`pipeline.md`](pipeline.md) |
 | What a technical term means (A to Z) | [`../GLOSSARY.md`](../GLOSSARY.md) | [`vesuvius-bible/`](vesuvius-bible/bible.md#app-glossary) Appendix A |
 | A cited reference book on the scrolls and the challenge, 2023 to 2026 (history, papyrus, imaging, prizes, inventory, pipeline, tools, glossary, timeline, FAQ, bibliography) | [`vesuvius-bible/`](vesuvius-bible/) ([`index.md`](vesuvius-bible/index.md), [`llms.txt`](vesuvius-bible/llms.txt), one file: [`bible.md`](vesuvius-bible/bible.md)) | [`start-here.md`](start-here.md) |

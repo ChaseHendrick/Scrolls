@@ -112,6 +112,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **IAAFT**: Iterative amplitude-adjusted Fourier transform. It makes a surrogate copy of an image with the same brightness values and nearly the same frequency content but no real structure. StrokeNet reports results against IAAFT copies as a control.
 
+**Ink Bench**: Unroll's model-agnostic scoring of an ink map of one PHerc. 139 winding against the published 2.4 um ink, in the browser or with `inkbench.py`: automatic alignment, Pearson r, IoU, Dice and average precision, and a bundle that can be ranked on its Leaderboard. Scores are agreement with another model's output, not ground truth. See [`docs/QUICKSTART.md`](docs/QUICKSTART.md#ink-bench-from-the-command-line).
+
 **inference**: Running a trained model on new data to get predictions.
 
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
@@ -175,6 +177,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **open problems**: The Vesuvius Challenge's published list of unsolved tasks ([scrollprize.org/2026_open_problems](https://scrollprize.org/2026_open_problems)).
 
 ## P
+
+**original_volume_downscale**: A per-segment factor in the open-data catalog. Some normalized meshes (`mesh/intermediate/tifxyz_normalized`) store coordinates divided by it, and a reader that ignores it puts points centimetres off ([villa PR #2112](https://github.com/ScrollPrize/villa/pull/2112); [`docs/QUICKSTART.md`](docs/QUICKSTART.md#8-gotchas-that-cost-people-days)).
 
 **papyrologist**: A scholar of ancient papyri. Only the Vesuvius Challenge papyrology team decides whether an image is legible.
 
@@ -249,6 +253,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **tifxyz**: A surface format of three float32 TIFF images giving the x, y and z position of each grid cell, with -1 for missing cells.
 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
+
+**torch.compile**: PyTorch's compiler for a model. villa's ink inference uses it by default; it is slow on the first batches and faster after (about 1.85x per tile measured here); `--no-compile` turns it off ([`docs/QUICKSTART.md`](docs/QUICKSTART.md#74-faster-inference-torchcompile-and-friends)).
 
 **trace (tracer)**: A traced surface, and the program that grows it. villa's tracer grows a surface from a seed.
 

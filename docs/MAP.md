@@ -49,6 +49,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `docs/compute/` | Modal pricing, rates, job assumptions, the public Modal ledger and run specs (hard rule 11) |
 | `docs/evidence/` | Frozen evidence archives with hashes; do not edit |
 | `docs/README.md` | Docs index: one home per topic; check it before researching |
+| `docs/QUICKSTART.md`, `scripts/quickstart/`, `tests/test_quickstart.py`, `docs/assets/quickstart-terminal.gif` | Quick start guide (install on Mac, Windows and Linux, open-data bucket, beginner and advanced paths, gotchas, troubleshooting, FAQ). `first_look.py` writes a first CT slice, segment and ink preview from the bucket into `work/quickstart/` (numpy, Pillow, tifffile); `terminal_gif.py` records the guide's text-only terminal GIF from the real commands |
 | `docs/plans/` | Public evaluation methodology and access-required private roadmap pointer |
 | `docs/prereg/` | Access-required pointer; private target rules belong in Scrolls-private |
 | `docs/contrib/` | Public contribution notes and an access-required private submission pointer |
