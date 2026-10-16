@@ -297,7 +297,9 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
         ctrl = np.squeeze(_load(control))
         if ctrl.shape != pred.shape:
             raise VerifyError(f"control shape {ctrl.shape} differs from the map's {pred.shape}")
-        if _same_file(control, prediction) or np.array_equal(ctrl, pred):
+        # the same file is refused; an identical copy still scores, and its zero gap fails the control honestly
+        # (a constant known-bad map, such as a blank sham, equals its own reverse)
+        if _same_file(control, prediction):
             raise VerifyError(f"control {control} is the map itself; give the reverse-depth map as the control")
         result["control"] = score_array(ctrl, ink, supervised, keep_zero, inner)
     if bootstrap or compare is not None:

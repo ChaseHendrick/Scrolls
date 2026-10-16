@@ -106,9 +106,10 @@ class AucGuardsTest(unittest.TestCase):
                 g = zarr.open_group(str(root / name), mode="w")
                 g.create_array("2", shape=a.shape, dtype="uint8", chunks=(64, 64))[:] = a.astype(np.uint8)
             args = (root / "map.tif", root / "lab.zarr", root / "msk.zarr")
-            for ctrl in ("map.tif", "copy.tif"):
-                with self.assertRaises(verify.VerifyError):
-                    auc.score_files(*args, control=root / ctrl)
+            with self.assertRaises(verify.VerifyError):
+                auc.score_files(*args, control=root / "map.tif")
+            copy = auc.score_files(*args, control=root / "copy.tif")   # scores, and shows no gap
+            self.assertEqual(copy["control"]["auc"], copy["forward"]["auc"])
             self.assertIn("control", auc.score_files(*args, control=root / "rev.tif"))
 
 
