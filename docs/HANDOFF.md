@@ -34,6 +34,7 @@ handoff:
 | AGENTS.md size | Over the 26,000-byte test limit | Trim or move detail out, then re-run tests |
 | `test_autopipe` | Import error | Fix the import and re-run tests |
 | AutoPipeline paid batches | Dry runs only; no daily watch routine set | Each paid batch and any cloud launch needs the owner's approval |
+| Release polish (Claude, 16 Oct 10:15 UTC) | Branch `claude/polish-releases-bgc1za`: the README's Unroll entry and `docs/unroll-space.md` now match the live Space, version 1.5.0 (they said 1.1.0 and ink_9um on `w046` to `w051` only). On `main` at `27d0e96` the full test suite passes (714 tests, 43 skipped, with numpy, tifffile, zarr and scipy installed), so the AGENTS.md size and `test_autopipe` rows above no longer fail there. No GitHub release exists yet for AutoPipeline 0.1.4 or for the workbench package (`kit.__version__` still 0.1.0) | Owner's yes on the list of releases to publish; GitHub releases are drafted as text, since the session cannot create them |
 
 ## Open items added 16 October 2026 (checked 01:10 ET)
 
