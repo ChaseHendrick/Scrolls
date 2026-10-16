@@ -19,6 +19,7 @@ Updated 14 October 2026.
 | Which scans exist and what we processed | [`scan-status.md`](scan-status.md) | |
 | Prize terms, amounts, deadlines, eligible scrolls | [`prizes.md`](prizes.md), `python -m kit prizes` | |
 | What has been released from private work | [`releases.json`](releases.json), shown as the README's "Released tools" section | `python -m kit releases list`; AGENTS.md rule 15 |
+| Unroll, the released interactive 3D viewer (Hugging Face Space, v1.0 release candidate, Apache 2.0 code, CC BY-NC 4.0 scan data) | [`unroll-space.md`](unroll-space.md), live at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) | README "Released tools" |
 
 ## Rules and standards
 

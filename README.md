@@ -34,7 +34,7 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 ## Released tools
 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
-Tools released from private work, AutoPipeline first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
+Tools released from private work, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
 ### AutoPipeline
 
@@ -51,6 +51,14 @@ python scripts/demo_synthetic.py                # every step on a synthetic scro
 ```
 
 Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md). What changed: [in 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/CHANGES.md) and [in 0.1.3](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix3/submissions/progress-2026-10-fix3/CHANGES.md).
+
+### Unroll (interactive 3D scroll viewer)
+
+Released 16 October 2026.
+
+[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, and an agent API. Status: released. Version: v1.0 (release candidate; the Space has no version.json or CHANGELOG yet). Licence: Apache 2.0 for the code (the Ink Bench and its bundle format are Apache 2.0 under `LICENSE-APACHE` and `NOTICE`; the Space's `LICENSE` file still covers the rest of the viewer code as MIT); the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account. The ink layers are model output, not readings.
+
+Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
 ### Segment stack check
 
@@ -121,7 +129,7 @@ scrolls-letterread MAP.png --weights letters-v2-ccby --letter-px 86 --overlay MA
 
 ## Interactive viewer
 
-[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is a browser page on Hugging Face Spaces that rebuilds 37 traced windings of PHerc. 139 in 3D and unrolls them, with X-ray, Published ink (2.4 µm) and Our ink model (9 µm, `ink_9um`, a growing set of windings) layers and a per-winding close-up. Data: Vesuvius Challenge, CC BY-NC 4.0. Details and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
+[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is a browser page on Hugging Face Spaces that rebuilds 37 traced windings of PHerc. 139 in 3D and unrolls them, with X-ray, Published ink (2.4 µm) and ink_9um (9 µm) layers, a per-winding close-up, an Ink Bench and an agent API. It is released; see its entry under [Released tools](#released-tools). Data: Vesuvius Challenge, CC BY-NC 4.0. Details and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
 ## Quick start (kit)
 
