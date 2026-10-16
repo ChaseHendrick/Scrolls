@@ -153,6 +153,24 @@ class TestRelay(unittest.TestCase):
         self.assertEqual([r["injected"] for r in lines[:3]], [True, True, False])
         self.assertEqual([r["get"] for r in lines[:3]], [1, 2, 3])
 
+    def test_one_server_and_one_date_header(self):
+        def headers(url):
+            try:
+                with urllib.request.urlopen(url, timeout=10) as r:
+                    return r.status, r.headers
+            except urllib.error.HTTPError as e:
+                e.read()
+                e.close()
+                return e.code, e.headers
+        with S3LikeServer(self.root, false=0) as up, fr.Relay(up.url, rate=1.0, seed=1, bad=1) as relay:
+            for want in (404, 200):                   # the replayed false 404, then the bucket's own answer
+                status, h = headers(relay.base + "/v.zarr/0/0/0/1")
+                self.assertEqual(status, want)
+                self.assertEqual(len(h.get_all("Server")), 1, h.get_all("Server"))
+                self.assertEqual(len(h.get_all("Date")), 1, h.get_all("Date"))
+                if want == 404:
+                    self.assertEqual(h["Server"], "AmazonS3")
+
     def test_rate_zero_passes_everything_and_true_misses(self):
         with S3LikeServer(self.root, false=0) as up, fr.Relay(up.url, rate=0.0) as relay:
             for x in range(4):

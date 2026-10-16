@@ -77,7 +77,13 @@ class _Handler(http.server.BaseHTTPRequestHandler):
     def _answer(self, method):
         status, headers, body = self.server.relay.answer(method, self.path, self.headers.get("Range"))
         try:
-            self.send_response(status)
+            # send_response would add the relay's own Server and Date beside the bucket's (or the false 404's)
+            self.send_response_only(status)
+            names = {k.lower() for k in headers}
+            if "server" not in names:
+                self.send_header("Server", self.version_string())
+            if "date" not in names:
+                self.send_header("Date", self.date_time_string())
             for k, v in headers.items():
                 if k.lower() not in HOP:
                     self.send_header(k, v)
