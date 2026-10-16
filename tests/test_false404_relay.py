@@ -153,6 +153,14 @@ class TestRelay(unittest.TestCase):
         self.assertEqual([r["injected"] for r in lines[:3]], [True, True, False])
         self.assertEqual([r["get"] for r in lines[:3]], [1, 2, 3])
 
+    def test_a_query_string_does_not_make_a_new_key(self):
+        with S3LikeServer(self.root, false=0) as up, fr.Relay(up.url, rate=1.0, seed=1, bad=1) as relay:
+            url = relay.base + "/v.zarr/0/0/0/1"
+            self.assertEqual(get(url + "?x-id=GetObject")[0], 404)      # the key's one false 404
+            self.assertEqual(get(url + "?x-id=GetObject&n=2")[:3:2], (200, bytes([1]) * 64))
+            self.assertEqual(get(url)[0], 200)
+            self.assertEqual((relay.stats["injected"], relay.stats["injected_keys"]), (1, 1))
+
     def test_one_server_and_one_date_header(self):
         def headers(url):
             try:

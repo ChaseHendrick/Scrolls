@@ -158,8 +158,9 @@ class Relay:
             self.stats["requests"] += 1
             n = None
             if method == "GET" and chosen(path, self.seed, self.rate):
-                n = self.gets.get(path, 0)
-                self.gets[path] = n + 1
+                key = urllib.parse.urlsplit(path).path         # one count per chunk key, whatever the query string
+                n = self.gets.get(key, 0)
+                self.gets[key] = n + 1
                 if n == 0:
                     self.stats["injected_keys"] += 1
                 if n < self.bad:
