@@ -35,6 +35,7 @@ import math
 import shlex
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from . import cloudcost, prizes, scancatalog
 
@@ -89,7 +90,11 @@ class BatchError(Exception):
 
 
 def _now_et():
-    return datetime.now().astimezone().strftime("%Y-%m-%d %H:%M ET")
+    """Now in US Eastern time, whatever the machine's own zone (cloud and Modal machines run on UTC)."""
+    try:
+        return datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d %H:%M ET")
+    except ZoneInfoNotFoundError:   # no time zone database (Windows without tzdata): say UTC, not ET
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 
 def digest(obj):

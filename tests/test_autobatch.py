@@ -329,6 +329,18 @@ class BatchTest(unittest.TestCase):
         st = {r["key"]: r["status"] for r in autobatch.status_table(self.state)}
         self.assertEqual(st["S1/20250101000001"], "planned")
 
+    def test_et_times_are_eastern_on_a_utc_machine(self):
+        from datetime import datetime, timezone
+        from unittest import mock
+
+        class UtcMachine(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                at = datetime(2026, 10, 16, 12, 0, tzinfo=timezone.utc)
+                return at.astimezone(tz) if tz else at.replace(tzinfo=None)   # local clock reads UTC
+        with mock.patch.object(autobatch, "datetime", UtcMachine):
+            self.assertEqual(autobatch._now_et(), "2026-10-16 08:00 ET")   # EDT, UTC-4
+
     def test_no_modal_import(self):
         src = Path(autobatch.__file__).read_text() + Path(scancatalog.__file__).read_text()
         self.assertNotIn("import modal", src)
