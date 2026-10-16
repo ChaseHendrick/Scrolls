@@ -346,3 +346,79 @@ class PlanTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class BombAndFetchErrorTests(unittest.TestCase):
+    """Decompression bombs are refused before they are inflated or decoded, and only a genuinely absent chunk
+    reads as the fill value."""
+
+    def test_gzip_body_past_the_ceiling_is_refused(self):
+        import gzip
+        from unittest import mock
+        body = gzip.compress(b"\0" * (1 << 20))
+        self.assertEqual(len(ma._gunzip(body)), 1 << 20)
+        with mock.patch.dict(os.environ, {"KIT_MAX_GUNZIP_BYTES": str((1 << 20) - 1)}):
+            with self.assertRaisesRegex(ValueError, "KIT_MAX_GUNZIP_BYTES"):
+                ma._gunzip(body)
+            with tempfile.TemporaryDirectory() as d:
+                p = os.path.join(d, "big.json.gz")
+                with open(p, "wb") as f:
+                    f.write(gzip.compress(b'"' + b" " * (1 << 20) + b'"'))
+                with self.assertRaisesRegex(ValueError, "KIT_MAX_GUNZIP_BYTES"):
+                    ma.get_json(p)
+
+    @unittest.skipIf(np is None, "numpy not installed")
+    def test_tiff_declaring_too_many_elements_is_refused_before_reading(self):
+        try:
+            import tifffile
+        except ImportError:
+            self.skipTest("tifffile not installed")
+        import io
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "x.tif")
+            tifffile.imwrite(p, np.zeros((40, 50), np.float32), compression="zlib")
+            self.assertEqual(ma.imread_capped(p).shape, (40, 50))
+            with mock.patch.dict(os.environ, {"KIT_MAX_TIFF_ELEMENTS": "1999"}):
+                with self.assertRaisesRegex(ValueError, "declares 2000 elements"):
+                    ma.imread_capped(p)
+                with open(p, "rb") as f:
+                    data = f.read()
+                with self.assertRaisesRegex(ValueError, "KIT_MAX_TIFF_ELEMENTS"):
+                    ma.read_tifxyz("base", fetch=lambda u: data)
+            self.assertLess(ma.MAX_TIFF_ELEMENTS, 40000 * 40000)     # the 2.6 KB, 6 GB grid of the fuzz report
+            self.assertEqual(ma.imread_capped(io.BytesIO(data)).shape, (40, 50))
+
+    @unittest.skipIf(np is None, "numpy not installed")
+    def test_only_a_missing_chunk_reads_as_fill(self):
+        import urllib.error
+        L, c = 4, 16
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, "0"))
+            with open(os.path.join(d, ".zattrs"), "w") as f:
+                json.dump({"multiscales": [{"datasets": [{"path": "0", "coordinateTransformations": [
+                    {"type": "scale", "scale": [2.4, 2.4, 2.4]}]}]}]}, f)
+            with open(os.path.join(d, "0", ".zarray"), "w") as f:
+                json.dump({"zarr_format": 2, "shape": [L, 32, 32], "chunks": [L, c, c], "dtype": "|u1",
+                           "compressor": None, "fill_value": 0, "order": "C", "filters": None}, f)
+
+            def fetcher(code):
+                def fetch(u):
+                    if u.endswith((".zattrs", ".zarray")):
+                        with open(u, "rb") as f:
+                            return f.read()
+                    raise urllib.error.HTTPError(u, code, "x", {}, None)
+                return fetch
+            sv = ma.SurfaceVolume(d, fetch=fetcher(404))
+            self.assertFalse(sv.read(0, 0, 32, 0, 32).any())
+            self.assertFalse(sv.read_layer(0, 1, 0, 32, 0, 32).any())
+            for code in (403, 503):
+                sv = ma.SurfaceVolume(d, fetch=fetcher(code))
+                with self.assertRaises(urllib.error.HTTPError):
+                    sv.read(0, 0, 32, 0, 32)
+                with self.assertRaises(urllib.error.HTTPError):
+                    sv.read_layer(0, 1, 0, 32, 0, 32)
+                errors = []
+                self.assertIsNone(ma._safe(sv.profile, 0.5, 0.5, errors=errors))
+                self.assertEqual(len(errors), 1)
+                self.assertIn(str(code), errors[0])

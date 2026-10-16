@@ -182,9 +182,15 @@ def fetch_tifxyz(url, cache):
     url = _https(url).rstrip("/")
     parts = urllib.parse.urlparse(url)
     rel = [p for p in parts.path.split("/") if p]
-    if any(p in (".", "..") for p in rel):
+    if parts.scheme not in ("http", "https") or not parts.hostname or parts.hostname.strip(".") == "" \
+            or any(c in parts.netloc for c in ("/", "\\")):
+        raise VerifyError(f"refusing a URL without an http(s) scheme and a host name: {url}")
+    if any(p in (".", "..") or "\\" in p for p in rel):
         raise VerifyError(f"refusing a URL with '.' or '..' in its path: {url}")
-    dest = Path(cache).joinpath(parts.netloc, *rel)
+    root = Path(cache).resolve()
+    dest = root.joinpath(parts.netloc, *rel).resolve()
+    if dest == root or root not in dest.parents:
+        raise VerifyError(f"refusing a URL whose cache folder {dest} is outside --cache {root}")
     dest.mkdir(parents=True, exist_ok=True)
     for f in ("x.tif", "y.tif", "z.tif", "meta.json"):
         p = dest / f
@@ -209,9 +215,10 @@ def read_tifxyz(folder):
         import tifffile
     except ImportError as exc:
         raise VerifyError("kit stackcheck needs tifffile") from exc
+    from . import meshaudit
     folder = Path(folder)
     try:
-        arrs = [tifffile.imread(str(folder / f"{c}.tif")) for c in "xyz"]
+        arrs = [meshaudit.imread_capped(str(folder / f"{c}.tif")) for c in "xyz"]
     except Exception as exc:  # missing file or unreadable TIFF
         raise VerifyError(f"cannot read the tifxyz folder {folder}: {exc}") from exc
     if any(a.ndim != 2 or a.shape != arrs[0].shape for a in arrs):

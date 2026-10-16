@@ -12,19 +12,60 @@ Network access is plain HTTPS to the public bucket (no AWS tools). Surface-volum
 read directly when uncompressed (the published layout); compressed arrays need ``zarr``.
 """
 
-import gzip
 import json
 import math
+import os
 import re
 import struct
+import urllib.error
 import urllib.parse
 import urllib.request
+import zlib
 from concurrent.futures import ThreadPoolExecutor
 
 BUCKET = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 SEED = 20261007
 TIERS_UM = (25.0, 75.0)
 CANVAS_RATIOS = (1.0, 0.5, 2.0, 4.0, 0.25)
+# Ceilings against decompression bombs (a few KB that declare or inflate to many GB). The environment variables
+# raise them for a genuinely larger file.
+MAX_GUNZIP_BYTES = 1 << 30            # KIT_MAX_GUNZIP_BYTES: largest gzip body inflated
+MAX_TIFF_ELEMENTS = 200_000_000       # KIT_MAX_TIFF_ELEMENTS: largest TIFF read, in array elements (a 14000 px square)
+
+
+def _limit(name, default):
+    try:
+        return int(os.environ.get(name, default))
+    except ValueError:
+        raise ValueError("%s must be an integer" % name) from None
+
+
+def _gunzip(data):
+    """Inflate a gzip body, refusing one that inflates past KIT_MAX_GUNZIP_BYTES."""
+    limit = _limit("KIT_MAX_GUNZIP_BYTES", MAX_GUNZIP_BYTES)
+    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+    out = d.decompress(data, limit + 1)
+    if len(out) > limit or d.unconsumed_tail:
+        raise ValueError("gzip body inflates past %d bytes; refused (raise KIT_MAX_GUNZIP_BYTES to allow it)" % limit)
+    return out
+
+
+def imread_capped(src):
+    """tifffile.imread of a path or file object, refusing a TIFF that declares more than KIT_MAX_TIFF_ELEMENTS
+    elements before any pixel is decoded."""
+    import tifffile
+    limit = _limit("KIT_MAX_TIFF_ELEMENTS", MAX_TIFF_ELEMENTS)
+    with tifffile.TiffFile(src) as t:
+        n = sum(math.prod(s.shape) for s in t.series)
+        if n > limit:
+            raise ValueError("TIFF declares %d elements, over %d; refused (raise KIT_MAX_TIFF_ELEMENTS to allow it)"
+                             % (n, limit))
+        return t.asarray()
+
+
+def _absent(exc):
+    """True only for a chunk that genuinely is not there: HTTP 404 (S3 NoSuchKey), or a missing local file."""
+    return isinstance(exc, FileNotFoundError) or (isinstance(exc, urllib.error.HTTPError) and exc.code == 404)
 
 
 # ---------------------------------------------------------------- HTTP and catalogue
@@ -37,7 +78,7 @@ def _get(url, byte_range=None, timeout=60):
     with urllib.request.urlopen(req, timeout=timeout) as r:
         data = r.read()
     if data[:2] == b"\x1f\x8b":
-        data = gzip.decompress(data)
+        data = _gunzip(data)
     return data
 
 
@@ -46,7 +87,7 @@ def get_json(url):
         with open(url, "rb") as f:
             data = f.read()
         if data[:2] == b"\x1f\x8b":
-            data = gzip.decompress(data)
+            data = _gunzip(data)
         return json.loads(data)
     return json.loads(_get(url))
 
@@ -434,7 +475,9 @@ class SurfaceVolume:
                     key = sep.join(str(k) for k in (zi, yi, xi))
                     try:
                         raw = self.fetch("%s/%s/%s" % (self.base, lv["path"], key))
-                    except Exception:  # noqa: BLE001 (absent chunk = fill value)
+                    except Exception as exc:  # noqa: BLE001
+                        if not _absent(exc):  # only a chunk that is not there reads as the fill value
+                            raise
                         continue
                     blk = np.frombuffer(raw, dtype=np.dtype(za["dtype"])).reshape(cz, cy, cx)
                     ys, xs = yi * cy, xi * cx
@@ -464,7 +507,9 @@ class SurfaceVolume:
                 key = sep.join(str(k) for k in (zi, yi, xi))
                 try:
                     raw = self.fetch_range("%s/%s/%s" % (self.base, lv["path"], key), zl * n, zl * n + n - 1)
-                except Exception:  # noqa: BLE001 (absent chunk = fill value)
+                except Exception as exc:  # noqa: BLE001
+                    if not _absent(exc):  # only a chunk that is not there reads as the fill value
+                        raise
                     continue
                 blk = np.frombuffer(raw, dtype=dt).reshape(cy, cx)
                 ys, xs = yi * cy, xi * cx
@@ -515,20 +560,27 @@ def depth_segment(base, sample_id, seg, cross_ids=None, n_tiles=32, seed=SEED, w
         return out
     nsv = SurfaceVolume("%s/%s" % (base, by_vol[native]))
     centres = tile_centres(n_tiles, seed)
+    nerr = []
     with ThreadPoolExecutor(workers) as ex:
-        nprof = list(ex.map(lambda uv: _safe(nsv.profile, *uv), centres))
+        nprof = list(ex.map(lambda uv: _safe(nsv.profile, *uv, errors=nerr), centres))
     out["native_dz_um"] = nsv.dz_um
     out["native_tiles_valid"] = sum(p is not None for p in nprof)
+    out["native_tiles_failed"] = len(nerr)          # read errors (not absent chunks): these tiles are not in n
+    if nerr:
+        out["native_tile_error"] = nerr[0][:200]
     for vid, p in sorted(by_vol.items()):
         if vid == native or (cross_ids and vid not in cross_ids):
             continue
         rec = {"cross_volume": vid, "surface_volume": p.split("/")[-1]}
         try:
-            csv = SurfaceVolume("%s/%s" % (base, p))
+            csv = SurfaceVolume("%s/%s" % (base, p)); cerr = []
             with ThreadPoolExecutor(workers) as ex:
-                cprof = list(ex.map(lambda uv: _safe(csv.profile, *uv) if nprof[centres.index(uv)] is not None else None,
-                                    centres))
+                cprof = list(ex.map(lambda uv: _safe(csv.profile, *uv, errors=cerr)
+                                    if nprof[centres.index(uv)] is not None else None, centres))
             rec["cross_dz_um"] = csv.dz_um
+            rec["cross_tiles_failed"] = len(cerr)
+            if cerr:
+                rec["cross_tile_error"] = cerr[0][:200]
             rec.update(compare_profiles(nprof, cprof, nsv.dz_um, csv.dz_um))
         except Exception as e:  # noqa: BLE001
             rec["error"] = str(e)[:200]
@@ -536,10 +588,13 @@ def depth_segment(base, sample_id, seg, cross_ids=None, n_tiles=32, seed=SEED, w
     return out
 
 
-def _safe(f, *a):
+def _safe(f, *a, errors=None):
+    """f(*a), or None on an error, which is appended to `errors` when given (list.append is thread safe)."""
     try:
         return f(*a)
-    except Exception:  # noqa: BLE001
+    except Exception as e:  # noqa: BLE001
+        if errors is not None:
+            errors.append("%s: %s" % (type(e).__name__, e))
         return None
 
 
@@ -633,11 +688,10 @@ def read_tifxyz(base_path, fetch=None):
     """(H, W, 3) float64 vertices in x, y, z order, NaN for holes (-1 or non-finite)."""
     import io
     import numpy as np
-    import tifffile
     fetch = fetch or _get
     arrs = []
     for a in ("x", "y", "z"):
-        arrs.append(tifffile.imread(io.BytesIO(fetch("%s/%s.tif" % (base_path, a)))).astype(np.float64))
+        arrs.append(imread_capped(io.BytesIO(fetch("%s/%s.tif" % (base_path, a)))).astype(np.float64))
     xyz = np.stack(arrs, axis=-1)
     bad = (xyz == -1).any(axis=-1) | ~np.isfinite(xyz).all(axis=-1)
     xyz[bad] = np.nan
