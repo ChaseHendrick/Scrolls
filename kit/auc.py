@@ -47,6 +47,14 @@ def _load(path):
     return load_map(path)
 
 
+def _same_file(a, b):
+    import os
+    try:
+        return os.path.samefile(a, b)
+    except OSError:
+        return False
+
+
 def _levels(path, level):
     zarr = _zarr()
     try:
@@ -60,15 +68,35 @@ def _levels(path, level):
     return node
 
 
+MIN_FLOAT_LEVELS = 256  # a float map spanning fewer of the 65,536 levels is rescaled min..max
+
+
 def _quantize(np, values):
-    """Integer scores for exact histogram AUC: uint8 and uint16 as is, floats to 0..65535."""
+    """Integer scores for exact histogram AUC: uint8 and uint16 as is, floats to 0..65535.
+
+    A float map is read as 0..1 (or 0..255, or 0..65535 when its largest value says so), as
+    before. A float map that does not fit that reading, with a value below 0 or above 65535
+    (logits, signed integers) or a range so narrow it falls on fewer than MIN_FLOAT_LEVELS
+    levels, is instead stretched from its own minimum to its maximum, which keeps every pixel's
+    rank. NaN and infinite values are refused: they have no rank."""
     if values.dtype in (np.uint8, np.uint16):
         return values.astype(np.int64), 65536
     v = values.astype(np.float64)
-    top = float(v.max()) if v.size else 1.0
-    if top > 1.0:
-        v = v / (255.0 if top <= 255 else 65535.0)
-    return np.clip(np.round(v * 65535), 0, 65535).astype(np.int64), 65536
+    if not np.isfinite(v).all():
+        bad = int((~np.isfinite(v)).sum())
+        raise VerifyError(f"the map holds {bad} NaN or infinite values; replace them (with 0 for no "
+                          "prediction) before scoring")
+    if not v.size:
+        return v.astype(np.int64), 65536
+    low, top = float(v.min()), float(v.max())
+    if low >= 0 and top <= 65535:
+        s = v / (255.0 if top <= 255 else 65535.0) if top > 1.0 else v
+        q = np.clip(np.round(s * 65535), 0, 65535).astype(np.int64)
+        if top == low or int(q.max()) - int(q.min()) >= MIN_FLOAT_LEVELS:
+            return q, 65536
+    if top == low:  # a constant map outside 0..65535, such as a blank sham written as logits: every pixel ties
+        return np.zeros(v.shape, dtype=np.int64), 65536
+    return np.round((v - low) / (top - low) * 65535).astype(np.int64), 65536
 
 
 def auc_scores(ink_scores, background_scores):
@@ -271,6 +299,10 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
         ctrl = np.squeeze(_load(control))
         if ctrl.shape != pred.shape:
             raise VerifyError(f"control shape {ctrl.shape} differs from the map's {pred.shape}")
+        # the same file is refused; an identical copy still scores, and its zero gap fails the control honestly
+        # (a constant known-bad map, such as a blank sham, equals its own reverse)
+        if _same_file(control, prediction):
+            raise VerifyError(f"control {control} is the map itself; give the reverse-depth map as the control")
         result["control"] = score_array(ctrl, ink, supervised, keep_zero, inner)
     if bootstrap or compare is not None:
         other = None

@@ -25,18 +25,33 @@ FAIL = "fail"
 CONTROL_NOT_CAUGHT = "control-not-caught"
 
 
+# The extra that installs the map tools' dependencies (numpy, tifffile, imagecodecs, zarr, scipy; pyproject.toml).
+MAPS_INSTALL = 'python -m pip install "scrolls-workbench[maps]"'
+
+# The command running now, for install hints: (what the user typed, the kit command), such as
+# ("python -m kit auc", "auc"). kit.cli sets it while a command runs; None when kit is used as a library.
+RUNNING = None
+
+
 class VerifyError(Exception):
     pass
+
+
+def missing(module):
+    """The VerifyError for a map tool that cannot import `module`: the command that needs it, the maps
+    extra that installs it, and how to run the command inside villa's environment instead."""
+    typed, name = RUNNING if RUNNING else (None, None)
+    need = f"{module} is required for {typed}" if typed else f"{module} is required"
+    note = " (its zarr needs Python 3.11 or newer)" if module == "zarr" else ""
+    return VerifyError(f"{need}. Install the maps extra{note}: {MAPS_INSTALL}, or run inside villa's environment: "
+                       f"uv run --project \"$VILLA/vesuvius\" --extra models python -m kit {name or 'COMMAND'} ...")
 
 
 def _numpy():
     try:
         import numpy
     except ImportError as exc:
-        raise VerifyError(
-            "numpy is required. Run inside villa's environment: "
-            "uv run --project \"$VILLA/vesuvius\" --extra models python -m kit verify ..."
-        ) from exc
+        raise missing("numpy") from exc
     return numpy
 
 
@@ -45,7 +60,7 @@ def load_map(path):
     try:
         import tifffile
     except ImportError as exc:
-        raise VerifyError("tifffile is required (it is in villa's environment)") from exc
+        raise missing("tifffile") from exc
     try:
         array = tifffile.imread(str(path))
     except Exception as exc:  # tifffile raises several types, e.g. for LZW without imagecodecs
@@ -71,9 +86,17 @@ def compare(reference, candidate, tolerance=DEFAULT_TOLERANCE):
         a = reference[start:start + ROWS_PER_BLOCK].astype(np.float64)
         b = candidate[start:start + ROWS_PER_BLOCK].astype(np.float64)
         d = np.abs(b - a)
+        # NaN or inf in one map and not the other is a disagreement: d is then NaN or inf, and
+        # max() and "d > tolerance" would both pass a NaN by. Equal values (inf and inf) or NaN in
+        # both maps at the same pixel agree.
+        same = (a == b) | (np.isnan(a) & np.isnan(b))
+        bad = ~(d <= tolerance) & ~same
+        d = np.where(same, 0.0, d)
+        if bad.any() and not np.isfinite(d[bad]).all():
+            max_abs = math.inf
         max_abs = max(max_abs, float(d.max()))
         sum_abs += float(d.sum())
-        over += int((d > tolerance).sum())
+        over += int(bad.sum())
         sx += float(a.sum())
         sy += float(b.sum())
         sxx += float((a * a).sum())
@@ -112,10 +135,20 @@ def verdict(candidate_agrees, control_agrees=None):
 
 def verify_arrays(reference, candidate, control=None, tolerance=DEFAULT_TOLERANCE,
                   max_fraction=DEFAULT_MAX_FRACTION):
+    np = _numpy()
+    if reference.dtype.kind == "f" and reference.size and not np.isfinite(reference).any():
+        # NaN at the same pixel counts as agreement, so an all-NaN candidate (both devices overflowing,
+        # say) would agree with an all-NaN reference and any finite control would look caught
+        raise VerifyError("the reference map has no finite values; a broken reference cannot show agreement")
     result = {"candidate": compare(reference, candidate, tolerance), "max_fraction": max_fraction}
     result["candidate_agrees"] = agrees(result["candidate"], max_fraction)
     control_agrees = None
     if control is not None:
+        if control.shape != reference.shape:
+            # A control of another shape would "disagree" by shape alone and turn any candidate
+            # into a pass; it shows nothing about whether the comparison can fail.
+            raise VerifyError(f"control shape {tuple(control.shape)} differs from the reference's "
+                              f"{tuple(reference.shape)}; the control must be the same map made wrongly")
         result["control"] = compare(reference, control, tolerance)
         control_agrees = agrees(result["control"], max_fraction)
         result["control_agrees"] = control_agrees

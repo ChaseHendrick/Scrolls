@@ -29,4 +29,4 @@ Each map is percentile ranked inside the mask (readers on different scales compa
 
 ## Demo
 
-`bash scripts/phantom-demo.sh` (writes to `/tmp/phantom-demo`, logs commands in `commands.log`). Results: [`logs/2026-10-07-phantom-demo.md`](logs/2026-10-07-phantom-demo.md); panels: [`assets/phantom-viewer-demo.png`](assets/phantom-viewer-demo.png).
+`bash scripts/phantom-demo.sh` (writes to a new `mktemp -d` folder, `$TMPDIR/phantom-demo.XXXXXX`, which it prints, or to `OUT` when set; logs commands in `commands.log`). Results: [`logs/2026-10-07-phantom-demo.md`](logs/2026-10-07-phantom-demo.md); panels: [`assets/phantom-viewer-demo.png`](assets/phantom-viewer-demo.png).

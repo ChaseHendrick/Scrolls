@@ -1,6 +1,7 @@
 import contextlib
 import io
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -84,6 +85,49 @@ class ProvenanceTest(unittest.TestCase):
         self.out.write_bytes(b"changed")
         with contextlib.redirect_stdout(io.StringIO()):
             self.assertEqual(cli.main(["provenance", "check", str(path), "--files"]), 1)
+
+    def test_devices_and_fifos_are_refused_not_read(self):
+        """A symlink to a device or a FIFO inside an input is refused at once (a link to /dev/zero used to hang)."""
+        (self.store / "dev").symlink_to(os.devnull)
+        with self.assertRaisesRegex(ValueError, "not a regular file"):
+            provenance.fingerprint(self.store)
+        with self.assertRaisesRegex(ValueError, "not a regular file"):
+            provenance.fingerprint(self.store / "dev")
+        (self.store / "dev").unlink()
+        r = self.record()
+        if hasattr(os, "mkfifo"):
+            os.mkfifo(self.store / "pipe")
+            self.assertTrue(any("not a regular file" in p for p in provenance.verify(r, recheck_files=True)))
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                code = cli.main(["provenance", "write", str(self.root / "p.json"), "--run", "t", "--repo", str(self.repo),
+                                 "--input", str(self.store)])
+            self.assertEqual(code, 2)
+            self.assertIn("not a regular file", err.getvalue())
+
+    def test_malformed_records_exit_2_and_ok_says_what_it_checked(self):
+        def check(record, *flags):
+            path = self.root / "r.json"
+            path.write_text(record if isinstance(record, str) else json.dumps(record))
+            out, err = io.StringIO(), io.StringIO()
+            with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+                code = cli.main(["provenance", "check", str(path), *flags])
+            return code, out.getvalue() + err.getvalue()
+        def sealed(body):
+            return dict(body, digest=__import__("hashlib").sha256(provenance.canonical(body)).hexdigest())
+        for bad in ([1, 2], sealed({"inputs": {"a": 1}}), sealed({"inputs": [{"path": "x"}]}),
+                    sealed({"models": ["x"]}), "[" * 100000 + "]" * 100000):
+            code, text = check(bad, "--files")
+            self.assertEqual(code, 2, text)
+            self.assertIn("malformed record", text)
+        code, text = check(sealed({"schema": 1, "run": "x"}), "--files")
+        self.assertEqual(code, 0)
+        self.assertIn("no files listed to check", text)
+        self.assertNotIn("files unchanged", text)
+        self.assertIn("not proof of who wrote it", text)
+        code, text = check(self.record(), "--files")
+        self.assertEqual(code, 0)
+        self.assertIn("3 listed files unchanged", text)
 
 
 if __name__ == "__main__":

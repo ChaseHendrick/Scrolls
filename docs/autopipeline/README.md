@@ -584,7 +584,7 @@ outside it; 22 prize eligible.
 
 ### Prices
 
-`autobatch.price` multiplies stage hours (`COST_MODEL`) by Modal list rates (`docs/compute/modal-rates.json` through
+`autobatch.price` multiplies stage hours (`COST_MODEL`) by Modal list rates (`kit/data/modal-rates.json` through
 `kit/cloudcost.py`) on the machines the package's Modal runner asks for: plan (8 cores), normal-grid cache
 (4 cores, scaled by level-0 voxels), trace and render per surface (8 cores), ink per surface per reader (one L4, scaled
 by the reader's pixels, capped at the GPU step's 1 h work limit), surface prediction when needed (one H100, scaled by

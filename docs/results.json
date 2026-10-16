@@ -1,6 +1,6 @@
 {
  "schema": 1,
- "updated": "2026-10-14",
+ "updated": "2026-10-16",
  "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. auc_shuffled: a map made with the depth layers shuffled, a second control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
  "held_out": {
   "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md",
@@ -10273,6 +10273,32 @@
     "verdict": "GO"
    },
    "held_out": "not run (labelled PHerc1447 windings, once); PHerc0841 ag405 labels not opened"
+  },
+  {
+   "date": "2026-10-15",
+   "source": "AutoPipeline fix4 release README, limits section (https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md); docs/logs/2026-10-14-upright-before-ink.md",
+   "claim": "Model output on development data (PHerc0841 w00 labels); a replication with a second reader, not a reading",
+   "reader": "Reader v2",
+   "what": "the same AutoPipeline trace and the same labelled pixels as the ink_9um test above, Reader v2 in place of ink_9um",
+   "native_auc": 0.851,
+   "upright_auc": 0.911,
+   "sham_45_auc": 0.872,
+   "upright_minus_sham_45": {
+    "diff": 0.039,
+    "ci95": [
+     -0.005,
+     0.091
+    ]
+   },
+   "reversed_control": {
+    "native": 0.476,
+    "upright": 0.709
+   },
+   "forward_minus_reversed": {
+    "native": 0.375,
+    "upright": 0.202
+   },
+   "result": "upright minus sham is not clearly above zero for Reader v2, so ink.orient stays opt in; the turn also raised the depth-reversed control"
   }
  ],
  "umbilicus_checks": [

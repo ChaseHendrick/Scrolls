@@ -19,6 +19,9 @@ the whole level-5 plane of each slice (papyrus area for keep_band, a stand-in fo
 uses) and a level-3 window around each centre (the rule itself), about 40 to 90 MB per scroll, cached in --cache.
 A chunk the bucket does not hold reads as 0 (air), as in the slice files; missing_chunks counts those reads (one per
 plane and chunk, from the cache too), or is null when a cache file made before the count was stored was used.
+Cache files are named by scroll and by a hash of the scan's bucket path and hold that path, so two scans of one scroll
+never share them; cache files made before 16 October 2026 (named by scroll only) are not read. A slice file given with
+--data must hold the scan the run or umbilicus file names.
 """
 import argparse, glob, hashlib, json, os, sys
 import numpy as np
@@ -32,6 +35,7 @@ class Bucket:
     cache file without a stored count was used."""
     def __init__(self, vol, cache, name):
         self.vol, self.cache, self.name = vol.rstrip("/"), cache, name
+        self.tag = hashlib.sha256(self.vol.encode()).hexdigest()[:12]    # cache files are per scan, not per scroll
         os.makedirs(cache, exist_ok=True)
         self.um = float(self.vol.split("/")[-1].split("-")[1].replace("um", ""))
         self.L3 = slices.PlaneReader(self.vol, 3)
@@ -44,6 +48,16 @@ class Bucket:
     def _stored(npz):
         return int(npz["missing"]) if "missing" in npz.files else None
 
+    def _load(self, f):
+        """A cache file of this scan, or None (absent, or written for another scan)."""
+        if not os.path.exists(f):
+            return None
+        hit = np.load(f)
+        if "vol" not in hit.files or str(hit["vol"]).rstrip("/") != self.vol:
+            print(f"{f}: cache file of another scan, read again", file=sys.stderr)
+            return None
+        return hit
+
     def heights(self):
         Z0 = self.L3.shape[0] * 8
         z = np.arange(32, Z0, 64)
@@ -52,8 +66,8 @@ class Bucket:
     def area(self, z):
         """Filled papyrus area of each slice from the level-5 plane (pipeline.papyrus_area's mask, 4x coarser)."""
         from scipy import ndimage as ndi
-        f = os.path.join(self.cache, f"{self.name}_l5.npz")
-        hit = np.load(f) if os.path.exists(f) else None
+        f = os.path.join(self.cache, f"{self.name}_{self.tag}_l5.npz")
+        hit = self._load(f)
         if hit is not None and np.array_equal(hit["z"], z):
             p5 = hit["p5"]; self._count(self._stored(hit))
         else:
@@ -61,7 +75,7 @@ class Bucket:
             with ThreadPoolExecutor(8) as ex:
                 p5 = np.stack(list(ex.map(lambda zz: L5.plane(int(zz) // 32, threads=9), z)))
             self._count(L5.missing)
-            np.savez_compressed(f, z=z, p5=p5, missing=L5.missing)
+            np.savez_compressed(f, z=z, p5=p5, missing=L5.missing, vol=self.vol)
         a = np.array([ndi.binary_fill_holes(ndi.gaussian_filter(im.astype(np.float32), 0.5) > 5).sum() for im in p5], float)
         return a, p5.reshape(len(p5), -1).max(1) > 0
 
@@ -71,9 +85,10 @@ class Bucket:
         ok = use & np.isfinite(yx).all(1)
         org[~ok] = 0
         key = hashlib.sha256(np.ascontiguousarray(np.c_[z, org, ok]).astype(np.int64).tobytes()).hexdigest()[:16]
-        f = os.path.join(self.cache, f"{self.name}_l3_{key}.npz")
-        if os.path.exists(f):
-            hit = np.load(f); self._count(self._stored(hit))
+        f = os.path.join(self.cache, f"{self.name}_{self.tag}_l3_{key}.npz")
+        hit = self._load(f)
+        if hit is not None:
+            self._count(self._stored(hit))
             return hit["w"], org
         w = np.zeros((len(z), 2 * h, 2 * h), np.uint8); m0 = self.L3.missing
         def one(i):
@@ -83,7 +98,7 @@ class Bucket:
             for i, c in ex.map(one, np.nonzero(ok)[0]):
                 w[i] = c
         n = self.L3.missing - m0; self._count(n)
-        np.savez_compressed(f, w=w, missing=n)
+        np.savez_compressed(f, w=w, missing=n, vol=self.vol)
         return w, org
 
 
@@ -91,6 +106,15 @@ def _rule_bucket(src, z, yx, present, keep):
     """pipeline.end_trimmed_keep on windows read from the bucket."""
     w, org = src.windows(z, yx, present)
     return pipeline.apply_end_rule(w, org, yx, z, src.um, keep, 3)
+
+
+def _npz(data, s, vol):
+    """data/<s>.npz, refused unless it holds the scan vol."""
+    f = os.path.join(data, f"{s}.npz"); d = np.load(f)
+    held = str(d["vol"]).rstrip("/") if "vol" in d.files else None
+    if held != str(vol).rstrip("/"):
+        raise SystemExit(f"{f} holds slices of {held}, not {vol}: use another --data folder")
+    return d
 
 
 def _rule_npz(d, yx, keep):
@@ -182,7 +206,7 @@ def score(run, cache, data=None, out=None):
         _, T = slices.truth(s)
         scored = (z >= T[0, 0]) & (z <= T[-1, 0])
         if data:
-            d = np.load(os.path.join(data, f"{s}.npz"))
+            d = _npz(data, s, p["vol"])
             kb = pipeline.keep_band(pipeline.papyrus_area(d["ct"]), z, um) & present
             k2, sup, thr = _rule_npz(d, yx, kb); miss = None      # slice files do not record absent chunks
         else:
@@ -218,7 +242,7 @@ def files(src_dir, dst, cache, data=None):
         z = np.array([q["z"] for q in cp], float); yx = np.array([[q["y"], q["x"]] for q in cp], float)
         um = float(j["metadata"]["voxelsize_um"])
         if data:
-            d = np.load(os.path.join(data, f"{s}.npz")); zz = np.asarray(d["z_l0"], float)
+            d = _npz(data, s, j["metadata"]["source_volume"]); zz = np.asarray(d["z_l0"], float)
             idx = np.searchsorted(zz, z)
             if not (idx < len(zz)).all() or not np.array_equal(zz[np.minimum(idx, len(zz) - 1)], z):
                 raise SystemExit(f"{s}: control point heights are not the slice file's heights")

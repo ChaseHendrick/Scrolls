@@ -147,10 +147,19 @@ say "2/7 data: $SEGMENT surface volume (0.6 to 1.7 GB), its labels, three checkp
 for z in inklabels supervision; do
   (cd "$SCROLLS" && "$PY" -m kit fetch "$LABELS/$z.zarr" "$LAB/$z.zarr" --workers 8)
 done
+# ink_9um at a pinned revision, and each file checked against its recorded SHA-256 (docs/logs/2026-10-07-w035-cpu.md)
+# before villa, which unpickles it, ever loads it; a file already there with another hash is refused, not used.
+INK9_REV=7109667e2607db1b90c37c8b09cb876ea7fe7bb1
 for seed in 42 43; do
   ck="$WORK/checkpoints/ink_9um/hybrid_3d2d-seed$seed/step-075000.pth"
   [[ -f "$ck" ]] || uvx -q --from huggingface_hub hf download scrollprize/ink_9um \
-    "hybrid_3d2d-seed$seed/step-075000.pth" --local-dir "$WORK/checkpoints/ink_9um"
+    "hybrid_3d2d-seed$seed/step-075000.pth" --revision "$INK9_REV" --local-dir "$WORK/checkpoints/ink_9um"
+  case "$seed" in
+    42) want=e635558ae6a1a807a7e5ec1e83adfd45bc3c0ac53883ea43f1d4e085d62a9cab ;;
+    43) want=2aeaa85a35ef28d7bc7bf3e848c4a6a91385e9132710927fdba41133c4ecb28f ;;
+  esac
+  got="$(sha "$ck")"
+  [[ "$got" == "$want" ]] || { echo "ink_9um seed $seed: $ck has sha256 $got, expected $want; move it aside and rerun" >&2; exit 1; }
 done
 "$PY" - "$V8IN" "$V8IN_REPO" "$V8IN_REV" <<'EOF'
 import sys

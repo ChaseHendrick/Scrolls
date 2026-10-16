@@ -44,10 +44,16 @@ The published w00 surface volume, turned in plane and turned back the same way, 
 
 **Result: GO** (Model output). Upright scored 0.874 against the published map's 0.798 on the same pixels; that difference, -0.076 [-0.164, 0.015], is not resolved. Both readers' pipeline checks matched the expected crop scores to 1e-4, the rerun matched exactly, and every forward map cleared its depth-reversed control by at least 0.137.
 
+## The same test with Reader v2 (15 October 2026)
+
+**Model output**, recorded in the limits of AutoPipeline's fix4 release ([README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md), released 16 October 2026). On the same trace and the same labelled pixels, Reader v2 scored 0.851 as rendered, 0.911 upright, and 0.872 for the sham turned 45 degrees off upright. Upright minus sham was +0.039, 95 % interval -0.005 to 0.091, so it is not clearly above zero, and `ink.orient` stays opt in. The turn also raised the depth-reversed control from 0.476 to 0.709, so forward minus reversed fell from 0.375 to 0.202; that is an observation, not part of the rule.
+
+**Interpretation.** For `ink_9um` the upright turn beat the sham by about 0.21; for Reader v2 the margin over the sham is small and not resolved, and the control rose sharply. So the gain does not carry over cleanly to a second reader family, and part of what the turn gives Reader v2 may not be ink.
+
 ## Limits
 
 - One trace, one scroll, on pixels that had been scored before. This is development data, not independent confirmation. The held-out test (labelled PHerc1447 windings, run once) has not been run.
-- One reader family (`ink_9um`, two seeds). Other readers may be trained with other augmentations.
+- The preregistered test used one reader family (`ink_9um`, two seeds). Reader v2, run on 15 October (above), did not show upright clearly beating the sham. Other readers may be trained with other augmentations.
 - The angle needs a sheet that contains the scroll's axis. On a sheet lying across it, the measure reports the canvas as not applicable and nothing is turned.
 - Whether `rotateHighZToTop` alone gives the same gain was not tested. It would put +z up the rows, 180 degrees from the published layout, a turn the training covers (Interpretation).
 

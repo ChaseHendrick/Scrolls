@@ -40,10 +40,24 @@ LICENSE = "CC BY-NC 4.0"
 FORBIDDEN_HOSTS = ("dl.ash2txt.org",)
 INK_SEGMENT_TYPES = ("ink-detection", "ink-detection-downsampled", "ink-labels", "3d-ink-prediction")
 SCHEMA = 1
+# Sample, volume and zarr folder names become folder names in the batch state and words in a shell command, so a row
+# whose id is anything else (a "..", a "/", a space, a quote) is left out of the catalog and listed under "rejected".
+SAFE_ID = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$")
 
 
 class ScanCatalogError(Exception):
     pass
+
+
+def safe_id(value):
+    """True for a name that is safe as one path component and one shell word (never "." or "..")."""
+    return isinstance(value, str) and bool(SAFE_ID.match(value)) and value not in (".", "..")
+
+
+def valid_shape(shape):
+    """True for a level-0 shape of three positive integers."""
+    return (isinstance(shape, (list, tuple)) and len(shape) == 3
+            and all(isinstance(n, int) and not isinstance(n, bool) and n > 0 for n in shape))
 
 
 def check_url(url):
@@ -143,20 +157,33 @@ def _zarr_entry(v):
 
 
 def build(cat, bucket_listing, snapshot=None, live_html=None, checked=None):
-    """The catalog document: {"schema", "checked", "sources", "volumes": [...], "scans_without_volume": [...]}."""
+    """The catalog document: {"schema", "checked", "sources", "volumes": [...], "scans_without_volume": [...],
+    "rejected": [rows left out because an id is not a safe name or repeats a key]}."""
     live = set(live_prize_ids(live_html)) if live_html is not None else None
     snap = snapshot_prizes(snapshot)
-    rows, seen = [], set()
+    rows, seen, rejected = [], set(), []
+
+    def reject(sid, vid, name, reason):
+        rejected.append({"sample": str(sid)[:200], "volume": str(vid)[:200], "name": str(name)[:200],
+                         "reason": reason})
+
     samples = cat.get("samples", {})
     for sid in sorted(set(samples) | set(bucket_listing)):
+        if not safe_id(sid):
+            reject(sid, "", "", "sample id is not a safe name")
+            continue
         s = samples.get(sid, {})
         listed = set(bucket_listing.get(sid, []))
         vols = s.get("volumes", {})
+        keys = set()
         for vid in sorted(vols):
             v = vols[vid]
             p = v.get("properties", {}) or {}
             path, roots = _zarr_entry(v)
             name = path.rstrip("/").split("/")[-1] if path else (v.get("long_id") or "")
+            if not safe_id(vid) or (name and not safe_id(name)):
+                reject(sid, vid, name, "volume id or zarr folder name is not a safe name")
+                continue
             in_bucket = name in listed or any(r == f"s3://{BUCKET}" for r in roots)
             types = {}
             for d in v.get("data", []):
@@ -167,7 +194,7 @@ def build(cat, bucket_listing, snapshot=None, live_html=None, checked=None):
             row = {"sample": sid, "volume": vid, "long_id": v.get("long_id") or name,
                    "scan_id": v.get("scan_id"), "voxel_um": p.get("pixel_size_um"),
                    "energy_keV": p.get("energy_keV"), "shape_zyx": shape,
-                   "size_gb": round(shape[0] * shape[1] * shape[2] / 1e9, 1) if shape else None,
+                   "size_gb": round(shape[0] * shape[1] * shape[2] / 1e9, 1) if valid_shape(shape) else None,
                    "zarr_url": f"{BUCKET_URL}/{sid}/volumes/{name}/" if in_bucket else None,
                    "in_bucket": in_bucket, "access": "bucket" if in_bucket else "outside-bucket",
                    "in_metadata": True, "superseded_by": p.get("superseded_by"),
@@ -180,14 +207,23 @@ def build(cat, bucket_listing, snapshot=None, live_html=None, checked=None):
                    "prize_live": (vid in live) if live is not None else None}
             row["era"] = "superseded" if row["superseded_by"] else "current"
             rows.append(row)
+            keys.add(vid)
             seen.add((sid, name))
         for name in sorted(listed):
             if (sid, name) in seen:
                 continue
+            if not safe_id(name):
+                reject(sid, "", name, "zarr folder name in the listing is not a safe name")
+                continue
             meta = parse_long_id(name)
-            vid = meta.get("volume", name)
-            if any(r["sample"] == sid and r["volume"] == vid for r in rows):
-                vid = name[:-5] if name.endswith(".zarr") else name   # a second zarr of a known volume id
+            # The volume id, else (a second zarr of a known volume id) the folder name without .zarr, else the whole
+            # folder name: the first that no earlier row of this sample uses, so every key is unique.
+            vid = next((c for c in (meta.get("volume", name), name[:-5] if name.endswith(".zarr") else name, name)
+                        if safe_id(c) and c not in keys), None)
+            if vid is None:
+                reject(sid, meta.get("volume", ""), name, "duplicate volume id")
+                continue
+            keys.add(vid)
             rows.append({"sample": sid, "volume": vid, "long_id": name, "scan_id": None,
                          "voxel_um": meta.get("voxel_um"), "energy_keV": meta.get("energy_keV"), "shape_zyx": None,
                          "size_gb": None, "zarr_url": f"{BUCKET_URL}/{sid}/volumes/{name}/", "in_bucket": True,
@@ -210,7 +246,7 @@ def build(cat, bucket_listing, snapshot=None, live_html=None, checked=None):
                             "date": (sc.get("creation") or {}).get("date")})
     return {"schema": SCHEMA, "checked": checked or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             "sources": {"metadata": METADATA_URL, "listing": BUCKET_URL + "/?list-type=2", "prizes": PRIZES_URL},
-            "license_expected": LICENSE, "volumes": rows, "scans_without_volume": orphans}
+            "license_expected": LICENSE, "volumes": rows, "scans_without_volume": orphans, "rejected": rejected}
 
 
 def key(row):
@@ -252,7 +288,7 @@ def summary(doc):
             "access": {a: sum(r["access"] == a for r in rows) for a in ("bucket", "outside-bucket")},
             "prize_eligible": sum(r["prize_eligible"] for r in rows),
             "license": {str(l): sum(r["license"] == l for r in rows) for l in {r["license"] for r in rows}},
-            "scans_without_volume": len(doc["scans_without_volume"])}
+            "scans_without_volume": len(doc["scans_without_volume"]), "rejected": len(doc.get("rejected", []))}
 
 
 def write(doc, path):
