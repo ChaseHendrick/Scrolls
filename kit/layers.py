@@ -125,6 +125,8 @@ def shuffle_file(src, dst, seed, level="0", crop=None):
     """Write src's layers in a fixed random order to a new zarr (array "0"), for villa's reader."""
     np = _numpy()
     zarr = _zarr()
+    if Path(dst).exists():
+        raise VerifyError(f"{dst} already exists; remove it or give a new path for the shuffled zarr")
     volume = open_volume(src, level)
     n, h, w = volume.shape
     y0, y1, x0, x1 = crop if crop is not None else (0, h, 0, w)
@@ -135,7 +137,7 @@ def shuffle_file(src, dst, seed, level="0", crop=None):
     for band in range(y0, y1, BAND_ROWS):
         end = min(band + BAND_ROWS, y1)
         data[:, band - y0:end - y0] = volume[:, band:end, x0:x1][order]
-    group = zarr.open_group(str(dst), mode="w")
+    group = zarr.open_group(str(dst), mode="w-")
     group.create_array("0", data=data, chunks=(n, min(128, y1 - y0), min(128, x1 - x0)))
     group.attrs["depth_shuffle"] = {"source": str(src), "seed": seed, "order": order, "crop": crop}
     return {"source": str(src), "out": str(dst), "shape": list(data.shape), "seed": seed, "order": order}
