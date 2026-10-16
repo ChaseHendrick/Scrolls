@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import inspect
 import io
 import json
@@ -86,6 +87,45 @@ def write_zarr_level(group, name, data, chunks=(16, 16)):
         arr = group.create_dataset(name, shape=data.shape, dtype=data.dtype, chunks=chunks)
     arr[:] = data
     return arr
+
+
+# The network's forward pass is most of the time these tests take, and many of them read the same synthetic image
+# with the same weights under different options, so the same band goes through the same network again and again.
+# This wrapper keeps each band's logits under a digest of the band and of every weight and layer of the network,
+# and hands back a fresh copy for exactly the same inputs: LineNet.logits still runs once for every distinct input,
+# and every read sees the same numbers. NetworkTest checks the forward pass itself.
+_LOGITS = {}
+_logits = R.LineNet.logits if R is not None else None
+
+
+def _cached_logits(self, band):
+    a = np.asarray(band, np.float32)
+    h = hashlib.sha256(repr((a.shape, self.stride, self.meta["layers"])).encode())
+    h.update(np.ascontiguousarray(a).tobytes())
+    for k in sorted(self.w):
+        v = np.asarray(self.w[k])
+        h.update(repr((k, v.dtype.str, v.shape)).encode())
+        h.update(np.ascontiguousarray(v).tobytes())
+    key = h.hexdigest()
+    if key not in _LOGITS:
+        _LOGITS[key] = _logits(self, band)
+    return _LOGITS[key].copy()
+
+
+_PATCHES = []
+
+
+def setUpModule():
+    if R is not None:
+        p = mock.patch.object(R.LineNet, "logits", _cached_logits)
+        p.start()
+        _PATCHES.append(p)
+
+
+def tearDownModule():
+    while _PATCHES:
+        _PATCHES.pop().stop()
+    _LOGITS.clear()
 
 
 def run_cli(argv):
