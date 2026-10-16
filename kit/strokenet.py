@@ -491,6 +491,20 @@ def _pool2(x):
     return out
 
 
+def _argsort_rows(z):
+    """np.argsort(z, axis=1, kind="stable") of a 2D array, through the faster default sort where that is the same.
+
+    A row with no ties and no NaN has only one sorting order, which any sort finds; a row with a tie
+    (-0.0 and 0.0 count as one) or a NaN is sorted again with the stable sort, so its ties stay in
+    position order."""
+    order = np.argsort(z, axis=1)
+    s = np.take_along_axis(z, order, axis=1)
+    redo = (s[:, 1:] == s[:, :-1]).any(axis=1) | np.isnan(s).any(axis=1)
+    if redo.any():
+        order[redo] = np.argsort(z[redo], axis=1, kind="stable")
+    return order
+
+
 def iaaft(windows, rng, iters=IAAFT_ITERS):
     """IAAFT copies (Schreiber and Schmitz 1996) of one window (H, W) or a stack (N, H, W), by default
     with 200 iterations as the evaluation copies. The algorithm of scripts/strokenet/nulls.py iaaft,
@@ -513,13 +527,10 @@ def iaaft(windows, rng, iters=IAAFT_ITERS):
     vals = np.sort(flat, axis=1)
     amp = np.abs(np.fft.rfft2(x))
     y = np.stack([f[rng.permutation(size)] for f in flat])
-    rows, ar = np.arange(N)[:, None], np.broadcast_to(np.arange(size), (N, size))
-    ranks = np.empty((N, size), np.intp)
     for _ in range(iters):
         Y = np.fft.rfft2(y.reshape(x.shape))
         z = np.fft.irfft2(amp * np.exp(1j * np.angle(Y)), s=shape).reshape(N, -1)
-        ranks[rows, np.argsort(z, axis=1, kind="stable")] = ar
-        y = np.take_along_axis(vals, ranks, axis=1)
+        np.put_along_axis(y, _argsort_rows(z), vals, axis=1)   # the k-th smallest of z gets the k-th value
     y = y.reshape(x.shape)
     return y[0] if single else y
 

@@ -783,6 +783,56 @@ class FastPathTest(unittest.TestCase):
             want = net.logits(win)
         self.assertSameBits(got, want)
 
+    def test_argsort_rows_is_the_stable_order(self):
+        rng = np.random.default_rng(14)
+        z = rng.normal(size=(6, 50))
+        z[1, ::3] = z[1, 0]                                   # repeated value
+        z[2, 4], z[2, 9] = 0.0, -0.0                          # equal zeros of opposite sign
+        z[3, 7], z[3, 20] = np.nan, np.nan                    # NaN, sorted last in position order
+        z[4] = 1.0                                            # constant row
+        z[5, 10], z[5, 11] = np.inf, np.inf
+        for a in (z, z[:, :1], z[:0], np.round(z * 4) / 4):
+            got = N._argsort_rows(a)
+            self.assertSameBits(got, np.argsort(a, axis=1, kind="stable"))
+
+    def test_iaaft_same_bits(self):
+        def reference(windows, rng, iters=N.IAAFT_ITERS):
+            # iaaft as it was: a stable argsort, a scatter into ranks and a gather of the sorted values
+            x = np.asarray(windows, np.float64)
+            single = x.ndim == 2
+            if single:
+                x = x[None]
+            n, shape = len(x), x.shape[1:]
+            if n == 0:
+                return x.copy()
+            size = shape[0] * shape[1]
+            flat = x.reshape(n, size)
+            vals = np.sort(flat, axis=1)
+            amp = np.abs(np.fft.rfft2(x))
+            y = np.stack([f[rng.permutation(size)] for f in flat])
+            rows, ar = np.arange(n)[:, None], np.broadcast_to(np.arange(size), (n, size))
+            ranks = np.empty((n, size), np.intp)
+            for _ in range(iters):
+                Y = np.fft.rfft2(y.reshape(x.shape))
+                z = np.fft.irfft2(amp * np.exp(1j * np.angle(Y)), s=shape).reshape(n, -1)
+                ranks[rows, np.argsort(z, axis=1, kind="stable")] = ar
+                y = np.take_along_axis(vals, ranks, axis=1)
+            y = y.reshape(x.shape)
+            return y[0] if single else y
+
+        rng = np.random.default_rng(15)
+        two_level = np.zeros((3, 32, 32), np.float32)
+        two_level[:, 10:16] = 200.0
+        nan_window = rng.normal(size=(2, 16, 16))
+        nan_window[0, 3, 3] = np.nan
+        cases = [rng.integers(4, 256, (4, 32, 32)).astype(np.uint8), rng.normal(size=(3, 17, 23)), two_level,
+                 np.full((2, 16, 16), 7.0), nan_window, rng.normal(size=(20, 20)), np.zeros((0, 8, 8))]
+        for windows in cases:
+            for iters in (0, 1, 12):
+                got = N.iaaft(windows, np.random.default_rng(3), iters)
+                want = reference(windows, np.random.default_rng(3), iters)
+                self.assertSameBits(got, want)
+
 
 if __name__ == "__main__":
     unittest.main()
