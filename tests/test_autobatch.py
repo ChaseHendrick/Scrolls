@@ -358,6 +358,11 @@ class BatchTest(unittest.TestCase):
         with mock.patch.object(autobatch, "datetime", UtcMachine):
             self.assertEqual(autobatch._now_et(), "2026-10-16 08:00 ET")   # EDT, UTC-4
 
+    def test_readers_comment_does_not_call_w043_held_out(self):
+        # w043 is ink_9um training data (docs/logs/2026-10-08-w045-not-held-out.md).
+        comments = [l for l in Path(autobatch.__file__).read_text().splitlines() if l.lstrip().startswith("#")]
+        self.assertFalse([l for l in comments if "held-out" in l and ("w043" in l or "segment" in l)])
+
     def test_no_modal_import(self):
         src = Path(autobatch.__file__).read_text() + Path(scancatalog.__file__).read_text()
         self.assertNotIn("import modal", src)
