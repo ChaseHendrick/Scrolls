@@ -2173,5 +2173,38 @@ class FastPathTest(unittest.TestCase):
         with self.assertRaises(ValueError):
             R.normalize_info(np.full((3, 3), np.nan))
 
+    def test_shear_matches_gather(self):
+        def reference(a, deg, fill=0.0):
+            # shear as it was: a gather of every pixel through full row and column index arrays
+            if not deg:
+                return a
+            h, w = a.shape
+            shift = np.round((np.arange(w) - w / 2) * math.tan(math.radians(deg))).astype(int)
+            rows = np.arange(h)[:, None] + shift[None, :]
+            ok = (rows >= 0) & (rows < h)
+            out = np.full_like(a, fill)
+            cols = np.broadcast_to(np.arange(w)[None, :], (h, w))
+            out[ok] = a[rows[ok], cols[ok]]
+            return out
+
+        rng = np.random.default_rng(6)
+        angles = list(R.deskew_angles()) + [45.0, -60.0, 89.0, 0.25, -0.01]
+        wide = rng.random((40, 90))
+        wide[5, 7], wide[30, 60] = np.nan, -0.0
+        images = [rng.random((63, 120)).astype(np.float32), wide, wide[:, 13:71], rng.random((1, 1)),
+                  rng.random((3, 200)), rng.integers(0, 256, (20, 30)).astype(np.uint8),
+                  np.zeros((0, 7), np.float32), np.zeros((5, 0)), np.zeros((0, 0))]
+        for a in images:
+            for deg in angles + [0, 0.0]:
+                for fill in (0.0, 0.3):
+                    self.assertSameBits(R.shear(a, deg, fill), reference(a, deg, fill))
+        a = images[0]
+        self.assertIs(R.shear(a, 0), a)
+        with mock.patch.object(R, "shear", reference):
+            want = R.deskew(a, 16, fill=0.3)
+        got = R.deskew(a, 16, fill=0.3)
+        self.assertEqual(got[0], want[0])
+        self.assertSameBits(got[1], want[1])
+
 if __name__ == "__main__":
     unittest.main()

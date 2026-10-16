@@ -1108,11 +1108,16 @@ def shear(a, deg, fill=0.0):
         return a
     h, w = a.shape
     shift = np.round((np.arange(w) - w / 2) * math.tan(math.radians(deg))).astype(int)
-    rows = np.arange(h)[:, None] + shift[None, :]
-    ok = (rows >= 0) & (rows < h)
     out = np.full_like(a, fill)
-    cols = np.broadcast_to(np.arange(w)[None, :], (h, w))
-    out[ok] = a[rows[ok], cols[ok]]
+    if w == 0:
+        return out
+    # columns with the same shift form runs (the shift only grows or only shrinks with x); copy each run as one block
+    cut = np.flatnonzero(np.diff(shift)) + 1
+    starts, ends = np.concatenate(([0], cut)), np.concatenate((cut, [w]))
+    for x0, x1, s in zip(starts.tolist(), ends.tolist(), shift[starts].tolist()):
+        y0, y1 = max(0, -s), min(h, h - s)
+        if y1 > y0:
+            out[y0:y1, x0:x1] = a[y0 + s:y1 + s, x0:x1]
     return out
 
 
