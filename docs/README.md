@@ -33,6 +33,7 @@ Updated 14 October 2026.
 | From idea to run to null or candidate | [`WORKFLOW.md`](WORKFLOW.md) | [`prereg/`](prereg/) |
 | Failures we hit, append-only | [`logs/errors.md`](logs/errors.md) | [`ERROR-LOG.md`](ERROR-LOG.md) is only the pointer and format |
 | CLI and output conventions | [`UI-UX.md`](UI-UX.md) | |
+| Recurring checks every agent runs at session start, and the daily workflow (prize page, release list, AutoPipeline watcher, handoff size and age, repository tests) | [`routines.json`](routines.json), run by `python3 -m kit routines run --due` | [`AI-AGENTS.md`](AI-AGENTS.md#session-start-repository-routines), [`../.github/workflows/routines.yml`](../.github/workflows/routines.yml) |
 
 ## Tools and how to run things
 

@@ -1,0 +1,31 @@
+name: Daily routines
+
+on:
+  schedule:
+    - cron: '23 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  routines:
+    # The public routines marked "ci" in docs/routines.json (kit/routines.py: the live prize page against the
+    # snapshot, the prize table, the README's release list, the leaderboard page once it lands) and the whole
+    # unit test suite, once a day on GitHub's free runners for public repositories. No secrets and a read-only
+    # token: nothing is posted, uploaded, pushed or launched. A failed check fails the job, so GitHub notifies
+    # the owner by email. Private work never runs here.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Routines marked ci (attention counts as a failure here)
+        run: python -m kit routines run --ci --strict
+      - name: Unit tests
+        if: always()
+        run: python -m unittest discover -s tests -v

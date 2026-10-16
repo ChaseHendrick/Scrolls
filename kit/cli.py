@@ -1236,6 +1236,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("text", nargs="+")
     p.set_defaults(func=cmd_greeklm)
 
+    p = sub.add_parser("routines", help="recurring repository checks any agent runs at session start "
+                                        "(kit/routines.py, docs/routines.json)")
+    from . import routines
+    routines.add_arguments(p)
+    p.set_defaults(func=routines.run)
+
     p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
     releases.add_arguments(p)
     p.set_defaults(func=releases.run)
