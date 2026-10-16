@@ -31,6 +31,21 @@ fi
 command -v git >/dev/null || { echo "git is missing (xcode-select --install)" >&2; exit 2; }
 command -v uv >/dev/null || { echo "uv is missing: brew install uv" >&2; exit 2; }
 mkdir -p "$WORK"/{checkpoints,data,logs,results} "$PRED"
+# One GPU job at a time, the same lock as mac-w045.sh: both scripts check out branches in the one
+# villa clone and write under $WORK, so a second run at once would clobber the first. A lock whose
+# process is gone is taken over.
+LOCK="$WORK/.gpu-job.lock"
+if ! mkdir "$LOCK" 2>/dev/null; then
+  other="$(cat "$LOCK/pid" 2>/dev/null || true)"
+  if [[ -n "$other" ]] && kill -0 "$other" 2>/dev/null; then
+    echo "Another run is using the GPU (pid $other: $(ps -o command= -p "$other" 2>/dev/null | cut -c1-80))." >&2
+    echo "Wait for it, or stop it: kill $other" >&2
+    exit 3
+  fi
+  echo "Taking over a stale lock left by pid ${other:-unknown}."
+fi
+echo $$ > "$LOCK/pid"
+trap 'rm -rf "$LOCK"' EXIT
 
 say "1/6 villa: main and PR #$PR"
 if [[ ! -d "$VILLA/.git" ]]; then

@@ -77,6 +77,19 @@ class MacVerifyTest(unittest.TestCase):
         self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
         self.assertEqual(self.runs.read_text().split(), ["unset"] * 3)
 
+    def test_shares_the_gpu_lock_with_mac_w045(self):
+        lock = self.work / ".gpu-job.lock"
+        lock.mkdir()
+        (lock / "pid").write_text(str(os.getpid()))   # a live process holds it
+        r = self.run_script("pass")
+        self.assertEqual(r.returncode, 3, r.stdout + r.stderr)
+        self.assertIn("Another run is using the GPU", r.stderr)
+        self.assertFalse(self.runs.exists())
+        (lock / "pid").write_text("")   # a lock with no live process is taken over, and removed at the end
+        r = self.run_script("pass")
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+        self.assertFalse(lock.exists())
+
 
 if __name__ == "__main__":
     unittest.main()
