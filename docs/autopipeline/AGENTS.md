@@ -17,5 +17,8 @@ Read [`README.md`](README.md) first; section 18 is the machine-readable part. Th
 7. Maps and scores are model output, not readings.
 8. Do not edit the README's "Released tools" section by hand (root AGENTS.md rule 15).
 9. No long dashes in tracked text. Never print tokens.
+10. Every scan (README section 19): `python -m kit run all --dry-run` plans and prices; nothing launches before the
+    owner approves that plan's digest (`--approve`). `python -m kit run watch` only queues and prices new volumes. The
+    open-data bucket is the only data source; never use dl.ash2txt.org.
 
-Tests: `python -m unittest discover -s tests` in the package folder; `python -m unittest tests.test_repo` here.
+Tests: `python -m unittest discover -s tests` in the package folder; `python -m unittest tests.test_repo tests.test_autobatch` here.

@@ -22,7 +22,7 @@ commands below use `scrolls-kit`.
 Contents: 1 Overview, 2 Architecture, 3 Install and requirements, 4 Quickstart, 5 Command line reference,
 6 Settings reference, 7 Environment variables, 8 Inputs, outputs and the run folder, 9 The stages, 10 Examples,
 11 Compute backends and cost logging, 12 Live monitor, 13 Troubleshooting, 14 FAQ, 15 Extending, 16 Testing,
-17 Changelog, 18 Agent section.
+17 Changelog, 18 Agent section, 19 Every scan: catalog, batch and watcher.
 
 ## 1. Overview
 
@@ -442,6 +442,8 @@ Run tests through `discover -s tests`; they import each other's helpers. For thi
 - Plan version 2 added `trace.normal_grids`; version 1 plans still read.
 - Not yet released: `python -m kit run modal-row` and `kit/modalledger.py` (pull request 90). The next release cut
   keeps the `run` command, so `run local`, `run backfill` and `run modal-row` would ship with it.
+- 16 October 2026, on `main`'s `kit`: section 19, every scan: `python -m kit run catalog`, `run all` (dry run,
+  status, approve) and `run watch` (`kit/scancatalog.py`, `kit/autobatch.py`). Launches nothing.
 
 ## 18. Agent section
 
@@ -505,3 +507,114 @@ Rules in short form: [`AGENTS.md`](AGENTS.md).
 python -m unittest discover -s tests                 # in the package folder
 python -m unittest tests.test_repo                   # in this repository
 ```
+
+## 19. Every scan: catalog, batch and watcher
+
+AutoPipeline (AP) runs one scan per plan. `kit/scancatalog.py` and `kit/autobatch.py` (on this branch's `kit`, run from the repository root) run it over every volume the
+Vesuvius Challenge open-data bucket holds, past, present and future, under one priced plan that the owner approves.
+Nothing in this section launches Modal; a test checks that neither module imports `modal` or starts a process.
+
+### The catalog
+
+`python -m kit run catalog [--out FILE] [--no-live-prizes]` writes one row per volume (default
+`work/autobatch/catalog.json`) from three public sources, read over anonymous HTTPS:
+
+- `metadata.json` of the bucket (`https://vesuvius-challenge-open-data.s3.amazonaws.com/metadata.json`): headers,
+  voxel size, energy, shape, license, surface predictions, normal grids, umbilicus, segments and their ink maps,
+  ink labels and 3D ink predictions.
+- The bucket listing (S3 ListObjectsV2 of each `SAMPLE/volumes/`): finds a volume that is in the bucket but not, or not
+  yet, in `metadata.json`.
+- Prizes: the live page `https://scrollprize.org/prizes` (a volume id named there is prize eligible) and the dated
+  snapshot in `kit/data/prizes-*.json` (which prize names it).
+
+The bucket is the only data source. `dl.ash2txt.org` is refused in code (`scancatalog.check_url`, tested). A volume
+whose catalog entry points to another host (the 2023 scans) stays in the catalog with `access` `outside-bucket` and is
+blocked from the batch, unless the listing finds it in the bucket.
+
+Past, present and future: the bucket keeps no object versions (ListObjectVersions shows `VersionId` null for
+`metadata.json`, checked 16 October 2026), so the past is what the bucket still holds. Each row's `era` is `current`,
+`superseded` (`superseded_by` is set: an earlier version of a scan, such as a remask) or `listing-only`. Scans with a
+catalog record and no volume are listed under `scans_without_volume`. New volumes are found by the watcher below.
+
+Row fields: `sample`, `volume`, `long_id`, `scan_id`, `voxel_um`, `energy_keV`, `shape_zyx`, `size_gb` (uint8 level 0),
+`zarr_url`, `in_bucket`, `access`, `in_metadata`, `era`, `superseded_by`, `surface_predictions` (model, level),
+`normal_grids`, `umbilicus`, `lasagna`, `volume_ink_3d`, `segments`, `segment_ink_maps`, `ink_labels`, `ink_3d`,
+`license`, `prizes_snapshot`, `prize_live`, `prize_eligible`. Read `license` per row: most volumes are CC BY-NC 4.0,
+but not all (16 October 2026: 67 CC BY-NC 4.0, 7 EduceLab Data License, 1 none given).
+
+Catalog on 16 October 2026: 75 volumes in 39 samples; 73 current, 1 superseded, 1 listing-only; 68 in the bucket, 7
+outside it; 22 prize eligible.
+
+### Per-scan config (automatic)
+
+`autobatch.scan_config` makes each scan's config from its row and its zarr's `.zattrs` (read once, cached under
+`work/autobatch/zattrs/`; the shape comes from `0/.zarray` when `metadata.json` gives none):
+
+- `voxel_um`, `levels` (the zarr's level paths), `trace_level` (coarsest level at or under 9.6 um) and `ink_level`
+  (coarsest level at or under the reader's resolution).
+- Ink readers by voxel size (`READERS`): up to 3.5 um, Hecate 2.4 um (`scrollprize/hecate`, `hecate_2.4um.pth`; best
+  on held-out PHerc0139 w043, AUC 0.940 against canonical 2um 0.887, model output on one held-out segment); 3.5 to
+  6.5 um, Hecate 2.4 um and Hecate 9.6 um compared; 6.5 to 20 um, ink_9um seed 42 and Hecate 9.6 um (after
+  resampling to 9.6 um); coarser than 20 um, blocked (no released reader).
+- `autopipe_settings`: the settings `scrolls-kit autopipeline plan` takes: `purpose` `benchmark` when the volume has ink
+  labels, else `smoke`; `volume`; ink on Modal with the f, r and s variants (the reverse-depth control stays);
+  `ink.models` the readers AP registers (`AUTOPIPE_MODELS`); `trace.normal_grids` `auto` when grids are published,
+  else `off`. Readers AP does not register yet (the Hecate pair) are listed in `readers_outside_autopipe`; they run
+  through their own runner until they are registered.
+- `needs_surface_prediction` when the scan has no published surface prediction (a surface-prediction GPU job first).
+- Skips and blocks: superseded volumes are skipped (`--include-superseded` plans them); outside-bucket, listing-only,
+  shapeless and too-coarse volumes are blocked, each with its reason.
+- Batch output stays in the git-ignored `work/` folder.
+
+### Prices
+
+`autobatch.price` multiplies stage hours (`COST_MODEL`) by Modal list rates (`docs/compute/modal-rates.json` through
+`kit/cloudcost.py`) on the machines the package's Modal runner asks for: plan (8 cores), normal-grid cache
+(4 cores, scaled by level-0 voxels), trace and render per surface (8 cores), ink per surface per reader (one L4, scaled
+by the reader's pixels, capped at the GPU step's 1 h work limit), surface prediction when needed (one H100, scaled by
+voxels, 0.5 to 8 h) and the driver. Four surfaces per scan. Low, typical and high are 0.5, 1 and 2.5 times typical.
+Calibrated on the billed PHerc0841 w00 run (0.27 USD); estimates, not quotes.
+
+### The batch: `python -m kit run all`
+
+```bash
+python -m kit run all --dry-run --refresh          # catalog, configs, prices, queue; prints the plan digest
+python -m kit run all --dry-run --only PHerc0139   # one sample (or SAMPLE/VOLUME); plan.json is not rewritten
+python -m kit run all --status                     # per-scan status and the total still to run
+python -m kit run all --approve DIGEST             # record the owner's yes to exactly that plan; launches nothing
+```
+
+Everything goes under `--state` (default `work/autobatch/`, git-ignored): `catalog.json`, `plan.json`, `plan.md`,
+`batch-ledger.csv` and `scans/SAMPLE/VOLUME/status.json` with `settings.json` next to it. Statuses: `planned`,
+`approved`, `running`, `done`, `failed`, `skipped`, `blocked`. Idempotent and resumable: a status is keyed by the
+config digest, an unchanged rerun rewrites nothing and adds no ledger row, `done` and `running` scans are never moved
+back, an approved scan stays approved, and a changed config returns a scan to `planned`. The plan digest covers every
+scan's config and price, so an approval is for one exact priced plan.
+
+Ledger rows are automatic: each dry run adds one row per scan per config and plan digest to `batch-ledger.csv`
+(`date_time_et, key, sample, volume, voxel_um, status, ink_readers, est_low_usd, est_typical_usd, est_high_usd,
+plan_digest, note`). A Modal launch still writes its own row in the Modal ledger (section 11).
+
+Launch, after approval only: each approved scan's `command` in `plan.json` is
+`scrolls-kit autopipeline plan SAMPLE --settings @work/autobatch/scans/SAMPLE/VOLUME/settings.json --out ...`, followed
+by the Modal runner with its own budget guards (`ASK_USD` 100, `CAP_USD` 200). The batch total is far above 100 USD,
+so the owner approves it in parts. Mark a scan `running`, `done` or `failed` in its `status.json` history as it goes.
+
+### The watcher: `python -m kit run watch`
+
+For a scheduled routine (cron, a CI schedule, an agent routine):
+
+```bash
+python -m kit run watch --exit-code     # exit 3 when it queued something, 0 when nothing is new
+python -m kit run watch --json          # {"first_run", "queued": [...], "gone": [...], "catalog_volumes"}
+```
+
+It rebuilds the catalog (`metadata.json` and the listing), diffs it against the last one seen
+(`work/autobatch/catalog.json`), and queues every new volume, and every volume whose row changed (a new surface
+prediction, grids, segments, supersession), as `planned`, priced, in dry run, with a ledger row (`plan_digest`
+`watch`). It prints one line per queued scan and saves the catalog. It launches nothing; a queued scan joins the next
+`run all --dry-run` plan for approval. The first run, with no saved catalog, queues every volume.
+
+### Tests
+
+`python -m unittest tests.test_autobatch` (synthetic catalog, no network, no Modal).
