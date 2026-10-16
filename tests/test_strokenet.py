@@ -7,6 +7,7 @@ import sys
 import tempfile
 import tracemalloc
 import unittest
+from unittest import mock
 from pathlib import Path
 from unittest import mock
 
@@ -766,6 +767,142 @@ class StrokeNetTest(unittest.TestCase):
                     rc = cli.main(["strokenet", mp, "--pixel-mm", "0.048"] + argv)
                 self.assertEqual(rc, 2)
                 self.assertTrue(err.getvalue())
+
+
+
+def reference_conv3(x, w, b):
+    """kit.strokenet._conv3 as it was: im2col gathered through sliding_window_view."""
+    N_, C, H, W = x.shape
+    O = w.shape[0]
+    xp = np.pad(x, ((0, 0), (0, 0), (1, 1), (1, 1)))
+    out = np.empty((N_, O, H, W), np.float32)
+    wm = w.reshape(O, C * 9).T
+    for n in range(N_):
+        cols = np.lib.stride_tricks.sliding_window_view(xp[n], (3, 3), axis=(1, 2))
+        cols = cols.transpose(1, 2, 0, 3, 4).reshape(H * W, C * 9)
+        out[n] = (cols @ wm + b).T.reshape(O, H, W)
+    return out
+
+
+def reference_pool2(x):
+    """kit.strokenet._pool2 as it was: a max over the reshaped 2 x 2 blocks."""
+    N_, C, H, W = x.shape
+    return x[:, :, :H // 2 * 2, :W // 2 * 2].reshape(N_, C, H // 2, 2, W // 2, 2).max(axis=(3, 5))
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class FastPathTest(unittest.TestCase):
+    """The faster convolution, pooling and IAAFT give the same bits as the simple code they replaced."""
+
+    def assertSameBits(self, got, want):
+        self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+        self.assertEqual(got.tobytes(), want.tobytes())
+
+    def test_pool2_matches_reshape_max(self):
+        rng = np.random.default_rng(11)
+        for shape in ((4, 16, 64, 64), (2, 3, 9, 11), (1, 1, 1, 1), (1, 2, 1, 5), (1, 2, 5, 1), (0, 3, 4, 4)):
+            x = rng.normal(size=shape).astype(np.float32)
+            if x.size > 4:
+                x.flat[::5] = 0.0
+                x.flat[1::7] = -0.0
+                x.flat[2::17] = np.nan
+            self.assertSameBits(N._pool2(x), reference_pool2(x))
+
+    def test_pool2_other_layouts_match_values(self):
+        # Bit for bit only for a C-contiguous x, which StrokeNet always passes. For a Fortran-ordered or
+        # transposed x the old reduction picks -0.0 or +0.0 in a tied block by memory order, so the values
+        # are compared with the sign of zero ignored: that is the only known difference.
+        rng = np.random.default_rng(13)
+        x = rng.normal(size=(2, 3, 17, 19)).astype(np.float32)
+        x.flat[::3] = 0.0
+        x.flat[1::5] = -0.0
+        x.flat[2::17] = np.nan
+        for y in (np.asfortranarray(x), x.transpose(0, 1, 3, 2)):
+            self.assertFalse(y.flags.c_contiguous)
+            got, want = N._pool2(y), reference_pool2(y)
+            self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+            np.testing.assert_array_equal(got, want)         # NaN equals NaN, -0.0 equals +0.0
+            differ = got.view(np.uint32) != want.view(np.uint32)
+            self.assertTrue((got[differ] == 0).all())
+            self.assertTrue(got.flags.c_contiguous)
+
+    def test_conv3_same_bits(self):
+        rng = np.random.default_rng(12)
+        released = [(2, 1, 128, 128, 16), (2, 16, 128, 128, 16), (2, 16, 64, 64, 32), (2, 32, 64, 64, 32),
+                    (2, 32, 32, 32, 64), (2, 64, 32, 32, 64), (2, 64, 16, 16, 128), (2, 128, 16, 16, 128),
+                    (2, 128, 8, 8, 128), (2, 128, 4, 4, 128)]
+        small = [(3, 8, 13, 7, 5), (2, 6, 10, 10, 6), (1, 4, 8, 8, 4), (2, 3, 9, 11, 5), (1, 1, 1, 1, 1),
+                 (1, 2, 1, 6, 3), (0, 2, 4, 4, 3)]
+        for n, c, h, wd, o in released + small:
+            x = np.maximum(rng.normal(size=(n, c, h, wd)), 0).astype(np.float32)
+            w = (rng.normal(size=(o, c, 3, 3)) * (2 / (c * 9)) ** 0.5).astype(np.float32)
+            b = (rng.normal(size=o) * 0.1).astype(np.float32)
+            self.assertSameBits(N._conv3(x, w, b), reference_conv3(x, w, b))
+        x = rng.normal(size=(2, 3, 9, 11))                     # float64 input, as a caller may pass
+        w = rng.normal(size=(5, 3, 3, 3)).astype(np.float32)
+        b = rng.normal(size=5).astype(np.float32)
+        self.assertSameBits(N._conv3(x, w, b), reference_conv3(x, w, b))
+
+    def test_logits_same_bits_in_released_layout(self):
+        with tempfile.TemporaryDirectory() as d:
+            write_random_net(Path(d) / "w.npz", chans=(16, 32, 64, 128, 128))
+            net = N.StrokeNet(Path(d) / "w.npz")
+        self.assertEqual(sorted(net.pool_after), [1, 3, 5, 7, 9])
+        win = np.random.default_rng(13).integers(4, 256, (3, 128, 128)).astype(np.float32)
+        got = net.logits(win)
+        with mock.patch.object(N, "_conv3", reference_conv3), mock.patch.object(N, "_pool2", reference_pool2):
+            want = net.logits(win)
+        self.assertSameBits(got, want)
+
+    def test_argsort_rows_is_the_stable_order(self):
+        rng = np.random.default_rng(14)
+        z = rng.normal(size=(6, 50))
+        z[1, ::3] = z[1, 0]                                   # repeated value
+        z[2, 4], z[2, 9] = 0.0, -0.0                          # equal zeros of opposite sign
+        z[3, 7], z[3, 20] = np.nan, np.nan                    # NaN, sorted last in position order
+        z[4] = 1.0                                            # constant row
+        z[5, 10], z[5, 11] = np.inf, np.inf
+        for a in (z, z[:, :1], z[:0], np.round(z * 4) / 4):
+            got = N._argsort_rows(a)
+            self.assertSameBits(got, np.argsort(a, axis=1, kind="stable"))
+
+    def test_iaaft_same_bits(self):
+        def reference(windows, rng, iters=N.IAAFT_ITERS):
+            # iaaft as it was: a stable argsort, a scatter into ranks and a gather of the sorted values
+            x = np.asarray(windows, np.float64)
+            single = x.ndim == 2
+            if single:
+                x = x[None]
+            n, shape = len(x), x.shape[1:]
+            if n == 0:
+                return x.copy()
+            size = shape[0] * shape[1]
+            flat = x.reshape(n, size)
+            vals = np.sort(flat, axis=1)
+            amp = np.abs(np.fft.rfft2(x))
+            y = np.stack([f[rng.permutation(size)] for f in flat])
+            rows, ar = np.arange(n)[:, None], np.broadcast_to(np.arange(size), (n, size))
+            ranks = np.empty((n, size), np.intp)
+            for _ in range(iters):
+                Y = np.fft.rfft2(y.reshape(x.shape))
+                z = np.fft.irfft2(amp * np.exp(1j * np.angle(Y)), s=shape).reshape(n, -1)
+                ranks[rows, np.argsort(z, axis=1, kind="stable")] = ar
+                y = np.take_along_axis(vals, ranks, axis=1)
+            y = y.reshape(x.shape)
+            return y[0] if single else y
+
+        rng = np.random.default_rng(15)
+        two_level = np.zeros((3, 32, 32), np.float32)
+        two_level[:, 10:16] = 200.0
+        nan_window = rng.normal(size=(2, 16, 16))
+        nan_window[0, 3, 3] = np.nan
+        cases = [rng.integers(4, 256, (4, 32, 32)).astype(np.uint8), rng.normal(size=(3, 17, 23)), two_level,
+                 np.full((2, 16, 16), 7.0), nan_window, rng.normal(size=(20, 20)), np.zeros((0, 8, 8))]
+        for windows in cases:
+            for iters in (0, 1, 12):
+                got = N.iaaft(windows, np.random.default_rng(3), iters)
+                want = reference(windows, np.random.default_rng(3), iters)
+                self.assertSameBits(got, want)
 
 
 if __name__ == "__main__":

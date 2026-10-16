@@ -1,4 +1,5 @@
 import contextlib
+import copy
 import io
 import json
 import sys
@@ -158,6 +159,23 @@ class JudgeTest(unittest.TestCase):
 class DemoRunTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
+        # Every demo run here draws the same page and noise image, the slow part of a run. Within this class each
+        # drawing is made once per set of arguments and every call gets a fresh copy; GlyphsTest checks the drawing
+        # itself, unpatched, including that the same arguments give the same image.
+        drawn = {}
+
+        def once(fn):
+            def call(*args, **kw):
+                key = (fn.__name__, repr(args), repr(sorted(kw.items())))
+                if key not in drawn:
+                    drawn[key] = fn(*args, **kw)
+                return copy.deepcopy(drawn[key])
+            return call
+
+        for name in ("render_page", "noise_page"):
+            p = mock.patch.object(D, name, once(getattr(D, name)))
+            p.start()
+            cls.addClassCleanup(p.stop)
         cls.tmp = tempfile.TemporaryDirectory()
         cls.d = Path(cls.tmp.name)
         cls.weights = random_weights(cls.d / "random.npz")

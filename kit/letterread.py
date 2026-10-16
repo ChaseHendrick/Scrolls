@@ -363,9 +363,7 @@ class LineNet:
             if op == "conv2d":
                 x = np.maximum(_conv2d(x, w, b, layer["pad"]), 0)
             elif op == "maxpool":
-                ky, kx = layer["k"]
-                C, H, W = x.shape
-                x = x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx).max(axis=(2, 4))
+                x = _maxpool(x, *layer["k"])
             elif op == "collapse":
                 x = np.maximum(_conv2d(x, w, b, 0), 0)[:, 0, :]
             elif op == "conv1d_res":
@@ -380,6 +378,25 @@ class LineNet:
         lg = self.logits(band)
         lg = lg - lg.max(axis=1, keepdims=True)
         return lg - np.log(np.exp(lg).sum(axis=1, keepdims=True))
+
+
+def _maxpool(x, ky, kx):
+    """Max pooling of a (C, H, W) array over ky x kx blocks, dropping rows and columns that do not fill a block.
+
+    The same values, bit for bit for a C-contiguous x, as x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky,
+    ky, W // kx, kx).max(axis=(2, 4)), taken as the elementwise maximum of the ky * kx strided slices: numpy
+    reduces over the two strided axes of the reshape about 20 times more slowly. LineNet always passes a
+    C-contiguous x (np.maximum output). For other layouts the old reduction's choice between -0.0 and +0.0
+    in a block whose maximum is a tie of the two depends on memory order, so only the sign of a zero can
+    differ, and the output here is always C-ordered."""
+    C, H, W = x.shape
+    hc, wc = H // ky * ky, W // kx * kx
+    out = x[:, 0:hc:ky, 0:wc:kx].copy()
+    for i in range(ky):
+        for j in range(kx):
+            if i or j:
+                np.maximum(out, x[:, i:hc:ky, j:wc:kx], out=out)
+    return out
 
 
 def _conv2d(x, w, b, pad):
@@ -934,9 +951,12 @@ def normalize_info(a, polarity="bright", dtype=np.float64):
     the image, not a rule) and, for auto, rule (POLARITY_RULE)."""
     a = np.asarray(a, dtype=dtype)
     finite = np.isfinite(a)
-    if not finite.any():
-        raise ValueError("image has no finite values")
-    a = np.where(finite, a, np.median(a[finite]))
+    # Only then is the fill needed: the median of a full image costs a copy and a partition. An empty image
+    # still raises the ValueError below, and a bool image still becomes float through np.where.
+    if a.size == 0 or a.dtype == bool or not finite.all():
+        if not finite.any():
+            raise ValueError("image has no finite values")
+        a = np.where(finite, a, np.median(a[finite]))
     lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
     if hi <= lo:  # sparse binary or quantised image, such as an ink label with under 0.2% ink
         lo, hi = float(a.min()), float(a.max())
@@ -1102,11 +1122,16 @@ def shear(a, deg, fill=0.0):
         return a
     h, w = a.shape
     shift = np.round((np.arange(w) - w / 2) * math.tan(math.radians(deg))).astype(int)
-    rows = np.arange(h)[:, None] + shift[None, :]
-    ok = (rows >= 0) & (rows < h)
     out = np.full_like(a, fill)
-    cols = np.broadcast_to(np.arange(w)[None, :], (h, w))
-    out[ok] = a[rows[ok], cols[ok]]
+    if w == 0:
+        return out
+    # columns with the same shift form runs (the shift only grows or only shrinks with x); copy each run as one block
+    cut = np.flatnonzero(np.diff(shift)) + 1
+    starts, ends = np.concatenate(([0], cut)), np.concatenate((cut, [w]))
+    for x0, x1, s in zip(starts.tolist(), ends.tolist(), shift[starts].tolist()):
+        y0, y1 = max(0, -s), min(h, h - s)
+        if y1 > y0:
+            out[y0:y1, x0:x1] = a[y0 + s:y1 + s, x0:x1]
     return out
 
 

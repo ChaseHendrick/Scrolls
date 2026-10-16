@@ -40,8 +40,26 @@ def _unit(np, a):
     return v / (255.0 if 1.0 < top <= 255 else 65535.0) if top > 1.0 else v
 
 
-def _ranks(np, v, valid):
+# The histogram path below gives the sort's bits only while every rank sum the sort path adds up stays an
+# exact float64 integer; a map whose sums could pass this takes the sort path.
+_EXACT_SUM = 2 ** 53
+
+
+def _ranks(np, v, valid, a=None):
+    """v's ranks among the valid pixels, ties sharing their mean rank, scaled to 0..1; 0 elsewhere.
+
+    a is the map v was scaled from, when the caller has it. For a uint8 or uint16 map, whose scaled
+    values keep its order and its ties, a value's mean rank is the count of valid pixels below it plus
+    (its count - 1) / 2, read from a histogram instead of two full sorts: the same bits as the sort
+    path, whose rank sums are exact integers, as long as every group's sum stays below _EXACT_SUM."""
     out = np.zeros_like(v)
+    x = a[valid] if a is not None and a.dtype in (np.uint8, np.uint16) else None
+    if x is not None and 0 < x.size < 2 ** 31:          # below 2 ** 31 the int64 group sums cannot overflow
+        counts = np.bincount(x, minlength=256 if a.dtype == np.uint8 else 65536)
+        below = np.cumsum(counts) - counts
+        if int((counts * (2 * below + counts - 1) // 2).max()) < _EXACT_SUM:
+            out[valid] = (below + (counts - 1) / 2.0)[x] / max(x.size - 1, 1)
+            return out
     x = v[valid]
     if x.size:
         order = np.argsort(x, kind="stable")
@@ -77,7 +95,7 @@ def combine(arrays, method="mean", weights=None):
     total = np.zeros(arrays[0].shape, np.float64)
     for a, w in zip(arrays, weights):
         v = _unit(np, a)
-        total += w * (_ranks(np, v, valid) if method == "rank" else v)
+        total += w * (_ranks(np, v, valid, a) if method == "rank" else v)
     total /= float(sum(weights))
     total[~valid] = 0.0
     return total, valid

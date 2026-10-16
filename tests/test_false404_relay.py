@@ -79,7 +79,8 @@ class S3LikeServer:
         self.url = f"http://127.0.0.1:{self.server.server_address[1]}"
 
     def __enter__(self):
-        threading.Thread(target=self.server.serve_forever, daemon=True).start()
+        # A short poll interval so shutdown() returns at once instead of after up to half a second.
+        threading.Thread(target=self.server.serve_forever, kwargs={"poll_interval": 0.02}, daemon=True).start()
         return self
 
     def __exit__(self, *exc):

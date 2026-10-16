@@ -2,9 +2,11 @@ import contextlib
 import hashlib
 import io
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 from kit import cli, ledger, verify
 
@@ -139,6 +141,47 @@ class ProvenanceTest(unittest.TestCase):
                              hashlib.sha256(b"weights").hexdigest())
             with self.assertRaises(ledger.LedgerError):
                 ledger.add_provenance("p", "x", [str(tmp / "nope")], root=tmp)
+
+
+
+class InstallHintTest(unittest.TestCase):
+    """A missing map dependency names the command actually run and the maps extra (standard library only)."""
+
+    def run_without(self, module, main, argv):
+        out, err = io.StringIO(), io.StringIO()
+        with mock.patch.dict(sys.modules, {module: None}), \
+                contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
+            code = main(argv)
+        return code, err.getvalue()
+
+    def test_library_use_names_the_extra(self):
+        with mock.patch.dict(sys.modules, {"numpy": None}):
+            with self.assertRaises(verify.VerifyError) as ctx:
+                verify._numpy()
+        text = str(ctx.exception)
+        self.assertIn("numpy is required.", text)
+        self.assertIn(verify.MAPS_INSTALL, text)
+        self.assertIn('"scrolls-workbench[maps]"', text)
+        self.assertIn("python -m kit COMMAND ...", text)
+
+    def test_numpy_hint_names_the_command_run(self):
+        code, err = self.run_without("numpy", cli.main, ["auc", "a.tif", "--labels", "l", "--mask", "m"])
+        self.assertEqual(code, 2)
+        self.assertIn("numpy is required for python -m kit auc.", err)
+        self.assertIn(verify.MAPS_INSTALL, err)
+        self.assertIn("--extra models python -m kit auc ...", err)
+        self.assertNotIn("kit verify", err)
+        self.assertIsNone(verify.RUNNING)                    # set only while the command runs
+
+    def test_zarr_hint_names_the_console_command(self):
+        with tempfile.TemporaryDirectory() as d:
+            code, err = self.run_without("zarr", cli.workbench_main, ["layers", str(Path(d) / "v.zarr"), d])
+        self.assertEqual(code, 2)
+        self.assertIn("zarr is required for scrolls-workbench layers.", err)
+        self.assertIn("Python 3.11 or newer", err)
+        self.assertIn(verify.MAPS_INSTALL, err)
+        self.assertIn("python -m kit layers ...", err)
+        self.assertIsNone(verify.RUNNING)
 
 
 if __name__ == "__main__":

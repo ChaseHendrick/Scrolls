@@ -19,6 +19,7 @@ The first tagged version. It holds everything released from this repository from
 - **Release list** (`python -m kit releases`): the README's "Released tools" section is written from `docs/releases.json`, and `kit releases check` fails when they disagree.
 - The command line builds its parser once per process, so repeated calls are much faster.
 - The Modal rates (`kit/data/modal-rates.json`) ship with the package, so `kit run all` and `python -m kit.cloudcost` work after a pip install.
+- **Checks that can fail, and inputs checked**, from an adversarial test of the tools: `kit verify` and `kit auc` refuse controls and maps that made a check pass by construction; the batch planner keeps every file inside its state folder, plans a failed row again and approves only the plan it computes; the release list refuses inline HTML and script links; the letter reader, StrokeNet, the umbilicus finder, `provenance check` and the TIFF reader refuse inputs that crashed, hung or used unbounded memory. Scores for valid inputs are unchanged.
 - `python -m kit run modal-row` appends one row to a Modal ledger; the public ledger takes a row only with `--public-generic` and a run marked generic.
 
 ## 0.1.0 (14 October 2026)
