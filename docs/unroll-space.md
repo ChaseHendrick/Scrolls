@@ -27,4 +27,4 @@ Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 tr
 - PHerc. 139 is held by the Biblioteca Nazionale di Napoli and was scanned at the ESRF synchrotron.
 - Ink model: [`scrollprize/ink_9um`](https://huggingface.co/scrollprize/ink_9um), trained and released by the Vesuvius Challenge; run over these windings by Chase Hendrick.
 - Rendering: [three.js](https://threejs.org).
-- The page code is MIT licensed; derived data in the Space is CC BY-NC 4.0. See the Space README for build scripts and per-run records.
+- The page code is Apache 2.0 licensed (v1.0.0); derived data in the Space is CC BY-NC 4.0. See the Space README for build scripts and per-run records.
