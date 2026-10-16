@@ -442,6 +442,8 @@ def main(argv=None):
     ap.add_argument("--manifest", default=None)
     ap.add_argument("--test-split", default="test", help="smoke runs only: smoke_test")
     a = ap.parse_args(argv)
+    if a.action in ("results", "release") and not a.out:
+        ap.error(f"{a.action} writes a file: give its path with --out.")
     if a.action == "calibrate":
         print(json.dumps(calibrate(a.runs)["gate"], indent=1, default=float))
     elif a.action == "results":
