@@ -178,7 +178,16 @@ def cmd_stackcheck(args):
 
 def cmd_meshaudit(args):
     """Mesh and cross-scan render audit (docs/plans/2026-10-07-mesh-hypothesis.md)."""
-    cat = meshaudit.load_catalogue(args.catalogue)
+    try:
+        cat = meshaudit.load_catalogue(args.catalogue)
+    except (OSError, ValueError) as exc:
+        print(f"meshaudit: cannot read the catalogue: {exc}. Give a metadata.json path or URL with --catalogue.",
+              file=sys.stderr)
+        return 2
+    if not isinstance(cat, dict) or not isinstance(cat.get("samples"), dict):
+        print("meshaudit: the catalogue has no samples object; give the bucket's metadata.json with --catalogue.",
+              file=sys.stderr)
+        return 2
     if args.action == "transforms":
         out = meshaudit.transforms_audit(cat)
         if not args.json:
@@ -202,8 +211,16 @@ def cmd_meshaudit(args):
                 print("%-12s native %s cross %s  %d of %d segments" % (
                     p["sample"], p["native_volume"], p["cross_volume"], len(p["segments"]), p["segments_available"]))
     else:  # depth
-        s = cat["samples"][args.sample]
-        seg = s["segments"][args.segment]
+        s = cat["samples"].get(args.sample)
+        if not isinstance(s, dict):
+            print(f"meshaudit: the catalogue has no sample {args.sample!r}; samples: {', '.join(sorted(cat['samples']))}",
+                  file=sys.stderr)
+            return 2
+        seg = (s.get("segments") or {}).get(args.segment)
+        if not isinstance(seg, dict):
+            print(f"meshaudit: sample {args.sample} has no segment {args.segment!r} in the catalogue; "
+                  f"check the id against samples.{args.sample}.segments in metadata.json", file=sys.stderr)
+            return 2
         out = meshaudit.depth_segment(args.base, args.sample, seg, cross_ids=args.cross or None,
                                       n_tiles=args.tiles, seed=args.seed, reference=args.reference)
         if not args.json:
@@ -212,8 +229,13 @@ def cmd_meshaudit(args):
                     args.segment, out["native_volume"], p["cross_volume"], p.get("tiles_with_peaks"),
                     p.get("delta_median_um"), p.get("location_control_pass")))
     if args.out:
-        with open(args.out, "w", encoding="utf-8") as f:
-            json.dump(out, f, indent=1)
+        try:
+            with open(args.out, "w", encoding="utf-8") as f:
+                json.dump(out, f, indent=1)
+        except OSError as exc:
+            print(f"meshaudit: cannot write {args.out}: {exc}. Give --out a path in an existing folder.",
+                  file=sys.stderr)
+            return 2
     if args.json:
         print(json.dumps(out, indent=1))
     return 0
