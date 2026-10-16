@@ -10,6 +10,7 @@ Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 tr
 - An X-ray layer: CT intensity on each surface.
 - A published ink layer: the Vesuvius Challenge ink detection on the 2.4 µm scan.
 - A second ink layer, "ink_9um (9 µm)": ink predictions produced by Chase Hendrick, who ran the public [`scrollprize/ink_9um`](https://huggingface.co/scrollprize/ink_9um) model over these windings and processed the output for this viewer. The model itself was trained and released by the Vesuvius Challenge, not by us. Coverage is a work in progress and grows as more windings are run; so far it covers windings `w046` to `w051`, run on Hugging Face ZeroGPU. It reads the 9.362 µm scan, about four times coarser than the published layer's scan, so it is shown at lower resolution on purpose, as a comparison baseline.
+- Ink layers show where models detect ink; letters visible here are candidates for expert reading.
 - A close-up view per winding with pan, zoom, a scale bar and a swipe comparison between Published ink (2.4 µm) and ink_9um (9 µm).
 
 ## Using it
