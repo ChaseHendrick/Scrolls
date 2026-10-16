@@ -37,6 +37,8 @@ class ValidateTest(unittest.TestCase):
         r.validate(entry(where=PACKAGE, details="Guide: [README](https://github.com/ChaseHendrick/Scrolls/blob/"
                                                  "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/README.md)."))
         r.validate(entry(commands=["python -m kit prizes"], summary="Under 5 minutes, see <https://example.org>."))
+        r.validate(entry(summary="AUC 0.94 < 0.95 and x<3; see [guide](docs/a.md#b), [site](https://a.b) and [top](#x)."))
+        r.validate(entry(commands=["python x.py > out.txt <in.txt", "echo '<b>'"]))
 
     def test_bad_entries_fail(self):
         bad = [entry(id="Demo"), entry(id="-x"), entry(id="a" * 64), entry(title=""), entry(title="a\nb"),
@@ -55,7 +57,14 @@ class ValidateTest(unittest.TestCase):
                entry(details="<details> more"),
                entry(where=PACKAGE, commands=["cd pkg && python -m kit " + "autopipeline defaults"]),
                entry(where=PACKAGE, details="Then run python3 -m kit " + "demo."),
-               entry(where=PACKAGE, details="Guide: [README](README.md)."), entry(where=PACKAGE, summary="See [x](http://a.b).")]
+               entry(where=PACKAGE, details="Guide: [README](README.md)."), entry(where=PACKAGE, summary="See [x](http://a.b)."),
+               entry(title="X tool <img src=x onerror=alert(1)>"),
+               entry(summary="A sentence. <details><summary>Show more</summary> And the rest"),
+               entry(summary="Read <a href=\"https://evil.example\">the docs"), entry(details="See </details> here"),
+               entry(details="See [docs](javascript:alert(document.domain))."), entry(details="See [docs]( JavaScript:x)."),
+               entry(summary="See [x](http://a.b)."), entry(summary="See [x](//evil.example/a)."),
+               entry(summary="See ![x](data:image/png;base64,AA)."), entry(summary="Open <javascript:alert(1)>."),
+               entry(summary="[x]: javascript:alert(1)"), entry(details="Embed <iframe src=https://evil.example>")]
         for e in bad:
             with self.subTest(entry=e), self.assertRaises(r.ReleaseListError):
                 r.validate(e)

@@ -53,6 +53,12 @@ BLOCK_OPENER = re.compile(r"\s|```|~~~|<")
 KIT_COMMAND = re.compile(r"python3? -m kit ")
 # A package's files are not on main, so a relative link in its entry would point at the wrong tree.
 RELATIVE_LINK = re.compile(r"\]\((?!https://)")
+# Inline raw HTML anywhere in a title, summary or details (an unclosed <details> or <a href> hides or relinks the rest of
+# the README), and link targets other than https:// or a relative path (javascript:, http:, //host), are refused.
+INLINE_HTML = re.compile(r"<\s*[A-Za-z/!?]")
+HTTPS_AUTOLINK = re.compile(r"<https://[^\s<>]*>")
+LINK_TARGET = re.compile(r"\]\(\s*<?([^)\s>]*)|^\s{0,3}\[[^\]]*\]:\s*<?(\S*)")
+URL_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:|//|\\")
 
 
 class ReleaseListError(ValueError):
@@ -79,6 +85,14 @@ def _plain(entry, key, value):
     for ch in LONG_DASHES:
         if ch in value:
             raise ReleaseListError(f"{entry.get('id', '?')}: {key} has a long dash (house style: none)")
+    if key == "commands":   # shown inside a bash code block, where Markdown and HTML are plain text
+        return
+    if INLINE_HTML.search(HTTPS_AUTOLINK.sub("", value)):
+        raise ReleaseListError(f"{entry.get('id', '?')}: {key} may not hold raw HTML")
+    for m in LINK_TARGET.finditer(value):
+        target = m[1] if m[1] is not None else m[2]
+        if not target.startswith("https://") and URL_SCHEME.match(target):
+            raise ReleaseListError(f"{entry.get('id', '?')}: {key} links must be https:// or relative, not {target[:40]!r}")
 
 
 def validate(entry):
