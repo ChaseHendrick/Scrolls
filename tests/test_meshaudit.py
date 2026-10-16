@@ -352,6 +352,17 @@ class BombAndFetchErrorTests(unittest.TestCase):
     """Decompression bombs are refused before they are inflated or decoded, and only a genuinely absent chunk
     reads as the fill value."""
 
+    def test_gzip_body_with_several_members_or_cut_off_reads_as_gzip_does(self):
+        import gzip
+        two = gzip.compress(b"first ") + gzip.compress(b"second") + b"\0\0"
+        self.assertEqual(ma._gunzip(two), gzip.decompress(two))
+        whole = gzip.compress(b"x" * 1000)
+        for cut in (whole[:-4], whole[:-8], whole[:20]):
+            with self.assertRaises(ValueError):
+                ma._gunzip(cut)
+        with self.assertRaises(Exception):
+            ma._gunzip(whole + b"junk")
+
     def test_gzip_body_past_the_ceiling_is_refused(self):
         import gzip
         from unittest import mock

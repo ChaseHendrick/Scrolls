@@ -94,6 +94,8 @@ def _quantize(np, values):
         q = np.clip(np.round(s * 65535), 0, 65535).astype(np.int64)
         if top == low or int(q.max()) - int(q.min()) >= MIN_FLOAT_LEVELS:
             return q, 65536
+    if top == low:  # a constant map outside 0..65535, such as a blank sham written as logits: every pixel ties
+        return np.zeros(v.shape, dtype=np.int64), 65536
     return np.round((v - low) / (top - low) * 65535).astype(np.int64), 65536
 
 

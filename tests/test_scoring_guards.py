@@ -56,6 +56,11 @@ class VerifyGuardsTest(unittest.TestCase):
         r = verify.verify_arrays(a, a.copy(), 255 - self.ref)
         self.assertEqual(r["verdict"], verify.PASS)
 
+    def test_all_nan_reference_is_refused(self):
+        nan = np.full(self.ref.shape, np.nan, np.float32)
+        with self.assertRaises(verify.VerifyError):   # two broken maps would agree, and a finite control "is caught"
+            verify.verify_arrays(nan, nan.copy(), self.ref.astype(np.float32))
+
 
 @unittest.skipIf(zarr is None, "numpy, tifffile and zarr are needed for kit auc")
 class AucGuardsTest(unittest.TestCase):
@@ -77,6 +82,10 @@ class AucGuardsTest(unittest.TestCase):
         self.assertEqual(self.score(-self.base), round(1 - self.want, 4))
         i16 = ((self.base - 0.5) * 10000).astype(np.int16)
         self.assertEqual(self.score(i16), round(_rank_auc(i16, self.ink, self.mask & (i16 != 0)), 4))
+
+    def test_constant_map_outside_the_known_scale_ties(self):
+        for value in (-3.0, 70000.0):   # a blank sham written as logits, or past 0..65535
+            self.assertEqual(self.score(np.full(self.ink.shape, value, np.float32)), 0.5)
 
     def test_maps_already_on_a_known_scale_quantize_as_before(self):
         u8 = (self.base * 255).astype(np.uint8)

@@ -41,13 +41,21 @@ def _limit(name, default):
 
 
 def _gunzip(data):
-    """Inflate a gzip body, refusing one that inflates past KIT_MAX_GUNZIP_BYTES."""
+    """Inflate a gzip body as gzip.decompress does (every member, a cut-off body refused), refusing one that
+    inflates past KIT_MAX_GUNZIP_BYTES."""
     limit = _limit("KIT_MAX_GUNZIP_BYTES", MAX_GUNZIP_BYTES)
-    d = zlib.decompressobj(16 + zlib.MAX_WBITS)
-    out = d.decompress(data, limit + 1)
-    if len(out) > limit or d.unconsumed_tail:
-        raise ValueError("gzip body inflates past %d bytes; refused (raise KIT_MAX_GUNZIP_BYTES to allow it)" % limit)
-    return out
+    out = bytearray()
+    while True:
+        d = zlib.decompressobj(16 + zlib.MAX_WBITS)
+        out += d.decompress(data, limit + 1 - len(out))   # at least 1: 0 would mean no limit
+        if len(out) > limit or d.unconsumed_tail:
+            raise ValueError("gzip body inflates past %d bytes; refused (raise KIT_MAX_GUNZIP_BYTES to allow it)"
+                             % limit)
+        if not d.eof:
+            raise ValueError("gzip body ends before its last member does")
+        data = d.unused_data.lstrip(b"\0")   # members follow one another; trailing zero padding is allowed
+        if not data:
+            return bytes(out)
 
 
 def imread_capped(src):

@@ -510,6 +510,18 @@ class InputsTest(unittest.TestCase):
                     sc.fetch_tifxyz(url, cache)
             self.assertEqual(sorted(p.name for p in Path(t).rglob("*")), [])
 
+    def test_cache_host_folder_may_be_a_link_to_another_disk(self):
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as t:
+            cache, other = Path(t) / "cache", Path(t) / "external"
+            cache.mkdir()
+            other.mkdir()
+            (cache / "example.org").symlink_to(other, target_is_directory=True)
+            with mock.patch("kit.meshaudit._get", return_value=b"tif"):
+                got = sc.fetch_tifxyz("https://example.org/PHerc0139/seg.tifxyz", cache)
+            self.assertEqual(got, cache / "example.org" / "PHerc0139" / "seg.tifxyz")
+            self.assertEqual((other / "PHerc0139" / "seg.tifxyz" / "x.tif").read_bytes(), b"tif")
+
     def test_read_tifxyz_refuses_a_declared_size_past_the_ceiling(self):
         import tifffile
         from unittest import mock

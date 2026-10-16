@@ -120,6 +120,11 @@ def verdict(candidate_agrees, control_agrees=None):
 
 def verify_arrays(reference, candidate, control=None, tolerance=DEFAULT_TOLERANCE,
                   max_fraction=DEFAULT_MAX_FRACTION):
+    np = _numpy()
+    if reference.dtype.kind == "f" and reference.size and not np.isfinite(reference).any():
+        # NaN at the same pixel counts as agreement, so an all-NaN candidate (both devices overflowing,
+        # say) would agree with an all-NaN reference and any finite control would look caught
+        raise VerifyError("the reference map has no finite values; a broken reference cannot show agreement")
     result = {"candidate": compare(reference, candidate, tolerance), "max_fraction": max_fraction}
     result["candidate_agrees"] = agrees(result["candidate"], max_fraction)
     control_agrees = None

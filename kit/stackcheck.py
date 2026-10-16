@@ -94,6 +94,7 @@ path that is neither "mesh" nor a ".tifxyz" folder. Needs numpy, tifffile and sc
 
 import json
 import math
+import os
 import re
 import time
 import urllib.parse
@@ -187,8 +188,9 @@ def fetch_tifxyz(url, cache):
         raise VerifyError(f"refusing a URL without an http(s) scheme and a host name: {url}")
     if any(p in (".", "..") or "\\" in p for p in rel):
         raise VerifyError(f"refusing a URL with '.' or '..' in its path: {url}")
-    root = Path(cache).resolve()
-    dest = root.joinpath(parts.netloc, *rel).resolve()
+    # checked on the path as written, not with symlinks resolved, so a cache folder linked to another disk still works
+    root = Path(os.path.abspath(cache))
+    dest = Path(os.path.abspath(root.joinpath(parts.netloc, *rel)))
     if dest == root or root not in dest.parents:
         raise VerifyError(f"refusing a URL whose cache folder {dest} is outside --cache {root}")
     dest.mkdir(parents=True, exist_ok=True)
