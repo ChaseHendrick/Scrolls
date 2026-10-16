@@ -23,21 +23,6 @@
     "kit/cloudcost.py"
    ]
   },
-  "experiment-records": {
-   "group": "pub-scripts-apps",
-   "covers": [
-    "scripts/experiments"
-   ]
-  },
-  "letterread": {
-   "group": "pub-letters",
-   "covers": [
-    "kit/letterexport.py",
-    "kit/letterread.py",
-    "python -m kit letterread",
-    "release letter-reader"
-   ]
-  },
   "letters-training": {
    "group": "pub-letters",
    "covers": [
@@ -62,48 +47,9 @@
     "scripts/mac-w045.sh"
    ]
   },
-  "modal-row": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/modalledger.py",
-    "python -m kit run modal-row"
-   ]
-  },
-  "provenance": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/provenance.py",
-    "python -m kit provenance write",
-    "python -m kit provenance check"
-   ]
-  },
   "quickstart-wip": {
    "group": "pub-released",
    "covers": []
-  },
-  "run-local": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/localcost.py",
-    "scripts/backfill",
-    "python -m kit run local",
-    "python -m kit run backfill"
-   ]
-  },
-  "scroll-session": {
-   "group": "pub-scripts-apps",
-   "covers": [
-    ".claude/skills/scroll-session"
-   ]
-  },
-  "strokenet": {
-   "group": "pub-models",
-   "covers": [
-    "kit/strokenet.py",
-    "scripts/strokenet",
-    "python -m kit strokenet",
-    "release strokenet"
-   ]
   },
   "tooldocs": {
    "group": "pub-planning",

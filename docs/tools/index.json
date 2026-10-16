@@ -970,6 +970,160 @@
    ]
   },
   {
+   "id": "experiment-records",
+   "name": "experiment-records",
+   "tagline": "saved scripts and scores of the 7 October public-data jobs",
+   "summary": "`scripts/experiments/` keeps, word for word, the scripts, logs and result JSON of the public-data jobs run on 7 October 2026 (the CPU cloud jobs, Grok's lanes A to I, the tricks runs and the mesh study), so their numbers can be traced and their checks rerun.",
+   "status": "Retired",
+   "kind": [
+    "data"
+   ],
+   "area": "Records and provenance",
+   "commands": [],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/experiments/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_grok_synthesis.py",
+    "tests/test_laneb.py",
+    "tests/test_laneb_archive.py",
+    "tests/test_lane_f_regression.py",
+    "tests/test_lane_g_regression.py",
+    "tests/test_laneh_job.py",
+    "tests/test_cropscan.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to read or test. Running the lane H fine-tune would rent GPUs and needs Chase's budget decision first (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": "Apache-2.0, like the rest of the repository ([LICENSE](../../LICENSE)); no scroll data, maps or weights are in these folders",
+   "fields": {
+    "Id": "`experiment-records`",
+    "Status": "Retired",
+    "Kind": "data",
+    "Area": "Records and provenance",
+    "Run": "None: saved records. Their regression tests run as under Tests",
+    "Code": "`scripts/experiments/`",
+    "Tests": "`tests/test_grok_synthesis.py`, `tests/test_laneb.py`, `tests/test_laneb_archive.py`, `tests/test_lane_f_regression.py`, `tests/test_lane_g_regression.py`, `tests/test_laneh_job.py`, `tests/test_cropscan.py`, and the test files inside seven record folders (see Tests)",
+    "Needs": "Nothing to read them. The regression tests: Python 3.10 or newer; CI runs them with every extra of the package installed. A rerun of a job: what its folder's README or notes name, usually villa with PR #1865, the released checkpoints and data from the open-data bucket",
+    "Runs on": "Reading: anywhere. The 45 tests inside the record folders take about 3 s, and six of the `tests/` files above (lanes A, B, F, G and H) under 2 s (measured 2026-10-16, cloud container). The original jobs ran in 4-CPU cloud containers and on Chase's Mac ([cloud README](../../scripts/experiments/2026-10-07-cloud/README.md))",
+    "Network": "None to read or test. A rerun downloads what its scripts name: the open-data bucket, Hugging Face checkpoints, GitHub releases",
+    "Writes": "Nothing when read or tested. A rerun writes where its script says (most under `$HOME/scrolls-work` or `$HOME/scrolls-cpu`); several scripts refuse to overwrite the saved outputs",
+    "Go-ahead": "Not needed to read or test. Running the lane H fine-tune would rent GPUs and needs Chase's budget decision first (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-07",
+    "License": "Apache-2.0, like the rest of the repository ([LICENSE](../../LICENSE)); no scroll data, maps or weights are in these folders",
+    "Replaced by": "Nothing",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/experiment-records.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "The records",
+     "start_line": 47,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 86,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 113,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 122,
+     "end_line": 125,
+     "applicable": false
+    },
+    {
+     "name": "Python API",
+     "start_line": 126,
+     "end_line": 129,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 130,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 138,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 160,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 178,
+     "end_line": 184,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 185,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 189,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 199,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 208,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 217,
+     "end_line": 224,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "false404-relay",
    "name": "false404-relay",
    "tagline": "replay S3's false 404 on chosen zarr chunks, on demand",
@@ -2402,6 +2556,177 @@
    ]
   },
   {
+   "id": "letterread",
+   "name": "letterread",
+   "tagline": "propose Greek letters on a 2D image of text, with controls",
+   "summary": "`python -m kit letterread` runs a small learned line reader (numpy only) over an ink map, an ink label or a photograph and proposes Greek capitals with boxes and confidences, scored against nulls, an optional control map and turned reads.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit letterread",
+    "scrolls-letterread"
+   ],
+   "imports": [
+    "from kit import letterread",
+    "from kit import letterexport"
+   ],
+   "code": [
+    {
+     "path": "kit/letterread.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/letterexport.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/letter-weights.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_letterread",
+      "letterread_main",
+      "import_advice"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_letterread.py",
+    "tests/test_letterexport.py",
+    "tests/test_letterlines.py",
+    "tests/test_letter_scripts.py",
+    "tests/test_letterdemo.py",
+    "tests/test_packaging.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to read public data. Publishing a read, an overlay or an export of a prize-eligible or unpublished scroll is never allowed before the prize is announced (the no-findings rule, hard rule 1); posting any read needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
+   "fields": {
+    "Id": "`letterread`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit letterread`, `scrolls-letterread` (the installed package's console script), `from kit import letterread`, `from kit import letterexport`",
+    "Code": "`kit/letterread.py`, `kit/letterexport.py`, `kit/data/letter-weights.json`, `kit/cli.py` (`cmd_letterread`, `letterread_main`, `import_advice`)",
+    "Tests": "`tests/test_letterread.py`, `tests/test_letterexport.py`, `tests/test_letterlines.py`, `tests/test_letter_scripts.py`, `tests/test_letterdemo.py`, `tests/test_packaging.py`",
+    "Needs": "Python 3.10 or newer and numpy. Pillow for PNG and JPEG input and for `--overlay`; tifffile (and imagecodecs for compressed TIFFs) for TIFF input; zarr for zarr input and for reading a compressed tiled TIFF band by band. The `reader` extra of the `scrolls-workbench` package brings numpy, Pillow, tifffile and imagecodecs; zarr comes with `pip install zarr`. The weights: a released model (`letters-v2-ccby`, 5,933,674 bytes, or `letters-v2-real`), downloaded once, or a `linenet-v1` `.npz` file. No torch, no GPU",
+    "Runs on": "Any CPU. A 301 x 1,006 px synthetic page with a control map, the four orientation reads, the three exports and an overlay took 4.0 s wall and 13.4 s of CPU (measured 2026-10-16, 4-core 2.8 GHz Xeon cloud container, weights cached). The guide measured a whole 2.4 um PHerc. 1667 w013 map (a 269 MB tiled TIFF) block-averaged by 43 at 35 to 36 s and about 250 MB peak with zarr installed (14 October 2026, 4-core cloud container; [Big maps](../letter-reader.md#big-maps))",
+    "Network": "Only when a released weights name is not yet in the cache: the download from `github.com`, which redirects to GitHub's release file host (`release-assets.githubusercontent.com` or `objects.githubusercontent.com`). It follows `HTTPS_PROXY` and `NO_PROXY`. Reading an image and the exports make no connection",
+    "Writes": "The weights file into the cache folder on a released name's first use (`~/.cache/scrolls-kit/letters/`, or the folder `KIT_LETTER_WEIGHTS` names). With `--out`, `--csv`, `--page-xml` and `--overlay`, those files, overwritten on a rerun. Otherwise it prints only",
+    "Go-ahead": "Not needed to read public data. Publishing a read, an overlay or an export of a prize-eligible or unpublished scroll is never allowed before the prize is announced (the no-findings rule, hard rule 1); posting any read needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57)); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day; listed in the README's \"Released tools\" as `letter-reader`",
+    "Release id": "`letter-reader`",
+    "License": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
+    "Guide": "[letter-reader.md](../letter-reader.md) (install, first reads, model cards, benchmarks, the result field by field)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/letterread.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 25,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 91,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 158,
+     "end_line": 243,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 244,
+     "end_line": 256,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 257,
+     "end_line": 295,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 296,
+     "end_line": 355,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 356,
+     "end_line": 368,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 369,
+     "end_line": 376,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 377,
+     "end_line": 386,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 387,
+     "end_line": 394,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 395,
+     "end_line": 405,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 406,
+     "end_line": 414,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "meshaudit",
    "name": "meshaudit",
    "tagline": "audit published cross-scan transforms, meshes and render depth",
@@ -2552,6 +2877,158 @@
      "name": "Related",
      "start_line": 323,
      "end_line": 332,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "modal-row",
+   "name": "modal-row",
+   "tagline": "add one Modal job's row to a Modal cost ledger, once",
+   "summary": "`python -m kit run modal-row` appends one row, from a small JSON file, to a Modal cost ledger CSV such as `docs/compute/modal-ledger.csv`, never twice for the same key, and lets the public ledger take only rows marked generic.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit run modal-row"
+   ],
+   "imports": [
+    "from kit import modalledger"
+   ],
+   "code": [
+    {
+     "path": "kit/modalledger.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_run"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_modalledger.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to write the row, since it only edits a local file. The Modal run it records needed its own go-ahead (renting compute, the go-ahead rule, hard rule 8), and the row becomes public only when the change is merged into public Scrolls"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`modal-row`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit run modal-row`, `from kit import modalledger`",
+    "Code": "`kit/modalledger.py`, `kit/cli.py` (`cmd_run`)",
+    "Tests": "`tests/test_modalledger.py`",
+    "Needs": "Python 3.10 or newer, standard library only. A ledger CSV that already has its header row",
+    "Runs on": "Any machine; the advisory lock needs `fcntl` (Mac and Linux), and elsewhere only one process may write at a time. Time not measured",
+    "Network": "None. It never contacts Modal; the numbers come from the caller",
+    "Writes": "The ledger CSV named by `--ledger` (default `docs/compute/modal-ledger.csv`), replaced atomically through a temporary `.modal-ledger-*` file in the same folder; a lock file `modalledger-HASH.lock` in the system temporary folder, left in place",
+    "Go-ahead": "Not needed to write the row, since it only edits a local file. The Modal run it records needed its own go-ahead (renting compute, the go-ahead rule, hard rule 8), and the row becomes public only when the change is merged into public Scrolls",
+    "Released": "Public `main` since 2026-10-16 ([pull request 90](https://github.com/ChaseHendrick/Scrolls/pull/90))",
+    "Guide": "[compute.md, Modal ledger rows](../compute.md#modal-ledger-rows)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/modal-row.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 83,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 100,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 119,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 144,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 160,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 176,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 184,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 188,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 198,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 206,
+     "end_line": 210,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 211,
+     "end_line": 218,
      "applicable": true
     }
    ]
@@ -3213,6 +3690,159 @@
    ]
   },
   {
+   "id": "provenance",
+   "name": "provenance",
+   "tagline": "a run record with input fingerprints and one digest",
+   "summary": "`python -m kit provenance write` records who ran a job, when, on which machine, from which code commits, and the SHA-256 of its models, inputs and outputs, sealed by one digest; `check` recomputes the digest and, with `--files`, rehashes every file.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit provenance write",
+    "python -m kit provenance check"
+   ],
+   "imports": [
+    "from kit import provenance"
+   ],
+   "code": [
+    {
+     "path": "kit/provenance.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_provenance"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_provenance.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to write or check a record. Publishing a record or its digest is an outward action and needs Chase's yes (the go-ahead rule, hard rule 8); a record of a target-scroll run stays in Scrolls-private (the no-findings rule, hard rule 1)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`provenance`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit provenance write`, `python -m kit provenance check`, `from kit import provenance`",
+    "Code": "`kit/provenance.py`, `kit/cli.py` (`cmd_provenance`)",
+    "Tests": "`tests/test_provenance.py`",
+    "Needs": "Python 3.10 or newer, standard library only. `git` on the PATH for the commit, branch and operator name (without it those fields are null or fall back to the login name); on macOS, `sysctl` for the chip name",
+    "Runs on": "Any CPU. `write` on three tiny synthetic files took 0.15 s wall (measured 2026-10-16, 4-core cloud container). Time grows with the bytes hashed, since every file of every model, input and output is read in full; large stores not measured",
+    "Network": "None. It hashes local files only; it never lists or downloads a remote store",
+    "Writes": "`write`: the JSON record at `path`, creating its parent folders and replacing any file there. `check` writes nothing",
+    "Go-ahead": "Not needed to write or check a record. Publishing a record or its digest is an outward action and needs Chase's yes (the go-ahead rule, hard rule 8); a record of a target-scroll run stays in Scrolls-private (the no-findings rule, hard rule 1)",
+    "Released": "Public `main` since 2026-10-07 (`1d45c54`)",
+    "Guide": "[STANDARDS.md](../STANDARDS.md) (the Provenance row)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/provenance.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 68,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 69,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 77,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 112,
+     "end_line": 134,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 135,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 143,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 170,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 184,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 195,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 199,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 209,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 217,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 221,
+     "end_line": 227,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "releases",
    "name": "releases",
    "tagline": "keep the README's Released tools section in step with the release list",
@@ -3711,6 +4341,307 @@
    ]
   },
   {
+   "id": "run-local",
+   "name": "run-local",
+   "tagline": "log a local run's time and estimated electricity cost",
+   "summary": "`python -m kit run local` runs a command on this machine and appends its wall time, CPU time and an estimated electricity cost to an experiment's ledger record; `python -m kit run backfill` adds past runs from a JSON list of logged durations.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "data"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit run local",
+    "python -m kit run backfill"
+   ],
+   "imports": [
+    "from kit import localcost"
+   ],
+   "code": [
+    {
+     "path": "kit/localcost.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/backfill/",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_run"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_localcost.py",
+    "tests/test_localcost_regressions.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the wrapper. Long local jobs fall under the Modal rule (hard rule 11): a job that needs a GPU or more than about an hour of CPU goes to Modal instead"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": "Apache 2.0, the repository's [LICENSE](../../LICENSE), for the code and the backfill list",
+   "fields": {
+    "Id": "`run-local`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, data",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit run local`, `python -m kit run backfill`, `from kit import localcost`",
+    "Code": "`kit/localcost.py`, `scripts/backfill/`, `kit/cli.py` (`cmd_run`)",
+    "Tests": "`tests/test_localcost.py`, `tests/test_localcost_regressions.py`",
+    "Needs": "Python 3.10 or newer, standard library only. An experiment made first with `python -m kit run init`, and an electricity rate (option, environment variable or local configuration file)",
+    "Runs on": "Mac or Linux; the CPU-time counter and the writer lock need a POSIX system, and elsewhere CPU time is recorded as null and writes must be serial. The wrapper's own overhead is not measured",
+    "Network": "None",
+    "Writes": "Appends cost entries to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`), replacing the file atomically through a temporary `.local-cost-*` file in that folder, and leaves a lock file `run.local-cost.lock` beside it. The wrapped command writes whatever it writes",
+    "Go-ahead": "Not needed for the wrapper. Long local jobs fall under the Modal rule (hard rule 11): a job that needs a GPU or more than about an hour of CPU goes to Modal instead",
+    "Released": "Public `main` since 2026-10-07 (`7878089`)",
+    "Guide": "[compute.md, local runs](../compute.md#local-runs-time-and-electricity)",
+    "License": "Apache 2.0, the repository's [LICENSE](../../LICENSE), for the code and the backfill list",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/run-local.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 71,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 72,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 121,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 143,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 165,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 208,
+     "end_line": 230,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 231,
+     "end_line": 240,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 241,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 245,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 255,
+     "end_line": 262,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 263,
+     "end_line": 267,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 268,
+     "end_line": 274,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "scroll-session",
+   "name": "scroll-session",
+   "tagline": "the Claude Code skill that runs a Vesuvius Challenge session step by step",
+   "summary": "The project skill `.claude/skills/scroll-session/` tells an agent how to start or continue Vesuvius Challenge work here: read the handoff, check prizes and the machine, plan and preregister a run, run it in the right place, and record the outcome without publishing a finding.",
+   "status": "Current",
+   "kind": [
+    "skill"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "/scroll-session",
+    "scroll-session"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": ".claude/skills/scroll-session/",
+     "symbols": []
+    }
+   ],
+   "tests": [],
+   "go_ahead": {
+    "needed": true,
+    "text": "Needed for paid compute (the user's budget decision) and for anything outward; never for a possible finding, which stays private (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`scroll-session`",
+    "Status": "Current",
+    "Kind": "skill",
+    "Area": "Pipeline and agents",
+    "Run": "`/scroll-session` in Claude Code, or the Skill tool with the name `scroll-session`",
+    "Code": "`.claude/skills/scroll-session/`",
+    "Tests": "None: no test reads the skill's text. The commands it names are tested by their own tools' tests",
+    "Needs": "Claude Code (or another agent that reads `.claude/skills/`), a clone of this repository, Python 3.10 or newer for `python -m kit`",
+    "Runs on": "Wherever the agent runs. Step 1's commands take seconds; the run in step 4 goes where the Modal rule (hard rule 11) sends it",
+    "Network": "None of its own. A run it plans may download data, and the prize re-check it suggests reads https://scrollprize.org/prizes",
+    "Writes": "Nothing by itself. Its steps write a ledger record under `experiments/SLUG/` (`python -m kit run init`, `run local`, `run cost`, `run status`), a run spec in `docs/compute/modal-specs/` when a job goes to Modal, and the open-items table of `docs/HANDOFF.md`",
+    "Go-ahead": "Needed for paid compute (the user's budget decision) and for anything outward; never for a possible finding, which stays private (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-06",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/scroll-session.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 83,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 109,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 119,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 132,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 143,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 149,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 153,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 163,
+     "end_line": 166,
+     "applicable": false
+    },
+    {
+     "name": "History",
+     "start_line": 167,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 173,
+     "end_line": 179,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "soup",
    "name": "soup",
    "tagline": "average the weights of several checkpoints of one training run",
@@ -4017,6 +4948,177 @@
      "name": "Related",
      "start_line": 343,
      "end_line": 351,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "strokenet",
+   "name": "strokenet",
+   "tagline": "score how text-like an ink map's windows look, with rotation and IAAFT controls",
+   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organisers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module",
+    "script folder",
+    "model",
+    "data"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit strokenet",
+    "python scripts/strokenet/data.py",
+    "python scripts/strokenet/train.py",
+    "python scripts/strokenet/pipeline.py",
+    "python scripts/strokenet/evaluate.py"
+   ],
+   "imports": [
+    "from kit import strokenet"
+   ],
+   "code": [
+    {
+     "path": "kit/strokenet.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/strokenet-weights.json",
+     "symbols": []
+    },
+    {
+     "path": "scripts/strokenet/",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_strokenet"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_strokenet.py",
+    "tests/test_strokenet_pipeline.py",
+    "tests/test_strokenet_stats.py",
+    "tests/test_gridpilot.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release))",
+   "fields": {
+    "Id": "`strokenet`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module, script folder, model, data",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit strokenet`, `from kit import strokenet`, `python scripts/strokenet/data.py`, `python scripts/strokenet/train.py`, `python scripts/strokenet/pipeline.py`, `python scripts/strokenet/evaluate.py`",
+    "Code": "`kit/strokenet.py`, `kit/data/strokenet-weights.json`, `scripts/strokenet/`, `kit/cli.py` (`cmd_strokenet`)",
+    "Tests": "`tests/test_strokenet.py`, `tests/test_strokenet_pipeline.py`, `tests/test_strokenet_stats.py`, `tests/test_gridpilot.py`",
+    "Needs": "Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`)",
+    "Runs on": "Scoring runs on any CPU. A synthetic 300 x 400 px map at 0.048 mm (43 windows) with a small random test network took 4.4 s (measured 2026-10-16, 4-core cloud container); the released network on a whole segment: Not measured. Training runs on a GPU: each run of the preregistered sweep, finals and controls took 666 to 2,356 s on CUDA, the released configuration 1,506 s (`train_wall_s` in [the evidence's run histories](../evidence/2026-10-14-strokenet/README.md))",
+    "Network": "`kit strokenet` with a weights file: None. With a released model name not yet in the cache: one download of the weights from github.com (the `url` in `kit/data/strokenet-weights.json`). `data.py fetch`: data.aws.ash2txt.org, one TIFF of about 1.3 GB per segment, 27 segments. `gridpilot.py`: HTTP range reads of a surface volume's chunks at a base URL its caller gives (its cloud runner is not in this repository)",
+    "Writes": "`kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file",
+    "Go-ahead": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score",
+    "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day",
+    "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits)",
+    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release))",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/strokenet.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 220,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 249,
+     "end_line": 259,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 260,
+     "end_line": 294,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 295,
+     "end_line": 359,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 360,
+     "end_line": 380,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 381,
+     "end_line": 386,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 387,
+     "end_line": 396,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 397,
+     "end_line": 404,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 405,
+     "end_line": 409,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 410,
+     "end_line": 418,
      "applicable": true
     }
    ]
