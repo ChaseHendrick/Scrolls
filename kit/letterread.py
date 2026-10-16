@@ -78,6 +78,14 @@ DOWNLOAD_TIMEOUT = 120  # seconds without data before a weights download gives u
 # 64 Mpx is 256 MB as float32, and normalising it takes a few such copies, which fits a laptop.
 MAX_PIXELS = 64_000_000
 BAND_PIXELS = 64_000_000   # input pixels per band read while block-averaging (rounded up to whole tiles)
+# Smallest letter height read, in pixels of the image read: a quarter of the released networks' 16 px working
+# height (LineNet.letter_px). The reader enlarges the image by 16 / letter_px each way, so a smaller letter
+# costs over 16 times the pixels of the image, and its pen stroke (0.14 of the letter's height in the demo's
+# hand, kit/letterdemo.py PEN) is under a pixel wide: no letter shape is left to read.
+MIN_LETTER_PX = 4
+# Most null copies one read makes: each is one more read of the whole image, and the status compares
+# with the largest null count, so more nulls cost time and make the test stricter (docs/letter-reader.md).
+MAX_NULLS = 64
 OVERLAY_MAX_SIDE = 4000
 NO_LETTER_SIZE = ("no letter size: the image shows no regular line spacing to estimate it from. Give the letter "
                   "height with --letter-px H (image pixels), or with --letter-mm MM and --um-per-px UM (for "
@@ -355,9 +363,7 @@ class LineNet:
             if op == "conv2d":
                 x = np.maximum(_conv2d(x, w, b, layer["pad"]), 0)
             elif op == "maxpool":
-                ky, kx = layer["k"]
-                C, H, W = x.shape
-                x = x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx).max(axis=(2, 4))
+                x = _maxpool(x, *layer["k"])
             elif op == "collapse":
                 x = np.maximum(_conv2d(x, w, b, 0), 0)[:, 0, :]
             elif op == "conv1d_res":
@@ -372,6 +378,25 @@ class LineNet:
         lg = self.logits(band)
         lg = lg - lg.max(axis=1, keepdims=True)
         return lg - np.log(np.exp(lg).sum(axis=1, keepdims=True))
+
+
+def _maxpool(x, ky, kx):
+    """Max pooling of a (C, H, W) array over ky x kx blocks, dropping rows and columns that do not fill a block.
+
+    The same values, bit for bit for a C-contiguous x, as x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky,
+    ky, W // kx, kx).max(axis=(2, 4)), taken as the elementwise maximum of the ky * kx strided slices: numpy
+    reduces over the two strided axes of the reshape about 20 times more slowly. LineNet always passes a
+    C-contiguous x (np.maximum output). For other layouts the old reduction's choice between -0.0 and +0.0
+    in a block whose maximum is a tie of the two depends on memory order, so only the sign of a zero can
+    differ, and the output here is always C-ordered."""
+    C, H, W = x.shape
+    hc, wc = H // ky * ky, W // kx * kx
+    out = x[:, 0:hc:ky, 0:wc:kx].copy()
+    for i in range(ky):
+        for j in range(kx):
+            if i or j:
+                np.maximum(out, x[:, i:hc:ky, j:wc:kx], out=out)
+    return out
 
 
 def _conv2d(x, w, b, pad):
@@ -926,9 +951,12 @@ def normalize_info(a, polarity="bright", dtype=np.float64):
     the image, not a rule) and, for auto, rule (POLARITY_RULE)."""
     a = np.asarray(a, dtype=dtype)
     finite = np.isfinite(a)
-    if not finite.any():
-        raise ValueError("image has no finite values")
-    a = np.where(finite, a, np.median(a[finite]))
+    # Only then is the fill needed: the median of a full image costs a copy and a partition. An empty image
+    # still raises the ValueError below, and a bool image still becomes float through np.where.
+    if a.size == 0 or a.dtype == bool or not finite.all():
+        if not finite.any():
+            raise ValueError("image has no finite values")
+        a = np.where(finite, a, np.median(a[finite]))
     lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
     if hi <= lo:  # sparse binary or quantised image, such as an ink label with under 0.2% ink
         lo, hi = float(a.min()), float(a.max())
@@ -983,6 +1011,7 @@ def polarity_trial(a, weights, polarity="bright", *, letter_px=None, input_scale
         h0, how = estimate_letter_px(orient(a, rotate, mirror) if rotate or mirror else a)
         if how != "line pitch" and not letter_px_fallback:
             raise ValueError(NO_LETTER_SIZE)
+        h0 = max(h0, float(MIN_LETTER_PX))
     else:
         h0 = float(letter_px) / k
     h = float(net.letter_px)
@@ -1043,7 +1072,7 @@ def letter_px_from_units(letter_mm, um_per_px):
 def resize(a, shape):
     """Area-average by an integer factor, then bilinear to the exact shape."""
     h, w = a.shape
-    H, W = int(shape[0]), int(shape[1])
+    H, W = max(1, int(shape[0])), max(1, int(shape[1]))      # a 1 px side at least, so h / H is defined
     if (H, W) == (h, w):
         return a.astype(np.float32, copy=True)
     if H < h and W < w:
@@ -1093,11 +1122,16 @@ def shear(a, deg, fill=0.0):
         return a
     h, w = a.shape
     shift = np.round((np.arange(w) - w / 2) * math.tan(math.radians(deg))).astype(int)
-    rows = np.arange(h)[:, None] + shift[None, :]
-    ok = (rows >= 0) & (rows < h)
     out = np.full_like(a, fill)
-    cols = np.broadcast_to(np.arange(w)[None, :], (h, w))
-    out[ok] = a[rows[ok], cols[ok]]
+    if w == 0:
+        return out
+    # columns with the same shift form runs (the shift only grows or only shrinks with x); copy each run as one block
+    cut = np.flatnonzero(np.diff(shift)) + 1
+    starts, ends = np.concatenate(([0], cut)), np.concatenate((cut, [w]))
+    for x0, x1, s in zip(starts.tolist(), ends.tolist(), shift[starts].tolist()):
+        y0, y1 = max(0, -s), min(h, h - s)
+        if y1 > y0:
+            out[y0:y1, x0:x1] = a[y0 + s:y1 + s, x0:x1]
     return out
 
 
@@ -1321,6 +1355,32 @@ def as_image(img, name="image"):
     return a
 
 
+def check_control(c, name="the control image"):
+    """A ValueError when a control image can never fail: it has no finite values, or they are all the same.
+
+    A constant map normalises to zeros and keeps no letters, so its count of 0 could never stop a
+    pass. c is an image array (as_image() makes it 2D); it is checked in row bands of about 4 million
+    pixels, with no copy of a big map."""
+    a = np.asarray(c)
+    if a.ndim != 2 or a.dtype.kind not in "biuf":
+        a = as_image(a, name)
+    first = None
+    step = max(1, (1 << 22) // max(1, a.shape[1]))
+    for y in range(0, a.shape[0], step):
+        part = a[y:y + step]
+        v = part[np.isfinite(part)] if part.dtype.kind == "f" else part.ravel()
+        if v.size:
+            if first is None:
+                first = v[0]
+            if (v != first).any():
+                return
+    if first is None:
+        raise ValueError(f"{name} has no finite values: it can keep no letters, so as a control it could never fail")
+    raise ValueError(f"{name} is constant (every finite value is {float(first):g}): a constant map keeps no letters, so as a "
+                     "control it could never fail. Give a map of the same surface with its own content, such as its "
+                     "reverse-depth map, or read without a control map")
+
+
 def _number(v):
     return isinstance(v, (int, float, np.integer, np.floating)) and not isinstance(v, (bool, np.bool_)) \
         and math.isfinite(float(v))
@@ -1342,6 +1402,12 @@ def check_options(*, letter_px=None, polarity="bright", columns="auto", nulls=4,
     if letter_px is not None and not (_number(letter_px) and float(letter_px) > 0):
         bad(f"letter_px {letter_px!r}", "the letter height must be a positive number of image pixels (or None to "
             "estimate it from the line spacing)")
+    if letter_px is not None and _whole(input_scale) and input_scale >= 1 and \
+            float(letter_px) / input_scale < MIN_LETTER_PX:
+        bad(f"letter_px {letter_px!r}", f"letters under {MIN_LETTER_PX} px tall in the image read are too small to "
+            "read (the network reads letters 16 px tall); give the height of a letter in image pixels"
+            + (f", here at least {MIN_LETTER_PX * input_scale} input pixels with input_scale {input_scale}"
+               if input_scale > 1 else ""))
     if polarity not in ("bright", "dark", "auto"):
         bad(f"polarity {polarity!r}", "give bright (ink brighter than the ground, as in ink maps), dark (dark ink on "
             "a light ground, as in photographs) or auto (read quickly both ways)")
@@ -1350,8 +1416,9 @@ def check_options(*, letter_px=None, polarity="bright", columns="auto", nulls=4,
     if not ok_cols:
         bad(f"columns {columns!r}", "give auto (split at empty vertical gutters), off (the whole width as one "
             "column) or a number of columns, at least 1")
-    if not (_whole(nulls) and nulls >= 0):
-        bad(f"nulls {nulls!r}", "give a whole number of null copies, 0 or more (4 is the default; 0 runs no control)")
+    if not (_whole(nulls) and 0 <= nulls <= MAX_NULLS):
+        bad(f"nulls {nulls!r}", f"give a whole number of null copies from 0 to {MAX_NULLS} (4 is the default; 0 runs "
+            "no control)")
     if not _whole(seed):
         bad(f"seed {seed!r}", "give a whole number")
     if not (_whole(min_letters) and min_letters >= 1):
@@ -1500,6 +1567,7 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
     img = as_image(img)
     if control is not None:
         control = as_image(control, "control image")
+        check_control(control)
     pinfo = None
     if normalized:
         a0 = np.asarray(img, dtype=np.float32)
@@ -1536,16 +1604,18 @@ def analyze(img, weights, *, letter_px=None, polarity="bright", nulls=4, seed=0,
         h0, how = estimate_letter_px(a0)
         if how != "line pitch" and not letter_px_fallback:
             raise ValueError(NO_LETTER_SIZE)
-        letter_px = h0
+        letter_px = max(h0, float(MIN_LETTER_PX))
         if scale_search:
             search = []
-            for i, k in enumerate(SCALE_STEPS):
+            # never under MIN_LETTER_PX; a scale that would go under it is read once, at MIN_LETTER_PX
+            sizes = sorted({max(h0 * k, float(MIN_LETTER_PX)) for k in SCALE_STEPS})
+            for i, hk in enumerate(sizes):
                 if progress:
-                    progress(f"scale search {i + 1}/{len(SCALE_STEPS)}: letter height {h0 * k * k_in:.1f} px")
-                r = _analyze_at(a0, net, h0 * k, nulls=2, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
+                    progress(f"scale search {i + 1}/{len(sizes)}: letter height {hk * k_in:.1f} px")
+                r = _analyze_at(a0, net, hk, nulls=2, seed=seed, deskew_deg=deskew_deg, lines=lines, p_min=p_min,
                                 null_rate=null_rate, max_lines=8, columns=columns, fill=fill)
                 c = r["control"]
-                search.append({"letter_px": round(h0 * k * k_in, 2), "letters_kept": c["letters_kept"],
+                search.append({"letter_px": round(hk * k_in, 2), "letters_kept": c["letters_kept"],
                                "null_letters_kept": c["null_letters_kept"],
                                "margin": c["letters_kept"] - max(c["null_letters_kept"])})
             best = max(search, key=lambda t: (t["margin"], -abs(math.log(t["letter_px"] / (h0 * k_in)))))
@@ -1827,6 +1897,7 @@ def read(img, weights, *, orientation=True, normalized=False, progress=None, con
     img = as_image(img)
     if control is not None:
         control = as_image(control, "control image")
+        check_control(control)
     polarity = kw.get("polarity", "bright")
     pinfo = dict(polarity_info) if polarity_info else None
     trial_kw = dict(letter_px=kw.get("letter_px"), input_scale=kw.get("input_scale", 1), seed=kw.get("seed", 0),

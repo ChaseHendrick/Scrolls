@@ -2,6 +2,7 @@
 
 import csv
 import json
+import shlex
 import tempfile
 import unittest
 from pathlib import Path
@@ -181,6 +182,152 @@ class BatchTest(unittest.TestCase):
         self.assertEqual([q["key"] for q in res["queued"]], ["S1/20270101000010"])
         self.assertEqual(res["queued"][0]["status"], "planned")
         self.assertGreater(res["queued"][0]["usd"]["typical"], 0)
+
+    def test_unsafe_ids_rejected_and_nothing_written_outside(self):
+        for good in ("PHerc0172", "20250101000001-2.4um-0.2m-78keV-masked.zarr", "a.b_c-d"):
+            self.assertTrue(scancatalog.safe_id(good), good)
+        for bad in ("..", ".", "../x", "a/b", "", "a b", "a;b", "-x", None, 5, "x" * 200):
+            self.assertFalse(scancatalog.safe_id(bad), bad)
+        cat = catalog()
+        cat["samples"]["S1"]["volumes"]["../../../ESC1"] = vol("20250101000007", 2.4, [100, 100, 100])
+        cat["samples"]["../ESC2"] = {"volumes": {"20250101000008": vol("20250101000008", 2.4, [100, 100, 100])}}
+        listed = {"S1": LISTED["S1"] + ["../../../../ESC3-7.91um.zarr"], "../ESC4": ["v.zarr"]}
+        doc = scancatalog.build(cat, listed, SNAP, live_html="", checked="t")
+        self.assertEqual(len(doc["volumes"]), 5)
+        self.assertEqual(len(doc["rejected"]), 4)
+        state = self.state / "a" / "b" / "state"
+        plan = autobatch.plan_all(state, catalog=doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(len(plan["scans"]), 5)
+        # a crafted catalog.json that skips build() is refused row by row, not written outside the state folder
+        doc["volumes"].append({**doc["volumes"][0], "volume": "../../../ESC5"})
+        plan = autobatch.plan_all(state, catalog=doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(len(plan["scans"]), 5)
+        self.assertEqual(len(plan["rejected"]), 1)
+        outside = [p for p in self.state.rglob("*") if "ESC" in str(p)]
+        self.assertEqual(outside, [])
+        with self.assertRaises(autobatch.BatchError):
+            autobatch._status_path(state, {"sample": "S1", "volume": ".."})
+
+    def test_launch_command_quotes_ids(self):
+        cmd = autobatch.launch_command({"sample": "S1", "volume": "v$(touch x)"})
+        self.assertEqual(shlex.split(cmd)[3], "S1")
+        self.assertIn("'@work/autobatch/scans/S1/v$(touch x)/settings.json'", cmd)
+
+    def test_duplicate_keys_get_unique_ids(self):
+        listed = {"S1": LISTED["S1"] + ["20250101000001.zarr"]}
+        doc = scancatalog.build(catalog(), listed, SNAP, live_html="", checked="t")
+        keys = [scancatalog.key(r) for r in doc["volumes"]]
+        self.assertEqual(len(keys), len(set(keys)))
+        self.assertIn("S1/20250101000001.zarr", keys)
+        plan = autobatch.plan_all(self.state, catalog=doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(len(plan["scans"]), 6)
+        doc["volumes"].append(dict(doc["volumes"][0]))   # a crafted repeat: the first row wins
+        plan = autobatch.plan_all(self.state, catalog=doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(len(plan["scans"]), 6)
+        self.assertIn("duplicate key", plan["rejected"][0]["reason"])
+
+    def test_bad_rows_block_and_title_in_id_does_not_stop_the_batch(self):
+        cat = catalog()
+        bad = {"20250101000011": [100, 100], "20250101000012": ["a", "b", "c"], "20250101000013": [-1, 1000, 1000],
+               "20250101000014": [0, 10, 10]}
+        for vid, shape in bad.items():
+            cat["samples"]["S1"]["volumes"][vid] = vol(vid, 2.4, shape)
+        cat["samples"]["S1"]["volumes"]["20250101000015-subtitle"] = vol("20250101000015-subtitle", 2.4, [10, 10, 10])
+        doc = scancatalog.build(cat, LISTED, SNAP, live_html="", checked="t")
+        plan = autobatch.plan_all(self.state, catalog=doc, levels_get=no_net, rates=self.rates)
+        by = {s["key"]: s for s in plan["scans"]}
+        for vid in bad:
+            self.assertIn("is not three positive integers", by["S1/" + vid]["block"])
+            self.assertEqual(by["S1/" + vid]["usd"]["high"], 0.0)
+        self.assertIsNone(by["S1/20250101000015-subtitle"]["block"])
+        self.assertTrue((self.state / "plan.json").is_file())
+        with self.assertRaises(autobatch.BatchError):
+            autobatch.refuse_title({"ink": {"titlecheck": True}})
+
+    def test_watch_survives_a_malformed_row(self):
+        doc = json.loads(json.dumps(self.doc))
+        doc["volumes"].append({"sample": "S1", "volume": "20250101000020", "in_bucket": True, "in_metadata": True,
+                               "voxel_um": "x", "shape_zyx": {"z": 1}})
+        doc["volumes"].append({"sample": "S1", "volume": "../../../ESC6", "in_bucket": False})
+        res = autobatch.watch(self.state, fetch=lambda: doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(len(res["queued"]), 6)
+        self.assertEqual([q["key"] for q in res["rejected"]], ["S1/../../../ESC6"])
+        self.assertTrue((self.state / "catalog.json").is_file())
+        again = autobatch.watch(self.state, fetch=lambda: doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(again["queued"], [])
+
+    def test_watch_retries_a_row_that_failed_and_flags_it(self):
+        """A row whose planning failed is not saved as seen: the next run plans it again, and the run that
+        failed exits 3 with --exit-code like one that queued something."""
+        import contextlib
+        import io
+        from unittest import mock
+        from kit import cli
+        autobatch.watch(self.state, fetch=lambda: self.doc, levels_get=no_net, rates=self.rates)
+        cat = catalog()
+        cat["samples"]["S1"]["volumes"]["20270101000011"] = vol("20270101000011", 2.4, [800, 800, 800])
+        newer = scancatalog.build(cat, {"S1": LISTED["S1"] + ["20270101000011-2.4um-0.2m-78keV-masked.zarr"]},
+                                  SNAP, live_html="", checked="t2")
+
+        prepare = autobatch._prepare
+
+        def broken(r, *a):
+            if r["volume"] == "20270101000011":
+                raise ValueError("Expecting value: an empty zattrs cache")
+            return prepare(r, *a)
+        with mock.patch.object(autobatch, "_prepare", side_effect=broken):
+            failed = autobatch.watch(self.state, fetch=lambda: newer, levels_get=no_net, rates=self.rates)
+        self.assertEqual(failed["queued"], [])
+        self.assertEqual([q["key"] for q in failed["rejected"]], ["S1/20270101000011"])
+        self.assertEqual(failed["failed"], 1)
+        fixed = autobatch.watch(self.state, fetch=lambda: newer, levels_get=no_net, rates=self.rates)
+        self.assertEqual([q["key"] for q in fixed["queued"]], ["S1/20270101000011"])
+        out = io.StringIO()
+        with mock.patch.object(autobatch, "watch", return_value=failed), contextlib.redirect_stdout(out):
+            self.assertEqual(cli.main(["run", "watch", "--state", str(self.state), "--exit-code"]), 3)
+        self.assertIn("rejected S1/20270101000011", out.getvalue())
+
+    def test_watch_prints_names_the_catalog_left_out(self):
+        """build() leaves out an unsafe bucket name; watch gives it a key, so the plain-text output prints it
+        instead of failing with KeyError."""
+        import contextlib
+        import io
+        from unittest import mock
+        from kit import cli
+        listed = {"S1": LISTED["S1"] + ["bad name.zarr"]}
+        doc = scancatalog.build(catalog(), listed, SNAP, live_html="", checked="t")
+        self.assertEqual(len(doc["rejected"]), 1)
+        res = autobatch.watch(self.state, fetch=lambda: doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(res["failed"], 0)
+        self.assertTrue(all("key" in q for q in res["rejected"]))
+        out = io.StringIO()
+        with mock.patch.object(autobatch, "watch", return_value=res), contextlib.redirect_stdout(out):
+            self.assertEqual(cli.main(["run", "watch", "--state", str(self.state), "--exit-code"]), 3)
+        self.assertIn("rejected S1/", out.getvalue())
+
+    def test_approve_checks_plan_contents_settings_and_cost(self):
+        plan = self.plan()
+        pj = self.state / "plan.json"
+        edited = json.loads(pj.read_text())
+        edited["total_usd"] = {"low": 0.01, "typical": 0.01, "high": 0.01}
+        pj.write_text(json.dumps(edited))
+        with self.assertRaisesRegex(autobatch.BatchError, "edited after it was priced"):
+            autobatch.approve(self.state, plan["digest"])
+        self.plan()
+        sp = self.state / "scans/S1/20250101000001/settings.json"
+        sp.write_text(json.dumps({"purpose": "smoke", "volume": "x"}))
+        with self.assertRaisesRegex(autobatch.BatchError, "settings.json"):
+            autobatch.approve(self.state, plan["digest"])
+        self.assertNotIn("approved", {r["status"] for r in autobatch.status_table(self.state)})
+        sp.unlink()
+        self.plan()
+        self.assertEqual(autobatch.approve(self.state, plan["digest"]), 2)
+        dear = {**self.rates, "cpu_usd_per_core_s": self.rates["cpu_usd_per_core_s"] * 10,
+                "mem_usd_per_gib_s": self.rates["mem_usd_per_gib_s"] * 10}   # prices rise 10x; configs unchanged
+        p2 = autobatch.plan_all(self.state, catalog=self.doc, levels_get=no_net, rates=dear)
+        self.assertNotEqual(p2["digest"], plan["digest"])
+        st = {r["key"]: r["status"] for r in autobatch.status_table(self.state)}
+        self.assertEqual(st["S1/20250101000001"], "planned")
 
     def test_no_modal_import(self):
         src = Path(autobatch.__file__).read_text() + Path(scancatalog.__file__).read_text()

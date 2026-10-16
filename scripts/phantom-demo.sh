@@ -1,8 +1,10 @@
 #!/bin/bash
 # Demo of kit phantom and kit view on synthetic data only (no scroll data). Logs every command.
 set -eu
-OUT=${OUT:-/tmp/phantom-demo}
+# A fresh private folder by default (a fixed /tmp name could be a planted symlink); set OUT to choose one.
+OUT=${OUT:-$(mktemp -d "${TMPDIR:-/tmp}/phantom-demo.XXXXXX")}
 mkdir -p "$OUT"
+echo "phantom demo output: $OUT"
 LOG="$OUT/commands.log"
 : > "$LOG"
 run() { echo "\$ $*" >> "$LOG"; "$@" | tee -a "$LOG"; }

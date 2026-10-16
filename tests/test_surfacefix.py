@@ -1,11 +1,15 @@
 """Synthetic controlled geometry tests, never target-scroll inference."""
 
+import copy
+import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 try:
     import numpy as np
@@ -14,8 +18,57 @@ try:
 except ImportError:
     np = None
 
+from kit import _surface_geometry
 from kit.surfacefix import correct, prepare
 from kit.verify import VerifyError
+
+# The certified projection of the baseline mesh onto the reference is the slow part of correct(), and nearly every
+# test here projects the same pair of synthetic meshes. This wrapper keeps each projection under a digest of every
+# field of both meshes except their folder (which differs per test) and of the two bounds, and hands back a deep
+# copy for exactly the same inputs: the kit code still runs once for every distinct input, and correct() sees the
+# same result.
+_PROJECTIONS = {}
+_project = _surface_geometry.project
+
+
+def _digest_mesh(h, mesh):
+    for k in sorted(mesh):
+        v = mesh[k]
+        if k == "path":
+            continue
+        h.update(repr(k).encode())
+        if isinstance(v, np.ndarray):
+            h.update(repr((v.dtype.str, v.shape)).encode())
+            h.update(np.ascontiguousarray(v).tobytes())
+        else:
+            h.update(repr(v).encode())
+        h.update(b"|")
+
+
+def _cached_project(source, reference, max_distance, tolerance):
+    h = hashlib.sha256()
+    _digest_mesh(h, source)
+    h.update(b"/")
+    _digest_mesh(h, reference)
+    h.update(repr((max_distance, tolerance)).encode())
+    key = h.hexdigest()
+    if key not in _PROJECTIONS:
+        _PROJECTIONS[key] = _project(source, reference, max_distance, tolerance)
+    return copy.deepcopy(_PROJECTIONS[key])
+
+
+_PATCH = mock.patch.object(_surface_geometry, "project", _cached_project)
+
+
+def setUpModule():
+    if np is not None:
+        _PATCH.start()
+
+
+def tearDownModule():
+    if np is not None:
+        _PATCH.stop()
+    _PROJECTIONS.clear()
 
 
 @unittest.skipIf(np is None, "numpy, scipy and tifffile required")
@@ -281,6 +334,12 @@ class SurfaceFixTests(unittest.TestCase):
         (self.base / "meta.json").write_text("{}")
         with self.assertRaisesRegex(VerifyError, "scale"):
             prepare(self.base, self.root / "other", 10, (1,))
+
+    def test_mesh_declaring_too_many_elements_is_refused(self):
+        from unittest import mock
+        with mock.patch.dict(os.environ, {"KIT_MAX_TIFF_ELEMENTS": str(32 * 32 - 1)}):
+            with self.assertRaisesRegex(VerifyError, "KIT_MAX_TIFF_ELEMENTS"):
+                prepare(self.base, self.root / "other", 10, (1,))
 
     def test_fractional_geometry_matches_recover_shifted_dense_maps_and_legacy_abstains(self):
         path, manifest = self._manifest()

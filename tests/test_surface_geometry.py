@@ -141,6 +141,33 @@ class SurfaceGeometryTests(unittest.TestCase):
         self.assertFalse(result["converged"])
         self.assertGreater(result["upper"] - result["lower"], 1e-8)
 
+    def test_one_far_vertex_does_not_make_every_point_list_every_quad(self):
+        """One stray vertex used to set the search radius of every point, so each point walked every quad in Python
+        (quadratic). The tree now returns only nearby quads; the stray quad is still tried and the answers stay."""
+        from unittest import mock
+        import scipy.spatial
+        n = 16
+        plain = self.mesh(self.plane(n))
+        spiked = self.mesh(self.plane(n))
+        spiked["xyz"][n - 1, n - 1] = [1e7, 1e7, 50]
+        self.assertTrue(quad_mask(spiked)[n - 2, n - 2])
+        source = self.mesh(self.plane(n) + [3, 4, 1])
+        listed, real = [], scipy.spatial.cKDTree
+
+        class Counting(real):
+            def query_ball_point(self, *a, **k):
+                out = real.query_ball_point(self, *a, **k)
+                listed.append(len(out))
+                return out
+        with mock.patch.object(scipy.spatial, "cKDTree", Counting):
+            got = project(source, spiked, 5, .001)
+        want = project(source, plain, 5, .001)
+        self.assertLess(max(listed), 20)                     # (n - 1) ** 2 = 225 quads before
+        inner = (slice(0, n - 2), slice(0, n - 2))
+        for k in ("uv", "distance", "valid", "ambiguous", "unresolved"):
+            np.testing.assert_array_equal(got[k][inner], want[k][inner])
+        self.assertTrue(got["valid"][inner].all())
+
     def test_shared_quad_edge_has_one_stable_uv(self):
         reference = self.mesh(self.plane(3))
         first = project(self.point([120, 110, 51]), reference, 5, .001)

@@ -339,6 +339,15 @@ class BenchmarkScriptsTest(unittest.TestCase):
         # p1667_text.py writes its docstring's second paragraph into every reference as its rule
         self.assertTrue(text.__doc__.split("\n\n")[1].startswith("The text is the column-by-column transcription"))
 
+    def test_p1667_fetch_refuses_label_keys_outside_out(self):
+        fetch = load_script("p1667_fetch")
+        root = self.d / "labels" / "w013" / "z" / "1"
+        self.assertEqual(fetch.label_path(root, "B/1/", "B/1/0/0/0"), root / "0/0/0")
+        self.assertEqual(fetch.label_path(root, "B/1/", "B/1/.zarray"), root / ".zarray")
+        for key in ("B/1/../../../../../x", "B/1/", "B/1//etc/x", "B/1/a/../../x", "C/1/x", "B/1/a\\..\\x", "B/1/a//b"):
+            with self.subTest(key=key), self.assertRaises(SystemExit):
+                fetch.label_path(root, "B/1/", key)
+
     def test_text_reference_and_alignment_refuse_letters_outside_the_alphabet(self):
         T = load_script("eval_p1667_text")
         good = {"columns": {"5": [{"line": 1, "letters": "ΚΑΙ??ΤΟΥϹ"}, {"line": 2, "letters": ""}]}}

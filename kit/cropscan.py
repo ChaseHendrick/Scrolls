@@ -5,7 +5,9 @@ quantized once, ink and background histograms are built per ``tile`` x ``tile`` 
 summed with a 2D cumulative sum, so every window costs O(bins). Window, stride and inner
 margin must be multiples of ``tile``. With ``bins=65536`` the result equals score_array on
 the same pixels for uint8, uint16 or normalized [0, 1] float predictions. Other float
-scales are refused because score_array chooses its quantization scale per crop. Fewer bins
+scales are refused because score_array chooses its quantization scale per crop; for the same
+reason a crop whose float values span fewer than 256 of the 65,536 levels can differ, since
+score_array stretches such a crop from its own minimum to its maximum. Fewer bins
 introduce data-dependent ties; approximation error must be checked for each use.
 
 Use it to see how much a single crop's AUC (and a ranking between maps) depends on where the
