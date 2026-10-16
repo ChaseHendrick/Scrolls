@@ -34,6 +34,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | [meshaudit](meshaudit.md) | Current | `python -m kit meshaudit transforms` | Not needed | `python -m kit meshaudit` checks the public catalogue's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders. |
 | [overlap](overlap.md) | Current | `python -m kit overlap` | Not needed | `python -m kit overlap` measures how close two tifxyz meshes run (one sheet traced twice, or two surfaces) and how well their human labels agree there against displaced matches; `python -m kit collate` compares two traces' ink maps by gap, against a control. |
 | [stackcheck](stackcheck.md) | Current | `python -m kit stackcheck` | Not needed | `python -m kit stackcheck` checks a stack of consecutive tifxyz segments, inner to outer, against the scroll's umbilicus: winding order, coincident or oddly spaced pairs, missing sectors and runs, skipped windings, turn overlaps and stack ends, with masks of the flagged vertices. |
+| [umbilicus](umbilicus.md) | Current | `python scripts/umbilicus/predict.py` | Not needed | `scripts/umbilicus/` finds the winding centre (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder. |
 | [surfacefix](surfacefix.md) | Experimental | `python -m kit surfacefix prepare` | Not needed | `python -m kit surfacefix` writes copies of a traced surface shifted along its normal, then, from one ink model's maps of those copies and of a second trace of the same sheet, flags regions where the traces disagree and copies only control-passing shifts into a new surface. |
 
 ### Ink maps and models
@@ -71,6 +72,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [cloudcost](cloudcost.md) | Current | `python -m kit.cloudcost` | Not needed | `python -m kit.cloudcost` turns GPU type, cores, memory and hours into a low, typical and high USD estimate at Modal's list prices from a dated JSON, and prints the default Modal GPU and CPU request for new jobs; it never contacts Modal. |
 | [compute](compute.md) | Current | `python -m kit compute` | Not needed | `python -m kit compute` finds the `provenance*.json` records that runs leave behind and prints one row per run with its operator, machine, start time, wall-clock hours and digest, plus an optional energy estimate from an assumed power draw. |
 | [modal-row](modal-row.md) | Current | `python -m kit run modal-row` | Not needed | `python -m kit run modal-row` appends one row, from a small JSON file, to a Modal cost ledger CSV such as `docs/compute/modal-ledger.csv`, never twice for the same key, and lets the public ledger take only rows marked generic. |
 | [run-local](run-local.md) | Current | `python -m kit run local` | Not needed | `python -m kit run local` runs a command on this machine and appends its wall time, CPU time and an estimated electricity cost to an experiment's ledger record; `python -m kit run backfill` adds past runs from a JSON list of logged durations. |
@@ -97,6 +99,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | --- | --- | --- | --- | --- |
 | [cli](cli.md) | Current | `python -m kit` | Not needed | `python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts. |
 | [releases](releases.md) | Current | `python -m kit releases add` | Not needed | `python -m kit releases` keeps `docs/releases.json`, the list of tools released from private work into this repository, and writes the README's "Released tools" section from it: pinned entries first, then newest first. |
+| [workbench-package](workbench-package.md) | Current | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` | Not needed | `pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench` 0.2.0, with three extras and four console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it. |
 
 ### Viewers and apps
 

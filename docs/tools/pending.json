@@ -17,12 +17,6 @@
     "python -m kit run catalog"
    ]
   },
-  "cloudcost": {
-   "group": "pub-ledger",
-   "covers": [
-    "kit/cloudcost.py"
-   ]
-  },
   "letters-training": {
    "group": "pub-letters",
    "covers": [
@@ -57,24 +51,10 @@
     "kit/tooldocs.py"
    ]
   },
-  "umbilicus": {
-   "group": "pub-models",
-   "covers": [
-    "scripts/umbilicus",
-    "release umbilicus-finder"
-   ]
-  },
   "unroll": {
    "group": "pub-released",
    "covers": [
     "release unroll"
-   ]
-  },
-  "workbench-package": {
-   "group": "pub-scripts-apps",
-   "covers": [
-    ".github/workflows/check.yml",
-    "pyproject.toml"
    ]
   }
  }

@@ -1,0 +1,358 @@
+# umbilicus: find a scroll's winding centre line in X-ray CT
+
+`scripts/umbilicus/` finds the winding centre (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder.
+
+| Field | Value |
+| --- | --- |
+| Id | `umbilicus` |
+| Status | Current |
+| Kind | script folder |
+| Area | Surfaces and tracing |
+| Run | `python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py` |
+| Code | `scripts/umbilicus/` |
+| Tests | `tests/test_umbilicus.py` |
+| Needs | Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py` |
+| Runs on | `predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container) |
+| Network | vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl` |
+| Writes | `predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` (collect), `DST/*_umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/*_umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/` |
+| Go-ahead | Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights |
+| Released | Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository |
+| Release id | `umbilicus-finder` |
+| Guide | [Scroll centre finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licences) |
+| License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licences-credits-and-citation)) |
+| Checked | 2026-10-16 against commit `63ee638` |
+
+## What it does
+
+Tools that trace and orient the papyrus sheets of a scroll use its umbilicus: the line of its winding centre, one point per height. Many scrolls have none published, and people placing the same centre by hand often disagree by a few millimetres. This folder finds the line automatically and measures its error against the 13 published lines.
+
+`predict.py` reads every 8th plane of pyramid level 3 (8 times downsampled) of a scroll's 1.2 m (about 9 um) scan from the open-data bucket, one slice every 64 level-0 voxels. A first U-Net (3.3 million parameters, `centrenet.py`) looks at three neighbouring slices squeezed into a 256 pixel frame and puts a heatmap peak on the centre, averaged over the 8 flips and rotations. A second U-Net of the same shape (the zoom stage, `refine.py`) looks at a 176 pixel level-3 window round that answer (12 to 13 mm across) and moves it onto the centre, twice. The line is smoothed along the height, then two end trims drop heights where a centre has nothing to sit on. The file it writes has control points `x`, `y`, `z` in level-0 voxels, as the published umbilicus files do.
+
+The other scripts make and check it: `slices.py` reads the slices and the published lines, `pipeline.py` trains and scores the first stage by fold and holds the trims and the file format, `refine.py` trains and chains the zoom stage, `endcheck.py` calibrates and applies the end-point rule, and `ctcheck.py` draws lines on CT slices for a person to check.
+
+The line is model output, not a measurement: check it on CT slices before relying on it. On the 13 published scrolls the released `-all` models trained on every scroll, so a line for one of them is not a test; the held-out numbers come from models that never saw the scroll they scored. It does not trace sheets, and it takes only 8 to 10 um scans.
+
+## When to use it
+
+- A scroll with a 1.2 m scan in the open-data bucket and no published umbilicus, before tracing or orienting its sheets.
+- A second opinion on a published or hand-made line: draw both on CT with `ctcheck.py`.
+- Trimming the mount and cap ends from umbilicus files already written (`pipeline.py trim`, `endcheck.py files`).
+- Reproducing the held-out scores from public data (`slices.py`, `pipeline.py`, `refine.py`, `endcheck.py score`).
+
+Do not use it:
+
+- On scans finer or coarser than 8 to 10 um: `predict.py` refuses them; villa's `vc_gen_umbilicus` is another finder (the two have not been compared on the same slices).
+- To check segment stacking against a line: use [`stackcheck`](stackcheck.md), which takes an umbilicus file.
+- Inside AutoPipeline runs: [`autopipeline`](autopipeline.md) takes the catalog's file or villa's estimate, and accepts a file in the published format such as this one.
+- As ground truth: a line from this finder is model output and its spread between models is not accuracy.
+
+## Quick start
+
+```bash
+python -m pip install numpy scipy requests torch
+U=https://github.com/ChaseHendrick/Scrolls/releases/download/umbilicus-v1
+mkdir -p work/umbilicus/weights
+for f in umbilicus-first-all.pt umbilicus-zoom-all.pt; do curl -fL -o work/umbilicus/weights/$f $U/$f; done
+(cd work/umbilicus/weights && shasum -a 256 -c) <<'EOF'
+c9b50aae2876e00f50b7ade5cf9a6facc84fb0f8ad9667dddf5565e5f06ae854  umbilicus-first-all.pt
+0a06fe2e108fbb5f252455f93862336ec4013a535eb922676ae8f846406fb4bb  umbilicus-zoom-all.pt
+EOF
+python scripts/umbilicus/predict.py SCROLL \
+    --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt \
+    --data work/umbilicus/slices --out work/umbilicus/out
+```
+
+- `SCROLL`: a scroll id as the bucket names it, such as `PHerc0125`. It needs a 1.2 m scan in the bucket stored as raw 128^3 uint8 chunks; give `--volume PATH` to pick one scan when there are several.
+- The two weight files are about 13 MB each; the SHA-256 check must print `OK` for both.
+- `work/` is ignored by git, so the weights and slices stay out of it.
+
+The `predict.py` run was not repeated for this page: this check's container had no torch and no bucket access. It prints one line per scroll, `SCROLL {"points": ..., "keep_band": ..., "spread_mm_median": ...}`, and writes `work/umbilicus/out/SCROLL_umbilicus.json` and `SCROLL_predict.json`. It worked when the exit code is 0 and `points` is above 0.
+
+The end trims run offline. On the synthetic 60-slice scroll of `tests/test_umbilicus.py` (slices in `slices/S.npz`, its untrimmed line in `src/S_umbilicus.json`), `python scripts/umbilicus/pipeline.py trim src --data slices --out trimmed` printed:
+
+```
+{
+ "S": {
+  "points": 36,
+  "z": [
+   800,
+   3040
+  ]
+ }
+}
+```
+
+and the trimmed file's `metadata.trimmed` reads `mount and cap slices dropped: kept the longest run with at least 0.3 of the median papyrus area, at least 3 mm inside the first and last slices with papyrus; end-point rule: dropped from each end until 2 mm of slices where at least 0.75 of 32 rays from the centre meet papyrus within 4 mm`.
+
+## Checks and controls
+
+- **Held-out scoring with a control.** The 13 published lines were split into four groups by scroll on 13 October 2026 (`FOLDS` in `pipeline.py`); each group was scored by models trained on the other scrolls only. The control is the papyrus centroid of each slice, smoothed the same way. Over 3,414 held-out slices the median distance to the published line was 3.98 mm for the centroid, 1.20 mm for the first stage and 0.73 mm for both stages (90th percentile 9.97, 4.00 and 3.37 mm); the first stage beat the centroid on 13 of 13 scrolls (`umbilicus_checks` in [`results.json`](../results.json), [guide](../../scripts/umbilicus/README.md#held-out-results)).
+- **Rules fixed before each run** (13 October 2026): the first stage works if its pooled held-out median is at most 2.0 mm and it beats the centroid on at least 10 of 13 scrolls; the zoom stage is adopted if its pooled median is at least 0.1 mm lower and it is not worse on at least 9 of 13. Both passed. The plan that holds the rules is not published, so the timing cannot be checked from here.
+- **With the end trims.** Both trims keep 3,243 of the 3,414 scored slices, median 0.69 mm for both stages; the dropped slices were mostly worse than the rest (9 of 10 scrolls) ([`heldout-endrule.json`](../evidence/2026-10-14-umbilicus/heldout-endrule.json)). `endcheck.py score RUN_DIR` reproduces this from a run; its `pooled.all` must first equal the run's own `result.json`.
+- **Limits.** The reference is one person's line per scroll (ten of 13 by one annotator), people disagree by more than this error, two scrolls have more than one winding centre, and the settings were chosen while looking at some of the same scrolls, so it is not an untouched test set ([guide](../../scripts/umbilicus/README.md#read-these-numbers-with-care)). `spread_mm_median` measures agreement between models, not accuracy.
+- **A person's check.** `ctcheck.py` draws a line (red) beside another (cyan) on whole and zoomed CT slices; nothing replaces looking at them.
+
+Claim label: Model output, for every line `predict.py` writes and for the held-out distances of 13 October 2026, scored against one person's published line per scroll.
+
+## Commands and options
+
+### `python scripts/umbilicus/predict.py`
+
+The centre line of any scroll from trained weights: no training, no labels.
+
+```
+usage: predict.py [-h] --first FIRST [FIRST ...] [--zoom [ZOOM ...]]
+                  --data DATA --out OUT [--volume VOLUME] [--device DEVICE]
+                  [--no-end-rule]
+                  scrolls [scrolls ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `scrolls` | required | One or more scroll ids, such as `PHerc0125` |
+| `--first FIRST [FIRST ...]` | required | First-stage weights (`centrenet.Net` state dicts); the median of several models is taken |
+| `--zoom [ZOOM ...]` | none | Zoom-stage weights; each moves the first-stage guess, and the median is taken. Without it only the first stage runs |
+| `--data DATA` | required | Folder of slice files `SCROLL.npz`, made here when missing |
+| `--out OUT` | required | Folder for `SCROLL_umbilicus.json` and `SCROLL_predict.json` |
+| `--volume VOLUME` | none (`slices.volume()`: the published line's scan, else the scroll's 1.2 m scan) | Bucket path of the scan to use, one scroll only; its name must give a voxel size from 8 to 10 um (`UM_RANGE`) |
+| `--device DEVICE` | `cpu` | Torch device; `cuda` for an NVIDIA GPU (bfloat16 autocast off the CPU) |
+| `--no-end-rule` | off | Trim mount and caps only, without the end-point rule |
+
+### `python scripts/umbilicus/slices.py`
+
+```
+usage: slices.py [-h] --out OUT {extract} [scrolls ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `cmd` | required | `extract`: write the slice file of each scroll by range reads (`extract_ranged`); an existing file is skipped |
+| `scrolls` | none (the 13 published scrolls) | Scroll ids |
+| `--out OUT` | required | Folder for `SCROLL.npz` |
+
+### `python scripts/umbilicus/pipeline.py`
+
+First-stage training by fold, its held-out score, and trimming written files.
+
+```
+usage: pipeline.py [-h] --data DATA --out OUT [--size SIZE] [--width WIDTH]
+                   [--epochs EPOCHS] [--time-s TIME_S] [--batch BATCH]
+                   [--device DEVICE] [--no-end-rule]
+                   cmd [job]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `cmd` | required | `job` (train one model and predict its held-out scrolls), `collect` (average seeds per fold, score against the published lines and the centroid control, write `result.json`), `trim` (drop end points from files already written). Any other word does nothing |
+| `job` | none | For `job`: `fold<k>s<seed>` (k from 0 to 3) or `alls<seed>`. For `trim`: the source folder of `*_umbilicus.json` |
+| `--data DATA` | required | Folder of slice files |
+| `--out OUT` | required | Run folder (job, collect), or the destination folder (trim) |
+| `--size SIZE` | `256` | First-stage frame side in pixels |
+| `--width WIDTH` | `32` | Channels of the U-Net's first block |
+| `--epochs EPOCHS` | `40` | Training epochs (the release used 60) |
+| `--time-s TIME_S` | `900` | Training time cap in seconds (the release used 300) |
+| `--batch BATCH` | `32` | Batch size |
+| `--device DEVICE` | `cpu` | Torch device |
+| `--no-end-rule` | off | `trim`: mount and caps only, without the end-point rule |
+
+### `python scripts/umbilicus/refine.py`
+
+The zoom stage: a check from offset published centres (`cv`), training on top of first-stage answers (`chain`), and its held-out score (`chain-collect`).
+
+```
+usage: refine.py [-h] [--base BASE] --data DATA --out OUT
+                 [--folds FOLDS [FOLDS ...]] [--epochs EPOCHS] [--width WIDTH]
+                 [--rounds ROUNDS] [--time-s TIME_S] [--device DEVICE]
+                 [--every EVERY] [--side SIDE] [--reach REACH]
+                 [--offsets OFFSETS [OFFSETS ...]]
+                 {cv,chain,chain-collect} [name]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `cmd` | required | `cv`, `chain` or `chain-collect` |
+| `name` | none | For `chain`: `fold<k>` (trains without fold k's scrolls) or `all` |
+| `--base BASE` | none | `chain`: the first-stage run folder whose answers are refined |
+| `--data DATA` | required | Folder of slice files |
+| `--out OUT` | required | Run folder |
+| `--folds FOLDS [FOLDS ...]` | `0 1 2 3` | `cv`: folds to train and score |
+| `--epochs EPOCHS` | `12` | Training epochs (the release used 30 with `chain`) |
+| `--width WIDTH` | `16` | Channels of the U-Net's first block (the release used 32) |
+| `--rounds ROUNDS` | `2` | Times each guess is re-cropped and moved |
+| `--time-s TIME_S` | none (no cap) | Training time cap in seconds (the release used 300) |
+| `--device DEVICE` | `cpu` | Torch device |
+| `--every EVERY` | `1` | `cv`: score every Nth annotated slice |
+| `--side SIDE` | `176` | Crop side in level-3 pixels (`S`) |
+| `--reach REACH` | `64` | Largest training offset in level-3 pixels (`R`) |
+| `--offsets OFFSETS [OFFSETS ...]` | `0.0 1.2 2.5` | `cv`: median sizes in mm of the smooth random offsets added to the published centres |
+
+### `python scripts/umbilicus/endcheck.py`
+
+```
+usage: endcheck.py [-h] [--cache CACHE] [--data DATA] [--out OUT]
+                   [--radius RADIUS]
+                   {calibrate,score,files} [args ...]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `cmd` | required | `calibrate` (the rule at the 13 published centres), `score` (the rule on a run's held-out answers, one stage per folder), `files` (apply the rule to written `*_umbilicus.json`) |
+| `args` | none | `score`: `RUN_DIR`; `files`: `SRC DST` |
+| `--cache CACHE` | `work/umbilicus/endcheck-cache` | Cache of bucket reads |
+| `--data DATA` | none (bucket reads) | The pipeline's slice files instead of bucket reads |
+| `--out OUT` | none | Write the result JSON here |
+| `--radius RADIUS` | none (`END_RADIUS_MM`, 4 mm) | `calibrate`: try this radius in mm instead |
+
+### `python scripts/umbilicus/ctcheck.py`
+
+```
+usage: ctcheck.py [-h] --a A --b B --out OUT [--scrolls [SCROLLS ...]] [--n N]
+                  [--cache CACHE] [--a-label A_LABEL] [--b-label B_LABEL]
+                  [--zoom-mm ZOOM_MM] [--close-mm CLOSE_MM]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--a A` | required | Folder of the lines to check (`SCROLL_umbilicus.json`), drawn as red circles |
+| `--b B` | required | Folder of the lines to compare with, drawn as cyan crosses |
+| `--out OUT` | required | Folder for the pictures and `summary.json` |
+| `--scrolls [SCROLLS ...]` | none (every file in `--a`) | Scroll ids to draw |
+| `--n N` | `6` | Slices spread along the line, plus the height where A and B differ most and where A moves fastest sideways |
+| `--cache CACHE` | none (`OUT/.cache`) | Cache of plane reads |
+| `--a-label A_LABEL` | `centres A` | Legend label of A |
+| `--b-label B_LABEL` | `centres B` | Legend label of B |
+| `--zoom-mm ZOOM_MM` | `6.0` | Half width in mm of the level-1 zoom panel |
+| `--close-mm CLOSE_MM` | `2.0` | Half width in mm of the level-0 close-up panel |
+
+`centrenet.py` has no command line; the other scripts import it.
+
+### Environment variables
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `DROBKOV_REV` | `de7642ac9b38266e95192489e22fb13b7e2d13b6` | Commit of Alexey Drobkov's herculaneum-umbilici whose ten lines `slices.truth()` reads; the held-out scores used this one |
+
+## Python API
+
+The scripts import one another by file name (each puts its folder first on `sys.path`). The functions other code uses:
+
+| Function | Returns | Raises | Notes |
+| --- | --- | --- | --- |
+| `predict.predict(s, first, zoom, data, out, device="cpu", end_rule=True, vol=None)` | `{"points", "keep_band", "spread_mm_median"}` | `SystemExit` for a scan outside 8 to 10 um or a slice file of another scan; `RuntimeError` from bucket reads | Writes both output files |
+| `slices.extract_ranged(s, out, level=3, every=8, vol=None, threads=16)` | `out` | `RuntimeError` for failed reads or no 1.2 m scan; `ValueError` for chunks that are not raw 128^3 uint8 | The slice file: `ct`, `z_l0`, `vol`, `um`, `level` |
+| `slices.PlaneReader(vol, level)` | Reader with `plane(z, y0=0, y1=None, x0=0, x1=None, threads=16)` and `missing` | As above | One 16 KiB range request per chunk; absent chunks read as 0 and are counted |
+| `slices.truth(s)` | `(volume path, rows z, y, x in level-0 voxels)` | `RuntimeError` | A published line, cached per process |
+| `slices.smooth_z(p, win=9)` | Smoothed `(n, 2)` array | Nothing of its own | Running median, then a quadratic Savitzky-Golay over 11 slices; NaNs filled first |
+| `pipeline.keep_band(area, z, um, cap_mm=None, frac=None)` | bool array | Nothing | The mount and cap trim |
+| `pipeline.end_trimmed_keep(ct, yx, z, um, keep, level=3)` | `(keep, support, papyrus_level)` | Nothing | The end-point rule |
+| `pipeline.umbilicus_json(s, z, yx, keep, um, vol, spread, note)` | dict in the published format | Nothing | See Outputs |
+| `pipeline.trim(src, data, dst, end_rule=True)` | `{scroll: {"points", "z"}}` | `SystemExit` for points off the slice heights | What `pipeline.py trim` runs |
+| `endcheck.files(src_dir, dst, cache, data=None)` | `{scroll: {"points_in", "points_out", "papyrus_level"}}` | `SystemExit` for points off the slice heights (with `data`) | Applies the end-point rule to any file in the published format |
+
+## Inputs
+
+| Input | Format | Notes |
+| --- | --- | --- |
+| Scan | A zarr v2 volume in the open-data bucket with raw (uncompressed) 128^3 uint8 chunks, levels 0 to 5 | 8 to 10 um voxels (the 1.2 m scans); the models trained on 8.64 and 9.362 um scans only. Absent chunks read as 0 (air) |
+| Slice file | `SCROLL.npz` with `ct` (n, H, W) uint8 level-3 planes, `z_l0` (level-0 heights, 32 + 64 k), `vol`, `um`, `level` | Made by `predict.py` or `slices.py extract`; 0.24 to 0.62 GB of reads on the 13 published scrolls |
+| Weights | PyTorch state dicts of `centrenet.Net` (float32) | 14 files in release `umbilicus-v1`, SHA-256 in the [guide](../../scripts/umbilicus/README.md#weights); `predict.py` needs the two `-all` files |
+| Umbilicus file | JSON with `control_points` (`x`, `y`, `z` in level-0 voxels) and `metadata` (`source_volume`, `voxelsize_um`) | Input to `trim`, `endcheck.py files` and `ctcheck.py` |
+| Published lines | The three bucket files (PHerc0125, PHerc0211, PHerc0826) and Drobkov's ten | Read by `slices.truth()` for training and scoring only |
+
+## Outputs
+
+`predict.py` prints one line per scroll: the scroll id and `{"points": N, "keep_band": N, "spread_mm_median": X}`.
+
+`OUT/SCROLL_umbilicus.json`:
+
+| Field | Type | Meaning |
+| --- | --- | --- |
+| `control_points` | list of `{x, y, z, score}` | One point per kept slice, level-0 voxels, rounded to integers; `score` is always 100 |
+| `metadata.source_volume`, `metadata.volume` | str | The scan's bucket path and its last part |
+| `metadata.voxelsize_um` | float | Voxel size in um |
+| `metadata.total_points` | int | Number of control points |
+| `metadata.created` | str | UTC time, `YYYY-MM-DDTHH:MM:SSZ` |
+| `metadata.method` | str | The models used and the trims applied |
+| `metadata.spread_mm_median` | float or null | Median over kept slices of the distance in mm between each model's answer and the models' median; null when the last stage has one model, as in Quick start |
+
+`OUT/SCROLL_predict.json` holds per slice: `z`, `yx` (smoothed centre, level-0 voxels, null where no papyrus), `present`, `keep_band`, `kept`, `support` (share of 32 rays meeting papyrus), `spread_mm`; and `scroll`, `volume`, `voxelsize_um`, `papyrus_level`, `first`, `zoom` (weight file names) and `rule` (the trim constants). `pipeline.py trim` adds `metadata.trimmed`, `endcheck.py files` adds `metadata.end_trimmed`.
+
+| Exit code | Meaning |
+| --- | --- |
+| `0` | Done. A line can still have 0 points when no run of slices meets the end-point rule |
+| `1` | A refusal with its message (a `SystemExit`, see Failure modes), or an error with a Python traceback, such as a failed bucket read (`RuntimeError`) or a missing torch |
+| `2` | A usage error from the argument parser |
+
+## Failure modes
+
+| What you see | Why | What to do |
+| --- | --- | --- |
+| `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `--volume needs exactly one scroll` | `predict.py` with `--volume` and several scrolls | Run one scroll per `--volume` |
+| `VOLUME: no voxel size in the scan name (<timestamp>-<size>um-...)` | The `--volume` path does not name its voxel size | Give the bucket path of the scan, as listed under `SCROLL/volumes/` |
+| `WHAT: 2.4 um voxels; this finder takes 8 to 10 um scans (the models trained on 8.64 and 9.362 um scans only)` | The scan or slice file is outside `UM_RANGE` | Use the scroll's 1.2 m scan |
+| `NPZ holds slices of VOL, not --volume VOLUME: use another --data folder or remove the file` | A slice file in `--data` from another scan | Use another `--data` folder, or delete the file |
+| `SCROLL: no 1.2 m scan in the open-data bucket; name a scan with predict.py --volume` | The scroll has no `um-1.2m` scan | Name an 8 to 10 um scan with `--volume`, if one exists |
+| `VOL/LEVEL: needs raw 128^3 uint8 chunks, got ...` | The scan is stored compressed or with other chunks | Not supported by the range reader |
+| `SCROLL: no volume matching ID` | The published bucket file names a scan the listing does not show | Check the bucket; report it |
+| `URL: STATUS` (a `RuntimeError` with a traceback) | A bucket or GitHub read failed 6 times | Check the network and retry; finished slice files are kept |
+| `listing PREFIX: ...` | A bucket listing did not return XML | Retry; check the prefix |
+| `bad job 'JOB': use fold<k>s<seed> or alls<seed>` | `pipeline.py job` with a malformed job name | Use, for example, `fold0s0` or `alls0` |
+| `SCROLL: N control points are not at the slice file's heights (first z Z); use endcheck.py files without --data, or trim --no-end-rule` | `pipeline.py trim` on a file not written by this pipeline | Use `endcheck.py files` without `--data`, or `--no-end-rule` |
+| `SCROLL: control point heights are not the slice file's heights` | `endcheck.py files --data` on a file whose points are at other heights | Run it without `--data` |
+| `RUN: no refine_*.json or fold*.json` | `endcheck.py score` on a folder without job records | Point it at a first-stage or zoom-stage run folder |
+| `RUN: holds both first-stage (fold*.json) and zoom-stage (refine_*.json) records; score one stage per folder` | Both stages' records in one folder | Score each stage's folder separately |
+| `score RUN_DIR` | `endcheck.py score` without exactly one folder | Give one run folder |
+| `files SRC DST` | `endcheck.py files` without a source and a destination | Give both folders |
+| `ModuleNotFoundError: No module named 'torch'` | torch is missing for `predict.py`, `refine.py` or training | `python -m pip install torch` |
+| A line with `"points": 0` | No 2 mm run of slices has papyrus within 4 mm of the centre in three quarters of the directions, or no slice holds papyrus | Check the scan on CT; compare with `--no-end-rule` |
+
+## How it works
+
+1. **Slices** (`slices.extract_ranged`): planes `z = 4 + 8 k` of level 3, so level-0 heights `32 + 64 k`, about 0.55 to 0.60 mm apart; each plane read with one range request per 128 px chunk (`PlaneReader`).
+2. **First stage** (`centrenet.frame`, `centrenet.predict`): the slices resampled into a 256 px square (`FRAME`) round the scroll's papyrus, plus 5 %; three slices (64 voxels apart) in, a heatmap at half resolution out; the 8 dihedral transforms are averaged, the peak is refined by a weighted mean over a 9 x 9 window, and mapped back to level-0 voxels. The median over `--first` models is taken.
+3. **Zoom stage** (`refine.refine`): a 176 px (`S`) level-3 window round each guess, the same network shape, two rounds (`--rounds`), median over `--zoom` models.
+4. **Smoothing** (`slices.smooth_z`): running median over 9 slices, then a quadratic Savitzky-Golay filter over 11.
+5. **Mount and cap trim** (`pipeline.keep_band`): keep the longest unbroken run of slices with at least `AREA_FRAC` = 0.3 of the scroll's median papyrus area and at least `CAP_MM` = 3.0 mm inside the first and last slices with papyrus.
+6. **End-point rule** (`pipeline.end_trimmed_keep`): from each slice's centre cast `END_RAYS` = 32 rays in the 3 x 3 smoothed level-3 slice and count the share that meet papyrus (at or above Otsu's level over the kept windows) within `END_RADIUS_MM` = 4.0 mm; drop points from each end until `END_RUN_MM` = 2.0 mm of consecutive slices reach `END_SUPPORT` = 0.75. Nothing between the first and last such run is dropped. The radius was the smallest of 2, 3, 4 and 5 mm at which at most 0.5 % of published centres in the middle 80 % of each line fall under the bar ([`calibrate.json`](../evidence/2026-10-14-umbilicus/calibrate.json)).
+7. **File** (`pipeline.umbilicus_json`): one control point per kept slice.
+
+Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`), two first-stage seeds per fold plus one model on all 13 (`JOBS`), one zoom model per fold plus one on all (`CHAIN_JOBS`); the zoom stage trains from published centres plus random offsets up to `R` = 64 level-3 pixels and is chained onto the first stage's real answers.
+
+## Cost and time
+
+- `predict.py`: about 13 minutes on 4 CPU cores for PHerc1203, the smallest published scan, 7 of them reading 0.25 to 0.65 GB of slices ([guide](../../scripts/umbilicus/README.md#quick-start)). That fits a laptop; no Modal needed.
+- Training: 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)), plus `slices.py extract` of the 13 scrolls (at most 5.0 GB of range reads). It needs a GPU, so it runs on Modal with a run spec and Chase's go-ahead (the Modal rule, hard rule 11). Cost: Not recorded in this repository.
+- `endcheck.py calibrate`: about 0.6 to 0.7 GB of range reads; time Not measured.
+- `pipeline.py trim` on a synthetic 60-slice scroll: 0.6 s (measured 2026-10-16, 4-core cloud container).
+
+## For agents
+
+- **Command:** `python scripts/umbilicus/predict.py SCROLL --first W/umbilicus-first-all.pt --zoom W/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out` (weights checked by SHA-256 first, as in Quick start); the machine-readable output is `OUT/SCROLL_umbilicus.json` and `OUT/SCROLL_predict.json`.
+- **Parse:** `control_points` (level-0 `x`, `y`, `z`), `metadata.total_points`, `metadata.spread_mm_median`; per slice `kept` and `support` in `_predict.json`. The printed line holds `points`, `keep_band` and `spread_mm_median`.
+- **Rerun:** Safe. Slice files in `--data` are reused (delete one to read it again); the two output files are overwritten. Training jobs overwrite their `.pt` and `.json`.
+- **Success:** Exit code 0 and `points` above 0.
+- **Not a pass:** A line on one of the 13 published scrolls from the `-all` weights (they trained on it); a small `spread_mm_median` read as accuracy; a line not looked at on CT; held-out scores that do not first reproduce `result.json` in `endcheck.py score`.
+- **Go-ahead:** Nothing to run `predict.py` on public scans. Renting GPUs to train, posting a line, or uploading weights needs Chase's yes.
+- **Never:** Call a line a measurement or ground truth; run it on a scan outside 8 to 10 um by editing `UM_RANGE`; commit slice files, CT pictures or weights to git (scan data is CC BY-NC 4.0 and stays out of the repository).
+
+## Tests
+
+```bash
+python -m unittest tests.test_umbilicus -v
+```
+
+They cover the first stage's coordinate frame and augmentation, the zoom crops and offsets, `keep_band`, the papyrus level, the end-point support and trims (from the ends only, at 2 mm and 4 mm for each voxel size), trimming written files, `collect` and `chain-collect`, `predict.py` writing a trimmed file from weights, its refusal of other scans, `endcheck.py` windows and missing-chunk counts, and the range reader against a synthetic volume. All data is synthetic and read on the CPU; 14 of 34 tests skip without torch (34 ran in 4.6 s with 14 skipped, measured 2026-10-16). They do not read the bucket or the released weights.
+
+## History
+
+- 2026-10-14: the tests set aside StrokeNet's same-named `pipeline` module (`8bf841b`).
+- 2026-10-14: first public release: `predict.py`, training and scoring scripts, the end-point rule, `ctcheck.py`, and held-out evidence; weights in release `umbilicus-v1` (`76e4591`).
+
+## Related
+
+- [Scroll centre finder guide](../../scripts/umbilicus/README.md): weights, held-out tables, the end-point rule, reproduction and credits.
+- [Evidence folder](../evidence/2026-10-14-umbilicus/README.md): `heldout-endrule.json` and `calibrate.json`.
+- [`results.json`](../results.json): `umbilicus_checks`, the held-out scores and the centroid control.
+- [`stackcheck`](stackcheck.md): checks a stack of segments against an umbilicus file.
+- [`autopipeline`](autopipeline.md): its umbilicus stage accepts a file in the published format.

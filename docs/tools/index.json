@@ -348,6 +348,153 @@
    ]
   },
   {
+   "id": "cloudcost",
+   "name": "cloudcost",
+   "tagline": "price a Modal job from dated list rates, offline",
+   "summary": "`python -m kit.cloudcost` turns GPU type, cores, memory and hours into a low, typical and high USD estimate at Modal's list prices from a dated JSON, and prints the default Modal GPU and CPU request for new jobs; it never contacts Modal.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Compute and cost",
+   "commands": [
+    "python -m kit.cloudcost"
+   ],
+   "imports": [
+    "from kit import cloudcost"
+   ],
+   "code": [
+    {
+     "path": "kit/cloudcost.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_cloudcost.py",
+    "tests/test_autobatch.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it: it prices, it rents nothing. Launching the job it prices needs Chase's yes and an approved budget (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "e49ec32"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`cloudcost`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Compute and cost",
+    "Run": "`python -m kit.cloudcost`, `from kit import cloudcost`",
+    "Code": "`kit/cloudcost.py`",
+    "Tests": "`tests/test_cloudcost.py`, `tests/test_autobatch.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Reads `docs/compute/modal-rates.json` and `docs/compute/modal-jobs.json` from the checkout",
+    "Runs on": "Any CPU, instantly. The 23 tests of `tests/test_cloudcost.py` and the 11 of `tests/test_autobatch.py` ran together in 0.15 s (measured 2026-10-16, cloud container)",
+    "Network": "None. Rates come from the dated JSON, not from Modal",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed to run it: it prices, it rents nothing. Launching the job it prices needs Chase's yes and an approved budget (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11)",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[modal-pricing.md](../compute/modal-pricing.md) (rates, plan limits, the default machine, worked estimates)",
+    "Checked": "2026-10-16 against commit `e49ec32`"
+   },
+   "page": "docs/tools/cloudcost.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 79,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 184,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 219,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 227,
+     "end_line": 268,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 269,
+     "end_line": 285,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 286,
+     "end_line": 294,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 295,
+     "end_line": 298,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 299,
+     "end_line": 308,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 309,
+     "end_line": 316,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 317,
+     "end_line": 322,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 323,
+     "end_line": 331,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "compute",
    "name": "compute",
    "tagline": "tabulate machine time per run from provenance records",
@@ -5297,6 +5444,156 @@
    ]
   },
   {
+   "id": "umbilicus",
+   "name": "umbilicus",
+   "tagline": "find a scroll's winding centre line in X-ray CT",
+   "summary": "`scripts/umbilicus/` finds the winding centre (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python scripts/umbilicus/predict.py",
+    "python scripts/umbilicus/slices.py",
+    "python scripts/umbilicus/pipeline.py",
+    "python scripts/umbilicus/refine.py",
+    "python scripts/umbilicus/endcheck.py",
+    "python scripts/umbilicus/ctcheck.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/umbilicus/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_umbilicus.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licences-credits-and-citation))",
+   "fields": {
+    "Id": "`umbilicus`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Surfaces and tracing",
+    "Run": "`python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`",
+    "Code": "`scripts/umbilicus/`",
+    "Tests": "`tests/test_umbilicus.py`",
+    "Needs": "Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py`",
+    "Runs on": "`predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container)",
+    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
+    "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` (collect), `DST/*_umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/*_umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`",
+    "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
+    "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository",
+    "Release id": "`umbilicus-finder`",
+    "Guide": "[Scroll centre finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licences)",
+    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licences-credits-and-citation))",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/umbilicus.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 25,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 87,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 97,
+     "end_line": 234,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 235,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 252,
+     "end_line": 261,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 262,
+     "end_line": 285,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 286,
+     "end_line": 309,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 310,
+     "end_line": 321,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 322,
+     "end_line": 328,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 329,
+     "end_line": 338,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 339,
+     "end_line": 346,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 347,
+     "end_line": 351,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 352,
+     "end_line": 358,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "v8in-run",
    "name": "v8in-run",
    "tagline": "run the v8in ink model on a layer folder, with opt-in fp16 on the Mac GPU",
@@ -5762,6 +6059,184 @@
      "name": "Related",
      "start_line": 246,
      "end_line": 254,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "workbench-package",
+   "name": "workbench-package",
+   "tagline": "the pip-installable scrolls-workbench package and the CI that tests it",
+   "summary": "`pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench` 0.2.0, with three extras and four console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it.",
+   "status": "Current",
+   "kind": [
+    "package",
+    "workflow"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"",
+    "scrolls-workbench",
+    "scrolls-letterread",
+    "scrolls-letterlines",
+    "scrolls-letterdemo"
+   ],
+   "imports": [
+    "import kit"
+   ],
+   "code": [
+    {
+     "path": "pyproject.toml",
+     "symbols": []
+    },
+    {
+     "path": ".github/workflows/check.yml",
+     "symbols": []
+    },
+    {
+     "path": "CITATION.cff",
+     "symbols": []
+    },
+    {
+     "path": "CHANGELOG.md",
+     "symbols": []
+    },
+    {
+     "path": "kit/__init__.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "workbench_main",
+      "letterread_main",
+      "letterlines_main",
+      "letterdemo_main",
+      "_console",
+      "CONSOLE_SCRIPTS"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_packaging.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "63ee638"
+   },
+   "license": "Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`)",
+   "fields": {
+    "Id": "`workbench-package`",
+    "Status": "Current",
+    "Kind": "package, workflow",
+    "Area": "Releases and repository",
+    "Run": "`python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `import kit`",
+    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `_console`, `CONSOLE_SCRIPTS`)",
+    "Tests": "`tests/test_packaging.py`",
+    "Needs": "Python 3.10 or newer (`requires-python = \">=3.10\"`); pip with network access to fetch `setuptools>=77` for the build. The core needs no other package; the extras add numpy, pillow, tifffile, imagecodecs, zarr 3 (Python 3.11 or newer only) and scipy",
+    "Runs on": "Linux, macOS and Windows (the CI's reader job runs all three). Installing with no extras from a local copy took about 6 s (measured 2026-10-16, cloud container, Python 3.13)",
+    "Network": "The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners",
+    "Writes": "pip writes the `kit` package into the environment's `site-packages` and the four console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored)",
+    "Go-ahead": "Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main`: installable since 2026-10-14; version 0.2.0 since 2026-10-16 ([PR #102](https://github.com/ChaseHendrick/Scrolls/pull/102))",
+    "License": "Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`)",
+    "Guide": "[letter-reader.md, \"Install\"](../letter-reader.md#install)",
+    "Checked": "2026-10-16 against commit `63ee638`"
+   },
+   "page": "docs/tools/workbench-package.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 83,
+     "end_line": 122,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 123,
+     "end_line": 131,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 132,
+     "end_line": 140,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 141,
+     "end_line": 150,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 151,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 166,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 173,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 177,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 187,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 195,
+     "end_line": 204,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 205,
+     "end_line": 211,
      "applicable": true
     }
    ]
