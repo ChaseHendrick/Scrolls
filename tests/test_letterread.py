@@ -109,7 +109,7 @@ def _cached_logits(self, band):
     key = h.hexdigest()
     if key not in _LOGITS:
         _LOGITS[key] = _logits(self, band)
-    return _LOGITS[key].copy()
+    return _LOGITS[key].copy(order="K")   # keep the Fortran order logits returns, so values match exactly
 
 
 _PATCHES = []

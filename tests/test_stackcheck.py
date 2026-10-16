@@ -114,10 +114,16 @@ def _digest(*parts):
     return h.hexdigest()
 
 
+def _state(*objs):
+    return _digest(*[v for o in objs for _, v in sorted(vars(o).items()) if v is None or isinstance(v, (np.ndarray, str, int, float, tuple))])
+
+
 def _cached_dense(seg, k, umb, _dense=sc.Dense):
     key = _digest(seg.xyz, seg.valid, seg.step, seg.rmed, k, umb.z, umb.x, umb.y)
     if key not in _DENSE:
+        before = _state(seg, umb)
         D = _dense(seg, k, umb)
+        assert _state(seg, umb) == before, "Dense changed its inputs, so its results cannot be reused"
         D.memo_key = key
         _DENSE[key] = D
     return _DENSE[key]
@@ -126,7 +132,9 @@ def _cached_dense(seg, k, umb, _dense=sc.Dense):
 def _cached_normal_hits(P, N, D, maxd, foot, _hits=sc.normal_hits, **kw):
     key = _digest(P, N, D.memo_key, maxd, foot, sorted(kw.items()))
     if key not in _HITS:
+        before = _digest(P, N, _state(D))
         _HITS[key] = _hits(P, N, D, maxd, foot, **kw)
+        assert _digest(P, N, _state(D)) == before, "normal_hits changed its inputs, so its results cannot be reused"
     return tuple(a.copy() for a in _HITS[key])
 
 
