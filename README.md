@@ -33,6 +33,10 @@ Most of the money ($1.55M of the $2.14M pool) needs an image that papyrologists 
 
 ## Released tools
 
+![AutoPipeline's live monitor during the synthetic demo: stages turn green one by one, the run finishes, then a traced surface is turned in 3D](docs/assets/autopipeline/monitor-run.gif)
+
+*AutoPipeline 0.1.4's live monitor following `scripts/demo_synthetic.py`, recorded in real time: a synthetic scroll with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. More views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
+
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Tools released from private work, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
