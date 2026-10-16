@@ -1337,7 +1337,18 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
             args = _parse(parser, argv)
     else:
         args = _parse(parser, argv)
-    return args.func(args)
+    return _run(args, f"{prog} {args.command}", args.command)
+
+
+def _run(args, typed, name):
+    """args.func(args), with the command line the user typed and its kit command in kit.verify.RUNNING while it
+    runs, so a missing dependency's install hint names the command actually run."""
+    before = verify.RUNNING
+    verify.RUNNING = (typed, name)
+    try:
+        return args.func(args)
+    finally:
+        verify.RUNNING = before
 
 
 def _console(script, argv=None):
@@ -1346,7 +1357,7 @@ def _console(script, argv=None):
     parser = build_parser(sub_progs={command: script})
     commands = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
     args = commands.choices[command].parse_args(sys.argv[1:] if argv is None else argv)
-    return args.func(args)
+    return _run(args, script, command)
 
 
 def workbench_main(argv=None):

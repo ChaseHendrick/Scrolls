@@ -25,18 +25,33 @@ FAIL = "fail"
 CONTROL_NOT_CAUGHT = "control-not-caught"
 
 
+# The extra that installs the map tools' dependencies (numpy, tifffile, imagecodecs, zarr, scipy; pyproject.toml).
+MAPS_INSTALL = 'python -m pip install "scrolls-workbench[maps]"'
+
+# The command running now, for install hints: (what the user typed, the kit command), such as
+# ("python -m kit auc", "auc"). kit.cli sets it while a command runs; None when kit is used as a library.
+RUNNING = None
+
+
 class VerifyError(Exception):
     pass
+
+
+def missing(module):
+    """The VerifyError for a map tool that cannot import `module`: the command that needs it, the maps
+    extra that installs it, and how to run the command inside villa's environment instead."""
+    typed, name = RUNNING if RUNNING else (None, None)
+    need = f"{module} is required for {typed}" if typed else f"{module} is required"
+    note = " (its zarr needs Python 3.11 or newer)" if module == "zarr" else ""
+    return VerifyError(f"{need}. Install the maps extra{note}: {MAPS_INSTALL}, or run inside villa's environment: "
+                       f"uv run --project \"$VILLA/vesuvius\" --extra models python -m kit {name or 'COMMAND'} ...")
 
 
 def _numpy():
     try:
         import numpy
     except ImportError as exc:
-        raise VerifyError(
-            "numpy is required. Run inside villa's environment: "
-            "uv run --project \"$VILLA/vesuvius\" --extra models python -m kit verify ..."
-        ) from exc
+        raise missing("numpy") from exc
     return numpy
 
 
@@ -45,7 +60,7 @@ def load_map(path):
     try:
         import tifffile
     except ImportError as exc:
-        raise VerifyError("tifffile is required (it is in villa's environment)") from exc
+        raise missing("tifffile") from exc
     try:
         array = tifffile.imread(str(path))
     except Exception as exc:  # tifffile raises several types, e.g. for LZW without imagecodecs
