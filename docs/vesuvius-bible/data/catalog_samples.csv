@@ -1,0 +1,46 @@
+sample,type,n_scans,n_volumes,n_segments,description
+PHerc0009B,fragment,2,3,19,
+PHerc0125,scroll,1,1,0,
+PHerc0139,scroll,5,10,39,
+PHerc0172,scroll,1,2,53,"PHerc. 172 is a rolled Herculaneum papyrus from the [Bodleian Library](https://www.bodleian.ox.ac.uk/home) in Oxford, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  It is similar in size to PHerc. Paris 4 (Scroll 1)."
+PHerc0175A,scroll,1,1,0,
+PHerc0175B,scroll,1,1,0,
+PHerc0191,scroll,1,1,0,
+PHerc0211,scroll,1,1,0,
+PHerc0257,scroll,1,1,0,
+PHerc0268,scroll,1,1,0,
+PHerc0306B,scroll,1,1,0,
+PHerc0332,scroll,4,4,2,"PHerc. 332 is a rolled Herculaneum papyrus from the [Biblioteca Nazionale di Napoli](https://www.bnnonline.it/it/121/officina-dei-papiri-ercolanesi), carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  It is a smaller scroll known as a *midollo* (marrow), a remnant from physical unwrapping of the larger original. Its small size enabled scanning at extremely high resolution (3.24um)."
+PHerc0343,scroll,1,1,0,
+PHerc0343P,fragment,2,2,8,
+PHerc0358,scroll,1,1,0,"PHerc 358 is a rolled Herculaneum papyrus from the Biblioteca Nazionale di Napoli, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the ESRF (European Synchrotron Radiation Facility) in Grenoble, France."
+PHerc0483A,scroll,1,1,0,
+PHerc0483B,scroll,1,1,0,
+PHerc0490A,scroll,1,1,0,
+PHerc0490B,scroll,1,1,0,
+PHerc0500P2,fragment,4,4,46,
+PHerc0800,scroll,1,1,6,
+PHerc0813,scroll,1,1,0,
+PHerc0814,scroll,3,3,19,
+PHerc0826,scroll,1,1,0,
+PHerc0841,scroll,2,2,3,
+PHerc0846A,scroll,2,2,0,
+PHerc0846B,scroll,1,1,0,
+PHerc1203,scroll,2,2,0,
+PHerc1218,scroll,1,1,0,
+PHerc1299,scroll,1,1,0,
+PHerc1447,scroll,1,1,15,
+PHerc1451,scroll,2,2,0,
+PHerc1545,scroll,1,1,0,
+PHerc1667,scroll,4,4,20,"PHerc. 1667 is a rolled Herculaneum papyrus from the [Biblioteca Nazionale di Napoli](https://www.bnnonline.it/it/121/officina-dei-papiri-ercolanesi), carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  It is similar in size to PHerc. 332 (Scroll 3)."
+PHerc1667Cr1Fr3,fragment,0,0,0,"PHerc. 1667 Cr 1 Fr 3 is a fragment from the same scroll as PHerc. 1667 (Scroll 4), from the [Biblioteca Nazionale di Napoli](https://www.bnnonline.it/it/121/officina-dei-papiri-ercolanesi). It was partially opened in 1987 via the Oslo method. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  Listed on [Chartes.it](https://www.chartes.it/index.php?r=document/view&id=1691).  See also: [EduceLab-Scrolls paper](https://arxiv.org/abs/2304.02084), [EduceLab 2023 Info Sheet](https://drive.google.com/file/d/1I6JNrR6A9pMdANbn6uAuXbcDNwjk8qZ2/view?usp=sharing)"
+PHerc51Cr4Fr8,fragment,0,0,0,"PHerc. 51 Cr 4 Fr 8 is a fragment of a Herculaneum papyrus, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  See also: [EduceLab-Scrolls paper](https://arxiv.org/abs/2304.02084), [EduceLab 2023 Info Sheet](https://drive.google.com/file/d/1I6JNrR6A9pMdANbn6uAuXbcDNwjk8qZ2/view?usp=sharing)."
+PHercMAN5,scroll,1,1,1,
+PHercMANB,scroll,1,1,0,
+PHercMANBp,fragment,2,2,11,
+PHercParis1Fr34,fragment,0,0,0,"PHerc. Paris 1 Fr 34 is a fragment of a Herculaneum papyrus, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  See also: [EduceLab-Scrolls paper](https://arxiv.org/abs/2304.02084), [EduceLab 2023 Info Sheet](https://drive.google.com/file/d/1I6JNrR6A9pMdANbn6uAuXbcDNwjk8qZ2/view?usp=sharing)."
+PHercParis1Fr39,fragment,0,0,0,"PHerc. Paris 1 Fr 39 is a fragment of a Herculaneum papyrus, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  Originally held back for automated scoring in the [Kaggle ink detection competition](https://kaggle.com/competitions/vesuvius-challenge-ink-detection/), this fragment has since been released.  See also: [EduceLab-Scrolls paper](https://arxiv.org/abs/2304.02084), [EduceLab 2023 Info Sheet](https://drive.google.com/file/d/1I6JNrR6A9pMdANbn6uAuXbcDNwjk8qZ2/view?usp=sharing)."
+PHercParis2Fr143,fragment,0,0,0,"PHerc. Paris 2 Fr 143 is a fragment of a Herculaneum papyrus, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  See also: [EduceLab-Scrolls paper](https://arxiv.org/abs/2304.02084), [EduceLab 2023 Info Sheet](https://drive.google.com/file/d/1I6JNrR6A9pMdANbn6uAuXbcDNwjk8qZ2/view?usp=sharing)."
+PHercParis2Fr47,fragment,0,0,0,"PHerc. Paris 2 Fr 47 is a fragment of a Herculaneum papyrus, carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  See also: [EduceLab-Scrolls paper](https://arxiv.org/abs/2304.02084), [EduceLab 2023 Info Sheet](https://drive.google.com/file/d/1I6JNrR6A9pMdANbn6uAuXbcDNwjk8qZ2/view?usp=sharing)."
+PHercParis3,scroll,1,1,0,
+PHercParis4,scroll,7,7,81,"PHerc. Paris 4 is a rolled Herculaneum papyrus from the [Institut de France](https://www.institutdefrance.fr/en/home/), carbonized during the eruption of Mount Vesuvius in 79 AD. It was scanned at the [Diamond Light Source](https://www.diamond.ac.uk) in Oxfordshire, UK.  This is the scroll for which we have by far the most segments, where the [first letters](https://scrollprize.org/firstletters) were discovered and the [2023 Grand Prize](https://scrollprize.org/grandprize) was claimed."

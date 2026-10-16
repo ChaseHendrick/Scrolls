@@ -1,0 +1,44 @@
+sort_key,date,category,event,source,chapter
+-110,c. 110 BCE,antiquity,Philodemus born at Gadara (approximate),WP-Philodemus,02-villa
+0079,79 CE,antiquity,Eruption of Vesuvius buries Herculaneum and the Villa of the Papyri,WP-Eruption79,01-eruption
+1709,1709,excavation,Herculaneum rediscovered by a well dig,WP-Herculaneum,01-eruption
+1738,1738,excavation,Systematic tunnelling begins under Charles of Bourbon,WP-Herculaneum,01-eruption
+1750,1750,excavation,Villa of the Papyri found,WP-Villa,02-villa
+1752,1752 to 1754,excavation,Papyri recovered from four find spots in the Villa,WP-HercPapyri,02-villa
+1756,1756,unrolling,Piaggio's unrolling machine,WP-Piaggio,03-unrolling
+1802,1802,unrolling,Six rolls given to Napoleon; later at the Institut de France,WP-HercPapyri,02-villa
+1802b,1802 to 1806,unrolling,Hayter unrolls about 200 papyri,WP-HercPapyri,03-unrolling
+1816,1816,unrolling,Paris attempt destroys a roll,WP-HercPapyri,03-unrolling
+1819,1819 to 1820,unrolling,Davy's chemical attempts,WP-HercPapyri,03-unrolling
+1858,1858,publication,Tesoro letterario di Ercolano published,Commons,03-unrolling
+1969,1969,scholarship,CISPE founded by Marcello Gigante,WP-HercPapyri,03-unrolling
+1986,1986,excavation,Villa of the Papyri reached again,WP-Villa,02-villa
+1999,1999 to 2011,imaging,"""BYU infrared imaging of 1,600 papyri""",WP-HercPapyri,03-unrolling
+2009,2009,imaging,Lab micro-CT of PHerc. Paris 4 and another roll; no ink visible,Parsons2023,08-scans
+2013,2013,imaging,Volume Cartographer begun by Seth Parker,VC-NewScans2023,09-founding
+2015,2015,imaging,Phase-contrast tomography letters (Mocella et al.),Mocella2015,03-unrolling
+2016,2016,imaging,En-Gedi scroll reading published; lead found in Herculaneum ink,Brun2016,03-unrolling
+2019,2019,imaging,Diamond I12 scans of Scrolls 1 and 2 and fragments; ML ink detection on fragments,Parsons2023,08-scans
+2023-03-15,15 Mar 2023,challenge,Vesuvius Challenge launched with a $1M prize pool,VC-GrandPrize,09-founding
+2023-10-12,12 Oct 2023,challenge,First word (porphyras) announced,VC-FirstLetters,10-2023
+2023-11-03,3 Nov 2023,data,New Diamond scans of PHerc. 332 and 1667 announced,VC-NewScans2023,08-scans
+2024-02-05,5 Feb 2024,challenge,"""2023 Grand Prize ($700,000) announced""",VC-GrandPrize,10-2023
+2024-02-27,27 Feb 2024,challenge,2024 prizes announced,VC-NewPrizes2024,11-2024
+2024-06-07,7 Jun 2024,challenge,"""2024 Grand Prize doubled to $200,000""",VC-GP2024Doubled,11-2024
+2024-11-27,27 Nov 2024,challenge,First letters found in PHerc. 172 (Scroll 5),VC-Scroll5,11-2024
+2025-01-24,24 Jan 2025,challenge,First Automated Segmentation prizes awarded,VC-FASP,11-2024
+2025-04-25,25 Apr 2025,data,Twenty scrolls scanned in one session,VC-ScanningAtScale,12-2025
+2025-05-05,5 May 2025,challenge,First Title prize awarded for PHerc. 172,VC-FirstTitle,12-2025
+2025-07-04,4 Jul 2025,data,"First BM18 results on fragments 9B, 343P and 500P2 (""Summer haze comes with ink"")",VC-SummerHaze,12-2025
+2025-09-11,11 Sep 2025,challenge,A column of text from PHerc. 172 published,VC-Column172,12-2025
+2025-10-09,9 Oct 2025,challenge,Multiple scrolls show Greek letters,VC-MultipleScrolls,12-2025
+2025-11-13,13 Nov 2025,challenge,"""Kaggle surface-detection competition launched ($100,000 pool, doubled to $200,000 in December)""",VC-KaggleSurface,12-2025
+2025-12-21,21 Dec 2025,challenge,Letters in Scroll 4,VC-Scroll4Letters,12-2025
+2026-01-13,13 Jan 2026,challenge,About 70 percent of PHerc. 172 unwrapped,VC-PHerc172Seventy,13-2026
+2026-03-19,19 Mar 2026,data,Dataset hosted on AWS Open Data; autoresearch agents,VC-WeAreCooking,13-2026
+2026-03-31,Mar 2026,data,PHerc. Paris 3 and Paris 4 rescanned at BM18,VC-Catalog,08-scans
+2026-06-25,25 Jun 2026,challenge,PHerc. 1667 read in full,Angelotti2026a,13-2026
+2026-07-15,15 Jul 2026,challenge,$1M 2027 Grand Prize announced,VC-GP2027,13-2026
+2026-08-06,6 Aug 2026,challenge,"$33,500 in progress prizes awarded for July 2026",VC-July2026,13-2026
+2026-10-08,8 Oct 2026,challenge,First Letters prize for PHerc. 343,VC-PHerc343,13-2026
+2027-06-25,25 Jun 2027,challenge,Deadline for the 2027 Grand Prize and other milestone prizes,VC-Prizes,13-2026

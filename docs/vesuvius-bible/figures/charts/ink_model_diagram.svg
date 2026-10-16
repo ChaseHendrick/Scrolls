@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="446.4pt" height="158.4pt" viewBox="0 0 446.4 158.4" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-15T20:02:57.027903</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 158.4 
+L 446.4 158.4 
+L 446.4 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 22.5288 115.336 
+L 78.0336 115.336 
+L 78.0336 61.152 
+L 22.5288 61.152 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #c9a26b; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 25.94448 112.0016 
+L 81.44928 112.0016 
+L 81.44928 57.8176 
+L 25.94448 57.8176 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #c9a26b; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 29.36016 108.6672 
+L 84.86496 108.6672 
+L 84.86496 54.4832 
+L 29.36016 54.4832 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #c9a26b; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 32.77584 105.3328 
+L 88.28064 105.3328 
+L 88.28064 51.1488 
+L 32.77584 51.1488 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #c9a26b; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 36.19152 101.9984 
+L 91.69632 101.9984 
+L 91.69632 47.8144 
+L 36.19152 47.8144 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #c9a26b; stroke: #000000; stroke-width: 0.5; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 120.7296 112.0016 
+L 197.5824 112.0016 
+Q 198.43632 112.0016 198.43632 111.168 
+L 198.43632 61.152 
+Q 198.43632 60.3184 197.5824 60.3184 
+L 120.7296 60.3184 
+Q 119.87568 60.3184 119.87568 61.152 
+L 119.87568 111.168 
+Q 119.87568 112.0016 120.7296 112.0016 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #e8eef5; stroke: #2b5d8a; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 223.2 112.0016 
+L 291.5136 112.0016 
+Q 292.36752 112.0016 292.36752 111.168 
+L 292.36752 61.152 
+Q 292.36752 60.3184 291.5136 60.3184 
+L 223.2 60.3184 
+Q 222.34608 60.3184 222.34608 61.152 
+L 222.34608 111.168 
+Q 222.34608 112.0016 223.2 112.0016 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #e8eef5; stroke: #2b5d8a; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 312.8616 112.0016 
+L 381.1752 112.0016 
+Q 382.02912 112.0016 382.02912 111.168 
+L 382.02912 61.152 
+Q 382.02912 60.3184 381.1752 60.3184 
+L 312.8616 60.3184 
+Q 312.00768 60.3184 312.00768 61.152 
+L 312.00768 111.168 
+Q 312.00768 112.0016 312.8616 112.0016 
+z
+" clip-path="url(#pb8bfe26a4a)" style="fill: #e8eef5; stroke: #2b5d8a; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: middle" x="56.6856" y="132.008" transform="rotate(-0 56.6856 132.008)">17-slice patch</text>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'" transform="translate(142.702875 83.607803)">small 3D</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'" transform="translate(139.627875 92.609268)">conv stem</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'" transform="translate(239.790394 83.60751)">pool over</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'" transform="translate(229.189613 92.609561)">depth: 2D map</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'; text-anchor: middle" x="347.0184" y="88.108242" transform="rotate(-0 347.0184 88.108242)">2D U-Net</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'" transform="translate(401.202956 83.60751)">ink</text>
+    <text style="font-size: 7.5px; font-family: 'DejaVu Sans'" transform="translate(386.784206 92.609561)">probability</text>
+   </g>
+   <g id="patch_10">
+    <path d="M 92.845339 86.16 
+Q 105.788442 86.16 117.613512 86.16 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+    <path d="M 114.013512 84.36 
+L 117.613512 86.16 
+L 114.013512 87.96 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 199.580648 86.16 
+Q 210.391288 86.16 220.083893 86.16 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+    <path d="M 216.483893 84.36 
+L 220.083893 86.16 
+L 216.483893 87.96 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 293.512369 86.16 
+Q 302.187873 86.16 309.745342 86.16 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+    <path d="M 306.145342 84.36 
+L 309.745342 86.16 
+L 306.145342 87.96 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 383.172405 86.16 
+Q 385.441979 86.16 386.593519 86.16 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+    <path d="M 382.993519 84.36 
+L 386.593519 86.16 
+L 382.993519 87.96 
+" style="fill: none; stroke: #000000; stroke-linecap: round"/>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 9px; font-family: 'DejaVu Sans'; text-anchor: middle" x="223.2" y="17.64" transform="rotate(-0 223.2 17.64)">Hybrid 3D to 2D ink model (ink_9um)</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pb8bfe26a4a">
+   <rect x="9.72" y="23.64" width="426.96" height="125.04"/>
+  </clipPath>
+ </defs>
+</svg>

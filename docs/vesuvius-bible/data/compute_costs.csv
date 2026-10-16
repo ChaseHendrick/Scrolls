@@ -1,0 +1,14 @@
+item,value,source,note
+unwrap_cost_per_scroll_current_low_usd,1000000.0,VC-MasterPlan,"""$1-5 million to unwrap an entire scroll"" with current techniques (July 2025)"
+unwrap_cost_per_scroll_current_high_usd,5000000.0,VC-MasterPlan,
+unwrap_cost_per_scroll_target_usd,5000,VC-MasterPlan,"""$5000 or below"""
+manual_segmentation_cost_per_cm2_usd_2023,100,VC-GrandPrize,"""more than $100 per square centimeter in manual labor"""
+stage2_cost_low_usd,5000000.0,VC-MasterPlan,
+stage2_cost_high_usd,6000000.0,VC-MasterPlan,
+stage3_cost_efficient_low_usd,4000000.0,VC-MasterPlan,
+stage3_cost_efficient_high_usd,8000000.0,VC-MasterPlan,
+stage3_cost_otherwise_usd,15000000.0,VC-MasterPlan,"""$15M+"""
+musk_foundation_donation_usd,2084000,VC-MasterPlan,
+spent_by_oct_2023_usd,500000,VC-RaceIsOn,"""about $500,000 in prizes and operational costs"""
+prizes_awarded_to_2026_10_usd,1958500,VC-Winners,"this book, data/prize_awards.csv"
+open_prize_pool_2026_10_usd,2140000,VC-Prizes,

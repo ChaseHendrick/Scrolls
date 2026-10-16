@@ -12,6 +12,7 @@ Updated 14 October 2026.
 | --- | --- | --- |
 | Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
 | New here, from no idea to a first submission | [`start-here.md`](start-here.md) | [`pipeline.md`](pipeline.md) |
+| A cited reference book on the scrolls and the challenge, 2023 to 2026 (history, papyrus, imaging, prizes, inventory, pipeline, tools, glossary, timeline, FAQ, bibliography) | [`vesuvius-bible/`](vesuvius-bible/) ([`index.md`](vesuvius-bible/index.md), [`llms.txt`](vesuvius-bible/llms.txt), one file: [`bible.md`](vesuvius-bible/bible.md)) | [`start-here.md`](start-here.md) |
 | Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere) |
 | What has been read, tried and paid by everyone | [`state-of-play.md`](state-of-play.md) (checked 6 and 7 October; PHerc. 343 award row 9 and 14 October) | [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md), [`tricks.md`](tricks.md) |
 | Which scans exist and what we processed | [`scan-status.md`](scan-status.md) | |

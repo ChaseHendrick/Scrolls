@@ -1,0 +1,7 @@
+feature,min_um,max_um,source
+Ink layer on a phantom,3,5,Parker2019
+Apparent ink deposits (Scroll 1),10,20,Angelotti2026a
+Fibre cell width,8,25,Vaughan2011
+Fibre ridge,50,200,Parker2019
+Carbonized sheet,150,150,Romano2023
+Letter height,3000,4000,Ceccarelli2025
