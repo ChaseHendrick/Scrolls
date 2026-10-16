@@ -254,11 +254,17 @@ def cmd_provenance(args):
     except (OSError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
+    except RecursionError:
+        print(f"{args.path}: malformed record: nested too deeply", file=sys.stderr)
+        return 2
     for problem in problems:
         print(f"problem: {problem}")
     if problems:
         return 1
-    print(f"{args.path}: ok (digest {record['digest']}{', files unchanged' if args.files else ''})")
+    n = provenance.files_listed(record)
+    files = (f", {n} listed files unchanged" if n else ", no files listed to check") if args.files else ""
+    print(f"{args.path}: ok (the record matches its digest {record['digest']}{files}; "
+          "a self-check, not proof of who wrote it)")
     return 0
 
 
