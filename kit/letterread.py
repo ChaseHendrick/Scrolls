@@ -355,9 +355,7 @@ class LineNet:
             if op == "conv2d":
                 x = np.maximum(_conv2d(x, w, b, layer["pad"]), 0)
             elif op == "maxpool":
-                ky, kx = layer["k"]
-                C, H, W = x.shape
-                x = x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx).max(axis=(2, 4))
+                x = _maxpool(x, *layer["k"])
             elif op == "collapse":
                 x = np.maximum(_conv2d(x, w, b, 0), 0)[:, 0, :]
             elif op == "conv1d_res":
@@ -372,6 +370,22 @@ class LineNet:
         lg = self.logits(band)
         lg = lg - lg.max(axis=1, keepdims=True)
         return lg - np.log(np.exp(lg).sum(axis=1, keepdims=True))
+
+
+def _maxpool(x, ky, kx):
+    """Max pooling of a (C, H, W) array over ky x kx blocks, dropping rows and columns that do not fill a block.
+
+    The same values, bit for bit, as x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx)
+    .max(axis=(2, 4)), taken as the elementwise maximum of the ky * kx strided slices: numpy reduces
+    over the two strided axes of the reshape about 20 times more slowly."""
+    C, H, W = x.shape
+    hc, wc = H // ky * ky, W // kx * kx
+    out = x[:, 0:hc:ky, 0:wc:kx].copy()
+    for i in range(ky):
+        for j in range(kx):
+            if i or j:
+                np.maximum(out, x[:, i:hc:ky, j:wc:kx], out=out)
+    return out
 
 
 def _conv2d(x, w, b, pad):

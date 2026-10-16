@@ -2093,5 +2093,43 @@ class OverlayTest(unittest.TestCase):
                 self.assertEqual([im.size[1], im.size[0]], geo["size"])
                 self.assertEqual(im.size[0], 200)
 
+
+def reshape_maxpool(x, ky, kx):
+    """The pooling LineNet.logits used before kit.letterread._maxpool: a max over the reshaped blocks."""
+    C, H, W = x.shape
+    return x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx).max(axis=(2, 4))
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class FastPathTest(unittest.TestCase):
+    """The faster inference and image paths give the same bits as the simple code they replaced."""
+
+    def assertSameBits(self, got, want):
+        self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+        self.assertEqual(got.tobytes(), want.tobytes())
+
+    def test_maxpool_matches_reshape_max(self):
+        rng = np.random.default_rng(3)
+        for shape in ((48, 36, 1200), (3, 37, 1201), (2, 5, 7), (1, 1, 1), (2, 1, 9), (2, 4, 1), (1, 0, 4)):
+            x = rng.normal(0, 1, shape).astype(np.float32)
+            if x.size > 4:
+                x.flat[::7] = 0.0
+                x.flat[1::11] = -0.0
+                x.flat[2::13] = np.nan
+            for k in ((2, 2), (2, 1), (1, 2), (3, 2), (1, 1)):
+                self.assertSameBits(R._maxpool(x, *k), reshape_maxpool(x, *k))
+                self.assertTrue(R._maxpool(x, *k).flags.c_contiguous)
+
+    def test_logits_match_reshape_max(self):
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        rng = np.random.default_rng(4)
+        for width in (1, 5, 37, 199, 201):
+            band = rng.random((net.band_rows, width)).astype(np.float32)
+            got = net.logits(band)
+            with mock.patch.object(R, "_maxpool", reshape_maxpool):
+                want = net.logits(band)
+            self.assertSameBits(got, want)
+
 if __name__ == "__main__":
     unittest.main()
