@@ -1,3 +1,4 @@
+import argparse
 import contextlib
 import io
 import json
@@ -331,6 +332,11 @@ class CliTest(unittest.TestCase):
             (Path(tmp) / "x" / "run.json").write_text("{not json")
             for argv in (("check", "x"), ("status", "x", "running"), ("cost", "x", "--usd", "1", "--what", "w"), ("list",)):
                 self.assertEqual(self.run_cli("run", "--root", tmp, *argv)[0], 2, argv)
+
+    def test_docstring_names_every_command(self):
+        listed = cli.__doc__.split("{", 1)[1].split("}", 1)[0].split(",")
+        commands = next(a for a in cli.build_parser()._actions if isinstance(a, argparse._SubParsersAction))
+        self.assertEqual(sorted(listed), sorted(commands.choices))
 
 
 if __name__ == "__main__":
