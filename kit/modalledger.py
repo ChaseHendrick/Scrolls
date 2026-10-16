@@ -77,15 +77,17 @@ def public_refusal(row, generic):
 def _cell(v):
     """A CSV cell. A text cell a spreadsheet would read as a formula (it starts with = + - @, a tab or a carriage
     return, OWASP's CSV injection list) gets a leading apostrophe; numbers, and text that is a plain number such
-    as -0.5, are written as they are."""
+    as -0.5, are written as they are. Carriage returns are written as newlines."""
     if v is None:
         return ""
     if isinstance(v, float):
         return f"{v:.8f}".rstrip("0").rstrip(".") if v else "0"
     s = str(v)
     if isinstance(v, str) and s[:1] in FORMULA_START and not NUMBER.fullmatch(s):
-        return "'" + s
-    return s
+        s = "'" + s
+    # a lone carriage return becomes a newline: Python 3.10's csv writer does not quote a cell holding only a
+    # carriage return when lines end in a newline, and the row then splits when it is read back
+    return s.replace("\r\n", "\n").replace("\r", "\n")
 
 
 @contextmanager

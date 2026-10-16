@@ -81,7 +81,7 @@ class ModalLedgerTest(unittest.TestCase):
         self.assertTrue(ML.append(self.pub, {**ROW, **bad}, "job:1", public=True, generic=True))
         (row,) = rows(self.pub)
         for k, v in bad.items():
-            want = "'" + v + ("; autoledger job:1" if k == "notes" else "")
+            want = ("'" + v).replace("\r", "\n") + ("; autoledger job:1" if k == "notes" else "")
             self.assertEqual(row[k], want, k)
         nums = {"est_cost_usd": -0.5, "gpu_seconds": -3, "cpu_seconds": "-0.5", "gpu_count": "+2",
                 "actual_cost_usd_if_known": "-1.5e-3", "cumulative_usd": "12"}
