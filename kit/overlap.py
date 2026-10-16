@@ -108,6 +108,8 @@ def _index(np, mesh):
 
 def overlap(mesh_a, mesh_b, voxel_um, within=12, labels_a=None, labels_b=None, level="2",
             draws=200, seed=0, upsample=UPSAMPLE):
+    if bool(labels_a) != bool(labels_b):
+        raise VerifyError("label agreement needs labels for both segments: give --labels-a and --labels-b, or neither")
     np = _numpy()
     a, b = load_mesh(mesh_a, upsample), load_mesh(mesh_b, upsample)
     step = voxel_um * a["surface_px_per_point"]
@@ -160,6 +162,8 @@ def _label_agreement(np, a, b, labels_a, labels_b, level, within, draws, seed, s
 
 def collate(mesh_a, mesh_b, map_a, map_b, voxel_um, gaps=(0, 3, 6, 9, 12, 18, 30), top=0.2,
             control_a=None, control_b=None, box=None, draws=50, seed=0, upsample=UPSAMPLE):
+    if bool(control_a) != bool(control_b):
+        raise VerifyError("the control needs a map for both segments: give --control-a and --control-b, or neither")
     np = _numpy()
     a, b = load_mesh(mesh_a, upsample), load_mesh(mesh_b, upsample)
     step = voxel_um * b["surface_px_per_point"]
