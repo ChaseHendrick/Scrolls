@@ -296,8 +296,9 @@ class BuildTest(unittest.TestCase):
         self.assertEqual(code, 0, err)
         try:
             import PIL  # noqa: F401
-            code, _, err = run_cli(["letterlines", "build", str(self.recs), "--out", str(test), "--preview",
-                                    str(self.d / "p.png")])
+            # every split, with a preview, into a file of its own: test.npz stays the held-out split scored below
+            code, _, err = run_cli(["letterlines", "build", str(self.recs), "--out", str(self.d / "all.npz"),
+                                    "--preview", str(self.d / "p.png")])
             self.assertEqual(code, 0, err)
             from PIL import Image
             with Image.open(self.d / "p.png") as im:
@@ -323,7 +324,7 @@ class BuildTest(unittest.TestCase):
         res = json.loads(stdout)
         self.assertEqual(res["note"], R.NOTE)
         self.assertEqual([m["weights"]["file"] for m in res["models"]], ["w1.npz", "w2.npz"])
-        self.assertEqual(res["models"][0]["letters"], 39)
+        self.assertEqual(res["models"][0]["letters"], 20)          # the two test lines, 10 letters each
         for m, j in zip(res["models"], range(2)):
             self.assertEqual(m["errors"], sum(L["errors"][j] for L in res["lines"]))
         for L in res["lines"]:

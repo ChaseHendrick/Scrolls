@@ -11,7 +11,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import localcost, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases
+from . import localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases
 
 
 def cmd_prizes(args):
@@ -366,10 +366,22 @@ def cmd_run(args):
                 raise localcost.CostError(f"cannot read backfill {args.file}: {exc}") from exc
             hours, usd = localcost.backfill(args.slug, items, root=root, rate=args.rate)
             print(f"{args.slug}: backfilled {len(items)} entries, {hours:.3f} h, ${usd:.4f} (estimated from logs)")
+        elif args.action == "modal-row":
+            try:
+                with open(args.file, encoding="utf-8") as fh:
+                    spec = json.load(fh)
+            except (OSError, ValueError) as exc:
+                raise modalledger.LedgerRowError(f"cannot read {args.file}: {exc}") from exc
+            if not isinstance(spec, dict) or not isinstance(spec.get("row"), dict) or not spec.get("key"):
+                raise modalledger.LedgerRowError(f"{args.file} is a JSON object with key, row and optionally generic")
+            wrote = modalledger.append(args.ledger, spec["row"], str(spec["key"]), public=args.public_generic,
+                                       generic=spec.get("generic") is True)
+            print(f"{args.ledger}: {'row added' if wrote else 'already holds this row; nothing written'} "
+                  f"({modalledger.KEY_MARK}{spec['key']})")
         elif args.action == "list":
             for record in ledger.list_runs(root):
                 print(f"{record['slug']:<28} {record['scroll']:<12} {record['status']:<10} ${ledger.total_cost(record):.2f}")
-    except (ledger.LedgerError, localcost.CostError, OSError) as exc:
+    except (ledger.LedgerError, localcost.CostError, modalledger.LedgerRowError, OSError) as exc:
         print(exc, file=sys.stderr)
         return 2
     return 0
@@ -1215,6 +1227,13 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("slug")
     a.add_argument("--file", required=True)
     a.add_argument("--rate", type=float)
+    a = actions.add_parser("modal-row", help="append one Modal job's row to a Modal ledger CSV, once per key "
+                                             "(kit/modalledger.py)")
+    a.add_argument("file", help="JSON object: key (unique per launch), row (column: value), generic (true or false)")
+    a.add_argument("--ledger", default="docs/compute/modal-ledger.csv", help="ledger CSV (default %(default)s)")
+    a.add_argument("--public-generic", action="store_true",
+                   help="write the public ledger: refused unless the row is marked generic and names no title, "
+                        "target, preregistered or held-out work")
     p.set_defaults(func=cmd_run)
     return parser
 

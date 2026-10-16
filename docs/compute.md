@@ -69,3 +69,15 @@ It records start and end (UTC), wall time, CPU time from the child-process resou
 The rate is the local electricity rate (set in your local config), never in git: env var `SCROLLS_ELECTRICITY_USD_PER_KWH`, or `electricity_usd_per_kwh` in `~/.config/scrolls/local.json` (or a gitignored `scrolls.local.json`). The same file may set `device` and `device_watts`. The run fails before starting if no rate is set. The ledger stores the rate, device assumptions, command arguments, time and estimated energy/cost, without copying the config file. Values must be finite and nonnegative. An explicitly selected config file must exist and contain a JSON object. Default watts are illustrative assumptions, not measured device power.
 
 Past runs can be added from logged durations with `python -m kit run backfill SLUG --file scripts/backfill/2026-10-07-local-runs.json`; each entry is marked "estimated from logs". The full batch is validated before any entries are committed. Sub-cent estimates retain six decimals and are added before the ledger rounds its displayed total to cents. On Mac/Linux, local-cost writers use an advisory lock and atomic ledger replacement; other ledger commands do not share that lock. On other platforms, use serial ledger writes. Do not backfill durations that a wrapper has already recorded.
+
+## Modal ledger rows
+
+`docs/compute/modal-ledger.csv` lists Modal spend with the header `date_time_et, purpose, gpu_type, gpu_count, gpu_seconds, cpu_seconds, est_cost_usd, actual_cost_usd_if_known, cumulative_usd, notes`. Add a row from a JSON file:
+
+```
+python -m kit run modal-row row.json --ledger docs/compute/modal-ledger.csv --public-generic
+```
+
+The file holds `{"key": "...", "row": {column: value}, "generic": true}`. The key is a stable name for the run (no `;` or newline). It is stored at the end of the notes as `autoledger KEY`, and a row whose key, or whose `app_id`, the ledger already holds is never written again, so a rerun writes nothing. Writes take an advisory lock and replace the file atomically (Mac/Linux).
+
+This ledger is public, so it takes a row only when both gates pass: the explicit `--public-generic` flag, and `"generic": true` in the file. A row whose purpose or notes name title, target, preregistered, held-out, experiment or candidate work is refused. Columns the header does not have are refused, except `lane_branch` and `app_id`, which are dropped. Fill `actual_cost_usd_if_known` from Modal's per-app report when it is available.

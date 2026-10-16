@@ -27,6 +27,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/gate.py` | Gate A, by the rule in its module docstring (`python -m kit gate [WORK]`): committed bars plus Mac results, Mac `ink_9um` checked against the CPU bar |
 | `kit/compute.py` | Time ledger per run from provenance records (`python -m kit compute DIR [--watts W]`), after GENChase's COMPUTE.md |
 | `kit/localcost.py` | `kit run local` and `kit run backfill`: wall time, CPU time and estimated electricity cost of local runs in the ledger (hard rule 9, [compute.md](compute.md)); past durations in `scripts/backfill/` |
+| `kit/modalledger.py` | `kit run modal-row`: one row in a Modal ledger CSV, once per key (idempotent, under a lock); the public ledger only behind `--public-generic` and only for a generic run ([compute.md](compute.md#modal-ledger-rows)) |
 | `kit/cloudcost.py` | Modal cost estimates from dated rates, no network (`python3 -m kit.cloudcost rates/cost/infer/jobs/budget/defaults`); rates and job assumptions in `docs/compute/` |
 | `kit/cropscan.py` | Pixel AUC of one map on every window of a grid in one pass (library; used by the lane I experiment): how much a crop's AUC depends on where the crop was put |
 | `kit/overlap.py` | `kit overlap` (do two segments trace the same sheet? mesh gaps, label agreement) and `kit collate` (do two traces' ink maps agree, against a control and displaced matches); `kit auc --bootstrap/--compare` gives AUC intervals and paired differences |
