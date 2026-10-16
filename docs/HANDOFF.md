@@ -2,6 +2,39 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Open items added 16 October 2026 (checked 02:30 ET)
+
+Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
+
+```yaml
+handoff:
+  written: 2026-10-16T02:30-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  merged_since_last_handoff:
+    - {number: 94, branch: grok/unroll-release, merge: 590636c, topic: Unroll in the README release list}
+    - {number: 95, branch: grok/handoff-2026-10-16, merge: cefa929, topic: handoff 01:10 ET}
+    - {number: 96, branch: grok/unroll-relicense, merge: 915f302, topic: Unroll listing Apache 2.0 and v1.0.0}
+    - {number: 97, branch: grok/readings-wording, merge: e73ca73, topic: ink-layer disclaimer wording}
+    - {number: 98, branch: grok/unroll-install-app, merge: 0d34f92, topic: Unroll Install app link}
+  open_prs:
+    - this handoff PR
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, open_data_bucket_only]
+```
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Unroll ink-layer wording | Merged, PR #97 (`e73ca73`): "Ink layers show where models detect ink; letters visible here are candidates for expert reading." | None |
+| Unroll Install app | Merged, PR #98 (`0d34f92`): release entry links the Install app (offline app) and `docs/unroll-space.md` has an Install app section | None |
+| Unroll viewer changes since 01:10 ET (Space repo) | New scrolls from the open data bucket (PHerc0172, PHerc1447, PHerc1667, CC BY-NC 4.0); installable offline app; texture upload queue removing a 14.6 s main-thread freeze; type and spacing pass; scan labelled 9.4 µm (9.362 µm in details); glossary links; lower resolution while dragging; X-ray window and level with auto contrast; CT volume view; lighter phone mesh (`--coarsen`); starting view fitted to each roll; first-load flash and black screen fix (shader NaN, stricter service worker matching). Space version 1.4.0 | Re-test first load on real phones and desktop GPUs; artifact sweep (spike, floating square) still open |
+| Unroll audit findings (from 01:10 ET) | Not yet confirmed fixed, except the old "run by us" chip text, which no longer appears in the Space code | Escape the annotation id, reject non-finite thresholds and offsets, show share-link errors, re-test |
+| Stale branches | Merged branches listed at 01:10 ET were deleted. Still present and fully merged: `grok/autopipeline-every-scan`, `grok/handoff-2026-10-16`, `grok/perf-cli-parser`, `grok/unroll-install-app`, `grok/unroll-release`, `grok/unroll-relicense` | Delete on the owner's yes |
+| GPU inference speed | TensorRT dropped by owner decision. `torch.compile` max-autotune fp16 is the chosen speedup (0.003755 s/tile, about 1.9x over eager) | None |
+| Quick start guide | In progress: a public QUICKSTART guide | Write it and open a PR |
+| AGENTS.md size | Over the 26,000-byte test limit | Trim or move detail out, then re-run tests |
+| `test_autopipe` | Import error | Fix the import and re-run tests |
+| AutoPipeline paid batches | Dry runs only; no daily watch routine set | Each paid batch and any cloud launch needs the owner's approval |
+
 ## Open items added 16 October 2026 (checked 01:10 ET)
 
 Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
