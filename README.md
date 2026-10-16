@@ -56,9 +56,9 @@ Setup, the run monitor and the limits: the package's [README](https://github.com
 
 Released 16 October 2026.
 
-[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, and an agent API. Status: released. Version: 1.0.0 (the Space's `version.json` and `CHANGELOG.md`). Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
+[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, and an agent API. Status: released. Version: 1.1.0 (the Space's `version.json` and `CHANGELOG.md`). Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and since 1.1.0 it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
 
-Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
+Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
 ### Segment stack check
 
