@@ -755,6 +755,24 @@ class FastPathTest(unittest.TestCase):
                 x.flat[2::17] = np.nan
             self.assertSameBits(N._pool2(x), reference_pool2(x))
 
+    def test_pool2_other_layouts_match_values(self):
+        # Bit for bit only for a C-contiguous x, which StrokeNet always passes. For a Fortran-ordered or
+        # transposed x the old reduction picks -0.0 or +0.0 in a tied block by memory order, so the values
+        # are compared with the sign of zero ignored: that is the only known difference.
+        rng = np.random.default_rng(13)
+        x = rng.normal(size=(2, 3, 17, 19)).astype(np.float32)
+        x.flat[::3] = 0.0
+        x.flat[1::5] = -0.0
+        x.flat[2::17] = np.nan
+        for y in (np.asfortranarray(x), x.transpose(0, 1, 3, 2)):
+            self.assertFalse(y.flags.c_contiguous)
+            got, want = N._pool2(y), reference_pool2(y)
+            self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+            np.testing.assert_array_equal(got, want)         # NaN equals NaN, -0.0 equals +0.0
+            differ = got.view(np.uint32) != want.view(np.uint32)
+            self.assertTrue((got[differ] == 0).all())
+            self.assertTrue(got.flags.c_contiguous)
+
     def test_conv3_same_bits(self):
         rng = np.random.default_rng(12)
         released = [(2, 1, 128, 128, 16), (2, 16, 128, 128, 16), (2, 16, 64, 64, 32), (2, 32, 64, 64, 32),

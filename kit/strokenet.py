@@ -481,7 +481,10 @@ def _pool2(x):
     """2 x 2 max pooling of (N, C, H, W), dropping an odd last row or column.
 
     The elementwise maximum of the four strided slices: the same values as a max over the reshaped
-    2 x 2 blocks, which numpy reduces over the strided axes many times more slowly."""
+    2 x 2 blocks, which numpy reduces over the strided axes many times more slowly. They match bit for bit
+    for a C-contiguous x, which StrokeNet always passes (np.maximum output). For other layouts the old
+    reduction's choice between -0.0 and +0.0 in a block whose maximum is a tie of the two depends on memory
+    order, so only the sign of a zero can differ, and the output here is always C-ordered."""
     N, C, H, W = x.shape
     h2, w2 = H // 2 * 2, W // 2 * 2
     out = x[:, :, 0:h2:2, 0:w2:2].copy()

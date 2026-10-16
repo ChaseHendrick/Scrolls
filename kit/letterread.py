@@ -375,9 +375,12 @@ class LineNet:
 def _maxpool(x, ky, kx):
     """Max pooling of a (C, H, W) array over ky x kx blocks, dropping rows and columns that do not fill a block.
 
-    The same values, bit for bit, as x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx)
-    .max(axis=(2, 4)), taken as the elementwise maximum of the ky * kx strided slices: numpy reduces
-    over the two strided axes of the reshape about 20 times more slowly."""
+    The same values, bit for bit for a C-contiguous x, as x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky,
+    ky, W // kx, kx).max(axis=(2, 4)), taken as the elementwise maximum of the ky * kx strided slices: numpy
+    reduces over the two strided axes of the reshape about 20 times more slowly. LineNet always passes a
+    C-contiguous x (np.maximum output). For other layouts the old reduction's choice between -0.0 and +0.0
+    in a block whose maximum is a tie of the two depends on memory order, so only the sign of a zero can
+    differ, and the output here is always C-ordered."""
     C, H, W = x.shape
     hc, wc = H // ky * ky, W // kx * kx
     out = x[:, 0:hc:ky, 0:wc:kx].copy()

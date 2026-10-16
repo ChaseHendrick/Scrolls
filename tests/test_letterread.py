@@ -2120,6 +2120,25 @@ class FastPathTest(unittest.TestCase):
                 self.assertSameBits(R._maxpool(x, *k), reshape_maxpool(x, *k))
                 self.assertTrue(R._maxpool(x, *k).flags.c_contiguous)
 
+    def test_maxpool_other_layouts_match_values(self):
+        # Bit for bit only for a C-contiguous x, which LineNet always passes. For a Fortran-ordered or
+        # transposed x the old reduction picks -0.0 or +0.0 in a tied block by memory order, so the values
+        # are compared with the sign of zero ignored: that is the only known difference.
+        rng = np.random.default_rng(6)
+        x = -np.abs(rng.normal(0, 1, (3, 37, 41))).astype(np.float32)   # so zeros are often a block's maximum
+        x.flat[::3] = 0.0
+        x.flat[1::5] = -0.0
+        x.flat[2::13] = np.nan
+        for y in (np.asfortranarray(x), x.transpose(0, 2, 1)):
+            self.assertFalse(y.flags.c_contiguous)
+            for k in ((2, 2), (2, 1), (1, 2), (3, 2)):
+                got, want = R._maxpool(y, *k), reshape_maxpool(y, *k)
+                self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+                np.testing.assert_array_equal(got, want)     # NaN equals NaN, -0.0 equals +0.0
+                differ = got.view(np.uint32) != want.view(np.uint32)
+                self.assertTrue((got[differ] == 0).all())
+                self.assertTrue(got.flags.c_contiguous)
+
     def test_logits_match_reshape_max(self):
         with tempfile.TemporaryDirectory() as d:
             net = R.LineNet(random_weights(Path(d) / "w.npz"))
