@@ -329,6 +329,23 @@ class BatchTest(unittest.TestCase):
         st = {r["key"]: r["status"] for r in autobatch.status_table(self.state)}
         self.assertEqual(st["S1/20250101000001"], "planned")
 
+    def test_failed_zattrs_read_is_retried_not_priced_at_level_0(self):
+        def flaky(url):
+            raise OSError("connection reset")
+        plan = autobatch.plan_all(self.state, catalog=self.doc, levels_get=flaky, rates=self.rates)
+        keys = {s["key"] for s in plan["scans"]}
+        self.assertNotIn("S1/20250101000001", keys)
+        reasons = {r["key"]: r["reason"] for r in plan["rejected"]}
+        self.assertIn(".zattrs", reasons["S1/20250101000001"])
+        first = autobatch.watch(self.state, fetch=lambda: self.doc, levels_get=flaky, rates=self.rates)
+        self.assertIn("S1/20250101000001", {r["key"] for r in first["rejected"]})
+        again = autobatch.watch(self.state, fetch=lambda: self.doc, levels_get=no_net, rates=self.rates)
+        fine = [q for q in again["queued"] if q["key"] == "S1/20250101000001"]
+        self.assertEqual(len(fine), 1)
+        cfg = autobatch.plan_all(self.state, catalog=self.doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual({s["key"]: s["levels"] for s in cfg["scans"]}["S1/20250101000001"],
+                         ["0", "1", "2", "3", "4", "5"])
+
     def test_et_times_are_eastern_on_a_utc_machine(self):
         from datetime import datetime, timezone
         from unittest import mock

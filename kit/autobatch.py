@@ -136,7 +136,10 @@ def _check_ids(row):
 
 
 def fetch_levels(row, cache_dir, get=scancatalog.http_get):
-    """The volume's zarr levels, read once from its .zattrs and cached under cache_dir."""
+    """The volume's zarr levels, read once from its .zattrs and cached under cache_dir.
+
+    A failed read raises BatchError, so the scan is rejected and retried on the next run instead of being
+    planned and priced at level 0."""
     if not row.get("zarr_url"):
         return None
     _check_ids(row)
@@ -145,8 +148,9 @@ def fetch_levels(row, cache_dir, get=scancatalog.http_get):
         return json.loads(cache.read_text())
     try:
         doc = json.loads(get(row["zarr_url"] + ".zattrs"))
-    except (OSError, ValueError):
-        return None
+    except (OSError, ValueError) as exc:
+        raise BatchError(f"cannot read {row['zarr_url']}.zattrs ({str(exc)[:120]}), so the scan's levels and price "
+                         "are unknown; the next run tries again") from exc
     levels = zarr_levels(doc)
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(levels))
