@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="331.2pt" height="149.76pt" viewBox="0 0 331.2 149.76" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-15T22:26:39.000254</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 149.76 
+L 331.2 149.76 
+L 331.2 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 15.126 96.324 
+L 59.01425 96.324 
+L 59.01425 53.436 
+L 15.126 53.436 
+z
+" clip-path="url(#pc2d7cfc6ca)" style="fill: #ece8df; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 121.71175 96.324 
+C 126.700021 96.324 131.484658 94.064525 135.011898 90.043198 
+C 138.539139 86.021871 140.521 80.567015 140.521 74.88 
+C 140.521 69.192985 138.539139 63.738129 135.011898 59.716802 
+C 131.484658 55.695475 126.700021 53.436 121.71175 53.436 
+C 116.723479 53.436 111.938842 55.695475 108.411602 59.716802 
+C 104.884361 63.738129 102.9025 69.192985 102.9025 74.88 
+C 102.9025 80.567015 104.884361 86.021871 108.411602 90.043198 
+C 111.938842 94.064525 116.723479 96.324 121.71175 96.324 
+z
+" clip-path="url(#pc2d7cfc6ca)" style="fill: #b89a6a; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 262.781125 110.62 
+L 272.18575 110.62 
+L 272.18575 39.14 
+L 262.781125 39.14 
+z
+" clip-path="url(#pc2d7cfc6ca)" style="fill: #5c5c5c; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 8px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(17.657625 72.496)">Synchrotron</text>
+    <text style="font-size: 8px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(28.742 82.936)">beam</text>
+   </g>
+   <g id="patch_5">
+    <path d="M 61.015258 92.75 
+Q 80.957973 92.75 100.118063 92.75 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 96.718063 91.05 
+L 100.118063 92.75 
+L 96.718063 94.45 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 61.015258 83.815 
+Q 80.957973 83.815 100.118063 83.815 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 96.718063 82.115 
+L 100.118063 83.815 
+L 96.718063 85.515 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 61.015258 74.88 
+Q 80.957973 74.88 100.118063 74.88 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 96.718063 73.18 
+L 100.118063 74.88 
+L 96.718063 76.58 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 61.015258 65.945 
+Q 80.957973 65.945 100.118063 65.945 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 96.718063 64.245 
+L 100.118063 65.945 
+L 96.718063 67.645 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 61.015258 57.01 
+Q 80.957973 57.01 100.118063 57.01 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 96.718063 55.31 
+L 100.118063 57.01 
+L 96.718063 58.71 
+" style="fill: none; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 8px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(113.107375 103.754)">Scroll</text>
+    <text style="font-size: 8px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(108.914875 114.194)">(rotates)</text>
+   </g>
+   <g id="patch_10">
+    <path d="M 145.655831 92.75 
+Q 201.650911 92.75 256.863367 92.75 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 253.463367 91.05 
+L 256.863367 92.75 
+L 253.463367 94.45 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_11">
+    <path d="M 145.655831 83.815 
+Q 201.650911 83.815 256.863367 83.815 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 253.463367 82.115 
+L 256.863367 83.815 
+L 253.463367 85.515 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_12">
+    <path d="M 145.655831 74.88 
+Q 201.650911 74.88 256.863367 74.88 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 253.463367 73.18 
+L 256.863367 74.88 
+L 253.463367 76.58 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_13">
+    <path d="M 145.655831 65.945 
+Q 201.650911 65.945 256.863367 65.945 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 253.463367 64.245 
+L 256.863367 65.945 
+L 253.463367 67.645 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="patch_14">
+    <path d="M 145.655831 57.01 
+Q 201.650911 57.01 256.863367 57.01 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 253.463367 55.31 
+L 256.863367 57.01 
+L 253.463367 58.71 
+" style="fill: none; opacity: 0.6; stroke: #2f5373; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 8px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(253.930312 114.476)">Detector</text>
+    <text style="font-size: 8px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(254.671562 124.916)">(fringes)</text>
+   </g>
+   <g id="patch_15">
+    <path d="M 143.303628 28.418 
+Q 200.865804 28.418 258.42798 28.418 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 146.703628 30.118 
+L 143.303628 28.418 
+L 146.703628 26.718 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 255.02798 26.718 
+L 258.42798 28.418 
+L 255.02798 30.118 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 8px; font-family: 'EB Garamond'; text-anchor: middle; fill: #22313f" x="200.083625" y="23.057" transform="rotate(-0 200.083625 23.057)">propagation distance (e.g. 22 cm or 1.2 m)</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 8px; font-family: 'EB Garamond'; text-anchor: middle; fill: #b0603a" x="165.6" y="140.999" transform="rotate(-0 165.6 140.999)">Coupled knobs: voxel size  |  X-ray energy (e.g. 78 or 110 keV)  |  sample to detector distance</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pc2d7cfc6ca">
+   <rect x="8.85625" y="3.4" width="313.4875" height="142.96"/>
+  </clipPath>
+ </defs>
+</svg>

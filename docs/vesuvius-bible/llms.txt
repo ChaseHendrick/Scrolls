@@ -1,0 +1,78 @@
+# The Vesuvius Challenge Bible
+
+> An edited, fully cited reference book (15 October 2026) on the carbonized Herculaneum papyri and the Vesuvius Challenge (2023 to 2026): history, papyrus and inks, X-ray imaging, every prize and winner, the scroll and fragment inventory, the digital unwrapping pipeline (segmentation, tracing, VC3D, ScrollFiesta, spiral fitting, flattening, rendering, ink detection), tools, data formats, community, compute and costs, open problems, how-tos, glossary, timeline, FAQ and bibliography.
+
+Conventions: citations are [Key] links into the bibliography; unverified statements are in italics; no sentence claims a reading of any text that the cited sources do not report; numbers come from the cited sources or are marked as editors' arithmetic.
+
+## Start here
+
+- [index.md](index.md): chapter list with summaries and word counts
+- [bible.md](bible.md): the whole book as one Markdown file
+
+## Chapters
+
+- [About This Book](md/00-preface.md): 
+- [The Eruption of 79 CE](md/01-eruption.md): Mount Vesuvius buried the towns around the Bay of Naples in a two-phase eruption in 79 CE. Herculaneum, upwind of the first ash fall, was overwhelmed by pyroclastic surges that carbonized organic mate
+- [The Villa of the Papyri and its Library](md/02-villa.md): The Villa of the Papyri, on the coast just outside Herculaneum, held the only library from the Graeco-Roman world that survives as a physical collection. Tunnellers working for the Bourbon kings of Na
+- [Two and a Half Centuries of Unrolling](md/03-unrolling.md): From 1752 to the end of the twentieth century every attempt to read a Herculaneum roll involved opening it physically, and every method destroyed part of what it revealed. Slicing, Antonio Piaggio's t
+- [Papyrus: from Plant to Roll](md/04-papyrus.md): Papyrus is made from the pith of the sedge *Cyperus papyrus*, cut into strips, laid in two layers at right angles, pressed and dried. Sheets were glued edge to edge into rolls. Carbonization at Hercul
+- [Inks and Writing](md/05-inks.md): Herculaneum scribes wrote with a reed pen in a carbon-based ink that is chemically almost identical to carbonized papyrus, which is why the ink is so hard to see in X-ray CT. Some Herculaneum ink cont
+- [Greek and Papyrology Basics](md/06-greek.md): The Herculaneum papyri are mostly written in Greek capitals in narrow columns, without word division. This chapter gives the minimum that a technical contributor needs to recognize what an ink model i
+- [X-ray Tomography for Carbonized Papyrus](md/07-xray.md): A CT scan does not deliver sheets or text; it delivers a three-dimensional grid of voxels, each holding an intensity. For carbonized papyrus with carbon ink, absorption contrast is weak, so the method
+- [Synchrotrons and Scan Campaigns](md/08-scans.md): The Herculaneum scrolls have been scanned at two synchrotrons: the Diamond Light Source in Oxfordshire (beamline I12, from 2019 to 2025) and the European Synchrotron (ESRF) in Grenoble (beamlines BM18
+- [Founding the Vesuvius Challenge](md/09-founding.md): The Vesuvius Challenge was launched on 15 March 2023 by Nat Friedman, Daniel Gross and Brent Seales, with CT data from EduceLab, a Kaggle ink-detection competition and a grand prize for reading text i
+- [The 2023 Season: First Letters and the Grand Prize](md/10-2023.md): In 2023 the community built segmentation tools, won a $100,000 Kaggle ink-detection competition on fragments, discovered the "crackle" texture of ink in the scrolls, read the first word (ΠΟΡΦΥΡΑϹ, "pu
+- [2024: From Five Percent to Autosegmentation](md/11-2024.md): In 2024 the challenge set a goal of reading 90 percent of four scrolls, launched more than $500,000 in prizes including monthly progress prizes, released the second halves of Scrolls 1 and 2 and a new
+- [2025: Titles, Scanning at Scale and Better Scans](md/12-2025.md): 2025 brought the first title recovered from a still-rolled Herculaneum scroll (PHerc. 172, *Philodemus, On Vices, Book 1(?)*), a production scanning session of twenty scrolls, the move to phase-contra
+- [2026: A Scroll Read in Full](md/13-2026.md): In 2026 the challenge unwrapped about 70 percent of PHerc. 172, ran agent-driven "autoresearch" and a 3D foundation model, closed the $200,000 Kaggle surface-detection competition, and on 25 June 2026
+- [The Prize Ledger](md/14-ledger.md): The public winners list records 233 individual awards totalling **$1,958,500** in 34 rounds from April 2023 to October 2026. The 2023 Grand Prize ($850,000 including runners-up) accounts for 43 percen
+- [Inventory of Scrolls and Fragments](md/15-inventory.md): The open-data catalogue (retrieved 15 October 2026) lists 45 samples: 35 scrolls and 10 fragments. This chapter tabulates every sample with data, its aliases, scans, voxel sizes, energies and faciliti
+- [The Pipeline at a Glance](md/16-pipeline.md): Reading a closed scroll is a chain: scan, predict surfaces, build meshes, fit them into a consistent whole, flatten, render surface volumes, detect ink, and have papyrologists read the result. The CT 
+- [Surface Prediction](md/17-surface.md): Surface prediction labels each voxel as papyrus recto surface or background, producing the cue that meshing follows. The standard architecture is a 3D U-Net, and since the 2025 to 2026 Kaggle competit
+- [Meshing and Surface Tracing](md/18-tracing.md): Meshing turns surface predictions into explicit surfaces with connectivity. The lineage runs from manual slice-by-slice tracing in Volume Cartographer (2023), through Khartes, ThaumatoAnakalyptor and 
+- [The Spiral Fit](md/19-spiral.md): The spiral fit is the main whole-scroll method in 2026. It models the scroll as an ideal Archimedean spiral deformed by a smooth, invertible map (a diffeomorphism), and fits that map to all available 
+- [Flattening and Rendering](md/20-flatten.md): Flattening assigns each mesh point a 2D coordinate with as little distortion as possible; VC3D's production tool, flatboi, uses SLIM to minimize the symmetric Dirichlet energy. Rendering then samples 
+- [Ink Detection](md/21-ink.md): Ink detection is "signal recovery, not reading": a model looks at a small patch of a surface volume and predicts, per pixel, the probability of ink. Labels began with fragments photographed in infrare
+- [Tools and Repositories](md/22-tools.md): Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural
+- [Data Formats](md/23-formats.md): Volumes are distributed as chunked, multiresolution OME-Zarr; surfaces as tifxyz quad meshes (three float32 TIFFs of x, y and z plus metadata) or OBJ; surface volumes as Zarr or TIFF stacks; labels as
+- [Community and People](md/24-community.md): The Vesuvius Challenge is a hybrid of open competition and in-house work: a Discord community, open-source progress prizes, a paid segmentation (annotation) team from 2023, an in-house research team f
+- [Compute, Storage and Costs](md/25-compute.md): The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put 
+- [Open Problems](md/26-open-problems.md): By October 2026 a sealed Herculaneum scroll has been unwrapped and read, but "not without a person checking its output at almost every stage" [VC-OpenProblems2026]. This chapter restates, from the cha
+- [How-Tos](md/27-howto.md): Step-by-step recipes adapted from the official tutorials as of October 2026: getting the code, viewing a scroll and growing a segment in VC3D, rendering a segment, training and running an ink model, s
+- [Data, Licences and Responsible Practice](md/28-ethics.md): Challenge data is released under CC BY-NC 4.0 unless noted, and the legacy EduceLab-Scrolls scans are copyrighted by EduceLab and the University of Kentucky. Users agree to cite the dataset and not to
+- [Timeline](md/29-timeline.md): A single chronology from the eruption to the 2027 prize deadline, compiled from the chapters of this book. Each row cites its source; the machine-readable version is data/timeline.csv. Dates of Substa
+- [Frequently Asked Questions](md/30-faq.md): Short answers to common questions, each pointing to the chapter that gives the evidence. Answers repeat facts sourced elsewhere in the book; follow the chapter link for citations.
+- [Appendix A. Glossary](md/31-appendix-a-glossary.md): 
+- [Appendix B. Prize Ledger](md/32-appendix-b-ledger.md): 
+- [Appendix C. Scans and Volumes](md/33-appendix-c-scans.md): 
+- [Appendix D. Models in the Catalogue](md/34-appendix-d-models.md): 
+- [Appendix E. Newsletter Index](md/35-appendix-e-substack.md): 
+- [Appendix F. Image Credits](md/36-appendix-f-images.md): 
+- [Appendix G. Bibliography](md/37-appendix-g-bibliography.md): 
+- [Index](md/39-index-terms.md): 
+
+## Data
+
+- [data/award_sizes.csv](data/award_sizes.csv)
+- [data/bibliography.json](data/bibliography.json)
+- [data/catalog_models.csv](data/catalog_models.csv)
+- [data/catalog_samples.csv](data/catalog_samples.csv)
+- [data/catalog_scans.csv](data/catalog_scans.csv)
+- [data/catalog_volumes.csv](data/catalog_volumes.csv)
+- [data/community_indicators.csv](data/community_indicators.csv)
+- [data/compute_costs.csv](data/compute_costs.csv)
+- [data/feature_scales.csv](data/feature_scales.csv)
+- [data/ink_thickness.csv](data/ink_thickness.csv)
+- [data/prize_awards.csv](data/prize_awards.csv)
+- [data/prize_categories.csv](data/prize_categories.csv)
+- [data/prize_rounds.csv](data/prize_rounds.csv)
+- [data/scroll_inventory.csv](data/scroll_inventory.csv)
+- [data/storage_by_voxel.csv](data/storage_by_voxel.csv)
+- [data/timeline.csv](data/timeline.csv)
+- [data/topography_dice.csv](data/topography_dice.csv)
+- [data/voxel_scaling.csv](data/voxel_scaling.csv)
+
+## Optional
+
+- `figures/charts/*.svg`: charts drawn by the editors from the CSV files in `data/`
+- Photographs are not stored in this repository; each figure reference keeps its caption, source page and licence.

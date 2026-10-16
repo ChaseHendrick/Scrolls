@@ -1,0 +1,6 @@
+claim,min_um,max_um,source
+Letters above fibres (lower bound),100,100,Mocella2015
+Assumed ink layer,50,50,Tack2016
+Phantom ink layer plus absorption,3,17,Parker2019
+Order of magnitude (summary),5,10,Parsons2023
+"Apparent deposits, PHerc. Paris 4",10,20,Angelotti2026a

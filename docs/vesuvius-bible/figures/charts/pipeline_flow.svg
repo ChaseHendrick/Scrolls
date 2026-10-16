@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="331.2pt" height="265.68pt" viewBox="0 0 331.2 265.68" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-10-15T22:26:41.911101</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 265.68 
+L 331.2 265.68 
+L 331.2 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 18.9712 64.40293 
+L 130.5648 64.40293 
+L 130.5648 33.836553 
+L 18.9712 33.836553 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_3">
+    <path d="M 18.9712 120.709413 
+L 130.5648 120.709413 
+L 130.5648 90.143037 
+L 18.9712 90.143037 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 18.9712 177.015897 
+L 130.5648 177.015897 
+L 130.5648 146.44952 
+L 18.9712 146.44952 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_5">
+    <path d="M 18.9712 233.32238 
+L 130.5648 233.32238 
+L 130.5648 202.756003 
+L 18.9712 202.756003 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_6">
+    <path d="M 181.1712 64.40293 
+L 292.7648 64.40293 
+L 292.7648 33.836553 
+L 181.1712 33.836553 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_7">
+    <path d="M 181.1712 120.709413 
+L 292.7648 120.709413 
+L 292.7648 90.143037 
+L 181.1712 90.143037 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_8">
+    <path d="M 181.1712 177.015897 
+L 292.7648 177.015897 
+L 292.7648 146.44952 
+L 181.1712 146.44952 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="patch_9">
+    <path d="M 181.1712 233.32238 
+L 292.7648 233.32238 
+L 292.7648 202.756003 
+L 181.1712 202.756003 
+z
+" clip-path="url(#pa0556a3c2a)" style="fill: #f3efe6; stroke: #22313f; stroke-width: 0.6; stroke-linejoin: miter"/>
+   </g>
+   <g id="text_1">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(62.685383 46.884742)">CT scan</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(54.776398 56.672242)">(synchrotron)</text>
+   </g>
+   <g id="patch_10">
+    <path d="M 74.768 65.866004 
+Q 74.768 76.600904 74.768 86.55318 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 76.468 83.15318 
+L 74.768 86.55318 
+L 73.068 83.15318 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_2">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #b0603a" x="78.012" y="77.272983" transform="rotate(-0 78.012 77.272983)">OME-Zarr volume</text>
+   </g>
+   <g id="text_3">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(48.636945 103.191225)">Surface prediction</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(42.644562 112.978725)">(3D U-Net, nnU-Net)</text>
+   </g>
+   <g id="patch_11">
+    <path d="M 74.768 122.172488 
+Q 74.768 132.907387 74.768 142.859663 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 76.468 139.459663 
+L 74.768 142.859663 
+L 73.068 139.459663 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #b0603a" x="78.012" y="133.579467" transform="rotate(-0 78.012 133.579467)">probability volume</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(45.472883 159.497708)">Meshing and tracing</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(31.742023 169.285208)">(VC3D, GrowPatch, Lasagna)</text>
+   </g>
+   <g id="patch_12">
+    <path d="M 74.768 178.478971 
+Q 74.768 189.213871 74.768 199.166147 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 76.468 195.766147 
+L 74.768 199.166147 
+L 73.068 195.766147 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_6">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #b0603a" x="78.012" y="189.88595" transform="rotate(-0 78.012 189.88595)">tifxyz patches</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(62.63968 215.804192)">Spiral fit</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(55.788313 225.591692)">(global prior)</text>
+   </g>
+   <g id="patch_13">
+    <path d="M 130.977191 228.182808 
+Q 101.349314 125.083766 176.605818 49.740125 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 173.00027 50.944293 
+L 176.605818 49.740125 
+L 175.405823 53.347064 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; fill: #b0603a" transform="translate(139.310758 140.216496) rotate(-70)">tifxyz windings</text>
+   </g>
+   <g id="text_9">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(222.323664 46.884742)">Flattening</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(215.127766 56.672242)">(SLIM, flatboi)</text>
+   </g>
+   <g id="patch_14">
+    <path d="M 236.968 65.866004 
+Q 236.968 76.600904 236.968 86.55318 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 238.668 83.15318 
+L 236.968 86.55318 
+L 235.268 83.15318 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #b0603a" x="240.212" y="77.272983" transform="rotate(-0 240.212 77.272983)">2D parameterization</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(221.709602 103.191225)">Rendering</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(210.515266 112.978725)">(vc_render_tifxyz)</text>
+   </g>
+   <g id="patch_15">
+    <path d="M 236.968 122.172488 
+Q 236.968 132.907387 236.968 142.859663 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 238.668 139.459663 
+L 236.968 142.859663 
+L 235.268 139.459663 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_12">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #b0603a" x="240.212" y="133.579467" transform="rotate(-0 240.212 133.579467)">surface volume (Zarr)</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(217.782648 159.497708)">Ink detection</text>
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; fill: #22313f" transform="translate(210.193 169.285208)">(2.5D, 3D models)</text>
+   </g>
+   <g id="patch_16">
+    <path d="M 236.968 178.478971 
+Q 236.968 189.213871 236.968 199.166147 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+    <path d="M 238.668 195.766147 
+L 236.968 199.166147 
+L 235.268 195.766147 
+" style="fill: none; stroke: #000000; stroke-width: 0.7; stroke-linecap: round"/>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 6.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #b0603a" x="240.212" y="189.88595" transform="rotate(-0 240.212 189.88595)">ink probability image</text>
+   </g>
+   <g id="text_15">
+    <text style="font-size: 7.5px; font-family: 'EB Garamond'; text-anchor: middle; fill: #22313f" x="236.968" y="220.697942" transform="rotate(-0 236.968 220.697942)">Papyrological review</text>
+   </g>
+   <g id="text_16">
+    <text style="font-size: 9.5px; font-family: 'EB Garamond'; text-anchor: start; fill: #22313f" x="3.4" y="12.9665" transform="rotate(-0 3.4 12.9665)">The virtual unwrapping pipeline (2026)</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="pa0556a3c2a">
+   <rect x="3.4" y="20.9665" width="324.4" height="241.3135"/>
+  </clipPath>
+ </defs>
+</svg>

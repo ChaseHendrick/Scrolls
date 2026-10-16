@@ -1,0 +1,702 @@
+{
+ "VC-Launch": {
+  "text": "Vesuvius Challenge newsletter, \"ML competition to read ancient scrolls raises $1MM in Twitter blitz\", 2023-03-23.",
+  "url": "https://scrollprize.substack.com/p/ml-competition-to-read-ancient-scrolls",
+  "type": "newsletter"
+ },
+ "VC-KaggleIncrease": {
+  "text": "Vesuvius Challenge newsletter, \"Increasing Kaggle ink detection prizes to $100k, and announcing open source prizes\", 2023-03-24.",
+  "url": "https://scrollprize.substack.com/p/increasing-kaggle-ink-detection-prizes",
+  "type": "newsletter"
+ },
+ "VC-PrizesOverview2023": {
+  "text": "Vesuvius Challenge newsletter, \"Prizes overview & community updates\", 2023-03-30.",
+  "url": "https://scrollprize.substack.com/p/prizes-overview-and-community-updates",
+  "type": "newsletter"
+ },
+ "VC-PrivatePrizes2023": {
+  "text": "Vesuvius Challenge newsletter, \"5 days left for the open source prizes + new 10x $250 private prizes\", 2023-04-06.",
+  "url": "https://scrollprize.substack.com/p/5-days-left-for-the-open-source-prizes",
+  "type": "newsletter"
+ },
+ "VC-FirstPrizes2023": {
+  "text": "Vesuvius Challenge newsletter, \"First prizes awarded! Open Source Prizes 4x$2500\", 2023-04-15.",
+  "url": "https://scrollprize.substack.com/p/first-prizes-awarded-open-source",
+  "type": "newsletter"
+ },
+ "VC-SegTools2023": {
+  "text": "Vesuvius Challenge newsletter, \"Segmentation Tools Prizes ($35,000 total)\", 2023-04-21.",
+  "url": "https://scrollprize.substack.com/p/segmentation-tools-prizes-35000-total",
+  "type": "newsletter"
+ },
+ "VC-PublicSegments2023": {
+  "text": "Vesuvius Challenge newsletter, \"Publicly available scroll segments!\", 2023-04-28.",
+  "url": "https://scrollprize.substack.com/p/publicly-available-scroll-segments",
+  "type": "newsletter"
+ },
+ "VC-FirstLettersPrize": {
+  "text": "Vesuvius Challenge newsletter, \"$50k First Letters Prize + Extending/Increasing the Segmentation Tooling Prize $35k ➡️ $45k\", 2023-05-05.",
+  "url": "https://scrollprize.substack.com/p/50k-first-letters-prize-extendingincreasing",
+  "type": "newsletter"
+ },
+ "VC-SignsOfProgress": {
+  "text": "Vesuvius Challenge newsletter, \"Signs of progress?! + Papyrology team Q&A\", 2023-05-16.",
+  "url": "https://scrollprize.substack.com/p/signs-of-progress-papyrology-team",
+  "type": "newsletter"
+ },
+ "VC-PapyrologyQA": {
+  "text": "Vesuvius Challenge newsletter, \"Papyrology Q&A pre-game\", 2023-05-24.",
+  "url": "https://scrollprize.substack.com/p/papyrology-q-and-a-pre-game",
+  "type": "newsletter"
+ },
+ "VC-InkFollowup": {
+  "text": "Vesuvius Challenge newsletter, \"$12,000 Ink Detection Followup Prize (28 Aug)\", 2023-07-14.",
+  "url": "https://scrollprize.substack.com/p/12000-ink-detection-followup-prize",
+  "type": "newsletter"
+ },
+ "VC-4thFragment": {
+  "text": "Vesuvius Challenge newsletter, \"4th fragment released; prize deadlines coming up; ink crackle hypothesis\", 2023-08-19.",
+  "url": "https://scrollprize.substack.com/p/4th-fragment-released-prize-deadlines",
+  "type": "newsletter"
+ },
+ "VC-InkFollowupWinners": {
+  "text": "Vesuvius Challenge newsletter, \"Ink Detection Followup Prize Winners!\", 2023-09-08.",
+  "url": "https://scrollprize.substack.com/p/ink-detection-followup-prize-winners",
+  "type": "newsletter"
+ },
+ "VC-SegTooling2Winners": {
+  "text": "Vesuvius Challenge newsletter, \"Segmentation Tooling 2 winners\", 2023-10-03.",
+  "url": "https://scrollprize.substack.com/p/segmentation-tooling-2-winners",
+  "type": "newsletter"
+ },
+ "VC-RaceIsOn": {
+  "text": "Vesuvius Challenge newsletter, \"The Race Is On ,  second and third place Grand Prize ($100k, $50k), four new $5,000 Open Source Prizes, and more!\", 2023-10-20.",
+  "url": "https://scrollprize.substack.com/p/the-race-is-on-second-and-third-place",
+  "type": "newsletter"
+ },
+ "VC-NewScans2023": {
+  "text": "Vesuvius Challenge newsletter, \"New scans of Herculaneum papyri at insane resolutions\", 2023-11-03.",
+  "url": "https://scrollprize.substack.com/p/new-scans-of-herculaneum-papyri-at",
+  "type": "newsletter"
+ },
+ "VC-ProgressPics": {
+  "text": "Vesuvius Challenge newsletter, \"$1000 Private Progress Pics Prize\", 2023-12-13.",
+  "url": "https://scrollprize.substack.com/p/1000-private-progress-pics-prize",
+  "type": "newsletter"
+ },
+ "VC-NewPrizes2024": {
+  "text": "Vesuvius Challenge newsletter, \"$500,000+ in New Prizes!\", 2024-02-27.",
+  "url": "https://scrollprize.substack.com/p/500000-in-new-prizes",
+  "type": "newsletter"
+ },
+ "VC-FirstProgress2024": {
+  "text": "Vesuvius Challenge newsletter, \"First 2024 Progress Prizes: 1 week left!\", 2024-03-22.",
+  "url": "https://scrollprize.substack.com/p/first-2024-progress-prizes-1-week",
+  "type": "newsletter"
+ },
+ "VC-SegDoubled": {
+  "text": "Vesuvius Challenge newsletter, \"Segmentation prize doubled to $100,000!\", 2024-04-03.",
+  "url": "https://scrollprize.substack.com/p/segmentation-prize-doubled-to-100000",
+  "type": "newsletter"
+ },
+ "VC-MarchProgress2024": {
+  "text": "Vesuvius Challenge newsletter, \"$42,500 in Progress Prizes Awarded\", 2024-04-12.",
+  "url": "https://scrollprize.substack.com/p/42500-in-progress-prizes-awarded",
+  "type": "newsletter"
+ },
+ "VC-StateOfSeg2024": {
+  "text": "Vesuvius Challenge newsletter, \"State of segmentation and rendering\", 2024-06-03.",
+  "url": "https://scrollprize.substack.com/p/state-of-segmentation-and-rendering",
+  "type": "newsletter"
+ },
+ "VC-NewData2024": {
+  "text": "Vesuvius Challenge newsletter, \"New scroll CT data released\", 2024-06-04.",
+  "url": "https://scrollprize.substack.com/p/new-scroll-ct-data-released",
+  "type": "newsletter"
+ },
+ "VC-TitlePrize2024": {
+  "text": "Vesuvius Challenge newsletter, \"$30k First Title Prize\", 2024-06-05.",
+  "url": "https://scrollprize.substack.com/p/30k-first-title-prize",
+  "type": "newsletter"
+ },
+ "VC-GP2024Doubled": {
+  "text": "Vesuvius Challenge newsletter, \"2024 Grand Prize doubled to $200,000; rubric available\", 2024-06-07.",
+  "url": "https://scrollprize.substack.com/p/2024-grand-prize-doubled-to-200000",
+  "type": "newsletter"
+ },
+ "VC-JuneProgress2024": {
+  "text": "Vesuvius Challenge newsletter, \"June Progress Prizes; First Letters Prizes doubled\", 2024-07-25.",
+  "url": "https://scrollprize.substack.com/p/june-progress-prizes",
+  "type": "newsletter"
+ },
+ "VC-EasierToLook": {
+  "text": "Vesuvius Challenge newsletter, \"It has never been easier to look inside ancient scrolls\", 2024-08-29.",
+  "url": "https://scrollprize.substack.com/p/it-has-never-been-easier-to-look",
+  "type": "newsletter"
+ },
+ "VC-Acceleration2024": {
+  "text": "Vesuvius Challenge newsletter, \"Exciting acceleration in community activity\", 2024-10-30.",
+  "url": "https://scrollprize.substack.com/p/exciting-acceleration-in-community",
+  "type": "newsletter"
+ },
+ "VC-Scroll5": {
+  "text": "Vesuvius Challenge newsletter, \"First letters found in new scroll\", 2024-11-27.",
+  "url": "https://scrollprize.substack.com/p/first-letters-found-in-new-scroll",
+  "type": "newsletter"
+ },
+ "VC-ThreeWeeks2024": {
+  "text": "Vesuvius Challenge newsletter, \"Three weeks to go in Vesuvius Challenge 2024!\", 2024-12-10.",
+  "url": "https://scrollprize.substack.com/p/three-weeks-to-go-in-vesuvius-challenge",
+  "type": "newsletter"
+ },
+ "VC-Hiring2025": {
+  "text": "Vesuvius Challenge newsletter, \"Vesuvius Challenge is hiring!\", 2025-01-21.",
+  "url": "https://scrollprize.substack.com/p/vesuvius-challenge-is-hiring",
+  "type": "newsletter"
+ },
+ "VC-FASP": {
+  "text": "Vesuvius Challenge newsletter, \"Awarding the amazing autosegmentation work from 2024\", 2025-01-24.",
+  "url": "https://scrollprize.substack.com/p/awarding-the-amazing-autosegmentation",
+  "type": "newsletter"
+ },
+ "VC-Scroll5News": {
+  "text": "Vesuvius Challenge newsletter, \"Exciting news from Scroll 5!\", 2025-02-05.",
+  "url": "https://scrollprize.substack.com/p/exciting-news-from-scroll-5",
+  "type": "newsletter"
+ },
+ "VC-NewPrizes2025": {
+  "text": "Vesuvius Challenge newsletter, \"New Prizes and an Update on Progress\", 2025-02-27.",
+  "url": "https://scrollprize.substack.com/p/new-prizes-and-an-update-on-progress",
+  "type": "newsletter"
+ },
+ "VC-FebProgress2025": {
+  "text": "Vesuvius Challenge newsletter, \"February Progress Prizes and Updates\", 2025-03-12.",
+  "url": "https://scrollprize.substack.com/p/february-progress-prizes-and-updates",
+  "type": "newsletter"
+ },
+ "VC-ScanningAtScale": {
+  "text": "Vesuvius Challenge newsletter, \"Scanning Herculaneum Scrolls at Scale\", 2025-04-25.",
+  "url": "https://scrollprize.substack.com/p/scanning-herculaneum-scrolls-at-scale",
+  "type": "newsletter"
+ },
+ "VC-FirstTitle": {
+  "text": "Vesuvius Challenge newsletter, \"$60,000 First Title Prize Awarded!\", 2025-05-05.",
+  "url": "https://scrollprize.substack.com/p/60000-first-title-prize-awarded",
+  "type": "newsletter"
+ },
+ "VC-AprilProgress2025": {
+  "text": "Vesuvius Challenge newsletter, \"April Progress Prizes / Updates\", 2025-05-23.",
+  "url": "https://scrollprize.substack.com/p/april-progress-prizes-updates",
+  "type": "newsletter"
+ },
+ "VC-MayProgress2025": {
+  "text": "Vesuvius Challenge newsletter, \"May Progress Prizes and Updates to Tooling\", 2025-06-13.",
+  "url": "https://scrollprize.substack.com/p/may-progress-prizes-and-updates-to",
+  "type": "newsletter"
+ },
+ "VC-SummerHaze": {
+  "text": "Vesuvius Challenge newsletter, \"Summer haze comes with ink\", 2025-07-04.",
+  "url": "https://scrollprize.substack.com/p/summer-haze-comes-with-ink",
+  "type": "newsletter"
+ },
+ "VC-CompressedRegions": {
+  "text": "Vesuvius Challenge newsletter, \"Unveiling the Mystery of Compressed Regions\", 2025-08-15.",
+  "url": "https://scrollprize.substack.com/p/unveiling-the-mystery-of-compressed",
+  "type": "newsletter"
+ },
+ "VC-Column172": {
+  "text": "Vesuvius Challenge newsletter, \"Column of text from PHerc. 172 (Scroll 5)\", 2025-09-11.",
+  "url": "https://scrollprize.substack.com/p/column-of-text-from-pherc-172-scroll",
+  "type": "newsletter"
+ },
+ "VC-MultipleScrolls": {
+  "text": "Vesuvius Challenge newsletter, \"Multiple scrolls now show Greek letters\", 2025-10-09.",
+  "url": "https://scrollprize.substack.com/p/multiple-scrolls-now-show-greek-letters",
+  "type": "newsletter"
+ },
+ "VC-KaggleSurface": {
+  "text": "Vesuvius Challenge newsletter, \"Back to the Challenge: $100K Kaggle Surface Detection\", 2025-11-13.",
+  "url": "https://scrollprize.substack.com/p/back-to-the-challenge-100k-kaggle",
+  "type": "newsletter"
+ },
+ "VC-Scroll4Letters": {
+  "text": "Vesuvius Challenge newsletter, \"Finally, letters in Scroll 4!\", 2025-12-21.",
+  "url": "https://scrollprize.substack.com/p/finallyletters-in-scroll-4",
+  "type": "newsletter"
+ },
+ "VC-PHerc172Seventy": {
+  "text": "Vesuvius Challenge newsletter, \"~70% of PHerc. 172 is now digitally unwrapped\", 2026-01-13.",
+  "url": "https://scrollprize.substack.com/p/70-of-pherc-172-is-now-digitally",
+  "type": "newsletter"
+ },
+ "VC-WeAreCooking": {
+  "text": "Vesuvius Challenge newsletter, \"We are cooking\", 2026-03-19.",
+  "url": "https://scrollprize.substack.com/p/we-are-cooking",
+  "type": "newsletter"
+ },
+ "VC-HardParts": {
+  "text": "Vesuvius Challenge newsletter, \"The hard parts are getting clearer\", 2026-06-05.",
+  "url": "https://scrollprize.substack.com/p/the-hard-parts-are-getting-clearer",
+  "type": "newsletter"
+ },
+ "VC-GP2027": {
+  "text": "Vesuvius Challenge newsletter, \"A New $1M Grand Prize for 2027\", 2026-07-15.",
+  "url": "https://scrollprize.substack.com/p/a-new-1m-grand-prize-for-2027",
+  "type": "newsletter"
+ },
+ "VC-July2026": {
+  "text": "Vesuvius Challenge newsletter, \"$33.5K awarded in July\", 2026-08-06.",
+  "url": "https://scrollprize.substack.com/p/335k-awarded-in-july",
+  "type": "newsletter"
+ },
+ "VC-Workflow2026": {
+  "text": "Vesuvius Challenge newsletter, \"From CT Scan to Ancient Text: A First Letters Prize Workflow\", 2026-08-18.",
+  "url": "https://scrollprize.substack.com/p/from-ct-scan-to-ancient-text-a-first",
+  "type": "newsletter"
+ },
+ "VC-PHerc343": {
+  "text": "Vesuvius Challenge newsletter, \"$50K First Letters Prize awarded for PHerc. 343\", 2026-10-08.",
+  "url": "https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for",
+  "type": "newsletter"
+ },
+ "VC-GrandPrize": {
+  "text": "Vesuvius Challenge, \"Vesuvius Challenge 2023 Grand Prize awarded: we can read the first scroll!\". scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/grandprize",
+  "type": "scrollprize.org"
+ },
+ "VC-Prizes": {
+  "text": "Vesuvius Challenge, \"Open Prizes\" (prize rules and open pool). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/prizes",
+  "type": "scrollprize.org"
+ },
+ "VC-Prizes2024": {
+  "text": "Vesuvius Challenge, \"Prizes\" (2024 prize page). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/2024_prizes",
+  "type": "scrollprize.org"
+ },
+ "VC-GPSubmissions2024": {
+  "text": "Vesuvius Challenge, \"2024 Grand Prize Submission Instructions\". scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/2024_gp_submissions",
+  "type": "scrollprize.org"
+ },
+ "VC-FAQ": {
+  "text": "Vesuvius Challenge, \"FAQ\". scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/faq",
+  "type": "scrollprize.org"
+ },
+ "VC-Data": {
+  "text": "Vesuvius Challenge, \"Data Formats\" (data page: licences, how to cite, repositories). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/data",
+  "type": "scrollprize.org"
+ },
+ "VC-Datasets": {
+  "text": "Vesuvius Challenge, \"Curated Datasets\". scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/data_datasets",
+  "type": "scrollprize.org"
+ },
+ "VC-SpiralTutorial": {
+  "text": "Vesuvius Challenge, \"Tutorial: Spiral Fitting\" (updated 16 Sep 2026). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/tutorial_spiral",
+  "type": "scrollprize.org"
+ },
+ "VC-VC3DTutorial": {
+  "text": "Vesuvius Challenge, \"Virtual Unwrapping with VC3D\" (updated 12 Jul 2026). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/tutorial_VC3D",
+  "type": "scrollprize.org"
+ },
+ "VC-InkTutorial": {
+  "text": "Vesuvius Challenge, \"Tutorial: Ink Detection\" (updated 6 Sep 2026). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/tutorial5",
+  "type": "scrollprize.org"
+ },
+ "VC-Tutorial5": {
+  "text": "Vesuvius Challenge, \"Tutorial: Ink Detection\" (same page as VC-InkTutorial). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/tutorial5",
+  "type": "scrollprize.org"
+ },
+ "VC-Tutorial": {
+  "text": "Vesuvius Challenge, \"The Tutorials\". scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/tutorial",
+  "type": "scrollprize.org"
+ },
+ "VC-CommunityProjects": {
+  "text": "Vesuvius Challenge, \"Awesome Scroll Tools\" (community projects). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/community_projects",
+  "type": "scrollprize.org"
+ },
+ "VC-Substack": {
+  "text": "Vesuvius Challenge newsletter archive (Substack). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.substack.com/archive",
+  "type": "scrollprize.org"
+ },
+ "VC-Winners": {
+  "text": "Vesuvius Challenge, \"Winners\" (all awarded prizes). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/winners",
+  "type": "scrollprize.org"
+ },
+ "VC-OpenProblems2026": {
+  "text": "Vesuvius Challenge, \"Open Problems: Why Reading Every Herculaneum Scroll Is Still a Challenge\" (last updated 14 Oct 2026). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/2026_open_problems",
+  "type": "scrollprize.org"
+ },
+ "VC-MasterPlan": {
+  "text": "Vesuvius Challenge, \"Master Plan\" (July 2025). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/master_plan",
+  "type": "scrollprize.org"
+ },
+ "VC-FirstScroll": {
+  "text": "Vesuvius Challenge, \"We read an entire scroll, without ever opening it\" (PHerc. 1667 results page). scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/firstscroll",
+  "type": "scrollprize.org"
+ },
+ "VC-FirstLetters": {
+  "text": "Vesuvius Challenge, \"First word discovered in unopened Herculaneum scroll by 21yo computer science student\". scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://scrollprize.org/firstletters",
+  "type": "scrollprize.org"
+ },
+ "VC-Catalog": {
+  "text": "Vesuvius Challenge open data catalogue, metadata.json in the open data bucket. scrollprize.org, accessed 15 Oct 2026.",
+  "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json",
+  "type": "scrollprize.org"
+ },
+ "WP-HercPapyri": {
+  "text": "Wikipedia, \"Herculaneum papyri\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Herculaneum_papyri",
+  "type": "encyclopedia"
+ },
+ "WP-Villa": {
+  "text": "Wikipedia, \"Villa of the Papyri\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Villa_of_the_Papyri",
+  "type": "encyclopedia"
+ },
+ "WP-Herculaneum": {
+  "text": "Wikipedia, \"Herculaneum\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Herculaneum",
+  "type": "encyclopedia"
+ },
+ "WP-Eruption79": {
+  "text": "Wikipedia, \"Eruption of Mount Vesuvius in 79 AD\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Eruption_of_Mount_Vesuvius_in_79_AD",
+  "type": "encyclopedia"
+ },
+ "WP-Philodemus": {
+  "text": "Wikipedia, \"Philodemus\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Philodemus",
+  "type": "encyclopedia"
+ },
+ "WP-Stichometry": {
+  "text": "Wikipedia, \"Stichometry\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Stichometry",
+  "type": "encyclopedia"
+ },
+ "WP-Epicureanism": {
+  "text": "Wikipedia, \"Epicureanism\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Epicureanism",
+  "type": "encyclopedia"
+ },
+ "WP-Weber": {
+  "text": "Wikipedia, \"Karl Jakob Weber\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Karl_Jakob_Weber",
+  "type": "encyclopedia"
+ },
+ "WP-Piaggio": {
+  "text": "Wikipedia, \"Antonio Piaggio\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Antonio_Piaggio",
+  "type": "encyclopedia"
+ },
+ "WP-GreekNumerals": {
+  "text": "Wikipedia, \"Greek numerals\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Greek_numerals",
+  "type": "encyclopedia"
+ },
+ "WP-PlinyYounger": {
+  "text": "Wikipedia, \"Pliny the Younger\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Pliny_the_Younger",
+  "type": "encyclopedia"
+ },
+ "WP-MicroCT": {
+  "text": "Wikipedia, \"X-ray microtomography\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/X-ray_microtomography",
+  "type": "encyclopedia"
+ },
+ "WP-Uncial": {
+  "text": "Wikipedia, \"Uncial script\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Uncial_script",
+  "type": "encyclopedia"
+ },
+ "WP-SynchrotronRadiation": {
+  "text": "Wikipedia, \"Synchrotron radiation\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Synchrotron_radiation",
+  "type": "encyclopedia"
+ },
+ "WP-RomanUnits": {
+  "text": "Wikipedia, \"Ancient Roman units of measurement\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Ancient_Roman_units_of_measurement",
+  "type": "encyclopedia"
+ },
+ "WP-LunateSigma": {
+  "text": "Wikipedia, \"Lunate sigma\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Lunate_sigma",
+  "type": "encyclopedia"
+ },
+ "WP-IronGall": {
+  "text": "Wikipedia, \"Iron gall ink\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Iron_gall_ink",
+  "type": "encyclopedia"
+ },
+ "WP-GreekAlphabet": {
+  "text": "Wikipedia, \"Greek alphabet\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Greek_alphabet",
+  "type": "encyclopedia"
+ },
+ "WP-ESRF": {
+  "text": "Wikipedia, \"European Synchrotron Radiation Facility\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/European_Synchrotron_Radiation_Facility",
+  "type": "encyclopedia"
+ },
+ "WP-Diamond": {
+  "text": "Wikipedia, \"Diamond Light Source\", accessed October 2026.",
+  "url": "https://en.wikipedia.org/wiki/Diamond_Light_Source",
+  "type": "encyclopedia"
+ },
+ "Pliny-NH13": {
+  "text": "Pliny the Elder, Naturalis Historia, Book 13, sections 68 to 89 (papyrus). Latin text on la.wikisource.",
+  "url": "https://la.wikisource.org/wiki/Naturalis_Historia/Liber_XIII",
+  "type": "work"
+ },
+ "Vaughan2011": {
+  "text": "Vaughan (2011). \"Cyperus papyrus L.\" PROTA (Plant Resources of Tropical Africa).",
+  "url": "https://prota.prota4u.org/protav8.asp?p=Cyperus+papyrus",
+  "type": "work"
+ },
+ "Bausch2022": {
+  "text": "Bausch, F. et al. (2022). \"Papyrus production revisited: differences between ancient and modern production modes.\" Cellulose 29.",
+  "url": "https://doi.org/10.1007/s10570-022-04573-y",
+  "type": "work"
+ },
+ "Rosado2021": {
+  "text": "Rosado, M. J. et al. (2021). Lignins of rind and pith of papyrus (Cyperus papyrus L.) culms. Industrial Crops and Products 174, 114226.",
+  "url": "https://doi.org/10.1016/j.indcrop.2021.114226",
+  "type": "work"
+ },
+ "Scora1991": {
+  "text": "Scora, P. E. and Scora, R. W. (1991). \"Some observations on the nature of papyrus bonding.\" Journal of Ethnobiology 11(2): 193 to 202.",
+  "url": "https://ethnobiology.org/sites/default/files/pdfs/JoE/11-2/Scora.pdf",
+  "type": "work"
+ },
+ "Waly2001": {
+  "text": "Waly, N. (2001). \"Papyrus and papyrus-like paper sheets, their quality in relation to anatomical features.\" Taeckholmia 21. (Consulted as a summary only.)",
+  "url": "https://www.researchgate.net/publication/327554110",
+  "type": "work"
+ },
+ "Wallert1989": {
+  "text": "Wallert, A. (1989). \"The reconstruction of papyrus manufacture: a preliminary investigation.\" Studies in Conservation 34(1): 1 to 8. (Consulted through secondary summaries.)",
+  "url": "https://doi.org/10.2307/1506154",
+  "type": "work"
+ },
+ "Bonnerot-CSMC": {
+  "text": "Bonnerot, O. and Nehring, G. \"Papyrus.\" Written Artefact Profiling Guide, Centre for the Study of Manuscript Cultures, University of Hamburg.",
+  "url": "https://www.csmc.uni-hamburg.de/profiling-guide/materials/writing-surfaces/papyrus.html",
+  "type": "work"
+ },
+ "Johnson-Bookrolls": {
+  "text": "Johnson, W. A. \"Bookrolls: physical features.\" Ancient Books project.",
+  "url": "https://ancientbooks.papyrology.org/bookrolls-physical-features/",
+  "type": "work"
+ },
+ "UCL-Rolls": {
+  "text": "UCL Digital Egypt for Universities, \"Papyrus rolls.\"",
+  "url": "https://www.ucl.ac.uk/museums-static/digitalegypt/writing/papyrusrolls.html",
+  "type": "work"
+ },
+ "Caricchi2014": {
+  "text": "Caricchi, C. et al. (2014). Deposit temperatures from optical analysis (reflectance) of wood charred in situ at the Villa dei Papiri. Journal of Volcanology and Geothermal Research 289: 14 to 25.",
+  "url": "https://doi.org/10.1016/j.jvolgeores.2014.10.016",
+  "type": "work"
+ },
+ "Giordano2018": {
+  "text": "Giordano, G. et al. (2018). Thermal interactions of the AD 79 pyroclastic density currents and their deposits at the Villa dei Papiri. Earth and Planetary Science Letters 490: 180 to 192.",
+  "url": "https://doi.org/10.1016/j.epsl.2018.03.023",
+  "type": "work"
+ },
+ "Cavallo1983": {
+  "text": "Cavallo, G. (1983). Libri scritture scribi a Ercolano. Primo supplemento a Cronache Ercolanesi 13. Napoli: Macchiaroli. (Consulted through a review and secondary citations.)",
+  "url": "",
+  "type": "work"
+ },
+ "Capasso-Titoli": {
+  "text": "Capasso, M. \"I titoli nei papiri ercolanesi. IV: altri tre esempi di titoli iniziali.\" (Venue and pages of the printed version not verified.)",
+  "url": "https://chartes.it/images/attachment/Capasso,Titoli%20IV.pdf",
+  "type": "work"
+ },
+ "DelMastro2014": {
+  "text": "Del Mastro, G. (2014). Titoli e annotazioni bibliologiche nei papiri greci di Ercolano. Napoli. (Consulted through a review.)",
+  "url": "https://hdl.handle.net/11588/586317",
+  "type": "work"
+ },
+ "Janko-HowTo": {
+  "text": "Janko, R. \"How to Read and Reconstruct a Herculaneum Papyrus.\" (Consulted through excerpts.)",
+  "url": "http://www-personal.umich.edu/~rjanko/how-to-read-and-reconstruct-a-herculaneum-papyrus.pdf",
+  "type": "work"
+ },
+ "Schironi2010": {
+  "text": "Schironi, F. (2010). \"Book-ends and book-layout in papyri with hexametric poetry.\" Proceedings of the 25th International Congress of Papyrology, 695 to 704.",
+  "url": "https://sites.lsa.umich.edu/schironi/wp-content/uploads/sites/259/2015/04/18_End-Titles_Proceedings.pdf",
+  "type": "work"
+ },
+ "Papyrology-Compiled": {
+  "text": "Editors' compilation of roll and column dimensions from Cavallo (1983), Capasso, Del Mastro (2014) and Janko, not re-verified against each primary text (see Chapter 4).",
+  "url": "",
+  "type": "work"
+ },
+ "Brun2016": {
+  "text": "Brun, E. et al. (2016). \"Revealing metallic ink in Herculaneum papyri.\" PNAS 113(14): 3751 to 3754.",
+  "url": "https://doi.org/10.1073/pnas.1519958113",
+  "type": "work"
+ },
+ "Tack2016": {
+  "text": "Tack, P. et al. (2016). \"Tracking ink composition on Herculaneum papyrus scrolls: quantification and speciation of lead by X-ray based techniques and Monte Carlo simulations.\" Scientific Reports 6: 20763.",
+  "url": "https://doi.org/10.1038/srep20763",
+  "type": "work"
+ },
+ "Christiansen2020": {
+  "text": "Christiansen, T. et al. (2020). \"Insights into the composition of ancient Egyptian red and black inks on papyri achieved by synchrotron-based microanalyses.\" PNAS 117(45).",
+  "url": "https://doi.org/10.1073/pnas.2004534117",
+  "type": "work"
+ },
+ "Romano2023": {
+  "text": "Romano, F. P. et al. (2023). Lead-drawn ruling lines in Herculaneum papyri by macro X-ray fluorescence. Scientific Reports 13.",
+  "url": "https://doi.org/10.1038/s41598-023-33242-8",
+  "type": "work"
+ },
+ "Thompson1906": {
+  "text": "Thompson, E. M. (1906). Handbook of Greek and Latin Palaeography, 3rd ed., chapter IV, \"Writing implements.\"",
+  "url": "https://www.katapi.org.uk/G&LPalaeography/Ch4.html",
+  "type": "work"
+ },
+ "Mocella2015": {
+  "text": "Mocella, V. et al. (2015). \"Revealing letters in rolled Herculaneum papyri by X-ray phase-contrast imaging.\" Nature Communications 6: 5895.",
+  "url": "https://doi.org/10.1038/ncomms6895",
+  "type": "work"
+ },
+ "Bukreeva2016": {
+  "text": "Bukreeva, I. et al. (2016). \"Virtual unrolling and deciphering of Herculaneum papyri by X-ray phase-contrast tomography.\" Scientific Reports 6: 27227.",
+  "url": "https://doi.org/10.1038/srep27227",
+  "type": "work"
+ },
+ "Parker2019": {
+  "text": "Parker, C. S., Parsons, S. et al., Seales, W. B. (2019). \"From invisibility to readability: Recovering the ink of Herculaneum.\" PLOS ONE 14(5): e0215775.",
+  "url": "https://doi.org/10.1371/journal.pone.0215775",
+  "type": "work"
+ },
+ "Stabile2021": {
+  "text": "Stabile, S., Palermo, F., Bukreeva, I. et al. (2021). \"A computational platform for the virtual unfolding of Herculaneum Papyri.\" Scientific Reports 11.",
+  "url": "https://doi.org/10.1038/s41598-020-80458-z",
+  "type": "work"
+ },
+ "Parsons2023": {
+  "text": "Parsons, S., Parker, C. S., Chapman, C., Hayashida, M. and Seales, W. B. (2023). \"EduceLab-Scrolls: Verifiable Recovery of Text from Herculaneum Papyri using X-ray CT.\" arXiv:2304.02084.",
+  "url": "https://arxiv.org/abs/2304.02084",
+  "type": "work"
+ },
+ "Angelotti2026a": {
+  "text": "Angelotti, G., Parsons, S., Nicolardi, F., Nader, Y. et al., Friedman, N. and Seales, W. B. (2026). \"Complete virtual unwrapping and reading of a rolled Herculaneum papyrus.\" arXiv:2606.29085.",
+  "url": "https://arxiv.org/abs/2606.29085",
+  "type": "work"
+ },
+ "Angelotti2026b": {
+  "text": "Angelotti, G., Nicolardi, F., Henderson, P. and Seales, W. B. (2026). \"Ink Detection from Surface Topography of the Herculaneum Papyri.\" Scientific Reports.",
+  "url": "https://doi.org/10.1038/s41598-026-58467-1",
+  "type": "work"
+ },
+ "Ceccarelli2025": {
+  "text": "Ceccarelli et al. (2025). Pulsed thermography of Herculaneum papyri. Scientific Reports 15: 34466.",
+  "url": "https://doi.org/10.1038/s41598-025-19911-w",
+  "type": "work"
+ },
+ "Henderson2026": {
+  "text": "Henderson, P. (2026). \"Virtually Unrolling the Herculaneum Papyri by Diffeomorphic Spiral Fitting.\" WACV 2026. arXiv:2512.04927.",
+  "url": "https://arxiv.org/abs/2512.04927",
+  "type": "work"
+ },
+ "NIST-Pb": {
+  "text": "NIST, X-Ray Mass Attenuation Coefficients, table for lead (Z = 82).",
+  "url": "https://physics.nist.gov/PhysRefData/XrayMassCoef/ElemTab/z82.html",
+  "type": "work"
+ },
+ "Ronneberger2015": {
+  "text": "Ronneberger, O., Fischer, P. and Brox, T. (2015). \"U-Net: Convolutional Networks for Biomedical Image Segmentation.\" MICCAI 2015. arXiv:1505.04597.",
+  "url": "https://arxiv.org/abs/1505.04597",
+  "type": "work"
+ },
+ "Cicek2016": {
+  "text": "Cicek, O., Abdulkadir, A., Lienkamp, S. S., Brox, T. and Ronneberger, O. (2016). \"3D U-Net: Learning Dense Volumetric Segmentation from Sparse Annotation.\" MICCAI 2016. arXiv:1606.06650.",
+  "url": "https://arxiv.org/abs/1606.06650",
+  "type": "work"
+ },
+ "Isensee2021": {
+  "text": "Isensee, F., Jaeger, P. F., Kohl, S. A. A., Petersen, J. and Maier-Hein, K. H. (2021). \"nnU-Net: a self-configuring method for deep learning-based biomedical image segmentation.\" Nature Methods 18: 203 to 211.",
+  "url": "https://doi.org/10.1038/s41592-020-01008-z",
+  "type": "work"
+ },
+ "Boergens2017": {
+  "text": "Boergens, K. M. et al. (2017). \"webKnossos: efficient online 3D data annotation for connectomics.\" Nature Methods 14: 691 to 694.",
+  "url": "https://doi.org/10.1038/nmeth.4331",
+  "type": "work"
+ },
+ "Caron2021": {
+  "text": "Caron, M. et al. (2021). \"Emerging Properties in Self-Supervised Vision Transformers\" (DINO). ICCV 2021. arXiv:2104.14294.",
+  "url": "https://arxiv.org/abs/2104.14294",
+  "type": "work"
+ },
+ "Ceres": {
+  "text": "Agarwal, S., Mierle, K. and the Ceres Solver Team. Ceres Solver.",
+  "url": "http://ceres-solver.org",
+  "type": "work"
+ },
+ "Kingma2015": {
+  "text": "Kingma, D. P. and Ba, J. (2015). \"Adam: A Method for Stochastic Optimization.\" ICLR 2015. arXiv:1412.6980.",
+  "url": "https://arxiv.org/abs/1412.6980",
+  "type": "work"
+ },
+ "Rabinovich2017": {
+  "text": "Rabinovich, M., Poranne, R., Panozzo, D. and Sorkine-Hornung, O. (2017). \"Scalable Locally Injective Mappings.\" ACM Transactions on Graphics 36(2).",
+  "url": "https://doi.org/10.1145/2983621",
+  "type": "work"
+ },
+ "Moore2021": {
+  "text": "Moore, J. et al. (2021). \"OME-NGFF: a next-generation file format for expanding bioimaging data-access strategies.\" Nature Methods 18: 1496 to 1498.",
+  "url": "https://doi.org/10.1038/s41592-021-01326-w",
+  "type": "work"
+ },
+ "Hara2018": {
+  "text": "Hara, K., Kataoka, H. and Satoh, Y. (2018). \"Can Spatiotemporal 3D CNNs Retrace the History of 2D CNNs and ImageNet?\" CVPR 2018. arXiv:1711.09577.",
+  "url": "https://arxiv.org/abs/1711.09577",
+  "type": "work"
+ },
+ "Carreira2019": {
+  "text": "Carreira, J., Noland, E., Hillier, C. and Zisserman, A. (2019). \"A Short Note on the Kinetics-700 Human Action Dataset.\" arXiv:1907.06987.",
+  "url": "https://arxiv.org/abs/1907.06987",
+  "type": "work"
+ },
+ "Bertasius2021": {
+  "text": "Bertasius, G., Wang, H. and Torresani, L. (2021). \"Is Space-Time Attention All You Need for Video Understanding?\" ICML 2021. arXiv:2102.05095.",
+  "url": "https://arxiv.org/abs/2102.05095",
+  "type": "work"
+ },
+ "CC-BYNC4": {
+  "text": "Creative Commons, Attribution-NonCommercial 4.0 International (CC BY-NC 4.0).",
+  "url": "https://creativecommons.org/licenses/by-nc/4.0/",
+  "type": "work"
+ },
+ "AIChallenges2026": {
+  "text": "Editors' research notes, \"How AI Is Being Used in Challenges and Prize Competitions, State of Play, October 2026\" (15 Oct 2026). Sections on Ithaca, Aeneas and Linear A only; based on secondary search summaries.",
+  "url": "",
+  "type": "work"
+ },
+ "Recent-2026-10-15": {
+  "text": "Editors' digest of public Vesuvius Challenge activity, 10 to 15 October 2026 (ScrollPrize/villa commit log, @scrollprize posts, scrollprize.org/winners).",
+  "url": "https://github.com/ScrollPrize/villa/commits/main",
+  "type": "work"
+ }
+}
