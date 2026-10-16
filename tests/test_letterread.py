@@ -2131,5 +2131,47 @@ class FastPathTest(unittest.TestCase):
                 want = net.logits(band)
             self.assertSameBits(got, want)
 
+    def test_normalize_info_matches_median_fill(self):
+        def reference(a, polarity="bright", dtype=np.float64):
+            # normalize_info as it was before it skipped the fill of an image with no missing pixels
+            a = np.asarray(a, dtype=dtype)
+            finite = np.isfinite(a)
+            if not finite.any():
+                raise ValueError("image has no finite values")
+            a = np.where(finite, a, np.median(a[finite]))
+            lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
+            if hi <= lo:
+                lo, hi = float(a.min()), float(a.max())
+            info = {"asked": polarity}
+            if polarity == "auto":
+                info["rule"] = R.POLARITY_RULE
+            if hi <= lo:
+                info.update(used=R.resolve_polarity(lo, med, hi, polarity) if polarity != "auto" else "bright",
+                            background=None)
+                return np.zeros_like(a, dtype=np.float32), info
+            used = R.resolve_polarity(lo, med, hi, polarity)
+            info.update(used=used, background=round(float((med - lo) / (hi - lo)), 3))
+            a = np.clip((a - lo) / (hi - lo), 0, 1)
+            return (1.0 - a if used == "dark" else a).astype(np.float32), info
+
+        rng = np.random.default_rng(5)
+        holes = rng.random((40, 50))
+        holes[3, 4], holes[7, 1], holes[9, 9] = np.nan, np.inf, -np.inf
+        signed = rng.normal(0, 1, (30, 30))
+        signed[::4] = -0.0
+        images = [rng.integers(0, 256, (40, 50)).astype(np.uint8), rng.random((40, 50)).astype(np.float32),
+                  holes, signed, np.full((8, 8), 0.4), np.zeros((5, 5), np.uint8)]
+        for a in images:
+            before = a.copy()
+            for polarity in ("bright", "dark", "auto"):
+                for dtype in (np.float64, np.float32):
+                    img, info = R.normalize_info(a, polarity, dtype)
+                    want_img, want_info = reference(a, polarity, dtype)
+                    self.assertSameBits(img, want_img)
+                    self.assertEqual(info, want_info)
+            self.assertSameBits(a, before)
+        with self.assertRaises(ValueError):
+            R.normalize_info(np.full((3, 3), np.nan))
+
 if __name__ == "__main__":
     unittest.main()

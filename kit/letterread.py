@@ -940,9 +940,10 @@ def normalize_info(a, polarity="bright", dtype=np.float64):
     the image, not a rule) and, for auto, rule (POLARITY_RULE)."""
     a = np.asarray(a, dtype=dtype)
     finite = np.isfinite(a)
-    if not finite.any():
-        raise ValueError("image has no finite values")
-    a = np.where(finite, a, np.median(a[finite]))
+    if not finite.all():  # only then is the fill needed: the median of a full image costs a copy and a partition
+        if not finite.any():
+            raise ValueError("image has no finite values")
+        a = np.where(finite, a, np.median(a[finite]))
     lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
     if hi <= lo:  # sparse binary or quantised image, such as an ink label with under 0.2% ink
         lo, hi = float(a.min()), float(a.max())
