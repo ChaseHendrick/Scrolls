@@ -32,6 +32,7 @@ import csv
 import hashlib
 import json
 import math
+import shlex
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -115,11 +116,26 @@ def zarr_levels(zattrs):
     return out
 
 
+def _inside(state, path):
+    """path, after checking that it resolves inside the state folder (ids come from the bucket and metadata.json)."""
+    path = Path(path)
+    if not path.resolve().is_relative_to(Path(state).resolve()):
+        raise BatchError(f"{path} is outside the batch folder {state}")
+    return path
+
+
+def _check_ids(row):
+    for k in ("sample", "volume"):
+        if not scancatalog.safe_id(row.get(k)):
+            raise BatchError(f"{k} id {str(row.get(k))[:80]!r} is not a safe name")
+
+
 def fetch_levels(row, cache_dir, get=scancatalog.http_get):
     """The volume's zarr levels, read once from its .zattrs and cached under cache_dir."""
     if not row.get("zarr_url"):
         return None
-    cache = Path(cache_dir) / "zattrs" / f"{row['sample']}_{row['volume']}.json"
+    _check_ids(row)
+    cache = _inside(cache_dir, Path(cache_dir) / "zattrs" / f"{row['sample']}_{row['volume']}.json")
     if cache.is_file():
         return json.loads(cache.read_text())
     try:
@@ -136,7 +152,8 @@ def fetch_shape(row, cache_dir, get=scancatalog.http_get):
     """Level-0 shape (z, y, x) from the zarr's 0/.zarray when metadata.json gives none; cached."""
     if not row.get("zarr_url"):
         return None
-    cache = Path(cache_dir) / "zattrs" / f"{row['sample']}_{row['volume']}.shape.json"
+    _check_ids(row)
+    cache = _inside(cache_dir, Path(cache_dir) / "zattrs" / f"{row['sample']}_{row['volume']}.shape.json")
     if cache.is_file():
         return json.loads(cache.read_text())
     try:
@@ -179,6 +196,8 @@ def scan_config(row, levels=None, model=None):
         block = "in the bucket listing but not in metadata.json: no headers yet (watch picks it up when it appears)"
     elif not row.get("shape_zyx"):
         block = "no shape in metadata.json"
+    elif not scancatalog.valid_shape(row["shape_zyx"]):
+        block = f"shape {str(row['shape_zyx'])[:80]} is not three positive integers"
     elif not names:
         block = why
     preds = row.get("surface_predictions") or []
@@ -199,10 +218,18 @@ def scan_config(row, levels=None, model=None):
         "readers_outside_autopipe": [n for n in names if n not in AUTOPIPE_MODELS],
         "surfaces": model["surfaces_per_scan"],
     }
-    refuse_title(cfg)
+    try:
+        # Ids and names come from the bucket (a volume folder may well say "subtitle"); the check is on the rest.
+        refuse_title({k: v for k, v in cfg.items() if k not in ID_FIELDS})
+        refuse_title({k: v for k, v in cfg["autopipe_settings"].items() if k != "volume"}, "config.autopipe_settings")
+    except BatchError as exc:
+        block = block or f"refused: {exc}"
     cfg["digest"] = digest(cfg)
     cfg["skip"], cfg["block"] = skip, block
     return cfg
+
+
+ID_FIELDS = ("sample", "volume", "long_id", "zarr_url", "autopipe_settings")
 
 
 def refuse_title(obj, path="config"):
@@ -254,7 +281,8 @@ def price(cfg, rates=None, model=None):
 
 
 def _status_path(state, cfg):
-    return Path(state) / "scans" / cfg["sample"] / cfg["volume"] / "status.json"
+    _check_ids(cfg)
+    return _inside(state, Path(state) / "scans" / cfg["sample"] / cfg["volume"] / "status.json")
 
 
 def read_status(state, cfg):
@@ -283,7 +311,8 @@ def queue_scan(state, cfg, cost):
         status, reason = "blocked", cfg["block"]
     elif cfg.get("skip"):
         status, reason = "skipped", cfg["skip"]
-    elif old and old.get("digest") == cfg["digest"] and old.get("status") in ("approved", "failed"):
+    elif (old and old.get("digest") == cfg["digest"] and old.get("status") in ("approved", "failed")
+          and old.get("cost") == cost):   # an approval holds only for the price the owner saw
         status, reason = old["status"], old.get("reason")
     else:
         status, reason = "planned", None
@@ -317,8 +346,9 @@ def ledger_row(state, cfg, status, cost, plan_digest, note=""):
 
 
 def launch_command(cfg):
-    return (f"scrolls-kit autopipeline plan {cfg['sample']} --settings @work/autobatch/scans/{cfg['sample']}/"
-            f"{cfg['volume']}/settings.json --out work/autobatch/runs/{cfg['sample']}-{cfg['volume']}")
+    q, s, v = shlex.quote, cfg["sample"], cfg["volume"]
+    return (f"scrolls-kit autopipeline plan {q(s)} --settings {q(f'@work/autobatch/scans/{s}/{v}/settings.json')} "
+            f"--out {q(f'work/autobatch/runs/{s}-{v}')}")
 
 
 def load_catalog(state, refresh=False, fetch=None):
@@ -330,20 +360,46 @@ def load_catalog(state, refresh=False, fetch=None):
     return doc
 
 
+ROW_ERRORS = (BatchError, TypeError, ValueError, KeyError, AttributeError, IndexError, ZeroDivisionError, OverflowError)
+
+
+def _prepare(r, state, get, rates, include_superseded=False):
+    """(row, config, cost) for one catalog row; a malformed row raises one of ROW_ERRORS."""
+    _check_ids(r)
+    r = with_shape(r, state, get)
+    lv = fetch_levels(r, state, get) if r.get("in_bucket") else None
+    cfg = scan_config(r, lv)
+    if include_superseded and cfg["skip"] and cfg["skip"].startswith("superseded"):
+        cfg["skip"] = None
+    return r, cfg, price(cfg, rates)
+
+
+def _rejected(r, exc):
+    key = f"{str(r.get('sample'))[:80]}/{str(r.get('volume'))[:80]}" if isinstance(r, dict) else str(r)[:160]
+    return {"key": key, "reason": f"{type(exc).__name__}: {str(exc)[:200]}"}
+
+
 def plan_all(state=STATE, catalog=None, only=None, include_superseded=False, levels_get=None, rates=None):
-    """Plan, price and queue every volume; write plan.json, plan.md and the dry-run ledger rows."""
+    """Plan, price and queue every volume; write plan.json, plan.md and the dry-run ledger rows.
+
+    A malformed catalog row (unsafe id, repeated key, wrong types) is listed under "rejected" and planned no further;
+    it never stops the rest of the batch."""
     state = Path(state)
     catalog = catalog if catalog is not None else load_catalog(state)
     rows = [r for r in catalog["volumes"]
-            if not only or scancatalog.key(r) == only or r["sample"] == only]
-    entries = []
+            if not only or (isinstance(r, dict) and (scancatalog.key(r) == only or r.get("sample") == only))]
+    entries, rejected, keys = [], [], set()
     for r in rows:
-        r = with_shape(r, state, levels_get or scancatalog.http_get)
-        lv = fetch_levels(r, state, levels_get or scancatalog.http_get) if r.get("in_bucket") else None
-        cfg = scan_config(r, lv)
-        if include_superseded and cfg["skip"] and cfg["skip"].startswith("superseded"):
-            cfg["skip"] = None
-        cost = price(cfg, rates)
+        try:
+            r, cfg, cost = _prepare(r, state, levels_get or scancatalog.http_get, rates, include_superseded)
+            if scancatalog.key(r) in keys:
+                raise BatchError(f"duplicate key {scancatalog.key(r)}")
+            if "prize_eligible" not in r or "era" not in r:
+                raise BatchError("row has no prize_eligible or era: rebuild the catalog with --refresh")
+        except ROW_ERRORS as exc:
+            rejected.append(_rejected(r, exc))
+            continue
+        keys.add(scancatalog.key(r))
         entries.append((r, cfg, cost))
     plan = {"schema": 1, "catalog_checked": catalog.get("checked"), "cost_model": COST_MODEL,
             "scans": [{"key": scancatalog.key(r), "digest": c["digest"], "voxel_um": c["voxel_um"],
@@ -355,7 +411,8 @@ def plan_all(state=STATE, catalog=None, only=None, include_superseded=False, lev
                       for r, c, p in entries]}
     plan["total_usd"] = {k: round(sum(s["usd"][k] for s in plan["scans"]), 2) for k in COST_MODEL["spread"]}
     plan["counts"] = {}
-    plan_digest = digest({"scans": plan["scans"], "total": plan["total_usd"]})
+    plan["rejected"] = rejected
+    plan_digest = _plan_digest(plan)
     plan["digest"] = plan_digest
     for r, c, p in entries:
         status, _ = queue_scan(state, c, p)
@@ -382,22 +439,48 @@ def plan_markdown(plan):
     return "\n".join(lines)
 
 
+def _plan_digest(plan):
+    return digest({"scans": plan["scans"], "total": plan["total_usd"]})
+
+
+def _approvable(state, s):
+    """(status path, status doc) of a planned scan whose files still match what plan.json priced, or None.
+
+    Raises BatchError when the status, its config or settings.json were changed after pricing."""
+    sample, _, volume = str(s.get("key", "")).partition("/")
+    p = _status_path(state, {"sample": sample, "volume": volume})
+    if not p.is_file():
+        return None
+    doc = json.loads(p.read_text())
+    if doc.get("status") != "planned" or doc.get("digest") != s["digest"]:
+        return None
+    cfg = doc.get("config") or {}
+    settings = p.with_name("settings.json")
+    if (digest({k: v for k, v in cfg.items() if k not in ("digest", "skip", "block")}) != doc["digest"]
+            or (doc.get("cost") or {}).get("usd") != s["usd"]
+            or not settings.is_file() or json.loads(settings.read_text()) != cfg.get("autopipe_settings")):
+        raise BatchError(f"{s['key']}: status, config, cost or settings.json changed after pricing: run --dry-run again")
+    return p, doc
+
+
 def approve(state, plan_digest):
     state = Path(state)
     plan = json.loads((state / "plan.json").read_text())
-    if plan["digest"] != plan_digest:
-        raise BatchError(f"plan digest is {plan['digest']}, not {plan_digest}: approve the plan you priced")
+    try:
+        actual = _plan_digest(plan)
+    except (KeyError, TypeError) as exc:
+        raise BatchError(f"plan.json is malformed ({exc}): run --dry-run again") from exc
+    if plan.get("digest") != actual:
+        raise BatchError(f"plan.json was edited after it was priced (contents hash to {actual}): run --dry-run again")
+    if actual != plan_digest:
+        raise BatchError(f"plan digest is {actual}, not {plan_digest}: approve the plan you priced")
+    todo = [x for x in (_approvable(state, s) for s in plan["scans"]) if x]   # check every scan before writing any
     n = 0
-    for s in plan["scans"]:
-        p = state / "scans" / s["key"] / "status.json"
-        if not p.is_file():
-            continue
-        doc = json.loads(p.read_text())
-        if doc["status"] == "planned" and doc["digest"] == s["digest"]:
-            doc["status"] = "approved"
-            doc["history"].append({"at": _now_et(), "status": "approved", "plan": plan_digest})
-            _write_if_changed(p, doc)
-            n += 1
+    for p, doc in todo:
+        doc["status"] = "approved"
+        doc["history"].append({"at": _now_et(), "status": "approved", "plan": plan_digest})
+        _write_if_changed(p, doc)
+        n += 1
     _write_if_changed(state / "approval.json", {"plan": plan_digest, "at": _now_et(), "approved_scans": n,
                                                 "total_usd": plan["total_usd"]})
     return n
@@ -419,16 +502,18 @@ def watch(state=STATE, fetch=None, levels_get=None, rates=None):
     old = json.loads(path.read_text()) if path.is_file() else None
     new = (fetch or (lambda: scancatalog.fetch(prizes.load())))()
     d = scancatalog.diff(old, new)
-    queued = []
+    queued, rejected = [], []
     for change, r in [("new", r) for r in d["new"]] + [("changed", r) for r in d["changed"]]:
-        r = with_shape(r, state, levels_get or scancatalog.http_get)
-        lv = fetch_levels(r, state, levels_get or scancatalog.http_get) if r.get("in_bucket") else None
-        cfg = scan_config(r, lv)
-        cost = price(cfg, rates)
+        try:
+            r, cfg, cost = _prepare(r, state, levels_get or scancatalog.http_get, rates)
+        except ROW_ERRORS as exc:   # one bad row is reported, never fails every scheduled run
+            rejected.append({**_rejected(r, exc), "change": change})
+            continue
         status, _ = queue_scan(state, cfg, cost)
         ledger_row(state, cfg, status, cost, "watch", change)
         queued.append({"key": scancatalog.key(r), "change": change,
                        "status": status, "voxel_um": cfg["voxel_um"], "readers": cfg["readers"],
                        "usd": cost["usd"], "reason": cfg["skip"] or cfg["block"]})
     scancatalog.write(new, path)
-    return {"first_run": old is None, "queued": queued, "gone": d["gone"], "catalog_volumes": len(new["volumes"])}
+    return {"first_run": old is None, "queued": queued, "gone": d["gone"], "catalog_volumes": len(new["volumes"]),
+            "rejected": rejected + list(new.get("rejected", []))}

@@ -347,6 +347,8 @@ def cmd_batch(args):
                           + (f" ({q['reason']})" if q["reason"] else ""))
                 print(f"{len(res['queued'])} queued (dry run, nothing launched), {len(res['gone'])} gone, "
                       f"{res['catalog_volumes']} volumes in the catalog" + (" (first run: all are new)" if res["first_run"] else ""))
+                for q in res["rejected"]:
+                    print(f"rejected {q['key']}: {q['reason']}")
             return 3 if (args.exit_code and res["queued"]) else 0
         if args.status:
             rows = autobatch.status_table(args.state)
@@ -365,11 +367,13 @@ def cmd_batch(args):
             print(json.dumps(plan, indent=1))
         else:
             print(autobatch.plan_markdown(plan))
+            for q in plan["rejected"]:
+                print(f"rejected {q['key']}: {q['reason']}")
             print(f"counts {plan['counts']}; plan digest {plan['digest']} (approve with: python -m kit run all "
                   f"--approve {plan['digest']}); nothing launched")
         return 0
-    except (autobatch.BatchError, scancatalog.ScanCatalogError, OSError, ValueError) as exc:
-        print(exc, file=sys.stderr)
+    except (autobatch.BatchError, scancatalog.ScanCatalogError, OSError, ValueError, TypeError, KeyError) as exc:
+        print(f"{type(exc).__name__}: {exc}", file=sys.stderr)
         return 2
 
 
