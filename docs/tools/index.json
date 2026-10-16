@@ -171,6 +171,155 @@
    ]
   },
   {
+   "id": "autopipeline",
+   "name": "autopipeline",
+   "tagline": "run villa's pipeline from a released scan to a scored ink map, unattended",
+   "summary": "AutoPipeline (AP) 0.1.4 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix4`, not on `main`.",
+   "status": "Branch only",
+   "kind": [
+    "package"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "scrolls-kit autopipeline",
+    "pip install -e .",
+    "kit",
+    "autopipe",
+    "python scripts/demo_synthetic.py",
+    "scrolls-kit vc3d mcp"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "submissions/progress-2026-10-fix4/autopipeline/",
+     "symbols": []
+    },
+    {
+     "path": "kit/autopipe.py",
+     "symbols": [
+      "cmd_autopipe",
+      "build_parser",
+      "DEFAULTS"
+     ]
+    },
+    {
+     "path": "kit/autopipe_monitor.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/vc3d_agent.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/demo_synthetic.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/get_vc3d.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/vc3d/ink.py",
+     "symbols": []
+    },
+    {
+     "path": "submissions/progress-2026-10-fix4/release.json",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "submissions/progress-2026-10-fix4/autopipeline/tests/",
+    "test_*.py",
+    "test_autopipe.py",
+    "test_autopipe_monitor.py",
+    "test_vc3d_agent.py",
+    "vc3d_fakes.py"
+   ],
+   "go_ahead": {
+    "needed": true,
+    "text": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "603fe14"
+   },
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/LICENSE)); data and model weights keep their own licences and are not included",
+   "fields": {
+    "Id": "`autopipeline`",
+    "Status": "Branch only",
+    "Kind": "package",
+    "Area": "Pipeline and agents",
+    "Run": "`scrolls-kit autopipeline` after `pip install -e .` in the package folder; inside that folder the branch's own `kit` module runs the same program (alias `autopipe`); `python scripts/demo_synthetic.py`; `scrolls-kit vc3d mcp` serves it as an MCP tool",
+    "Code": "`submissions/progress-2026-10-fix4/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/vc3d_agent.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix4/release.json`",
+    "Tests": "`submissions/progress-2026-10-fix4/autopipeline/tests/` on its branch: 34 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
+    "Needs": "Python 3.11 or newer (zarr 3 needs it); numpy, tifffile, zarr 3 and scipy (`pyproject.toml`, tested 2026-10-12 with numpy 2.4.6, tifffile 2026.3.3, zarr 3.1.6, scipy 1.17.1). For real runs: villa's VC3D tools (`vc_gen_umbilicus`, `vc_grow_seg_from_seed`, `vc_tifxyz_selfcross`, `vc_flatten`, `vc_render_tifxyz`), from villa's Linux x86_64 AppImage or `VC3D.app` on a Mac; for ink, villa's `vesuvius` package and torch in their own environment (`KIT_INK_PYTHON`)",
+    "Runs on": "The synthetic demo: 7.5 s wall (it reports 6.1 s itself) on a shared 4-core cloud container, Python 3.13 (measured 2026-10-16 for this page). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
+    "Network": "The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network",
+    "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
+    "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
+    "Released": "Public branch `submission/progress-2026-10-fix4` at `603fe14` (committed 2026-10-15; README entry dated 2026-10-16 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/LICENSE)); data and model weights keep their own licences and are not included",
+    "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
+    "Branch": "`submission/progress-2026-10-fix4` at `603fe14`",
+    "Checked": "2026-10-16 against commit `603fe14`"
+   },
+   "page": "docs/tools/autopipeline.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 25,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "Where the code is",
+     "start_line": 35,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "How to run it",
+     "start_line": 47,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Inputs and outputs",
+     "start_line": 142,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "Why it is not on the default branch",
+     "start_line": 166,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 170,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 176,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 183,
+     "end_line": 190,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "batch",
    "name": "batch",
    "tagline": "plan, price and queue AutoPipeline over every scan in the open-data bucket",
@@ -3032,6 +3181,461 @@
    ]
   },
   {
+   "id": "letters-training",
+   "name": "letters-training",
+   "tagline": "training data, training, fine-tuning and benchmarks of the letter reader",
+   "summary": "`scripts/letters/` holds the scripts that make the Greek letter reader's synthetic training lines, train and fine-tune its weights, fetch the public PHerc. 1667 and PHerc. 172 data, and run the benchmarks and control checks behind its published numbers.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python scripts/letters/gen_dataset.py",
+    "python scripts/letters/realforms.py",
+    "python scripts/letters/train_linenet.py",
+    "python scripts/letters/finetune_maps.py",
+    "python scripts/letters/p1667_fetch.py",
+    "python scripts/letters/p1667_groups.py",
+    "python scripts/letters/p1667_mapcrops.py",
+    "python scripts/letters/p1667_text.py",
+    "python scripts/letters/p1667_align.py",
+    "python scripts/letters/eval_p1667.py",
+    "python scripts/letters/eval_p1667_text.py",
+    "python scripts/letters/eval_p172.py",
+    "python scripts/letters/compare_p172.py",
+    "python scripts/letters/eval_pages.py",
+    "python scripts/letters/eval_photos.py",
+    "python scripts/letters/eval_controls.py",
+    "python scripts/letters/demo_p1667.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/letters/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_letter_scripts.py",
+    "tests/test_letterdata.py",
+    "tests/test_letterread.py",
+    "tests/test_letterdemo.py",
+    "tests/test_letterlines.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for CPU runs on public data. Needed for any rented GPU or Modal run (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and for posting weights or numbers"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "e49ec32"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`letters-training`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Letters and titles",
+    "Run": "`python scripts/letters/gen_dataset.py`, `python scripts/letters/realforms.py`, `python scripts/letters/train_linenet.py`, `python scripts/letters/finetune_maps.py`, `python scripts/letters/p1667_fetch.py`, `python scripts/letters/p1667_groups.py`, `python scripts/letters/p1667_mapcrops.py`, `python scripts/letters/p1667_text.py`, `python scripts/letters/p1667_align.py`, `python scripts/letters/eval_p1667.py`, `python scripts/letters/eval_p1667_text.py`, `python scripts/letters/eval_p172.py`, `python scripts/letters/compare_p172.py`, `python scripts/letters/eval_pages.py`, `python scripts/letters/eval_photos.py`, `python scripts/letters/eval_controls.py`, `python scripts/letters/demo_p1667.py`",
+    "Code": "`scripts/letters/`",
+    "Tests": "`tests/test_letter_scripts.py`, `tests/test_letterdata.py`, `tests/test_letterread.py`, `tests/test_letterdemo.py`, `tests/test_letterlines.py`",
+    "Needs": "Python 3.10 or newer, numpy, from a clone with the `reader` extra (`python -m pip install -e \".[reader]\"`: numpy, Pillow, tifffile, imagecodecs). Pillow to draw lines and pages. torch only for `train_linenet.py` and `finetune_maps.py train` (the CPU build on Linux without a GPU). scipy and zarr (the `all` extra) for `p1667_groups.py` and `p1667_mapcrops.py`. `pdftotext` (poppler) for `eval_p172.py` and `p1667_text.py`. Data you fetch yourself: Hell-Char and ICDAR 2023 letter crops for `realforms.py`, a clone of Bodillium/Herculaneum-Scroll-Labels for the PHerc. 172 scripts, a PDF of arXiv 2606.29085 for `p1667_text.py`, Perseus TEI texts for decoys",
+    "Runs on": "Any CPU for data, benchmarks and checks; training a release-size model wants a GPU. 20 synthetic lines took 2.2 s with one process (measured 2026-10-16, 4-core 2.8 GHz Xeon cloud container). The guide measured about 137 s per 1,000 synthetic lines per process, a CPU training run of 25 minutes on 4 threads, the `letters-v2-real` recipe at about 8 minutes on one B200, and fine-tuning at 3.1 s a step on 4 threads (about 80 minutes for 1,500 steps), all on 14 October 2026 ([Train your own](../letter-reader.md#train-your-own))",
+    "Network": "`p1667_fetch.py` and `demo_p1667.py`: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`, anonymous HTTPS (the maps are about 1.9 GB; the demo's JPEG about 3.5 MB). Any script given a released weights name: one download from `github.com`, redirected to GitHub's release file host. The others read local files only; Hell-Char, ICDAR, the Bodillium labels and the paper are fetched by you",
+    "Writes": "Only where you point them, by convention under the ignored `work/` folder: shards (`OUT/PREFIX-SEED-NNNN.npz`), glyph banks, `OUT_DIR/linenet.pt`, `linenet.npz`, `train.json`, `ckpt/`, `finetune.json`, fetched maps and labels, group crops and `.npy` windows, reference and decoy JSON, and each benchmark's `--out` JSON. `demo_p1667.py` defaults to `work/letters/demo`. Reruns overwrite",
+    "Go-ahead": "Not needed for CPU runs on public data. Needed for any rented GPU or Modal run (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and for posting weights or numbers",
+    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57)), with the letter reader release (`letter-reader`)",
+    "Guide": "[letter-reader.md](../letter-reader.md): [Reproduce the benchmarks](../letter-reader.md#reproduce-the-benchmarks), [Train your own](../letter-reader.md#train-your-own), [Fine-tune on your own lines](../letter-reader.md#fine-tune-on-your-own-lines)",
+    "Checked": "2026-10-16 against commit `e49ec32`"
+   },
+   "page": "docs/tools/letters-training.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "The scripts",
+     "start_line": 49,
+     "end_line": 71,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 72,
+     "end_line": 88,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 89,
+     "end_line": 103,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 104,
+     "end_line": 434,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 435,
+     "end_line": 438,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 439,
+     "end_line": 453,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 454,
+     "end_line": 476,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 477,
+     "end_line": 505,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 506,
+     "end_line": 517,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 518,
+     "end_line": 523,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 524,
+     "end_line": 533,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 534,
+     "end_line": 541,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 542,
+     "end_line": 549,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 550,
+     "end_line": 557,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "mac-phase0",
+   "name": "mac-phase0",
+   "tagline": "queue v8in and v8in-1447 on the three PHerc0841 crops on a Mac, then print Gate A",
+   "summary": "`scripts/mac-phase0.sh` runs [mac-w045](mac-w045.md) in `QUICK=1` mode for every reader and PHerc0841 crop not yet scored, one job at a time on the Mac GPU, skips finished jobs, and ends with the Gate A table from `python -m kit gate`.",
+   "status": "Current",
+   "kind": [
+    "script"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "bash scripts/mac-phase0.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/mac-phase0.sh",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_repo.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it on your own Mac. Posting the gate table or the scores needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "0747c06"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`mac-phase0`",
+    "Status": "Current",
+    "Kind": "script",
+    "Area": "Scoring and controls",
+    "Run": "`bash scripts/mac-phase0.sh`",
+    "Code": "`scripts/mac-phase0.sh`",
+    "Tests": "`tests/test_repo.py` (only that the script parses with `bash -n` and uses no bash 4 syntax)",
+    "Needs": "`python3` (any version `kit gate` runs on; standard library only) for the skip check and the gate; everything [mac-w045](mac-w045.md) needs for each job: an Apple Silicon Mac, git, uv, and about 6 GB free in `WORK`; run it from a clone of the repository, since `kit gate` reads `docs/results.json`",
+    "Runs on": "Apple Silicon Mac. About 20 min per job in fp32 on an M1 Pro (script header and [mac.md](../mac.md#generalization-check-on-w045-one-command); an estimate, not a recorded run of this queue), so about 2 h for the six default jobs. `DRY_RUN=1` with nothing to run took 0.5 s (measured 2026-10-16, Linux cloud container)",
+    "Network": "None itself. Each job runs [mac-w045](mac-w045.md), which contacts GitHub, the open-data bucket, Hugging Face and the Python package index",
+    "Writes": "`WORK/logs/` (created), one log per job at `WORK/logs/phase0_SEGMENT_MODEL.log` (overwritten), and the gate table at `WORK/phase0-gate.txt` (overwritten, also with `DRY_RUN=1`). Each job also writes everything mac-w045 writes, under `WORK/SEGMENT/` and the shared `WORK` folders",
+    "Go-ahead": "Not needed to run it on your own Mac. Posting the gate table or the scores needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[mac.md, \"All of Phase 0 in one command\"](../mac.md#generalization-check-on-w045-one-command)",
+    "Checked": "2026-10-16 against commit `0747c06`"
+   },
+   "page": "docs/tools/mac-phase0.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 99,
+     "end_line": 102,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 103,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 113,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 131,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 144,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 155,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 166,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 176,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 184,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 188,
+     "end_line": 194,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "mac-verify",
+   "name": "mac-verify",
+   "tagline": "check on a Mac that villa's MPS ink inference gives the CPU's map",
+   "summary": "`scripts/mac-verify.sh` runs `ink_9um` seed 42 on PHerc0139 w035 on the CPU with stock villa and twice on the Mac GPU with villa PR #1865, then checks both pairs with `kit verify` against a reverse-depth control and prints a summary to paste.",
+   "status": "Current",
+   "kind": [
+    "script"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "bash scripts/mac-verify.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/mac-verify.sh",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_repo.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it on your own Mac. Posting its summary, for example on villa PR #1865, needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "0747c06"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`mac-verify`",
+    "Status": "Current",
+    "Kind": "script",
+    "Area": "Scoring and controls",
+    "Run": "`bash scripts/mac-verify.sh`",
+    "Code": "`scripts/mac-verify.sh`",
+    "Tests": "`tests/test_repo.py` (only that the script parses with `bash -n` and uses no bash 4 syntax)",
+    "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 3 GB free in `WORK` (script header). The script itself builds the rest: villa (`main` and PR #1865), a Python 3.14 virtual environment with villa's `models` extra minus `volume-cartographer`, `cucim`, `nnunetv2` and `batchgeneratorsv2`, plus tifffile and imagecodecs; the published w035 surface volume and the `ink_9um` seed 42 checkpoint",
+    "Runs on": "Apple Silicon Mac only (or any machine with `EXPECT_GPU=cpu`, to test the script). On an Apple M1 Pro: CPU 1,740 s for both directions, MPS 218 s and 212 s forward ([w035 log](../logs/2026-10-07-w035-cpu.md), 2026-10-07), plus the downloads",
+    "Network": "`github.com` (clones and fetches `ScrollPrize/villa`); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the w035 surface volume, through `kit fetch`); `huggingface.co` (the checkpoint `scrollprize/ink_9um`, through `uvx --from huggingface_hub hf download`); the Python package index and uv's Python downloads (the environment). Nothing is uploaded",
+    "Writes": "Under `WORK` (default `~/scrolls-work`): `villa/` (a clone; the script checks out `origin/main` or `pr-1865` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`. uv also fills its own cache",
+    "Go-ahead": "Not needed to run it on your own Mac. Posting its summary, for example on villa PR #1865, needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Public `main` since 2026-10-07",
+    "Guide": "[mac.md, \"One command\"](../mac.md#one-command) and its [runbook](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)",
+    "Checked": "2026-10-16 against commit `0747c06`"
+   },
+   "page": "docs/tools/mac-verify.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 76,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 86,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 99,
+     "end_line": 102,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 103,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 113,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 134,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 149,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 161,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 172,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 182,
+     "end_line": 189,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 190,
+     "end_line": 193,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 194,
+     "end_line": 201,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "meshaudit",
    "name": "meshaudit",
    "tagline": "audit published cross-scan transforms, meshes and render depth",
@@ -4143,6 +4747,130 @@
      "name": "Related",
      "start_line": 221,
      "end_line": 227,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "quickstart-wip",
+   "name": "quickstart-wip",
+   "tagline": "a first CT slice, segment and ink preview from the open data, for an unreviewed Quick start guide",
+   "summary": "`scripts/quickstart/` holds two scripts written for a draft Quick start guide: one fetches a first CT slice, segment mesh and ink preview of PHerc0139 from the open-data bucket, one records the guide's terminal GIF; both are only on branch `grok/quickstart-wip`, unreviewed.",
+   "status": "Branch only",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python scripts/quickstart/first_look.py {slice,segment,ink,all}",
+    "python scripts/quickstart/terminal_gif.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/quickstart/first_look.py",
+     "symbols": [
+      "main",
+      "slice_plane",
+      "cmd_slice",
+      "cmd_segment",
+      "cmd_ink"
+     ]
+    },
+    {
+     "path": "scripts/quickstart/terminal_gif.py",
+     "symbols": [
+      "main",
+      "commands"
+     ]
+    },
+    {
+     "path": "docs/QUICKSTART.md",
+     "symbols": []
+    },
+    {
+     "path": "grok/quickstart-wip",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "docs/MAP.md",
+    "tests/test_quickstart.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run them. Committing what `first_look.py` writes, or a GIF that shows scan imagery, to a public repository is not allowed: the data are CC BY-NC 4.0 and no scroll data goes in git"
+   },
+   "checked": {
+    "date": "2026-10-16",
+    "commit": "8681ef9"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`quickstart-wip`",
+    "Status": "Branch only",
+    "Kind": "script folder",
+    "Area": "Data and downloads",
+    "Run": "`python scripts/quickstart/first_look.py {slice,segment,ink,all}`, `python scripts/quickstart/terminal_gif.py` (from the repository root of a checkout of the branch)",
+    "Code": "`scripts/quickstart/first_look.py` (`main`, `slice_plane`, `cmd_slice`, `cmd_segment`, `cmd_ink`), `scripts/quickstart/terminal_gif.py` (`main`, `commands`), with the guide `docs/QUICKSTART.md`, all on branch `grok/quickstart-wip`",
+    "Tests": "None. The branch's `docs/MAP.md` row names `tests/test_quickstart.py`, but the commit does not contain it",
+    "Needs": "`first_look.py`: Python 3 (the guide says 3.10 or newer), numpy, Pillow and tifffile (the `reader` extra of `pyproject.toml` installs them). `terminal_gif.py`: Pillow, `curl`, the DejaVu Sans Mono font at `/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf` (a Linux path), and network access to the Unroll Space",
+    "Runs on": "Any CPU. `first_look.py all` took 3.0 s wall and wrote 1.5 MB on a 4-core cloud container, Python 3.13 (measured 2026-10-16 for this page); the guide says about 6 s on a fast connection. `terminal_gif.py`: Not measured",
+    "Network": "`first_look.py`: `vesuvius-challenge-open-data.s3.amazonaws.com` over anonymous HTTPS (zarr chunks, the w035 mesh, a bucket listing and the ink preview). `terminal_gif.py`: also `huggingface.co` (the Unroll Space's `tools/inkbench.py` and `data/bench/` images)",
+    "Writes": "`first_look.py`: `work/quickstart/` by default (`slice-z170.png`, `w035.tifxyz/` with `meta.json`, `x.tif`, `y.tif`, `z.tif`, `slice-with-w035.png`, `w035-ink-preview.jpg`). `terminal_gif.py`: `docs/assets/quickstart-terminal.gif` and scratch files in `work/quickstart-gif/`",
+    "Go-ahead": "Not needed to run them. Committing what `first_look.py` writes, or a GIF that shows scan imagery, to a public repository is not allowed: the data are CC BY-NC 4.0 and no scroll data goes in git",
+    "Released": "Public branch `grok/quickstart-wip` only, since 2026-10-16; never merged or listed as a release",
+    "Branch": "`grok/quickstart-wip` at `8681ef9`",
+    "Checked": "2026-10-16 against commit `8681ef9`"
+   },
+   "page": "docs/tools/quickstart-wip.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "Where the code is",
+     "start_line": 33,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "How to run it",
+     "start_line": 43,
+     "end_line": 88,
+     "applicable": true
+    },
+    {
+     "name": "Inputs and outputs",
+     "start_line": 89,
+     "end_line": 101,
+     "applicable": true
+    },
+    {
+     "name": "Why it is not on the default branch",
+     "start_line": 102,
+     "end_line": 105,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 106,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 112,
+     "end_line": 115,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 116,
+     "end_line": 121,
      "applicable": true
     }
    ]
