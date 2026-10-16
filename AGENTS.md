@@ -90,6 +90,8 @@ The full map, one row per module and script, is [`docs/MAP.md`](docs/MAP.md); se
 ```bash
 python -m unittest discover -s tests -v        # all tests; map tests skip without their numerical dependencies
 python -m kit prizes                            # open prizes from the snapshot
+python -m kit run all --dry-run --refresh        # AutoPipeline over every open-data bucket volume: priced plan, launches nothing
+python -m kit run watch --exit-code             # scheduled: queue new or changed bucket volumes, priced (exit 3 if any)
 python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr \
     [--crop Y0 Y1 X0 X1 --surface-shape H W] [--inner 64] [--json]
 python -m kit provenance write OUT.json --run NAME --model M --input I --output O
