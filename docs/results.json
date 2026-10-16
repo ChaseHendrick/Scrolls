@@ -6,6 +6,23 @@
   "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md",
   "PHerc0841": "not in the training data of ink_9um (its label dataset has no PHerc0841 segment; docs/logs/2026-10-08-w045-not-held-out.md), v8in or v8in-1447 (v8in's card lists no PHerc0841 segment; v8in-1447 fine-tunes on PHerc1447 w058 and w060 only), d9v2 (TAUIL's README holds out all three PHerc0841 segments, Community report) or Reader v2 (its train_config.json lists no PHerc0841 segment, Community report): the held-out test for those readers. Possibly not held out from Hecate: Hecate's base model scrollprize/ink_canonical_2um (recipe new_canon_autoresearch_recipe, epoch 13, step 113,246) has a committed trainer, ScrollPrize/villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py, that lists w00 and both PHerc0841 auto_grown segments as training fragments (lines 200-207, 292-293) and holds out only l5_0_crop (line 794) (Sourced fact); that the released weights came from that list is Interpretation. Treat Hecate's PHerc0841 scores, and the team's new_canon_autoresearch_recipe maps of PHerc0841, as possibly in-sample. See docs/logs/2026-10-09-pherc0841-hecate.md"
  },
+ "held_out_by_reader": {
+  "about": "Per reader family, whether each test group was outside its training data, in one word, for python -m kit leaderboard. The reasons and sources are in held_out above; keep the two in step. A row for a family with no status here fails kit leaderboard check.",
+  "w045": {
+   "v8in": "held out",
+   "ink_9um": "not held out",
+   "d9v2": "not held out",
+   "Reader v2": "not held out"
+  },
+  "PHerc0841": {
+   "ink_9um": "held out",
+   "v8in": "held out",
+   "v8in-1447": "held out",
+   "d9v2": "held out",
+   "Reader v2": "held out",
+   "Hecate": "possibly not held out"
+  }
+ },
  "segments": {
   "w045": {
    "scroll": "PHerc0139",
@@ -257,7 +274,8 @@
    "auc_reversed": 0.5012,
    "auc_shuffled": 0.4851,
    "measured_by": "this repo",
-   "source": "https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md"
+   "source": "https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md",
+   "date": "2026-10-09"
   },
   {
    "segment": "0841-ag896",
