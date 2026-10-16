@@ -2,6 +2,35 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Open items added 16 October 2026 (checked 01:10 ET)
+
+Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
+
+```yaml
+handoff:
+  written: 2026-10-16T01:10-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  merged_since_last_handoff:
+    - {number: 91, branch: grok/glossary, merge: ad2c4f8, topic: GLOSSARY.md, an A to Z of technical terms}
+    - {number: 92, branch: grok/perf-cli-parser, merge: dc6713b, topic: kit cli reuses one argparse parser per process}
+    - {number: 93, branch: grok/autopipeline-every-scan, merge: 0a22f72, topic: AutoPipeline on every scan}
+  open_prs:
+    - none
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, open_data_bucket_only]
+```
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Unroll v1.0 (viewer Space, [unroll-space.md](unroll-space.md)) | Released. Control panel redesign (grouped Layers, Ink Bench, View, Destroy, Scrolls), Settings saved in localStorage and settable by URL, plain language glossary, agent API (`unrollView.actions/settings/state/glossary`), Ink Bench button, CPU pick fallback for Destroy on GPUs without float targets. The overlay layer is labelled `ink_9um (9 µm)`, credited to the Vesuvius Challenge. README entries updated | Fix the audit findings below |
+| Unroll security and UX audit | Findings, highest first: HIGH stored HTML injection through the Ink Bench annotation id (the note field is escaped, the id is not); MED NaN or Infinity thresholds accepted and carried into share links; MED out-of-range alignment offsets accepted; MED malformed `?bench=` links fail silently or show raw errors; MED HUD collisions at 800x500 and 1100x700, and the readout has no backdrop. LOW: no minimum image size, wrong advice for non-image uploads, a double-escaped name, raw `atob` errors, "9.362 um" instead of µm, mixed UK and US spelling. Passed: bad uploads, zip bomb, path traversal, XSS in names and credits, resize and key spam | Escape the annotation id, reject non-finite thresholds and offsets, show share-link errors, then re-test |
+| Glossary | Merged, PR #91 (`ad2c4f8`) | None |
+| CLI speedup | Merged, PR #92 (`dc6713b`): one parser per process (about 119 ms to 13 ms per call) | None |
+| AutoPipeline on every scan | Merged, PR #93 (`0a22f72`): catalog of every scan volume in the `vesuvius-challenge-open-data` bucket (75 volumes when checked), per-scan config, priced dry-run batch (`kit run all`) and watcher (`kit run watch`). Launches nothing; volumes not in the bucket are marked blocked | Paid batch runs each need the owner's approval |
+| Unroll in the README release list | Merged, PR #94 (`590636c`): adds Unroll v1.0 to `docs/releases.json` and the README Released tools section | None |
+| Stale branches | Fully merged into `main`, safe to delete on the owner's yes: `grok/autopipe-fixes`, `grok/autopipe-readme`, `grok/charred-ink-20261011`, `grok/glossary`, `grok/handoff-2026-10-15`, `grok/lane{A..I}-*`, `grok/local-cost-ledger`, `grok/modal-pricing`, `grok/prize-snapshot-20261011`, `grok/unroll-link`, `grok/vesuvius-bible`, `ChaseHendrick-patch-1`, `rewrite/main-without-noreply`, `release-readme/progress-2026-10-fix4`. Not merged: `release-readme/progress-2026-10-fix1` (2 commits, superseded by fix4), `submission/progress-2026-10` and `-fix4` (1 commit each, Progress Prize submission snapshots; keep) | Owner decides on deletion |
+| GPU inference speed probes (C reader) | `torch.compile` gives about 1.85x over eager fp16 per tile; max-autotune about 1.9x; TensorRT fp16, int8 and fp8 builds did not complete (missing ONNX file and `onnx_graphsurgeon`) | Fix the ONNX export before any further probe; no launch without approval |
+
 ## Open items added 15 October 2026 (checked 23:20 ET)
 
 Public work only. Every PR and SHA below was checked on GitHub when written; anything not checked says **unverified**.
