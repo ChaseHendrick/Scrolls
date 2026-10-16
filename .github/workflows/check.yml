@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+# A new push to a pull request cancels that pull request's run still in progress, since only the newest
+# commit's result counts. Runs on main are never cancelled, so every merge keeps its own complete record.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   test:
     # The core is standard library only: the whole suite with no third-party package installed. The letter
