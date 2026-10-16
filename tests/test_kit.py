@@ -2,6 +2,9 @@ import argparse
 import contextlib
 import io
 import json
+import os
+import subprocess
+import sys
 import tempfile
 import unittest
 from datetime import date
@@ -337,6 +340,21 @@ class CliTest(unittest.TestCase):
         listed = cli.__doc__.split("{", 1)[1].split("}", 1)[0].split(",")
         commands = next(a for a in cli.build_parser()._actions if isinstance(a, argparse._SubParsersAction))
         self.assertEqual(sorted(listed), sorted(commands.choices))
+
+    def test_a_reader_that_stops_early_ends_the_command_quietly(self):
+        # python -m kit prizes --json | head -1: head closes the pipe before the output is written
+        root = Path(__file__).resolve().parents[1]
+        for argv in (["prizes", "--json"], ["cost", "--gpu-hours", "1", "--rate", "2"]):
+            read, write = os.pipe()
+            os.close(read)
+            try:
+                done = subprocess.run([sys.executable, "-m", "kit"] + argv, cwd=root, stdout=write,
+                                      stderr=subprocess.PIPE, timeout=60)
+            finally:
+                os.close(write)
+            self.assertNotIn(b"Traceback", done.stderr, argv)
+            self.assertNotIn(b"BrokenPipeError", done.stderr, argv)
+            self.assertEqual(done.returncode, 1, argv)
 
 
 if __name__ == "__main__":

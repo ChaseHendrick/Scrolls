@@ -8,6 +8,7 @@ scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
 import argparse
 import copy
 import json
+import os
 import sys
 from pathlib import Path
 from datetime import date
@@ -1398,13 +1399,21 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
 
 def _run(args, typed, name):
     """args.func(args), with the command line the user typed and its kit command in kit.verify.RUNNING while it
-    runs, so a missing dependency's install hint names the command actually run."""
+    runs, so a missing dependency's install hint names the command actually run. A reader that stops early
+    (python -m kit prizes | head -1) ends it with code 1 and no traceback, as Python's documentation advises
+    for SIGPIPE."""
     before = verify.RUNNING
     verify.RUNNING = (typed, name)
     try:
-        return args.func(args)
+        code = args.func(args)
+        sys.stdout.flush()                 # inside the try, so a closed pipe is caught here and not at exit
+    except BrokenPipeError:
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())   # the exit flush then writes nowhere instead of failing again
+        return 1
     finally:
         verify.RUNNING = before
+    return code
 
 
 def _console(script, argv=None):
