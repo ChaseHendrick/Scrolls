@@ -210,6 +210,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ROC curve**: A plot of true positive rate against false positive rate over all thresholds. AUC is the area under it.
 
+**routine (`kit routines`)**: A recurring, read-only repository check listed in `docs/routines.json`, daily or weekly, that any agent runs at session start with `python3 -m kit routines run --due`, so it does not depend on one account's scheduler. Its results stay in the ignored `work/routines/`.
+
 ## S
 
 **S3**: Amazon's object storage service, which hosts the open-data bucket.
