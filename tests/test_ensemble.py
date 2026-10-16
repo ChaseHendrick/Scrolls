@@ -123,6 +123,25 @@ class RankFastPathTest(unittest.TestCase):
                     self.assertSameBits(ensemble._ranks(np, v, valid, a), reference_ranks(np, v, valid))
                 self.assertSameBits(ensemble._ranks(np, v, valid), reference_ranks(np, v, valid))
 
+    def test_exact_sum_guard_boundary(self):
+        # The histogram path runs only while the largest tie group's rank sum, the biggest number the sort
+        # path's float64 bincount adds up, stays below _EXACT_SUM; at the sum itself the sort path runs.
+        rng = np.random.default_rng(24)
+        a = rng.integers(0, 3, (40, 40)).astype(np.uint16)
+        for valid in (a != 0, (a != 0) & (rng.random(a.shape) < 0.5)):
+            counts = np.bincount(a[valid]).tolist()
+            below = [sum(counts[:i]) for i in range(len(counts))]
+            biggest = max(sum(range(b, b + c)) for b, c in zip(below, counts))   # 0-based ranks, Python ints
+            self.assertGreater(biggest, max(counts))
+            v = ensemble._unit(np, a)
+            want = reference_ranks(np, v, valid)
+            for limit, sort_path in ((biggest, True), (biggest + 1, False)):
+                with mock.patch.object(ensemble, "_EXACT_SUM", limit), \
+                        mock.patch("numpy.unique", wraps=np.unique) as unique:
+                    got = ensemble._ranks(np, v, valid, a)
+                self.assertEqual(unique.called, sort_path, limit)
+                self.assertSameBits(got, want)
+
     def test_rank_combine_matches_the_sort(self):
         rng = np.random.default_rng(23)
         f = rng.random((60, 70)).astype(np.float32)
