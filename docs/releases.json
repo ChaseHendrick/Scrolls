@@ -42,20 +42,20 @@
     {
       "id": "autopipeline",
       "title": "AutoPipeline",
-      "summary": "AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. Its default reader is now Domenico Russo's Reader v2, a community fine-tune of `ink_9um`: on PHerc0841 w00, from the released scan and the published segment, it scored AUC 0.8752 forward and 0.5659 reversed, against 0.7479 and 0.5012 for `ink_9um` seed 42 on the same render (Model output, development data, 15 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.3, the third fix release, which also reads remote volumes faster and fetches villa's current VC3D AppImage, so the Docker build works again; the earlier releases stay on their own branches. Its last step, ink detection with the reversed-layer control, also runs in a browser with `ink_9um` seed 42: the [AutoPipeline ink Space](https://huggingface.co/spaces/SharpMeow/autopipeline-ink) maps a crop of a released segment, or a small surface volume you upload, and scores the crop where it has published ink labels.",
+      "summary": "AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. Its default reader is now Domenico Russo's Reader v2, a community fine-tune of `ink_9um`: on PHerc0841 w00, from the released scan and the published segment, it scored AUC 0.8752 forward and 0.5659 reversed, against 0.7479 and 0.5012 for `ink_9um` seed 42 on the same render (Model output, development data, 15 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.4, the fourth fix release: it passes remote volumes to VC3D's renderer in the form villa's builds since 12 October 2026 require (they refuse 0.1.3's), though no full remote render has run with it yet; the earlier releases stay on their own branches. Its last step, ink detection with the reversed-layer control, also runs in a browser with `ink_9um` seed 42: the [AutoPipeline ink Space](https://huggingface.co/spaces/SharpMeow/autopipeline-ink) maps a crop of a released segment, or a small surface volume you upload, and scores the crop where it has published ink labels.",
       "commands": [
-        "git clone --branch submission/progress-2026-10-fix3 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
-        "cd scrolls-autopipeline/submissions/progress-2026-10-fix3/autopipeline",
+        "git clone --branch submission/progress-2026-10-fix4 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
+        "cd scrolls-autopipeline/submissions/progress-2026-10-fix4/autopipeline",
         "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
         "python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy",
         "python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS"
       ],
-      "details": "Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix3/submissions/progress-2026-10-fix3/autopipeline/README.md). What changed: [in 0.1.3](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix3/submissions/progress-2026-10-fix3/CHANGES.md) and [in 0.1.2](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix2/submissions/progress-2026-10-fix2/CHANGES.md).",
-      "released": "2026-10-15",
+      "details": "Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md). What changed: [in 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/CHANGES.md) and [in 0.1.3](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix3/submissions/progress-2026-10-fix3/CHANGES.md).",
+      "released": "2026-10-16",
       "where": {
-        "branch": "submission/progress-2026-10-fix3",
-        "commit": "bd7d6cfcc9ac84bfdb3cc295d60f3b9c8696bbed",
-        "path": "submissions/progress-2026-10-fix3"
+        "branch": "submission/progress-2026-10-fix4",
+        "commit": "603fe14633201d6769776519646dc19cf203009f",
+        "path": "submissions/progress-2026-10-fix4"
       }
     },
     {
