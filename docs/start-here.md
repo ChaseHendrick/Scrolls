@@ -1,6 +1,6 @@
 # Start here: from "no idea" to a first submission
 
-Private operational plans, target outputs and submission material belong in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). This page is public background and general tooling guidance. Every other doc is listed by topic in the [docs index](README.md).
+Private operational plans, target outputs and submission material belong in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). This page is public background and general tooling guidance. Every other doc is listed by topic in the [docs index](README.md). Technical terms are defined in the [glossary](../GLOSSARY.md).
 
 Checked 2026-10-13. Prize facts come from [scrollprize.org/prizes](https://scrollprize.org/prizes) as snapshotted on 2026-10-11 (`python -m kit prizes`). Re-check the live page before you invest time.
 
