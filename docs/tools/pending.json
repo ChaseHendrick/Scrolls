@@ -1,0 +1,347 @@
+{
+ "about": "Tool pages still to be written, each with the coverage targets it will cover (kit modules, packages, scripts, commands, releases, skills and workflows). python -m kit.tooldocs check accepts these targets and links to these pages until the page exists; then it asks for the entry to be removed, so this list can only shrink. Delete the file when it is empty. The standard is docs/TOOL-DOCS.md.",
+ "pages": {
+  "autopipeline": {
+   "group": "pub-released",
+   "covers": [
+    "release autopipeline"
+   ]
+  },
+  "batch": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/autobatch.py",
+    "kit/scancatalog.py",
+    "python -m kit run all",
+    "python -m kit run watch",
+    "python -m kit run catalog"
+   ]
+  },
+  "cli": {
+   "group": "pub-planning",
+   "covers": []
+  },
+  "cloudcost": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/cloudcost.py"
+   ]
+  },
+  "compute": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/compute.py",
+    "python -m kit compute"
+   ]
+  },
+  "cropscan": {
+   "group": "pub-geometry",
+   "covers": [
+    "kit/cropscan.py"
+   ]
+  },
+  "doctor": {
+   "group": "pub-planning",
+   "covers": [
+    "kit/doctor.py",
+    "python -m kit doctor"
+   ]
+  },
+  "ensemble": {
+   "group": "pub-scoring",
+   "covers": [
+    "kit/ensemble.py",
+    "python -m kit ensemble"
+   ]
+  },
+  "experiment-records": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    "scripts/experiments"
+   ]
+  },
+  "false404-relay": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    "scripts/false404"
+   ]
+  },
+  "fetch": {
+   "group": "pub-data",
+   "covers": [
+    "kit/fetch.py",
+    "python -m kit fetch"
+   ]
+  },
+  "fibertensor": {
+   "group": "pub-data",
+   "covers": [
+    "kit/fibertensor.py",
+    "python -m kit fibertensor train",
+    "python -m kit fibertensor predict"
+   ]
+  },
+  "gate": {
+   "group": "pub-scoring",
+   "covers": [
+    "kit/gate.py",
+    "python -m kit gate"
+   ]
+  },
+  "greeklm": {
+   "group": "pub-letters",
+   "covers": [
+    "kit/greeklm.py",
+    "python -m kit greeklm build",
+    "python -m kit greeklm score"
+   ]
+  },
+  "hpscore": {
+   "group": "pub-scoring",
+   "covers": [
+    "kit/hpscore.py",
+    "python -m kit hpscore"
+   ]
+  },
+  "layers": {
+   "group": "pub-data",
+   "covers": [
+    "kit/layers.py",
+    "python -m kit layers",
+    "python -m kit shuffle"
+   ]
+  },
+  "letterdemo": {
+   "group": "pub-letters",
+   "covers": [
+    "kit/letterdemo.py",
+    "python -m kit letterdemo"
+   ]
+  },
+  "letterlines": {
+   "group": "pub-letters",
+   "covers": [
+    "kit/letterlines.py",
+    "python -m kit letterlines build",
+    "python -m kit letterlines score"
+   ]
+  },
+  "letterread": {
+   "group": "pub-letters",
+   "covers": [
+    "kit/letterexport.py",
+    "kit/letterread.py",
+    "python -m kit letterread",
+    "release letter-reader"
+   ]
+  },
+  "letters-training": {
+   "group": "pub-letters",
+   "covers": [
+    "scripts/letters"
+   ]
+  },
+  "mac-phase0": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    "scripts/mac-phase0.sh"
+   ]
+  },
+  "mac-verify": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    "scripts/mac-verify.sh"
+   ]
+  },
+  "mac-w045": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    "scripts/mac-w045.sh"
+   ]
+  },
+  "meshaudit": {
+   "group": "pub-geometry",
+   "covers": [
+    "kit/meshaudit.py",
+    "python -m kit meshaudit transforms",
+    "python -m kit meshaudit canvas",
+    "python -m kit meshaudit plan",
+    "python -m kit meshaudit depth"
+   ]
+  },
+  "modal-row": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/modalledger.py",
+    "python -m kit run modal-row"
+   ]
+  },
+  "overlap": {
+   "group": "pub-geometry",
+   "covers": [
+    "kit/overlap.py",
+    "python -m kit overlap",
+    "python -m kit collate"
+   ]
+  },
+  "phantom": {
+   "group": "pub-data",
+   "covers": [
+    "kit/phantom.py",
+    "scripts/phantom-demo.sh",
+    "python -m kit phantom"
+   ]
+  },
+  "plan": {
+   "group": "pub-planning",
+   "covers": [
+    "kit/plan.py",
+    "python -m kit plan",
+    "python -m kit cost"
+   ]
+  },
+  "prizes": {
+   "group": "pub-planning",
+   "covers": [
+    "kit/prizes.py",
+    "python -m kit prizes"
+   ]
+  },
+  "provenance": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/provenance.py",
+    "python -m kit provenance write",
+    "python -m kit provenance check"
+   ]
+  },
+  "quickstart-wip": {
+   "group": "pub-released",
+   "covers": []
+  },
+  "releases": {
+   "group": "pub-planning",
+   "covers": [
+    "kit/releases.py",
+    "python -m kit releases add",
+    "python -m kit releases render",
+    "python -m kit releases check",
+    "python -m kit releases list",
+    "python -m kit releases pin",
+    "python -m kit releases unpin"
+   ]
+  },
+  "rowscore": {
+   "group": "pub-scoring",
+   "covers": [
+    "kit/rowscore.py",
+    "python -m kit rowscore"
+   ]
+  },
+  "run-ledger": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/ledger.py",
+    "python -m kit run init",
+    "python -m kit run status",
+    "python -m kit run cost",
+    "python -m kit run record",
+    "python -m kit run check",
+    "python -m kit run list"
+   ]
+  },
+  "run-local": {
+   "group": "pub-ledger",
+   "covers": [
+    "kit/localcost.py",
+    "scripts/backfill",
+    "python -m kit run local",
+    "python -m kit run backfill"
+   ]
+  },
+  "scroll-session": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    ".claude/skills/scroll-session"
+   ]
+  },
+  "soup": {
+   "group": "pub-models",
+   "covers": [
+    "scripts/soup.py"
+   ]
+  },
+  "stackcheck": {
+   "group": "pub-geometry",
+   "covers": [
+    "kit/stackcheck.py",
+    "python -m kit stackcheck",
+    "release stackcheck"
+   ]
+  },
+  "strokenet": {
+   "group": "pub-models",
+   "covers": [
+    "kit/strokenet.py",
+    "scripts/strokenet",
+    "python -m kit strokenet",
+    "release strokenet"
+   ]
+  },
+  "surfacefix": {
+   "group": "pub-geometry",
+   "covers": [
+    "kit/_surface_geometry.py",
+    "kit/surfacefix.py",
+    "python -m kit surfacefix prepare",
+    "python -m kit surfacefix apply"
+   ]
+  },
+  "tooldocs": {
+   "group": "pub-planning",
+   "covers": [
+    "kit/tooldocs.py"
+   ]
+  },
+  "umbilicus": {
+   "group": "pub-models",
+   "covers": [
+    "scripts/umbilicus",
+    "release umbilicus-finder"
+   ]
+  },
+  "unroll": {
+   "group": "pub-released",
+   "covers": [
+    "release unroll"
+   ]
+  },
+  "v8in-run": {
+   "group": "pub-models",
+   "covers": [
+    "scripts/v8in_run.py"
+   ]
+  },
+  "verify": {
+   "group": "pub-scoring",
+   "covers": [
+    "kit/verify.py",
+    "python -m kit verify"
+   ]
+  },
+  "view": {
+   "group": "pub-data",
+   "covers": [
+    "kit/viewer.py",
+    "python -m kit view"
+   ]
+  },
+  "workbench-package": {
+   "group": "pub-scripts-apps",
+   "covers": [
+    ".github/workflows/check.yml",
+    "pyproject.toml"
+   ]
+  }
+ }
+}

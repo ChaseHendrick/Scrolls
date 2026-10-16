@@ -1,4 +1,4 @@
-# Tool name: what it does in a few words
+# {id}: <!-- Write: what it does in a few words, such as "score an ink map against labels" -->
 
 <!-- Write: one sentence, at most 300 characters, saying what the tool does and what it is for. The index shows it. -->
 
@@ -7,36 +7,48 @@
 | Id | `{id}` |
 | Status | {status} |
 | Kind | {kind} |
-| Run | <!-- Write: each entry point in code, such as `python -m kit auc`; for a library, None (library) and the import, such as `from kit import auc` --> |
-| Code | <!-- Write: every file of the tool, in code, such as `kit/auc.py`, `kit/cli.py` (`cmd_auc`) --> |
-| Tests | <!-- Write: test files in code, or None and why --> |
+| Area | {area} |
+| Run | {run} |
+| Code | {code} |
+| Tests | {tests} |
 | Needs | <!-- Write: Python version, packages, outside tools (villa, VC3D) and data, with versions --> |
-| Runs on | <!-- Write: where it should run and how long it takes, such as CPU, seconds per segment (measured 2026-10-07, log link) --> |
+| Runs on | <!-- Write: where it runs and how long it takes, with the source, such as CPU, about 5 s per segment (measured 2026-10-16, 4-core Xeon) --> |
 | Network | <!-- Write: None, or every host it contacts and why --> |
 | Writes | <!-- Write: Nothing (prints only), or every file and folder it creates or changes --> |
-| Go-ahead | <!-- Write: Not needed, or Needed and why (posting, uploading, renting compute: AGENTS.md hard rule 8) --> |
-| Released | <!-- Write: where it is public, such as Public `main` since 2026-10-07, or Private only --> |
-| Checked | {date} against commit <!-- Write: the short commit you read --> |
+| Go-ahead | <!-- Write: Not needed, or Needed and why (posting, uploading, renting compute) --> |
+| Released | <!-- Write: where it is public and since when, such as Public `main` since 2026-10-07, or Private only --> |
+| Checked | {date} against commit `{commit}` |
 
 ## What it does
 
-<!-- Write: two to five paragraphs in plain words: the problem, what the tool does about it, what it does not do and
-what its output must not be called (an ink map is model output, not a reading). Define every internal name. -->
+<!-- Write: two to five short paragraphs in plain words: the problem, what the tool does about it, what it does not do,
+and what its output must not be called (an ink map is model output, not a reading). Define every internal name. -->
 
 ## When to use it
 
-<!-- Write: the situations it fits, then "Do not use it" cases, each with the tool to use instead. -->
+<!-- Write: the situations it fits, then a "Do not use it" list, each case with the tool to use instead. -->
 
 ## Quick start
 
-<!-- Write: the shortest real run, in a bash block that can be pasted, then what it prints (a short excerpt), then
-how to tell it worked. Placeholders in CAPITALS, each explained below the block. -->
+<!-- Write: the shortest real run in a bash block, a short excerpt of what it printed when you ran it, and how to tell
+it worked. Placeholders are CAPITALS, each explained under the block. -->
+
+## Checks and controls
+
+<!-- Write: the control that lets the result fail, how to run it, what a pass and a fail look like, with the numbers
+and their source. -->
+
+Claim label: <!-- Write: one of the claim labels in docs/TOOL-DOCS.md, and what it applies to -->
 
 ## Commands and options
 
-<!-- Write: one ### heading per command or action. Under each, the usage line, then a table with every positional
-argument and every option: | Option | Default | Meaning |. Defaults come from the code. For a library, use the
-heading "## Python API" instead, with each public function's signature, arguments, return value and errors. -->
+{commands_block}
+
+{env_block}
+
+## Python API
+
+{api_block}
 
 ## Inputs
 
@@ -44,33 +56,37 @@ heading "## Python API" instead, with each public function's signature, argument
 
 ## Outputs
 
-<!-- Write: what it prints, every file it writes, every JSON field (| Field | Type | Meaning |) and every exit code
-(| Code | Meaning |). -->
+<!-- Write: what it prints, every file it writes, every JSON field (| Field | Type | Meaning |, with units). -->
 
-## How it works
-
-<!-- Write: the method step by step, with the constants that matter (name and value from the code) and sources for
-any published method it follows. -->
-
-## Checks and controls
-
-<!-- Write: the control that lets the result fail (AGENTS.md hard rule 4), how to run it, what a pass and a fail look
-like, and the claim label the output carries (docs/NOVELTY.md). -->
+| Exit code | Meaning |
+| --- | --- |
+| `0` | <!-- Write: success, and what success means here --> |
+| `1` | <!-- Write: what exit 1 means, or delete the row --> |
+| `2` | <!-- Write: what exit 2 means, or delete the row --> |
 
 ## Failure modes
 
-<!-- Write: a table | What you see | Why | What to do |, with the exact error messages from the code. -->
+{failures_block}
+
+## How it works
+
+<!-- Write: the method step by step, the constants that matter (name and value from the code) and the source of any
+published method it follows. -->
 
 ## Cost and time
 
-<!-- Write: measured times and memory with date, machine and source; where it must run (rule 11: GPU work and long
-CPU jobs go to Modal); cost if it rents anything. Write "Not measured" rather than guess. -->
+<!-- Write: measured times and memory with date, machine and source; where it must run; the cost if it rents
+anything. Write "Not measured" rather than guess. -->
 
 ## For agents
 
-<!-- Write: the exact command for the common case and its machine-readable form (--json), what it reads, writes and
-sends, whether it is safe to rerun, what needs the user's go-ahead, how to tell success from failure, and what never
-to do with it or its output. -->
+- **Command:** <!-- Write: the exact command for the common case, and its machine-readable form -->
+- **Parse:** <!-- Write: what to read from the output: the JSON fields or lines and what each means -->
+- **Rerun:** <!-- Write: safe to rerun or not, and what a rerun overwrites -->
+- **Success:** <!-- Write: the exit code and the output values that mean it worked -->
+- **Not a pass:** <!-- Write: results that look fine but must not be trusted, such as a score with no control -->
+- **Go-ahead:** <!-- Write: what needs the user's yes first, or "Nothing" -->
+- **Never:** <!-- Write: what never to do with the tool or its output -->
 
 ## Tests
 
@@ -78,7 +94,7 @@ to do with it or its output. -->
 
 ## History
 
-<!-- Write: dated changes, newest first, with PR or commit links; for a retired tool, why it was retired. -->
+{history_block}
 
 ## Related
 
