@@ -464,16 +464,31 @@ def _conv3(x, w, b):
     xp = np.pad(x, ((0, 0), (0, 0), (1, 1), (1, 1)))
     out = np.empty((N, O, H, W), np.float32)
     wm = w.reshape(O, C * 9).T
+    # im2col: one row per pixel (y, x), columns in (c, dy, dx) order. Nine block copies from the channel-last
+    # image fill the same matrix that sliding_window_view(...).transpose(1, 2, 0, 3, 4).reshape gathered, faster,
+    # and the matrix product is the same call on the same matrices, so the output is the same bit for bit.
+    cols = np.empty((H, W, C, 3, 3), xp.dtype)
     for n in range(N):
-        cols = np.lib.stride_tricks.sliding_window_view(xp[n], (3, 3), axis=(1, 2))
-        cols = cols.transpose(1, 2, 0, 3, 4).reshape(H * W, C * 9)
-        out[n] = (cols @ wm + b).T.reshape(O, H, W)
+        xt = xp[n].transpose(1, 2, 0)
+        for dy in range(3):
+            for dx in range(3):
+                cols[:, :, :, dy, dx] = xt[dy:dy + H, dx:dx + W]
+        out[n] = (cols.reshape(H * W, C * 9) @ wm + b).T.reshape(O, H, W)
     return out
 
 
 def _pool2(x):
+    """2 x 2 max pooling of (N, C, H, W), dropping an odd last row or column.
+
+    The elementwise maximum of the four strided slices: the same values as a max over the reshaped
+    2 x 2 blocks, which numpy reduces over the strided axes many times more slowly."""
     N, C, H, W = x.shape
-    return x[:, :, :H // 2 * 2, :W // 2 * 2].reshape(N, C, H // 2, 2, W // 2, 2).max(axis=(3, 5))
+    h2, w2 = H // 2 * 2, W // 2 * 2
+    out = x[:, :, 0:h2:2, 0:w2:2].copy()
+    np.maximum(out, x[:, :, 0:h2:2, 1:w2:2], out=out)
+    np.maximum(out, x[:, :, 1:h2:2, 0:w2:2], out=out)
+    np.maximum(out, x[:, :, 1:h2:2, 1:w2:2], out=out)
+    return out
 
 
 def iaaft(windows, rng, iters=IAAFT_ITERS):

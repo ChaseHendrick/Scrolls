@@ -7,6 +7,7 @@ import sys
 import tempfile
 import tracemalloc
 import unittest
+from unittest import mock
 from pathlib import Path
 
 from kit import cli
@@ -713,6 +714,74 @@ class StrokeNetTest(unittest.TestCase):
                     rc = cli.main(["strokenet", mp, "--pixel-mm", "0.048"] + argv)
                 self.assertEqual(rc, 2)
                 self.assertTrue(err.getvalue())
+
+
+
+def reference_conv3(x, w, b):
+    """kit.strokenet._conv3 as it was: im2col gathered through sliding_window_view."""
+    N_, C, H, W = x.shape
+    O = w.shape[0]
+    xp = np.pad(x, ((0, 0), (0, 0), (1, 1), (1, 1)))
+    out = np.empty((N_, O, H, W), np.float32)
+    wm = w.reshape(O, C * 9).T
+    for n in range(N_):
+        cols = np.lib.stride_tricks.sliding_window_view(xp[n], (3, 3), axis=(1, 2))
+        cols = cols.transpose(1, 2, 0, 3, 4).reshape(H * W, C * 9)
+        out[n] = (cols @ wm + b).T.reshape(O, H, W)
+    return out
+
+
+def reference_pool2(x):
+    """kit.strokenet._pool2 as it was: a max over the reshaped 2 x 2 blocks."""
+    N_, C, H, W = x.shape
+    return x[:, :, :H // 2 * 2, :W // 2 * 2].reshape(N_, C, H // 2, 2, W // 2, 2).max(axis=(3, 5))
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class FastPathTest(unittest.TestCase):
+    """The faster convolution, pooling and IAAFT give the same bits as the simple code they replaced."""
+
+    def assertSameBits(self, got, want):
+        self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+        self.assertEqual(got.tobytes(), want.tobytes())
+
+    def test_pool2_matches_reshape_max(self):
+        rng = np.random.default_rng(11)
+        for shape in ((4, 16, 64, 64), (2, 3, 9, 11), (1, 1, 1, 1), (1, 2, 1, 5), (1, 2, 5, 1), (0, 3, 4, 4)):
+            x = rng.normal(size=shape).astype(np.float32)
+            if x.size > 4:
+                x.flat[::5] = 0.0
+                x.flat[1::7] = -0.0
+                x.flat[2::17] = np.nan
+            self.assertSameBits(N._pool2(x), reference_pool2(x))
+
+    def test_conv3_same_bits(self):
+        rng = np.random.default_rng(12)
+        released = [(2, 1, 128, 128, 16), (2, 16, 128, 128, 16), (2, 16, 64, 64, 32), (2, 32, 64, 64, 32),
+                    (2, 32, 32, 32, 64), (2, 64, 32, 32, 64), (2, 64, 16, 16, 128), (2, 128, 16, 16, 128),
+                    (2, 128, 8, 8, 128), (2, 128, 4, 4, 128)]
+        small = [(3, 8, 13, 7, 5), (2, 6, 10, 10, 6), (1, 4, 8, 8, 4), (2, 3, 9, 11, 5), (1, 1, 1, 1, 1),
+                 (1, 2, 1, 6, 3), (0, 2, 4, 4, 3)]
+        for n, c, h, wd, o in released + small:
+            x = np.maximum(rng.normal(size=(n, c, h, wd)), 0).astype(np.float32)
+            w = (rng.normal(size=(o, c, 3, 3)) * (2 / (c * 9)) ** 0.5).astype(np.float32)
+            b = (rng.normal(size=o) * 0.1).astype(np.float32)
+            self.assertSameBits(N._conv3(x, w, b), reference_conv3(x, w, b))
+        x = rng.normal(size=(2, 3, 9, 11))                     # float64 input, as a caller may pass
+        w = rng.normal(size=(5, 3, 3, 3)).astype(np.float32)
+        b = rng.normal(size=5).astype(np.float32)
+        self.assertSameBits(N._conv3(x, w, b), reference_conv3(x, w, b))
+
+    def test_logits_same_bits_in_released_layout(self):
+        with tempfile.TemporaryDirectory() as d:
+            write_random_net(Path(d) / "w.npz", chans=(16, 32, 64, 128, 128))
+            net = N.StrokeNet(Path(d) / "w.npz")
+        self.assertEqual(sorted(net.pool_after), [1, 3, 5, 7, 9])
+        win = np.random.default_rng(13).integers(4, 256, (3, 128, 128)).astype(np.float32)
+        got = net.logits(win)
+        with mock.patch.object(N, "_conv3", reference_conv3), mock.patch.object(N, "_pool2", reference_pool2):
+            want = net.logits(win)
+        self.assertSameBits(got, want)
 
 
 if __name__ == "__main__":
