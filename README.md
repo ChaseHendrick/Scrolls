@@ -121,7 +121,7 @@ scrolls-letterread MAP.png --weights letters-v2-ccby --letter-px 86 --overlay MA
 
 ## Interactive viewer
 
-[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is a browser page on Hugging Face Spaces that rebuilds 37 traced windings of PHerc. 139 in 3D and unrolls them, with X-ray, published ink (2.4 µm) and `ink_9um` (9.362 µm) layers and a per-winding close-up. Data: Vesuvius Challenge, CC BY-NC 4.0. Details and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
+[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is a browser page on Hugging Face Spaces that rebuilds 37 traced windings of PHerc. 139 in 3D and unrolls them, with X-ray, Published ink (2.4 µm) and Our ink model (9 µm, `ink_9um`, a growing set of windings) layers and a per-winding close-up. Data: Vesuvius Challenge, CC BY-NC 4.0. Details and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
 ## Quick start (kit)
 

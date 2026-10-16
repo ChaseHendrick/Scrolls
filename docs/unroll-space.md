@@ -9,8 +9,8 @@ Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 tr
 - The real winding shapes, from the public 9.362 µm surface meshes, decimated for the browser.
 - An X-ray layer: CT intensity on each surface.
 - A published ink layer: the Vesuvius Challenge ink detection on the 2.4 µm scan.
-- A second ink layer for six windings (`w046` to `w051`), produced by running the open `scrollprize/ink_9um` model on the 9.362 µm scan. It is coarser than the published layer and is shown as a comparison baseline.
-- A close-up view per winding with pan, zoom, a scale bar and a swipe comparison between the two ink layers.
+- A second ink layer, "Our ink model (9 µm)", from the public [`scrollprize/ink_9um`](https://huggingface.co/scrollprize/ink_9um) model run on the 9.362 µm scan. So far it has been run on Hugging Face ZeroGPU over windings `w046` to `w051`. More windings are added as daily free GPU runs allow, so this layer is a work in progress and will grow. It is coarser than the published layer and is shown as a comparison baseline.
+- A close-up view per winding with pan, zoom, a scale bar and a swipe comparison between Published ink (2.4 µm) and Our ink model (9 µm).
 
 ## Using it
 
@@ -18,7 +18,8 @@ Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 tr
 - Scrub the timeline, or press play, to unroll from the outermost winding to the innermost.
 - Click a sheet, or use the Read button, to open its close-up.
 - Press `?` for keyboard shortcuts.
-- A "Tear apart" mode simulates brittle carbonized papyrus breaking and crushing. It is a visual toy, not a model of a real unrolling.
+- A "Destroy" mode lets a visitor tear, crush, burn or soak the papyrus, rolled up or unrolled, with damage that stays as the scroll is rolled and unrolled. It is a visual toy, not a model of real damage or a real unrolling.
+- A "Roll up" button (or `U`) rolls the scroll back up.
 
 ## Credits
 
