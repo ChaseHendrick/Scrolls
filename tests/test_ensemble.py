@@ -56,6 +56,25 @@ class EnsembleTest(unittest.TestCase):
         with self.assertRaises(verify.VerifyError):
             ensemble.combine([a, a], method="median")
 
+    def test_npy_input_must_be_a_2d_map(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            np.save(root / "a.npy", np.ones((3, 4, 5), np.float32))
+            np.save(root / "b.npy", np.ones((3, 4, 5), np.float32))
+            np.save(root / "c.npy", np.ones((1, 4, 5), np.float32))
+            np.save(root / "d.npy", np.ones((4, 5), np.float32))
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                code = cli.main(["ensemble", str(root / "e.npy"), str(root / "a.npy"), str(root / "b.npy")])
+            self.assertEqual(code, 2)
+            self.assertIn("expected a 2D map", err.getvalue())
+            self.assertFalse((root / "e.npy").exists())
+            with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(cli.main(["ensemble", str(root / "e.npy"), str(root / "missing.npy"),
+                                           str(root / "d.npy")]), 2)
+            result = ensemble.ensemble_files(root / "e.npy", [root / "c.npy", root / "d.npy"])
+            self.assertEqual(result["shape"], [4, 5])
+
     def test_files_round_trip_keeps_valid_pixels_above_zero(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
