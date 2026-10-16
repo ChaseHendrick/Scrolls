@@ -256,6 +256,55 @@ class BatchTest(unittest.TestCase):
         again = autobatch.watch(self.state, fetch=lambda: doc, levels_get=no_net, rates=self.rates)
         self.assertEqual(again["queued"], [])
 
+    def test_watch_retries_a_row_that_failed_and_flags_it(self):
+        """A row whose planning failed is not saved as seen: the next run plans it again, and the run that
+        failed exits 3 with --exit-code like one that queued something."""
+        import contextlib
+        import io
+        from unittest import mock
+        from kit import cli
+        autobatch.watch(self.state, fetch=lambda: self.doc, levels_get=no_net, rates=self.rates)
+        cat = catalog()
+        cat["samples"]["S1"]["volumes"]["20270101000011"] = vol("20270101000011", 2.4, [800, 800, 800])
+        newer = scancatalog.build(cat, {"S1": LISTED["S1"] + ["20270101000011-2.4um-0.2m-78keV-masked.zarr"]},
+                                  SNAP, live_html="", checked="t2")
+
+        prepare = autobatch._prepare
+
+        def broken(r, *a):
+            if r["volume"] == "20270101000011":
+                raise ValueError("Expecting value: an empty zattrs cache")
+            return prepare(r, *a)
+        with mock.patch.object(autobatch, "_prepare", side_effect=broken):
+            failed = autobatch.watch(self.state, fetch=lambda: newer, levels_get=no_net, rates=self.rates)
+        self.assertEqual(failed["queued"], [])
+        self.assertEqual([q["key"] for q in failed["rejected"]], ["S1/20270101000011"])
+        self.assertEqual(failed["failed"], 1)
+        fixed = autobatch.watch(self.state, fetch=lambda: newer, levels_get=no_net, rates=self.rates)
+        self.assertEqual([q["key"] for q in fixed["queued"]], ["S1/20270101000011"])
+        out = io.StringIO()
+        with mock.patch.object(autobatch, "watch", return_value=failed), contextlib.redirect_stdout(out):
+            self.assertEqual(cli.main(["run", "watch", "--state", str(self.state), "--exit-code"]), 3)
+        self.assertIn("rejected S1/20270101000011", out.getvalue())
+
+    def test_watch_prints_names_the_catalog_left_out(self):
+        """build() leaves out an unsafe bucket name; watch gives it a key, so the plain-text output prints it
+        instead of failing with KeyError."""
+        import contextlib
+        import io
+        from unittest import mock
+        from kit import cli
+        listed = {"S1": LISTED["S1"] + ["bad name.zarr"]}
+        doc = scancatalog.build(catalog(), listed, SNAP, live_html="", checked="t")
+        self.assertEqual(len(doc["rejected"]), 1)
+        res = autobatch.watch(self.state, fetch=lambda: doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual(res["failed"], 0)
+        self.assertTrue(all("key" in q for q in res["rejected"]))
+        out = io.StringIO()
+        with mock.patch.object(autobatch, "watch", return_value=res), contextlib.redirect_stdout(out):
+            self.assertEqual(cli.main(["run", "watch", "--state", str(self.state), "--exit-code"]), 3)
+        self.assertIn("rejected S1/", out.getvalue())
+
     def test_approve_checks_plan_contents_settings_and_cost(self):
         plan = self.plan()
         pj = self.state / "plan.json"

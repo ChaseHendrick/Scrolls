@@ -355,7 +355,8 @@ def cmd_batch(args):
                       f"{res['catalog_volumes']} volumes in the catalog" + (" (first run: all are new)" if res["first_run"] else ""))
                 for q in res["rejected"]:
                     print(f"rejected {q['key']}: {q['reason']}")
-            return 3 if (args.exit_code and res["queued"]) else 0
+            # a row that failed to plan needs a look as much as a new one, and it is retried on the next run
+            return 3 if (args.exit_code and (res["queued"] or res["failed"])) else 0
         if args.status:
             rows = autobatch.status_table(args.state)
             for r in rows:

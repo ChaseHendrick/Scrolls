@@ -514,6 +514,19 @@ def watch(state=STATE, fetch=None, levels_get=None, rates=None):
         queued.append({"key": scancatalog.key(r), "change": change,
                        "status": status, "voxel_um": cfg["voxel_um"], "readers": cfg["readers"],
                        "usd": cost["usd"], "reason": cfg["skip"] or cfg["block"]})
+    if rejected:   # a row that failed is saved as last seen (or not at all), so the next run tries it again
+        failed = {r["key"] for r in rejected}
+        before = {scancatalog.key(r): r for r in (old or {}).get("volumes", [])}
+        kept = []
+        for r in new["volumes"]:
+            k = scancatalog.key(r)
+            if k not in failed:
+                kept.append(r)
+            elif k in before:
+                kept.append(before[k])
+        new = {**new, "volumes": kept}
     scancatalog.write(new, path)
+    unsafe = [{**e, "key": f"{str(e.get('sample'))[:80]}/{str(e.get('volume') or e.get('name'))[:80]}"}
+              for e in new.get("rejected", [])]   # names build() left out: they carry no "key" of their own
     return {"first_run": old is None, "queued": queued, "gone": d["gone"], "catalog_volumes": len(new["volumes"]),
-            "rejected": rejected + list(new.get("rejected", []))}
+            "rejected": rejected + unsafe, "failed": len(rejected)}
