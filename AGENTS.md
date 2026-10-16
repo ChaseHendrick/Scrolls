@@ -21,6 +21,8 @@ Many files here are long: read the top of each and search the rest.
 3. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
 4. [`docs/MAP.md`](docs/MAP.md): the repository map, one row per module and script. Search it for a tool or a path.
 
+Released tools are listed in the README's ["Released tools"](README.md#released-tools) section, including [Unroll](https://huggingface.co/spaces/SharpMeow/unroll), the interactive 3D viewer released as a Hugging Face Space (v1.0, release candidate; guide: [`docs/unroll-space.md`](docs/unroll-space.md)).
+
 Terms used in the code and docs are defined, A to Z, in [`GLOSSARY.md`](GLOSSARY.md). Add a term there when you introduce one.
 
 Open these when the task needs them:
