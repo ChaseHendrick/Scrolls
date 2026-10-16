@@ -24,7 +24,7 @@ How to read it:
 - Rows are sorted by Forward within a window. A higher Forward is not a ranking by itself: check the controls and the
   held-out column first. `kit gate` applies the Phase 0 rule to the crop rows.
 
-Written from results.json of 2026-10-14.
+Written from results.json of 2026-10-16.
 
 ## Measured in this repository
 
@@ -152,8 +152,8 @@ Each team's own crop, labels and settings, so these do not compare directly with
 | v8in d89166b | PHerc0841 ag405, labels' bounding box, human labels | held out | 0.8100 | 0.5860 | +0.2240 | [github.com/Bullo27/v8in-12gb](https://github.com/Bullo27/v8in-12gb) | 2026-10-01 |  |
 | v8in d89166b | PHerc0841 ag896, labels' bounding box, human labels | held out | 0.8070 | 0.6180 | +0.1890 | [github.com/Bullo27/v8in-12gb](https://github.com/Bullo27/v8in-12gb) | 2026-10-01 |  |
 | v8in d89166b | PHerc0841 w00, labels' bounding box, human labels | held out | 0.8370 | 0.5620 | +0.2750 | [github.com/Bullo27/v8in-12gb](https://github.com/Bullo27/v8in-12gb) | 2026-10-01 |  |
-| Hecate + Reader v2 mean | PHerc0841 whole, human labels | **possibly NOT held out** | 0.8660 |  |  | [huggingface.co/domenicor046/reader-v2](https://huggingface.co/domenicor046/reader-v2) | not recorded | PHerc0841 may not be held out from Hecate: its base model's committed trainer lists all three PHerc0841 segments (see held_out.PHerc0841) |
-| Hecate | PHerc0841 whole, human labels | **possibly NOT held out** | 0.8550 |  |  | [huggingface.co/domenicor046/reader-v2](https://huggingface.co/domenicor046/reader-v2) | not recorded | PHerc0841 may not be held out from Hecate: its base model's committed trainer lists all three PHerc0841 segments (see held_out.PHerc0841) |
+| Hecate + Reader v2 mean | PHerc0841 whole, human labels | **NOT held out** | 0.8660 |  |  | [huggingface.co/domenicor046/reader-v2](https://huggingface.co/domenicor046/reader-v2) | not recorded | PHerc0841 is not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, makes them validation-only (see held_out.PHerc0841) |
+| Hecate | PHerc0841 whole, human labels | **NOT held out** | 0.8550 |  |  | [huggingface.co/domenicor046/reader-v2](https://huggingface.co/domenicor046/reader-v2) | not recorded | PHerc0841 is not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, makes them validation-only (see held_out.PHerc0841) |
 | Reader v2 | PHerc0841 whole, human labels | held out | 0.8240 |  |  | [huggingface.co/domenicor046/reader-v2](https://huggingface.co/domenicor046/reader-v2) | not recorded |  |
 | ink_9um | PHerc0841 whole, human labels | held out | 0.7330 |  |  | [huggingface.co/domenicor046/reader-v2](https://huggingface.co/domenicor046/reader-v2) | not recorded |  |
 | Reader v2 + d9v2 mean | PHerc0841, TAUIL held-out benchmark | held out | 0.8400 |  |  | [github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search](https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search) | not recorded |  |
