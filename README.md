@@ -119,6 +119,10 @@ scrolls-letterread MAP.png --weights letters-v2-ccby --letter-px 86 --overlay MA
 `scrolls-letterdemo` checks the install on synthetic letters (it downloads the 6 MB of weights once) and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the 38 um grid of the public-map demo, `scripts/letters/demo_p1667.py`. Give the reader its own virtual environment, apart from AutoPipeline's: both install a package named `kit`. Windows, other letter sizes, that demo, both model cards and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
+## Interactive viewer
+
+[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is a browser page on Hugging Face Spaces that rebuilds 37 traced windings of PHerc. 139 in 3D and unrolls them, with X-ray, Published ink (2.4 µm) and Our ink model (9 µm, `ink_9um`, a growing set of windings) layers and a per-winding close-up. Data: Vesuvius Challenge, CC BY-NC 4.0. Details and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
+
 ## Quick start (kit)
 
 Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). The Greek letter reader is not: it needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
