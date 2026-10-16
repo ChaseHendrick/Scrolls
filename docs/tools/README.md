@@ -106,6 +106,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | --- | --- | --- | --- | --- |
 | [cli](cli.md) | Current | `python -m kit` | Not needed | `python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts. |
 | [releases](releases.md) | Current | `python -m kit releases add` | Not needed | `python -m kit releases` keeps `docs/releases.json`, the list of tools released from private work into this repository, and writes the README's "Released tools" section from it: pinned entries first, then newest first. |
+| [tooldocs](tooldocs.md) | Current | `python -m kit.tooldocs check` | Not needed | `python -m kit.tooldocs` checks every page in `docs/tools/` against the standard in `docs/TOOL-DOCS.md` and against the code, writes the index, prints a page or one section of it for agents, and starts new pages prefilled from the code. |
 | [workbench-package](workbench-package.md) | Current | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` | Not needed | `pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench` 0.2.0, with three extras and four console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it. |
 
 ### Viewers and apps
