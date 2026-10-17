@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07 (`bec6fb9`). The AutoPipeline release package carries the module (same code, older docstring) but no `gate` command |
 | Guide | [STANDARDS.md](../STANDARDS.md) (the Gate A row and its known gap), [mac.md](../mac.md) (the Phase 0 queue that ends with this table) |
-| Checked | 2026-10-16 against commit `63753fa` |
+| Checked | 2026-10-17 against commit `a6beee7` |
 
 ## What it does
 
@@ -26,7 +26,7 @@ Several released ink readers (ink models) can be run on the same surface. Gate A
 
 The rule: score each reader on three 640 px crops of PHerc0841 (one each on segments w00, ag896 and ag405, the windows of densest labelled ink, with a 64 px edge left out), with [`auc`](auc.md) against the organizers' labels of 2026-09-18. Rank readers by their mean forward AUC over the three crops. A reader counts only if its forward AUC is at least 0.10 above its reverse-depth AUC on every crop (the reverse-depth map is the same model run with the volume's layers in the opposite order; see [auc](auc.md)). One reader beats another only by a lead of at least 0.02 in mean AUC.
 
-`kit gate` applies that rule mechanically. It reads two sources of scores. The committed "bars" are the CPU scores in [`results.json`](../results.json) (rows of `results` with `window` "crop" and `inner_px` 64). The Mac results are the `kit auc --json` files that `scripts/mac-w045.sh` writes under `WORK/SEGMENT/results/` when run in QUICK mode (crop only) by `scripts/mac-phase0.sh`. A Mac file counts only if it was scored on the same crop with the same 64 px edge. As a device check, the Mac's `ink_9um` seed 42 score must equal the committed CPU bar to four decimals; a difference is printed as a MISMATCH and makes the exit code 1.
+`kit gate` applies that rule mechanically. It reads two sources of scores. The committed "bars" are the CPU scores in [`results.json`](../results.json) (rows of `results` with `window` "crop" and `inner_px` 64). The Mac results are the `kit auc --json` files that `scripts/mac-w045.sh` writes under `WORK/SEGMENT/results/` when run in QUICK mode (crop only) by `scripts/mac-phase0.sh`. A Mac file counts only if it was scored on the same crop with the same 64 px edge. As a device check, the Mac's `ink_9um` seed 42 score must equal the committed CPU bar to four decimals; a mismatch is printed as MISMATCH, blocks the verdict (no winner or lead) and makes the exit code 1.
 
 It does not run any model, score any map, or test whether a lead is beyond sampling noise: it only reads AUCs that already exist. A Gate A winner is the reader with the best agreement with human ink labels on these crops. It is not a reader of letters, and its maps are model output, not readings.
 
@@ -81,7 +81,7 @@ and the exit code was 1. It worked when the exit code is 0 and the last line sta
 ## Checks and controls
 
 - **Reverse-depth control on every crop** (`--min-gap`, default `MIN_GAP` 0.10). A reader whose forward AUC is less than 0.10 above its reverse AUC on any crop, or that has no reverse AUC, is listed with `too close (min gap ...)` and cannot win, even when its mean is highest (`tests/test_gate.py`, `test_weak_control_is_flagged`). On a synthetic reader with forward 0.95 and reverse 0.90 on all three crops it printed `too close (min gap 0.05)` and the verdict went to the next reader. The committed readers pass with little room: the smallest committed gap is 0.1015 (`ink_9um` seed 42 on ag896, 0.6594 against 0.5579, `results` in `results.json`).
-- **Mac against CPU** (`consistency`). The Mac's `ink_9um` seed 42 forward AUC must be within 0.0001 of the committed CPU bar on every crop both have. A mismatch prints `MISMATCH` and the exit code is 1; the table and verdict are still printed, so read the exit code.
+- **Mac against CPU** (`consistency`). The Mac's `ink_9um` seed 42 forward AUC must be within 0.0001 of the committed CPU bar on every crop both have. A mismatch prints `MISMATCH`, sets `verdict.blocked` to true, clears `winner` and `lead`, sets `clear` to false and makes the exit code 1. The table remains visible for diagnosis; its order is not an accepted winner.
 - **Sampling noise.** The gate applies no interval. A 1 mm block bootstrap on PHerc0841 gave 95 % interval half-widths of 0.008 (w00) to 0.038 (ag405) for the team's maps (README finding 8, [overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md)), so a lead near 0.02 is within noise; [STANDARDS.md](../STANDARDS.md) lists this as a known gap and asks for a paired comparison (`kit auc --compare --bootstrap 300`) beside the gate. The current committed lead, 0.1016, is well outside that range (Interpretation).
 - **Crops are not independent.** w00 and ag896 are patches of one shared sheet, so a three-crop mean weights that sheet twice ([tricks tables](../../scripts/experiments/2026-10-07-cloud/tricks/tables.md)).
 - **Held-out data.** PHerc0841 is outside the training data of `ink_9um`, v8in, v8in-1447, d9v2 and Reader v2 (`held_out` in `results.json`), which is why the gate uses it. Do not add Hecate to the table.
@@ -121,7 +121,7 @@ print(result["verdict"]["winner"], result["verdict"]["clear"])
 | `from_mac(work, crops)` | `(table, skipped)`: `table` as above with the file path as third item; `skipped` is a list of `PATH: reason` strings | `KeyError` when `crops` lacks a segment; a file whose `forward` or `control` is not an object is skipped, not raised | Reads `work/SEGMENT/results/auc_*.json` in sorted order. Names come from `MAC_NAMES`: `ink9um_s42` is `ink_9um seed42 (Mac)`, `ink9um_s43` is `ink_9um seed43 (Mac)`, `v8in` is `v8in`, `v8in1447` is `v8in-1447`; any other file stem is used as it is |
 | `decide(table, min_lead=MIN_LEAD, min_gap=MIN_GAP)` | Dict with `ranked`, `incomplete`, `verdict` and `rule` (see Outputs) | Nothing of its own | The rule itself, on a table of `{reader: {segment: (forward, reverse, source)}}` |
 | `consistency(bars, mac)` | List of `{"segment", "cpu", "mac", "match"}`, one per crop where both `ink_9um seed42` (committed) and `ink_9um seed42 (Mac)` have a forward AUC | Nothing of its own | `match` is true when the two differ by at most 0.0001 |
-| `run(work=None, results=RESULTS, min_lead=MIN_LEAD, min_gap=MIN_GAP)` | `decide`'s dict plus `checks` and `skipped` | As `committed` and `from_mac` | What the command runs. Mac cells are merged over committed cells of the same reader name |
+| `run(work=None, results=RESULTS, min_lead=MIN_LEAD, min_gap=MIN_GAP)` | `decide`'s dict plus `checks`, `skipped` and `replaced`; a device mismatch adds `verdict.blocked: true` | As `committed` and `from_mac` | What the command runs. Mac cells replace committed cells of the same reader name and segment, with each replacement recorded. Any failed device check suppresses the winner and lead |
 | `format_result(result)` | str: the Markdown table and lines the command prints | `KeyError` on a dict without `checks` and `skipped`, such as `decide`'s output alone | Forward AUC to 4 decimals, reverse to 3 in brackets (`?` when missing) |
 
 Module constants: `SEGMENTS = ("0841-w00", "0841-ag896", "0841-ag405")`, `MIN_LEAD = 0.02`, `MIN_GAP = 0.10`, `INNER = 64`, `RESULTS` (the clone's `docs/results.json`), `MAC_NAMES`.
@@ -131,18 +131,19 @@ Module constants: `SEGMENTS = ("0841-w00", "0841-ag896", "0841-ag405")`, `MIN_LE
 | Input | Format | Notes |
 | --- | --- | --- |
 | `docs/results.json` (or `--results`) | JSON object | `segments.SEGMENT.crop` gives each crop as `[Y0, Y1, X0, X1]` in surface pixels (now `0841-w00` `[2624, 3264, 2688, 3328]`, `0841-ag896` `[2496, 3136, 1600, 2240]`, `0841-ag405` `[1024, 1664, 2496, 3136]`). Rows of `results` give `segment`, `window`, `inner_px`, `reader`, `auc_as_stored` (forward AUC) and `auc_reversed` (reverse AUC, may be null). The repository's file is about 290 KB; the gate reads it whole |
-| `WORK/SEGMENT/results/auc_NAME.json` | `python -m kit auc --json` output | Read: `forward.auc`, `forward.inner` (must be 64), `control.auc` (may be missing) and `crop` (must equal the committed crop for that segment). `SEGMENT` is `0841-w00`, `0841-ag896` or `0841-ag405`; `NAME` names the reader (see `from_mac`). `scripts/mac-w045.sh` writes `auc_ink9um_s42.json`, `auc_ink9um_s43.json` and `auc_MTAG.json` (`v8in`, `v8in1447`) |
+| `WORK/SEGMENT/results/auc_NAME.json` | `python -m kit auc --json` output | Read: `forward.auc`, `forward.inner` (must be 64), `control.auc` (may be missing), `control.inner` (when present, must be 64) and `crop` (must equal the committed crop for that segment). `SEGMENT` is `0841-w00`, `0841-ag896` or `0841-ag405`; `NAME` names the reader (see `from_mac`). `scripts/mac-w045.sh` writes `auc_ink9um_s42.json`, `auc_ink9um_s43.json` and `auc_MTAG.json` (`v8in`, `v8in1447`) |
 
 Scores are pixel AUCs on the 9.366 um surface grid of each segment; see [auc](auc.md) for how they are made.
 
 ## Outputs
 
-By default a Markdown table, one row per complete reader sorted by mean forward AUC, then lines for readers not ranked yet, each Mac check, each skipped file, and the verdict (see Quick start). The Control column says `ok`, or `too close (min gap X)` where X is the smallest forward minus reverse gap (`None` when a reverse AUC is missing). The verdict line is one of:
+By default a Markdown table, one row per complete reader sorted by mean forward AUC, then lines for readers not ranked yet, each Mac check, each replaced committed bar, each skipped file, and the verdict (see Quick start). The Control column says `ok`, or `too close (min gap X)` where X is the smallest forward minus reverse gap (`None` when a reverse AUC is missing). The verdict line is one of:
 
 - `Gate A: R1 leads R2 by L mean AUC: a clear win (at least 0.02)`
 - `Gate A: R1 leads R2 by L mean AUC: within 0.02, so not a win; prefer the reader already in use, or score more crops`
 - `Gate A: R1 is the only reader with all three crops and a clean control`
 - `Gate A: no reader has all three crops with a clean control`
+- `Gate A: blocked: the Mac's ink_9um seed 42 does not match the committed CPU bar on SEGMENT (crop, labels or code differ); explain the mismatch before ranking`
 
 With `--json`, one object:
 
@@ -155,13 +156,15 @@ With `--json`, one object:
 | `ranked[].control_ok` | bool | True when forward minus reverse is at least `min_gap` on every crop |
 | `ranked[].min_gap` | float (4 decimals) or null | Smallest forward minus reverse gap; null when a reverse AUC is missing |
 | `incomplete` | list of str | Readers missing a crop or a forward AUC, sorted |
-| `verdict.winner` | str or null | The eligible reader with the highest mean; null when none is eligible |
-| `verdict.lead` | float or null | Winner's mean minus the second eligible reader's mean (both already rounded to 4 decimals); null with fewer than two eligible readers |
-| `verdict.clear` | bool | True when `lead` is at least `min_lead`, and also true when only one reader is eligible (then nothing was beaten) |
+| `verdict.winner` | str or null | The eligible reader with the highest mean; null when none is eligible or a device mismatch blocks the verdict |
+| `verdict.lead` | float or null | Winner's mean minus the second eligible reader's mean (both already rounded to 4 decimals); null with fewer than two eligible readers or when the verdict is blocked |
+| `verdict.clear` | bool | True when `lead` is at least `min_lead`, and also true when only one reader is eligible (then nothing was beaten); false when blocked |
+| `verdict.blocked` | bool, optional | Present and true when any Mac/CPU consistency check mismatches; otherwise absent. Use `verdict.get("blocked", False)` in Python |
 | `verdict.text` | str | The verdict sentence, without `Gate A: ` |
 | `rule.min_lead`, `rule.min_gap`, `rule.inner`, `rule.segments` | float, float, int, list of str | The rule used, as given |
 | `checks` | list of objects | `{"segment", "cpu", "mac", "match"}` per crop, from `consistency` |
-| `skipped` | list of str | `PATH: unreadable`, `PATH: forward and control must be objects with an auc; rescore this crop`, or `PATH: not the standard crop with a 64 px edge (crop ..., inner ...)` |
+| `replaced` | list of objects | Each local cell that replaced a committed cell: `reader`, `segment`, `committed` forward AUC, `local` forward AUC (possibly null), and source `file` |
+| `skipped` | list of str | `PATH: unreadable`, `PATH: forward and control must be objects with an auc; rescore this crop`, `PATH: not the standard crop with a 64 px edge (crop ..., inner ...)`, or `PATH: control scored with a N px edge, not 64` |
 
 | Exit code | Meaning |
 | --- | --- |
@@ -180,7 +183,8 @@ With `--json`, one object:
 | `skipped PATH: forward and control must be objects with an auc; rescore this crop` | A Mac `auc_*.json` whose `forward` or `control` is not an object (such as a list); the file is left out, not fatal | Rescore that crop with `kit auc --json`, or remove the file |
 | `skipped PATH: unreadable` | A Mac file that is not JSON, or lacks `forward` | Rerun its `kit auc --json`; the file is left out, not fatal |
 | `skipped PATH: not the standard crop with a 64 px edge (crop [...], inner N)` | The Mac file was scored on another window or edge | Score with `--crop` equal to `segments.SEGMENT.crop` in `results.json` and `--inner 64` (QUICK mode of `scripts/mac-w045.sh` does) |
-| `check SEGMENT: Mac ink_9um s42 A vs CPU B: MISMATCH (crop, labels or code differ; do not rank until explained)`, exit code 1 | The Mac `ink_9um` seed 42 score differs from the committed CPU bar by more than 0.0001 | Find the cause (crop, labels version, villa commit, device) before using any Mac row; the table ranks it anyway |
+| `check SEGMENT: Mac ink_9um s42 A vs CPU B: MISMATCH (crop, labels or code differ; do not rank until explained)`, exit code 1 | The Mac `ink_9um` seed 42 score differs from the committed CPU bar by more than 0.0001 | Find the cause (crop, labels version, villa commit, device) before accepting a verdict. The diagnostic table remains, but `winner` and `lead` are null, `clear` is false and `blocked` is true |
+| `skipped PATH: control scored with a N px edge, not 64` | The reverse control used another edge exclusion | Rescore forward and reverse on the same crop with `--inner 64`; a missing `control.inner` keeps the legacy 64 px assumption |
 | `Not ranked yet (missing crops): R` | Reader R lacks a score on at least one crop (now Reader v2, which has no ag405 crop row) | Score the missing crop |
 | `too close (min gap X)` in the Control column of reader R | R's forward AUC is less than `--min-gap` above its reverse on some crop, or a reverse is missing | R cannot win; check its reverse maps |
 | `Gate A: no reader has all three crops with a clean control` | No reader is both complete and eligible | Score the missing crops and controls |
@@ -190,10 +194,10 @@ With `--json`, one object:
 
 1. `cmd_gate` picks the work folder: the `work` argument, else `~/scrolls-work` when it is a folder, else none. It stops with exit code 2 if `--results` is not a file.
 2. `committed` reads the crops of `SEGMENTS` from `segments`, and every `results` row on those segments with `window` "crop", `inner_px` 64 (`INNER`) and a forward AUC.
-3. `from_mac` reads each `WORK/SEGMENT/results/auc_*.json`, keeps it only if its `crop` equals the committed crop and `forward.inner` is 64, and names the reader from the file stem (`MAC_NAMES`). Mac cells are merged over committed cells of the same reader name; the Mac `ink_9um` files get their own names ending in ` (Mac)`, so they do not overwrite the CPU bars.
+3. `from_mac` reads each `WORK/SEGMENT/results/auc_*.json`, keeps it only if its `crop` equals the committed crop and `forward.inner` is 64, and `control.inner`, if recorded, is also 64; it names the reader from the file stem (`MAC_NAMES`). Mac cells are merged over committed cells of the same reader name, recording replacements in `replaced`; the Mac `ink_9um` files get their own names ending in ` (Mac)`, so they do not overwrite the CPU bars.
 4. `decide` leaves out readers missing any crop. For the rest it takes the mean forward AUC over the three crops (rounded to 4 decimals) and the forward minus reverse gap on each crop; a reader is eligible (`control_ok`) when every gap is at least `min_gap`. Readers are sorted by mean, highest first.
 5. The verdict uses eligible readers only: none gives no winner; one gives that reader with `clear` true; two or more give the top one, its lead over the second (from the rounded means), and `clear` when the lead is at least `min_lead` (`MIN_LEAD`, 0.02).
-6. `consistency` compares `ink_9um seed42 (Mac)` with the committed `ink_9um seed42` on each crop; more than 0.0001 apart (one unit in the fourth decimal, plus 1e-9 for float rounding) is a mismatch, and `cmd_gate` returns 1.
+6. `consistency` compares `ink_9um seed42 (Mac)` with the committed `ink_9um seed42` on each crop; more than 0.0001 apart (one unit in the fourth decimal, plus 1e-9 for float rounding) is a mismatch. `run` replaces the verdict with a blocked message, null winner and lead, and `clear: false`; `cmd_gate` returns 1.
 
 The rule's numbers are fixed in code (`MIN_LEAD`, `MIN_GAP`, `INNER`, `SEGMENTS`), so the readout is set before new scores arrive, as preregistration asks. The 0.10 gap is this repository's reading of the rule's "reverse well below forward"; the 0.02 lead is the rule's own number. Neither is a published community standard ([STANDARDS.md](../STANDARDS.md): TAUIL ranks by a plain mean over segments; ShribyrLabs counts no difference under 0.005 run-to-run noise; Community reports).
 
@@ -204,7 +208,7 @@ About 0.1 s wall time on committed scores only (measured with `time` on 2026-10-
 ## For agents
 
 - **Command:** `python -m kit gate --json` from a clone (committed scores, plus `~/scrolls-work` if it exists); with Mac results, `python -m kit gate WORK --json`.
-- **Parse:** `verdict.winner`, `verdict.lead`, `verdict.clear` and `verdict.text`; `ranked[].control_ok` and `ranked[].min_gap`; `incomplete`; `checks[].match`; `skipped`.
+- **Parse:** `verdict.winner`, `verdict.lead`, `verdict.clear` and `verdict.text`; `ranked[].control_ok` and `ranked[].min_gap`; `incomplete`; `checks[].match`; optional `verdict.blocked`; `replaced`; `skipped`.
 - **Rerun:** Safe; it only reads its inputs and writes nothing.
 - **Success:** Exit code 0, `verdict.clear` true and `verdict.lead` not null (the winner beat a second eligible reader by at least `min_lead`).
 - **Not a pass:** Exit code 1 (a Mac/CPU mismatch), even though a table and verdict are printed; `verdict.clear` true with `verdict.lead` null (only one eligible reader, nothing was beaten); a reader with `control_ok` false, however high its mean; a lead under about 0.04 with no paired `kit auc --compare --bootstrap 300` interval on each crop; any result with `--min-lead` or `--min-gap` changed from the defaults after seeing scores; files listed in `skipped` that you expected to count.
@@ -221,6 +225,7 @@ They cover ranking from committed bars alone with a clear win, a Mac reader whos
 
 ## History
 
+- 2026-10-17: reference corrected to describe behavior already present in `cfb6792`: the blocked verdict, `replaced` records and mismatched control-edge rejection. No scoring behavior change.
 - 2026-10-17: a Mac `auc_*.json` whose `forward` or `control` is not an object is skipped with a message; before, it stopped the gate with an `AttributeError` traceback and exit code 1 (`107b379`).
 - 2026-10-14: a missing `docs/results.json`, as in an installed package, gives the "run it from a clone" message and exit code 2 instead of a traceback (`ca7b143`).
 - 2026-10-09: the docstring states the rule itself, since the roadmap moved to the private repository, and names the smallest committed gap (0.1015); no behaviour change (`3ba683f`).
