@@ -4,14 +4,14 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 16 October 2026.
+Updated 17 October 2026.
 
 ## Where things stand
 
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
-| New here, from no idea to a first submission | [`start-here.md`](start-here.md) | [`pipeline.md`](pipeline.md) |
+| New here: browser tour, synthetic practice, setup and first tasks with official tools | [`start-here.md`](start-here.md), the shareable beginner guide | [`pipeline.md`](pipeline.md), [`tools/starter.md`](tools/starter.md) |
 | What a technical term means (A to Z) | [`../GLOSSARY.md`](../GLOSSARY.md) | [`vesuvius-bible/`](vesuvius-bible/bible.md#app-glossary) Appendix A |
 | A cited reference book on the scrolls and the challenge, 2023 to 2026 (history, papyrus, imaging, prizes, inventory, pipeline, tools, glossary, timeline, FAQ, bibliography) | [`vesuvius-bible/`](vesuvius-bible/) ([`index.md`](vesuvius-bible/index.md), [`llms.txt`](vesuvius-bible/llms.txt), one file: [`bible.md`](vesuvius-bible/bible.md)) | [`start-here.md`](start-here.md) |
 | Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere) |
@@ -42,6 +42,7 @@ Updated 16 October 2026.
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Every tool, one reference page each: options with defaults, inputs, outputs, failures, checks and rules for agents | [`tools/README.md`](tools/README.md) (generated index; [`tools/index.json`](tools/index.json) for agents) | `python -m kit.tooldocs list`; [`TOOL-DOCS.md`](TOOL-DOCS.md) |
+| Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package lives on branch `submission/progress-2026-10-fix4`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
