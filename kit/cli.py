@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines}.
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -818,6 +818,11 @@ def cmd_letterdemo(args):
     return letterdemo.run_cli(args)
 
 
+def cmd_segzoo(args):
+    from . import segzoo   # standard library; the torch code is in scripts/segzoo/
+    return segzoo.cmd_segzoo(args)
+
+
 # Console scripts that run one command (pyproject.toml's [project.scripts]): script name -> command.
 CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines",
                    "scrolls-letterdemo": "letterdemo"}
@@ -1185,6 +1190,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--out", help="also write the result as JSON")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
+
+    p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
+                                      "MedSAM2 and Mamba families, their licences and fit; Auto3DSeg datalists")
+    from . import segzoo as _segzoo
+    _segzoo.build_parser(p)
+    p.set_defaults(func=cmd_segzoo)
 
     p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
     p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")

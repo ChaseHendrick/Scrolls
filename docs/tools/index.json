@@ -6606,6 +6606,163 @@
    ]
   },
   {
+   "id": "segzoo",
+   "name": "segzoo",
+   "tagline": "modern segmentation models next to nnU-Net, with licences, trainers and controls",
+   "summary": "`python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with licence and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "script folder"
+   ],
+   "area": "Training",
+   "commands": [
+    "python -m kit segzoo",
+    "python scripts/segzoo/segzoo_nnunet.py",
+    "python scripts/segzoo/segzoo_sam2.py",
+    "python scripts/segzoo/segzoo_probe.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/segzoo.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/segzoo",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_segzoo"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_segzoo.py",
+    "tests/test_segzoo_models.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the code; Needed before any paid GPU run (Modal budget) and before releasing weights trained from a family whose weights are research only"
+   },
+   "checked": {
+    "date": "2026-10-17",
+    "commit": "fecd2bb"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`segzoo`",
+    "Status": "Experimental",
+    "Kind": "kit command,script folder",
+    "Area": "Training",
+    "Run": "`python -m kit segzoo`, `python scripts/segzoo/segzoo_nnunet.py`, `python scripts/segzoo/segzoo_sam2.py`, `python scripts/segzoo/segzoo_probe.py`",
+    "Code": "`kit/segzoo.py`, `scripts/segzoo`, `kit/cli.py` (`cmd_segzoo`)",
+    "Tests": "`tests/test_segzoo.py`, `tests/test_segzoo_models.py`",
+    "Needs": "`kit segzoo`: Python 3.10 or newer, standard library only. `scripts/segzoo/`: torch (checked with 2.14.1, CPU build), numpy, and per family nnunetv2 2.8.1, monai 1.6.1, transformers 5.20.1, Pillow; `segzoo_sam2.py` needs the `sam2` package (1.1.0) or MedSAM2's fork. `kit segzoo env` says which are present",
+    "Runs on": "`kit segzoo`: any CPU, under a second. Training and inference: a CUDA GPU for real data (Modal, AGENTS.md rule 11); CPU works for smoke runs. Measured 2026-10-17 on a 4-core Xeon cloud container: the model tests take about 81 s; an SS2DUNet forward pass on one 128 x 128 slice about 5 s",
+    "Network": "`kit segzoo`: none. `segzoo_probe.py features` and `segzoo_nets.FrozenFeatures` download the named model from `huggingface.co` once (DINOv3 needs a logged-in account with approved access); `segzoo_sam2.py follow` downloads its checkpoint from `huggingface.co` when given a Hugging Face id",
+    "Writes": "`kit segzoo datalist`: `datalist.json` and `task.yaml` in `--out`. `segzoo_nnunet.py shim`: `segzoo_shim.py` in nnU-Net's trainer folder (or `--target`). `segzoo_sam2.py` and `segzoo_probe.py`: the `--out` file only. Otherwise it prints only",
+    "Go-ahead": "Not needed for the code; Needed before any paid GPU run (Modal budget) and before releasing weights trained from a family whose weights are research only",
+    "Released": "Public `main` from the PR that adds this page (17 October 2026); not a Progress Prize release",
+    "Checked": "2026-10-17 against commit `fecd2bb`"
+   },
+   "page": "docs/tools/segzoo.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 94,
+     "end_line": 150,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 151,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 178,
+     "end_line": 184,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 185,
+     "end_line": 204,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 205,
+     "end_line": 255,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 256,
+     "end_line": 269,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 270,
+     "end_line": 273,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 274,
+     "end_line": 283,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 284,
+     "end_line": 287,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 288,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 292,
+     "end_line": 297,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "soup",
    "name": "soup",
    "tagline": "average the weights of several checkpoints of one training run",
