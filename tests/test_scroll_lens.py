@@ -575,6 +575,28 @@ class Page(unittest.TestCase):
             app.CUBES.get("run:a")
         self.assertEqual(app.CUBES.get("run:c").key, "run:c")
 
+    def test_gallery_cubes_never_push_out_a_run(self):
+        app = self.app
+        app.CUBES = app.CubeCache(size=2)
+        run = self.cube(key="run:kept")
+        for i in range(5):
+            self.cube(key=f"gallery:g{i}")
+        self.assertIs(app.CUBES.get("run:kept"), run)
+
+    def test_url_fetching_is_closed(self):
+        try:
+            import gradio.processing_utils as pu
+            import gradio.routes as rt
+        except ImportError:
+            self.skipTest("needs gradio")
+        import asyncio
+        self.app.close_url_fetching()
+        with self.assertRaises(PermissionError):
+            asyncio.run(pu.async_ssrf_protected_download("https://example.org/x.npy", tempfile.gettempdir()))
+        with self.assertRaises(Exception) as cm:
+            asyncio.run(rt.secure_url_stream_response("https://example.org/", None))
+        self.assertEqual(getattr(cm.exception, "status_code", None), 403)
+
     def test_cpu_fallback_cube_is_recentered(self):
         app = self.app
         res = Files().result(128)

@@ -35,6 +35,7 @@ const st = {
   marks: {pos: [], neg: []}, pending: [], inflight: null, clickSeq: 0, loading: 0, linkSlices: null,
 };
 const PAGE_ID = Math.random().toString(36).slice(2, 8);
+const MODE_NAME = `slv-mode-${PAGE_ID}`;                 // one radio group for the three click modes
 for (const [k, , on] of LAYERS) st.on[k] = on;
 const ctCache = new Map();
 
@@ -49,7 +50,7 @@ element.innerHTML = `
     </div>
     <div class="slv-group">
       <span class="slv-label">A click does</span>${MODES.map(([k, label], i) => `
-      <label class="slv-chip"><input type="radio" name="slv-mode-${Math.random().toString(36).slice(2)}"
+      <label class="slv-chip"><input type="radio" name="${MODE_NAME}"
         data-mode="${k}" ${i === 0 ? 'checked' : ''}>${label}</label>`).join('')}
     </div>
     <details class="slv-more" open><summary>More controls</summary>
@@ -342,8 +343,9 @@ async function loadCT(m, token) {
   };
   const queue = keys.slice();
   await Promise.all(Array.from({length: Math.min(8, keys.length)}, async () => {
-    while (queue.length) await one(queue.shift());
+    while (queue.length && token === st.loading) await one(queue.shift());
   }));
+  if (token !== st.loading) return null;                 // another cube was picked: never cache a part-read scan
   ctCache.set(ckey, ct);
   while (ctCache.size > CT_CACHE_MAX) ctCache.delete(ctCache.keys().next().value);
   return ct;
@@ -395,12 +397,16 @@ function decodeSim(b64) {
 }
 
 function linkSlicesOnce() {
-  // a link made with Copy link carries the crosshair as s=z,y,x (cube voxels); use it for the first cube only
+  // a link made with Copy link carries the crosshair as s=z,y,x (cube voxels), for the cube the link names: a gallery
+  // cube (cube=ID) or the cube run at a point (v, z, y, x); it is applied when that cube opens, and to no other
   try {
     const q = new URLSearchParams(window.location.search);
     if (!q.get('s')) return null;
     const s = q.get('s').split(',').map(Number);
-    return s.length === 3 && s.every(Number.isFinite) ? s : null;
+    if (s.length !== 3 || !s.every(Number.isFinite)) return null;
+    if (q.get('cube')) return {s, cube: q.get('cube')};
+    const point = ['z', 'y', 'x'].map(k => Number(q.get(k)));
+    return q.get('v') && point.every(Number.isFinite) ? {s, v: q.get('v'), point} : null;
   } catch (e) { return null; }
 }
 st.linkSlices = linkSlicesOnce();
@@ -409,9 +415,19 @@ async function onValue(raw) {
   let m = null;
   try { m = raw ? JSON.parse(raw) : null; } catch (e) { m = null; }
   if (!m || !m.key) return;
-  if (m.key !== st.key) {
+  if (m.ack_only) {                                        // clicks the server could not use: stop resending them
+    if (m.key === st.key) {
+      const acked = new Set((m.clicks && m.clicks.acked) || []);
+      st.pending = st.pending.filter(p => !acked.has(p.id));
+      if (st.inflight) { clearTimeout(st.inflight); st.inflight = null; }
+      st.flushTries = 0;
+      redraw([0, 1, 2], true);
+    }
+    return;
+  }
+  if (m.key !== st.key || st.failed) {
     await newCube(m);
-  } else if (m.rev !== st.rev) {
+  } else if (m.rev > st.rev) {
     applyClicks(m);
     redraw();
   }
@@ -441,7 +457,7 @@ function flushClicks() {
     redraw([0, 1, 2], true);
     return;
   }
-  st.inflight = setTimeout(() => { st.inflight = null; flushClicks(); }, 8000);
+  st.inflight = setTimeout(() => { st.inflight = null; flushClicks(); }, 15000);
   trigger('select', {key: st.key, clicks: st.pending.map(p => ({id: p.id, index: p.voxel, value: p.kind}))});
 }
 
@@ -453,21 +469,27 @@ async function newCube(m) {
   st.size = S;
   st.n = S / PATCH;
   st.ct = st.ink = st.surface = st.pca = st.ref = null;
+  st.failed = false;
   st.pending = [];
+  st.rev = -1;
   applyClicks(m);
   const local = m.point.map((p, i) => Math.min(S - 1, Math.max(0, p - m.origin[i])));
-  st.slices = st.linkSlices ? st.linkSlices.map(v => Math.min(S - 1, Math.max(0, v | 0))) : local;
-  st.linkSlices = null;
+  const link = st.linkSlices;
+  const forThisCube = link && (link.cube ? link.cube === m.cube_id
+    : (link.v && link.v.toLowerCase() === String(m.volume).toLowerCase() && link.point.every((p, i) => p === m.point[i])));
+  st.slices = forThisCube ? link.s.map(v => Math.min(S - 1, Math.max(0, v | 0))) : local;
+  if (forThisCube) st.linkSlices = null;
   for (const v of V) {
     v.slider.max = S - 1;
     if (!same) { v.zoom = 1; }
     v.cx = S / 2; v.cy = S / 2;
   }
   resize();
+  redraw();                                                // black views, not the previous cube, while this one loads
   setStatus(`Loading ${m.title || m.volume}...`, 0);
   try {
     const [ct, layers] = await Promise.all([loadCT(m, token), loadLayers(m)]);
-    if (token !== st.loading) return;
+    if (token !== st.loading || !ct) return;
     st.ct = ct;
     Object.assign(st, {ink: layers.ink || null, surface: layers.surface || null, pca: layers.pca || null,
                        ref: layers.ref || null});
@@ -481,7 +503,8 @@ async function newCube(m) {
     redraw();
   } catch (e) {
     if (token !== st.loading) return;
-    setStatus(`Could not load this cube: ${e.message}. Try again in a minute.`, null);
+    st.failed = true;                                      // picking the same cube again retries the load
+    setStatus(`Could not load this cube: ${e.message}. Pick it again in a minute to retry.`, null);
     console.error('scroll lens viewer', e);
   }
 }
@@ -543,9 +566,10 @@ element.querySelectorAll('button[data-act]').forEach(btn => btn.addEventListener
 }));
 
 function flash(btn, text) {
-  const old = btn.textContent;
+  if (btn.dataset.label === undefined) btn.dataset.label = btn.textContent;
+  clearTimeout(btn._flash);
   btn.textContent = text;
-  setTimeout(() => { btn.textContent = old; }, 1500);
+  btn._flash = setTimeout(() => { btn.textContent = btn.dataset.label; }, 1500);
 }
 
 function copyLink(btn) {
@@ -623,6 +647,10 @@ function moveCrosshair(a, vox) {
 }
 
 function sendClick(kind, vox) {
+  if (!st.ct) {
+    setStatus('This cube is still loading; click again in a moment.', null);
+    return;
+  }
   if (!st.meta || !st.meta.has || !st.meta.has.dino) {
     setStatus('This cube has no 3D DINO embeddings, so it cannot be searched. Run it with the 3D DINO model.', null);
     return;
@@ -635,6 +663,9 @@ function sendClick(kind, vox) {
   redraw([0, 1, 2], true);
   flushClicks();
 }
+
+const DOUBLE_CLICK_MS = 260;
+let clickTimer = 0;
 
 V.forEach((v, a) => {
   const cv = v.canvas;
@@ -694,8 +725,9 @@ V.forEach((v, a) => {
     if (gesture.type === 'pending') {
       const vox = toVoxel(a, ev);
       if (vox) {
+        clearTimeout(clickTimer);
         if (st.mode === 'move') moveCrosshair(a, vox);
-        else sendClick(st.mode, vox);
+        else clickTimer = setTimeout(() => sendClick(st.mode, vox), DOUBLE_CLICK_MS);
       }
     }
     gesture = null;
@@ -704,6 +736,7 @@ V.forEach((v, a) => {
   cv.addEventListener('pointercancel', ev => { pointers.delete(ev.pointerId); gesture = null; });
   cv.addEventListener('pointerleave', () => { if (!gesture) readout(null); });
   cv.addEventListener('dblclick', () => {
+    clearTimeout(clickTimer);                             // the two clicks of a double-click search nothing
     v.zoom = 1; v.cx = st.size / 2; v.cy = st.size / 2;
     redraw([a], true);
   });
@@ -713,16 +746,17 @@ V.forEach((v, a) => {
     if (!st.size) return;
     ev.preventDefault();
     if (ev.ctrlKey || ev.metaKey) {
-      zoomAt(a, Math.exp(-ev.deltaY * 0.0025), ev.clientX, ev.clientY);
+      zoomAt(a, Math.exp(-(ev.deltaY || ev.deltaX) * 0.0025), ev.clientX, ev.clientY);
       return;
     }
     // a mouse wheel notch (deltaY of about 100 pixels, or a line) is one slice; a trackpad's small deltas add up
+    const dy = ev.deltaY || (ev.shiftKey ? ev.deltaX : 0);   // Shift turns a wheel notch sideways on many systems
     let steps;
-    if (ev.deltaMode !== 0 || Math.abs(ev.deltaY) >= 50) {
-      steps = Math.sign(ev.deltaY);
+    if (ev.deltaMode !== 0 || Math.abs(dy) >= 50) {
+      steps = Math.sign(dy);
       wheelAcc = 0;
     } else {
-      wheelAcc += ev.deltaY;
+      wheelAcc += dy;
       steps = Math.trunc(wheelAcc / 30);
       wheelAcc -= steps * 30;
     }
@@ -732,14 +766,15 @@ V.forEach((v, a) => {
 
   cv.addEventListener('keydown', ev => {
     if (!st.size) return;
-    const big = ev.shiftKey ? 8 : 1;
-    const keys = {ArrowUp: big, ArrowRight: big, PageUp: 8, ArrowDown: -big, ArrowLeft: -big, PageDown: -8};
-    if (ev.key in keys) { stepSlice(a, keys[ev.key]); ev.preventDefault(); return; }
-    if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'z' || ev.key === 'Z')) {
+    if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'z' || ev.key === 'Z') && !ev.shiftKey && !ev.altKey) {
       element.querySelector('button[data-act="undo"]').click();
       ev.preventDefault();
       return;
     }
+    if (ev.ctrlKey || ev.metaKey || ev.altKey) return;     // the browser's own shortcuts (zoom, copy, history)
+    const big = ev.shiftKey ? 8 : 1;
+    const keys = {ArrowUp: big, ArrowRight: big, PageUp: 8, ArrowDown: -big, ArrowLeft: -big, PageDown: -8};
+    if (ev.key in keys) { stepSlice(a, keys[ev.key]); ev.preventDefault(); return; }
     if (ev.key === '+' || ev.key === '=') { const r = cv.getBoundingClientRect(); zoomAt(a, 1.25, r.left + r.width / 2, r.top + r.height / 2); }
     else if (ev.key === '-' || ev.key === '_') { const r = cv.getBoundingClientRect(); zoomAt(a, 0.8, r.left + r.width / 2, r.top + r.height / 2); }
     else if (ev.key === '0') { v.zoom = 1; v.cx = st.size / 2; v.cy = st.size / 2; redraw([a], true); }
@@ -805,7 +840,7 @@ async function toggle3D(btn) {
     g3.on = true;
     element.querySelector('.slv-views').hidden = true;
     panel3.hidden = false;
-    btn.textContent = 'Flat views';
+    btn.textContent = btn.dataset.label = 'Flat views';
     if (!g3.renderer) init3D();
     size3D();
     build3D();
@@ -816,7 +851,7 @@ async function toggle3D(btn) {
     cancelAnimationFrame(g3.raf);
     panel3.hidden = true;
     element.querySelector('.slv-views').hidden = false;
-    btn.textContent = '3D view';
+    btn.textContent = btn.dataset.label = '3D view';
     resize();
     redraw();
   }

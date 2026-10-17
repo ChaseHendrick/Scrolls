@@ -12,6 +12,7 @@ import base64
 import collections
 import functools
 import gzip
+import itertools
 import json
 import os
 import sys
@@ -36,7 +37,8 @@ ON_ZERO_GPU = bool(spaces) and os.environ.get("SPACES_ZERO_GPU", "").lower() in 
 OUT = Path(tempfile.gettempdir()) / "scroll-lens-out"
 VIEW_DIR = Path(tempfile.gettempdir()) / "scroll-lens-view"   # model layers for the browser viewer, served by Gradio
 CPU_SIZE = 128                      # the cube side the CPU fallback runs
-STATE_TTL_S = 30 * 60               # a visitor's session state is dropped after this long without use
+STATE_TTL_S = 6 * 3600              # a visitor's session state (a cube key and clicks) is dropped after this
+MAX_CLICKS = 512                    # clicks a session keeps, More like this and Not this together
 CACHE_CUBES = 12                    # cubes whose model outputs stay in memory, shared by every visitor
 SIM_SCALE = 8192                    # similarity maps travel to the browser as int16 of similarity times this
 TOP_FLOOR = 0.35                    # opacity of the least similar patch still inside Top %
@@ -176,8 +178,12 @@ RUN_LOCK = threading.Lock()
 def client_of(request):
     if request is None:
         return None
+    user = getattr(request, "username", None)
+    if user:
+        return f"user:{user}"
     headers = getattr(request, "headers", None) or {}
-    forwarded = (headers.get("x-forwarded-for") or "").split(",")[0].strip()
+    # the last X-Forwarded-For entry is the one the Space's own proxy adds; earlier ones are what the caller sent
+    forwarded = (headers.get("x-forwarded-for") or "").split(",")[-1].strip()
     host = getattr(getattr(request, "client", None), "host", "") or ""
     return forwarded or host or getattr(request, "session_hash", None)
 
@@ -305,26 +311,38 @@ class Cube:
 
 
 class CubeCache:
+    """Two least-recently-used pools: gallery cubes (reloaded from disk when they drop out) and cubes the models ran
+    on now (lost when they drop out), so opening gallery cubes never pushes out a visitor's run."""
+
     def __init__(self, size=CACHE_CUBES):
         self.size = size
-        self.items = collections.OrderedDict()
+        self.pools = {"gallery": collections.OrderedDict(), "run": collections.OrderedDict()}
         self.lock = threading.Lock()
+
+    def _pool(self, key):
+        return self.pools["gallery" if key.startswith("gallery:") else "run"]
+
+    @property
+    def items(self):
+        return {**self.pools["gallery"], **self.pools["run"]}
 
     def get(self, key):
         with self.lock:
-            if key in self.items:
-                self.items.move_to_end(key)
-                return self.items[key]
+            pool = self._pool(key)
+            if key in pool:
+                pool.move_to_end(key)
+                return pool[key]
         if key.startswith("gallery:"):
             return self.put(gallery_cube(key.split(":", 1)[1]))
         raise LensError("this cube is no longer in the Space's memory (it keeps the last few); run it again")
 
     def put(self, cube):
         with self.lock:
-            self.items[cube.key] = cube
-            self.items.move_to_end(cube.key)
-            while len(self.items) > self.size:
-                key, old = self.items.popitem(last=False)
+            pool = self._pool(cube.key)
+            pool[cube.key] = cube
+            pool.move_to_end(cube.key)
+            while len(pool) > self.size:
+                key, old = pool.popitem(last=False)
                 if key.startswith("run:") and old.data_path:
                     Path(old.data_path).unlink(missing_ok=True)
         return cube
@@ -379,6 +397,13 @@ def new_view(cube, point, source, note="", title=None, request_size=None, cube_i
 
 def empty_state():
     return {"view": None, "pos": [], "neg": [], "rev": 0}
+
+
+REVS = itertools.count(1)           # one increasing revision for every answer, so the viewer keeps only the newest
+
+
+def next_rev():
+    return next(REVS)
 
 
 def cube_key(view):
@@ -436,6 +461,12 @@ def viewer_value(state):
         "clicks": {"sim": encode_sim(click_sim(state, cube)), "pos": marks["pos"], "neg": marks["neg"],
                    "acked": state.get("acked", [])},
     })
+
+
+def ack_only(key, clicks):
+    """A viewer answer that only acknowledges click ids, for clicks the server cannot use (viewer.js onValue)."""
+    return json.dumps({"key": key, "rev": next_rev(), "ack_only": True,
+                       "clicks": {"acked": [str(c.get("id")) for c in clicks]}})
 
 
 # ---------------------------------------------------------------- drawing on the server (the agent tools)
@@ -1333,13 +1364,13 @@ def build_demo():
     def on_run(vid, z, y, x, size, layers, tta, state, request: gr.Request):
         with one_run(request):
             view = load_point(vid, z, y, x, size, layers, tta)
-        state = dict(state, view=view, rev=state.get("rev", 0) + 1)
+        state = dict(state, view=view, rev=next_rev())
         return shown(state) + fresh()
 
     def open_gallery(cube_id, state):
         if not cube_id:
             raise LensError("pick a gallery cube")
-        state = dict(state, view=load_gallery(cube_id), rev=state.get("rev", 0) + 1)
+        state = dict(state, view=load_gallery(cube_id), rev=next_rev())
         p = state["view"]["point"]
         return shown(state) + fresh() + [state["view"]["volume"], p[0], p[1], p[2], state["view"]["size"], cube_id]
 
@@ -1370,22 +1401,36 @@ def build_demo():
         The viewer sends every click the server has not yet acknowledged, so none is lost when two arrive while one
         is being handled; the ids keep a resent click from counting twice."""
         data = getattr(evt, "_data", None) or {}
+        key = str(data.get("key") or "")
+        clicks = (data.get("clicks") or [])[:64]
         view = state["view"]
-        if view is None or data.get("key") != view["cache"]:
-            return [gr.skip()] * 3          # clicks on a cube this session has already left
+        if (view is None or key != view["cache"]) and key.startswith("gallery:"):
+            try:                            # the session expired, or another tab moved on: the browser shows this cube
+                view = load_gallery(key.split(":", 1)[1])
+                state = dict(state, view=view, pos=[], neg=[], acked=[])
+            except LensError:
+                view = None
+        if view is None or key != view["cache"]:
+            gr.Warning("This cube is no longer in this page's session; open it again to search it.")
+            return [state, ack_only(key, clicks), gr.skip()]
         state = dict(state, pos=list(state["pos"]), neg=list(state["neg"]))
-        seen = set(state.get("acked", []))
+        acked = list(state.get("acked", []))
+        seen = set(acked)
         problem = None
         try:
             cube = cube_of(view)
         except LensError as exc:            # a run cube the Space no longer holds: say so once, take no clicks
             cube, problem = None, str(exc)
-        for click in (data.get("clicks") or [])[:64]:
+        for click in clicks:
             cid = str(click.get("id"))
             if cid in seen:
                 continue
             seen.add(cid)                   # acknowledged even when refused, so the viewer does not resend it
+            acked.append(cid)
             if cube is None:
+                continue
+            if len(state["pos"]) + len(state["neg"]) >= MAX_CLICKS:
+                problem = f"a page keeps at most {MAX_CLICKS} clicks; clear some to add more"
                 continue
             try:
                 vox = [int(v) for v in click.get("index")]
@@ -1399,12 +1444,12 @@ def build_demo():
             state["tick"] = state.get("tick", 0) + 1
             state[kind].append({"volume": view["volume"], "cube": cube_key(view), "voxel": vox, "t": state["tick"],
                                 "voxel_zyx": [int(v + o) for v, o in zip(vox, view["origin"])], "vec": vec})
-        state["acked"] = sorted(seen)[-256:]
-        state["rev"] = state.get("rev", 0) + 1
+        state["acked"] = acked[-256:]       # in arrival order: the newest ids stay
+        state["rev"] = next_rev()
         if problem:
             gr.Warning(problem)
         if cube is None:
-            return [state, gr.skip(), gr.skip()]
+            return [state, ack_only(key, clicks), gr.skip()]
         return shown(state)
 
     @soft(3)
@@ -1415,13 +1460,13 @@ def build_demo():
         if not clicks:
             raise LensError("no click to undo")
         _, kind, i = max(clicks)
-        state = dict(state, rev=state.get("rev", 0) + 1)
+        state = dict(state, rev=next_rev())
         state[kind] = state[kind][:i] + state[kind][i + 1:]
         return shown(state)
 
     @soft(3)
     def on_clear(state):
-        state = dict(state, pos=[], neg=[], rev=state.get("rev", 0) + 1)
+        state = dict(state, pos=[], neg=[], rev=next_rev())
         return shown(state)
 
     @soft(5)
@@ -1438,7 +1483,7 @@ def build_demo():
         paths = [p for p in (paths if isinstance(paths, list) else [paths]) if p]
         if not paths:                         # the file was removed: drop the loaded concept, keep the clicks
             state = dict(state, pos=[c for c in state["pos"] if c["cube"] != "file"],
-                         neg=[c for c in state["neg"] if c["cube"] != "file"], rev=state.get("rev", 0) + 1)
+                         neg=[c for c in state["neg"] if c["cube"] != "file"], rev=next_rev())
             return shown(state)
         pos, neg = [], []
         for p in paths[:2]:
@@ -1446,7 +1491,7 @@ def build_demo():
             (neg if "_not" in Path(p).name.lower() else pos).append(item)
         if not pos:
             raise LensError("load concept.npy too: concept_not.npy alone has nothing to look for")
-        state = dict(state, pos=pos, neg=neg, rev=state.get("rev", 0) + 1)
+        state = dict(state, pos=pos, neg=neg, rev=next_rev())
         return shown(state)
 
     @soft(2)
@@ -1482,7 +1527,7 @@ def build_demo():
         if not cube_id:
             return shown(state) + fields + [size, gr.skip(), tab]
         try:
-            state = dict(state, view=load_gallery(cube_id), rev=state.get("rev", 0) + 1)
+            state = dict(state, view=load_gallery(cube_id), rev=next_rev())
         except (LensError, OSError) as exc:
             log(f"link not loaded: {exc}")
             gr.Warning(f"The gallery cube could not be opened: {exc}")
@@ -1596,8 +1641,9 @@ def build_demo():
 
 
 class NoUrlFiles:
-    """ASGI middleware: refuse Gradio's /file=<url> route, which would otherwise fetch any public URL for anyone.
-    This Space serves its own files only."""
+    """ASGI middleware, a second guard beside close_url_fetching: refuse Gradio's file routes when they name a URL
+    (/file=URL, /file/URL), and uploads of more than MAX_UPLOAD_BYTES in one request (max_file_size counts each file
+    of a request on its own)."""
 
     def __init__(self, app):
         self.app = app
@@ -1606,12 +1652,23 @@ class NoUrlFiles:
         if scope.get("type") == "http":
             from urllib.parse import unquote
             path = unquote(unquote(scope.get("path", ""))).lower()
-            if "/file=http:" in path or "/file=https:" in path or "/file=//" in path:
-                await send({"type": "http.response.start", "status": 403,
-                            "headers": [(b"content-type", b"text/plain; charset=utf-8")]})
-                await send({"type": "http.response.body", "body": b"Scroll Lens does not fetch URLs for callers."})
-                return
+            if any(t in path for t in ("/file=http:", "/file=https:", "/file=//", "/file/http:", "/file/https:",
+                                       "/file//")):
+                return await self.refuse(send, 403, b"Scroll Lens does not fetch URLs for callers.")
+            if scope.get("method") == "POST" and path.rstrip("/").endswith("/upload"):
+                length = dict(scope.get("headers") or []).get(b"content-length")
+                if length is not None and length.isdigit() and int(length) > MAX_UPLOAD_BYTES:
+                    return await self.refuse(send, 413, b"An upload to Scroll Lens is at most 12 MB.")
         await self.app(scope, receive, send)
+
+    @staticmethod
+    async def refuse(send, status, body):
+        await send({"type": "http.response.start", "status": status,
+                    "headers": [(b"content-type", b"text/plain; charset=utf-8")]})
+        await send({"type": "http.response.body", "body": body})
+
+
+MAX_UPLOAD_BYTES = 12 << 20
 
 
 HEAD = """
@@ -1623,8 +1680,38 @@ and click to search. Model output, not a reading.">
 """
 
 
+def close_url_fetching():
+    """Gradio streams any public URL through its file routes (/file=URL and the older /file/URL) and downloads any URL
+    a caller puts in a file input, with no size limit. This Space serves its own files only, and downloads a file input
+    only from itself or the Hugging Face Hub (an agent may pass back a concept.npy this Space gave it)."""
+    import gradio.processing_utils as pu
+    import gradio.route_utils as ru
+    import gradio.routes as rt
+    from urllib.parse import urlparse
+    from fastapi import HTTPException
+
+    async def refuse_stream(url, request):
+        raise HTTPException(status_code=403, detail="Scroll Lens does not fetch URLs for callers.")
+    rt.secure_url_stream_response = ru.secure_url_stream_response = refuse_stream
+    try:
+        import gradio.static_server as ss
+        ss.secure_url_stream_response = refuse_stream
+    except ImportError:
+        pass
+    allowed = {h for h in (os.environ.get("SPACE_HOST"), "huggingface.co", "hf.co") if h}
+    original = getattr(pu.async_ssrf_protected_download, "__wrapped_original__", pu.async_ssrf_protected_download)
+
+    async def download(url, cache_dir):
+        if (urlparse(url).hostname or "").lower() not in allowed:
+            raise PermissionError("Scroll Lens downloads files only from this Space or the Hugging Face Hub")
+        return await original(url, cache_dir)
+    download.__wrapped_original__ = original
+    pu.async_ssrf_protected_download = download
+
+
 def launch_kwargs():
     from starlette.middleware import Middleware
+    close_url_fetching()
     VIEW_DIR.mkdir(parents=True, exist_ok=True)
     return dict(theme=theme(), css=CSS, head=HEAD, footer_links=["api", "gradio"], allowed_paths=[str(VIEW_DIR)],
                 mcp_server=True, max_file_size="5mb", app_kwargs={"middleware": [Middleware(NoUrlFiles)]})
