@@ -9,7 +9,7 @@ Challenge released with the PHerc. Paris 4 paper (Angelotti et al. 2026, arXiv:2
 - surface_recto_3dunet, a 3D U-Net that marks the written (recto) surface of each papyrus sheet.
 
 Clicks then light up every patch whose embedding is close to the clicked ones: the expert-click method the
-organisers used to build the reference ink embedding behind ink_3d_dino_guided. Everything here is model output,
+organizers used to build the reference ink embedding behind ink_3d_dino_guided. Everything here is model output,
 not a reading; a cube is 0.6 mm across, smaller than one letter.
 
 No gradio here, and torch is imported only inside the model code, so the tests run with numpy alone.
@@ -40,7 +40,7 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 BUCKET = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 CHUNK = 128                 # every listed scan is stored as uncompressed uint8 chunks of 128^3 voxels
 SIZES = (128, 256)          # cube sides in voxels; 256 is the models' training patch, 128 fits a CPU
@@ -48,7 +48,7 @@ PATCH = 8                   # dinovol embeds each 8^3 voxel patch
 EMBED_DIM = 864
 MIN_FOREGROUND = 0.05       # a cube with less papyrus than this (the scans are masked to 0 outside it) is refused
 REDUCED_DIM = 128           # gallery cubes keep this many components of each embedding (see reduce_grid)
-TAU = 0.5                   # the threshold the organisers used on cosine similarity to their ink reference
+TAU = 0.5                   # the threshold the organizers used on cosine similarity to their ink reference
 MAX_CONCEPT_BYTES = 4 << 20
 USER_AGENT = f"scroll-lens/{VERSION}"
 
@@ -137,7 +137,7 @@ VOLUMES = {
 }
 
 # PHerc. Paris 4's title is still an open prize, so Scroll Lens never picks Paris 4 points itself: "Surprise me" and the
-# gallery use only these, the eight Paris 4 points the organisers listed for training in the ink checkpoint's own
+# gallery use only these, the eight Paris 4 points the organizers listed for training in the ink checkpoint's own
 # config (extra_patches.coords_xyz of ckpt_78k_fullsup.pth, sampled with 1024 voxels of jitter), here as z y x.
 PARIS4_TRAINING_POINTS = ((37628, 8793, 22167), (35344, 19651, 19735), (70688, 19605, 10649), (41802, 16221, 12261),
                           (41652, 10039, 8270), (41652, 8812, 8006), (41652, 10476, 19310), (41778, 17662, 27405))
@@ -148,7 +148,7 @@ LAYER_TITLES = {"dino": "3D DINO embeddings", "ink": "3D ink model", "surface": 
 # ---------------------------------------------------------------- the models and the code they need
 #
 # Weights come from the Hugging Face Hub at a pinned revision and are refused unless their SHA-256 matches.
-# The model code is the organisers' own: dinovol (MIT, with DINOv2 and DINOv3 parts under their licenses) and
+# The model code is the organizers' own: dinovol (MIT, with DINOv2 and DINOv3 parts under their licenses) and
 # villa's vesuvius package (MIT), each downloaded at a pinned commit and put on sys.path. Nothing of theirs is
 # copied into this Space.
 
@@ -202,7 +202,7 @@ def volume_url(vid, level=0):
 def cube_origin(vid, center_zyx, size):
     """The corner of the cube of side `size` around `center_zyx` (level-0 voxels, z y x), snapped to the scan's
     128-voxel chunk grid so a 256 cube is exactly 8 stored chunks, and kept inside the scan. The point lies inside
-    the cube, at most 64 voxels from its centre."""
+    the cube, at most 64 voxels from its center."""
     size = check_size(size)
     shape = volume(vid)["shape"]
     out = []
@@ -396,7 +396,7 @@ def ensure_code(cache=CACHE):
     for name, env, sub in (("dinovol", "LENS_DINOVOL", ""), ("villa", "LENS_VILLA_SRC", "vesuvius/src")):
         if os.environ.get(env):
             path = Path(os.environ[env]).expanduser().resolve()
-            info[name] = {"source": env, "path": str(path), "pinned": CODE[name]["commit"]}
+            info[name] = {"source": f"local checkout ({env})", "pinned": CODE[name]["commit"]}
         else:
             dest = Path(cache) / f"{name}-{CODE[name]['commit'][:12]}"
             if not (dest / "COMMIT").is_file():
@@ -518,7 +518,7 @@ class Engine:
         return torch.autocast("cuda", dtype=torch.bfloat16) if dev.type == "cuda" else contextlib.nullcontext()
 
     def _dino_grid(self, cube, dev):
-        """dinovol's dense patch embeddings, as its own napari inspector computes them: robust normalisation of
+        """dinovol's dense patch embeddings, as its own napari inspector computes them: robust normalization of
         the whole cube, 128^3 windows overlapping by one patch, edge-tapered averaging, unit length."""
         import numpy as np
         import torch
@@ -632,7 +632,7 @@ def gpu_seconds(size, layers, tta=False):
     return int(math.ceil(12 + scale * sum(per[x] for x in layers)))
 
 
-# ---------------------------------------------------------------- embeddings: clicks, similarity, colours
+# ---------------------------------------------------------------- embeddings: clicks, similarity, colors
 
 def unit(v, axis=-1):
     import numpy as np
@@ -652,7 +652,7 @@ def grid_of(result):
 
 
 def reduce_grid(grid, k=REDUCED_DIM):
-    """Keep the top `k` directions of a cube's embeddings (uncentred SVD, so the common direction stays): 1/7 of the
+    """Keep the top `k` directions of a cube's embeddings (uncentered SVD, so the common direction stays): 1/7 of the
     size. Returns (coefficients float16, basis (864, k) float32). grid_of() rebuilds unit vectors from them."""
     import numpy as np
     g = np.asarray(grid, np.float32).reshape(-1, EMBED_DIM)
@@ -668,8 +668,49 @@ def token_of(voxel_zyx, size):
     return tuple(int(min(max(int(v) // PATCH, 0), n - 1)) for v in voxel_zyx)
 
 
+def parse_points(text, limit=64):
+    """Points written as "z,y,x; z,y,x" (spaces, semicolons or new lines between them) as a list of (z, y, x)."""
+    text = str(text or "").replace("\n", ";").strip()
+    out = []
+    for part in [p for p in text.split(";") if p.strip()]:
+        nums = [s for s in part.replace(" ", ",").split(",") if s]
+        try:
+            pt = tuple(int(float(s)) for s in nums)
+        except ValueError:
+            raise LensError(f"not a point: {part.strip()!r}; write z,y,x in voxels") from None
+        if len(pt) != 3 or min(pt) < 0:
+            raise LensError(f"not a point: {part.strip()!r}; write z,y,x in voxels, each 0 or more")
+        out.append(pt)
+    if len(out) > limit:
+        raise LensError(f"at most {limit} points")
+    return out
+
+
+def voxel_in_cube(point_zyx, origin, size):
+    """A scan point as a voxel of the cube at `origin`; refuses a point outside the cube."""
+    v = [int(p) - int(o) for p, o in zip(point_zyx, origin)]
+    if min(v) < 0 or max(v) >= size:
+        raise LensError(f"point {tuple(int(p) for p in point_zyx)} is outside the cube at {tuple(origin)} of side "
+                        f"{size}; points must lie inside the cube being searched")
+    return v
+
+
+def top_matches(sim_tokens, origin, k=20):
+    """The `k` best patches of a similarity map, best first: each patch's center in scan voxels and its score."""
+    import numpy as np
+    k = int(min(max(int(k), 1), 200))
+    flat = np.asarray(sim_tokens, np.float32).ravel()
+    idx = np.argsort(-flat, kind="stable")[:k]
+    out = []
+    for i in idx:
+        t = np.unravel_index(int(i), sim_tokens.shape)
+        out.append({"center_zyx": [int(o + PATCH * a + PATCH // 2) for o, a in zip(origin, t)],
+                    "score": round(float(flat[i]), 4)})
+    return out
+
+
 def concept(grid, tokens):
-    """The organisers' recipe for a reference embedding: the unit-length mean of the clicked patches' embeddings."""
+    """The organizers' recipe for a reference embedding: the unit-length mean of the clicked patches' embeddings."""
     import numpy as np
     if not tokens:
         return None
@@ -686,15 +727,15 @@ def similarity(grid, positive, negative=None):
     return s
 
 
-def pca_colours(grid):
+def pca_colors(grid):
     """The three main directions of a cube's embeddings as red, green and blue, stretched to the 1st and 99th
-    percentiles: patches the model sees as alike get alike colours. (Z, Y, X, 3) uint8 at patch resolution."""
+    percentiles: patches the model sees as alike get alike colors. (Z, Y, X, 3) uint8 at patch resolution."""
     import numpy as np
     g = np.asarray(grid, np.float32).reshape(-1, grid.shape[-1])
     g = g - g.mean(0)
     _, _, vt = np.linalg.svd(g[:: max(1, len(g) // 20000)], full_matrices=False)
     p = g @ vt[:3].T
-    # fix each component's sign so the colours do not flip between runs of the same cube
+    # fix each component's sign so the colors do not flip between runs of the same cube
     p *= np.sign(np.sum(p ** 3, axis=0, keepdims=True) + 1e-12)
     lo, hi = np.percentile(p, 1, axis=0), np.percentile(p, 99, axis=0)
     p = np.clip((p - lo) / np.maximum(hi - lo, 1e-6), 0, 1)
@@ -840,6 +881,9 @@ def gallery(root=HERE / "gallery"):
         return []
     items = json.loads(idx.read_text()).get("cubes", [])
     for it in items:
+        for key in ("title", "note"):     # cubes built before 1.1.0 say "organisers'"; the page uses American spelling
+            if isinstance(it.get(key), str):
+                it[key] = it[key].replace("rganisers", "rganizers")
         volume(it["volume"])
         for key in ("id", "title", "note", "file", "point_zyx", "size"):
             if key not in it:

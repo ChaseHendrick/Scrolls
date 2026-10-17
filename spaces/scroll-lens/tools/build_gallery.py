@@ -9,7 +9,7 @@ It calls the Space's `look` endpoint with your token, so every cube's GPU time c
 each call actually uses. It stops at the first quota refusal and keeps what it has, so a later run (the next day)
 continues where it left off: cubes already in gallery/ are skipped.
 
-The plan, fixed by --seed: the eight PHerc. Paris 4 points the organisers trained the 3D ink model on, and one random
+The plan, fixed by --seed: the eight PHerc. Paris 4 points the organizers trained the 3D ink model on, and one random
 point on the papyrus of each other listed scan (lens.random_point). No other Paris 4 point is ever picked, because
 its title is still an open prize. Cubes are interleaved so that an early stop still covers several scrolls.
 
@@ -36,8 +36,8 @@ def plan(seed, fetch=lens._get):
     import numpy as np
     rng = np.random.default_rng(seed)
     paris = [(f"paris4-train-{i + 1}", "PHercParis4", tuple(p),
-              f"PHerc. Paris 4, organisers' training point {i + 1} of 8",
-              "One of the eight Paris 4 points the organisers listed for training the 3D ink model, so the ink model "
+              f"PHerc. Paris 4, organizers' training point {i + 1} of 8",
+              "One of the eight Paris 4 points the organizers listed for training the 3D ink model, so the ink model "
               "has seen this place: a demonstration, not a test.")
              for i, p in enumerate(lens.PARIS4_TRAINING_POINTS)]
     others = []
