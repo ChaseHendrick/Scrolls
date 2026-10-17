@@ -25,6 +25,7 @@ case "$1 $2" in
     echo "Using MPS device"
     exit 0 ;;
   "-c "*) echo "0.0 mps available: False"; exit 0 ;;
+  "- "*pyproject.toml) cat > /dev/null; echo torch; exit 0 ;;   # the requirements step uses tomllib (3.11+)
 esac
 exec python3 "$@"
 """
