@@ -284,7 +284,7 @@ async function fetchRetry(url, tries = 3) {
   for (let t = 0; t < tries; t++) {
     try {
       const resp = await fetch(url);
-      if (resp.status === 403 || resp.status === 404) return null;      // no chunk there: all outside the scroll
+      if (resp.status === 404) return null;      // no chunk stored there: all outside the scroll (403 is a refusal)
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       return await resp.arrayBuffer();
     } catch (e) {

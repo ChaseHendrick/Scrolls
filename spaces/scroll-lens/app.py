@@ -797,7 +797,7 @@ HOW_TO = """\
 2. **Your own point**: pick a scan, type a point in voxels (z, y, x) or press **Surprise me**, then **Run the models**.
    A 256³ cube is the models' own working size and uses about 5 seconds of ZeroGPU time (with ZeroGPU's own
    overhead, a call is about 10 seconds). When your daily ZeroGPU time runs out, Scroll Lens runs a 128³ cube on the
-   CPU instead (slower, about a minute).
+   CPU instead (about 10 seconds).
 3. **Look**: drag a slider under a view, or drag inside a view to move the crosshair; the other views follow as you
    move. The wheel or the arrow keys step one slice (Shift: 8). Ctrl or Cmd with the wheel, or a pinch, zooms;
    right-drag or Shift-drag pans; double-click resets. The line under the views reads out what is under the pointer.
@@ -1484,7 +1484,7 @@ def add_api(gr, guard):
             layers: Comma-separated models to run: dino (3D DINO embeddings), ink (3D ink), surface (recto surface).
             tta: Average the eight mirrorings for ink and surface (8 times their GPU time).
             compact: Keep 128 components of the embeddings and 16 levels of each probability (about a fifth of the size).
-            allow_cpu: If ZeroGPU refuses (quota used up, no GPU free), run the middle 128 cube on the Space's CPU, about a minute, instead of failing. Check cube_size and note_run in the answer.
+            allow_cpu: If ZeroGPU refuses (quota used up, no GPU free), run the middle 128 cube on the Space's CPU, about 10 seconds, instead of failing. Check cube_size and note_run in the answer.
         Returns:
             dict, the receipt (scan, cube_origin_zyx, cube_size, device, seconds, agreement_with_ink_model, note_run), with cube_ref (pass it to search or view while the Space keeps the cube in memory) and npz (the .npz file: grid (Z/8, Y/8, X/8, 864) float16 unit embeddings, or grid_reduced and grid_basis when compact; ink and surface (Z, Y, X) uint8; receipt as JSON bytes)
         """

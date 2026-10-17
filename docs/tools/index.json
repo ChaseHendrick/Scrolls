@@ -5681,14 +5681,16 @@
    "id": "scroll-lens",
    "name": "scroll-lens",
    "tagline": "look inside a scan cube with the organisers' 3D DINO, ink and surface models",
-   "summary": "A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to 2.4 µm scroll scan and shows what three Vesuvius Challenge 3D models see in it, with click search over the 3D DINO embeddings and a CPU fallback.",
+   "summary": "A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to 2.4 µm scroll scan and shows what three Vesuvius Challenge 3D models see in it, with click search, a viewer drawn in the browser, and an API and MCP server for agents.",
    "status": "Current",
    "kind": [
     "app",
+    "agent tool",
     "script"
    ],
    "area": "Viewers and apps",
    "commands": [
+    "https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/",
     "python3 spaces/scroll-lens/app.py",
     "python3 spaces/scroll-lens/lens.py look VOLUME Z Y X",
     "python3 spaces/scroll-lens/tools/deploy.py OWNER/NAME",
@@ -5698,6 +5700,10 @@
    "code": [
     {
      "path": "spaces/scroll-lens/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/scroll-lens/viewer.js",
      "symbols": []
     },
     {
@@ -5726,120 +5732,120 @@
    ],
    "go_ahead": {
     "needed": true,
-    "text": "Needed for `tools/deploy.py` (creates or pushes the Space) and `tools/build_gallery.py` (spends Chase's ZeroGPU minutes and uploads `gallery/`); both ask y/N; not needed to run locally"
+    "text": "Needed for `tools/deploy.py` (creates or pushes the Space) and `tools/build_gallery.py` (spends Chase's ZeroGPU minutes and uploads `gallery/`), and for calling the live `look` with Chase's token; both scripts ask y/N. Not needed to use the page or the GPU-free endpoints, or to run locally"
    },
    "checked": {
     "date": "2026-10-17",
-    "commit": "caf1991"
+    "commit": "c921ef1"
    },
-   "license": "Apache 2.0 for the Space's code ([`spaces/scroll-lens/LICENSE`](../../spaces/scroll-lens/LICENSE), [`NOTICE`](../../spaces/scroll-lens/NOTICE)); the models and the scans keep their own licenses",
+   "license": "Apache 2.0 for the Space's code ([`spaces/scroll-lens/LICENSE`](../../spaces/scroll-lens/LICENSE), [`NOTICE`](../../spaces/scroll-lens/NOTICE)); the models (MIT) and the scans and gallery cubes (CC BY-NC 4.0) keep their own licenses",
    "fields": {
     "Id": "`scroll-lens`",
     "Status": "Current",
-    "Kind": "app, script",
+    "Kind": "app, agent tool, script",
     "Area": "Viewers and apps",
-    "Run": "`python3 spaces/scroll-lens/app.py` (the page), `python3 spaces/scroll-lens/lens.py look VOLUME Z Y X` (one cube, no page), `python3 spaces/scroll-lens/tools/deploy.py OWNER/NAME`, `python3 spaces/scroll-lens/tools/build_gallery.py OWNER/NAME`; live at https://huggingface.co/spaces/SharpMeow/scroll-lens",
-    "Code": "`spaces/scroll-lens/app.py` (the page), `spaces/scroll-lens/lens.py` (everything else), `spaces/scroll-lens/tools/deploy.py`, `spaces/scroll-lens/tools/build_gallery.py`, `spaces/scroll-lens/requirements.txt`, `spaces/scroll-lens/README.md` (the Space card)",
-    "Tests": "`tests/test_scroll_lens.py`, 29 tests, numpy only",
-    "Needs": "Python 3.12 (3.10 or newer works), the pins in `spaces/scroll-lens/requirements.txt` (torch 2.13.0, timm 1.0.30, numpy 2.5.2, zarr 3.4.1, gradio 6.28.0 for the page); downloads dinovol at commit `a72fda2` and villa's `vesuvius/src` at `b29f310` itself. `tools/deploy.py` needs huggingface_hub; `tools/build_gallery.py` needs numpy, gradio_client and huggingface_hub",
-    "Runs on": "ZeroGPU (an NVIDIA RTX PRO 6000 Blackwell MIG 2g.48gb slice): a 256³ cube with all three models in 3.5 to 5.8 s of model time, 7 to 12 s per call, about 4.5 s of quota (19 gallery cubes, 2026-10-17). CPU: a 128³ cube in about 35 s plus 30 to 50 s of model loading (2026-10-16, 4-core cloud CPU)",
-    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (scan chunks), `huggingface.co` (weights at pinned revisions; `tools/` also the Space itself), `github.com` or `codeload.github.com` (model code at pinned commits)",
-    "Writes": "Model weights and code under `$LENS_CACHE` (default `TMPDIR/scroll-lens`, about 3.7 GB); `look` writes `VOLUME-Z-Y-X-SIZE.npz` and `.json` to `--out`; the page writes saved files under `TMPDIR/scroll-lens-out`; `tools/build_gallery.py` writes `--out` (default `spaces/scroll-lens/gallery/`, gitignored)",
-    "Go-ahead": "Needed for `tools/deploy.py` (creates or pushes the Space) and `tools/build_gallery.py` (spends Chase's ZeroGPU minutes and uploads `gallery/`); both ask y/N; not needed to run locally",
-    "Released": "Space [`SharpMeow/scroll-lens`](https://huggingface.co/spaces/SharpMeow/scroll-lens) since 2026-10-17 (v1.0.0, 19 gallery cubes); code on public `main` since 2026-10-16 ([PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110))",
-    "License": "Apache 2.0 for the Space's code ([`spaces/scroll-lens/LICENSE`](../../spaces/scroll-lens/LICENSE), [`NOTICE`](../../spaces/scroll-lens/NOTICE)); the models and the scans keep their own licenses",
-    "Checked": "2026-10-17 against commit `caf1991`"
+    "Run": "[huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) (the page; MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`), `python3 spaces/scroll-lens/app.py` (the page locally), `python3 spaces/scroll-lens/lens.py look VOLUME Z Y X` (one cube, no page), `python3 spaces/scroll-lens/tools/deploy.py OWNER/NAME`, `python3 spaces/scroll-lens/tools/build_gallery.py OWNER/NAME`",
+    "Code": "`spaces/scroll-lens/app.py` (the page and the API), `spaces/scroll-lens/viewer.js` (the slice viewer, run in the browser), `spaces/scroll-lens/lens.py` (everything else), `spaces/scroll-lens/tools/deploy.py`, `spaces/scroll-lens/tools/build_gallery.py`, `spaces/scroll-lens/requirements.txt`, `spaces/scroll-lens/README.md` (the Space card)",
+    "Tests": "`tests/test_scroll_lens.py`, 47 tests, numpy only (2 more need gradio or node and skip without them)",
+    "Needs": "Python 3.12 (3.10 or newer works), the pins in `spaces/scroll-lens/requirements.txt` (torch 2.13.0, timm 1.0.30, numpy 2.5.2, zarr 3.4.1, mcp 1.30.0, huggingface_hub 1.33.0; gradio 6.28.0 for the page, from the card); downloads dinovol at commit `a72fda2` and villa's `vesuvius/src` at `b29f310` itself. A browser with `DecompressionStream` (Chrome 80, Safari 16.4, Firefox 113 or newer) for the viewer. `tools/deploy.py` needs huggingface_hub; `tools/build_gallery.py` needs numpy, gradio_client and huggingface_hub",
+    "Runs on": "ZeroGPU (an NVIDIA RTX PRO 6000 Blackwell MIG 2g.48gb slice): a 256³ cube with all three models in 3.2 to 8.0 s of model time (median 3.5 s over 61 gallery cubes), 7 to 12 s per call, about 4.5 s of quota; a 128³ cube in about 0.3 s of model time and 0.5 s of quota (38 cubes; 2026-10-17). The Space's CPU fallback: a 128³ cube in about 9 s (live, 2026-10-17). A gallery cube opens in 1.2 s the first time (0.1 s for 128³) and then from memory (M1 Pro, 2026-10-17)",
+    "Network": "The page's server: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (scan chunks and listings), `huggingface.co` (weights at pinned revisions; `tools/` also the Space itself), `github.com` or `codeload.github.com` (model code at pinned commits). The visitor's browser: the same bucket (scan chunks; it allows any origin) and the Space",
+    "Writes": "Model weights and code under `$LENS_CACHE` (default `TMPDIR/scroll-lens`, about 3.7 GB); the viewer's layer files under `TMPDIR/scroll-lens-view` (one per cube shown, a few MB each, cleared at start-up); saved files, `look` outputs and `view` PNGs under `TMPDIR/scroll-lens-out` (pruned after 15 minutes; Gradio serves its own copies); `lens.py look` writes `VOLUME-Z-Y-X-SIZE.npz` and `.json` to `--out`; `tools/build_gallery.py` writes `--out` (default `spaces/scroll-lens/gallery/`, gitignored)",
+    "Go-ahead": "Needed for `tools/deploy.py` (creates or pushes the Space) and `tools/build_gallery.py` (spends Chase's ZeroGPU minutes and uploads `gallery/`), and for calling the live `look` with Chase's token; both scripts ask y/N. Not needed to use the page or the GPU-free endpoints, or to run locally",
+    "Released": "Space [`SharpMeow/scroll-lens`](https://huggingface.co/spaces/SharpMeow/scroll-lens) since 2026-10-17 (v1.0.0; v1.1.0 adds the browser viewer, the API and MCP); 99 gallery cubes since 2026-10-17; code on public `main` since 2026-10-16 ([PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110))",
+    "License": "Apache 2.0 for the Space's code ([`spaces/scroll-lens/LICENSE`](../../spaces/scroll-lens/LICENSE), [`NOTICE`](../../spaces/scroll-lens/NOTICE)); the models (MIT) and the scans and gallery cubes (CC BY-NC 4.0) keep their own licenses",
+    "Checked": "2026-10-17 against commit `c921ef1`"
    },
    "page": "docs/tools/scroll-lens.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 32,
+     "end_line": 34,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 33,
-     "end_line": 45,
+     "start_line": 35,
+     "end_line": 47,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 46,
-     "end_line": 71,
+     "start_line": 48,
+     "end_line": 68,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 72,
-     "end_line": 80,
+     "start_line": 69,
+     "end_line": 78,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 81,
-     "end_line": 181,
+     "start_line": 79,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 182,
-     "end_line": 203,
+     "start_line": 203,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 204,
-     "end_line": 222,
+     "start_line": 233,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 223,
-     "end_line": 243,
+     "start_line": 252,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 244,
-     "end_line": 287,
+     "start_line": 290,
+     "end_line": 374,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 288,
-     "end_line": 295,
+     "start_line": 375,
+     "end_line": 385,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 296,
-     "end_line": 299,
+     "start_line": 386,
+     "end_line": 389,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 300,
-     "end_line": 309,
+     "start_line": 390,
+     "end_line": 399,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 310,
-     "end_line": 313,
+     "start_line": 400,
+     "end_line": 403,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 314,
-     "end_line": 319,
+     "start_line": 404,
+     "end_line": 411,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 320,
-     "end_line": 325,
+     "start_line": 412,
+     "end_line": 417,
      "applicable": true
     }
    ]
