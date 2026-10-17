@@ -198,6 +198,10 @@ class RepoTest(unittest.TestCase):
         for rel in files:
             parts = rel.split("/")
             known.update("/".join(parts[:i]) for i in range(1, len(parts)))
+        # Tool pages still to be written (docs/TOOL-DOCS.md) may be linked by their future path.
+        pending = ROOT / "docs" / "tools" / "pending.json"
+        if pending.exists():
+            known.update(f"docs/tools/{pid}.md" for pid in json.loads(pending.read_text(encoding="utf-8"))["pages"])
         missing = []
         for f in tracked():
             rel = f.relative_to(ROOT).as_posix()

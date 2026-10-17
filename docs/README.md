@@ -4,7 +4,7 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 14 October 2026.
+Updated 16 October 2026.
 
 ## Where things stand
 
@@ -35,11 +35,13 @@ Updated 14 October 2026.
 | Failures we hit, append-only | [`logs/errors.md`](logs/errors.md) | [`ERROR-LOG.md`](ERROR-LOG.md) is only the pointer and format |
 | CLI and output conventions | [`UI-UX.md`](UI-UX.md) | |
 | Recurring checks every agent runs at session start, and the daily workflow (prize page, release list, AutoPipeline watcher, handoff size and age, repository tests) | [`routines.json`](routines.json), run by `python3 -m kit routines run --due` | [`AI-AGENTS.md`](AI-AGENTS.md#session-start-repository-routines), [`../.github/workflows/routines.yml`](../.github/workflows/routines.yml) |
+| How every tool is documented: the tool-page standard, its fields and sections, and what the checker checks | [`TOOL-DOCS.md`](TOOL-DOCS.md) | [`../templates/tool-doc.md`](../templates/tool-doc.md); AGENTS.md rule 16 |
 
 ## Tools and how to run things
 
 | Topic | Home | Also see |
 | --- | --- | --- |
+| Every tool, one reference page each: options with defaults, inputs, outputs, failures, checks and rules for agents | [`tools/README.md`](tools/README.md) (generated index; [`tools/index.json`](tools/index.json) for agents) | `python -m kit.tooldocs list`; [`TOOL-DOCS.md`](TOOL-DOCS.md) |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package lives on branch `submission/progress-2026-10-fix4`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
