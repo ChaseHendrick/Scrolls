@@ -4,6 +4,8 @@ Start with a browser, learn what each image means, then try one small task with 
 
 **Share this guide:** <https://github.com/ChaseHendrick/Scrolls/blob/main/docs/start-here.md>
 
+**What is Workbench?** [See the picture guide](workbench.md) for the toolbox, its screens and what to open first.
+
 ## Choose your first goal
 
 | I want to... | Start here | What you need | First success |

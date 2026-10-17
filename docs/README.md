@@ -12,6 +12,7 @@ Updated 17 October 2026.
 | --- | --- | --- |
 | Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
 | New here: browser tour, synthetic practice, setup and first tasks with official tools | [`start-here.md`](start-here.md), the shareable beginner guide | [`pipeline.md`](pipeline.md), [`tools/starter.md`](tools/starter.md) |
+| What Workbench is, what its tools look like and what to open first | [`workbench.md`](workbench.md), the picture guide | [`start-here.md`](start-here.md), [`tools/README.md`](tools/README.md) |
 | What a technical term means (A to Z) | [`../GLOSSARY.md`](../GLOSSARY.md) | [`vesuvius-bible/`](vesuvius-bible/bible.md#app-glossary) Appendix A |
 | A cited reference book on the scrolls and the challenge, 2023 to 2026 (history, papyrus, imaging, prizes, inventory, pipeline, tools, glossary, timeline, FAQ, bibliography) | [`vesuvius-bible/`](vesuvius-bible/) ([`index.md`](vesuvius-bible/index.md), [`llms.txt`](vesuvius-bible/llms.txt), one file: [`bible.md`](vesuvius-bible/bible.md)) | [`start-here.md`](start-here.md) |
 | Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere) |
