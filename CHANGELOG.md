@@ -10,7 +10,9 @@ python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseH
 
 ## 0.4.0 (17 October 2026)
 
-- **Scrolls Starter:** an offline browser introduction, synthetic practice with a known answer and a shuffled control, a local setup snapshot, and a command builder for the optional reader. A portable HTML download works without Python; the installed checker reports the current environment. The Start Here guide connects these exercises and existing community tools to the official data notebook, VC3D and ink workflow.
+- **Volume viewer:** `python -m kit volumeview` builds a Neuroglancer link, state or receipt from an explicit local manifest. It checks axes, voxel spacing, physical extents and declared frames before combining a public CT volume and prediction. This validates supplied metadata, not remote registration; no array is downloaded.
+
+- **Scrolls Starter:** an offline browser introduction, synthetic practice with a known answer and a noise-only control, a local setup snapshot, and a command builder for the optional reader. A portable HTML download works without Python; the installed checker reports the current environment. The Start Here guide connects these exercises and existing community tools to the official data notebook, VC3D and ink workflow.
 
 - **Scroll Text Reader:** the current name for the former Greek Letter Reader, covering Greek LineNet and optional local Tesseract OCR for installed languages. Commands, Python APIs, model names and output schemas are unchanged. Existing benchmark limits still apply.
 

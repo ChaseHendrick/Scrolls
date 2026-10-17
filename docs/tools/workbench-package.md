@@ -16,7 +16,7 @@
 | Network | The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners |
 | Writes | pip writes the `kit` package into the environment's `site-packages` and the five console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored) |
 | Go-ahead | Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8) |
-| Released | Public `main`: installable since 2026-10-14; version 0.2.0 since 2026-10-16 ([PR #102](https://github.com/ChaseHendrick/Scrolls/pull/102)) |
+| Released | Public `main`: installable since 2026-10-14; version 0.4.0 includes Scrolls Starter and local viewer-state generation ([release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0)) |
 | License | Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`) |
 | Guide | [letter-reader.md, "Install"](../letter-reader.md#install) |
 | Checked | 2026-10-16 against commit `63ee638` |
@@ -29,7 +29,7 @@ The core (prizes, plan, cost, fetch, the run ledger, provenance) is standard lib
 
 The name is not `kit` or `scrolls-kit` on purpose. AutoPipeline's released package is the distribution `vc-autopipeline`, with a `scrolls-kit` script, and both install a top-level package named `kit`. Installed into one environment, one would overwrite the other, so each goes in its own virtual environment.
 
-`check.yml` is the repository's only CI workflow. It runs the whole test suite with no third-party package (the core), the letter reader as users get it on three systems, and every test with every extra plus the saved experiment regression tests. `CITATION.cff` gives the citation for the software (version 0.2.0) and for the reader's two sets of weights, which carry their own licences.
+`check.yml` is the Kit checks workflow. It runs the whole test suite with no third-party package (the core), the letter reader as users get it on three systems, and every test with every extra plus the saved experiment regression tests. `CITATION.cff` gives the citation for the software (version 0.4.0) and for the reader's two sets of weights, which carry their own licences.
 
 Nothing here makes a claim. What the installed letter reader prints is model output, letter hypotheses for a person to check, not a reading.
 
@@ -69,7 +69,7 @@ $ scrolls-letterdemo --quiet
 DEMO ERROR: the letter reader needs numpy (No module named 'numpy'); python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)
 ```
 
-That last line, with exit code 2, is the expected answer without the `reader` extra; the CI checks it. It worked when `kit.__version__` prints `0.2.0` from `site-packages` and `scrolls-workbench prizes` prints the prize table.
+That last line, with exit code 2, is the expected answer without the `reader` extra; the CI checks it. It worked when `kit.__version__` prints `0.4.0` from `site-packages` and `scrolls-workbench prizes` prints the prize table.
 
 ## Checks and controls
 
@@ -115,6 +115,8 @@ Name "Kit checks". It runs on a push to `main`, on every pull request, and by ha
 | `reader` | `ubuntu-latest`, `macos-latest`, `windows-latest`, each with Python 3.10 and 3.13 (`fail-fast: false`, bash shell) | 20 min | `python -m pip install ".[reader]"`; the reader's tests (`test_letter*.py`, `test_greeklm.py`, `test_packaging.py`); from `runner.temp`, `scrolls-letterdemo --out letterdemo` and `scrolls-letterread letterdemo/demo-page.png --weights letters-v2-ccby --letter-px 32 --quiet --no-orientation` |
 | `verify` | `ubuntu-latest`, Python 3.13 | 10 min | `python -m pip install ".[all]"`; the whole suite; then every folder under `scripts/experiments/` that holds a `test_*.py` ([experiment-records](experiment-records.md)), failing with `No experiment regression tests found` when there are none |
 
+The installed Starter is checked outside the clone on Linux, macOS and Windows: `scrolls-start --portable --out starter-portable.html --no-open`, `scrolls-start --check`, and `scrolls-start --out starter-local.html --no-open`. The checks require the installed version in the setup JSON and both generated HTML files. The no-extras job also checks portable output and the setup command.
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -141,7 +143,7 @@ Name "Kit checks". It runs on a push to `main`, on every pull request, and by ha
 
 ## Outputs
 
-An installed distribution `scrolls-workbench` (version in `kit/__init__.py`): the `kit` package in `site-packages`, its data files, the five console scripts, and its metadata (name, version, summary, Apache-2.0, the project URLs "Source" and "Letter reader guide"). The CI's result is the check status GitHub shows on the commit or pull request.
+An installed distribution `scrolls-workbench` (version in `kit/__init__.py`): the `kit` package in `site-packages`, its data files, the five console scripts, and its metadata (name, version, summary, Apache-2.0, the project URLs "Source" and "Scroll Text Reader guide"). The CI's result is the check status GitHub shows on the commit or pull request.
 
 | Exit code | Meaning |
 | --- | --- |

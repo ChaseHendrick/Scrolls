@@ -8790,6 +8790,163 @@
    ]
   },
   {
+   "id": "volumeview",
+   "name": "volumeview",
+   "tagline": "create a volume overlay viewer link locally",
+   "summary": "Turn explicitly declared public CT and prediction grids into a Neuroglancer state or link, checking their axes, physical extents and coordinate frame without accessing scan data.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "kit entry point"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python -m kit volumeview",
+    "python -m kit.volumeview"
+   ],
+   "imports": [
+    "from kit import volumeview"
+   ],
+   "code": [
+    {
+     "path": "kit/volumeview.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/volumeview-example.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_volumeview"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_volumeview.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for local generation; sharing a link is a separate publication action"
+   },
+   "checked": {
+    "date": "2026-10-17",
+    "commit": "67ced6a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`volumeview`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, kit entry point",
+    "Area": "Viewers and apps",
+    "Run": "`python -m kit volumeview`, `python -m kit.volumeview`, `from kit import volumeview`",
+    "Code": "`kit/volumeview.py`, `kit/data/volumeview-example.json`, `kit/cli.py` (`cmd_volumeview`)",
+    "Tests": "`tests/test_volumeview.py`",
+    "Needs": "Python 3.10 or newer; standard library only; an explicit local JSON manifest",
+    "Runs on": "Any CPU; no numerical arrays or GPU required. Synthetic test timing is under Cost and time",
+    "Network": "None. Manually opening the resulting link later loads the external viewer and lets it request the declared public sources",
+    "Writes": "Stdout by default; `--out` creates one new local text file and refuses existing files",
+    "Go-ahead": "Not needed for local generation; sharing a link is a separate publication action",
+    "Released": "Added for the next public workbench release; not a separate model or dataset release",
+    "Checked": "2026-10-17 against commit `67ced6a`"
+   },
+   "page": "docs/tools/volumeview.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 36,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 62,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 92,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 103,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 124,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 145,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 174,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 182,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 186,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 196,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 204,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 208,
+     "end_line": 213,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "workbench-package",
    "name": "workbench-package",
    "tagline": "the pip-installable scrolls-workbench package and the CI that tests it",
@@ -8870,7 +9027,7 @@
     "Network": "The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners",
     "Writes": "pip writes the `kit` package into the environment's `site-packages` and the five console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored)",
     "Go-ahead": "Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8)",
-    "Released": "Public `main`: installable since 2026-10-14; version 0.2.0 since 2026-10-16 ([PR #102](https://github.com/ChaseHendrick/Scrolls/pull/102))",
+    "Released": "Public `main`: installable since 2026-10-14; version 0.4.0 includes Scrolls Starter and local viewer-state generation ([release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0))",
     "License": "Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`)",
     "Guide": "[letter-reader.md, \"Install\"](../letter-reader.md#install)",
     "Checked": "2026-10-16 against commit `63ee638`"
@@ -8904,67 +9061,67 @@
     {
      "name": "Commands and options",
      "start_line": 83,
-     "end_line": 123,
+     "end_line": 125,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 124,
-     "end_line": 132,
+     "start_line": 126,
+     "end_line": 134,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 133,
-     "end_line": 141,
+     "start_line": 135,
+     "end_line": 143,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 142,
-     "end_line": 151,
+     "start_line": 144,
+     "end_line": 153,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 152,
-     "end_line": 166,
+     "start_line": 154,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 167,
-     "end_line": 173,
+     "start_line": 169,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 174,
-     "end_line": 177,
+     "start_line": 176,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 178,
-     "end_line": 187,
+     "start_line": 180,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 188,
-     "end_line": 195,
+     "start_line": 190,
+     "end_line": 197,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 196,
-     "end_line": 205,
+     "start_line": 198,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 206,
-     "end_line": 212,
+     "start_line": 208,
+     "end_line": 214,
      "applicable": true
     }
    ]
