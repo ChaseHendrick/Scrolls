@@ -121,6 +121,14 @@
         "commit": "4953f17851aa9b2ffd3c26c86e85ecdabd659ca6",
         "path": "submissions/progress-2026-10-inkfilter"
       }
+    },
+    {
+      "id": "scrolls-starter",
+      "title": "Scrolls Starter: a beginner path into the tools",
+      "released": "2026-10-17",
+      "where": "main",
+      "summary": "A local browser introduction with a known-answer synthetic exercise, a control you can compare, a real setup checker and a command builder for Scroll Text Reader. The portable HTML works without installing Python; it explicitly leaves local setup unchecked. The guide connects our released tools and the official browser exercises to the official data notebook, VC3D and ink detection. It does not run models or download scans for you.",
+      "details": "Start with [the beginner guide](docs/start-here.md), download [the portable page](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/Scrolls-Starter.html), or install [workbench 0.4.0](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0) and run `scrolls-start`. The [tool reference](docs/tools/starter.md) covers setup checks and generated commands."
     }
   ]
 }

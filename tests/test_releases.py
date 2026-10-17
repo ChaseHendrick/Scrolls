@@ -109,11 +109,11 @@ class RenderTest(unittest.TestCase):
         self.assertEqual([e["id"] for e in r.ordered(releases, ["old"])], ["old", "b", "a", "mid"])
         self.assertEqual([e["id"] for e in r.ordered(releases, ["mid", "a"])], ["mid", "a", "b", "old"])
         lines = r.render({"schema_version": 1, "pinned": ["old"], "releases": releases}).split("\n")
-        self.assertEqual(lines[1], "Tools released from private work, Old first and the rest newest first. "
+        self.assertEqual(lines[1], "Released tools, Old first and the rest newest first. "
                                    "Each entry comes from [`docs/releases.json`](docs/releases.json).")
         self.assertEqual([x for x in lines if x.startswith("### ")], ["### Old", "### B", "### A", "### Mid"])
         two = r.intro({"schema_version": 1, "pinned": ["mid", "a"], "releases": releases})
-        self.assertTrue(two.startswith("Tools released from private work, Mid and A first and the rest newest first."))
+        self.assertTrue(two.startswith("Released tools, Mid and A first and the rest newest first."))
 
     def test_render_is_wrapped_in_the_markers(self):
         block = r.render({"schema_version": 1, "releases": [entry()]})

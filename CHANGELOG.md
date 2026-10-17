@@ -5,10 +5,12 @@ This file covers the `scrolls-workbench` package, the `kit` folder of this repos
 To install a fixed version, name its tag:
 
 ```bash
-python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.3.0"
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.4.0"
 ```
 
-## Unreleased
+## 0.4.0 (17 October 2026)
+
+- **Scrolls Starter:** an offline browser introduction, synthetic practice with a known answer and a shuffled control, a local setup snapshot, and a command builder for the optional reader. A portable HTML download works without Python; the installed checker reports the current environment. The Start Here guide connects these exercises and existing community tools to the official data notebook, VC3D and ink workflow.
 
 - **Scroll Text Reader:** the current name for the former Greek Letter Reader, covering Greek LineNet and optional local Tesseract OCR for installed languages. Commands, Python APIs, model names and output schemas are unchanged. Existing benchmark limits still apply.
 

@@ -43,6 +43,8 @@ jobs:
           python -c "import kit, pathlib; assert 'site-packages' in pathlib.Path(kit.__file__).parts, kit.__file__"
           scrolls-workbench prizes > /dev/null
           scrolls-workbench plan PHerc0826 > /dev/null
+          scrolls-start --portable --out starter-portable.html --no-open
+          scrolls-start --check > starter-check.json
           # without numpy the demo stops with DEMO ERROR and exit code 2, not a traceback
           set +e; scrolls-letterdemo --quiet; code=$?; set -e
           test "$code" = 2
@@ -80,6 +82,13 @@ jobs:
           python -m unittest discover -s tests -p "test_letter*.py" -v
           python -m unittest discover -s tests -p "test_greeklm.py" -v
           python -m unittest discover -s tests -p "test_packaging.py" -v
+      - name: Installed Starter on each supported system
+        working-directory: ${{ runner.temp }}
+        run: |
+          scrolls-start --portable --out starter-portable.html --no-open
+          scrolls-start --check > starter-check.json
+          scrolls-start --out starter-local.html --no-open
+          python -c "import json, pathlib; import kit; data=json.loads(pathlib.Path('starter-check.json').read_text()); assert data['version'] == kit.__version__; assert all(pathlib.Path(p).stat().st_size > 1000 for p in ('starter-portable.html', 'starter-local.html'))"
       - name: Demo with the released weights, from outside the clone
         working-directory: ${{ runner.temp }}
         run: |
