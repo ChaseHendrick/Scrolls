@@ -5,18 +5,18 @@ A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to
 | Field | Value |
 | --- | --- |
 | Id | `scroll-lens` |
-| Status | Current (built and tested, not yet on Hugging Face) |
+| Status | Current |
 | Kind | App (Gradio Space) and command line |
 | Area | Viewing and exploration |
 | Run | `python3 spaces/scroll-lens/app.py` (page) or `python3 spaces/scroll-lens/lens.py look VOLUME Z Y X` |
 | Code | [`spaces/scroll-lens/`](../../spaces/scroll-lens/): `app.py` (page), `lens.py` (everything else), `tools/deploy.py`, `tools/build_gallery.py` |
 | Tests | [`tests/test_scroll_lens.py`](../../tests/test_scroll_lens.py), 29 tests, numpy only |
 | Needs | Python 3.12 (3.10 or newer works), the pins in `spaces/scroll-lens/requirements.txt` (torch 2.13.0, timm 1.0.30, numpy 2.5.2, zarr 3.4.1, gradio 6.28.0 for the page); downloads dinovol at commit `a72fda2` and villa's `vesuvius/src` at `b29f310` itself |
-| Runs on | ZeroGPU GPU, or CPU: 128³ cube with all three models in about 35 s plus 30 to 50 s of model loading (measured 2026-10-16, 4-core cloud CPU); GPU time per cube not measured yet |
+| Runs on | ZeroGPU (an NVIDIA RTX PRO 6000 Blackwell MIG 2g.48gb slice): a 256³ cube with all three models in 3.5 to 5.8 s of model time, 7 to 12 s per call, about 4.5 s of quota (19 gallery cubes, 2026-10-17). CPU: a 128³ cube in about 35 s plus 30 to 50 s of model loading (2026-10-16, 4-core cloud CPU) |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (scan chunks), `huggingface.co` (weights at pinned revisions), `github.com` or `codeload.github.com` (model code at pinned commits) |
 | Writes | Model weights and code under `$LENS_CACHE` (default `TMPDIR/scroll-lens`, about 3.7 GB); `look` writes `VOLUME-Z-Y-X-SIZE.npz` and `.json` to `--out`; the page writes saved files under `TMPDIR/scroll-lens-out` |
 | Go-ahead | Needed for `tools/deploy.py` (creates or pushes the Space) and `tools/build_gallery.py` (spends Chase's ZeroGPU minutes and uploads `gallery/`); both ask y/N; not needed to run locally |
-| Released | Not yet. Branch `claude/project-thread-cl5mbs`; planned Space `SharpMeow/scroll-lens` |
+| Released | Space [`SharpMeow/scroll-lens`](https://huggingface.co/spaces/SharpMeow/scroll-lens) since 2026-10-17 (v1.0.0, 19 gallery cubes); source on public `main` since PR #110 |
 | Checked | 2026-10-16 against commit `378bd42` |
 
 ## What it does
@@ -129,7 +129,7 @@ The `.npz` (no scan voxels):
 
 ## Cost and time
 
-Free to run locally. On the Space, a visitor's runs count against their own ZeroGPU quota. Chase's 5 minutes are planned for the gallery (`tools/build_gallery.py`): 8 Paris 4 training points and one random papyrus point per other scan, about 12 MB per compact 256³ cube. GPU time per cube: not measured.
+Free to run locally. On the Space, a visitor's runs count against their own ZeroGPU quota. The gallery (`tools/build_gallery.py`, 2026-10-17) holds 19 compact 256³ cubes, 213 MB: the 8 Paris 4 training points and one random papyrus point per other scan. It used 84.8 s of Chase's 300 s daily quota, about 4.5 s per cube. `gpu_seconds` still asks 26 s for a 256³ cube; ZeroGPU counts the time used.
 
 ## For agents
 
@@ -141,6 +141,7 @@ Never deploy or upload without Chase's yes for that push. Keep the allow-list fr
 
 ## History
 
+- 2026-10-17: v1.0.0 live on Hugging Face with the 19-cube gallery. Gallery agreement (Model output): most cubes AUC 0.67 to 0.91 with controls 0.42 to 0.59; PHerc. 500P2 0.30 (control 0.45), 343P 0.40 (0.63) and 332 0.62 (0.59) disagree.
 - 2026-10-16: built in thread "Use my 5 minutes of ZeroGPU" (Chase: "something cool and visionary and useful by both newcomers and the elite researchers, like I did and we did for Unroll").
 
 ## Related

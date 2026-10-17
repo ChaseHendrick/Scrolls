@@ -64,6 +64,14 @@ Released 16 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
+### Scroll Lens (3D DINO, ink and surface models on scan cubes)
+
+Released 17 October 2026.
+
+[Scroll Lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) shows what the Vesuvius Challenge's 3D models see inside a scroll scan. Pick a ready-made cube or a point in one of twelve public 2.2 to 2.4 µm scans, and it runs the organisers' 3D DINO embeddings (dinovol), direct 3D ink model and recto surface model on a 128³ or 256³ cube read live from the open data. Click a patch to light up every patch the DINO model finds alike, the organisers' own few-click recipe; the concept carries across scans and downloads as `concept.npy`. Each cube shows how well the organisers' ink reference agrees with the ink model, beside a control that must fail. Status: released. Version: 1.0.0. It runs on ZeroGPU and falls back to the CPU when a visitor's GPU time runs out; a `look` endpoint returns the outputs to scripts. Licence: Apache 2.0 for the code; the models are MIT; the scan data and the gallery cubes derived from it are CC BY-NC 4.0. Model output, not a reading: a cube is smaller than one letter.
+
+Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens). Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).
+
 ### Segment stack check
 
 Released 14 October 2026.
