@@ -218,6 +218,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **S3**: Amazon's object storage service, which hosts the open-data bucket.
 
+**Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organisers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
+
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
 **segment**: A traced piece of papyrus surface together with its rendered surface volume. Segments are named by id, for example w035 or w045 of PHerc0139.
