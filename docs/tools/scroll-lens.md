@@ -339,7 +339,7 @@ Free to run locally. On the Space, a visitor's runs count against their own Zero
 
 ## History
 
-- 2026-10-17: v1.1.0. Agent tools as API endpoints and MCP tools (`list_scans`, `list_gallery`, `random_point`, `inspect_cube`, `search_cube`, `download_cube`); the views redraw while a slider or the crosshair is dragged; wheel steps slices; *Undo last click*; *Previous* and *Next* gallery buttons and a filterable list; American spelling; the gallery grew to 99 cubes with the rest of Chase's ZeroGPU minutes (PR to follow).
+- 2026-10-17: v1.1.0. Agent tools as API endpoints and MCP tools (`list_scans`, `list_gallery`, `random_point`, `inspect_cube`, `search_cube`, `download_cube`); the views redraw while a slider or the crosshair is dragged; wheel steps slices; *Undo last click*; *Previous* and *Next* gallery buttons and a filterable list; American spelling; the gallery grew to 99 cubes with the rest of Chase's ZeroGPU minutes ([PR #114](https://github.com/ChaseHendrick/Scrolls/pull/114)).
 - 2026-10-17: v1.0.0 live on Hugging Face with the 19-cube gallery. Gallery agreement (Model output): most cubes AUC 0.67 to 0.91 with controls 0.42 to 0.59; PHerc. 500P2 0.30 (control 0.45), 343P 0.40 (0.63) and 332 0.62 (0.59) disagree ([PR #113](https://github.com/ChaseHendrick/Scrolls/pull/113)).
 - 2026-10-17: tool page, docs index, map, glossary and handoff rows (`60da647`).
 - 2026-10-16: built in thread "Use my 5 minutes of ZeroGPU" (Chase: "something cool and visionary and useful by both newcomers and the elite researchers, like I did and we did for Unroll") (`378bd42`, [PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110)).
