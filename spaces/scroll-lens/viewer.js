@@ -22,7 +22,7 @@ const LAYERS = [
   ['pca', 'DINO colors', false, 'linear-gradient(90deg,#e33,#3c3,#36f)'],
   ['cross', 'Crosshair', true, '#fff'],
 ];
-const MODES = [['pos', 'More like this'], ['neg', 'Not this'], ['move', 'Move only']];
+const MODES = [['move', 'Move only'], ['pos', 'More like this'], ['neg', 'Not this']];   // the first is the default
 const CT_CACHE_MAX = 4;                        // scan cubes kept in memory, for going back and forth
 const TOP_FLOOR = 0.35;                        // opacity of the least similar patch inside Top % (app.TOP_FLOOR)
 
@@ -30,7 +30,7 @@ const st = {
   meta: null, key: null, rev: -1, size: 0, n: 0,
   ct: null, ink: null, surface: null, pca: null, ref: null, clk: null,
   lo: 0, hi: 255, autoLo: 0, autoHi: 255, bright: 0, contrast: 0,
-  slices: [0, 0, 0], on: {}, mode: 'pos', opacity: 0.7, top: 8,
+  slices: [0, 0, 0], on: {}, mode: 'move', opacity: 0.7, top: 8,
   refThr: 0, refTop: 1, clkThr: 0, clkTop: 1,
   marks: {pos: [], neg: []}, pending: [], inflight: null, clickSeq: 0, loading: 0, linkSlices: null,
 };

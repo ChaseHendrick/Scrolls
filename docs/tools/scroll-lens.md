@@ -166,12 +166,12 @@ Starts the page locally (queue of 256 waiting events, 8 at a time for most event
 | Models to run | all three | 3D DINO, ink, surface |
 | Average eight mirrorings | off | Same as `--tta` |
 | Layers (viewer) | ink, your clicks, organizers' reference, crosshair on; surface, DINO colors off | Toggle at once in the browser |
-| A click does (viewer) | More like this | Or Not this, or Move only |
+| A click does (viewer) | Move only | Or More like this, or Not this |
 | Opacity, Top % shown (viewer) | 0.7, 8 | 0 to 1; 1 to 40 |
 | Brightness, Contrast (viewer) | 0, 0 | -100 to 100 around the automatic window (the 0.5th to 99.5th percentile of the papyrus) |
 | 3D view (viewer) | off | Slices, layers as points, cube outline on; spin off |
 
-Viewer mouse and keys: drag moves the crosshair; wheel or arrow keys step a slice (Shift: 8); Ctrl or Cmd with the wheel, a pinch, or `+` and `-` zoom; right-drag or Shift-drag pans; double-click or `0` resets the zoom; `C` centers on the cube's point; Ctrl or Cmd with `Z` (or *Undo click*) forgets the last click. In the 3D view: drag rotates, the wheel zooms, right-drag pans, a click on a slice searches (or moves the crosshair in Move only), *Reset camera* looks at the whole cube. Links: `?cube=ID`, `?v=SCAN&z=Z&y=Y&x=X&size=SIZE` (fills Your own point and opens that tab), and `&s=Z,Y,X` (the crosshair, cube voxels; *Copy link* writes it).
+Viewer mouse and keys: drag moves the crosshair; wheel or arrow keys step a slice (Shift: 8); Ctrl or Cmd with the wheel, a pinch, or `+` and `-` zoom; right-drag or Shift-drag pans; double-click or `0` resets the zoom; `C` centers on the cube's point; Ctrl or Cmd with `Z` (or *Undo click*) forgets the last click. In the 3D view: drag rotates, the wheel zooms, right-drag pans, a click on a slice moves the crosshair (or searches, with More like this or Not this chosen), *Reset camera* looks at the whole cube. Links: `?cube=ID`, `?v=SCAN&z=Z&y=Y&x=X&size=SIZE` (fills Your own point and opens that tab), and `&s=Z,Y,X` (the crosshair, cube voxels; *Copy link* writes it).
 
 ### Agent tools (API and MCP, since 1.1.0)
 

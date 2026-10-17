@@ -64,8 +64,8 @@ in another.
    8). Ctrl or Cmd with the wheel, or a pinch, zooms; right-drag or Shift-drag pans; double-click resets. The line
    under the views reads out what is under the pointer: place in the cube and the scan, CT value, ink and surface
    probability, and similarity.
-4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Move only* just moves the
-   crosshair; *Undo click* (or Ctrl or Cmd with Z) forgets the last click. *Top % shown* sets how many of the most similar patches light up. The organizers' reference (amber)
+4. **Search**: a click only moves the crosshair at first (*Move only*). Choose *More like this* and click a patch;
+   *Not this* subtracts one; *Undo click* (or Ctrl or Cmd with Z) forgets the last click. *Top % shown* sets how many of the most similar patches light up. The organizers' reference (amber)
    never lights a patch below their own threshold, cosine 0.5.
 5. **3D view**: turns the three views into one 3D space of the cube, as in Unroll: the three slices as planes that
    move as you drag the sliders, ink and surface as points, and the patches like your concept or the organizers'

@@ -710,8 +710,8 @@ def load_gallery(cube_id):
 
 
 def gallery_label(it):
-    z, y, x = it["point_zyx"]
-    return f"{it['title']} (z {z}, y {y}, x {x}, {it['size']}³)"
+    """The dropdown shows the title alone, on one line; the point and size are in the readout below the views."""
+    return it["title"]
 
 
 def next_gallery_id(cube_id, step=1):
@@ -1208,12 +1208,13 @@ HOW_TO = """\
 3. **Look**: drag a slider under a view, or drag inside a view to move the crosshair; the other views follow as you
    move. The wheel or the arrow keys step one slice (Shift: 8). Ctrl or Cmd with the wheel, or a pinch, zooms;
    right-drag or Shift-drag pans; double-click resets. The line under the views reads out what is under the pointer.
-4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Undo click* (or Ctrl or Cmd
-   with Z) forgets the last one. *Top % shown* sets how many of the most similar patches light up.
+4. **Search**: a click only moves the crosshair until you choose *More like this*; then click a patch.
+   *Not this* subtracts one; *Undo click* (or Ctrl or Cmd with Z) forgets the last one.
+   *Top % shown* sets how many of the most similar patches light up.
 5. **3D view**: turns the three views into one 3D space: the three slices as planes through the cube (they move
    as you drag the sliders), ink and surface as points, and the patches like your concept or the organizers'
    reference glowing. Drag to rotate, wheel to zoom, right-drag to pan, *Spin* to turn it slowly; click a slice to
-   search there. *Flat views* goes back.
+   move there (or search there, with *More like this* chosen). *Flat views* goes back.
 6. **Take it away**: **Save files** gives the model outputs (.npz), the receipt (.json) and, after clicks, your
    `concept.npy`. *Copy link* gives a link that opens this cube at this crosshair.
 
@@ -1224,15 +1225,14 @@ AGENTS_TEXT = """\
 Everything on this page is also an API endpoint and an MCP tool, so an AI agent or a script can use Scroll Lens
 the way a person does. Every answer includes `open_in_browser`, a link that opens the same cube here for a person.
 
-| Tool | What it does | GPU |
-| --- | --- | --- |
-| `list_scans` | the twelve scans, their sizes, and what each model saw of them in training | no |
-| `list_gallery` | the ready-made cubes | no |
-| `random_point` | a point on the papyrus of a scan | no |
-| `inspect_cube` | three slice views with overlays, and the cube's numbers and checks | gallery: no |
-| `search_cube` | places like your example points or concept file (or the organizers' ink reference) | gallery: no |
-| `download_cube` | the models' outputs as arrays (.npz) | gallery: no |
-| `look` | the .npz for any point, for batch scripts | yes |
+- `list_scans`: the twelve scans, their sizes, and what each model saw of them in training. No GPU.
+- `list_gallery`: the ready-made cubes. No GPU.
+- `random_point`: a point on the papyrus of a scan. No GPU.
+- `inspect_cube`: three slice views with overlays, and the cube's numbers and checks. No GPU for a gallery cube.
+- `search_cube`: places like your example points or concept file (or the organizers' ink reference). No GPU for a
+  gallery cube.
+- `download_cube`: the models' outputs as arrays (.npz). No GPU for a gallery cube.
+- `look`: the .npz for any point, for batch scripts. Uses the GPU.
 
 **MCP** (Claude, Cursor and other MCP clients): add the server `{url}/gradio_api/mcp/`.
 Hugging Face's own MCP settings (huggingface.co/settings/mcp) can add this Space too. Runs on a new point use the
@@ -1253,6 +1253,8 @@ Grand Prize.
 """
 
 CSS = """
+#sl-gpick input { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+#sl-gpick [role=option] { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .sl-head { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; margin: 4px 0 2px; }
 .sl-head h1 { margin:0; font-size: 1.6rem; letter-spacing: .01em; }
 .sl-head span { color: var(--body-text-color-subdued); }
@@ -1567,7 +1569,7 @@ def build_demo():
                     with gr.Tab("Gallery", id="gallery"):
                         gpick = gr.Dropdown(gal_choices, value=gal_choices[0][1] if gal_choices else None,
                                             label=f"Ready-made cube, {len(gal_choices)} in all (no GPU needed)",
-                                            filterable=True)
+                                            filterable=True, elem_id="sl-gpick")
                         with gr.Row(equal_height=True):
                             gprev = gr.Button("Previous", size="sm", min_width=60)
                             grand = gr.Button("Random", size="sm", min_width=60)
@@ -1595,7 +1597,7 @@ def build_demo():
                     receipt = gr.JSON(label="Receipt")
                 with gr.Accordion("How to use it", open=False):
                     gr.Markdown(HOW_TO)
-                with gr.Accordion("For agents and scripts", open=False):
+                with gr.Accordion("For agents and scripts", open=False, elem_id="sl-agents"):
                     gr.Markdown(AGENTS_TEXT.format(url=page_url().rstrip("/") if page_url() != "/" else
                                                    "https://sharpmeow-scroll-lens.hf.space"))
             with gr.Column(scale=3, min_width=320, elem_id="sl-viewer"):
