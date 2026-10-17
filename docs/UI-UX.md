@@ -6,6 +6,8 @@ The product is a terminal package and Markdown documentation. There is no web ap
 
 Use Python 3.10 or newer. Depending on the environment the executable is `python` or `python3`.
 
+This table is a summary. Each tool's page in [`tools/`](tools/README.md) has every option with its default, the outputs, the exit codes and the failure modes ([`TOOL-DOCS.md`](TOOL-DOCS.md)).
+
 | Command | Result | Important inputs |
 | --- | --- | --- |
 | `python -m kit prizes` | Table of open prizes, days left, eligible scrolls | `--json`, `--today YYYY-MM-DD` |

@@ -14,6 +14,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Apple Silicon**: Apple's own Mac processors (M1 and later). VC3D, rendering and flattening run natively on them; see [`docs/mac.md`](docs/mac.md).
 
+**At a glance table**: The two-column table at the top of every tool page in `docs/tools/` (Id, Status, Kind, Area, Run, Code, Tests, Needs, Runs on, Network, Writes, Go-ahead, Released, Checked). An agent reads it first. See [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md).
+
 **AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labelled ink pixels above labelled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
 
 **AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix4` (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
@@ -27,6 +29,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **BM18**: A beamline at the ESRF built for phase-contrast tomography of large objects; used for scroll scans from 2025.
 
 **bootstrap**: Resampling the data many times to estimate how much a score would vary. `kit auc --bootstrap` gives AUC intervals this way.
+
+**Branch only**: The status of a tool page whose code is not on the default branch, only on another branch or in history. The page names the branch and commit that hold it and says why it is not on the default branch ([`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md)).
 
 **bucket (open-data bucket)**: The Vesuvius Challenge's public Amazon S3 storage, which holds the scans, segments, predictions and labels that kit reads.
 
@@ -251,6 +255,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **tifxyz**: A surface format of three float32 TIFF images giving the x, y and z position of each grid cell, with -1 for missing cells.
 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
+
+**tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
 
 **trace (tracer)**: A traced surface, and the program that grows it. villa's tracer grows a surface from a seed.
 
