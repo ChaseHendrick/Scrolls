@@ -236,7 +236,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **SAM 2**: Meta's Segment Anything Model 2: segments an object in an image or a video from a click, box or mask, and follows it from frame to frame. `scripts/segzoo/segzoo_sam2.py` treats a cube's slices as frames to follow papyrus sheets ([page](docs/tools/segzoo.md)).
 
-**Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organisers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
+**Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 

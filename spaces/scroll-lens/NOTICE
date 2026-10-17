@@ -1,7 +1,7 @@
 Scroll Lens
 Copyright 2026 Chase Hendrick and Scrolls contributors
 
-The Scroll Lens code (app.py, lens.py and the tools/ scripts) is licensed under the Apache License, Version 2.0.
+The Scroll Lens code (app.py, lens.py, viewer.js and the tools/ scripts) is licensed under the Apache License, Version 2.0.
 See LICENSE.
 
 Scroll Lens copies no third-party code. When it starts, it downloads the following at pinned versions and uses them

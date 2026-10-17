@@ -1,19 +1,25 @@
 """Scroll Lens: look inside a Herculaneum scroll scan with the Vesuvius Challenge's 3D models.
 
-The web page. Everything that is not the page (reading the scans, the models, clicks and scores) is in lens.py.
-On a ZeroGPU Space the GPU is attached only to `gpu_run`; when the visitor's GPU quota is used up, or no GPU is free,
-the same models run on the Space's CPU on a smaller cube instead. Gallery cubes need no GPU at all.
+The web page and the API. Everything that is not the page (reading the scans, the models, clicks and scores) is in
+lens.py, and the slice views are drawn in the visitor's browser by viewer.js. On a ZeroGPU Space the GPU is attached
+only to `gpu_run`; when the visitor's GPU quota is used up, or no GPU is free, the same models run on the Space's CPU
+on a smaller cube instead. Gallery cubes need no GPU at all.
 
   python3 app.py            serve the page (on a Space, or on any computer: it then runs on CUDA if present, else CPU)
 """
 
+import base64
+import collections
 import functools
+import gzip
+import itertools
 import json
 import os
 import sys
 import tempfile
 import threading
 import time
+import uuid
 from pathlib import Path
 
 try:
@@ -29,8 +35,13 @@ from lens import LensError  # noqa: E402
 
 ON_ZERO_GPU = bool(spaces) and os.environ.get("SPACES_ZERO_GPU", "").lower() in ("1", "true")
 OUT = Path(tempfile.gettempdir()) / "scroll-lens-out"
+VIEW_DIR = Path(tempfile.gettempdir()) / "scroll-lens-view"   # model layers for the browser viewer, served by Gradio
 CPU_SIZE = 128                      # the cube side the CPU fallback runs
-STATE_TTL_S = 30 * 60               # a visitor's cube is dropped from memory after this long without use
+STATE_TTL_S = 6 * 3600              # a visitor's session state (a cube key and clicks) is dropped after this
+MAX_CLICKS = 512                    # clicks a session keeps, More like this and Not this together
+CACHE_CUBES = 12                    # cubes whose model outputs stay in memory, shared by every visitor
+SIM_SCALE = 8192                    # similarity maps travel to the browser as int16 of similarity times this
+TOP_FLOOR = 0.35                    # opacity of the least similar patch still inside Top %
 ENGINE = None
 ENGINE_ERROR = None
 READY = threading.Event()
@@ -38,11 +49,9 @@ REFERENCE = None                    # the organizers' reference ink embedding, l
 GALLERY = []
 
 OVERLAYS = ("Ink (3D ink model)", "Recto surface", "Your clicks", "Organizers' ink reference", "DINO colors")
-CLICK_MODES = ("More like this", "Not this", "Move the slices here")
 VIEW_NAMES = ("Top view (z)", "Front view (y)", "Side view (x)")
 COLORS = {"ink": (235, 64, 52), "surface": (64, 200, 96), "clicks": (40, 220, 235), "reference": (250, 180, 30)}
 MARKS = {"pos": (255, 255, 255), "neg": (255, 70, 200)}   # crosses where you clicked: More like this, Not this
-
 
 def log(message):
     lens.log(message)
@@ -65,10 +74,18 @@ def _load_engine():
 
 def startup():
     global REFERENCE, GALLERY
+    import shutil
     import numpy as np
     REFERENCE = lens.unit(np.load(lens.ensure_weights(names=("ink_reference",))["ink_reference"],
                                   allow_pickle=False).astype(np.float32))
-    GALLERY = lens.gallery()
+    try:
+        GALLERY = lens.gallery()
+    except LensError as exc:                      # a broken index must not keep the page from starting
+        log(f"gallery not loaded: {exc}")
+        GALLERY = []
+    for folder in (OUT, VIEW_DIR):                # outputs of an earlier run of this process
+        shutil.rmtree(folder, ignore_errors=True)
+    VIEW_DIR.mkdir(parents=True, exist_ok=True)
     log(f"{len(GALLERY)} gallery cubes; ZeroGPU {'on' if ON_ZERO_GPU else 'off'}")
     threading.Thread(target=_load_engine, name="load-models", daemon=True).start()
 
@@ -98,31 +115,101 @@ def gpu_run(cube, layers, tta):
     return ENGINE.run(cube, layers, device="cuda", tta=tta)
 
 
+# ZeroGPU's refusals, by the titles the spaces package gives them (spaces 0.51.3, zero/client.py and wrappers.py):
+# the quota, a duration it will not grant, no GPU free in time. "ZeroGPU worker error" is different: the models
+# themselves failed inside the GPU task, so the CPU would fail the same way, except for "GPU task aborted" (the task
+# ran past its duration).
+GPU_REFUSALS = ("ZeroGPU quota exceeded", "ZeroGPU illegal duration", "ZeroGPU pending credits exceeded",
+                "ZeroGPU queue timeout", "ZeroGPU client error")
+CPU_SLOT = threading.Semaphore(1)       # one CPU fallback run at a time, so the page keeps answering
+
+
+def _gpu_text(exc):
+    """A ZeroGPU error's own message (gr.Error's str() is its repr, with quotes)."""
+    return str(getattr(exc, "message", None) or exc).strip().strip("'\"").strip()
+
+
 def _is_gpu_refusal(exc):
-    text = f"{type(exc).__name__} {exc} {getattr(exc, 'title', '')}".lower()
-    return any(k in text for k in ("quota", "zerogpu", "no gpu", "gpu task aborted", "gpu is not available"))
+    return (str(getattr(exc, "title", "") or "") in GPU_REFUSALS or "GPU task aborted" in str(exc)
+            or "No GPU was available" in str(exc))
+
+
+def cpu_run(eng, cube, layers):
+    if not CPU_SLOT.acquire(blocking=False):
+        raise LensError("the Space's CPU is busy with another fallback run; try again in a minute, or sign in to "
+                        "Hugging Face for more ZeroGPU time")
+    try:
+        import torch
+        torch.set_num_threads(max(1, (os.cpu_count() or 2) - 1))     # leave a core for the page
+        return eng.run(_center(cube, CPU_SIZE), layers, device="cpu", tta=False)
+    finally:
+        CPU_SLOT.release()
 
 
 def run_models(cube, layers, tta, allow_cpu=True):
     """Run on the GPU when there is one; on ZeroGPU fall back to the CPU when the GPU is refused. Returns the result
     and a note for the visitor (empty when it ran as asked)."""
-    import torch
     eng = engine()
+    import torch
     if ON_ZERO_GPU:
         try:
             return gpu_run(cube, tuple(layers), bool(tta)), ""
         except Exception as exc:  # noqa: BLE001
-            if not (allow_cpu and _is_gpu_refusal(exc)):
+            if not _is_gpu_refusal(exc):
+                if str(getattr(exc, "title", "")) == "ZeroGPU worker error":
+                    raise LensError(f"the models failed on the GPU ({_gpu_text(exc)[:200]}); try again, or try "
+                                    "another point") from None
                 raise
+            if not allow_cpu:
+                raise LensError(f"ZeroGPU refused this call: {_gpu_text(exc)[:300]} Pass allow_cpu=True to run "
+                                f"the middle {CPU_SIZE}³ on the CPU instead.") from None
             log(f"GPU refused ({exc}); running on the CPU")
-            note = (f"Ran on the Space's CPU, because ZeroGPU said: {str(exc).strip()[:240]} "
-                    "Your GPU minutes come back each day; signing in to Hugging Face gives more.")
-            return eng.run(_center(cube, CPU_SIZE), layers, device="cpu", tta=False), note
+            note = (f"ZeroGPU refused the run ({_gpu_text(exc).rstrip('. ')[:200]}), so the models ran on the "
+                    f"Space's CPU, on the middle {CPU_SIZE}³ voxels. ZeroGPU time comes back each day; signing in "
+                    "to Hugging Face gives more.")
+            return cpu_run(eng, cube, layers), note
     device = "cuda" if torch.cuda.is_available() else "cpu"
     if device == "cpu" and cube.shape[0] > CPU_SIZE:
-        return (eng.run(_center(cube, CPU_SIZE), layers, device="cpu", tta=False),
+        return (cpu_run(eng, cube, layers),
                 f"No GPU here, so the models ran on the CPU on the middle {CPU_SIZE}³ voxels.")
     return eng.run(cube, layers, device=device, tta=tta), ""
+
+
+# One model run at a time per visitor or caller, so one script cannot hold the GPU and the queue for everyone.
+RUNNING = collections.Counter()
+RUN_LOCK = threading.Lock()
+
+
+def client_of(request):
+    if request is None:
+        return None
+    user = getattr(request, "username", None)
+    if user:
+        return f"user:{user}"
+    headers = getattr(request, "headers", None) or {}
+    # the last X-Forwarded-For entry is the one the Space's own proxy adds; earlier ones are what the caller sent
+    forwarded = (headers.get("x-forwarded-for") or "").split(",")[-1].strip()
+    host = getattr(getattr(request, "client", None), "host", "") or ""
+    return forwarded or host or getattr(request, "session_hash", None)
+
+
+class one_run:
+    def __init__(self, request):
+        self.key = client_of(request)
+
+    def __enter__(self):
+        with RUN_LOCK:
+            if self.key and RUNNING[self.key] >= 1:
+                raise LensError("you already have a model run going; wait for it to finish (one at a time per "
+                                "visitor)")
+            RUNNING[self.key] += 1
+
+    def __exit__(self, *exc):
+        with RUN_LOCK:
+            RUNNING[self.key] -= 1
+            if RUNNING[self.key] <= 0:
+                del RUNNING[self.key]
+        return False
 
 
 def _center(cube, size):
@@ -132,35 +219,209 @@ def _center(cube, size):
     return cube[o:o + size, o:o + size, o:o + size]
 
 
-# ---------------------------------------------------------------- one cube in memory
+# ---------------------------------------------------------------- cubes in memory
+#
+# A cube's model outputs (tens of MB) live in one cache shared by every visitor; a visitor's session keeps only the
+# cube's key and its clicks, so memory stays bounded however many people use the page. Gallery cubes reload from
+# disk when they drop out; a cube the models ran on now does not, and asks to be run again.
 
-def new_view(vid, origin, size, point, cube, result, source, note=""):
-    """Everything the page needs about the cube on screen. Arrays only; it lives in the visitor's session."""
-    import numpy as np
-    if cube.shape[0] != size:                      # the CPU fallback ran a smaller cube at the center
-        o = (size - cube.shape[0]) // 2
-        origin = tuple(int(v + o) for v in origin)
-        size = int(cube.shape[0])
-    nz = cube[cube > 0]
-    lo, hi = (np.percentile(nz, (0.5, 99.5)) if nz.size else (0, 255))
-    view = {"volume": vid, "origin": tuple(int(v) for v in origin), "size": int(size),
-            "point": tuple(int(v) for v in point), "cube": cube, "lo": float(lo), "hi": float(max(hi, lo + 1)),
-            "source": source, "note": note, "result": result, "pca": None, "ref_sim": None,
-            "foreground": lens.foreground(cube)}
-    if "grid" in result or "grid_reduced" in result:
-        view["grid"] = lens.grid_of(result).astype(np.float16)
-        view["ref_sim"] = lens.similarity(view["grid"].astype(np.float32), REFERENCE)
-    view["slices"] = [int(min(max(p - o, 0), size - 1)) for p, o in zip(point, view["origin"])]
-    view["receipt"] = lens.receipt(vid, view["origin"], size, point, result,
-                                   ENGINE.describe() if ENGINE else None,
-                                   {"source": source, "foreground": round(view["foreground"], 4)})
-    if "ink" in result and view.get("ref_sim") is not None:
-        view["receipt"]["agreement_with_ink_model"] = lens.agreement(view["ref_sim"], result["ink"])
-    return view
+class Cube:
+    """One cube's model outputs and what is derived from them."""
+
+    def __init__(self, key, meta, result):
+        import numpy as np
+        self.key, self.meta, self.result = key, meta, result
+        self.size = int(meta["cube_size"])
+        self.n = self.size // lens.PATCH
+        self.lock = threading.Lock()
+        self.has_dino = "grid" in result or "grid_reduced" in result
+        self.norms = None
+        if "grid_reduced" in result:
+            coef = np.asarray(result["grid_reduced"], np.float32)
+            self.norms = np.maximum(np.linalg.norm(coef, axis=-1), 1e-12)
+        self.ref_sim = self.similarity(REFERENCE) if self.has_dino and REFERENCE is not None else None
+        self.data_path = None
+
+    def similarity(self, positive, negative=None):
+        """Per patch: cosine to the positive concept, minus that to the negative one. A compact (gallery) cube is
+        scored in its reduced basis, the same numbers as with the embeddings lens.grid_of rebuilds."""
+        import numpy as np
+        res = self.result
+        if "grid" in res:
+            return lens.similarity(np.asarray(res["grid"]), positive, negative)
+        if "grid_reduced" not in res:
+            raise LensError("this cube has no DINO embeddings; run it with the 3D DINO model to search it")
+        basis = np.asarray(res["grid_basis"], np.float32)
+        coef = np.asarray(res["grid_reduced"], np.float32)
+
+        def cos(vec):                 # the projection's dot product, as lens.grid_of rebuilds it (no rescaling)
+            return coef @ (basis.T @ np.asarray(vec, np.float32))
+        s = cos(positive)
+        if negative is not None:
+            s = s - cos(negative)
+        return s.astype(np.float32)
+
+    def reference_agreement(self):
+        """The organizers' reference against the 3D ink model for this cube, with the control range (lens.agreement),
+        worked out once from the arrays held here."""
+        if self.ref_sim is None or "ink" not in self.result:
+            return None
+        if getattr(self, "_ref_agreement", None) is None:
+            self._ref_agreement = lens.agreement(self.ref_sim, self.result["ink"])
+        return self._ref_agreement
+
+    def vector(self, voxel):
+        """The unit 864-number embedding of the patch holding a cube voxel (z, y, x)."""
+        import numpy as np
+        t = lens.token_of(voxel, self.size)
+        res = self.result
+        if "grid" in res:
+            return np.asarray(res["grid"][t], np.float32)
+        if "grid_reduced" not in res:
+            raise LensError("this cube has no DINO embeddings; run it with the 3D DINO model to search by clicking")
+        return lens.unit(np.asarray(res["grid_basis"], np.float32) @ np.asarray(res["grid_reduced"][t], np.float32))
+
+    def pca(self):
+        import numpy as np
+        res = self.result
+        if "grid" in res:
+            return lens.pca_colors(np.asarray(res["grid"], np.float32))
+        if "grid_reduced" in res:
+            # the basis is orthonormal, so unit coefficients are the unit embeddings in a rotated frame: same colors
+            coef = np.asarray(res["grid_reduced"], np.float32) / self.norms[..., None]
+            return lens.pca_colors(coef)
+        return None
+
+    def layers_file(self, path):
+        """Write the model layers the browser viewer draws, once: ink and surface (uint8, Z Y X), DINO colors
+        (uint8, Z/8 Y/8 X/8 3) and the organizers' reference similarity (float32, Z/8 Y/8 X/8), gzipped behind a
+        JSON header (see viewer.js loadLayers)."""
+        import numpy as np
+        with self.lock:
+            if self.data_path and Path(self.data_path).is_file():
+                return self.data_path
+            arrays = [(k, np.ascontiguousarray(self.result[k], np.uint8)) for k in ("ink", "surface") if k in self.result]
+            if self.has_dino:
+                arrays.append(("pca", np.ascontiguousarray(self.pca(), np.uint8)))
+                if self.ref_sim is not None:
+                    arrays.append(("ref", np.ascontiguousarray(self.ref_sim, "<f4")))
+            header, blobs, offset = {"arrays": []}, [], 0
+            for name, a in arrays:
+                raw = a.tobytes()
+                header["arrays"].append({"name": name, "dtype": str(a.dtype).replace("<", ""), "shape": list(a.shape),
+                                         "offset": offset, "nbytes": len(raw)})
+                pad = (-len(raw)) % 4
+                blobs.append(raw + b"\0" * pad)
+                offset += len(raw) + pad
+            hjson = json.dumps(header).encode()
+            body = len(hjson).to_bytes(4, "little") + hjson
+            body += b"\0" * ((-len(body)) % 4)
+            Path(path).parent.mkdir(parents=True, exist_ok=True)
+            tmp = Path(f"{path}.{uuid.uuid4().hex[:8]}.part")      # concurrent first opens never share it
+            tmp.write_bytes(gzip.compress(body + b"".join(blobs), compresslevel=3, mtime=0))
+            os.replace(tmp, path)
+            self.data_path = str(path)
+            return self.data_path
+
+
+class CubeCache:
+    """Two least-recently-used pools: gallery cubes (reloaded from disk when they drop out) and cubes the models ran
+    on now (lost when they drop out), so opening gallery cubes never pushes out a visitor's run."""
+
+    def __init__(self, size=CACHE_CUBES):
+        self.size = size
+        self.pools = {"gallery": collections.OrderedDict(), "run": collections.OrderedDict()}
+        self.lock = threading.Lock()
+
+    def _pool(self, key):
+        return self.pools["gallery" if key.startswith("gallery:") else "run"]
+
+    @property
+    def items(self):
+        return {**self.pools["gallery"], **self.pools["run"]}
+
+    def get(self, key):
+        with self.lock:
+            pool = self._pool(key)
+            if key in pool:
+                pool.move_to_end(key)
+                return pool[key]
+        if key.startswith("gallery:"):
+            return self.put(gallery_cube(key.split(":", 1)[1]))
+        raise LensError("this cube is no longer in the Space's memory (it keeps the last few); run it again")
+
+    def put(self, cube):
+        with self.lock:
+            pool = self._pool(cube.key)
+            pool[cube.key] = cube
+            pool.move_to_end(cube.key)
+            while len(pool) > self.size:
+                key, old = pool.popitem(last=False)
+                if key.startswith("run:") and old.data_path:
+                    Path(old.data_path).unlink(missing_ok=True)
+        return cube
+
+
+CUBES = CubeCache()
+
+
+def gallery_item(cube_id):
+    for it in GALLERY:
+        if it["id"] == cube_id:
+            return it
+    raise LensError(f"no gallery cube {cube_id!r}")
+
+
+def gallery_cube(cube_id):
+    it = gallery_item(cube_id)
+    meta, arrays = lens.load_npz(HERE / "gallery" / it["file"])
+    result = dict(arrays, seconds=meta.get("seconds", {}), device=meta.get("device"),
+                  device_name=meta.get("device_name"), tta=meta.get("tta", False))
+    return Cube(f"gallery:{cube_id}", meta, result)
+
+
+def cube_of(view):
+    return CUBES.get(view["cache"])
+
+
+def layers_url(cube):
+    if cube.key.startswith("gallery:"):
+        path = VIEW_DIR / "gallery" / f"{cube.key.split(':', 1)[1]}-{lens.VERSION}.bin"
+    else:
+        path = VIEW_DIR / "runs" / f"{cube.key.split(':', 1)[1]}.bin"
+    return f"gradio_api/file={cube.layers_file(path)}"
+
+
+# ---------------------------------------------------------------- one cube on screen
+
+def new_view(cube, point, source, note="", title=None, request_size=None, cube_id=None):
+    """What a visitor's session keeps about the cube on screen: small values only; the arrays stay in CUBES."""
+    meta = cube.meta
+    vid = meta["volume"]
+    origin = tuple(int(v) for v in meta["cube_origin_zyx"])
+    receipt = dict(meta)
+    receipt["source"] = source
+    if cube_id:
+        receipt["gallery_id"] = cube_id
+    return {"cache": cube.key, "volume": vid, "origin": origin, "size": cube.size,
+            "point": tuple(int(v) for v in point), "source": source, "note": note, "cube_id": cube_id,
+            "title": title or f"{lens.volume(vid)['scroll']}, cube at z {origin[0]}, y {origin[1]}, x {origin[2]}",
+            "request_size": request_size or cube.size, "foreground": meta.get("foreground"), "receipt": receipt}
 
 
 def empty_state():
-    return {"view": None, "pos": [], "neg": []}
+    return {"view": None, "pos": [], "neg": [], "rev": 0}
+
+
+REVS = itertools.count(1)           # one increasing revision for every answer, so the viewer keeps only the newest
+
+
+def next_rev():
+    return next(REVS)
+
+
+def cube_key(view):
+    return f"{view['volume']}:{','.join(map(str, view['origin']))}:{view['size']}"
 
 
 def click_concept(state):
@@ -173,27 +434,76 @@ def click_concept(state):
     return p, n
 
 
-def click_sim(state):
+def click_sim(state, cube=None):
     view = state["view"]
     p, n = click_concept(state)
-    if view is None or p is None or "grid" not in view:
+    if view is None or p is None:
         return None
+    cube = cube or cube_of(view)
+    if not cube.has_dino:
+        return None
+    return cube.similarity(p, n)
+
+
+def encode_sim(sim):
     import numpy as np
-    return lens.similarity(view["grid"].astype(np.float32), p, n)
+    if sim is None:
+        return None
+    q = np.clip(np.rint(np.asarray(sim, np.float32) * SIM_SCALE), -32768, 32767).astype("<i2")
+    return base64.b64encode(q.tobytes()).decode()
 
 
-# ---------------------------------------------------------------- drawing
+def viewer_value(state):
+    """The JSON the browser viewer reads (viewer.js onValue): where to fetch the scan and the model layers, the
+    cube's place, and the visitor's clicks with their similarity map."""
+    view = state.get("view")
+    if not view:
+        return ""
+    cube = cube_of(view)
+    key = cube_key(view)
+    marks = {kind: [c["voxel"] for c in state[kind] if c.get("cube") == key and c.get("voxel")]
+             for kind in ("pos", "neg")}
+    return json.dumps({
+        "key": view["cache"], "rev": state.get("rev", 0), "volume": view["volume"],
+        "scroll": lens.volume(view["volume"])["scroll"], "title": view["title"], "cube_id": view.get("cube_id"),
+        "origin": list(view["origin"]), "size": view["size"], "point": list(view["point"]),
+        "request_size": view.get("request_size"),
+        "ct": {"base": lens.volume_url(view["volume"]), "chunk": lens.CHUNK},
+        "data": layers_url(cube),
+        "has": {"dino": cube.has_dino, "ink": "ink" in cube.result, "surface": "surface" in cube.result},
+        "tau": lens.TAU,
+        "clicks": {"sim": encode_sim(click_sim(state, cube)), "pos": marks["pos"], "neg": marks["neg"],
+                   "acked": state.get("acked", [])},
+    })
+
+
+def ack_only(key, clicks):
+    """A viewer answer that only acknowledges click ids, for clicks the server cannot use (viewer.js onValue)."""
+    return json.dumps({"key": key, "rev": next_rev(), "ack_only": True,
+                       "clicks": {"acked": [str(c.get("id")) for c in clicks]}})
+
+
+# ---------------------------------------------------------------- drawing on the server (the agent tools)
 
 def _take(a, axis, i):
     return a[i] if axis == 0 else (a[:, i] if axis == 1 else a[:, :, i])
 
 
-def _top_alpha(sim2d, sim3d, top_pct):
-    """Opacity of each pixel of a similarity slice: 0 below the cube's top `top_pct` percent, rising to 1 at its best."""
+def _top_alpha(sim2d, sim3d, top_pct, floor=None):
+    """Opacity of each pixel of a similarity slice: 0 below the cube's top `top_pct` percent (and below `floor`, if
+    given), then from 0.35 at the threshold to 1 at the cube's best patch, so every selected patch shows (viewer.js
+    draws it the same way)."""
     import numpy as np
     thr = float(np.percentile(sim3d, 100 - top_pct))
+    if floor is not None:
+        thr = max(thr, float(floor))
+        if float(sim3d.max()) < thr:
+            return np.zeros_like(sim2d, dtype=np.float32)
     best = float(sim3d.max())
-    return np.clip((sim2d - thr) / max(best - thr, 1e-6), 0, 1) * (sim2d >= thr)
+    if best - thr < 1e-6 and float(sim3d.min()) == best:
+        return np.zeros_like(sim2d, dtype=np.float32)          # a flat map (the concept cancels out): show nothing
+    ramp = np.clip((sim2d - thr) / max(best - thr, 1e-6), 0, 1)
+    return (TOP_FLOOR + (1 - TOP_FLOOR) * ramp) * (sim2d >= thr)
 
 
 def draw_slice(state, axis, overlays, top_pct, opacity):
@@ -227,9 +537,9 @@ def draw_slice(state, axis, overlays, top_pct, opacity):
         blend(COLORS["ink"], _take(res["ink"], axis, idx) / 255.0)
     if "Organizers' ink reference" in overlays and view.get("ref_sim") is not None:
         s3 = view["ref_sim"]
-        blend(COLORS["reference"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct)))
+        blend(COLORS["reference"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct, floor=lens.TAU)))
     if "Your clicks" in overlays:
-        s3 = click_sim(state)
+        s3 = tool_click_sim(state)
         if s3 is not None:
             blend(COLORS["clicks"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct)))
     img = (np.clip(rgb, 0, 1) * 255).astype(np.uint8)
@@ -254,6 +564,10 @@ def draw_slice(state, axis, overlays, top_pct, opacity):
     return img
 
 
+def scale_of(size):
+    return max(1, 512 // int(size))
+
+
 def _mark(img, r, c, color, half):
     """A cross two pixels thick, drawn in place."""
     h, w = img.shape[:2]
@@ -264,113 +578,120 @@ def _mark(img, r, c, color, half):
                     img[y, x] = color
 
 
-def scale_of(size):
-    return max(1, 512 // int(size))
-
-
-def cube_key(view):
-    return f"{view['volume']}:{','.join(map(str, view['origin']))}:{view['size']}"
-
-
-def numbers(state, top_pct):
-    """The text beside the images: what this cube is, what ran, and the checks."""
-    import numpy as np
+def numbers(state):
+    """The text beside the views: what this cube is, what ran, and the checks."""
     view = state["view"]
     if view is None:
         return ("Pick a ready-made cube from the gallery, or a point in a scan, then press **Run the models**. "
-                "Click the images to find similar places.")
+                "Click the views to find similar places.")
+    cube = cube_of(view)
     v = lens.volume(view["volume"])
     r = view["receipt"]
     um = v["voxel_um"] * view["size"]
+    fg = view.get("foreground")
     lines = [f"**{v['scroll']}**, cube of {view['size']}³ voxels ({um / 1000:.2f} mm a side) at "
-             f"z {view['origin'][0]}, y {view['origin'][1]}, x {view['origin'][2]}. "
-             f"{view['foreground']:.0%} of it lies inside the scan's scroll mask."]
+             f"z {view['origin'][0]}, y {view['origin'][1]}, x {view['origin'][2]}."
+             + (f" {fg:.0%} of it lies inside the scan's scroll mask." if fg is not None else "")]
     src = {"gallery": "Gallery cube: computed earlier, no GPU used now.", "gpu": "Ran now on the GPU.",
-           "cpu": "Ran now on the CPU.", "file": "Loaded from your file."}[view["source"]]
+           "cpu": "" if view["note"] else "Ran now on the CPU.", "file": "Loaded from your file."}[view["source"]]
     secs = ", ".join(f"{k} {s:.1f} s" for k, s in r.get("seconds", {}).items())
-    lines.append(f"{src} {('Times: ' + secs + '.') if secs else ''} {view['note']}".strip())
+    lines.append(f"{src} {('Model time: ' + secs + '.') if secs else ''} {view['note']}".strip())
     lines.append("**What each model saw of this scroll in training.** " + " ".join(
         f"{lens.LAYER_TITLES[k]}: {v['role'][k]}" for k in lens.LAYERS))
-    ag = r.get("agreement_with_ink_model")
-    if ag and ag["auc"] is not None:
+    ag = cube.reference_agreement()
+    if ag and ag.get("auc") is not None:
         lines.append(f"**Check.** The organizers' ink reference picks out the patches the 3D ink model marks as ink "
-                     f"with AUC {ag['auc']:.2f}; the control (ink mask moved half a cube) gives "
-                     f"{ag['auc_control_shifted']:.2f} and should sit near 0.5. Ink covers "
-                     f"{ag['ink_patch_fraction']:.1%} of patches. Agreement between two models, not ground truth.")
-    if view.get("ref_sim") is not None:
+                     f"with AUC {ag['auc']:.2f}; controls (the ink mask moved away from its place) give "
+                     f"{ag['auc_control_p05']:.2f} to {ag['auc_control_p95']:.2f}, and the AUC means something only "
+                     f"above that range. Ink covers {ag['ink_patch_fraction']:.1%} of patches. Agreement between two "
+                     "models, not ground truth.")
+    if cube.ref_sim is not None:
         lines.append(f"Patches at or above the organizers' threshold (cosine {lens.TAU}) to their reference: "
-                     f"{float((view['ref_sim'] >= lens.TAU).mean()):.1%}.")
-    s = click_sim(state)
+                     f"{float((cube.ref_sim >= lens.TAU).mean()):.1%}.")
+    s = click_sim(state, cube)
     if s is not None:
         extra = ""
-        if "ink" in view["result"]:
-            a = lens.agreement(s, view["result"]["ink"])
+        if "ink" in cube.result:
+            a = lens.agreement(s, cube.result["ink"])
             if a["auc"] is not None:
                 extra = (f" Against the 3D ink model your concept scores AUC {a['auc']:.2f} "
-                         f"(control {a['auc_control_shifted']:.2f}).")
-        lines.append(f"**Your concept:** {len(state['pos'])} positive and {len(state['neg'])} negative clicks"
-                     f" from {len({c['cube'] for c in state['pos'] + state['neg']})} cube(s). Showing its top "
-                     f"{top_pct:g}% of patches.{extra}")
-    lines.append(f"[Link to this cube]({view_link(view)}). _Model output, not a reading. A cube is smaller than one "
-                 "letter._")
+                         f"(controls {a.get('auc_control_p05', 0):.2f} to {a.get('auc_control_p95', 0):.2f}).")
+        clicked = {c["cube"] for c in state["pos"] + state["neg"] if c["cube"] != "file"}
+        loaded = any(c["cube"] == "file" for c in state["pos"])
+        loaded_not = any(c["cube"] == "file" for c in state["neg"])
+        lines.append(f"**Your concept:** {len([c for c in state['pos'] if c['cube'] != 'file'])} positive and "
+                     f"{len([c for c in state['neg'] if c['cube'] != 'file'])} negative clicks from {len(clicked)} "
+                     f"cube(s){', plus your concept.npy' if loaded else ''}"
+                     f"{' and concept_not.npy' if loaded_not else ''}.{extra}")
+    lines.append("_Model output, not a reading. A cube is smaller than one letter._")
     return "\n\n".join(lines)
-
-
-def figure_3d(state, overlays, top_pct):
-    """Ink and surface as see-through shells and the similar patches as points, in a rotatable 3D plot."""
-    import numpy as np
-    import plotly.graph_objects as go
-    view = state["view"]
-    fig = go.Figure()
-    if view is None:
-        return fig
-    from skimage.measure import marching_cubes
-    res, size = view["result"], view["size"]
-    step = 2 if size <= 128 else 4
-    for key, name, color, show in (("surface", "Recto surface", COLORS["surface"], "Recto surface" in overlays),
-                                    ("ink", "Ink", COLORS["ink"], "Ink (3D ink model)" in overlays)):
-        if not show or key not in res or res[key].max() < 128:
-            continue
-        verts, faces, _, _ = marching_cubes(res[key].astype(np.float32), level=127.5, step_size=step)
-        fig.add_trace(go.Mesh3d(x=verts[:, 2], y=verts[:, 1], z=verts[:, 0], i=faces[:, 0], j=faces[:, 1],
-                                k=faces[:, 2], color=f"rgb{color}", opacity=0.35 if key == "surface" else 0.8,
-                                name=name, showlegend=True, hoverinfo="skip"))
-    for key, name, color in (("clicks", "Your clicks", COLORS["clicks"]),
-                              ("reference", "Organizers' ink reference", COLORS["reference"])):
-        if (key == "clicks" and "Your clicks" not in overlays) or \
-                (key == "reference" and "Organizers' ink reference" not in overlays):
-            continue
-        s3 = click_sim(state) if key == "clicks" else view.get("ref_sim")
-        if s3 is None:
-            continue
-        thr = np.percentile(s3, 100 - top_pct)
-        pts = np.argwhere(s3 >= thr) * lens.PATCH + lens.PATCH / 2
-        fig.add_trace(go.Scatter3d(x=pts[:, 2], y=pts[:, 1], z=pts[:, 0], mode="markers", name=name,
-                                   marker=dict(size=2.5, color=f"rgb{color}", opacity=0.7), hoverinfo="skip"))
-    ax = dict(range=[0, size], showbackground=False, gridcolor="#3a4654", zerolinecolor="#3a4654",
-              color="#c9d4de")
-    fig.update_layout(scene=dict(xaxis=dict(ax, title="x"), yaxis=dict(ax, title="y"), zaxis=dict(ax, title="z"),
-                                 aspectmode="cube", bgcolor="#11161c"),
-                      paper_bgcolor="#11161c", font=dict(color="#c9d4de"), height=460,
-                      margin=dict(l=0, r=0, t=10, b=0), legend=dict(orientation="h", y=0.02))
-    return fig
 
 
 # ---------------------------------------------------------------- loading cubes
 
-def load_point(vid, z, y, x, size, layers, tta):
+def run_cube(vid, z, y, x, size, layers, tta, allow_cpu=True):
+    """Read the cube around a point, run the chosen models on it and keep it in CUBES. Returns (cube, note)."""
     import numpy as np
-    size = lens.check_size(size)
-    layers = lens.check_layers([{"3D DINO embeddings": "dino", "3D ink model": "ink",
-                                 "Recto surface model": "surface"}.get(k, k) for k in layers])
-    point = (int(z), int(y), int(x))
+    vid = lens.volume_id(vid)
+    size = check_size_arg(size)
+    layers = lens.check_layers(layers)
+    point = check_point(z, y, x)
+    eng = engine()                                 # refuse before reading the bucket while the models load
     origin = lens.cube_origin(vid, point, size)
-    cube = lens.read_cube(vid, origin, size)
-    lens.check_cube(cube)
-    result, note = run_models(cube, layers, tta)
-    src = "gpu" if result.get("device", "").startswith("cuda") else "cpu"
-    ran = _center(cube, ran_size(result))      # the CPU fallback runs the middle of the cube
-    return new_view(vid, origin, size, point, np.ascontiguousarray(ran), result, src, note)
+    ct = lens.read_cube(vid, origin, size)
+    fg = lens.check_cube(ct)
+    result, note = run_models(ct, layers, bool(tta), allow_cpu=allow_cpu)
+    n = ran_size(result)
+    if n != size:                                  # the CPU fallback ran the middle of the cube
+        origin = tuple(int(o + (size - n) // 2) for o in origin)
+        fg = lens.foreground(_center(ct, n))
+    src = "gpu" if str(result.get("device", "")).startswith("cuda") else "cpu"
+    meta = lens.receipt(vid, origin, n, point, result, eng.describe(),
+                        {"source": src, "note_run": note, "foreground": round(fg, 4), "requested_size": size})
+    if "grid" in result and "ink" in result:
+        meta["agreement_with_ink_model"] = lens.agreement(
+            lens.similarity(np.asarray(result["grid"], np.float32), REFERENCE), result["ink"])
+    return CUBES.put(Cube(f"run:{uuid.uuid4().hex}", meta, result)), note
+
+
+def check_point(z, y, x):
+    try:
+        point = tuple(int(v) for v in (z, y, x))
+    except (TypeError, ValueError, OverflowError):
+        raise LensError("give the point as three whole numbers, z y x, in level-0 voxels") from None
+    return point
+
+
+def check_size_arg(size):
+    try:
+        return lens.check_size(int(size))
+    except (TypeError, ValueError, OverflowError):
+        raise LensError(f"cube side must be one of {lens.SIZES} voxels, not {size!r}") from None
+
+
+def parse_layers(layers):
+    """Models to run from a comma-separated string or a list, in any case, by key or by page title."""
+    titles = {v.lower(): k for k, v in lens.LAYER_TITLES.items()}
+    items = layers if isinstance(layers, (list, tuple)) else str(layers or "").split(",")
+    return lens.check_layers([titles.get(str(i).strip().lower(), str(i).strip().lower()) for i in items
+                              if str(i).strip()])
+
+
+def prune(folder, age_s=3600):
+    """Delete what a folder of per-request outputs holds that is older than `age_s` (Gradio serves copies)."""
+    import shutil
+    now = time.time()
+    for p in Path(folder).glob("*"):
+        try:
+            if now - p.stat().st_mtime > age_s:
+                shutil.rmtree(p) if p.is_dir() else p.unlink()
+        except OSError:
+            pass
+
+
+def load_point(vid, z, y, x, size, layers, tta):
+    cube, note = run_cube(vid, z, y, x, size, parse_layers(list(layers or [])), tta)
+    return new_view(cube, check_point(z, y, x), cube.meta["source"], note, request_size=int(size))
 
 
 def ran_size(result):
@@ -382,18 +703,10 @@ def ran_size(result):
 
 
 def load_gallery(cube_id):
-    for it in GALLERY:
-        if it["id"] == cube_id:
-            meta, arrays = lens.load_npz(HERE / "gallery" / it["file"])
-            origin, size = tuple(meta["cube_origin_zyx"]), int(meta["cube_size"])
-            cube = lens.read_cube(meta["volume"], origin, size)
-            result = dict(arrays, seconds=meta.get("seconds", {}), device=meta.get("device"),
-                          device_name=meta.get("device_name"), tta=meta.get("tta", False))
-            view = new_view(meta["volume"], origin, size, tuple(meta["point_zyx"]), cube, result, "gallery",
-                            it.get("note", ""))
-            view["receipt"]["gallery_id"] = cube_id
-            return view
-    raise LensError(f"no gallery cube {cube_id!r}")
+    it = gallery_item(cube_id)
+    cube = CUBES.get(f"gallery:{cube_id}")
+    return new_view(cube, tuple(it["point_zyx"]), "gallery", it.get("note", ""), title=it["title"],
+                    cube_id=cube_id)
 
 
 def gallery_label(it):
@@ -420,6 +733,124 @@ def surprise(vid, seed=None):
 # ---------------------------------------------------------------- files to take away
 
 def save_files(state):
+    import numpy as np
+    view = state["view"]
+    if view is None:
+        raise LensError("nothing to save yet")
+    cube = cube_of(view)
+    OUT.mkdir(parents=True, exist_ok=True)
+    prune(OUT, 900)
+    d = Path(tempfile.mkdtemp(dir=OUT))
+    name = f"scroll-lens-{view['volume']}-{'-'.join(map(str, view['origin']))}-{view['size']}"
+    files = [lens.save_npz(d / f"{name}.npz", view["receipt"], cube.result,
+                           compact="grid_reduced" in cube.result)]
+    rec = d / f"{name}.json"
+    rec.write_text(json.dumps(view["receipt"], indent=1) + "\n")
+    files.append(rec)
+    p, n = click_concept(state)
+    if p is not None:
+        np.save(d / "concept.npy", p.astype(np.float32))
+        files.append(d / "concept.npy")
+        if n is not None:
+            np.save(d / "concept_not.npy", n.astype(np.float32))
+            files.append(d / "concept_not.npy")
+        clicks = {"tool": "Scroll Lens", "version": lens.VERSION, "embedding": lens.MODELS["dino"]["repo"],
+                  "positive": [{k: c[k] for k in ("volume", "cube", "voxel_zyx")} for c in state["pos"]],
+                  "negative": [{k: c[k] for k in ("volume", "cube", "voxel_zyx")} for c in state["neg"]],
+                  "note": "concept.npy is the unit-length mean of the positive clicks' 864-number dinovol embeddings; "
+                          "concept_not.npy, when present, that of the Not this clicks. The page scores each patch "
+                          "as its cosine to concept.npy minus its cosine to concept_not.npy. Load both files "
+                          "together to get the same map back."}
+        (d / "clicks.json").write_text(json.dumps(clicks, indent=1) + "\n")
+        files.append(d / "clicks.json")
+    return [str(f) for f in files]
+
+
+def as_bool(value, name):
+    """True or False from a boolean, 0 or 1, or the strings true, false, yes, no, 1, 0 (a JSON caller may send
+    "false", which bool() would read as True)."""
+    if isinstance(value, bool):
+        return value
+    if isinstance(value, (int, float)) and value in (0, 1):
+        return bool(value)
+    text = str(value).strip().lower()
+    if text in ("true", "yes", "1", "on"):
+        return True
+    if text in ("false", "no", "0", "off", "", "none"):
+        return False
+    raise LensError(f"{name} must be true or false, not {value!r}")
+
+
+# ---------------------------------------------------------------- the agent tools' cubes
+#
+# The agent tools below (PR #114) keep their own view of a cube, with every array in it; the page uses CUBES.
+
+def tool_new_view(vid, origin, size, point, cube, result, source, note=""):
+    """Everything the agent tools need about one cube: the scan cube and all arrays (kept in VIEW_CACHE, three at a
+    time). The page keeps its cubes in CUBES instead."""
+    import numpy as np
+    if cube.shape[0] != size:                      # the CPU fallback ran a smaller cube at the center
+        o = (size - cube.shape[0]) // 2
+        origin = tuple(int(v + o) for v in origin)
+        size = int(cube.shape[0])
+    nz = cube[cube > 0]
+    lo, hi = (np.percentile(nz, (0.5, 99.5)) if nz.size else (0, 255))
+    view = {"volume": vid, "origin": tuple(int(v) for v in origin), "size": int(size),
+            "point": tuple(int(v) for v in point), "cube": cube, "lo": float(lo), "hi": float(max(hi, lo + 1)),
+            "source": source, "note": note, "result": result, "pca": None, "ref_sim": None,
+            "foreground": lens.foreground(cube)}
+    if "grid" in result or "grid_reduced" in result:
+        view["grid"] = lens.grid_of(result).astype(np.float16)
+        view["ref_sim"] = lens.similarity(view["grid"].astype(np.float32), REFERENCE)
+    view["slices"] = [int(min(max(p - o, 0), size - 1)) for p, o in zip(point, view["origin"])]
+    view["receipt"] = lens.receipt(vid, view["origin"], size, point, result,
+                                   ENGINE.describe() if ENGINE else None,
+                                   {"source": source, "foreground": round(view["foreground"], 4)})
+    if "ink" in result and view.get("ref_sim") is not None:
+        view["receipt"]["agreement_with_ink_model"] = lens.agreement(view["ref_sim"], result["ink"])
+    return view
+
+
+def tool_click_sim(state):
+    view = state["view"]
+    p, n = click_concept(state)
+    if view is None or p is None or "grid" not in view:
+        return None
+    import numpy as np
+    return lens.similarity(view["grid"].astype(np.float32), p, n)
+
+
+def tool_load_point(vid, z, y, x, size, layers, tta):
+    import numpy as np
+    size = lens.check_size(size)
+    layers = lens.check_layers([{"3D DINO embeddings": "dino", "3D ink model": "ink",
+                                 "Recto surface model": "surface"}.get(k, k) for k in layers])
+    point = (int(z), int(y), int(x))
+    origin = lens.cube_origin(vid, point, size)
+    cube = lens.read_cube(vid, origin, size)
+    lens.check_cube(cube)
+    result, note = run_models(cube, layers, tta)
+    src = "gpu" if result.get("device", "").startswith("cuda") else "cpu"
+    ran = _center(cube, ran_size(result))      # the CPU fallback runs the middle of the cube
+    return tool_new_view(vid, origin, size, point, np.ascontiguousarray(ran), result, src, note)
+
+
+def tool_load_gallery(cube_id):
+    for it in GALLERY:
+        if it["id"] == cube_id:
+            meta, arrays = lens.load_npz(HERE / "gallery" / it["file"])
+            origin, size = tuple(meta["cube_origin_zyx"]), int(meta["cube_size"])
+            cube = lens.read_cube(meta["volume"], origin, size)
+            result = dict(arrays, seconds=meta.get("seconds", {}), device=meta.get("device"),
+                          device_name=meta.get("device_name"), tta=meta.get("tta", False))
+            view = tool_new_view(meta["volume"], origin, size, tuple(meta["point_zyx"]), cube, result, "gallery",
+                            it.get("note", ""))
+            view["receipt"]["gallery_id"] = cube_id
+            return view
+    raise LensError(f"no gallery cube {cube_id!r}")
+
+
+def tool_save_files(state):
     import numpy as np
     view = state["view"]
     if view is None:
@@ -464,13 +895,15 @@ def look(vid: str, z: int, y: int, x: int, size: int = 256, layers: str = "dino,
         The .npz file.
     """
     import numpy as np
+    tta, compact, allow_cpu = as_bool(tta, "tta"), as_bool(compact, "compact"), as_bool(allow_cpu, "allow_cpu")
     size = lens.check_size(size)
     layers = lens.check_layers([s.strip() for s in str(layers).split(",") if s.strip()])
-    point = (int(z), int(y), int(x))
+    point = check_point(z, y, x)
+    engine()                                       # refuse before reading the bucket while the models load
     origin = lens.cube_origin(vid, point, size)
     cube = lens.read_cube(vid, origin, size)
     lens.check_cube(cube)
-    result, note = run_models(cube, layers, bool(tta), allow_cpu=bool(allow_cpu))
+    result, note = run_models(cube, layers, tta, allow_cpu=allow_cpu)
     n = ran_size(result)
     if n != size:
         origin = tuple(int(o + (size - n) // 2) for o in origin)
@@ -481,7 +914,7 @@ def look(vid: str, z: int, y: int, x: int, size: int = 256, layers: str = "dino,
             lens.similarity(np.asarray(result["grid"], np.float32), REFERENCE), result["ink"])
     OUT.mkdir(parents=True, exist_ok=True)
     d = Path(tempfile.mkdtemp(dir=OUT))
-    return str(lens.save_npz(d / f"{vid}-{'-'.join(map(str, origin))}-{n}.npz", meta, result, compact=bool(compact)))
+    return str(lens.save_npz(d / f"{vid}-{'-'.join(map(str, origin))}-{n}.npz", meta, result, compact=compact))
 
 
 # ---------------------------------------------------------------- tools for agents (also the API and MCP server)
@@ -532,7 +965,7 @@ def agent_view(cube_id="", scan="", z=0, y=0, x=0, size=256):
             hit["receipt"] = dict(hit["receipt"], point_zyx=list(point))
             hit["slices"] = [int(min(max(p - o, 0), hit["size"] - 1)) for p, o in zip(point, hit["origin"])]
             return hit
-    view = load_gallery(cube_id) if cube_id else load_point(scan, point[0], point[1], point[2], size,
+    view = tool_load_gallery(cube_id) if cube_id else tool_load_point(scan, point[0], point[1], point[2], size,
                                                             list(lens.LAYERS), False)
     with VIEW_LOCK:
         VIEW_CACHE[key] = view
@@ -735,7 +1168,7 @@ def download_cube(cube_id: str = "", scan: str = "", z: int = 0, y: int = 0, x: 
         The .npz file and its receipt as JSON.
     """
     view = agent_view(cube_id, scan, z, y, x, size)
-    paths = save_files({"view": view, "pos": [], "neg": []})
+    paths = tool_save_files({"view": view, "pos": [], "neg": []})
     return paths[0], summary(view)
 
 
@@ -766,19 +1199,25 @@ output, not a reading:** a cube is at most 0.6 mm across, smaller than one lette
 """
 
 HOW_TO = """\
-1. **Gallery** (no GPU needed): pick a ready-made cube and it loads at once.
+1. **Gallery** (no GPU needed): pick a ready-made cube; it opens at once. *Previous*, *Next* and *Random* step
+   through the list, and you can type in the list to search it.
 2. **Your own point**: pick a scan, type a point in voxels (z, y, x) or press **Surprise me**, then **Run the models**.
-   A 256³ cube is the models' own working size and uses about half a minute of GPU time; 128³ about a quarter.
-   When your daily ZeroGPU time runs out, Scroll Lens runs a 128³ cube on the CPU instead (slower, about a minute).
-3. **Look**: drag inside a view to move the crosshair (the other two views follow), scroll the wheel over a view to
-   step through its slices (Shift for 8 at a time), or drag the sliders. Tick the layers to show. The white dotted
-   lines are where the other two views cut this one.
-4. **Search**: choose a click mode, then click a view. Raise or lower *Top % shown* to see more or fewer matches.
-   **Undo last click** takes back one click; **Clear clicks** all of them.
-5. **Take it away**: **Save files** gives the model outputs (.npz), the receipt (.json) and, after clicks, your
-   `concept.npy`. A link with `?v=SCAN&z=…&y=…&x=…` opens the page on a point; `?cube=ID` on a gallery cube.
+   A 256³ cube is the models' own working size and uses about 5 seconds of ZeroGPU time (with ZeroGPU's own
+   overhead, a call is about 10 seconds). When your daily ZeroGPU time runs out, Scroll Lens runs a 128³ cube on the
+   CPU instead (about 10 seconds).
+3. **Look**: drag a slider under a view, or drag inside a view to move the crosshair; the other views follow as you
+   move. The wheel or the arrow keys step one slice (Shift: 8). Ctrl or Cmd with the wheel, or a pinch, zooms;
+   right-drag or Shift-drag pans; double-click resets. The line under the views reads out what is under the pointer.
+4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Undo click* (or Ctrl or Cmd
+   with Z) forgets the last one. *Top % shown* sets how many of the most similar patches light up.
+5. **3D view**: turns the three views into one 3D space: the three slices as planes through the cube (they move
+   as you drag the sliders), ink and surface as points, and the patches like your concept or the organizers'
+   reference glowing. Drag to rotate, wheel to zoom, right-drag to pan, *Spin* to turn it slowly; click a slice to
+   search there. *Flat views* goes back.
+6. **Take it away**: **Save files** gives the model outputs (.npz), the receipt (.json) and, after clicks, your
+   `concept.npy`. *Copy link* gives a link that opens this cube at this crosshair.
 
-Agents and scripts can do all of this too: see **For agents and scripts** at the bottom of the page.
+Scripts and agents: see *For scripts and agents* below, or the README.
 """
 
 AGENTS_TEXT = """\
@@ -814,81 +1253,46 @@ Grand Prize.
 """
 
 CSS = """
-#sl-views img { image-rendering: pixelated; cursor: crosshair; touch-action: none; user-select: none; }
 .sl-head { display:flex; gap:14px; align-items:baseline; flex-wrap:wrap; margin: 4px 0 2px; }
 .sl-head h1 { margin:0; font-size: 1.6rem; letter-spacing: .01em; }
 .sl-head span { color: var(--body-text-color-subdued); }
-.sl-legend { display:flex; flex-wrap:wrap; gap:10px 16px; font-size:.86rem; margin: 2px 0 4px; }
-.sl-legend i { display:inline-block; width:11px; height:11px; border-radius:2px; margin-right:5px; vertical-align:-1px; }
-@media (max-width: 720px) { #sl-viewer { order: -1; } }   /* phones: the images first, the controls below */
 footer.sl-credit { text-align:center; color: var(--body-text-color-subdued); font-size:.85rem; margin-top: 8px; }
-"""
-
-# Mouse and touch on the three views. Dragging moves the crosshair: the other two slices follow the pointer. The wheel
-# steps through this view's slice (Shift for 8 at a time). Both set the sliders, which redraw the views as they move. A
-# click without a drag still does what "Clicking a view does" says.
-GESTURES = """
-<script>
-(() => {
-  const DRAG_PX = 4;
-  let drag = null, swallowClick = false;
-  const viewOf = (el) => { const v = el && el.closest && el.closest('[id^="sl-v"]'); return v ? +v.id.slice(4) : -1; };
-  const range = (a) => document.querySelector('#sl-s' + a + ' input[type="range"]');
-  function setSlider(a, value) {
-    const r = range(a);
-    if (!r) return;
-    const v = Math.max(+r.min, Math.min(+r.max, Math.round(value)));
-    if (+r.value === v) return;
-    r.value = v;
-    r.dispatchEvent(new Event('input', {bubbles: true}));
-  }
-  function release(a) {
-    const r = range(a);
-    if (r) { r.dispatchEvent(new Event('change', {bubbles: true})); r.dispatchEvent(new PointerEvent('pointerup', {bubbles: true})); }
-  }
-  function moveTo(d, e) {
-    const box = d.img.getBoundingClientRect(), n = +range(d.axis).max + 1;
-    const others = [0, 1, 2].filter((a) => a !== d.axis);
-    setSlider(others[0], (e.clientY - box.top) / box.height * n);
-    setSlider(others[1], (e.clientX - box.left) / box.width * n);
-  }
-  document.addEventListener('pointerdown', (e) => {
-    const a = viewOf(e.target);
-    if (a < 0 || e.target.tagName !== 'IMG' || e.button !== 0) return;
-    drag = {axis: a, img: e.target, x: e.clientX, y: e.clientY, moved: false};
-    e.preventDefault();
-  });
-  document.addEventListener('pointermove', (e) => {
-    if (!drag) return;
-    if (!drag.moved && Math.hypot(e.clientX - drag.x, e.clientY - drag.y) < DRAG_PX) return;
-    drag.moved = true;
-    moveTo(drag, e);
-  });
-  document.addEventListener('pointerup', () => {
-    if (drag && drag.moved) {
-      swallowClick = true;
-      [0, 1, 2].filter((a) => a !== drag.axis).forEach(release);
-      setTimeout(() => { swallowClick = false; }, 300);
-    }
-    drag = null;
-  });
-  document.addEventListener('click', (e) => {
-    if (swallowClick && viewOf(e.target) >= 0) { e.stopPropagation(); e.preventDefault(); swallowClick = false; }
-  }, true);
-  document.addEventListener('dragstart', (e) => { if (viewOf(e.target) >= 0) e.preventDefault(); });
-  let wheelTimer = null;
-  document.addEventListener('wheel', (e) => {
-    const a = viewOf(e.target);
-    if (a < 0 || e.target.tagName !== 'IMG') return;
-    e.preventDefault();
-    const r = range(a);
-    if (!r) return;
-    setSlider(a, +r.value + Math.sign(e.deltaY) * (e.shiftKey ? 8 : 1));
-    clearTimeout(wheelTimer);
-    wheelTimer = setTimeout(() => release(a), 250);
-  }, {passive: false});
-})();
-</script>
+#sl-viewer-html .slv { display:flex; flex-direction:column; gap:8px; }
+#sl-viewer-html .slv-bar { display:flex; flex-direction:column; gap:6px; font-size:.86rem; }
+#sl-viewer-html .slv-group { display:flex; flex-wrap:wrap; gap:4px 8px; align-items:center; }
+#sl-viewer-html .slv-chip { display:inline-flex; align-items:center; gap:5px; padding:2px 9px; border:1px solid var(--border-color-primary);
+  border-radius:999px; cursor:pointer; user-select:none; background: var(--block-background-fill); }
+#sl-viewer-html .slv-chip input { margin:0; }
+#sl-viewer-html .slv-chip i { width:10px; height:10px; border-radius:2px; display:inline-block; }
+#sl-viewer-html .slv-label { color: var(--body-text-color-subdued); margin-right: 2px; }
+#sl-viewer-html .slv-sliders label { display:inline-flex; align-items:center; gap:5px; margin-right: 8px; }
+#sl-viewer-html .slv-sliders input[type=range] { width:96px; }
+#sl-viewer-html .slv-buttons button { font-size:.8rem; padding:3px 10px; border:1px solid var(--border-color-primary); border-radius:6px;
+  background: var(--button-secondary-background-fill); color: var(--button-secondary-text-color); cursor:pointer; }
+#sl-viewer-html .slv-buttons button:hover { background: var(--button-secondary-background-fill-hover); }
+#sl-viewer-html .slv-status { display:flex; gap:10px; align-items:center; font-size:.86rem; color: var(--body-text-color-subdued);
+  min-height:1.4em; word-break: break-all; }
+#sl-viewer-html .slv-status progress { width:160px; flex: none; }
+#sl-viewer-html .slv-views { display:grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap:8px; }
+@media (max-width: 900px) { #sl-viewer-html .slv-views { grid-template-columns: 1fr; } }
+#sl-viewer-html .slv-view { display:flex; flex-direction:column; gap:4px; min-width:0; }
+#sl-viewer-html .slv-title { font-size:.85rem; display:flex; justify-content:space-between; color: var(--body-text-color-subdued); }
+#sl-viewer-html .slv-view canvas { display:block; background:#0b0f14; border-radius:6px; touch-action:none; cursor:crosshair;
+  outline:none; }
+#sl-viewer-html .slv-view canvas:focus-visible { box-shadow: 0 0 0 2px var(--color-accent); }
+#sl-viewer-html .slv-view input[type=range] { width:100%; }
+#sl-viewer-html .slv-more { display:flex; flex-direction:column; gap:6px; }
+#sl-viewer-html .slv-more > summary { cursor:pointer; color: var(--body-text-color-subdued); font-size:.84rem; }
+@media (min-width: 601px) { #sl-viewer-html .slv-more > summary { display:none !important; } }
+#sl-viewer-html .slv-views[hidden], #sl-viewer-html .slv-3d[hidden] { display:none !important; }
+#sl-viewer-html .slv-3d { display:flex; flex-direction:column; gap:6px; }
+#sl-viewer-html .slv-3d-canvas { display:block; width:100%; border-radius:6px; background:#0b0f14; touch-action:none; cursor:grab; }
+#sl-viewer-html .slv-3d-canvas:active { cursor:grabbing; }
+#sl-viewer-html .slv-3d-sliders label { display:inline-flex; align-items:center; gap:6px; flex:1 1 30%; min-width:150px; }
+#sl-viewer-html .slv-3d-sliders input[type=range] { flex:1; }
+#sl-viewer-html .slv-3d-toggle { font-weight:600; }
+#sl-viewer-html .slv-readout { font-family: ui-monospace, monospace; font-size:.8rem; min-height:1.3em; }
+#sl-viewer-html .slv-help { font-size:.78rem; color: var(--body-text-color-subdued); }
 """
 
 
@@ -908,17 +1312,14 @@ def fix_mcp_multiple_outputs():
     GradioMCPServer._execute_tool_without_progress = without_progress
 
 
-LEGEND = ('<div class="sl-legend">' + "".join(
-    f'<span><i style="background:rgb{c}"></i>{t}</span>' for t, c in (
-        ("Ink, 3D ink model", COLORS["ink"]), ("Recto surface", COLORS["surface"]),
-        ("Like your clicks", COLORS["clicks"]), ("Like the organizers' ink reference", COLORS["reference"]),
-        ("Your clicks: white +, Not this: magenta +", MARKS["neg"]))) + "</div>")
-
-
 def theme():
     import gradio as gr
     return gr.themes.Base(primary_hue="amber", neutral_hue="slate", radius_size="sm",
                           font=("system-ui", "sans-serif"), font_mono=("ui-monospace", "monospace"))
+
+
+def viewer_js():
+    return (HERE / "viewer.js").read_text(encoding="utf-8")
 
 
 def build_demo():
@@ -926,213 +1327,283 @@ def build_demo():
 
     vol_choices = [(f"{v['scroll']} ({vid})", vid) for vid, v in lens.VOLUMES.items()]
     gal_choices = [(gallery_label(it), it["id"]) for it in GALLERY]
+    gal_ids = [it["id"] for it in GALLERY]
     layer_names = [lens.LAYER_TITLES[k] for k in lens.LAYERS]
 
     def volume_text(vid):
         v = lens.volume(vid)
         z, y, x = v["shape"]
-        return (f"{v['note']} Scan: {v['voxel_um']} µm voxels, {z:,} × {y:,} × {x:,} (z, y, x). "
-                f"[Open data]({lens.BUCKET}/{vid}/volumes/{v['scan']}/)").strip()
-
-    def show(state, overlays, top_pct, opacity):
-        return ([draw_slice(state, a, overlays, top_pct, opacity) for a in range(3)]
-                + [numbers(state, top_pct)])
-
-    def slider_updates(state):
-        view = state["view"]
-        if view is None:
-            return [gr.update()] * 3
-        return [gr.update(maximum=view["size"] - 1, value=view["slices"][a]) for a in range(3)]
+        return (f"{v['note']} Scan: {v['voxel_um']} µm voxels, {z:,} × {y:,} × {x:,} (z, y, x), open data at "
+                f"`{lens.BUCKET}/{vid}/volumes/{v['scan']}` ([metadata]({lens.volume_url(vid)}/.zarray))").strip()
 
     def guard(fn):
-        @functools.wraps(fn)          # keeps fn's signature, so gradio still passes SelectData and Request
+        @functools.wraps(fn)          # keeps fn's signature, so gradio still passes EventData and Request
         def wrapped(*args, **kwargs):
             try:
                 return fn(*args, **kwargs)
             except LensError as exc:
                 raise gr.Error(str(exc)) from None
+            except gr.Error:
+                raise
+            except Exception as exc:  # noqa: BLE001  (anything else still reaches the visitor with its reason)
+                import traceback
+                log(f"{fn.__name__} failed: {traceback.format_exc()}")
+                raise gr.Error(f"{type(exc).__name__}: {str(exc)[:400]}") from None
         return wrapped
 
-    @guard
-    def on_run(vid, z, y, x, size, layers, tta, state, overlays, top_pct, opacity):
-        state = dict(state)
-        state["view"] = load_point(vid, z, y, x, size, layers, tta)
-        return [state] + slider_updates(state) + show(state, overlays, top_pct, opacity)
+    def soft(n):
+        """For the page's own events: a refusal shows as a warning and leaves the page as it was (an error would
+        cover the views with error panels). The API endpoints use guard, so callers get a real error."""
+        def deco(fn):
+            @functools.wraps(fn)
+            def wrapped(*args, **kwargs):
+                try:
+                    return fn(*args, **kwargs)
+                except LensError as exc:
+                    gr.Warning(str(exc))
+                except gr.Error as exc:
+                    gr.Warning(str(exc))
+                except Exception as exc:  # noqa: BLE001
+                    import traceback
+                    log(f"{fn.__name__} failed: {traceback.format_exc()}")
+                    gr.Warning(f"{type(exc).__name__}: {str(exc)[:300]}")
+                return gr.skip() if n == 1 else [gr.skip()] * n
+            return wrapped
+        return deco
 
-    @guard
-    def on_gallery(cube_id, state, overlays, top_pct, opacity):
+    def shown(state):
+        return [state, viewer_value(state), numbers(state)]
+
+    def fresh():                      # a new cube: clear the old saved files and receipt
+        return [None, None]
+
+    @soft(5)
+    def on_run(vid, z, y, x, size, layers, tta, state, request: gr.Request):
+        with one_run(request):
+            view = load_point(vid, z, y, x, size, layers, tta)
+        state = dict(state, view=view, rev=next_rev())
+        return shown(state) + fresh()
+
+    def open_gallery(cube_id, state):
         if not cube_id:
             raise LensError("pick a gallery cube")
-        state = dict(state)
-        state["view"] = load_gallery(cube_id)
+        state = dict(state, view=load_gallery(cube_id), rev=next_rev())
         p = state["view"]["point"]
-        return ([state] + slider_updates(state) + show(state, overlays, top_pct, opacity)
-                + [state["view"]["volume"], p[0], p[1], p[2]])
+        return shown(state) + fresh() + [state["view"]["volume"], p[0], p[1], p[2], state["view"]["size"], cube_id]
 
-    @guard
+    @soft(11)
+    def on_gallery(cube_id, state):
+        return open_gallery(cube_id, state)
+
+    @soft(11)
+    def on_gallery_step(cube_id, state, *, step):
+        if not gal_ids:
+            raise LensError("the gallery is empty on this copy; pick a point instead")
+        if step == "random":
+            import numpy as np
+            nxt = gal_ids[int(np.random.default_rng().integers(0, len(gal_ids)))]
+        else:
+            i = gal_ids.index(cube_id) if cube_id in gal_ids else -1
+            nxt = gal_ids[(i + (1 if step == "next" else -1)) % len(gal_ids)]
+        return open_gallery(nxt, state)
+
+    @soft(3)
     def on_surprise(vid):
         z, y, x = surprise(vid)
         return z, y, x
 
-    @guard
-    def on_slices(sz, sy, sx, state, overlays, top_pct, opacity):
-        if state["view"] is not None:
-            state["view"]["slices"] = [int(sz), int(sy), int(sx)]
-        return show(state, overlays, top_pct, opacity)
-
-    def on_drag(sz, sy, sx, state, overlays, top_pct, opacity):
-        """The three views only, for the live redraw while a slider is dragged (the text waits for the release)."""
+    @soft(3)
+    def on_viewer_select(state, evt: gr.EventData):
+        """Clicks from the viewer: {"key": cube, "clicks": [{"id", "index": [z, y, x], "value": "pos" or "neg"}]}.
+        The viewer sends every click the server has not yet acknowledged, so none is lost when two arrive while one
+        is being handled; the ids keep a resent click from counting twice."""
+        data = getattr(evt, "_data", None) or {}
+        key = str(data.get("key") or "")
+        clicks = (data.get("clicks") or [])[:64]
         view = state["view"]
-        if view is None:
-            return [gr.update()] * 3
-        view["slices"] = [int(sz), int(sy), int(sx)]
-        return [draw_slice(state, a, overlays, top_pct, opacity) for a in range(3)]
+        if (view is None or key != view["cache"]) and key.startswith("gallery:"):
+            try:                            # the session expired, or another tab moved on: the browser shows this cube
+                view = load_gallery(key.split(":", 1)[1])
+                state = dict(state, view=view, pos=[], neg=[], acked=[])
+            except LensError:
+                view = None
+        if view is None or key != view["cache"]:
+            gr.Warning("This cube is no longer in this page's session; open it again to search it.")
+            return [state, ack_only(key, clicks), gr.skip()]
+        state = dict(state, pos=list(state["pos"]), neg=list(state["neg"]))
+        acked = list(state.get("acked", []))
+        seen = set(acked)
+        problem = None
+        try:
+            cube = cube_of(view)
+        except LensError as exc:            # a run cube the Space no longer holds: say so once, take no clicks
+            cube, problem = None, str(exc)
+        for click in clicks:
+            cid = str(click.get("id"))
+            if cid in seen:
+                continue
+            seen.add(cid)                   # acknowledged even when refused, so the viewer does not resend it
+            acked.append(cid)
+            if cube is None:
+                continue
+            if len(state["pos"]) + len(state["neg"]) >= MAX_CLICKS:
+                problem = f"a page keeps at most {MAX_CLICKS} clicks; clear some to add more"
+                continue
+            try:
+                vox = [int(v) for v in click.get("index")]
+                if len(vox) != 3 or not all(0 <= v < view["size"] for v in vox):
+                    raise LensError("that click is outside the cube")
+                vec = cube.vector(vox)
+            except (TypeError, ValueError, LensError) as exc:
+                problem = str(exc) if isinstance(exc, LensError) else "a click needs a voxel z, y, x"
+                continue
+            kind = "neg" if click.get("value") == "neg" else "pos"
+            state["tick"] = state.get("tick", 0) + 1
+            state[kind].append({"volume": view["volume"], "cube": cube_key(view), "voxel": vox, "t": state["tick"],
+                                "voxel_zyx": [int(v + o) for v, o in zip(vox, view["origin"])], "vec": vec})
+        state["acked"] = acked[-256:]       # in arrival order: the newest ids stay
+        state["rev"] = next_rev()
+        if problem:
+            gr.Warning(problem)
+        if cube is None:
+            return [state, ack_only(key, clicks), gr.skip()]
+        return shown(state)
 
-    def on_select(axis):
-        @guard
-        def handler(mode, state, overlays, top_pct, opacity, evt: gr.SelectData):
-            view = state["view"]
-            if view is None or evt.index is None:
-                return [state] + slider_updates(state) + show(state, overlays, top_pct, opacity) + [overlays]
-            f = scale_of(view["size"])
-            col, row = int(evt.index[0]) // f, int(evt.index[1]) // f
-            others = [a for a in range(3) if a != axis]
-            vox = [0, 0, 0]
-            vox[axis] = view["slices"][axis]
-            vox[others[0]], vox[others[1]] = row, col
-            vox = [int(min(max(v, 0), view["size"] - 1)) for v in vox]
-            if mode == CLICK_MODES[2]:
-                view["slices"] = vox
-                return [state] + slider_updates(state) + show(state, overlays, top_pct, opacity) + [overlays]
-            if "grid" not in view:
-                raise LensError("this cube has no DINO embeddings; run it with the 3D DINO model to search by "
-                                "clicking")
-            tok = lens.token_of(vox, view["size"])
-            vec = view["grid"][tok].astype("float32")
-            kind = "pos" if mode == CLICK_MODES[0] else "neg"
-            n = 1 + max([c.get("n", 0) for c in state["pos"] + state["neg"]] or [0])
-            state[kind] = state[kind] + [{"n": n, "volume": view["volume"], "cube": cube_key(view), "voxel": vox,
-                                          "voxel_zyx": [int(v + o) for v, o in zip(vox, view["origin"])],
-                                          "vec": vec}]
-            if "Your clicks" not in overlays:
-                overlays = list(overlays) + ["Your clicks"]
-            return [state] + slider_updates(state) + show(state, overlays, top_pct, opacity) + [overlays]
-        return handler
+    @soft(3)
+    def on_undo(state):
+        """Forget the most recent click (More like this or Not this) on any cube."""
+        clicks = [(c.get("t", 0), kind, i) for kind in ("pos", "neg") for i, c in enumerate(state[kind])
+                  if c["cube"] != "file"]
+        if not clicks:
+            raise LensError("no click to undo")
+        _, kind, i = max(clicks)
+        state = dict(state, rev=next_rev())
+        state[kind] = state[kind][:i] + state[kind][i + 1:]
+        return shown(state)
 
-    @guard
-    def on_clear(state, overlays, top_pct, opacity):
-        state = dict(state, pos=[], neg=[])
-        return [state] + show(state, overlays, top_pct, opacity)
+    @soft(3)
+    def on_clear(state):
+        state = dict(state, pos=[], neg=[], rev=next_rev())
+        return shown(state)
 
-    @guard
-    def on_undo(state, overlays, top_pct, opacity):
-        clicks = state["pos"] + state["neg"]
-        if clicks:
-            last = max(clicks, key=lambda c: c.get("n", 0))
-            state = dict(state, pos=[c for c in state["pos"] if c is not last],
-                         neg=[c for c in state["neg"] if c is not last])
-        return [state] + show(state, overlays, top_pct, opacity)
+    @soft(5)
+    def on_viewer_use(evt: gr.EventData):
+        data = getattr(evt, "_data", None) or {}
+        vid = data.get("volume")
+        lens.volume(vid)
+        z, y, x = check_point(*(data.get("point") or [None] * 3))
+        return vid, z, y, x, gr.Tabs(selected="point")
 
-    @guard
-    def on_concept(path, state, overlays, top_pct, opacity):
-        if not path:
-            return [state] + show(state, overlays, top_pct, opacity) + [overlays]
-        vec = lens.load_concept(path)
-        state = dict(state, pos=[{"volume": "file", "cube": "file", "voxel": [-1, -1, -1], "voxel_zyx": None,
-                                  "vec": vec}], neg=[])
-        if "Your clicks" not in overlays:
-            overlays = list(overlays) + ["Your clicks"]
-        return [state] + show(state, overlays, top_pct, opacity) + [overlays]
+    @soft(3)
+    def on_concept(paths, state):
+        """Load concept.npy, and concept_not.npy with it if you have one: they replace your clicks."""
+        paths = [p for p in (paths if isinstance(paths, list) else [paths]) if p]
+        if not paths:                         # the file was removed: drop the loaded concept, keep the clicks
+            state = dict(state, pos=[c for c in state["pos"] if c["cube"] != "file"],
+                         neg=[c for c in state["neg"] if c["cube"] != "file"], rev=next_rev())
+            return shown(state)
+        pos, neg = [], []
+        for p in paths[:2]:
+            item = {"volume": "file", "cube": "file", "voxel": None, "voxel_zyx": None, "vec": lens.load_concept(p)}
+            (neg if "_not" in Path(p).name.lower() else pos).append(item)
+        if not pos:
+            raise LensError("load concept.npy too: concept_not.npy alone has nothing to look for")
+        state = dict(state, pos=pos, neg=neg, rev=next_rev())
+        return shown(state)
 
-    @guard
+    @soft(2)
     def on_save(state):
         return save_files(state), (state["view"] or {}).get("receipt")
 
-    def on_load(state, overlays, top_pct, opacity, request: gr.Request):
+    def on_load(state, request: gr.Request):
+        """Open the page from its link: ?cube=ID opens a gallery cube; ?v=SCAN&z=&y=&x=&size= fills Your own point
+        (press Run the models); anything else opens the first gallery cube. A link that cannot be followed says why."""
         q = dict(request.query_params) if request else {}
-        fields = [gr.update()] * 4
+        fields, tab, problems = [gr.skip()] * 4, gr.skip(), []
+        size = gr.update(value=int(q["size"])) if q.get("size") in ("128", "256") else gr.skip()
+        if q.get("size") and q.get("size") not in ("128", "256"):
+            problems.append(f"size must be 128 or 256, not {q['size']!r}")
+        cube_id = q.get("cube")
+        if q.get("v"):
+            try:
+                vid = lens.volume_id(q["v"])
+                ok = {k: str(q.get(k, "")).isascii() and str(q.get(k, "")).isdigit() for k in "zyx"}
+                fields = [vid] + [int(q[k]) if ok[k] else gr.skip() for k in "zyx"]
+                bad = [k for k in "zyx" if not ok[k]]
+                if bad:
+                    problems.append(f"{', '.join(bad)} must be whole numbers of voxels")
+                tab = gr.Tabs(selected="point")
+            except LensError as exc:
+                problems.append(str(exc))
+        if cube_id and cube_id not in gal_ids:
+            problems.append(f"no gallery cube {cube_id!r}")
+            cube_id = None
+        if not cube_id and gal_ids:
+            cube_id = gal_ids[0]
+        if problems:
+            gr.Warning(f"This link could not be followed in full: {'; '.join(problems)}.")
+        if not cube_id:
+            return shown(state) + fields + [size, gr.skip(), tab]
         try:
-            if q.get("v") in lens.VOLUMES:
-                fields = [q["v"]] + [int(q[k]) if str(q.get(k, "")).isdigit() else gr.update() for k in "zyx"]
-            cube_id = q.get("cube") or ((not q.get("v")) and GALLERY and GALLERY[0]["id"])
-            if cube_id:
-                state = dict(state)
-                state["view"] = load_gallery(cube_id)
-                if not q.get("v"):
-                    p = state["view"]["point"]
-                    fields = [state["view"]["volume"], p[0], p[1], p[2]]
-        except (LensError, ValueError, OSError) as exc:
+            state = dict(state, view=load_gallery(cube_id), rev=next_rev())
+        except (LensError, OSError) as exc:
             log(f"link not loaded: {exc}")
-        size = gr.update(value=int(q["size"])) if q.get("size") in ("128", "256") else gr.update()
-        return ([state] + slider_updates(state) + show(state, overlays, top_pct, opacity) + fields + [size]
-                + [gr.update(value=state["view"] and state["view"].get("receipt", {}).get("gallery_id"))])
+            gr.Warning(f"The gallery cube could not be opened: {exc}")
+            return shown(state) + fields + [size, gr.skip(), tab]
+        if not q.get("v"):
+            p = state["view"]["point"]
+            fields = [state["view"]["volume"], p[0], p[1], p[2]]
+        if not q.get("size"):
+            size = gr.update(value=state["view"]["size"])
+        return shown(state) + fields + [size, cube_id, tab]
 
     with gr.Blocks(title="Scroll Lens", delete_cache=(1800, 3600)) as demo:
         state = gr.State(empty_state(), time_to_live=STATE_TTL_S)
         gr.HTML('<div class="sl-head"><h1>Scroll Lens</h1><span>Look inside a Herculaneum scroll with the '
                 'Vesuvius Challenge’s 3D models: embeddings, ink and surfaces, and click to search.</span></div>')
         with gr.Row(equal_height=False):
-            with gr.Column(scale=1, min_width=300, elem_id="sl-controls"):
-                with gr.Tab("Gallery"):
-                    gpick = gr.Dropdown(gal_choices, value=gal_choices[0][1] if gal_choices else None,
-                                        label=f"Ready-made cube, {len(gal_choices)} in all (no GPU needed; "
-                                              "type to filter)", filterable=True)
-                    with gr.Row():
-                        gprev = gr.Button("◀ Previous", size="sm", min_width=80)
-                        gnext = gr.Button("Next ▶", size="sm", min_width=80)
-                    if not gal_choices:
-                        gr.Markdown("The gallery is empty on this copy. Pick a point instead.")
-                with gr.Tab("Your own point"):
-                    vid = gr.Dropdown(vol_choices, value="PHercParis4", label="Scan", filterable=False)
-                    vinfo = gr.Markdown(volume_text("PHercParis4"))
-                    with gr.Row():
-                        z = gr.Number(37628, label="z", precision=0, minimum=0)
-                        y = gr.Number(8793, label="y", precision=0, minimum=0)
-                        x = gr.Number(22167, label="x", precision=0, minimum=0)
-                    size = gr.Radio([128, 256], value=256, label="Cube side, voxels")
-                    layers = gr.CheckboxGroup(layer_names, value=layer_names, label="Models to run")
-                    tta = gr.Checkbox(False, label="Average eight mirrorings for ink and surface (slower, smoother)")
-                    with gr.Row():
-                        sbtn = gr.Button("Surprise me")
-                        rbtn = gr.Button("Run the models", variant="primary")
-                with gr.Accordion("Show and search", open=True):
-                    overlays = gr.CheckboxGroup(list(OVERLAYS), value=["Ink (3D ink model)", "Your clicks",
-                                                                       "Organizers' ink reference"],
-                                                label="Layers to show")
-                    mode = gr.Radio(list(CLICK_MODES), value=CLICK_MODES[0], label="Clicking a view does")
-                    top_pct = gr.Slider(1, 40, value=8, step=1, label="Top % of similar patches shown")
-                    opacity = gr.Slider(0, 1, value=0.7, step=0.05, label="Layer opacity")
-                    with gr.Row():
-                        undo = gr.Button("Undo last click", size="sm")
-                        clear = gr.Button("Clear clicks", size="sm")
-                    concept_up = gr.UploadButton("Load a concept.npy (864 numbers)", file_types=[".npy"],
-                                                 type="filepath", size="sm")
-                with gr.Accordion("How to use it", open=False):
-                    gr.Markdown(HOW_TO)
-            with gr.Column(scale=3, min_width=320, elem_id="sl-viewer"):
-                gr.HTML(LEGEND)
-                with gr.Row(elem_id="sl-views"):
-                    imgs = [gr.Image(label=VIEW_NAMES[a], interactive=False, buttons=["fullscreen"], type="numpy",
-                                     elem_id=f"sl-v{a}",
-                                     min_width=220)
-                            for a in range(3)]
-                with gr.Row():
-                    sliders = [gr.Slider(0, 255, value=128, step=1, label=n.split(" (")[1].rstrip(")") + " slice",
-                                         elem_id=f"sl-s{a}")
-                               for a, n in enumerate(VIEW_NAMES)]
-                info = gr.Markdown(numbers(empty_state(), 8))
-                with gr.Accordion("3D view", open=False):
-                    plot = gr.Plot(label="Ink and surface shells, similar patches as points")
-                    pbtn = gr.Button("Draw in 3D", size="sm")
-                with gr.Accordion("Save files", open=False):
+            with gr.Column(scale=1, min_width=290, elem_id="sl-controls"):
+                with gr.Tabs() as tabs:
+                    with gr.Tab("Gallery", id="gallery"):
+                        gpick = gr.Dropdown(gal_choices, value=gal_choices[0][1] if gal_choices else None,
+                                            label=f"Ready-made cube, {len(gal_choices)} in all (no GPU needed)",
+                                            filterable=True)
+                        with gr.Row(equal_height=True):
+                            gprev = gr.Button("Previous", size="sm", min_width=60)
+                            grand = gr.Button("Random", size="sm", min_width=60)
+                            gnext = gr.Button("Next", size="sm", min_width=60)
+                        if not gal_choices:
+                            gr.Markdown("The gallery is empty on this copy. Pick a point instead.")
+                    with gr.Tab("Your own point", id="point"):
+                        vid = gr.Dropdown(vol_choices, value="PHercParis4", label="Scan", filterable=False)
+                        vinfo = gr.Markdown(volume_text("PHercParis4"))
+                        with gr.Row():
+                            z = gr.Number(37628, label="z", precision=0, minimum=0)
+                            y = gr.Number(8793, label="y", precision=0, minimum=0)
+                            x = gr.Number(22167, label="x", precision=0, minimum=0)
+                        size = gr.Radio([128, 256], value=256, label="Cube side, voxels")
+                        layers = gr.CheckboxGroup(layer_names, value=layer_names, label="Models to run")
+                        tta = gr.Checkbox(False, label="Average eight mirrorings for ink and surface (slower, smoother)")
+                        with gr.Row():
+                            sbtn = gr.Button("Surprise me")
+                            rbtn = gr.Button("Run the models", variant="primary")
+                with gr.Accordion("Your concept and files", open=False):
+                    concept_up = gr.UploadButton("Load concept.npy (and concept_not.npy): replaces your clicks",
+                                                 file_types=[".npy"], file_count="multiple", type="filepath", size="sm")
                     save = gr.Button("Save files", size="sm")
                     files = gr.File(label="Model outputs, receipt and your concept", file_count="multiple")
                     receipt = gr.JSON(label="Receipt")
-                with gr.Accordion("About", open=False):
-                    gr.Markdown(INTRO)
+                with gr.Accordion("How to use it", open=False):
+                    gr.Markdown(HOW_TO)
                 with gr.Accordion("For agents and scripts", open=False):
                     gr.Markdown(AGENTS_TEXT.format(url=page_url().rstrip("/") if page_url() != "/" else
                                                    "https://sharpmeow-scroll-lens.hf.space"))
+            with gr.Column(scale=3, min_width=320, elem_id="sl-viewer"):
+                viewer = gr.HTML("", html_template='<div class="slv-mount"></div>', js_on_load=viewer_js(),
+                                 apply_default_css=False, elem_id="sl-viewer-html")
+                info = gr.Markdown(numbers(empty_state()))
+                with gr.Accordion("About", open=False):
+                    gr.Markdown(INTRO)
         gr.HTML('<footer class="sl-credit">Built by Chase Hendrick · models and data by the Vesuvius Challenge · '
                 f'Scroll Lens {lens.VERSION}</footer>')
 
@@ -1153,33 +1624,24 @@ def build_demo():
             t_img, t_json, t_file = gr.Image(type="numpy", format="png"), gr.JSON(), gr.File()
             t_btns = [gr.Button() for _ in range(6)]
 
-        view_inputs = [overlays, top_pct, opacity]
-        shown = imgs + [info]
-        vid.change(volume_text, vid, vinfo, api_visibility="private")
-        rbtn.click(on_run, [vid, z, y, x, size, layers, tta, state] + view_inputs, [state] + sliders + shown,
-                   concurrency_id="models", concurrency_limit=2, api_visibility="private")
-        gal_out = [state] + sliders + shown + [vid, z, y, x]
-        gpick.input(on_gallery, [gpick, state] + view_inputs, gal_out, api_visibility="private")
-        for b, step in ((gprev, -1), (gnext, 1)):
-            b.click(lambda c, s=step: next_gallery_id(c, s), gpick, gpick, api_visibility="private",
-                    queue=False).then(on_gallery, [gpick, state] + view_inputs, gal_out, api_visibility="private")
-        sbtn.click(on_surprise, vid, [z, y, x], api_visibility="private")
-        for s in sliders:
-            # redraw while the slider moves: only the newest position is drawn, so a fast drag never queues up
-            s.input(on_drag, sliders + [state] + view_inputs, imgs, api_visibility="private", show_progress="hidden",
-                    trigger_mode="always_last", queue=False)
-            s.release(on_slices, sliders + [state] + view_inputs, shown, api_visibility="private", show_progress="hidden")
-        for c in view_inputs:
-            c.change(on_slices, sliders + [state] + view_inputs, shown, api_visibility="private", show_progress="hidden")
-        for a in range(3):
-            imgs[a].select(on_select(a), [mode, state] + view_inputs, [state] + sliders + shown + [overlays],
-                           api_visibility="private", show_progress="hidden")
-        clear.click(on_clear, [state] + view_inputs, [state] + shown, api_visibility="private")
-        undo.click(on_undo, [state] + view_inputs, [state] + shown, api_visibility="private")
-        concept_up.upload(on_concept, [concept_up, state] + view_inputs, [state] + shown + [overlays],
-                          api_visibility="private")
-        pbtn.click(lambda s, o, t: figure_3d(s, o, t), [state, overlays, top_pct], plot, api_visibility="private")
-        save.click(on_save, state, [files, receipt], api_visibility="private")
+        out = [state, viewer, info]
+        stale = [files, receipt]
+        hidden = dict(api_visibility="private")
+        vid.change(volume_text, vid, vinfo, **hidden)
+        rbtn.click(on_run, [vid, z, y, x, size, layers, tta, state], out + stale, concurrency_id="models",
+                   concurrency_limit=2, **hidden)
+        gal_out = out + stale + [vid, z, y, x, size, gpick]
+        gpick.input(on_gallery, [gpick, state], gal_out, concurrency_limit=4, **hidden)
+        for btn, step in ((gprev, "previous"), (gnext, "next"), (grand, "random")):
+            btn.click(functools.partial(on_gallery_step, step=step), [gpick, state], gal_out, concurrency_limit=4,
+                      **hidden)
+        sbtn.click(on_surprise, vid, [z, y, x], **hidden)
+        viewer.select(on_viewer_select, state, out, show_progress="hidden", trigger_mode="multiple", **hidden)
+        viewer.clear(on_clear, state, out, show_progress="hidden", **hidden)
+        viewer.undo(on_undo, state, out, show_progress="hidden", **hidden)
+        viewer.apply(on_viewer_use, None, [vid, z, y, x, tabs], show_progress="hidden", **hidden)
+        concept_up.upload(on_concept, [concept_up, state], out, **hidden)
+        save.click(on_save, state, [files, receipt], **hidden)
         a_btn.click(guard(look), [a_vid, a_z, a_y, a_x, a_size, a_layers, a_tta, a_compact, a_cpu], a_out,
                     api_name="look", concurrency_id="models", concurrency_limit=2)
         cube_in = [t_id, t_scan, t_z, t_y, t_x, t_size]
@@ -1194,13 +1656,88 @@ def build_demo():
             models = name in ("inspect_cube", "search_cube", "download_cube")
             btn.click(guard(fn), ins, outs, api_name=name, api_description=fn.__doc__.split("\n\n")[0],
                       concurrency_id="models" if models else None, concurrency_limit=2 if models else 8)
-        demo.load(on_load, [state] + view_inputs, [state] + sliders + shown + [vid, z, y, x, size, gpick],
-                  api_visibility="private")
+        demo.load(on_load, state, out + [vid, z, y, x, size, gpick, tabs], **hidden)
     return demo
+
+
+class NoUrlFiles:
+    """ASGI middleware, a second guard beside close_url_fetching: refuse Gradio's file routes when they name a URL
+    (/file=URL, /file/URL), and uploads of more than MAX_UPLOAD_BYTES in one request (max_file_size counts each file
+    of a request on its own)."""
+
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope.get("type") == "http":
+            from urllib.parse import unquote
+            path = unquote(unquote(scope.get("path", ""))).lower()
+            if any(t in path for t in ("/file=http:", "/file=https:", "/file=//", "/file/http:", "/file/https:",
+                                       "/file//")):
+                return await self.refuse(send, 403, b"Scroll Lens does not fetch URLs for callers.")
+            if scope.get("method") == "POST" and path.rstrip("/").endswith("/upload"):
+                length = dict(scope.get("headers") or []).get(b"content-length")
+                if length is not None and length.isdigit() and int(length) > MAX_UPLOAD_BYTES:
+                    return await self.refuse(send, 413, b"An upload to Scroll Lens is at most 12 MB.")
+        await self.app(scope, receive, send)
+
+    @staticmethod
+    async def refuse(send, status, body):
+        await send({"type": "http.response.start", "status": status,
+                    "headers": [(b"content-type", b"text/plain; charset=utf-8")]})
+        await send({"type": "http.response.body", "body": body})
+
+
+MAX_UPLOAD_BYTES = 12 << 20
+
+
+HEAD = """
+<meta name="description" content="Scroll Lens: look inside Herculaneum scroll CT scans with the Vesuvius Challenge's
+3D DINO, 3D ink and recto surface models; click to search. API and MCP server for agents.">
+<meta property="og:title" content="Scroll Lens">
+<meta property="og:description" content="Look inside a Herculaneum scroll with the Vesuvius Challenge's 3D models,
+and click to search. Model output, not a reading.">
+"""
+
+
+def close_url_fetching():
+    """Gradio streams any public URL through its file routes (/file=URL and the older /file/URL) and downloads any URL
+    a caller puts in a file input, with no size limit. This Space serves its own files only, and downloads a file input
+    only from itself or the Hugging Face Hub (an agent may pass back a concept.npy this Space gave it)."""
+    import gradio.processing_utils as pu
+    import gradio.route_utils as ru
+    import gradio.routes as rt
+    from urllib.parse import urlparse
+    from fastapi import HTTPException
+
+    async def refuse_stream(url, request):
+        raise HTTPException(status_code=403, detail="Scroll Lens does not fetch URLs for callers.")
+    rt.secure_url_stream_response = ru.secure_url_stream_response = refuse_stream
+    try:
+        import gradio.static_server as ss
+        ss.secure_url_stream_response = refuse_stream
+    except ImportError:
+        pass
+    allowed = {h for h in (os.environ.get("SPACE_HOST"), "huggingface.co", "hf.co") if h}
+    original = getattr(pu.async_ssrf_protected_download, "__wrapped_original__", pu.async_ssrf_protected_download)
+
+    async def download(url, cache_dir):
+        if (urlparse(url).hostname or "").lower() not in allowed:
+            raise PermissionError("Scroll Lens downloads files only from this Space or the Hugging Face Hub")
+        return await original(url, cache_dir)
+    download.__wrapped_original__ = original
+    pu.async_ssrf_protected_download = download
+
+
+def launch_kwargs():
+    from starlette.middleware import Middleware
+    close_url_fetching()
+    VIEW_DIR.mkdir(parents=True, exist_ok=True)
+    return dict(theme=theme(), css=CSS, head=HEAD, footer_links=["api", "gradio"], allowed_paths=[str(VIEW_DIR)],
+                mcp_server=True, max_file_size="5mb", app_kwargs={"middleware": [Middleware(NoUrlFiles)]})
 
 
 if __name__ == "__main__":
     startup()
     fix_mcp_multiple_outputs()
-    build_demo().queue(max_size=24).launch(theme=theme(), css=CSS, head=GESTURES, footer_links=["api", "gradio"],
-                                           mcp_server=True)
+    build_demo().queue(max_size=256, default_concurrency_limit=8).launch(**launch_kwargs())

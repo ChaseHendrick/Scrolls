@@ -24,11 +24,13 @@ tags:
 - dino
 - self-supervised
 - zerogpu
+- mcp-server
 ---
 
 # Scroll Lens
 
 Look inside a carbonized Herculaneum scroll with the Vesuvius Challenge's newest 3D models, and click to search.
+People use the page, flat or in 3D; scripts and AI agents use the same cubes through tools that are an API and an MCP server.
 
 Scroll Lens reads a small cube (128³ or 256³ voxels, 0.3 or 0.6 mm a side) of a public X-ray CT scan straight from the
 [Vesuvius Challenge open data](https://scrollprize.org/data) and runs three models on it, all released by the
@@ -43,33 +45,44 @@ Vesuvius Challenge team with their PHerc. Paris 4 work ([Angelotti et al. 2026](
 **Click to search.** Click a patch with *More like this* and every patch whose embedding is close to it lights up;
 *Not this* subtracts a patch. This is the organizers' own recipe: their ink reference (shown in amber) is the mean
 embedding of 256 expert clicks on ink. Your concept follows you to other cubes and scans, and downloads as
-`concept.npy`, so you can click ink in one scroll and look for its like in another.
+`concept.npy` (and `concept_not.npy` for the Not this clicks), so you can click ink in one scroll and look for its like
+in another.
 
 **Everything shown is model output, not a reading.** A cube is smaller than one letter.
 
 ## Using it
 
-1. **Gallery** (no GPU): pick a ready-made cube (type to filter), or step through them with *Previous* and *Next*.
-   The page opens on the first one.
+1. **Gallery** (no GPU): 99 ready-made cubes. Pick one and it opens; *Previous*, *Next* and *Random* step through
+   them, and you can type in the list to search it. The page opens on the first one.
 2. **Your own point**: pick a scan, type a point (level-0 voxels, z y x) or press *Surprise me*, then *Run the
-   models*. A 256³ cube asks ZeroGPU for about half a minute. When your daily ZeroGPU time is used up, or no GPU is
-   free, the models run on the Space's CPU on the middle 128³ of the cube instead (slower, about a minute).
-3. **Look**: drag inside a view to move the crosshair (the other two views follow as you drag), scroll the wheel
-   over a view to step through its slices (Shift for 8), or move the z, y and x sliders. Tick the layers. White
-   dotted lines show where the other views cut.
-4. **Search**: choose a click mode and click a view. *Top % shown* sets how many of the most similar patches light up.
-   *Undo last click* takes one back.
-5. **3D view**: ink and surface as shells, similar patches as points, rotatable.
-6. **Save files**: the model outputs (`.npz`), a receipt (`.json`) and, after clicks, `concept.npy` and `clicks.json`.
+   models*. A 256³ cube uses about 5 seconds of your daily ZeroGPU time (a call takes 7 to 12 s), a 128³ cube under a
+   second. ZeroGPU starts a call only while about 21 s (256³) or 11 s (128³) of your quota is left. When it refuses,
+   or no GPU is free, the models run on the Space's CPU on the middle 128³ of the cube instead (about 10 seconds, one
+   such run at a time).
+3. **Look**: the three views are drawn in your browser, so everything answers at once. Drag a slider, or drag inside a
+   view to move the crosshair: the other views follow as you move. The wheel or the arrow keys step one slice (Shift:
+   8). Ctrl or Cmd with the wheel, or a pinch, zooms; right-drag or Shift-drag pans; double-click resets. The line
+   under the views reads out what is under the pointer: place in the cube and the scan, CT value, ink and surface
+   probability, and similarity.
+4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Move only* just moves the
+   crosshair; *Undo click* (or Ctrl or Cmd with Z) forgets the last click. *Top % shown* sets how many of the most similar patches light up. The organizers' reference (amber)
+   never lights a patch below their own threshold, cosine 0.5.
+5. **3D view**: turns the three views into one 3D space of the cube, as in Unroll: the three slices as planes that
+   move as you drag the sliders, ink and surface as points, and the patches like your concept or the organizers'
+   reference glowing. Drag to rotate, wheel to zoom, right-drag to pan, *Spin* to turn it slowly; click a slice to
+   search there.
+6. **More**: brightness and contrast, *Center on point*, *Reset zoom*, *Use crosshair as point* (copies the
+   crosshair's scan position to Your own point), *Copy link* (a link that opens this cube at this crosshair), and
+   *Save files* (model outputs as `.npz`, the receipt `.json`, your concept).
 
-Links: `?v=PHerc0139&z=…&y=…&x=…&size=256` opens the page on a point (it runs only when you press the button);
-`?cube=ID` opens a gallery cube.
+Links: `?cube=ID` opens a gallery cube; `?v=PHerc0139&z=…&y=…&x=…&size=256` fills in Your own point (press Run the
+models); `&s=z,y,x` puts the crosshair at that voxel of the cube.
 
 ## The scans
 
-Only these twelve scans, all at 2.2 to 2.4 µm, the scale the models were made for. None is on the First Letters or
-Grand Prize eligible lists. PHerc. Paris 4's title is an open prize, so Scroll Lens itself only ever picks the eight
-Paris 4 points the organizers listed for training the 3D ink model; you can type any point.
+Only these twelve scans, all at 2.2 to 2.4 µm, the scale the models work at. None is on the First Letters or Grand
+Prize eligible lists. PHerc. Paris 4's title is an open prize, so Scroll Lens itself only ever picks the eight Paris 4
+points the organizers listed for training the 3D ink model; you can type any point.
 
 | Id | Scroll | 3D DINO | 3D ink | Recto surface |
 | --- | --- | --- | --- | --- |
@@ -92,8 +105,10 @@ the model cards and the checkpoints' own training configs, read 16 October 2026.
 ## Checks
 
 - Each cube shows how well the organizers' ink reference picks out the patches the 3D ink model marks as ink (AUC),
-  beside a control that must fail: the same ink mask moved by half the cube, which should sit near 0.5. Your own
-  concept gets the same pair. This is agreement between two models, not ground truth.
+  beside controls that must fail: the same ink mask moved away from its place. Papyrus is layered, so one move can
+  line the layers up again; the control is therefore taken over 16 fixed moves, and the AUC means something only
+  above their range (`auc_control_p95`). Your own concept gets the same check. This is agreement between two models,
+  not ground truth.
 - The 3D DINO code is the organizers' own (dinovol, at a pinned commit) and reproduces their napari inspector's patch
   embeddings to a cosine of 0.9999 on a Paris 4 cube.
 - Weights are downloaded at pinned revisions and refused unless their SHA-256 matches; the model code is downloaded
