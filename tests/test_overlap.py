@@ -46,6 +46,18 @@ class OverlapTest(unittest.TestCase):
             self.assertGreater(row["map"]["reappear"], 0.8)
             self.assertLess(abs(row["control"]["pearson"]), 0.5)
 
+    def test_one_sided_labels_or_control_is_refused(self):
+        with tempfile.TemporaryDirectory() as t:
+            t = Path(t)
+            write_mesh(t / "a", 500); write_mesh(t / "b", 502)
+            np.save(t / "m.npy", np.ones((600, 800)))
+            for kw in ({"labels_a": t / "la"}, {"labels_b": t / "lb"}):
+                with self.assertRaisesRegex(overlap.VerifyError, "both"):
+                    overlap.overlap(t / "a", t / "b", 9.366, **kw)
+            for kw in ({"control_a": t / "m.npy"}, {"control_b": t / "m.npy"}):
+                with self.assertRaisesRegex(overlap.VerifyError, "both"):
+                    overlap.collate(t / "a", t / "b", t / "m.npy", t / "m.npy", 9.366, gaps=(0, 5), draws=2, **kw)
+
 
 @unittest.skipIf(np is None, "numpy is needed")
 class BootstrapTest(unittest.TestCase):

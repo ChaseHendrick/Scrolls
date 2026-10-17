@@ -560,5 +560,43 @@ class EvaluateTest(unittest.TestCase):
                 EV.results(d)
 
 
+@unittest.skipIf(M is None, "numpy not installed")
+class EvaluateCommandLineTest(unittest.TestCase):
+    """evaluate.py results and release write a file, so they need --out; numpy alone runs them."""
+
+    def setUp(self):
+        sys.path.insert(0, str(SCRIPTS))
+        try:
+            import evaluate
+        finally:
+            while str(SCRIPTS) in sys.path:
+                sys.path.remove(str(SCRIPTS))
+        self.ev = evaluate
+
+    def runs(self, d):
+        """The smallest runs folder release reads: calibration, choice and the chosen model's weights."""
+        (Path(d) / "calibration.json").write_text(json.dumps(
+            {"models": {"released": {"platt": [1.0, 0.0], "q99": 0.5}}, "val_ref": {}}))
+        (Path(d) / "choice.json").write_text(json.dumps({"chosen": "A"}))
+        (Path(d) / "A").mkdir()
+        np.savez(Path(d) / "A" / "strokenet.npz", meta=np.array(json.dumps({})), w=np.zeros(2, np.float32))
+
+    def test_results_and_release_refuse_a_missing_out_before_any_work(self):
+        import contextlib
+        import io
+        with tempfile.TemporaryDirectory() as d:
+            self.runs(d)
+            for action in ("results", "release"):
+                err = io.StringIO()
+                with contextlib.redirect_stderr(err), self.assertRaises(SystemExit) as stop:
+                    self.ev.main([action, "--runs", d])
+                self.assertEqual(stop.exception.code, 2, action)
+                self.assertIn("--out", err.getvalue(), action)
+            out = Path(d) / "released.npz"
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.ev.main(["release", "--runs", d, "--out", str(out)])
+            self.assertEqual(json.loads(str(np.load(out)["meta"]))["run"], "A")
+
+
 if __name__ == "__main__":
     unittest.main()

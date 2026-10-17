@@ -216,7 +216,11 @@ def run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=N
         item["raw_returncode"] = raw_code
     if launch_error is not None:
         item["launch_error"] = launch_error
-    append(slug, item, root)
+    try:
+        append(slug, item, root)
+    except (OSError, ValueError, KeyError, TypeError, ledger.LedgerError, CostError) as exc:
+        # The child has run: keep its exit code and let the caller report the entry that was lost.
+        item["ledger_error"] = str(exc)
     return code, item
 
 

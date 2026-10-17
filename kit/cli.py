@@ -1,4 +1,4 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,letterread,letterlines,letterdemo,greeklm,releases}.
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate and releases read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -8,6 +8,7 @@ scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
 import argparse
 import copy
 import json
+import os
 import sys
 from pathlib import Path
 from datetime import date
@@ -178,7 +179,16 @@ def cmd_stackcheck(args):
 
 def cmd_meshaudit(args):
     """Mesh and cross-scan render audit (docs/plans/2026-10-07-mesh-hypothesis.md)."""
-    cat = meshaudit.load_catalogue(args.catalogue)
+    try:
+        cat = meshaudit.load_catalogue(args.catalogue)
+    except (OSError, ValueError) as exc:
+        print(f"meshaudit: cannot read the catalogue: {exc}. Give a metadata.json path or URL with --catalogue.",
+              file=sys.stderr)
+        return 2
+    if not isinstance(cat, dict) or not isinstance(cat.get("samples"), dict):
+        print("meshaudit: the catalogue has no samples object; give the bucket's metadata.json with --catalogue.",
+              file=sys.stderr)
+        return 2
     if args.action == "transforms":
         out = meshaudit.transforms_audit(cat)
         if not args.json:
@@ -202,8 +212,16 @@ def cmd_meshaudit(args):
                 print("%-12s native %s cross %s  %d of %d segments" % (
                     p["sample"], p["native_volume"], p["cross_volume"], len(p["segments"]), p["segments_available"]))
     else:  # depth
-        s = cat["samples"][args.sample]
-        seg = s["segments"][args.segment]
+        s = cat["samples"].get(args.sample)
+        if not isinstance(s, dict):
+            print(f"meshaudit: the catalogue has no sample {args.sample!r}; samples: {', '.join(sorted(cat['samples']))}",
+                  file=sys.stderr)
+            return 2
+        seg = (s.get("segments") or {}).get(args.segment)
+        if not isinstance(seg, dict):
+            print(f"meshaudit: sample {args.sample} has no segment {args.segment!r} in the catalogue; "
+                  f"check the id against samples.{args.sample}.segments in metadata.json", file=sys.stderr)
+            return 2
         out = meshaudit.depth_segment(args.base, args.sample, seg, cross_ids=args.cross or None,
                                       n_tiles=args.tiles, seed=args.seed, reference=args.reference)
         if not args.json:
@@ -212,8 +230,13 @@ def cmd_meshaudit(args):
                     args.segment, out["native_volume"], p["cross_volume"], p.get("tiles_with_peaks"),
                     p.get("delta_median_um"), p.get("location_control_pass")))
     if args.out:
-        with open(args.out, "w", encoding="utf-8") as f:
-            json.dump(out, f, indent=1)
+        try:
+            with open(args.out, "w", encoding="utf-8") as f:
+                json.dump(out, f, indent=1)
+        except OSError as exc:
+            print(f"meshaudit: cannot write {args.out}: {exc}. Give --out a path in an existing folder.",
+                  file=sys.stderr)
+            return 2
     if args.json:
         print(json.dumps(out, indent=1))
     return 0
@@ -269,11 +292,19 @@ def cmd_provenance(args):
 
 
 def cmd_compute(args):
+    missing = [p for p in args.paths if not Path(p).exists()]
+    if missing:
+        print(f"no such file or folder: {', '.join(missing)}; check the paths", file=sys.stderr)
+        return 2
     records = compute.collect(args.paths)
     if not records:
         print("no provenance records found", file=sys.stderr)
         return 2
-    r = compute.rows(records, args.watts)
+    try:
+        r = compute.rows(records, args.watts)
+    except ValueError as exc:
+        print(f"{exc}; leave that record out of the paths given", file=sys.stderr)
+        return 2
     print(json.dumps(r, indent=2) if args.json else compute.table(r, args.watts))
     return 0
 
@@ -416,6 +447,11 @@ def cmd_run(args):
             cpu = "unavailable" if item["cpu_s"] is None else f"{item['cpu_s']:.1f} s"
             print(f"{args.slug}: {item['wall_s']:.1f} s wall, {cpu} CPU, "
                   f"{item['kwh']:.4f} kWh, ${item['usd_exact']:.4f} (exit {code})", file=sys.stderr)
+            if "ledger_error" in item:
+                print(f"{args.slug}: the command exited {code}, but its cost was not written to the ledger: "
+                      f"{item['ledger_error']}. Record it with kit run backfill, using the wall time above.",
+                      file=sys.stderr)
+                return code or 2
             return code
         elif args.action == "backfill":
             try:
@@ -808,11 +844,11 @@ def cmd_strokenet(args):
             gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
             np.save(gpath, grid)
             res["grid_file"] = gpath
+        if args.out:
+            Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
     except (ImportError, OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
-    if args.out:
-        Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
     print(json.dumps(res, indent=1) if args.json else strokenet.text_summary(res))
     return 0
 
@@ -1080,7 +1116,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
 
     p = sub.add_parser("layers", help="export a surface-volume zarr to 00.tif, 01.tif, ... (v8in's input)")
     p.add_argument("volume", help="surface-volume zarr, e.g. from vc_render_tifxyz --zarr-output")
-    p.add_argument("out_dir")
+    p.add_argument("out_dir", help="folder for the layer TIFFs; it must not already hold numbered TIFFs")
     p.add_argument("--start", type=int, default=0, help="first layer to export")
     p.add_argument("--count", type=int, help="number of layers (default: all from --start)")
     p.add_argument("--level", default="0", help="OME-Zarr level when the store is a group")
@@ -1363,13 +1399,21 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
 
 def _run(args, typed, name):
     """args.func(args), with the command line the user typed and its kit command in kit.verify.RUNNING while it
-    runs, so a missing dependency's install hint names the command actually run."""
+    runs, so a missing dependency's install hint names the command actually run. A reader that stops early
+    (python -m kit prizes | head -1) ends it with code 1 and no traceback, as Python's documentation advises
+    for SIGPIPE."""
     before = verify.RUNNING
     verify.RUNNING = (typed, name)
     try:
-        return args.func(args)
+        code = args.func(args)
+        sys.stdout.flush()                 # inside the try, so a closed pipe is caught here and not at exit
+    except BrokenPipeError:
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, sys.stdout.fileno())   # the exit flush then writes nowhere instead of failing again
+        return 1
     finally:
         verify.RUNNING = before
+    return code
 
 
 def _console(script, argv=None):

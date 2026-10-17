@@ -107,5 +107,14 @@ class RowScoreCliTest(unittest.TestCase):
             self.assertEqual(len(result["files"]["forward"]), 2)
 
 
+class RowScoreFormatTest(unittest.TestCase):
+    def test_closing_line_does_not_call_pherc0139_held_out(self):
+        # PHerc0139 w045 and w033 are not held out from ink_9um (AGENTS.md glossary).
+        text = rowscore.format_result({"forward": {"score": None, "reason": "too small", "largest_piece": True}})
+        last = text.splitlines()[-1]
+        self.assertNotIn("held-out", last)
+        self.assertIn("PHerc0139", last)
+
+
 if __name__ == "__main__":
     unittest.main()

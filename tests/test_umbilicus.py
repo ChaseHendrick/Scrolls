@@ -350,6 +350,16 @@ class JobsTest(unittest.TestCase):
         self.assertEqual(len(folds), len(set(folds)))
         self.assertFalse(set(folds) & set(pipeline.slices.UNLABELLED))
 
+    def test_a_mistyped_command_is_refused(self):
+        import subprocess
+        if np is None:
+            self.skipTest("numpy unavailable")
+        with tempfile.TemporaryDirectory() as d:
+            done = subprocess.run([sys.executable, os.path.join(UMB, "pipeline.py"), "colect", "--data", d, "--out", d],
+                                  capture_output=True, text=True, timeout=60)
+        self.assertEqual(done.returncode, 2, done.stderr)
+        self.assertIn("colect", done.stderr)
+
 
 class EndRulePromisesTest(unittest.TestCase):
     """The end-point rule's promises: ends only, 2 mm and 4 mm converted per scan, y before x, constants read when

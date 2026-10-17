@@ -37,7 +37,11 @@ def collect(paths):
 def rows(records, watts=None):
     out = []
     for rec in records:
-        start, end = _parse(rec.get("started_utc")), _parse(rec.get("finished_utc"))
+        try:
+            start, end = _parse(rec.get("started_utc")), _parse(rec.get("finished_utc"))
+        except (TypeError, ValueError):
+            raise ValueError(f"{rec.get('_file', rec['run'])}: started_utc {rec.get('started_utc')!r} and finished_utc "
+                             f"{rec.get('finished_utc')!r} must be UTC times like 2026-10-07T08:00:00Z") from None
         hours = (end - start).total_seconds() / 3600 if start and end else None
         m = rec.get("machine", {})
         row = {"run": rec["run"], "operator": rec.get("operator", {}).get("name"),

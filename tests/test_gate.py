@@ -78,6 +78,13 @@ class GateTest(unittest.TestCase):
         self.assertIn("0841-ag896: Mac ink_9um s42 0.6600 vs CPU 0.6600: match", out.getvalue())
 
 
+    def test_forward_or_control_not_an_object_is_skipped(self):
+        self.put("0841-w00", "v8in", dict(mac_auc("0841-w00", 0.9, 0.5), forward=0.9))
+        self.put("0841-ag896", "v8in", dict(mac_auc("0841-ag896", 0.9, 0.5), control=[0.5]))
+        r = gate.run(self.work, self.results)
+        self.assertEqual(sum("must be objects" in s for s in r["skipped"]), 2)
+        self.assertNotIn("v8in", [x["reader"] for x in r["ranked"]])
+
     def test_no_scores_file_points_to_a_clone(self):
         err = io.StringIO()
         with contextlib.redirect_stderr(err):

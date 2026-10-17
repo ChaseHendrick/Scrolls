@@ -39,8 +39,8 @@ EOF
 }
 
 for job in $JOBS; do
-  case "$job" in
-    v8in:0841-*|v8in-1447:0841-*) ;;
+  case "$job" in   # only the PHerc0841 segments mac-w045.sh accepts, checked before any job starts
+    v8in:0841-w00|v8in:0841-ag896|v8in:0841-ag405|v8in-1447:0841-w00|v8in-1447:0841-ag896|v8in-1447:0841-ag405) ;;
     *) echo "unknown job $job (expected v8in|v8in-1447:0841-w00|0841-ag896|0841-ag405)" >&2; exit 2 ;;
   esac
 done

@@ -122,7 +122,16 @@ def write(path, combined, valid):
 def ensemble_files(out, inputs, method="mean", weights=None):
     from .auc import _load
 
-    arrays = [_load(p) for p in inputs]
+    np = _numpy()
+    arrays = []
+    for p in inputs:
+        try:
+            a = np.squeeze(_load(p))
+        except (OSError, ValueError) as exc:  # np.load: a missing or non-array .npy
+            raise VerifyError(f"cannot read {p}: {exc}") from exc
+        if a.ndim != 2:
+            raise VerifyError(f"{p}: expected a 2D map, got shape {a.shape}")
+        arrays.append(a)
     combined, valid = combine(arrays, method, weights)
     write(out, combined, valid)
     return {"out": str(out), "inputs": [str(p) for p in inputs], "method": method,
