@@ -1,0 +1,11 @@
+{"recipe_name": "face-mix",
+ "recipe": {"components": [{"kind": "composite", "face": "bot", "half": 20, "lo": 0.45, "hi": 0.60, "opacity": 1.0},
+                           {"kind": "step", "face": "bot", "depths": [2, 1, 0, -1]},
+                           {"kind": "texture", "face": "bot", "depths": [2], "window": 3}],
+            "smooth": 48, "background": 192},
+ "baselines": {"raw": ["mip10", "s24b0", 1],
+               "clahe": ["clahe_band10", "s16b64", 1],
+               "alpha": ["alpha_abs_hi20_0.45_0.15_1.0", "s24b0", 1],
+               "alpha_highpass": ["alpha_abs_hi20_0.45_0.15_1.0", "s24b96", 1],
+               "vtid": ["vtid_acf", "s24b0", 1],
+               "alpha_reverse": ["alpha_abs_lo20_0.45_0.15_1.0", "s24b0", 1]}}

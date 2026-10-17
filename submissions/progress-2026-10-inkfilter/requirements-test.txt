@@ -1,0 +1,4 @@
+# Environment used for this release candidate's synthetic tests, 17 October 2026.
+numpy==2.5.4
+tifffile==2026.10.15
+zarr==3.4.1

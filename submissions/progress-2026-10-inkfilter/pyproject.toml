@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scrolls-inkfilter"
+version = "0.1.0"
+description = "Fixed image filters and a reverse-depth control for surface volumes"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {file = "LICENSE"}
+authors = [{name = "Chase Hendrick"}]
+dependencies = ["numpy>=1.26,<3"]
+
+[project.optional-dependencies]
+io = ["tifffile>=2024.1.1", "zarr>=3,<4"]
+
+[project.scripts]
+scrolls-inkfilter = "scrolls_inkfilter.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
