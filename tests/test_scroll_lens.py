@@ -271,8 +271,8 @@ class Files(unittest.TestCase):
         for p in sorted(SPACE.rglob("*")):
             if p.is_file() and p.suffix in (".py", ".md", ".txt", "") and p.name != "LICENSE":
                 text = p.read_text(encoding="utf-8")
-                self.assertNotIn("—", text, p)
-                self.assertNotIn("–", text, p)
+                self.assertNotIn(chr(0x2014), text, p)
+                self.assertNotIn(chr(0x2013), text, p)
 
 
 @unittest.skipIf(np is None, "needs numpy")
