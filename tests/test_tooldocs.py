@@ -4,6 +4,7 @@ import argparse
 import contextlib
 import io
 import json
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -308,6 +309,38 @@ class PageShape(unittest.TestCase):
         self.assertIn("needs the field 'Branch'", self.found(no_branch))
         self.assertNotIn("missing section '## Quick start'", found)
         self.assertNotIn("not in the repository", found)
+
+    def test_a_branch_only_page_whose_commit_has_merged_must_become_current(self):
+        text = (ROOT / "templates" / "tool-doc-branch.md").read_text(encoding="utf-8")
+        root = self.repo.root
+
+        def git(*args):
+            return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.org", *args], cwd=root,
+                                  capture_output=True, text=True, check=True).stdout.strip()
+        try:
+            git("init", "-q")
+            git("add", "-A")
+            git("commit", "-q", "-m", "tool")
+            merged = git("rev-parse", "--short", "HEAD")
+            git("checkout", "-q", "-b", "side")
+            self.repo.write("kit/side.py", "x = 1\n")
+            git("add", "-A")
+            git("commit", "-q", "-m", "side tool")
+            side = git("rev-parse", "--short", "HEAD")
+            git("checkout", "-q", "-")
+        except (OSError, subprocess.CalledProcessError):
+            self.skipTest("git is not available")
+        ctx = tooldocs.Context(root, COMMANDS, (), "public", git=True)
+        for commit, merged_now in ((merged, True), (side, False)):
+            page = text
+            for key, value in (("{id}", "demo"), ("{kind}", "kit module"), ("{area}", "Training"),
+                               ("{date}", "2026-10-16"), ("{commit}", commit),
+                               ("{history_block}", f"- 2026-10-01: made (`{commit}`).")):
+                page = page.replace(key, value)
+            page = "\n".join(f"| Branch | `side` at `{commit}` |" if line.startswith("| Branch |") else line
+                             for line in page.split("\n"))
+            found = " ".join(tooldocs.check_page(self.repo.page(page), ctx))
+            self.assertEqual("which this branch already holds" in found, merged_now, found)
 
     def test_leftovers_dashes_and_fences(self):
         self.assertIn("template guidance", self.found(GOOD.replace("It demonstrates.", "<!-- Write: what it does -->")))

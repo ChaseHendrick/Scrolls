@@ -264,17 +264,19 @@ Units: transform residuals in um of the target volume, round trips in um of the 
 | Exit code | Meaning |
 | --- | --- |
 | `0` | Finished. Read errors inside `canvas` and `depth` are in the result, not in the exit code |
-| `1` | An error with a Python traceback: the catalogue cannot be read, an unknown `--sample` or `--segment` (`KeyError`), a native render that cannot be read, or numpy missing |
-| `2` | A usage error from the argument parser, such as no action |
+| `1` | An error with a Python traceback: a native render that cannot be read, or numpy missing |
+| `2` | A usage error from the argument parser, such as no action; or, with a `meshaudit: ...` message on stderr, a catalogue that cannot be read or has no `samples` object, an unknown `--sample` or `--segment`, or an `--out` that cannot be written |
 
 ## Failure modes
 
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | No action, or a missing `--sample` or `--segment` for `depth` | Check the command against Commands and options |
-| `urllib.error.URLError: ...` and a traceback, exit code 1 | The bucket cannot be reached for the catalogue | Check the network, or pass a saved copy with `--catalogue` |
-| `FileNotFoundError: ...` and a traceback, exit code 1 | `--catalogue` names a file that does not exist | Fix the path |
-| `KeyError: 'NAME'` and a traceback, exit code 1 | `depth` with a sample or segment id the catalogue does not have | Use the key under `samples`, and the segment's key under its `segments` (the short id) |
+| `meshaudit: cannot read the catalogue: MESSAGE. Give a metadata.json path or URL with --catalogue.`, exit code 2 | The bucket cannot be reached (`<urlopen error ...>`), `--catalogue` names a file that does not exist, or the catalogue is not JSON or is a cut-off or oversized gzip body (the gzip messages below) | Check the network, fix the path, or pass a saved copy with `--catalogue` |
+| `meshaudit: the catalogue has no samples object; give the bucket's metadata.json with --catalogue.`, exit code 2 | The JSON read is not the bucket's `metadata.json`: not an object, or no `samples` object in it | Point `--catalogue` at the bucket's `metadata.json` |
+| `meshaudit: the catalogue has no sample 'NAME'; samples: ...`, exit code 2 | `depth` with a `--sample` the catalogue does not have | Use one of the listed keys under `samples` |
+| `meshaudit: sample S has no segment 'NAME' in the catalogue; check the id against samples.S.segments in metadata.json`, exit code 2 | `depth` with a `--segment` that is not a key under the sample's `segments` | Use the segment's key under its `segments` (the short id) |
+| `meshaudit: cannot write PATH: MESSAGE. Give --out a path in an existing folder.`, exit code 2 | `--out` is in a folder that does not exist, or cannot be written; the result was computed but not saved (with `--json` it is not printed either) | Give `--out` a writable path in an existing folder, and rerun |
 | `ModuleNotFoundError: No module named 'numpy'` and a traceback | numpy is not installed | `python -m pip install numpy` |
 | `"error": "no surface volume on the native volume"` in `depth`, and no pair lines | The segment has no render on its native volume (or on `--reference`) | Pick a `--reference` volume that has a render (amendment H3b) |
 | No pair lines from `depth`, exit code 0 | `--cross` names no volume the segment has a render on | Check the volume ids with `canvas` |
@@ -282,8 +284,8 @@ Units: transform residuals in um of the target volume, round trips in um of the 
 | `"evaluable": false` with `"location_control_pass": false` | The location control failed: profiles are alike everywhere, or the offset is real and large enough to lower the matched correlation | Report the pair as not evaluable; do not read its delta as a result |
 | `"error": "not a TIFF (version N): URL"` in `mesh_errors` | A mesh's `x.tif` is not a TIFF | Look at the file; the row is left without that mesh |
 | `"error": "TIFF IFD lacks width or height"` in `mesh_errors` | The TIFF's first directory has no size tags | As above |
-| `ValueError: gzip body ends before its last member does` and a traceback, exit code 1 | The catalogue (or another gzipped file) is cut off | Download it again |
-| `ValueError: gzip body inflates past N bytes; refused (raise KIT_MAX_GUNZIP_BYTES to allow it)` and a traceback, exit code 1 | A gzip body inflates past `KIT_MAX_GUNZIP_BYTES` (1 GiB by default): a decompression bomb, or a genuinely larger file | Check the file; raise `KIT_MAX_GUNZIP_BYTES` only for a file you trust |
+| `ValueError: gzip body ends before its last member does` and a traceback, exit code 1 (inside the `cannot read the catalogue` message, exit code 2, for the catalogue) | A gzipped file is cut off | Download it again |
+| `ValueError: gzip body inflates past N bytes; refused (raise KIT_MAX_GUNZIP_BYTES to allow it)` and a traceback, exit code 1 (inside the `cannot read the catalogue` message, exit code 2, for the catalogue) | A gzip body inflates past `KIT_MAX_GUNZIP_BYTES` (1 GiB by default): a decompression bomb, or a genuinely larger file | Check the file; raise `KIT_MAX_GUNZIP_BYTES` only for a file you trust |
 | `ValueError: TIFF declares N elements, over M; refused (raise KIT_MAX_TIFF_ELEMENTS to allow it)` | A tifxyz mesh TIFF declares more than `KIT_MAX_TIFF_ELEMENTS` elements | Check the file; raise `KIT_MAX_TIFF_ELEMENTS` only for a mesh you trust |
 | `ValueError: KIT_MAX_GUNZIP_BYTES must be an integer` (or `KIT_MAX_TIFF_ELEMENTS`) | The variable is set to something that is not a whole number | Set it to a whole number of bytes or elements, or unset it |
 | `native_tiles_failed` or `.cross_tiles_failed` above 0 in `depth` | A tile's chunk read failed with an error other than a missing chunk (a timeout, a server error, a bad chunk); that tile is left out | Read `native_tile_error` or `.cross_tile_error`; rerun when the network is back, since fewer tiles can change the result |
@@ -329,10 +331,11 @@ The method is the protocol's, written before the measurements: [`plans/2026-10-0
 python -m unittest tests.test_meshaudit -v
 ```
 
-30 tests, about 5 s, no network. They cover the decompression-bomb guards and fetch errors (a gzip body with several members or cut off reads as `gzip.decompress` does, a body past `KIT_MAX_GUNZIP_BYTES` and a TIFF past `KIT_MAX_TIFF_ELEMENTS` are refused, only a missing chunk reads as fill), the transform audit (an exact refit, LOO above the fit with noise, flat landmarks, a stored matrix that misses its landmarks, 4 landmarks untestable, an inconsistent reverse, the tiers, pairing in a catalogue), canvas matching and TIFF and BigTIFF header parsing, the volume id, depth (synthetic shifts recovered within 2 um at three layer spacings, a peak outside the window, identity, a shift between resolutions, reversed layer order, a location control that fails, too few tiles), a local uncompressed zarr with an absent chunk, the H4 residuals (a pure affine, a known normal shift, holes), the H5 phase shift, area resampling and predicted shift, tile centres across pyramid levels, and the plan's grouping and determinism. They skip the numpy parts without numpy. They do not cover the command line, network reads, compressed zarr, or `canvas_audit` and `depth_segment` end to end; this page ran those on the live catalogue and a synthetic local bucket.
+32 tests, about 5 s, no network. They cover the decompression-bomb guards and fetch errors (a gzip body with several members or cut off reads as `gzip.decompress` does, a body past `KIT_MAX_GUNZIP_BYTES` and a TIFF past `KIT_MAX_TIFF_ELEMENTS` are refused, only a missing chunk reads as fill), the transform audit (an exact refit, LOO above the fit with noise, flat landmarks, a stored matrix that misses its landmarks, 4 landmarks untestable, an inconsistent reverse, the tiers, pairing in a catalogue), canvas matching and TIFF and BigTIFF header parsing, the volume id, depth (synthetic shifts recovered within 2 um at three layer spacings, a peak outside the window, identity, a shift between resolutions, reversed layer order, a location control that fails, too few tiles), a local uncompressed zarr with an absent chunk, the H4 residuals (a pure affine, a known normal shift, holes), the H5 phase shift, area resampling and predicted shift, tile centres across pyramid levels, the plan's grouping and determinism, and the command line's messages and exit code 2 for a missing or broken catalogue and an unknown sample or segment. They skip the numpy parts without numpy. They do not cover the rest of the command line, network reads, compressed zarr, or `canvas_audit` and `depth_segment` end to end; this page ran those on the live catalogue and a synthetic local bucket.
 
 ## History
 
+- 2026-10-17: a catalogue that cannot be read or has no `samples`, an unknown `--sample` or `--segment`, and an `--out` that cannot be written are reported as `meshaudit: ...` messages with exit code 2; before, each ended in a traceback (`URLError`, `FileNotFoundError`, `KeyError` or `OSError`) with exit code 1 (`b51cb4e`).
 - 2026-10-16: the gzip reader inflates every member and refuses a cut-off body, as `gzip.decompress` did (`136b5b2`).
 - 2026-10-16: gzip and TIFF size ceilings (`KIT_MAX_GUNZIP_BYTES`, `KIT_MAX_TIFF_ELEMENTS`, `imread_capped`); only a missing chunk reads as the fill value, and `depth` counts the tiles whose reads failed (`145b0fc`).
 - 2026-10-07: first version, with the protocol, its amendments, the derived data and the log (`e14b033`).

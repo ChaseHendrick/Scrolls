@@ -74,7 +74,7 @@ inference on A10, 2 pass(es): hours 0.08 / 0.14 / 0.36, USD 0.126 / 0.223 / 0.56
 total USD low 0.140, typical 0.258, high 0.633
 ```
 
-It worked when the exit code is 0 and a total is printed. An error ends in a Python traceback and exit code 1.
+It worked when the exit code is 0 and a total is printed. An input error prints `cloudcost: MESSAGE` on stderr and exits 2; a missing file still ends in a Python traceback and exit code 1.
 
 ## Checks and controls
 
@@ -199,12 +199,12 @@ cpu = cloudcost.modal_cpu()          # (16.0, 16.0)
 | `modal_gpu(count=1, fallback=True, cuda13=True)` | A list such as `["B300", "B200", "H200", "H100"]` (`"B300:2"` and so on when `count` is above 1), or the string `"B300"` with `fallback=False` | `ValueError` for `count` outside 1 to 8, or `fallback=False` with `cuda13=False` | The `gpu=` value for a new Modal Function. `cuda13=False` (an image built for CUDA 12) drops B300 and starts at B200 |
 | `modal_cpu(cores=MODAL_CPU_CORES)` | `(float(cores), float(cores))`, `(16.0, 16.0)` by default | `ValueError` below 0.125 cores | The `cpu=` value: cores reserved, request equal to limit |
 | `gpu_per_hour(rates, gpu)` | USD per hour for the GPU alone | `ValueError` for an unknown GPU, naming the known ones | |
-| `container_cost(rates, hours, gpu=None, gpus=1, cpu=0.125, mem_gib=0.125, containers=1, region='none', nonpreemptible=False)` | `{"gpu", "cpu", "mem", "total"}` in USD, unrounded | `ValueError` for a negative input, `nonpreemptible` with a GPU, or too many GPUs per container; `KeyError` for an unknown GPU or region | USD for `containers` identical containers running `hours` each, with the per-container minimums applied |
+| `container_cost(rates, hours, gpu=None, gpus=1, cpu=0.125, mem_gib=0.125, containers=1, region='none', nonpreemptible=False)` | `{"gpu", "cpu", "mem", "total"}` in USD, unrounded | `ValueError` for a negative input, `nonpreemptible` with a GPU, an unknown GPU (naming the known ones) or too many GPUs per container; `KeyError` for an unknown region | USD for `containers` identical containers running `hours` each, with the per-container minimums applied |
 | `volume_cost(rates, gib, months=1.0, free_gib=None)` | USD | Nothing of its own | Only GiB above the free allowance (`volume_free_gib`, 1024) are billed |
 | `egress_cost(rates, gib, plan='starter', already_used_gib=0.0)` | USD | `KeyError` for an unknown plan | Only GiB beyond the plan's free egress (1024 on Starter) are billed |
 | `surface_volume_gb(area_cm2, um, layers, bytes_per_voxel=1)` | GB (1e9 bytes), uncompressed | `ZeroDivisionError` when `um` is 0 | Uncompressed size of a flattened surface volume: area x (1 cm / voxel)^2 x layers |
 | `inference_phases(profile, area_cm2, um, passes=1)` | `(phases, gb)`: three phase dicts and the surface volume's size | `KeyError` for a profile without `ref_um`, `gpu_s_per_cm2`, `layers` or `gpu`; `ValueError` for a range that is not three numbers | Phases (image build, staging on CPU, GPU inference) for one reader over `area_cm2` |
-| `expand(job, profiles)` | A copy of the job with explicit `phases` (and `volume_gib` set from the surface volume) | `KeyError` for an unknown profile | An `inference` block is expanded through its profile |
+| `expand(job, profiles)` | A copy of the job with explicit `phases` (and `volume_gib` set from the surface volume) | `ValueError` for an unknown profile, naming the known ones | An `inference` block is expanded through its profile |
 | `estimate(rates, job, profiles=None, region='none', plan='starter')` | The estimate dict under Outputs | As `container_cost` and `expand` | Low, typical and high USD for a job, with a per-phase breakdown |
 | `budget_hours(rates, budget, gpu, gpus=1, cpu=4, mem_gib=32)` | Wall hours | As `container_cost` | Hours of one container that `budget` USD buys |
 | `work_cost(rates, gpu, cpu=4, mem_gib=32)` | USD per A100-80GB-equivalent hour, or `None` when the GPU has no speed figure | As `container_cost` | For CNN training only; speeds are not measured on ink models |
@@ -263,21 +263,20 @@ Text or JSON on stdout; it writes no file.
 | Exit code | Meaning |
 | --- | --- |
 | `0` | Printed |
-| `1` | An error the module does not catch, with a Python traceback: a `ValueError`, `KeyError` or `FileNotFoundError` (see Failure modes) |
-| `2` | A usage error from the argument parser |
+| `1` | An error the module does not catch, with a Python traceback: a `FileNotFoundError`, a `KeyError` from a malformed rates or jobs file, or a `ValueError` while reading the rates file (see Failure modes) |
+| `2` | A usage error from the argument parser, or an input error (`ValueError`) printed as `cloudcost: MESSAGE` on stderr |
 
 ## Failure modes
 
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument, such as `cost` without `--hours` | Check the command against Commands and options |
-| `ValueError: negative input`, traceback, exit code 1 | A negative `--hours`, `--containers`, `--gpus`, `--cpu` or `--mem` | Use zero or more |
-| `ValueError: Modal does not support nonpreemptible GPU Functions` | `cost --gpu ... --nonpreemptible` | Drop `--nonpreemptible`; GPU work is always preemptible and needs checkpoints |
-| `ValueError: NAME allows at most LIMIT GPUs per container` | `--gpus` above the type's `max_gpus_per_container` | Use fewer GPUs per container, or more containers |
-| `KeyError: 'NAME'`, traceback, from `cost` | A `--gpu` that is not in the rates file (the friendly `unknown GPU` message is not used on this path) | Use a name from `python -m kit.cloudcost rates` |
-| `ValueError: unknown GPU 'NAME'; known: ...` | `gpu_per_hour` or `budget_table` asked for a GPU not in the rates file (library calls) | Use a known name |
-| `KeyError: 'PROFILE'`, traceback, from `infer` | `--profile` not in the jobs file | Use `2p5d_9um`, `2p5d_2um`, `3d_l2` or `3d_2um`, or add the profile |
-| `ValueError: expected [low, typical, high], got ...` | A range in the jobs file (`hours`, `gpu_s_per_cm2`, `volume_gib`, `egress_gib`, `stage_mb_per_s`, `image_build_h`) that is a list of other than three numbers | Give one number or exactly three |
+| `cloudcost: negative input`, exit code 2 | A negative `--hours`, `--containers`, `--gpus`, `--cpu` or `--mem` | Use zero or more |
+| `cloudcost: Modal does not support nonpreemptible GPU Functions`, exit code 2 | `cost --gpu ... --nonpreemptible` | Drop `--nonpreemptible`; GPU work is always preemptible and needs checkpoints |
+| `cloudcost: NAME allows at most LIMIT GPUs per container`, exit code 2 | `--gpus` above the type's `max_gpus_per_container` | Use fewer GPUs per container, or more containers |
+| `cloudcost: unknown GPU 'NAME'; known: ...`, exit code 2 (a `ValueError` from library calls) | A `--gpu` that is not in the rates file, or `container_cost`, `gpu_per_hour` or `budget_table` asked for one | Use a name from `python -m kit.cloudcost rates` |
+| `cloudcost: unknown inference profile 'PROFILE'; known: ...`, exit code 2 (a `ValueError` from `expand` or `estimate`) | `--profile`, or a job's `inference.profile`, not in the jobs file's `inference_profiles` | Use `2p5d_9um`, `2p5d_2um`, `3d_l2` or `3d_2um`, or add the profile |
+| `cloudcost: expected [low, typical, high], got ...`, exit code 2 | A range in the jobs file (`hours`, `gpu_s_per_cm2`, `volume_gib`, `egress_gib`, `stage_mb_per_s`, `image_build_h`) that is a list of other than three numbers | Give one number or exactly three |
 | `FileNotFoundError: ...`, traceback | `--rates`, `--jobs` or the jobs `file` does not exist, or the module is run outside a full checkout | Fix the path; run from the repository root |
 | `ValueError: Modal allows 1 to 8 of these GPUs per container` | `modal_gpu(count)` with `count` outside 1 to 8 (library call) | Use 1 to 8 |
 | `ValueError: B300 needs a CUDA 13.1 or newer image` | `modal_gpu(fallback=False, cuda13=False)`: a lone B300 for a CUDA 12 image (library call) | Rebuild the image for CUDA 13, or use `modal_gpu(cuda13=False)` |
@@ -301,7 +300,7 @@ Not measured beyond the test run above (34 tests of this module and `batch` in 0
 - **Command:** `python -m kit.cloudcost cost --gpu B300 --hours HOURS --cpu 8 --mem 32` (one JSON line); `python -m kit.cloudcost jobs --json` for every job; `python -m kit.cloudcost defaults` for the default request. In Python, `cloudcost.estimate(cloudcost.load_rates(), job, profiles)`.
 - **Parse:** `total` from `cost`; `usd.low`, `usd.typical`, `usd.high` and `gpu_hours` per job from `jobs --json`; `gpu` and `cpu` from `defaults`.
 - **Rerun:** Safe; it reads two JSON files and writes nothing.
-- **Success:** Exit code 0 and a number printed. Exit code 1 with a traceback is an input error.
+- **Success:** Exit code 0 and a number printed. Exit code 2 with `cloudcost: MESSAGE` is an input error; exit code 1 with a traceback is a missing or broken rates or jobs file.
 - **Not a pass:** A typical figure quoted as the cost (it is an assumption with a low and high); a price from rates older than the job without a check against [modal.com/pricing](https://modal.com/pricing); a GPU-only price for a job that also pays for cores and memory; a `--region` other than `none` or `--nonpreemptible` in a real plan.
 - **Go-ahead:** Nothing to run it. The job it prices needs Chase's yes and budget, with the estimate, before launch; Claude cloud sessions never launch Modal themselves (the Modal rule, hard rule 11).
 - **Never:** Present an estimate as a bill or a quote; launch or sign in to Modal from a Claude cloud session; price a target-scroll job in a public file (those specs live privately).
@@ -316,6 +315,7 @@ python -m unittest tests.test_cloudcost tests.test_autobatch -v
 
 ## History
 
+- 2026-10-17: an unknown GPU or inference profile is named with the known ones, and the command line prints every `ValueError` as `cloudcost: MESSAGE` with exit code 2; before, an unknown `--gpu` in `cost` or `--profile` in `infer` ended in a `KeyError` traceback, and other input errors in a `ValueError` traceback, with exit code 1 (`af78253`).
 - 2026-10-16: the rates file moved from `docs/compute/` to `kit/data/modal-rates.json`, so it ships with the package and `kit run all` works after `pip install` (`b1a96d2`, PR #106).
 - 2026-10-12: `defaults`, `modal_gpu` and `modal_cpu`: new jobs default to B300 with fallbacks and 16 reserved CPU cores (`e0ff3a3`).
 - 2026-10-07: a nested-quote f-string that broke Python 3.10 and 3.11 fixed (`2005db9`).

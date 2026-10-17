@@ -65,7 +65,7 @@ It worked when the exit code is 0 and the count in the last line matches the run
 ## Checks and controls
 
 - **The records themselves.** The table is only as good as the records. Run `python -m kit provenance check FILE` on any record you quote: it recomputes the digest and prints `FILE: ok (digest ...)` with exit code 0, or one `problem: ...` line per mismatch with exit code 1. The 16-character digest prefix in the table ties each row to its record.
-- **Skipped files.** A path that does not exist, a file that is not JSON, or JSON without both `run` and `digest` is skipped silently. Compare the run count in the last line with the runs you expected; the command fails (exit code 2) only when nothing at all is found.
+- **Skipped files.** A file that is not JSON, or JSON without both `run` and `digest`, is skipped silently. Compare the run count in the last line with the runs you expected; the command fails (exit code 2) when a path given does not exist, when a record's times are not in the Z form, or when nothing at all is found.
 - **Energy.** The Wh column is hours times the `--watts` you gave, labelled "an estimate, not a measurement". Do not report it as measured energy.
 
 Claim label: None. The hours are copied from provenance records, and the Wh figure is an estimate from an assumed power draw.
@@ -95,7 +95,7 @@ print(compute.table(rows, watts=30))
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `collect(paths)` | list of record dicts, each with an added `_file` key (the path it was read from) | Nothing of its own; unreadable files and non-records are skipped | Provenance records from files or directories (searched for provenance*.json). A record is a JSON object with both `run` and `digest`. Folders are searched in sorted path order |
-| `rows(records, watts=None)` | list of row dicts (fields under Outputs), sorted by `started_utc` (missing start first) | `ValueError` when `started_utc` or `finished_utc` is not in the form `YYYY-MM-DDTHH:MM:SSZ`; `KeyError` when a record lacks `run` or `digest` | `hours` is rounded to 3 decimals, or `None` without both times. `wh_estimate` is added only when `watts` is given and hours are known |
+| `rows(records, watts=None)` | list of row dicts (fields under Outputs), sorted by `started_utc` (missing start first) | `ValueError` naming the record's file when `started_utc` or `finished_utc` is not a string in the form `YYYY-MM-DDTHH:MM:SSZ`; `KeyError` when a record lacks `run` or `digest` | `hours` is rounded to 3 decimals, or `None` without both times. `wh_estimate` is added only when `watts` is given and hours are known |
 | `table(rows_, watts=None)` | str: the Markdown table and its total line | Nothing of its own | The text the command prints. Rows without hours count 0 toward the total |
 
 ## Inputs
@@ -131,23 +131,24 @@ With `--json`, a list of objects:
 | Exit code | Meaning |
 | --- | --- |
 | `0` | At least one record found and printed |
-| `1` | An uncaught error with a traceback, such as a timestamp in another format (`ValueError`) |
-| `2` | No records found under the paths, or a usage error from the argument parser |
+| `1` | An uncaught error with a traceback |
+| `2` | A path that does not exist, a record whose times are not in the Z form, no records found under the paths, or a usage error from the argument parser |
 
 ## Failure modes
 
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
-| `no provenance records found` on stderr, exit code 2 | No path held a readable JSON object with both `run` and `digest`; a mistyped path or folder also ends here | Check the paths; folders are searched only for files named `provenance*.json` |
-| `ValueError: time data '...' does not match format '%Y-%m-%dT%H:%M:%SZ'` and a traceback, exit code 1 | A record's `started_utc` or `finished_utc` has another form, such as `+00:00` or fractional seconds. One bad record stops the whole table | Fix the record's times to `YYYY-MM-DDTHH:MM:SSZ`, or leave that file out of the paths |
-| Fewer rows than expected, exit code 0 | Files that are missing, not JSON, or lack `run` or `digest` are skipped without a message | Check each expected file; run `python -m kit provenance check FILE` on it |
+| `no such file or folder: PATH, ...; check the paths` on stderr, exit code 2 | A path given does not exist, such as a mistyped file or folder; nothing is read | Fix the path |
+| `no provenance records found` on stderr, exit code 2 | No path held a readable JSON object with both `run` and `digest` | Check the paths; folders are searched only for files named `provenance*.json` |
+| `FILE: started_utc '...' and finished_utc '...' must be UTC times like 2026-10-07T08:00:00Z; leave that record out of the paths given` on stderr, exit code 2 | A record's `started_utc` or `finished_utc` has another form, such as `+00:00` or fractional seconds, or is not a string. One bad record stops the whole table | Fix the record's times to `YYYY-MM-DDTHH:MM:SSZ`, or leave that file out of the paths |
+| Fewer rows than expected, exit code 0 | Files that are not JSON, or lack `run` or `digest`, are skipped without a message | Check each expected file; run `python -m kit provenance check FILE` on it |
 | A blank Hours cell | The record has no `finished_utc` (or no `started_utc`) | The run did not finish writing its record; it counts 0 toward the total |
 
 ## How it works
 
-1. `collect` walks each path: a folder with `rglob("provenance*.json")` in sorted order, anything else as one file. Each file is parsed as JSON; files that fail to read or parse, and JSON that is not an object with `run` and `digest`, are dropped.
-2. `rows` parses `started_utc` and `finished_utc` with `datetime.strptime(..., "%Y-%m-%dT%H:%M:%SZ")`, takes the difference in hours, and rounds it to 3 decimals. With `watts`, `wh_estimate` is hours times watts, rounded to 1 decimal. Rows are sorted by the start string.
+1. The command line first stops on any path that does not exist. `collect` then walks each path: a folder with `rglob("provenance*.json")` in sorted order, anything else as one file. Each file is parsed as JSON; files that fail to read or parse, and JSON that is not an object with `run` and `digest`, are dropped.
+2. `rows` parses `started_utc` and `finished_utc` with `datetime.strptime(..., "%Y-%m-%dT%H:%M:%SZ")`, takes the difference in hours, and rounds it to 3 decimals; a time in another form, or one that is not a string, raises a `ValueError` naming the record's file. With `watts`, `wh_estimate` is hours times watts, rounded to 1 decimal. Rows are sorted by the start string.
 3. `table` writes the Markdown table and sums the hours, treating blank hours as 0. The energy total in the last line is the summed hours times watts, rounded to a whole Wh, and is printed only when `watts` is nonzero.
 
 There are no constants; the power draw is whatever the caller gives. Finish times before start times are not checked and would give negative hours.
@@ -172,10 +173,12 @@ Not measured. It reads small JSON files and does arithmetic; it runs anywhere, w
 python -m unittest tests.test_compute -v
 ```
 
-They cover collecting records from nested folders (skipping a JSON file without `run` and `digest`), hours and the Wh estimate, the table's total line and its "an estimate, not a measurement" wording, matching header and rule widths, and the command line's exit codes 0 and 2. They do not cover malformed timestamps or records without times.
+They cover collecting records from nested folders (skipping a JSON file without `run` and `digest`), hours and the Wh estimate, the table's total line and its "an estimate, not a measurement" wording, matching header and rule widths, the command line's exit codes 0 and 2, a time without the `Z` reported as a message rather than a traceback, and a missing path reported. They do not cover records without times.
 
 ## History
 
+- 2026-10-17: a start or finish time not in the Z form is reported as `FILE: ... must be UTC times like 2026-10-07T08:00:00Z` with exit code 2; before, it ended in a `ValueError` traceback with exit code 1 (`20064ad`).
+- 2026-10-17: a path that does not exist stops the command with `no such file or folder: ...` and exit code 2; before, it was skipped silently (`0a7a0fd`).
 - 2026-10-07: first version, modelled on GENChase's compute ledger (`da58d07`).
 
 ## Related

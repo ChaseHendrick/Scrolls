@@ -467,13 +467,13 @@
     {
      "name": "History",
      "start_line": 317,
-     "end_line": 323,
+     "end_line": 326,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 324,
-     "end_line": 332,
+     "start_line": 327,
+     "end_line": 335,
      "applicable": true
     }
    ]
@@ -614,43 +614,43 @@
     {
      "name": "Failure modes",
      "start_line": 187,
-     "end_line": 199,
+     "end_line": 200,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 200,
-     "end_line": 209,
+     "start_line": 201,
+     "end_line": 210,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 210,
-     "end_line": 213,
+     "start_line": 211,
+     "end_line": 214,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 214,
-     "end_line": 223,
+     "start_line": 215,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 224,
-     "end_line": 231,
+     "start_line": 225,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 232,
-     "end_line": 239,
+     "start_line": 233,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 240,
-     "end_line": 246,
+     "start_line": 243,
+     "end_line": 249,
      "applicable": true
     }
    ]
@@ -761,36 +761,36 @@
     {
      "name": "Failure modes",
      "start_line": 269,
-     "end_line": 285,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 286,
-     "end_line": 294,
+     "start_line": 285,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 295,
-     "end_line": 298,
+     "start_line": 294,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 299,
-     "end_line": 308,
+     "start_line": 298,
+     "end_line": 307,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 309,
-     "end_line": 316,
+     "start_line": 308,
+     "end_line": 315,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 317,
+     "start_line": 316,
      "end_line": 323,
      "applicable": true
     },
@@ -913,43 +913,43 @@
     {
      "name": "Failure modes",
      "start_line": 137,
-     "end_line": 146,
+     "end_line": 147,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 147,
-     "end_line": 154,
+     "start_line": 148,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 155,
-     "end_line": 158,
+     "start_line": 156,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 159,
-     "end_line": 168,
+     "start_line": 160,
+     "end_line": 169,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 169,
-     "end_line": 176,
+     "start_line": 170,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 177,
-     "end_line": 180,
+     "start_line": 178,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 181,
-     "end_line": 187,
+     "start_line": 184,
+     "end_line": 190,
      "applicable": true
     }
    ]
@@ -1413,13 +1413,13 @@
     {
      "name": "History",
      "start_line": 222,
-     "end_line": 226,
+     "end_line": 227,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 227,
-     "end_line": 235,
+     "start_line": 228,
+     "end_line": 236,
      "applicable": true
     }
    ]
@@ -1644,72 +1644,72 @@
     {
      "name": "Quick start",
      "start_line": 46,
-     "end_line": 90,
+     "end_line": 89,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 91,
-     "end_line": 99,
+     "start_line": 90,
+     "end_line": 98,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 100,
-     "end_line": 119,
+     "start_line": 99,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 120,
-     "end_line": 140,
+     "start_line": 119,
+     "end_line": 139,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 141,
-     "end_line": 149,
+     "start_line": 140,
+     "end_line": 148,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 150,
-     "end_line": 185,
+     "start_line": 149,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 186,
-     "end_line": 197,
+     "start_line": 185,
+     "end_line": 195,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 198,
-     "end_line": 206,
+     "start_line": 196,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 207,
-     "end_line": 210,
+     "start_line": 205,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 211,
-     "end_line": 220,
+     "start_line": 209,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 221,
-     "end_line": 228,
+     "start_line": 219,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 229,
+     "start_line": 227,
      "end_line": 232,
      "applicable": true
     },
@@ -2189,13 +2189,13 @@
     {
      "name": "History",
      "start_line": 222,
-     "end_line": 227,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 228,
-     "end_line": 237,
+     "start_line": 229,
+     "end_line": 238,
      "applicable": true
     }
    ]
@@ -2599,7 +2599,7 @@
     "Needs": "Python 3.11 or newer with numpy, tifffile and zarr 3 (checked with numpy 2.5.3, tifffile 2026.10.15, zarr 3.4.1). `kit shuffle` writes with zarr 3's `create_array`, which zarr 2.18 lacks (`pyproject.toml`); `kit layers` only reads zarr. No imagecodecs needed: the TIFFs are zlib-compressed",
     "Runs on": "Any CPU. A 28 x 2,048 x 2,048 synthetic volume (117 MB) took 9.7 s to export and 7.2 s to shuffle (measured 2026-10-16, 4-core Xeon cloud container); the whole PHerc0139 w045 volume (28 x 5,980 x 8,240) exported in 23 s (commit `6081aab`, machine not recorded)",
     "Network": "None",
-    "Writes": "`kit layers`: the folder `OUT_DIR` (created when missing) and one TIFF per layer in it, replacing files of the same names and leaving any other files there. `kit shuffle`: a zarr group at `OUT`; anything already at `OUT` is deleted first",
+    "Writes": "`kit layers`: the folder `OUT_DIR` (created when missing) and one TIFF per layer in it; a folder that already holds numbered TIFFs (`00.tif`, `1.tif`, ...) is refused, and other files there are left alone. `kit shuffle`: a zarr group at `OUT`, which must not exist yet",
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07 (`1caa69e`; the shuffle control since `bd18778`); also in the AutoPipeline release copy at `faada83`",
     "Checked": "2026-10-16 against commit `29e7e8c`"
@@ -2687,13 +2687,13 @@
     {
      "name": "History",
      "start_line": 235,
-     "end_line": 242,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 243,
-     "end_line": 252,
+     "start_line": 245,
+     "end_line": 254,
      "applicable": true
     }
    ]
@@ -3339,13 +3339,13 @@
     {
      "name": "History",
      "start_line": 544,
-     "end_line": 552,
+     "end_line": 553,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 553,
-     "end_line": 560,
+     "start_line": 554,
+     "end_line": 561,
      "applicable": true
     }
    ]
@@ -3452,36 +3452,36 @@
     {
      "name": "Failure modes",
      "start_line": 131,
-     "end_line": 143,
+     "end_line": 142,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 144,
-     "end_line": 154,
+     "start_line": 143,
+     "end_line": 153,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 155,
-     "end_line": 165,
+     "start_line": 154,
+     "end_line": 164,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 166,
-     "end_line": 175,
+     "start_line": 165,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 176,
-     "end_line": 183,
+     "start_line": 175,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 184,
+     "start_line": 183,
      "end_line": 187,
      "applicable": true
     },
@@ -3536,7 +3536,7 @@
     "Needs": "An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 3 GB free in `WORK` (script header). The script itself builds the rest: villa (`main` and PR #1865), a Python 3.14 virtual environment with villa's `models` extra minus `volume-cartographer`, `cucim`, `nnunetv2` and `batchgeneratorsv2`, plus tifffile and imagecodecs; the published w035 surface volume and the `ink_9um` seed 42 checkpoint",
     "Runs on": "Apple Silicon Mac only (or any machine with `EXPECT_GPU=cpu`, to test the script). On an Apple M1 Pro: CPU 1,740 s for both directions, MPS 218 s and 212 s forward ([w035 log](../logs/2026-10-07-w035-cpu.md), 2026-10-07), plus the downloads",
     "Network": "`github.com` (clones and fetches `ScrollPrize/villa`); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the w035 surface volume, through `kit fetch`); `huggingface.co` (the checkpoint `scrollprize/ink_9um`, through `uvx --from huggingface_hub hf download`); the Python package index and uv's Python downloads (the environment). Nothing is uploaded",
-    "Writes": "Under `WORK` (default `~/scrolls-work`): `villa/` (a clone; the script checks out `origin/main` or `pr-1865` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`. uv also fills its own cache",
+    "Writes": "Under `WORK` (default `~/scrolls-work`): `villa/` (a clone; the script checks out `origin/main` or `pr-1865` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`, and the lock folder `.gpu-job.lock/` while it runs. uv also fills its own cache",
     "Go-ahead": "Not needed to run it on your own Mac. Posting its summary, for example on villa PR #1865, needs Chase's yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-07",
     "Guide": "[mac.md, \"One command\"](../mac.md#one-command) and its [runbook](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)",
@@ -3589,49 +3589,49 @@
     {
      "name": "Outputs",
      "start_line": 113,
-     "end_line": 133,
+     "end_line": 134,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 134,
-     "end_line": 148,
+     "start_line": 135,
+     "end_line": 152,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 149,
-     "end_line": 160,
+     "start_line": 153,
+     "end_line": 164,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 161,
-     "end_line": 171,
+     "start_line": 165,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 172,
-     "end_line": 181,
+     "start_line": 176,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 182,
-     "end_line": 189,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 190,
+     "start_line": 186,
      "end_line": 193,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "History",
      "start_line": 194,
-     "end_line": 201,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 201,
+     "end_line": 208,
      "applicable": true
     }
    ]
@@ -3893,43 +3893,43 @@
     {
      "name": "Failure modes",
      "start_line": 270,
-     "end_line": 291,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 292,
-     "end_line": 303,
+     "start_line": 294,
+     "end_line": 305,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 304,
-     "end_line": 315,
+     "start_line": 306,
+     "end_line": 317,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 316,
-     "end_line": 325,
+     "start_line": 318,
+     "end_line": 327,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 326,
-     "end_line": 333,
+     "start_line": 328,
+     "end_line": 335,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 334,
-     "end_line": 339,
+     "start_line": 336,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 340,
-     "end_line": 349,
+     "start_line": 343,
+     "end_line": 352,
      "applicable": true
     }
    ]
@@ -4219,43 +4219,43 @@
     {
      "name": "Failure modes",
      "start_line": 220,
-     "end_line": 243,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 244,
-     "end_line": 254,
+     "start_line": 245,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 255,
-     "end_line": 268,
+     "start_line": 256,
+     "end_line": 269,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 269,
-     "end_line": 278,
+     "start_line": 270,
+     "end_line": 279,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 279,
-     "end_line": 286,
+     "start_line": 280,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 287,
-     "end_line": 291,
+     "start_line": 288,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 292,
-     "end_line": 303,
+     "start_line": 294,
+     "end_line": 305,
      "applicable": true
     }
    ]
@@ -5340,13 +5340,13 @@
     {
      "name": "History",
      "start_line": 222,
-     "end_line": 227,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 228,
-     "end_line": 239,
+     "start_line": 229,
+     "end_line": 240,
      "applicable": true
     }
    ]
@@ -5476,43 +5476,43 @@
     {
      "name": "Failure modes",
      "start_line": 246,
-     "end_line": 268,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 269,
-     "end_line": 290,
+     "start_line": 272,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 291,
-     "end_line": 294,
+     "start_line": 294,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 295,
-     "end_line": 304,
+     "start_line": 298,
+     "end_line": 307,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 305,
-     "end_line": 313,
+     "start_line": 308,
+     "end_line": 316,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 314,
-     "end_line": 318,
+     "start_line": 317,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 319,
-     "end_line": 326,
+     "start_line": 325,
+     "end_line": 332,
      "applicable": true
     }
    ]
@@ -5636,43 +5636,43 @@
     {
      "name": "Failure modes",
      "start_line": 208,
-     "end_line": 230,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 231,
-     "end_line": 240,
+     "start_line": 232,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 241,
-     "end_line": 244,
+     "start_line": 242,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 245,
-     "end_line": 254,
+     "start_line": 246,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 255,
-     "end_line": 262,
+     "start_line": 256,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 263,
-     "end_line": 267,
+     "start_line": 264,
+     "end_line": 269,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 268,
-     "end_line": 274,
+     "start_line": 270,
+     "end_line": 276,
      "applicable": true
     }
    ]
@@ -6426,43 +6426,43 @@
     {
      "name": "Failure modes",
      "start_line": 295,
-     "end_line": 359,
+     "end_line": 361,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 360,
-     "end_line": 380,
+     "start_line": 362,
+     "end_line": 382,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 381,
-     "end_line": 386,
+     "start_line": 383,
+     "end_line": 388,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 387,
-     "end_line": 396,
+     "start_line": 389,
+     "end_line": 398,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 397,
-     "end_line": 404,
+     "start_line": 399,
+     "end_line": 406,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 405,
-     "end_line": 409,
+     "start_line": 407,
+     "end_line": 413,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 410,
-     "end_line": 418,
+     "start_line": 414,
+     "end_line": 422,
      "applicable": true
     }
    ]
@@ -6761,43 +6761,43 @@
     {
      "name": "Failure modes",
      "start_line": 252,
-     "end_line": 327,
+     "end_line": 328,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 328,
-     "end_line": 340,
+     "start_line": 329,
+     "end_line": 341,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 341,
-     "end_line": 351,
+     "start_line": 342,
+     "end_line": 352,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 352,
-     "end_line": 361,
+     "start_line": 353,
+     "end_line": 362,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 362,
-     "end_line": 369,
+     "start_line": 363,
+     "end_line": 370,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 370,
-     "end_line": 376,
+     "start_line": 371,
+     "end_line": 378,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 377,
-     "end_line": 384,
+     "start_line": 379,
+     "end_line": 386,
      "applicable": true
     }
    ]
@@ -6911,43 +6911,43 @@
     {
      "name": "Failure modes",
      "start_line": 286,
-     "end_line": 311,
+     "end_line": 312,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 312,
-     "end_line": 323,
+     "start_line": 313,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 324,
-     "end_line": 330,
+     "start_line": 325,
+     "end_line": 331,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 331,
-     "end_line": 340,
+     "start_line": 332,
+     "end_line": 341,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 341,
-     "end_line": 348,
+     "start_line": 342,
+     "end_line": 349,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 349,
-     "end_line": 354,
+     "start_line": 350,
+     "end_line": 356,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 355,
-     "end_line": 361,
+     "start_line": 357,
+     "end_line": 363,
      "applicable": true
     }
    ]

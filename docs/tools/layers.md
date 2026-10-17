@@ -14,7 +14,7 @@
 | Needs | Python 3.11 or newer with numpy, tifffile and zarr 3 (checked with numpy 2.5.3, tifffile 2026.10.15, zarr 3.4.1). `kit shuffle` writes with zarr 3's `create_array`, which zarr 2.18 lacks (`pyproject.toml`); `kit layers` only reads zarr. No imagecodecs needed: the TIFFs are zlib-compressed |
 | Runs on | Any CPU. A 28 x 2,048 x 2,048 synthetic volume (117 MB) took 9.7 s to export and 7.2 s to shuffle (measured 2026-10-16, 4-core Xeon cloud container); the whole PHerc0139 w045 volume (28 x 5,980 x 8,240) exported in 23 s (commit `6081aab`, machine not recorded) |
 | Network | None |
-| Writes | `kit layers`: the folder `OUT_DIR` (created when missing) and one TIFF per layer in it, replacing files of the same names and leaving any other files there. `kit shuffle`: a zarr group at `OUT`; anything already at `OUT` is deleted first |
+| Writes | `kit layers`: the folder `OUT_DIR` (created when missing) and one TIFF per layer in it; a folder that already holds numbered TIFFs (`00.tif`, `1.tif`, ...) is refused, and other files there are left alone. `kit shuffle`: a zarr group at `OUT`, which must not exist yet |
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07 (`1caa69e`; the shuffle control since `bd18778`); also in the AutoPipeline release copy at `faada83` |
 | Checked | 2026-10-16 against commit `29e7e8c` |
@@ -88,7 +88,7 @@ usage: python -m kit layers [-h] [--start START] [--count COUNT]
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `volume` | required | The surface-volume zarr: a bare (layers, height, width) array, or a group whose key `--level` is one. uint8 only |
-| `out_dir` | required | Folder for the TIFFs; created with its parents when missing. Files of the same names are replaced; other files stay |
+| `out_dir` | required | Folder for the TIFFs; created with its parents when missing. It must not already hold numbered TIFFs (a `.tif` whose name before the suffix is all digits); other files stay |
 | `--start START` | `0` | First layer to export; file `00.tif` holds it |
 | `--count COUNT` | none (all layers from `--start`) | Number of layers. `START + COUNT` must not pass the last layer |
 | `--level LEVEL` | `0` | The group key to read when the store is a group (`0` is full resolution in OME-Zarr); ignored for a bare array |
@@ -106,7 +106,7 @@ usage: python -m kit shuffle [-h] [--seed SEED] [--level LEVEL]
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `volume` | required | The surface-volume zarr, bare or a group, any dtype |
-| `out` | required | The zarr to write: a group with one array `0`. Anything already at this path is deleted first |
+| `out` | required | The zarr to write: a group with one array `0`. Nothing may exist at this path yet |
 | `--seed SEED` | `20261007` | Seed of the order, `depth_permutation(LAYERS, SEED)` over all layers |
 | `--level LEVEL` | `0` | The group key to read when the store is a group |
 | `--crop Y0 Y1 X0 X1` | none (the whole layer) | Copy only this window, ends excluded; the output's shape is the window's |
@@ -123,9 +123,9 @@ info_shuffled = layers.export_file("w045_9um.zarr", "layers_shuf", crop=(3840, 4
 | --- | --- | --- | --- |
 | `open_volume(path, level='0')` | The zarr array of shape (layers, height, width), opened read-only (lazy) | `VerifyError` when zarr is missing, the store cannot be opened, a group has no key `level`, or the array is not 3D | A bare array is returned as it is; `level` is used only for a group |
 | `depth_permutation(n, seed)` | A list of `n` ints, a permutation of `0 .. n-1` that is neither the identity nor the reverse | `VerifyError` for `n` below 3, or without numpy | numpy `default_rng(seed).permutation(n)`, redrawn until it is neither; the same `n`, seed and numpy version give the same list |
-| `export_layers(volume, out_dir, start=0, count=None, compression='zlib', crop=None, max_bytes=DEFAULT_MAX_BYTES, order=None)` | The list of `Path`s written, in file order | `VerifyError` for a range outside the volume, a crop outside the layer, a dtype other than uint8, or an `order` that is not a permutation of `0 .. count-1` | `volume` is any array with `shape`, `dtype` and slicing (zarr or numpy). `crop` is `(y0, y1, x0, x1)`. `compression` goes to `tifffile.imwrite`. Reads every requested layer in row bands into memory when `count * h * w <= max_bytes`, else one layer at a time |
+| `export_layers(volume, out_dir, start=0, count=None, compression='zlib', crop=None, max_bytes=DEFAULT_MAX_BYTES, order=None)` | The list of `Path`s written, in file order | `VerifyError` for a range outside the volume, a crop outside the layer, a dtype other than uint8, an `out_dir` that already holds numbered TIFFs, or an `order` that is not a permutation of `0 .. count-1` | `volume` is any array with `shape`, `dtype` and slicing (zarr or numpy). `crop` is `(y0, y1, x0, x1)`. `compression` goes to `tifffile.imwrite`. Reads every requested layer in row bands into memory when `count * h * w <= max_bytes`, else one layer at a time |
 | `export_file(src, out_dir, start=0, count=None, level='0', crop=None, max_bytes=DEFAULT_MAX_BYTES, shuffle_seed=None)` | `{"source", "shape", "start", "crop", "layers", "out_dir", "order"}`: the path, the full volume shape, the first layer, the crop as given, the files written, the folder, and the order (`None` unless shuffled) | As `open_volume`, `depth_permutation` and `export_layers` | What `kit layers` runs |
-| `shuffle_file(src, dst, seed, level='0', crop=None)` | `{"source", "out", "shape", "seed", "order"}`, with `shape` the written array's | `VerifyError` as `open_volume`, for a crop outside the layer, or fewer than 3 layers | What `kit shuffle` runs. Reads the whole (cropped) volume into memory, with no fallback |
+| `shuffle_file(src, dst, seed, level='0', crop=None)` | `{"source", "out", "shape", "seed", "order"}`, with `shape` the written array's | `VerifyError` for a `dst` that already exists, as `open_volume`, for a crop outside the layer, or fewer than 3 layers | What `kit shuffle` runs. Reads the whole (cropped) volume into memory, with no fallback |
 
 ## Inputs
 
@@ -185,20 +185,20 @@ It writes a zarr group at `OUT` in the installed zarr's default format (format 3
 | `ModuleNotFoundError: No module named 'tifffile'` and a traceback, exit code 1 | `kit layers` without tifffile | Install tifffile |
 | `PermissionError` or `OSError` and a traceback, exit code 1 | `OUT_DIR` or `OUT` cannot be created or written, or the disk is full | Pick a writable folder with room for the export |
 | `AttributeError: ... 'create_array'` and a traceback, exit code 1 | `kit shuffle` with zarr 2.x (expected from the `pyproject.toml` note; not run here) | Use zarr 3 on Python 3.11 or newer |
-| Exit code 0 but v8in reads more layers than you exported | `OUT_DIR` still held higher-numbered TIFFs from an earlier, larger export; `kit layers` does not delete them | Delete the folder first (`rm -rf OUT_DIR`), as the scripts here do |
-| Exit code 0 and other files at `OUT` are gone | `kit shuffle` opens `OUT` in zarr's mode `w`, which deletes what is there | Always give `kit shuffle` a new path |
+| `OUT_DIR already holds layer TIFFs from an earlier export, which v8in would read too; remove them or give an empty folder`, exit code 2 | `OUT_DIR` holds numbered TIFFs, such as those of an earlier, larger export; v8in reads every numbered TIFF in the folder. Nothing is written | Delete the folder first (`rm -rf OUT_DIR`), as the scripts here do, or give a new one |
+| `OUT already exists; remove it or give a new path for the shuffled zarr`, exit code 2 | Something is already at `OUT`; `kit shuffle` never deletes it | Give `kit shuffle` a new path, or remove the old one |
 
 ## How it works
 
 `kit layers` (`export_file`, `export_layers`):
 
 1. Open the store read-only (`open_volume`); for a group take key `--level`; require 3 dimensions.
-2. Check the layer range, the crop and the dtype (uint8).
+2. Check the layer range, the crop and the dtype (uint8), and that `OUT_DIR` holds no numbered TIFFs.
 3. If the export fits in `DEFAULT_MAX_BYTES` (4 GiB, `count * h * w` bytes), read every requested layer of the window into one uint8 stack in bands of `BAND_ROWS` (1,024) rows. Chunks of these stores hold every depth (w035 and w045: 28 x 128 x 128, stored uncompressed, 458,752 bytes each), so reading one layer reads all depths of each touched chunk; reading bands across all layers reads each chunk once. Commit `6081aab` measured the whole w045 export at 23 s this way against about 72 s of per-layer reads. A larger export falls back to one layer at a time.
 4. With `--shuffle`, compute the order with `depth_permutation(COUNT, SEED)` (before the range check).
 5. Write file `i` from layer `ORDER[i]` (or `i`) with `tifffile.imwrite(..., compression="zlib")`, names zero-padded to `max(2, digits of COUNT-1)`.
 
-`kit shuffle` (`shuffle_file`): open the volume, compute `depth_permutation(LAYERS, SEED)` over all layers, read the window of every layer in 1,024-row bands into memory already in the new order, then open `OUT` with `zarr.open_group(mode="w")`, write array `0` with chunks of all layers by 128 x 128, and store `depth_shuffle` in the group's attributes.
+`kit shuffle` (`shuffle_file`): refuse an `OUT` that already exists, open the volume, compute `depth_permutation(LAYERS, SEED)` over all layers, read the window of every layer in 1,024-row bands into memory already in the new order, then open `OUT` with `zarr.open_group(mode="w-")`, which fails rather than replace anything, write array `0` with chunks of all layers by 128 x 128, and store `depth_shuffle` in the group's attributes.
 
 `depth_permutation(n, seed)`: `numpy.random.default_rng(seed).permutation(n)`, drawn again while it equals the identity or the reverse. numpy does not promise the same stream for a seed across versions, which is why both commands print the order and `kit shuffle` stores it.
 
@@ -218,9 +218,9 @@ Random data does not compress, so real volumes may write faster. For the whole w
 
 - **Command:** `python -m kit layers VOLUME.zarr OUT_DIR --crop Y0 Y1 X0 X1` for v8in's input; add `--shuffle 20261007` for its shuffled control; `python -m kit shuffle VOLUME.zarr NEW.zarr --crop Y0 Y1 X0 X1` (seed 20261007 by default) for villa's inference. There is no JSON form; read the printed line, and for `kit shuffle` the group attribute `depth_shuffle`.
 - **Parse:** `kit layers`: `N layers of [L, H, W] from layer START ...`, where N is the files written and the list after `depth order shuffled (seed SEED):` is the order. `kit shuffle`: `L layers shuffled (seed SEED, order [ORDER]) -> OUT`; output layer `i` is source layer `ORDER[i]`.
-- **Rerun:** `kit layers` overwrites files of the same names and keeps any others, so empty `OUT_DIR` first (`rm -rf OUT_DIR`). `kit shuffle` replaces everything at `OUT`. Both give the same order for the same seed and layer count.
+- **Rerun:** `kit layers` refuses a folder that already holds numbered TIFFs, so empty `OUT_DIR` first (`rm -rf OUT_DIR`) or give a new one. `kit shuffle` refuses an existing `OUT`, so remove it first or give a new path. Both give the same order for the same seed and layer count.
 - **Success:** Exit code 0, N equal to the layers wanted, and files `00.tif` to the last one present (or array `0` in the zarr).
-- **Not a pass:** A forward score reported without the reverse control, with the shuffled one as a substitute; a shuffled score assumed to be 0.5 (it was 0.56 to 0.62 on some PHerc0841 crops); two shuffled runs with different layer counts treated as the same control; a TIFF folder holding leftovers from a larger export.
+- **Not a pass:** A forward score reported without the reverse control, with the shuffled one as a substitute; a shuffled score assumed to be 0.5 (it was 0.56 to 0.62 on some PHerc0841 crops); two shuffled runs with different layer counts treated as the same control.
 - **Go-ahead:** Nothing.
 - **Never:** Point `kit shuffle`'s `OUT` at the source volume or any folder that holds other files (it is emptied); reverse layers at export (use the model's reverse option); commit layer TIFFs or zarrs to git (the no-data-in-git rule, hard rule 6); call a map made from these layers a reading.
 
@@ -230,10 +230,12 @@ Random data does not compress, so real volumes may write faster. For the whole w
 python -m unittest tests.test_layers -v
 ```
 
-Twelve tests, on small synthetic zarrs: a bare array exported in stored order, a group read at level `0`, a range renumbered from `00.tif`, a crop and a crop refused, banded and one-layer reads agreeing byte for byte across more than one band, uint16 refused, a range and a missing level refused, files read back in v8in's numeric order, the command line's printed line, a permutation that is fixed for a seed and never the identity or reverse (and refused for 2 layers), and shuffled TIFFs equal to a cropped `kit shuffle` zarr. They skip without numpy, tifffile and zarr, and need zarr 3. They do not cover real data, OME metadata, the deletion at `OUT`, files left in `OUT_DIR`, or zarr 2.
+Fourteen tests, on small synthetic zarrs: a bare array exported in stored order, a group read at level `0`, a range renumbered from `00.tif`, a crop and a crop refused, banded and one-layer reads agreeing byte for byte across more than one band, uint16 refused, a range and a missing level refused, files read back in v8in's numeric order, the command line's printed line, a permutation that is fixed for a seed and never the identity or reverse (and refused for 2 layers), shuffled TIFFs equal to a cropped `kit shuffle` zarr, a folder with earlier layer TIFFs refused, and an existing `kit shuffle` output refused. They skip without numpy, tifffile and zarr, and need zarr 3. They do not cover real data, OME metadata, or zarr 2.
 
 ## History
 
+- 2026-10-17: `kit layers` refuses a folder that already holds numbered TIFFs; before, it replaced files of the same names and left higher-numbered TIFFs from a larger export, which v8in then read too (`0ec3659`).
+- 2026-10-17: `kit shuffle` refuses an `OUT` that already exists; before, it opened `OUT` in zarr's mode `w`, which deleted whatever was there (`b640173`).
 - 2026-10-07: the module text explains the banded read; no change in behaviour (`fda744f`).
 - 2026-10-07: the depth-shuffle control: `kit shuffle` and `kit layers --shuffle`; on the PHerc0841 w00 crop, `ink_9um`, its checkpoint soup and d9v2 fell to 0.48 to 0.50 AUC shuffled against 0.50 to 0.59 reversed (`bd18778`).
 - 2026-10-07: the printed line shows the crop (`b121223`).

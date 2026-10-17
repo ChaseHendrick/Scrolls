@@ -201,7 +201,7 @@ usage: evaluate.py [-h] --runs RUNS [--out OUT] [--manifest MANIFEST]
 | --- | --- | --- |
 | `action` | required | `calibrate` (from the validation read only: Platt scaling, blank thresholds, baseline directions, validity checks and the gate, written once to `calibration.json`), `results` (every measure on the test split, the bar, comparisons, ablations and the verdict line), `release` (the released model's `.npz` with its Platt parameters, blank threshold and validation reference values in its metadata) |
 | `--runs RUNS` | required | The run folder |
-| `--out OUT` | none | Output file; needed by `results` (JSON) and `release` (`.npz`) |
+| `--out OUT` | none | Output file; required by `results` (JSON) and `release` (`.npz`), which stop with a usage error without it |
 | `--manifest MANIFEST` | none | `results`: the committed data manifest to compare with the run's own rebuild |
 | `--test-split TEST_SPLIT` | `test` | Split to evaluate; `smoke_test` for smoke runs only |
 
@@ -289,14 +289,16 @@ The grid file is a float32 array of `grid_shape`, NaN where a window was skipped
 | Exit code | Meaning |
 | --- | --- |
 | `0` | Scored. `map.learned_n` can still be 0 when no window met the papyrus rule |
-| `1` | An error the command does not catch, with a Python traceback, such as `--out` in a folder that does not exist. The scripts also exit 1 on their own refusals (a `SystemExit` message, see Failure modes) |
-| `2` | Bad input, with the message on stderr (an `ImportError`, `OSError`, `KeyError` or `ValueError`), or a usage error from the argument parser |
+| `1` | An error the command does not catch, with a Python traceback. The scripts also exit 1 on their own refusals (a `SystemExit` message, see Failure modes) |
+| `2` | Bad input, with the message on stderr (an `ImportError`, `OSError`, `KeyError` or `ValueError`), including an `--out` or `--grid` file that cannot be written, or a usage error from the argument parser |
 
 ## Failure modes
 
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `[Errno 2] No such file or directory: 'OUT'` on stderr, exit code 2, after the map was scored | `kit strokenet --out` names a file in a folder that does not exist, or one it cannot write | Create the folder or fix the path, and rerun |
+| `evaluate.py: error: results writes a file: give its path with --out.` (or `release writes a file`), exit code 2 | `evaluate.py results` or `release` without `--out` | Add `--out FILE`: JSON for `results`, `.npz` for `release`. Nothing ran |
 | `SPEC: no such file, and not a released model (strokenet-paris4-v1)` | `--weights` names neither a file nor a released model | Fix the path, or use the released name |
 | `SPEC: not in FOLDER` | `resolve_weights(download=False)` and the released file is not cached | Download it, or call with `download=True` |
 | `SPEC: no download address yet; see docs/strokenet.md` | A registry entry with no `url` | Pass a weights file with `--weights` |
@@ -404,6 +406,8 @@ python -m unittest tests.test_strokenet tests.test_strokenet_pipeline tests.test
 
 ## History
 
+- 2026-10-17: `evaluate.py results` and `release` without `--out` stop at once with a usage error; before, `results` ran the whole evaluation and then crashed with a `TypeError` in `Path(None)`, and `release` crashed in `np.savez(None)` (`c0a06fe`).
+- 2026-10-17: a `kit strokenet --out` that cannot be written is reported on stderr with exit code 2; before, it ended in a `FileNotFoundError` traceback, exit code 1, after the whole map had been scored (`56b8988`).
 - 2026-10-14: tests skip without numpy (`d47c2ab`).
 - 2026-10-14: first public release: `kit strokenet`, the scripts, the preregistered held-out result (missed its bar), the tile grid pilot and the weights `strokenet-paris4-v1` (`8d9ad54`).
 

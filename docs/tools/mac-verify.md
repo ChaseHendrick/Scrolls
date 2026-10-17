@@ -14,7 +14,7 @@
 | Needs | An Apple Silicon Mac (macOS, arm64) with git and uv (`brew install uv`); about 3 GB free in `WORK` (script header). The script itself builds the rest: villa (`main` and PR #1865), a Python 3.14 virtual environment with villa's `models` extra minus `volume-cartographer`, `cucim`, `nnunetv2` and `batchgeneratorsv2`, plus tifffile and imagecodecs; the published w035 surface volume and the `ink_9um` seed 42 checkpoint |
 | Runs on | Apple Silicon Mac only (or any machine with `EXPECT_GPU=cpu`, to test the script). On an Apple M1 Pro: CPU 1,740 s for both directions, MPS 218 s and 212 s forward ([w035 log](../logs/2026-10-07-w035-cpu.md), 2026-10-07), plus the downloads |
 | Network | `github.com` (clones and fetches `ScrollPrize/villa`); `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the w035 surface volume, through `kit fetch`); `huggingface.co` (the checkpoint `scrollprize/ink_9um`, through `uvx --from huggingface_hub hf download`); the Python package index and uv's Python downloads (the environment). Nothing is uploaded |
-| Writes | Under `WORK` (default `~/scrolls-work`): `villa/` (a clone; the script checks out `origin/main` or `pr-1865` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`. uv also fills its own cache |
+| Writes | Under `WORK` (default `~/scrolls-work`): `villa/` (a clone; the script checks out `origin/main` or `pr-1865` detached), `venv/`, `models-reqs.txt`, `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth`, `data/w035_9um.zarr/`, `predictions/w035_cpu.tif`, `predictions/w035_cpu_reverse.tif`, `predictions/w035_gpu_a.tif`, `predictions/w035_gpu_b.tif`, `logs/cpu.log`, `logs/gpu_a.log`, `logs/gpu_b.log`, `results/cpu_vs_gpu.json`, `results/gpu_repeat.json`, `results/summary.txt`, and the lock folder `.gpu-job.lock/` while it runs. uv also fills its own cache |
 | Go-ahead | Not needed to run it on your own Mac. Posting its summary, for example on villa PR #1865, needs Chase's yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main` since 2026-10-07 |
 | Guide | [mac.md, "One command"](../mac.md#one-command) and its [runbook](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment) |
@@ -28,7 +28,7 @@ It runs the released 9 um ink model `ink_9um` (seed 42, step 75,000) on the publ
 
 w035 is a training segment of `ink_9um`, so its map shows the model reproducing its training labels ([w035 log](../logs/2026-10-07-w035-cpu.md)). That does not matter here: a device comparison needs only the same input on both devices. A `pass` says the Mac GPU reproduces the CPU's map; it says nothing about whether either map shows ink, and an ink map is model output, not a reading.
 
-It does not score against labels, does not run v8in, does not reuse finished maps (every run redoes all three inference passes) and does not take the GPU lock that [mac-w045](mac-w045.md) takes.
+It does not score against labels, does not run v8in, and does not reuse finished maps (every run redoes all three inference passes). It takes the same GPU lock as [mac-w045](mac-w045.md), `WORK/.gpu-job.lock`, so it will not start while another GPU job of these scripts runs.
 
 ## When to use it
 
@@ -41,7 +41,7 @@ Do not use it:
 - To test whether a model finds ink it was not trained on: use [mac-w045](mac-w045.md), which scores against labels with [`auc`](auc.md).
 - To compare two maps you already have: run [`verify`](verify.md) directly.
 - On a Linux or CUDA machine for a real result: it refuses without `EXPECT_GPU=cpu`, and with it the "GPU" runs are CPU runs.
-- While [mac-w045](mac-w045.md) or [mac-phase0](mac-phase0.md) is running on the same Mac: this script does not check their GPU lock, and two GPU jobs at once can run out of memory.
+- While [mac-w045](mac-w045.md) or [mac-phase0](mac-phase0.md) is running on the same Mac with the same `WORK`: it finds their GPU lock and stops with exit code 3. With another `WORK` the lock does not cover them, and two GPU jobs at once can run out of memory.
 
 ## Quick start
 
@@ -71,13 +71,13 @@ cpu_vs_gpu: verdict VERDICT (exit CODE) | max|diff| MAX | over tol SHARE% | pear
 gpu_repeat: verdict VERDICT (exit CODE) | max|diff| MAX | over tol SHARE% | pearson R | control over tol CONTROL%
 ```
 
-It worked when both result lines read `verdict pass (exit 0)` and the control share is large (73.12 % on the recorded M1 Pro run). The script's own exit code 0 only means it finished: read the verdicts.
+It worked when both result lines read `verdict pass (exit 0)` and the control share is large (73.12 % on the recorded M1 Pro run). The script exits 0 only when both `kit verify` checks pass; a `fail` or `control-not-caught` verdict ends it with exit code 1 after the summary.
 
 ## Checks and controls
 
 - **Reverse-depth control.** Both `kit verify` calls pass `--control WORK/predictions/w035_cpu_reverse.tif`, the CPU map with the surface volume's layers in reverse order. Agreement counts as `pass` only when that control is caught by the same test (at most 0.01 % of pixels more than 2 grey levels apart; see [`verify`](verify.md)). A control that agrees gives `control-not-caught`.
 - **Repeat.** `gpu_repeat` compares two MPS runs, which catches nondeterminism, such as a torch bug that reads freed memory.
-- **No silent CPU fallback.** After the two GPU runs it greps each log for `Using MPS device` and stops with exit code 1 if either lacks it. Unlike [mac-w045](mac-w045.md), it does not unset `PYTORCH_ENABLE_MPS_FALLBACK`, so unset it yourself before running.
+- **No silent CPU fallback.** After the two GPU runs it greps each log for `Using MPS device` and stops with exit code 1 if either lacks it. Like [mac-w045](mac-w045.md), it unsets `PYTORCH_ENABLE_MPS_FALLBACK` at the start, so an op MPS lacks fails instead of running on the CPU.
 - **Recorded pass.** Apple M1 Pro, macOS 27.0, torch 2.14.1, villa `main` `e0bbb8b40` and PR #1865 `6723ad158`: CPU against MPS `pass` with max |diff| 1 and Pearson 0.99999999; MPS repeat bit-identical; control 73.12 % of pixels over tolerance ([w035 log](../logs/2026-10-07-w035-cpu.md); `device_checks` in [`results.json`](../results.json)).
 - **What a caught control looks like.** On w035 the CPU forward map against its reverse: max |diff| 167, mean 21.6692, 73.117458 % of pixels over 2, Pearson 0.511578 ([w035 log](../logs/2026-10-07-w035-cpu.md)).
 
@@ -126,9 +126,10 @@ The summary's result lines read, from each JSON: `verdict`, the `kit verify` exi
 
 | Exit code | Meaning |
 | --- | --- |
-| `0` | The script finished and printed the summary. It does not mean the maps agree: read the two verdicts |
-| `1` | An inference run failed, a GPU run did not log `Using MPS device`, or a later command failed under `set -e` (such as the summary step when a `kit verify` JSON is empty) |
+| `0` | The script finished, printed the summary, and both `kit verify` checks exited 0 (`verdict pass`) |
+| `1` | A `kit verify` check did not pass (printed after the summary), an inference run failed, a GPU run did not log `Using MPS device`, or a later command failed under `set -e` (such as the summary step when a `kit verify` JSON is empty) |
 | `2` | Not an Apple Silicon Mac (without `EXPECT_GPU=cpu`), or git or uv is missing; also `kit fetch`'s own code 2 for a failed download |
+| `3` | Another run holds the GPU lock `WORK/.gpu-job.lock` |
 | Other | The code of whichever command failed under `set -e`, such as git |
 
 ## Failure modes
@@ -138,9 +139,12 @@ The summary's result lines read, from each JSON: `verdict`, the `kit verify` exi
 | `This needs an Apple Silicon Mac (or EXPECT_GPU=cpu to test the script elsewhere).`, exit code 2 | `uname -s`/`uname -m` is not `Darwin/arm64` and `EXPECT_GPU` is `mps` | Run it on an Apple Silicon Mac; set `EXPECT_GPU=cpu` only to test the script |
 | `git is missing (xcode-select --install)`, exit code 2 | No git on `PATH` | Install the Xcode command line tools |
 | `uv is missing: brew install uv`, exit code 2 | No uv on `PATH` | `brew install uv` |
+| `Another run is using the GPU (pid PID: COMMAND).` then `Wait for it, or stop it: kill PID`, exit code 3 | A live process holds `WORK/.gpu-job.lock`, such as a [mac-w045](mac-w045.md) run or another mac-verify run | Wait, or stop that run |
+| `Taking over a stale lock left by pid PID.` | The lock's process is gone | Nothing; the run continues |
 | `inference failed, see WORK/logs/LOG.log` then the log's last 20 lines, exit code 1 | villa's inference exited non-zero (a missing package, out of memory, an MPS op error) | Read the log; paste its last 20 lines when asking for help |
 | `gpu_a did not run on MPS; see WORK/logs/gpu_a.log` (or `gpu_b`), exit code 1 | The PR #1865 run did not print `Using MPS device`: it ran on the CPU, or PR #1865 changed its log line | Check `torch ... mps available: True` in the output and the PR's current code |
 | A Python `json.decoder.JSONDecodeError` traceback after `== 6/6 kit verify`, exit code 1 | A `kit verify` call exited 2 (an unreadable map), so its JSON file is empty and the summary step cannot read it | Run the `kit verify` command by hand with `WORK/venv/bin/python -m kit verify ...` to see its message |
+| `kit verify did not pass (cpu_vs_gpu exit V1, gpu_repeat exit V2); see the summary above and WORK/results` on stderr, exit code 1 | At least one check's verdict is not `pass`; the summary lines above it say which | See the rows below |
 | `cpu_vs_gpu: verdict fail (exit 1)` in the summary | More than 0.01 % of pixels differ by more than 2 grey levels between CPU and MPS | Use the CPU result; report the difference on PR #1865 (after Chase says yes) |
 | `gpu_repeat: verdict fail (exit 1)` | Two MPS runs of the same input differ | Note torch and macOS versions; this is the kind of bug the repeat is there to catch |
 | `verdict control-not-caught (exit 1)` | The reverse map also agreed, so the test cannot tell maps apart | Check that `w035_cpu_reverse.tif` is a real reverse run and not a copy |
@@ -148,13 +152,13 @@ The summary's result lines read, from each JSON: `verdict`, the `kit verify` exi
 
 ## How it works
 
-1. Refuse a machine that is not `Darwin/arm64` unless `EXPECT_GPU` is not `mps`; check for git and uv; create `WORK/{checkpoints,data,logs,results}` and `WORK/predictions`.
+1. Unset `PYTORCH_ENABLE_MPS_FALLBACK`. Refuse a machine that is not `Darwin/arm64` unless `EXPECT_GPU` is not `mps`; check for git and uv; create `WORK/{checkpoints,data,logs,results}` and `WORK/predictions`. Take the GPU lock: `mkdir WORK/.gpu-job.lock` with the process id inside; exit 3 if a live process holds it, take it over if not; remove it on exit.
 2. **1/6:** clone villa into `WORK/villa` if needed (`--filter=blob:none`), fetch `origin main` and `pull/1865/head` as `pr-1865`, record both short commits.
 3. **2/6:** create `WORK/venv` with Python 3.14 if missing; with villa `main` checked out, read the `models` optional dependencies from `vesuvius/pyproject.toml`, drop those starting with `volume-cartographer`, `cucim`, `nnunetv2` or `batchgeneratorsv2`, and install the rest with `vesuvius` editable plus tifffile and imagecodecs.
 4. **3/6:** `kit fetch w035 WORK/data/w035_9um.zarr`; download the seed 42 checkpoint if missing; hash it with SHA-256.
 5. **4/6:** on villa `main`, run inference with `--direction both` into `w035_cpu.tif` (villa also writes `w035_cpu_reverse.tif`).
 6. **5/6:** on `pr-1865`, run inference twice, forward, into `w035_gpu_a.tif` and `w035_gpu_b.tif`; switch villa back to `main`; with `EXPECT_GPU=mps`, require `Using MPS device` in both logs.
-7. **6/6:** run `kit verify` CPU against GPU a, and GPU a against GPU b, each with `--control w035_cpu_reverse.tif --json`, keeping their exit codes; write and print the summary.
+7. **6/6:** run `kit verify` CPU against GPU a, and GPU a against GPU b, each with `--control w035_cpu_reverse.tif --json`, keeping their exit codes; write and print the summary; exit 1 if either code is not 0.
 
 Constants in the script: `PR=1865`; the checkpoint path `hybrid_3d2d-seed42/step-075000.pth`; the tolerance and allowed share are `kit verify`'s defaults (2 grey levels, 0.01 % of pixels). The method of a repeat plus a control follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md), as [mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment) describes.
 
@@ -174,8 +178,8 @@ It runs locally on the Mac; it rents nothing. It is not a Modal job: the point i
 - **Command:** `bash scripts/mac-verify.sh` on an Apple Silicon Mac, wrapped as `python -m kit run local SLUG -- bash scripts/mac-verify.sh`. Machine-readable results: `WORK/results/cpu_vs_gpu.json` and `WORK/results/gpu_repeat.json` (`kit verify --json`).
 - **Parse:** in each JSON, `verdict`, `candidate.max_abs_diff`, `candidate.fraction_over_tolerance`, `candidate.pearson`, `control.fraction_over_tolerance` and `control.shape_match`; or the `cpu_vs_gpu:` and `gpu_repeat:` lines of `WORK/results/summary.txt`.
 - **Rerun:** Safe but not cheap: it reuses villa, the environment, the data and the checkpoint, and redoes all three inference runs, overwriting the maps, logs, JSON files and summary.
-- **Success:** Script exit code 0 and both JSON files with `verdict` equal to `pass`.
-- **Not a pass:** Exit code 0 with a `fail` or `control-not-caught` verdict; any result from `EXPECT_GPU=cpu`; a `pass` read as evidence that the map shows ink (w035 is a training segment).
+- **Success:** Script exit code 0, which means both JSON files have `verdict` equal to `pass`.
+- **Not a pass:** Exit code 1 after the summary (a `fail` or `control-not-caught` verdict); exit code 3 (nothing ran); any result from `EXPECT_GPU=cpu`; a `pass` read as evidence that the map shows ink (w035 is a training segment).
 - **Go-ahead:** Nothing to run it on the user's Mac. Posting the summary on villa PR #1865 or anywhere public needs Chase's yes first.
 - **Never:** Run it while another GPU job runs on the same Mac; report agreement without the control; call the w035 map a reading.
 
@@ -189,6 +193,9 @@ python -m unittest tests.test_repo -v
 
 ## History
 
+- 2026-10-17: the script exits 1 when either `kit verify` check does not pass; before, it exited 0 whenever it finished, so a `fail` verdict was seen only in the summary (`7a0e9a9`).
+- 2026-10-17: it unsets `PYTORCH_ENABLE_MPS_FALLBACK`; before, an inherited `PYTORCH_ENABLE_MPS_FALLBACK=1` let an op MPS lacks run quietly on the CPU, which the `Using MPS device` check does not see (`b213518`).
+- 2026-10-17: it takes the shared GPU lock `WORK/.gpu-job.lock` and exits 3 while another run holds it; before, it did not check the lock, so it could run beside mac-w045 in the same villa clone and `WORK` (`ff604b9`).
 - 2026-10-07: first version, with `kit fetch` for the w035 surface volume, the CPU reference, two PR #1865 runs and two `kit verify` checks (`912135c`).
 
 ## Related

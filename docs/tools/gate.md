@@ -118,7 +118,7 @@ print(result["verdict"]["winner"], result["verdict"]["clear"])
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `committed(path=RESULTS)` | `(table, crops)`: `table` is `{reader: {segment: (auc_as_stored, auc_reversed or None, "results.json")}}`; `crops` is `{segment: [Y0, Y1, X0, X1]}` from `segments` | `OSError` for a missing file, `ValueError` for bad JSON, `KeyError` when `segments`, a segment's `crop`, or a matching row's `reader` is missing | Keeps rows whose `segment` is in `SEGMENTS`, `window` is "crop", `inner_px` is 64 and `auc_as_stored` is not null. It does not look at `map_from`; a later row for the same reader and segment replaces an earlier one |
-| `from_mac(work, crops)` | `(table, skipped)`: `table` as above with the file path as third item; `skipped` is a list of `PATH: reason` strings | `AttributeError` when a file's `forward` is not an object; `KeyError` when `crops` lacks a segment | Reads `work/SEGMENT/results/auc_*.json` in sorted order. Names come from `MAC_NAMES`: `ink9um_s42` is `ink_9um seed42 (Mac)`, `ink9um_s43` is `ink_9um seed43 (Mac)`, `v8in` is `v8in`, `v8in1447` is `v8in-1447`; any other file stem is used as it is |
+| `from_mac(work, crops)` | `(table, skipped)`: `table` as above with the file path as third item; `skipped` is a list of `PATH: reason` strings | `KeyError` when `crops` lacks a segment; a file whose `forward` or `control` is not an object is skipped, not raised | Reads `work/SEGMENT/results/auc_*.json` in sorted order. Names come from `MAC_NAMES`: `ink9um_s42` is `ink_9um seed42 (Mac)`, `ink9um_s43` is `ink_9um seed43 (Mac)`, `v8in` is `v8in`, `v8in1447` is `v8in-1447`; any other file stem is used as it is |
 | `decide(table, min_lead=MIN_LEAD, min_gap=MIN_GAP)` | Dict with `ranked`, `incomplete`, `verdict` and `rule` (see Outputs) | Nothing of its own | The rule itself, on a table of `{reader: {segment: (forward, reverse, source)}}` |
 | `consistency(bars, mac)` | List of `{"segment", "cpu", "mac", "match"}`, one per crop where both `ink_9um seed42` (committed) and `ink_9um seed42 (Mac)` have a forward AUC | Nothing of its own | `match` is true when the two differ by at most 0.0001 |
 | `run(work=None, results=RESULTS, min_lead=MIN_LEAD, min_gap=MIN_GAP)` | `decide`'s dict plus `checks` and `skipped` | As `committed` and `from_mac` | What the command runs. Mac cells are merged over committed cells of the same reader name |
@@ -161,7 +161,7 @@ With `--json`, one object:
 | `verdict.text` | str | The verdict sentence, without `Gate A: ` |
 | `rule.min_lead`, `rule.min_gap`, `rule.inner`, `rule.segments` | float, float, int, list of str | The rule used, as given |
 | `checks` | list of objects | `{"segment", "cpu", "mac", "match"}` per crop, from `consistency` |
-| `skipped` | list of str | `PATH: unreadable` or `PATH: not the standard crop with a 64 px edge (crop ..., inner ...)` |
+| `skipped` | list of str | `PATH: unreadable`, `PATH: forward and control must be objects with an auc; rescore this crop`, or `PATH: not the standard crop with a 64 px edge (crop ..., inner ...)` |
 
 | Exit code | Meaning |
 | --- | --- |
@@ -177,7 +177,7 @@ With `--json`, one object:
 | `cannot read the scores: no PATH. The gate reads the repository's docs/results.json, which an installed package does not have: run it from a clone (git clone https://github.com/ChaseHendrick/Scrolls), or give --results` | `--results` (or the default, `docs/results.json` next to the code) is not a file; an installed `scrolls-workbench` has no `docs/` | Run from a clone, or pass `--results PATH` |
 | `cannot read the scores: 'KEY'`, exit code 2 | The scores file lacks a key the gate needs, such as `segments`, a segment's `crop`, or `reader` in a matching row | Use the repository's `docs/results.json`, or fix the file |
 | `cannot read the scores: Expecting ...`, exit code 2 | The scores file is not valid JSON | Fix or restore the file (`git checkout docs/results.json` in a clone) |
-| `AttributeError: 'list' object has no attribute 'get'` and a traceback, exit code 1 | A Mac `auc_*.json` whose `forward` is not an object | Remove the file, or rewrite it with `kit auc --json` |
+| `skipped PATH: forward and control must be objects with an auc; rescore this crop` | A Mac `auc_*.json` whose `forward` or `control` is not an object (such as a list); the file is left out, not fatal | Rescore that crop with `kit auc --json`, or remove the file |
 | `skipped PATH: unreadable` | A Mac file that is not JSON, or lacks `forward` | Rerun its `kit auc --json`; the file is left out, not fatal |
 | `skipped PATH: not the standard crop with a 64 px edge (crop [...], inner N)` | The Mac file was scored on another window or edge | Score with `--crop` equal to `segments.SEGMENT.crop` in `results.json` and `--inner 64` (QUICK mode of `scripts/mac-w045.sh` does) |
 | `check SEGMENT: Mac ink_9um s42 A vs CPU B: MISMATCH (crop, labels or code differ; do not rank until explained)`, exit code 1 | The Mac `ink_9um` seed 42 score differs from the committed CPU bar by more than 0.0001 | Find the cause (crop, labels version, villa commit, device) before using any Mac row; the table ranks it anyway |
@@ -217,10 +217,11 @@ About 0.1 s wall time on committed scores only (measured with `time` on 2026-10-
 python -m unittest tests.test_gate -v
 ```
 
-They cover ranking from committed bars alone with a clear win, a Mac reader whose lead is under 0.02 (not a win), an incomplete reader and a Mac file on the wrong crop (skipped), a reader with a weak control that has the highest mean but does not win, the Mac `ink_9um` seed 42 check through the command line (exit code 1 and the MISMATCH and match lines), and the missing scores file (exit code 2 and the clone hint). They use a synthetic `results.json` and need only the standard library. They do not cover `--json`, the `~/scrolls-work` default, unreadable Mac files, the one-reader and no-reader verdicts, or the repository's real `results.json`.
+They cover ranking from committed bars alone with a clear win, a Mac reader whose lead is under 0.02 (not a win), an incomplete reader, a Mac file on the wrong crop and one whose forward or control is not an object (both skipped), a reader with a weak control that has the highest mean but does not win, the Mac `ink_9um` seed 42 check through the command line (exit code 1 and the MISMATCH and match lines), and the missing scores file (exit code 2 and the clone hint). They use a synthetic `results.json` and need only the standard library. They do not cover `--json`, the `~/scrolls-work` default, unreadable Mac files, the one-reader and no-reader verdicts, or the repository's real `results.json`.
 
 ## History
 
+- 2026-10-17: a Mac `auc_*.json` whose `forward` or `control` is not an object is skipped with a message; before, it stopped the gate with an `AttributeError` traceback and exit code 1 (`107b379`).
 - 2026-10-14: a missing `docs/results.json`, as in an installed package, gives the "run it from a clone" message and exit code 2 instead of a traceback (`ca7b143`).
 - 2026-10-09: the docstring states the rule itself, since the roadmap moved to the private repository, and names the smallest committed gap (0.1015); no behaviour change (`3ba683f`).
 - 2026-10-07: first version, with committed bars, Mac `auc_*.json` files, the 0.10 control gap and the Mac against CPU check, run at the end of `scripts/mac-phase0.sh` (`bec6fb9`).

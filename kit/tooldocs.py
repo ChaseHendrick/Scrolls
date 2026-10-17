@@ -557,6 +557,12 @@ def commit_exists(root, rev):
     return out is not None and out.returncode == 0
 
 
+def in_history(root, rev):
+    """True when commit rev is HEAD or one of its ancestors, so its changes are on the checked-out branch."""
+    out = _git(root, "merge-base", "--is-ancestor", rev, "HEAD")
+    return out is not None and out.returncode == 0
+
+
 def repo_kind(root):
     out = _git(root, "remote", "get-url", "origin")
     if out is None or out.returncode != 0:
@@ -681,6 +687,9 @@ def _check_fields(page, ctx, kinds, status):
         elif ctx.git and not commit_exists(ctx.root, m.group(2)):
             problems.append(f"Branch names commit {m.group(2)}, which is not in this repository "
                             "(fetch the branch, or the code is in another repository)")
+        elif ctx.git and in_history(ctx.root, m.group(2)):
+            problems.append(f"Branch names commit {m.group(2)}, which this branch already holds: the tool has merged, "
+                            "so make the page Current (or Retired if its code was removed since)")
     if page.field("Public page") and ctx.kind == "private" and \
             "### Differences from the public copy" not in page.text:
         problems.append("a page with a Public page field needs '### Differences from the public copy'")

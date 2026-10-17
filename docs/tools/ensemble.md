@@ -110,7 +110,7 @@ combined, valid = ensemble.combine([array_a, array_b], method="mean", weights=[2
 | --- | --- | --- | --- |
 | `combine(arrays, method='mean', weights=None)` | `(combined, valid)`: a float64 array of the inputs' shape, 0 outside `valid`, and the boolean mask of pixels non-zero in every input | `VerifyError` for an unknown method, fewer than two arrays, arrays of different shapes, or weights that are not one non-negative number per array with a positive sum; `VerifyError` when numpy is missing | The combining step, on arrays in memory. Values on valid pixels are in 0..1 for well-formed inputs, but are not clipped here (see Inputs) |
 | `write(path, combined, valid)` | The path, as str | `VerifyError` when tifffile is missing for a TIFF; `FileNotFoundError` or another `OSError` when the folder does not exist | `.npy`: float32, `(1 + clip(v, 0, 1) * 65534) / 65535` on valid pixels and 0 elsewhere. Anything else: uint16 TIFF, `1 + round(clip(v, 0, 1) * 65534)` on valid pixels (1 to 65535) and 0 elsewhere |
-| `ensemble_files(out, inputs, method='mean', weights=None)` | Dict: `out`, `inputs`, `method`, `weights`, `shape`, `valid_px` (see Outputs) | `VerifyError` from loading, `combine` or `write`; `FileNotFoundError` for a missing `.npy` input or output folder | What the command runs: loads every input (TIFFs with `load_map`, `.npy` with `numpy.load`), combines, writes |
+| `ensemble_files(out, inputs, method='mean', weights=None)` | Dict: `out`, `inputs`, `method`, `weights`, `shape`, `valid_px` (see Outputs) | `VerifyError` from loading (an input that cannot be read or is not a 2D map), `combine` or `write`; `FileNotFoundError` for a missing output folder | What the command runs: loads every input (TIFFs with `load_map`, `.npy` with `numpy.load`), squeezes singleton axes, checks each is 2D, combines, writes |
 
 Module constant: `METHODS = ("mean", "rank")`.
 
@@ -119,7 +119,7 @@ Module constant: `METHODS = ("mean", "rank")`.
 | Input | Format | Notes |
 | --- | --- | --- |
 | Ink map, `.tif` | Any 2D TIFF tifffile reads | Singleton axes are squeezed; a stack or an RGB image is refused |
-| Ink map, `.npy` | numpy array | Loaded as it is, with no squeeze and no 2D check; object (pickled) arrays are refused by numpy |
+| Ink map, `.npy` | numpy array | Singleton axes are squeezed; an array that is not then 2D is refused; object (pickled) arrays are refused by numpy and reported as `cannot read PATH: ...` |
 | All maps | Same shape | Same window of the same surface on the same grid; only the shape is checked |
 
 How scores are scaled to 0..1 before `mean` (and before ranking, which the scaling does not change):
@@ -157,7 +157,7 @@ Text output, one line: `METHOD of N maps -> OUT (VALID valid px of H x W)`. With
 | Exit code | Meaning |
 | --- | --- |
 | `0` | `OUT` was written |
-| `1` | An error the command does not catch, with a Python traceback, such as a missing `.npy` input or a missing output folder (`FileNotFoundError`) |
+| `1` | An error the command does not catch, with a Python traceback, such as a missing output folder (`FileNotFoundError`) |
 | `2` | Bad input, with the message on stderr (see Failure modes), or a usage error from the argument parser |
 
 ## Failure modes
@@ -173,13 +173,13 @@ Text output, one line: `METHOD of N maps -> OUT (VALID valid px of H x W)`. With
 | `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed | `python -m pip install numpy tifffile`, or run inside villa's environment |
 | `tifffile is required (it is in villa's environment)` | A `.tif` input and no tifffile | Install tifffile, or use `.npy` inputs |
 | `tifffile is required to write a .tif ensemble` | An output name not ending in `.npy` and no tifffile | Install tifffile, or name the output `.npy` |
-| `cannot read PATH: ...` | A `.tif` input that does not exist or cannot be decoded (for example LZW without imagecodecs) | Fix the path; install imagecodecs; or save the map as `.npy` |
-| `PATH: expected a 2D map, got shape (...)` | A `.tif` input that is a stack or an RGB image | Pass one 2D map per file |
-| `FileNotFoundError: ...` and a traceback, exit code 1 | A `.npy` input that does not exist, or an output folder that does not exist | Fix the path, or create the folder |
+| `cannot read PATH: ...` | An input that does not exist, a `.tif` that cannot be decoded (for example LZW without imagecodecs), or a `.npy` that is not a plain numpy array file | Fix the path; install imagecodecs; or save the map as `.npy` with `numpy.save` |
+| `PATH: expected a 2D map, got shape (...)` | An input (`.tif` or `.npy`) that is still not 2D after singleton axes are squeezed, such as a stack or an RGB image | Pass one 2D map per file |
+| `FileNotFoundError: ...` and a traceback, exit code 1 | An output folder that does not exist | Create the folder |
 
 ## How it works
 
-1. Load every input: `.npy` with `numpy.load`, anything else with `load_map` (tifffile, squeezed, must be 2D).
+1. Load every input: `.npy` with `numpy.load`, anything else with `load_map` (tifffile); squeeze singleton axes and refuse any input that is not then 2D.
 2. Check the method, the count (at least two), equal shapes, and the weights (one per map, none negative, positive sum; equal when not given).
 3. Valid mask: pixels that are non-zero in every input.
 4. Scale each map to 0..1 by dtype (`_unit`; Inputs has the rule).
@@ -217,10 +217,11 @@ Memory grows with the map size and the number of maps: every input is held in me
 python -m unittest tests.test_ensemble -v
 ```
 
-They cover the dtype scaling of uint8 and uint16 maps and the valid mask, weights, `rank` ignoring each map's scale, tied scores sharing a rank, the refusals (one map, different shapes, wrong weight count, unknown method), and a round trip through the command line to `.tif` and `.npy` that keeps every valid pixel above 0. They skip without numpy and tifffile (the CI's map job installs them). They do not cover `--json`, `--weights` from the command line, float maps above 1, logits, NaN, or real maps.
+They cover the dtype scaling of uint8 and uint16 maps and the valid mask, weights, `rank` ignoring each map's scale, tied scores sharing a rank, the refusals (one map, different shapes, wrong weight count, unknown method, a `.npy` input that is not a 2D map), and a round trip through the command line to `.tif` and `.npy` that keeps every valid pixel above 0. They skip without numpy and tifffile (the CI's map job installs them). They do not cover `--json`, `--weights` from the command line, float maps above 1, logits, NaN, or real maps.
 
 ## History
 
+- 2026-10-17: `.npy` inputs are squeezed and must be 2D like TIFFs, and a missing or unreadable `.npy` is reported as `cannot read PATH: ...`; before, a `.npy` was loaded as it was, with no 2D check, and a missing one ended in a `FileNotFoundError` traceback (`31e15a1`).
 - 2026-10-09: the module text says PHerc0841 may not be held out from Hecate; no behaviour change (`3ba683f`).
 - 2026-10-07: first version, with `mean` and `rank`, the valid-pixel rule and uint16 or float32 output (`ebd4ae3`).
 

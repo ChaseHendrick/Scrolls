@@ -137,7 +137,7 @@ hours, usd = localcost.backfill("SLUG", [{"what": "a past run", "wall_s": 600}],
 | `estimate(wall_s, watts, rate)` | `(kwh, usd)`, each rounded to 6 decimals | `CostError` for any value that is not finite and nonnegative | `kwh = watts * wall_s / 3600 / 1000`; `usd = kwh * rate` |
 | `entry(started, ended, wall_s, cpu_s, device, watts, rate, note=None, command=None, exit_code=None)` | dict: the `local` entry under Outputs, without `command_argv`, `signal`, `raw_returncode` and `launch_error` | `CostError` as for `estimate`, and for negative `cpu_s` | `command`, `exit_code` and `note` are included only when given |
 | `append(slug, item, root=ledger.DEFAULT_ROOT)` | dict: the whole updated ledger record | `LedgerError` (from `kit.ledger`) for a bad slug or no experiment; `OSError` when the write fails, with the record unchanged | Appends one cost entry under the lock and replaces `run.json` atomically |
-| `run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=None)` | `(code, item)`: the shell-compatible exit code and the `local` entry | `CostError` for an empty or non-list command and every rate, watts and configuration problem; `LedgerError` for a bad slug or no experiment. All of these come before the child starts | Run a child, record its cost, and return its shell-compatible exit code and entry. A child that cannot be launched is recorded, not raised |
+| `run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=None)` | `(code, item)`: the shell-compatible exit code and the `local` entry | `CostError` for an empty or non-list command and every rate, watts and configuration problem; `LedgerError` for a bad slug or no experiment. All of these come before the child starts | Run a child, record its cost, and return its shell-compatible exit code and entry. A child that cannot be launched is recorded, not raised. When the ledger write fails after the child has run, the error is not raised: the entry comes back with `ledger_error` set to its message and the child's code is kept |
 | `backfill(slug, items, root=ledger.DEFAULT_ROOT, rate=None)` | `(hours, usd)`: the batch's total hours (4 decimals) and estimated USD (6 decimals) | `CostError` when `items` is not a list, an item lacks a nonempty `what` or `wall_s`, or any value is invalid; `LedgerError` as for `run` | Validate the whole batch before committing any estimated-from-logs entries. An empty list writes nothing |
 
 ## Inputs
@@ -199,8 +199,8 @@ Each run, and each backfill item, appends one object to `costs` in `ROOT/SLUG/ru
 | Exit code | Meaning |
 | --- | --- |
 | `0` | `run local`: the child exited 0 and its entry was written. `run backfill`: every item was written |
-| `2` | An error before the child started, or a failed ledger write, with the message on stderr (see Failure modes); also a usage error. A child that itself exits 2 looks the same: read the summary line |
-| child's code | `run local` passes the child's exit code through and records it |
+| `2` | An error before the child started, a failed `run backfill` write, or a failed `run local` ledger write after a child that exited 0, with the message on stderr (see Failure modes); also a usage error. A child that itself exits 2 looks the same: read the summary line |
+| child's code | `run local` passes the child's exit code through and records it; a nonzero code is kept even when the ledger write fails |
 | `128 + N` | `run local`: the child was killed by signal N (for example 143 for SIGTERM) |
 | `126`, `127` | `run local`: the child could not be started (127 when the program does not exist, 126 for any other launch error); the attempt is still recorded |
 | `130` | `run local`: the wrapper was interrupted with Ctrl-C while the child ran; the entry is still written |
@@ -226,7 +226,8 @@ Each run, and each backfill item, appends one object to `costs` in `ROOT/SLUG/ru
 | `no experiment at ROOT/SLUG/run.json` | The experiment was never started, or `--root` points elsewhere | Run `python -m kit run init SLUG ...` first, or fix `--root` |
 | `bad slug: 'SLUG'` | An empty slug, one with `/`, or one starting with `.` | Use a plain name |
 | `FILE is a JSON object with key, row and optionally generic` | Comes from `run modal-row`, which shares `cmd_run`; not from these actions | See [modal-row](modal-row.md) |
-| An `OSError` message such as `[Errno 13] Permission denied: ...`, exit code 2 | The ledger could not be written; `run.json` is left as it was. In `run local` the child has already run and its exit code is replaced by 2 | Fix the folder's permissions, then backfill the run's duration by hand if it should count |
+| `SLUG: the command exited CODE, but its cost was not written to the ledger: MESSAGE. Record it with kit run backfill, using the wall time above.`, after the summary line; exit code CODE, or 2 when CODE is 0 | `run local`: the child has run, but its entry could not be written (such as `[Errno 13] Permission denied: ...` or a full disk); `run.json` is left as it was | Fix the folder's permissions or free space, then record the run with `python -m kit run backfill` using the wall time in the summary line, if it should count |
+| An `OSError` message such as `[Errno 13] Permission denied: ...`, exit code 2 | `run backfill`: the ledger could not be written; `run.json` is left as it was | Fix the folder's permissions, then run the backfill again |
 
 ## How it works
 
@@ -247,7 +248,7 @@ Not measured. The wrapper adds a configuration read, two resource-counter reads 
 - **Command:** `python -m kit run local SLUG -- COMMAND ARGS` (add `--device apple-silicon-gpu` for MPS work); `python -m kit run backfill SLUG --file FILE` for past runs. There is no JSON mode: read the record.
 - **Parse:** the last entry of `costs` in `experiments/SLUG/run.json`: `local.wall_s`, `local.cpu_s`, `local.exit_code`, `local.kwh`, `local.usd_exact`; or the stderr line `SLUG: ... (exit CODE)`.
 - **Rerun:** Not idempotent. Each `run local` runs the child again and appends another entry; each `run backfill` appends the whole list again.
-- **Success:** The exit code is the child's (0 for a clean run) and a new entry exists in `costs`. Exit code 2 with no new entry means the wrapper refused before starting.
+- **Success:** The exit code is the child's (0 for a clean run) and a new entry exists in `costs`. Exit code 2 with no new entry means the wrapper refused before starting, unless stderr has the `its cost was not written to the ledger` line: then the child ran and its entry was lost.
 - **Not a pass:** A `kwh` or `usd` figure presented as measured; a backfilled entry (`estimated_from_logs`) mixed with measured ones; an exit code 2 read as the child's without checking `costs`.
 - **Go-ahead:** Nothing for the wrapper. Moving a long or GPU job to Modal needs the user's budget decision first (the go-ahead rule, hard rule 8).
 - **Never:** Commit the local configuration file or your electricity rate; backfill a run the wrapper already logged; wrap a long GPU or CPU job on a laptop instead of writing a Modal run spec.
@@ -258,10 +259,11 @@ Not measured. The wrapper adds a configuration read, two resource-counter reads 
 python -m unittest tests.test_localcost tests.test_localcost_regressions -v
 ```
 
-They cover the estimate arithmetic, the order of rate sources, refusing before launch without a rate or with a NaN, infinite, negative, boolean or non-numeric rate or watts, configuration files that are a list, null or broken, a missing `SCROLLS_LOCAL_CONFIG` file and bad `device_watts`, the command line passing the child's arguments and exit code through, signals (143 for SIGTERM), a missing program (127), a missing resource counter, sub-cent sums, backfill marking and all-or-nothing validation, four concurrent writers keeping all 40 entries, a failed atomic replace leaving the ledger unchanged, and that `scripts/backfill/2026-10-07-local-runs.json` is valid. The 2026-10-16 run took 0.29 s for these and the compute and modal-row tests together (25 tests). They do not measure real power.
+They cover the estimate arithmetic, the order of rate sources, refusing before launch without a rate or with a NaN, infinite, negative, boolean or non-numeric rate or watts, configuration files that are a list, null or broken, a missing `SCROLLS_LOCAL_CONFIG` file and bad `device_watts`, the command line passing the child's arguments and exit code through, signals (143 for SIGTERM), a missing program (127), a missing resource counter, sub-cent sums, backfill marking and all-or-nothing validation, four concurrent writers keeping all 40 entries, a failed atomic replace leaving the ledger unchanged, a failed ledger write in `run local` keeping the child's exit code (2 for a child that exited 0) and naming the error, and that `scripts/backfill/2026-10-07-local-runs.json` is valid. The 2026-10-16 run took 0.29 s for these and the compute and modal-row tests together (25 tests). They do not measure real power.
 
 ## History
 
+- 2026-10-17: when `run local` cannot write its ledger entry after the child has run, it keeps the child's nonzero exit code (2 when the child exited 0) and prints what was lost and how to backfill it; before, the write error replaced the child's exit code with 2 (`0a84855`).
 - 2026-10-07: review fixes: values must be finite and nonnegative, the backfill is validated whole, writes are locked and atomic, signals and launch failures are recorded, and child arguments survive the Python 3.10 parser (`7492129`).
 - 2026-10-07: first version, with `run local`, `run backfill` and the 7 October backfill list (`7878089`).
 

@@ -293,6 +293,7 @@ Each line below is a problem `check` reports for a page, with CAPITALS for the p
 | `a page of kind KIND needs the field 'License'` | Kinds model, app, package and data need a License | Add the License field |
 | `a Retired tool needs the field 'Replaced by' (write 'Nothing' if nothing replaced it)` | Retired without Replaced by | Add the field |
 | `` a Branch only tool needs the field 'Branch': `BRANCH` at `COMMIT` `` and `Branch names commit C, which is not in this repository (fetch the branch, or the code is in another repository)` | The Branch field is missing, or its commit is unknown | Add the field; fetch the branch |
+| `Branch names commit C, which this branch already holds: the tool has merged, so make the page Current (or Retired if its code was removed since)` | A Branch only page's commit is already in the checked-out branch's history, so its code is here and the page is out of date | Rewrite the page as Current from `templates/tool-doc.md` (the checker then checks it against the code), or as Retired if the code was removed later |
 | `a page with a Public page field needs '### Differences from the public copy'` | A private page of a public tool, in Scrolls-private | Add the subsection |
 | `template guidance (<!-- Write: ...) is still on the page; replace it with the text` | A template placeholder is left | Replace it with real text |
 | `'WORD' is still on the page; finish that part` | `TODO`, `TBD`, `FIXME`, `XXX` or a template token such as `{id}` outside code | Finish that part, or put the word in code if it is meant literally |
@@ -369,6 +370,7 @@ python -m unittest tests.test_tooldocs -v
 
 ## History
 
+- 2026-10-17: a Branch only page whose commit the checked-out branch already holds is reported, so a merged tool's page becomes Current ([PR #104](https://github.com/ChaseHendrick/Scrolls/pull/104)).
 - 2026-10-16: defaults written as the checker expects: an empty string or list is none, and a path inside the checkout is written relative to it (`63ee638`).
 - 2026-10-16: standard v2, the tool-pages rule (hard rule 16), index rows and glossary terms (`29e7e8c`).
 - 2026-10-16: checker v2: options, defaults, error messages, public API, environment variables and coverage checked against the code; `new` prefills from the code (`f4a3193`).

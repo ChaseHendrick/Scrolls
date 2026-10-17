@@ -90,7 +90,7 @@ The script takes no arguments and has no `--help`: anything after the script nam
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `WORK` | `$HOME/scrolls-work` | The Mac work folder shared with [mac-w045](mac-w045.md) and passed on to it; `kit gate` reads `WORK/SEGMENT/results/auc_*.json` |
-| `JOBS` | `v8in:0841-w00 v8in:0841-ag896 v8in:0841-ag405 v8in-1447:0841-w00 v8in-1447:0841-ag896 v8in-1447:0841-ag405` | Space-separated `MODEL:SEGMENT` jobs, run in this order. Each must match `v8in:0841-*` or `v8in-1447:0841-*`; mac-w045 then accepts only `0841-w00`, `0841-ag896` and `0841-ag405` |
+| `JOBS` | `v8in:0841-w00 v8in:0841-ag896 v8in:0841-ag405 v8in-1447:0841-w00 v8in-1447:0841-ag896 v8in-1447:0841-ag405` | Space-separated `MODEL:SEGMENT` jobs, run in this order. `MODEL` must be `v8in` or `v8in-1447` and `SEGMENT` one of `0841-w00`, `0841-ag896` and `0841-ag405`, the PHerc0841 segments mac-w045 accepts; every job is checked before any starts |
 | `KEEP_GOING` | `0` | `1`: a failed job does not stop the queue; the script still exits 1 at the end. Otherwise the first failure stops it before the gate step |
 | `DRY_RUN` | `0` | `1`: print each job that would run, start no job and no `caffeinate`, still print and save the gate table, and exit 0 |
 
@@ -126,16 +126,15 @@ A macOS notification (title `Scrolls Phase 0`) and a terminal line report the en
 | --- | --- |
 | `0` | Every job ran or was skipped and `kit gate` exited 0; or any `DRY_RUN=1` run that got past the job check |
 | `1` | A job failed (at once, or at the end with `KEEP_GOING=1`), or `kit gate` exited 1 because a Mac score disagreed with its committed bar |
-| `2` | A job in `JOBS` is not `v8in:0841-*` or `v8in-1447:0841-*`, or `kit gate` exited 2 because it could not read the scores |
+| `2` | A job in `JOBS` is not `v8in` or `v8in-1447` on `0841-w00`, `0841-ag896` or `0841-ag405`, or `kit gate` exited 2 because it could not read the scores |
 
 ## Failure modes
 
 | What you see | Why | What to do |
 | --- | --- | --- |
-| `unknown job JOB (expected v8in\|v8in-1447:0841-w00\|0841-ag896\|0841-ag405)` on stderr, exit code 2 | A job that is not `v8in:0841-*` or `v8in-1447:0841-*` | Fix `JOBS`. Nothing ran |
+| `unknown job JOB (expected v8in\|v8in-1447:0841-w00\|0841-ag896\|0841-ag405)` on stderr, exit code 2 | A job that is not `v8in` or `v8in-1447` on `0841-w00`, `0841-ag896` or `0841-ag405`, such as `v8in:0841-w01` | Fix `JOBS`. Nothing ran |
 | `MODEL on SEGMENT failed after M min; see its log` then `Stopping (KEEP_GOING=1 to continue past failures). Rerun to resume.`, exit code 1 | mac-w045 exited non-zero for that job: see its failure modes, such as the device check, a download, or exit code 3 for another GPU job holding the lock | Read `WORK/logs/phase0_SEGMENT_MODEL.log`, fix the cause and rerun; finished jobs are skipped |
 | `Phase 0: N job(s) ran, failed: MODEL:SEGMENT ...`, exit code 1 | With `KEEP_GOING=1`, at least one job failed | As above, then rerun |
-| `SEGMENT must be w045, 0841-w00, 0841-ag896 or 0841-ag405` in a job's log | A `JOBS` entry such as `v8in:0841-w01` passes this script's check but not mac-w045's | Use one of the three PHerc0841 names |
 | `This needs an Apple Silicon Mac (or EXPECT_GPU=cpu to test the script elsewhere).` in a job's log | Not run on an Apple Silicon Mac | Run it on the Mac; use `DRY_RUN=1` elsewhere |
 | A job runs again although it finished | Its score is not on the standard crop with a 64 px edge (`kit gate` lists it under skipped), or the file is unreadable | Check `python -m kit gate WORK`; delete or move a non-standard file |
 | `cannot read the scores: ...` after `== Gate A`, exit code 2 | `kit gate` could not read `docs/results.json` or a score file | Run from a clone; see [gate](gate.md#failure-modes) |
@@ -144,7 +143,7 @@ A macOS notification (title `Scrolls Phase 0`) and a terminal line report the en
 ## How it works
 
 1. Set `WORK`, `JOBS`, `KEEP_GOING`, `DRY_RUN`; find `python3`; create `WORK/logs`.
-2. Check every job against `v8in:0841-*` or `v8in-1447:0841-*`; exit 2 on the first that fails.
+2. Check every job against the six accepted pairs (`v8in` or `v8in-1447` on `0841-w00`, `0841-ag896` or `0841-ag405`); exit 2 on the first that fails, before any job runs.
 3. Unless `DRY_RUN=1`, start `caffeinate -i -w PID` in the background so the Mac does not idle-sleep while the script runs.
 4. For each job in order: ask `kit gate` whether it is scored (`gate.committed()` for the standard crops, then `gate.from_mac(WORK, crops)`, which reads `WORK/SEGMENT/results/auc_*.json` and keeps only scores on the standard crop with `inner` 64); skip it if so; with `DRY_RUN=1` print what would run; otherwise run `MODEL=... SEGMENT=... QUICK=1 bash scripts/mac-w045.sh`, piped through `tee` into its log. A failure notifies and stops the queue unless `KEEP_GOING=1`.
 5. Run `python -m kit gate WORK` with `PYTHONPATH` set to the checkout, piped into `WORK/phase0-gate.txt`, and keep its exit code.
@@ -183,6 +182,7 @@ python -m unittest tests.test_repo -v
 
 ## History
 
+- 2026-10-17: the job check accepts only the three PHerc0841 segments mac-w045 accepts; before, any `v8in:0841-*` or `v8in-1447:0841-*` passed, so a job such as `v8in:0841-w01` was queued and then failed in mac-w045 with `SEGMENT must be w045, 0841-w00, 0841-ag896 or 0841-ag405` in its log, after earlier jobs had run (`b112518`).
 - 2026-10-07: first version: one Mac queue over v8in and v8in-1447 on the three PHerc0841 crops, resumable, with the Gate A table at the end (`bec6fb9`).
 
 ## Related

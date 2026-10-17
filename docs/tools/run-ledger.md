@@ -80,7 +80,7 @@ It worked when every exit code is 0 and `run check` prints `SLUG: ok`. The recor
 
 - **The readout hash** (`run check`). `init` stores `readout_rule_sha256`, the SHA-256 of the rule's UTF-8 text. On the scratch record above, changing `readout_rule` by hand made `run check` print `problem: readout rule was edited after the run was created` and exit 1. `tests/test_kit.py` checks the same.
 - **The status rules** (`run status`). On the scratch record, `running` to `published` was refused (`cannot go from running to published`, exit 2), and `submitted` to `published` without `--announced` was refused with the announcement message (exit 2).
-- **What `run check` cannot catch** (read from the code, 2026-10-16). The hash sits in the same file as the rule, so an edit that also replaces the hash passes; a commitment others can check needs the rule or its hash committed elsewhere, such as `docs/prereg/` or a [provenance](provenance.md) digest. `check` cannot tell whether `--announced` was given, so a hand-written `submitted` to `published` step passes. It does not require the history to start at `planned`, and `run cost --usd nan` is stored as NaN (the total then prints `$nan`).
+- **What `run check` cannot catch** (read from the code, 2026-10-16). The hash sits in the same file as the rule, so an edit that also replaces the hash passes; a commitment others can check needs the rule or its hash committed elsewhere, such as `docs/prereg/` or a [provenance](provenance.md) digest. `check` cannot tell whether `--announced` was given, so a hand-written `submitted` to `published` step passes.
 
 Claim label: None, for the ledger itself: it records plans, statuses and costs, and makes no claim about ink. A status of `candidate` is the operator's label (Candidate (private)), never a reading.
 
@@ -190,16 +190,16 @@ print(ledger.check("demo-a"))  # [] when consistent
 | --- | --- | --- | --- |
 | `LedgerError()` | Exception class | | Raised for every refusal here; the commands print its message and exit with code 2 |
 | `path_for(slug, root=DEFAULT_ROOT)` | `Path` of `root/slug/run.json` | `LedgerError` (`bad slug: ...`) for an empty slug, one with `/`, or one starting with `.` | Does not touch the disk |
-| `load(slug, root=DEFAULT_ROOT)` | The record dict | `LedgerError` (`no experiment at ...`) when the file is missing; `json.JSONDecodeError` for a corrupt file | |
+| `load(slug, root=DEFAULT_ROOT)` | The record dict | `LedgerError` (`no experiment at ...`) when the file is missing; `LedgerError` (`cannot read ...` or `... is not a run record`) for a file that is not JSON or not a JSON object | |
 | `save(record, root=DEFAULT_ROOT)` | `Path` written | `LedgerError` for a bad `record["slug"]`; `OSError` | Creates the folder; writes indented JSON with a final newline, replacing the file |
 | `init(slug, scroll, question, readout, root=DEFAULT_ROOT, villa_commit=None, snapshot=None)` | `(path, record)` | `LedgerError` when the experiment exists or the readout is blank | `snapshot` is a prize snapshot dict; by default `prizes.load()` reads `kit/data/prizes-2026-10-11.json` |
-| `set_status(slug, status, note='', announced=False, root=DEFAULT_ROOT)` | The updated record | `LedgerError` for an unknown status, a step not in `TRANSITIONS`, or `submitted` to `published` without `announced` | Appends to `history` and saves |
-| `add_cost(slug, usd, what, root=DEFAULT_ROOT)` | The updated record | `LedgerError` for a negative `usd` | Stores `round(usd, 2)` |
+| `set_status(slug, status, note='', announced=False, root=DEFAULT_ROOT)` | The updated record | `LedgerError` for an unknown status (new, or stored in the file), a step not in `TRANSITIONS`, or `submitted` to `published` without `announced` | Appends to `history` and saves |
+| `add_cost(slug, usd, what, root=DEFAULT_ROOT)` | The updated record | `LedgerError` for a `usd` that is not finite (NaN or infinity) or is negative | Stores `round(usd, 2)` |
 | `add_provenance(slug, command, files=(), root=DEFAULT_ROOT)` | The updated record | `LedgerError` (`not a file: ...`) for a path that is not a file | Record a command line and the SHA-256 of files it used or wrote (checkpoints, maps), in 1 MiB chunks |
 | `add_check(slug, name, result, root=DEFAULT_ROOT)` | The updated record | `LedgerError` when the experiment is missing | Attach a verification result (such as from `kit verify`) to an experiment; what `--slug` on `verify`, `auc`, `rowscore` and `hpscore` calls |
 | `total_cost(record)` | float, the sum of `costs[].usd` rounded to cents | `KeyError` for a record without `costs` | |
 | `check(slug, root=DEFAULT_ROOT)` | list of problem strings; empty means consistent | `LedgerError` when the experiment is missing | Return a list of problems; empty means the record is consistent |
-| `list_runs(root=DEFAULT_ROOT)` | list of record dicts sorted by path; `[]` when `root` is not a folder | `json.JSONDecodeError` for a corrupt `run.json` | |
+| `list_runs(root=DEFAULT_ROOT)` | list of record dicts sorted by path; `[]` when `root` is not a folder | `LedgerError` for a `run.json` that is not JSON or not a JSON object | |
 
 Constants: `DEFAULT_ROOT = Path("experiments")`, `STATUSES` and `TRANSITIONS` (see How it works).
 
@@ -240,7 +240,7 @@ Each action prints one line (see Quick start); `check` prints one `problem: ...`
 | Exit code | Meaning |
 | --- | --- |
 | `0` | Done; for `check`, the record is consistent |
-| `1` | `check` found problems; also an error the command does not catch, with a Python traceback, such as a corrupt `run.json` |
+| `1` | `check` found problems; also an error the command does not catch, with a Python traceback |
 | `2` | Refused, with the message on stderr (see Failure modes), or a usage error from the argument parser |
 
 ## Failure modes
@@ -255,23 +255,26 @@ Each action prints one line (see Quick start); `check` prints one `problem: ...`
 | `unknown status '...'; use one of planned, running, null, candidate, submitted, published` | `set_status` called from Python with another word (the command line refuses it earlier) | Use one of the listed statuses |
 | `cannot go from CURRENT to NEW` | A step not in `TRANSITIONS`, such as `running` to `published` or anything after `published` | Follow the steps under How it works; a `candidate` goes through `submitted` |
 | `a submitted result stays private until the prize is officially announced; pass --announced only after Vesuvius Challenge announces it` | `submitted` to `published` without `--announced` | Wait for the official announcement |
+| `SLUG has the unknown status '...' in its run.json; it must be one of planned, running, null, candidate, submitted, published` | `run status` on a record whose stored `status` was edited to another word (or is missing) | Restore `status` from `history`, then rerun |
+| `cost must be a finite number of US dollars, not nan` (or `inf`) | `--usd nan`, `inf` or `-inf` | Give the amount as a plain number |
 | `cost cannot be negative` | `--usd` below 0 | Record refunds in `--what` of a corrected entry instead |
 | `not a file: PATH` | A `--file` that is missing or a folder | Fix the path; hash folders with [provenance](provenance.md) |
 | `problem: readout rule was edited after the run was created`, exit code 1 | `readout_rule` no longer matches its hash | The run's preregistration is broken: say so in any write-up, and start a new experiment with the rule fixed before looking |
 | `problem: unknown status '...'`, exit code 1 | The file's `status` was edited to another word | Restore it from `history` |
+| `problem: history does not start at planned`, exit code 1 | `history` is empty, or its first step is not `planned`: steps were removed or the file was written by hand | Find out who edited the file; do not trust the record |
 | `problem: history has an illegal step A -> B`, exit code 1 | `history` holds a step `run status` would refuse | Find out who edited the file; do not trust the record |
 | `problem: status does not match the last history entry`, exit code 1 | `status` was edited by hand | Restore it from `history` |
-| `json.decoder.JSONDecodeError: ...` and a traceback, exit code 1 | A corrupt `run.json` (also breaks `run list`) | Repair the JSON by hand |
+| `cannot read ROOT/SLUG/run.json: ...; fix the file or restore it from a backup`, exit code 2 | A `run.json` that is not valid JSON; any action that reads it, `run list` included, stops here | Repair the JSON by hand, or restore it from a backup |
+| `ROOT/SLUG/run.json is not a run record (a JSON object); fix the file or restore it from a backup`, exit code 2 | A `run.json` that holds JSON other than an object, such as a list | Restore the record from a backup |
 | `cannot read backfill FILE: ...` | `run backfill` only: its JSON file is missing or not JSON ([run-local](run-local.md)) | Fix the file |
 | `FILE is a JSON object with key, row and optionally generic` | `run modal-row` only: its spec has the wrong shape ([modal-row](modal-row.md)) | Fix the spec |
-| `SLUG: total $nan`, exit code 0 | `--usd nan` is not refused | Do not pass NaN; fix the entry in `run.json` by hand |
 
 ## How it works
 
 1. `init` checks the slug (`path_for`), refuses an existing record and a blank readout rule, reads the prize snapshot, hashes the readout rule with SHA-256, and saves the record with status `planned`.
-2. `status` loads the record, checks the new status against `TRANSITIONS`, refuses `submitted` to `published` without `--announced`, appends `{at, status, note}` to `history`, and saves.
+2. `status` loads the record, refuses a stored status that is not one of `STATUSES`, checks the new status against `TRANSITIONS`, refuses `submitted` to `published` without `--announced`, appends `{at, status, note}` to `history`, and saves.
 3. `cost`, `record` and the `--slug` of other commands load the record, append one entry with the UTC time, and save the whole file again.
-4. `check` recomputes the readout hash, checks that the status is known, that each pair of steps in `history` is allowed, and that `status` equals the last step.
+4. `check` recomputes the readout hash, checks that the status is known, that `history` starts at `planned`, that each pair of steps in `history` is allowed, and that `status` equals the last step.
 
 The allowed steps (`TRANSITIONS` in `kit/ledger.py`):
 
@@ -309,10 +312,13 @@ python -m unittest tests.test_kit.LedgerTest tests.test_kit.CliTest.test_run_rou
 python -m unittest tests.test_verify -v
 ```
 
-`LedgerTest` in `tests/test_kit.py` covers the eligible volume and hash written by `init`, a readout edit caught by `check`, a `candidate` refused straight to `published` and `submitted` refused without `announced`, a `null` published, costs and the negative-cost refusal, and the blank-readout and `../escape` refusals. `CliTest.test_run_roundtrip` runs `init`, `check` and `list` on the command line with `--root`. `tests/test_verify.py` covers `add_provenance` and its refusal of a missing file, and a `verify` check stored with `--slug`. They do not cover `check`'s history and status problems, NaN costs, or `list` on a corrupt record.
+`LedgerTest` in `tests/test_kit.py` covers the eligible volume and hash written by `init`, a readout edit caught by `check`, a `candidate` refused straight to `published` and `submitted` refused without `announced`, a `null` published, costs and the negative-cost refusal, and the blank-readout and `../escape` refusals. `CliTest.test_run_roundtrip` runs `init`, `check` and `list` on the command line with `--root`. `tests/test_verify.py` covers `add_provenance` and its refusal of a missing file, and a `verify` check stored with `--slug`. `LedgerTest` also covers a history that does not start at `planned`, a cost that is not finite, and a corrupt record or unknown stored status raised as `LedgerError`; `CliTest` checks that `run` reports a corrupt record without a traceback. They do not cover `check`'s other history and status problems.
 
 ## History
 
+- 2026-10-17: `run check` reports a history that does not start at `planned`; before, such a history passed (`b4edc21`).
+- 2026-10-17: `run cost` refuses a cost that is not a finite number; before, `--usd nan` was stored and the total printed `$nan` (`bc75474`).
+- 2026-10-17: a `run.json` that is not JSON or not an object, or that holds an unknown status, is reported as a message with exit code 2; before, it ended in a `JSONDecodeError` or `KeyError` traceback with exit code 1 (`4941862`).
 - 2026-10-07: `run record` (`add_provenance`) and `add_check`, so `verify` and later `auc` attach checks with `--slug` (`99dba9e`).
 - 2026-10-06: first version, with the hashed readout rule, the status steps and the announcement guard (`2daee8e`).
 

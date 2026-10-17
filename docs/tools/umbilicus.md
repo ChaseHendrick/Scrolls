@@ -138,12 +138,12 @@ First-stage training by fold, its held-out score, and trimming written files.
 usage: pipeline.py [-h] --data DATA --out OUT [--size SIZE] [--width WIDTH]
                    [--epochs EPOCHS] [--time-s TIME_S] [--batch BATCH]
                    [--device DEVICE] [--no-end-rule]
-                   cmd [job]
+                   {job,collect,trim} [job]
 ```
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `cmd` | required | `job` (train one model and predict its held-out scrolls), `collect` (average seeds per fold, score against the published lines and the centroid control, write `result.json`), `trim` (drop end points from files already written). Any other word does nothing |
+| `cmd` | required | `job` (train one model and predict its held-out scrolls), `collect` (average seeds per fold, score against the published lines and the centroid control, write `result.json`), `trim` (drop end points from files already written). Any other word is refused with a usage error, exit code 2 |
 | `job` | none | For `job`: `fold<k>s<seed>` (k from 0 to 3) or `alls<seed>`. For `trim`: the source folder of `*_umbilicus.json` |
 | `--data DATA` | required | Folder of slice files |
 | `--out OUT` | required | Run folder (job, collect), or the destination folder (trim) |
@@ -300,6 +300,7 @@ The scripts import one another by file name (each puts its folder first on `sys.
 | `URL: STATUS` (a `RuntimeError` with a traceback) | A bucket or GitHub read failed 6 times | Check the network and retry; finished slice files are kept |
 | `listing PREFIX: ...` | A bucket listing did not return XML | Retry; check the prefix |
 | `bad job 'JOB': use fold<k>s<seed> or alls<seed>` | `pipeline.py job` with a malformed job name | Use, for example, `fold0s0` or `alls0` |
+| `pipeline.py: error: argument cmd: invalid choice: 'WORD' (choose from 'job', 'collect', 'trim')`, exit code 2 | `pipeline.py` with a mistyped command | Use `job`, `collect` or `trim`. Nothing ran |
 | `SCROLL: N control points are not at the slice file's heights (first z Z); use endcheck.py files without --data, or trim --no-end-rule` | `pipeline.py trim` on a file not written by this pipeline | Use `endcheck.py files` without `--data`, or `--no-end-rule` |
 | `SCROLL: control point heights are not the slice file's heights` | `endcheck.py files --data` on a file whose points are at other heights | Run it without `--data` |
 | `RUN: no refine_*.json or fold*.json` | `endcheck.py score` on a folder without job records | Point it at a first-stage or zoom-stage run folder |
@@ -344,10 +345,11 @@ Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`
 python -m unittest tests.test_umbilicus -v
 ```
 
-They cover the first stage's coordinate frame and augmentation, the zoom crops and offsets, `keep_band`, the papyrus level, the end-point support and trims (from the ends only, at 2 mm and 4 mm for each voxel size), trimming written files, `collect` and `chain-collect`, `predict.py` writing a trimmed file from weights, its refusal of other scans, `endcheck.py` windows and missing-chunk counts, and the range reader against a synthetic volume. All data is synthetic and read on the CPU; 14 of 34 tests skip without torch (34 ran in 4.6 s with 14 skipped, measured 2026-10-16). They do not read the bucket or the released weights.
+They cover the first stage's coordinate frame and augmentation, the zoom crops and offsets, `keep_band`, the papyrus level, the end-point support and trims (from the ends only, at 2 mm and 4 mm for each voxel size), trimming written files, `collect` and `chain-collect`, `predict.py` writing a trimmed file from weights, its refusal of other scans, `endcheck.py` windows and missing-chunk counts, the range reader against a synthetic volume, and `pipeline.py` refusing a mistyped command. All data is synthetic and read on the CPU; 14 of 40 tests skip without torch (40 ran in 5.3 s with 14 skipped, measured 2026-10-17, cloud container). They do not read the bucket or the released weights.
 
 ## History
 
+- 2026-10-17: `pipeline.py` refuses a command other than `job`, `collect` or `trim` with a usage error; before, a mistyped command did nothing and exited 0 (`c03e227`).
 - 2026-10-16: slice caches are keyed by scan, and a slice file with no CT is refused (`91bc14e`).
 - 2026-10-14: the tests set aside StrokeNet's same-named `pipeline` module (`8bf841b`).
 - 2026-10-14: first public release: `predict.py`, training and scoring scripts, the end-point rule, `ctcheck.py`, and held-out evidence; weights in release `umbilicus-v1` (`76e4591`).

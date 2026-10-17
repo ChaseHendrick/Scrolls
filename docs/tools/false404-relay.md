@@ -74,11 +74,10 @@ HEAD 0/0/0/1: 200
 {"requests": 11, "injected": 4, "injected_keys": 4, "upstream_false_404": 0, "upstream_404": 0, "upstream_errors": 0}
 ```
 
-A chosen GET looked like this (headers trimmed):
+A chosen GET looks like this (headers trimmed; the run above was made before `4277e97`, which dropped a second `Server: fault-relay ...` line from this answer):
 
 ```
 HTTP/1.1 404 Not Found
-Server: fault-relay Python/3.13.16
 Content-Type: application/xml
 Server: AmazonS3
 x-amz-request-id: 087C326AE6CA5359
@@ -193,14 +192,13 @@ Answers carry the upstream's status, headers (hop-by-hop ones dropped) and body.
 | `OSError: [Errno 98] Address already in use` and a traceback | `--port` is taken | Use another port, or `--port 0` |
 | The client gets `502` and `fault-relay: the bucket did not answer` | 10 tries upstream all failed (network errors, or 404s that were not `NoSuchKey`) | Check the network and the upstream URL; `upstream_errors` and `upstream_false_404` in the counts say which |
 | `injected` stays 0 | `--rate 0`, `--bad 0`, no chunk key requested, or the client only sent HEAD | Raise `--rate`; check the client reads chunks by GET through the relay URL |
-| A client that reads the first `Server` header sees `fault-relay Python/...` | The standard library's handler sends its own `Server` and `Date` headers before the relayed or replayed ones, so both appear | Clients that look at the body (`NoSuchBucket` against `NoSuchKey`), as villa #2060 does, are not affected |
 
 ## How it works
 
 1. Start a threaded HTTP server on `127.0.0.1:PORT` (`http.server.ThreadingHTTPServer`, HTTP/1.1).
-2. For each GET, decide whether the path is chosen (`chosen`): it must be a chunk key (`CHUNK = \d+(\.\d+)*` on the last path part) and the first 8 bytes of SHA-256 of `SEED:PATH`, as a fraction of 2^64, must be below `--rate`. Count GETs per chosen path under a lock.
+2. For each GET, decide whether the path is chosen (`chosen`): it must be a chunk key (`CHUNK = \d+(\.\d+)*` on the last path part) and the first 8 bytes of SHA-256 of `SEED:PATH`, as a fraction of 2^64, must be below `--rate`. Count GETs per chosen chunk key (the path without its query string) under a lock, so `KEY?x-id=GetObject` and `KEY` share one count.
 3. If this is one of the first `--bad` GETs of a chosen path, answer with `false_404`: status 404, `Content-Type: application/xml`, `Server: AmazonS3`, an `x-amz-request-id` of 16 hex digits from SHA-256 of `PATH:N`, and the body `<Error><Code>NoSuchBucket</Code><Message>The specified bucket does not exist</Message>...`, as S3 sent in villa #2058.
-4. Otherwise forward the request to the upstream with `urllib.request` (a new connection each time, `User-Agent: fault-relay`, the client's `Range` header kept, 60 s timeout). Return the upstream's status, headers and body; drop hop-by-hop headers (`HOP`) and set `Content-Length` to the body's length (for HEAD, the upstream's).
+4. Otherwise forward the request to the upstream with `urllib.request` (a new connection each time, `User-Agent: fault-relay`, the client's `Range` header kept, 60 s timeout). Return the upstream's status, headers and body; drop hop-by-hop headers (`HOP`) and set `Content-Length` to the body's length (for HEAD, the upstream's). Each answer carries one `Server` and one `Date` header: the upstream's (or the false 404's `Server: AmazonS3`) when it has them, the relay's own otherwise.
 5. A GET that comes back 404 with an S3 code other than `NoSuchKey` is a real false 404: count it in `upstream_false_404`, wait `min(2.0, 0.1 * 2 ** attempt)` seconds and try again. A connection error or an unreadable error body counts in `upstream_errors` and waits `min(4.0, 0.25 * 2 ** attempt)`. After `UPSTREAM_TRIES = 10` tries, answer 502.
 6. Log each answer as one JSON line when `--log` is set.
 
@@ -224,11 +222,13 @@ Seconds of CPU; the time is the client's and the bucket's. On a fake local bucke
 python -m unittest tests.test_false404_relay -v
 ```
 
-Six tests, about 3 s, standard library only, against a local S3-like server over a temporary folder. They cover which keys count as chunks, a choice that is fixed by seed and near the rate, a chosen key that gets two false 404s with S3's headers and then its data (also with a `Range`), metadata and HEAD passing through, the counts and the log lines, rate 0 passing everything including a real `NoSuchKey`, a bucket false 404 retried and hidden from the client, and `url_for`. They do not run VC3D, the real bucket, the 502 path, or the command line.
+Eight tests, about 3 s, standard library only, against a local S3-like server over a temporary folder. They cover which keys count as chunks, a choice that is fixed by seed and near the rate, a chosen key that gets two false 404s with S3's headers and then its data (also with a `Range`), metadata and HEAD passing through, the counts and the log lines, rate 0 passing everything including a real `NoSuchKey`, a bucket false 404 retried and hidden from the client, `url_for`, one count per key whatever the query string, and one `Server` and one `Date` header on both the false 404 and the bucket's answer. They do not run VC3D, the real bucket, the 502 path, or the command line.
 
 ## History
 
 - 2026-10-12: first version, used for the renders behind villa #2058 and its draft fix #2060 (`6be238e`).
+- 2026-10-17: each answer carries one `Server` and one `Date` header; before, the standard library's handler sent its own `Server: fault-relay ...` and `Date` ahead of the relayed or replayed ones, so a client reading the first `Server` header saw the relay's (`4277e97`).
+- 2026-10-17: false 404s are counted per chunk key; before, the count was per path with its query string, so `KEY?x-id=GetObject` and `KEY` each got their own `--bad` false 404s (`e2f4cc5`).
 
 ## Related
 

@@ -58,7 +58,7 @@ On two synthetic 1,600 x 1,600 uint8 maps (letter-sized strokes placed only in r
 ```
 forward: row score 320.2, period 4.99 mm at -90.0 deg, p99 1.0, 15.30% over 0.5
 reverse: row score 6.8, period 4.15 mm at -146.3 deg, p99 0.669, 5.48% over 0.5
-triage only: Bullo27 reports held-out controls at 73-148 and 6 cm2 control tiles as low as 6.8. Look at the map.
+triage only: Bullo27 reports PHerc0139 w045 and w033 (not held out from ink_9um) at 73-148 and 6 cm2 tiles of them as low as 6.8. Look at the map.
 ```
 
 The two maps alone scored 144.8 and 115.3; their average scored higher because the noise averaged out. A synthetic map of perfect rows scores in the millions, since the score has no upper bound.
@@ -217,10 +217,11 @@ Most of the dense time on large maps is the area resize (34.4 of 39.7 s on the f
 python -m unittest tests.test_rowscore tests.test_rowscore_fast -v
 ```
 
-Nineteen tests. `tests/test_rowscore.py` (11): rows 5 mm apart score above 50 at about 5 mm and 90 degrees, speckle scores below 20, a 1 mm period scores under a third of a 5 mm one, a 200 px map gets no score, float maps score like uint8, maps of two shapes are refused, holes on a grid erode the whole map, the area resize equals a block mean and keeps the mean on fractional factors, the erosion and its edge rule, and the command line with two averaged forward maps and a reverse. `tests/test_rowscore_fast.py` (8): sparse coefficients equal the dense ones, the default never calls the sparse path and adds no fields, the sparse resize matches within float32 tolerance while a displaced input fails that comparison, score, period and angle agree on a 1,023 px grid, a tied spectrum may pick either orientation, scipy missing is an error, NaN keeps the dense path, and the command line marks both directions only when asked. They skip without numpy and tifffile (and scipy for the fast tests). They do not cover real maps, the `band empty` reason, the run without scipy's largest-piece step, or `--slug`.
+Twenty tests. `tests/test_rowscore.py` (12): rows 5 mm apart score above 50 at about 5 mm and 90 degrees, speckle scores below 20, a 1 mm period scores under a third of a 5 mm one, a 200 px map gets no score, float maps score like uint8, maps of two shapes are refused, holes on a grid erode the whole map, the area resize equals a block mean and keeps the mean on fractional factors, the erosion and its edge rule, the command line with two averaged forward maps and a reverse, and a closing line that does not call PHerc0139 held out. `tests/test_rowscore_fast.py` (8): sparse coefficients equal the dense ones, the default never calls the sparse path and adds no fields, the sparse resize matches within float32 tolerance while a displaced input fails that comparison, score, period and angle agree on a 1,023 px grid, a tied spectrum may pick either orientation, scipy missing is an error, NaN keeps the dense path, and the command line marks both directions only when asked. They skip without numpy and tifffile (and scipy for the fast tests). They do not cover real maps, the `band empty` reason, the run without scipy's largest-piece step, or `--slug`.
 
 ## History
 
+- 2026-10-17: the closing `triage only:` line names PHerc0139 w045 and w033 and says they are not held out from `ink_9um`; before, it called Bullo27's reference scores held-out controls (`851a29d`).
 - 2026-10-08: the module text no longer calls Bullo27's w045 and w033 scores held out, since `ink_9um` trained on w045's 2.4 um render (`d841e06`).
 - 2026-10-07: `--fast-resize`, an opt-in sparse area resize, 7.0 times faster on a 305-million-pixel map, with `resize_mode` in the JSON; the dense default is unchanged (`047ee06`, [PR #27](https://github.com/ChaseHendrick/Scrolls/pull/27)).
 - 2026-10-07: first version, a port of Bullo27's `rowscore.py` that averages forward and reverse maps (`b533efa`).

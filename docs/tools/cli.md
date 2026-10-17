@@ -180,7 +180,7 @@ The entry point prints nothing of its own except argparse's usage, help and erro
 | Exit code | Meaning |
 | --- | --- |
 | `0` | `--help`, or the command's handler returned 0 (or `None`) |
-| `1` | Python could not find the package (`No module named kit`), or a command's own failure or an uncaught error with a traceback; see the command's page |
+| `1` | Python could not find the package (`No module named kit`), the output pipe was closed before the command finished writing (no traceback), or a command's own failure or an uncaught error with a traceback; see the command's page |
 | `2` | A usage error from argparse (no command, an unknown command or action, a bad option), or a command's own bad-input exit; see the command's page |
 | `3` | Only from commands that use it, such as `verify` (`pass-uncontrolled`) and `run watch --exit-code` (something new queued) |
 
@@ -195,6 +195,7 @@ The entry point prints nothing of its own except argparse's usage, help and erro
 | `/usr/bin/python3: No module named kit`, exit code 1 | `python -m kit` run outside the clone's root, with the package not installed | `cd` to the repository root, or install the package as [CHANGELOG.md](../../CHANGELOG.md) shows and use `scrolls-workbench` |
 | `No module named numpy; python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)` | `letterread` or `letterlines` needs a package the reader extra brings (`import_advice`) | Run the install line it prints |
 | `No module named zarr; python -m pip install zarr (or "scrolls-workbench[all]", Python 3.11 or newer)` | A letter command was given a zarr input without zarr installed (`import_advice`) | Install zarr, on Python 3.11 or newer for zarr 3 |
+| No message, exit code 1, and output cut short | A reader that stops early, as in `python -m kit prizes --json \| head -1`, closed the pipe; the command ends quietly, as Python's documentation advises for SIGPIPE | Nothing, when the cut was meant; otherwise write the output to a file |
 | A command's own message | That command's input or environment | See the command's page, linked in the table above |
 
 ## How it works
@@ -204,7 +205,7 @@ The entry point prints nothing of its own except argparse's usage, help and erro
 3. `main()` gets the parser from `_parser(prog, sub_progs)`. The first call builds it with `build_parser` and stores it in `_PARSERS` under the key `(prog, sorted sub_progs)`; later calls in the same process reuse it.
 4. It parses the arguments with `_parse`, which deep-copies the namespace so a handler that changes a list default cannot affect a later call, exactly as with a fresh parser.
 5. Special case: when the first word is `run` and the arguments hold `--`, it parses only the part before `--`. If the action is `local`, it appends everything after `--` to the child command (`args.cmd`); otherwise it parses the whole line as usual. This works around Python 3.10's argparse, which mishandles a trailing `nargs="*"` after wrapper options (commit `7492129`).
-6. It calls `args.func(args)`, the handler that `set_defaults(func=...)` attached to the command, and returns its value as the exit code.
+6. It calls `args.func(args)`, the handler that `set_defaults(func=...)` attached to the command, through `_run`, which puts the typed command line in `kit.verify.RUNNING` while it runs (so an install hint names the command actually run) and flushes stdout inside the call. A `BrokenPipeError` there, from a reader that closed the pipe early, points stdout at the null device and returns 1 with no traceback. Otherwise the handler's value is the exit code.
 7. A one-command console script (`_console`) builds a fresh parser with `sub_progs={command: script}`, takes that command's sub-parser, parses the arguments with it, and calls its handler.
 
 ## Cost and time
@@ -224,13 +225,15 @@ The entry point prints nothing of its own except argparse's usage, help and erro
 ## Tests
 
 ```bash
-python -m unittest tests.test_cli_parser_cache tests.test_packaging tests.test_localcost_regressions -v
+python -m unittest tests.test_cli_parser_cache tests.test_packaging tests.test_localcost_regressions tests.test_kit.CliTest -v
 ```
 
-`tests/test_cli_parser_cache.py` covers the parser cache (one parser per key, the same namespace as a fresh parser, no leaking list defaults, 20 calls under 5 s). `tests/test_packaging.py` covers the console scripts (each in `pyproject.toml` points at a function here, the one-command scripts equal `CONSOLE_SCRIPTS`, each shows its own name in usage and errors, `scrolls-workbench` runs `prizes` and refuses an unknown command with exit code 2) and that the package version comes from `kit.__version__`. `tests/test_localcost_regressions.py` covers the `run ... local SLUG -- COMMAND` split. `tests/test_repo.py` checks that every documented `python -m kit` command exists, `tests/test_letterdemo.py` runs the `scrolls-letterdemo` function, and `tests/test_letter_scripts.py` checks that `CITATION.cff`'s version equals `__version__`. These ran in 0.14 s here (16 tests, 2026-10-16). They do not install the package or run the console scripts as installed executables; the CI workflow does that (its page is [workbench-package](workbench-package.md)).
+`tests/test_cli_parser_cache.py` covers the parser cache (one parser per key, the same namespace as a fresh parser, no leaking list defaults, 20 calls under 5 s). `tests/test_packaging.py` covers the console scripts (each in `pyproject.toml` points at a function here, the one-command scripts equal `CONSOLE_SCRIPTS`, each shows its own name in usage and errors, `scrolls-workbench` runs `prizes` and refuses an unknown command with exit code 2) and that the package version comes from `kit.__version__`. `tests/test_localcost_regressions.py` covers the `run ... local SLUG -- COMMAND` split. `tests/test_kit.py`'s `CliTest` checks that the module docstring names every command and that a reader that stops early ends `prizes --json` and `cost` with exit code 1 and no traceback. `tests/test_repo.py` checks that every documented `python -m kit` command exists, `tests/test_letterdemo.py` runs the `scrolls-letterdemo` function, and `tests/test_letter_scripts.py` checks that `CITATION.cff`'s version equals `__version__`. These ran in 0.14 s here (16 tests, 2026-10-16). They do not install the package or run the console scripts as installed executables; the CI workflow does that (its page is [workbench-package](workbench-package.md)).
 
 ## History
 
+- 2026-10-17: a command whose output pipe closes early (`python -m kit prizes | head -1`) ends with exit code 1 and no traceback; before, it printed a `BrokenPipeError` traceback (`f3b1ac8`).
+- 2026-10-17: the module docstring's command list names `meshaudit` and `strokenet`, which it had left out (`e7dce03`).
 - 2026-10-16: package version 0.2.0 in `kit/__init__.py`, with `CHANGELOG.md` (`00b0097`).
 - 2026-10-16: the parser is built once per process and each parsed namespace is deep-copied; a repeated `main()` went from 13 ms to 2 ms per call (`88fbee4`).
 - 2026-10-14: the installable package `scrolls-workbench` with console scripts `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines` and `scrolls-letterdemo` (`2582ab7`).

@@ -111,8 +111,8 @@ usage: python -m kit overlap [-h] --voxel-um VOXEL_UM [--within WITHIN]
 | `mesh_b` | required | Segment B's tifxyz folder, in the same volume as A |
 | `--voxel-um VOXEL_UM` | required | Voxel size of the mesh coordinates in um, such as 9.366; turns grid steps into um and cm2 |
 | `--within WITHIN` | `12` | Gap in voxels (an integer) that counts as one sheet: sets `same_sheet_share` and which points the label Dice uses |
-| `--labels-a LABELS_A` | none | Folder holding A's `inklabels.zarr` and `supervision.zarr`. Used only together with `--labels-b` |
-| `--labels-b LABELS_B` | none | The same for B. With only one of the two, the label check is skipped without a message |
+| `--labels-a LABELS_A` | none | Folder holding A's `inklabels.zarr` and `supervision.zarr`. Give it together with `--labels-b`, or neither |
+| `--labels-b LABELS_B` | none | The same for B. Giving only one of the two is refused |
 | `--level LEVEL` | `2` | Pyramid level of the label stores to read (`auc.DEFAULT_LEVEL`); any level that spans the whole surface works |
 | `--draws DRAWS` | `200` | Displaced matches for the label null; a draw with fewer than 50 points is dropped |
 | `--seed SEED` | `0` | Seed of the displaced matches; the same seed gives the same null |
@@ -137,8 +137,8 @@ usage: python -m kit collate [-h] --voxel-um VOXEL_UM [--gaps GAPS [GAPS ...]]
 | `--voxel-um VOXEL_UM` | required | Voxel size of the mesh coordinates in um; turns gaps and grid steps into um |
 | `--gaps GAPS ...` | `0 3 6 9 12 18 30` | Gap bin edges in voxels; each bin holds gaps above its lower edge and up to its upper edge |
 | `--top TOP` | `0.2` | A strong spot is in this top fraction of its map's nonzero values over the whole trace; also the chance level of `reappear` |
-| `--control-a CONTROL_A` | none | Control map of A, such as high-passed raw CT or the reverse-depth map. Used only together with `--control-b` |
-| `--control-b CONTROL_B` | none | Control map of B. With only one of the two, no control is computed and nothing says so |
+| `--control-a CONTROL_A` | none | Control map of A, such as high-passed raw CT or the reverse-depth map. Give it together with `--control-b`, or neither |
+| `--control-b CONTROL_B` | none | Control map of B. Giving only one of the two is refused |
 | `--box Y0 Y1 X0 X1` | none | Keep only A's points inside rows Y0 to Y1 and columns X0 to X1 of map A (pixels of map A, ends excluded): one candidate area |
 | `--draws DRAWS` | `50` | Displaced matches for the null; a draw with fewer than 30 points is dropped |
 | `--seed SEED` | `0` | Seed of the displaced matches, shared over the bins and the map and control |
@@ -157,8 +157,8 @@ print(r["same_sheet_share"], r["labels"]["dice"], r["labels"]["null_dice_p99"])
 | `load_mesh(path, upsample=UPSAMPLE)` | dict: `points` (N, 3) float64 voxels, `rows` and `cols` on the upsampled grid, `shape`, `path`, `surface_px_per_point` (1 / scale / upsample) | `VerifyError` for an unreadable folder, grids that are not 2D of one shape, fewer than 4 valid points, or missing numpy or scipy; `ImportError` without tifffile | Holes: non-finite, any coordinate below 0, or all zero. The scale is `meta.json`'s `scale[0]`, 0.05 when missing |
 | `sample_grid(array, mesh)` | 1D array, one value per mesh point | Nothing of its own | Nearest neighbour of a 2D array that spans the whole surface, by proportional grid position |
 | `match(a, b)` | `(distances, indices)`: gaps in voxels from each point of `a`, and the index of `b`'s nearest point | `VerifyError` without scipy | A `cKDTree` query in 3D |
-| `overlap(mesh_a, mesh_b, voxel_um, within=12, labels_a=None, labels_b=None, level='2', draws=200, seed=0, upsample=UPSAMPLE)` | The `overlap` dict under Outputs | `VerifyError` for bad meshes or label stores | What `kit overlap` runs; labels only when both folders are given |
-| `collate(mesh_a, mesh_b, map_a, map_b, voxel_um, gaps=(0, 3, 6, 9, 12, 18, 30), top=0.2, control_a=None, control_b=None, box=None, draws=50, seed=0, upsample=UPSAMPLE)` | The `collate` dict under Outputs | `VerifyError` for bad meshes or maps, or a box with no point of A; `FileNotFoundError` for a missing `.npy` | What `kit collate` runs; the control only when both control maps are given |
+| `overlap(mesh_a, mesh_b, voxel_um, within=12, labels_a=None, labels_b=None, level='2', draws=200, seed=0, upsample=UPSAMPLE)` | The `overlap` dict under Outputs | `VerifyError` for bad meshes or label stores, or only one of `labels_a`, `labels_b` | What `kit overlap` runs; labels only when both folders are given |
+| `collate(mesh_a, mesh_b, map_a, map_b, voxel_um, gaps=(0, 3, 6, 9, 12, 18, 30), top=0.2, control_a=None, control_b=None, box=None, draws=50, seed=0, upsample=UPSAMPLE)` | The `collate` dict under Outputs | `VerifyError` for bad meshes or maps, a box with no point of A, or only one of `control_a`, `control_b`; `FileNotFoundError` for a missing `.npy` | What `kit collate` runs; the control only when both control maps are given |
 | `format_overlap(r)` | str | `KeyError` for a dict that is not an `overlap()` result | The text `kit overlap` prints |
 | `format_collate(r)` | str | `KeyError` for a dict that is not a `collate()` result | The text `kit collate` prints |
 | `dumps(result)` | str | Nothing of its own | JSON with an indent of 2, as `--json` prints |
@@ -239,7 +239,8 @@ Text by default (see Quick start). With `--json`, `overlap` prints one object:
 | Every `collate` bin shows `(0 pts)`, exit code 0 | The two traces are the same mesh: every gap is exactly 0, and the first bin starts above 0 | Compare two different traces |
 | A bin with no `map r` in the text, or `"map": null` | Under 30 points in that bin with both maps nonzero | Read the bins that have points, or widen `--gaps` |
 | `labels: too few points labelled on both traces` | Under 50 points supervised on both traces within `--within` | The traces' labelled areas do not overlap; there is no label check to make |
-| No `labels` line, or no `control` in the result | Only one of `--labels-a`, `--labels-b` (or of `--control-a`, `--control-b`) was given | Give both |
+| `label agreement needs labels for both segments: give --labels-a and --labels-b, or neither`, exit code 2 | `kit overlap` with only one of `--labels-a`, `--labels-b` | Give both, or neither |
+| `the control needs a map for both segments: give --control-a and --control-b, or neither`, exit code 2 | `kit collate` with only one of `--control-a`, `--control-b` | Give both, or neither |
 
 ## How it works
 
@@ -282,10 +283,11 @@ Most of the time goes to the displaced draws. It runs on any machine; nothing he
 python -m unittest tests.test_overlap -v
 ```
 
-Three tests, about 3 s: `overlap` finds two flat synthetic traces 3 voxels apart to be one sheet and two 200 voxels apart to be separate; `collate` finds high correlation and reappearance for one map copied to both traces and low correlation for a smooth-noise control. The third test in the file checks `kit auc`'s block bootstrap. They skip without numpy, scipy and tifffile. They do not cover the labels path (Dice and its null), `--box`, the command line, the error messages, holes, or real data; this page's real PHerc0841 run covers the labels path once.
+Four tests, about 3 s: `overlap` finds two flat synthetic traces 3 voxels apart to be one sheet and two 200 voxels apart to be separate; `collate` finds high correlation and reappearance for one map copied to both traces and low correlation for a smooth-noise control. Another refuses only one of the two label folders or control maps. The last test in the file checks `kit auc`'s block bootstrap. They skip without numpy, scipy and tifffile. They do not cover the labels path (Dice and its null), `--box`, the command line, the other error messages, holes, or real data; this page's real PHerc0841 run covers the labels path once.
 
 ## History
 
+- 2026-10-17: only one of `--labels-a`, `--labels-b` (or of `--control-a`, `--control-b`) is refused with a message; before, the label check or the control was skipped without a word (`9c2fdb7`).
 - 2026-10-09: the module text says the team's PHerc0841 maps used for collation are probably in-sample there (`3ba683f`, [Hecate log](../logs/2026-10-09-pherc0841-hecate.md)).
 - 2026-10-07: first version of `kit overlap` and `kit collate`, with tests, after the log's scripts (`25070df`, [overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md)).
 

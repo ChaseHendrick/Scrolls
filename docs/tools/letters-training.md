@@ -121,7 +121,7 @@ usage: gen_dataset.py [-h] [--n N] [--shard SHARD] [--seed SEED]
 | `--n N` | `20000` | Lines to write; `n // shard` shards are written |
 | `--shard SHARD` | `1000` | Lines per shard file |
 | `--seed SEED` | `0` | Seed; shard i uses seed x 100003 + i, and the file name carries the seed |
-| `--domain DOMAIN` | none | `map` (ink-map look) or `mask` (drawn-label look); by default each line's look is drawn at random. The usage line lists `None`, but `--domain None` is refused (`invalid choice: 'None'`, seen 2026-10-16): leave the option out instead |
+| `--domain DOMAIN` | `None` | `map` (ink-map look) or `mask` (drawn-label look) for every line; `None`, or leaving the option out, draws each line's look at random |
 | `--procs PROCS` | the number of CPUs (`os.cpu_count()`) | Worker processes |
 | `--bank BANK` | none | A `realforms.py` bank: draw a share of lines from real letter crops |
 | `--bank-split BANK_SPLIT` | `train` | `train`, or `val` (the 21 held-out papyri) |
@@ -543,6 +543,7 @@ python -m unittest tests.test_letter_scripts tests.test_letterdata -v
 
 ## History
 
+- 2026-10-17: `gen_dataset.py --domain None` is accepted and means the default, a random look per line; before, the usage line listed `None` but the option refused it with `invalid choice: 'None'` (`0255790`).
 - 2026-10-16: `p1667_fetch.py` refuses label keys that would land outside `OUT` (`af2e07d`).
 - 2026-10-14: `letters-v2-ccby` (CC BY 4.0, trained without ICDAR data) becomes the default weights the benchmark and demo scripts use (`0366ed7`).
 - 2026-10-14: fine-tuning on your own lines (`finetune_maps.py` takes `letterlines` output) (`33a0ad3`).
