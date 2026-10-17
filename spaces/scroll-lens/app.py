@@ -124,6 +124,11 @@ GPU_REFUSALS = ("ZeroGPU quota exceeded", "ZeroGPU illegal duration", "ZeroGPU p
 CPU_SLOT = threading.Semaphore(1)       # one CPU fallback run at a time, so the page keeps answering
 
 
+def _gpu_text(exc):
+    """A ZeroGPU error's own message (gr.Error's str() is its repr, with quotes)."""
+    return str(getattr(exc, "message", None) or exc).strip().strip("'\"").strip()
+
+
 def _is_gpu_refusal(exc):
     return (str(getattr(exc, "title", "") or "") in GPU_REFUSALS or "GPU task aborted" in str(exc)
             or "No GPU was available" in str(exc))
@@ -152,14 +157,14 @@ def run_models(cube, layers, tta, allow_cpu=True):
         except Exception as exc:  # noqa: BLE001
             if not _is_gpu_refusal(exc):
                 if str(getattr(exc, "title", "")) == "ZeroGPU worker error":
-                    raise LensError(f"the models failed on the GPU ({str(exc).strip()[:200]}); try again, or try "
+                    raise LensError(f"the models failed on the GPU ({_gpu_text(exc)[:200]}); try again, or try "
                                     "another point") from None
                 raise
             if not allow_cpu:
-                raise LensError(f"ZeroGPU refused this call: {str(exc).strip()[:300]} Pass allow_cpu=True to run "
+                raise LensError(f"ZeroGPU refused this call: {_gpu_text(exc)[:300]} Pass allow_cpu=True to run "
                                 f"the middle {CPU_SIZE}³ on the CPU instead.") from None
             log(f"GPU refused ({exc}); running on the CPU")
-            note = (f"ZeroGPU refused the run ({str(exc).strip().rstrip('. ')[:200]}), so the models ran on the "
+            note = (f"ZeroGPU refused the run ({_gpu_text(exc).rstrip('. ')[:200]}), so the models ran on the "
                     f"Space's CPU, on the middle {CPU_SIZE}³ voxels. ZeroGPU time comes back each day; signing in "
                     "to Hugging Face gives more.")
             return cpu_run(eng, cube, layers), note
@@ -256,6 +261,15 @@ class Cube:
             s = s - cos(negative)
         return s.astype(np.float32)
 
+    def reference_agreement(self):
+        """The organizers' reference against the 3D ink model for this cube, with the control range (lens.agreement),
+        worked out once from the arrays held here."""
+        if self.ref_sim is None or "ink" not in self.result:
+            return None
+        if getattr(self, "_ref_agreement", None) is None:
+            self._ref_agreement = lens.agreement(self.ref_sim, self.result["ink"])
+        return self._ref_agreement
+
     def vector(self, voxel):
         """The unit 864-number embedding of the patch holding a cube voxel (z, y, x)."""
         import numpy as np
@@ -303,7 +317,7 @@ class Cube:
             body = len(hjson).to_bytes(4, "little") + hjson
             body += b"\0" * ((-len(body)) % 4)
             Path(path).parent.mkdir(parents=True, exist_ok=True)
-            tmp = Path(f"{path}.part")
+            tmp = Path(f"{path}.{uuid.uuid4().hex[:8]}.part")      # concurrent first opens never share it
             tmp.write_bytes(gzip.compress(body + b"".join(blobs), compresslevel=3, mtime=0))
             os.replace(tmp, path)
             self.data_path = str(path)
@@ -584,12 +598,13 @@ def numbers(state):
     lines.append(f"{src} {('Model time: ' + secs + '.') if secs else ''} {view['note']}".strip())
     lines.append("**What each model saw of this scroll in training.** " + " ".join(
         f"{lens.LAYER_TITLES[k]}: {v['role'][k]}" for k in lens.LAYERS))
-    ag = r.get("agreement_with_ink_model")
+    ag = cube.reference_agreement()
     if ag and ag.get("auc") is not None:
         lines.append(f"**Check.** The organizers' ink reference picks out the patches the 3D ink model marks as ink "
-                     f"with AUC {ag['auc']:.2f}; the control (ink mask moved half a cube) gives "
-                     f"{ag['auc_control_shifted']:.2f} and should sit near 0.5. Ink covers "
-                     f"{ag['ink_patch_fraction']:.1%} of patches. Agreement between two models, not ground truth.")
+                     f"with AUC {ag['auc']:.2f}; controls (the ink mask moved away from its place) give "
+                     f"{ag['auc_control_p05']:.2f} to {ag['auc_control_p95']:.2f}, and the AUC means something only "
+                     f"above that range. Ink covers {ag['ink_patch_fraction']:.1%} of patches. Agreement between two "
+                     "models, not ground truth.")
     if cube.ref_sim is not None:
         lines.append(f"Patches at or above the organizers' threshold (cosine {lens.TAU}) to their reference: "
                      f"{float((cube.ref_sim >= lens.TAU).mean()):.1%}.")
@@ -600,12 +615,14 @@ def numbers(state):
             a = lens.agreement(s, cube.result["ink"])
             if a["auc"] is not None:
                 extra = (f" Against the 3D ink model your concept scores AUC {a['auc']:.2f} "
-                         f"(control {a['auc_control_shifted']:.2f}).")
+                         f"(controls {a.get('auc_control_p05', 0):.2f} to {a.get('auc_control_p95', 0):.2f}).")
         clicked = {c["cube"] for c in state["pos"] + state["neg"] if c["cube"] != "file"}
         loaded = any(c["cube"] == "file" for c in state["pos"])
+        loaded_not = any(c["cube"] == "file" for c in state["neg"])
         lines.append(f"**Your concept:** {len([c for c in state['pos'] if c['cube'] != 'file'])} positive and "
-                     f"{len(state['neg'])} negative clicks from {len(clicked)} cube(s)"
-                     f"{', plus your concept.npy' if loaded else ''}.{extra}")
+                     f"{len([c for c in state['neg'] if c['cube'] != 'file'])} negative clicks from {len(clicked)} "
+                     f"cube(s){', plus your concept.npy' if loaded else ''}"
+                     f"{' and concept_not.npy' if loaded_not else ''}.{extra}")
     lines.append("_Model output, not a reading. A cube is smaller than one letter._")
     return "\n\n".join(lines)
 
@@ -1510,8 +1527,9 @@ def build_demo():
         if q.get("v"):
             try:
                 vid = lens.volume_id(q["v"])
-                fields = [vid] + [int(q[k]) if str(q.get(k, "")).isdigit() else gr.skip() for k in "zyx"]
-                bad = [k for k in "zyx" if not str(q.get(k, "")).isdigit()]
+                ok = {k: str(q.get(k, "")).isascii() and str(q.get(k, "")).isdigit() for k in "zyx"}
+                fields = [vid] + [int(q[k]) if ok[k] else gr.skip() for k in "zyx"]
+                bad = [k for k in "zyx" if not ok[k]]
                 if bad:
                     problems.append(f"{', '.join(bad)} must be whole numbers of voxels")
                 tab = gr.Tabs(selected="point")
@@ -1535,6 +1553,8 @@ def build_demo():
         if not q.get("v"):
             p = state["view"]["point"]
             fields = [state["view"]["volume"], p[0], p[1], p[2]]
+        if not q.get("size"):
+            size = gr.update(value=state["view"]["size"])
         return shown(state) + fields + [size, cube_id, tab]
 
     with gr.Blocks(title="Scroll Lens", delete_cache=(1800, 3600)) as demo:
