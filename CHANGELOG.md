@@ -8,6 +8,10 @@ To install a fixed version, name its tag:
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.2.0"
 ```
 
+## Unreleased
+
+- **Segmentation model zoo** (`python -m kit segzoo datalist`): refuse duplicate case/channel files, mismatched label endings, malformed dataset metadata, empty datasets and fewer than two folds before writing an Auto3DSeg training plan. Previously duplicates could silently replace an input and zero folds caused a traceback. Valid datasets keep the same fold assignments.
+
 ## 0.2.0 (16 October 2026)
 
 The first tagged version. It holds everything released from this repository from 14 to 16 October 2026.

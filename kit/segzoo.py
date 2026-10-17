@@ -325,6 +325,8 @@ def _case_id(name, channel_suffix=True):
 
 def fold_of(case, folds):
     """A case's fold from the sha256 of its id: fixed, independent of file order and machine."""
+    if type(folds) is not int or folds < 2:
+        raise ValueError("folds must be an integer of at least 2")
     return int(hashlib.sha256(case.encode()).hexdigest(), 16) % folds
 
 
@@ -334,16 +336,30 @@ def build_datalist(raw, folds=5, modality=None):
     Every case in imagesTr must have its label in labelsTr and every channel the dataset.json names; extra or
     missing files raise ValueError. Cases go to folds by fold_of, so Auto3DSeg and an nnU-Net run told the same
     split train on the same cases."""
+    # Check even an empty dataset before iterating, and before write_datalist creates any output.
+    fold_of("", folds)
     raw = Path(raw)
     meta_path = raw / "dataset.json"
     if not meta_path.is_file():
         raise ValueError(f"no dataset.json in {raw}")
     meta = json.loads(meta_path.read_text())
+    if not isinstance(meta, dict):
+        raise ValueError("dataset.json must contain an object")
     channels = meta.get("channel_names") or meta.get("modality")
     if not isinstance(channels, dict) or not channels:
         raise ValueError("dataset.json has no channel_names")
     n_ch = len(channels)
+    if set(channels) != {str(i) for i in range(n_ch)}:
+        raise ValueError("dataset.json channel_names keys must be consecutive integers starting at 0")
     ending = meta.get("file_ending")
+    if ending is not None and ending not in SUFFIXES:
+        raise ValueError(f"unsupported dataset file_ending {ending!r}; supported: {', '.join(SUFFIXES)}")
+    label_map = meta.get("labels", {})
+    if not isinstance(label_map, dict):
+        raise ValueError("dataset.json labels must be an object")
+    want = meta.get("numTraining")
+    if want is not None and (type(want) is not int or want < 1):
+        raise ValueError("dataset.json numTraining must be a positive integer")
     images, labels = raw / "imagesTr", raw / "labelsTr"
     if not images.is_dir() or not labels.is_dir():
         raise ValueError(f"{raw} needs imagesTr/ and labelsTr/")
@@ -356,18 +372,26 @@ def build_datalist(raw, folds=5, modality=None):
         case, ch = _case_id(p.name)
         if ch >= n_ch:
             raise ValueError(f"{p.name}: channel {ch} but dataset.json names {n_ch}")
-        cases.setdefault(case, {})[ch] = f"imagesTr/{p.name}"
+        chans = cases.setdefault(case, {})
+        if ch in chans:
+            raise ValueError(f"duplicate image for case {case!r} channel {ch}: {chans[ch]} and {p.name}")
+        chans[ch] = f"imagesTr/{p.name}"
     label_files = {}
     for p in sorted(labels.iterdir()):
         if p.name.startswith(".") or not p.is_file():
             continue
+        if ending and not p.name.endswith(ending):
+            raise ValueError(f"{p.name} does not end with the dataset's file_ending {ending!r}")
         case, _ = _case_id(p.name, channel_suffix=False)
+        if case in label_files:
+            raise ValueError(f"duplicate label for case {case!r}: {label_files[case]} and {p.name}")
         label_files[case] = f"labelsTr/{p.name}"
     missing = sorted(c for c in cases if c not in label_files)
     orphans = sorted(c for c in label_files if c not in cases)
     if missing or orphans:
         raise ValueError(f"cases without labels: {missing[:5]}; labels without images: {orphans[:5]}")
-    want = meta.get("numTraining")
+    if not cases:
+        raise ValueError("imagesTr contains no training cases")
     if isinstance(want, int) and want != len(cases):
         raise ValueError(f"dataset.json says numTraining {want} but imagesTr holds {len(cases)} cases")
     training = []
@@ -377,7 +401,6 @@ def build_datalist(raw, folds=5, modality=None):
             raise ValueError(f"case {case}: channels {sorted(chans)}, expected 0..{n_ch - 1}")
         image = chans[0] if n_ch == 1 else [chans[i] for i in range(n_ch)]
         training.append({"image": image, "label": label_files[case], "fold": fold_of(case, folds), "case": case})
-    label_map = meta.get("labels", {})
     ignore = label_map.get("ignore")
     mod = modality or ("CT" if any(str(v).upper() in ("CT", "CT_DATA") for v in channels.values()) else "MRI")
     datalist = {"training": training, "testing": []}

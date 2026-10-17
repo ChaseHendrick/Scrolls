@@ -17,7 +17,7 @@
 | Writes | `kit segzoo datalist`: `datalist.json` and `task.yaml` in `--out`. `segzoo_nnunet.py shim`: `segzoo_shim.py` in nnU-Net's trainer folder (or `--target`). `segzoo_sam2.py` and `segzoo_probe.py`: the `--out` file only. Otherwise it prints only |
 | Go-ahead | Not needed for the code; Needed before any paid GPU run (Modal budget) and before releasing weights trained from a family whose weights are research only |
 | Released | Public `main` from the PR that adds this page (17 October 2026); not a Progress Prize release |
-| Checked | 2026-10-17 against commit `fecd2bb` |
+| Checked | 2026-10-17 against commit `fa6e640` and the datalist validation fix |
 
 ## What it does
 
@@ -86,6 +86,7 @@ Each runnable part carries a control that can fail:
 - **SAM 2 follower:** `score` reports, per labelled sheet, Dice on each slice, whether the sheet kept its identity, the first slice where it hopped to another sheet, and coverage, and the same numbers for the copy-seed control (the seed slice repeated through the cube). `beats_control` is true only when the follower's mean Dice is above the control's. On the tests' two flat sheets the control keeps identity on every slice, so a follower that hops loses to it.
 - **Frozen probe:** `fit` trains 20 heads on shuffled training labels and reports their accuracy on the test set (`control_shuffled_labels`); a probe has no signal unless its lower 95% bound is above that control's maximum. With `--against`, it also gives the paired difference against another method on the same items, with a bootstrap interval and a verdict (better, worse, no clear difference).
 - **Selective scan:** the chunked scan is checked against a step-by-step loop, values and gradients (tests, about 4e-5 and 3e-6).
+- **Dataset conversion:** malformed metadata, fewer than two folds, an empty dataset, duplicate case/channel files, and a label with the wrong file ending fail before either output is written. Synthetic regression tests check exit code 2 and preservation of existing output files. Valid datasets keep the same hash folds and paths.
 
 The registry's evidence lines are sourced: each family lists its paper or repository, and the margins quoted from them (such as MedNeXt L above ResEnc L on six of six datasets in the nnU-Net Revisited table, arXiv:2404.09556) are the papers' numbers. None of them was measured on scroll CT.
 
@@ -106,7 +107,7 @@ usage: python -m kit segzoo [-h] [--out OUT] [--folds FOLDS]
 | `action` | required | `list` the families, `show` one, `env` (which can run here), `datalist` (Auto3DSeg files) |
 | `name` | none | show: a family id; datalist: the nnU-Net raw folder |
 | `--out OUT` | none | datalist: folder for datalist.json and task.yaml |
-| `--folds FOLDS` | `5` | datalist: number of folds (default 5) |
+| `--folds FOLDS` | `5` | datalist: number of folds, at least 2; hash splits can leave a fold empty |
 | `--modality MODALITY` | none | datalist: Auto3DSeg modality (default CT when dataset.json names a CT channel, else MRI) |
 | `--json` | off | print JSON |
 
@@ -155,7 +156,7 @@ usage: python -m kit segzoo [-h] [--out OUT] [--folds FOLDS]
 | `family(name)` | The registry dict of one family | `KeyError` for an unknown id | Fields are `segzoo.FIELDS`; ids are `segzoo.IDS` |
 | `installed(module)` | Version string, `''` when importable without metadata, or `None` | Nothing | Uses `importlib.util.find_spec`; never imports the package |
 | `env_report()` | `{family id: {"ready": bool, "packages": {import name: version or None}}}` | Nothing | For this Python |
-| `fold_of(case, folds)` | Fold number of a case id | Nothing | From the sha256 of the id: fixed, independent of file order and machine |
+| `fold_of(case, folds)` | Fold number of a case id | `ValueError` when folds is not an integer of at least 2 | From the sha256 of the id: fixed, independent of file order and machine |
 | `build_datalist(raw, folds=5, modality=None)` | `(datalist, task, summary)` dicts | `ValueError` for any problem in the raw folder (see Failure modes) | Reads an nnU-Net v2 raw dataset folder |
 | `task_yaml(task)` | `task.yaml` text | Nothing | Flat `key: value` lines AutoRunner reads; no yaml package needed |
 | `write_datalist(raw, out, folds=5, modality=None)` | The summary dict | `ValueError` as `build_datalist`, `OSError` when `out` cannot be written | Writes `datalist.json` and `task.yaml` |
@@ -177,7 +178,7 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 
 ## Inputs
 
-- **`kit segzoo datalist`:** an nnU-Net v2 raw folder: `dataset.json` with `channel_names`, `labels`, `numTraining` and `file_ending`; `imagesTr/CASE_0000.nii.gz` (one file per channel, `_0000`, `_0001`, ...) and `labelsTr/CASE.nii.gz`. Only names are read, never the images. Any file ending nnU-Net accepts (`.nii.gz`, `.tif`, `.png`, `.b2nd` and others).
+- **`kit segzoo datalist`:** an nnU-Net v2 raw folder: `dataset.json` with `channel_names`, `labels`, `numTraining` and `file_ending`; `imagesTr/CASE_0000.nii.gz` (one file per channel, `_0000`, `_0001`, ...) and `labelsTr/CASE.nii.gz`. `channel_names` keys must be `"0"`, `"1"`, ... with no gaps. Only names are read, never the images. Supported endings are `.nii.gz`, `.nii`, `.nrrd`, `.mha`, `.tiff`, `.tif` and `.png`; this converter does not support `.b2nd`. Both images and labels must use the declared ending. Older datasets may omit `file_ending` and use `modality` instead of `channel_names`; duplicate case/channel files still fail. At least one case and two folds are required; check the printed fold counts before training because hashing does not guarantee nonempty folds.
 - **Trainers:** a dataset nnU-Net has planned and preprocessed (`nnUNetv2_plan_and_preprocess`). Patch sides must divide by the network's `multiple_of`; 2D-only networks need a `2d` configuration.
 - **`segzoo_sam2.py`:** a CT cube as `.npy` (Z, Y, X), any dtype (scaled to 0 to 255 per cube); a seed slice `.npy` (Y, X) of integer sheet ids; for `score`, the full instance labels of the cube, same shape. The tests use flat synthetic sheets; real known-answer cubes are instance-labelled public surface cubes.
 - **`segzoo_probe.py`:** images as above; `labels` (class names), `groups` (for example a papyrus id, so cross-validation never splits one), `ids`.
@@ -210,7 +211,12 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 | `unknown segzoo action` | An action other than list, show, env, datalist reached `cmd_segzoo` from Python | Use one of the four |
 | `unknown family` | `show` or `family()` got an id not in the registry | `kit segzoo list` for the ids |
 | `segzoo show needs a family id` | `show` without a name | Add an id |
-| `unsupported file type:` | An image or label name ends in no file ending nnU-Net knows | Rename, or fix `file_ending` in dataset.json |
+| `unsupported file type:` or `unsupported dataset file_ending` | The ending is outside this converter's supported list | Convert the dataset to one of the formats listed under Inputs |
+| `folds must be an integer of at least 2` | Zero, one, a negative count or a non-integer Python value was supplied | Use at least two folds and inspect the fold counts before training |
+| `dataset.json must contain an object`, `dataset.json labels must be an object` or `dataset.json numTraining must be a positive integer` | Metadata has the wrong JSON type or count | Correct dataset.json before converting |
+| `dataset.json channel_names keys must be consecutive integers starting at 0` | A channel key is missing or renamed | Use `"0"`, `"1"`, ... and matching `_000N` image suffixes |
+| `duplicate image for case` or `duplicate label for case` | More than one file maps to the same case/channel or label, often two formats of one image | Keep the intended file; the converter will not choose for you |
+| `imagesTr contains no training cases` | The dataset has no visible image files | Supply the training images before exporting a plan |
 | `no dataset.json in` | RAW is not an nnU-Net raw dataset folder | Point at the `DatasetNNN_Name` folder |
 | `dataset.json has no channel_names` | An nnU-Net v1 or hand-written dataset.json | Add `channel_names` as nnU-Net v2 expects |
 | `needs imagesTr/ and labelsTr/` | A folder is missing | Check the dataset layout |

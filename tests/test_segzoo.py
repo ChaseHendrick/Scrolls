@@ -159,6 +159,79 @@ class DatalistTest(unittest.TestCase):
             self.assertEqual(code, 2)
             self.assertIn("no dataset.json", err)
 
+    def test_invalid_fold_count_preserves_existing_outputs(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = raw_dataset(Path(tmp) / "raw")
+            out = Path(tmp) / "auto"
+            out.mkdir()
+            for name in ("datalist.json", "task.yaml"):
+                (out / name).write_text("previous result")
+            for folds in ("0", "-1", "1"):
+                with self.subTest(folds=folds):
+                    code, _, err = run("datalist", str(raw), "--out", str(out), "--folds", folds)
+                    self.assertEqual(code, 2)
+                    self.assertIn("folds must be an integer of at least 2", err)
+                    for name in ("datalist.json", "task.yaml"):
+                        self.assertEqual((out / name).read_text(), "previous result")
+            for folds in (True, 2.5, "5"):
+                with self.subTest(folds=folds), self.assertRaisesRegex(ValueError, "folds"):
+                    segzoo.build_datalist(raw, folds=folds)
+
+    def test_duplicate_inputs_are_not_silently_replaced(self):
+        for folder, name, reason in (("imagesTr", "a_0000.tif", "duplicate image"),
+                                     ("labelsTr", "a.tif", "duplicate label")):
+            with self.subTest(folder=folder), tempfile.TemporaryDirectory() as tmp:
+                raw = raw_dataset(Path(tmp) / "raw")
+                meta = json.loads((raw / "dataset.json").read_text())
+                del meta["file_ending"]  # Older datasets may omit this; both suffixes are supported.
+                (raw / "dataset.json").write_text(json.dumps(meta))
+                (raw / folder / name).write_bytes(b"different image")
+                out = Path(tmp) / "auto"
+                code, _, err = run("datalist", str(raw), "--out", str(out))
+                self.assertEqual(code, 2)
+                self.assertIn(reason, err)
+                self.assertFalse(out.exists())
+
+    def test_label_ending_must_match_the_dataset(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = raw_dataset(Path(tmp) / "raw")
+            (raw / "labelsTr/a.nii.gz").rename(raw / "labelsTr/a.tif")
+            with self.assertRaisesRegex(ValueError, "a.tif does not end with"):
+                segzoo.build_datalist(raw)
+
+    def test_malformed_metadata_is_a_cli_error(self):
+        changes = ((None, [], "must contain an object"),
+                   ("channel_names", {"1": "CT"}, "consecutive integers"),
+                   ("channel_names", {"0": "CT", "2": "CT"}, "consecutive integers"),
+                   ("labels", [], "labels must be an object"),
+                   ("file_ending", [], "unsupported dataset file_ending"),
+                   ("file_ending", ".b2nd", "unsupported dataset file_ending"),
+                   ("numTraining", True, "numTraining must be a positive integer"),
+                   ("numTraining", "3", "numTraining must be a positive integer"))
+        for key, value, reason in changes:
+            with self.subTest(key=key, value=value), tempfile.TemporaryDirectory() as tmp:
+                raw = raw_dataset(Path(tmp) / "raw")
+                meta = json.loads((raw / "dataset.json").read_text())
+                if key is None:
+                    meta = value
+                else:
+                    meta[key] = value
+                (raw / "dataset.json").write_text(json.dumps(meta))
+                out = Path(tmp) / "auto"
+                code, _, err = run("datalist", str(raw), "--out", str(out))
+                self.assertEqual(code, 2)
+                self.assertIn(reason, err)
+                self.assertFalse(out.exists())
+
+    def test_empty_dataset_is_not_a_training_plan(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            raw = raw_dataset(Path(tmp) / "raw", cases=())
+            meta = json.loads((raw / "dataset.json").read_text())
+            del meta["numTraining"]
+            (raw / "dataset.json").write_text(json.dumps(meta))
+            with self.assertRaisesRegex(ValueError, "no training cases"):
+                segzoo.build_datalist(raw)
+
 
 if __name__ == "__main__":
     unittest.main()
