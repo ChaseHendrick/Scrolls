@@ -51,7 +51,7 @@ LEDGER_COLUMNS = ("date_time_et", "key", "sample", "volume", "voxel_um", "status
 # training data, docs/logs/2026-10-08-w045-not-held-out.md). Fine scans read with
 # Hecate 2.4 um; coarse scans with the team's ink_9um and Hecate 9.6 um (after kit hecateprep's resample to 9.6 um).
 READERS = (
-    (3.5, ["hecate-2.4um"], "fine scan: Hecate 2.4 um (best on w043, which is not held out)"),
+    (3.5, ["hecate-2.4um"], "fine scan: Hecate 2.4 um (best on held-out w043)"),
     (6.5, ["hecate-2.4um", "hecate-9.6um"], "middle: Hecate 2.4 um and Hecate 9.6 um (resampled), compared"),
     (20.0, ["ink_9um-seed42", "hecate-9.6um"], "coarse scan: ink_9um and Hecate 9.6 um (resampled)"),
 )
