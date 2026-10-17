@@ -82,6 +82,20 @@ class LetterDataTest(unittest.TestCase):
             self.assertEqual(im.shape[0], L.band_height())
             self.assertEqual(len(b), len(t))
 
+    def test_gen_dataset_takes_the_domains_its_help_names(self):
+        import subprocess
+        script = str(ROOT / "scripts" / "letters" / "gen_dataset.py")
+        with tempfile.TemporaryDirectory() as d:
+            for domain in ("None", "map", "mask"):           # --help: {None,map,mask}; None mixes map and mask
+                out = Path(d) / domain
+                done = subprocess.run([sys.executable, script, str(out), "--n", "2", "--shard", "2", "--procs", "1",
+                                       "--domain", domain], capture_output=True, text=True, timeout=120)
+                self.assertEqual(done.returncode, 0, done.stderr)
+                self.assertEqual(len(list(out.glob("shard-*.npz"))), 1)
+            done = subprocess.run([sys.executable, script, str(Path(d) / "x"), "--n", "0", "--domain", "photo"],
+                                  capture_output=True, text=True, timeout=120)
+            self.assertEqual(done.returncode, 2)
+
 
 if __name__ == "__main__":
     unittest.main()

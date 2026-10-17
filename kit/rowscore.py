@@ -214,5 +214,6 @@ def format_result(result):
         rows.append("note: scipy not found, so the largest-piece step was skipped; thin strips can fake a period")
     if result.get("fast_resize"):
         rows.append("note: --fast-resize changes float32 accumulation; near-tied FFT peaks can differ (see JSON resize_mode)")
-    rows.append("triage only: Bullo27 reports held-out controls at 73-148 and 6 cm2 control tiles as low as 6.8. Look at the map.")
+    rows.append("triage only: Bullo27 reports PHerc0139 w045 and w033 (not held out from ink_9um) at 73-148 "
+                "and 6 cm2 tiles of them as low as 6.8. Look at the map.")
     return "\n".join(rows)

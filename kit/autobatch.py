@@ -35,6 +35,7 @@ import math
 import shlex
 from datetime import datetime, timezone
 from pathlib import Path
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 from . import cloudcost, prizes, scancatalog
 
@@ -45,8 +46,9 @@ FINISHED = ("done", "running")
 LEDGER_COLUMNS = ("date_time_et", "key", "sample", "volume", "voxel_um", "status", "ink_readers",
                   "est_low_usd", "est_typical_usd", "est_high_usd", "plan_digest", "note")
 
-# Ink reader by level-0 voxel size (owner, 16 Oct 2026; measured on held-out PHerc0139 w043: Hecate 2.4 um AUC 0.940,
-# canonical 2um 0.887, Hecate 9.6 um 0.922; model output on one held-out segment). Fine scans read with
+# Ink reader by level-0 voxel size (owner, 16 Oct 2026; measured on PHerc0139 w043: Hecate 2.4 um AUC 0.940,
+# canonical 2um 0.887, Hecate 9.6 um 0.922; model output on one segment, which is not held out: w043 is ink_9um
+# training data, docs/logs/2026-10-08-w045-not-held-out.md). Fine scans read with
 # Hecate 2.4 um; coarse scans with the team's ink_9um and Hecate 9.6 um (after kit hecateprep's resample to 9.6 um).
 READERS = (
     (3.5, ["hecate-2.4um"], "fine scan: Hecate 2.4 um (best on held-out w043)"),
@@ -89,7 +91,11 @@ class BatchError(Exception):
 
 
 def _now_et():
-    return datetime.now().astimezone().strftime("%Y-%m-%d %H:%M ET")
+    """Now in US Eastern time, whatever the machine's own zone (cloud and Modal machines run on UTC)."""
+    try:
+        return datetime.now(ZoneInfo("America/New_York")).strftime("%Y-%m-%d %H:%M ET")
+    except ZoneInfoNotFoundError:   # no time zone database (Windows without tzdata): say UTC, not ET
+        return datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
 
 def digest(obj):
@@ -131,7 +137,10 @@ def _check_ids(row):
 
 
 def fetch_levels(row, cache_dir, get=scancatalog.http_get):
-    """The volume's zarr levels, read once from its .zattrs and cached under cache_dir."""
+    """The volume's zarr levels, read once from its .zattrs and cached under cache_dir.
+
+    A failed read raises BatchError, so the scan is rejected and retried on the next run instead of being
+    planned and priced at level 0."""
     if not row.get("zarr_url"):
         return None
     _check_ids(row)
@@ -140,8 +149,9 @@ def fetch_levels(row, cache_dir, get=scancatalog.http_get):
         return json.loads(cache.read_text())
     try:
         doc = json.loads(get(row["zarr_url"] + ".zattrs"))
-    except (OSError, ValueError):
-        return None
+    except (OSError, ValueError) as exc:
+        raise BatchError(f"cannot read {row['zarr_url']}.zattrs ({str(exc)[:120]}), so the scan's levels and price "
+                         "are unknown; the next run tries again") from exc
     levels = zarr_levels(doc)
     cache.parent.mkdir(parents=True, exist_ok=True)
     cache.write_text(json.dumps(levels))

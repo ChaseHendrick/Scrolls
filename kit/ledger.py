@@ -13,6 +13,7 @@ Two rules from the prize page and from published First Letters runs are enforced
 
 import hashlib
 import json
+import math
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -48,12 +49,22 @@ def path_for(slug, root=DEFAULT_ROOT):
     return Path(root) / slug / "run.json"
 
 
+def _read(path):
+    with open(path, encoding="utf-8") as fh:
+        try:
+            record = json.load(fh)
+        except ValueError as exc:
+            raise LedgerError(f"cannot read {path}: {exc}; fix the file or restore it from a backup") from exc
+    if not isinstance(record, dict):
+        raise LedgerError(f"{path} is not a run record (a JSON object); fix the file or restore it from a backup")
+    return record
+
+
 def load(slug, root=DEFAULT_ROOT):
     path = path_for(slug, root)
     if not path.exists():
         raise LedgerError(f"no experiment at {path}")
-    with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
+    return _read(path)
 
 
 def save(record, root=DEFAULT_ROOT):
@@ -90,9 +101,12 @@ def init(slug, scroll, question, readout, root=DEFAULT_ROOT, villa_commit=None, 
 
 def set_status(slug, status, note="", announced=False, root=DEFAULT_ROOT):
     record = load(slug, root)
-    current = record["status"]
+    current = record.get("status")
     if status not in STATUSES:
         raise LedgerError(f"unknown status {status!r}; use one of {', '.join(STATUSES)}")
+    if current not in TRANSITIONS:
+        raise LedgerError(f"{slug} has the unknown status {current!r} in its run.json; "
+                          f"it must be one of {', '.join(STATUSES)}")
     if status not in TRANSITIONS[current]:
         raise LedgerError(f"cannot go from {current} to {status}")
     if status == "published" and current == "submitted" and not announced:
@@ -107,6 +121,8 @@ def set_status(slug, status, note="", announced=False, root=DEFAULT_ROOT):
 
 
 def add_cost(slug, usd, what, root=DEFAULT_ROOT):
+    if not math.isfinite(usd):
+        raise LedgerError(f"cost must be a finite number of US dollars, not {usd}")
     if usd < 0:
         raise LedgerError("cost cannot be negative")
     record = load(slug, root)
@@ -157,6 +173,8 @@ def check(slug, root=DEFAULT_ROOT):
     if record.get("status") not in STATUSES:
         problems.append(f"unknown status {record.get('status')!r}")
     seen = [h["status"] for h in record.get("history", [])]
+    if not seen or seen[0] != "planned":
+        problems.append("history does not start at planned")
     for before, after in zip(seen, seen[1:]):
         if after not in TRANSITIONS.get(before, set()):
             problems.append(f"history has an illegal step {before} -> {after}")
@@ -171,6 +189,5 @@ def list_runs(root=DEFAULT_ROOT):
         return []
     out = []
     for path in sorted(root.glob("*/run.json")):
-        with open(path, encoding="utf-8") as fh:
-            out.append(json.load(fh))
+        out.append(_read(path))
     return out
