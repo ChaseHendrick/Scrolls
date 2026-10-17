@@ -64,8 +64,8 @@ FORMAT = "linenet-v1"
 # keep it. docs/letter-reader.md ("The result, field by field") lists every field of schema 1.
 SCHEMA = 1
 WEIGHTS_REGISTRY = Path(__file__).parent / "data" / "letter-weights.json"
-# The released model the demo, the public-map demo and the guide use when none is named: letters-v2-ccby, for
-# its CC BY 4.0 licence (letters-v2-real, CC BY-NC 4.0, stays released). The reader itself names no default.
+# The offline and public-map demos use permissive weights. The CLI selects by task through letterweights;
+# Python read() still requires an explicit model. Both released checkpoints keep their existing hashes.
 DEFAULT_WEIGHTS = "letters-v2-ccby"
 # Weight of the language model in its beam decode when a model is given without a weight (the command line's
 # --lm-weight default).

@@ -1569,8 +1569,10 @@ class WeightsTest(unittest.TestCase):
         self.assertEqual(R.released_name(m["sha256"]), "letters-v2-ccby")
         self.assertEqual(cli.build_parser().parse_args(["letterdemo"]).weights, R.DEFAULT_WEIGHTS)
         self.assertEqual(inspect.signature(D.run).parameters["weights"].default, R.DEFAULT_WEIGHTS)
-        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
-            cli.build_parser().parse_args(["letterread", "x.png"])        # the reader itself names no default
+        # The CLI now chooses a task profile; the permissive offline demo keeps its original default.
+        args = cli.build_parser().parse_args(["letterread", "x.png"])
+        self.assertIsNone(args.weights)
+        self.assertIsNone(args.weight_profile)
 
     def test_released_name_is_checked_offline(self):
         """letters-v2-ccby by name, with no network: a missing file is not fetched, a wrong one is refused."""

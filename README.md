@@ -72,6 +72,22 @@ Released 17 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens); MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).
 
+### Greek letter reader
+
+Released 17 October 2026.
+
+A small learned reader proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs using NumPy on CPU. Its output is a hypothesis for a person to check, with null and orientation controls, not a reading. The default now follows the task: given line positions select `letters-v2-real` (CC BY-NC 4.0); automatic layout selects `letters-v2-ccby` (CC BY 4.0). Explicit weights or a profile override that choice, and results record the profile, license and weight hash. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for real versus 0.462 for ccby; the paired difference interval was +0.017 to +0.155 (Model output; 117 letters in 84 groups). The whole-region comparison was unresolved; photo accuracy is untested. Those maps may benefit from training-label exposure, so this does not establish accuracy on new scrolls. An optional local Tesseract backend supports Latin, Greek, Hebrew and other installed language packs with pack hashes and blank/shuffled controls. Printed-text smoke checks establish that the backend works, not scroll accuracy; controls can fail. `ReaderSession` validates replacements before switching models, profiles, languages or backends and keeps the previous selection on failure. Checkpoint files and release tags are unchanged.
+
+```bash
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
+scrolls-letterdemo
+scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png
+```
+
+`scrolls-letterdemo` downloads the CC BY weights once and checks synthetic letters. Give the reader its own virtual environment, apart from AutoPipeline: both install `kit`. The 86 px letter height is for the public PHerc. 1667 map demo. Install, profiles, model cards and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md). Local OCR packs and session switching: [`docs/tools/reader-backends.md`](docs/tools/reader-backends.md).
+
 ### Segment stack check
 
 Released 14 October 2026.
@@ -121,22 +137,6 @@ python -m unittest tests.test_umbilicus          # synthetic data, CPU
 ```
 
 Guide, the 14 weight files with their SHA-256, held-out results with their limits, the end-point rule, training and licences: [`scripts/umbilicus/README.md`](scripts/umbilicus/README.md); evidence: [`docs/evidence/2026-10-14-umbilicus/`](docs/evidence/2026-10-14-umbilicus/README.md).
-
-### Greek letter reader
-
-Released 14 October 2026.
-
-A small learned reader that proposes Greek capital letters, with boxes and confidences, on ink-detection maps and drawn ink labels, and on photographs of papyri. Reading needs only NumPy, with no GPU or deep-learning framework, and every result carries null and orientation controls and a status code, with a control map when one is given. Its output is a hypothesis for a person to check, not a reading. Its default weights, `letters-v2-ccby`, are released under CC BY 4.0; the earlier `letters-v2-real` (CC BY-NC 4.0) stays available. With `letters-v2-ccby`, on PHerc. 1667's official ink labels it names drawn letters at a character error of 0.043 with the line given, and on PHerc. 1667's ink maps of the same groups its free-ends error is 0.31 to 0.48 (plain character error 0.76 to 1.39, which also charges letters read beside the labelled ones), measured under rules fixed before the reads (Model output; 117 letters in 84 groups, scored against machine transcriptions of the drawings). Those segments are in `ink_9um`'s training labels, and whether the 2.4 um model that made their maps trained on them is not checked, so their maps may be cleaner than maps of new text. On these tests `letters-v2-ccby` has not been shown to read better than `letters-v2-real`, and it errs more on one of the map rows; it is the default for its licence (Interpretation). How well it names letters on real photographs is untested.
-
-```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
-scrolls-letterdemo
-scrolls-letterread MAP.png --weights letters-v2-ccby --letter-px 86 --overlay MAP-letters.png
-```
-
-`scrolls-letterdemo` checks the install on synthetic letters (it downloads the 6 MB of weights once) and prints DEMO PASS. `--letter-px 86` is PHerc. 1667's letter height on the 38 um grid of the public-map demo, `scripts/letters/demo_p1667.py`. Give the reader its own virtual environment, apart from AutoPipeline's: both install a package named `kit`. Windows, other letter sizes, that demo, both model cards and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md).
 <!-- releases:end -->
 
 ## Interactive viewer

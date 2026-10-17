@@ -9,7 +9,7 @@ build-backend = "setuptools.build_meta"
 # (docs/letter-reader.md, "Install").
 name = "scrolls-workbench"
 dynamic = ["version"]   # kit.__version__
-description = "Vesuvius Challenge workbench: a Greek letter reader for ink maps and photographs, ink-map scoring, run planning and provenance"
+description = "Vesuvius Challenge workbench: Greek letter reading, local multilingual OCR, ink-map scoring, run planning and provenance"
 readme = "README.md"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]

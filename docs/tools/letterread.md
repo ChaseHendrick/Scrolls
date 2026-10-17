@@ -1,6 +1,6 @@
-# letterread: propose Greek letters on a 2D image of text, with controls
+# letterread: Greek letter hypotheses or explicit local multilingual OCR
 
-`python -m kit letterread` runs a small learned line reader (numpy only) over an ink map, an ink label or a photograph and proposes Greek capitals with boxes and confidences, scored against nulls, an optional control map and turned reads.
+`python -m kit letterread` proposes Greek letters with a controlled line network, or explicitly selects a local Tesseract language model for word hypotheses. Both routes record the model and controls; neither produces a verified reading.
 
 | Field | Value |
 | --- | --- |
@@ -9,8 +9,8 @@
 | Kind | kit command, kit module |
 | Area | Letters and titles |
 | Run | `python -m kit letterread`, `scrolls-letterread` (the installed package's console script), `from kit import letterread`, `from kit import letterexport` |
-| Code | `kit/letterread.py`, `kit/letterexport.py`, `kit/data/letter-weights.json`, `kit/cli.py` (`cmd_letterread`, `letterread_main`, `import_advice`) |
-| Tests | `tests/test_letterread.py`, `tests/test_letterexport.py`, `tests/test_letterlines.py`, `tests/test_letter_scripts.py`, `tests/test_letterdemo.py`, `tests/test_packaging.py` |
+| Code | `kit/letterread.py`, `kit/letterexport.py`, `kit/letterweights.py`, `kit/data/letter-weights.json`, `kit/cli.py` (`cmd_letterread`, `letterread_main`, `import_advice`) |
+| Tests | `tests/test_letterweights.py`, `tests/test_reader_backends.py`, `tests/test_letterread.py`, `tests/test_letterexport.py`, `tests/test_letterlines.py`, `tests/test_letter_scripts.py`, `tests/test_letterdemo.py`, `tests/test_packaging.py` |
 | Needs | Python 3.10 or newer and numpy. Pillow for PNG and JPEG input and for `--overlay`; tifffile (and imagecodecs for compressed TIFFs) for TIFF input; zarr for zarr input and for reading a compressed tiled TIFF band by band. The `reader` extra of the `scrolls-workbench` package brings numpy, Pillow, tifffile and imagecodecs; zarr comes with `pip install zarr`. The weights: a released model (`letters-v2-ccby`, 5,933,674 bytes, or `letters-v2-real`), downloaded once, or a `linenet-v1` `.npz` file. No torch, no GPU |
 | Runs on | Any CPU. A 301 x 1,006 px synthetic page with a control map, the four orientation reads, the three exports and an overlay took 4.0 s wall and 13.4 s of CPU (measured 2026-10-16, 4-core 2.8 GHz Xeon cloud container, weights cached). The guide measured a whole 2.4 um PHerc. 1667 w013 map (a 269 MB tiled TIFF) block-averaged by 43 at 35 to 36 s and about 250 MB peak with zarr installed (14 October 2026, 4-core cloud container; [Big maps](../letter-reader.md#big-maps)) |
 | Network | Only when a released weights name is not yet in the cache: the download from `github.com`, which redirects to GitHub's release file host (`release-assets.githubusercontent.com` or `objects.githubusercontent.com`). It follows `HTTPS_PROXY` and `NO_PROXY`. Reading an image and the exports make no connection |
@@ -20,9 +20,13 @@
 | Release id | `letter-reader` |
 | License | Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights)) |
 | Guide | [letter-reader.md](../letter-reader.md) (install, first reads, model cards, benchmarks, the result field by field) |
-| Checked | 2026-10-16 against commit `14f5ce0` |
+| Checked | 2026-10-17 against commit `869d621` and the reader routing change |
 
 ## What it does
+
+The default backend is the Greek LineNet described below. The separate [reader-backends page](reader-backends.md) documents `--backend tesseract`: Latin and other installed language packs, capability discovery, word output and its limitations. Greek weights cannot be relabelled as another language. The command checks a local LineNet checkpoint's actual alphabet before calling it Greek.
+
+Greek weights are selected before reading the image. Explicit `--weights` is preserved; otherwise `--weight-profile` selects a documented profile, defaulting to `ink-lines` when `--lines` is supplied and `permissive` for automatic layout. The profile and licence are printed and recorded in JSON. This follows the released given-line evidence, not a claim of one universally better checkpoint. The Python `letterread.read()` API still requires explicit weights.
 
 Ink detection turns a scroll's CT scan into a 2D ink map, and people then look for letters in it. `letterread` proposes those letters. It is a convolutional line reader trained with CTC (connectionist temporal classification: the network learns from each line's letter string alone, without letter boxes) on synthetic lines of random Greek capitals and real letter crops, exported to a `.npz` file in the format `linenet-v1` and run in plain numpy. For each text line it finds, it returns the letters it decodes, each with a confidence `p`, a box in the image's pixels and whether it cleared the read's confidence floor (`kept`).
 
@@ -95,8 +99,15 @@ Claim label: Model output, for every letter, box, count and status the reader re
 The console script `scrolls-letterread` takes the same arguments, with `scrolls-letterread` in place of `python -m kit letterread` in its usage line.
 
 ```
-usage: python -m kit letterread [-h] --weights WEIGHTS [--key KEY]
-                                [--crop Y0 Y1 X0 X1] [--letter-px LETTER_PX]
+usage: python -m kit letterread [-h] [--backend {linenet,tesseract}]
+                                [--language LANGUAGE]
+                                [--weights WEIGHTS | --weight-profile {ink-lines,permissive}]
+                                [--tessdata TESSDATA]
+                                [--ocr-psm {3,6,7,11,13}]
+                                [--ocr-timeout OCR_TIMEOUT]
+                                [--ocr-min-confidence OCR_MIN_CONFIDENCE]
+                                [--key KEY] [--crop Y0 Y1 X0 X1]
+                                [--letter-px LETTER_PX]
                                 [--letter-mm LETTER_MM]
                                 [--um-per-px UM_PER_PX] [--max-mpx MAX_MPX]
                                 [--polarity {bright,dark,auto}]
@@ -117,7 +128,14 @@ usage: python -m kit letterread [-h] --weights WEIGHTS [--key KEY]
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `image` | required | The image: `.npy`, `.npz`, `.tif`/`.tiff`, `.png`, `.jpg` (any format Pillow opens) or a zarr store. Ink bright by default. A PNG or JPEG is turned by its EXIF orientation as it loads |
-| `--weights WEIGHTS` | required | A released model name (`letters-v2-ccby` or `letters-v2-real`, downloaded once and SHA-256 checked; a name is looked up before any file of that name), or a path to a `linenet-v1` `.npz` file |
+| `--weights WEIGHTS` | none | A released model name (`letters-v2-ccby` or `letters-v2-real`, downloaded once and SHA-256 checked; a name is looked up before any file of that name), or a path to a `linenet-v1` `.npz` file |
+| `--backend BACKEND` | `linenet` | `linenet` for the Greek network, `tesseract` for explicitly installed local OCR packs; no fallback |
+| `--language LANGUAGE` | `grc` | Explicit language; LineNet supports Greek only. Tesseract accepts installed codes such as `lat`, `grc`, `heb`, or an ordered combination such as `grc+lat` |
+| `--weight-profile WEIGHT_PROFILE` | none | LineNet: `ink-lines` chooses `letters-v2-real` (CC BY-NC 4.0), `permissive` chooses `letters-v2-ccby` (CC BY 4.0). With neither weights nor profile, supplied `--lines` selects ink-lines and automatic line finding selects permissive. Mutually exclusive with `--weights` |
+| `--tessdata TESSDATA` | none | Tesseract local language-pack directory; otherwise the engine's configured system directory. No downloads |
+| `--ocr-psm OCR_PSM` | `3` | Tesseract segmentation: 3 automatic, 6 block, 7 line, 11 sparse text, 13 raw line |
+| `--ocr-timeout OCR_TIMEOUT` | `60` | Tesseract timeout in seconds per call, including each control, positive and at most 600 |
+| `--ocr-min-confidence OCR_MIN_CONFIDENCE` | `50` | Tesseract word confidence floor from 0 to 100, not a calibrated probability |
 | `--key KEY` | none | `.npz`: the array name (default the first). zarr: the array path or OME-Zarr level (default level 0, full resolution); pixel values are then in that level's pixels. Also applied to `--control` |
 | `--crop Y0 Y1 X0 X1` | none | Read only rows Y0 to Y1 and columns X0 to X1 (numpy slicing, ends excluded); every row, box and `--lines` value is then relative to Y0, X0. The CSV and PAGE exports add the offset back |
 | `--letter-px LETTER_PX` | none | Letter height in image pixels, at least 4 (`MIN_LETTER_PX`, a quarter of the network's 16 px letters). Without it (and without `--letter-mm`) it is estimated from the line pitch with a scale search, and the read stops when the image shows no line pitch |
@@ -156,6 +174,15 @@ The command checks every option, the output folders and the input paths before i
 | `KIT_LETTER_WEIGHTS` | unset: the cache folder is `~/.cache/scrolls-kit/letters` | A folder (`~` expanded) to download and keep released weights in, or a weights file (an existing file, or a path ending in `.npz`) to use for a released name when its SHA-256 matches; its folder is then the cache |
 
 ## Python API
+
+The standard-library helper `kit.letterweights` selects weights without loading models or reading images:
+
+| Function | Returns | Raises | Notes |
+| --- | --- | --- | --- |
+| `profile_info(profile=None, *, lines_given=False, registry=None)` | Profile name, weights, licence, scope and evidence | `ValueError` for unknown profiles or unregistered weights; file/JSON errors for an invalid registry | Given lines default to ink-lines; automatic layout to permissive |
+| `select_weights(weights=None, profile=None, *, lines_given=False, registry=None)` | Released weight name or unchanged explicit path | `ValueError` for both weights and profile | Selection never downloads; the existing loader still checks the release's hash |
+
+For explicit reusable backend selection use `reader_backends.read()` as described on its [page](reader-backends.md).
 
 ```python
 from kit import letterread as R
@@ -257,6 +284,8 @@ Coordinates: rows down, columns right, in input pixels (the image file's pixels 
 
 ## Outputs
 
+These fields describe the default LineNet backend. It adds `backend` with id/language/script and, when a task profile selects the weights, `weight_profile` with the profile's licence and evidence. Tesseract instead emits `schema: "scrolls-ocr-v1"`, word confidences and separate controls; see [its output contract](reader-backends.md#outputs). Its result must not be parsed as Greek letter confidences or treated as `control.status: strong`.
+
 Without `--json` it prints the text summary (see Quick start): the model-output note, a provenance line, the letter height and floor, the scale-search table when the size was estimated, any warnings, one line per text line (`line N y=ROW [K kept, chance C]: LETTERS`, `·` for a letter under the floor), per-column statuses when there are several columns, then the `control:`, `control map`, `status:` and `orientation:` lines. With `--json` it prints the full result instead. `--out` writes the same JSON. Main fields (every field: [The result, field by field](../letter-reader.md#the-result-field-by-field)):
 
 | Field | Type | Meaning |
@@ -295,6 +324,17 @@ Without `--json` it prints the text summary (see Quick start): the model-output 
 | `2` | A bad option or input, a missing package, a failed weights download, or out of memory, with the message on stderr and no read; or a usage error from the argument parser. Also when the read finished but an output file could not be written: the result is still printed, and the error follows on stderr |
 
 ## Failure modes
+
+Routing and weight selection can also fail before reading:
+
+| Message | Cause and action |
+| --- | --- |
+| `--tessdata and --ocr-* options require --backend tesseract` | Select Tesseract explicitly or remove its options |
+| `unknown weight profile` | Choose ink-lines or permissive |
+| `weight profile ... names unregistered weights` | The registry is invalid; do not substitute a different model |
+| `choose --weights or --weight-profile, not both` | Make one explicit selection |
+
+Tesseract's capability, language, input and timeout failures are on the [backend page](reader-backends.md#failure-modes). Nondefault LineNet options unsupported by Tesseract fail; word output cannot use the glyph exporters.
 
 | What you see | Why | What to do |
 | --- | --- | --- |
@@ -380,6 +420,8 @@ It runs on a laptop CPU and needs no GPU and no Modal. Peak memory for a large i
 
 ## For agents
 
+The guidance below concerns LineNet. For Tesseract use its [agent contract](reader-backends.md#for-agents); `above_controls` never means a verified reading. Always preserve explicit caller weight choices, and include the selected profile's licence when reporting an automatic choice.
+
 - **Command:** `python -m kit letterread IMAGE --weights letters-v2-ccby --letter-px PX --control MAP_REVERSE --json --quiet`; add `--out RESULT.json --csv LETTERS.csv --page-xml LETTERS.xml --overlay LETTERS.png` for files. Set `KIT_LETTER_WEIGHTS` to a folder or file when the cache must live elsewhere.
 - **Parse:** `control.status` (`strong`, `weak`, `none`, `too_few`, `no_control`), `control.letters_kept`, `control.null_letters_kept`, `control.control_map.letters_kept`, per column `columns[].control.status`, per line `lines[].ink_only`, `n_kept` and `chance`, per letter `glyph`, `p`, `kept`, `box`; `weights.sha256` and `options` for provenance.
 - **Rerun:** Safe and deterministic for the same image, weights, options and seed. It overwrites `--out`, `--csv`, `--page-xml` and `--overlay`; the weights download happens once.
@@ -397,6 +439,8 @@ python -m unittest tests.test_letterread tests.test_letterexport -v
 `tests/test_letterread.py` covers the numpy network against a torch export (skipped without torch), CTC decoding with and without a language model, forced alignment, nulls, line and column finding, deskew, normalisation and polarity (auto, the trial, the hint), big images block-averaged in every format including zarr and OME-Zarr levels, the letter size in units and its check, the status codes and the control map, turned, mirrored and EXIF-turned reads, the overlay, the released weights (download once, SHA-256 refusal, nothing kept on a bad or interrupted download, names before paths, `KIT_LETTER_WEIGHTS`), the Python API's checks and provenance, the command line's errors and file order, and UTF-8 output. They use small random weights, not the released ones. `tests/test_letterexport.py` (6 tests, 2.0 s on 2026-10-16) checks the CSV and PAGE XML in input pixels, turned and two-column reads, crops and block-averaged reads. `tests/test_letter_scripts.py`, `tests/test_letterlines.py`, `tests/test_letterdemo.py` and `tests/test_packaging.py` use the reader from the scripts, `letterlines`, the demo and the console scripts. They skip without numpy. They do not measure accuracy on real maps; the benchmark scripts do (see [letters-training](letters-training.md)). The run time of `tests/test_letterread.py` was Not measured here.
 
 ## History
+
+- 2026-10-17: working change against `869d621`, explicit local multilingual backend routing with word provenance and controls; task-aware Greek weight profiles while preserving explicit weights and released model hashes.
 
 - 2026-10-16: speed-ups with bit-identical output: LineNet's max pooling by strided slices (one 36 x 1200 band 148.2 ms to 77.8 ms, per the commit), `shear` by runs of columns (deskew of a 630 x 1200 image 384 ms to 40 ms, per the commit), and `normalize_info` skipping the median fill when every pixel is finite (`b48258d`, `4a31ee5`, `45269ca`, `9e2a16e`).
 - 2026-10-16: the missing-package hint names numpy, pillow, tifffile and imagecodecs instead of `scrolls-workbench[reader]`, which is not on PyPI (`00c25f5`).

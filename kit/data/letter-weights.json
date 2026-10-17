@@ -1,11 +1,24 @@
 {
  "about": "Released weights of the Greek letter reader (kit/letterread.py). Weights are not in git; kit.letterread.resolve_weights downloads a named model once into ~/.cache/scrolls-kit/letters (or $KIT_LETTER_WEIGHTS) and refuses a file whose SHA-256 differs. Every string the reader returns is model output, not a reading.",
+ "profiles": {
+  "ink-lines": {
+   "weights": "letters-v2-real",
+   "scope": "Noncommercial ink-map line research. Lower error in the published PHerc. 1667 comparison with line positions and letter height given; not established as best for whole regions or photographs.",
+   "evidence": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/letter-reader.md#benchmarks-letters-v2-ccby-against-letters-v2-real"
+  },
+  "permissive": {
+   "weights": "letters-v2-ccby",
+   "scope": "CC BY weights for automatic page reads, photographs and uses requiring a permissive license. The whole-region comparison is unresolved; this profile is not a universal accuracy claim.",
+   "evidence": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/letter-reader.md#which-weights"
+  }
+ },
  "models": {
   "letters-v2-real": {
    "file": "letters-v2-real-step030000.npz",
    "sha256": "44946dadf0195ddb565f097acec0dd1d777af9b6c66d83995c1f4497aa587477",
    "url": "https://github.com/ChaseHendrick/Scrolls/releases/download/letters-v2-real/letters-v2-real-step030000.npz",
    "licence": "CC BY-NC 4.0 (trained on lines built from ICDAR 2023 Greek letter crops, CC BY-NC 4.0, and Hell-Char, CC BY 4.0)",
+   "license_id": "CC-BY-NC-4.0",
    "params": 1483241,
    "letter_px": 16,
    "card": "docs/letter-reader.md#model-card-letters-v2-real"
@@ -15,6 +28,7 @@
    "sha256": "b14988852fc721cce71e80a66db0a8ea99a1de914ef2b724ecc6e711baa9ed8c",
    "url": "https://github.com/ChaseHendrick/Scrolls/releases/download/letters-v2-ccby/letters-v2-ccby-step026000.npz",
    "licence": "CC BY 4.0 (trained on lines built from Hell-Char letter crops, which the Hell-Char authors license under CC BY 4.0, and from synthetic glyphs; no ICDAR 2023 data; credits in the model card)",
+   "license_id": "CC-BY-4.0",
    "params": 1483241,
    "letter_px": 16,
    "card": "docs/letter-reader.md#model-card-letters-v2-ccby"

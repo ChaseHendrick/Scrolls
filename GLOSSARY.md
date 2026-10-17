@@ -188,6 +188,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## O
 
+**OCR (optical character recognition)**: A model proposing text from an image. Its output still needs independent checks and is not a verified reading.
+
 **OME-Zarr**: A zarr layout for large microscopy-style images, with several resolution levels and metadata. The challenge stores its CT volumes this way.
 
 **open problems**: The Vesuvius Challenge's published list of unsolved tasks ([scrollprize.org/2026_open_problems](https://scrollprize.org/2026_open_problems)).
@@ -271,6 +273,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **synthetic data**: Data made by a program, with a known answer, used to test that a tool works before it runs on real scans.
 
 ## T
+
+**Tesseract**: An open-source local OCR engine with separate language packs. The reader can explicitly select an installed pack and records its hash; printed-text accuracy does not establish accuracy on scroll ink maps.
 
 **threshold**: A cut-off value that turns a probability map into a yes or no mask.
 

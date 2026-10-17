@@ -571,8 +571,19 @@ def cmd_letterread(args):
     say = (lambda msg: None) if args.quiet else (lambda msg: print(msg, file=sys.stderr, flush=True))
     letter_px = net = None
     try:
-        from . import letterread
+        from . import letterread, reader_backends, letterweights
         letterread.utf8_console()       # Greek letters print in a pipe and on a Windows console too
+        reader_backends.validate_route(args.backend, args.language)
+        if args.backend == "tesseract":
+            return reader_backends.run_cli(args)
+        if args.tessdata is not None or args.ocr_psm != 3 or args.ocr_timeout != 60 or args.ocr_min_confidence != 50:
+            raise ValueError("--tessdata and --ocr-* options require --backend tesseract")
+        profile = None if args.weights is not None else letterweights.profile_info(
+            args.weight_profile, lines_given=args.lines is not None)
+        weights = profile["weights"] if profile is not None else letterweights.select_weights(
+            args.weights, args.weight_profile, lines_given=args.lines is not None)
+        if profile is not None:
+            say(f"weight profile {profile['name']}: {profile['weights']} ({profile['license']})")
         if args.letter_px is not None and (args.letter_mm is not None or args.um_per_px is not None):
             raise ValueError("give the letter height once: --letter-px, or --letter-mm with --um-per-px")
         letter_px = args.letter_px
@@ -616,7 +627,8 @@ def cmd_letterread(args):
         if args.letter_mm is not None:
             say(f"letter height {args.letter_mm:g} mm at {args.um_per_px:g} um per pixel: {letter_px:.2f} px")
         # the weights before the image, so a failed download costs no load
-        net = letterread.load_weights(args.weights)
+        net = letterread.load_weights(weights)
+        reader_backends.validate_linenet(net)
         lm = None
         if args.lm:
             from . import greeklm
@@ -663,6 +675,9 @@ def cmd_letterread(args):
                               min_letters=args.min_letters, columns=columns)
         del c0
         # file names only, never a folder, so a result can be shared without a local path
+        res["backend"] = {"id": "linenet", "languages": ["grc"], "scripts": ["Greek"]}
+        if profile is not None:
+            res["weight_profile"] = profile
         res["source"] = {"file": Path(args.image).name, "key": args.key}
         res["options"]["max_mpx"] = args.max_mpx
         if args.control:
@@ -726,6 +741,9 @@ def cmd_letterread(args):
             failed.append(exc)
     for out in wrote:
         say(f"wrote {out}")
+    if not args.json and res.get("weight_profile"):
+        selected = res["weight_profile"]
+        print(f"weight profile {selected['name']}: {selected['weights']} ({selected['license']})")
     print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
     for exc in failed:
         print(exc, file=sys.stderr)
@@ -1197,11 +1215,26 @@ def build_parser(prog="python -m kit", sub_progs=None):
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
 
-    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
+    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="Greek letter reader or explicit local multilingual OCR, with controls")
     p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
-    p.add_argument("--weights", required=True,
+    p.add_argument("--backend", choices=["linenet", "tesseract"], default="linenet",
+                   help="linenet: Greek letter reader (default); tesseract: installed local OCR language packs")
+    p.add_argument("--language", default="grc", help="language code (default grc); tesseract also accepts lat, heb, "
+                   "or other installed codes joined by +; no automatic language detection")
+    weights_group = p.add_mutually_exclusive_group()
+    weights_group.add_argument("--weights",
                    help="a released model name such as letters-v2-ccby (downloaded once, SHA-256 checked; a name is "
                         "looked up before any file of that name), or a linenet-v1 .npz path")
+    weights_group.add_argument("--weight-profile", choices=["ink-lines", "permissive"],
+                   help="linenet weight profile: by default ink-lines with --lines, permissive otherwise; "
+                        "explicit --weights always selects that model")
+    p.add_argument("--tessdata", help="tesseract: local directory of .traineddata language packs; never downloaded")
+    p.add_argument("--ocr-psm", type=int, choices=[3, 6, 7, 11, 13], default=3,
+                   help="tesseract page segmentation: 3 auto (default), 6 block, 7 line, 11 sparse, 13 raw line")
+    p.add_argument("--ocr-timeout", type=float, default=60,
+                   help="tesseract timeout per invocation, including each control (default 60 seconds, maximum 600)")
+    p.add_argument("--ocr-min-confidence", type=float, default=50,
+                   help="tesseract word confidence floor, 0 to 100 (default 50); not a calibrated probability")
     p.add_argument("--key", help=".npz: array name (default: the first); zarr: array path or OME-Zarr level (default: "
                                  "level 0, full resolution); pixel values are then in that level's pixels")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
