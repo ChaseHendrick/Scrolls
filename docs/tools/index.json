@@ -2682,6 +2682,138 @@
    ]
   },
   {
+   "id": "inkfilter",
+   "name": "inkfilter",
+   "tagline": "fixed image filters for surface volumes",
+   "summary": "Inkfilter 0.1.0 makes a map from a local surface-volume window using fixed operations and writes a reversed-depth control, with no trained model or weights.",
+   "status": "Branch only",
+   "kind": [
+    "package"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "scrolls-inkfilter",
+    "python -m scrolls_inkfilter",
+    "python demo.py demo-output"
+   ],
+   "imports": [
+    "from scrolls_inkfilter import ink_map"
+   ],
+   "code": [
+    {
+     "path": "submissions/progress-2026-10-inkfilter/",
+     "symbols": []
+    },
+    {
+     "path": "src/scrolls_inkfilter/core.py",
+     "symbols": []
+    },
+    {
+     "path": "src/scrolls_inkfilter/cli.py",
+     "symbols": []
+    },
+    {
+     "path": "src/scrolls_inkfilter/__init__.py",
+     "symbols": []
+    },
+    {
+     "path": "src/scrolls_inkfilter/__main__.py",
+     "symbols": []
+    },
+    {
+     "path": "demo.py",
+     "symbols": []
+    },
+    {
+     "path": "evidence/summarize.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "submissions/progress-2026-10-inkfilter/tests/test_core.py",
+    "submissions/progress-2026-10-inkfilter/tests/test_cli.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for local CPU use on data the user may access. Needed before publishing maps, posting or uploading (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-17",
+    "commit": "4953f17851aa9b2ffd3c26c86e85ecdabd659ca6"
+   },
+   "license": "Original code: [Apache-2.0](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/LICENSE). Referenced data and methods keep their own licenses; data and upstream implementations are not bundled",
+   "fields": {
+    "Id": "`inkfilter`",
+    "Status": "Branch only",
+    "Kind": "package",
+    "Area": "Ink maps and models",
+    "Run": "`scrolls-inkfilter`, `python -m scrolls_inkfilter`, `from scrolls_inkfilter import ink_map`; `python demo.py demo-output` in the package directory",
+    "Code": "`submissions/progress-2026-10-inkfilter/` on its branch: `src/scrolls_inkfilter/core.py`, `src/scrolls_inkfilter/cli.py`, `src/scrolls_inkfilter/__init__.py`, `src/scrolls_inkfilter/__main__.py`, `demo.py`, `evidence/summarize.py`",
+    "Tests": "`submissions/progress-2026-10-inkfilter/tests/test_core.py` and `submissions/progress-2026-10-inkfilter/tests/test_cli.py` on its branch",
+    "Needs": "Python 3.10 or newer and NumPy; Python 3.11 or newer for optional Zarr 3. Local TIFF support needs tifffile. Tested on Python 3.12.14 with NumPy 2.5.4, tifffile 2026.10.15 and zarr 3.4.1; exact pins in `requirements-test.txt`",
+    "Runs on": "CPU. All 25 synthetic tests took 0.683 seconds in the 17 October 2026 cloud packaging check; real-data adapter runtime and peak RAM were not measured",
+    "Network": "None for filtering, the synthetic demo or saved-score aggregation. Installing dependencies contacts the configured Python package index",
+    "Writes": "The requested `.npy`, `.tif` or `.tiff` float32 map, `_reverse` map and `.json` record; creates the output folder and refuses existing files unless `--overwrite`. The demo creates a new directory containing wholly synthetic input and these outputs",
+    "Go-ahead": "Not needed for local CPU use on data the user may access. Needed before publishing maps, posting or uploading (the go-ahead rule, hard rule 8)",
+    "Released": "Public branch `submission/progress-2026-10-inkfilter`, commit `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6`; code is not on public `main`",
+    "License": "Original code: [Apache-2.0](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/LICENSE). Referenced data and methods keep their own licenses; data and upstream implementations are not bundled",
+    "Guide": "[Package README](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/README.md), [evidence and limits](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/evidence/README.md)",
+    "Branch": "`submission/progress-2026-10-inkfilter` at `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6`",
+    "Checked": "2026-10-17 against commit `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6`"
+   },
+   "page": "docs/tools/inkfilter.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 25,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "Where the code is",
+     "start_line": 35,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "How to run it",
+     "start_line": 46,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Inputs and outputs",
+     "start_line": 68,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Why it is not on the default branch",
+     "start_line": 74,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 78,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 84,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 88,
+     "end_line": 93,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "layers",
    "name": "layers",
    "tagline": "export a surface volume to layer TIFFs, and write the depth-shuffle control",
