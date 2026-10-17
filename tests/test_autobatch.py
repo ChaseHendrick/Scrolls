@@ -329,6 +329,40 @@ class BatchTest(unittest.TestCase):
         st = {r["key"]: r["status"] for r in autobatch.status_table(self.state)}
         self.assertEqual(st["S1/20250101000001"], "planned")
 
+    def test_failed_zattrs_read_is_retried_not_priced_at_level_0(self):
+        def flaky(url):
+            raise OSError("connection reset")
+        plan = autobatch.plan_all(self.state, catalog=self.doc, levels_get=flaky, rates=self.rates)
+        keys = {s["key"] for s in plan["scans"]}
+        self.assertNotIn("S1/20250101000001", keys)
+        reasons = {r["key"]: r["reason"] for r in plan["rejected"]}
+        self.assertIn(".zattrs", reasons["S1/20250101000001"])
+        first = autobatch.watch(self.state, fetch=lambda: self.doc, levels_get=flaky, rates=self.rates)
+        self.assertIn("S1/20250101000001", {r["key"] for r in first["rejected"]})
+        again = autobatch.watch(self.state, fetch=lambda: self.doc, levels_get=no_net, rates=self.rates)
+        fine = [q for q in again["queued"] if q["key"] == "S1/20250101000001"]
+        self.assertEqual(len(fine), 1)
+        cfg = autobatch.plan_all(self.state, catalog=self.doc, levels_get=no_net, rates=self.rates)
+        self.assertEqual({s["key"]: s["levels"] for s in cfg["scans"]}["S1/20250101000001"],
+                         ["0", "1", "2", "3", "4", "5"])
+
+    def test_et_times_are_eastern_on_a_utc_machine(self):
+        from datetime import datetime, timezone
+        from unittest import mock
+
+        class UtcMachine(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                at = datetime(2026, 10, 16, 12, 0, tzinfo=timezone.utc)
+                return at.astimezone(tz) if tz else at.replace(tzinfo=None)   # local clock reads UTC
+        with mock.patch.object(autobatch, "datetime", UtcMachine):
+            self.assertEqual(autobatch._now_et(), "2026-10-16 08:00 ET")   # EDT, UTC-4
+
+    def test_readers_comment_does_not_call_w043_held_out(self):
+        # w043 is ink_9um training data (docs/logs/2026-10-08-w045-not-held-out.md).
+        comments = [l for l in Path(autobatch.__file__).read_text().splitlines() if l.lstrip().startswith("#")]
+        self.assertFalse([l for l in comments if "held-out" in l and ("w043" in l or "segment" in l)])
+
     def test_no_modal_import(self):
         src = Path(autobatch.__file__).read_text() + Path(scancatalog.__file__).read_text()
         self.assertNotIn("import modal", src)

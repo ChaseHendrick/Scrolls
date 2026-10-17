@@ -127,6 +127,31 @@ class LayersTest(unittest.TestCase):
         self.assertEqual([int(v) for v in z["0"][:, 0, 0]], values)
         self.assertEqual(z.attrs["depth_shuffle"]["order"], result["order"])
 
+    def test_layers_refuses_a_folder_with_earlier_layers(self):
+        src = self.bare(volume())
+        layers.export_file(src, self.root / "out")
+        with self.assertRaises(verify.VerifyError) as ctx:
+            layers.export_file(src, self.root / "out", count=3)
+        self.assertIn("already holds layer TIFFs", str(ctx.exception))
+        self.assertEqual(len(list((self.root / "out").glob("*.tif"))), 6)
+        (self.root / "other").mkdir()
+        (self.root / "other" / "notes.txt").write_text("kept")
+        layers.export_file(src, self.root / "other", count=3)
+        self.assertEqual(len(list((self.root / "other").glob("*.tif"))), 3)
+
+    def test_shuffle_refuses_an_existing_out(self):
+        src = self.bare(volume())
+        dst = self.root / "taken"
+        dst.mkdir()
+        (dst / "keep.txt").write_text("not ours")
+        with self.assertRaises(verify.VerifyError) as ctx:
+            layers.shuffle_file(src, dst, 5)
+        self.assertIn("already exists", str(ctx.exception))
+        self.assertTrue((dst / "keep.txt").is_file())
+        with self.assertRaises(verify.VerifyError):
+            layers.shuffle_file(src, src, 5)
+        self.assertEqual(layers.open_volume(src).shape, (6, 20, 30))
+
 
 if __name__ == "__main__":
     unittest.main()

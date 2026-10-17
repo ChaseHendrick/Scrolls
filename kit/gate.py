@@ -53,6 +53,9 @@ def from_mac(work, crops):
             except (OSError, ValueError, KeyError, TypeError):
                 skipped.append(f"{f}: unreadable")
                 continue
+            if not isinstance(fwd, dict) or not isinstance(ctrl, dict):
+                skipped.append(f"{f}: forward and control must be objects with an auc; rescore this crop")
+                continue
             if list(a.get("crop") or []) != list(crops[seg]) or fwd.get("inner") != INNER:
                 skipped.append(f"{f}: not the standard crop with a {INNER} px edge (crop {a.get('crop')}, inner {fwd.get('inner')})")
                 continue
