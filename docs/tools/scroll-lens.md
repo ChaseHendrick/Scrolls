@@ -1,4 +1,4 @@
-# scroll-lens: look inside a scan cube with the organisers' 3D DINO, ink and surface models
+# scroll-lens: look inside a scan cube with the organizers' 3D DINO, ink and surface models
 
 A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to 2.4 µm scroll scan and shows what three Vesuvius Challenge 3D models see in it, with click search over the 3D DINO embeddings and a CPU fallback.
 
@@ -24,7 +24,7 @@ A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to
 
 The Vesuvius Challenge released three 3D models with its PHerc. Paris 4 work (Angelotti et al. 2026, [arXiv:2606.29085](https://arxiv.org/abs/2606.29085)): `scrollprize/dinovol_v2_ps8_with_paris4_352500`, a self-supervised 3D ViT that gives each 8 × 8 × 8 voxel patch 864 numbers (an embedding); `scrollprize/ink_3d_dino_guided`, which marks ink voxels directly in the scan; and `scrollprize/surface_recto_3dunet`, which marks the written (recto) side of each sheet. Scroll Lens reads one cube of a scan from the open-data bucket, runs any of the three on it, and shows the results as overlays on three slice views and in a 3D plot.
 
-Click search: a click in "More like this" mode takes the embedding of the clicked patch and lights up the cube's most similar patches; "Not this" subtracts a patch. The concept is the unit-length mean of the clicked embeddings, the same recipe the organisers used for their reference ink embedding (`avg_ref_embedding.npy`, 256 expert clicks), which the page also shows. The concept follows the visitor to other cubes and scans and downloads as `concept.npy`.
+Click search: a click in "More like this" mode takes the embedding of the clicked patch and lights up the cube's most similar patches; "Not this" subtracts a patch. The concept is the unit-length mean of the clicked embeddings, the same recipe the organizers used for their reference ink embedding (`avg_ref_embedding.npy`, 256 expert clicks), which the page also shows. The concept follows the visitor to other cubes and scans and downloads as `concept.npy`.
 
 Everything shown is model output, not a reading. A cube is at most 0.6 mm across, smaller than one letter. Scroll Lens reads only twelve listed scans (below), none on the First Letters or Grand Prize eligible lists. On PHerc. Paris 4, whose title is an open prize, Scroll Lens itself picks only the eight points listed in the ink checkpoint's training config (`lens.PARIS4_TRAINING_POINTS`).
 
@@ -32,7 +32,7 @@ The tool has two parts. `lens.py` holds everything except the web page: the allo
 
 ## When to use it
 
-- To see what the organisers' 3D models mark in a piece of a scan, without installing villa or dinovol.
+- To see what the organizers' 3D models mark in a piece of a scan, without installing villa or dinovol.
 - To try few-click labelling with 3D DINO embeddings, then carry the concept to another scan or a script.
 - To get the models' outputs for a cube as arrays (`look` endpoint or `lens.py look`).
 
@@ -71,7 +71,7 @@ It worked if the exit code is 0, `OUT` holds the `.npz` and `.json`, and the con
 
 ## Checks and controls
 
-- Agreement with a control that must fail: `lens.agreement` gives the AUC with which a similarity map (the organisers' reference, or the visitor's concept) picks out the patches the 3D ink model marks as ink (mean probability over 0.5), beside the same ink mask rolled by half the cube on every axis. Paris 4 cube above: 0.71 against control 0.48; PHerc. 1667 cube at z 17984, y 7488, x 7488, 128³: 0.76 against 0.45 (Model output, 2026-10-16). A control near the real AUC means the agreement is not about place. `test_agreement_has_a_control_that_fails` checks that the control can fail.
+- Agreement with a control that must fail: `lens.agreement` gives the AUC with which a similarity map (the organizers' reference, or the visitor's concept) picks out the patches the 3D ink model marks as ink (mean probability over 0.5), beside the same ink mask rolled by half the cube on every axis. Paris 4 cube above: 0.71 against control 0.48; PHerc. 1667 cube at z 17984, y 7488, x 7488, 128³: 0.76 against 0.45 (Model output, 2026-10-16). A control near the real AUC means the agreement is not about place. `test_agreement_has_a_control_that_fails` checks that the control can fail.
 - Port check: on a 128³ Paris 4 block, `Engine._dino_grid` matched dinovol's napari inspector (`compute_patch_embedding_grid`) to a cosine of at least 0.99990 per patch.
 - Pinned inputs: weights are refused unless their SHA-256 matches `lens.MODELS`; code is fetched at `lens.CODE` commits.
 - The agreement is with another model, not with ground truth; a high AUC says the DINO concept and the ink model mark the same patches, nothing more.
@@ -169,6 +169,21 @@ Starts the page locally (Gradio queue of 24, the `look` endpoint at most 2 at a 
 
 The hidden `look` endpoint (`api_name="look"`) takes, in order: volume, z, y, x, size (default 256), layers (default `dino,ink,surface`), tta, compact, allow_cpu (all three default off), and returns the `.npz` path. See [the Space card](../../spaces/scroll-lens/README.md) for a `gradio_client` example.
 
+### Agent tools (API and MCP, since 1.1.0)
+
+`app.py` launches with `mcp_server=True`, so each endpoint below is also an MCP tool at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. A cube is named by `cube_id` (a gallery id; no GPU) or by `scan`, `z`, `y`, `x` and `size` (runs all three models; the caller's ZeroGPU time, else the CPU fallback). The three most recent cubes stay in memory (`VIEW_CACHE_N = 3`), so a search after an inspect of the same cube runs no model. Every JSON answer has `open_in_browser`, a page link to the same cube.
+
+| Endpoint | Inputs | Returns |
+| --- | --- | --- |
+| `list_scans` | none | JSON: `scans`, `paris4_training_points`, `sizes`, `layers`, `version` |
+| `list_gallery` | none | JSON: `cubes` with `id`, `scan`, `title`, `note`, `point_zyx`, `size`, `open_in_browser` |
+| `random_point` | scan, seed | JSON: `scan`, `z`, `y`, `x` |
+| `inspect_cube` | cube_id, scan, z, y, x, size, overlays (`ink,surface,reference,dino`, any subset) | PNG of the three views through the point; JSON summary (receipt, agreement, `reference_fraction_at_tau`, `ink_voxel_fraction`, `surface_voxel_fraction`, `slices_zyx`) |
+| `search_cube` | cube_id, scan, z, y, x, size, positive (`"z,y,x; ..."`), negative, concept (`.npy`), top_k (1 to 200) | PNG through the best match; JSON with `matches` (`center_zyx`, `score`) and `agreement_with_ink_model`; `concept.npy` |
+| `download_cube` | cube_id, scan, z, y, x, size | The `.npz` and the JSON summary |
+
+With no positive points and no concept file, `search_cube` uses the organizers' ink reference. `app.fix_mcp_multiple_outputs` patches Gradio 6.28's MCP server, which otherwise joins a queued tool's several outputs into one text, so the image reaches agents as an image.
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -177,6 +192,7 @@ The hidden `look` endpoint (`api_name="look"`) takes, in order: volume, z, y, x,
 | `LENS_WEIGHTS` | none | Folder of local weights laid out `REPO_NAME/FILE`; still hash-checked |
 | `LENS_DINOVOL` | none | Local dinovol checkout (repository root) instead of the pinned download |
 | `LENS_VILLA_SRC` | none | Local villa `vesuvius/src` instead of the pinned download |
+| `SPACE_HOST` | unset | Set by Hugging Face to the Space's host name; page links (`open_in_browser`, "Link to this cube") start with it, else they are relative |
 | `SPACES_ZERO_GPU` | unset | Set to `1` or `true` by Hugging Face on a ZeroGPU Space; with the `spaces` package present, `app.py` then runs models through `spaces.GPU` |
 
 ## Python API
@@ -262,6 +278,15 @@ The page's Save button writes `scroll-lens-VOLUME-Z-Y-X-SIZE.npz` and `.json`, p
 | ZeroGPU quota used up or no GPU free | The visitor's quota is spent or ZeroGPU is busy | The page says so and runs the middle 128³ on the CPU; `look` does the same only with `allow_cpu` |
 | `no gallery cube 'ID'` | The id is not in `gallery/index.json` | Pick from the gallery list |
 | `pick a gallery cube` | The gallery button was pressed with none chosen | Choose a cube first |
+| `the gallery is empty` | *Previous* or *Next* on a copy with no gallery | Pick a point instead |
+| `give a gallery cube_id, or a scan and a point (z, y, x)` | An agent tool got neither | Pass `cube_id`, or `scan` with `z`, `y`, `x` |
+| `unknown overlays [...]; choose from ink, surface, clicks, reference, dino` | `inspect_cube` named another overlay | Use those names, comma-separated |
+| `not a point: 'TEXT'; write z,y,x in voxels` | A `search_cube` point is not whole numbers | Write `z,y,x; z,y,x` |
+| `not a point: 'TEXT'; write z,y,x in voxels, each 0 or more` | Not three numbers, or a negative one | Write three numbers, each 0 or more |
+| `point (Z, Y, X) is outside the cube at (...) of side N; points must lie inside the cube being searched` | A search point is not in the named cube | Use a point inside the cube, or name the cube around it |
+| `give positive points or a concept file, not both` | Both were given | Give one |
+| `negative points need positive points or a concept file` | Only negative points | Add positive points or a concept |
+| `this cube has no DINO embeddings, so it cannot be searched` | `search_cube` on a cube without embeddings | Use a cube run with all three models |
 | `nothing to save yet` | Save before any cube is shown | Run or open a cube first |
 | `this cube has no DINO embeddings; run it with the 3D DINO model to search by clicking` | A click search on a cube run without DINO (page) | Rerun with the 3D DINO model |
 | `this cube has no DINO embeddings; run it with the 3D DINO layer` | `lens.grid_of` on a result without DINO | Rerun with `dino` in the layers |
@@ -288,8 +313,8 @@ The page's Save button writes `scroll-lens-VOLUME-Z-Y-X-SIZE.npz` and `.json`, p
 ## How it works
 
 1. `cube_origin` snaps the cube to the chunk grid; `read_cube` fetches the 1 or 8 chunks in parallel.
-2. dinovol: robust normalisation of the whole cube, 128³ windows overlapping by one patch with edge-tapered averaging, unit length (a port of dinovol's napari inspector). Ink: villa's `normalize_image` with the checkpoint's normalisation and the EMA weights. Surface: z-score per cube, channel 1 of the softmax. bf16 autocast on CUDA.
-3. Similarity: cosine to the positive concept minus cosine to the negative one; the page shows the top `Top %` patches. The organisers' threshold `lens.TAU = 0.5` is reported for their reference.
+2. dinovol: robust normalization of the whole cube, 128³ windows overlapping by one patch with edge-tapered averaging, unit length (a port of dinovol's napari inspector). Ink: villa's `normalize_image` with the checkpoint's normalization and the EMA weights. Surface: z-score per cube, channel 1 of the softmax. bf16 autocast on CUDA.
+3. Similarity: cosine to the positive concept minus cosine to the negative one; the page shows the top `Top %` patches. The organizers' threshold `lens.TAU = 0.5` is reported for their reference.
 4. `gpu_seconds` asks ZeroGPU for 12 s plus 6 (dino), 4 (ink) and 4 (surface) times (size/256)³, ink and surface times 8 with mirroring, rounded up.
 5. Constants in `lens.py`: `CHUNK = 128`, `PATCH = 8`, `EMBED_DIM = 864`, `MIN_FOREGROUND = 0.05`, `REDUCED_DIM = 128`, `MAX_CONCEPT_BYTES` 4 MB, `VERSION = "1.0.0"`. In `app.py`: `CPU_SIZE = 128`, `STATE_TTL_S` 30 minutes.
 
@@ -299,6 +324,7 @@ Free to run locally. On the Space, a visitor's runs count against their own Zero
 
 ## For agents
 
+- **On the Space:** use the MCP tools or the API endpoints in "Agent tools" above; start with `list_gallery` and `inspect_cube` (no GPU), and hand a person the `open_in_browser` link.
 - **Command:** `python3 spaces/scroll-lens/lens.py look VOLUME Z Y X --size 128 --out OUT`; the receipt is printed as JSON and saved as `OUT/VOLUME-Z-Y-X-128.json` beside the `.npz`.
 - **Parse:** `agreement_with_ink_model.auc` and `.auc_control_shifted` from the receipt; arrays `grid`, `ink`, `surface` from the `.npz` via `lens.load_npz`; `cube_origin_zyx` is the snapped corner, not your point.
 - **Rerun:** safe; it overwrites the same `.npz` and `.json` in `OUT` and reuses the cache in `$LENS_CACHE`.
@@ -313,6 +339,7 @@ Free to run locally. On the Space, a visitor's runs count against their own Zero
 
 ## History
 
+- 2026-10-17: v1.1.0. Agent tools as API endpoints and MCP tools (`list_scans`, `list_gallery`, `random_point`, `inspect_cube`, `search_cube`, `download_cube`); the views redraw while a slider or the crosshair is dragged; wheel steps slices; *Undo last click*; *Previous* and *Next* gallery buttons and a filterable list; American spelling; the gallery grew to 99 cubes with the rest of Chase's ZeroGPU minutes (PR to follow).
 - 2026-10-17: v1.0.0 live on Hugging Face with the 19-cube gallery. Gallery agreement (Model output): most cubes AUC 0.67 to 0.91 with controls 0.42 to 0.59; PHerc. 500P2 0.30 (control 0.45), 343P 0.40 (0.63) and 332 0.62 (0.59) disagree ([PR #113](https://github.com/ChaseHendrick/Scrolls/pull/113)).
 - 2026-10-17: tool page, docs index, map, glossary and handoff rows (`60da647`).
 - 2026-10-16: built in thread "Use my 5 minutes of ZeroGPU" (Chase: "something cool and visionary and useful by both newcomers and the elite researchers, like I did and we did for Unroll") (`378bd42`, [PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110)).

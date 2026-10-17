@@ -170,11 +170,11 @@ class Embeddings(unittest.TestCase):
         self.assertLess(a["auc_control_shifted"], 0.6)
         self.assertAlmostEqual(a["ink_patch_fraction"], 8 / 512)
 
-    def test_pca_colours(self):
-        col = lens.pca_colours(self.grid)
+    def test_pca_colors(self):
+        col = lens.pca_colors(self.grid)
         self.assertEqual(col.shape, (8, 8, 8, 3))
         self.assertEqual(col.dtype, np.uint8)
-        self.assertTrue(np.array_equal(col, lens.pca_colours(self.grid)))
+        self.assertTrue(np.array_equal(col, lens.pca_colors(self.grid)))
 
     def test_reduce_grid_round_trip(self):
         rng = np.random.default_rng(1)
@@ -277,7 +277,7 @@ class Files(unittest.TestCase):
 
 @unittest.skipIf(np is None, "needs numpy")
 class GalleryPlan(unittest.TestCase):
-    def test_plan_uses_only_the_organisers_paris4_points(self):
+    def test_plan_uses_only_the_organizers_paris4_points(self):
         build = load("build_gallery", SPACE / "tools" / "build_gallery.py")
         c = lens.CHUNK
         chunk = np.random.default_rng(0).integers(100, 200, (c, c, c), dtype=np.uint8).tobytes()
@@ -315,9 +315,9 @@ class Page(unittest.TestCase):
         self.assertIn("not a reading", text)
         self.assertIn("control", text)
         self.assertEqual(app.ran_size(res), 128)
-        self.assertEqual(app._centre(np.zeros((256,) * 3), 128).shape, (128,) * 3)
+        self.assertEqual(app._center(np.zeros((256,) * 3), 128).shape, (128,) * 3)
 
-    def test_cpu_fallback_view_is_recentred(self):
+    def test_cpu_fallback_view_is_recentered(self):
         app = load("scroll_lens_app", SPACE / "app.py")
         app.REFERENCE = lens.unit(np.ones(lens.EMBED_DIM, np.float32))
         res = Files().result(128)
@@ -325,6 +325,60 @@ class Page(unittest.TestCase):
                             np.ones((128,) * 3, np.uint8), res, "cpu")
         self.assertEqual(view["origin"], (1088, 1088, 1088))
         self.assertEqual(view["size"], 128)
+
+
+    def test_agent_tools_on_a_gallery_cube(self):
+        app = load("scroll_lens_app", SPACE / "app.py")
+        app.REFERENCE = lens.unit(np.ones(lens.EMBED_DIM, np.float32))
+        rng = np.random.default_rng(5)
+        res = Files().result(128)
+        cube = rng.integers(1, 256, (128, 128, 128), dtype=np.uint8)
+        origin = (1024, 2048, 3072)
+        view = app.new_view("PHerc0139", origin, 128, (1030, 2050, 3080), cube, res, "gallery")
+        view["receipt"]["gallery_id"] = "g1"
+        app.VIEW_CACHE.clear()
+        app.VIEW_CACHE[("gallery", "g1")] = view
+        app.GALLERY = [{"id": "g1", "volume": "PHerc0139", "title": "t", "note": "", "file": "g1.npz",
+                        "point_zyx": [1030, 2050, 3080], "size": 128}]
+        img, info = app.inspect_cube("g1", overlays="ink,surface,reference,dino")
+        self.assertEqual(img.shape, (512, 512 * 3 + 16, 3))
+        self.assertEqual(info["slices_zyx"], [1030, 2050, 3080])
+        self.assertIn("cube=g1", info["open_in_browser"])
+        with self.assertRaises(lens.LensError):
+            app.inspect_cube("g1", overlays="ink,letters")
+        img, hits, concept = app.search_cube("g1", positive="1030,2050,3080", top_k=5)
+        self.assertEqual(len(hits["matches"]), 5)
+        self.assertEqual(hits["matches"][0]["score"], 1.0)              # the example matches itself best
+        self.assertEqual(hits["matches"][0]["center_zyx"], [1028, 2052, 3084])
+        self.assertIn("auc_control_shifted", hits["agreement_with_ink_model"])
+        self.assertEqual(np.load(concept).shape, (lens.EMBED_DIM,))
+        _, again, _ = app.search_cube("g1", concept=concept, top_k=5)  # the saved concept finds the same patches
+        self.assertEqual(again["matches"], hits["matches"])
+        _, ref, _ = app.search_cube("g1", top_k=3)
+        self.assertEqual(ref["concept"], "the organizers' ink reference")
+        for bad in ({"positive": "0,0,0"}, {"positive": "1,2"}, {"negative": "1030,2050,3080"}):
+            with self.assertRaises(lens.LensError):
+                app.search_cube("g1", **bad)
+        with self.assertRaises(lens.LensError):
+            app.inspect_cube("", "")                                     # neither a cube nor a scan
+        self.assertEqual(app.next_gallery_id("g1", 1), "g1")
+        self.assertEqual(app.list_gallery()["cubes"][0]["id"], "g1")
+        self.assertEqual(len(app.list_scans()["scans"]), len(lens.VOLUMES))
+
+    def test_parse_points_and_matches(self):
+        self.assertEqual(lens.parse_points("1,2,3; 4 5 6\n7,8,9"), [(1, 2, 3), (4, 5, 6), (7, 8, 9)])
+        self.assertEqual(lens.parse_points(""), [])
+        for bad in ("1,2", "1,2,3,4", "a,b,c", "-1,2,3"):
+            with self.assertRaises(lens.LensError):
+                lens.parse_points(bad)
+        self.assertEqual(lens.voxel_in_cube((110, 120, 130), (100, 100, 100), 128), [10, 20, 30])
+        with self.assertRaises(lens.LensError):
+            lens.voxel_in_cube((99, 120, 130), (100, 100, 100), 128)
+        sim = np.zeros((4, 4, 4), np.float32)
+        sim[1, 2, 3], sim[0, 0, 0] = 0.9, 0.5
+        m = lens.top_matches(sim, (100, 200, 300), 2)
+        self.assertEqual(m[0], {"center_zyx": [112, 220, 328], "score": 0.9})
+        self.assertEqual(m[1]["center_zyx"], [104, 204, 304])
 
 
 if __name__ == "__main__":
