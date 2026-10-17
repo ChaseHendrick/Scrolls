@@ -1,8 +1,8 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,segzoo}.
+"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
-scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
+scrolls-letterlines, scrolls-letterdemo and scrolls-start (one command each; CONSOLE_SCRIPTS).
 """
 
 import argparse
@@ -836,6 +836,11 @@ def cmd_letterdemo(args):
     return letterdemo.run_cli(args)
 
 
+def cmd_volumeview(args):
+    from . import volumeview
+    return volumeview.run(args)
+
+
 def cmd_segzoo(args):
     from . import segzoo   # standard library; the torch code is in scripts/segzoo/
     return segzoo.cmd_segzoo(args)
@@ -843,7 +848,7 @@ def cmd_segzoo(args):
 
 # Console scripts that run one command (pyproject.toml's [project.scripts]): script name -> command.
 CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines",
-                   "scrolls-letterdemo": "letterdemo"}
+                   "scrolls-letterdemo": "letterdemo", "scrolls-start": "start"}
 
 
 def cmd_strokenet(args):
@@ -881,6 +886,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     sub_progs = sub_progs or {}
     parser = argparse.ArgumentParser(prog=prog, description=__doc__)
     sub = parser.add_subparsers(dest="command", required=True)
+
+    p = sub.add_parser("start", prog=sub_progs.get("start"), help="open Scrolls Starter: setup, practice and guided next steps")
+    from . import starter
+    starter.add_arguments(p)
+    p.set_defaults(func=starter.run)
 
     p = sub.add_parser("prizes", help="open prizes from the dated snapshot")
     p.add_argument("--json", action="store_true")
@@ -1209,13 +1219,22 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
 
+    p = sub.add_parser("volumeview", help="build a local viewer link from explicit public volume metadata")
+    from . import volumeview
+    volumeview.add_arguments(p)
+    p.set_defaults(func=cmd_volumeview)
+
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
                                       "MedSAM2 and Mamba families, their licences and fit; Auto3DSeg datalists")
     from . import segzoo as _segzoo
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
 
-    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="Greek letter reader or explicit local multilingual OCR, with controls")
+    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"),
+                       help="Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls",
+                       description="Scroll Text Reader (formerly Greek Letter Reader). Greek LineNet proposes letters; "
+                                   "optional local Tesseract proposes words using explicitly installed language packs. "
+                                   "Outputs are unverified hypotheses with controls, not readings.")
     p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
     p.add_argument("--backend", choices=["linenet", "tesseract"], default="linenet",
                    help="linenet: Greek letter reader (default); tesseract: installed local OCR language packs")
@@ -1496,3 +1515,8 @@ def letterlines_main(argv=None):
 def letterdemo_main(argv=None):
     """Console script scrolls-letterdemo: python -m kit letterdemo."""
     return _console("scrolls-letterdemo", argv)
+
+
+def start_main(argv=None):
+    """Console script scrolls-start: python -m kit start."""
+    return _console("scrolls-start", argv)

@@ -178,6 +178,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## N
 
+**Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
+
 **nnU-Net**: A self-configuring U-Net framework: given a labelled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
 
 **normal**: A direction perpendicular to a surface. A normal grid is a published 3D field of such directions that tracing uses.
@@ -239,6 +241,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **SAM 2**: Meta's Segment Anything Model 2: segments an object in an image or a video from a click, box or mask, and follows it from frame to frame. `scripts/segzoo/segzoo_sam2.py` treats a cube's slices as frames to follow papyrus sheets ([page](docs/tools/segzoo.md)).
 
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
+
+**Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 

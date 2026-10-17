@@ -7,9 +7,9 @@
   "releases": [
     {
       "id": "letter-reader",
-      "title": "Greek letter reader",
+      "title": "Scroll Text Reader",
       "released": "2026-10-17",
-      "summary": "A small learned reader proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs using NumPy on CPU. Its output is a hypothesis for a person to check, with null and orientation controls, not a reading. The default now follows the task: given line positions select `letters-v2-real` (CC BY-NC 4.0); automatic layout selects `letters-v2-ccby` (CC BY 4.0). Explicit weights or a profile override that choice, and results record the profile, license and weight hash. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for real versus 0.462 for ccby; the paired difference interval was +0.017 to +0.155 (Model output; 117 letters in 84 groups). The whole-region comparison was unresolved; photo accuracy is untested. Those maps may benefit from training-label exposure, so this does not establish accuracy on new scrolls. An optional local Tesseract backend supports Latin, Greek, Hebrew and other installed language packs with pack hashes and blank/shuffled controls. Printed-text smoke checks establish that the backend works, not scroll accuracy; controls can fail. `ReaderSession` validates replacements before switching models, profiles, languages or backends and keeps the previous selection on failure. Checkpoint files and release tags are unchanged.",
+      "summary": "Scroll Text Reader (formerly Greek Letter Reader). A small learned reader proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs using NumPy on CPU. Its output is a hypothesis for a person to check, with null and orientation controls, not a reading. The default now follows the task: given line positions select `letters-v2-real` (CC BY-NC 4.0); automatic layout selects `letters-v2-ccby` (CC BY 4.0). Explicit weights or a profile override that choice, and results record the profile, license and weight hash. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for real versus 0.462 for ccby; the paired difference interval was +0.017 to +0.155 (Model output; 117 letters in 84 groups). The whole-region comparison was unresolved; photo accuracy is untested. Those maps may benefit from training-label exposure, so this does not establish accuracy on new scrolls. An optional local Tesseract backend supports Latin, Greek, Hebrew and other installed language packs with pack hashes and blank/shuffled controls. Printed-text smoke checks establish that the backend works, not scroll accuracy; controls can fail. `ReaderSession` validates replacements before switching models, profiles, languages or backends and keeps the previous selection on failure. Checkpoint files and release tags are unchanged.",
       "commands": [
         "python3 -m venv .venv",
         ". .venv/bin/activate",
@@ -121,6 +121,14 @@
         "commit": "4953f17851aa9b2ffd3c26c86e85ecdabd659ca6",
         "path": "submissions/progress-2026-10-inkfilter"
       }
+    },
+    {
+      "id": "scrolls-starter",
+      "title": "Scrolls Starter: a beginner path into the tools",
+      "released": "2026-10-17",
+      "where": "main",
+      "summary": "A local browser introduction with a known-answer synthetic exercise, a control you can compare, a real setup checker and a command builder for Scroll Text Reader. The portable HTML works without installing Python; it explicitly leaves local setup unchecked. The guide connects our released tools and the official browser exercises to the official data notebook, VC3D and ink detection. It does not run models or download scans for you.",
+      "details": "Start with [the beginner guide](docs/start-here.md), download [the portable page](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/Scrolls-Starter.html), or install [workbench 0.4.0](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0) and run `scrolls-start`. The [tool reference](docs/tools/starter.md) covers setup checks and generated commands."
     }
   ]
 }

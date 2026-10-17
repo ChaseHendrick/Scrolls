@@ -4,4 +4,4 @@ The reading pipeline itself (VC3D, the ``vesuvius`` library, ink detection) live
 ScrollPrize/villa. This package wraps it; it does not reimplement it.
 """
 
-__version__ = "0.3.0"
+__version__ = "0.4.0"

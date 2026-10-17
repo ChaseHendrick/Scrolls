@@ -4,14 +4,14 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 16 October 2026.
+Updated 17 October 2026.
 
 ## Where things stand
 
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
-| New here, from no idea to a first submission | [`start-here.md`](start-here.md) | [`pipeline.md`](pipeline.md) |
+| New here: browser tour, synthetic practice, setup and first tasks with official tools | [`start-here.md`](start-here.md), the shareable beginner guide | [`pipeline.md`](pipeline.md), [`tools/starter.md`](tools/starter.md) |
 | What a technical term means (A to Z) | [`../GLOSSARY.md`](../GLOSSARY.md) | [`vesuvius-bible/`](vesuvius-bible/bible.md#app-glossary) Appendix A |
 | A cited reference book on the scrolls and the challenge, 2023 to 2026 (history, papyrus, imaging, prizes, inventory, pipeline, tools, glossary, timeline, FAQ, bibliography) | [`vesuvius-bible/`](vesuvius-bible/) ([`index.md`](vesuvius-bible/index.md), [`llms.txt`](vesuvius-bible/llms.txt), one file: [`bible.md`](vesuvius-bible/bible.md)) | [`start-here.md`](start-here.md) |
 | Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere) |
@@ -42,6 +42,7 @@ Updated 16 October 2026.
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Every tool, one reference page each: options with defaults, inputs, outputs, failures, checks and rules for agents | [`tools/README.md`](tools/README.md) (generated index; [`tools/index.json`](tools/index.json) for agents) | `python -m kit.tooldocs list`; [`TOOL-DOCS.md`](TOOL-DOCS.md) |
+| Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package lives on branch `submission/progress-2026-10-fix4`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
@@ -49,7 +50,7 @@ Updated 16 October 2026.
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |
 | Scroll centre (umbilicus) finder: a centre line from CT, with its held-out error on the 13 published centre lines | [`../scripts/umbilicus/README.md`](../scripts/umbilicus/README.md) | [`evidence/2026-10-14-umbilicus/`](evidence/2026-10-14-umbilicus/README.md) (end-point rule calibration; held-out scores with the end trims; weight hashes), `results.json` `umbilicus_checks` |
 | StrokeNet (text-likeness of ink map windows), its held-out test on PHerc. Paris 4 and the tile grid pilot | [`strokenet.md`](strokenet.md) | [`prereg/2026-10-14-strokenet.md`](prereg/2026-10-14-strokenet.md), [`prereg/2026-10-14-gridpilot.md`](prereg/2026-10-14-gridpilot.md), [`evidence/2026-10-14-strokenet/`](evidence/2026-10-14-strokenet/README.md), data [`strokenet-data-manifest.json`](strokenet-data-manifest.json), `results.json` `strokenet_checks` |
-| Letter reader (Greek hypotheses and explicit local multilingual OCR) | [`letter-reader.md`](letter-reader.md), [`tools/reader-backends.md`](tools/reader-backends.md) | [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) (measurements), `results.json` `letter_reader_checks` |
+| Scroll Text Reader, formerly Greek Letter Reader (Greek LineNet and explicit local OCR for installed languages) | [`letter-reader.md`](letter-reader.md), [`tools/reader-backends.md`](tools/reader-backends.md) | [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) (measurements), `results.json` `letter_reader_checks` |
 | Segment stack check: order, coincident or oddly spaced pairs, missing sectors, skipped windings, turn overlaps and stack ends of consecutive segments, from geometry against the umbilicus (`python -m kit stackcheck`) | the usage section of [`logs/2026-10-14-pherc0139-segment-defects.md`](logs/2026-10-14-pherc0139-segment-defects.md) and the `kit/stackcheck.py` docstring | [`MAP.md`](MAP.md) |
 | Modern segmentation models next to nnU-Net (MedNeXt, Primus, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba and SS2D): licences, fit, trainers, sheet follower and frozen probe (`python -m kit segzoo`) | [`tools/segzoo.md`](tools/segzoo.md) | [`MAP.md`](MAP.md), [`GLOSSARY.md`](../GLOSSARY.md) |
 | Surface correction tool | [`surfacefix.md`](surfacefix.md) | [`logs/2026-10-07-real-surfacefix-validation.md`](logs/2026-10-07-real-surfacefix-validation.md) |

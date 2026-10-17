@@ -482,7 +482,7 @@
    "id": "cli",
    "name": "cli",
    "tagline": "the kit command line (python -m kit) and its list of commands",
-   "summary": "`python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts.",
+   "summary": "`python -m kit` is the one command line of the workbench: `kit/cli.py` builds the command parser, hands each to its handler, and gives the installed package its console scripts.",
    "status": "Current",
    "kind": [
     "kit module"
@@ -493,7 +493,8 @@
     "scrolls-workbench",
     "scrolls-letterread",
     "scrolls-letterlines",
-    "scrolls-letterdemo"
+    "scrolls-letterdemo",
+    "scrolls-start"
    ],
    "imports": [
     "from kit import cli"
@@ -511,6 +512,7 @@
       "letterread_main",
       "letterlines_main",
       "letterdemo_main",
+      "start_main",
       "import_advice",
       "_shape",
       "CONSOLE_SCRIPTS",
@@ -549,8 +551,8 @@
     "Status": "Current",
     "Kind": "kit module",
     "Area": "Releases and repository",
-    "Run": "`python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` (the installed package's console scripts), `from kit import cli`",
-    "Code": "`kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py`",
+    "Run": "`python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start` (the installed package's console scripts), `from kit import cli`",
+    "Code": "`kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py`",
     "Tests": "`tests/test_cli_parser_cache.py`, `tests/test_packaging.py`, `tests/test_localcost_regressions.py`, `tests/test_repo.py`, `tests/test_letterdemo.py`, `tests/test_letter_scripts.py`",
     "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`). The entry point and every module it imports at start are standard library only; a command that needs numpy, tifffile, zarr, Pillow or scipy imports them when it runs (see its page)",
     "Runs on": "Any machine. `python -m kit prizes --json` took 0.19 s wall (measured 2026-10-16, cloud container, Python 3.13.16); building the parser once and reusing it brought a repeated `main()` from 13 ms to 2 ms per call (commit `88fbee4`'s message; machine not recorded)",
@@ -590,67 +592,67 @@
     {
      "name": "Commands and options",
      "start_line": 75,
-     "end_line": 149,
+     "end_line": 150,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 150,
-     "end_line": 171,
+     "start_line": 151,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 172,
-     "end_line": 175,
+     "start_line": 175,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 176,
-     "end_line": 186,
+     "start_line": 179,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 187,
-     "end_line": 200,
+     "start_line": 190,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 201,
-     "end_line": 210,
+     "start_line": 204,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 211,
-     "end_line": 214,
+     "start_line": 214,
+     "end_line": 217,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 215,
-     "end_line": 224,
+     "start_line": 218,
+     "end_line": 227,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 225,
-     "end_line": 232,
+     "start_line": 228,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 233,
-     "end_line": 242,
+     "start_line": 236,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 243,
-     "end_line": 249,
+     "start_line": 246,
+     "end_line": 252,
      "applicable": true
     }
    ]
@@ -3447,8 +3449,8 @@
   {
    "id": "letterread",
    "name": "letterread",
-   "tagline": "Greek letter hypotheses or explicit local multilingual OCR",
-   "summary": "`python -m kit letterread` proposes Greek letters with a controlled line network, or explicitly selects a local Tesseract language model for word hypotheses. Both routes record the model and controls; neither produces a verified reading.",
+   "tagline": "Scroll Text Reader",
+   "summary": "Scroll Text Reader (formerly Greek Letter Reader) uses `scrolls-letterread` or `python -m kit letterread` to propose Greek letters with LineNet or words with installed local Tesseract language packs, with model provenance and controls.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -3532,91 +3534,91 @@
     {
      "name": "What it does",
      "start_line": 25,
-     "end_line": 38,
+     "end_line": 40,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 39,
-     "end_line": 53,
+     "start_line": 41,
+     "end_line": 55,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 54,
-     "end_line": 81,
+     "start_line": 56,
+     "end_line": 83,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 82,
-     "end_line": 94,
+     "start_line": 84,
+     "end_line": 96,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 95,
-     "end_line": 175,
+     "start_line": 97,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 176,
-     "end_line": 271,
+     "start_line": 178,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 272,
-     "end_line": 284,
+     "start_line": 274,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 285,
-     "end_line": 325,
+     "start_line": 287,
+     "end_line": 327,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 326,
-     "end_line": 399,
+     "start_line": 328,
+     "end_line": 401,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 400,
-     "end_line": 412,
+     "start_line": 402,
+     "end_line": 414,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 413,
-     "end_line": 420,
+     "start_line": 415,
+     "end_line": 422,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 421,
-     "end_line": 432,
+     "start_line": 423,
+     "end_line": 434,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 433,
-     "end_line": 440,
+     "start_line": 435,
+     "end_line": 442,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 441,
-     "end_line": 456,
+     "start_line": 443,
+     "end_line": 458,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 457,
-     "end_line": 465,
+     "start_line": 459,
+     "end_line": 467,
      "applicable": true
     }
    ]
@@ -5608,8 +5610,8 @@
   {
    "id": "reader-backends",
    "name": "reader-backends",
-   "tagline": "switch between Greek letters and local multilingual OCR",
-   "summary": "Choose a reader and language explicitly, inspect installed Tesseract packs, and return word hypotheses with model hashes and controls without silently substituting a model. Tesseract uses only local packs; requested Greek releases keep their existing hash-verified downloader.",
+   "tagline": "Scroll Text Reader backends and session switching",
+   "summary": "Scroll Text Reader can switch between Greek LineNet and explicitly installed local Tesseract language packs, with model provenance, controls and validation before replacing a working selection.",
    "status": "Experimental",
    "kind": [
     "kit module"
@@ -7362,6 +7364,168 @@
    ]
   },
   {
+   "id": "starter",
+   "name": "starter",
+   "tagline": "open a local introduction to scroll tools",
+   "summary": "Scrolls Starter guides newcomers through existing viewers, an offline controls exercise and first official tasks, with a real setup snapshot and an optional Scroll Text Reader command builder.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit start",
+    "scrolls-start"
+   ],
+   "imports": [
+    "from kit import starter"
+   ],
+   "code": [
+    {
+     "path": "kit/starter.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/starter.html",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/starter.js",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "start_main"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_starter.py",
+    "tests/test_packaging.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for setup inspection, local practice or command preparation. Linked services and real workflows have their own resource and data requirements"
+   },
+   "checked": {
+    "date": "2026-10-17",
+    "commit": "67ced6a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`starter`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit start`, `scrolls-start`, `from kit import starter`",
+    "Code": "`kit/starter.py`, `kit/data/starter.html`, `kit/data/starter.js`, `kit/cli.py` (`start_main`)",
+    "Tests": "`tests/test_starter.py`, `tests/test_packaging.py`",
+    "Needs": "Python 3.10 or newer, standard library only, and a modern browser. A generated portable HTML page needs only the browser",
+    "Runs on": "Local CPU; no GPU. Import probes have a 15 second timeout and Tesseract probes each have a 10 second timeout",
+    "Network": "None for generation, checking or the embedded exercise. External links open their named sites only when selected; generated install or reader commands can download packages or weights only when the user runs them",
+    "Writes": "One new self-contained HTML file, by default in a new `scrolls-starter-*/index.html` temporary folder; `--check` prints JSON only. No image or model output is generated",
+    "Go-ahead": "Not needed for setup inspection, local practice or command preparation. Linked services and real workflows have their own resource and data requirements",
+    "Released": "Prepared for the public workbench 0.4.0 release; the portable HTML and installed command use the same assets",
+    "Release id": "`scrolls-starter`",
+    "Checked": "2026-10-17 against commit `67ced6a` plus the Starter working changes"
+   },
+   "page": "docs/tools/starter.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 39,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 87,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 97,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 103,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 125,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 138,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 144,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 148,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 162,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 166,
+     "end_line": 171,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "strokenet",
    "name": "strokenet",
    "tagline": "score how text-like an ink map's windows look, with rotation and IAAFT controls",
@@ -8626,10 +8790,167 @@
    ]
   },
   {
+   "id": "volumeview",
+   "name": "volumeview",
+   "tagline": "create a volume overlay viewer link locally",
+   "summary": "Turn explicitly declared public CT and prediction grids into a Neuroglancer state or link, checking their axes, physical extents and coordinate frame without accessing scan data.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "kit entry point"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python -m kit volumeview",
+    "python -m kit.volumeview"
+   ],
+   "imports": [
+    "from kit import volumeview"
+   ],
+   "code": [
+    {
+     "path": "kit/volumeview.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/volumeview-example.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_volumeview"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_volumeview.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for local generation; sharing a link is a separate publication action"
+   },
+   "checked": {
+    "date": "2026-10-17",
+    "commit": "67ced6a"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`volumeview`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, kit entry point",
+    "Area": "Viewers and apps",
+    "Run": "`python -m kit volumeview`, `python -m kit.volumeview`, `from kit import volumeview`",
+    "Code": "`kit/volumeview.py`, `kit/data/volumeview-example.json`, `kit/cli.py` (`cmd_volumeview`)",
+    "Tests": "`tests/test_volumeview.py`",
+    "Needs": "Python 3.10 or newer; standard library only; an explicit local JSON manifest",
+    "Runs on": "Any CPU; no numerical arrays or GPU required. Synthetic test timing is under Cost and time",
+    "Network": "None. Manually opening the resulting link later loads the external viewer and lets it request the declared public sources",
+    "Writes": "Stdout by default; `--out` creates one new local text file and refuses existing files",
+    "Go-ahead": "Not needed for local generation; sharing a link is a separate publication action",
+    "Released": "Added for the next public workbench release; not a separate model or dataset release",
+    "Checked": "2026-10-17 against commit `67ced6a`"
+   },
+   "page": "docs/tools/volumeview.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 36,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 62,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 92,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 103,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 124,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 145,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 174,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 182,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 186,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 196,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 204,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 208,
+     "end_line": 213,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "workbench-package",
    "name": "workbench-package",
    "tagline": "the pip-installable scrolls-workbench package and the CI that tests it",
-   "summary": "`pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench` 0.2.0, with three extras and four console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it.",
+   "summary": "`pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench`, with three extras and five console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it.",
    "status": "Current",
    "kind": [
     "package",
@@ -8641,7 +8962,8 @@
     "scrolls-workbench",
     "scrolls-letterread",
     "scrolls-letterlines",
-    "scrolls-letterdemo"
+    "scrolls-letterdemo",
+    "scrolls-start"
    ],
    "imports": [
     "import kit"
@@ -8674,6 +8996,7 @@
       "letterread_main",
       "letterlines_main",
       "letterdemo_main",
+      "start_main",
       "_console",
       "CONSOLE_SCRIPTS"
      ]
@@ -8696,15 +9019,15 @@
     "Status": "Current",
     "Kind": "package, workflow",
     "Area": "Releases and repository",
-    "Run": "`python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `import kit`",
-    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `_console`, `CONSOLE_SCRIPTS`)",
+    "Run": "`python -m pip install \"scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls\"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start`, `import kit`",
+    "Code": "`pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`)",
     "Tests": "`tests/test_packaging.py`",
     "Needs": "Python 3.10 or newer (`requires-python = \">=3.10\"`); pip with network access to fetch `setuptools>=77` for the build. The core needs no other package; the extras add numpy, pillow, tifffile, imagecodecs, zarr 3 (Python 3.11 or newer only) and scipy",
     "Runs on": "Linux, macOS and Windows (the CI's reader job runs all three). Installing with no extras from a local copy took about 6 s (measured 2026-10-16, cloud container, Python 3.13)",
     "Network": "The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners",
-    "Writes": "pip writes the `kit` package into the environment's `site-packages` and the four console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored)",
+    "Writes": "pip writes the `kit` package into the environment's `site-packages` and the five console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored)",
     "Go-ahead": "Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8)",
-    "Released": "Public `main`: installable since 2026-10-14; version 0.2.0 since 2026-10-16 ([PR #102](https://github.com/ChaseHendrick/Scrolls/pull/102))",
+    "Released": "Public `main`: installable since 2026-10-14; version 0.4.0 includes Scrolls Starter and local viewer-state generation ([release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0))",
     "License": "Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`)",
     "Guide": "[letter-reader.md, \"Install\"](../letter-reader.md#install)",
     "Checked": "2026-10-16 against commit `63ee638`"
@@ -8738,67 +9061,67 @@
     {
      "name": "Commands and options",
      "start_line": 83,
-     "end_line": 122,
+     "end_line": 125,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 123,
-     "end_line": 131,
+     "start_line": 126,
+     "end_line": 134,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 132,
-     "end_line": 140,
+     "start_line": 135,
+     "end_line": 143,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 141,
-     "end_line": 150,
+     "start_line": 144,
+     "end_line": 153,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 151,
-     "end_line": 165,
+     "start_line": 154,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 166,
-     "end_line": 172,
+     "start_line": 169,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 173,
-     "end_line": 176,
+     "start_line": 176,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 177,
-     "end_line": 186,
+     "start_line": 180,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 187,
-     "end_line": 194,
+     "start_line": 190,
+     "end_line": 197,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 195,
-     "end_line": 204,
+     "start_line": 198,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 205,
-     "end_line": 211,
+     "start_line": 208,
+     "end_line": 214,
      "applicable": true
     }
    ]

@@ -1,8 +1,10 @@
-# Greek letter reader
+# Scroll Text Reader
 
-A small learned reader that proposes Greek capital letters, with positions and confidences, on 2D images of scroll text: ink-detection maps, drawn ink labels and photographs of papyri. It reads whole lines with a convolutional network trained with CTC, runs in numpy (no GPU or torch needed to read), and reports controls with every result, so you can tell letters from noise.
+Scroll Text Reader (formerly Greek Letter Reader) proposes text on 2D images: ink-detection maps, drawn ink labels and photographs of papyri. Its default Greek LineNet proposes capital letters with positions and confidences. The optional local Tesseract backend proposes words in Latin, Greek, Hebrew or other explicitly installed languages. Language support depends on the selected backend and weights; this is not a reader for every script.
 
-Everything it prints is **Model output**: letter hypotheses for a person to check. It is not a reading or a transcription; papyrologists read and transcribe ([NOVELTY.md](NOVELTY.md)).
+The Greek backend reads whole lines with a convolutional network trained with CTC and runs in numpy, with no GPU or torch needed for inference. Both backends record controls and model provenance. Tesseract's printed-text checks establish working integration, not accuracy on scrolls.
+
+Everything it prints is **Model output**: letter or word hypotheses for a person to check. It is not a verified reading or transcription; papyrologists read and transcribe ([NOVELTY.md](NOVELTY.md)). The commands `scrolls-letterread` and `python -m kit letterread`, Python APIs, guide URL and released Greek model names remain unchanged.
 
 - Code: [`kit/letterread.py`](../kit/letterread.py) (reader), [`kit/greeklm.py`](../kit/greeklm.py) (optional letter language model), [`scripts/letters/`](../scripts/letters/) (training data, training, benchmarks, demo).
 - Measured accuracy: [How well it reads](#how-well-it-reads) below, with the full record in [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) and the numbers in [`results.json`](results.json) under `letter_reader_checks`.

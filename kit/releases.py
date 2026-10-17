@@ -1,7 +1,7 @@
-"""The list of tools released from private work, and the README section made from it.
+"""The list of released tools, and the README section made from it.
 
-docs/releases.json lists the tools and packages released from the private repository into this one since the list
-began on 14 October 2026, and README.md's "Released tools" section, between the two marker lines below, is written
+docs/releases.json lists this project's released tools and packages, including curated private-to-public releases,
+since the list began on 14 October 2026, and README.md's "Released tools" section, between the two marker lines below, is written
 from it, newest first:
 
   python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
@@ -40,7 +40,7 @@ REPO_URL = "https://github.com/ChaseHendrick/Scrolls"
 START = ("<!-- releases:start (generated from docs/releases.json by python -m kit releases render; "
          "edit that list, not this section) -->")
 END = "<!-- releases:end -->"
-INTRO = "Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
+INTRO = "Released tools, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
 FIELDS = {"id", "title", "released", "summary", "commands", "details", "where"}
 REQUIRED = ("id", "title", "released", "summary", "where")
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",

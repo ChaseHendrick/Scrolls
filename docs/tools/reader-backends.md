@@ -1,6 +1,6 @@
-# reader-backends: switch between Greek letters and local multilingual OCR
+# reader-backends: Scroll Text Reader backends and session switching
 
-Choose a reader and language explicitly, inspect installed Tesseract packs, and return word hypotheses with model hashes and controls without silently substituting a model. Tesseract uses only local packs; requested Greek releases keep their existing hash-verified downloader.
+Scroll Text Reader can switch between Greek LineNet and explicitly installed local Tesseract language packs, with model provenance, controls and validation before replacing a working selection.
 
 | Field | Value |
 | --- | --- |
@@ -176,4 +176,4 @@ Run `python -m unittest tests.test_reader_backends -v`. Tests cover script misma
 ## Related
 
 - [letterread](letterread.md): Greek reader and shared command-line options.
-- [Letter reader guide](../letter-reader.md): released Greek weights and their measured scope.
+- [Scroll Text Reader guide](../letter-reader.md): released Greek weights, optional local OCR and their measured scope.

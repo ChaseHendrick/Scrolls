@@ -239,7 +239,7 @@ What each action prints on stdout:
 | `id` | str | `add` only: the entry's id |
 | `action` | str | `add` only: `added` (new id, appended) or `replaced` (an entry with this id was there) |
 
-**Files.** The list is rewritten in its written form (see `dumps` under Python API); entries keep the key order they were given in. The README's section reads, from top to bottom: the start marker line; the intro, `Tools released from private work, newest first. Each entry comes from LINK.` (LINK is a Markdown link to `docs/releases.json`), which with pins names them, as in `..., AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. ...`; then for each entry a blank line, `### TITLE`, `Released 16 October 2026.` (for a package: `Released DATE as a reviewed package on branch `B`: ` and a link to `https://github.com/ChaseHendrick/Scrolls/tree/COMMIT/PATH` shown with the 7-character commit), the summary, the commands in a `bash` block and the details; and the end marker line.
+**Files.** The list is rewritten in its written form (see `dumps` under Python API); entries keep the key order they were given in. The README's section reads, from top to bottom: the start marker line; the intro, `Released tools, newest first. Each entry comes from LINK.` (LINK is a Markdown link to `docs/releases.json`), which with pins names them, as in `..., AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. ...`; then for each entry a blank line, `### TITLE`, `Released 16 October 2026.` (for a package: `Released DATE as a reviewed package on branch `B`: ` and a link to `https://github.com/ChaseHendrick/Scrolls/tree/COMMIT/PATH` shown with the 7-character commit), the summary, the commands in a `bash` block and the details; and the end marker line.
 
 | Exit code | Meaning |
 | --- | --- |
@@ -306,7 +306,7 @@ Constants that matter, from `kit/releases.py`:
 | --- | --- |
 | `START` | `<!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->` (a README line is found by its start, `<!-- releases:start`) |
 | `END` | `<!-- releases:end -->` |
-| `INTRO` | `Tools released from private work, newest first. Each entry comes from LINK.` (LINK is a Markdown link to `docs/releases.json`) |
+| `INTRO` | `Released tools, newest first. Each entry comes from LINK.` (LINK is a Markdown link to `docs/releases.json`) |
 | `FIELDS`, `REQUIRED` | The seven entry fields; `id`, `title`, `released`, `summary`, `where` are required |
 | `REPO_URL` | `https://github.com/ChaseHendrick/Scrolls`, the base of a package's link |
 | `BLOCK_OPENER` | Whitespace, three backticks, three tildes or `<` at the start of a summary or details |
