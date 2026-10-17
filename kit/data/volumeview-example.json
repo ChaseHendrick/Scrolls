@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "layers": [
+    {
+      "name": "Synthetic CT (example path only)",
+      "role": "ct",
+      "source": "s3://vesuvius-challenge-open-data/EXAMPLE/volumes/ct.zarr/",
+      "frame": "synthetic-example-frame",
+      "shape_zyx": [40, 60, 80],
+      "voxel_size_um_zyx": [2, 3, 4],
+      "origin_um_zyx": [0, 0, 0],
+      "source_grid": {"axes": ["z", "y", "x"], "scale": [1, 1, 1], "units": ["", "", ""], "origin": [0, 0, 0]}
+    },
+    {
+      "name": "Synthetic prediction (example path only)",
+      "role": "prediction",
+      "source": "s3://vesuvius-challenge-open-data/EXAMPLE/representations/prediction.zarr/",
+      "frame": "synthetic-example-frame",
+      "shape_zyx": [20, 30, 40],
+      "voxel_size_um_zyx": [4, 6, 8],
+      "origin_um_zyx": [0, 0, 0],
+      "source_grid": {"axes": ["z", "y", "x"], "scale": [1, 1, 1], "units": ["", "", ""], "origin": [0, 0, 0]}
+    }
+  ]
+}

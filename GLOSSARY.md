@@ -178,6 +178,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## N
 
+**Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
+
 **nnU-Net**: A self-configuring U-Net framework: given a labelled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
 
 **normal**: A direction perpendicular to a surface. A normal grid is a published 3D field of such directions that tracing uses.

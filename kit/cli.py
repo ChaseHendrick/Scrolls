@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,segzoo}.
+"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -836,6 +836,11 @@ def cmd_letterdemo(args):
     return letterdemo.run_cli(args)
 
 
+def cmd_volumeview(args):
+    from . import volumeview
+    return volumeview.run(args)
+
+
 def cmd_segzoo(args):
     from . import segzoo   # standard library; the torch code is in scripts/segzoo/
     return segzoo.cmd_segzoo(args)
@@ -1213,6 +1218,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--out", help="also write the result as JSON")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
+
+    p = sub.add_parser("volumeview", help="build a local viewer link from explicit public volume metadata")
+    from . import volumeview
+    volumeview.add_arguments(p)
+    p.set_defaults(func=cmd_volumeview)
 
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
                                       "MedSAM2 and Mamba families, their licences and fit; Auto3DSeg datalists")
