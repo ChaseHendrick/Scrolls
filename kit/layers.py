@@ -22,14 +22,14 @@ v8in's layer folder in the same order.
 
 from pathlib import Path
 
-from .verify import VerifyError, _numpy
+from .verify import VerifyError, _numpy, missing
 
 
 def _zarr():
     try:
         import zarr
     except ImportError as exc:
-        raise VerifyError("zarr is required (it is in villa's environment)") from exc
+        raise missing("zarr") from exc
     return zarr
 
 

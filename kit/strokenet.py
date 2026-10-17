@@ -48,6 +48,7 @@ kit/data/strokenet-weights.json, which resolve_weights() downloads once and chec
 import contextlib
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 
@@ -65,6 +66,10 @@ USABLE_MIN = 3                 # usable papyrus: map value above this (0 to 255 
 MIN_USABLE_FRAC = 0.99         # windows with fewer core pixels are skipped
 CORE_MM = 1.5                  # core papyrus: more than this from any unusable pixel
 STRIP_PX = 1 << 22             # source pixels read at a time by to_working
+# Map pixel sizes StrokeNet takes, in mm. 1 mm is 21 times its 0.048 mm working pixel: a 6.1 mm window
+# then spans about 6 source pixels and a letter 2 to 4, so no stroke is left to see, and a coarser map
+# is only enlarged further. 0.0001 mm (0.1 um) is ten times finer than any scroll scan.
+MIN_PIXEL_MM, MAX_PIXEL_MM = 1e-4, 1.0
 
 
 # ------------------------------------------------------------------ released weights
@@ -91,13 +96,14 @@ def resolve_weights(spec=None, cache=None, registry=None, download=True):
     """A weights file path from a path or a released model name (default DEFAULT).
 
     A released name is looked up in the cache folder and downloaded from its URL when missing;
-    either way its SHA-256 must match the registry, so a damaged or swapped file is refused."""
+    either way its SHA-256 must match the registry, so a damaged or swapped file is refused. A released name
+    always means the released file, even when the working folder holds a file of that name; write ./NAME
+    to use such a file instead."""
     spec = str(spec or DEFAULT)
-    p = Path(spec)
-    if p.exists():
-        return p
     models = released_weights(registry)
     if spec not in models:
+        if Path(spec).exists():
+            return Path(spec)
         raise ValueError(f"{spec}: no such file, and not a released model ({', '.join(sorted(models))})")
     m = models[spec]
     dest = Path(cache or weights_cache()) / m["file"]
@@ -106,16 +112,21 @@ def resolve_weights(spec=None, cache=None, registry=None, download=True):
             raise ValueError(f"{spec}: not in {dest.parent}")
         if not m.get("url"):
             raise ValueError(f"{spec}: no download address yet; see docs/strokenet.md")
+        import tempfile
         import urllib.request
         dest.parent.mkdir(parents=True, exist_ok=True)
-        tmp = dest.with_name(dest.name + ".part")
-        with urllib.request.urlopen(m["url"]) as r, open(tmp, "wb") as f:
-            for block in iter(lambda: r.read(1 << 20), b""):
-                f.write(block)
-        if _sha256(tmp) != m["sha256"]:
-            tmp.unlink()
-            raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
-        tmp.replace(dest)
+        # a new file of its own (O_EXCL), not a fixed .part name another user could have made a link
+        fd, name = tempfile.mkstemp(dir=dest.parent, prefix=dest.name + ".", suffix=".part")
+        tmp = Path(name)
+        try:
+            with os.fdopen(fd, "wb") as f, urllib.request.urlopen(m["url"], timeout=120) as r:
+                for block in iter(lambda: r.read(1 << 20), b""):
+                    f.write(block)
+            if _sha256(tmp) != m["sha256"]:
+                raise ValueError(f"{spec}: download from {m['url']} does not match its SHA-256; nothing kept")
+            tmp.replace(dest)
+        finally:
+            tmp.unlink(missing_ok=True)
     if _sha256(dest) != m["sha256"]:
         raise ValueError(f"{spec}: {dest} does not match its SHA-256 {m['sha256']}; delete it and retry")
     return dest
@@ -214,6 +225,17 @@ def _finite(blk):
     return blk
 
 
+def check_pixel_mm(pixel_mm):
+    """A ValueError when pixel_mm is not a map pixel size StrokeNet can use (MIN_PIXEL_MM to MAX_PIXEL_MM); else None."""
+    try:
+        ok = math.isfinite(float(pixel_mm)) and MIN_PIXEL_MM <= float(pixel_mm) <= MAX_PIXEL_MM
+    except (TypeError, ValueError):
+        ok = False
+    if not ok:
+        raise ValueError(f"pixel_mm {pixel_mm!r}: give the map's pixel size in mm, from {MIN_PIXEL_MM:g} to "
+                         f"{MAX_PIXEL_MM:g} (0.0024 for a 2.4 um map; StrokeNet works at {PIXEL_MM} mm)")
+
+
 def to_working(ink, pixel_mm, strip=None):
     """Resample a 2D map (array or array-like such as zarr) to 0.048 mm per pixel; float32.
 
@@ -223,8 +245,7 @@ def to_working(ink, pixel_mm, strip=None):
     averaging, then np.rint for an integer map. NaN and infinite source values read as 0. The source
     is read `strip` rows at a time (default about STRIP_PX pixels per strip), so no full float copy
     of it is made."""
-    if not pixel_mm > 0:
-        raise ValueError("pixel_mm must be positive")
+    check_pixel_mm(pixel_mm)
     z, shape, dtype = _source(ink)
     if len(shape) != 2:
         raise ValueError(f"expected a 2D map, got shape {shape}")
@@ -391,6 +412,7 @@ def snap_crop(crop, pixel_mm, shape=None):
     The window rule is then applied to the crop alone: papyrus edges outside it are not seen, and
     the corners of the crop lose about 1.5 mm of core papyrus. For exactly the training rule, score
     the whole map and read the windows needed from the grid."""
+    check_pixel_mm(pixel_mm)
     y0, y1, x0, x1 = (int(v) for v in crop)
     if shape is not None:
         y1, x1 = min(y1, int(shape[0])), min(x1, int(shape[1]))
@@ -464,16 +486,48 @@ def _conv3(x, w, b):
     xp = np.pad(x, ((0, 0), (0, 0), (1, 1), (1, 1)))
     out = np.empty((N, O, H, W), np.float32)
     wm = w.reshape(O, C * 9).T
+    # im2col: one row per pixel (y, x), columns in (c, dy, dx) order. Nine block copies from the channel-last
+    # image fill the same matrix that sliding_window_view(...).transpose(1, 2, 0, 3, 4).reshape gathered, faster,
+    # and the matrix product is the same call on the same matrices, so the output is the same bit for bit.
+    cols = np.empty((H, W, C, 3, 3), xp.dtype)
     for n in range(N):
-        cols = np.lib.stride_tricks.sliding_window_view(xp[n], (3, 3), axis=(1, 2))
-        cols = cols.transpose(1, 2, 0, 3, 4).reshape(H * W, C * 9)
-        out[n] = (cols @ wm + b).T.reshape(O, H, W)
+        xt = xp[n].transpose(1, 2, 0)
+        for dy in range(3):
+            for dx in range(3):
+                cols[:, :, :, dy, dx] = xt[dy:dy + H, dx:dx + W]
+        out[n] = (cols.reshape(H * W, C * 9) @ wm + b).T.reshape(O, H, W)
     return out
 
 
 def _pool2(x):
+    """2 x 2 max pooling of (N, C, H, W), dropping an odd last row or column.
+
+    The elementwise maximum of the four strided slices: the same values as a max over the reshaped
+    2 x 2 blocks, which numpy reduces over the strided axes many times more slowly. They match bit for bit
+    for a C-contiguous x, which StrokeNet always passes (np.maximum output). For other layouts the old
+    reduction's choice between -0.0 and +0.0 in a block whose maximum is a tie of the two depends on memory
+    order, so only the sign of a zero can differ, and the output here is always C-ordered."""
     N, C, H, W = x.shape
-    return x[:, :, :H // 2 * 2, :W // 2 * 2].reshape(N, C, H // 2, 2, W // 2, 2).max(axis=(3, 5))
+    h2, w2 = H // 2 * 2, W // 2 * 2
+    out = x[:, :, 0:h2:2, 0:w2:2].copy()
+    np.maximum(out, x[:, :, 0:h2:2, 1:w2:2], out=out)
+    np.maximum(out, x[:, :, 1:h2:2, 0:w2:2], out=out)
+    np.maximum(out, x[:, :, 1:h2:2, 1:w2:2], out=out)
+    return out
+
+
+def _argsort_rows(z):
+    """np.argsort(z, axis=1, kind="stable") of a 2D array, through the faster default sort where that is the same.
+
+    A row with no ties and no NaN has only one sorting order, which any sort finds; a row with a tie
+    (-0.0 and 0.0 count as one) or a NaN is sorted again with the stable sort, so its ties stay in
+    position order."""
+    order = np.argsort(z, axis=1)
+    s = np.take_along_axis(z, order, axis=1)
+    redo = (s[:, 1:] == s[:, :-1]).any(axis=1) | np.isnan(s).any(axis=1)
+    if redo.any():
+        order[redo] = np.argsort(z[redo], axis=1, kind="stable")
+    return order
 
 
 def iaaft(windows, rng, iters=IAAFT_ITERS):
@@ -498,13 +552,10 @@ def iaaft(windows, rng, iters=IAAFT_ITERS):
     vals = np.sort(flat, axis=1)
     amp = np.abs(np.fft.rfft2(x))
     y = np.stack([f[rng.permutation(size)] for f in flat])
-    rows, ar = np.arange(N)[:, None], np.broadcast_to(np.arange(size), (N, size))
-    ranks = np.empty((N, size), np.intp)
     for _ in range(iters):
         Y = np.fft.rfft2(y.reshape(x.shape))
         z = np.fft.irfft2(amp * np.exp(1j * np.angle(Y)), s=shape).reshape(N, -1)
-        ranks[rows, np.argsort(z, axis=1, kind="stable")] = ar
-        y = np.take_along_axis(vals, ranks, axis=1)
+        np.put_along_axis(y, _argsort_rows(z), vals, axis=1)   # the k-th smallest of z gets the k-th value
     y = y.reshape(x.shape)
     return y[0] if single else y
 

@@ -314,7 +314,8 @@ class PredictTest(unittest.TestCase):
         frame, side = predict.FRAME, refine.S
         predict.FRAME, refine.S = 64, 64             # small frames keep the test fast; the plumbing is the same
         self.addCleanup(setattr, predict, "FRAME", frame); self.addCleanup(setattr, refine, "S", side)
-        with tempfile.TemporaryDirectory() as d:
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(predict.slices, "volume", lambda s: "S/volumes/1-8.640um-x"):
             np.savez(os.path.join(d, "S.npz"), ct=ct, z_l0=z, um=um, level=3, vol="S/volumes/1-8.640um-x")
             ws = []
             for i in range(2):
@@ -530,6 +531,67 @@ class EndcheckBucketTest(unittest.TestCase):
             self.assertIsNone(b.missing)
 
 
+    def test_two_scans_of_one_scroll_do_not_share_cache_files(self):
+        """A second scan of the same scroll, same shape, read into the same cache, is read again rather than served
+        from the first scan's files; an old cache file named by scroll only is not read."""
+        other = "S/volumes/2-8.640um-y"; empty = np.zeros_like(self.ct)
+        reader = lambda vol, level: _PlaneReader(empty if vol == other else self.ct, level)
+        use = np.ones(len(self.z), bool)
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(self.e.slices, "PlaneReader", reader):
+            np.savez_compressed(os.path.join(d, "S_l5.npz"), z=self.z, p5=np.zeros((len(self.z), 1, 1), np.uint8), missing=0)
+            a = self.e.Bucket(self.vol, d, "S")
+            area_a, present_a = a.area(self.z); w_a, _ = a.windows(self.z, self.yx, use)
+            self.assertTrue(present_a.all()); self.assertGreater(area_a.sum(), 0); self.assertTrue(w_a.any())
+            b = self.e.Bucket(other, d, "S")
+            area_b, present_b = b.area(self.z); w_b, _ = b.windows(self.z, self.yx, use)
+            self.assertFalse(present_b.any()); self.assertEqual(area_b.sum(), 0); self.assertFalse(w_b.any())
+            for f in os.listdir(d):                  # a cache file renamed to the other scan's name is not trusted
+                if f.startswith(f"S_{b.tag}_"):
+                    os.replace(os.path.join(d, f), os.path.join(d, f.replace(b.tag, a.tag)))
+            c = self.e.Bucket(self.vol, d, "S")
+            self.assertTrue(c.area(self.z)[1].all())
+
+    def test_slice_file_of_another_scan_is_refused(self):
+        with tempfile.TemporaryDirectory() as d:
+            np.savez(os.path.join(d, "S.npz"), ct=self.ct, z_l0=self.z, um=self.um, level=3, vol=self.vol)
+            self.assertEqual(str(self.e._npz(d, "S", self.vol + "/")["vol"]), self.vol)
+            with self.assertRaises(SystemExit):
+                self.e._npz(d, "S", "S/volumes/2-8.640um-y")
+
+
+@unittest.skipIf(np is None, "numpy unavailable")
+class PredictSliceFileTest(unittest.TestCase):
+    """predict.py reuses DATA/<scroll>.npz only when it holds the scan asked for (also with no --volume) and some CT;
+    these checks come before any model is loaded."""
+    def setUp(self):
+        import predict
+        self.p = predict
+        self.ct, self.z, _, self.um = _synthetic_scroll(n=20, end=4)
+        for patch in (mock.patch.object(predict.slices, "volume", lambda s: "S/volumes/2-8.640um-y"),
+                      mock.patch.object(predict.slices, "extract_ranged", side_effect=AssertionError("no download expected")),
+                      mock.patch.object(predict, "first_stage", side_effect=AssertionError("refused before the models"))):
+            patch.start(); self.addCleanup(patch.stop)
+
+    def run_on(self, **npz):
+        with tempfile.TemporaryDirectory() as d:
+            np.savez(os.path.join(d, "S.npz"), **dict(dict(ct=self.ct, z_l0=self.z, um=self.um, level=3), **npz))
+            self.p.predict("S", ["w.pt"], [], d, os.path.join(d, "out"))
+
+    def test_default_scan_must_match_the_slice_file(self):
+        with self.assertRaisesRegex(SystemExit, "default scan"):
+            self.run_on(vol="S/volumes/1-8.640um-x")
+        with self.assertRaisesRegex(SystemExit, "holds slices of None"):
+            self.run_on()
+        with self.assertRaisesRegex(AssertionError, "refused before the models"):    # the right scan goes on
+            self.run_on(vol="S/volumes/2-8.640um-y/")
+
+    def test_slice_file_without_ct_is_refused(self):
+        with self.assertRaisesRegex(SystemExit, "no CT"):
+            self.run_on(vol="S/volumes/2-8.640um-y", ct=np.zeros_like(self.ct))
+        with self.assertRaisesRegex(SystemExit, "no CT"):
+            self.run_on(vol="S/volumes/2-8.640um-y", missing=40, chunks=40)
+
+
 @unittest.skipIf(torch is None, "numpy or torch unavailable")
 class WiringTest(unittest.TestCase):
     def test_score_reproduces_collect_and_chain_collect(self):
@@ -572,7 +634,8 @@ class WiringTest(unittest.TestCase):
         ct, z, yx, um = _synthetic_scroll(n=20, end=4)
         frame = predict.FRAME; predict.FRAME = 64; self.addCleanup(setattr, predict, "FRAME", frame)
         with tempfile.TemporaryDirectory() as d, \
-                mock.patch.object(predict.slices, "extract_ranged", side_effect=AssertionError("no download expected")):
+                mock.patch.object(predict.slices, "extract_ranged", side_effect=AssertionError("no download expected")), \
+                mock.patch.object(predict.slices, "volume", {"U": "U/volumes/3-2.400um-0.2m"}.get):
             np.savez(os.path.join(d, "S.npz"), ct=ct, z_l0=z, um=um, level=3, vol="S/volumes/1-8.640um-x")
             w = os.path.join(d, "w.pt"); torch.save(centrenet.Net(4).state_dict(), w)
             out = os.path.join(d, "out")
@@ -682,6 +745,15 @@ class PlaneReaderTest(unittest.TestCase):
             np.testing.assert_array_equal(npz["ct"], self.vol[4::8])
             np.testing.assert_array_equal(npz["z_l0"], np.arange(4, self.shape[0], 8) * 8)
             self.assertEqual((float(npz["um"]), int(npz["level"]), str(npz["vol"])), (9.362, 3, self.VOL))
+            self.assertEqual((int(npz["missing"]), int(npz["chunks"])), (16, 37 * 9))   # 37 planes of 9 chunks; z 132 to 252 meet the absent one
+
+    def test_extract_ranged_writes_nothing_when_every_chunk_is_absent(self):
+        for k in [k for k in self.store if not k.endswith(".zarray")]:
+            del self.store[k]
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaisesRegex(RuntimeError, "absent"):
+                self.slices.extract_ranged("S", os.path.join(d, "S.npz"))
+            self.assertEqual(os.listdir(d), [])
 
     def test_extract_and_extract_ranged_write_the_same_file(self):
         """extract (whole chunks, the reader the training slices came from) and extract_ranged agree."""

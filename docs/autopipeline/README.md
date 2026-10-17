@@ -114,6 +114,8 @@ Runs and caches go to `work/` in the package folder, or under `KIT_HOME` when se
 
 The demo runs every stage on a synthetic scroll with stand-in VC3D tools, with no download and no GPU:
 
+![The live monitor following the synthetic demo](../assets/autopipeline/monitor-run.gif)
+
 ```bash
 python scripts/demo_synthetic.py                 # prints DEMO PASS
 python scripts/demo_synthetic.py --out demo-run  # keeps the run folder
@@ -379,6 +381,20 @@ at most 256 MiB decoded, 300 surfaces. A snapshot replaces the run folder's, kit
 `<run>`, `<kit>` and `~`, and shows other absolute paths by their last name; it still holds the run's records and
 log lines, so a snapshot of a scroll whose ink is not published is not for sharing.
 
+The pictures below are AutoPipeline 0.1.4's monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 16 October 2026. The demo's scroll, VC3D tools and ink model are stand-ins, so its ink maps are stripes, not ink.
+
+The top of the page once the run has finished (dark theme):
+
+![Monitor header, the Finished banner, four counters and the stage timeline](../assets/autopipeline/monitor-finished-dark.png)
+
+Each surface's checks, its traced mesh (drag to turn it) and its ink maps beside the reversed control (light theme):
+
+![Two surface cards with trace, flatten and render checks, a 3D wireframe of each trace, and forward and reversed ink maps](../assets/autopipeline/monitor-surfaces-light.png)
+
+On a phone:
+
+<img src="../assets/autopipeline/monitor-phone-dark.png" alt="The monitor at phone width" width="300">
+
 ## 13. Troubleshooting
 
 | Symptom | Cause and fix |
@@ -568,7 +584,7 @@ outside it; 22 prize eligible.
 
 ### Prices
 
-`autobatch.price` multiplies stage hours (`COST_MODEL`) by Modal list rates (`docs/compute/modal-rates.json` through
+`autobatch.price` multiplies stage hours (`COST_MODEL`) by Modal list rates (`kit/data/modal-rates.json` through
 `kit/cloudcost.py`) on the machines the package's Modal runner asks for: plan (8 cores), normal-grid cache
 (4 cores, scaled by level-0 voxels), trace and render per surface (8 cores), ink per surface per reader (one L4, scaled
 by the reader's pixels, capped at the GPU step's 1 h work limit), surface prediction when needed (one H100, scaled by

@@ -7,6 +7,9 @@ write one for every run, null or not, so publishing a digest never hints at a re
 
 Inputs (zarr stores, label stores, any directory) are fingerprinted by hashing every file
 locally: a manifest of (relative path, size, SHA-256) and a digest over that manifest.
+Only regular files are hashed (a symlink to one is followed); a device, FIFO or socket is
+refused, so a link to /dev/zero cannot hang a run. The digest is computed from the record
+itself: a match shows the record is unchanged since its digest was made, not who made it.
 Standard library only.
 """
 
@@ -15,6 +18,7 @@ import hashlib
 import json
 import os
 import platform
+import stat
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -23,27 +27,44 @@ CHUNK = 1 << 20
 SCHEMA = 1
 
 
+def _open_regular(path):
+    """Open a regular file for reading (following symlinks); refuse a device, FIFO or socket without blocking."""
+    fd = os.open(path, os.O_RDONLY | getattr(os, "O_NONBLOCK", 0))
+    st = os.fstat(fd)
+    if not stat.S_ISREG(st.st_mode):
+        os.close(fd)
+        raise ValueError(f"{path}: not a regular file (device, FIFO or socket); refused")
+    return os.fdopen(fd, "rb"), st.st_size
+
+
 def sha256_file(path):
+    return _hash_regular(path)[1]
+
+
+def _hash_regular(path):
+    """(size, sha256) of a regular file."""
     h = hashlib.sha256()
-    with open(path, "rb") as f:
+    f, size = _open_regular(path)
+    with f:
         for block in iter(lambda: f.read(CHUNK), b""):
             h.update(block)
-    return h.hexdigest()
+    return size, h.hexdigest()
 
 
 def fingerprint(path):
     """SHA-256 of a file, or of a directory's sorted (relative path, size, sha256) manifest."""
     path = Path(path)
-    if path.is_file():
-        return {"path": str(path), "kind": "file", "bytes": path.stat().st_size, "sha256": sha256_file(path)}
-    if not path.is_dir():
+    if not path.exists():
         raise FileNotFoundError(path)
+    if not path.is_dir():
+        size, digest = _hash_regular(path)
+        return {"path": str(path), "kind": "file", "bytes": size, "sha256": digest}
     entries = []
     for root, dirs, files in os.walk(path):
         dirs.sort()
         for name in sorted(files):
             full = Path(root) / name
-            entries.append((full.relative_to(path).as_posix(), full.stat().st_size, sha256_file(full)))
+            entries.append((full.relative_to(path).as_posix(), *_hash_regular(full)))
     entries.sort()
     manifest = "\n".join(f"{rel}\t{size}\t{digest}" for rel, size, digest in entries)
     return {"path": str(path), "kind": "directory", "files": len(entries),
@@ -115,8 +136,30 @@ def build(name, repo, started=None, inputs=(), models=(), outputs=(), extra_code
     return record
 
 
+def files_listed(record):
+    """How many models, inputs and outputs the record lists."""
+    return sum(len(record.get(section) or []) for section in ("models", "inputs", "outputs"))
+
+
+def _check_shape(record):
+    """ValueError when the record is not a provenance record's shape (verify would otherwise crash on it)."""
+    if not isinstance(record, dict):
+        raise ValueError("malformed record: not a JSON object")
+    if not isinstance(record.get("digest"), str):
+        raise ValueError("malformed record: no digest")
+    for section in ("models", "inputs", "outputs"):
+        items = record.get(section, [])
+        if not isinstance(items, list):
+            raise ValueError(f"malformed record: {section} is not a list")
+        for item in items:
+            if not (isinstance(item, dict) and isinstance(item.get("path"), str) and isinstance(item.get("sha256"), str)):
+                raise ValueError(f"malformed record: an entry in {section} without a path and sha256")
+
+
 def verify(record, recheck_files=False):
-    """Problems with a record: a digest that does not match, and optionally files that changed."""
+    """Problems with a record: a digest that does not match, and optionally files that changed.
+    ValueError for a record of the wrong shape."""
+    _check_shape(record)
     problems = []
     if hashlib.sha256(canonical(record)).hexdigest() != record.get("digest"):
         problems.append("digest does not match the record")
@@ -127,6 +170,9 @@ def verify(record, recheck_files=False):
                     now = fingerprint(item["path"])["sha256"]
                 except FileNotFoundError:
                     problems.append(f"{section}: {item['path']} is missing")
+                    continue
+                except ValueError as exc:
+                    problems.append(f"{section}: {exc}")
                     continue
                 if now != item["sha256"]:
                     problems.append(f"{section}: {item['path']} changed")

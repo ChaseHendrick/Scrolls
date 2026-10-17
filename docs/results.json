@@ -10293,6 +10293,32 @@
     "verdict": "GO"
    },
    "held_out": "not run (labelled PHerc1447 windings, once); PHerc0841 ag405 labels not opened"
+  },
+  {
+   "date": "2026-10-15",
+   "source": "AutoPipeline fix4 release README, limits section (https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md); docs/logs/2026-10-14-upright-before-ink.md",
+   "claim": "Model output on development data (PHerc0841 w00 labels); a replication with a second reader, not a reading",
+   "reader": "Reader v2",
+   "what": "the same AutoPipeline trace and the same labelled pixels as the ink_9um test above, Reader v2 in place of ink_9um",
+   "native_auc": 0.851,
+   "upright_auc": 0.911,
+   "sham_45_auc": 0.872,
+   "upright_minus_sham_45": {
+    "diff": 0.039,
+    "ci95": [
+     -0.005,
+     0.091
+    ]
+   },
+   "reversed_control": {
+    "native": 0.476,
+    "upright": 0.709
+   },
+   "forward_minus_reversed": {
+    "native": 0.375,
+    "upright": 0.202
+   },
+   "result": "upright minus sham is not clearly above zero for Reader v2, so ink.orient stays opt in; the turn also raised the depth-reversed control"
   }
  ],
  "umbilicus_checks": [

@@ -7,12 +7,14 @@ neighbour's sheet) is flagged by its own check, so every check can fail; a check
 stack from being reported clean; and bad inputs and outputs exit 2."""
 
 import contextlib
+import hashlib
 import io
 import json
 import os
 import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 try:
     import numpy as np
@@ -91,6 +93,68 @@ def check(segs, settings=None):
     objs = [sc.Segment(f"w{k:02d}", xyz, valid) for k, (xyz, valid, _) in enumerate(segs)]
     rep, masks = sc.check_stack(objs, umb, VOXEL_UM, dict(SETTINGS, **(settings or {})))
     return rep, masks
+
+
+# The normal search is the slow part of check_stack, and most tests here plant one defect in an otherwise unchanged
+# stack, so most of its work is the same from test to test. These wrappers keep each result under a digest of every
+# input it reads and hand back that result (a fresh copy of each array) when exactly the same inputs come again: the
+# real kit code still runs once for every distinct input, and what check_stack returns is unchanged.
+_DENSE, _HITS = {}, {}
+
+
+def _digest(*parts):
+    h = hashlib.sha256()
+    for p in parts:
+        if isinstance(p, np.ndarray):
+            h.update(repr((p.dtype.str, p.shape)).encode())
+            h.update(np.ascontiguousarray(p).tobytes())
+        else:
+            h.update(repr(p).encode())
+        h.update(b"|")
+    return h.hexdigest()
+
+
+def _state(*objs):
+    return _digest(*[v for o in objs for _, v in sorted(vars(o).items()) if v is None or isinstance(v, (np.ndarray, str, int, float, tuple))])
+
+
+def _cached_dense(seg, k, umb, _dense=sc.Dense):
+    key = _digest(seg.xyz, seg.valid, seg.step, seg.rmed, k, umb.z, umb.x, umb.y)
+    if key not in _DENSE:
+        before = _state(seg, umb)
+        D = _dense(seg, k, umb)
+        assert _state(seg, umb) == before, "Dense changed its inputs, so its results cannot be reused"
+        D.memo_key = key
+        _DENSE[key] = D
+    return _DENSE[key]
+
+
+def _cached_normal_hits(P, N, D, maxd, foot, _hits=sc.normal_hits, **kw):
+    key = _digest(P, N, D.memo_key, maxd, foot, sorted(kw.items()))
+    if key not in _HITS:
+        before = _digest(P, N, _state(D))
+        _HITS[key] = _hits(P, N, D, maxd, foot, **kw)
+        assert _digest(P, N, _state(D)) == before, "normal_hits changed its inputs, so its results cannot be reused"
+    return tuple(a.copy() for a in _HITS[key])
+
+
+_PATCHES = []
+
+
+def setUpModule():
+    if np is None:
+        return
+    for name, fn in (("Dense", _cached_dense), ("normal_hits", _cached_normal_hits)):
+        p = mock.patch.object(sc, name, fn)
+        p.start()
+        _PATCHES.append(p)
+
+
+def tearDownModule():
+    while _PATCHES:
+        _PATCHES.pop().stop()
+    _DENSE.clear()
+    _HITS.clear()
 
 
 def write_tifxyz(d, xyz, valid):
@@ -499,6 +563,39 @@ class InputsTest(unittest.TestCase):
         self.assertIsNone(sc.folder_voxel_um("refs/meshes/w035"))
         with self.assertRaises(VerifyError):
             sc.fetch_tifxyz("https://example.org/a/../b.tifxyz", tempfile.gettempdir())
+
+    def test_fetch_stays_inside_the_cache(self):
+        """A URL host of '..' or no host, or a scheme other than http(s), is refused before any folder is made."""
+        with tempfile.TemporaryDirectory() as t:
+            cache = Path(t) / "cache"
+            for url in ("https://../escaped/seg.tifxyz", "https://./x/seg.tifxyz", "http:///etc/seg.tifxyz",
+                        "file:///etc/seg.tifxyz", "ftp://example.org/seg.tifxyz", "https://user@../e/seg.tifxyz"):
+                with self.assertRaises(VerifyError, msg=url):
+                    sc.fetch_tifxyz(url, cache)
+            self.assertEqual(sorted(p.name for p in Path(t).rglob("*")), [])
+
+    def test_cache_host_folder_may_be_a_link_to_another_disk(self):
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as t:
+            cache, other = Path(t) / "cache", Path(t) / "external"
+            cache.mkdir()
+            other.mkdir()
+            (cache / "example.org").symlink_to(other, target_is_directory=True)
+            with mock.patch("kit.meshaudit._get", return_value=b"tif"):
+                got = sc.fetch_tifxyz("https://example.org/PHerc0139/seg.tifxyz", cache)
+            self.assertEqual(got, cache / "example.org" / "PHerc0139" / "seg.tifxyz")
+            self.assertEqual((other / "PHerc0139" / "seg.tifxyz" / "x.tif").read_bytes(), b"tif")
+
+    def test_read_tifxyz_refuses_a_declared_size_past_the_ceiling(self):
+        import tifffile
+        from unittest import mock
+        with tempfile.TemporaryDirectory() as t:
+            for c in "xyz":
+                tifffile.imwrite(Path(t) / f"{c}.tif", np.ones((10, 12), np.float32))
+            self.assertEqual(sc.read_tifxyz(t)[0].shape, (10, 12, 3))
+            with mock.patch.dict(os.environ, {"KIT_MAX_TIFF_ELEMENTS": "100"}):
+                with self.assertRaisesRegex(VerifyError, "KIT_MAX_TIFF_ELEMENTS"):
+                    sc.read_tifxyz(t)
 
     def test_a_path_with_an_equals_sign(self):
         self.assertEqual(sc.split_spec("w035=/data/a/b.tifxyz"), ("w035", "/data/a/b.tifxyz"))

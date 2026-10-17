@@ -14,6 +14,8 @@ millerandmuller's PHerc0826 null ([first-light-pherc0826](https://github.com/mil
 | PHerc0841 ag896 | 318,252 | 0.435 | 2.4 % | 0.07 % |
 | PHerc0841 ag405 | 289,928 | 0.388 | 3.7 % | 0.03 % |
 
+Correction (2026-10-16): the w045 row says "held out", but w045 is not held out from `ink_9um`. Its 2.4 um render is one of `ink_9um`'s training segments (pherc0139-w029), so the 9.5 % is for a surface the model trained on through another scan ([log](2026-10-08-w045-not-held-out.md)). The table is left as first written.
+
 (Model output.) The same rule they used for candidates (8-connected pixels at or above the threshold, bounding box long side at least 0.5 mm, their `analyze_target.py`) on these team-traced surfaces, where text is known to be present:
 
 | Segment | Map area | Forward candidates | Of them mostly on labelled ink | Reverse candidates | Forward candidates per cm² |

@@ -1,4 +1,5 @@
 import contextlib
+import hashlib
 import inspect
 import io
 import json
@@ -86,6 +87,45 @@ def write_zarr_level(group, name, data, chunks=(16, 16)):
         arr = group.create_dataset(name, shape=data.shape, dtype=data.dtype, chunks=chunks)
     arr[:] = data
     return arr
+
+
+# The network's forward pass is most of the time these tests take, and many of them read the same synthetic image
+# with the same weights under different options, so the same band goes through the same network again and again.
+# This wrapper keeps each band's logits under a digest of the band and of every weight and layer of the network,
+# and hands back a fresh copy for exactly the same inputs: LineNet.logits still runs once for every distinct input,
+# and every read sees the same numbers. NetworkTest checks the forward pass itself.
+_LOGITS = {}
+_logits = R.LineNet.logits if R is not None else None
+
+
+def _cached_logits(self, band):
+    a = np.asarray(band, np.float32)
+    h = hashlib.sha256(repr((a.shape, self.stride, self.meta["layers"])).encode())
+    h.update(np.ascontiguousarray(a).tobytes())
+    for k in sorted(self.w):
+        v = np.asarray(self.w[k])
+        h.update(repr((k, v.dtype.str, v.shape)).encode())
+        h.update(np.ascontiguousarray(v).tobytes())
+    key = h.hexdigest()
+    if key not in _LOGITS:
+        _LOGITS[key] = _logits(self, band)
+    return _LOGITS[key].copy(order="K")   # keep the Fortran order logits returns, so values match exactly
+
+
+_PATCHES = []
+
+
+def setUpModule():
+    if R is not None:
+        p = mock.patch.object(R.LineNet, "logits", _cached_logits)
+        p.start()
+        _PATCHES.append(p)
+
+
+def tearDownModule():
+    while _PATCHES:
+        _PATCHES.pop().stop()
+    _LOGITS.clear()
 
 
 def run_cli(argv):
@@ -732,7 +772,8 @@ class BigImageTest(unittest.TestCase):
                     code, _, err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])
                 self.assertEqual(code, 2)
                 self.assertIn(f"No module named {module!r}", err)
-                self.assertIn('python -m pip install "scrolls-workbench[reader]"', err)
+                self.assertIn("python -m pip install numpy pillow tifffile imagecodecs", err)
+                self.assertNotIn("scrolls-workbench", err)   # not on PyPI: a bare name there could be anyone's
             with mock.patch.object(R, "load_reduced", side_effect=ImportError("No module named 'zarr'", name="zarr")):
                 err = run_cli(["letterread", str(img), "--weights", str(w), "--letter-px", "16"])[2]
             self.assertIn("python -m pip install zarr", err)
@@ -851,8 +892,9 @@ class ControlStatusTest(unittest.TestCase):
         self.assertEqual(res["lines"][0]["letters"], alone["lines"][0]["letters"])   # the control changes no letter
         self.assertEqual(res["p_min"], alone["p_min"])
         self.assertEqual(res["orientation"], alone["orientation"])
-        # A flat control has no lines of its own; it is still read on every line of the image.
-        flat = R.read(img, net, letter_px=16, nulls=2, control=np.full_like(img, 0.3))
+        # A control with no lines of its own (noise) is still read on every line of the image.
+        flat = R.read(img, net, letter_px=16, nulls=2,
+                      control=np.random.default_rng(3).normal(0.3, 0.01, img.shape))
         self.assertEqual(len([r for r in flat["lines"] if "control_map_kept" in r]), len(flat["lines"]))
         self.assertEqual(sum(r["control_map_kept"] for r in flat["lines"]), flat["control"]["control_map"]["letters_kept"])
         self.assertEqual(flat["control"]["status"], R.control_status(
@@ -865,6 +907,42 @@ class ControlStatusTest(unittest.TestCase):
         self.assertIsNotNone(spy.call_args_list[0].kwargs["control"])
         self.assertTrue(all("control" not in c.kwargs for c in spy.call_args_list[1:]))   # orientation reads: no control
         self.assertIn("control map: ", R.text_summary(res))
+
+    def test_constant_control_map_is_refused(self):
+        # A constant map normalises to zeros and keeps no letters, so as a control it could never fail.
+        img = lined_image()
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        nan = np.full(img.shape, np.nan)
+        nan[3, 4] = 7.0                                          # one finite value: nothing varies either
+        for c in (np.full_like(img, 0.3), np.zeros(img.shape, np.uint8), np.full(img.shape, 7.0), nan,
+                  np.ones(img.shape, bool)):
+            with mock.patch.object(R, "_analyze_at", side_effect=AssertionError("read before the check")):
+                for call in (lambda c=c: R.read(img, net, letter_px=16, nulls=1, control=c),
+                             lambda c=c: R.analyze(img, net, letter_px=16, nulls=1, control=c),
+                             lambda c=c: R.read(R.normalize(img), net, letter_px=16, nulls=1, normalized=True,
+                                                control=R.normalize(c))):
+                    with self.assertRaisesRegex(ValueError, "constant .*could never fail"):
+                        call()
+        with self.assertRaisesRegex(ValueError, "no finite values"):
+            R.check_control(np.full(img.shape, np.nan))
+        varied = np.full(img.shape, 0.3)
+        varied[-1, -1] = 0.31                                    # one pixel that differs is enough
+        self.assertIsNone(R.check_control(varied))
+        inf = np.full(img.shape, 0.3)
+        inf[::7, ::5] = np.inf                                   # infinite values are not values that vary
+        with self.assertRaisesRegex(ValueError, "constant"):
+            R.check_control(inf)
+        with tempfile.TemporaryDirectory() as d:
+            w = random_weights(Path(d) / "w.npz")
+            src, flat = Path(d) / "img.npy", Path(d) / "flat.npy"
+            np.save(src, img)
+            np.save(flat, np.full_like(img, 7.0))
+            with mock.patch.object(R, "read", side_effect=AssertionError("read before the check")):
+                code, _, err = run_cli(["letterread", str(src), "--weights", str(w), "--letter-px", "16",
+                                        "--nulls", "1", "--control", str(flat)])
+        self.assertEqual(code, 2)
+        self.assertIn(f"--control {flat} is constant (every finite value is 7)", err)
 
     def test_cli_control_map_and_floor(self):
         with tempfile.TemporaryDirectory() as d:
@@ -1782,6 +1860,43 @@ class ApiTest(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "^letter_px"):
             R.analyze(self.img, self.net, letter_px=0, nulls=1)        # analyze() checks the same
 
+    def test_tiny_images_letters_and_too_many_nulls(self):
+        from unittest import mock
+        # resize never divides by zero, so a strip of an image has a size estimate and reads
+        self.assertEqual(R.resize(np.ones((3, 20)), (0, 5)).shape, (1, 5))
+        rng = np.random.default_rng(0)
+        for shape in ((1, 5000), (3, 20000), (5000, 1)):
+            self.assertGreater(R.estimate_letter_px(rng.random(shape))[0], 0, shape)
+        res = R.read(rng.random((3, 20000)), self.net, nulls=1, orientation=False)
+        # the size guess (3 / 4 px) is under the smallest letter read, so the search reads at MIN_LETTER_PX alone
+        self.assertEqual([t["letter_px"] for t in res["scale_search"]], [R.MIN_LETTER_PX])
+        self.assertEqual((res["letter_px"], res["letter_px_first_guess"]), (R.MIN_LETTER_PX, 0.75))
+        searched = R.read(self.img, self.net, nulls=1, orientation=False)["scale_search"]   # letters of 16 px
+        self.assertEqual(len(searched), len(R.SCALE_STEPS))         # a search above the floor is as before
+        trial = R.polarity_trial(R.normalize(rng.random((3, 20000))), self.net)
+        self.assertEqual(trial["letter_px"], R.MIN_LETTER_PX)
+        # letters under MIN_LETTER_PX in the image read, and more than MAX_NULLS nulls, are refused before any work
+        with mock.patch.object(R, "normalize_info", side_effect=AssertionError("work began")), \
+                mock.patch.object(R, "_analyze_at", side_effect=AssertionError("work began")):
+            for kw in (dict(letter_px=3.9), dict(letter_px=1), dict(letter_px=1e-6), dict(letter_px=12, input_scale=4),
+                       dict(nulls=R.MAX_NULLS + 1), dict(nulls=200)):
+                with self.assertRaisesRegex(ValueError, f"^{next(iter(kw))}"):
+                    self.read(self.img, **kw)
+        self.assertEqual(R.MIN_LETTER_PX * 4, 16)                    # a quarter of the network's working height
+        self.assertIsNone(R.check_options(letter_px=R.MIN_LETTER_PX, nulls=R.MAX_NULLS))
+        self.assertIsNone(R.check_options(letter_px=16, input_scale=4))
+        with tempfile.TemporaryDirectory() as d:
+            img = Path(d) / "img.npy"
+            np.save(img, self.img)
+            base = ["letterread", str(img), "--weights", str(self.w)]
+            with mock.patch.object(R, "load_weights", side_effect=AssertionError("weights before the checks")):
+                for extra, words in ((["--letter-px", "2"], "at least 4"), (["--letter-px", "nan"], "at least 4"),
+                                     (["--letter-mm", "3.3", "--um-per-px", "38400"], "under the 4 px"),
+                                     (["--nulls", "65"], "--nulls must be 0 to 64")):
+                    code, _, err = run_cli(base + extra)
+                    self.assertEqual(code, 2, extra)
+                    self.assertIn(words, err, extra)
+
     def test_language_model_weight_defaults_as_on_the_command_line(self):
         try:
             from kit import greeklm
@@ -2052,6 +2167,150 @@ class OverlayTest(unittest.TestCase):
             with Image.open(png) as im:
                 self.assertEqual([im.size[1], im.size[0]], geo["size"])
                 self.assertEqual(im.size[0], 200)
+
+
+def reshape_maxpool(x, ky, kx):
+    """The pooling LineNet.logits used before kit.letterread._maxpool: a max over the reshaped blocks."""
+    C, H, W = x.shape
+    return x[:, :H // ky * ky, :W // kx * kx].reshape(C, H // ky, ky, W // kx, kx).max(axis=(2, 4))
+
+
+@unittest.skipIf(np is None, "numpy not installed")
+class FastPathTest(unittest.TestCase):
+    """The faster inference and image paths give the same bits as the simple code they replaced."""
+
+    def assertSameBits(self, got, want):
+        self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+        self.assertEqual(got.tobytes(), want.tobytes())
+
+    def test_maxpool_matches_reshape_max(self):
+        rng = np.random.default_rng(3)
+        for shape in ((48, 36, 1200), (3, 37, 1201), (2, 5, 7), (1, 1, 1), (2, 1, 9), (2, 4, 1), (1, 0, 4)):
+            x = rng.normal(0, 1, shape).astype(np.float32)
+            if x.size > 4:
+                x.flat[::7] = 0.0
+                x.flat[1::11] = -0.0
+                x.flat[2::13] = np.nan
+            for k in ((2, 2), (2, 1), (1, 2), (3, 2), (1, 1)):
+                self.assertSameBits(R._maxpool(x, *k), reshape_maxpool(x, *k))
+                self.assertTrue(R._maxpool(x, *k).flags.c_contiguous)
+
+    def test_maxpool_other_layouts_match_values(self):
+        # Bit for bit only for a C-contiguous x, which LineNet always passes. For a Fortran-ordered or
+        # transposed x the old reduction picks -0.0 or +0.0 in a tied block by memory order, so the values
+        # are compared with the sign of zero ignored: that is the only known difference.
+        rng = np.random.default_rng(6)
+        x = -np.abs(rng.normal(0, 1, (3, 37, 41))).astype(np.float32)   # so zeros are often a block's maximum
+        x.flat[::3] = 0.0
+        x.flat[1::5] = -0.0
+        x.flat[2::13] = np.nan
+        for y in (np.asfortranarray(x), x.transpose(0, 2, 1)):
+            self.assertFalse(y.flags.c_contiguous)
+            for k in ((2, 2), (2, 1), (1, 2), (3, 2)):
+                got, want = R._maxpool(y, *k), reshape_maxpool(y, *k)
+                self.assertEqual((got.dtype, got.shape), (want.dtype, want.shape))
+                np.testing.assert_array_equal(got, want)     # NaN equals NaN, -0.0 equals +0.0
+                differ = got.view(np.uint32) != want.view(np.uint32)
+                self.assertTrue((got[differ] == 0).all())
+                self.assertTrue(got.flags.c_contiguous)
+
+    def test_logits_match_reshape_max(self):
+        with tempfile.TemporaryDirectory() as d:
+            net = R.LineNet(random_weights(Path(d) / "w.npz"))
+        rng = np.random.default_rng(4)
+        for width in (1, 5, 37, 199, 201):
+            band = rng.random((net.band_rows, width)).astype(np.float32)
+            got = net.logits(band)
+            with mock.patch.object(R, "_maxpool", reshape_maxpool):
+                want = net.logits(band)
+            self.assertSameBits(got, want)
+
+    def test_normalize_info_matches_median_fill(self):
+        def reference(a, polarity="bright", dtype=np.float64):
+            # normalize_info as it was before it skipped the fill of an image with no missing pixels
+            a = np.asarray(a, dtype=dtype)
+            finite = np.isfinite(a)
+            if not finite.any():
+                raise ValueError("image has no finite values")
+            a = np.where(finite, a, np.median(a[finite]))
+            lo, med, hi = np.percentile(a, [0.5, 50, 99.8])
+            if hi <= lo:
+                lo, hi = float(a.min()), float(a.max())
+            info = {"asked": polarity}
+            if polarity == "auto":
+                info["rule"] = R.POLARITY_RULE
+            if hi <= lo:
+                info.update(used=R.resolve_polarity(lo, med, hi, polarity) if polarity != "auto" else "bright",
+                            background=None)
+                return np.zeros_like(a, dtype=np.float32), info
+            used = R.resolve_polarity(lo, med, hi, polarity)
+            info.update(used=used, background=round(float((med - lo) / (hi - lo)), 3))
+            a = np.clip((a - lo) / (hi - lo), 0, 1)
+            return (1.0 - a if used == "dark" else a).astype(np.float32), info
+
+        rng = np.random.default_rng(5)
+        holes = rng.random((40, 50))
+        holes[3, 4], holes[7, 1], holes[9, 9] = np.nan, np.inf, -np.inf
+        signed = rng.normal(0, 1, (30, 30))
+        signed[::4] = -0.0
+        images = [rng.integers(0, 256, (40, 50)).astype(np.uint8), rng.random((40, 50)).astype(np.float32),
+                  holes, signed, np.full((8, 8), 0.4), np.zeros((5, 5), np.uint8)]
+        for a in images:
+            before = a.copy()
+            for polarity in ("bright", "dark", "auto"):
+                for dtype in (np.float64, np.float32):
+                    img, info = R.normalize_info(a, polarity, dtype)
+                    want_img, want_info = reference(a, polarity, dtype)
+                    self.assertSameBits(img, want_img)
+                    self.assertEqual(info, want_info)
+            self.assertSameBits(a, before)
+        with self.assertRaises(ValueError):
+            R.normalize_info(np.full((3, 3), np.nan))
+        for shape in ((0, 5), (0, 0), (3, 0)):     # vacuously all finite, but still no finite values
+            with self.assertRaises(ValueError):
+                R.normalize_info(np.zeros(shape))
+            with self.assertRaises(ValueError):
+                R.normalize_info(np.zeros(shape, np.float32), "auto", np.float32)
+        mask = rng.random((50, 50)) < 0.3            # a bool image becomes float through the fill
+        for dtype in (None, bool):
+            for polarity in ("bright", "dark", "auto"):
+                img, info = R.normalize_info(mask, polarity, dtype)
+                want_img, want_info = reference(mask, polarity, dtype)
+                self.assertSameBits(img, want_img)
+                self.assertEqual(info, want_info)
+
+    def test_shear_matches_gather(self):
+        def reference(a, deg, fill=0.0):
+            # shear as it was: a gather of every pixel through full row and column index arrays
+            if not deg:
+                return a
+            h, w = a.shape
+            shift = np.round((np.arange(w) - w / 2) * math.tan(math.radians(deg))).astype(int)
+            rows = np.arange(h)[:, None] + shift[None, :]
+            ok = (rows >= 0) & (rows < h)
+            out = np.full_like(a, fill)
+            cols = np.broadcast_to(np.arange(w)[None, :], (h, w))
+            out[ok] = a[rows[ok], cols[ok]]
+            return out
+
+        rng = np.random.default_rng(6)
+        angles = list(R.deskew_angles()) + [45.0, -60.0, 89.0, 0.25, -0.01]
+        wide = rng.random((40, 90))
+        wide[5, 7], wide[30, 60] = np.nan, -0.0
+        images = [rng.random((63, 120)).astype(np.float32), wide, wide[:, 13:71], rng.random((1, 1)),
+                  rng.random((3, 200)), rng.integers(0, 256, (20, 30)).astype(np.uint8),
+                  np.zeros((0, 7), np.float32), np.zeros((5, 0)), np.zeros((0, 0))]
+        for a in images:
+            for deg in angles + [0, 0.0]:
+                for fill in (0.0, 0.3):
+                    self.assertSameBits(R.shear(a, deg, fill), reference(a, deg, fill))
+        a = images[0]
+        self.assertIs(R.shear(a, 0), a)
+        with mock.patch.object(R, "shear", reference):
+            want = R.deskew(a, 16, fill=0.3)
+        got = R.deskew(a, 16, fill=0.3)
+        self.assertEqual(got[0], want[0])
+        self.assertSameBits(got[1], want[1])
 
 if __name__ == "__main__":
     unittest.main()

@@ -34,3 +34,4 @@ letters-v2-*.npz
 
 # Local machine settings (electricity rate, device class). Never commit.
 scrolls.local.json
+spaces/scroll-lens/gallery/
