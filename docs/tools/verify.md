@@ -10,21 +10,21 @@
 | Area | Scoring and controls |
 | Run | `python -m kit verify`, `from kit import verify` |
 | Code | `kit/verify.py`, `kit/cli.py` (`cmd_verify`), `kit/ledger.py` (`add_check`, `load`, `path_for`) |
-| Tests | `tests/test_verify.py` |
-| Needs | Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. villa's environment has all three |
+| Tests | `tests/test_verify.py`, `tests/test_scoring_guards.py` (`VerifyGuardsTest`) |
+| Needs | Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. The maps extra installs all three (`python -m pip install "scrolls-workbench[maps]"`, `MAPS_INSTALL`); villa's environment has them too |
 | Runs on | Any CPU. A 2.4 um w035 ink map of 22,640 x 20,400 px with a control took 36 s and 2.25 GB ([mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment), 2026-10-07); a 5,980 x 8,240 uint8 map with a control took 17 s and 512 MB (measured 2026-10-16, shared 4-core cloud container, synthetic maps) |
 | Network | None |
 | Writes | Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`) |
 | Go-ahead | Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main` since 2026-10-07 |
 | Guide | [mac.md, "Runbook: verify MPS against CPU on the control segment"](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-16 against commit `d9eaf42` |
 
 ## What it does
 
 When ink detection moves to a new device or code path, such as villa's Apple GPU (MPS) backend in [villa PR #1865](https://github.com/ScrollPrize/villa/pull/1865), half precision, or a refactor, its maps should match the old path's maps on the same input. Two maps that come out of the same model on the same surface volume can be compared pixel by pixel. `kit verify` does that: it reports the largest and mean absolute difference, how many pixels differ by more than a tolerance, and the Pearson correlation.
 
-A loose comparison passes everything, so agreement alone proves nothing. `kit verify` also takes a control: a map that must not agree with the reference, usually the reverse-direction map (the same model run with the surface volume's layers in reverse order). Agreement counts as a `pass` only when the same test also catches the control. Without a control the verdict is `pass-uncontrolled`, and when the control agrees too it is `control-not-caught`. This acceptance rule follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md).
+A loose comparison passes everything, so agreement alone proves nothing. `kit verify` also takes a control: a map that must not agree with the reference, usually the reverse-direction map (the same model run with the surface volume's layers in reverse order). Agreement counts as a `pass` only when the same test also catches the control, which must have the reference's shape. Without a control the verdict is `pass-uncontrolled`, and when the control agrees too it is `control-not-caught`. This acceptance rule follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md).
 
 The default test is the one villa PR #1865's report sets: there CPU and MPS maps differed by at most 1 of 255 grey levels on 0.002 % of pixels. The defaults, at most 0.01 % of pixels more than 2 grey levels apart, leave margin above that without accepting a different map.
 
@@ -70,7 +70,7 @@ It worked when the exit code is 0 and the last line reads `verdict: pass`. Exit 
 - **A real pass.** On an Apple M1 Pro (macOS 27.0, torch 2.14.1), `ink_9um` seed 42 on PHerc0139 w035: CPU against MPS `pass` with max |diff| 1, 0.000000 % of pixels over tolerance and Pearson 0.99999999; an MPS repeat bit-identical; the control 73.12 % over tolerance ([w035 log](../logs/2026-10-07-w035-cpu.md); `device_checks` in [`results.json`](../results.json)). v8in, CPU against MPS on a w045 crop at stride 64: `pass`, max |diff| 1, Pearson 0.99999998 (`device_checks`, [community scan log](../logs/2026-10-07-community-scan.md)).
 - **What a caught control looks like.** On w035 the CPU forward map against its reverse: max |diff| 167, mean 21.6692, 73.117458 % of pixels over 2, Pearson 0.511578 ([w035 log](../logs/2026-10-07-w035-cpu.md)).
 - **At full size.** On the published 2.4 um w035 ink map (about 462 million pixels) it passed a copy with 0.002 % of pixels changed by one level and caught a control shifted by 64 px (34 % of pixels beyond tolerance) ([mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)).
-- **Gaps in the control rule** (found while writing this page, 2026-10-16, on synthetic maps). A control of a different shape counts as caught: the verdict is `pass` with `control.shape_match` false. NaN pixels never count as over the tolerance, so a float candidate that is all NaN passes against a real control. Check both before trusting a `pass`.
+- **Checks that cannot fail are refused** (since `521c648` and `136b5b2`, 2026-10-16). A control of another shape is an error (exit code 2), not a caught control. NaN or inf in one map and not the other counts as over the tolerance, so an all-NaN candidate fails (on a synthetic 300 x 400 float map: `max |diff| inf, mean nan, 100.000000% of pixels over 0.01`, `verdict: fail`). A float reference with no finite value is an error. NaN in both maps at the same pixel still counts as agreement. This page's earlier version listed the first two as open gaps; they are fixed.
 
 Claim label: Model output, for the agreement of two runs of a model on one input; a `pass` is about the device or code path, not about ink.
 
@@ -108,11 +108,12 @@ print(result["verdict"], verify.format_result(result), sep="\n")
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `verify_files(reference, candidate, control=None, tolerance=DEFAULT_TOLERANCE, max_fraction=DEFAULT_MAX_FRACTION)` | The result dict under Outputs, with `files` | `VerifyError` for a missing package or an unreadable or non-2D map | What the command runs |
-| `verify_arrays(reference, candidate, control=None, tolerance=DEFAULT_TOLERANCE, max_fraction=DEFAULT_MAX_FRACTION)` | The result dict under Outputs, without `files` | `VerifyError` without numpy | For arrays already in memory |
-| `compare(reference, candidate, tolerance=DEFAULT_TOLERANCE)` | The statistics dict (`shape_match`, `shape`, `pixels`, `tolerance`, `max_abs_diff`, `mean_abs_diff`, `pixels_over_tolerance`, `fraction_over_tolerance`, `pearson`), or `{"shape_match": False, "reference_shape", "candidate_shape"}` | `VerifyError` without numpy | Candidate minus reference in blocks of `ROWS_PER_BLOCK` = 1024 rows, in float64, to bound memory. `pearson` is `None` when either map is constant |
+| `verify_arrays(reference, candidate, control=None, tolerance=DEFAULT_TOLERANCE, max_fraction=DEFAULT_MAX_FRACTION)` | The result dict under Outputs, without `files` | `VerifyError` without numpy, for a control whose shape differs from the reference's, or for a float reference with no finite value | For arrays already in memory |
+| `compare(reference, candidate, tolerance=DEFAULT_TOLERANCE)` | The statistics dict (`shape_match`, `shape`, `pixels`, `tolerance`, `max_abs_diff`, `mean_abs_diff`, `pixels_over_tolerance`, `fraction_over_tolerance`, `pearson`), or `{"shape_match": False, "reference_shape", "candidate_shape"}` | `VerifyError` without numpy | Candidate minus reference in blocks of `ROWS_PER_BLOCK` = 1024 rows, in float64, to bound memory. Equal values, and NaN in both maps at the same pixel, agree; NaN or inf in one map only is over the tolerance and makes `max_abs_diff` inf. `pearson` is `None` when either map is constant or holds NaN |
 | `agrees(stats, max_fraction=DEFAULT_MAX_FRACTION)` | bool: the shapes match and `fraction_over_tolerance` is at most `max_fraction` | Nothing | |
 | `verdict(candidate_agrees, control_agrees=None)` | One of `PASS` (`"pass"`), `PASS_UNCONTROLLED` (`"pass-uncontrolled"`), `FAIL` (`"fail"`), `CONTROL_NOT_CAUGHT` (`"control-not-caught"`) | Nothing | `fail` when the candidate disagrees, whatever the control; `pass-uncontrolled` when `control_agrees` is `None` |
 | `load_map(path)` | A 2D numpy array, squeezed | `VerifyError` without numpy or tifffile, for an unreadable file, or for a map that is not 2D | Shared by `auc`, `hpscore`, `rowscore`, `overlap` and others |
+| `missing(module)` | The `VerifyError` (not raised) for a missing package `module`, naming the command running now (`RUNNING`, which `kit.cli` sets while a command runs), the maps extra (`MAPS_INSTALL`) and villa's `uv run` line | Nothing | Shared by the map tools for their install hints; as a library (`RUNNING` is `None`) the message names no command and ends `python -m kit COMMAND ...` |
 | `format_result(result)` | str | Nothing | The text the command prints; `EXPLAIN` holds each verdict's sentence |
 | `VerifyError` | Exception class | | Raised for bad input here and by most map tools in `kit`; the commands print its message and exit with code 2 |
 
@@ -136,14 +137,14 @@ With `--json`, one object:
 | `candidate.shape` | [int, int] | Rows and columns |
 | `candidate.pixels` | int | Pixels compared |
 | `candidate.tolerance` | number | The tolerance used |
-| `candidate.max_abs_diff` | float | Largest absolute difference, in map units |
-| `candidate.mean_abs_diff` | float | Mean absolute difference, in map units |
+| `candidate.max_abs_diff` | float | Largest absolute difference, in map units; `Infinity` in the JSON when one map has NaN or inf where the other does not |
+| `candidate.mean_abs_diff` | float | Mean absolute difference, in map units; `NaN` in the JSON when one map has NaN where the other does not |
 | `candidate.pixels_over_tolerance` | int | Pixels whose difference is larger than the tolerance |
 | `candidate.fraction_over_tolerance` | float | That count over `pixels`, from 0 to 1 |
 | `candidate.pearson` | float or null | Pearson correlation of the two maps; null when either is constant |
 | `max_fraction` | float | The allowed share used |
 | `candidate_agrees` | bool | Shapes match and `fraction_over_tolerance` is at most `max_fraction` |
-| `control` | object, the same fields | Only with `--control`; for a shape mismatch its keys are still `reference_shape` and `candidate_shape` |
+| `control` | object, the same fields | Only with `--control`, which must have the reference's shape |
 | `control_agrees` | bool | Only with `--control`; true means the control was not caught |
 | `verdict` | str | `pass`, `pass-uncontrolled`, `fail` or `control-not-caught` |
 | `files.reference`, `files.candidate`, `files.control` | str, or null for `control` | The paths as given |
@@ -162,8 +163,8 @@ With `--slug`, the same object is stored as the check's `result` in `run.json`, 
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
-| `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed | Run inside villa's environment as the message says, or `python -m pip install numpy tifffile imagecodecs` |
-| `tifffile is required (it is in villa's environment)` | tifffile is missing | Install tifffile, and imagecodecs for LZW TIFFs |
+| `numpy is required for python -m kit verify. Install the maps extra: python -m pip install "scrolls-workbench[maps]", or run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed. From Python (`verify_files`) the message reads `numpy is required. Install the maps extra: ...` and ends `python -m kit COMMAND ...` | Install the maps extra, or run inside villa's environment, as the message says |
+| `tifffile is required for python -m kit verify. Install the maps extra: ...` (the rest as for numpy) | tifffile is missing | The same; imagecodecs, in the maps extra, reads LZW TIFFs |
 | `cannot read MAP.tif: ...` | A missing file, a file that is not a TIFF (such as `.npy`), or an LZW TIFF without imagecodecs | Fix the path, install imagecodecs, or save the map as TIFF |
 | `MAP.tif: expected a 2D map, got shape (...)` | A layer stack or an RGB image | Pass one 2D map |
 | `no experiment at ROOT/SLUG/run.json` | `--slug` names an experiment that was never started | Start it with `python -m kit run init`, or fix `--slug` and `--root` |
@@ -172,17 +173,19 @@ With `--slug`, the same object is stored as the check's `result` in `run.json`, 
 | `verdict: fail (candidate does not agree with the reference)`, exit code 1 | More than `--max-fraction` of pixels differ by more than `--tolerance` | Look at `max_abs_diff` and the share; check the device's logs for a silent fallback or a numerical bug, and that both runs used the same settings |
 | `verdict: control-not-caught (...)`, exit code 1 | The control also agreed: the tolerance is too loose for these maps (a float map with the uint8 tolerance does this) or the control is not different | Set `--tolerance` in the maps' units, or use a control that differs, such as the reverse-direction map |
 | `verdict: pass-uncontrolled (...)`, exit code 3 | No `--control` given | Rerun with a control |
-| `control  : shape mismatch [...] vs [...]` with `verdict: pass`, exit code 0 | A control of another shape is counted as caught | Not a real pass: use a control of the same shape |
-| `mean nan` and `pearson n/a` with `verdict: pass` | NaN pixels in a float map never count as over the tolerance | Not a real pass: replace NaN or fix the map |
+| `control shape (H, W) differs from the reference's (H, W); the control must be the same map made wrongly`, exit code 2 | The control is another crop, render or downsampling; a control of another shape would disagree by shape alone and pass any candidate | Use a control of the reference's shape, such as the reverse-direction map of the same input |
+| `the reference map has no finite values; a broken reference cannot show agreement`, exit code 2 | A float reference that is all NaN or inf, such as a run that overflowed; NaN at the same pixel counts as agreement, so an all-NaN candidate would pass | Fix the reference run |
+| `candidate: max \|diff\| inf, mean nan, ...` and `verdict: fail`, exit code 1 | The candidate has NaN or inf where the reference has a value (or the other way round) | Find why one run produced NaN or inf, such as half-precision overflow |
 
 ## How it works
 
 1. Read each map with `tifffile.imread` and squeeze it to 2D (`load_map`).
-2. If the candidate's shape differs from the reference's, record a shape mismatch: it does not agree.
-3. Otherwise, in blocks of `ROWS_PER_BLOCK` = 1024 rows, convert both to float64, take the absolute difference, and accumulate its maximum and sum, the count of pixels over the tolerance, and the sums needed for Pearson's r (`compare`).
-4. The candidate agrees when the shapes match and the share over the tolerance is at most `--max-fraction` (`agrees`).
-5. With a control, the control is compared with the reference in the same way; it is caught when it does not agree.
-6. The verdict (`verdict`): `fail` if the candidate does not agree; else `pass-uncontrolled` without a control; else `control-not-caught` if the control agrees; else `pass`.
+2. Refuse a float reference with no finite value, and a control whose shape differs from the reference's (`verify_arrays`).
+3. If the candidate's shape differs from the reference's, record a shape mismatch: it does not agree.
+4. Otherwise, in blocks of `ROWS_PER_BLOCK` = 1024 rows, convert both to float64, take the absolute difference, and accumulate its maximum and sum, the count of pixels over the tolerance, and the sums needed for Pearson's r (`compare`). A pixel is over when its difference is not at most the tolerance and the two values are not equal and not both NaN, so NaN or inf in one map only is over.
+5. The candidate agrees when the shapes match and the share over the tolerance is at most `--max-fraction` (`agrees`).
+6. With a control, the control is compared with the reference in the same way; it is caught when it does not agree.
+7. The verdict (`verdict`): `fail` if the candidate does not agree; else `pass-uncontrolled` without a control; else `control-not-caught` if the control agrees; else `pass`.
 
 Constants: `DEFAULT_TOLERANCE = 2`, `DEFAULT_MAX_FRACTION = 1e-4`, `ROWS_PER_BLOCK = 1024`. The defaults leave margin above villa PR #1865's report of at most 1 of 255 on 0.002 % of pixels; the acceptance rule is GENChase's.
 
@@ -201,21 +204,24 @@ Memory is about the three maps in their own dtype plus a few float64 blocks of 1
 - **Command:** `python -m kit verify REF.tif CAND.tif --control CONTROL.tif --json`.
 - **Parse:** `verdict`; then `candidate.max_abs_diff`, `candidate.fraction_over_tolerance` and `candidate.pearson`; `control.fraction_over_tolerance`; `control.shape_match`.
 - **Rerun:** Safe; it only reads its inputs and gives the same numbers. With `--slug`, each run appends one more check to `run.json`.
-- **Success:** Exit code 0 and `verdict` equal to `pass`, with `control.shape_match` true and a non-NaN `candidate.mean_abs_diff`.
-- **Not a pass:** Exit code 3 (`pass-uncontrolled`); `control-not-caught`; a `pass` whose control has another shape; a `pass` on float maps with the default tolerance of 2; a `pass` with NaN statistics; any `pass` read as evidence that a map shows ink.
+- **Success:** Exit code 0 and `verdict` equal to `pass`.
+- **Not a pass:** Exit code 3 (`pass-uncontrolled`); `control-not-caught`; a `pass` on float maps with the default tolerance of 2; a `pass` with NaN statistics, which means NaN in both maps at the same pixels; any `pass` read as evidence that a map shows ink.
 - **Go-ahead:** Nothing to run it. Posting its output on a villa PR or anywhere public needs Chase's yes first.
 - **Never:** Call two agreeing maps a result about ink; report agreement without its control; drop the control to turn a failing check into exit code 3.
 
 ## Tests
 
 ```bash
-python -m unittest tests.test_verify -v
+python -m unittest tests.test_verify tests.test_scoring_guards.VerifyGuardsTest -v
 ```
 
-Ten tests. Nine cover `kit verify`: a pass needs agreement and a caught control, no control gives `pass-uncontrolled`, a control that agrees gives `control-not-caught`, a different map fails, a shape mismatch fails, block statistics equal whole-array statistics (with 7-row blocks) and numpy's Pearson r, constant maps have no Pearson r, the command line on tiled BigTIFF maps (LZW when imagecodecs is there) stores a `pass` in the ledger, and the exit codes 3 and 2. The tenth tests `ledger.add_provenance`. They skip without numpy and tifffile. They do not cover a control of another shape, NaN values or float maps.
+`tests/test_verify.py` holds thirteen tests. Nine cover `kit verify`: a pass needs agreement and a caught control, no control gives `pass-uncontrolled`, a control that agrees gives `control-not-caught`, a different map fails, a shape mismatch fails, block statistics equal whole-array statistics (with 7-row blocks) and numpy's Pearson r, constant maps have no Pearson r, the command line on tiled BigTIFF maps (LZW when imagecodecs is there) stores a `pass` in the ledger, and the exit codes 3 and 2. One tests `ledger.add_provenance`. Three check the install hint of `missing`: as a library it names the maps extra, under `python -m kit` it names the command run, and under a console script it names that script. `VerifyGuardsTest` in `tests/test_scoring_guards.py` checks that a control of another shape is an error, an all-NaN candidate fails, NaN in both maps at the same pixels agrees, and an all-NaN reference is refused. The map tests skip without numpy and tifffile. They do not cover float maps with a tolerance in their own units.
 
 ## History
 
+- 2026-10-16: missing numpy or tifffile names the command run and the maps extra (`missing`, `bb8cc06`).
+- 2026-10-16: a float reference with no finite value is refused (`136b5b2`).
+- 2026-10-16: a control of another shape is an error, not a caught control, and NaN or inf in one map only counts as disagreement (`521c648`).
 - 2026-10-07: first version, with the control rule, the four verdicts, the ledger link and the Mac runbook (`99dba9e`).
 
 ## Related

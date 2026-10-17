@@ -20,7 +20,7 @@
 | Release id | `letter-reader` |
 | License | Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights)) |
 | Guide | [letter-reader.md](../letter-reader.md) (install, first reads, model cards, benchmarks, the result field by field) |
-| Checked | 2026-10-16 against commit `63ee638` |
+| Checked | 2026-10-16 against commit `14f5ce0` |
 
 ## What it does
 
@@ -78,7 +78,7 @@ It worked when the exit code is 0 and the summary ends with a `status:` line. On
 ## Checks and controls
 
 - **Nulls** (`--nulls`, default 4). Alternating tile-shuffled copies (letter-sized tiles moved and flipped at random: grey levels and local texture kept, letters and lines broken) and phase-randomised copies (the same power spectrum, so the same line spacing, shapes broken), each read like the image. The floor `p_min` lets the nulls keep at most 5 % of the line's letter slots (`null_rate` 0.05), never below 0.5.
-- **Control map** (`--control`). For an ink map, the reverse-depth map of the same surface: it shows the same fibres and cracks with the ink signal at the wrong depth. It is read on the image's columns, deskew and lines at the image's letter size and floor. A control map that keeps as many letters as the image makes the read `none`.
+- **Control map** (`--control`). For an ink map, the reverse-depth map of the same surface: it shows the same fibres and cracks with the ink signal at the wrong depth. It is read on the image's columns, deskew and lines at the image's letter size and floor. A control map that keeps as many letters as the image makes the read `none`. A control map with no finite values, or a constant one, is refused (`check_control`): it normalises to zeros and keeps no letters, so its count of 0 could never stop a pass; before 16 October 2026 such a control let a read end `strong`.
 - **Status** (`control.status`, in this order, `control_status`): no nulls run is `no_control`; letters kept not above the largest null, or not above the control map, is `none`; fewer than `--min-letters` (10, `MIN_LETTERS`) is `too_few`; more than 3 times (`STRONG_FACTOR`) every control, a count of 0 counting as 1, is `strong`; the rest is `weak`. Each column gets its own status, and each line its `chance` count (the column's mean null count over its lines). The rule and what to do for each code: [The status, and what to do](../letter-reader.md#the-status-and-what-to-do).
 - **A pass and a fail, synthetic** (2026-10-16, this page's run). The synthetic page above is `strong`: 96 letters against nulls of 9, 0, 11 and 2 and a control map of 0. The noise image alone, nothing given, is `too_few`: 4 letters against nulls of 0, 0, 3 and 2, with a deskew warning, exit code 0.
 - **On a public map** (Model output, 14 October 2026, [guide](../letter-reader.md#where-the-letters-are)). PHerc. 1667 w013's public map averaged to about 38 um, `--letter-px 86`, `letters-v2-ccby`: 120 letters against nulls of 31, 20, 33 and 47, status `weak`, ratio 2.55. With the map itself as its control map the status is `none`, as it must be.
@@ -120,8 +120,8 @@ usage: python -m kit letterread [-h] --weights WEIGHTS [--key KEY]
 | `--weights WEIGHTS` | required | A released model name (`letters-v2-ccby` or `letters-v2-real`, downloaded once and SHA-256 checked; a name is looked up before any file of that name), or a path to a `linenet-v1` `.npz` file |
 | `--key KEY` | none | `.npz`: the array name (default the first). zarr: the array path or OME-Zarr level (default level 0, full resolution); pixel values are then in that level's pixels. Also applied to `--control` |
 | `--crop Y0 Y1 X0 X1` | none | Read only rows Y0 to Y1 and columns X0 to X1 (numpy slicing, ends excluded); every row, box and `--lines` value is then relative to Y0, X0. The CSV and PAGE exports add the offset back |
-| `--letter-px LETTER_PX` | none | Letter height in image pixels. Without it (and without `--letter-mm`) it is estimated from the line pitch with a scale search, and the read stops when the image shows no line pitch |
-| `--letter-mm LETTER_MM` | none | Letter height in millimetres; needs `--um-per-px`. Not with `--letter-px` |
+| `--letter-px LETTER_PX` | none | Letter height in image pixels, at least 4 (`MIN_LETTER_PX`, a quarter of the network's 16 px letters). Without it (and without `--letter-mm`) it is estimated from the line pitch with a scale search, and the read stops when the image shows no line pitch |
+| `--letter-mm LETTER_MM` | none | Letter height in millimetres; needs `--um-per-px`. Not with `--letter-px`. The height it gives in pixels must be at least 4 |
 | `--um-per-px UM_PER_PX` | none | Pixel size in micrometres, with `--letter-mm`; letter px = mm x 1000 / um |
 | `--max-mpx MAX_MPX` | `64` | Pixel budget in millions of pixels (`MAX_PIXELS` / 1e6): a bigger image is block-averaged by an integer factor while it loads |
 | `--polarity POLARITY` | `bright` | `bright`: ink brighter than the ground, as in ink maps. `dark`: dark ink on a light ground, as in photographs. `auto`: a quick read both ways, keeping the polarity whose letters stand further above its nulls (bright on a tie) |
@@ -130,8 +130,8 @@ usage: python -m kit letterread [-h] --weights WEIGHTS [--key KEY]
 | `--deskew MAX_DEG` | `6.0` | Largest line tilt searched, degrees either way, in steps of 0.5 (`DESKEW_DEG`, `DESKEW_STEP`); 0 turns deskew off; under 45 |
 | `--lines LINES ...` | none | Centre rows of the lines in image pixels (in the turned image with `--rotate` or `--mirror`), each its row at the image's horizontal middle, which the deskew turns about (give `--deskew 0` for level bands). Given lines mean one column. Default: found from the row profile |
 | `--columns COLUMNS` | `auto` | `auto`: split at empty vertical gutters at least 2 letter heights wide; `off`: the whole width as one column; a number: that many columns, split at the widest gutters |
-| `--nulls NULLS` | `4` | Null copies to read, alternating tile shuffle and phase randomisation; 0 runs no control (status `no_control`) |
-| `--control MAP_REVERSE` | none | A second map of the same surface on the same grid, such as its reverse-depth ink map, read on the image's lines at the same letter size and floor. Same shape after `--crop` and `--key`; normalised in the image's polarity |
+| `--nulls NULLS` | `4` | Null copies to read, 0 to 64 (`MAX_NULLS`), alternating tile shuffle and phase randomisation; 0 runs no control (status `no_control`) |
+| `--control MAP_REVERSE` | none | A second map of the same surface on the same grid, such as its reverse-depth ink map, read on the image's lines at the same letter size and floor. Same shape after `--crop` and `--key`; normalised in the image's polarity. A map with no finite values, or whose finite values are all the same, is refused, since it could never fail |
 | `--min-letters MIN_LETTERS` | `10` | Fewest kept letters a read or a column needs before its controls can pass (`MIN_LETTERS`); fewer is `too_few` |
 | `--seed SEED` | `0` | Seed of the null copies (column `i` uses seed + `i`; the polarity trial uses seed + 1). The same seed, image, weights and options give the same result |
 | `--p-min P_MIN` | none | Letter confidence floor from 0 to 1. Default: set from the nulls so they keep at most 5 % of letter slots, at least 0.5 |
@@ -197,7 +197,7 @@ print(R.text_summary(res)); E.write_csv(res, "letters.csv")
 | `normalize_auto(img, weights, max_pixels=MAX_PIXELS, **trial_kw)` | `(image, info)`, info with `trial` | As `polarity_trial` and `normalize` | Polarity auto for a whole read |
 | `polarity_hint(trial, used)` | str, or `None` | Nothing | A hint when the other polarity reads `strong` and better |
 | `letter_px_from_units(letter_mm, um_per_px)` | float, letter height in pixels | `ValueError` when either is missing or not positive | mm x 1000 / um |
-| `resize(a, shape)` | float32 array of `shape` | Nothing | Area average by an integer factor, then bilinear |
+| `resize(a, shape)` | float32 array of `shape`, each side at least 1 px | Nothing | Area average by an integer factor, then bilinear |
 | `line_pitch(a, lo=8)` | int pixels, or `None` | Nothing | First autocorrelation peak above 0.15 of the row profile |
 | `shear(a, deg, fill=0.0)` | array of a's shape | Nothing | Vertical shear about the middle column |
 | `deskew_angles(max_deg=DESKEW_DEG, step=DESKEW_STEP)` | numpy array of angles in degrees | Nothing | Symmetric about 0, both limits included |
@@ -211,12 +211,13 @@ print(R.text_summary(res)); E.write_csv(res, "letters.csv")
 | `null_images(a, h, n=4, seed=0)` | list of `(kind, image)`, kind `tile_shuffle` or `phase` | Nothing | Both keep the image's grey levels |
 | `read_bands(net, a, ys, h)` | list of (T, K) log-probability arrays | Nothing | One band per line centre |
 | `as_image(img, name='image')` | 2D array | `TypeError` for a file name; `ValueError` for non-numbers, a wrong shape or an empty image | Size-1 axes dropped; (H, W, 3 or 4) averaged to grey |
-| `check_options(*, letter_px=None, polarity='bright', columns='auto', nulls=4, seed=0, min_letters=MIN_LETTERS, deskew_deg=DESKEW_DEG, rotate=0, input_scale=1, p_min=None, null_rate=0.05, lm_weight=None, beam=32, lines=None, shear_fill=None, **_)` | `None` | `ValueError` naming the option and what to give | What `read` and `analyze` check first |
+| `check_control(c, name='the control image')` | `None` | `ValueError` when `c` has no finite values or they are all the same | Checks in row bands of about 4 million pixels, without copying a big map; `read` and `analyze` call it on `control`, the command line on `--control` |
+| `check_options(*, letter_px=None, polarity='bright', columns='auto', nulls=4, seed=0, min_letters=MIN_LETTERS, deskew_deg=DESKEW_DEG, rotate=0, input_scale=1, p_min=None, null_rate=0.05, lm_weight=None, beam=32, lines=None, shear_fill=None, **_)` | `None` | `ValueError` naming the option and what to give | What `read` and `analyze` check first; `letter_px / input_scale` must be at least `MIN_LETTER_PX` (4) and `nulls` at most `MAX_NULLS` (64) |
 | `lm_info(lm)` | dict `file`, `sha256`, `order`, or `None` | Nothing | |
 | `read_options(kw, **extra)` | dict of every name in `OPTION_NAMES` with its value used | Nothing | The result's `options` |
 | `provenance(net, seed=0)` | dict `schema`, `reader`, `weights`, `seed` | Nothing | |
 | `estimate_letter_px(a)` | `(px, how)`, how `"line pitch"` or `"image height / 4"` | Nothing | Line pitch over `PITCH_PER_H` (6.6 / 3.5) |
-| `analyze(img, weights, *, letter_px=None, polarity='bright', nulls=4, seed=0, deskew_deg=DESKEW_DEG, lines=None, p_min=None, null_rate=0.05, lm=None, lm_weight=None, beam=32, scale_search=True, columns='auto', normalized=False, input_scale=1, letter_px_fallback=True, progress=None, control=None, min_letters=MIN_LETTERS, shear_fill=None)` | The result dict without orientation | `ValueError` for a bad option, no letter size (with `letter_px_fallback=False`) or a control of another shape; `TypeError` for a file name; as `load_weights` | One read with nulls, columns, deskew, scale search and control map |
+| `analyze(img, weights, *, letter_px=None, polarity='bright', nulls=4, seed=0, deskew_deg=DESKEW_DEG, lines=None, p_min=None, null_rate=0.05, lm=None, lm_weight=None, beam=32, scale_search=True, columns='auto', normalized=False, input_scale=1, letter_px_fallback=True, progress=None, control=None, min_letters=MIN_LETTERS, shear_fill=None)` | The result dict without orientation | `ValueError` for a bad option, no letter size (with `letter_px_fallback=False`) or a control of another shape, with no finite values or constant; `TypeError` for a file name; as `load_weights` | One read with nulls, columns, deskew, scale search and control map |
 | `deskew_warning(res)` | str, or `None` | Nothing | |
 | `verdict(n, null_n)` | str, one of four fixed sentences | Nothing | The old wording kept in `control.verdict`; more than 3 times is "well above" |
 | `control_status(n, null_n, control_n=None, min_letters=MIN_LETTERS)` | `"strong"`, `"weak"`, `"none"`, `"too_few"` or `"no_control"` | Nothing | The rule under Checks and controls |
@@ -301,11 +302,12 @@ Without `--json` it prints the text summary (see Quick start): the model-output 
 | `give the letter height once: --letter-px, or --letter-mm with --um-per-px` | Both size forms given | Give one |
 | `give the letter height in millimetres and the pixel size in micrometres together (--letter-mm MM --um-per-px UM)` | `--letter-mm` without `--um-per-px`, or the reverse | Give both |
 | `letter height (MM mm) and pixel size (UM um) must both be positive` | A zero or negative unit | Fix the values |
-| `--letter-px PX: the letter height must be positive` | `--letter-px` 0 or less | Give the height in pixels |
+| `--letter-px PX: give the letter height in image pixels, at least 4 (the network reads letters 16 px tall, so smaller letters have no shape left to read)` | `--letter-px` under 4 (`MIN_LETTER_PX`), refused before any work | Give the height of a letter in image pixels; a block-averaged map's letters are still given in input pixels |
+| `--letter-mm MM at --um-per-px UM is a letter PX px tall, under the 4 px the reader can read; check the units (the letter height in millimetres, the pixel size in micrometres)` | The two values give a letter under 4 px, usually a unit mix-up (such as 0.1 mm at 38.4 um, 2.6 px, seen 2026-10-16) | Give the letter height in millimetres and the pixel size in micrometres |
 | `--max-mpx must be positive and --overlay-max-side at least 16` | A bad budget or overlay size | Use the defaults, 64 and 4000 |
 | `--min-letters N: give at least 1` | `--min-letters` 0 or less | Keep 10; do not lower it to get a pass |
 | `--deskew DEG: give an angle from 0 (off) to under 45 degrees` | Out of range | Use 0 to 44 |
-| `--nulls must be 0 or more, --beam at least 1 and --lm-weight 0 or more` | A negative count or weight | Fix the value |
+| `--nulls must be 0 to 64, --beam at least 1 and --lm-weight 0 or more` | A negative count or weight, or more than 64 nulls (`MAX_NULLS`) | Fix the value; 4 nulls is the default |
 | `--p-min P: give a confidence from 0 to 1` | Out of range | Leave it out to set it from the nulls |
 | `--columns C: give auto, off or a number of columns, at least 1` | Not `auto`, `off` or a whole number | Fix it |
 | `--overlay needs Pillow: ...` | Pillow is not installed | `python -m pip install pillow`, or the `reader` extra |
@@ -326,12 +328,14 @@ Without `--json` it prints the text summary (see Quick start): the model-output 
 | `no letter size: the image shows no regular line spacing to estimate it from. Give the letter height with --letter-px H (image pixels), or with --letter-mm MM and --um-per-px UM (for example --letter-mm 3.3 --um-per-px 38.4), or read a window that holds several lines with --crop Y0 Y1 X0 X1` | No line pitch and no size given (the command line never falls back to a quarter of the height) | Give the size, or crop to several lines |
 | `--control FILE: H x W px, but the image is H x W; give a map of the same surface on the same grid (such as its reverse-depth map)` | The control map has another shape (seen on synthetic inputs, 2026-10-16) | Use the map of the same surface and grid |
 | `the control image is H x W px but the image is H x W; give a map of the same surface on the same grid (such as its reverse-depth map), cropped the same way` | Python only: a control of another shape | Same as above |
+| `--control FILE is constant (every finite value is V): a constant map keeps no letters, so as a control it could never fail. Give a map of the same surface with its own content, such as its reverse-depth map, or read without a control map` (from Python, `the control image is constant ...`) | Every finite value of the control map is the same | Give the real reverse-depth map of the surface, or read without `--control` |
+| `--control FILE has no finite values: it can keep no letters, so as a control it could never fail` (from Python, `the control image has no finite values ...`) | The control map is all NaN or infinite | Same as above |
 | `IMAGE: expected a 2D image, got shape (...)` | A file with more than one 2D plane, such as a layer stack | Pass one 2D map |
 | `image: expected a 2D image (H, W), or a colour image (H, W, 3 or 4) with its channels last; got shape (...)` | Python only: an array of another shape | Pass a 2D array |
 | `image: expected an array of numbers, got one of DTYPE` | Python only: strings or objects | Pass numbers |
 | `image 'PATH': read() and analyze() take an image array; read a file with load_image(path) or, for a big map, load_reduced(path) (its block size goes in as input_scale)` | Python only: a file name passed to `read` | Load it first |
 | `read(): unknown option NAME; the options are ..., orientation, normalized, progress, control, rotate, mirror and polarity_info` | Python only: a misspelt keyword | Use a listed option |
-| `OPTION VALUE: WHAT TO GIVE` (such as `nulls -1: give a whole number of null copies, 0 or more (4 is the default; 0 runs no control)`) | Python only: `check_options` refuses a value for `letter_px`, `polarity`, `columns`, `nulls`, `seed`, `min_letters`, `deskew_deg`, `rotate`, `input_scale`, `p_min`, `null_rate`, `lm_weight`, `beam`, `lines` or `shear_fill` | Give what the message asks |
+| `OPTION VALUE: WHAT TO GIVE` (such as `nulls -1: give a whole number of null copies from 0 to 64 (4 is the default; 0 runs no control)`, or `letter_px 3: letters under 4 px tall in the image read are too small to read (the network reads letters 16 px tall); give the height of a letter in image pixels`, with `, here at least N input pixels with input_scale K` for a block-averaged image) | Python only: `check_options` refuses a value for `letter_px`, `polarity`, `columns`, `nulls`, `seed`, `min_letters`, `deskew_deg`, `rotate`, `input_scale`, `p_min`, `null_rate`, `lm_weight`, `beam`, `lines` or `shear_fill` | Give what the message asks |
 | `IMAGE: the image is empty (0 x W px)` | An empty image or array | Check the file |
 | `IMAGE: crop [...] is empty for an image of shape (H, W)` | `--crop` outside the image | Fix the crop |
 | `rotate R: give 0, 90, 180 or 270 (degrees clockwise)` | Python only: another angle | Use a quarter turn |
@@ -344,8 +348,8 @@ Without `--json` it prints the text summary (see Quick start): the model-output 
 | `IMAGE: no array 'KEY' in this zarr (arrays: ...)` | A wrong `--key` | Use one of the listed arrays |
 | `IMAGE: 'KEY' is a zarr group, not an array; give its level, such as KEY/0` | `--key` names a group | Add the level |
 | `'KEY is not a file in the archive'` | `--key` names no array of the `.npz` | Use an array name of the file |
-| `No module named 'numpy'; python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)` | numpy, Pillow, tifffile or imagecodecs is missing (`import_advice` adds the install line) | Install the `reader` extra |
-| `...; python -m pip install zarr (or "scrolls-workbench[all]", Python 3.11 or newer)` | zarr is missing for a zarr input | Install zarr |
+| `No module named 'numpy'; python -m pip install numpy pillow tifffile imagecodecs (the reader extra's packages)` | numpy, Pillow, tifffile or imagecodecs is missing (`import_advice` adds the install line) | Install them, or the `reader` extra from a clone (`python -m pip install -e ".[reader]"`) |
+| `...; python -m pip install zarr (Python 3.11 or newer)` | zarr is missing for a zarr input | Install zarr |
 | `out of memory reading IMAGE. Give the letter size (--letter-px, or --letter-mm with --um-per-px) so a big image is block-averaged while it loads, lower the budget with --max-mpx, or read a window with --crop Y0 Y1 X0 X1.` | A big image without a letter size | Do what it says |
 | `out of memory reading IMAGE. Its letters (PX px tall) are too small to block-average (that needs letters at least 64 px tall), so the image is loaded whole: read a window with --crop Y0 Y1 X0 X1, or check the letter size.` | Letters under twice the network's height cannot be averaged | Crop a window, or check the size |
 | `this result was read from a --crop window and does not record the whole image's size (image_shape); give image_shape=(H, W) of the image file` | Python only: exporting a crop read without its image size | Pass `image_shape` |
@@ -358,7 +362,7 @@ Without `--json` it prints the text summary (see Quick start): the model-output 
 1. **Check** every option, the output folders and the input paths; load the weights (a released name resolves to the cache file, downloaded once and SHA-256 checked).
 2. **Load** the image (`load_reduced`). Over the budget (`MAX_PIXELS` = 64,000,000) it is block-averaged by an integer k in row bands of `BAND_PIXELS` (64,000,000 input pixels) that follow the file's tiles; with a letter size, k keeps letters at least 32 px tall (twice the network's 16 px).
 3. **Normalise** once (`normalize_for_reading`): clip between the 0.5th and 99.8th percentiles to 0..1, inverted for dark ink. With `auto`, `polarity_trial` reads both ways once (up to 8 lines, 2 nulls) and keeps the larger margin over its nulls (`AUTO_RULE`).
-4. **Letter size.** Given, or estimated from the first autocorrelation peak of the row profile divided by `PITCH_PER_H` (6.6 / 3.5, about 1.89 letter heights per line), then a scale search at `SCALE_STEPS` (0.5, 0.63, 0.8, 1.0, 1.25, 1.6) times the guess, each with 2 nulls on up to 8 lines, keeping the largest margin of letters over the largest null.
+4. **Letter size.** Given (at least `MIN_LETTER_PX`, 4 px, in the image read), or estimated from the first autocorrelation peak of the row profile divided by `PITCH_PER_H` (6.6 / 3.5, about 1.89 letter heights per line) and raised to 4 px when smaller, then a scale search at `SCALE_STEPS` (0.5, 0.63, 0.8, 1.0, 1.25, 1.6) times the guess, each size raised to 4 px and each distinct size read once, with 2 nulls on up to 8 lines, keeping the largest margin of letters over the largest null. The polarity trial also never reads under 4 px.
 5. **Layout.** Resize to the network's 16 px letters, split columns at gutters (`find_columns`), deskew each column by the shear in steps of 0.5 degrees up to `--deskew` that makes its row profile most peaked, and find line rows as row-profile peaks at least 0.7 pitch apart.
 6. **Read.** Each line band (a fixed number of letter heights around the row, `band_rows`) goes through the numpy network: 2D convolutions with BatchNorm folded in, a collapse to one row, dilated 1D residual convolutions and a 25-way CTC head (24 capitals with lunate sigma, plus the blank). Best-path decoding gives letters, confidences and frame spans; boxes widen each span by 0.3 letter heights and undo the shear.
 7. **Controls.** Read the nulls (`null_images`) on the same lines, set the floor, count kept letters per line, column and read, read the control map on the same lines and floor, and set each status (`control_status`). Then, in `read`, the four turned reads at the same floor with no nulls, and, after a `none` or `too_few` read in a fixed polarity, the quick read both ways with a hint.
@@ -394,6 +398,9 @@ python -m unittest tests.test_letterread tests.test_letterexport -v
 
 ## History
 
+- 2026-10-16: speed-ups with bit-identical output: LineNet's max pooling by strided slices (one 36 x 1200 band 148.2 ms to 77.8 ms, per the commit), `shear` by runs of columns (deskew of a 630 x 1200 image 384 ms to 40 ms, per the commit), and `normalize_info` skipping the median fill when every pixel is finite (`b48258d`, `4a31ee5`, `45269ca`, `9e2a16e`).
+- 2026-10-16: the missing-package hint names numpy, pillow, tifffile and imagecodecs instead of `scrolls-workbench[reader]`, which is not on PyPI (`00c25f5`).
+- 2026-10-16: refuses a constant control map or one with no finite values (`check_control`), which could never fail and let a read end `strong`; letter heights under 4 px (`MIN_LETTER_PX`) and more than 64 nulls (`MAX_NULLS`); the scale search and polarity trial never read under 4 px; `resize` keeps each side at least 1 px, so a strip a few pixels tall no longer stops with a division by zero (`c58cdab`).
 - 2026-10-14: `letters-v2-ccby` (CC BY 4.0) becomes the default weights of the demo and guide; `letters-v2-real` stays released (`0366ed7`).
 - 2026-10-14: fixes from the usability review (`ca7b143`).
 - 2026-10-14: CSV and PAGE XML exports (`kit/letterexport.py`, `--csv`, `--page-xml`) (`33a0ad3`).

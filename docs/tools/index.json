@@ -48,7 +48,8 @@
    ],
    "tests": [
     "tests/test_auc.py",
-    "tests/test_auc_bootstrap_exact.py"
+    "tests/test_auc_bootstrap_exact.py",
+    "tests/test_scoring_guards.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -56,7 +57,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "27d0e96"
+    "commit": "d9eaf42"
    },
    "license": null,
    "fields": {
@@ -66,7 +67,7 @@
     "Area": "Scoring and controls",
     "Run": "`python -m kit auc`, `from kit import auc`",
     "Code": "`kit/auc.py`, `kit/cli.py` (`cmd_auc`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`)",
-    "Tests": "`tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`",
+    "Tests": "`tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`)",
     "Needs": "Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer; 2.x works for reading)",
     "Runs on": "Any CPU. A full-size 5,980 x 8,240 map takes about 5 s with a control and about 6 s with `--bootstrap 300` (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, synthetic data)",
     "Network": "None",
@@ -74,7 +75,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07; also inside the AutoPipeline release",
     "Guide": "[STANDARDS.md](../STANDARDS.md) (how AUC is used here), [the overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md) (sampling noise)",
-    "Checked": "2026-10-16 against commit `27d0e96`"
+    "Checked": "2026-10-16 against commit `d9eaf42`"
    },
    "page": "docs/tools/auc.md",
    "sections": [
@@ -129,43 +130,43 @@
     {
      "name": "Failure modes",
      "start_line": 176,
-     "end_line": 203,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 204,
-     "end_line": 216,
+     "start_line": 206,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 217,
-     "end_line": 220,
+     "start_line": 219,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 221,
-     "end_line": 230,
+     "start_line": 223,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 231,
-     "end_line": 238,
+     "start_line": 233,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 239,
-     "end_line": 247,
+     "start_line": 241,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 248,
-     "end_line": 255,
+     "start_line": 254,
+     "end_line": 261,
      "applicable": true
     }
    ]
@@ -363,7 +364,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "e49ec32"
+    "commit": "14f5ce0"
    },
    "license": null,
    "fields": {
@@ -374,14 +375,14 @@
     "Run": "`python -m kit run all`, `python -m kit run watch`, `python -m kit run catalog`, `from kit import autobatch, scancatalog`",
     "Code": "`kit/autobatch.py`, `kit/scancatalog.py`, `kit/cli.py` (`cmd_batch`)",
     "Tests": "`tests/test_autobatch.py`",
-    "Needs": "Python 3.10 or newer, standard library only. Reads `docs/compute/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-10-11.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call",
+    "Needs": "Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` (through [cloudcost](cloudcost.md)) and the prizes snapshot `kit/data/prizes-2026-10-11.json`. Launching an approved scan needs the released AutoPipeline package (`scrolls-kit`), which this tool does not call",
     "Runs on": "Any CPU. A dry run of a 5-volume synthetic catalog took 0.19 s (measured 2026-10-16, cloud container). A catalog of the real bucket: Not measured; it is a few hundred small HTTPS requests",
     "Network": "`run catalog`, `run watch`, and `run all` with `--refresh` or with no saved catalog: anonymous HTTPS GETs of `https://vesuvius-challenge-open-data.s3.amazonaws.com/metadata.json`, the bucket's S3 listing (root and each `SAMPLE/volumes/`) and `https://scrollprize.org/prizes` (skipped by `run catalog --no-live-prizes`). `run all` and `run watch` also GET each in-bucket volume's `.zattrs`, and `0/.zarray` when the shape is missing, once (cached). `dl.ash2txt.org` is refused. Nothing is posted",
     "Writes": "`run catalog`: `--out` only (default `work/autobatch/catalog.json`). `run all` and `run watch`: under `--state` (default `work/autobatch/`, git-ignored): `catalog.json`, `plan.json`, `plan.md`, `batch-ledger.csv`, `approval.json`, `scans/SAMPLE/VOLUME/status.json` and `settings.json`, `zattrs/` caches. `run all --status` writes nothing",
     "Go-ahead": "Not needed for `catalog`, `watch`, `--dry-run` or `--status`: they launch, post and spend nothing. Needed for `--approve`: run it only with the digest Chase approved, and each approved scan's Modal launch needs his yes and budget (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-16 ([PR #93](https://github.com/ChaseHendrick/Scrolls/pull/93))",
     "Guide": "[AutoPipeline reference, section 19](../autopipeline/README.md#19-every-scan-catalog-batch-and-watcher)",
-    "Checked": "2026-10-16 against commit `e49ec32`"
+    "Checked": "2026-10-16 against commit `14f5ce0`"
    },
    "page": "docs/tools/batch.md",
    "sections": [
@@ -406,73 +407,73 @@
     {
      "name": "Checks and controls",
      "start_line": 78,
-     "end_line": 87,
+     "end_line": 88,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 88,
-     "end_line": 131,
+     "start_line": 89,
+     "end_line": 132,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 132,
-     "end_line": 185,
+     "start_line": 133,
+     "end_line": 188,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 186,
-     "end_line": 196,
+     "start_line": 189,
+     "end_line": 199,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 197,
-     "end_line": 251,
+     "start_line": 200,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 252,
-     "end_line": 270,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 271,
-     "end_line": 280,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 281,
+     "start_line": 256,
      "end_line": 284,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "How it works",
      "start_line": 285,
      "end_line": 294,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Cost and time",
      "start_line": 295,
-     "end_line": 302,
+     "end_line": 298,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 299,
+     "end_line": 308,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 309,
+     "end_line": 316,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 303,
-     "end_line": 306,
+     "start_line": 317,
+     "end_line": 323,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 307,
-     "end_line": 315,
+     "start_line": 324,
+     "end_line": 332,
      "applicable": true
     }
    ]
@@ -698,7 +699,7 @@
     "Run": "`python -m kit.cloudcost`, `from kit import cloudcost`",
     "Code": "`kit/cloudcost.py`",
     "Tests": "`tests/test_cloudcost.py`, `tests/test_autobatch.py`",
-    "Needs": "Python 3.10 or newer, standard library only. Reads `docs/compute/modal-rates.json` and `docs/compute/modal-jobs.json` from the checkout",
+    "Needs": "Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` and `docs/compute/modal-jobs.json` from the checkout",
     "Runs on": "Any CPU, instantly. The 23 tests of `tests/test_cloudcost.py` and the 11 of `tests/test_autobatch.py` ran together in 0.15 s (measured 2026-10-16, cloud container)",
     "Network": "None. Rates come from the dated JSON, not from Modal",
     "Writes": "Nothing (prints only)",
@@ -790,13 +791,13 @@
     {
      "name": "History",
      "start_line": 317,
-     "end_line": 322,
+     "end_line": 323,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 323,
-     "end_line": 331,
+     "start_line": 324,
+     "end_line": 332,
      "applicable": true
     }
    ]
@@ -1064,43 +1065,43 @@
     {
      "name": "Failure modes",
      "start_line": 134,
-     "end_line": 156,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 157,
-     "end_line": 166,
+     "start_line": 158,
+     "end_line": 167,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 167,
-     "end_line": 178,
+     "start_line": 168,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 179,
-     "end_line": 188,
+     "start_line": 180,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 189,
-     "end_line": 196,
+     "start_line": 190,
+     "end_line": 197,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 197,
-     "end_line": 201,
+     "start_line": 198,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 202,
-     "end_line": 208,
+     "start_line": 204,
+     "end_line": 210,
      "applicable": true
     }
    ]
@@ -1382,43 +1383,43 @@
     {
      "name": "Failure modes",
      "start_line": 163,
-     "end_line": 178,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 179,
-     "end_line": 190,
+     "start_line": 180,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 191,
-     "end_line": 202,
+     "start_line": 192,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 203,
-     "end_line": 212,
+     "start_line": 204,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 213,
-     "end_line": 220,
+     "start_line": 214,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 221,
-     "end_line": 225,
+     "start_line": 222,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 226,
-     "end_line": 234,
+     "start_line": 227,
+     "end_line": 235,
      "applicable": true
     }
    ]
@@ -3064,7 +3065,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "63ee638"
+    "commit": "14f5ce0"
    },
    "license": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
    "fields": {
@@ -3084,7 +3085,7 @@
     "Release id": "`letter-reader`",
     "License": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
     "Guide": "[letter-reader.md](../letter-reader.md) (install, first reads, model cards, benchmarks, the result field by field)",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-16 against commit `14f5ce0`"
    },
    "page": "docs/tools/letterread.md",
    "sections": [
@@ -3121,61 +3122,61 @@
     {
      "name": "Python API",
      "start_line": 158,
-     "end_line": 243,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 244,
-     "end_line": 256,
+     "start_line": 245,
+     "end_line": 257,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 257,
-     "end_line": 295,
+     "start_line": 258,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 296,
-     "end_line": 355,
+     "start_line": 297,
+     "end_line": 359,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 356,
-     "end_line": 368,
+     "start_line": 360,
+     "end_line": 372,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 369,
-     "end_line": 376,
+     "start_line": 373,
+     "end_line": 380,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 377,
-     "end_line": 386,
+     "start_line": 381,
+     "end_line": 390,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 387,
-     "end_line": 394,
+     "start_line": 391,
+     "end_line": 398,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 395,
-     "end_line": 405,
+     "start_line": 399,
+     "end_line": 412,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 406,
-     "end_line": 414,
+     "start_line": 413,
+     "end_line": 421,
      "applicable": true
     }
    ]
@@ -3308,43 +3309,43 @@
     {
      "name": "Failure modes",
      "start_line": 477,
-     "end_line": 505,
+     "end_line": 507,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 506,
-     "end_line": 517,
+     "start_line": 508,
+     "end_line": 519,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 518,
-     "end_line": 523,
+     "start_line": 520,
+     "end_line": 525,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 524,
-     "end_line": 533,
+     "start_line": 526,
+     "end_line": 535,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 534,
-     "end_line": 541,
+     "start_line": 536,
+     "end_line": 543,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 542,
-     "end_line": 549,
+     "start_line": 544,
+     "end_line": 552,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 550,
-     "end_line": 557,
+     "start_line": 553,
+     "end_line": 560,
      "applicable": true
     }
    ]
@@ -3819,7 +3820,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "63753fa"
+    "commit": "d9eaf42"
    },
    "license": null,
    "fields": {
@@ -3837,7 +3838,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07 (`e14b033`)",
     "Guide": "[The mesh hypothesis protocol](../plans/2026-10-07-mesh-hypothesis.md), [its log](../logs/2026-10-07-mesh-hypothesis.md) and [its data](../data/mesh-hypothesis/README.md)",
-    "Checked": "2026-10-16 against commit `63753fa`"
+    "Checked": "2026-10-16 against commit `d9eaf42`"
    },
    "page": "docs/tools/meshaudit.md",
    "sections": [
@@ -3868,67 +3869,67 @@
     {
      "name": "Commands and options",
      "start_line": 84,
-     "end_line": 157,
+     "end_line": 164,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 158,
-     "end_line": 199,
+     "start_line": 165,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 200,
-     "end_line": 209,
+     "start_line": 208,
+     "end_line": 217,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 210,
-     "end_line": 259,
+     "start_line": 218,
+     "end_line": 269,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 260,
-     "end_line": 276,
+     "start_line": 270,
+     "end_line": 291,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 277,
-     "end_line": 288,
+     "start_line": 292,
+     "end_line": 303,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 289,
-     "end_line": 300,
+     "start_line": 304,
+     "end_line": 315,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 301,
-     "end_line": 310,
+     "start_line": 316,
+     "end_line": 325,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 311,
-     "end_line": 318,
+     "start_line": 326,
+     "end_line": 333,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 319,
-     "end_line": 322,
+     "start_line": 334,
+     "end_line": 339,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 323,
-     "end_line": 332,
+     "start_line": 340,
+     "end_line": 349,
      "applicable": true
     }
    ]
@@ -4325,7 +4326,7 @@
     "Needs": "Python 3.10 or newer and numpy (no scipy: the blur is a numpy FFT). `stress` and `calibrate` score with `kit.auc`, which needs only numpy here. The demo script needs bash and must run from the repository root, since it calls `python3 -m kit`",
     "Runs on": "Any CPU. `make` at the command's default size (26 x 384 x 384) took 2.1 s, `stress` with its defaults (8 phantoms) 14.2 s, `calibrate` with its defaults 8.2 s, and the whole demo 14.2 s (measured 2026-10-16, 4-core Xeon cloud container)",
     "Network": "None",
-    "Writes": "`make`: the folder `OUT` (created before the phantom is checked, so it is left empty on a refusal) and `volume.npy`, `ink.npy`, `mask.npy`, `meta.json` in it, replacing earlier ones. `stress --save-maps DIR`: `DIR/surface_SEED.npy` and `DIR/surface_reversed_SEED.npy` per phantom. `calibrate`: nothing. The demo: everything under `$OUT` (default `/tmp/phantom-demo`), listed under Outputs",
+    "Writes": "`make`: the folder `OUT` (created before the phantom is checked, so it is left empty on a refusal) and `volume.npy`, `ink.npy`, `mask.npy`, `meta.json` in it, replacing earlier ones. `stress --save-maps DIR`: `DIR/surface_SEED.npy` and `DIR/surface_reversed_SEED.npy` per phantom. `calibrate`: nothing. The demo: everything under `$OUT` (default a fresh `mktemp -d` folder, `${TMPDIR:-/tmp}/phantom-demo.XXXXXX`, whose path it prints first), listed under Outputs",
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07 (`eeacf6a`); `kit/phantom.py` is also in the AutoPipeline release copy at `faada83`",
     "Guide": "[phantom-and-viewer.md](../phantom-and-viewer.md); results of the demo in the [phantom demo log](../logs/2026-10-07-phantom-demo.md)",
@@ -4360,67 +4361,67 @@
     {
      "name": "Commands and options",
      "start_line": 88,
-     "end_line": 138,
+     "end_line": 139,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 139,
-     "end_line": 158,
+     "start_line": 140,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 159,
-     "end_line": 162,
+     "start_line": 160,
+     "end_line": 163,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 163,
-     "end_line": 221,
+     "start_line": 164,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 222,
-     "end_line": 238,
+     "start_line": 223,
+     "end_line": 239,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 239,
-     "end_line": 252,
+     "start_line": 240,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 253,
-     "end_line": 270,
+     "start_line": 254,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 271,
-     "end_line": 280,
+     "start_line": 272,
+     "end_line": 281,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 281,
-     "end_line": 288,
+     "start_line": 282,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 289,
-     "end_line": 293,
+     "start_line": 290,
+     "end_line": 295,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 294,
-     "end_line": 301,
+     "start_line": 296,
+     "end_line": 303,
      "applicable": true
     }
    ]
@@ -4780,7 +4781,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "63ee638"
+    "commit": "14f5ce0"
    },
    "license": null,
    "fields": {
@@ -4798,7 +4799,7 @@
     "Go-ahead": "Not needed to write or check a record. Publishing a record or its digest is an outward action and needs Chase's yes (the go-ahead rule, hard rule 8); a record of a target-scroll run stays in Scrolls-private (the no-findings rule, hard rule 1)",
     "Released": "Public `main` since 2026-10-07 (`1d45c54`)",
     "Guide": "[STANDARDS.md](../STANDARDS.md) (the Provenance row)",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-16 against commit `14f5ce0`"
    },
    "page": "docs/tools/provenance.md",
    "sections": [
@@ -4817,79 +4818,79 @@
     {
      "name": "Quick start",
      "start_line": 46,
-     "end_line": 68,
+     "end_line": 70,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 69,
-     "end_line": 76,
+     "start_line": 71,
+     "end_line": 79,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 77,
-     "end_line": 111,
+     "start_line": 80,
+     "end_line": 114,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 112,
-     "end_line": 134,
+     "start_line": 115,
+     "end_line": 138,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 135,
-     "end_line": 142,
+     "start_line": 139,
+     "end_line": 146,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 143,
-     "end_line": 169,
+     "start_line": 147,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 170,
-     "end_line": 183,
+     "start_line": 174,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 184,
-     "end_line": 194,
+     "start_line": 194,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 195,
-     "end_line": 198,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 199,
+     "start_line": 205,
      "end_line": 208,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "For agents",
      "start_line": 209,
-     "end_line": 216,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 219,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 217,
-     "end_line": 220,
+     "start_line": 227,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 221,
-     "end_line": 227,
+     "start_line": 232,
+     "end_line": 238,
      "applicable": true
     }
    ]
@@ -5067,7 +5068,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "commit": "d9eaf42"
    },
    "license": null,
    "fields": {
@@ -5085,7 +5086,7 @@
     "Go-ahead": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module",
     "Guide": "[AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-16 against commit `d9eaf42`"
    },
    "page": "docs/tools/releases.md",
    "sections": [
@@ -5140,43 +5141,43 @@
     {
      "name": "Failure modes",
      "start_line": 250,
-     "end_line": 291,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 292,
-     "end_line": 316,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 317,
+     "start_line": 294,
      "end_line": 320,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 321,
-     "end_line": 330,
+     "end_line": 324,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 325,
+     "end_line": 334,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 331,
-     "end_line": 338,
+     "start_line": 335,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 339,
-     "end_line": 346,
+     "start_line": 343,
+     "end_line": 352,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 347,
-     "end_line": 355,
+     "start_line": 353,
+     "end_line": 361,
      "applicable": true
     }
    ]
@@ -6014,7 +6015,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "63753fa"
+    "commit": "d9eaf42"
    },
    "license": null,
    "fields": {
@@ -6032,7 +6033,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-14 (`47cd607`); listed in the README's \"Released tools\" as the release `stackcheck` (Segment stack check)",
     "Guide": "[The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits",
-    "Checked": "2026-10-16 against commit `63753fa`"
+    "Checked": "2026-10-16 against commit `d9eaf42`"
    },
    "page": "docs/tools/stackcheck.md",
    "sections": [
@@ -6063,67 +6064,67 @@
     {
      "name": "Commands and options",
      "start_line": 99,
-     "end_line": 145,
+     "end_line": 154,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 146,
-     "end_line": 193,
+     "start_line": 155,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 194,
-     "end_line": 205,
+     "start_line": 203,
+     "end_line": 214,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 206,
-     "end_line": 241,
+     "start_line": 215,
+     "end_line": 250,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 242,
-     "end_line": 290,
+     "start_line": 251,
+     "end_line": 302,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 291,
-     "end_line": 307,
+     "start_line": 303,
+     "end_line": 319,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 308,
-     "end_line": 318,
+     "start_line": 320,
+     "end_line": 330,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 319,
-     "end_line": 328,
+     "start_line": 331,
+     "end_line": 340,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 329,
-     "end_line": 336,
+     "start_line": 341,
+     "end_line": 348,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 337,
-     "end_line": 342,
+     "start_line": 349,
+     "end_line": 356,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 343,
-     "end_line": 351,
+     "start_line": 357,
+     "end_line": 365,
      "applicable": true
     }
    ]
@@ -6743,43 +6744,43 @@
     {
      "name": "Failure modes",
      "start_line": 286,
-     "end_line": 309,
+     "end_line": 311,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 310,
-     "end_line": 321,
+     "start_line": 312,
+     "end_line": 323,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 322,
-     "end_line": 328,
+     "start_line": 324,
+     "end_line": 330,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 329,
-     "end_line": 338,
+     "start_line": 331,
+     "end_line": 340,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 339,
-     "end_line": 346,
+     "start_line": 341,
+     "end_line": 348,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 347,
-     "end_line": 351,
+     "start_line": 349,
+     "end_line": 354,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 352,
-     "end_line": 358,
+     "start_line": 355,
+     "end_line": 361,
      "applicable": true
     }
    ]
@@ -7103,7 +7104,8 @@
     }
    ],
    "tests": [
-    "tests/test_verify.py"
+    "tests/test_verify.py",
+    "tests/test_scoring_guards.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -7111,7 +7113,7 @@
    },
    "checked": {
     "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "commit": "d9eaf42"
    },
    "license": null,
    "fields": {
@@ -7121,15 +7123,15 @@
     "Area": "Scoring and controls",
     "Run": "`python -m kit verify`, `from kit import verify`",
     "Code": "`kit/verify.py`, `kit/cli.py` (`cmd_verify`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
-    "Tests": "`tests/test_verify.py`",
-    "Needs": "Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. villa's environment has all three",
+    "Tests": "`tests/test_verify.py`, `tests/test_scoring_guards.py` (`VerifyGuardsTest`)",
+    "Needs": "Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. The maps extra installs all three (`python -m pip install \"scrolls-workbench[maps]\"`, `MAPS_INSTALL`); villa's environment has them too",
     "Runs on": "Any CPU. A 2.4 um w035 ink map of 22,640 x 20,400 px with a control took 36 s and 2.25 GB ([mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment), 2026-10-07); a 5,980 x 8,240 uint8 map with a control took 17 s and 512 MB (measured 2026-10-16, shared 4-core cloud container, synthetic maps)",
     "Network": "None",
     "Writes": "Nothing (prints only). With `--slug SLUG`, appends one check to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`)",
     "Go-ahead": "Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-07",
     "Guide": "[mac.md, \"Runbook: verify MPS against CPU on the control segment\"](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-16 against commit `d9eaf42`"
    },
    "page": "docs/tools/verify.md",
    "sections": [
@@ -7166,61 +7168,61 @@
     {
      "name": "Python API",
      "start_line": 100,
-     "end_line": 118,
+     "end_line": 119,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 119,
-     "end_line": 126,
+     "start_line": 120,
+     "end_line": 127,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 127,
-     "end_line": 159,
+     "start_line": 128,
+     "end_line": 160,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 160,
-     "end_line": 177,
+     "start_line": 161,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 178,
-     "end_line": 188,
+     "start_line": 180,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 189,
-     "end_line": 198,
+     "start_line": 192,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 199,
-     "end_line": 208,
+     "start_line": 202,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 209,
-     "end_line": 216,
+     "start_line": 212,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 217,
-     "end_line": 220,
+     "start_line": 220,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 221,
-     "end_line": 229,
+     "start_line": 227,
+     "end_line": 235,
      "applicable": true
     }
    ]

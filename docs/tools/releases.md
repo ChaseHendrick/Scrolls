@@ -18,7 +18,7 @@
 | Go-ahead | Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module |
 | Guide | [AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-16 against commit `d9eaf42` |
 
 ## What it does
 
@@ -28,7 +28,7 @@ Tools are built in the private repository, Scrolls-private, and some are later r
 
 An entry's `where` is either `"main"`, for files merged into this repository's `main`, or a package: `{"branch": B, "commit": C, "path": P}`, a reviewed copy that lives on its own branch, such as the Progress Prize exporter's `submission/<submission_id>` branches. The section links a package at its exact commit. The exporter is a private tool; it writes its package's entry with its copy of this module and pushes it as a `release-readme/<submission_id>` branch for a PR into `main`.
 
-It does not publish anything, push, open a PR, or decide what may be released. It checks the form of an entry (lengths, one paragraph, no long dashes, no Markdown that could swallow the rest of the README), not whether its links resolve, whether a package's branch and commit exist, or whether the summary's claims are true. A summary that mentions an ink map or ink layer must still say it is model output, not a reading; the tool cannot check that.
+It does not publish anything, push, open a PR, or decide what may be released. It checks the form of an entry (lengths, one paragraph, no long dashes, no raw HTML, links only to `https://` or relative targets, no Markdown that could swallow the rest of the README), not whether its links resolve, whether a package's branch and commit exist, or whether the summary's claims are true. A summary that mentions an ink map or ink layer must still say it is model output, not a reading; the tool cannot check that.
 
 ## When to use it
 
@@ -213,7 +213,7 @@ No other top-level key is allowed.
 | `details` | str | Optional. One line of at most 500 characters, such as links to the guide |
 | `where` | `"main"`, or an object | Required. `"main"` for files merged here, or `{"branch": B, "commit": C, "path": P}` for a package on its own branch |
 
-Rules for every text value: no HTML comment marker (`<!--` or `-->`), and no long dash (U+2014 or U+2013). The `summary` and `details` may not start with a space, a tab, a code fence (three backticks or three tildes) or `<`, because a code block or HTML block opened there would run past the end marker and swallow the rest of the README.
+Rules for every text value: no HTML comment marker (`<!--` or `-->`), and no long dash (U+2014 or U+2013). The `title`, `summary` and `details` may not hold raw HTML anywhere (a `<` followed by a letter, `/`, `!` or `?`; an `https://` autolink such as `<https://example.org>` is allowed, and so is a bare `<` such as `x<3`), and every link target in them, inline (a target in round brackets after the link text) or as a reference definition (`[x]: TARGET`), is either `https://...` or relative (no scheme such as `http:`, `javascript:` or `data:`, no `//host`, no backslash). Commands are exempt from both, since they are shown in a `bash` block. The `summary` and `details` may not start with a space, a tab, a code fence (three backticks or three tildes) or `<`, because a code block or HTML block opened there would run past the end marker and swallow the rest of the README.
 
 Rules for a package (`where` is an object): exactly the three keys; `branch` matches `[A-Za-z0-9_][A-Za-z0-9_./-]{0,99}`, has no `..` and is not `main`; `commit` is the full 40-character lowercase hex commit; `path` is a simple relative path (no leading `/`, no `.` or `..` parts); the summary, details and commands never use `python -m kit` or `python3 -m kit` (a package runs its own files, and the repository test of documented kit commands checks every `python -m kit` in the README against this repository's kit); and every link in the summary and details is a full `https://` URL, because a relative link would point into `main`, not into the package. A `"main"` entry may use relative links; they resolve from the README, at the repository root.
 
@@ -269,6 +269,8 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `ID: KEY must be one line or one paragraph` | A line break in the title, summary or details | Make it one paragraph |
 | `ID: KEY may not hold an HTML comment` | `<!--` or `-->` in a value, which could fake or break the markers | Remove it |
 | `ID: KEY has a long dash (house style: none)` | U+2014 or U+2013 in a value (the style rule, hard rule 10) | Use a comma, a colon or "to" |
+| `ID: KEY may not hold raw HTML` | An HTML tag anywhere in the title, summary or details, such as `<details>`, `<a href=...>` or `<img ...>`, which could hide or relink the rest of the README | Write plain Markdown; an `https://` autolink in angle brackets is fine |
+| `ID: KEY links must be https:// or relative, not 'TARGET'` | A link target with another scheme (`http:`, `javascript:`, `data:`), or starting with `//` or holding a backslash; TARGET is its first 40 characters | Link by `https://` URL, or by a relative path for a `main` entry |
 | `ID: KEY may not start with a space, a code fence or an HTML tag` | The summary or details starts with whitespace, three backticks, three tildes or `<` | Start with a word |
 | `ID: released must be a date, YYYY-MM-DD` | Not that form, or not a real date (such as `2026-02-30`) | Write the release date as `YYYY-MM-DD` |
 | `ID: commands must be a list of at most 12 lines` | `commands` is a string, or has more than 12 lines | Give a list of at most 12 strings |
@@ -279,7 +281,7 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `ID: where.commit must be a full 40-character commit` | A short or uppercase hash | Give the full lowercase hash (`git rev-parse COMMIT`) |
 | `ID: where.path must be a simple relative path` | A leading `/`, `.` or `..` parts, or spaces | Give the package folder as a relative path |
 | `ID: a package's commands run its own files (python scripts/...), never "python -m kit", which the README checks against this repository's kit` | A package entry mentions `python -m kit` or `python3 -m kit` | Use the package's own entry points, such as `python scripts/NAME.py` |
-| `ID: a package's links are full https:// URLs at its commit` | A relative or `http://` link in a package entry | Link the package's files by `https://` URL at its commit |
+| `ID: a package's links are full https:// URLs at its commit` | A relative link in a package entry (an `http://` link is refused earlier, by the links rule for every entry) | Link the package's files by `https://` URL at its commit |
 | `ID: listed twice` | Two entries with one id (a hand edit) | Keep one entry per tool |
 | `the list is {"schema_version": 1, "pinned": [ids, optional], "releases": [...]}` | The list is not an object, `schema_version` is not 1, or it has other top-level keys | Restore the list's shape |
 | `releases must be a list` | `releases` is not a list | Restore it |
@@ -310,6 +312,8 @@ Constants that matter, from `kit/releases.py`:
 | `BLOCK_OPENER` | Whitespace, three backticks, three tildes or `<` at the start of a summary or details |
 | `KIT_COMMAND` | `python3? -m kit ` (refused in a package entry) |
 | `RELATIVE_LINK` | `](` not followed by `https://` (refused in a package entry) |
+| `INLINE_HTML`, `HTTPS_AUTOLINK` | `<` followed by optional space and a letter, `/`, `!` or `?` (refused in a title, summary or details), after removing `<https://...>` autolinks |
+| `LINK_TARGET`, `URL_SCHEME` | A link target, inline or in a reference definition, and the scheme, `//` or backslash that makes it refused unless it starts with `https://` |
 | Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters |
 
 The write is not atomic across the two files: the list is written first, then the README. If the README write failed, `check` would report the mismatch and `render` would repair it.
@@ -338,6 +342,8 @@ python -m unittest tests.test_releases -v
 
 ## History
 
+- 2026-10-16: the letter reader's entry gives the plain character error beside the free-ends error on PHerc. 1667 maps (`2b8c445`).
+- 2026-10-16: entries may not hold raw HTML in a title, summary or details, and their links must be `https://` or relative (`eb88e23`).
 - 2026-10-16: Unroll's entry added and pinned after AutoPipeline (`9896827`).
 - 2026-10-14: pins: `pin ID` and `unpin ID`, `list` marks pinned entries, and the intro names them; AutoPipeline pinned (`2bb459c`, [PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)).
 - 2026-10-14: without `docs/releases.json` (an installed package) it says to run from a clone instead of a bare file error (`ca7b143`).

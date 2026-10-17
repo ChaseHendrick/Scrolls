@@ -11,7 +11,7 @@
 | Run | `python -m kit.cloudcost`, `from kit import cloudcost` |
 | Code | `kit/cloudcost.py` |
 | Tests | `tests/test_cloudcost.py`, `tests/test_autobatch.py` |
-| Needs | Python 3.10 or newer, standard library only. Reads `docs/compute/modal-rates.json` and `docs/compute/modal-jobs.json` from the checkout |
+| Needs | Python 3.10 or newer, standard library only. Reads `kit/data/modal-rates.json` and `docs/compute/modal-jobs.json` from the checkout |
 | Runs on | Any CPU, instantly. The 23 tests of `tests/test_cloudcost.py` and the 11 of `tests/test_autobatch.py` ran together in 0.15 s (measured 2026-10-16, cloud container) |
 | Network | None. Rates come from the dated JSON, not from Modal |
 | Writes | Nothing (prints only) |
@@ -22,7 +22,7 @@
 
 ## What it does
 
-GPU work here runs on [Modal](https://modal.com/), which bills per second for each GPU, each physical CPU core and each GiB of memory, plus storage on Volumes and network egress. Before anyone launches a job, the Modal rule (hard rule 11) asks for a time and cost estimate. `kit.cloudcost` makes that estimate offline: it reads Modal's list prices and limits from [`docs/compute/modal-rates.json`](../compute/modal-rates.json) (with source URLs and an access date, 2026-10-07) and the job assumptions from [`docs/compute/modal-jobs.json`](../compute/modal-jobs.json), and multiplies them out.
+GPU work here runs on [Modal](https://modal.com/), which bills per second for each GPU, each physical CPU core and each GiB of memory, plus storage on Volumes and network egress. Before anyone launches a job, the Modal rule (hard rule 11) asks for a time and cost estimate. `kit.cloudcost` makes that estimate offline: it reads Modal's list prices and limits from [`kit/data/modal-rates.json`](../../kit/data/modal-rates.json) (with source URLs and an access date, 2026-10-07) and the job assumptions from [`docs/compute/modal-jobs.json`](../compute/modal-jobs.json), and multiplies them out.
 
 It has six actions. `rates` prints the hourly price of every GPU type alone and inside a container. `cost` prices one container shape for some hours. `infer` prices one ink reader over an area of surface at a voxel size, phase by phase (image build, staging the surface volume, GPU inference). `jobs` prices every job in the jobs file. `budget` turns budgets in USD into hours of each GPU. `defaults` prints the default Modal request for new jobs: B300 with fallbacks B200, H200 and H100, and reserved CPU cores (16 for CPU jobs, 8 in a GPU container).
 
@@ -98,7 +98,7 @@ usage: python3 -m kit.cloudcost [-h] [--rates RATES]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--rates RATES` | `docs/compute/modal-rates.json` (`RATES`) | Rates JSON to price with, for every action |
+| `--rates RATES` | `kit/data/modal-rates.json` (`RATES`) | Rates JSON to price with, for every action |
 
 ### `python -m kit.cloudcost rates`
 
@@ -194,7 +194,7 @@ cpu = cloudcost.modal_cpu()          # (16.0, 16.0)
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `load(path)` | The parsed JSON document | `OSError` for a missing file, `json.JSONDecodeError` for bad JSON | Shared reader |
-| `load_rates(path=None)` | The rates dict | As `load` | Default `RATES`, `docs/compute/modal-rates.json` |
+| `load_rates(path=None)` | The rates dict | As `load` | Default `RATES`, `kit/data/modal-rates.json` |
 | `load_jobs(path=None)` | The jobs dict (`inference_profiles`, `jobs`) | As `load` | Default `JOBS`, `docs/compute/modal-jobs.json` |
 | `modal_gpu(count=1, fallback=True, cuda13=True)` | A list such as `["B300", "B200", "H200", "H100"]` (`"B300:2"` and so on when `count` is above 1), or the string `"B300"` with `fallback=False` | `ValueError` for `count` outside 1 to 8, or `fallback=False` with `cuda13=False` | The `gpu=` value for a new Modal Function. `cuda13=False` (an image built for CUDA 12) drops B300 and starts at B200 |
 | `modal_cpu(cores=MODAL_CPU_CORES)` | `(float(cores), float(cores))`, `(16.0, 16.0)` by default | `ValueError` below 0.125 cores | The `cpu=` value: cores reserved, request equal to limit |
@@ -220,7 +220,7 @@ Constants: `MODAL_GPU = "B300"`, `MODAL_GPU_FALLBACK = ("B300", "B200", "H200", 
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| Rates | JSON, default `docs/compute/modal-rates.json` | Fields read: `accessed`, `gpu_source`, `gpu_usd_per_s` (USD per GPU-second by type), `max_gpus_per_container`, `cpu_usd_per_core_s`, `mem_usd_per_gib_s`, `min_cpu_cores`, `min_mem_gib`, `region_multiplier`, `nonpreemptible_cpu_mem_multiplier`, `volume_usd_per_gib_month`, `volume_free_gib`, `egress_usd_per_gib`, `egress_free_gib` (by plan), `speed_vs_a100_80gb`. Each group names its source URL |
+| Rates | JSON, default `kit/data/modal-rates.json` | Fields read: `accessed`, `gpu_source`, `gpu_usd_per_s` (USD per GPU-second by type), `max_gpus_per_container`, `cpu_usd_per_core_s`, `mem_usd_per_gib_s`, `min_cpu_cores`, `min_mem_gib`, `region_multiplier`, `nonpreemptible_cpu_mem_multiplier`, `volume_usd_per_gib_month`, `volume_free_gib`, `egress_usd_per_gib`, `egress_free_gib` (by plan), `speed_vs_a100_80gb`. Each group names its source URL |
 | Jobs | JSON, default `docs/compute/modal-jobs.json` | `inference_profiles`: per profile `gpu`, `ref_um`, `scale_power` (2 for 2.5D, 3 for native 3D), `layers`, `gpu_s_per_cm2` (low, typical, high at `ref_um`), `basis`, and optional `bytes_per_voxel` (1), `stage_mb_per_s` (100, 50, 20), `image_build_h` (0.1, 0.25, 0.5), `cpu` (4), `mem_gib` (32), `startup_h` (0.05). `jobs`: each with `id`, `name`, and `phases` (`name`, `gpu`, `gpus`, `containers`, `cpu`, `mem_gib`, `hours` as one number or three) or an `inference` block (`profile`, `area_cm2`, `um`, `passes`), plus optional `volume_gib`, `volume_months`, `egress_gib` |
 | Command values | Numbers | Hours are wall hours; CPU is physical cores (2 vCPU each); memory is GiB; area is cm2; voxel size is um |
 
@@ -316,6 +316,7 @@ python -m unittest tests.test_cloudcost tests.test_autobatch -v
 
 ## History
 
+- 2026-10-16: the rates file moved from `docs/compute/` to `kit/data/modal-rates.json`, so it ships with the package and `kit run all` works after `pip install` (`b1a96d2`, PR #106).
 - 2026-10-12: `defaults`, `modal_gpu` and `modal_cpu`: new jobs default to B300 with fallbacks and 16 reserved CPU cores (`e0ff3a3`).
 - 2026-10-07: a nested-quote f-string that broke Python 3.10 and 3.11 fixed (`2005db9`).
 - 2026-10-07: first version, with the dated rates and jobs files and the pricing guide (`f9abfc1`).
@@ -323,7 +324,7 @@ python -m unittest tests.test_cloudcost tests.test_autobatch -v
 ## Related
 
 - [modal-pricing.md](../compute/modal-pricing.md): the guide, with the rates, the Starter plan's limits, the default machine and the job estimates this module prints.
-- [`modal-rates.json`](../compute/modal-rates.json) and [`modal-jobs.json`](../compute/modal-jobs.json): the inputs.
+- [`modal-rates.json`](../../kit/data/modal-rates.json) and [`modal-jobs.json`](../compute/modal-jobs.json): the inputs.
 - [`modal-specs/`](../compute/modal-specs/README.md): where a priced public job's run spec goes.
 - [`batch`](batch.md): prices AutoPipeline over every scan with this module.
 - [`modal-row`](modal-row.md): records what a Modal job actually cost.

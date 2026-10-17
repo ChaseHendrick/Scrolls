@@ -10,7 +10,7 @@
 | Area | Scoring and controls |
 | Run | `python -m kit auc`, `from kit import auc` |
 | Code | `kit/auc.py`, `kit/cli.py` (`cmd_auc`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`) |
-| Tests | `tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py` |
+| Tests | `tests/test_auc.py`, `tests/test_auc_bootstrap_exact.py`, `tests/test_scoring_guards.py` (`AucGuardsTest`) |
 | Needs | Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer; 2.x works for reading) |
 | Runs on | Any CPU. A full-size 5,980 x 8,240 map takes about 5 s with a control and about 6 s with `--bootstrap 300` (measured 2026-10-16, 4-core 2.1 GHz Xeon cloud container, synthetic data) |
 | Network | None |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07; also inside the AutoPipeline release |
 | Guide | [STANDARDS.md](../STANDARDS.md) (how AUC is used here), [the overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md) (sampling noise) |
-| Checked | 2026-10-16 against commit `27d0e96` |
+| Checked | 2026-10-16 against commit `d9eaf42` |
 
 ## What it does
 
@@ -72,7 +72,7 @@ It worked when the exit code is 0 and both the map and the control show an AUC. 
 
 ## Checks and controls
 
-- **Reverse-depth control** (`--control`). The map must beat its reverse by a clear margin. Gate A in `kit/gate.py` reads "well below" as forward minus reverse of at least 0.10 (`MIN_GAP`) on every segment. The reverse is not always near 0.5: the 30 rows of `results` in `results.json` with a reversed score run from 0.33 to 0.73, most below 0.60, with `ink_9um` on PHerc0841 ag405 up to 0.67 and Reader v2 on w00 at 0.73. A forward AUC reported without its control is not a result here (the rule that every check must be able to fail, in `AGENTS.md`).
+- **Reverse-depth control** (`--control`). The map must beat its reverse by a clear margin. Gate A in `kit/gate.py` reads "well below" as forward minus reverse of at least 0.10 (`MIN_GAP`) on every segment. The reverse is not always near 0.5: the 30 rows of `results` in `results.json` with a reversed score run from 0.33 to 0.73, most below 0.60, with `ink_9um` on PHerc0841 ag405 up to 0.67 and Reader v2 on w00 at 0.73. A forward AUC reported without its control is not a result here (the rule that every check must be able to fail, in `AGENTS.md`). The control file may not be the map's own file (exit code 2, since `521c648`); an identical copy under another name still scores, and its zero gap shows the control failing.
 - **A real pass, for scale.** `ink_9um` seed 42 on the whole of PHerc0841 w00 scores 0.7479 as stored against 0.501 reversed (`results` in `results.json`, segment `0841-w00`, source [community scan log](../logs/2026-10-07-community-scan.md)).
 - **Sampling noise** (`--bootstrap`, `--compare`). A difference whose 95 % interval includes 0 is "not distinguishable from noise", whatever its size. On PHerc0841 a strong map's interval is plus or minus 0.01 to 0.04 ([log](../logs/2026-10-07-overlap-and-baseline.md)), so a ranking by a smaller margin on one segment is noise.
 - **Held-out data.** The score generalizes only on a segment outside the model's training data; check the `held_out` key of `results.json` first.
@@ -123,10 +123,10 @@ print(auc.format_result(result))
 
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
-| `score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None, surface_shape=None, keep_zero=False, inner=0, bootstrap=0, block_px=BLOCK_PX, compare=None, seed=0)` | The result dict under Outputs | `VerifyError` on bad input; `FileNotFoundError` for a missing `.npy` | What the command runs. `crop` is `[Y0, Y1, X0, X1]` and `surface_shape` is `[H, W]` |
-| `score_array(prediction, ink, mask, keep_zero=False, inner=0)` | `{"auc", "ink_px", "background_px", "zero_px_in_mask", "zero_px_counted", "inner"}` | `VerifyError` when `inner` leaves nothing | A map against same-shape boolean ink and mask arrays already on its grid. `auc` is rounded to 4 decimals, or `None` |
-| `auc_scores(ink_scores, background_scores)` | float, or `None` when a class is empty | Nothing of its own | Mann-Whitney AUC with ties half, exact on 65,536 integer levels. Scores that are not int64 are quantized together first |
-| `block_bootstrap(prediction, ink, mask, draws=300, block_px=BLOCK_PX, seed=0, other=None, keep_zero=False, inner=0)` | The `bootstrap` dict under Outputs | `VerifyError` for fewer than 20 draws, a block under 1 px, a compared map of another shape, or a mask with one class | The same pixels and the same draws for both maps when `other` is given |
+| `score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None, surface_shape=None, keep_zero=False, inner=0, bootstrap=0, block_px=BLOCK_PX, compare=None, seed=0)` | The result dict under Outputs | `VerifyError` on bad input, including NaN or inf in a map and a control that is the map's own file; `FileNotFoundError` for a missing `.npy` | What the command runs. `crop` is `[Y0, Y1, X0, X1]` and `surface_shape` is `[H, W]` |
+| `score_array(prediction, ink, mask, keep_zero=False, inner=0)` | `{"auc", "ink_px", "background_px", "zero_px_in_mask", "zero_px_counted", "inner"}` | `VerifyError` when `inner` leaves nothing, or for NaN or inf in the map | A map against same-shape boolean ink and mask arrays already on its grid. `auc` is rounded to 4 decimals, or `None` |
+| `auc_scores(ink_scores, background_scores)` | float, or `None` when a class is empty | `VerifyError` for NaN or inf scores | Mann-Whitney AUC with ties half, exact on 65,536 integer levels. Scores that are not int64 are quantized together first |
+| `block_bootstrap(prediction, ink, mask, draws=300, block_px=BLOCK_PX, seed=0, other=None, keep_zero=False, inner=0)` | The `bootstrap` dict under Outputs | `VerifyError` for fewer than 20 draws, a block under 1 px, a compared map of another shape, NaN or inf in a map, or a mask with one class | The same pixels and the same draws for both maps when `other` is given |
 | `labels_on_map(labels, mask, level, surface_shape, crop, map_shape)` | `(ink, supervised)` boolean arrays of `map_shape` | `VerifyError` for unreadable stores, a missing level, or labels and mask of different shapes | Labels resampled onto the map's grid by nearest neighbour |
 | `label_grid(labels_shape, surface_shape, crop, map_shape)` | `(rows, cols)` integer index arrays into the labels | `VerifyError` for a scale that differs between axes, a crop outside the surface, or a crop that does not match the map | The nearest-neighbour lookup `labels_on_map` uses |
 | `format_result(result)` | str | Nothing | The text the command prints |
@@ -135,7 +135,7 @@ print(auc.format_result(result))
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| Ink map | 2D TIFF (any dtype tifffile reads) or `.npy` | uint8 and uint16 are scored as they are. Other dtypes are scaled once for the whole map to 0..65535: divided first by 255 when the maximum is above 1 and at most 255, or by 65535 when it is above 255. Negative values all score 0 (apply a sigmoid to logits first). Exactly 0 means "no prediction" unless `--keep-zero` |
+| Ink map | 2D TIFF (any dtype tifffile reads) or `.npy` | uint8 and uint16 are scored as they are. Other dtypes are scaled once for the whole map to 0..65535 levels. A map whose values all lie in 0..65535 is read as 0..1, or as 0..255 when its maximum is above 1 and at most 255, or as 0..65535 when it is above 255. A map with a value below 0 or above 65535 (logits, signed values), or one whose scaled values fall on fewer than 256 levels (`MIN_FLOAT_LEVELS`), is stretched from its own minimum to its maximum instead, which keeps every pixel's rank; a constant map outside 0..65535 ties everywhere. NaN or infinite values anywhere in the map are refused. Exactly 0 in the raw map means "no prediction" unless `--keep-zero` |
 | Labels | zarr: a group whose key `--level` is a 2D array, or one 2D array | Greater than 0 is ink |
 | Mask | zarr, same layout and shape as the labels | Greater than 0 is supervised |
 | Control and compared maps | Same formats, same shape as the map | |
@@ -178,9 +178,11 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
-| `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed | `python -m pip install numpy tifffile zarr`, or run inside villa's environment |
-| `tifffile is required (it is in villa's environment)` | tifffile is missing | Install tifffile, and imagecodecs for compressed TIFFs |
-| `zarr is required (it is in villa's environment)` | zarr is missing | Install zarr |
+| `numpy is required for python -m kit auc. Install the maps extra: python -m pip install "scrolls-workbench[maps]", or run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit auc ...` | numpy is not installed | Install the maps extra, or run inside villa's environment, as the message says |
+| `tifffile is required for python -m kit auc. Install the maps extra: ...` (the rest as for numpy) | tifffile is missing | The same; imagecodecs, in the maps extra, reads compressed TIFFs |
+| `zarr is required for python -m kit auc. Install the maps extra (its zarr needs Python 3.11 or newer): ...` | zarr is missing | The same, on Python 3.11 or newer |
+| `the map holds N NaN or infinite values; replace them (with 0 for no prediction) before scoring` | The map, control or compared map has NaN or inf anywhere, which has no rank | Replace them with 0, which is left out as unpredicted, or fix the run that wrote them |
+| `control CONTROL is the map itself; give the reverse-depth map as the control` | `--control` names the map's own file (the same file, also through another path or a link) | Give the reverse-depth map |
 | `cannot read MAP.tif: ...` | An unreadable TIFF, or a compressed one without imagecodecs | Install imagecodecs, or save the map as `.npy` |
 | `MAP: expected a 2D map, got shape (...)` | A layer stack or an RGB image | Pass one 2D map |
 | `FileNotFoundError: ...` and a traceback, exit code 1 | A `.npy` path that does not exist | Fix the path |
@@ -205,7 +207,7 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 
 1. Load the map and squeeze it to 2D, then open the labels and mask at `--level`.
 2. Map every map pixel to a label pixel by nearest neighbour on the scaled grid (`label_grid`), inside `--crop` when given.
-3. Quantize the whole map once to integers (`_quantize`), so ink and background pixels are on one scale.
+3. Quantize the whole map once to integers (`_quantize`), so ink and background pixels are on one scale: uint8 and uint16 as they are; a float map in 0..65535 by its known scale (0..1, 0..255 or 0..65535, from its maximum); a map outside that range, or one that would fall on fewer than `MIN_FLOAT_LEVELS` = 256 levels, stretched from its minimum to its maximum onto 0..65535. NaN or inf is refused.
 4. Keep pixels inside the mask, minus exact zeros (unless `--keep-zero`) and minus `--inner` pixels at each edge.
 5. Count the AUC: histogram ink and background scores on 65,536 levels and count, for each ink pixel, the background pixels below it plus half the ties (`auc_scores`). This equals the pairwise Mann-Whitney definition exactly, which `tests/test_auc_bootstrap_exact.py` checks.
 6. Bootstrap (`block_bootstrap`): cut the scored pixels into square blocks of `--block-px`, draw blocks with replacement N times from a seeded numpy generator, and recompute the AUC of each draw from 1,024-bin block histograms (`BOOT_BINS`). The 2.5 and 97.5 percentiles are the interval. With `--compare`, both maps use the same pixels (zeros of either map left out) and the same draws, so the interval is of the paired difference.
@@ -231,13 +233,17 @@ Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map
 ## Tests
 
 ```bash
-python -m unittest tests.test_auc tests.test_auc_bootstrap_exact -v
+python -m unittest tests.test_auc tests.test_auc_bootstrap_exact tests.test_scoring_guards.AucGuardsTest -v
 ```
 
-They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. They skip without numpy, tifffile and zarr. They do not run on real segment data.
+They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. They skip without numpy, tifffile and zarr. They do not run on real segment data.
 
 ## History
 
+- 2026-10-16: a missing numpy, tifffile or zarr names the command run and the maps extra (`bb8cc06`).
+- 2026-10-16: a constant float map outside 0..65535 ties everywhere (AUC 0.5) instead of crashing (`136b5b2`).
+- 2026-10-16: only the map's own file is refused as its control; an identical copy scores and shows no gap (`0f3afea`).
+- 2026-10-16: NaN and inf are refused, float maps outside 0..65535 or on fewer than 256 levels are stretched min to max so ranks are kept, and the map cannot be its own control (`521c648`).
 - 2026-10-09: the module text gives the PHerc0841 held-out wording for Hecate (`3ba683f`).
 - 2026-10-08: the module text says w045 is not held out from `ink_9um`, which trained on its 2.4 um render (`d841e06`).
 - 2026-10-07: a faster exact block bootstrap with the same outputs (`fda744f`, [production speed log](../logs/2026-10-07-production-speed.md)).

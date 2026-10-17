@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07 (`e14b033`) |
 | Guide | [The mesh hypothesis protocol](../plans/2026-10-07-mesh-hypothesis.md), [its log](../logs/2026-10-07-mesh-hypothesis.md) and [its data](../data/mesh-hypothesis/README.md) |
-| Checked | 2026-10-16 against commit `63753fa` |
+| Checked | 2026-10-16 against commit `d9eaf42` |
 
 ## What it does
 
@@ -155,6 +155,13 @@ usage: python -m kit meshaudit depth [-h] --sample SAMPLE --segment SEGMENT
 | `--out OUT` | none | Write the segment's result as JSON to OUT |
 | `--json` | off | Print the JSON instead of one text line per pair |
 
+### Environment variables
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `KIT_MAX_GUNZIP_BYTES` | `1073741824` (`MAX_GUNZIP_BYTES`, 1 GiB) | Largest size a gzip body (the catalogue, a gzipped `meta.json` or a fetched file) may inflate to; a larger one is refused, against decompression bombs. Raise it for a genuinely larger file |
+| `KIT_MAX_TIFF_ELEMENTS` | `200000000` (`MAX_TIFF_ELEMENTS`, about a 14,000 px square) | Largest TIFF `imread_capped` reads, in array elements over all its series, checked before any pixel is decoded. Used for the tifxyz meshes of `read_tifxyz` and by [`stackcheck`](stackcheck.md) |
+
 ## Python API
 
 ```python
@@ -167,7 +174,8 @@ bad = [r for r in rows if r.get("matrix_matches_landmarks") is False]
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `load_catalogue(path_or_url=None)` | dict, the catalogue | `OSError` (including `urllib.error.URLError`) or `ValueError` when it cannot be read | `BUCKET/metadata.json` when None |
-| `get_json(url)` | the parsed JSON | `OSError`, `ValueError` | A path or URL, gunzipped when gzipped |
+| `get_json(url)` | the parsed JSON | `OSError`, `ValueError` (also for a gzip body that is cut off or inflates past `KIT_MAX_GUNZIP_BYTES`) | A path or URL, gunzipped when gzipped: every gzip member is inflated, as `gzip.decompress` does |
+| `imread_capped(src)` | the TIFF's array, as `tifffile.imread` gives it | `ValueError` for a TIFF that declares more than `KIT_MAX_TIFF_ELEMENTS` elements, before any pixel is decoded; tifffile's errors for an unreadable file | `src` is a path or a file object; needs tifffile |
 | `tif_dims(url)` | `(width, height)` | `ValueError` for a file that is not a TIFF or an IFD without width or height; `OSError` on network errors | Classic TIFF and BigTIFF, from the first IFD, with two range reads |
 | `parse_ifd_dims(ifd, bo='<', big=False)` | `(width, height)` | `ValueError` | Reads tags 256 and 257 from IFD bytes |
 | `fit_affine(src, dst)` | 3x4 array M with `dst` about `M[:, :3] @ src + M[:, 3]` | numpy's `LinAlgError` in rare degenerate cases | Least squares |
@@ -182,7 +190,7 @@ bad = [r for r in rows if r.get("matrix_matches_landmarks") is False]
 | `plan_depth(cat, per_combo=5, seed=SEED)` | list of plan records | Nothing of its own | One generator for all combinations in sorted order, so the picks depend on the whole catalogue |
 | `tile_centres(n, seed=SEED)` | list of `(u, v)` in [0, 1) | Nothing | u along columns, v along rows |
 | `depth_segment(base, sample_id, seg, cross_ids=None, n_tiles=32, seed=SEED, workers=8, reference=None)` | dict, the depth result under Outputs | Errors reading the native render; a cross render's errors go to its pair's `error` | What `depth` runs |
-| `SurfaceVolume(base_url, fetch=None, fetch_range=None)` | a reader with `levels`, `dz_um`, `n_layers`, `read`, `read_layer`, `profile`, `level_near` | `OSError` or `ValueError` when `.zattrs` or `.zarray` cannot be read | Uncompressed chunks are read directly; compressed arrays through zarr. An absent chunk reads as the fill value |
+| `SurfaceVolume(base_url, fetch=None, fetch_range=None)` | a reader with `levels`, `dz_um`, `n_layers`, `read`, `read_layer`, `profile`, `level_near` | `OSError` or `ValueError` when `.zattrs` or `.zarray` cannot be read; `read` and `read_layer` raise a chunk's read error | Uncompressed chunks are read directly; compressed arrays through zarr. Only an absent chunk (HTTP 404, or a missing local file) reads as the fill value; any other read error is raised |
 | `gaussian_smooth(y, sigma)` | array | Nothing | Reflect-padded |
 | `layer_positions_um(n_layers, dz_um)` | array of um from the centre layer | Nothing | |
 | `sheet_peak_um(profile, dz_um, sigma_um=8.0, window_um=60.0)` | float um from the centre layer, or None | Nothing | Highest local maximum within the window, refined with a parabola |
@@ -190,7 +198,7 @@ bad = [r for r in rows if r.get("matrix_matches_landmarks") is False]
 | `compare_profiles(native, cross, dz_native, dz_cross)` | dict, the pair fields under Outputs | Nothing | Needs 4 tiles with both profiles |
 | `grid_normals(xyz)` | (H, W, 3) unit normals, NaN where undefined | Nothing | H4 |
 | `affine_residuals(ref_xyz, cross_xyz, matrix, px_cross_um, search=4, max_points=20000, seed=SEED)` | dict: `points`, `matched`, normal and tangential median, 90th percentile and max in um, shares of normal residuals over 25 and 75 um | Nothing | H4: is the cross mesh the matrix's image of the reference mesh? |
-| `read_tifxyz(base_path, fetch=None)` | (H, W, 3) float64, NaN for holes | `OSError`; `ImportError` without tifffile | H4 |
+| `read_tifxyz(base_path, fetch=None)` | (H, W, 3) float64, NaN for holes | `OSError`; `ImportError` without tifffile; `ValueError` for a TIFF past `KIT_MAX_TIFF_ELEMENTS` | H4. Reads through `imread_capped` |
 | `sample_matrix(cat, sample_id, a, b)` | `(matrix, derivation_path)`, or `(None, None)` | `KeyError` for an unknown sample | The catalogue's sample-level matrix from volume a to b; `kit stackcheck --transform catalog:...` uses it |
 | `area_resample_1d(a, in_px, out_px, n_out, start_um, axis)` | array | Nothing | H5: area-averaged resampling |
 | `phase_shift(a, b, exclude=5)` | `((rows, cols) shift in px, peak-to-sidelobe ratio)` | Nothing | H5: b(x) is about a(x - s) |
@@ -240,8 +248,10 @@ Units: transform residuals in um of the target volume, round trips in um of the 
 | `sample`, `segment`, `native_volume` | str | The segment, and the volume in the native role |
 | `reference_is_native` | bool | False with a `--reference` other than the native volume |
 | `native_dz_um`, `native_tiles_valid` | float, int | Layer spacing of the native render, and tiles valid in it |
+| `native_tiles_failed`, `native_tile_error` | int, str | Native tiles whose read failed with an error other than an absent chunk (left out of every count), and the first such error, cut to 200 characters (only when there was one) |
 | `error` | str | `no surface volume on the native volume`; then `pairs` is empty |
 | `pairs[].cross_volume`, `.surface_volume`, `.cross_dz_um` | str, str, float | The cross render |
+| `.cross_tiles_failed`, `.cross_tile_error` | int, str | As `native_tiles_failed` and `native_tile_error`, for the cross render |
 | `.tiles_with_profiles` | int | Tiles with a profile in both renders |
 | `.evaluable`, `.reason` | bool, str | Whether the pair counts; `reason` when under 4 tiles |
 | `.layer_order_opposite` | bool | The cross render's layers run the other way (deltas are computed after reversing) |
@@ -272,6 +282,11 @@ Units: transform residuals in um of the target volume, round trips in um of the 
 | `"evaluable": false` with `"location_control_pass": false` | The location control failed: profiles are alike everywhere, or the offset is real and large enough to lower the matched correlation | Report the pair as not evaluable; do not read its delta as a result |
 | `"error": "not a TIFF (version N): URL"` in `mesh_errors` | A mesh's `x.tif` is not a TIFF | Look at the file; the row is left without that mesh |
 | `"error": "TIFF IFD lacks width or height"` in `mesh_errors` | The TIFF's first directory has no size tags | As above |
+| `ValueError: gzip body ends before its last member does` and a traceback, exit code 1 | The catalogue (or another gzipped file) is cut off | Download it again |
+| `ValueError: gzip body inflates past N bytes; refused (raise KIT_MAX_GUNZIP_BYTES to allow it)` and a traceback, exit code 1 | A gzip body inflates past `KIT_MAX_GUNZIP_BYTES` (1 GiB by default): a decompression bomb, or a genuinely larger file | Check the file; raise `KIT_MAX_GUNZIP_BYTES` only for a file you trust |
+| `ValueError: TIFF declares N elements, over M; refused (raise KIT_MAX_TIFF_ELEMENTS to allow it)` | A tifxyz mesh TIFF declares more than `KIT_MAX_TIFF_ELEMENTS` elements | Check the file; raise `KIT_MAX_TIFF_ELEMENTS` only for a mesh you trust |
+| `ValueError: KIT_MAX_GUNZIP_BYTES must be an integer` (or `KIT_MAX_TIFF_ELEMENTS`) | The variable is set to something that is not a whole number | Set it to a whole number of bytes or elements, or unset it |
+| `native_tiles_failed` or `.cross_tiles_failed` above 0 in `depth` | A tile's chunk read failed with an error other than a missing chunk (a timeout, a server error, a bad chunk); that tile is left out | Read `native_tile_error` or `.cross_tile_error`; rerun when the network is back, since fewer tiles can change the result |
 | A row with `"error"` and `"reproducible": false` in `canvas` | The surface volume's `.zattrs` is missing or has no `canvas_size` | The render cannot be checked; note it |
 
 ## How it works
@@ -282,7 +297,7 @@ Units: transform residuals in um of the target volume, round trips in um of the 
 
 `plan` (H3 scope): group segments by (sample, native volume, cross volume) where a render exists on both, and draw up to `--per-combo` ids per group without replacement from one numpy generator seeded with `--seed`, groups in sorted order.
 
-`depth` (H3): draw `--tiles` centres (u, v) uniformly with `--seed`. At each, read a 1.5 mm square of the native render at the level whose pixel is nearest 20 um, keep it when at least half the centre layer is nonzero, and average each layer over the valid pixels: the depth profile. Read the same normalized centre from each cross render. Per pair (`compare_profiles`), with at least 4 tiles: decide the layer order by which way the cross profile correlates better on most tiles; the location control C3 compares the median matched correlation with the 95th percentile over all tile pairs that do not match; then smooth each profile with a Gaussian of 8 um, take the highest local maximum within 60 um of the centre layer, refine it with a parabola, and report cross minus native per tile. A pair is evaluable when C3 passes and at least 4 tiles have peaks in both.
+`depth` (H3): draw `--tiles` centres (u, v) uniformly with `--seed`. At each, read a 1.5 mm square of the native render at the level whose pixel is nearest 20 um, keep it when at least half the centre layer is nonzero, and average each layer over the valid pixels: the depth profile. Read the same normalized centre from each cross render. Per pair (`compare_profiles`), with at least 4 tiles: decide the layer order by which way the cross profile correlates better on most tiles; the location control C3 compares the median matched correlation with the 95th percentile over all tile pairs that do not match; then smooth each profile with a Gaussian of 8 um, take the highest local maximum within 60 um of the centre layer, refine it with a parabola, and report cross minus native per tile. A missing chunk reads as the fill value; a tile whose read fails with any other error is left out and counted in `native_tiles_failed` or `cross_tiles_failed`. A pair is evaluable when C3 passes and at least 4 tiles have peaks in both.
 
 The method is the protocol's, written before the measurements: [`plans/2026-10-07-mesh-hypothesis.md`](../plans/2026-10-07-mesh-hypothesis.md). H4 and H5 (amendments made after seeing results, marked exploratory) use the remaining functions through the study's scripts.
 
@@ -314,10 +329,12 @@ The method is the protocol's, written before the measurements: [`plans/2026-10-0
 python -m unittest tests.test_meshaudit -v
 ```
 
-26 tests, about 5 s, no network. They cover the transform audit (an exact refit, LOO above the fit with noise, flat landmarks, a stored matrix that misses its landmarks, 4 landmarks untestable, an inconsistent reverse, the tiers, pairing in a catalogue), canvas matching and TIFF and BigTIFF header parsing, the volume id, depth (synthetic shifts recovered within 2 um at three layer spacings, a peak outside the window, identity, a shift between resolutions, reversed layer order, a location control that fails, too few tiles), a local uncompressed zarr with an absent chunk, the H4 residuals (a pure affine, a known normal shift, holes), the H5 phase shift, area resampling and predicted shift, tile centres across pyramid levels, and the plan's grouping and determinism. They skip the numpy parts without numpy. They do not cover the command line, network reads, compressed zarr, or `canvas_audit` and `depth_segment` end to end; this page ran those on the live catalogue and a synthetic local bucket.
+30 tests, about 5 s, no network. They cover the decompression-bomb guards and fetch errors (a gzip body with several members or cut off reads as `gzip.decompress` does, a body past `KIT_MAX_GUNZIP_BYTES` and a TIFF past `KIT_MAX_TIFF_ELEMENTS` are refused, only a missing chunk reads as fill), the transform audit (an exact refit, LOO above the fit with noise, flat landmarks, a stored matrix that misses its landmarks, 4 landmarks untestable, an inconsistent reverse, the tiers, pairing in a catalogue), canvas matching and TIFF and BigTIFF header parsing, the volume id, depth (synthetic shifts recovered within 2 um at three layer spacings, a peak outside the window, identity, a shift between resolutions, reversed layer order, a location control that fails, too few tiles), a local uncompressed zarr with an absent chunk, the H4 residuals (a pure affine, a known normal shift, holes), the H5 phase shift, area resampling and predicted shift, tile centres across pyramid levels, and the plan's grouping and determinism. They skip the numpy parts without numpy. They do not cover the command line, network reads, compressed zarr, or `canvas_audit` and `depth_segment` end to end; this page ran those on the live catalogue and a synthetic local bucket.
 
 ## History
 
+- 2026-10-16: the gzip reader inflates every member and refuses a cut-off body, as `gzip.decompress` did (`136b5b2`).
+- 2026-10-16: gzip and TIFF size ceilings (`KIT_MAX_GUNZIP_BYTES`, `KIT_MAX_TIFF_ELEMENTS`, `imread_capped`); only a missing chunk reads as the fill value, and `depth` counts the tiles whose reads failed (`145b0fc`).
 - 2026-10-07: first version, with the protocol, its amendments, the derived data and the log (`e14b033`).
 
 ## Related

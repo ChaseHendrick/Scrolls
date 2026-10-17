@@ -166,6 +166,7 @@ Text output, one line: `METHOD of N maps -> OUT (VALID valid px of H x W)`. With
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument, such as no input maps, or `--method` other than `mean` or `rank` (`argument --method: invalid choice: ...`) | Check the command against Commands and options |
 | `an ensemble needs at least two maps` | Only one input map | Give two or more maps |
+| `give one finite, non-negative weight per map, not all zero` | `--weights` (or `weights=`) has a different count from the maps, a NaN, infinite or negative value, or sums to 0 | Give one weight per map, each finite and at least 0, with at least one above 0 |
 | `maps differ in shape: [(...), (...)]` | The inputs are not the same window or grid | Use maps of the same surface window; crop or render them to one grid first |
 | `give one non-negative weight per map, not all zero` | `--weights` count differs from the number of maps, a weight is negative, or all are 0 | Give one weight per map, in order |
 | `method must be one of ('mean', 'rank'), got '...'` | `combine` or `ensemble_files` called from Python with another method (the command line refuses it earlier) | Use `mean` or `rank` |

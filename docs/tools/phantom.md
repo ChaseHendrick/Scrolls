@@ -14,7 +14,7 @@
 | Needs | Python 3.10 or newer and numpy (no scipy: the blur is a numpy FFT). `stress` and `calibrate` score with `kit.auc`, which needs only numpy here. The demo script needs bash and must run from the repository root, since it calls `python3 -m kit` |
 | Runs on | Any CPU. `make` at the command's default size (26 x 384 x 384) took 2.1 s, `stress` with its defaults (8 phantoms) 14.2 s, `calibrate` with its defaults 8.2 s, and the whole demo 14.2 s (measured 2026-10-16, 4-core Xeon cloud container) |
 | Network | None |
-| Writes | `make`: the folder `OUT` (created before the phantom is checked, so it is left empty on a refusal) and `volume.npy`, `ink.npy`, `mask.npy`, `meta.json` in it, replacing earlier ones. `stress --save-maps DIR`: `DIR/surface_SEED.npy` and `DIR/surface_reversed_SEED.npy` per phantom. `calibrate`: nothing. The demo: everything under `$OUT` (default `/tmp/phantom-demo`), listed under Outputs |
+| Writes | `make`: the folder `OUT` (created before the phantom is checked, so it is left empty on a refusal) and `volume.npy`, `ink.npy`, `mask.npy`, `meta.json` in it, replacing earlier ones. `stress --save-maps DIR`: `DIR/surface_SEED.npy` and `DIR/surface_reversed_SEED.npy` per phantom. `calibrate`: nothing. The demo: everything under `$OUT` (default a fresh `mktemp -d` folder, `${TMPDIR:-/tmp}/phantom-demo.XXXXXX`, whose path it prints first), listed under Outputs |
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07 (`eeacf6a`); `kit/phantom.py` is also in the AutoPipeline release copy at `faada83` |
 | Guide | [phantom-and-viewer.md](../phantom-and-viewer.md); results of the demo in the [phantom demo log](../logs/2026-10-07-phantom-demo.md) |
@@ -134,7 +134,8 @@ It takes no arguments and has no `--help`. Run it from the repository root. It r
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
-| `OUT` | `/tmp/phantom-demo` | `scripts/phantom-demo.sh`: the folder for everything the demo writes; created when missing, and its `commands.log` is emptied at the start |
+| `OUT` | a fresh folder from `mktemp -d "${TMPDIR:-/tmp}/phantom-demo.XXXXXX"` | `scripts/phantom-demo.sh`: the folder for everything the demo writes; the script prints `phantom demo output: PATH` first. A fixed `/tmp` name is avoided because it could be a planted symlink. Set `OUT` to choose a folder; it is created when missing, and its `commands.log` is emptied at the start |
+| `TMPDIR` | `/tmp` | `scripts/phantom-demo.sh`: where the default `OUT` folder is made |
 
 ## Python API
 
@@ -289,6 +290,7 @@ python -m unittest tests.test_phantom -v
 ## History
 
 - 2026-10-07: the demo log and panels; the demo's `calibrate` step uses quality 0.3 and 32 px blocks, since 107 px blocks gave `nan` on 256 px phantoms (`afe8d3c`).
+- 2026-10-16: the demo writes to a fresh `mktemp -d` folder by default instead of `/tmp/phantom-demo` (`da68987`).
 - 2026-10-07: first version: `make`, `stress`, `calibrate`, and `scripts/phantom-demo.sh` (`eeacf6a`).
 
 ## Related

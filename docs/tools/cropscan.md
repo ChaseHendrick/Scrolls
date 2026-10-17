@@ -137,6 +137,7 @@ Every refusal is a `kit.verify.VerifyError` with the message below, raised befor
 
 | What you see | Why | What to do |
 | --- | --- | --- |
+| `the map holds N NaN or infinite values; replace them (with 0 for no prediction) before scoring` | The map has NaN or infinite pixels, which a histogram cannot rank | Replace them, with 0 where there is no prediction, and rerun |
 | `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed | `python -m pip install numpy` |
 | `prediction, ink and mask must be 2D arrays` | An array with another number of axes | Pass one 2D map and 2D labels |
 | `prediction, ink and mask must share one grid` | The shapes differ | Put the labels on the map's grid first (`kit.auc.labels_on_map`) |
@@ -196,6 +197,7 @@ The 7 tests cover exact agreement with `score_array` on every window (float32 an
 
 ## History
 
+- 2026-10-16: a map with NaN or infinite pixels is refused with a message instead of being ranked (`136b5b2`).
 - 2026-10-07: the input domain is enforced (uint8, uint16 or [0, 1] floats, boolean labels, integer grid parameters), the memory guard `max_work_bytes` added, uint8 kept at all 256 levels (the first version put 16 uint8 levels in each bin at the default 4,096 bins), and exactness against `score_array` tested (`210e023`, [PR #26](https://github.com/ChaseHendrick/Scrolls/pull/26)).
 - 2026-10-07: first version, for the lane I crop placement study (`f5430ee`, [lane I log](../logs/2026-10-07-grok-laneI.md)).
 

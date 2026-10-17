@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-14 (`47cd607`); listed in the README's "Released tools" as the release `stackcheck` (Segment stack check) |
 | Guide | [The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits |
-| Checked | 2026-10-16 against commit `63753fa` |
+| Checked | 2026-10-16 against commit `d9eaf42` |
 
 ## What it does
 
@@ -143,6 +143,15 @@ The settings that show `none` take their value from `DEFAULTS` in `kit/stackchec
 
 Two settings are fixed in the code and have no option: `tol_cells` 1.5 (same height and angle means within 1.5 grid steps of z and of arc; settable only through `settings` in the Python API) and `PAIR_SPACING` (0.5, 1.75).
 
+### Environment variables
+
+Both are read by [`meshaudit`](meshaudit.md)'s readers, which this command uses.
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `KIT_MAX_TIFF_ELEMENTS` | `200000000` (`meshaudit.MAX_TIFF_ELEMENTS`) | Largest grid TIFF read, in array elements, checked before decoding |
+| `KIT_MAX_GUNZIP_BYTES` | `1073741824` (`meshaudit.MAX_GUNZIP_BYTES`, 1 GiB) | Largest size a gzipped download (a fetched file or the umbilicus JSON) may inflate to; a larger one fails as `cannot fetch ...` or `cannot read the umbilicus ...` |
+
 ## Python API
 
 ```python
@@ -163,8 +172,8 @@ stackcheck.write_flags("flags.npz", segs, masks, rep["frame"]["voxel_um"])
 | `Segment(name, xyz, valid, path=None, stride=1, input_shape=None, input_xyz=None)` | a segment; `prepare(umb)` adds normals (pointing away from the umbilicus), cell areas, radius, angle, unwrapped turn, z extent and median radius | `VerifyError` from `prepare` when no vertex has a usable normal | `xyz` is (H, W, 3) in the umbilicus's frame |
 | `split_spec(spec)` | `(name or None, path)` | Nothing | Reads `NAME=PATH` |
 | `segment_name(path)` | str | Nothing | The nearest folder above the path that is neither `mesh` nor a `.tifxyz` folder |
-| `fetch_tifxyz(url, cache)` | `Path` of the local copy, `CACHE/HOST/PATH` | `VerifyError` for `.` or `..` in the URL path, or a failed download of `x.tif`, `y.tif` or `z.tif` | `meta.json` is skipped when missing; each file is written as `.part` and renamed |
-| `read_tifxyz(folder)` | `(xyz (H, W, 3) float64, valid (H, W) bool, meta dict)` | `VerifyError` for a missing or unreadable file, grids that are not 2D of one shape, or no tifffile | Holes: non-finite, any coordinate below -0.5, or all zero |
+| `fetch_tifxyz(url, cache)` | `Path` of the local copy, `CACHE/HOST/PATH` | `VerifyError` for a URL without an http(s) scheme and a host name, for `.`, `..` or a backslash in the URL path, for a local folder that would fall outside `cache`, or a failed download of `x.tif`, `y.tif` or `z.tif` | `meta.json` is skipped when missing; each file is written as `.part` and renamed |
+| `read_tifxyz(folder)` | `(xyz (H, W, 3) float64, valid (H, W) bool, meta dict)` | `VerifyError` for a missing or unreadable file, a TIFF past `KIT_MAX_TIFF_ELEMENTS`, grids that are not 2D of one shape, or no tifffile | Holes: non-finite, any coordinate below -0.5, or all zero |
 | `Umbilicus(z, x, y, voxel_um=None, source=None, volume=None)` | an umbilicus; `at(z)` gives `(x, y)` | `VerifyError` with no control points | Linear between control points, constant beyond them |
 | `parse_umbilicus(data, source=None)` | `Umbilicus` | `VerifyError` for missing keys, values that are not finite numbers, or a voxel size that is not above 0 | Reads `control_points` (or `points`, or a bare list) and `metadata` |
 | `load_umbilicus(src)` | `Umbilicus` | `VerifyError` when the file or URL cannot be read | A local path or a URL |
@@ -251,7 +260,10 @@ Every message below goes to stderr with exit code 2.
 | `cannot read the tifxyz folder FOLDER: ...` | No `x.tif`, `y.tif` or `z.tif` there, or an unreadable TIFF | Point at the `.tifxyz` folder itself |
 | `FOLDER: x.tif, y.tif and z.tif must be 2D grids of one shape` | Grids of different shapes, or multi-page TIFFs | Use a tifxyz folder as villa writes it |
 | `NAME: no vertex with a usable normal` | Every vertex is a hole, or the grid is degenerate | Check the segment; it may be a placeholder |
-| `refusing a URL with '.' or '..' in its path: URL` | A URL with `.` or `..` parts, which could write outside `--cache` | Give the plain URL |
+| `refusing a URL without an http(s) scheme and a host name: URL` | A URL with no host (such as `https:///PATH`), a host of only dots, or a `/` or `\` in the host part | Give the full bucket URL |
+| `refusing a URL with '.' or '..' in its path: URL` | A URL with `.` or `..` parts, or a backslash in a part, which could write outside `--cache` | Give the plain URL |
+| `refusing a URL whose cache folder DEST is outside --cache ROOT` | The URL's host and path would put the fetched files outside `--cache` (checked on the path as written, so a `--cache` that is a link to another disk works) | Give the plain URL |
+| `cannot read the tifxyz folder FOLDER: TIFF declares N elements, over M; refused (raise KIT_MAX_TIFF_ELEMENTS to allow it)` | A grid TIFF declares more elements than `KIT_MAX_TIFF_ELEMENTS` (200,000,000 by default, about a 14,000 px square), checked before any pixel is decoded, against decompression bombs | Check the file; for a genuinely larger segment you trust, raise `KIT_MAX_TIFF_ELEMENTS` (see Environment variables) |
 | `cannot fetch URL/x.tif: ...` | A network or HTTP error, or no such segment on the bucket | Check the URL in a browser and the network; rerun, since fetched files are kept |
 | `cannot read the umbilicus UMBILICUS: ...` | A missing file, unreachable URL, or not JSON | Fix the path or URL |
 | `UMBILICUS: expected control points with x, y and z keys` | Not the published umbilicus format | Use the scroll's `representations/umbilicus/...json` |
@@ -332,10 +344,12 @@ Run A downloads about 100 MB once and run B about 25 MB (the note). It uses one 
 python -m unittest tests.test_stackcheck -v
 ```
 
-31 tests on synthetic Archimedean spirals built in the test file, with no downloads. They cover a clean stack passing every check; each planted defect flagged by its own check (missing sector, two adjacent missing sectors, inversion, an inversion within `--coincide-um` flagged only as coincident, skipped winding, turn overlap at the end and at the start of the turn and across a hole wider than half a turn, missing stack end, a winding traced twice, one missing all the way, a segment on its neighbour's sheet, control pairs keeping their spacing); checks with nothing to look at keeping the stack from being clean; the command line on files with a transform, the report and the masks; stride; names, URLs and `NAME=PATH`; catalog transforms and volume checks; settings, the umbilicus format, and exit codes 1 and 2. They do not fetch from the bucket and do not run on real segments. On 2026-10-16 they took about 5 minutes of wall clock in the shared container (82 s of CPU time).
+34 tests on synthetic Archimedean spirals built in the test file, with no downloads. They cover a clean stack passing every check; each planted defect flagged by its own check (missing sector, two adjacent missing sectors, inversion, an inversion within `--coincide-um` flagged only as coincident, skipped winding, turn overlap at the end and at the start of the turn and across a hole wider than half a turn, missing stack end, a winding traced twice, one missing all the way, a segment on its neighbour's sheet, control pairs keeping their spacing); checks with nothing to look at keeping the stack from being clean; the command line on files with a transform, the report and the masks; stride; names, URLs and `NAME=PATH`; catalog transforms and volume checks; settings, the umbilicus format, and exit codes 1 and 2; and that a fetch stays inside the cache, a cache host folder may be a link to another disk, and a grid TIFF declaring a size past the ceiling is refused. They do not fetch from the bucket and do not run on real segments. On 2026-10-16 they took about 5 minutes of wall clock in the shared container (82 s of CPU time).
 
 ## History
 
+- 2026-10-16: a cache folder linked to another disk works again: the URL check runs on the path as written (`136b5b2`).
+- 2026-10-16: fetched segments must stay inside `--cache` (a URL needs an http(s) scheme and a host name), and grid TIFFs over `KIT_MAX_TIFF_ELEMENTS` are refused (`145b0fc`).
 - 2026-10-14: flags coincident and oddly spaced pairs, finds a turn overlap at the start of the turn, names what no check covers, exits 2 on an unwritable output, and checks settings and the umbilicus's voxel size (`1243518`).
 - 2026-10-14: review fixes: missing runs, turn angles unwrapped across holes, missing sectors limited to the segment's heights, a stack-end mask, inversions counted beyond `--coincide-um`, gap by height and control pairs, `summary.not_checked`, volume checks, and paths with `=` (`2bf31fd`).
 - 2026-10-14: first version, with the PHerc0139 note and the release entry (`47cd607`).

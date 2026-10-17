@@ -287,6 +287,8 @@ The scripts import one another by file name (each puts its folder first on `sys.
 
 | What you see | Why | What to do |
 | --- | --- | --- |
+| `NPZ holds no CT (every chunk read was absent or zero): remove the file and check the scan path` (`predict.py`) | A cached slice file holds only zeros, or every chunk it read was missing, usually from a wrong scan path or a false 404 | Remove the file, check `--volume`, and run again |
+| `VOL/LEVEL: all N chunk reads were absent (NoSuchKey); no slice file written` (`slices.py`) | Every chunk read for the sampled slices was missing, so the scan path or level is wrong | Check the volume URL and level, then rerun; nothing was cached |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `--volume needs exactly one scroll` | `predict.py` with `--volume` and several scrolls | Run one scroll per `--volume` |
 | `VOLUME: no voxel size in the scan name (<timestamp>-<size>um-...)` | The `--volume` path does not name its voxel size | Give the bucket path of the scan, as listed under `SCROLL/volumes/` |
@@ -346,6 +348,7 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 
 ## History
 
+- 2026-10-16: slice caches are keyed by scan, and a slice file with no CT is refused (`91bc14e`).
 - 2026-10-14: the tests set aside StrokeNet's same-named `pipeline` module (`8bf841b`).
 - 2026-10-14: first public release: `predict.py`, training and scoring scripts, the end-point rule, `ctcheck.py`, and held-out evidence; weights in release `umbilicus-v1` (`76e4591`).
 

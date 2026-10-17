@@ -478,6 +478,8 @@ Every text scored must be in the reader's alphabet `ΑΒΓΔΕΖΗΘΙΚΛΜΝΞ
 
 | What you see | Why | What to do |
 | --- | --- | --- |
+| `refusing unsafe key 'KEY'` (`p1667_fetch.py`) | A label key from the bucket listing is not a plain relative path below the segment's folder: empty, absolute, with a backslash, or with an empty, `.` or `..` part | Nothing to fix on your side; the listing is wrong or hostile. Report it and do not work around the check |
+| `refusing key 'KEY': it leaves OUT` (`p1667_fetch.py`) | The key would resolve outside `OUT`, for example through a symlink inside `OUT` | Remove the symlink or choose an empty `OUT` |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the script's table under Commands and options |
 | `finetune_maps.py: error: --steps: give at least 20 (the one-cycle schedule warms up over a tenth of them)` | `--steps` under 20 (seen 2026-10-16) | Use 20 or more; the default is 1500 |
 | `realforms.py: error: give --hellchar and/or --icdar` | `build` with no source (seen 2026-10-16) | Give a source folder |
@@ -541,6 +543,7 @@ python -m unittest tests.test_letter_scripts tests.test_letterdata -v
 
 ## History
 
+- 2026-10-16: `p1667_fetch.py` refuses label keys that would land outside `OUT` (`af2e07d`).
 - 2026-10-14: `letters-v2-ccby` (CC BY 4.0, trained without ICDAR data) becomes the default weights the benchmark and demo scripts use (`0366ed7`).
 - 2026-10-14: fine-tuning on your own lines (`finetune_maps.py` takes `letterlines` output) (`33a0ad3`).
 - 2026-10-14: the guide's commands run as written, with benchmark script checks (`e30ff76`).
