@@ -20,7 +20,7 @@ Updated 16 October 2026.
 | Prize terms, amounts, deadlines, eligible scrolls | [`prizes.md`](prizes.md), `python -m kit prizes` | |
 | What has been released from private work | [`releases.json`](releases.json), shown as the README's "Released tools" section | `python -m kit releases list`; AGENTS.md rule 15 |
 | Unroll, the released interactive 3D viewer (Hugging Face Space, v1.0.0, Apache 2.0 for all code, CC BY-NC 4.0 scan data) | [`unroll-space.md`](unroll-space.md), live at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) | README "Released tools" |
-| Scroll Lens, a ZeroGPU Space that shows the organisers' 3D DINO, ink and surface models on a cube of a public scan, with click search (built 16 October, not yet on Hugging Face) | [`tools/scroll-lens.md`](tools/scroll-lens.md), code in [`../spaces/scroll-lens/`](../spaces/scroll-lens/) | [`unroll-space.md`](unroll-space.md) |
+| Scroll Lens, a ZeroGPU Space that shows the organisers' 3D DINO, ink and surface models on a cube of a public scan, with click search (v1.0.0, 17 October) | [`tools/scroll-lens.md`](tools/scroll-lens.md), live at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens), code in [`../spaces/scroll-lens/`](../spaces/scroll-lens/) | [`unroll-space.md`](unroll-space.md) |
 
 ## Rules and standards
 
