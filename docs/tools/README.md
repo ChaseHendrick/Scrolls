@@ -77,6 +77,12 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | [letterread](letterread.md) | Current | `python -m kit letterread` | Not needed | `python -m kit letterread` runs a small learned line reader (numpy only) over an ink map, an ink label or a photograph and proposes Greek capitals with boxes and confidences, scored against nulls, an optional control map and turned reads. |
 | [letters-training](letters-training.md) | Current | `python scripts/letters/gen_dataset.py` | Not needed | `scripts/letters/` holds the scripts that make the Greek letter reader's synthetic training lines, train and fine-tune its weights, fetch the public PHerc. 1667 and PHerc. 172 data, and run the benchmarks and control checks behind its published numbers. |
 
+### Training
+
+| Tool | Status | Run | Go-ahead | What it does |
+| --- | --- | --- | --- | --- |
+| [segzoo](segzoo.md) | Experimental | `python -m kit segzoo` | Not needed | `python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with licence and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls. |
+
 ### Compute and cost
 
 | Tool | Status | Run | Go-ahead | What it does |

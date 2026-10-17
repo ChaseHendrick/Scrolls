@@ -18,6 +18,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labelled ink pixels above labelled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
 
+**Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyses a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
+
 **AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix4` (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
 
 ## B
@@ -66,6 +68,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Dice score**: An overlap measure between two masks: twice the shared area divided by the sum of both areas. A Dice check is reported beside the same map displaced.
 
+**DINOv2, DINOv3**: Self-supervised image backbones from Meta, trained without labels on very large photo collections. DINOv2 is Apache-2.0; DINOv3's weights are under the DINOv3 License and gated on Hugging Face. `scripts/segzoo/segzoo_probe.py` puts a linear head on their frozen features ([page](docs/tools/segzoo.md)).
+
 **Discord**: The chat service where the Vesuvius Challenge community meets and where most announcements appear first.
 
 ## E
@@ -89,6 +93,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **fp16 (half precision)**: Storing and computing numbers with 16 bits instead of the usual 32 (fp32). It can make GPU inference faster at a small cost in accuracy. `V8IN_FP16=1` turns it on for v8in on MPS, where it is kept only if the crop check still passes and it is faster.
 
 **fragment**: A detached piece of papyrus, often with visible ink, used as ground truth for ink models.
+
+**frozen-feature probe (linear probe)**: A test of a pretrained backbone in which the backbone is not trained at all: only a linear (logistic) head on its features is fitted. Cheap enough for a CPU, and a fair first check of whether a big model helps a small task.
 
 ## G
 
@@ -150,7 +156,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## M
 
+**Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
+
 **mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labelled ink or trusted labels.
+
+**MedNeXt**: A U-Net built from ConvNeXt blocks (large depthwise kernels), in sizes S, B, M and L. In the nnU-Net Revisited comparison it is the one family that scored above nnU-Net's ResEnc L on every dataset, at about twice the training time.
+
+**MedSAM2**: SAM 2 fine-tuned on 3D medical images and video. Its weights are licensed for research and education only, so nothing trained from it is released here.
 
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
 
@@ -165,6 +177,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **MPS**: Metal Performance Shaders, the backend PyTorch uses to run on Apple Silicon GPUs.
 
 ## N
+
+**nnU-Net**: A self-configuring U-Net framework: given a labelled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
 
 **normal**: A direction perpendicular to a surface. A normal grid is a published 3D field of such directions that tracing uses.
 
@@ -220,9 +234,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **S3**: Amazon's object storage service, which hosts the open-data bucket.
 
+**SAM 2**: Meta's Segment Anything Model 2: segments an object in an image or a video from a click, box or mask, and follows it from frame to frame. `scripts/segzoo/segzoo_sam2.py` treats a cube's slices as frames to follow papyrus sheets ([page](docs/tools/segzoo.md)).
+
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
+
+**SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial licence.
 
 **segment**: A traced piece of papyrus surface together with its rendered surface volume. Segments are named by id, for example w035 or w045 of PHerc0139.
 
@@ -245,6 +263,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **surface prediction**: A model's voxel-by-voxel prediction of where the papyrus surface is in a CT volume, used to guide tracing.
 
 **surface volume**: A stack of images rendered at depths above and below a traced surface. Ink models read it.
+
+**Swin UNETR**: A U-Net whose encoder is a Swin transformer (attention inside shifted windows), from MONAI. Its input sides must divide by 32.
 
 **synchrotron**: A particle accelerator that produces very bright X-rays, used for the scroll scans.
 

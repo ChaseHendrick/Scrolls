@@ -24,6 +24,7 @@ handoff:
 
 | Item | State | Next step |
 | --- | --- | --- |
+| Segmentation model zoo (`kit segzoo`, `scripts/segzoo/`; Chase, 17 Oct) | Registry of twelve families with licences, nnU-Net v2 trainers for MedNeXt, Swin UNETR, SegResNet, SegFormer and an SS2D U-Net, SAM 2 sheet follower and frozen DINO probe, each with a control; CPU tested, nothing trained on scroll data ([page](tools/segzoo.md)) | Any GPU benchmark needs a spec and Chase's budget yes (rule 11) |
 | Unroll ink-layer wording | Merged, PR #97 (`e73ca73`): "Ink layers show where models detect ink; letters visible here are candidates for expert reading." | None |
 | Unroll Install app | Merged, PR #98 (`0d34f92`): release entry links the Install app (offline app) and `docs/unroll-space.md` has an Install app section | None |
 | Unroll viewer changes since 01:10 ET (Space repo) | New scrolls from the open data bucket (PHerc0172, PHerc1447, PHerc1667, CC BY-NC 4.0); installable offline app; texture upload queue removing a 14.6 s main-thread freeze; type and spacing pass; scan labelled 9.4 µm (9.362 µm in details); glossary links; lower resolution while dragging; X-ray window and level with auto contrast; CT volume view; lighter phone mesh (`--coarsen`); starting view fitted to each roll; first-load flash and black screen fix (shader NaN, stricter service worker matching). Space version 1.4.0 | Re-test first load on real phones and desktop GPUs; artifact sweep (spike, floating square) still open |
