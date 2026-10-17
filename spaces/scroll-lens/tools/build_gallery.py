@@ -13,7 +13,7 @@ quota refusal and keeps what it has, so a later run (the next day) continues whe
 gallery folder are skipped.
 
 The plan, fixed by --seed and --batch:
-- batch 1: the eight PHerc. Paris 4 points the organisers trained the 3D ink model on, and one random papyrus point on
+- batch 1: the eight PHerc. Paris 4 points the organizers trained the 3D ink model on, and one random papyrus point on
   each other listed scan, drawn in lens.VOLUMES order from one generator (numpy default_rng(seed)); interleaved so
   that an early stop still covers several scrolls.
 - batch K (2 or more): one more random papyrus point on each scan except Paris 4, seed + K - 1, each scan from its
@@ -67,8 +67,8 @@ def plan(seed, fetch=lens._get, batch=1):
             except lens.LensError as exc:
                 print(f"  {vid}: skipped ({exc})")
         paris = [(f"paris4-train-{i + 1}", "PHercParis4", tuple(p),
-                  f"PHerc. Paris 4, organisers' training point {i + 1} of 8",
-                  "One of the eight Paris 4 points the organisers listed for training the 3D ink model, so the ink "
+                  f"PHerc. Paris 4, organizers' training point {i + 1} of 8",
+                  "One of the eight Paris 4 points the organizers listed for training the 3D ink model, so the ink "
                   "model has seen this place: a demonstration, not a test.")
                  for i, p in enumerate(lens.PARIS4_TRAINING_POINTS)]
         return interleave(paris, others)

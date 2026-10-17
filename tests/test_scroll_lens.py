@@ -299,11 +299,11 @@ class Embeddings(unittest.TestCase):
         p = lens.random_point(vid, np.random.default_rng(3), fetch=fetch, tries=6)
         self.assertIn(((p[1] // 8) // c, (p[2] // 8) // c), stored)
 
-    def test_pca_colours(self):
-        col = lens.pca_colours(self.grid)
+    def test_pca_colors(self):
+        col = lens.pca_colors(self.grid)
         self.assertEqual(col.shape, (8, 8, 8, 3))
         self.assertEqual(col.dtype, np.uint8)
-        self.assertTrue(np.array_equal(col, lens.pca_colours(self.grid)))
+        self.assertTrue(np.array_equal(col, lens.pca_colors(self.grid)))
 
     def test_reduce_grid_round_trip(self):
         rng = np.random.default_rng(1)
@@ -409,7 +409,7 @@ class Files(unittest.TestCase):
 
 @unittest.skipIf(np is None, "needs numpy")
 class GalleryPlan(unittest.TestCase):
-    def test_plan_uses_only_the_organisers_paris4_points(self):
+    def test_plan_uses_only_the_organizers_paris4_points(self):
         build = load("build_gallery", SPACE / "tools" / "build_gallery.py")
         c = lens.CHUNK
         chunk = np.random.default_rng(0).integers(100, 200, (c, c, c), dtype=np.uint8).tobytes()
@@ -567,7 +567,7 @@ class Page(unittest.TestCase):
             app.CUBES.get("run:a")
         self.assertEqual(app.CUBES.get("run:c").key, "run:c")
 
-    def test_cpu_fallback_cube_is_recentred(self):
+    def test_cpu_fallback_cube_is_recentered(self):
         app = self.app
         res = Files().result(128)
 
@@ -590,7 +590,24 @@ class Page(unittest.TestCase):
             self.app.check_point("a", 1, 2)
         self.assertEqual(self.app.check_point(1.0, 2, 3), (1, 2, 3))
 
-    def test_reference_layer_has_the_organisers_floor(self):
+    def test_view_endpoint_draws_one_or_all_views(self):
+        from unittest import mock
+        app = self.app
+        cube = self.cube(key="run:v")
+        ct = np.random.default_rng(4).integers(1, 256, (128,) * 3, dtype=np.uint8)
+        with mock.patch.object(app, "scan_cube", lambda vid, origin, size: ct):
+            from PIL import Image
+            one = Image.open(app.agent_view("run:v", axis="y", index=10, layers=["ink"]))
+            self.assertEqual(one.size, (512, 512))
+            three = Image.open(app.agent_view("run:v", axis="all", layers=["ink", "reference"],
+                                              positive_zyx=[[1030, 1040, 1050]]))
+            self.assertEqual(three.size, (3 * 512 + 16, 512))
+            for bad in ({"axis": "w"}, {"axis": "all", "index": 3}, {"axis": "z", "index": 128},
+                        {"layers": ["letters"]}):
+                with self.assertRaises(lens.LensError, msg=str(bad)):
+                    app.agent_view("run:v", **bad)
+
+    def test_reference_layer_has_the_organizers_floor(self):
         app = self.app
         sim = np.full((16, 16, 16), 0.2, np.float32)
         sim[0, 0, 0] = 0.4                                         # nothing reaches tau = 0.5

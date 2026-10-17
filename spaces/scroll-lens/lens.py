@@ -9,7 +9,7 @@ Challenge released with the PHerc. Paris 4 paper (Angelotti et al. 2026, arXiv:2
 - surface_recto_3dunet, a 3D U-Net that marks the written (recto) surface of each papyrus sheet.
 
 Clicks then light up every patch whose embedding is close to the clicked ones: the expert-click method the
-organisers used to build the reference ink embedding behind ink_3d_dino_guided. Everything here is model output,
+organizers used to build the reference ink embedding behind ink_3d_dino_guided. Everything here is model output,
 not a reading; a cube is 0.6 mm across, smaller than one letter.
 
 No gradio here, and torch is imported only inside the model code, so the tests run with numpy alone.
@@ -48,7 +48,7 @@ PATCH = 8                   # dinovol embeds each 8^3 voxel patch
 EMBED_DIM = 864
 MIN_FOREGROUND = 0.05       # a cube with less papyrus than this (the scans are masked to 0 outside it) is refused
 REDUCED_DIM = 128           # gallery cubes keep this many components of each embedding (see reduce_grid)
-TAU = 0.5                   # the threshold the organisers used on cosine similarity to their ink reference
+TAU = 0.5                   # the threshold the organizers used on cosine similarity to their ink reference
 MAX_CONCEPT_BYTES = 4 << 20
 USER_AGENT = f"scroll-lens/{VERSION}"
 
@@ -137,7 +137,7 @@ VOLUMES = {
 }
 
 # PHerc. Paris 4's title is still an open prize, so Scroll Lens never picks Paris 4 points itself: "Surprise me" and the
-# gallery use only these, the eight Paris 4 points the organisers listed for training in the ink checkpoint's own
+# gallery use only these, the eight Paris 4 points the organizers listed for training in the ink checkpoint's own
 # config (extra_patches.coords_xyz of ckpt_78k_fullsup.pth, sampled with 1024 voxels of jitter), here as z y x.
 PARIS4_TRAINING_POINTS = ((37628, 8793, 22167), (35344, 19651, 19735), (70688, 19605, 10649), (41802, 16221, 12261),
                           (41652, 10039, 8270), (41652, 8812, 8006), (41652, 10476, 19310), (41778, 17662, 27405))
@@ -148,7 +148,7 @@ LAYER_TITLES = {"dino": "3D DINO embeddings", "ink": "3D ink model", "surface": 
 # ---------------------------------------------------------------- the models and the code they need
 #
 # Weights come from the Hugging Face Hub at a pinned revision and are refused unless their SHA-256 matches.
-# The model code is the organisers' own: dinovol (MIT, with DINOv2 and DINOv3 parts under their licenses) and
+# The model code is the organizers' own: dinovol (MIT, with DINOv2 and DINOv3 parts under their licenses) and
 # villa's vesuvius package (MIT), each downloaded at a pinned commit and put on sys.path. Nothing of theirs is
 # copied into this Space.
 
@@ -209,7 +209,7 @@ def volume_url(vid, level=0):
 def cube_origin(vid, center_zyx, size):
     """The corner of the cube of side `size` around `center_zyx` (level-0 voxels, z y x), kept inside the scan. Where
     it can, the corner sits on the scan's 128-voxel chunk grid (so a 256 cube is exactly 8 stored chunks) and the
-    point lies at most 64 voxels from the cube's centre; near the scan's far edge the cube ends at the edge instead,
+    point lies at most 64 voxels from the cube's center; near the scan's far edge the cube ends at the edge instead,
     off the grid. The point always lies inside the cube."""
     size = check_size(size)
     shape = volume(vid)["shape"]
@@ -389,7 +389,7 @@ def random_point(vid, rng, fetch=_get, tries=24, list_fetch=None):
             parts = key[len(prefix):].split("/")
             if len(parts) == 3 and all(x.isdigit() for x in parts):
                 stored.add((int(parts[1]), int(parts[2])))
-        # chunks whose four in-plane neighbours are stored too lie inside the scroll, away from the mask edge
+        # chunks whose four in-plane neighbors are stored too lie inside the scroll, away from the mask edge
         inner = sorted(k for k in stored if all((k[0] + dy, k[1] + dx) in stored
                                                   for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1))))
         pool = inner or sorted(stored)
@@ -489,7 +489,7 @@ def ensure_code(cache=CACHE):
     for name, env, sub in (("dinovol", "LENS_DINOVOL", ""), ("villa", "LENS_VILLA_SRC", "vesuvius/src")):
         if os.environ.get(env):
             path = Path(os.environ[env]).expanduser().resolve()
-            info[name] = {"source": env, "path": str(path), "pinned": CODE[name]["commit"]}
+            info[name] = {"source": f"local checkout ({env})", "pinned": CODE[name]["commit"]}   # no local path
         else:
             dest = Path(cache) / f"{name}-{CODE[name]['commit'][:12]}"
             if not (dest / "COMMIT").is_file():
@@ -611,7 +611,7 @@ class Engine:
         return torch.autocast("cuda", dtype=torch.bfloat16) if dev.type == "cuda" else contextlib.nullcontext()
 
     def _dino_grid(self, cube, dev):
-        """dinovol's dense patch embeddings, as its own napari inspector computes them: robust normalisation of
+        """dinovol's dense patch embeddings, as its own napari inspector computes them: robust normalization of
         the whole cube, 128^3 windows overlapping by one patch, edge-tapered averaging, unit length."""
         import numpy as np
         import torch
@@ -728,7 +728,7 @@ def gpu_seconds(size, layers, tta=False):
     return int(math.ceil(6 + scale * sum(per[x] for x in layers)))
 
 
-# ---------------------------------------------------------------- embeddings: clicks, similarity, colours
+# ---------------------------------------------------------------- embeddings: clicks, similarity, colors
 
 def unit(v, axis=-1):
     import numpy as np
@@ -750,7 +750,7 @@ def grid_of(result):
 
 
 def reduce_grid(grid, k=REDUCED_DIM):
-    """Keep the top `k` directions of a cube's embeddings (uncentred SVD, so the common direction stays): 1/7 of the
+    """Keep the top `k` directions of a cube's embeddings (uncentered SVD, so the common direction stays): 1/7 of the
     size. Returns (coefficients float16, basis (864, k) float32). grid_of() rebuilds unit vectors from them."""
     import numpy as np
     g = np.asarray(grid, np.float32).reshape(-1, EMBED_DIM)
@@ -767,7 +767,7 @@ def token_of(voxel_zyx, size):
 
 
 def concept(grid, tokens):
-    """The organisers' recipe for a reference embedding: the unit-length mean of the clicked patches' embeddings."""
+    """The organizers' recipe for a reference embedding: the unit-length mean of the clicked patches' embeddings."""
     import numpy as np
     if not tokens:
         return None
@@ -784,16 +784,16 @@ def similarity(grid, positive, negative=None):
     return s
 
 
-def pca_colours(grid):
+def pca_colors(grid):
     """The three main directions of a cube's embeddings as red, green and blue, stretched to the 1st and 99th
-    percentiles: patches the model sees as alike get alike colours. (Z, Y, X, 3) uint8 at patch resolution."""
+    percentiles: patches the model sees as alike get alike colors. (Z, Y, X, 3) uint8 at patch resolution."""
     import numpy as np
     g = np.asarray(grid, np.float32).reshape(-1, grid.shape[-1])
     g = g - g.mean(0)
     # the three main directions: the top eigenvectors of the covariance, the same as the SVD's and far cheaper
     _, vecs = np.linalg.eigh((g.T @ g).astype(np.float64))
     p = g @ vecs[:, ::-1][:, :3].astype(np.float32)
-    # fix each component's sign so the colours do not flip between runs of the same cube
+    # fix each component's sign so the colors do not flip between runs of the same cube
     p *= np.sign(np.sum(p ** 3, axis=0, keepdims=True) + 1e-12)
     lo, hi = np.percentile(p, 1, axis=0), np.percentile(p, 99, axis=0)
     p = np.clip((p - lo) / np.maximum(hi - lo, 1e-6), 0, 1)
@@ -836,7 +836,7 @@ def agreement(sim_tokens, ink_u8, threshold=0.5):
     the patch above `threshold`), as an AUC, beside controls that must fail: the same ink mask rolled away from its
     place, which breaks the link between place and score. `auc_control_shifted` rolls it by half the cube on every
     axis; because papyrus is layered, one roll can line the layers up again, so `auc_control_mean`, `_p05` and `_p95`
-    summarise CONTROL_SHIFTS rolls between a quarter and three quarters of the cube (fixed seed). The AUC means
+    summarize CONTROL_SHIFTS rolls between a quarter and three quarters of the cube (fixed seed). The AUC means
     something only above `auc_control_p95`. Agreement with a model, not ground truth."""
     import numpy as np
     n = sim_tokens.shape[0]
@@ -985,6 +985,9 @@ def gallery(root=HERE / "gallery"):
     for it in items:
         if not isinstance(it, dict):
             raise LensError("gallery/index.json holds an entry that is not an object")
+        for key in ("title", "note"):     # cubes built before 1.1.0 say "organisers'"; the page uses American spelling
+            if isinstance(it.get(key), str):
+                it[key] = it[key].replace("rganisers", "rganizers")
         for key in ("id", "volume", "title", "note", "file", "point_zyx", "size"):
             if key not in it:
                 raise LensError(f"gallery entry {it.get('id')!r} has no {key}")

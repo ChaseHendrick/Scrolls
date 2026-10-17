@@ -43,15 +43,15 @@ TOP_FLOOR = 0.35                    # opacity of the least similar patch still i
 ENGINE = None
 ENGINE_ERROR = None
 READY = threading.Event()
-REFERENCE = None                    # the organisers' reference ink embedding, loaded before the models
+REFERENCE = None                    # the organizers' reference ink embedding, loaded before the models
 GALLERY = []
 
-OVERLAYS = ("Ink (3D ink model)", "Recto surface", "Your clicks", "Organisers' ink reference", "DINO colours")
+OVERLAYS = ("Ink (3D ink model)", "Recto surface", "Your clicks", "Organizers' ink reference", "DINO colors")
 VIEW_NAMES = ("Top view (z)", "Front view (y)", "Side view (x)")
-COLOURS = {"ink": (235, 64, 52), "surface": (64, 200, 96), "clicks": (40, 220, 235), "reference": (250, 180, 30)}
+COLORS = {"ink": (235, 64, 52), "surface": (64, 200, 96), "clicks": (40, 220, 235), "reference": (250, 180, 30)}
 MARKS = {"pos": (255, 255, 255), "neg": (255, 70, 200)}   # crosses where you clicked: More like this, Not this
 LAYER_KEYS = {"ink": "Ink (3D ink model)", "surface": "Recto surface", "clicks": "Your clicks",
-              "reference": "Organisers' ink reference", "pca": "DINO colours"}
+              "reference": "Organizers' ink reference", "pca": "DINO colors"}
 
 
 def log(message):
@@ -137,7 +137,7 @@ def cpu_run(eng, cube, layers):
     try:
         import torch
         torch.set_num_threads(max(1, (os.cpu_count() or 2) - 1))     # leave a core for the page
-        return eng.run(_centre(cube, CPU_SIZE), layers, device="cpu", tta=False)
+        return eng.run(_center(cube, CPU_SIZE), layers, device="cpu", tta=False)
     finally:
         CPU_SLOT.release()
 
@@ -204,7 +204,7 @@ class one_run:
         return False
 
 
-def _centre(cube, size):
+def _center(cube, size):
     if cube.shape[0] <= size:
         return cube
     o = (cube.shape[0] - size) // 2
@@ -268,16 +268,16 @@ class Cube:
         import numpy as np
         res = self.result
         if "grid" in res:
-            return lens.pca_colours(np.asarray(res["grid"], np.float32))
+            return lens.pca_colors(np.asarray(res["grid"], np.float32))
         if "grid_reduced" in res:
-            # the basis is orthonormal, so unit coefficients are the unit embeddings in a rotated frame: same colours
+            # the basis is orthonormal, so unit coefficients are the unit embeddings in a rotated frame: same colors
             coef = np.asarray(res["grid_reduced"], np.float32) / self.norms[..., None]
-            return lens.pca_colours(coef)
+            return lens.pca_colors(coef)
         return None
 
     def layers_file(self, path):
-        """Write the model layers the browser viewer draws, once: ink and surface (uint8, Z Y X), DINO colours
-        (uint8, Z/8 Y/8 X/8 3) and the organisers' reference similarity (float32, Z/8 Y/8 X/8), gzipped behind a
+        """Write the model layers the browser viewer draws, once: ink and surface (uint8, Z Y X), DINO colors
+        (uint8, Z/8 Y/8 X/8 3) and the organizers' reference similarity (float32, Z/8 Y/8 X/8), gzipped behind a
         JSON header (see viewer.js loadLayers)."""
         import numpy as np
         with self.lock:
@@ -466,7 +466,7 @@ def _top_alpha(sim2d, sim3d, top_pct, floor=None):
 
 def render_slice(ct, cube, axis, index, overlays, top_pct=8.0, opacity=0.7, click=None, marks=None):
     """One slice through a cube as an RGB uint8 image (size x size), drawn the way the browser viewer draws it: the CT
-    windowed to its 0.5th to 99.5th percentile of papyrus, then DINO colours, surface, ink, the organisers' reference
+    windowed to its 0.5th to 99.5th percentile of papyrus, then DINO colors, surface, ink, the organizers' reference
     and the visitor's concept, each blended at `opacity`. `click` is a similarity map at patch resolution."""
     import numpy as np
     size = cube.size
@@ -482,39 +482,39 @@ def render_slice(ct, cube, axis, index, overlays, top_pct=8.0, opacity=0.7, clic
     def up(t2):
         return np.repeat(np.repeat(t2, lens.PATCH, 0), lens.PATCH, 1)
 
-    def blend(colour, alpha):
+    def blend(color, alpha):
         a = (np.asarray(alpha, np.float32) * opacity)[..., None]
-        rgb[:] = rgb * (1 - a) + (np.asarray(colour, np.float32) / 255.0) * a
+        rgb[:] = rgb * (1 - a) + (np.asarray(color, np.float32) / 255.0) * a
 
-    if "DINO colours" in overlays and cube.has_dino:
+    if "DINO colors" in overlays and cube.has_dino:
         pc = up(_take(cube.pca(), axis, tok_i)).astype(np.float32) / 255.0
         rgb[:] = rgb * (1 - 0.6 * opacity) + pc * (0.6 * opacity)
     if "Recto surface" in overlays and "surface" in res:
-        blend(COLOURS["surface"], _take(res["surface"], axis, index) / 255.0)
+        blend(COLORS["surface"], _take(res["surface"], axis, index) / 255.0)
     if "Ink (3D ink model)" in overlays and "ink" in res:
-        blend(COLOURS["ink"], _take(res["ink"], axis, index) / 255.0)
-    if "Organisers' ink reference" in overlays and cube.ref_sim is not None:
+        blend(COLORS["ink"], _take(res["ink"], axis, index) / 255.0)
+    if "Organizers' ink reference" in overlays and cube.ref_sim is not None:
         s3 = cube.ref_sim
-        blend(COLOURS["reference"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct, floor=lens.TAU)))
+        blend(COLORS["reference"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct, floor=lens.TAU)))
     if "Your clicks" in overlays and click is not None:
-        blend(COLOURS["clicks"], up(_top_alpha(_take(click, axis, tok_i), click, top_pct)))
+        blend(COLORS["clicks"], up(_top_alpha(_take(click, axis, tok_i), click, top_pct)))
     img = (np.clip(rgb, 0, 1) * 255).astype(np.uint8)
     others = [a for a in range(3) if a != axis]
-    for kind, colour in (("pos", MARKS["pos"]), ("neg", MARKS["neg"])):
+    for kind, color in (("pos", MARKS["pos"]), ("neg", MARKS["neg"])):
         for v in (marks or {}).get(kind, []):
             if v[axis] // lens.PATCH == tok_i:
-                _mark(img, v[others[0]], v[others[1]], colour, 4)
+                _mark(img, v[others[0]], v[others[1]], color, 4)
     return img
 
 
-def _mark(img, r, c, colour, half):
+def _mark(img, r, c, color, half):
     """A cross two pixels thick, drawn in place."""
     h, w = img.shape[:2]
     for d in range(-half, half + 1):
         for t in (0, 1):
             for (y, x) in ((r + d, c + t), (r + t, c + d)):
                 if 0 <= y < h and 0 <= x < w:
-                    img[y, x] = colour
+                    img[y, x] = color
 
 
 def numbers(state):
@@ -540,12 +540,12 @@ def numbers(state):
         f"{lens.LAYER_TITLES[k]}: {v['role'][k]}" for k in lens.LAYERS))
     ag = r.get("agreement_with_ink_model")
     if ag and ag.get("auc") is not None:
-        lines.append(f"**Check.** The organisers' ink reference picks out the patches the 3D ink model marks as ink "
+        lines.append(f"**Check.** The organizers' ink reference picks out the patches the 3D ink model marks as ink "
                      f"with AUC {ag['auc']:.2f}; the control (ink mask moved half a cube) gives "
                      f"{ag['auc_control_shifted']:.2f} and should sit near 0.5. Ink covers "
                      f"{ag['ink_patch_fraction']:.1%} of patches. Agreement between two models, not ground truth.")
     if cube.ref_sim is not None:
-        lines.append(f"Patches at or above the organisers' threshold (cosine {lens.TAU}) to their reference: "
+        lines.append(f"Patches at or above the organizers' threshold (cosine {lens.TAU}) to their reference: "
                      f"{float((cube.ref_sim >= lens.TAU).mean()):.1%}.")
     s = click_sim(state, cube)
     if s is not None:
@@ -576,18 +576,18 @@ def figure_3d(state, overlays, top_pct):
     cube = cube_of(view)
     res, size = cube.result, view["size"]
     step = 2 if size <= 128 else 4
-    for key, name, colour, show in (("surface", "Recto surface", COLOURS["surface"], "Recto surface" in overlays),
-                                    ("ink", "Ink", COLOURS["ink"], "Ink (3D ink model)" in overlays)):
+    for key, name, color, show in (("surface", "Recto surface", COLORS["surface"], "Recto surface" in overlays),
+                                    ("ink", "Ink", COLORS["ink"], "Ink (3D ink model)" in overlays)):
         if not show or key not in res or res[key].max() < 128:
             continue
         verts, faces, _, _ = marching_cubes(res[key].astype(np.float32), level=127.5, step_size=step)
         fig.add_trace(go.Mesh3d(x=verts[:, 2], y=verts[:, 1], z=verts[:, 0], i=faces[:, 0], j=faces[:, 1],
-                                k=faces[:, 2], color=f"rgb{colour}", opacity=0.35 if key == "surface" else 0.8,
+                                k=faces[:, 2], color=f"rgb{color}", opacity=0.35 if key == "surface" else 0.8,
                                 name=name, showlegend=True, hoverinfo="skip"))
-    for key, name, colour in (("clicks", "Your clicks", COLOURS["clicks"]),
-                              ("reference", "Organisers' ink reference", COLOURS["reference"])):
+    for key, name, color in (("clicks", "Your clicks", COLORS["clicks"]),
+                              ("reference", "Organizers' ink reference", COLORS["reference"])):
         if (key == "clicks" and "Your clicks" not in overlays) or \
-                (key == "reference" and "Organisers' ink reference" not in overlays):
+                (key == "reference" and "Organizers' ink reference" not in overlays):
             continue
         s3 = click_sim(state, cube) if key == "clicks" else cube.ref_sim
         if s3 is None:
@@ -595,7 +595,7 @@ def figure_3d(state, overlays, top_pct):
         thr = np.percentile(s3, 100 - top_pct)
         pts = np.argwhere(s3 >= thr) * lens.PATCH + lens.PATCH / 2
         fig.add_trace(go.Scatter3d(x=pts[:, 2], y=pts[:, 1], z=pts[:, 0], mode="markers", name=name,
-                                   marker=dict(size=2.5, color=f"rgb{colour}", opacity=0.7), hoverinfo="skip"))
+                                   marker=dict(size=2.5, color=f"rgb{color}", opacity=0.7), hoverinfo="skip"))
     ax = dict(range=[0, size], showbackground=False, gridcolor="#3a4654", zerolinecolor="#3a4654",
               color="#c9d4de")
     fig.update_layout(scene=dict(xaxis=dict(ax, title="x"), yaxis=dict(ax, title="y"), zaxis=dict(ax, title="z"),
@@ -622,7 +622,7 @@ def run_cube(vid, z, y, x, size, layers, tta, allow_cpu=True):
     n = ran_size(result)
     if n != size:                                  # the CPU fallback ran the middle of the cube
         origin = tuple(int(o + (size - n) // 2) for o in origin)
-        fg = lens.foreground(_centre(ct, n))
+        fg = lens.foreground(_center(ct, n))
     src = "gpu" if str(result.get("device", "")).startswith("cuda") else "cpu"
     meta = lens.receipt(vid, origin, n, point, result, eng.describe(),
                         {"source": src, "note_run": note, "foreground": round(fg, 4), "requested_size": size})
@@ -773,15 +773,15 @@ It reads a small cube of a public X-ray CT scan straight from the open-data buck
 
 - **3D DINO embeddings** ([dinovol](https://huggingface.co/scrollprize/dinovol_v2_ps8_with_paris4_352500)): a
   self-supervised model that turns every 8 × 8 × 8 voxel patch into 864 numbers. Patches the model finds alike get
-  alike numbers. *DINO colours* paints the three main directions as red, green and blue.
+  alike numbers. *DINO colors* paints the three main directions as red, green and blue.
 - **3D ink model** ([ink_3d_dino_guided](https://huggingface.co/scrollprize/ink_3d_dino_guided)): marks ink voxels
   directly in the scan, with no flattened surface.
 - **Recto surface model** ([surface_recto_3dunet](https://huggingface.co/scrollprize/surface_recto_3dunet)): marks
   the written side of each papyrus sheet.
 
 **Click to search.** With *More like this*, a click takes the embedding of the patch you clicked; every patch with a
-similar embedding lights up in cyan. *Not this* subtracts a patch you do not want. This is how the organisers built
-their ink reference (*Organisers' ink reference*, in amber): experts clicked ink 256 times and averaged the
+similar embedding lights up in cyan. *Not this* subtracts a patch you do not want. This is how the organizers built
+their ink reference (*Organizers' ink reference*, in amber): experts clicked ink 256 times and averaged the
 embeddings. Your concept follows you to other cubes and scans, so you can click ink in one scroll and look for its
 like in another, and you can download it as `concept.npy`.
 
@@ -801,8 +801,8 @@ HOW_TO = """\
 3. **Look**: drag a slider under a view, or drag inside a view to move the crosshair; the other views follow as you
    move. The wheel or the arrow keys step one slice (Shift: 8). Ctrl or Cmd with the wheel, or a pinch, zooms;
    right-drag or Shift-drag pans; double-click resets. The line under the views reads out what is under the pointer.
-4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one. *Top % shown* sets how many of
-   the most similar patches light up.
+4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Undo click* (or Ctrl or Cmd
+   with Z) forgets the last one. *Top % shown* sets how many of the most similar patches light up.
 5. **Take it away**: **Save files** gives the model outputs (.npz), the receipt (.json) and, after clicks, your
    `concept.npy`. *Copy link* gives a link that opens this cube at this crosshair.
 
@@ -978,7 +978,8 @@ def build_demo():
                 problem = str(exc) if isinstance(exc, LensError) else "a click needs a voxel z, y, x"
                 continue
             kind = "neg" if click.get("value") == "neg" else "pos"
-            state[kind].append({"volume": view["volume"], "cube": cube_key(view), "voxel": vox,
+            state["tick"] = state.get("tick", 0) + 1
+            state[kind].append({"volume": view["volume"], "cube": cube_key(view), "voxel": vox, "t": state["tick"],
                                 "voxel_zyx": [int(v + o) for v, o in zip(vox, view["origin"])], "vec": vec})
         state["acked"] = sorted(seen)[-256:]
         state["rev"] = state.get("rev", 0) + 1
@@ -986,6 +987,18 @@ def build_demo():
             gr.Warning(problem)
         if cube is None:
             return [state, gr.skip(), gr.skip()]
+        return shown(state)
+
+    @soft(3)
+    def on_undo(state):
+        """Forget the most recent click (More like this or Not this) on any cube."""
+        clicks = [(c.get("t", 0), kind, i) for kind in ("pos", "neg") for i, c in enumerate(state[kind])
+                  if c["cube"] != "file"]
+        if not clicks:
+            raise LensError("no click to undo")
+        _, kind, i = max(clicks)
+        state = dict(state, rev=state.get("rev", 0) + 1)
+        state[kind] = state[kind][:i] + state[kind][i + 1:]
         return shown(state)
 
     @soft(4)
@@ -1135,6 +1148,7 @@ def build_demo():
         sbtn.click(on_surprise, vid, [z, y, x], **hidden)
         viewer.select(on_viewer_select, state, out, show_progress="hidden", trigger_mode="multiple", **hidden)
         viewer.clear(on_clear, state, out + [concept_up], show_progress="hidden", **hidden)
+        viewer.undo(on_undo, state, out, show_progress="hidden", **hidden)
         viewer.submit(on_viewer_3d, state, plot, **hidden)
         viewer.apply(on_viewer_use, None, [vid, z, y, x, tabs], show_progress="hidden", **hidden)
         concept_up.change(on_concept, [concept_up, state], out, **hidden)
@@ -1158,8 +1172,8 @@ PAGE_URL = f"https://huggingface.co/spaces/{SPACE_ID}"
 APP_URL = f"https://{SPACE_ID.lower().replace('/', '-').replace('_', '-')}.hf.space"
 GALLERY_URL = f"https://huggingface.co/spaces/{SPACE_ID}/resolve/main/gallery"
 MAX_TOP_K = 200
-LAYER_NAMES = {"ink": "Ink (3D ink model)", "surface": "Recto surface", "reference": "Organisers' ink reference",
-               "concept": "Your clicks", "pca": "DINO colours"}
+LAYER_NAMES = {"ink": "Ink (3D ink model)", "surface": "Recto surface", "reference": "Organizers' ink reference",
+               "concept": "Your clicks", "pca": "DINO colors"}
 
 
 def _plain(x):
@@ -1231,7 +1245,7 @@ def agent_volumes():
         "paris4_training_points_zyx": [list(p) for p in lens.PARIS4_TRAINING_POINTS],
         "note": ("Coordinates are level-0 scan voxels, z y x. None of these scans is eligible for the First Letters "
                  "or Grand Prize. PHerc. Paris 4's title is an open prize, so random_point returns only the eight "
-                 "points the organisers listed for training the ink model. Model output, not a reading."),
+                 "points the organizers listed for training the ink model. Model output, not a reading."),
     })
 
 
@@ -1248,7 +1262,7 @@ def agent_gallery(volume=""):
 
 def cube_receipt(cube):
     """A cube's receipt for the API: the stored receipt, the agreement check worked out again now (with the control
-    range, from the arrays the Space holds), and the share of patches the organisers' reference marks."""
+    range, from the arrays the Space holds), and the share of patches the organizers' reference marks."""
     import numpy as np
     meta = dict(cube.meta)
     meta.pop("engine", None)
@@ -1338,11 +1352,12 @@ def scan_cube(vid, origin, size):
 
 def agent_view(cube, axis="z", index=-1, layers=("ink", "reference"), positive_zyx=(), negative_zyx=(),
                positive_vector=(), top_pct=8.0, opacity=0.7):
-    """Path of a PNG of one slice, drawn by render_slice and scaled up to 512 pixels."""
+    """Path of a PNG of one slice, or of the three views side by side (axis "all"), drawn by render_slice and scaled
+    up to 512 pixels a view."""
     import numpy as np
     from PIL import Image
-    if axis not in ("z", "y", "x"):
-        raise LensError("axis is z, y or x")
+    if axis not in ("z", "y", "x", "all"):
+        raise LensError("axis is z, y, x or all")
     names = [str(k).strip().lower() for k in (layers or [])]
     bad = [k for k in names if k not in LAYER_NAMES]
     if bad:
@@ -1352,13 +1367,14 @@ def agent_view(cube, axis="z", index=-1, layers=("ink", "reference"), positive_z
         raise LensError("top_pct is 1 to 40 and opacity 0 to 1")
     c = _cube_for(cube)
     origin = tuple(int(v) for v in c.meta["cube_origin_zyx"])
-    a = "zyx".index(axis)
+    point = c.meta.get("point_zyx") or [o + c.size // 2 for o in origin]
+    axes = [0, 1, 2] if axis == "all" else ["zyx".index(axis)]
     index = lens.as_int(index, "index")
-    if index < 0:
-        point = c.meta.get("point_zyx") or [o + c.size // 2 for o in origin]
-        index = min(max(int(point[a]) - origin[a], 0), c.size - 1)
-    if not 0 <= index < c.size:
+    if axis == "all" and index >= 0:
+        raise LensError("with axis all, leave index at -1: each view goes through the cube's point")
+    if index >= c.size:
         raise LensError(f"index is 0 to {c.size - 1}, or -1 for the slice through the cube's point")
+    picks = [index if index >= 0 else min(max(int(point[a]) - origin[a], 0), c.size - 1) for a in axes]
     click, marks = None, {"pos": [], "neg": []}
     if positive_zyx or negative_zyx or positive_vector:
         pos, _ = _concept_of(c, positive_zyx, positive_vector, False, "positive")
@@ -1370,13 +1386,16 @@ def agent_view(cube, axis="z", index=-1, layers=("ink", "reference"), positive_z
                  for k, pts in (("pos", positive_zyx), ("neg", negative_zyx))}
         if "concept" not in names:
             names.append("concept")
-    img = render_slice(scan_cube(c.meta["volume"], origin, c.size), c, a, index,
-                       [LAYER_NAMES[k] for k in names], top_pct, opacity, click=click, marks=marks)
+    ct = scan_cube(c.meta["volume"], origin, c.size)
     f = max(1, 512 // c.size)
-    img = np.repeat(np.repeat(img, f, 0), f, 1)
+    tiles = [np.repeat(np.repeat(render_slice(ct, c, a, i, [LAYER_NAMES[k] for k in names], top_pct, opacity,
+                                              click=click, marks=marks), f, 0), f, 1) for a, i in zip(axes, picks)]
+    gap = np.full((tiles[0].shape[0], 8, 3), 255, np.uint8)
+    img = tiles[0] if len(tiles) == 1 else np.concatenate([tiles[0], gap, tiles[1], gap, tiles[2]], axis=1)
     OUT.mkdir(parents=True, exist_ok=True)
     prune(OUT, 900)
-    path = Path(tempfile.mkdtemp(dir=OUT)) / f"{c.meta['volume']}-{'-'.join(map(str, origin))}-{c.size}-{axis}{index}.png"
+    tag = "all" if axis == "all" else f"{axis}{picks[0]}"
+    path = Path(tempfile.mkdtemp(dir=OUT)) / f"{c.meta['volume']}-{'-'.join(map(str, origin))}-{c.size}-{tag}.png"
     Image.fromarray(img).save(path)
     return str(path)
 
@@ -1393,8 +1412,8 @@ Everything on this page is also an API, for scripts (`gradio_client`, plain HTTP
 | `random_point` | A random point on the papyrus of a scan (Surprise me) |
 | `look` | Run the three models on the cube around a point (ZeroGPU; your quota) |
 | `search` | Click search without clicking: the patches most like a concept, with the ink-model check |
-| `view` | One slice as a PNG, drawn like the page |
-| `reference` | The organisers' ink reference (864 numbers) |
+| `view` | The three views (or one) as a PNG, drawn like the page |
+| `reference` | The organizers' ink reference (864 numbers) |
 
 **MCP** (Claude, Cursor and other MCP clients): `{APP_URL}/gradio_api/mcp/` (streamable HTTP), or
 `{APP_URL}/gradio_api/mcp/sse`. For Claude Code: `claude mcp add --transport http scroll-lens {APP_URL}/gradio_api/mcp/`.
@@ -1440,7 +1459,7 @@ def add_api(gr, guard):
         return agent_gallery(volume)
 
     def gallery_cube(cube_id: str) -> dict:
-        """Get one gallery cube: its receipt (place in the scan, models, timings, and the check of the organisers' ink reference against the 3D ink model, with its control range) and its .npz of model outputs. No GPU.
+        """Get one gallery cube: its receipt (place in the scan, models, timings, and the check of the organizers' ink reference against the 3D ink model, with its control range) and its .npz of model outputs. No GPU.
 
         Args:
             cube_id: A gallery id from gallery, for example paris4-train-1.
@@ -1454,7 +1473,7 @@ def add_api(gr, guard):
         return dict(_plain(meta), npz=FileData(path=str(HERE / "gallery" / it["file"])).model_dump())
 
     def random_point(volume: Volume, seed: int | None = None) -> dict:
-        """Pick a random point on the papyrus of a scan (the page's Surprise me) to pass to look. Reads a few small chunks of the scan, no GPU. On PHercParis4 it returns one of the organisers' eight ink-training points.
+        """Pick a random point on the papyrus of a scan (the page's Surprise me) to pass to look. Reads a few small chunks of the scan, no GPU. On PHercParis4 it returns one of the organizers' eight ink-training points.
 
         Args:
             volume: A scan id from volumes, for example PHerc0139.
@@ -1496,7 +1515,7 @@ def add_api(gr, guard):
     def search(cube: str, positive_zyx: list[list[int]] = [], negative_zyx: list[list[int]] = [],
                positive_vector: list[float] = [], negative_vector: list[float] = [], reference: bool = False,
                top_k: int = 20, top_pct: float = 8.0, return_concept: bool = False) -> dict:
-        """Click search without clicking: score every 8x8x8 patch of a cube by the cosine similarity of its 3D DINO embedding to a concept, list the best patches, and check the scores against the 3D ink model (AUC beside a control range that should sit near 0.5). The concept is the unit mean of the embeddings at the positive voxels, a given 864-number vector and, if asked, the organisers' ink reference; negatives are subtracted. No GPU.
+        """Click search without clicking: score every 8x8x8 patch of a cube by the cosine similarity of its 3D DINO embedding to a concept, list the best patches, and check the scores against the 3D ink model (AUC beside a control range that should sit near 0.5). The concept is the unit mean of the embeddings at the positive voxels, a given 864-number vector and, if asked, the organizers' ink reference; negatives are subtracted. No GPU.
 
         Args:
             cube: A gallery id from gallery, or the cube_ref that look returned.
@@ -1504,7 +1523,7 @@ def add_api(gr, guard):
             negative_zyx: Scan voxels inside the cube whose patches to subtract (the page's Not this).
             positive_vector: An 864-number concept, such as a concept.npy, reference's vector, or a concept returned for another cube.
             negative_vector: An 864-number concept to subtract.
-            reference: Add the organisers' ink reference (mean embedding of 256 expert clicks on ink) to the positives.
+            reference: Add the organizers' ink reference (mean embedding of 256 expert clicks on ink) to the positives.
             top_k: How many of the best patches to list, 1 to 200.
             top_pct: The page's Top % shown: the share of patches counted as matches, 1 to 40.
             return_concept: Also return the concept's 864-number vectors, to search another cube or scan with them.
@@ -1515,31 +1534,31 @@ def add_api(gr, guard):
                             top_pct, return_concept)
 
     def reference() -> dict:
-        """Get the organisers' ink reference: the unit-length mean 3D DINO embedding of 256 expert clicks on ink, the vector the 3D ink model was guided by. Instant, no GPU. Use it as search's positive_vector, or call search with reference true.
+        """Get the organizers' ink reference: the unit-length mean 3D DINO embedding of 256 expert clicks on ink, the vector the 3D ink model was guided by. Instant, no GPU. Use it as search's positive_vector, or call search with reference true.
 
         Returns:
-            dict with vector (864 numbers), tau (the cosine threshold the organisers used), embed_dim and source (repo, revision, file, sha256)
+            dict with vector (864 numbers), tau (the cosine threshold the organizers used), embed_dim and source (repo, revision, file, sha256)
         """
         return agent_reference()
 
-    def view(cube: str, axis: Literal["z", "y", "x"] = "z", index: int = -1,
+    def view(cube: str, axis: Literal["z", "y", "x", "all"] = "all", index: int = -1,
              layers: list[Layer] = ["ink", "reference"], positive_zyx: list[list[int]] = [],
              negative_zyx: list[list[int]] = [], positive_vector: list[float] = [], top_pct: float = 8.0,
              opacity: float = 0.7) -> FileData:
-        """Draw one slice of a cube as a PNG, like the page: the scan in grey, ink red, recto surface green, the organisers' ink reference amber, a concept cyan, white and magenta crosses on its voxels. Reads the scan from the open-data bucket, no GPU.
+        """Draw a cube's slices as a PNG, like the page: the three views (top z, front y, side x) side by side, or one of them; the scan in gray, ink red, recto surface green, the organizers' ink reference amber, a concept cyan, white and magenta crosses on its voxels. Reads the scan from the open-data bucket, no GPU.
 
         Args:
             cube: A gallery id from gallery, or the cube_ref that look returned.
-            axis: Which view: z (top), y (front) or x (side).
-            index: The slice inside the cube, 0 to size - 1; -1 for the slice through the cube's point.
-            layers: Layers to draw: ink, surface, reference, concept, pca (DINO colours).
+            axis: all (the three views through the cube's point, side by side), or one view: z (top), y (front) or x (side).
+            index: For one view, the slice inside the cube, 0 to size - 1; -1 (and always with all) for the slice through the cube's point.
+            layers: Layers to draw: ink, surface, reference, concept, pca (DINO colors).
             positive_zyx: Scan voxels [[z, y, x], ...] for the cyan concept layer.
             negative_zyx: Scan voxels to subtract from that concept.
             positive_vector: An 864-number concept for the cyan layer.
             top_pct: Share of patches lit in the reference and concept layers, 1 to 40.
             opacity: Layer opacity, 0 to 1.
         Returns:
-            file, a PNG of 512 by 512 pixels
+            file, a PNG: 512 by 512 pixels for one view, 1552 by 512 for all three
         """
         return FileData(path=agent_view(cube, axis, index, layers, positive_zyx, negative_zyx, positive_vector,
                                         top_pct, opacity))

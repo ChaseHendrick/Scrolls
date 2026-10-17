@@ -12,14 +12,14 @@ const PATCH = 8;
 const OTHERS = [[1, 2], [0, 2], [0, 1]];      // per view: the axes of its rows and of its columns
 const VIEW_NAMES = ['Top view (z)', 'Front view (y)', 'Side view (x)'];
 const AXIS = ['z', 'y', 'x'];
-const COLOURS = {ink: [235, 64, 52], surface: [64, 200, 96], clicks: [40, 220, 235], reference: [250, 180, 30]};
+const COLORS = {ink: [235, 64, 52], surface: [64, 200, 96], clicks: [40, 220, 235], reference: [250, 180, 30]};
 const MARKS = {pos: '#ffffff', neg: '#ff46c8'};
 const LAYERS = [
   ['ink', 'Ink (3D ink model)', true, 'rgb(235,64,52)'],
   ['surface', 'Recto surface', false, 'rgb(64,200,96)'],
   ['clicks', 'Your clicks', true, 'rgb(40,220,235)'],
-  ['reference', "Organisers' ink reference", true, 'rgb(250,180,30)'],
-  ['pca', 'DINO colours', false, 'linear-gradient(90deg,#e33,#3c3,#36f)'],
+  ['reference', "Organizers' ink reference", true, 'rgb(250,180,30)'],
+  ['pca', 'DINO colors', false, 'linear-gradient(90deg,#e33,#3c3,#36f)'],
   ['cross', 'Crosshair', true, '#fff'],
 ];
 const MODES = [['pos', 'More like this'], ['neg', 'Not this'], ['move', 'Move only']];
@@ -43,9 +43,9 @@ const ctCache = new Map();
 element.innerHTML = `
 <div class="slv">
   <div class="slv-bar">
-    <div class="slv-group slv-layers">${LAYERS.map(([k, label, on, colour]) => `
+    <div class="slv-group slv-layers">${LAYERS.map(([k, label, on, color]) => `
       <label class="slv-chip"><input type="checkbox" data-layer="${k}" ${on ? 'checked' : ''}>
-        <i style="background:${colour}"></i>${label}</label>`).join('')}
+        <i style="background:${color}"></i>${label}</label>`).join('')}
     </div>
     <div class="slv-group">
       <span class="slv-label">A click does</span>${MODES.map(([k, label], i) => `
@@ -60,9 +60,10 @@ element.innerHTML = `
       <label>Contrast <input type="range" data-set="contrast" min="-100" max="100" step="1" value="0"></label>
     </div>
     <div class="slv-group slv-buttons">
-      <button data-act="centre" title="Put the crosshair back on the cube's point (C)">Centre on point</button>
+      <button data-act="center" title="Put the crosshair back on the cube's point (C)">Center on point</button>
       <button data-act="reset" title="Undo zoom and pan in all views (0)">Reset zoom</button>
       <button data-act="auto" title="Brightness and contrast back to automatic">Auto contrast</button>
+      <button data-act="undo" title="Forget your last click (Ctrl or Cmd + Z)">Undo click</button>
       <button data-act="clear" title="Forget every More like this and Not this click">Clear clicks</button>
       <button data-act="use" title="Copy the crosshair's scan position to Your own point">Use crosshair as point</button>
       <button data-act="link" title="Copy a link that opens this cube at this crosshair">Copy link</button>
@@ -83,7 +84,7 @@ element.innerHTML = `
   <div class="slv-help">Drag in a view: move the crosshair. Wheel or arrow keys: next slice (Shift: 8 at a time).
     Ctrl or Cmd with the wheel, or pinch: zoom. Right-drag or Shift-drag: pan. Double-click: reset zoom.
     Click: More like this (white cross), Not this (magenta cross), or nothing, as chosen above.
-    Amber marks the organisers' ink reference (their threshold, cosine 0.5, and the Top % shown).</div>
+    Amber marks the organizers' ink reference (their threshold, cosine 0.5, and the Top % shown).</div>
 </div>`;
 
 const $ = sel => element.querySelector(sel);
@@ -123,9 +124,9 @@ function flush() {
 
 function windowLevel() {
   const width = Math.max(1, (st.autoHi - st.autoLo) * Math.pow(2, -st.contrast / 50));
-  const centre = (st.autoLo + st.autoHi) / 2 - (st.bright / 100) * (st.autoHi - st.autoLo) / 2;
-  st.lo = centre - width / 2;
-  st.hi = centre + width / 2;
+  const center = (st.autoLo + st.autoHi) / 2 - (st.bright / 100) * (st.autoHi - st.autoLo) / 2;
+  st.lo = center - width / 2;
+  st.hi = center + width / 2;
 }
 
 function compose(a) {
@@ -146,8 +147,8 @@ function compose(a) {
   const ct = st.ct, ink = st.on.ink ? st.ink : null, sf = st.on.surface ? st.surface : null;
   const pca = st.on.pca ? st.pca : null, ref = st.on.reference ? st.ref : null, clk = st.on.clicks ? st.clk : null;
   const op = st.opacity, lo = st.lo, k = 255 / Math.max(1e-6, st.hi - st.lo);
-  const [ir, ig, ib] = COLOURS.ink, [sr, sg, sb] = COLOURS.surface;
-  const [rr, rg, rb] = COLOURS.reference, [cr, cg, cb] = COLOURS.clicks;
+  const [ir, ig, ib] = COLORS.ink, [sr, sg, sb] = COLORS.surface;
+  const [rr, rg, rb] = COLORS.reference, [cr, cg, cb] = COLORS.clicks;
   const refThr = st.refThr, refK = 1 / Math.max(1e-6, st.refTop - st.refThr);
   const clkThr = st.clkThr, clkK = 1 / Math.max(1e-6, st.clkTop - st.clkThr);
   const pw = 0.6 * op;
@@ -262,7 +263,7 @@ function topThreshold(sim, pct) {
 }
 function updateThresholds() {
   if (st.ref) {
-    // the organisers' reference never lights a patch below their own threshold (tau, cosine 0.5)
+    // the organizers' reference never lights a patch below their own threshold (tau, cosine 0.5)
     [st.refThr, st.refTop] = topThreshold(st.ref, st.top);
     const tau = st.meta && st.meta.tau != null ? st.meta.tau : 0.5;
     if (st.refThr < tau) st.refThr = tau;
@@ -496,7 +497,7 @@ function setSlider(name, value) {
 
 element.querySelectorAll('button[data-act]').forEach(btn => btn.addEventListener('click', () => {
   const act = btn.dataset.act, m = st.meta;
-  if (act === 'centre' && m) {
+  if (act === 'center' && m) {
     st.slices = m.point.map((p, i) => Math.min(st.size - 1, Math.max(0, p - m.origin[i])));
     redraw();
   } else if (act === 'reset') {
@@ -504,6 +505,9 @@ element.querySelectorAll('button[data-act]').forEach(btn => btn.addEventListener
     redraw([0, 1, 2], true);
   } else if (act === 'auto') {
     setSlider('bright', 0); setSlider('contrast', 0); windowLevel(); redraw();
+  } else if (act === 'undo') {
+    if (st.pending.length) { st.pending.pop(); redraw([0, 1, 2], true); }
+    else trigger('undo', {key: st.key});
   } else if (act === 'clear') {
     st.pending = [];
     trigger('clear', {key: st.key});
@@ -712,10 +716,15 @@ V.forEach((v, a) => {
     const big = ev.shiftKey ? 8 : 1;
     const keys = {ArrowUp: big, ArrowRight: big, PageUp: 8, ArrowDown: -big, ArrowLeft: -big, PageDown: -8};
     if (ev.key in keys) { stepSlice(a, keys[ev.key]); ev.preventDefault(); return; }
+    if ((ev.ctrlKey || ev.metaKey) && (ev.key === 'z' || ev.key === 'Z')) {
+      element.querySelector('button[data-act="undo"]').click();
+      ev.preventDefault();
+      return;
+    }
     if (ev.key === '+' || ev.key === '=') { const r = cv.getBoundingClientRect(); zoomAt(a, 1.25, r.left + r.width / 2, r.top + r.height / 2); }
     else if (ev.key === '-' || ev.key === '_') { const r = cv.getBoundingClientRect(); zoomAt(a, 0.8, r.left + r.width / 2, r.top + r.height / 2); }
     else if (ev.key === '0') { v.zoom = 1; v.cx = st.size / 2; v.cy = st.size / 2; redraw([a], true); }
-    else if (ev.key === 'c' || ev.key === 'C') element.querySelector('button[data-act="centre"]').click();
+    else if (ev.key === 'c' || ev.key === 'C') element.querySelector('button[data-act="center"]').click();
     else return;
     ev.preventDefault();
   });

@@ -38,12 +38,12 @@ Vesuvius Challenge team with their PHerc. Paris 4 work ([Angelotti et al. 2026](
 
 | Layer | Model | What it shows |
 | --- | --- | --- |
-| 3D DINO embeddings | [`scrollprize/dinovol_v2_ps8_with_paris4_352500`](https://huggingface.co/scrollprize/dinovol_v2_ps8_with_paris4_352500) | A self-supervised 3D ViT: 864 numbers for every 8 × 8 × 8 voxel patch. Alike patches get alike numbers. Shown as *DINO colours* (the three main directions as red, green, blue) and used by click search. |
+| 3D DINO embeddings | [`scrollprize/dinovol_v2_ps8_with_paris4_352500`](https://huggingface.co/scrollprize/dinovol_v2_ps8_with_paris4_352500) | A self-supervised 3D ViT: 864 numbers for every 8 × 8 × 8 voxel patch. Alike patches get alike numbers. Shown as *DINO colors* (the three main directions as red, green, blue) and used by click search. |
 | 3D ink | [`scrollprize/ink_3d_dino_guided`](https://huggingface.co/scrollprize/ink_3d_dino_guided) | Ink voxels marked directly in the scan, with no flattened surface. |
 | Recto surface | [`scrollprize/surface_recto_3dunet`](https://huggingface.co/scrollprize/surface_recto_3dunet) | The written side of each papyrus sheet. |
 
 **Click to search.** Click a patch with *More like this* and every patch whose embedding is close to it lights up;
-*Not this* subtracts a patch. This is the organisers' own recipe: their ink reference (shown in amber) is the mean
+*Not this* subtracts a patch. This is the organizers' own recipe: their ink reference (shown in amber) is the mean
 embedding of 256 expert clicks on ink. Your concept follows you to other cubes and scans, and downloads as
 `concept.npy` (and `concept_not.npy` for the Not this clicks), so you can click ink in one scroll and look for its like
 in another.
@@ -65,9 +65,9 @@ in another.
    under the views reads out what is under the pointer: place in the cube and the scan, CT value, ink and surface
    probability, and similarity.
 4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Move only* just moves the
-   crosshair. *Top % shown* sets how many of the most similar patches light up. The organisers' reference (amber)
+   crosshair; *Undo click* (or Ctrl or Cmd with Z) forgets the last click. *Top % shown* sets how many of the most similar patches light up. The organizers' reference (amber)
    never lights a patch below their own threshold, cosine 0.5.
-5. **More**: brightness and contrast, *Centre on point*, *Reset zoom*, *Use crosshair as point* (copies the
+5. **More**: brightness and contrast, *Center on point*, *Reset zoom*, *Use crosshair as point* (copies the
    crosshair's scan position to Your own point), *Copy link* (a link that opens this cube at this crosshair), *Draw in
    3D* (ink and surface shells and similar patches), and *Save files* (model outputs as `.npz`, the receipt `.json`,
    your concept).
@@ -79,7 +79,7 @@ models); `&s=z,y,x` puts the crosshair at that voxel of the cube.
 
 Only these twelve scans, all at 2.2 to 2.4 µm, the scale the models work at. None is on the First Letters or Grand
 Prize eligible lists. PHerc. Paris 4's title is an open prize, so Scroll Lens itself only ever picks the eight Paris 4
-points the organisers listed for training the 3D ink model; you can type any point.
+points the organizers listed for training the 3D ink model; you can type any point.
 
 | Id | Scroll | 3D DINO | 3D ink | Recto surface |
 | --- | --- | --- | --- | --- |
@@ -101,12 +101,12 @@ the model cards and the checkpoints' own training configs, read 16 October 2026.
 
 ## Checks
 
-- Each cube shows how well the organisers' ink reference picks out the patches the 3D ink model marks as ink (AUC),
+- Each cube shows how well the organizers' ink reference picks out the patches the 3D ink model marks as ink (AUC),
   beside controls that must fail: the same ink mask moved away from its place. Papyrus is layered, so one move can
   line the layers up again; the control is therefore taken over 16 fixed moves, and the AUC means something only
   above their range (`auc_control_p95`). Your own concept gets the same check. This is agreement between two models,
   not ground truth.
-- The 3D DINO code is the organisers' own (dinovol, at a pinned commit) and reproduces their napari inspector's patch
+- The 3D DINO code is the organizers' own (dinovol, at a pinned commit) and reproduces their napari inspector's patch
   embeddings to a cosine of 0.9999 on a Paris 4 cube.
 - Weights are downloaded at pinned revisions and refused unless their SHA-256 matches; the model code is downloaded
   at pinned commits. The receipt records all of it, plus the device, timings and the cube's place in the scan.
@@ -124,8 +124,8 @@ Only `look` uses the GPU.
 | `random_point` | `volume`, `seed` (optional) | a point on the papyrus (Surprise me) | no |
 | `look` | `vid`, `z`, `y`, `x`, `size=256`, `layers="dino,ink,surface"`, `tta`, `compact`, `allow_cpu` | the receipt, `cube_ref` and the `.npz` | yes |
 | `search` | `cube` (a gallery id or a `cube_ref`), `positive_zyx`, `negative_zyx`, `positive_vector`, `negative_vector`, `reference`, `top_k=20`, `top_pct=8`, `return_concept` | the best patches with scores, and the ink-model check | no |
-| `view` | `cube`, `axis` (z, y or x), `index` (-1 for the cube's point), `layers` (ink, surface, reference, concept, pca), the concept arguments, `top_pct`, `opacity` | a 512 × 512 PNG drawn like the page | no |
-| `reference` | none | the organisers' ink reference: 864 numbers, threshold 0.5, source | no |
+| `view` | `cube`, `axis` (all, z, y or x), `index` (-1 for the cube's point), `layers` (ink, surface, reference, concept, pca), the concept arguments, `top_pct`, `opacity` | a PNG drawn like the page: the three views side by side (1552 × 512), or one (512 × 512) | no |
+| `reference` | none | the organizers' ink reference: 864 numbers, threshold 0.5, source | no |
 
 **MCP.** Connect any MCP client to `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/` (streamable HTTP; the
 older SSE transport is at `/gradio_api/mcp/sse`). On this Space the tools are named `scroll_lens_volumes`,
@@ -173,10 +173,10 @@ receipt["cube_origin_zyx"], receipt["cube_size"])` reads it from the bucket.
 
 `lens.py` also runs on any computer: `python3 lens.py look PHerc0139 47316 9452 12796 --size 256` (CUDA if present).
 
-## Credits and licences
+## Credits and licenses
 
 Code: Apache 2.0 (see `LICENSE` and `NOTICE`), by Chase Hendrick. Models and their code: MIT, by the Vesuvius
-Challenge (dinovol includes parts under the DINOv2 Apache 2.0 licence and the DINOv3 License Agreement). Scan data:
+Challenge (dinovol includes parts under the DINOv2 Apache 2.0 license and the DINOv3 License Agreement). Scan data:
 CC BY-NC 4.0, Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael Dal Prà, Johannes Rudolph, Paul
 Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald, David Josey, Youssef Nader,
 C. Seth Parker, W. Brent Seales, *Vesuvius Challenge: CT Scans of Herculaneum Papyri*. Gallery cubes are model output

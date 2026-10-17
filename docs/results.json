@@ -3,8 +3,27 @@
  "updated": "2026-10-16",
  "about": "Every benchmark number this repository has measured or relies on. Model output, not readings. AUC: pixel AUC against the segment's 20260918 human labels inside its supervision mask (kit auc). auc_reversed: the same map read with depth reversed, the control. auc_shuffled: a map made with the depth layers shuffled, a second control. window crop: the segment's 640 px densest-labelled-ink window; inner_px: edge left out; map_from: full = cut from a whole-segment map, bare-crop = inferred on the crop alone (equal to full when inner_px is 64).",
  "held_out": {
-  "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md",
-  "PHerc0841": "not in the training data of ink_9um (its label dataset has no PHerc0841 segment; docs/logs/2026-10-08-w045-not-held-out.md), v8in or v8in-1447 (v8in's card lists no PHerc0841 segment; v8in-1447 fine-tunes on PHerc1447 w058 and w060 only), d9v2 (TAUIL's README holds out all three PHerc0841 segments, Community report) or Reader v2 (its train_config.json lists no PHerc0841 segment, Community report): the held-out test for those readers. Possibly not held out from Hecate: Hecate's base model scrollprize/ink_canonical_2um (recipe new_canon_autoresearch_recipe, epoch 13, step 113,246) has a committed trainer, ScrollPrize/villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py, that lists w00 and both PHerc0841 auto_grown segments as training fragments (lines 200-207, 292-293) and holds out only l5_0_crop (line 794) (Sourced fact); that the released weights came from that list is Interpretation. Treat Hecate's PHerc0841 scores, and the team's new_canon_autoresearch_recipe maps of PHerc0841, as possibly in-sample. See docs/logs/2026-10-09-pherc0841-hecate.md"
+  "w045": "held out from v8in only. ink_9um trained on this surface through its 2.399 um render pooled to 9.6 um (label dataset segment pherc0139-w029); d9v2 and Reader v2 start from ink_9um, and Reader v2 also trained on w045. Our scores use the native 9.362 um render: a cross-scan check on a training surface for those readers. See docs/logs/2026-10-08-w045-not-held-out.md. Not held out from Hecate or the team's canonical 2.4 um model either: the canonical trainer (ScrollPrize/villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py, lines 200-207) lists this surface as w029_202601261946, and the published Hecate split rule (villa branch distilled_3d_ink, 5ff00ca0, vesuvius/src/vesuvius/ink_detection/data/multiteacher.py) puts 86.8 % of its supervised pixels under training patches (our computation on the ink dataset's masks, 2026-10-16). See docs/logs/2026-10-16-reader-exposure.md",
+  "PHerc0841": "in the training data of none of ink_9um (its label dataset has no PHerc0841 segment), v8in and v8in-1447 (v8in's training/configs/v8in.json at d89166b and its patch pack list none; v8in-1447 adds only PHerc1447 w058 and w060), d9v2 (all three are in TAUIL's reader/test.txt at c156944, Community report) and Reader v2 (its train_config.json lists none, Community report): the held-out test for those readers. Not held out from Hecate (Interpretation, settled on 2026-10-16 as far as public sources go). Its own published trainer's split rule (ScrollPrize/villa branch distilled_3d_ink, 5ff00ca0, data/multiteacher.py), applied to the ink dataset's published masks, makes all three segments validation-only, since every supervised pixel lies inside their validation_mask_v2 (0 training patches; our computation; the archived manifest of the released run is not public). But its starting weights, scrollprize/ink_canonical_2um, come from a committed trainer (villa 94602c91 ink-detection/train_resnet3d_3d_decoder.py, lines 200-207, 292-293 and 794) that lists w00, ag405 and ag896 as training fragments and reads no validation mask; it keeps tiles only inside each segment's own _mask file, whose content in the team's 2um_dataset is not public (Sourced fact; that the released checkpoint used this list is Interpretation, from its matching name, epoch and step count). Weaker channels: checkpoint selection on a validation mean that would include PHerc0841, and the Paris 4 3D teacher (scrollprize/ink_3d_dino_guided), whose first stage trained on eight scrolls' labels including 0841 but which made Hecate's targets for Paris 4 only, so indirect at most (Interpretation). Team members also said on the community Discord in September 2026 that Hecate's training used almost all of the available ink labels and that the released label sets had been at least partly used to train the published models (Community reports, paraphrased). Treat Hecate's PHerc0841 scores, ensembles that include Hecate, and the team's new_canon_autoresearch_recipe maps of PHerc0841 as possibly in-sample. See docs/logs/2026-10-16-reader-exposure.md",
+  "w043": "PHerc0139 w043 (20260112000000-w043_2026011217): not held out from ink_9um (label dataset segment pherc0139-w043), d9v2 (reader/train.txt, and inherited from ink_9um), Reader v2 (train_config.json, twice, and inherited) or, very likely, Hecate: the ink dataset holds w043 with no validation mask, so the published Hecate split rule (villa distilled_3d_ink 5ff00ca0) holds out two generated 1024 px blocks (15.3 % of its supervised pixels) and puts 74.5 % under training patches (our computation, 2026-10-16; 68.2 % to 93.7 % over seeds 0 to 39, so the verdict does not depend on the seed; the archived manifest is not published). It is not in the canonical 2.4 um trainer's committed list (villa 94602c91, lines 200-207) or in v8in's. A ranking of these readers on w043 is mostly in-sample and favours Hecate over canonical 2um. See docs/logs/2026-10-16-reader-exposure.md",
+  "PHerc1447": "w058 and w060: held out from every released reader except v8in-1447, which fine-tuned on both (training/configs/loo_w062.json at 2bf9f42). Neither is in the label lists of ink_9um, v8in, d9v2 or Reader v2, in the ink dataset behind Hecate (it has no PHerc1447 folder) or in the canonical trainer's committed list. w062's labels are not released. See docs/logs/2026-10-16-reader-exposure.md"
+ },
+ "held_out_by_reader": {
+  "about": "Per reader family, whether each test group was outside its training data, in one word, for python -m kit leaderboard. The reasons and sources are in held_out above; keep the two in step. A row for a family with no status here fails kit leaderboard check.",
+  "w045": {
+   "v8in": "held out",
+   "ink_9um": "not held out",
+   "d9v2": "not held out",
+   "Reader v2": "not held out"
+  },
+  "PHerc0841": {
+   "ink_9um": "held out",
+   "v8in": "held out",
+   "v8in-1447": "held out",
+   "d9v2": "held out",
+   "Reader v2": "held out",
+   "Hecate": "not held out"
+  }
  },
  "segments": {
   "w045": {
@@ -257,7 +276,8 @@
    "auc_reversed": 0.5012,
    "auc_shuffled": 0.4851,
    "measured_by": "this repo",
-   "source": "https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md"
+   "source": "https://github.com/ChaseHendrick/Scrolls/blob/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10/autopipeline/README.md",
+   "date": "2026-10-09"
   },
   {
    "segment": "0841-ag896",
@@ -550,7 +570,7 @@
    "test": "PHerc0841 whole, human labels",
    "auc": 0.855,
    "source": "https://huggingface.co/domenicor046/reader-v2",
-   "note": "PHerc0841 may not be held out from Hecate: its base model's committed trainer lists all three PHerc0841 segments (see held_out.PHerc0841)"
+   "note": "PHerc0841 is not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, makes them validation-only (see held_out.PHerc0841)"
   },
   {
    "reader": "Reader v2",
@@ -569,7 +589,7 @@
    "test": "PHerc0841 whole, human labels",
    "auc": 0.866,
    "source": "https://huggingface.co/domenicor046/reader-v2",
-   "note": "PHerc0841 may not be held out from Hecate: its base model's committed trainer lists all three PHerc0841 segments (see held_out.PHerc0841)"
+   "note": "PHerc0841 is not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, makes them validation-only (see held_out.PHerc0841)"
   },
   {
    "reader": "ink_9um seed42",

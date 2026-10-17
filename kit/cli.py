@@ -1,7 +1,7 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases}.
+"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
-gate and releases read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
+gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
 scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
 """
 
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases
+from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard
 
 
 def cmd_prizes(args):
@@ -1293,9 +1293,18 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("text", nargs="+")
     p.set_defaults(func=cmd_greeklm)
 
+    p = sub.add_parser("routines", help="recurring repository checks any agent runs at session start "
+                                        "(kit/routines.py, docs/routines.json)")
+    from . import routines
+    routines.add_arguments(p)
+    p.set_defaults(func=routines.run)
+
     p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
     releases.add_arguments(p)
     p.set_defaults(func=releases.run)
+    p = sub.add_parser("leaderboard", help="the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json")
+    leaderboard.add_arguments(p)
+    p.set_defaults(func=leaderboard.run)
 
     p = sub.add_parser("run", help="local experiment ledger (experiments/, gitignored)")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))

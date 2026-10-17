@@ -184,8 +184,8 @@ class PlanTest(unittest.TestCase):
         self.assertIn("--reverse --device mps", plan.first_letters("PHerc0826", mac=True))
 
     def test_plan_names_hecate_caveat_for_pherc0841(self):
-        # PHerc0841 is held out from the readers this repository scores, but possibly not from
-        # Hecate (docs/logs/2026-10-09-pherc0841-hecate.md).
+        # PHerc0841 is held out from the readers this repository scores, but not from Hecate
+        # (docs/logs/2026-10-16-reader-exposure.md).
         text = plan.first_letters("PHerc0826")
         step = text[text.index("# 1b."):text.index("python -m kit fetch w045")]
         self.assertIn("PHerc0841 is the held-out test for ink_9um, v8in, v8in-1447, d9v2 and\n#     Reader v2", step)
