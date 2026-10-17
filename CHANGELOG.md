@@ -8,6 +8,11 @@ To install a fixed version, name its tag:
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.4.0"
 ```
 
+## Unreleased
+
+- **Offline ink-map viewer:** hovering now reports the scaled disagreement encoded in the overlay, including intermediate values such as 0.71. It previously read the red color channel and displayed 1.00 wherever disagreement was nonzero. Regenerate existing HTML pages to use the fix.
+- **Gate A reference:** documents the existing blocked verdict on a Mac/CPU mismatch, replacement records and reverse-control edge checks. Scoring behavior is unchanged.
+
 ## 0.4.0 (17 October 2026)
 
 - **Volume viewer:** `python -m kit volumeview` builds a Neuroglancer link, state or receipt from an explicit local manifest. It checks axes, voxel spacing, physical extents and declared frames before combining a public CT volume and prediction. This validates supplied metadata, not remote registration; no array is downloaded.

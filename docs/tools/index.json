@@ -2087,8 +2087,8 @@
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63753fa"
+    "date": "2026-10-17",
+    "commit": "a6beee7"
    },
    "license": null,
    "fields": {
@@ -2106,7 +2106,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07 (`bec6fb9`). The AutoPipeline release package carries the module (same code, older docstring) but no `gate` command",
     "Guide": "[STANDARDS.md](../STANDARDS.md) (the Gate A row and its known gap), [mac.md](../mac.md) (the Phase 0 queue that ends with this table)",
-    "Checked": "2026-10-16 against commit `63753fa`"
+    "Checked": "2026-10-17 against commit `a6beee7`"
    },
    "page": "docs/tools/gate.md",
    "sections": [
@@ -2155,49 +2155,49 @@
     {
      "name": "Outputs",
      "start_line": 138,
-     "end_line": 171,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 172,
-     "end_line": 188,
+     "start_line": 175,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 189,
-     "end_line": 199,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 200,
+     "start_line": 193,
      "end_line": 203,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 204,
-     "end_line": 213,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 208,
+     "end_line": 217,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 214,
-     "end_line": 221,
+     "start_line": 218,
+     "end_line": 225,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 222,
-     "end_line": 228,
+     "start_line": 226,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 229,
-     "end_line": 238,
+     "start_line": 234,
+     "end_line": 243,
      "applicable": true
     }
    ]
@@ -8674,8 +8674,8 @@
     "text": "Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-17",
+    "commit": "a6beee7"
    },
    "license": null,
    "fields": {
@@ -8693,7 +8693,7 @@
     "Go-ahead": "Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1)",
     "Released": "Public `main` since 2026-10-07 ([PR #13](https://github.com/ChaseHendrick/Scrolls/pull/13)); since 2026-10-14 also in the `scrolls-workbench` package installed from this repository, as `scrolls-workbench view`",
     "Guide": "[phantom-and-viewer.md](../phantom-and-viewer.md) (the phantoms and this viewer), [the phantom and viewer demo log](../logs/2026-10-07-phantom-demo.md)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-17 against commit `a6beee7`"
    },
    "page": "docs/tools/view.md",
    "sections": [
@@ -8778,13 +8778,13 @@
     {
      "name": "History",
      "start_line": 240,
-     "end_line": 245,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 246,
-     "end_line": 254,
+     "start_line": 247,
+     "end_line": 255,
      "applicable": true
     }
    ]
