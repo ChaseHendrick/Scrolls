@@ -6,7 +6,8 @@ Everything it prints is **Model output**: letter hypotheses for a person to chec
 
 - Code: [`kit/letterread.py`](../kit/letterread.py) (reader), [`kit/greeklm.py`](../kit/greeklm.py) (optional letter language model), [`scripts/letters/`](../scripts/letters/) (training data, training, benchmarks, demo).
 - Measured accuracy: [How well it reads](#how-well-it-reads) below, with the full record in [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) and the numbers in [`results.json`](results.json) under `letter_reader_checks`.
-- Weights: [Model card](#model-card-letters-v2-ccby) of `letters-v2-ccby`, the default (CC BY 4.0); `letters-v2-real` (CC BY-NC 4.0) stays released ([its card](#model-card-letters-v2-real); [Which weights](#which-weights)). Weights are not in git.
+- Weights: the command selects `letters-v2-real` (CC BY-NC 4.0) when you supply line positions, and `letters-v2-ccby` (CC BY 4.0) for automatic page reads. You can choose either explicitly; the demos use the permissive weights. [Which weights](#which-weights) explains the evidence and licenses. Weights are not in git.
+- Other scripts: the optional local Tesseract backend can propose Latin, Hebrew and other text when the corresponding language packs are installed. It reports word hypotheses, pack hashes and blank/shuffled controls; it has no measured scroll accuracy. [Reader backends](tools/reader-backends.md) covers installation, explicit language selection and switching backends or weights in a long-lived `ReaderSession`.
 
 ## Quick start
 
@@ -485,7 +486,7 @@ The exports carry machine letter annotations, like the overlay: keep them out of
 
 All numbers are Model output on public data, measured on CPU with the numpy reader, except the real-letter validation row (row 6), which is the trainer's own check on the B200. [Reproduce the benchmarks](#reproduce-the-benchmarks) gives the command for each row, and each benchmark script prints the row its settings reproduce before its numbers. Character error is edit distance over reference letters; 0.10 means about one edit per ten letters. "Free ends" does not charge letters read before or after the reference, because a map window also shows unlabelled neighbours. Each PHerc. 1667 test's rule was fixed in writing on 9 October 2026 before the readers it compares were run on it; the PHerc. 172 row is a diagnostic, because its column rule was set after that test half had been seen (conditions in the [log](logs/2026-10-14-letter-reader.md)). "Synthetic-only" is letters-v1: the same network, data size and training, with no real letters in its training lines.
 
-The table is `letters-v2-real`'s card as first published, scored on the PHerc. 1667 references of 9 October 2026. The default weights, `letters-v2-ccby`, were compared with `letters-v2-real` on 14 October on the same benchmarks, with PHerc. 1667 references rebuilt because the 9 October ones were lost, so `letters-v2-real`'s PHerc. 1667 numbers there differ from this table: see [Benchmarks: letters-v2-ccby against letters-v2-real](#benchmarks-letters-v2-ccby-against-letters-v2-real). In short (Interpretation), `letters-v2-ccby` errs more than `letters-v2-real` on one PHerc. 1667 map row, the other PHerc. 1667 and PHerc. 172 test comparisons are not resolved, and it errs less on Hell-Char validation lines.
+The table is `letters-v2-real`'s card as first published, scored on the PHerc. 1667 references of 9 October 2026. The permissive weights, `letters-v2-ccby`, were compared with `letters-v2-real` on 14 October on the same benchmarks, with PHerc. 1667 references rebuilt because the 9 October ones were lost, so `letters-v2-real`'s PHerc. 1667 numbers there differ from this table: see [Benchmarks: letters-v2-ccby against letters-v2-real](#benchmarks-letters-v2-ccby-against-letters-v2-real). In short (Interpretation), `letters-v2-ccby` errs more than `letters-v2-real` on one PHerc. 1667 map row, the other PHerc. 1667 and PHerc. 172 test comparisons are not resolved, and it errs less on Hell-Char validation lines.
 
 | Row | Test (letters-v2-real, step 30000) | Reference | Letters | Character error | Comparison |
 | --- | --- | --- | --- | --- | --- |
@@ -506,18 +507,33 @@ What it does not support:
 
 ## Which weights
 
-Two models are released, with the same network and the same reader code; [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) lists both, and `--weights` takes either name.
+Two models are released, with the same network and the same reader code; [`kit/data/letter-weights.json`](../kit/data/letter-weights.json) lists both, their fixed hashes and the selection profiles. `--weights` takes either name or your own weights file and always preserves that explicit choice.
 
-| | `letters-v2-ccby` (default) | `letters-v2-real` |
+| | `letters-v2-ccby` | `letters-v2-real` |
 | --- | --- | --- |
 | Licence | CC BY 4.0 | CC BY-NC 4.0 |
 | Real letters in its training lines | Hell-Char only (10,857 crops of 123 papyri) | Hell-Char and ICDAR 2023 (43,806 crops) |
 | Checkpoint chosen on | Hell-Char validation lines from 21 papyri held out of training | the PHerc. 172 dev half |
 | Card | [letters-v2-ccby](#model-card-letters-v2-ccby) | [letters-v2-real](#model-card-letters-v2-real) |
 
-`letters-v2-ccby` is the default (Chase's choice, 14 October 2026) for its licence, not because it reads better (Interpretation). On the benchmarks in its card it errs more than `letters-v2-real` on one PHerc. 1667 map row (the map windows with the line given: +0.085, 95% interval +0.017 to +0.155) and on the PHerc. 172 dev half that chose `letters-v2-real`; the other scroll comparisons are not resolved, and it errs less on Hell-Char validation lines. The default is what the offline demo, the public-map demo, CI and this guide's examples use; `letterread` itself always takes `--weights`, and `R.DEFAULT_WEIGHTS` names the default in Python.
+The default now follows the task, using the public comparison below (17 October 2026). With `--lines`, the command selects the `ink-lines` profile and `letters-v2-real`. Without given line positions it selects `permissive` and `letters-v2-ccby`. This chooses before reading any pixels or scoring any output; it does not try both and select whichever produces more letters. Use `--weight-profile` to override the task choice, or `--weights` for a particular checkpoint or file; the two options cannot be combined. The command reports the profile and license, and its result records the selected weights and hash.
 
-Pick `letters-v2-ccby` when the use may be commercial, or when weights or a model fine-tuned from them are to be shared under a permissive licence: CC BY 4.0 allows both with credit (the credit lines are in its card). Pick `letters-v2-real` (`--weights letters-v2-real`) for non-commercial use when you want the model with the lower point estimates on most of the scroll rows, or to reproduce its published numbers; it and anything fine-tuned from it carry CC BY-NC 4.0.
+| Profile | Weights | When to use it |
+| --- | --- | --- |
+| `ink-lines` | `letters-v2-real`, CC BY-NC 4.0 | Noncommercial research on ink-map lines. In the published PHerc. 1667 test with line positions and letter height given, free-ends error was 0.376 against 0.462 for `letters-v2-ccby`; the paired difference was +0.085, 95% interval +0.017 to +0.155 |
+| `permissive` | `letters-v2-ccby`, CC BY 4.0 | Automatic page reads, photographs, commercial use or sharing a permissively licensed fine-tune. The whole-region ink-map comparison was unresolved: 0.308 against 0.342 for `letters-v2-real`, difference -0.034, interval -0.118 to +0.048. Photo accuracy remains untested; this profile does not claim an accuracy win on photographs |
+
+For example, a noncommercial ink-map read with a known line at row 120 selects the ink-line checkpoint. A permissive read can keep that checkpoint choice explicit even when its line position is supplied:
+
+```bash
+scrolls-letterread MAP.png --lines 120 --letter-px 86
+scrolls-letterread MAP.png --lines 120 --letter-px 86 --weight-profile permissive
+scrolls-letterread MAP.png --weight-profile ink-lines --letter-px 86
+```
+
+**Scope matters.** Neither checkpoint is established as best for every input. The PHerc. 172 development half helped choose `letters-v2-real`, so its advantage there is not independent evidence. `letters-v2-ccby` errs less on the Hell-Char validation lines. The map benchmarks use a small, previously studied set; they do not establish accuracy on new scrolls. All figures are Model output, and the model card below gives the controls and limitations.
+
+The earlier all-purpose demo choice of `letters-v2-ccby` was for its permissive license (14 October 2026). The offline demo, public-map demo and CI still use it explicitly; `R.DEFAULT_WEIGHTS` remains that demo default. The Python `read()` API still takes explicit weights; `kit.letterweights.select_weights(lines_given=True)` returns the ink-line choice when an application wants the same policy as the command. No weights, release tags or hashes change. Fine-tunes inherit their starting checkpoint's terms: CC BY 4.0 from `letters-v2-ccby`, CC BY-NC 4.0 from `letters-v2-real`.
 
 ## Model card: letters-v2-ccby
 
@@ -550,7 +566,7 @@ CPU, Model output, read with the public reader code at commit `7dc92e8` on 14 Oc
 | Hell-Char validation lines from 21 unseen papyri, lines 601 to 2,000 (1,288 with letters), used to choose neither checkpoint | 0.404 | 0.430 | -0.026 (-0.034 to -0.018) |
 | The same papyri, the first 600 lines (549 with letters), which letters-v2-ccby was chosen on (biased in its favour) | 0.416 | 0.444 | -0.028 (-0.039 to -0.017) |
 
-What the numbers say (Interpretation). On these tests `letters-v2-ccby` errs more than `letters-v2-real` on the map windows with the line given, and on the PHerc. 172 dev half that chose `letters-v2-real`; the other scroll comparisons are not resolved (the three-line windows only just: the interval's lower end is exactly zero). It errs less on the Hell-Char validation lines, whose papyri come from the dataset that gave `letters-v2-ccby` all of its real letters but `letters-v2-real` only about a quarter of them; that may favour it there, but this is untested. The Hell-Char and dev-half comparisons were not fixed in advance; the six scroll comparisons that were (the four PHerc. 1667 rows and the two PHerc. 172 test-half rows) carry no correction for multiplicity. It is the default because its weights carry a permissive licence, not because it reads better.
+What the numbers say (Interpretation). On these tests `letters-v2-ccby` errs more than `letters-v2-real` on the map windows with the line given, and on the PHerc. 172 dev half that chose `letters-v2-real`; the other scroll comparisons are not resolved (the three-line windows only just: the interval's lower end is exactly zero). It errs less on the Hell-Char validation lines, whose papyri come from the dataset that gave `letters-v2-ccby` all of its real letters but `letters-v2-real` only about a quarter of them; that may favour it there, but this is untested. The Hell-Char and dev-half comparisons were not fixed in advance; the six scroll comparisons that were (the four PHerc. 1667 rows and the two PHerc. 172 test-half rows) carry no correction for multiplicity. It remains the automatic-page and demo choice because its weights carry a permissive license; supplied-line research now selects `letters-v2-real` unless overridden.
 
 Controls. Every PHerc. 1667, PHerc. 172 and synthetic-page read passed both controls on its totals: the error against references shuffled across groups or lines is above the real error, and the confident letters kept are more than three times those kept on scrambled copies of the same images. On the PHerc. 172 and page reads the shuffled-reference check was added after the test plan was fixed. A few segments fall under the letters-kept bar on their own: two of `letters-v2-ccby`'s six PHerc. 1667 segments in the whole-region read, and one small PHerc. 172 dev-half segment for each reader. The Hell-Char lines have no letters-kept control; their error against shuffled references, checked after the plan was fixed, is above the real error. On six blank synthetic pages `letters-v2-ccby` kept 1 confident letter and `letters-v2-real` 39; `letters-v2-real`'s 39 all fell on one texture page, where its own scrambled-copy control marked them as noise.
 
@@ -571,7 +587,7 @@ Changes made: we do not redistribute the crops. Each usable crop was converted t
 
 ## Model card: letters-v2-real
 
-The reader's default weights until 14 October 2026; they stay released, and `--weights letters-v2-real` reads with them ([Which weights](#which-weights)).
+The reader's default weights until 14 October 2026 and the `ink-lines` profile since 17 October; `--weights letters-v2-real` also selects them explicitly ([Which weights](#which-weights)).
 
 | | |
 | --- | --- |

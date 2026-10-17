@@ -3315,8 +3315,8 @@
   {
    "id": "letterread",
    "name": "letterread",
-   "tagline": "propose Greek letters on a 2D image of text, with controls",
-   "summary": "`python -m kit letterread` runs a small learned line reader (numpy only) over an ink map, an ink label or a photograph and proposes Greek capitals with boxes and confidences, scored against nulls, an optional control map and turned reads.",
+   "tagline": "Greek letter hypotheses or explicit local multilingual OCR",
+   "summary": "`python -m kit letterread` proposes Greek letters with a controlled line network, or explicitly selects a local Tesseract language model for word hypotheses. Both routes record the model and controls; neither produces a verified reading.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -3341,6 +3341,10 @@
      "symbols": []
     },
     {
+     "path": "kit/letterweights.py",
+     "symbols": []
+    },
+    {
      "path": "kit/data/letter-weights.json",
      "symbols": []
     },
@@ -3354,6 +3358,8 @@
     }
    ],
    "tests": [
+    "tests/test_letterweights.py",
+    "tests/test_reader_backends.py",
     "tests/test_letterread.py",
     "tests/test_letterexport.py",
     "tests/test_letterlines.py",
@@ -3366,8 +3372,8 @@
     "text": "Not needed to read public data. Publishing a read, an overlay or an export of a prize-eligible or unpublished scroll is never allowed before the prize is announced (the no-findings rule, hard rule 1); posting any read needs Chase's yes (the go-ahead rule, hard rule 8)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "14f5ce0"
+    "date": "2026-10-17",
+    "commit": "869d621"
    },
    "license": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
    "fields": {
@@ -3376,8 +3382,8 @@
     "Kind": "kit command, kit module",
     "Area": "Letters and titles",
     "Run": "`python -m kit letterread`, `scrolls-letterread` (the installed package's console script), `from kit import letterread`, `from kit import letterexport`",
-    "Code": "`kit/letterread.py`, `kit/letterexport.py`, `kit/data/letter-weights.json`, `kit/cli.py` (`cmd_letterread`, `letterread_main`, `import_advice`)",
-    "Tests": "`tests/test_letterread.py`, `tests/test_letterexport.py`, `tests/test_letterlines.py`, `tests/test_letter_scripts.py`, `tests/test_letterdemo.py`, `tests/test_packaging.py`",
+    "Code": "`kit/letterread.py`, `kit/letterexport.py`, `kit/letterweights.py`, `kit/data/letter-weights.json`, `kit/cli.py` (`cmd_letterread`, `letterread_main`, `import_advice`)",
+    "Tests": "`tests/test_letterweights.py`, `tests/test_reader_backends.py`, `tests/test_letterread.py`, `tests/test_letterexport.py`, `tests/test_letterlines.py`, `tests/test_letter_scripts.py`, `tests/test_letterdemo.py`, `tests/test_packaging.py`",
     "Needs": "Python 3.10 or newer and numpy. Pillow for PNG and JPEG input and for `--overlay`; tifffile (and imagecodecs for compressed TIFFs) for TIFF input; zarr for zarr input and for reading a compressed tiled TIFF band by band. The `reader` extra of the `scrolls-workbench` package brings numpy, Pillow, tifffile and imagecodecs; zarr comes with `pip install zarr`. The weights: a released model (`letters-v2-ccby`, 5,933,674 bytes, or `letters-v2-real`), downloaded once, or a `linenet-v1` `.npz` file. No torch, no GPU",
     "Runs on": "Any CPU. A 301 x 1,006 px synthetic page with a control map, the four orientation reads, the three exports and an overlay took 4.0 s wall and 13.4 s of CPU (measured 2026-10-16, 4-core 2.8 GHz Xeon cloud container, weights cached). The guide measured a whole 2.4 um PHerc. 1667 w013 map (a 269 MB tiled TIFF) block-averaged by 43 at 35 to 36 s and about 250 MB peak with zarr installed (14 October 2026, 4-core cloud container; [Big maps](../letter-reader.md#big-maps))",
     "Network": "Only when a released weights name is not yet in the cache: the download from `github.com`, which redirects to GitHub's release file host (`release-assets.githubusercontent.com` or `objects.githubusercontent.com`). It follows `HTTPS_PROXY` and `NO_PROXY`. Reading an image and the exports make no connection",
@@ -3387,98 +3393,98 @@
     "Release id": "`letter-reader`",
     "License": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
     "Guide": "[letter-reader.md](../letter-reader.md) (install, first reads, model cards, benchmarks, the result field by field)",
-    "Checked": "2026-10-16 against commit `14f5ce0`"
+    "Checked": "2026-10-17 against commit `869d621` and the reader routing change"
    },
    "page": "docs/tools/letterread.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 25,
-     "end_line": 34,
+     "end_line": 38,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 35,
-     "end_line": 49,
+     "start_line": 39,
+     "end_line": 53,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 50,
-     "end_line": 77,
+     "start_line": 54,
+     "end_line": 81,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 78,
-     "end_line": 90,
+     "start_line": 82,
+     "end_line": 94,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 91,
-     "end_line": 157,
+     "start_line": 95,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 158,
-     "end_line": 244,
+     "start_line": 176,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 245,
-     "end_line": 257,
+     "start_line": 272,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 258,
-     "end_line": 296,
+     "start_line": 285,
+     "end_line": 325,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 297,
-     "end_line": 359,
+     "start_line": 326,
+     "end_line": 399,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 360,
-     "end_line": 372,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 373,
-     "end_line": 380,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 381,
-     "end_line": 390,
-     "applicable": true
-    },
-    {
-     "name": "Tests",
-     "start_line": 391,
-     "end_line": 398,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 399,
+     "start_line": 400,
      "end_line": 412,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Cost and time",
      "start_line": 413,
-     "end_line": 421,
+     "end_line": 420,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 421,
+     "end_line": 432,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 433,
+     "end_line": 440,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 441,
+     "end_line": 456,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 457,
+     "end_line": 465,
      "applicable": true
     }
    ]
@@ -5463,6 +5469,150 @@
      "name": "Related",
      "start_line": 116,
      "end_line": 121,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "reader-backends",
+   "name": "reader-backends",
+   "tagline": "switch between Greek letters and local multilingual OCR",
+   "summary": "Choose a reader and language explicitly, inspect installed Tesseract packs, and return word hypotheses with model hashes and controls without silently substituting a model. Tesseract uses only local packs; requested Greek releases keep their existing hash-verified downloader.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit.reader_backends"
+   ],
+   "imports": [
+    "from kit import reader_backends"
+   ],
+   "code": [
+    {
+     "path": "kit/reader_backends.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_reader_backends.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for local public-data use; publication of private results still needs clearance"
+   },
+   "checked": {
+    "date": "2026-10-17",
+    "commit": "869d621"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`reader-backends`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit.reader_backends`, `from kit import reader_backends`",
+    "Code": "`kit/reader_backends.py`",
+    "Tests": "`tests/test_reader_backends.py`",
+    "Needs": "Python 3.10 or newer. Discovery uses the standard library. Reading needs numpy and Pillow; Tesseract 5 and its explicitly installed language packs. Checked with Tesseract 5.5.0",
+    "Runs on": "Local CPU; the synthetic Latin read and its two controls finished in under one second here on 17 October 2026. Scroll-image accuracy and large-page timing are not measured",
+    "Network": "None for Tesseract. The Greek route uses the existing hash-verified released-weight loader, which may download a requested release from GitHub",
+    "Writes": "Temporary PNGs, deleted after the read; through the letterread CLI, only the requested JSON output. No model installation",
+    "Go-ahead": "Not needed for local public-data use; publication of private results still needs clearance",
+    "Released": "New source change, not a separate released model or tagged package",
+    "Checked": "2026-10-17 against commit `869d621` and the reader routing change"
+   },
+   "page": "docs/tools/reader-backends.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 36,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 49,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 57,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 70,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 107,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 113,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 121,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 150,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 154,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 158,
+     "end_line": 167,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 168,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 172,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 176,
+     "end_line": 179,
      "applicable": true
     }
    ]

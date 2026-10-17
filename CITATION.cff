@@ -10,7 +10,8 @@ abstract: >-
   maps, drawn ink labels and photographs of papyri (numpy inference, with null
   and orientation controls and a status code on every result, and a control map
   when one is given), ink-map scoring against published labels, run planning and
-  provenance records. Everything the letter reader prints is model output, letter
+  provenance records. An optional local OCR backend supports installed language
+  packs, with model hashes and blank/shuffled controls. Everything the letter reader prints is model output, letter
   hypotheses for a person to check, not a reading.
 authors:
   - given-names: Chase
@@ -18,7 +19,8 @@ authors:
 repository-code: "https://github.com/ChaseHendrick/Scrolls"
 url: "https://github.com/ChaseHendrick/Scrolls"
 license: Apache-2.0
-version: 0.2.0
+version: 0.3.0
+date-released: 2026-10-17
 keywords:
   - Vesuvius Challenge
   - Herculaneum papyri
@@ -37,7 +39,7 @@ references:
     notes: >-
       The file letters-v2-ccby-step026000.npz (SHA-256
       b14988852fc721cce71e80a66db0a8ea99a1de914ef2b724ecc6e711baa9ed8c), released
-      on GitHub as letters-v2-ccby, the reader's default weights; its model card is
+      on GitHub as letters-v2-ccby, the permissive profile and demo weights; its model card is
       in docs/letter-reader.md. The weights are licensed CC BY 4.0, not Apache-2.0.
       Part of their training lines' glyphs are letter crops from Hell-Char (the
       paper https://arxiv.org/abs/2606.24984; the dataset at

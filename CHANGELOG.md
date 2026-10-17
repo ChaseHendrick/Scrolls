@@ -5,11 +5,14 @@ This file covers the `scrolls-workbench` package, the `kit` folder of this repos
 To install a fixed version, name its tag:
 
 ```bash
-python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.2.0"
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.3.0"
 ```
 
-## Unreleased
+## 0.3.0 (17 October 2026)
 
+- **Letter reader:** explicit local Tesseract backend for Latin and other installed language packs, with word-level provenance, model hashes and blank/shuffle controls. Greek LineNet stays script-checked; language changes never relabel its alphabet. No runtime model downloads or remote OCR in the Tesseract route.
+- **Greek weight profiles:** known line positions default to the measured ink-line checkpoint (`letters-v2-real`, CC BY-NC 4.0); automatic layout keeps `letters-v2-ccby` (CC BY 4.0). Explicit weights or profiles override this choice and the selected profile licence is recorded.
+- **Reader sessions:** `ReaderSession.switch()` changes weights, profiles, languages or backends on one Python object. It loads and validates the replacement before activation, retains the previous working selection on failure and records the active selection in each result. Tesseract remains a local subprocess per read. A language pack that fails initialization is rejected even if the engine could continue with only part of the requested language set.
 - **Segmentation model zoo** (`python -m kit segzoo datalist`): refuse duplicate case/channel files, mismatched label endings, malformed dataset metadata, empty datasets and fewer than two folds before writing an Auto3DSeg training plan. Previously duplicates could silently replace an input and zero folds caused a traceback. Valid datasets keep the same fold assignments.
 
 ## 0.2.0 (16 October 2026)

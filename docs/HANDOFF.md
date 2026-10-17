@@ -2,6 +2,13 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 17 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Reader weights, languages and runtime switching | Implemented for workbench 0.3.0: supplied lines use the `ink-lines` profile (CC BY-NC 4.0), automatic regions keep the permissive profile, and explicit overrides remain. Local Tesseract supports installed recognition languages with separate word provenance and controls. `ReaderSession.switch()` validates replacements before activating them. Independent Greek/Latin switching and seven failed-switch checks passed; 1,056 tests passed with 61 optional skips, plus 45 numerical experiment checks | Publish the checked workbench tag after the implementation PR passes CI. Printed-language checks do not establish scroll accuracy; one Latin shuffle control beat its input. [Guide](letter-reader.md), [backend contract](tools/reader-backends.md) |
+| Segmentation dataset validation | [PR #118](https://github.com/ChaseHendrick/Scrolls/pull/118) merged: ambiguous inputs, malformed metadata and invalid fold counts are rejected before training plans are written | No training or model-quality result is implied. [Tool page](tools/segzoo.md) |
+
 ## Open items added 16 October 2026 (checked 02:30 ET)
 
 Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
