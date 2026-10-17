@@ -3447,8 +3447,8 @@
   {
    "id": "letterread",
    "name": "letterread",
-   "tagline": "Greek letter hypotheses or explicit local multilingual OCR",
-   "summary": "`python -m kit letterread` proposes Greek letters with a controlled line network, or explicitly selects a local Tesseract language model for word hypotheses. Both routes record the model and controls; neither produces a verified reading.",
+   "tagline": "Scroll Text Reader",
+   "summary": "Scroll Text Reader (formerly Greek Letter Reader) uses `scrolls-letterread` or `python -m kit letterread` to propose Greek letters with LineNet or words with installed local Tesseract language packs, with model provenance and controls.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -3532,91 +3532,91 @@
     {
      "name": "What it does",
      "start_line": 25,
-     "end_line": 38,
+     "end_line": 40,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 39,
-     "end_line": 53,
+     "start_line": 41,
+     "end_line": 55,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 54,
-     "end_line": 81,
+     "start_line": 56,
+     "end_line": 83,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 82,
-     "end_line": 94,
+     "start_line": 84,
+     "end_line": 96,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 95,
-     "end_line": 175,
+     "start_line": 97,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 176,
-     "end_line": 271,
+     "start_line": 178,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 272,
-     "end_line": 284,
+     "start_line": 274,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 285,
-     "end_line": 325,
+     "start_line": 287,
+     "end_line": 327,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 326,
-     "end_line": 399,
+     "start_line": 328,
+     "end_line": 401,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 400,
-     "end_line": 412,
+     "start_line": 402,
+     "end_line": 414,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 413,
-     "end_line": 420,
+     "start_line": 415,
+     "end_line": 422,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 421,
-     "end_line": 432,
+     "start_line": 423,
+     "end_line": 434,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 433,
-     "end_line": 440,
+     "start_line": 435,
+     "end_line": 442,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 441,
-     "end_line": 456,
+     "start_line": 443,
+     "end_line": 458,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 457,
-     "end_line": 465,
+     "start_line": 459,
+     "end_line": 467,
      "applicable": true
     }
    ]
@@ -5608,8 +5608,8 @@
   {
    "id": "reader-backends",
    "name": "reader-backends",
-   "tagline": "switch between Greek letters and local multilingual OCR",
-   "summary": "Choose a reader and language explicitly, inspect installed Tesseract packs, and return word hypotheses with model hashes and controls without silently substituting a model. Tesseract uses only local packs; requested Greek releases keep their existing hash-verified downloader.",
+   "tagline": "Scroll Text Reader backends and session switching",
+   "summary": "Scroll Text Reader can switch between Greek LineNet and explicitly installed local Tesseract language packs, with model provenance, controls and validation before replacing a working selection.",
    "status": "Experimental",
    "kind": [
     "kit module"

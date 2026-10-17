@@ -1215,7 +1215,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
 
-    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="Greek letter reader or explicit local multilingual OCR, with controls")
+    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"),
+                       help="Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls",
+                       description="Scroll Text Reader (formerly Greek Letter Reader). Greek LineNet proposes letters; "
+                                   "optional local Tesseract proposes words using explicitly installed language packs. "
+                                   "Outputs are unverified hypotheses with controls, not readings.")
     p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
     p.add_argument("--backend", choices=["linenet", "tesseract"], default="linenet",
                    help="linenet: Greek letter reader (default); tesseract: installed local OCR language packs")

@@ -89,11 +89,11 @@ Released 17 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens); MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).
 
-### Greek letter reader
+### Scroll Text Reader
 
 Released 17 October 2026.
 
-A small learned reader proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs using NumPy on CPU. Its output is a hypothesis for a person to check, with null and orientation controls, not a reading. The default now follows the task: given line positions select `letters-v2-real` (CC BY-NC 4.0); automatic layout selects `letters-v2-ccby` (CC BY 4.0). Explicit weights or a profile override that choice, and results record the profile, license and weight hash. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for real versus 0.462 for ccby; the paired difference interval was +0.017 to +0.155 (Model output; 117 letters in 84 groups). The whole-region comparison was unresolved; photo accuracy is untested. Those maps may benefit from training-label exposure, so this does not establish accuracy on new scrolls. An optional local Tesseract backend supports Latin, Greek, Hebrew and other installed language packs with pack hashes and blank/shuffled controls. Printed-text smoke checks establish that the backend works, not scroll accuracy; controls can fail. `ReaderSession` validates replacements before switching models, profiles, languages or backends and keeps the previous selection on failure. Checkpoint files and release tags are unchanged.
+Scroll Text Reader (formerly Greek Letter Reader). A small learned reader proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs using NumPy on CPU. Its output is a hypothesis for a person to check, with null and orientation controls, not a reading. The default now follows the task: given line positions select `letters-v2-real` (CC BY-NC 4.0); automatic layout selects `letters-v2-ccby` (CC BY 4.0). Explicit weights or a profile override that choice, and results record the profile, license and weight hash. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for real versus 0.462 for ccby; the paired difference interval was +0.017 to +0.155 (Model output; 117 letters in 84 groups). The whole-region comparison was unresolved; photo accuracy is untested. Those maps may benefit from training-label exposure, so this does not establish accuracy on new scrolls. An optional local Tesseract backend supports Latin, Greek, Hebrew and other installed language packs with pack hashes and blank/shuffled controls. Printed-text smoke checks establish that the backend works, not scroll accuracy; controls can fail. `ReaderSession` validates replacements before switching models, profiles, languages or backends and keeps the previous selection on failure. Checkpoint files and release tags are unchanged.
 
 ```bash
 python3 -m venv .venv
@@ -162,7 +162,7 @@ Guide, the 14 weight files with their SHA-256, held-out results with their limit
 
 ## Quick start (kit)
 
-Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). The Greek letter reader is not: it needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
+Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). Scroll Text Reader needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
 
 ```bash
 # from the repository root
@@ -238,9 +238,9 @@ python -m unittest discover -s tests -v
 | [`docs/start-here.md`](docs/start-here.md) | Beginner path, day by day, with costs |
 | [`docs/prizes.md`](docs/prizes.md) | Every open prize, its submission contents, eligible scrolls |
 | [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
-| [`docs/letter-reader.md`](docs/letter-reader.md), [`scripts/letters/`](scripts/letters/) | Greek letter reader: guide, model card, benchmarks, training and demo |
+| [`docs/letter-reader.md`](docs/letter-reader.md), [`scripts/letters/`](scripts/letters/) | Scroll Text Reader: Greek model, local OCR backends, benchmarks, training and demo |
 | [`scripts/umbilicus/`](scripts/umbilicus/README.md) | Scroll centre (umbilicus) finder: guide, released weights, held-out results, training, end-point rule and tests |
-| [`pyproject.toml`](pyproject.toml) | The installable package `scrolls-workbench`: `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` gives the letter reader's commands (`scrolls-letterread`, `scrolls-letterdemo`) and every `python -m kit` command as `scrolls-workbench`; install it in its own virtual environment, apart from AutoPipeline's ([guide](docs/letter-reader.md#install)) |
+| [`pyproject.toml`](pyproject.toml) | The installable package `scrolls-workbench`: `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` gives Scroll Text Reader's commands (`scrolls-letterread`, `scrolls-letterdemo`) and every `python -m kit` command as `scrolls-workbench`; install it in its own virtual environment, apart from AutoPipeline's ([guide](docs/letter-reader.md#install)) |
 | [`docs/state-of-play.md`](docs/state-of-play.md) | What has been read, what has been tried, recent winners and published nulls |
 | [`docs/compute.md`](docs/compute.md) | Hardware, cloud costs, and what AI agents can and cannot do here |
 | [`docs/mac.md`](docs/mac.md) | Apple Silicon: what runs locally, the open MPS PRs, useful Mac contributions |
@@ -259,7 +259,7 @@ python -m unittest discover -s tests -v
 | [`docs/logs/`](docs/logs/) | Dated research notes (not claims) |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution ground rules |
 | [`LICENSE`](LICENSE) | Apache-2.0 (permissive, so it meets the prizes' open-source condition) |
-| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as separate references, the letter reader's weights: `letters-v2-ccby` (CC BY 4.0, the default) and `letters-v2-real` (CC BY-NC 4.0) |
+| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as separate references, Scroll Text Reader's Greek weights: `letters-v2-ccby` (CC BY 4.0, automatic-layout default) and `letters-v2-real` (CC BY-NC 4.0) |
 
 ## Architecture (kit)
 
@@ -272,7 +272,7 @@ python -m unittest discover -s tests -v
 | `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
 | `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
 | `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
-| `letterread.py` | Greek letter reader: numpy CTC line network, layout, null, control-map and orientation controls with a status code, whole maps block-averaged while loading, turned, mirrored and tilted text, photographs (polarity by a quick read both ways, EXIF orientation), overlay, released weights (numpy; Pillow and tifffile for images, zarr optional) |
+| `letterread.py` | Scroll Text Reader's Greek backend: numpy CTC line network, layout, null, control-map and orientation controls with a status code, whole maps block-averaged while loading, turned, mirrored and tilted text, photographs (polarity by a quick read both ways, EXIF orientation), overlay, released weights (numpy; Pillow and tifffile for images, zarr optional) |
 | `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
 | `letterexport.py` | The letter reader's exports: a CSV of letters and PAGE XML (2019 schema, for eScriptorium), in the image file's pixels |
 | `letterlines.py` | Training lines for fine-tuning the letter reader from your own transcribed lines, and character error on lines kept apart |
@@ -339,8 +339,9 @@ an express contributor patent grant. See [NOTICE](NOTICE) for attribution and
 the separately licensed Contributor Covenant.
 
 Third-party software, datasets, labels, renders and model weights retain their
-own licenses. The letter reader's released weights are CC BY-NC 4.0, because part of
-their training data (ICDAR 2023 Greek letters) is. The code license does not grant rights to those materials.
+own licenses. Scroll Text Reader's Greek weights are CC BY 4.0 for `letters-v2-ccby`
+and CC BY-NC 4.0 for `letters-v2-real`, which uses ICDAR 2023 Greek letters in its training data.
+Local OCR language packs keep their source licenses. The code license does not grant rights to those materials.
 The scroll centre finder's released weights (release `umbilicus-v1`) are CC BY-NC 4.0, because the CT they learned from is.
 Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
 before use or redistribution.

@@ -8,6 +8,10 @@ To install a fixed version, name its tag:
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.3.0"
 ```
 
+## Unreleased
+
+- **Scroll Text Reader:** the current name for the former Greek Letter Reader, covering Greek LineNet and optional local Tesseract OCR for installed languages. Commands, Python APIs, model names and output schemas are unchanged. Existing benchmark limits still apply.
+
 ## 0.3.0 (17 October 2026)
 
 - **Letter reader:** explicit local Tesseract backend for Latin and other installed language packs, with word-level provenance, model hashes and blank/shuffle controls. Greek LineNet stays script-checked; language changes never relabel its alphabet. No runtime model downloads or remote OCR in the Tesseract route.
