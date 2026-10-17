@@ -1,3 +1,4 @@
+import shutil
 import tempfile
 import unittest
 from pathlib import Path
@@ -56,6 +57,83 @@ class ViewerTest(unittest.TestCase):
         self.assertIn("good vs noise", stats["rank_correlation"])
         with self.assertRaises(Exception):
             viewer.build_html([("a", a), ("b", b[:10])])
+
+    @unittest.skipUnless(shutil.which("node"), "hover JavaScript regression uses optional Node.js")
+    def test_hover_reports_disagreement_from_embedded_overlay(self):
+        import base64
+        from html.parser import HTMLParser
+        import json
+        import re
+        import struct
+        import subprocess
+        import zlib
+        import numpy as np
+        from kit import viewer
+
+        first = np.arange(1, 65, dtype=float).reshape(8, 8)
+        second = np.flipud(first).copy()
+        second[:, ::2] = first[:, ::2]
+        page, _ = viewer.build_html([("first", first), ("second", second)])
+        images = {}
+
+        class Images(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                if tag != "img":
+                    return
+                attrs = dict(attrs)
+                png = base64.b64decode(attrs["src"].split(",", 1)[1])
+                width, height, _, colour, _, _, _ = struct.unpack(">IIBBBBB", png[16:29])
+                channels = {0: 1, 6: 4}[colour]
+                raw = zlib.decompress(png[png.index(b"IDAT") + 4:png.index(b"IEND") - 8])
+                pixels = []
+                for y in range(height):
+                    offset = y * (1 + width * channels)
+                    self_filter = raw[offset]
+                    if self_filter != 0:
+                        raise AssertionError("test decoder requires the viewer's unfiltered PNG rows")
+                    row = []
+                    for x in range(width):
+                        start = offset + 1 + x * channels
+                        pixel = list(raw[start:start + channels])
+                        if channels == 1:
+                            pixel = pixel * 3 + [255]
+                        # Canvas drops RGB when a pixel is fully transparent.
+                        row.append(pixel if pixel[3] else [0, 0, 0, 0])
+                    pixels.append(row)
+                images[attrs["id"]] = {"pixels": pixels, "style": {}}
+
+        Images().feed(page)
+        script = re.search(r"<script>(.*?)</script>", page, re.S).group(1)
+        harness = r"""
+const fs = require('fs'), vm = require('vm'), data = JSON.parse(fs.readFileSync(0, 'utf8'));
+const elements = {...data.images, stage: {getBoundingClientRect:()=>({left:10,top:20})},
+  reader: {value:'first'}, over: {value:'none'}, op: {value:'60'},
+  lab: {checked:true}, msk: {checked:true}, read: {textContent:''}};
+let current;
+const context = {clearRect(){}, drawImage(image){current=image},
+  getImageData(x,y){return {data:current.pixels[y][x]}}};
+const document = {getElementById(id){return elements[id]},
+  createElement(){return {getContext(){return context}}}};
+vm.runInNewContext(data.script, {document});
+const results=[];
+for(const opacity of ['0','100']) {
+  elements.over.value='disagreement';elements.op.value=opacity;elements.op.oninput();
+  for(const [x,y] of data.samples) {
+    elements.stage.onmousemove({clientX:10+x+.5,clientY:20+y+.5});
+    results.push(elements.read.textContent);
+  }
+}
+console.log(JSON.stringify(results));
+"""
+        result = subprocess.run([shutil.which("node"), "-e", harness], text=True, capture_output=True,
+                                input=json.dumps({"script": script, "images": images,
+                                                  "samples": [[0, 1], [1, 1], [1, 3], [1, 0]]}),
+                                check=True, timeout=10)
+        values = json.loads(result.stdout)
+        for value, expected in zip(values, ["0.00", "0.71", "0.14", "1.00"] * 2):
+            self.assertTrue(value.endswith("disagreement " + expected), value)
+        self.assertIn("first rank 0.14  second rank 0.78", values[1])
+        self.assertEqual(values[:4], values[4:])
 
     def test_constant_and_quantized_maps_preserve_auc_ties(self):
         import json
