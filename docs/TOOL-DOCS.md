@@ -4,6 +4,14 @@ Chase asked on 16 October 2026 (09:58 UTC) for "all current, past, and future to
 
 Two readers use every page. A person reads it top to bottom to learn what the tool is for and whether to trust its output. An agent jumps to one section by its fixed name, copies a command, and needs every option, default, output field, exit code and error message written out exactly. The rules below serve both: the same fields and sections in the same order on every page, plain sentences, and exact text, checked against the code, wherever something will be pasted or parsed.
 
+## Headless workflows and competitive evidence
+
+Chase's standing requirement of 17 October 2026 covers all tools and techniques in both repositories. Every new or changed tool must provide its complete supported workflow through a noninteractive CLI and/or programmatic API; GUIs are optional. Document explicit inputs and output paths, machine-readable status and results, useful exit codes or structured API errors, and a dry run or preflight for costly or destructive actions. An agent must be able to configure, run, inspect and export the work without manual GUI steps.
+
+Competitive performance against community tools is the goal, not an assumed result. Claims need fair comparisons with the strongest relevant eligible released baselines: identify versions and eligibility, record training/evaluation exposure and provenance, and report correctness or quality, cost, speed and negative controls under comparable conditions. Limit conclusions to the measured task, data and resources; never claim a blanket win. Match validation to the change and use existing evidence where applicable, rather than requiring new costly benchmarks for every edit.
+
+Record existing interface and evidence gaps on the tool page and improve them when touching the tool. This requirement does not assert that all current tools comply, and does not relax scientific, privacy or compute-authorization rules.
+
 ## What counts as a tool
 
 Anything a person or an agent runs or calls. The checker finds the first eight in the tree and fails when no page names one:
