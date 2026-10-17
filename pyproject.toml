@@ -38,6 +38,7 @@ scrolls-workbench = "kit.cli:workbench_main"     # every python -m kit command (
 scrolls-letterread = "kit.cli:letterread_main"   # python -m kit letterread
 scrolls-letterlines = "kit.cli:letterlines_main" # python -m kit letterlines
 scrolls-letterdemo = "kit.cli:letterdemo_main"   # python -m kit letterdemo: DEMO PASS or DEMO FAIL
+scrolls-start = "kit.cli:start_main"            # python -m kit start: local beginner app
 
 [project.urls]
 Source = "https://github.com/ChaseHendrick/Scrolls"
@@ -48,7 +49,7 @@ packages = ["kit"]
 
 [tool.setuptools.package-data]
 # Everything kit reads from its own folder at run time: the prize snapshots and the letter-weights registry.
-kit = ["data/*.json"]
+kit = ["data/*.json", "data/starter.html", "data/starter.js"]
 
 [tool.setuptools.dynamic]
 version = { attr = "kit.__version__" }

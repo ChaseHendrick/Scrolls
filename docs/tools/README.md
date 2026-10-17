@@ -19,6 +19,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | --- | --- | --- | --- | --- |
 | [batch](batch.md) | Current | `python -m kit run all` | Not needed | `python -m kit run catalog`, `run all` and `run watch` list every volume of the Vesuvius Challenge open-data bucket, give each one an AutoPipeline config and a Modal price, and queue them in a resumable, approvable dry-run plan; they never launch anything. |
 | [scroll-session](scroll-session.md) | Current | `/scroll-session` | Needed | The project skill `.claude/skills/scroll-session/` tells an agent how to start or continue Vesuvius Challenge work here: read the handoff, check prizes and the machine, plan and preregister a run, run it in the right place, and record the outcome without publishing a finding. |
+| [starter](starter.md) | Current | `python -m kit start` | Not needed | Scrolls Starter guides newcomers through existing viewers, an offline controls exercise and first official tasks, with a real setup snapshot and an optional Scroll Text Reader command builder. |
 | [autopipeline](autopipeline.md) | Branch only | `scrolls-kit autopipeline` | Needed | AutoPipeline (AP) 0.1.4 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix4`, not on `main`. |
 
 ### Data and downloads
@@ -115,11 +116,11 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
-| [cli](cli.md) | Current | `python -m kit` | Not needed | `python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts. |
+| [cli](cli.md) | Current | `python -m kit` | Not needed | `python -m kit` is the one command line of the workbench: `kit/cli.py` builds the command parser, hands each to its handler, and gives the installed package its console scripts. |
 | [releases](releases.md) | Current | `python -m kit releases add` | Not needed | `python -m kit releases` keeps `docs/releases.json`, the list of tools released from private work into this repository, and writes the README's "Released tools" section from it: pinned entries first, then newest first. |
 | [routines](routines.md) | Current | `python -m kit routines list` | Not needed | `python -m kit routines` runs the repository's recurring read-only checks, listed in `docs/routines.json`, whichever agent or account opens the clone, keeps each result in the ignored `work/routines/`, and is what the daily GitHub Actions check runs. |
 | [tooldocs](tooldocs.md) | Current | `python -m kit.tooldocs check` | Not needed | `python -m kit.tooldocs` checks every page in `docs/tools/` against the standard in `docs/TOOL-DOCS.md` and against the code, writes the index, prints a page or one section of it for agents, and starts new pages prefilled from the code. |
-| [workbench-package](workbench-package.md) | Current | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` | Not needed | `pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench` 0.2.0, with three extras and four console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it. |
+| [workbench-package](workbench-package.md) | Current | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` | Not needed | `pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench`, with three extras and five console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it. |
 
 ### Viewers and apps
 

@@ -1,6 +1,6 @@
 # workbench-package: the pip-installable scrolls-workbench package and the CI that tests it
 
-`pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench` 0.2.0, with three extras and four console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it.
+`pyproject.toml` makes this repository's `kit` folder an installable package, `scrolls-workbench`, with three extras and five console scripts; `.github/workflows/check.yml` tests it on every push and pull request, and `CITATION.cff` says how to cite it.
 
 | Field | Value |
 | --- | --- |
@@ -8,13 +8,13 @@
 | Status | Current |
 | Kind | package, workflow |
 | Area | Releases and repository |
-| Run | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `import kit` |
-| Code | `pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `_console`, `CONSOLE_SCRIPTS`) |
+| Run | `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"`, then `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start`, `import kit` |
+| Code | `pyproject.toml`, `.github/workflows/check.yml`, `CITATION.cff`, `CHANGELOG.md`, `kit/__init__.py`, `kit/cli.py` (`workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `_console`, `CONSOLE_SCRIPTS`) |
 | Tests | `tests/test_packaging.py` |
 | Needs | Python 3.10 or newer (`requires-python = ">=3.10"`); pip with network access to fetch `setuptools>=77` for the build. The core needs no other package; the extras add numpy, pillow, tifffile, imagecodecs, zarr 3 (Python 3.11 or newer only) and scipy |
 | Runs on | Linux, macOS and Windows (the CI's reader job runs all three). Installing with no extras from a local copy took about 6 s (measured 2026-10-16, cloud container, Python 3.13) |
 | Network | The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners |
-| Writes | pip writes the `kit` package into the environment's `site-packages` and the four console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored) |
+| Writes | pip writes the `kit` package into the environment's `site-packages` and the five console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored) |
 | Go-ahead | Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main`: installable since 2026-10-14; version 0.2.0 since 2026-10-16 ([PR #102](https://github.com/ChaseHendrick/Scrolls/pull/102)) |
 | License | Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`) |
@@ -25,7 +25,7 @@
 
 The tools in `kit/` run from a clone as `python -m kit COMMAND`. `pyproject.toml` also lets anyone install them with pip, without cloning, under the distribution name `scrolls-workbench`. The installed package is the same `kit` folder: its version is `kit.__version__` (0.2.0), and the letter reader writes that version into every result's provenance.
 
-The core (prizes, plan, cost, fetch, the run ledger, provenance) is standard library only, so a plain install has no dependencies. Three extras add what the other tools need: `reader` for the Greek letter reader, `maps` for the map scoring and checks, and `all` for both. Four console scripts come with it: `scrolls-workbench` runs every `python -m kit` command, and `scrolls-letterread`, `scrolls-letterlines` and `scrolls-letterdemo` each run one letter-reader command under their own name.
+The core (prizes, plan, cost, fetch, the run ledger, provenance) is standard library only, so a plain install has no dependencies. Three extras add what the other tools need: `reader` for the Greek letter reader, `maps` for the map scoring and checks, and `all` for both. Five console scripts come with it: `scrolls-workbench` runs every `python -m kit` command, and `scrolls-letterread`, `scrolls-letterlines` and `scrolls-letterdemo` each run one reader command under their own name. `scrolls-start` opens [Scrolls Starter](starter.md), the local beginner app with an offline exercise and guided next steps.
 
 The name is not `kit` or `scrolls-kit` on purpose. AutoPipeline's released package is the distribution `vc-autopipeline`, with a `scrolls-kit` script, and both install a top-level package named `kit`. Installed into one environment, one would overwrite the other, so each goes in its own virtual environment.
 
@@ -101,6 +101,7 @@ On Python 3.10 the `maps` and `all` extras leave zarr out, because pip would pic
 | `scrolls-letterread` | `kit.cli:letterread_main` | `python -m kit letterread` ([letterread](letterread.md)) |
 | `scrolls-letterlines` | `kit.cli:letterlines_main` | `python -m kit letterlines` ([letterlines](letterlines.md)) |
 | `scrolls-letterdemo` | `kit.cli:letterdemo_main` | `python -m kit letterdemo`, which prints `DEMO PASS` or `DEMO FAIL` ([letterdemo](letterdemo.md)) |
+| `scrolls-start` | `kit.cli:start_main` | `python -m kit start`, the local beginner app ([starter](starter.md)) |
 
 Each command's options are on its own page; `scrolls-workbench COMMAND --help` prints them.
 
@@ -126,21 +127,21 @@ Name "Kit checks". It runs on a push to `main`, on every pull request, and by ha
 | --- | --- | --- | --- |
 | `kit.__version__` | str, `"0.2.0"` | Nothing | The package version; pyproject reads it (`version = { attr = "kit.__version__" }`) |
 | `kit.cli.workbench_main(argv=None)` | The command's return value, used as the exit code | `SystemExit` from argparse (code 2) on a usage error | `scrolls-workbench`; `argv` defaults to `sys.argv[1:]` |
-| `kit.cli.letterread_main(argv=None)`, `letterlines_main(argv=None)`, `letterdemo_main(argv=None)` | As above | As above | One command each, through `_console`, with the script's name in usage and errors |
-| `kit.cli.CONSOLE_SCRIPTS` | dict | Nothing | `{"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines", "scrolls-letterdemo": "letterdemo"}` |
+| `kit.cli.letterread_main(argv=None)`, `letterlines_main(argv=None)`, `letterdemo_main(argv=None)`, `start_main(argv=None)` | As above | As above | One command each, through `_console`, with the script's name in usage and errors |
+| `kit.cli.CONSOLE_SCRIPTS` | dict | Nothing | `{"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines", "scrolls-letterdemo": "letterdemo", "scrolls-start": "start"}` |
 
 ## Inputs
 
 | Input | Notes |
 | --- | --- |
-| The source tree | `pyproject.toml` packages the folder `kit` (`packages = ["kit"]`) and its data files `kit/data/*.json` (the prize snapshots and the letter-weights registry); nothing from `docs/`, `scripts/` or `tests/` |
+| The source tree | `pyproject.toml` packages the folder `kit` (`packages = ["kit"]`) and its data files `kit/data/*.json` (the prize snapshots and the letter-weights registry), plus `kit/data/starter.html` and `starter.js` for the self-contained beginner app; nothing from `docs/`, `scripts/` or `tests/` |
 | `README.md` | The package's long description |
 | `LICENSE`, `NOTICE` | The licence files (`license-files`) |
 | The extra in brackets | `reader`, `maps`, `all`, or none |
 
 ## Outputs
 
-An installed distribution `scrolls-workbench` 0.2.0: the `kit` package in `site-packages`, its data files, the four console scripts, and its metadata (name, version, summary, Apache-2.0, the project URLs "Source" and "Letter reader guide"). The CI's result is the check status GitHub shows on the commit or pull request.
+An installed distribution `scrolls-workbench` (version in `kit/__init__.py`): the `kit` package in `site-packages`, its data files, the five console scripts, and its metadata (name, version, summary, Apache-2.0, the project URLs "Source" and "Letter reader guide"). The CI's result is the check status GitHub shows on the commit or pull request.
 
 | Exit code | Meaning |
 | --- | --- |

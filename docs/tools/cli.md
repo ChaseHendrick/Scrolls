@@ -1,6 +1,6 @@
 # cli: the kit command line (python -m kit) and its list of commands
 
-`python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts.
+`python -m kit` is the one command line of the workbench: `kit/cli.py` builds the command parser, hands each to its handler, and gives the installed package its console scripts.
 
 | Field | Value |
 | --- | --- |
@@ -8,8 +8,8 @@
 | Status | Current |
 | Kind | kit module |
 | Area | Releases and repository |
-| Run | `python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` (the installed package's console scripts), `from kit import cli` |
-| Code | `kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py` |
+| Run | `python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start` (the installed package's console scripts), `from kit import cli` |
+| Code | `kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py` |
 | Tests | `tests/test_cli_parser_cache.py`, `tests/test_packaging.py`, `tests/test_localcost_regressions.py`, `tests/test_repo.py`, `tests/test_letterdemo.py`, `tests/test_letter_scripts.py` |
 | Needs | Python 3.10 or newer (`requires-python` in `pyproject.toml`). The entry point and every module it imports at start are standard library only; a command that needs numpy, tifffile, zarr, Pillow or scipy imports them when it runs (see its page) |
 | Runs on | Any machine. `python -m kit prizes --json` took 0.19 s wall (measured 2026-10-16, cloud container, Python 3.13.16); building the parser once and reusing it brought a repeated `main()` from 13 ms to 2 ms per call (commit `88fbee4`'s message; machine not recorded) |
@@ -83,7 +83,7 @@ usage: python -m kit [-h]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `command` | required | One of the 30 commands below. Everything after it goes to that command's parser |
+| `command` | required | One of the commands below. Everything after it goes to that command's parser |
 | `-h`, `--help` | off | Print the usage, the module docstring and one line per command, then exit 0 |
 
 `scrolls-workbench` takes the same arguments and shows `scrolls-workbench` in its usage and errors (`main(argv, prog="scrolls-workbench")`).
@@ -140,6 +140,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `scrolls-letterread` | `kit.cli:letterread_main` | `python -m kit letterread` alone |
 | `scrolls-letterlines` | `kit.cli:letterlines_main` | `python -m kit letterlines` alone (its actions `build` and `score`) |
 | `scrolls-letterdemo` | `kit.cli:letterdemo_main` | `python -m kit letterdemo` alone |
+| `scrolls-start` | `kit.cli:start_main` | `python -m kit start`, the local beginner app ([starter](starter.md)) |
 
 A one-command script takes that command's own arguments, with no command word: `scrolls-letterdemo --quiet`, not `scrolls-letterdemo letterdemo --quiet`. Its usage and errors show the script's name (`usage: scrolls-letterlines [-h] {build,score} ...`).
 
@@ -168,6 +169,8 @@ code = cli.main(["prizes", "--json"])      # the same as python -m kit prizes --
 | `CONSOLE_SCRIPTS` | dict | | Console script name to command: `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` |
 | `READER_INSTALL` | str | | `python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)` |
 | `kit.__version__` | str | | The package version, `"0.2.0"` at this commit; `pyproject.toml` reads it (`[tool.setuptools.dynamic]`) |
+
+| `start_main(argv=None)` | As `main` | As `main` | Runs Scrolls Starter through `_console` |
 
 ## Inputs
 
