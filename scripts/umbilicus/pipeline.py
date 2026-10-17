@@ -334,7 +334,7 @@ def collect(data, out):
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd"); ap.add_argument("job", nargs="?")
+    ap.add_argument("cmd", choices=["job", "collect", "trim"]); ap.add_argument("job", nargs="?")
     ap.add_argument("--data", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--size", type=int, default=256); ap.add_argument("--width", type=int, default=32)
     ap.add_argument("--epochs", type=int, default=40); ap.add_argument("--time-s", type=float, default=900)

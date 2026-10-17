@@ -97,6 +97,8 @@ def container_cost(rates, hours, gpu=None, gpus=1, cpu=0.125, mem_gib=0.125, con
     if gpu and nonpreemptible:
         raise ValueError("Modal does not support nonpreemptible GPU Functions")
     if gpu:
+        if gpu not in rates["gpu_usd_per_s"]:
+            raise ValueError(f"unknown GPU {gpu!r}; known: {', '.join(rates['gpu_usd_per_s'])}")
         limit = rates["max_gpus_per_container"].get(gpu)
         if isinstance(limit, int) and gpus > limit:
             raise ValueError(f"{gpu} allows at most {limit} GPUs per container")
@@ -169,6 +171,8 @@ def expand(job, profiles):
     phases = list(job.get("phases", []))
     inf = job.get("inference")
     if inf:
+        if inf["profile"] not in profiles:
+            raise ValueError(f"unknown inference profile {inf['profile']!r}; known: {', '.join(profiles) or 'none'}")
         prof = profiles[inf["profile"]]
         extra, gb = inference_phases(prof, inf["area_cm2"], inf["um"], inf.get("passes", 1))
         phases = extra + phases
@@ -303,37 +307,41 @@ def build_parser():
 def main(argv=None):
     args = build_parser().parse_args(argv)
     rates = load_rates(args.rates)
-    if args.command == "rates":
-        print(rates_table(rates, args.cpu, args.mem))
-    elif args.command == "cost":
-        c = container_cost(rates, args.hours, gpu=args.gpu, gpus=args.gpus, cpu=args.cpu, mem_gib=args.mem,
-                           containers=args.containers, region=args.region, nonpreemptible=args.nonpreemptible)
-        print(json.dumps({k: round(v, 4) for k, v in c.items()}))
-    elif args.command == "infer":
-        doc = load_jobs(args.jobs)
-        job = {"id": "infer", "name": f"{args.profile} over {args.area:g} cm2 at {args.um:g} um",
-               "inference": {"profile": args.profile, "area_cm2": args.area, "um": args.um, "passes": args.passes}}
-        e = estimate(rates, job, doc["inference_profiles"])
-        for ph in e["phases"]:
-            print(f"{ph['name']}: hours {' / '.join(f'{h:.2f}' for h in ph['hours'])}, "
-                  f"USD {' / '.join(_usd(u) for u in ph['usd'])}")
-        print(f"total USD low {_usd(e['usd']['low'])}, typical {_usd(e['usd']['typical'])}, high {_usd(e['usd']['high'])}")
-    elif args.command == "jobs":
-        doc = load_jobs(args.file)
-        if args.json:
-            out = [estimate(rates, job, doc.get("inference_profiles", {})) for job in doc["jobs"]]
-            print(json.dumps(out, indent=1))
-        else:
-            print(jobs_table(rates, doc))
-    elif args.command == "budget":
-        print(budget_table(rates, args.budgets, cpu=args.cpu, mem_gib=args.mem))
-    elif args.command == "defaults":
-        per_h = container_cost(rates, 1.0, gpu=MODAL_GPU, cpu=MODAL_GPU_CPU_CORES, mem_gib=32)["total"]
-        cpu_h = container_cost(rates, 1.0, cpu=MODAL_CPU_CORES, mem_gib=32)["total"]
-        print(json.dumps({"gpu": modal_gpu(), "gpu_container_cpu": modal_cpu(MODAL_GPU_CPU_CORES),
-                          "cpu": modal_cpu(), "usd_per_h_one_b300_8_cores_32_gib": round(per_h, 4),
-                          "usd_per_h_cpu_16_cores_32_gib": round(cpu_h, 4),
-                          "estimate_rate": "price a fallback list at its dearest entry (B300)"}, indent=1))
+    try:
+        if args.command == "rates":
+            print(rates_table(rates, args.cpu, args.mem))
+        elif args.command == "cost":
+            c = container_cost(rates, args.hours, gpu=args.gpu, gpus=args.gpus, cpu=args.cpu, mem_gib=args.mem,
+                               containers=args.containers, region=args.region, nonpreemptible=args.nonpreemptible)
+            print(json.dumps({k: round(v, 4) for k, v in c.items()}))
+        elif args.command == "infer":
+            doc = load_jobs(args.jobs)
+            job = {"id": "infer", "name": f"{args.profile} over {args.area:g} cm2 at {args.um:g} um",
+                   "inference": {"profile": args.profile, "area_cm2": args.area, "um": args.um, "passes": args.passes}}
+            e = estimate(rates, job, doc["inference_profiles"])
+            for ph in e["phases"]:
+                print(f"{ph['name']}: hours {' / '.join(f'{h:.2f}' for h in ph['hours'])}, "
+                      f"USD {' / '.join(_usd(u) for u in ph['usd'])}")
+            print(f"total USD low {_usd(e['usd']['low'])}, typical {_usd(e['usd']['typical'])}, high {_usd(e['usd']['high'])}")
+        elif args.command == "jobs":
+            doc = load_jobs(args.file)
+            if args.json:
+                out = [estimate(rates, job, doc.get("inference_profiles", {})) for job in doc["jobs"]]
+                print(json.dumps(out, indent=1))
+            else:
+                print(jobs_table(rates, doc))
+        elif args.command == "budget":
+            print(budget_table(rates, args.budgets, cpu=args.cpu, mem_gib=args.mem))
+        elif args.command == "defaults":
+            per_h = container_cost(rates, 1.0, gpu=MODAL_GPU, cpu=MODAL_GPU_CPU_CORES, mem_gib=32)["total"]
+            cpu_h = container_cost(rates, 1.0, cpu=MODAL_CPU_CORES, mem_gib=32)["total"]
+            print(json.dumps({"gpu": modal_gpu(), "gpu_container_cpu": modal_cpu(MODAL_GPU_CPU_CORES),
+                              "cpu": modal_cpu(), "usd_per_h_one_b300_8_cores_32_gib": round(per_h, 4),
+                              "usd_per_h_cpu_16_cores_32_gib": round(cpu_h, 4),
+                              "estimate_rate": "price a fallback list at its dearest entry (B300)"}, indent=1))
+    except ValueError as exc:
+        print(f"cloudcost: {exc}", file=sys.stderr)
+        return 2
     return 0
 
 

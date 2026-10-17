@@ -119,6 +119,17 @@ class LocalCostRegressionTest(unittest.TestCase):
         self.assertIsNone(ledger.load('t1', self.root)['costs'][0]['local']['cpu_s'])
         self.assertIn('unavailable CPU', message.getvalue())
 
+    def test_failed_ledger_write_keeps_the_child_exit_code(self):
+        for child_code, want in ((3, 3), (0, 2)):
+            with self.subTest(child_code=child_code), \
+                 mock.patch.object(localcost, 'append', side_effect=OSError('disk full')), \
+                 contextlib.redirect_stderr(io.StringIO()) as message:
+                code = cli.main(['run', '--root', str(self.root), 'local', 't1', '--rate', '.1',
+                                 '--', sys.executable, '-c', f'raise SystemExit({child_code})'])
+            self.assertEqual(code, want)
+            self.assertIn(f'exited {child_code}', message.getvalue())
+            self.assertIn('disk full', message.getvalue())
+
     @unittest.skipIf(localcost.fcntl is None, 'POSIX local-cost writer lock')
     def test_concurrent_cost_writers_preserve_every_entry(self):
         script = ('import sys;from pathlib import Path;from kit import localcost;'

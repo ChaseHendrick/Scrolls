@@ -433,3 +433,46 @@ class BombAndFetchErrorTests(unittest.TestCase):
                 self.assertIsNone(ma._safe(sv.profile, 0.5, 0.5, errors=errors))
                 self.assertEqual(len(errors), 1)
                 self.assertIn(str(code), errors[0])
+
+
+class CliInputTests(unittest.TestCase):
+    """Bad input to kit meshaudit ends in a message and exit code 2, not a traceback."""
+
+    def run_cli(self, *argv):
+        import contextlib
+        import io
+        from kit import cli
+        err = io.StringIO()
+        with contextlib.redirect_stderr(err), contextlib.redirect_stdout(io.StringIO()):
+            code = cli.main(["meshaudit", *argv])
+        return code, err.getvalue()
+
+    def test_missing_or_broken_catalogue(self):
+        with tempfile.TemporaryDirectory() as d:
+            code, err = self.run_cli("transforms", "--catalogue", os.path.join(d, "none.json"))
+            self.assertEqual(code, 2)
+            self.assertIn("catalogue", err)
+            bad = os.path.join(d, "bad.json")
+            with open(bad, "w") as f:
+                f.write("{not json")
+            self.assertEqual(self.run_cli("transforms", "--catalogue", bad)[0], 2)
+            with open(bad, "w") as f:
+                json.dump([1, 2], f)
+            self.assertEqual(self.run_cli("plan", "--catalogue", bad)[0], 2)
+            with open(bad, "w") as f:
+                json.dump({"samples": {}}, f)
+            code, err = self.run_cli("transforms", "--catalogue", bad, "--out", os.path.join(d, "no", "out.json"))
+            self.assertEqual(code, 2)
+            self.assertIn("cannot write", err)
+
+    def test_unknown_sample_or_segment(self):
+        with tempfile.TemporaryDirectory() as d:
+            path = os.path.join(d, "metadata.json")
+            with open(path, "w") as f:
+                json.dump({"samples": {"PHerc0841": {"segments": {"w00": {}}}}}, f)
+            code, err = self.run_cli("depth", "--sample", "PHerc9999", "--segment", "w00", "--catalogue", path)
+            self.assertEqual(code, 2)
+            self.assertIn("PHerc9999", err)
+            code, err = self.run_cli("depth", "--sample", "PHerc0841", "--segment", "w99", "--catalogue", path)
+            self.assertEqual(code, 2)
+            self.assertIn("w99", err)

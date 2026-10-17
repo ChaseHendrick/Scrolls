@@ -59,7 +59,8 @@ if __name__ == "__main__":
     ap.add_argument("--n", type=int, default=20000)
     ap.add_argument("--shard", type=int, default=1000)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--domain", default=None, choices=[None, "map", "mask"])
+    ap.add_argument("--domain", default=None, choices=[None, "map", "mask"], type=lambda s: None if s == "None" else s,
+                    help="map or mask for every line; None (the default) picks one at random per line")
     ap.add_argument("--procs", type=int, default=os.cpu_count())
     ap.add_argument("--bank", help="realforms.py bank: draw some lines from real letter crops")
     ap.add_argument("--bank-split", default="train", choices=["train", "val"])
