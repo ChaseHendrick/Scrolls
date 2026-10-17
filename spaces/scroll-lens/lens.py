@@ -40,7 +40,7 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 BUCKET = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 CHUNK = 128                 # every listed scan is stored as uncompressed uint8 chunks of 128^3 voxels
 SIZES = (128, 256)          # cube sides in voxels; 256 is the models' training patch, 128 fits a CPU
@@ -187,37 +187,64 @@ def log(message):
 
 # ---------------------------------------------------------------- cubes: where and how to read them
 
+def volume_id(vid):
+    """The listed scan id for `vid` (case does not matter), or a refusal that lists them."""
+    if isinstance(vid, str):
+        for k in VOLUMES:
+            if k.lower() == vid.strip().lower():
+                return k
+    raise LensError(f"{vid!r} is not one of the scans this Space may read; choose from {', '.join(VOLUMES)}")
+
+
 def volume(vid):
     """The listed volume `vid`, or a refusal. Nothing else is ever read."""
-    if vid not in VOLUMES:
-        raise LensError(f"{vid!r} is not one of the scans this Space may read")
-    return VOLUMES[vid]
+    return VOLUMES[volume_id(vid)]
 
 
 def volume_url(vid, level=0):
-    v = volume(vid)
-    return f"{BUCKET}/{vid}/volumes/{v['scan']}/{int(level)}"
+    vid = volume_id(vid)
+    return f"{BUCKET}/{vid}/volumes/{VOLUMES[vid]['scan']}/{int(level)}"
 
 
 def cube_origin(vid, center_zyx, size):
-    """The corner of the cube of side `size` around `center_zyx` (level-0 voxels, z y x), snapped to the scan's
-    128-voxel chunk grid so a 256 cube is exactly 8 stored chunks, and kept inside the scan. The point lies inside
-    the cube, at most 64 voxels from its centre."""
+    """The corner of the cube of side `size` around `center_zyx` (level-0 voxels, z y x), kept inside the scan. Where
+    it can, the corner sits on the scan's 128-voxel chunk grid (so a 256 cube is exactly 8 stored chunks) and the
+    point lies at most 64 voxels from the cube's centre; near the scan's far edge the cube ends at the edge instead,
+    off the grid. The point always lies inside the cube."""
     size = check_size(size)
     shape = volume(vid)["shape"]
+    try:
+        center = [as_int(c, "each of z, y and x") for c in center_zyx]
+    except TypeError:
+        raise LensError("give the point as three whole numbers, z y x, in level-0 voxels") from None
+    if len(center) != 3:
+        raise LensError("give the point as three whole numbers, z y x, in level-0 voxels")
     out = []
-    for c, n in zip(center_zyx, shape):
-        c = int(c)
+    for c, n in zip(center, shape):
         if not 0 <= c < n:
-            raise LensError(f"point {list(map(int, center_zyx))} is outside the scan, whose shape is {list(shape)}")
-        o = int(round((c - size / 2) / CHUNK)) * CHUNK
-        o = max(0, min(o, (n - size) // CHUNK * CHUNK))
+            raise LensError(f"point {center} is outside the scan, whose shape is {list(shape)}")
+        o = max(0, (c - size // 2 + CHUNK // 2) // CHUNK * CHUNK)    # nearest grid line, halves rounded up
+        if o + size > n:
+            o = max(0, n - size)
         out.append(o)
     return tuple(out)
 
 
+def as_int(value, name):
+    """A whole number from an int, an integral float or a string of digits; anything else is a refusal naming it."""
+    if isinstance(value, bool):
+        raise LensError(f"{name} must be a whole number, not {value!r}")
+    try:
+        f = float(value)
+    except (TypeError, ValueError):
+        raise LensError(f"{name} must be a whole number, not {value!r}") from None
+    if not math.isfinite(f) or f != int(f):
+        raise LensError(f"{name} must be a whole number, not {value!r}")
+    return int(f)
+
+
 def check_size(size):
-    size = int(size)
+    size = as_int(size, "the cube side")
     if size not in SIZES:
         raise LensError(f"cube side must be one of {SIZES} voxels, not {size}")
     return size
@@ -230,7 +257,9 @@ def chunk_keys(origin, size):
 
 
 def _get(url, timeout=60, tries=3):
-    """One object from the open-data bucket, anonymously. None for a missing chunk (all papyrus-free there)."""
+    """One object from the open-data bucket, anonymously. None for a missing key (HTTP 404): the bucket stores no
+    chunk where the scan holds nothing but the masked-out outside. Throttling and server errors are retried; any
+    other refusal (403 included) is an error, never read as an empty chunk."""
     last = None
     for attempt in range(tries):
         try:
@@ -238,22 +267,46 @@ def _get(url, timeout=60, tries=3):
             with urllib.request.urlopen(req, timeout=timeout) as resp:
                 return resp.read()
         except urllib.error.HTTPError as exc:
-            if exc.code in (403, 404):
+            if exc.code == 404:
                 return None
+            if exc.code not in (429, 500, 502, 503, 504):
+                raise LensError(f"the open-data bucket refused {url.rsplit('/volumes/', 1)[-1]} (HTTP {exc.code})") \
+                    from None
             last = exc
-        except (urllib.error.URLError, TimeoutError, ConnectionError) as exc:
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError) as exc:
             last = exc
         time.sleep(1.5 * (attempt + 1))
     raise LensError(f"could not read the open-data bucket ({last}); try again in a minute")
 
 
+def _list_keys(prefix, fetch=None):
+    """The object keys under `prefix` in the open-data bucket (anonymous S3 ListObjectsV2, which this bucket
+    allows), following continuation tokens."""
+    import re
+    import urllib.parse
+    keys, token = [], None
+    while True:
+        q = {"list-type": "2", "prefix": prefix, "max-keys": "1000"}
+        if token:
+            q["continuation-token"] = token
+        raw = (fetch or _get)(f"{BUCKET}/?{urllib.parse.urlencode(q)}")
+        text = (raw or b"").decode("utf-8", "replace")
+        keys += re.findall(r"<Key>([^<]+)</Key>", text)
+        m = re.search(r"<NextContinuationToken>([^<]+)</NextContinuationToken>", text)
+        if "<IsTruncated>true</IsTruncated>" not in text or not m:
+            return keys
+        token = m.group(1)
+
+
 def read_cube(vid, origin, size, fetch=_get, workers=8):
-    """The uint8 cube of side `size` at `origin` (z y x, level 0). Chunks the bucket does not hold read as 0."""
+    """The uint8 cube of side `size` at `origin` (z y x, level 0), anywhere inside the scan: an origin off the chunk
+    grid (a CPU-fallback receipt's) reads the chunks it overlaps and crops. Chunks the bucket does not hold read as 0."""
     import numpy as np
     size = check_size(size)
     shape = volume(vid)["shape"]
-    if any(o < 0 or o % CHUNK or o + size > n for o, n in zip(origin, shape)):
-        raise LensError(f"cube at {list(origin)} is not on the chunk grid inside the scan")
+    origin = tuple(int(o) for o in origin)
+    if any(o < 0 or o + size > n for o, n in zip(origin, shape)):
+        raise LensError(f"cube at {list(origin)} is not inside the scan, whose shape is {list(shape)}")
     base = volume_url(vid)
     keys = chunk_keys(origin, size)
     out = np.zeros((size, size, size), np.uint8)
@@ -270,8 +323,11 @@ def read_cube(vid, origin, size, fetch=_get, workers=8):
         for key, chunk in pool.map(one, keys):
             if chunk is None:
                 continue
-            sl = tuple(slice(k * CHUNK - o, k * CHUNK - o + CHUNK) for k, o in zip(key, origin))
-            out[sl] = chunk
+            lo = [max(k * CHUNK, o) for k, o in zip(key, origin)]          # overlap of chunk and cube, scan voxels
+            hi = [min((k + 1) * CHUNK, o + size) for k, o in zip(key, origin)]
+            dst = tuple(slice(a - o, b - o) for a, b, o in zip(lo, hi, origin))
+            src = tuple(slice(a - k * CHUNK, b - k * CHUNK) for a, b, k in zip(lo, hi, key))
+            out[dst] = chunk[src]
     return out
 
 
@@ -284,12 +340,14 @@ def check_cube(cube):
     frac = foreground(cube)
     if frac < MIN_FOREGROUND:
         raise LensError(f"only {frac:.1%} of this cube is papyrus; the scan is masked to 0 outside the scroll. "
-                        "Pick a point on the papyrus, or press Surprise me.")
+                        "Pick a point on the papyrus: press Surprise me on the page, or call the random_point "
+                        "endpoint.")
     return frac
 
 
-def random_point(vid, rng, fetch=_get, tries=24):
-    """A random point on papyrus: read random level-3 chunks (1/8 resolution) and pick a bright voxel in one."""
+def random_point(vid, rng, fetch=_get, tries=24, list_fetch=None):
+    """A random point on papyrus: read random level-3 chunks (1/8 resolution) and pick a bright voxel in one.
+    `list_fetch` reads bucket listings for the fallback (default: `fetch`)."""
     import numpy as np
     shape = volume(vid)["shape"]
     lv = 3
@@ -313,6 +371,41 @@ def random_point(vid, rng, fetch=_get, tries=24):
         for _ in range(16):
             p = idx[int(rng.integers(0, len(idx)))] + 16
             # the 256 cube around the point (16 voxels each way at this level) must lie inside the scroll mask
+            win = a[p[0] - 16:p[0] + 16, p[1] - 16:p[1] + 16, p[2] - 16:p[2] + 16]
+            if (win > 0).mean() < 0.9:
+                continue
+            zyx = [int((c * CHUNK + p[i]) * f + f // 2) for i, c in enumerate((cz, cy, cx))]
+            if all(0 <= v < n for v, n in zip(zyx, shape)):
+                return tuple(zyx)
+    # Some scans store few level-3 chunks (most of their chunk grid lies outside the scroll), so blind draws can all
+    # land on missing keys. Then draw among the chunks the bucket holds, from a listing of one z slab at a time. The
+    # blind draws come first so that points drawn before this fallback existed are drawn again unchanged.
+    v = volume(vid)
+    prefix = f"{volume_id(vid)}/volumes/{v['scan']}/{lv}/"
+    for _ in range(tries):
+        cz = int(rng.integers(int(nchunks[0] * 0.1), max(int(nchunks[0] * 0.9), int(nchunks[0] * 0.1) + 1)))
+        stored = set()
+        for key in _list_keys(f"{prefix}{cz}/", fetch=list_fetch or fetch):
+            parts = key[len(prefix):].split("/")
+            if len(parts) == 3 and all(x.isdigit() for x in parts):
+                stored.add((int(parts[1]), int(parts[2])))
+        # chunks whose four in-plane neighbours are stored too lie inside the scroll, away from the mask edge
+        inner = sorted(k for k in stored if all((k[0] + dy, k[1] + dx) in stored
+                                                  for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1))))
+        pool = inner or sorted(stored)
+        if not pool:
+            continue
+        cy, cx = pool[int(rng.integers(0, len(pool)))]
+        raw = fetch(f"{base}/{cz}/{cy}/{cx}")
+        if raw is None or len(raw) != CHUNK ** 3:
+            continue
+        a = np.frombuffer(raw, np.uint8).reshape(CHUNK, CHUNK, CHUNK)
+        inner_a = a[16:-16, 16:-16, 16:-16]
+        idx = np.argwhere(inner_a > max(1, np.percentile(a[a > 0], 60) if (a > 0).any() else 255))
+        if len(idx) < 50:
+            continue
+        for _ in range(16):
+            p = idx[int(rng.integers(0, len(idx)))] + 16
             win = a[p[0] - 16:p[0] + 16, p[1] - 16:p[1] + 16, p[2] - 16:p[2] + 16]
             if (win > 0).mean() < 0.9:
                 continue
@@ -625,11 +718,14 @@ def check_layers(layers):
 
 
 def gpu_seconds(size, layers, tta=False):
-    """What one cube asks ZeroGPU for. Generous until measured: the quota counts the time actually used."""
+    """The duration one cube asks ZeroGPU for. ZeroGPU reserves 1.5 times this from the visitor's quota before it
+    starts the call (it refused a 256 cube asking 26 s with "39s requested vs. 38s left") and then charges the time
+    used. Measured on the Space (99 gallery cubes, 2026-10-17): 256 cube, all three models, 3.2 to 8.0 s of model time
+    and about 4.5 s of quota; 128 cube about 0.3 s. Six seconds cover moving the models to the GPU."""
     size, layers = check_size(size), check_layers(layers)
     scale = (size / 256) ** 3
-    per = {"dino": 6.0, "ink": 4.0 * (8 if tta else 1), "surface": 4.0 * (8 if tta else 1)}
-    return int(math.ceil(12 + scale * sum(per[x] for x in layers)))
+    per = {"dino": 4.0, "ink": 2.0 * (8 if tta else 1), "surface": 2.0 * (8 if tta else 1)}
+    return int(math.ceil(6 + scale * sum(per[x] for x in layers)))
 
 
 # ---------------------------------------------------------------- embeddings: clicks, similarity, colours
@@ -641,13 +737,15 @@ def unit(v, axis=-1):
 
 
 def grid_of(result):
-    """The (Z/8, Y/8, X/8, 864) float32 unit embeddings of a result, rebuilt from a reduced gallery cube if needed."""
+    """The (Z/8, Y/8, X/8, 864) float32 embeddings of a result. A full result's are unit vectors. A compact (gallery)
+    result's are rebuilt as the projection of each unit embedding onto the kept REDUCED_DIM directions, left as they
+    are: their length is the share of the embedding kept (median 0.98 over the gallery, at least 0.68), and a dot
+    product with a unit concept estimates the original cosine without the bias that rescaling to unit length adds."""
     import numpy as np
     if "grid" in result:
         return np.asarray(result["grid"], np.float32)
     if "grid_reduced" in result:
-        g = np.asarray(result["grid_reduced"], np.float32) @ np.asarray(result["grid_basis"], np.float32).T
-        return unit(g)
+        return np.asarray(result["grid_reduced"], np.float32) @ np.asarray(result["grid_basis"], np.float32).T
     raise LensError("this cube has no DINO embeddings; run it with the 3D DINO layer")
 
 
@@ -692,8 +790,9 @@ def pca_colours(grid):
     import numpy as np
     g = np.asarray(grid, np.float32).reshape(-1, grid.shape[-1])
     g = g - g.mean(0)
-    _, _, vt = np.linalg.svd(g[:: max(1, len(g) // 20000)], full_matrices=False)
-    p = g @ vt[:3].T
+    # the three main directions: the top eigenvectors of the covariance, the same as the SVD's and far cheaper
+    _, vecs = np.linalg.eigh((g.T @ g).astype(np.float64))
+    p = g @ vecs[:, ::-1][:, :3].astype(np.float32)
     # fix each component's sign so the colours do not flip between runs of the same cube
     p *= np.sign(np.sum(p ** 3, axis=0, keepdims=True) + 1e-12)
     lo, hi = np.percentile(p, 1, axis=0), np.percentile(p, 99, axis=0)
@@ -711,69 +810,107 @@ def upsample(tokens, size):
 
 
 def auc(scores, labels):
-    """Probability that a positive scores above a negative (ties count half). None when a class is empty."""
+    """Probability that a positive scores above a negative (ties count half). None when a class is empty or a score
+    is not a number."""
     import numpy as np
     s = np.asarray(scores, np.float64).ravel()
     y = np.asarray(labels, bool).ravel()
     n1, n0 = int(y.sum()), int((~y).sum())
-    if not n1 or not n0:
+    if not n1 or not n0 or not np.isfinite(s).all():
         return None
     order = np.argsort(s, kind="mergesort")
+    ss = s[order]
+    first = np.concatenate(([True], ss[1:] != ss[:-1]))           # start of each run of equal scores
+    starts = np.flatnonzero(first)
+    ends = np.append(starts[1:], len(ss)) - 1
     ranks = np.empty(len(s), np.float64)
-    sorted_s = s[order]
-    # average ranks over ties
-    i = 0
-    while i < len(s):
-        j = i
-        while j + 1 < len(s) and sorted_s[j + 1] == sorted_s[i]:
-            j += 1
-        ranks[order[i:j + 1]] = (i + j) / 2.0 + 1.0
-        i = j + 1
+    ranks[order] = ((starts + ends) / 2.0 + 1.0)[np.cumsum(first) - 1]   # average rank within each run
     return float((ranks[y].sum() - n1 * (n1 + 1) / 2.0) / (n1 * n0))
+
+
+CONTROL_SHIFTS = 16     # the agreement control: the ink mask rolled by this many fixed pseudo-random shifts
 
 
 def agreement(sim_tokens, ink_u8, threshold=0.5):
     """How well a patch similarity map picks out the patches the 3D ink model marks as ink (mean probability over
-    the patch above `threshold`), as an AUC, beside a control that must fail: the same ink mask moved by half the
-    cube along every axis, which breaks the link between place and score. Agreement with a model, not ground
-    truth."""
+    the patch above `threshold`), as an AUC, beside controls that must fail: the same ink mask rolled away from its
+    place, which breaks the link between place and score. `auc_control_shifted` rolls it by half the cube on every
+    axis; because papyrus is layered, one roll can line the layers up again, so `auc_control_mean`, `_p05` and `_p95`
+    summarise CONTROL_SHIFTS rolls between a quarter and three quarters of the cube (fixed seed). The AUC means
+    something only above `auc_control_p95`. Agreement with a model, not ground truth."""
     import numpy as np
     n = sim_tokens.shape[0]
     f = ink_u8.shape[0] // n
     ink_tok = ink_u8.reshape(n, f, n, f, n, f).mean(axis=(1, 3, 5)) / 255.0 > threshold
     shifted = np.roll(ink_tok, (n // 2, n // 2, n // 2), axis=(0, 1, 2))
-    return {"auc": auc(sim_tokens, ink_tok), "auc_control_shifted": auc(sim_tokens, shifted),
-            "ink_patch_fraction": float(ink_tok.mean())}
+    rng = np.random.default_rng(20261017)
+    controls = [auc(sim_tokens, np.roll(ink_tok, tuple(int(v) for v in rng.integers(n // 4, 3 * n // 4 + 1, 3)),
+                                        axis=(0, 1, 2))) for _ in range(CONTROL_SHIFTS)]
+    controls = [c for c in controls if c is not None]
+    out = {"auc": auc(sim_tokens, ink_tok), "auc_control_shifted": auc(sim_tokens, shifted),
+           "ink_patch_fraction": float(ink_tok.mean())}
+    if controls:
+        out.update(auc_control_mean=float(np.mean(controls)), auc_control_p05=float(np.percentile(controls, 5)),
+                   auc_control_p95=float(np.percentile(controls, 95)))
+    return out
 
 
 def load_concept(path):
-    """A concept file a visitor uploads: .npy, float, shape (864,) or (K, 864), finite, at most 4 MB, no pickles.
-    Returns the unit-length mean."""
+    """A concept file a visitor uploads: .npy, float, shape (864,) or (K, 864) with K at least 1, finite, at most
+    4 MB, no pickles. The header is read before the data, so a file that claims a huge shape is refused without
+    allocating it. Returns the unit-length mean, refused when the rows cancel out."""
     import numpy as np
     p = Path(path)
-    if p.stat().st_size > MAX_CONCEPT_BYTES:
+    try:
+        nbytes = p.stat().st_size
+    except OSError as exc:
+        raise LensError(f"cannot read the concept file: {exc}") from None
+    if nbytes > MAX_CONCEPT_BYTES:
         raise LensError(f"a concept file is at most {MAX_CONCEPT_BYTES >> 20} MB")
     try:
-        a = np.load(p, allow_pickle=False)
-    except (ValueError, OSError) as exc:
+        with open(p, "rb") as fh:
+            version = np.lib.format.read_magic(fh)
+            if version == (1, 0):
+                shape, fortran, dtype = np.lib.format.read_array_header_1_0(fh)
+            else:
+                shape, fortran, dtype = np.lib.format.read_array_header_2_0(fh)
+            data_at = fh.tell()
+    except (ValueError, OSError, EOFError) as exc:
         raise LensError(f"not a plain .npy array: {exc}") from None
-    if a.dtype.kind != "f" or a.ndim not in (1, 2) or a.shape[-1] != EMBED_DIM:
-        raise LensError(f"a concept is a float array of shape ({EMBED_DIM},) or (K, {EMBED_DIM}), not {a.dtype} "
-                        f"{a.shape}")
-    a = a.astype(np.float32).reshape(-1, EMBED_DIM)
-    if not np.isfinite(a).all() or not np.linalg.norm(a, axis=1).all():
+    if dtype.kind != "f" or len(shape) not in (1, 2) or shape[-1] != EMBED_DIM or 0 in shape:
+        raise LensError(f"a concept is a float array of shape ({EMBED_DIM},) or (K, {EMBED_DIM}), not {dtype} "
+                        f"{shape}")
+    if data_at + math.prod(shape) * dtype.itemsize != nbytes:
+        raise LensError("the concept file's size does not match its header")
+    try:
+        a = np.load(p, allow_pickle=False)
+    except (ValueError, OSError, EOFError) as exc:
+        raise LensError(f"not a plain .npy array: {exc}") from None
+    a = np.asarray(a, np.float64).reshape(-1, EMBED_DIM)
+    norms = np.linalg.norm(a, axis=1)
+    if not np.isfinite(a).all() or not np.isfinite(norms).all() or not norms.all():
         raise LensError("the concept holds non-finite or zero vectors")
-    return unit(unit(a).mean(0))
+    mean = (a / norms[:, None]).mean(0)
+    if np.linalg.norm(mean) < 1e-3:
+        raise LensError("the concept's rows cancel out (their mean is close to zero)")
+    return unit(mean.astype(np.float32))
 
 
 # ---------------------------------------------------------------- saving and the gallery
 
+def layers_in(result):
+    """The models whose output a result holds: DINO is stored as `grid` (or `grid_reduced` when compact)."""
+    return [k for k in LAYERS if (k == "dino" and ("grid" in result or "grid_reduced" in result))
+            or (k != "dino" and k in result)]
+
+
 def receipt(vid, origin, size, center, result, engine_info=None, extra=None):
-    v = volume(vid)
+    vid = volume_id(vid)
+    v = VOLUMES[vid]
     r = {"tool": "Scroll Lens", "version": VERSION, "volume": vid, "scroll": v["scroll"],
          "zarr": f"{BUCKET}/{vid}/volumes/{v['scan']}", "level": 0, "voxel_um": v["voxel_um"],
          "point_zyx": [int(c) for c in center], "cube_origin_zyx": [int(o) for o in origin], "cube_size": int(size),
-         "layers": [k for k in LAYERS if k in result or (k == "dino" and "grid_reduced" in result)],
+         "layers": layers_in(result),
          "device": result.get("device"), "device_name": result.get("device_name"), "tta": result.get("tta", False),
          "seconds": result.get("seconds", {}), "models_trained_on_this_scroll": v["role"],
          "note": "Model output, not a reading. A cube is smaller than one letter."}
@@ -819,6 +956,7 @@ def load_npz(path):
     with np.load(path, allow_pickle=False) as z:
         out = {k: z[k] for k in z.files}
     meta = json.loads(bytes(out.pop("receipt")).decode())
+    meta["layers"] = layers_in(out)               # receipts before 1.1.0 left dino out of this list
     size = check_size(meta["cube_size"])
     volume(meta["volume"])
     n = size // PATCH
@@ -834,24 +972,42 @@ def load_npz(path):
 
 
 def gallery(root=HERE / "gallery"):
-    """The precomputed cubes: gallery/index.json lists them, each with its .npz beside it."""
+    """The precomputed cubes: gallery/index.json lists them, each with its .npz beside it. Refuses an index that is
+    not a list of complete, unique entries naming files that exist."""
     idx = Path(root) / "index.json"
     if not idx.is_file():
         return []
-    items = json.loads(idx.read_text()).get("cubes", [])
+    data = json.loads(idx.read_text())
+    items = data.get("cubes", []) if isinstance(data, dict) else None
+    if not isinstance(items, list):
+        raise LensError("gallery/index.json has no list of cubes")
+    seen = set()
     for it in items:
-        volume(it["volume"])
-        for key in ("id", "title", "note", "file", "point_zyx", "size"):
+        if not isinstance(it, dict):
+            raise LensError("gallery/index.json holds an entry that is not an object")
+        for key in ("id", "volume", "title", "note", "file", "point_zyx", "size"):
             if key not in it:
                 raise LensError(f"gallery entry {it.get('id')!r} has no {key}")
+        if it["id"] in seen:
+            raise LensError(f"gallery entry {it['id']!r} is listed twice")
+        seen.add(it["id"])
+        vid = volume_id(it["volume"])
         if "/" in it["file"] or ".." in it["file"] or not it["file"].endswith(".npz"):
             raise LensError(f"gallery entry {it['id']!r} names a file outside gallery/")
+        if not (Path(root) / it["file"]).is_file():
+            raise LensError(f"gallery entry {it['id']!r} names {it['file']}, which is missing")
+        if it["size"] not in SIZES:
+            raise LensError(f"gallery entry {it['id']!r} has size {it['size']!r}, not one of {SIZES}")
+        p = it["point_zyx"]
+        if not (isinstance(p, list) and len(p) == 3 and all(isinstance(v, int) for v in p)
+                and all(0 <= v < n for v, n in zip(p, VOLUMES[vid]["shape"]))):
+            raise LensError(f"gallery entry {it['id']!r} has a point_zyx outside the scan")
     return items
 
 
 # ---------------------------------------------------------------- the Space's own files
 
-SPACE_FILES = ("README.md", "app.py", "lens.py", "requirements.txt", "LICENSE", "NOTICE")
+SPACE_FILES = ("README.md", "app.py", "lens.py", "viewer.js", "requirements.txt", "LICENSE", "NOTICE")
 
 
 def space_files(root=HERE):
