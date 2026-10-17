@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" 2>/dev/null && python3 -m kit routines run --due --background 2>/dev/null; exit 0",
+            "timeout": 20
+          }
+        ]
+      }
+    ]
+  }
+}

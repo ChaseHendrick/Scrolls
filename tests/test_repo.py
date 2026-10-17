@@ -8,6 +8,7 @@
 - no live file calls PHerc0139 w045 held out from `ink_9um` (it trained on w045's 2.4 um render).
 - no live file says no candidate or released reader trained on PHerc0841 without naming Hecate,
   whose base model's committed trainer lists all three PHerc0841 segments;
+- no tracked file outside docs/vesuvius-bible/ links a Discord message (the archive stays private);
 - every `kit/*.py` module has a row in the repository map, docs/MAP.md;
 - AGENTS.md and docs/HANDOFF.md stay short, since every agent reads them first;
 - every relative link in live Markdown resolves to a tracked file or directory.
@@ -32,11 +33,16 @@ HISTORICAL = ("docs/logs/", "docs/evidence/", "scripts/experiments/")
 # published verbatim, so the wording and link checks leave them as they were frozen.
 FROZEN = ("docs/prereg/2026-10-14-strokenet.md", "docs/prereg/2026-10-14-gridpilot.md")
 W045_HELD_OUT = re.compile(r"(?<!not )held[ -]out from `?ink_9um|held out from both models")
-# PHerc0841 is held out from ink_9um, v8in, d9v2 and Reader v2, but possibly not from Hecate, whose
-# base model's committed trainer lists w00, ag896 and ag405; docs/logs/2026-10-09-pherc0841-hecate.md.
+# PHerc0841 is held out from ink_9um, v8in, d9v2 and Reader v2, but not from Hecate, whose
+# base model's committed trainer lists w00, ag896 and ag405; docs/logs/2026-10-16-reader-exposure.md.
 PHERC0841_HELD_OUT = re.compile(
     r"no candidate'?s training|in no candidate'?s|no (?:released )?(?:reader|model)s? (?:has |have |was |were |ever )*trained on"
     r"|no released reader'?s training", re.I)
+# Discord messages are archived in Scrolls-private only, and its rule is that no message, name or link
+# goes into public Scrolls; a public note cites a message the anonymous way, by channel and date
+# (docs/logs/2026-10-14-upright-before-ink.md). The bible's prize table keeps the award posts' links.
+DISCORD_MESSAGE = re.compile(r"discord(?:app)?\.com/channels/\d+/\d+/\d+")
+DISCORD_ALLOWED = ("docs/vesuvius-bible/",)
 MD_LINK = re.compile(r"\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 # Bash 4+ features macOS's /bin/bash 3.2 lacks.
 BASH4 = [
@@ -151,6 +157,17 @@ class RepoTest(unittest.TestCase):
                     "| PHerc0841 | Scroll in no candidate's training set, with labelled segments"):
             self.assertIsNotNone(PHERC0841_HELD_OUT.search(old), old)
         self.assertIsNone(PHERC0841_HELD_OUT.search("no candidate with usable selection variation"))
+
+    def test_no_discord_message_links(self):
+        for f in tracked():
+            rel = f.relative_to(ROOT).as_posix()
+            if f.suffix not in TEXT + (".csv",) or not f.exists() or rel.startswith(DISCORD_ALLOWED):
+                continue
+            m = DISCORD_MESSAGE.search(f.read_text(encoding="utf-8", errors="replace"))
+            self.assertIsNone(m, f"{rel} links a Discord message: {m.group(0)}" if m else "")
+        # The check can fail: a message link is caught, a plain mention is not.
+        self.assertIsNotNone(DISCORD_MESSAGE.search("(https://discord.com/channels/" "1079907749569237093/1/2)"))
+        self.assertIsNone(DISCORD_MESSAGE.search("(Discord #general, 26 February 2025)"))
 
     def test_agents_map_lists_every_kit_module(self):
         # Every kit module has a row in the repository map, docs/MAP.md (AGENTS.md points there); a row

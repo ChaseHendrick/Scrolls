@@ -21,6 +21,8 @@ Many files here are long: read the top of each and search the rest.
 3. [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): the rulebook.
 4. [`docs/MAP.md`](docs/MAP.md): the repository map, one row per module and script. Search it for a tool or a path.
 
+At session start, any agent runs `python3 -m kit routines run --due` and reads `python3 -m kit routines status` ([rulebook](docs/AI-AGENTS.md#session-start-repository-routines)).
+
 Released tools are listed in the README's ["Released tools"](README.md#released-tools) section, including [Unroll](https://huggingface.co/spaces/SharpMeow/unroll), the interactive 3D viewer released as a Hugging Face Space (v1.0.0, Apache 2.0 code; guide: [`docs/unroll-space.md`](docs/unroll-space.md)).
 
 Terms used in the code and docs are defined, A to Z, in [`GLOSSARY.md`](GLOSSARY.md). Add a term there when you introduce one.
@@ -114,8 +116,8 @@ Testing the Mac scripts off a Mac: `SMOKE=1 EXPECT_GPU=cpu WORK=<scratch dir> ba
 | v8in | Youssef Nader's ResNet3D-50 ink model (`YoussefMoNader/ink-8um-v8in`, 2026-09-28); `v8in-1447` is its PHerc1447 fine-tune |
 | d9v2, Reader v2 | Community fine-tunes of `ink_9um` (TAUIL-Abd-Elilah; Domenico Russo); drop-in `ink_9um` checkpoints |
 | w035 | PHerc0139 training segment: a pipeline check only (the model reproduces its own labels there) |
-| w045 | PHerc0139 segment unseen by v8in but not held out from `ink_9um`, which trained on its 2.4 um render (pherc0139-w029); d9v2 and Reader v2 inherit that, and Reader v2 also trained on it ([log](docs/logs/2026-10-08-w045-not-held-out.md)) |
-| PHerc0841 | Scroll with labelled segments w00, ag896, ag405, in the training data of none of `ink_9um`, v8in, v8in-1447, d9v2 and Reader v2: the fair generalization test for them. Possibly not held out from Hecate, whose base model's committed trainer lists all three segments ([log](docs/logs/2026-10-09-pherc0841-hecate.md), `held_out` in [results.json](docs/results.json)) |
+| w045 | PHerc0139 segment unseen by v8in but not held out from `ink_9um`, which trained on its 2.4 um render (pherc0139-w029); d9v2 and Reader v2 inherit that, and Reader v2 also trained on it; so did Hecate and its base model ([log](docs/logs/2026-10-08-w045-not-held-out.md), [exposure log](docs/logs/2026-10-16-reader-exposure.md)) |
+| PHerc0841 | Scroll with labelled segments w00, ag896, ag405, in the training data of none of `ink_9um`, v8in, v8in-1447, d9v2 and Reader v2: the fair generalization test for them. Not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md), `held_out` in [results.json](docs/results.json)) |
 | AUC | Probability a labelled ink pixel scores above a labelled background pixel, inside the supervision mask |
 | As stored / reversed | Depth order of the surface volume; reversed is the control and should sit near or below 0.5 |
 | Crop, `--inner 64` | The 640 px window of densest labelled ink per segment; 64 px edge left out so bare-crop and full-map scores match |

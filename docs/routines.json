@@ -1,0 +1,59 @@
+{
+  "about": "Recurring checks of public Scrolls, run by python3 -m kit routines (kit/routines.py) from any agent or account: the Claude Code SessionStart hook in .claude/settings.json runs the due ones, docs/AI-AGENTS.md tells Codex, ChatGPT and other agents to run python3 -m kit routines run --due at session start, and the daily workflow .github/workflows/routines.yml runs the ones marked ci on GitHub's free runners. Results go to the ignored work/routines/. Routines only check: they never post, comment, open issues, upload, push or start Modal. Exit codes: 0 ok, 3 attention, 75 skipped, other fail.",
+  "routines": [
+    {
+      "name": "prize-page",
+      "cadence": "daily",
+      "timeout_s": 60,
+      "ci": true,
+      "command": ["{python}", "-m", "kit.prizewatch", "--state", "work/routines/prize-page.json"],
+      "why": "docs/AI-AGENTS.md rule 4: re-check prizes, and add a new dated snapshot in kit/data when the live page changes"
+    },
+    {
+      "name": "prizes",
+      "cadence": "daily",
+      "timeout_s": 30,
+      "ci": true,
+      "command": ["{python}", "-m", "kit", "prizes"],
+      "why": "AGENTS.md Commands: the open prizes and days left from the dated snapshot"
+    },
+    {
+      "name": "releases",
+      "cadence": "daily",
+      "timeout_s": 30,
+      "ci": true,
+      "command": ["{python}", "-m", "kit", "releases", "check"],
+      "why": "AGENTS.md rule 15: the README's Released tools section and docs/releases.json agree"
+    },
+    {
+      "name": "leaderboard",
+      "cadence": "daily",
+      "timeout_s": 60,
+      "ci": true,
+      "requires": ["kit/leaderboard.py"],
+      "command": ["{python}", "-m", "kit", "leaderboard", "check"],
+      "why": "the ink reader leaderboard page and docs/results.json stay in step (runs once kit leaderboard lands)"
+    },
+    {
+      "name": "autopipeline-watch",
+      "cadence": "daily",
+      "timeout_s": 300,
+      "command": ["{python}", "-m", "kit", "run", "watch", "--exit-code"],
+      "why": "AGENTS.md Commands, scheduled: queue new or changed open-data bucket volumes, priced in dry run (exit 3 when something is new); it launches nothing (kit/autobatch.py). Not in the workflow: a runner keeps no state, so every volume would look new"
+    },
+    {
+      "name": "handoff",
+      "cadence": "daily",
+      "timeout_s": 60,
+      "command": ["{python}", "-m", "kit", "routines", "check", "handoff"],
+      "why": "AGENTS.md rule 14: one current handoff; AGENTS.md and docs/HANDOFF.md stay under tests/test_repo.py's limits"
+    },
+    {
+      "name": "repo-tests",
+      "cadence": "daily",
+      "timeout_s": 300,
+      "command": ["{python}", "-m", "unittest", "tests.test_repo"],
+      "why": "tests/test_repo.py: size limits, no long dashes, relative links, every kit module in docs/MAP.md, documented kit commands exist (the workflow runs the whole suite instead)"
+    }
+  ]
+}
