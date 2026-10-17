@@ -67,7 +67,7 @@ element.innerHTML = `
       <button data-act="clear" title="Forget every More like this and Not this click">Clear clicks</button>
       <button data-act="use" title="Copy the crosshair's scan position to Your own point">Use crosshair as point</button>
       <button data-act="link" title="Copy a link that opens this cube at this crosshair">Copy link</button>
-      <button data-act="3d" title="Ink and surface shells and similar patches in a rotatable 3D plot">Draw in 3D</button>
+      <button data-act="view3d" class="slv-3d-toggle" title="Turn the three views into one 3D space you can rotate">3D view</button>
     </div>
     </details>
   </div>
@@ -80,11 +80,25 @@ element.innerHTML = `
       <input type="range" data-slice="${a}" min="0" max="255" value="128" aria-label="${AXIS[a]} slice">
     </div>`).join('')}
   </div>
+  <div class="slv-3d" hidden>
+    <div class="slv-group slv-3d-bar">
+      <label class="slv-chip"><input type="checkbox" data-3d="slices" checked>Slices</label>
+      <label class="slv-chip"><input type="checkbox" data-3d="points" checked>Layers as points in 3D</label>
+      <label class="slv-chip"><input type="checkbox" data-3d="box" checked>Cube outline</label>
+      <label class="slv-chip"><input type="checkbox" data-3d="spin">Spin</label>
+      <span class="slv-buttons"><button data-act="camera" title="Look at the whole cube again">Reset camera</button></span>
+    </div>
+    <canvas class="slv-3d-canvas" aria-label="3D view of the cube"></canvas>
+    <div class="slv-group slv-3d-sliders">${[0, 1, 2].map(a => `
+      <label>${AXIS[a]} <input type="range" data-slice3="${a}" min="0" max="255" value="128"><b data-out="s3${a}"></b></label>`).join('')}
+    </div>
+  </div>
   <div class="slv-readout" data-out="readout">&nbsp;</div>
   <div class="slv-help">Drag in a view: move the crosshair. Wheel or arrow keys: next slice (Shift: 8 at a time).
     Ctrl or Cmd with the wheel, or pinch: zoom. Right-drag or Shift-drag: pan. Double-click: reset zoom.
     Click: More like this (white cross), Not this (magenta cross), or nothing, as chosen above.
-    Amber marks the organizers' ink reference (their threshold, cosine 0.5, and the Top % shown).</div>
+    Amber marks the organizers' ink reference (their threshold, cosine 0.5, and the Top % shown).
+    3D view: drag to rotate, wheel to zoom, right-drag to pan; click a slice to search or move the crosshair.</div>
 </div>`;
 
 const $ = sel => element.querySelector(sel);
@@ -116,10 +130,12 @@ function redraw(views = [0, 1, 2], paintOnly = false) {
 }
 function flush() {
   frame = 0;
+  const composed = [...dirty];
   for (const a of dirty) compose(a);
   for (const a of new Set([...dirty, ...dirtyPaint])) paint(a);
   dirty.clear();
   dirtyPaint.clear();
+  if (g3.on && g3.ready) update3D(composed);
 }
 
 function windowLevel() {
@@ -270,6 +286,7 @@ function updateThresholds() {
     if (st.refTop < st.refThr) st.refThr = Infinity;
   }
   if (st.clk) [st.clkThr, st.clkTop] = topThreshold(st.clk, st.top);
+  if (g3.on && g3.ready) buildPatchClouds();
 }
 
 // ---------------------------------------------------------------- loading a cube
@@ -457,6 +474,7 @@ async function newCube(m) {
     [st.autoLo, st.autoHi] = autoWindow(ct);
     windowLevel();
     updateThresholds();
+    if (g3.on && g3.ready) build3D();
     const missing = ['ink', 'surface', 'dino'].filter(k => !(m.has || {})[k]);
     setStatus(`${m.title || m.volume}: cube of ${S}³ voxels at z ${m.origin[0]}, y ${m.origin[1]}, x ${m.origin[2]}`
               + (missing.length ? ` (not run: ${missing.join(', ')})` : ''), null);
@@ -473,6 +491,7 @@ async function newCube(m) {
 element.querySelectorAll('input[data-layer]').forEach(box => box.addEventListener('change', () => {
   st.on[box.dataset.layer] = box.checked;
   redraw();
+  if (g3.on && g3.ready) visibility3D();
 }));
 element.querySelectorAll('input[data-mode]').forEach(radio => radio.addEventListener('change', () => {
   if (radio.checked) st.mode = radio.dataset.mode;
@@ -516,10 +535,10 @@ element.querySelectorAll('button[data-act]').forEach(btn => btn.addEventListener
     flash(btn, 'Copied to Your own point');
   } else if (act === 'link' && m) {
     copyLink(btn);
-  } else if (act === '3d') {
-    trigger('submit', {key: st.key, top: st.top,
-                       layers: Object.keys(st.on).filter(k => st.on[k])});
-    flash(btn, 'Drawing below...');
+  } else if (act === 'view3d') {
+    toggle3D(btn);
+  } else if (act === 'camera') {
+    resetCamera();
   }
 }));
 
@@ -735,6 +754,320 @@ function stepSlice(a, delta) {
   if (s === st.slices[a]) return;
   st.slices[a] = s;
   redraw();
+}
+
+
+// ---------------------------------------------------------------- the 3D view
+//
+// One three.js scene (three 0.160, as Unroll uses) holding the cube: the three slices as planes textured with the
+// same images the flat views draw, so they move and recolour live; the cube's outline; ink and recto surface voxels
+// as points; and the patches like your concept or like the organizers' reference as larger glowing points. World
+// axes: x to the right, the scan's z up (z grows downward in the scan, as in the front and side views), y toward you.
+
+const THREE_URL = 'https://cdn.jsdelivr.net/npm/three@0.160.0/+esm';
+const ORBIT_URL = 'https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js/+esm';
+const MAX_POINTS = 160000;               // voxels drawn per layer in 3D; denser layers are thinned evenly
+const g3 = {on: false, ready: false, loading: null, T: null, renderer: null, scene: null, camera: null, controls: null,
+            planes: [], textures: [], box: null, clouds: {}, raf: 0, size: 0, key: null,
+            show: {slices: true, points: true, box: true}, down: null};
+const panel3 = element.querySelector('.slv-3d');
+const canvas3 = element.querySelector('.slv-3d-canvas');
+
+function world(z, y, x) {
+  const h = st.size / 2;
+  return [x - h, h - z, y - h];
+}
+
+async function load3D() {
+  if (g3.T) return;
+  if (!g3.loading) {
+    g3.loading = Promise.all([import(THREE_URL), import(ORBIT_URL)]).then(([T, O]) => {
+      g3.T = T;
+      g3.Orbit = O.OrbitControls;
+    });
+  }
+  await g3.loading;
+}
+
+async function toggle3D(btn) {
+  if (!g3.on) {
+    btn.disabled = true;
+    setStatus('Loading the 3D view...', null);
+    try {
+      await load3D();
+    } catch (e) {
+      btn.disabled = false;
+      g3.loading = null;
+      setStatus(`Could not load the 3D view (${e.message}); the flat views still work.`, null);
+      return;
+    }
+    btn.disabled = false;
+    g3.on = true;
+    element.querySelector('.slv-views').hidden = true;
+    panel3.hidden = false;
+    btn.textContent = 'Flat views';
+    if (!g3.renderer) init3D();
+    size3D();
+    build3D();
+    loop3D();
+    setStatus('3D view: drag to rotate, wheel to zoom, right-drag to pan. Click a slice to search it.', null);
+  } else {
+    g3.on = false;
+    cancelAnimationFrame(g3.raf);
+    panel3.hidden = true;
+    element.querySelector('.slv-views').hidden = false;
+    btn.textContent = '3D view';
+    resize();
+    redraw();
+  }
+}
+
+function init3D() {
+  const T = g3.T;
+  g3.renderer = new T.WebGLRenderer({canvas: canvas3, antialias: true});
+  g3.renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
+  g3.renderer.setClearColor(0x0b0f14);
+  g3.scene = new T.Scene();
+  g3.camera = new T.PerspectiveCamera(40, 1, 1, 10000);
+  g3.controls = new g3.Orbit(g3.camera, canvas3);
+  g3.controls.enableDamping = true;
+  g3.controls.dampingFactor = 0.07;
+  g3.controls.autoRotateSpeed = 1.2;
+  g3.ready = true;
+  new ResizeObserver(() => { if (g3.on) size3D(); }).observe(panel3);
+  canvas3.addEventListener('pointerdown', ev => { g3.down = {x: ev.clientX, y: ev.clientY, button: ev.button}; });
+  canvas3.addEventListener('pointerup', ev => {
+    const d = g3.down;
+    g3.down = null;
+    if (!d || d.button !== 0 || Math.hypot(ev.clientX - d.x, ev.clientY - d.y) > 4) return;
+    const hit = pick3D(ev);
+    if (!hit) return;
+    if (st.mode === 'move') { st.slices = hit.voxel.slice(); redraw(); }
+    else sendClick(st.mode, hit.voxel);
+  });
+  canvas3.addEventListener('pointermove', ev => {
+    if (ev.buttons) return;
+    const hit = pick3D(ev);
+    readout(hit ? hit.voxel : null);
+  });
+  canvas3.addEventListener('pointerleave', () => readout(null));
+  element.querySelectorAll('input[data-3d]').forEach(box => box.addEventListener('change', () => {
+    const k = box.dataset['3d'];
+    if (k === 'spin') g3.controls.autoRotate = box.checked;
+    else { g3.show[k] = box.checked; visibility3D(); }
+  }));
+  element.querySelectorAll('input[data-slice3]').forEach(input => input.addEventListener('input', () => {
+    st.slices[+input.dataset.slice3] = +input.value;
+    redraw();
+  }));
+}
+
+function size3D() {
+  const w = Math.max(200, panel3.clientWidth);
+  const h = Math.round(Math.min(window.innerHeight * 0.72, w * 0.7));
+  canvas3.style.width = `${w}px`;
+  canvas3.style.height = `${h}px`;
+  g3.renderer.setSize(w, h, false);
+  g3.camera.aspect = w / h;
+  g3.camera.updateProjectionMatrix();
+}
+
+function resetCamera() {
+  if (!g3.ready) return;
+  const S = st.size || 256;
+  g3.camera.position.set(S * 1.25, S * 0.85, S * 1.55);
+  g3.camera.near = S / 100;
+  g3.camera.far = S * 20;
+  g3.camera.updateProjectionMatrix();
+  g3.controls.target.set(0, 0, 0);
+  g3.controls.minDistance = S * 0.2;
+  g3.controls.maxDistance = S * 6;
+  g3.controls.update();
+}
+
+function clear3D() {
+  for (const obj of [...g3.planes, g3.box, ...Object.values(g3.clouds)]) {
+    if (!obj) continue;
+    g3.scene.remove(obj);
+    obj.geometry.dispose();
+    obj.material.dispose();
+  }
+  for (const t of g3.textures) t.dispose();
+  g3.planes = []; g3.textures = []; g3.box = null; g3.clouds = {};
+}
+
+function build3D() {
+  const T = g3.T, S = st.size;
+  if (!S) return;
+  const fresh = g3.key !== st.key;
+  g3.size = S;
+  clear3D();
+  for (let a = 0; a < 3; a++) {
+    compose(a);                                            // the textures read the flat views' images
+    const tex = new T.CanvasTexture(V[a].off);
+    tex.flipY = false;
+    tex.magFilter = T.NearestFilter;
+    tex.minFilter = T.LinearFilter;
+    tex.generateMipmaps = false;
+    tex.colorSpace = T.SRGBColorSpace;
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(new Float32Array(12), 3));
+    geo.setAttribute('uv', new T.BufferAttribute(new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), 2));
+    geo.setIndex([0, 2, 1, 1, 2, 3]);
+    const mesh = new T.Mesh(geo, new T.MeshBasicMaterial({map: tex, side: T.DoubleSide}));
+    mesh.userData.axis = a;
+    g3.scene.add(mesh);
+    g3.planes.push(mesh);
+    g3.textures.push(tex);
+    placePlane(a);
+  }
+  g3.box = new T.LineSegments(new T.EdgesGeometry(new T.BoxGeometry(S, S, S)),
+                              new T.LineBasicMaterial({color: 0xc9d4de, transparent: true, opacity: 0.45}));
+  g3.scene.add(g3.box);
+  buildVoxelCloud('ink', st.ink, 0xeb4034, 0.5);
+  buildVoxelCloud('surface', st.surface, 0x40c860, 0.25);
+  buildPatchClouds();
+  visibility3D();
+  for (const input of element.querySelectorAll('input[data-slice3]')) input.max = S - 1;
+  syncSliders3D();
+  if (fresh) { g3.key = st.key; resetCamera(); }
+}
+
+function placePlane(a) {
+  const S = st.size, [r, c] = OTHERS[a], s = st.slices[a] + 0.5;
+  const pos = g3.planes[a].geometry.attributes.position;
+  [[0, 0], [0, S], [S, 0], [S, S]].forEach(([row, col], i) => {
+    const v = [0, 0, 0];
+    v[a] = s; v[r] = row; v[c] = col;
+    const [X, Y, Z] = world(v[0], v[1], v[2]);
+    pos.setXYZ(i, X, Y, Z);
+  });
+  pos.needsUpdate = true;
+  g3.planes[a].geometry.computeBoundingSphere();
+  g3.planes[a].geometry.computeBoundingBox();
+}
+
+function buildVoxelCloud(name, vol, color, opacity) {
+  if (!vol) return;
+  const T = g3.T, S = st.size;
+  let count = 0;
+  for (let i = 0; i < vol.length; i++) if (vol[i] >= 128) count++;
+  if (!count) return;
+  const stride = Math.max(1, Math.ceil(count / MAX_POINTS));
+  const pts = new Float32Array(Math.ceil(count / stride) * 3);
+  let k = 0, seen = 0;
+  for (let i = 0; i < vol.length; i++) {
+    if (vol[i] < 128) continue;
+    if (seen++ % stride) continue;
+    const z = Math.floor(i / (S * S)), y = Math.floor(i / S) % S, x = i % S;
+    const [X, Y, Z] = world(z + 0.5, y + 0.5, x + 0.5);
+    pts[k++] = X; pts[k++] = Y; pts[k++] = Z;
+  }
+  const geo = new T.BufferGeometry();
+  geo.setAttribute('position', new T.BufferAttribute(pts.subarray(0, k), 3));
+  const mat = new T.PointsMaterial({color, size: Math.max(0.9, 1.1 * stride ** (1 / 3)), sizeAttenuation: true,
+                                    transparent: true, opacity, depthWrite: false});
+  g3.clouds[name] = new T.Points(geo, mat);
+  g3.scene.add(g3.clouds[name]);
+}
+
+function patchCloud(name, sim, thr, color, opacity) {
+  const T = g3.T, n = st.n;
+  if (g3.clouds[name]) {
+    g3.scene.remove(g3.clouds[name]);
+    g3.clouds[name].geometry.dispose();
+    g3.clouds[name].material.dispose();
+    delete g3.clouds[name];
+  }
+  if (!sim || !Number.isFinite(thr)) return;
+  const out = [];
+  for (let i = 0; i < sim.length; i++) {
+    if (sim[i] < thr) continue;
+    const tz = Math.floor(i / (n * n)), ty = Math.floor(i / n) % n, tx = i % n;
+    out.push(...world(tz * PATCH + PATCH / 2, ty * PATCH + PATCH / 2, tx * PATCH + PATCH / 2));
+  }
+  if (!out.length) return;
+  const geo = new T.BufferGeometry();
+  geo.setAttribute('position', new T.BufferAttribute(new Float32Array(out), 3));
+  g3.clouds[name] = new T.Points(geo, new T.PointsMaterial({color, size: PATCH * 0.8, sizeAttenuation: true,
+    transparent: true, opacity, depthWrite: false, blending: T.AdditiveBlending}));
+  g3.scene.add(g3.clouds[name]);
+}
+
+function buildPatchClouds() {
+  if (!g3.ready || !st.size) return;
+  patchCloud('reference', st.ref, st.refThr, 0xfab41e, 0.55);
+  patchCloud('clicks', st.clk, st.clkThr, 0x28dceb, 0.7);
+  const marks = [];
+  for (const kind of ['pos', 'neg']) for (const v of st.marks[kind]) marks.push({kind, v});
+  if (g3.clouds.marks) {
+    g3.scene.remove(g3.clouds.marks);
+    g3.clouds.marks.geometry.dispose();
+    g3.clouds.marks.material.dispose();
+    delete g3.clouds.marks;
+  }
+  if (marks.length) {
+    const T = g3.T, pos = [], col = [];
+    for (const {kind, v} of marks) {
+      pos.push(...world(v[0] + 0.5, v[1] + 0.5, v[2] + 0.5));
+      col.push(...(kind === 'pos' ? [1, 1, 1] : [1, 0.27, 0.78]));
+    }
+    const geo = new T.BufferGeometry();
+    geo.setAttribute('position', new T.BufferAttribute(new Float32Array(pos), 3));
+    geo.setAttribute('color', new T.BufferAttribute(new Float32Array(col), 3));
+    g3.clouds.marks = new T.Points(geo, new T.PointsMaterial({size: PATCH * 1.2, vertexColors: true,
+                                                             sizeAttenuation: true, depthTest: false}));
+    g3.scene.add(g3.clouds.marks);
+  }
+  visibility3D();
+}
+
+function visibility3D() {
+  if (!g3.ready) return;
+  for (const p of g3.planes) p.visible = g3.show.slices;
+  if (g3.box) g3.box.visible = g3.show.box;
+  const want = {ink: st.on.ink, surface: st.on.surface, reference: st.on.reference, clicks: st.on.clicks, marks: true};
+  for (const [name, cloud] of Object.entries(g3.clouds)) cloud.visible = g3.show.points && !!want[name];
+}
+
+function syncSliders3D() {
+  element.querySelectorAll('input[data-slice3]').forEach(input => {
+    const a = +input.dataset.slice3;
+    if (+input.value !== st.slices[a]) input.value = st.slices[a];
+    out(`s3${a}`).textContent = st.slices[a];
+  });
+}
+
+function update3D(composed) {
+  if (!g3.planes.length) return;
+  if (g3.size !== st.size) { build3D(); return; }        // a cube of another size: new planes and textures
+  for (const a of composed) {
+    if (!g3.planes[a]) continue;
+    g3.textures[a].needsUpdate = true;
+    placePlane(a);
+  }
+  syncSliders3D();
+}
+
+function pick3D(ev) {
+  if (!g3.ready || !g3.show.slices || !st.size) return null;
+  const T = g3.T, rect = canvas3.getBoundingClientRect();
+  const ndc = new T.Vector2(((ev.clientX - rect.left) / rect.width) * 2 - 1, -((ev.clientY - rect.top) / rect.height) * 2 + 1);
+  const ray = new T.Raycaster();
+  ray.setFromCamera(ndc, g3.camera);
+  const hit = ray.intersectObjects(g3.planes, false)[0];
+  if (!hit) return null;
+  const h = st.size / 2, p = hit.point;
+  const vox = [h - p.y, p.z + h, p.x + h].map(v => Math.min(st.size - 1, Math.max(0, Math.floor(v))));
+  vox[hit.object.userData.axis] = st.slices[hit.object.userData.axis];
+  return {voxel: vox};
+}
+
+function loop3D() {
+  if (!g3.on) return;
+  g3.controls.update();
+  g3.renderer.render(g3.scene, g3.camera);
+  g3.raf = requestAnimationFrame(loop3D);
 }
 
 // ---------------------------------------------------------------- start

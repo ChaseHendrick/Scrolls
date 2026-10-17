@@ -117,7 +117,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
-| [scroll-lens](scroll-lens.md) | Current | `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/` | Needed | A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to 2.4 µm scroll scan and shows what three Vesuvius Challenge 3D models see in it, with click search, a viewer drawn in the browser, and an API and MCP server for agents. |
+| [scroll-lens](scroll-lens.md) | Current | `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/` | Needed | A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to 2.4 µm scroll scan and shows what three Vesuvius Challenge 3D models see in it: click search, slice views and a 3D view drawn in the browser, and agent tools (API and MCP). |
 | [unroll](unroll.md) | Current | `python inkbench.py compare PRED.png --segment WNNN -o BUNDLE.json` | Not needed | Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scroll windings in 3D with X-ray and ink layers, unrolls them, shows raw CT around any point, and scores your ink map against the published one (Ink Bench). |
 | [view](view.md) | Current | `python -m kit view` | Not needed | `python -m kit view` writes one self-contained HTML file (no server, no network) that shows several readers' ink maps of one crop, percentile ranked so different scales compare, with their disagreement, the label outline and the mask, plus a JSON summary. |
 

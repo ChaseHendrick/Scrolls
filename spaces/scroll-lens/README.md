@@ -30,7 +30,7 @@ tags:
 # Scroll Lens
 
 Look inside a carbonized Herculaneum scroll with the Vesuvius Challenge's newest 3D models, and click to search.
-People use the page; scripts and AI agents use the same things through an API and an MCP server.
+People use the page, flat or in 3D; scripts and AI agents use the same cubes through tools that are an API and an MCP server.
 
 Scroll Lens reads a small cube (128³ or 256³ voxels, 0.3 or 0.6 mm a side) of a public X-ray CT scan straight from the
 [Vesuvius Challenge open data](https://scrollprize.org/data) and runs three models on it, all released by the
@@ -67,10 +67,13 @@ in another.
 4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Move only* just moves the
    crosshair; *Undo click* (or Ctrl or Cmd with Z) forgets the last click. *Top % shown* sets how many of the most similar patches light up. The organizers' reference (amber)
    never lights a patch below their own threshold, cosine 0.5.
-5. **More**: brightness and contrast, *Center on point*, *Reset zoom*, *Use crosshair as point* (copies the
-   crosshair's scan position to Your own point), *Copy link* (a link that opens this cube at this crosshair), *Draw in
-   3D* (ink and surface shells and similar patches), and *Save files* (model outputs as `.npz`, the receipt `.json`,
-   your concept).
+5. **3D view**: turns the three views into one 3D space of the cube, as in Unroll: the three slices as planes that
+   move as you drag the sliders, ink and surface as points, and the patches like your concept or the organizers'
+   reference glowing. Drag to rotate, wheel to zoom, right-drag to pan, *Spin* to turn it slowly; click a slice to
+   search there.
+6. **More**: brightness and contrast, *Center on point*, *Reset zoom*, *Use crosshair as point* (copies the
+   crosshair's scan position to Your own point), *Copy link* (a link that opens this cube at this crosshair), and
+   *Save files* (model outputs as `.npz`, the receipt `.json`, your concept).
 
 Links: `?cube=ID` opens a gallery cube; `?v=PHerc0139&z=…&y=…&x=…&size=256` fills in Your own point (press Run the
 models); `&s=z,y,x` puts the crosshair at that voxel of the cube.
@@ -111,65 +114,50 @@ the model cards and the checkpoints' own training configs, read 16 October 2026.
 - Weights are downloaded at pinned revisions and refused unless their SHA-256 matches; the model code is downloaded
   at pinned commits. The receipt records all of it, plus the device, timings and the cube's place in the scan.
 
-## For scripts and agents
+## For agents and scripts
 
-Everything on the page is also an endpoint. Each is a `gradio_client` call, a plain HTTP call, and an MCP tool.
-Only `look` uses the GPU.
+Everything a person can do on the page, an agent can do too: each tool below is both an API endpoint
+(`gradio_client`) and an MCP tool. Every answer carries `open_in_browser`, a link that opens the same cube on the page,
+so an agent can hand its result to a person.
 
-| Endpoint | Arguments | Returns | GPU |
-| --- | --- | --- | --- |
-| `volumes` | none | the twelve scans: id, shape, voxel size, notes, what each model saw | no |
-| `gallery` | `volume` (optional) | the gallery cubes: id, scan, point, size, `npz_url`, `page_url` | no |
-| `gallery_cube` | `cube_id` | the cube's receipt, with the agreement check, and its `.npz` | no |
-| `random_point` | `volume`, `seed` (optional) | a point on the papyrus (Surprise me) | no |
-| `look` | `vid`, `z`, `y`, `x`, `size=256`, `layers="dino,ink,surface"`, `tta`, `compact`, `allow_cpu` | the receipt, `cube_ref` and the `.npz` | yes |
-| `search` | `cube` (a gallery id or a `cube_ref`), `positive_zyx`, `negative_zyx`, `positive_vector`, `negative_vector`, `reference`, `top_k=20`, `top_pct=8`, `return_concept` | the best patches with scores, and the ink-model check | no |
-| `view` | `cube`, `axis` (all, z, y or x), `index` (-1 for the cube's point), `layers` (ink, surface, reference, concept, pca), the concept arguments, `top_pct`, `opacity` | a PNG drawn like the page: the three views side by side (1552 × 512), or one (512 × 512) | no |
-| `reference` | none | the organizers' ink reference: 864 numbers, threshold 0.5, source | no |
+| Tool | What it does | GPU |
+| --- | --- | --- |
+| `list_scans` | the twelve scans, their sizes, what each model saw of them in training, the Paris 4 training points | no |
+| `list_gallery` | the ready-made cubes, with ids | no |
+| `random_point` | a point on the papyrus of a scan, fixed by a seed | no |
+| `inspect_cube` | three slice views with chosen overlays (one PNG) and the cube's receipt, checks and layer fractions | gallery: no |
+| `search_cube` | the patches most like example points, a `concept.npy`, or the organizers' ink reference; with the AUC against the 3D ink model and its control, an image through the best match, and the concept as `concept.npy` | gallery: no |
+| `download_cube` | the model outputs as a `.npz` and the receipt | gallery: no |
+| `look` | the `.npz` for any point, for batch scripts (`tools/build_gallery.py` uses it) | yes |
 
-**MCP.** Connect any MCP client to `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/` (streamable HTTP; the
-older SSE transport is at `/gradio_api/mcp/sse`). On this Space the tools are named `scroll_lens_volumes`,
-`scroll_lens_gallery` and so on. In Claude Code:
+A cube is named by a gallery `cube_id`, or by `scan` and a point `z`, `y`, `x` (level-0 voxels) with `size` 128 or
+256. Points for `search_cube` are scan coordinates inside the cube, written `"z,y,x; z,y,x"`. A point outside the
+listed scans, outside the cube, or not three whole numbers is refused with a message saying why.
 
-```bash
-claude mcp add --transport http scroll-lens https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/ --header "Authorization: Bearer hf_YOUR_TOKEN"
-```
+**MCP.** Add `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/` to an MCP client (Claude, Cursor and others).
+Calls on a new point use the caller's ZeroGPU time, so give the client a Hugging Face token
+(`Authorization: Bearer hf_...`); gallery cubes need none.
 
-The token is optional. With it, `look` spends your own ZeroGPU quota (300 s a day on a free account, 40 minutes on
-PRO); without it, ZeroGPU gives an anonymous caller only a few runs a day. The other tools need no quota.
-
-**Python:**
+**Python.**
 
 ```python
 from gradio_client import Client
-c = Client("SharpMeow/scroll-lens")            # token="hf_..." to spend your own ZeroGPU quota in look
-cubes = c.predict(api_name="/gallery")["cubes"]
-hits = c.predict(cube="paris4-train-1", reference=True, top_k=5, api_name="/search")
-print(hits["agreement_with_ink_model"], hits["top_patches"][0]["center_zyx"])
-png = c.predict(cube="paris4-train-1", axis="y", layers=["ink", "reference"], api_name="/view")
-out = c.predict("PHerc1667", 15108, 10100, 5532, 128, "dino,ink,surface", False, True, True, api_name="/look")
-same = c.predict(cube=out["cube_ref"], positive_zyx=[[15108, 10100, 5532]], api_name="/search")
+c = Client("SharpMeow/scroll-lens", token="hf_...")   # your token: GPU time counts against your quota
+cubes = c.predict(api_name="/list_gallery")["cubes"]
+image, info = c.predict(cubes[0]["id"], "", 0, 0, 0, 256, "ink,reference", api_name="/inspect_cube")
+image, hits, concept = c.predict("", "PHerc1667", 15108, 10100, 5532, 256,   # cube_id, scan, z, y, x, size
+                                 "15108,10100,5532", "", None, 10,           # positive, negative, concept, top_k
+                                 api_name="/search_cube")
+path = c.predict("PHerc1667", 15108, 10100, 5532,     # look: scan, z, y, x
+                 256, "dino,ink,surface",            # cube side, models
+                 False, False, False,                # mirror averaging, compact, allow the CPU fallback
+                 api_name="/look")
 ```
 
-Notes for agents:
-
-- Coordinates are level-0 scan voxels, z y x. `look` puts the cube on the 128-voxel chunk grid around your point;
-  `cube_origin_zyx` and `cube_size` in the receipt say where it landed. After `allow_cpu`, check `cube_size` and
-  `note_run`: the CPU ran only the middle 128³.
-- One `look` at a time per caller; a second one is refused until the first ends.
-- `cube_ref` works while the Space keeps that cube in memory (its last 12). If it is gone, run `look` again or search
-  the `.npz` yourself with this Space's `lens.py`.
-- Returned files (the `.npz`, the PNG) are served for about an hour; save them if you need them later.
-- Over MCP, a dict result arrives as Python literal text (single quotes, `True`, `None`), not JSON; `gradio_client`
-  gives real JSON.
-- Errors come back with their reason, for example `'X' is not one of the scans this Space may read; choose from …`.
-
-Reading a `.npz`: `meta, arrays = lens.load_npz(path)` with this Space's
-[`lens.py`](https://huggingface.co/spaces/SharpMeow/scroll-lens/blob/main/lens.py), or plain numpy:
-`z = numpy.load(path); receipt = json.loads(bytes(z["receipt"]))`. `grid` is (Z/8, Y/8, X/8, 864) float16 unit
-embeddings (or `grid_reduced` and `grid_basis` when compact; `lens.grid_of` rebuilds them), `ink` and `surface` are
-(Z, Y, X) uint8 probabilities times 255. The scan itself is not included: `lens.read_cube(volume,
-receipt["cube_origin_zyx"], receipt["cube_size"])` reads it from the bucket.
+Read a `.npz` with `lens.load_npz(path)` from this Space's `lens.py`: `grid` is (Z/8, Y/8, X/8, 864) float16 unit
+embeddings (or `grid_reduced` and `grid_basis` when compact), `ink` and `surface` are (Z, Y, X) uint8 probabilities
+times 255, and `receipt` is the JSON receipt. The scan itself is not included; read it from the bucket with
+`lens.read_cube(volume, receipt["cube_origin_zyx"], receipt["cube_size"])`.
 
 `lens.py` also runs on any computer: `python3 lens.py look PHerc0139 47316 9452 12796 --size 256` (CUDA if present).
 

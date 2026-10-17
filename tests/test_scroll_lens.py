@@ -312,6 +312,21 @@ class Embeddings(unittest.TestCase):
         back = lens.grid_of({"grid_reduced": coef, "grid_basis": basis})
         self.assertGreater(float((back * low).sum(-1).min()), 0.99)
 
+    def test_parse_points_and_matches(self):
+        self.assertEqual(lens.parse_points("1,2,3; 4 5 6\n7,8,9"), [(1, 2, 3), (4, 5, 6), (7, 8, 9)])
+        self.assertEqual(lens.parse_points(""), [])
+        for bad in ("1,2", "1,2,3,4", "a,b,c", "-1,2,3"):
+            with self.assertRaises(lens.LensError):
+                lens.parse_points(bad)
+        self.assertEqual(lens.voxel_in_cube((110, 120, 130), (100, 100, 100), 128), [10, 20, 30])
+        with self.assertRaises(lens.LensError):
+            lens.voxel_in_cube((99, 120, 130), (100, 100, 100), 128)
+        sim = np.zeros((4, 4, 4), np.float32)
+        sim[1, 2, 3], sim[0, 0, 0] = 0.9, 0.5
+        m = lens.top_matches(sim, (100, 200, 300), 2)
+        self.assertEqual(m[0], {"center_zyx": [112, 220, 328], "score": 0.9})
+        self.assertEqual(m[1]["center_zyx"], [104, 204, 304])
+
     def test_quantize(self):
         a = np.arange(256, dtype=np.uint8)
         q = lens.quantize(a)
@@ -526,27 +541,20 @@ class Page(unittest.TestCase):
         self.assertLess(float(np.abs(sim - want).max()), 1.0 / app.SIM_SCALE)
         self.assertEqual(app.viewer_value(app.empty_state()), "")
 
-    def test_render_numbers_3d_and_save(self):
+    def test_numbers_and_save(self):
         app = self.app
         cube = self.cube()
         state = self.state(cube, clicks=[(10, 20, 30)])
-        ct = np.random.default_rng(3).integers(1, 256, (128, 128, 128), dtype=np.uint8)
-        for axis in range(3):
-            img = app.render_slice(ct, cube, axis, 64, list(app.OVERLAYS), click=app.click_sim(state),
-                                   marks={"pos": [[10, 20, 30]]})
-            self.assertEqual(img.shape, (128, 128, 3))
         text = app.numbers(state)
         self.assertIn("not a reading", text)
         self.assertIn("1 positive", text)
-        self.assertEqual(len(app.figure_3d(state, list(app.OVERLAYS), 8).data) > 0, True)
         names = sorted(Path(f).name for f in app.save_files(state))
         self.assertIn("concept.npy", names)
         self.assertIn("clicks.json", names)
 
     def test_concept_upload_has_no_voxel(self):
         app = self.app
-        cube = self.cube()
-        state = self.state(cube)
+        state = self.state(self.cube())
         state["pos"] = [{"volume": "file", "cube": "file", "voxel": None, "voxel_zyx": None,
                          "vec": lens.unit(np.ones(lens.EMBED_DIM, np.float32))}]
         v = json.loads(app.viewer_value(state))
@@ -590,23 +598,6 @@ class Page(unittest.TestCase):
             self.app.check_point("a", 1, 2)
         self.assertEqual(self.app.check_point(1.0, 2, 3), (1, 2, 3))
 
-    def test_view_endpoint_draws_one_or_all_views(self):
-        from unittest import mock
-        app = self.app
-        cube = self.cube(key="run:v")
-        ct = np.random.default_rng(4).integers(1, 256, (128,) * 3, dtype=np.uint8)
-        with mock.patch.object(app, "scan_cube", lambda vid, origin, size: ct):
-            from PIL import Image
-            one = Image.open(app.agent_view("run:v", axis="y", index=10, layers=["ink"]))
-            self.assertEqual(one.size, (512, 512))
-            three = Image.open(app.agent_view("run:v", axis="all", layers=["ink", "reference"],
-                                              positive_zyx=[[1030, 1040, 1050]]))
-            self.assertEqual(three.size, (3 * 512 + 16, 512))
-            for bad in ({"axis": "w"}, {"axis": "all", "index": 3}, {"axis": "z", "index": 128},
-                        {"layers": ["letters"]}):
-                with self.assertRaises(lens.LensError, msg=str(bad)):
-                    app.agent_view("run:v", **bad)
-
     def test_reference_layer_has_the_organizers_floor(self):
         app = self.app
         sim = np.full((16, 16, 16), 0.2, np.float32)
@@ -628,14 +619,58 @@ class Page(unittest.TestCase):
         app.GALLERY = []
         demo = app.build_demo()
         info = demo.get_api_info()
-        self.assertEqual(sorted(info["named_endpoints"]), ["/gallery", "/gallery_cube", "/look", "/random_point",
-                                                            "/reference", "/search", "/view", "/volumes"])
+        self.assertEqual(sorted(info["named_endpoints"]), ["/download_cube", "/inspect_cube", "/list_gallery",
+                                                            "/list_scans", "/look", "/random_point", "/search_cube"])
         self.assertEqual(info["unnamed_endpoints"], {})
         look = [p["parameter_name"] for p in info["named_endpoints"]["/look"]["parameters"]]
         self.assertEqual(look, ["vid", "z", "y", "x", "size", "layers", "tta", "compact", "allow_cpu"])
         kw = app.launch_kwargs()
         self.assertTrue(kw["mcp_server"])
         self.assertEqual(kw["max_file_size"], "5mb")
+
+    def test_agent_tools_on_a_gallery_cube(self):
+        app = self.app
+        rng = np.random.default_rng(5)
+        res = Files().result(128)
+        ct = rng.integers(1, 256, (128, 128, 128), dtype=np.uint8)
+        origin = (1024, 2048, 3072)
+        view = app.tool_new_view("PHerc0139", origin, 128, (1030, 2050, 3080), ct, res, "gallery")
+        view["receipt"]["gallery_id"] = "g1"
+        app.VIEW_CACHE.clear()
+        app.VIEW_CACHE[("gallery", "g1")] = view
+        app.GALLERY = [{"id": "g1", "volume": "PHerc0139", "title": "t", "note": "", "file": "g1.npz",
+                        "point_zyx": [1030, 2050, 3080], "size": 128}]
+        img, info = app.inspect_cube("g1", overlays="ink,surface,reference,dino")
+        self.assertEqual(img.shape, (512, 512 * 3 + 16, 3))
+        self.assertEqual(info["slices_zyx"], [1030, 2050, 3080])
+        self.assertIn("cube=g1", info["open_in_browser"])
+        with self.assertRaises(lens.LensError):
+            app.inspect_cube("g1", overlays="ink,letters")
+        img, hits, concept = app.search_cube("g1", positive="1030,2050,3080", top_k=5)
+        self.assertEqual(len(hits["matches"]), 5)
+        self.assertEqual(hits["matches"][0]["score"], 1.0)              # the example matches itself best
+        self.assertEqual(hits["matches"][0]["center_zyx"], [1028, 2052, 3084])
+        self.assertIn("auc_control_shifted", hits["agreement_with_ink_model"])
+        self.assertEqual(np.load(concept).shape, (lens.EMBED_DIM,))
+        _, again, _ = app.search_cube("g1", concept=concept, top_k=5)  # the saved concept finds the same patches
+        self.assertEqual(again["matches"], hits["matches"])
+        _, ref, _ = app.search_cube("g1", top_k=3)
+        self.assertEqual(ref["concept"], "the organizers' ink reference")
+        for bad in ({"positive": "0,0,0"}, {"positive": "1,2"}, {"negative": "1030,2050,3080"}):
+            with self.assertRaises(lens.LensError):
+                app.search_cube("g1", **bad)
+        with self.assertRaises(lens.LensError):
+            app.inspect_cube("", "")                                     # neither a cube nor a scan
+        self.assertEqual(app.next_gallery_id("g1", 1), "g1")
+        self.assertEqual(app.list_gallery()["cubes"][0]["id"], "g1")
+        self.assertEqual(len(app.list_scans()["scans"]), len(lens.VOLUMES))
+        path, summary = app.download_cube("g1")
+        self.assertTrue(path.endswith(".npz"))
+        self.assertEqual(lens.load_npz(path)[0]["layers"], ["dino", "ink", "surface"])
+
+    def test_look_reads_its_flags_strictly(self):
+        with self.assertRaises(lens.LensError):
+            self.app.look("PHerc0139", 47316, 9452, 12796, 128, "dino", "maybe", False, False)
 
     def test_viewer_js_parses(self):
         import shutil

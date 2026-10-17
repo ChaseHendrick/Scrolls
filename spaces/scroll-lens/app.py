@@ -50,9 +50,6 @@ OVERLAYS = ("Ink (3D ink model)", "Recto surface", "Your clicks", "Organizers' i
 VIEW_NAMES = ("Top view (z)", "Front view (y)", "Side view (x)")
 COLORS = {"ink": (235, 64, 52), "surface": (64, 200, 96), "clicks": (40, 220, 235), "reference": (250, 180, 30)}
 MARKS = {"pos": (255, 255, 255), "neg": (255, 70, 200)}   # crosses where you clicked: More like this, Not this
-LAYER_KEYS = {"ink": "Ink (3D ink model)", "surface": "Recto surface", "clicks": "Your clicks",
-              "reference": "Organizers' ink reference", "pca": "DINO colors"}
-
 
 def log(message):
     lens.log(message)
@@ -441,7 +438,7 @@ def viewer_value(state):
     })
 
 
-# ---------------------------------------------------------------- drawing on the server (the slice API and tests)
+# ---------------------------------------------------------------- drawing on the server (the agent tools)
 
 def _take(a, axis, i):
     return a[i] if axis == 0 else (a[:, i] if axis == 1 else a[:, :, i])
@@ -464,20 +461,18 @@ def _top_alpha(sim2d, sim3d, top_pct, floor=None):
     return (TOP_FLOOR + (1 - TOP_FLOOR) * ramp) * (sim2d >= thr)
 
 
-def render_slice(ct, cube, axis, index, overlays, top_pct=8.0, opacity=0.7, click=None, marks=None):
-    """One slice through a cube as an RGB uint8 image (size x size), drawn the way the browser viewer draws it: the CT
-    windowed to its 0.5th to 99.5th percentile of papyrus, then DINO colors, surface, ink, the organizers' reference
-    and the visitor's concept, each blended at `opacity`. `click` is a similarity map at patch resolution."""
+def draw_slice(state, axis, overlays, top_pct, opacity):
+    """One slice through the cube as an RGB image, scaled up so a 128 or 256 cube shows at 512 px."""
     import numpy as np
-    size = cube.size
-    index = int(min(max(int(index), 0), size - 1))
-    tok_i = index // lens.PATCH
-    ct2 = _take(ct, axis, index).astype(np.float32) if ct is not None else np.zeros((size, size), np.float32)
-    nz = ct[ct > 0] if ct is not None else np.zeros(0)
-    lo, hi = (np.percentile(nz, (0.5, 99.5)) if nz.size else (0, 255))
-    g = np.clip((ct2 - lo) / max(float(hi - lo), 1.0), 0, 1)
+    view = state["view"]
+    if view is None:
+        return None
+    size, cube, idx = view["size"], view["cube"], view["slices"][axis]
+    ct = _take(cube, axis, idx).astype(np.float32)
+    g = np.clip((ct - view["lo"]) / (view["hi"] - view["lo"]), 0, 1)
     rgb = np.repeat(g[..., None], 3, axis=2)
-    res = cube.result
+    res = view["result"]
+    tok_i = idx // lens.PATCH
 
     def up(t2):
         return np.repeat(np.repeat(t2, lens.PATCH, 0), lens.PATCH, 1)
@@ -486,25 +481,46 @@ def render_slice(ct, cube, axis, index, overlays, top_pct=8.0, opacity=0.7, clic
         a = (np.asarray(alpha, np.float32) * opacity)[..., None]
         rgb[:] = rgb * (1 - a) + (np.asarray(color, np.float32) / 255.0) * a
 
-    if "DINO colors" in overlays and cube.has_dino:
-        pc = up(_take(cube.pca(), axis, tok_i)).astype(np.float32) / 255.0
+    if "DINO colors" in overlays and "grid" in view:
+        if view["pca"] is None:
+            view["pca"] = lens.pca_colors(view["grid"].astype(np.float32))
+        pc = up(_take(view["pca"], axis, tok_i)).astype(np.float32) / 255.0
         rgb[:] = rgb * (1 - 0.6 * opacity) + pc * (0.6 * opacity)
     if "Recto surface" in overlays and "surface" in res:
-        blend(COLORS["surface"], _take(res["surface"], axis, index) / 255.0)
+        blend(COLORS["surface"], _take(res["surface"], axis, idx) / 255.0)
     if "Ink (3D ink model)" in overlays and "ink" in res:
-        blend(COLORS["ink"], _take(res["ink"], axis, index) / 255.0)
-    if "Organizers' ink reference" in overlays and cube.ref_sim is not None:
-        s3 = cube.ref_sim
+        blend(COLORS["ink"], _take(res["ink"], axis, idx) / 255.0)
+    if "Organizers' ink reference" in overlays and view.get("ref_sim") is not None:
+        s3 = view["ref_sim"]
         blend(COLORS["reference"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct, floor=lens.TAU)))
-    if "Your clicks" in overlays and click is not None:
-        blend(COLORS["clicks"], up(_top_alpha(_take(click, axis, tok_i), click, top_pct)))
+    if "Your clicks" in overlays:
+        s3 = tool_click_sim(state)
+        if s3 is not None:
+            blend(COLORS["clicks"], up(_top_alpha(_take(s3, axis, tok_i), s3, top_pct)))
     img = (np.clip(rgb, 0, 1) * 255).astype(np.uint8)
+    # where the other two slices cut this one: thin guide lines
     others = [a for a in range(3) if a != axis]
+    r, c = view["slices"][others[0]], view["slices"][others[1]]
+    f = scale_of(size)
+    img = np.repeat(np.repeat(img, f, 0), f, 1)
+    guide = np.array([255, 255, 255], np.uint8)
+    img[r * f + f // 2, :: 3] = guide
+    img[:: 3, c * f + f // 2] = guide
+    # the clicks made in this cube that lie in this slice
     for kind, color in (("pos", MARKS["pos"]), ("neg", MARKS["neg"])):
-        for v in (marks or {}).get(kind, []):
-            if v[axis] // lens.PATCH == tok_i:
-                _mark(img, v[others[0]], v[others[1]], color, 4)
+        for ck in state[kind]:
+            if ck.get("cube") != cube_key(view):
+                continue
+            v = ck["voxel"]
+            if v[axis] // lens.PATCH != tok_i:
+                continue
+            rr, cc = v[others[0]] * f, v[others[1]] * f
+            _mark(img, rr + f // 2, cc + f // 2, color, 5 * f // 2 + 3)
     return img
+
+
+def scale_of(size):
+    return max(1, 512 // int(size))
 
 
 def _mark(img, r, c, color, half):
@@ -519,7 +535,6 @@ def _mark(img, r, c, color, half):
 
 def numbers(state):
     """The text beside the views: what this cube is, what ran, and the checks."""
-    import numpy as np
     view = state["view"]
     if view is None:
         return ("Pick a ready-made cube from the gallery, or a point in a scan, then press **Run the models**. "
@@ -562,47 +577,6 @@ def numbers(state):
                      f"{', plus your concept.npy' if loaded else ''}.{extra}")
     lines.append("_Model output, not a reading. A cube is smaller than one letter._")
     return "\n\n".join(lines)
-
-
-def figure_3d(state, overlays, top_pct):
-    """Ink and surface as see-through shells and the similar patches as points, in a rotatable 3D plot."""
-    import numpy as np
-    import plotly.graph_objects as go
-    view = state["view"]
-    fig = go.Figure()
-    if view is None:
-        return fig
-    from skimage.measure import marching_cubes
-    cube = cube_of(view)
-    res, size = cube.result, view["size"]
-    step = 2 if size <= 128 else 4
-    for key, name, color, show in (("surface", "Recto surface", COLORS["surface"], "Recto surface" in overlays),
-                                    ("ink", "Ink", COLORS["ink"], "Ink (3D ink model)" in overlays)):
-        if not show or key not in res or res[key].max() < 128:
-            continue
-        verts, faces, _, _ = marching_cubes(res[key].astype(np.float32), level=127.5, step_size=step)
-        fig.add_trace(go.Mesh3d(x=verts[:, 2], y=verts[:, 1], z=verts[:, 0], i=faces[:, 0], j=faces[:, 1],
-                                k=faces[:, 2], color=f"rgb{color}", opacity=0.35 if key == "surface" else 0.8,
-                                name=name, showlegend=True, hoverinfo="skip"))
-    for key, name, color in (("clicks", "Your clicks", COLORS["clicks"]),
-                              ("reference", "Organizers' ink reference", COLORS["reference"])):
-        if (key == "clicks" and "Your clicks" not in overlays) or \
-                (key == "reference" and "Organizers' ink reference" not in overlays):
-            continue
-        s3 = click_sim(state, cube) if key == "clicks" else cube.ref_sim
-        if s3 is None:
-            continue
-        thr = np.percentile(s3, 100 - top_pct)
-        pts = np.argwhere(s3 >= thr) * lens.PATCH + lens.PATCH / 2
-        fig.add_trace(go.Scatter3d(x=pts[:, 2], y=pts[:, 1], z=pts[:, 0], mode="markers", name=name,
-                                   marker=dict(size=2.5, color=f"rgb{color}", opacity=0.7), hoverinfo="skip"))
-    ax = dict(range=[0, size], showbackground=False, gridcolor="#3a4654", zerolinecolor="#3a4654",
-              color="#c9d4de")
-    fig.update_layout(scene=dict(xaxis=dict(ax, title="x"), yaxis=dict(ax, title="y"), zaxis=dict(ax, title="z"),
-                                 aspectmode="cube", bgcolor="#11161c"),
-                      paper_bgcolor="#11161c", font=dict(color="#c9d4de"), height=460,
-                      margin=dict(l=0, r=0, t=10, b=0), legend=dict(orientation="h", y=0.02))
-    return fig
 
 
 # ---------------------------------------------------------------- loading cubes
@@ -688,7 +662,16 @@ def load_gallery(cube_id):
 
 
 def gallery_label(it):
-    return it["title"] if int(it.get("size", 256)) == 256 else f"{it['title']} ({it['size']}³)"
+    z, y, x = it["point_zyx"]
+    return f"{it['title']} (z {z}, y {y}, x {x}, {it['size']}³)"
+
+
+def next_gallery_id(cube_id, step=1):
+    ids = [it["id"] for it in GALLERY]
+    if not ids:
+        raise LensError("the gallery is empty")
+    i = ids.index(cube_id) if cube_id in ids else -step
+    return ids[(i + step) % len(ids)]
 
 
 def surprise(vid, seed=None):
@@ -750,19 +733,395 @@ def as_bool(value, name):
     raise LensError(f"{name} must be true or false, not {value!r}")
 
 
-def api_look(vid, z, y, x, size, layers, tta, compact, allow_cpu, request=None):
-    """For scripts and agents: run the models on one cube. Returns (cube, receipt, .npz path)."""
-    with one_run(request):
-        cube, _ = run_cube(vid, z, y, x, size, parse_layers(layers), as_bool(tta, "tta"),
-                           allow_cpu=as_bool(allow_cpu, "allow_cpu"))
-    meta = dict(cube.meta, source="api", cube_ref=cube.key)
+# ---------------------------------------------------------------- the agent tools' cubes
+#
+# The agent tools below (PR #114) keep their own view of a cube, with every array in it; the page uses CUBES.
+
+def tool_new_view(vid, origin, size, point, cube, result, source, note=""):
+    """Everything the agent tools need about one cube: the scan cube and all arrays (kept in VIEW_CACHE, three at a
+    time). The page keeps its cubes in CUBES instead."""
+    import numpy as np
+    if cube.shape[0] != size:                      # the CPU fallback ran a smaller cube at the center
+        o = (size - cube.shape[0]) // 2
+        origin = tuple(int(v + o) for v in origin)
+        size = int(cube.shape[0])
+    nz = cube[cube > 0]
+    lo, hi = (np.percentile(nz, (0.5, 99.5)) if nz.size else (0, 255))
+    view = {"volume": vid, "origin": tuple(int(v) for v in origin), "size": int(size),
+            "point": tuple(int(v) for v in point), "cube": cube, "lo": float(lo), "hi": float(max(hi, lo + 1)),
+            "source": source, "note": note, "result": result, "pca": None, "ref_sim": None,
+            "foreground": lens.foreground(cube)}
+    if "grid" in result or "grid_reduced" in result:
+        view["grid"] = lens.grid_of(result).astype(np.float16)
+        view["ref_sim"] = lens.similarity(view["grid"].astype(np.float32), REFERENCE)
+    view["slices"] = [int(min(max(p - o, 0), size - 1)) for p, o in zip(point, view["origin"])]
+    view["receipt"] = lens.receipt(vid, view["origin"], size, point, result,
+                                   ENGINE.describe() if ENGINE else None,
+                                   {"source": source, "foreground": round(view["foreground"], 4)})
+    if "ink" in result and view.get("ref_sim") is not None:
+        view["receipt"]["agreement_with_ink_model"] = lens.agreement(view["ref_sim"], result["ink"])
+    return view
+
+
+def tool_click_sim(state):
+    view = state["view"]
+    p, n = click_concept(state)
+    if view is None or p is None or "grid" not in view:
+        return None
+    import numpy as np
+    return lens.similarity(view["grid"].astype(np.float32), p, n)
+
+
+def tool_load_point(vid, z, y, x, size, layers, tta):
+    import numpy as np
+    size = lens.check_size(size)
+    layers = lens.check_layers([{"3D DINO embeddings": "dino", "3D ink model": "ink",
+                                 "Recto surface model": "surface"}.get(k, k) for k in layers])
+    point = (int(z), int(y), int(x))
+    origin = lens.cube_origin(vid, point, size)
+    cube = lens.read_cube(vid, origin, size)
+    lens.check_cube(cube)
+    result, note = run_models(cube, layers, tta)
+    src = "gpu" if result.get("device", "").startswith("cuda") else "cpu"
+    ran = _center(cube, ran_size(result))      # the CPU fallback runs the middle of the cube
+    return tool_new_view(vid, origin, size, point, np.ascontiguousarray(ran), result, src, note)
+
+
+def tool_load_gallery(cube_id):
+    for it in GALLERY:
+        if it["id"] == cube_id:
+            meta, arrays = lens.load_npz(HERE / "gallery" / it["file"])
+            origin, size = tuple(meta["cube_origin_zyx"]), int(meta["cube_size"])
+            cube = lens.read_cube(meta["volume"], origin, size)
+            result = dict(arrays, seconds=meta.get("seconds", {}), device=meta.get("device"),
+                          device_name=meta.get("device_name"), tta=meta.get("tta", False))
+            view = tool_new_view(meta["volume"], origin, size, tuple(meta["point_zyx"]), cube, result, "gallery",
+                            it.get("note", ""))
+            view["receipt"]["gallery_id"] = cube_id
+            return view
+    raise LensError(f"no gallery cube {cube_id!r}")
+
+
+def tool_save_files(state):
+    import numpy as np
+    view = state["view"]
+    if view is None:
+        raise LensError("nothing to save yet")
     OUT.mkdir(parents=True, exist_ok=True)
-    prune(OUT, 900)
     d = Path(tempfile.mkdtemp(dir=OUT))
-    origin = meta["cube_origin_zyx"]
-    path = lens.save_npz(d / f"{meta['volume']}-{'-'.join(map(str, origin))}-{cube.size}.npz", meta, cube.result,
-                         compact=as_bool(compact, "compact"))
-    return cube, meta, str(path)
+    name = f"scroll-lens-{view['volume']}-{'-'.join(map(str, view['origin']))}-{view['size']}"
+    files = [lens.save_npz(d / f"{name}.npz", view["receipt"], view["result"])]
+    rec = d / f"{name}.json"
+    rec.write_text(json.dumps(view["receipt"], indent=1) + "\n")
+    files.append(rec)
+    p, n = click_concept(state)
+    if p is not None:
+        np.save(d / "concept.npy", p.astype(np.float32))
+        files.append(d / "concept.npy")
+        clicks = {"tool": "Scroll Lens", "version": lens.VERSION, "embedding": lens.MODELS["dino"]["repo"],
+                  "positive": [{k: c[k] for k in ("volume", "cube", "voxel_zyx")} for c in state["pos"]],
+                  "negative": [{k: c[k] for k in ("volume", "cube", "voxel_zyx")} for c in state["neg"]],
+                  "note": "concept.npy is the unit-length mean of the positive clicks' 864-number dinovol embeddings"}
+        (d / "clicks.json").write_text(json.dumps(clicks, indent=1) + "\n")
+        files.append(d / "clicks.json")
+    return [str(f) for f in files]
+
+
+def look(vid: str, z: int, y: int, x: int, size: int = 256, layers: str = "dino,ink,surface", tta: bool = False,
+         compact: bool = False, allow_cpu: bool = False):
+    """For batch scripts: run the models on the cube around a point and return its .npz (see lens.save_npz). Uses the
+    caller's ZeroGPU time; tools/build_gallery.py builds the gallery with it.
+
+    Args:
+        vid: a scan id from list_scans.
+        z: the point's z in voxels.
+        y: the point's y in voxels.
+        x: the point's x in voxels.
+        size: the cube's side in voxels, 128 or 256.
+        layers: comma-separated models to run: dino, ink, surface.
+        tta: average the eight mirrorings for ink and surface (8 times their GPU time).
+        compact: keep 128 components of each embedding and 16 levels of each probability (about a quarter the size).
+        allow_cpu: when ZeroGPU refuses, run the middle 128 cube on the Space's CPU instead of failing.
+
+    Returns:
+        The .npz file.
+    """
+    import numpy as np
+    tta, compact, allow_cpu = as_bool(tta, "tta"), as_bool(compact, "compact"), as_bool(allow_cpu, "allow_cpu")
+    size = lens.check_size(size)
+    layers = lens.check_layers([s.strip() for s in str(layers).split(",") if s.strip()])
+    point = check_point(z, y, x)
+    engine()                                       # refuse before reading the bucket while the models load
+    origin = lens.cube_origin(vid, point, size)
+    cube = lens.read_cube(vid, origin, size)
+    lens.check_cube(cube)
+    result, note = run_models(cube, layers, tta, allow_cpu=allow_cpu)
+    n = ran_size(result)
+    if n != size:
+        origin = tuple(int(o + (size - n) // 2) for o in origin)
+    meta = lens.receipt(vid, origin, n, point, result, ENGINE.describe(), {"source": "api", "note_run": note,
+                                                                          "foreground": lens.foreground(cube)})
+    if "grid" in result and "ink" in result:
+        meta["agreement_with_ink_model"] = lens.agreement(
+            lens.similarity(np.asarray(result["grid"], np.float32), REFERENCE), result["ink"])
+    OUT.mkdir(parents=True, exist_ok=True)
+    d = Path(tempfile.mkdtemp(dir=OUT))
+    return str(lens.save_npz(d / f"{vid}-{'-'.join(map(str, origin))}-{n}.npz", meta, result, compact=compact))
+
+
+# ---------------------------------------------------------------- tools for agents (also the API and MCP server)
+#
+# Each function below is one API endpoint and one MCP tool. They keep no session: a cube is named by a gallery id, or
+# by a scan and a point, and every answer carries a link that opens the same cube on the page for a person.
+
+VIEW_CACHE = {}                     # recent cubes, so a search after an inspect does not run the models again
+VIEW_CACHE_N = 3
+VIEW_LOCK = threading.Lock()
+AGENT_OVERLAYS = {"ink": OVERLAYS[0], "surface": OVERLAYS[1], "clicks": OVERLAYS[2], "reference": OVERLAYS[3],
+                  "dino": OVERLAYS[4]}
+
+
+def page_url(query=""):
+    host = os.environ.get("SPACE_HOST")
+    base = f"https://{host}/" if host else "/"
+    return base + (f"?{query}" if query else "")
+
+
+def view_link(view):
+    gid = view["receipt"].get("gallery_id")
+    if gid:
+        return page_url(f"cube={gid}")
+    z, y, x = view["point"]
+    return page_url(f"v={view['volume']}&z={z}&y={y}&x={x}&size={view['size']}")
+
+
+def agent_view(cube_id="", scan="", z=0, y=0, x=0, size=256):
+    """A gallery cube (no GPU), or the cube around a point with all three models run on it (GPU, else CPU)."""
+    cube_id = str(cube_id or "").strip()
+    if cube_id:
+        key = ("gallery", cube_id)
+    else:
+        if not scan:
+            raise LensError("give a gallery cube_id, or a scan and a point (z, y, x)")
+        lens.volume(scan)
+        size = lens.check_size(int(size))
+        point = (int(z), int(y), int(x))
+        key = ("point", scan, lens.cube_origin(scan, point, size), size)
+    with VIEW_LOCK:
+        hit = VIEW_CACHE.pop(key, None)
+        if hit is not None:
+            VIEW_CACHE[key] = hit
+            if cube_id:
+                return hit
+            hit = dict(hit, point=point)    # same cube, another point in it
+            hit["receipt"] = dict(hit["receipt"], point_zyx=list(point))
+            hit["slices"] = [int(min(max(p - o, 0), hit["size"] - 1)) for p, o in zip(point, hit["origin"])]
+            return hit
+    view = tool_load_gallery(cube_id) if cube_id else tool_load_point(scan, point[0], point[1], point[2], size,
+                                                            list(lens.LAYERS), False)
+    with VIEW_LOCK:
+        VIEW_CACHE[key] = view
+        while len(VIEW_CACHE) > VIEW_CACHE_N:
+            VIEW_CACHE.pop(next(iter(VIEW_CACHE)))
+    return view
+
+
+def agent_overlays(text):
+    names = [s.strip().lower() for s in str(text or "").split(",") if s.strip()]
+    bad = [n for n in names if n not in AGENT_OVERLAYS]
+    if bad:
+        raise LensError(f"unknown overlays {bad}; choose from {', '.join(AGENT_OVERLAYS)}")
+    return [AGENT_OVERLAYS[n] for n in names]
+
+
+def three_views(state, overlays, top_pct):
+    """The three slice views through the current slices, side by side, as one RGB image."""
+    import numpy as np
+    imgs = [draw_slice(state, a, overlays, top_pct, 0.7) for a in range(3)]
+    gap = np.full((imgs[0].shape[0], 8, 3), 255, np.uint8)
+    return np.concatenate([imgs[0], gap, imgs[1], gap, imgs[2]], axis=1)
+
+
+def summary(view):
+    """The receipt plus the numbers a person sees beside the images."""
+    import numpy as np
+    r = dict(view["receipt"])
+    r["source"] = view["source"]
+    r["slices_zyx"] = [int(s + o) for s, o in zip(view["slices"], view["origin"])]
+    r["foreground"] = round(float(view["foreground"]), 4)
+    if view.get("ref_sim") is not None:
+        r["reference_fraction_at_tau"] = round(float((view["ref_sim"] >= lens.TAU).mean()), 4)
+    for k in ("ink", "surface"):
+        if k in view["result"]:
+            r[f"{k}_voxel_fraction"] = round(float((np.asarray(view["result"][k]) >= 128).mean()), 4)
+    if view["note"]:
+        r["run_note"] = view["note"]
+    r["open_in_browser"] = view_link(view)
+    return r
+
+
+def list_scans():
+    """List the twelve scans Scroll Lens can read, with their size and what each model saw of them in training.
+
+    Points are voxel coordinates (z, y, x) at full resolution. On PHerc. Paris 4, prefer the organizers' eight training
+    points (`paris4_training_points`), since its text is an open prize.
+
+    Returns:
+        A JSON object: `scans` (id, scroll, voxel_um, shape_zyx, note, models_trained_on_this_scroll),
+        `paris4_training_points`, `sizes`, `layers`, `version`.
+    """
+    scans = [{"id": vid, "scroll": v["scroll"], "voxel_um": v["voxel_um"], "shape_zyx": list(v["shape"]),
+              "note": v["note"], "models_trained_on_this_scroll": v["role"]} for vid, v in lens.VOLUMES.items()]
+    return {"scans": scans, "paris4_training_points": [list(p) for p in lens.PARIS4_TRAINING_POINTS],
+            "sizes": list(lens.SIZES), "layers": list(lens.LAYERS), "version": lens.VERSION,
+            "note": "Model output, not a reading. A cube is smaller than one letter."}
+
+
+def list_gallery():
+    """List the ready-made gallery cubes. Inspecting or searching a gallery cube needs no GPU.
+
+    Returns:
+        A JSON object: `cubes` (id, scan, title, note, point_zyx, size, open_in_browser).
+    """
+    return {"cubes": [{"id": it["id"], "scan": it["volume"], "title": it["title"], "note": it["note"],
+                       "point_zyx": it["point_zyx"], "size": it["size"],
+                       "open_in_browser": page_url(f"cube={it['id']}")} for it in GALLERY]}
+
+
+def random_point(scan: str, seed: int = 0):
+    """Pick a point on the papyrus of a scan (a window around it is at least 90% inside the scroll mask).
+
+    Args:
+        scan: a scan id from list_scans, such as PHerc0139.
+        seed: any whole number; the same seed gives the same point. On PHercParis4 the point is one of the
+            organizers' eight training points.
+
+    Returns:
+        A JSON object with z, y, x (voxels) and the scan.
+    """
+    lens.volume(scan)
+    z, y, x = surprise(scan, int(seed))
+    return {"scan": scan, "z": int(z), "y": int(y), "x": int(x)}
+
+
+def inspect_cube(cube_id: str = "", scan: str = "", z: int = 0, y: int = 0, x: int = 0, size: int = 256,
+                  overlays: str = "ink,reference"):
+    """Look at one cube: three slice views through a point, with model overlays, and the cube's numbers.
+
+    Name the cube either by a gallery `cube_id` (no GPU) or by `scan` and a point (z, y, x), which runs the three
+    models on the cube around it (a few seconds of the caller's ZeroGPU time; the Space's CPU on a 128 cube when
+    that is used up). The slices cut through the point, or the gallery cube's own point.
+
+    Args:
+        cube_id: a gallery cube id from list_gallery; leave empty to use scan and point.
+        scan: a scan id from list_scans.
+        z: the point's z in voxels.
+        y: the point's y in voxels.
+        x: the point's x in voxels.
+        size: the cube's side in voxels, 128 or 256.
+        overlays: comma-separated layers to draw: ink (red), surface (green), reference (amber, patches like the
+            organizers' ink reference), dino (DINO colors). Empty for the bare scan.
+
+    Returns:
+        An image (top, front and side views left to right, a white dotted line where the others cut) and a JSON
+        summary: the receipt, the ink reference agreement AUC with its control, layer fractions, and a link
+        that opens the same cube on the page.
+    """
+    view = agent_view(cube_id, scan, z, y, x, size)
+    state = {"view": view, "pos": [], "neg": []}
+    return three_views(state, agent_overlays(overlays), 8), summary(view)
+
+
+def search_cube(cube_id: str = "", scan: str = "", z: int = 0, y: int = 0, x: int = 0, size: int = 256,
+                 positive: str = "", negative: str = "", concept: str = None, top_k: int = 20):
+    """Search a cube for places like some examples: the organizers' recipe, done by clicking on the page.
+
+    Give examples as voxel points (z, y, x) in scan coordinates inside the cube: `positive` for "more like this",
+    `negative` for "not this". Or give a concept file (concept.npy, 864 numbers, from the page's Save files or an
+    earlier search), which carries a concept from one cube or scan to another. With neither, the organizers' ink
+    reference is the concept. Name the cube as in inspect_cube.
+
+    Args:
+        cube_id: a gallery cube id from list_gallery; leave empty to use scan and point.
+        scan: a scan id from list_scans.
+        z: the point's z in voxels, which picks the cube.
+        y: the point's y in voxels.
+        x: the point's x in voxels.
+        size: the cube's side in voxels, 128 or 256.
+        positive: example points like "37600,8800,22100; 37610,8790,22120" (z,y,x; separated by semicolons).
+        negative: points to steer away from, written the same way.
+        concept: a concept.npy file (path or URL) to use instead of positive points.
+        top_k: how many best-matching patches to list (1 to 200).
+
+    Returns:
+        An image (the three views through the best match, the matching patches in cyan), a JSON summary (the
+        best patches with their scan coordinates and scores, the concept's AUC against the 3D ink model with its
+        control, and a link to the page), and the concept as concept.npy.
+    """
+    import numpy as np
+    view = agent_view(cube_id, scan, z, y, x, size)
+    if "grid" not in view:
+        raise LensError("this cube has no DINO embeddings, so it cannot be searched")
+    grid = view["grid"].astype(np.float32)
+    pos = lens.parse_points(positive)
+    neg = lens.parse_points(negative)
+    state = {"view": dict(view), "pos": [], "neg": []}
+    for kind, pts in (("pos", pos), ("neg", neg)):
+        for p in pts:
+            vox = lens.voxel_in_cube(p, view["origin"], view["size"])
+            state[kind].append({"volume": view["volume"], "cube": cube_key(view), "voxel": vox,
+                                "voxel_zyx": list(p), "vec": grid[lens.token_of(vox, view["size"])]})
+    if concept:
+        if pos:
+            raise LensError("give positive points or a concept file, not both")
+        state["pos"] = [{"volume": "file", "cube": "file", "voxel": [-1, -1, -1], "voxel_zyx": None,
+                         "vec": lens.load_concept(concept)}]
+    used = "clicks" if state["pos"] else "reference"
+    if used == "reference":
+        if neg:
+            raise LensError("negative points need positive points or a concept file")
+        sim = view["ref_sim"]
+        vec = REFERENCE
+    else:
+        p_vec, n_vec = click_concept(state)
+        sim = lens.similarity(grid, p_vec, n_vec)
+        vec = p_vec
+    matches = lens.top_matches(sim, view["origin"], int(top_k))
+    best = matches[0]["center_zyx"]
+    state["view"]["slices"] = lens.voxel_in_cube(best, view["origin"], view["size"])
+    overlays = [AGENT_OVERLAYS["clicks" if used == "clicks" else "reference"]]
+    img = three_views(state, overlays, 8)
+    out = summary(state["view"])
+    out.update({"concept": "your examples" if used == "clicks" else "the organizers' ink reference",
+                "positive_zyx": [list(p) for p in pos], "negative_zyx": [list(p) for p in neg], "matches": matches,
+                "score": "cosine to the concept, minus cosine to the negative examples when given"})
+    if "ink" in view["result"]:
+        out["agreement_with_ink_model"] = lens.agreement(sim, view["result"]["ink"])
+    OUT.mkdir(parents=True, exist_ok=True)
+    path = Path(tempfile.mkdtemp(dir=OUT)) / "concept.npy"
+    np.save(path, np.asarray(vec, np.float32))
+    return img, out, str(path)
+
+
+def download_cube(cube_id: str = "", scan: str = "", z: int = 0, y: int = 0, x: int = 0, size: int = 256):
+    """Get a cube's model outputs as arrays: a .npz with the 3D DINO embeddings (float16, one 864-number unit vector
+    per 8³ patch), the 3D ink and recto surface probabilities (uint8 per voxel) and the receipt (JSON). Name the cube
+    as in inspect_cube. Read it with numpy.load(allow_pickle=False), or lens.load_npz from the Space's files.
+
+    Args:
+        cube_id: a gallery cube id from list_gallery; leave empty to use scan and point.
+        scan: a scan id from list_scans.
+        z: the point's z in voxels.
+        y: the point's y in voxels.
+        x: the point's x in voxels.
+        size: the cube's side in voxels, 128 or 256.
+
+    Returns:
+        The .npz file and its receipt as JSON.
+    """
+    view = agent_view(cube_id, scan, z, y, x, size)
+    paths = tool_save_files({"view": view, "pos": [], "neg": []})
+    return paths[0], summary(view)
 
 
 # ---------------------------------------------------------------- the page
@@ -803,10 +1162,46 @@ HOW_TO = """\
    right-drag or Shift-drag pans; double-click resets. The line under the views reads out what is under the pointer.
 4. **Search**: with *More like this* chosen, click a patch; *Not this* subtracts one; *Undo click* (or Ctrl or Cmd
    with Z) forgets the last one. *Top % shown* sets how many of the most similar patches light up.
-5. **Take it away**: **Save files** gives the model outputs (.npz), the receipt (.json) and, after clicks, your
+5. **3D view**: turns the three views into one 3D space: the three slices as planes through the cube (they move
+   as you drag the sliders), ink and surface as points, and the patches like your concept or the organizers'
+   reference glowing. Drag to rotate, wheel to zoom, right-drag to pan, *Spin* to turn it slowly; click a slice to
+   search there. *Flat views* goes back.
+6. **Take it away**: **Save files** gives the model outputs (.npz), the receipt (.json) and, after clicks, your
    `concept.npy`. *Copy link* gives a link that opens this cube at this crosshair.
 
 Scripts and agents: see *For scripts and agents* below, or the README.
+"""
+
+AGENTS_TEXT = """\
+Everything on this page is also an API endpoint and an MCP tool, so an AI agent or a script can use Scroll Lens
+the way a person does. Every answer includes `open_in_browser`, a link that opens the same cube here for a person.
+
+| Tool | What it does | GPU |
+| --- | --- | --- |
+| `list_scans` | the twelve scans, their sizes, and what each model saw of them in training | no |
+| `list_gallery` | the ready-made cubes | no |
+| `random_point` | a point on the papyrus of a scan | no |
+| `inspect_cube` | three slice views with overlays, and the cube's numbers and checks | gallery: no |
+| `search_cube` | places like your example points or concept file (or the organizers' ink reference) | gallery: no |
+| `download_cube` | the models' outputs as arrays (.npz) | gallery: no |
+| `look` | the .npz for any point, for batch scripts | yes |
+
+**MCP** (Claude, Cursor and other MCP clients): add the server `{url}/gradio_api/mcp/`.
+Hugging Face's own MCP settings (huggingface.co/settings/mcp) can add this Space too. Runs on a new point use the
+caller's ZeroGPU minutes, so sign the client in with a Hugging Face token.
+
+**Python**:
+
+```python
+from gradio_client import Client
+lens = Client("SharpMeow/scroll-lens")                     # Client(..., token=...) to use your own GPU minutes
+cubes = lens.predict(api_name="/list_gallery")["cubes"]
+image, info = lens.predict(cubes[0]["id"], "", 0, 0, 0, 256, "ink,reference", api_name="/inspect_cube")
+image, hits, concept = lens.predict(cubes[0]["id"], "", 0, 0, 0, 256, "", "", None, 10, api_name="/search_cube")
+```
+
+Model output, not a reading. Scroll Lens reads only the twelve listed scans, none eligible for the First Letters or
+Grand Prize.
 """
 
 CSS = """
@@ -841,9 +1236,32 @@ footer.sl-credit { text-align:center; color: var(--body-text-color-subdued); fon
 .slv-more { display:flex; flex-direction:column; gap:6px; }
 .slv-more > summary { cursor:pointer; color: var(--body-text-color-subdued); font-size:.84rem; }
 @media (min-width: 601px) { .slv-more > summary { display:none; } }
+.slv-views[hidden], .slv-3d[hidden] { display:none !important; }
+.slv-3d { display:flex; flex-direction:column; gap:6px; }
+.slv-3d-canvas { display:block; width:100%; border-radius:6px; background:#0b0f14; touch-action:none; cursor:grab; }
+.slv-3d-canvas:active { cursor:grabbing; }
+.slv-3d-sliders label { display:inline-flex; align-items:center; gap:6px; flex:1 1 30%; min-width:150px; }
+.slv-3d-sliders input[type=range] { flex:1; }
+.slv-3d-toggle { font-weight:600; }
 .slv-readout { font-family: ui-monospace, monospace; font-size:.8rem; min-height:1.3em; }
 .slv-help { font-size:.78rem; color: var(--body-text-color-subdued); }
 """
+
+
+def fix_mcp_multiple_outputs():
+    """Gradio 6.28's MCP server joins a queued tool's several outputs into one text, so inspect_cube's image never
+    reached an agent as an image. Hand them over one by one, as its unqueued path already does."""
+    try:
+        from gradio.mcp import GradioMCPServer
+        from anyio.to_thread import run_sync
+    except ImportError:
+        return
+
+    async def without_progress(self, job):
+        result = await run_sync(job.result)
+        return list(result) if isinstance(result, tuple) else [result]
+
+    GradioMCPServer._execute_tool_without_progress = without_progress
 
 
 def theme():
@@ -908,10 +1326,10 @@ def build_demo():
     def shown(state):
         return [state, viewer_value(state), numbers(state)]
 
-    def fresh():                      # a new cube: hide the old 3D plot and clear the old saved files
-        return [gr.update(value=None, visible=False), None, None]
+    def fresh():                      # a new cube: clear the old saved files and receipt
+        return [None, None]
 
-    @soft(6)
+    @soft(5)
     def on_run(vid, z, y, x, size, layers, tta, state, request: gr.Request):
         with one_run(request):
             view = load_point(vid, z, y, x, size, layers, tta)
@@ -925,11 +1343,11 @@ def build_demo():
         p = state["view"]["point"]
         return shown(state) + fresh() + [state["view"]["volume"], p[0], p[1], p[2], state["view"]["size"], cube_id]
 
-    @soft(12)
+    @soft(11)
     def on_gallery(cube_id, state):
         return open_gallery(cube_id, state)
 
-    @soft(12)
+    @soft(11)
     def on_gallery_step(cube_id, state, *, step):
         if not gal_ids:
             raise LensError("the gallery is empty on this copy; pick a point instead")
@@ -1001,19 +1419,10 @@ def build_demo():
         state[kind] = state[kind][:i] + state[kind][i + 1:]
         return shown(state)
 
-    @soft(4)
+    @soft(3)
     def on_clear(state):
         state = dict(state, pos=[], neg=[], rev=state.get("rev", 0) + 1)
-        return shown(state) + [None]
-
-    @soft(1)
-    def on_viewer_3d(state, evt: gr.EventData):
-        data = getattr(evt, "_data", None) or {}
-        if state["view"] is None:
-            raise LensError("open a cube first")
-        overlays = [LAYER_KEYS[k] for k in data.get("layers", ["ink", "clicks", "reference"]) if k in LAYER_KEYS]
-        top = float(min(max(float(data.get("top", 8)), 1), 40))
-        return gr.update(value=figure_3d(state, overlays, top), visible=True)
+        return shown(state)
 
     @soft(5)
     def on_viewer_use(evt: gr.EventData):
@@ -1114,28 +1523,44 @@ def build_demo():
                             sbtn = gr.Button("Surprise me")
                             rbtn = gr.Button("Run the models", variant="primary")
                 with gr.Accordion("Your concept and files", open=False):
-                    concept_up = gr.File(label="Load concept.npy, and concept_not.npy if saved (replaces your "
-                                               "clicks)", file_types=[".npy"], file_count="multiple",
-                                         type="filepath", height=130)
+                    concept_up = gr.UploadButton("Load concept.npy (and concept_not.npy): replaces your clicks",
+                                                 file_types=[".npy"], file_count="multiple", type="filepath", size="sm")
                     save = gr.Button("Save files", size="sm")
                     files = gr.File(label="Model outputs, receipt and your concept", file_count="multiple")
                     receipt = gr.JSON(label="Receipt")
                 with gr.Accordion("How to use it", open=False):
                     gr.Markdown(HOW_TO)
-                with gr.Accordion("For scripts and agents", open=False):
-                    gr.Markdown(AGENTS_MD)
+                with gr.Accordion("For agents and scripts", open=False):
+                    gr.Markdown(AGENTS_TEXT.format(url=page_url().rstrip("/") if page_url() != "/" else
+                                                   "https://sharpmeow-scroll-lens.hf.space"))
             with gr.Column(scale=3, min_width=320, elem_id="sl-viewer"):
                 viewer = gr.HTML("", html_template='<div class="slv-mount"></div>', js_on_load=viewer_js(),
                                  apply_default_css=False, elem_id="sl-viewer-html")
                 info = gr.Markdown(numbers(empty_state()))
-                plot = gr.Plot(label="Ink and surface shells, similar patches as points", visible=False)
                 with gr.Accordion("About", open=False):
                     gr.Markdown(INTRO)
         gr.HTML('<footer class="sl-credit">Built by Chase Hendrick · models and data by the Vesuvius Challenge · '
                 f'Scroll Lens {lens.VERSION}</footer>')
 
+        # hidden: the API endpoints and MCP tools for scripts and agents
+        with gr.Row(visible=False):
+            a_vid, a_layers = gr.Textbox(), gr.Textbox(value="dino,ink,surface")
+            a_z, a_y, a_x, a_size = gr.Number(precision=0), gr.Number(precision=0), gr.Number(precision=0), \
+                gr.Number(256, precision=0)
+            a_tta, a_compact, a_cpu = gr.Checkbox(False), gr.Checkbox(False), gr.Checkbox(False)
+            a_out, a_btn = gr.File(), gr.Button()
+            t_id, t_scan = gr.Textbox("", label="cube_id"), gr.Textbox("", label="scan")
+            t_z, t_y, t_x = (gr.Number(0, precision=0, label=k) for k in "zyx")
+            t_size, t_seed = gr.Number(256, precision=0, label="size"), gr.Number(0, precision=0, label="seed")
+            t_over = gr.Textbox("ink,reference", label="overlays")
+            t_pos, t_neg = gr.Textbox("", label="positive"), gr.Textbox("", label="negative")
+            t_concept = gr.File(label="concept", file_types=[".npy"], type="filepath")
+            t_k = gr.Number(20, precision=0, label="top_k")
+            t_img, t_json, t_file = gr.Image(type="numpy", format="png"), gr.JSON(), gr.File()
+            t_btns = [gr.Button() for _ in range(6)]
+
         out = [state, viewer, info]
-        stale = [plot, files, receipt]
+        stale = [files, receipt]
         hidden = dict(api_visibility="private")
         vid.change(volume_text, vid, vinfo, **hidden)
         rbtn.click(on_run, [vid, z, y, x, size, layers, tta, state], out + stale, concurrency_id="models",
@@ -1147,443 +1572,27 @@ def build_demo():
                       **hidden)
         sbtn.click(on_surprise, vid, [z, y, x], **hidden)
         viewer.select(on_viewer_select, state, out, show_progress="hidden", trigger_mode="multiple", **hidden)
-        viewer.clear(on_clear, state, out + [concept_up], show_progress="hidden", **hidden)
+        viewer.clear(on_clear, state, out, show_progress="hidden", **hidden)
         viewer.undo(on_undo, state, out, show_progress="hidden", **hidden)
-        viewer.submit(on_viewer_3d, state, plot, **hidden)
         viewer.apply(on_viewer_use, None, [vid, z, y, x, tabs], show_progress="hidden", **hidden)
-        concept_up.change(on_concept, [concept_up, state], out, **hidden)
+        concept_up.upload(on_concept, [concept_up, state], out, **hidden)
         save.click(on_save, state, [files, receipt], **hidden)
+        a_btn.click(guard(look), [a_vid, a_z, a_y, a_x, a_size, a_layers, a_tta, a_compact, a_cpu], a_out,
+                    api_name="look", concurrency_id="models", concurrency_limit=2)
+        cube_in = [t_id, t_scan, t_z, t_y, t_x, t_size]
+        for btn, fn, ins, outs, name in (
+                (t_btns[0], list_scans, [], t_json, "list_scans"),
+                (t_btns[1], list_gallery, [], t_json, "list_gallery"),
+                (t_btns[2], random_point, [t_scan, t_seed], t_json, "random_point"),
+                (t_btns[3], inspect_cube, cube_in + [t_over], [t_img, t_json], "inspect_cube"),
+                (t_btns[4], search_cube, cube_in + [t_pos, t_neg, t_concept, t_k], [t_img, t_json, t_file],
+                 "search_cube"),
+                (t_btns[5], download_cube, cube_in, [t_file, t_json], "download_cube")):
+            models = name in ("inspect_cube", "search_cube", "download_cube")
+            btn.click(guard(fn), ins, outs, api_name=name, api_description=fn.__doc__.split("\n\n")[0],
+                      concurrency_id="models" if models else None, concurrency_limit=2 if models else 8)
         demo.load(on_load, state, out + [vid, z, y, x, size, gpick, tabs], **hidden)
-        add_api(gr, guard)
     return demo
-
-
-# ---------------------------------------------------------------- the API for scripts and agents
-#
-# add_api() registers one public endpoint per function: for gradio_client, for plain HTTP, and, because the app
-# launches with mcp_server=True, as one MCP tool each. Gradio builds the API docs and the MCP schema from each
-# function's name, type hints and docstring (the text before "Args:" describes the tool, each "name: text" line under
-# "Args:" a parameter). The page's own events stay api_visibility="private", so they are neither endpoints nor tools.
-# Nothing here keeps state between calls: a concept travels as scan voxels or as an 864-number vector, and a cube as
-# a gallery id or the cube_ref that look returns.
-
-SPACE_ID = os.environ.get("SPACE_ID") or "SharpMeow/scroll-lens"
-PAGE_URL = f"https://huggingface.co/spaces/{SPACE_ID}"
-APP_URL = f"https://{SPACE_ID.lower().replace('/', '-').replace('_', '-')}.hf.space"
-GALLERY_URL = f"https://huggingface.co/spaces/{SPACE_ID}/resolve/main/gallery"
-MAX_TOP_K = 200
-LAYER_NAMES = {"ink": "Ink (3D ink model)", "surface": "Recto surface", "reference": "Organizers' ink reference",
-               "concept": "Your clicks", "pca": "DINO colors"}
-
-
-def _plain(x):
-    """A JSON-ready copy: numpy scalars and arrays to Python numbers and lists, tuples to lists, floats rounded."""
-    import math
-    import numpy as np
-    if isinstance(x, dict):
-        return {str(k): _plain(v) for k, v in x.items()}
-    if isinstance(x, (list, tuple)):
-        return [_plain(v) for v in x]
-    if isinstance(x, np.ndarray):
-        return _plain(x.tolist())
-    if isinstance(x, (bool, np.bool_)):
-        return bool(x)
-    if isinstance(x, np.integer):
-        return int(x)
-    if isinstance(x, (float, np.floating)):
-        return round(float(x), 6) if math.isfinite(float(x)) else None
-    return x
-
-
-def _cube_for(cube):
-    """A cube by gallery id, or by the cube_ref look returned (kept while the Space has it in memory)."""
-    cube = str(cube or "").strip()
-    if not cube:
-        raise LensError("give cube: a gallery id (see gallery) or the cube_ref that look returned")
-    if cube.startswith("run:"):
-        return CUBES.get(cube)
-    gallery_item(cube)
-    return CUBES.get(f"gallery:{cube}")
-
-
-def _concept_of(cube, zyx_list, vector, use_reference, what):
-    """(unit mean, count) of the patches holding scan voxels `zyx_list`, an 864-number vector and the reference."""
-    import numpy as np
-    origin = [int(v) for v in cube.meta["cube_origin_zyx"]]
-    vecs = []
-    for p in zyx_list or []:
-        if not isinstance(p, (list, tuple)) or len(p) != 3:
-            raise LensError(f"{what}_zyx holds [z, y, x] triples, not {p!r}")
-        local = [lens.as_int(v, f"a {what} voxel coordinate") - o for v, o in zip(p, origin)]
-        if not all(0 <= v < cube.size for v in local):
-            raise LensError(f"{what} voxel {list(p)} is outside this cube, which spans {origin} to "
-                            f"{[o + cube.size - 1 for o in origin]} (scan voxels, z y x)")
-        vecs.append(cube.vector(local))
-    if vector:
-        a = np.asarray(vector, np.float64)
-        if a.shape != (lens.EMBED_DIM,) or not np.isfinite(a).all() or not np.linalg.norm(a):
-            raise LensError(f"{what}_vector is {lens.EMBED_DIM} finite numbers, not all zero")
-        vecs.append(lens.unit(a.astype(np.float32)))
-    if use_reference:
-        vecs.append(REFERENCE)
-    if not vecs:
-        return None, 0
-    mean = np.mean(np.stack(vecs), 0)
-    if np.linalg.norm(mean) < 1e-3:
-        raise LensError(f"the {what} concept cancels out (its parts point in opposite directions)")
-    return lens.unit(mean), len(vecs)
-
-
-def agent_volumes():
-    return _plain({
-        "volumes": [{"id": vid, "scroll": v["scroll"], "voxel_um": v["voxel_um"], "shape_zyx": list(v["shape"]),
-                     "zarr": f"{lens.BUCKET}/{vid}/volumes/{v['scan']}", "level": 0, "note": v["note"],
-                     "models_trained_on_this_scroll": dict(v["role"])} for vid, v in lens.VOLUMES.items()],
-        "cube_sizes": list(lens.SIZES), "patch": lens.PATCH, "embed_dim": lens.EMBED_DIM,
-        "models": {k: {"title": lens.LAYER_TITLES[k], "repo": lens.MODELS[k]["repo"],
-                       "revision": lens.MODELS[k]["revision"]} for k in lens.LAYERS},
-        "paris4_training_points_zyx": [list(p) for p in lens.PARIS4_TRAINING_POINTS],
-        "note": ("Coordinates are level-0 scan voxels, z y x. None of these scans is eligible for the First Letters "
-                 "or Grand Prize. PHerc. Paris 4's title is an open prize, so random_point returns only the eight "
-                 "points the organizers listed for training the ink model. Model output, not a reading."),
-    })
-
-
-def agent_gallery(volume=""):
-    vid = lens.volume_id(volume) if volume else None
-    cubes = [{"id": it["id"], "volume": it["volume"], "scroll": lens.VOLUMES[it["volume"]]["scroll"],
-              "title": it["title"], "note": it.get("note", ""), "size": int(it["size"]),
-              "point_zyx": list(it["point_zyx"]), "npz_url": f"{GALLERY_URL}/{it['file']}",
-              "page_url": f"{PAGE_URL}?cube={it['id']}"}
-             for it in GALLERY if vid is None or it["volume"] == vid]
-    return _plain({"count": len(cubes), "cubes": cubes,
-                   "note": "Search and view these by id (no GPU). Each npz_url is the cube's .npz on the Hub."})
-
-
-def cube_receipt(cube):
-    """A cube's receipt for the API: the stored receipt, the agreement check worked out again now (with the control
-    range, from the arrays the Space holds), and the share of patches the organizers' reference marks."""
-    import numpy as np
-    meta = dict(cube.meta)
-    meta.pop("engine", None)
-    meta["layers"] = lens.layers_in(cube.result)
-    if cube.ref_sim is not None:
-        meta["reference_patch_fraction_at_tau"] = float((cube.ref_sim >= lens.TAU).mean())
-        if "ink" in cube.result:
-            meta["agreement_with_ink_model"] = lens.agreement(np.asarray(cube.ref_sim), cube.result["ink"])
-    meta["arrays"] = {k: f"{np.asarray(v).dtype} {list(np.shape(v))}" for k, v in cube.result.items()
-                      if isinstance(v, np.ndarray)}
-    return meta
-
-
-def agent_search(cube, positive_zyx=(), negative_zyx=(), positive_vector=(), negative_vector=(), reference=False,
-                 top_k=20, top_pct=8.0, return_concept=False):
-    import numpy as np
-    top_k = lens.as_int(top_k, "top_k")
-    top_pct = float(top_pct)
-    if not 1 <= top_k <= MAX_TOP_K:
-        raise LensError(f"top_k is 1 to {MAX_TOP_K}")
-    if not 1 <= top_pct <= 40:
-        raise LensError("top_pct is 1 to 40")
-    c = _cube_for(cube)
-    if not c.has_dino:
-        raise LensError("this cube has no DINO embeddings; run look with dino in layers to search it")
-    origin = [int(v) for v in c.meta["cube_origin_zyx"]]
-    pos, n_pos = _concept_of(c, positive_zyx, positive_vector, as_bool(reference, "reference"), "positive")
-    neg, n_neg = _concept_of(c, negative_zyx, negative_vector, False, "negative")
-    if pos is None:
-        raise LensError("give a concept: positive_zyx, positive_vector or reference=true")
-    sim = c.similarity(pos, neg)
-    flat = sim.ravel()
-    top = []
-    for rank, i in enumerate(np.argsort(-flat, kind="stable")[:top_k], 1):
-        t = np.unravel_index(int(i), sim.shape)
-        row = {"rank": rank, "score": float(flat[i]), "patch_index_zyx": [int(v) for v in t],
-               "center_zyx": [int(o + v * lens.PATCH + lens.PATCH // 2) for o, v in zip(origin, t)]}
-        for k in ("ink", "surface"):
-            if k in c.result:
-                sl = tuple(slice(v * lens.PATCH, (v + 1) * lens.PATCH) for v in t)
-                row[k] = float(np.asarray(c.result[k][sl]).mean() / 255.0)
-        top.append(row)
-    thr = float(np.percentile(sim, 100 - top_pct))
-    out = {"cube": {"volume": c.meta["volume"], "scroll": c.meta.get("scroll"), "cube_origin_zyx": origin,
-                    "cube_size": c.size, "gallery_id": c.key.split(":", 1)[1] if c.key.startswith("gallery:") else None,
-                    "cube_ref": c.key if c.key.startswith("run:") else None, "patches": int(sim.size)},
-           "concept": {"positive_count": n_pos, "negative_count": n_neg,
-                       "reference_included": as_bool(reference, "reference")},
-           "top_patches": top, "top_pct": top_pct, "threshold": thr, "match_fraction": float((sim >= thr).mean()),
-           "note": "Model output, not a reading. AUCs are agreement between two models, not ground truth."}
-    if neg is None:
-        out.update(tau=lens.TAU, fraction_at_or_above_tau=float((sim >= lens.TAU).mean()))
-    if "ink" in c.result:
-        out["agreement_with_ink_model"] = lens.agreement(sim, c.result["ink"])
-        if c.ref_sim is not None:
-            out["reference_agreement_with_ink_model"] = lens.agreement(np.asarray(c.ref_sim), c.result["ink"])
-    if as_bool(return_concept, "return_concept"):
-        out["concept"].update(positive_vector=pos, negative_vector=neg)
-    return _plain(out)
-
-
-def agent_reference():
-    spec = lens.MODELS["ink_reference"]
-    return _plain({"vector": REFERENCE, "tau": lens.TAU, "embed_dim": lens.EMBED_DIM,
-                   "source": {k: spec[k] for k in ("repo", "revision", "file", "sha256")},
-                   "note": "Unit length. A patch's cosine similarity to it is the page's amber layer."})
-
-
-SCAN_CUBES = collections.OrderedDict()      # the scan cubes view drew last, read from the bucket
-SCAN_LOCK = threading.Lock()
-
-
-def scan_cube(vid, origin, size):
-    key = (vid, tuple(origin), size)
-    with SCAN_LOCK:
-        if key in SCAN_CUBES:
-            SCAN_CUBES.move_to_end(key)
-            return SCAN_CUBES[key]
-    ct = lens.read_cube(vid, origin, size)
-    ct.setflags(write=False)
-    with SCAN_LOCK:
-        SCAN_CUBES[key] = ct
-        while len(SCAN_CUBES) > 4:
-            SCAN_CUBES.popitem(last=False)
-    return ct
-
-
-def agent_view(cube, axis="z", index=-1, layers=("ink", "reference"), positive_zyx=(), negative_zyx=(),
-               positive_vector=(), top_pct=8.0, opacity=0.7):
-    """Path of a PNG of one slice, or of the three views side by side (axis "all"), drawn by render_slice and scaled
-    up to 512 pixels a view."""
-    import numpy as np
-    from PIL import Image
-    if axis not in ("z", "y", "x", "all"):
-        raise LensError("axis is z, y, x or all")
-    names = [str(k).strip().lower() for k in (layers or [])]
-    bad = [k for k in names if k not in LAYER_NAMES]
-    if bad:
-        raise LensError(f"unknown layer {bad[0]!r}; choose from {', '.join(LAYER_NAMES)}")
-    top_pct, opacity = float(top_pct), float(opacity)
-    if not (1 <= top_pct <= 40 and 0 <= opacity <= 1):
-        raise LensError("top_pct is 1 to 40 and opacity 0 to 1")
-    c = _cube_for(cube)
-    origin = tuple(int(v) for v in c.meta["cube_origin_zyx"])
-    point = c.meta.get("point_zyx") or [o + c.size // 2 for o in origin]
-    axes = [0, 1, 2] if axis == "all" else ["zyx".index(axis)]
-    index = lens.as_int(index, "index")
-    if axis == "all" and index >= 0:
-        raise LensError("with axis all, leave index at -1: each view goes through the cube's point")
-    if index >= c.size:
-        raise LensError(f"index is 0 to {c.size - 1}, or -1 for the slice through the cube's point")
-    picks = [index if index >= 0 else min(max(int(point[a]) - origin[a], 0), c.size - 1) for a in axes]
-    click, marks = None, {"pos": [], "neg": []}
-    if positive_zyx or negative_zyx or positive_vector:
-        pos, _ = _concept_of(c, positive_zyx, positive_vector, False, "positive")
-        neg, _ = _concept_of(c, negative_zyx, (), False, "negative")
-        if pos is None:
-            raise LensError("a negative concept needs a positive one")
-        click = c.similarity(pos, neg)
-        marks = {k: [[int(v) - o for v, o in zip(p, origin)] for p in pts or []]
-                 for k, pts in (("pos", positive_zyx), ("neg", negative_zyx))}
-        if "concept" not in names:
-            names.append("concept")
-    ct = scan_cube(c.meta["volume"], origin, c.size)
-    f = max(1, 512 // c.size)
-    tiles = [np.repeat(np.repeat(render_slice(ct, c, a, i, [LAYER_NAMES[k] for k in names], top_pct, opacity,
-                                              click=click, marks=marks), f, 0), f, 1) for a, i in zip(axes, picks)]
-    gap = np.full((tiles[0].shape[0], 8, 3), 255, np.uint8)
-    img = tiles[0] if len(tiles) == 1 else np.concatenate([tiles[0], gap, tiles[1], gap, tiles[2]], axis=1)
-    OUT.mkdir(parents=True, exist_ok=True)
-    prune(OUT, 900)
-    tag = "all" if axis == "all" else f"{axis}{picks[0]}"
-    path = Path(tempfile.mkdtemp(dir=OUT)) / f"{c.meta['volume']}-{'-'.join(map(str, origin))}-{c.size}-{tag}.png"
-    Image.fromarray(img).save(path)
-    return str(path)
-
-
-AGENTS_MD = f"""\
-Everything on this page is also an API, for scripts (`gradio_client`, plain HTTP) and for agents (MCP). Only
-`look` uses the GPU; everything else is instant or reads a little of the open-data bucket.
-
-| Endpoint | What it does |
-| --- | --- |
-| `volumes` | The twelve scans: ids, shapes, voxel sizes, what each model saw in training |
-| `gallery` | The ready-made cubes, with ids, points and download links |
-| `gallery_cube` | One gallery cube's receipt and `.npz` |
-| `random_point` | A random point on the papyrus of a scan (Surprise me) |
-| `look` | Run the three models on the cube around a point (ZeroGPU; your quota) |
-| `search` | Click search without clicking: the patches most like a concept, with the ink-model check |
-| `view` | The three views (or one) as a PNG, drawn like the page |
-| `reference` | The organizers' ink reference (864 numbers) |
-
-**MCP** (Claude, Cursor and other MCP clients): `{APP_URL}/gradio_api/mcp/` (streamable HTTP), or
-`{APP_URL}/gradio_api/mcp/sse`. For Claude Code: `claude mcp add --transport http scroll-lens {APP_URL}/gradio_api/mcp/`.
-
-**Python:**
-
-```python
-from gradio_client import Client
-c = Client("{SPACE_ID}")                         # add token="hf_..." to use your own ZeroGPU quota for look
-cubes = c.predict(api_name="/gallery")["cubes"]
-hits = c.predict(cube=cubes[0]["id"], reference=True, top_k=5, api_name="/search")
-```
-
-Full reference: the README of this Space, and `docs/tools/scroll-lens.md` in github.com/ChaseHendrick/Scrolls.
-"""
-
-
-def add_api(gr, guard):
-    """The endpoints for scripts and agents; each is also an MCP tool (the app launches with mcp_server=True)."""
-    from typing import Literal
-
-    from gradio.data_classes import FileData
-
-    Volume = Literal[tuple(lens.VOLUMES)]
-    Layer = Literal[tuple(LAYER_NAMES)]
-
-    def volumes() -> dict:
-        """List the twelve CT scans Scroll Lens may read: shape, voxel size, notes, and what each of the three models saw of each scroll in training. Instant, no GPU. Call it first for valid volume ids.
-
-        Returns:
-            dict with volumes (id, scroll, voxel_um, shape_zyx, zarr, note, models_trained_on_this_scroll), cube_sizes, patch, embed_dim, models, paris4_training_points_zyx and note
-        """
-        return agent_volumes()
-
-    def gallery(volume: Literal[("",) + tuple(lens.VOLUMES)] = "") -> dict:
-        """List the ready-made gallery cubes, whose model outputs were computed earlier: searching and viewing them needs no GPU, so start here.
-
-        Args:
-            volume: Only the cubes of this scan id (see volumes); empty for all of them.
-        Returns:
-            dict with count and cubes (id, volume, scroll, title, note, size, point_zyx, npz_url, page_url)
-        """
-        return agent_gallery(volume)
-
-    def gallery_cube(cube_id: str) -> dict:
-        """Get one gallery cube: its receipt (place in the scan, models, timings, and the check of the organizers' ink reference against the 3D ink model, with its control range) and its .npz of model outputs. No GPU.
-
-        Args:
-            cube_id: A gallery id from gallery, for example paris4-train-1.
-        Returns:
-            dict, the receipt, with npz (the .npz file; gradio_client downloads it) and npz_url (the same file on the Hub). The .npz holds grid_reduced and grid_basis (embeddings), ink and surface (uint8 probability times 255) and receipt (JSON bytes)
-        """
-        it = gallery_item(str(cube_id))
-        meta = cube_receipt(CUBES.get(f"gallery:{it['id']}"))
-        meta.update(gallery_id=it["id"], title=it["title"], npz_url=f"{GALLERY_URL}/{it['file']}",
-                    page_url=f"{PAGE_URL}?cube={it['id']}")
-        return dict(_plain(meta), npz=FileData(path=str(HERE / "gallery" / it["file"])).model_dump())
-
-    def random_point(volume: Volume, seed: int | None = None) -> dict:
-        """Pick a random point on the papyrus of a scan (the page's Surprise me) to pass to look. Reads a few small chunks of the scan, no GPU. On PHercParis4 it returns one of the organizers' eight ink-training points.
-
-        Args:
-            volume: A scan id from volumes, for example PHerc0139.
-            seed: Any integer for a repeatable pick; leave out for a new one (the seed used is returned).
-        Returns:
-            dict with volume, seed, point_zyx, cube_origin_zyx for each cube size, and page_url
-        """
-        import numpy as np
-        vid = lens.volume_id(volume)
-        seed = int(np.random.SeedSequence().entropy % (1 << 32)) if seed is None else lens.as_int(seed, "seed")
-        point = surprise(vid, seed)
-        return _plain({"volume": vid, "seed": seed, "point_zyx": list(point),
-                       "cube_origin_zyx": {str(s): list(lens.cube_origin(vid, point, s)) for s in lens.SIZES},
-                       "page_url": f"{PAGE_URL}?v={vid}&z={point[0]}&y={point[1]}&x={point[2]}"})
-
-    def look(vid: Volume, z: int, y: int, x: int, size: int = 256, layers: str = "dino,ink,surface",
-             tta: bool = False, compact: bool = False, allow_cpu: bool = False,
-             request: gr.Request = None) -> dict:
-        """Run the Vesuvius Challenge's 3D DINO, 3D ink and recto surface models on the cube around one point of a scan. Uses ZeroGPU: about 5 s of the caller's quota and 7 to 12 s per 256 cube, under 1 s of quota for a 128 cube; send your Hugging Face token to use your own quota. One run at a time per caller. Use a gallery cube instead when one will do.
-
-        Args:
-            vid: A scan id from volumes, for example PHerc0139.
-            z: The point's z, a level-0 scan voxel; the cube is placed on the 128-voxel chunk grid around it.
-            y: The point's y.
-            x: The point's x.
-            size: Cube side in voxels, 128 or 256 (256 is the models' own size).
-            layers: Comma-separated models to run: dino (3D DINO embeddings), ink (3D ink), surface (recto surface).
-            tta: Average the eight mirrorings for ink and surface (8 times their GPU time).
-            compact: Keep 128 components of the embeddings and 16 levels of each probability (about a fifth of the size).
-            allow_cpu: If ZeroGPU refuses (quota used up, no GPU free), run the middle 128 cube on the Space's CPU, about 10 seconds, instead of failing. Check cube_size and note_run in the answer.
-        Returns:
-            dict, the receipt (scan, cube_origin_zyx, cube_size, device, seconds, agreement_with_ink_model, note_run), with cube_ref (pass it to search or view while the Space keeps the cube in memory) and npz (the .npz file: grid (Z/8, Y/8, X/8, 864) float16 unit embeddings, or grid_reduced and grid_basis when compact; ink and surface (Z, Y, X) uint8; receipt as JSON bytes)
-        """
-        cube, meta, path = api_look(vid, z, y, x, size, layers, tta, compact, allow_cpu, request)
-        out = cube_receipt(cube)
-        out.update(source="api", cube_ref=cube.key)
-        return dict(_plain(out), npz=FileData(path=path).model_dump())
-
-    def search(cube: str, positive_zyx: list[list[int]] = [], negative_zyx: list[list[int]] = [],
-               positive_vector: list[float] = [], negative_vector: list[float] = [], reference: bool = False,
-               top_k: int = 20, top_pct: float = 8.0, return_concept: bool = False) -> dict:
-        """Click search without clicking: score every 8x8x8 patch of a cube by the cosine similarity of its 3D DINO embedding to a concept, list the best patches, and check the scores against the 3D ink model (AUC beside a control range that should sit near 0.5). The concept is the unit mean of the embeddings at the positive voxels, a given 864-number vector and, if asked, the organizers' ink reference; negatives are subtracted. No GPU.
-
-        Args:
-            cube: A gallery id from gallery, or the cube_ref that look returned.
-            positive_zyx: Scan voxels [[z, y, x], ...] inside the cube whose patches show the concept (the page's More like this).
-            negative_zyx: Scan voxels inside the cube whose patches to subtract (the page's Not this).
-            positive_vector: An 864-number concept, such as a concept.npy, reference's vector, or a concept returned for another cube.
-            negative_vector: An 864-number concept to subtract.
-            reference: Add the organizers' ink reference (mean embedding of 256 expert clicks on ink) to the positives.
-            top_k: How many of the best patches to list, 1 to 200.
-            top_pct: The page's Top % shown: the share of patches counted as matches, 1 to 40.
-            return_concept: Also return the concept's 864-number vectors, to search another cube or scan with them.
-        Returns:
-            dict with cube, concept, top_patches (rank, score, center_zyx, patch_index_zyx, mean ink and surface probability), threshold, match_fraction, agreement_with_ink_model (auc, auc_control_shifted, auc_control_mean, auc_control_p05, auc_control_p95, ink_patch_fraction), reference_agreement_with_ink_model and note
-        """
-        return agent_search(cube, positive_zyx, negative_zyx, positive_vector, negative_vector, reference, top_k,
-                            top_pct, return_concept)
-
-    def reference() -> dict:
-        """Get the organizers' ink reference: the unit-length mean 3D DINO embedding of 256 expert clicks on ink, the vector the 3D ink model was guided by. Instant, no GPU. Use it as search's positive_vector, or call search with reference true.
-
-        Returns:
-            dict with vector (864 numbers), tau (the cosine threshold the organizers used), embed_dim and source (repo, revision, file, sha256)
-        """
-        return agent_reference()
-
-    def view(cube: str, axis: Literal["z", "y", "x", "all"] = "all", index: int = -1,
-             layers: list[Layer] = ["ink", "reference"], positive_zyx: list[list[int]] = [],
-             negative_zyx: list[list[int]] = [], positive_vector: list[float] = [], top_pct: float = 8.0,
-             opacity: float = 0.7) -> FileData:
-        """Draw a cube's slices as a PNG, like the page: the three views (top z, front y, side x) side by side, or one of them; the scan in gray, ink red, recto surface green, the organizers' ink reference amber, a concept cyan, white and magenta crosses on its voxels. Reads the scan from the open-data bucket, no GPU.
-
-        Args:
-            cube: A gallery id from gallery, or the cube_ref that look returned.
-            axis: all (the three views through the cube's point, side by side), or one view: z (top), y (front) or x (side).
-            index: For one view, the slice inside the cube, 0 to size - 1; -1 (and always with all) for the slice through the cube's point.
-            layers: Layers to draw: ink, surface, reference, concept, pca (DINO colors).
-            positive_zyx: Scan voxels [[z, y, x], ...] for the cyan concept layer.
-            negative_zyx: Scan voxels to subtract from that concept.
-            positive_vector: An 864-number concept for the cyan layer.
-            top_pct: Share of patches lit in the reference and concept layers, 1 to 40.
-            opacity: Layer opacity, 0 to 1.
-        Returns:
-            file, a PNG: 512 by 512 pixels for one view, 1552 by 512 for all three
-        """
-        return FileData(path=agent_view(cube, axis, index, layers, positive_zyx, negative_zyx, positive_vector,
-                                        top_pct, opacity))
-
-    def checked(fn):
-        """guard, plus a readable refusal for input of the wrong type (gr.api passes JSON values through)."""
-        inner = guard(fn)
-
-        @functools.wraps(fn)
-        def wrapped(*args, **kwargs):
-            try:
-                return inner(*args, **kwargs)
-            except gr.Error:
-                raise
-            except (TypeError, ValueError, KeyError) as exc:
-                raise gr.Error(f"bad input: {exc}") from None
-        return wrapped
-
-    for fn in (volumes, gallery, reference):
-        gr.api(checked(fn), api_name=fn.__name__, queue=False)
-    for fn in (gallery_cube, search):
-        gr.api(checked(fn), api_name=fn.__name__, concurrency_id="files", concurrency_limit=8)
-    for fn in (random_point, view):
-        gr.api(checked(fn), api_name=fn.__name__, concurrency_id="bucket", concurrency_limit=4)
-    gr.api(checked(look), api_name="look", concurrency_id="models", concurrency_limit=2)
 
 
 class NoUrlFiles:
@@ -1623,4 +1632,5 @@ def launch_kwargs():
 
 if __name__ == "__main__":
     startup()
+    fix_mcp_multiple_outputs()
     build_demo().queue(max_size=256, default_concurrency_limit=8).launch(**launch_kwargs())

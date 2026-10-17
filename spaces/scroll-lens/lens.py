@@ -766,6 +766,47 @@ def token_of(voxel_zyx, size):
     return tuple(int(min(max(int(v) // PATCH, 0), n - 1)) for v in voxel_zyx)
 
 
+def parse_points(text, limit=64):
+    """Points written as "z,y,x; z,y,x" (spaces, semicolons or new lines between them) as a list of (z, y, x)."""
+    text = str(text or "").replace("\n", ";").strip()
+    out = []
+    for part in [p for p in text.split(";") if p.strip()]:
+        nums = [s for s in part.replace(" ", ",").split(",") if s]
+        try:
+            pt = tuple(int(float(s)) for s in nums)
+        except ValueError:
+            raise LensError(f"not a point: {part.strip()!r}; write z,y,x in voxels") from None
+        if len(pt) != 3 or min(pt) < 0:
+            raise LensError(f"not a point: {part.strip()!r}; write z,y,x in voxels, each 0 or more")
+        out.append(pt)
+    if len(out) > limit:
+        raise LensError(f"at most {limit} points")
+    return out
+
+
+def voxel_in_cube(point_zyx, origin, size):
+    """A scan point as a voxel of the cube at `origin`; refuses a point outside the cube."""
+    v = [int(p) - int(o) for p, o in zip(point_zyx, origin)]
+    if min(v) < 0 or max(v) >= size:
+        raise LensError(f"point {tuple(int(p) for p in point_zyx)} is outside the cube at {tuple(origin)} of side "
+                        f"{size}; points must lie inside the cube being searched")
+    return v
+
+
+def top_matches(sim_tokens, origin, k=20):
+    """The `k` best patches of a similarity map, best first: each patch's center in scan voxels and its score."""
+    import numpy as np
+    k = int(min(max(int(k), 1), 200))
+    flat = np.asarray(sim_tokens, np.float32).ravel()
+    idx = np.argsort(-flat, kind="stable")[:k]
+    out = []
+    for i in idx:
+        t = np.unravel_index(int(i), sim_tokens.shape)
+        out.append({"center_zyx": [int(o + PATCH * a + PATCH // 2) for o, a in zip(origin, t)],
+                    "score": round(float(flat[i]), 4)})
+    return out
+
+
 def concept(grid, tokens):
     """The organizers' recipe for a reference embedding: the unit-length mean of the clicked patches' embeddings."""
     import numpy as np

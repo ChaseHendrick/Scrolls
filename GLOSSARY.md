@@ -220,7 +220,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **S3**: Amazon's object storage service, which hosts the open-data bucket.
 
-**Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organisers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views drawn in the browser, and an API and MCP server for agents ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)). A `cube_ref` is the key `look` returns for a cube the Space still holds in memory.
+**Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
