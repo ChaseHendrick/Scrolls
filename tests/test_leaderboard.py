@@ -172,6 +172,29 @@ class CheckTest(unittest.TestCase):
         self.assertIn("no known family", err)
         self.assertEqual(self.call("render")[0], 2)
 
+    def test_a_row_missing_a_field_is_a_problem_not_a_traceback(self):
+        d = data()
+        del d["community"][0]["auc"]
+        self.results.write_text(json.dumps(d), encoding="utf-8")
+        code, _, err = self.call("check")
+        self.assertEqual(code, 1)
+        self.assertIn("has no 'auc' field", err)
+        code, _, err = self.call("render")
+        self.assertEqual(code, 2)
+        self.assertIn("has no 'auc' field", err)
+
+    def test_render_counts_rows_and_refuses_a_missing_folder(self):
+        code, out, _ = self.call("render")
+        self.assertEqual(code, 0)
+        rec = json.loads(out)
+        text = self.board.read_text(encoding="utf-8")
+        body = [l for l in text.split("\n") if l.startswith("| ") and not l.startswith("| ---")]
+        self.assertEqual(rec["rows"] + rec["tables"], len(body))      # every table has one header line
+        self.board = self.dir / "no-such-folder" / "leaderboard.md"
+        code, _, err = self.call("render")
+        self.assertEqual(code, 2)
+        self.assertIn("leaderboard: ", err)
+
     def test_no_results_file(self):
         self.results = self.dir / "missing.json"
         self.assertEqual(self.call("check")[0], 2)

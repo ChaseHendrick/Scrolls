@@ -234,6 +234,8 @@ def check(results_path=RESULTS, board_path=BOARD):
     """Problems as strings; empty when the board is what results.json renders to."""
     try:
         want = render(load(results_path))
+    except KeyError as exc:
+        return [f"leaderboard: a row in {results_path} has no {exc} field"]
     except (OSError, ValueError) as exc:
         return [f"leaderboard: {exc}"]
     board = Path(board_path)
@@ -265,11 +267,15 @@ def run(args):
         return 1 if problems else 0
     try:
         text = render(load(args.results))
+        Path(args.out).write_text(text, encoding="utf-8")
+    except KeyError as exc:
+        print(f"leaderboard: a row in {args.results} has no {exc} field", file=sys.stderr)
+        return 2
     except (OSError, ValueError) as exc:
         print(f"leaderboard: {exc}", file=sys.stderr)
         return 2
-    Path(args.out).write_text(text, encoding="utf-8")
-    print(json.dumps({"out": args.out, "rows": text.count("\n| ") - text.count("\n| ---")}))
+    tables = text.count("\n| ---")
+    print(json.dumps({"out": args.out, "rows": text.count("\n| ") - 2 * tables, "tables": tables}))
     return 0
 
 

@@ -11,7 +11,8 @@ what appeared or disappeared on the page since the last run.
 
 Exit 0 when the page and the snapshot agree and nothing changed; 3 when an agent should re-read the page, then add
 a new dated snapshot in kit/data (docs/AI-AGENTS.md rule 4) and update any prize notes AGENTS.md names; 75 when the
-page cannot be fetched (offline); 2 on an unreadable snapshot. The live page wins when they disagree. It posts and
+page cannot be fetched (offline, or a server error); 3 also when the site answers 4xx, since the page may have
+moved; 2 on an unreadable snapshot or a malformed --today. The live page wins when they disagree. It posts and
 submits nothing. The routine registry (docs/routines.json, kit/routines.py) runs it daily; the same file is in
 Scrolls and Scrolls-private.
 """
@@ -162,16 +163,28 @@ def main(argv=None):
     args = p.parse_args(argv)
     try:
         snapshot = prizes.load(args.snapshot)
-    except (OSError, ValueError) as exc:
+        snapshot["prizes"]
+    except (OSError, ValueError, KeyError, TypeError) as exc:
         print(f"prizewatch: cannot read the snapshot {args.snapshot}: {exc}", file=sys.stderr)
         return 2
     try:
+        now = (datetime.combine(date.fromisoformat(args.today), time(12), timezone.utc) if args.today
+               else datetime.now(timezone.utc))
+    except ValueError as exc:
+        print(f"prizewatch: --today is not YYYY-MM-DD: {exc}", file=sys.stderr)
+        return 2
+    try:
         raw = fetch(args.url, args.timeout)
+    except urllib.error.HTTPError as exc:
+        if 400 <= exc.code < 500:      # the site answered: the page moved or went away, which needs a person
+            print(f"prizewatch: {args.url} answered {exc}; the prize page may have moved, so re-read "
+                  "https://scrollprize.org and fix --url or kit/prizewatch.py URL")
+            return EXIT_ATTENTION
+        print(f"prizewatch: offline, {args.url} could not be fetched: {exc}")
+        return EXIT_OFFLINE
     except (urllib.error.URLError, OSError, ValueError) as exc:
         print(f"prizewatch: offline, {args.url} could not be fetched: {exc}")
         return EXIT_OFFLINE
-    now = (datetime.combine(date.fromisoformat(args.today), time(12), timezone.utc) if args.today
-           else datetime.now(timezone.utc))
     code, report = check(raw, snapshot, now, args.state)
     if args.json:
         print(json.dumps(report, indent=2))

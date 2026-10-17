@@ -5,7 +5,7 @@ import json
 import tempfile
 import unittest
 import urllib.error
-from contextlib import redirect_stdout
+from contextlib import redirect_stderr, redirect_stdout
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest import mock
@@ -118,6 +118,23 @@ class MainTest(unittest.TestCase):
 
     def test_bad_snapshot_is_exit_2(self):
         self.assertEqual(prizewatch.main(["--snapshot", "/nonexistent.json"]), 2)
+
+    def test_a_page_gone_from_the_site_needs_a_look_not_a_skip(self):
+        gone = urllib.error.HTTPError(prizewatch.URL, 404, "Not Found", {}, None)
+        code, out = self.run_main(error=gone)
+        self.assertEqual(code, 3)
+        self.assertIn("may have moved", out)
+        busy = urllib.error.HTTPError(prizewatch.URL, 503, "Service Unavailable", {}, None)
+        code, out = self.run_main(error=busy)
+        self.assertEqual(code, 75)
+
+    def test_bad_today_and_a_snapshot_without_prizes_are_exit_2(self):
+        with redirect_stderr(io.StringIO()):
+            self.assertEqual(self.run_main("--today", "16-10-2026", page=PAGE)[0], 2)
+            with tempfile.TemporaryDirectory() as tmp:
+                snap = Path(tmp) / "s.json"
+                snap.write_text("{}")
+                self.assertEqual(prizewatch.main(["--snapshot", str(snap)]), 2)
 
 
 if __name__ == "__main__":
