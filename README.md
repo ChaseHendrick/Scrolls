@@ -86,7 +86,7 @@ scrolls-letterdemo
 scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png
 ```
 
-`scrolls-letterdemo` downloads the CC BY weights once and checks synthetic letters. Give the reader its own virtual environment, apart from AutoPipeline: both install `kit`. The 86 px letter height is for the public PHerc. 1667 map demo. Install, profiles, model cards and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md). Local OCR packs and session switching: [`docs/tools/reader-backends.md`](docs/tools/reader-backends.md).
+`scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. `--letter-px 86` is for PHerc. 1667's 38 um grid in [`scripts/letters/demo_p1667.py`](scripts/letters/demo_p1667.py). Install, profiles and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md). Local OCR and session switching: [`docs/tools/reader-backends.md`](docs/tools/reader-backends.md).
 
 ### Segment stack check
 
