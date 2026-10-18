@@ -192,7 +192,7 @@ Not measured. It reads and rewrites one small CSV. It contacts no service and re
 - **Rerun:** Safe with the same key: the second run writes nothing. A new key for the same launch would add a second row in the public ledger, which has no `app_id` column to catch it.
 - **Success:** Exit code 0 with either message.
 - **Not a pass:** A row whose `est_cost_usd` was never checked against Modal's report; a `cumulative_usd` you did not recompute; a public row that passed the word check but still describes private work in other words.
-- **Go-ahead:** Nothing to write the row. Launching the Modal job it records needs the user's budget decision first, and Claude cloud sessions cannot reach Modal at all.
+- **Go-ahead:** Nothing to write the row. Launching the Modal job it records needs the user's budget decision first, and a Claude cloud session runs Modal only with `modal[api-proxy-support]`, Chase's sign-in and an allow rule.
 - **Never:** Put a target-scroll, title, preregistered, held-out or other private run in the public ledger; use `--public-generic` to push through a row that is not generic; invent a key per rerun to force a second row.
 
 ## Tests
