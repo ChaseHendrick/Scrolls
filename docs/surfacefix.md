@@ -38,7 +38,7 @@ python -m kit surfacefix apply work/surfacefix-candidates/manifest.json \
   --min-corr 0.5 --min-gain 0.1 --control-margin 0.1 --max-step-vox 1
 ```
 
-The thresholds are experimental defaults, not calibrated operating points. Choose and freeze them on held-out labeled data before target use. Changing thresholds after seeing target maps invalidates that experiment's preregistration.
+The thresholds are experimental defaults, not calibrated operating points. Choose and freeze them on held-out labelled data before target use. Changing thresholds after seeing target maps invalidates that experiment's preregistration.
 
 ## Acceptance checks
 
@@ -68,7 +68,7 @@ A reference trace can share an artifact with the source. Control failures and he
 
 Accepted candidates are copied into a new mesh. Rejected regions remain unchanged and flagged in the report. A no-correction result is meaningful and has a distinct CLI status. The source remains available for comparison and rollback.
 
-**Rerender and rerun the reader on the final combined surface before claiming an improvement.** Combining locally accepted shifts changes neighboring input context. The scores of separate candidate renders do not validate the final combined render. Check geometry and held-back labeled AUC/high-pass scores where labels exist, with the same controls. A model-output improvement is not a reading.
+**Rerender and rerun the reader on the final combined surface before claiming an improvement.** Combining locally accepted shifts changes neighboring input context. The scores of separate candidate renders do not validate the final combined render. Check geometry and held-back labelled AUC/high-pass scores where labels exist, with the same controls. A model-output improvement is not a reading.
 
 ## Validation scope
 

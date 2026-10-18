@@ -79,7 +79,7 @@ def platt_fit(z, y, w=None, iters=100, tol=1e-9):
 
     The targets are Platt's smoothed ones, (N+ + 1) / (N+ + 2) for positives and 1 / (N- + 2)
     for negatives, where N+ and N- count the samples (not their weights), so a separable set
-    still has a finite optimum. The fit runs on standardized scores (weighted mean and standard
+    still has a finite optimum. The fit runs on standardised scores (weighted mean and standard
     deviation) by damped Newton steps: each step is halved until the weighted log loss decreases
     enough (Armijo rule). It stops when the largest gradient component of the mean loss is below
     tol and raises RuntimeError if that does not happen within iters steps, or if a line search

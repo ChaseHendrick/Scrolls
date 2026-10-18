@@ -5,24 +5,24 @@ Seven single numbers with no fitting; evaluate.py sets each one's direction per 
 validation:
 
   density    window mean. The text and blank labels come partly from ink density, so this shows
-             how much of the text-against-blank test the labeling rule alone explains.
+             how much of the text-against-blank test the labelling rule alone explains.
   skew       skewness of the window's values. It does not depend on pixel order, bit for bit:
              windows of whole numbers 0..255 (uint8, or floats holding such values) use moments
              of their 256-value histogram, other float windows exactly rounded sums (math.fsum).
              So any permutation of a window scores exactly the same, and the value-keeping nulls
              (iaaft, shuffle, rot90, strip) tie with their source windows (AUC exactly 0.5).
-  lines      (v_rows - v_cols) / (v_rows + v_cols + 1e-9) of the normalized window's row-mean and
+  lines      (v_rows - v_cols) / (v_rows + v_cols + 1e-9) of the normalised window's row-mean and
              column-mean variances: high for horizontal bands such as text lines.
-  roughness  log of the mean squared 5-point Laplacian of the normalized window over interior
+  roughness  log of the mean squared 5-point Laplacian of the normalised window over interior
              pixels: high-frequency energy. IAAFT copies carry excess high-frequency power, so
              this score separates text from its IAAFT copies well away from 0.5; it measures the
              IAAFT residue that T2 must be read against.
   seam8      log(mean |z[:, c+1] - z[:, c]| over the strip seams c = 7, 15, ..., 119 + 1e-6)
-             - log(the same over every other c in 0..126 + 1e-6), z the normalized window: a
+             - log(the same over every other c in 0..126 + 1e-6), z the normalised window: a
              detector of the strip null's 8 px seams.
   seam32     the same for the tile seams c = 31, 63, 95, along both axes, the two summed: a
              detector of the tile shuffle's 32 px seams.
-  grid       the seam32 construction on the 6.4 px grid of the organizers' prediction tiles
+  grid       the seam32 construction on the 6.4 px grid of the organisers' prediction tiles
              (overlapping 256 px tiles at stride 128 px on the 2.4 um grid), columns and rows
              round(6.4 k) - 1, both axes summed. The pooled maps carry that grid as lines of
              smaller steps (15 to 25 % smaller than elsewhere, in every segment); windows cut on
@@ -36,7 +36,7 @@ validation:
 Four fitted on training windows only, by L2 logistic regression; they always read
 "higher = text":
 
-  spectrum   on spectrum_features: 84 log mean powers of the normalized window minus its mean,
+  spectrum   on spectrum_features: 84 log mean powers of the normalised window minus its mean,
              in 12 radial bands with edges np.geomspace(1, 91, 13) (cycles per window, full
              fft2, so every frequency up to the corner r = 90.5 is in a band) by 8 angular bins
              over [0, pi). 12 of the 96 bins hold no frequency of a 128 x 128 window and are
@@ -47,9 +47,9 @@ Four fitted on training windows only, by L2 logistic regression; they always rea
              two for it is the IAAFT residue, not letter shapes.
   texture    on spectrum_features + hand_features (84 + 21 = 105 features), fitted on the
              training mixture. hand_features: the seven single numbers above, an
-             8-bin gradient-orientation histogram (energy weighted, normalized to sum 1,
+             8-bin gradient-orientation histogram (energy weighted, normalised to sum 1,
              log(h + 1e-6)) and the 0.05, 0.25, 0.5, 0.75, 0.95, 0.99 quantiles of the
-             normalized values.
+             normalised values.
   randcnn    train.Net(width, depth) with frozen random weights (torch.manual_seed(seed)), batch
              norm statistics set by no-gradient passes over the training mixture, and a logistic
              head on the global mean and max of its last feature map.
@@ -75,7 +75,7 @@ R_EDGES = np.geomspace(1.0, 91.0, N_RAD + 1)         # cycles per window
 N_ORI = 8
 QUANTILES = (0.05, 0.25, 0.5, 0.75, 0.95, 0.99)
 STRIP, TILE = 8, 32                                    # seam lattices of the strip and tile nulls
-GRID_PX = 6.4          # the organizers' prediction stride, 128 px at 2.4 um, in 48 um pixels
+GRID_PX = 6.4          # the organisers' prediction stride, 128 px at 2.4 um, in 48 um pixels
 HAND_NAMES = (SINGLE + tuple(f"orient{i}" for i in range(N_ORI))
               + tuple(f"q{q:g}" for q in QUANTILES))
 
@@ -185,7 +185,7 @@ def _grid_cols(width, period=GRID_PX):
 
 
 def _seam_ratio(d, cols):
-    """d: (N, H, W - 1) absolute steps between neighboring columns. log(mean over the columns
+    """d: (N, H, W - 1) absolute steps between neighbouring columns. log(mean over the columns
     cols + 1e-6) - log(mean over every other column + 1e-6)."""
     m = np.zeros(d.shape[2], bool)
     m[cols] = True
@@ -212,7 +212,7 @@ def _grid_z(z):
 
 def _orient_z(z):
     """8-bin histogram of gradient orientation over [0, pi) (central differences on interior
-    pixels), weighted by squared gradient magnitude, normalized to sum 1, as log(h + 1e-6)."""
+    pixels), weighted by squared gradient magnitude, normalised to sum 1, as log(h + 1e-6)."""
     N = len(z)
     gy = (z[:, 2:, 1:-1] - z[:, :-2, 1:-1]) / 2
     gx = (z[:, 1:-1, 2:] - z[:, 1:-1, :-2]) / 2
@@ -250,7 +250,7 @@ def seam32(windows, chunk=256):
 
 
 def grid(windows, chunk=256):
-    """The seam32 construction on the 6.4 px grid of the organizers' prediction tiles (columns
+    """The seam32 construction on the 6.4 px grid of the organisers' prediction tiles (columns
     and rows round(6.4 k) - 1), both axes summed."""
     return _per_chunk(windows, _grid_z, chunk)
 
@@ -259,7 +259,7 @@ grid_step = grid                        # its name in the development checks
 
 
 def _hand_parts(windows, chunk=256):
-    """The seven single numbers, the orientation histogram and the quantiles, normalizing once."""
+    """The seven single numbers, the orientation histogram and the quantiles, normalising once."""
     windows = np.asarray(windows)
     parts = {k: [] for k in SINGLE + ("orient", "quant")}
     for s in _chunks(len(windows), chunk):
@@ -322,7 +322,7 @@ def spectrum_bins(H=128, W=128):
 
 def spectrum_features(windows, chunk=256):
     """(N, 84) for 128 x 128 windows: log(mean power + 1e-6) per nonempty radial and angular
-    bin of the full 2D power spectrum of the normalized window minus its mean."""
+    bin of the full 2D power spectrum of the normalised window minus its mean."""
     windows = np.asarray(windows)
     sel, A, keep = _spectrum_bins(*windows.shape[1:])
     out = []
@@ -336,10 +336,10 @@ def spectrum_features(windows, chunk=256):
 
 # ------------------------------------------------------------------ logistic regression
 def fit_logistic(X, y, l2=1e-3, sample_weight=None, iters=100, tol=1e-8):
-    """L2-regularized logistic regression on standardized features (weighted mean and standard
+    """L2-regularised logistic regression on standardised features (weighted mean and standard
     deviation; a constant feature keeps sd 1 and gets coefficient 0), by damped Newton steps
-    with a backtracking line search. Minimizes sum_i w_i logloss_i + l2 / 2 |beta|^2 with the
-    weights summing to 1 and the intercept not penalized. Raises RuntimeError if the largest
+    with a backtracking line search. Minimises sum_i w_i logloss_i + l2 / 2 |beta|^2 with the
+    weights summing to 1 and the intercept not penalised. Raises RuntimeError if the largest
     gradient component does not fall below tol within iters steps, or if a line search finds no
     decrease while it is above 1e-6. Returns {"mu", "sd", "w" (coefficients, intercept last),
     "l2", "iters"}."""
@@ -436,7 +436,7 @@ def _torch_modules():
 
 
 def _cnn_features(net, windows, device, batch):
-    """Global mean and max of net.features over each normalized window, float64 (N, 2 C)."""
+    """Global mean and max of net.features over each normalised window, float64 (N, 2 C)."""
     torch, T = _torch_modules()
     out = []
     with torch.no_grad():

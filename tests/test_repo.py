@@ -153,8 +153,8 @@ class RepoTest(unittest.TestCase):
     def test_pherc0841_pattern_catches_the_old_wording(self):
         # The check above must be able to fail: the wording it replaced is caught.
         for old in ("\"PHerc0841\": \"in no candidate's training set\"",
-                    "PHerc0841, the labeled scroll no released reader trained on.",
-                    "| PHerc0841 | Scroll in no candidate's training set, with labeled segments"):
+                    "PHerc0841, the labelled scroll no released reader trained on.",
+                    "| PHerc0841 | Scroll in no candidate's training set, with labelled segments"):
             self.assertIsNotNone(PHERC0841_HELD_OUT.search(old), old)
         self.assertIsNone(PHERC0841_HELD_OUT.search("no candidate with usable selection variation"))
 

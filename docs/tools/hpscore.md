@@ -147,7 +147,7 @@ The score needs labeled area around each scored pixel: only pixels whose 2 x sig
 
 ## Outputs
 
-Text by default (see Quick start): one line for the map and one for the control. A map with nothing to score prints `map    : no score (N px with a full 10 px labeled neighborhood)`.
+Text by default (see Quick start): one line for the map and one for the control. A map with nothing to score prints `map    : no score (N px with a full 10 px labelled neighbourhood)`.
 
 With `--json`, one object:
 
@@ -195,7 +195,7 @@ The JSON has no `files` or `level` field, unlike `kit auc`. A NaN score is print
 | `no experiment at ROOT/SLUG/run.json` | `--slug` names an experiment that was never started | Start it with `python -m kit run init`, or fix `--slug` and `--root` |
 | `bad slug: '...'` | A slug that is empty, holds `/` or starts with `.` | Use a plain name |
 | `ZeroDivisionError: float division by zero` and a traceback, exit code 1 | `--voxel-um 0` | Give the map's real pixel size |
-| `map    : no score (N px with a full 10 px labeled neighborhood)`, exit code 0 | Fewer than 3 pixels to score, or a constant map or key there (a flat map gives this) | Check the map's values, the crop, `--inner` and that the mask holds both ink and background |
+| `map    : no score (N px with a full 10 px labelled neighbourhood)`, exit code 0 | Fewer than 3 pixels to score, or a constant map or key there (a flat map gives this) | Check the map's values, the crop, `--inner` and that the mask holds both ink and background |
 | `letter-scale r +nan (...)`, exit code 0 | A NaN in the map | Replace NaN with 0 (unpredicted) before scoring |
 
 ## How it works

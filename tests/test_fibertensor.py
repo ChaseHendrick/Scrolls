@@ -12,7 +12,7 @@ from kit import auc
 
 
 def phantom(seed, size=160, layers=10, angle=0.3):
-    """Fibers at `angle` and angle + 90 deg; ink disks replace fibers by isotropic texture of equal mean and spread."""
+    """Fibres at `angle` and angle + 90 deg; ink discs replace fibres by isotropic texture of equal mean and spread."""
     rng = np.random.default_rng(seed)
     yy, xx = np.mgrid[:size, :size].astype(float)
     u = xx * np.cos(angle) + yy * np.sin(angle)
@@ -36,7 +36,7 @@ class FibreTensorTest(unittest.TestCase):
     def test_texture_ink_found_and_brightness_fails(self):
         from kit import fibertensor as ft
         vtr, itr = phantom(1)
-        vte, ite = phantom(2, angle=0.9)          # held-out phantom, fibers rotated: axis must be re-measured
+        vte, ite = phantom(2, angle=0.9)          # held-out phantom, fibres rotated: axis must be re-measured
         sup = np.ones_like(itr)
         res = {}
         for kind in ("fibre", "raw"):

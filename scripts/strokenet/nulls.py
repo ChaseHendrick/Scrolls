@@ -12,7 +12,7 @@ scores real text above a null has used what the null destroys, or an artifact of
            200-iteration copies at AUC about 0.85), so a score that rejects them may use that
            residue; the `nullspec` baseline measures how far the residue alone goes.
   iaaft20  the same with 20 iterations (training negatives and the training monitor).
-  phase    plain Fourier phase randomization, rounded to whole values: the same amplitude
+  phase    plain Fourier phase randomisation, rounded to whole values: the same amplitude
            spectrum, but the histogram becomes nearly Gaussian, so a histogram alone can separate
            it (kept for comparison with the 7 October 2026 recipe).
   shuffle  4 x 4 tiles of 32 px (1.54 mm) permuted, each rotated by a random multiple of 90

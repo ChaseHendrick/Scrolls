@@ -1,4 +1,4 @@
-"""StrokeNet dataset: 128 x 128 windows of the organizers' public PHerc. Paris 4 ink maps.
+"""StrokeNet dataset: 128 x 128 windows of the organisers' public PHerc. Paris 4 ink maps.
 
 Every step starts from public files and is deterministic, so two machines that run it get the
 same windows byte for byte (`manifest` prints their SHA-256).
@@ -8,7 +8,7 @@ same windows byte for byte (`manifest` prints their SHA-256).
   python scripts/strokenet/data.py manifest --work WORK [--out manifest.json]
 
 Steps, per segment:
-  fetch   download the organizers' 2.4 um ink prediction (one TIFF, about 1.3 GB) into WORK/raw/,
+  fetch   download the organisers' 2.4 um ink prediction (one TIFF, about 1.3 GB) into WORK/raw/,
           resumable, recording its size and SHA-256 in WORK/raw/<seg>.json
   pool    20 x 20 mean to 48 um (0.048 mm per pixel), rounded to uint8: WORK/pooled/<seg>_48.npy
   label   text, blank papyrus and dense non-periodic areas from the pooled map: WORK/labels/<seg>.npz
@@ -19,7 +19,7 @@ Labels come from the ink map itself (line periodicity and ink density), not from
 text-against-blank score partly measures agreement with this rule; docs/strokenet.md says what
 that does and does not show. Nothing here is a reading.
 
-Source: https://data.aws.ash2txt.org/samples/PHercParis4/segments/ (organizer ink predictions of
+Source: https://data.aws.ash2txt.org/samples/PHercParis4/segments/ (organiser ink predictions of
 the July 2026 tracings on volume 20260411134726, model new_canon_autoresearch_recipe).
 The innermost tracing, w010-027, is not used at all.
 """

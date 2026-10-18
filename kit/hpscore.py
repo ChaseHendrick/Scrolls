@@ -34,7 +34,7 @@ def _gaussian():
 
 
 def high_pass(np, gf, img, m, sigma):
-    """img minus its Gaussian mean over the pixels in m (normalized convolution)."""
+    """img minus its Gaussian mean over the pixels in m (normalised convolution)."""
     w = gf(m.astype(np.float64), sigma)
     return img - gf(img * m, sigma) / np.maximum(w, 1e-3)
 
@@ -114,7 +114,7 @@ def score_files(prediction, labels, mask, voxel_um, control=None, level=DEFAULT_
 def format_result(result):
     def line(label, r):
         if r["hp_r"] is None:
-            return f"{label}: no score ({r['px']} px with a full {2 * r['sigma_px']:.0f} px labeled neighborhood)"
+            return f"{label}: no score ({r['px']} px with a full {2 * r['sigma_px']:.0f} px labelled neighbourhood)"
         return (f"{label}: letter-scale r {r['hp_r']:+.4f} (raw r {r['raw_r']:+.4f}, rolled-key null |r| <= "
                 f"{r['null_max_abs']:.4f}) on {r['px']} px")
 
