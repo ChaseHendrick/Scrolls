@@ -6,10 +6,10 @@
 
 X-ray computed tomography (CT) records hundreds to thousands of X-ray projection images of an object from different angles, usually by rotating the object through 360 degrees between a fixed source and a fixed detector, and then combines them with a reconstruction algorithm into a three-dimensional volume [VC-Tutorial] [WP-MicroCT]. The volume is a grid of **voxels** (volume pixels). The voxel size is the physical edge length of each cube; the value stored is the local intensity of the reconstruction (often loosely called "radiodensity") [VC-Tutorial].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Schematic of tomography: an object containing several shapes is projected from different directions onto detector planes, and the projections are combined to reconstruct the object.
+> **Photograph (not stored in git; see the caption for source and license):** Schematic of tomography: an object containing several shapes is projected from different directions onto detector planes, and the projections are combined to reconstruct the object.
 *Figure 7.1. The basic principle of tomography: projections of an object from different directions (S1, S2) are combined to reconstruct its interior. Illustration: Dtrx, via Wikimedia Commons. License: CC BY-SA 3.0 DE. <https://commons.wikimedia.org/wiki/File:TomographyPrinciple_Illustration.png>*
 
-When the voxel size is in the micrometre range the technique is called **micro-CT**. The first X-ray microtomography system was built by James C. Elliott in the early 1980s; its first published images had pixels of about 50 µm [WP-MicroCT]. Scroll scans in this book range from 45.5 µm (overview scans) to 0.55 µm (a small region of interest) ([Chapter 8](#ch-scans)).
+When the voxel size is in the micrometer range the technique is called **micro-CT**. The first X-ray microtomography system was built by James C. Elliott in the early 1980s; its first published images had pixels of about 50 µm [WP-MicroCT]. Scroll scans in this book range from 45.5 µm (overview scans) to 0.55 µm (a small region of interest) ([Chapter 8](#ch-scans)).
 
 A scan is often delivered as a **TIFF stack**: one image per horizontal slice, typically from the bottom of the scroll upward. At 10 µm voxel size, 100 slices cover 1 mm of the object [VC-Tutorial]. Modern distributions use chunked, multiresolution **OME-Zarr** instead ([Chapter 23](#ch-formats)).
 
@@ -37,7 +37,7 @@ The 2026 open-problems overview identifies three parameters that matter most [VC
 | Parameter | Meaning | Why it matters |
 |---|---|---|
 | Voxel size | physical size represented by each voxel | smaller voxels preserve finer structure but increase scan time, reconstruction difficulty and data size |
-| X-ray energy | energy of the incident photons | affects penetration, contrast and phase behaviour |
+| X-ray energy | energy of the incident photons | affects penetration, contrast and phase behavior |
 | Sample to detector distance | propagation distance after the sample | controls how phase fringes develop before detection |
 
 More phase contrast is not always better. Pushing the propagation distance too far blurs the volume. The balance, in the words of the overview, is "enough phase contribution to reveal useful structure; not so much that the scan becomes dominated by haze ...; enough X-ray energy to penetrate the object and separate layers; not so much that useful absorption contrast disappears; and voxels small enough to resolve the structures that matter, without shrinking so far that scanning a full scroll stops being practical" [VC-OpenProblems2026].
@@ -50,19 +50,19 @@ More phase contrast is not always better. Pushing the propagation distance too f
 | Earlier "optimal" low-resolution regime | about 9 µm | 1.2 m | about 110 keV | widely used in 2025 | [VC-OpenProblems2026] |
 | Best small-pixel result for a fragment ROI (ESRF ID11) | 0.55 µm | 7 cm | 65 keV | region of interest only | [VC-CompressedRegions] |
 | Best 2.4 µm fragment result | 2.4 µm | 22 cm | 77 keV | | [VC-CompressedRegions] |
-| Original Diamond scans of Scrolls 1 and 2 | 7.91 µm | not recorded in catalogue | 53 to 54 keV | 2023 Grand Prize data | [Parsons2023] [VC-Catalog] |
+| Original Diamond scans of Scrolls 1 and 2 | 7.91 µm | not recorded in catalog | 53 to 54 keV | 2023 Grand Prize data | [Parsons2023] [VC-Catalog] |
 
 Angelotti and colleagues give rough guides: about 0.5 m at 4.6 µm and 2 m at 8 µm are acceptable distances, with a "sweet spot" near 8 µm at 100 to 120 keV and about 3 m [Angelotti2026a]. The August 2025 recipe was: pixel size as small as feasible; distance short enough to enhance phase contrast without letting scattering dominate (generally under 1 m and less than half the near-field limit); energy as low as possible to boost absorption, within the constraints of the other two [VC-CompressedRegions].
 
-**On energy, sources differ.** Parsons and colleagues report anecdotal evidence that lower energy works better for carbon ink [Parsons2023]; Angelotti and colleagues favour higher energy and shorter distance to fight decoherence [Angelotti2026a]. These need not conflict: the first concerns absorption contrast, the second phase decoherence.
+**On energy, sources differ.** Parsons and colleagues report anecdotal evidence that lower energy works better for carbon ink [Parsons2023]; Angelotti and colleagues favor higher energy and shorter distance to fight decoherence [Angelotti2026a]. These need not conflict: the first concerns absorption contrast, the second phase decoherence.
 
 ## Compressed regions and haze
 
 For years, some regions of scroll scans looked worse than their nominal resolution: blurred, "foggy" or "mushy", with adjacent sheets hard to separate. Scans of a fragment region at 0.55 µm on ESRF beamline ID11 in July 2025 gave an explanation [VC-CompressedRegions] [VC-OpenProblems2026]:
 
-- Carbonized papyrus fibres contain small internal cavities: each fibre is surrounded by a thick wall of cells with hollow lumens.
-- Carbonized fibres are probably close to graphite, a strong decoherer that scrambles the X-ray wavefront.
-- Where many fibres are densely packed, as in closely spaced sheets, these periodic micro-structures scatter the beam slightly, and the longer the beam travels through them before reaching the detector, the stronger the effect.
+- Carbonized papyrus fibers contain small internal cavities: each fiber is surrounded by a thick wall of cells with hollow lumens.
+- Carbonized fibers are probably close to graphite, a strong decoherer that scrambles the X-ray wavefront.
+- Where many fibers are densely packed, as in closely spaced sheets, these periodic micro-structures scatter the beam slightly, and the longer the beam travels through them before reaching the detector, the stronger the effect.
 - The result is a local haze that degrades exactly the most compressed parts of a scroll.
 
 The practical remedies are smaller voxels (ideally below the periodicity, under 1 µm, which is impractical for whole scrolls), shorter propagation distances, and an energy balanced between penetration and absorption [VC-CompressedRegions]. Scan quality is therefore **local**: "A scan can hold excellent regions and nearly-impossible-to-unwrap ones in the very same volume" [VC-OpenProblems2026].
@@ -71,8 +71,8 @@ The practical remedies are smaller voxels (ideally below the periodicity, under 
 
 Halving the voxel size multiplies the number of voxels for the same physical volume by eight. Going from 8 µm to 2 µm multiplies it by 64; from 8 µm to 0.55 µm by about 4,096 [VC-OpenProblems2026] [VC-CompressedRegions]. Small regions can be scanned at very high resolution; "full scrolls cannot yet be scanned everywhere at sub-micron resolution in a practical production workflow" [VC-OpenProblems2026].
 
-![Line chart on log-log axes showing how the number of voxels per cubic centimetre grows as voxel size decreases from 45 micrometres to 0.55 micrometres, with the scan sizes used for Herculaneum scrolls marked.](../figures/charts/voxel_scaling.svg)
-*Figure 7.3. Voxels per cubic centimetre (and bytes at 8 bits per voxel) as a function of voxel size, with the voxel sizes of Herculaneum scans marked. Chart by the editors; the scaling law is from [VC-OpenProblems2026]. Data: data/voxel_scaling.csv. License: CC BY 4.0 (this book).*
+![Line chart on log-log axes showing how the number of voxels per cubic centimeter grows as voxel size decreases from 45 micrometers to 0.55 micrometers, with the scan sizes used for Herculaneum scrolls marked.](../figures/charts/voxel_scaling.svg)
+*Figure 7.3. Voxels per cubic centimeter (and bytes at 8 bits per voxel) as a function of voxel size, with the voxel sizes of Herculaneum scans marked. Chart by the editors; the scaling law is from [VC-OpenProblems2026]. Data: data/voxel_scaling.csv. License: CC BY 4.0 (this book).*
 
 | Voxel size (µm) | Voxels per cm3 | Relative to 7.91 µm | Bytes per cm3 at 8 bits |
 |---|---|---|---|

@@ -1,6 +1,6 @@
 # About This Book {#ch-preface}
 
-*The Vesuvius Challenge Bible* is a reference for anyone working on reading the Herculaneum scrolls: the history of the rolls, the physics of imaging them, the record of the Vesuvius Challenge from 2023 to October 2026, every scroll and fragment in the public catalogue, the full virtual unwrapping pipeline, the tools and formats, and the open problems. It is written for two kinds of reader: people, who will mostly read it as a PDF, and AI agents, which can read the same text as Markdown with machine-readable data alongside.
+*The Vesuvius Challenge Bible* is a reference for anyone working on reading the Herculaneum scrolls: the history of the rolls, the physics of imaging them, the record of the Vesuvius Challenge from 2023 to October 2026, every scroll and fragment in the public catalog, the full virtual unwrapping pipeline, the tools and formats, and the open problems. It is written for two kinds of reader: people, who will mostly read it as a PDF, and AI agents, which can read the same text as Markdown with machine-readable data alongside.
 
 Edition date: 15 October 2026.
 
@@ -14,7 +14,7 @@ Edition date: 15 October 2026.
 
 ## Images
 
-Photographs come from Wikimedia Commons and other sources whose licences allow reuse; each caption gives the source and licence, and Appendix F lists them all. **The book reproduces no CT scan data, renders or ink predictions** from the Vesuvius Challenge or EduceLab datasets, out of respect for the data terms ([Chapter 28](#ch-ethics)). Scans are described with numbers and with charts and diagrams drawn by the editors.
+Photographs come from Wikimedia Commons and other sources whose licenses allow reuse; each caption gives the source and license, and Appendix F lists them all. **The book reproduces no CT scan data, renders or ink predictions** from the Vesuvius Challenge or EduceLab datasets, out of respect for the data terms ([Chapter 28](#ch-ethics)). Scans are described with numbers and with charts and diagrams drawn by the editors.
 
 ## How to read it
 

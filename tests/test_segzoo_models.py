@@ -236,7 +236,7 @@ class SheetFollowTest(unittest.TestCase):
         self.assertEqual(res["objects"]["2"]["identity_kept"], 1.0)
 
     def test_refusals(self):
-        with self.assertRaisesRegex(ValueError, "no labelled pixel"):
+        with self.assertRaisesRegex(ValueError, "no labeled pixel"):
             self.m.seed_objects(np.zeros((4, 4)))
         with self.assertRaisesRegex(ValueError, "2D"):
             self.m.seed_objects(np.zeros((2, 4, 4)))

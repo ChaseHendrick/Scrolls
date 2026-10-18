@@ -71,7 +71,7 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
 """
 
 HELD_OUT = """\
-# 1b. Labelled check: PHerc0139 w045, unseen by v8in. ink_9um trained on its 2.4 um render
+# 1b. Labeled check: PHerc0139 w045, unseen by v8in. ink_9um trained on its 2.4 um render
 #     (pherc0139-w029), so here it shows cross-scan reading of a training surface, not
 #     generalization; PHerc0841 is the held-out test for ink_9um, v8in, v8in-1447, d9v2 and
 #     Reader v2 (not for Hecate: its base model's trainer lists all three PHerc0841

@@ -26,7 +26,7 @@ The browser tour links the official Vesuvius Challenge introduction and the exis
 
 Normal startup checks this Python environment: actual image-package imports, hashes of locally cached released Greek weights, Tesseract's version and installed languages, and the presence of git, Jupyter and Docker on PATH. A missing optional dependency does not block the tour or practice. This is a snapshot of the generating machine, not a complete VC3D or GPU readiness check.
 
-The optional Scroll Text Reader wizard builds a quoted command for an existing local image. It preserves the existing reader's controls and supported backends. Greek LineNet supports measured scale, weights and line centres; Tesseract supports installed recognition languages and JSON output. The browser never reads the image or runs the command. Reader output is model hypotheses, not a verified transcription.
+The optional Scroll Text Reader wizard builds a quoted command for an existing local image. It preserves the existing reader's controls and supported backends. Greek LineNet supports measured scale, weights and line centers; Tesseract supports installed recognition languages and JSON output. The browser never reads the image or runs the command. Reader output is model hypotheses, not a verified transcription.
 
 `--portable` skips every local probe and embeds no host executable path, operating system, dependency status or cached-weight state. That file can be shared and opened without Python. Setup is explicitly not checked. Portable commands use `.venv/bin/python` or `.venv\Scripts\python.exe` from the `scrolls-learning` folder described in [Start Here](../start-here.md).
 
@@ -98,7 +98,7 @@ The installed `scrolls-start` command takes the same options. Browser commands a
 
 No scroll input is needed. The normal check imports numpy, Pillow, tifffile and imagecodecs in a separate isolated Python process. Tesseract is inspected using its existing backend capability probe. Locally cached released weights are SHA-256 checked up to 64 MiB per file; larger files are explicitly not checked. A custom weights file is not loaded as a model.
 
-The command builder accepts an image path, new output prefix, backend, polarity and optional matching control path. Greek inputs include a released name or local weights path, measured letter height in image pixels (at least 4) or millimetres with image micrometres per pixel, and optional nonnegative line-centre rows. Tesseract takes explicit installed recognition codes; no automatic language detection occurs. Blank, non-finite and invalid scale values are rejected. These values stay in this browser session.
+The command builder accepts an image path, new output prefix, backend, polarity and optional matching control path. Greek inputs include a released name or local weights path, measured letter height in image pixels (at least 4) or millimeters with image micrometers per pixel, and optional nonnegative line-center rows. Tesseract takes explicit installed recognition codes; no automatic language detection occurs. Blank, non-finite and invalid scale values are rejected. These values stay in this browser session.
 
 ## Outputs
 

@@ -23,13 +23,13 @@
 
 ## What it does
 
-On 7 October 2026 many agents ran jobs on public labelled data at once: twelve CPU cloud jobs on PHerc0841 and PHerc0139 w045 crops, Grok's lanes A to I (label-free signals, a fibre reader, crop placement, a fine-tune plan), the "tricks" runs (checkpoint soup, depth windows, mirror test-time augmentation, ensembles) and the mesh-placement study. Each job committed its scripts, its `results.json` or JSON outputs, its logs and its `notes.md` under `scripts/experiments/`. This folder is that record. The dated logs in `docs/logs/` interpret the numbers; this folder holds what produced them.
+On 7 October 2026 many agents ran jobs on public labeled data at once: twelve CPU cloud jobs on PHerc0841 and PHerc0139 w045 crops, Grok's lanes A to I (label-free signals, a fiber reader, crop placement, a fine-tune plan), the "tricks" runs (checkpoint soup, depth windows, mirror test-time augmentation, ensembles) and the mesh-placement study. Each job committed its scripts, its `results.json` or JSON outputs, its logs and its `notes.md` under `scripts/experiments/`. This folder is that record. The dated logs in `docs/logs/` interpret the numbers; this folder holds what produced them.
 
 The records are frozen: they keep their original wording, even where later reviews corrected an interpretation. `tests/test_repo.py` exempts `scripts/experiments/` from its wording and link checks for that reason (its `HISTORICAL` list), and corrections live in new logs or in the record's own review notes. Some scripts were later guarded so they cannot be run by accident as if they were current analyses (see Failure modes).
 
 It is not a tool to run for new work, which is why its status is Retired. Several jobs stopped early or were never run; the table below says which. Every score in it is model output against published labels, not a reading, and nothing here touches a target scroll.
 
-Two terms used below: a "lane" is one of Grok's parallel research tracks of 7 October (A to I); a "crop" is the 640 px window of densest labelled ink per segment, scored with a 64 px edge left out (`--inner 64`).
+Two terms used below: a "lane" is one of Grok's parallel research tracks of 7 October (A to I); a "crop" is the 640 px window of densest labeled ink per segment, scored with a 64 px edge left out (`--inner 64`).
 
 ## When to use it
 
@@ -46,7 +46,7 @@ Do not use it:
 
 ## The records
 
-Every job used public labelled data only: PHerc0841 w00, ag896 and ag405, and PHerc0139 w045. PHerc0841 is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's ([log](../logs/2026-10-09-pherc0841-hecate.md)). w045 is not held out from `ink_9um`, which trained on its 2.4 um render, nor from its fine-tunes ([log](../logs/2026-10-08-w045-not-held-out.md)).
+Every job used public labeled data only: PHerc0841 w00, ag896 and ag405, and PHerc0139 w045. PHerc0841 is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's ([log](../logs/2026-10-09-pherc0841-hecate.md)). w045 is not held out from `ink_9um`, which trained on its 2.4 um render, nor from its fine-tunes ([log](../logs/2026-10-08-w045-not-held-out.md)).
 
 ### `2026-10-07-cloud/`: twelve CPU cloud jobs
 
@@ -72,9 +72,9 @@ Their shared rules, setup, crops and result-row format are in [the folder's READ
 | Folder | What it ran | Outcome as recorded | Where the results are |
 | --- | --- | --- | --- |
 | `2026-10-07-grok-laneA/` | Cross-analysis of the cloud jobs' records against bootstrap noise (`synth.py`) | Kept byte for byte; its significance verdicts were withdrawn on review | `synth.json`, `synth.out`; [lane A log](../logs/2026-10-07-grok-laneA.md) |
-| `2026-10-07-grok-laneB/` | Label-free checks of ink maps on w00 and w045 (stroke width, fibres, geometry, depth), with reverse controls | Historical and preliminary; predates the mesh-hole and supervision corrections | `results/*.json`, `results/run_mac.log`; [lane B log](../logs/2026-10-07-grok-laneB.md) |
+| `2026-10-07-grok-laneB/` | Label-free checks of ink maps on w00 and w045 (stroke width, fibers, geometry, depth), with reverse controls | Historical and preliminary; predates the mesh-hole and supervision corrections | `results/*.json`, `results/run_mac.log`; [lane B log](../logs/2026-10-07-grok-laneB.md) |
 | `2026-10-07-grok-laneC/` | A model-free texture feature and its rank fusion with `ink_9um` | Both null (commit `d3074de`) | `results.json`; [lane C log](../logs/2026-10-07-grok-laneC.md) |
-| `2026-10-07-grok-laneD/` | The fibre-orientation reader, [`fibertensor`](fibertensor.md), trained on one segment and scored on another, against brightness and `ink_9um` | Null against brightness and `ink_9um` (commit `ca9c8c4`) | `results/*.json`; [lane D log](../logs/2026-10-07-grok-laneD.md) |
+| `2026-10-07-grok-laneD/` | The fiber-orientation reader, [`fibertensor`](fibertensor.md), trained on one segment and scored on another, against brightness and `ink_9um` | Null against brightness and `ink_9um` (commit `ca9c8c4`) | `results/*.json`; [lane D log](../logs/2026-10-07-grok-laneD.md) |
 | `2026-10-07-grok-laneF/` | Four experiments: histogram matching across scrolls, two-reader disagreement, depth-profile transfer, self-training | All four null (commit `4d8dfee`) | `results.json`, `logs/`; [lane F log](../logs/2026-10-07-grok-laneF.md) |
 | `2026-10-07-laneG/` | Five model-free pixel signals and a line-period cue, preregistered in [`prereg/2026-10-07-grok-laneG.md`](../prereg/2026-10-07-grok-laneG.md) | Five signals null on both segments, the line-period cue inconclusive (commit `18ea482`) | `results.json`, `signals.log`; [lane G log](../logs/2026-10-07-grok-laneG.md) |
 | `2026-10-07-grok-laneI/` | Crop placement sensitivity, a downsampled proxy and crop scan speed on w00, preregistered in [`prereg/2026-10-07-grok-laneI.md`](../prereg/2026-10-07-grok-laneI.md) | Its R1 and R2 conclusions are not validated (nonfinite intervals); P1 is descriptive | `results.json`, `run.log`; [lane I log](../logs/2026-10-07-grok-laneI.md); the tested helper is [`cropscan`](cropscan.md) |
@@ -117,7 +117,7 @@ It worked when every folder ends with `OK`. Seven folders hold tests, 45 in all.
 - **Preregistration.** Lanes G and I and the lane H job wrote their readout rules before any run (their logs name the commits); lane C and lane F record theirs in their logs.
 - **Regression tests.** The `test_*.py` files and the `tests/` files above check the saved scripts' logic and guards, and CI runs them on every push, so a later change to a `kit` function they use cannot silently change them.
 
-Claim label: Model output and Null, as each record's log labels them, on public labelled data; the records make no claim of their own.
+Claim label: Model output and Null, as each record's log labels them, on public labeled data; the records make no claim of their own.
 
 ## Commands and options
 
@@ -151,7 +151,7 @@ The cloud jobs' `results.json` files are JSON lists of rows with these keys, lea
 | `device` | str | `cpu` |
 | `auc_as_stored`, `auc_reversed`, `auc_shuffled` | float | AUC of the map, its reverse-depth control and its depth-shuffled control |
 | `hp_r`, `hp_r_reversed` | float | Letter-scale score ([`hpscore`](hpscore.md)) of the map and its reverse |
-| `ink_px` | int | Labelled ink pixels scored |
+| `ink_px` | int | Labeled ink pixels scored |
 | `seconds` | float | Wall time |
 | `notes` | str | Anything odd |
 

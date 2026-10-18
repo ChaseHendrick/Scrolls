@@ -66,7 +66,7 @@ It worked when the exit code is 0 and the count in the last line matches the run
 
 - **The records themselves.** The table is only as good as the records. Run `python -m kit provenance check FILE` on any record you quote: it recomputes the digest and prints `FILE: ok (digest ...)` with exit code 0, or one `problem: ...` line per mismatch with exit code 1. The 16-character digest prefix in the table ties each row to its record.
 - **Skipped files.** A file that is not JSON, or JSON without both `run` and `digest`, is skipped silently. Compare the run count in the last line with the runs you expected; the command fails (exit code 2) when a path given does not exist, when a record's times are not in the Z form, or when nothing at all is found.
-- **Energy.** The Wh column is hours times the `--watts` you gave, labelled "an estimate, not a measurement". Do not report it as measured energy.
+- **Energy.** The Wh column is hours times the `--watts` you gave, labeled "an estimate, not a measurement". Do not report it as measured energy.
 
 Claim label: None. The hours are copied from provenance records, and the Wh figure is an estimate from an assumed power draw.
 
@@ -179,7 +179,7 @@ They cover collecting records from nested folders (skipping a JSON file without 
 
 - 2026-10-17: a start or finish time not in the Z form is reported as `FILE: ... must be UTC times like 2026-10-07T08:00:00Z` with exit code 2; before, it ended in a `ValueError` traceback with exit code 1 (`20064ad`).
 - 2026-10-17: a path that does not exist stops the command with `no such file or folder: ...` and exit code 2; before, it was skipped silently (`0a7a0fd`).
-- 2026-10-07: first version, modelled on GENChase's compute ledger (`da58d07`).
+- 2026-10-07: first version, modeled on GENChase's compute ledger (`da58d07`).
 
 ## Related
 

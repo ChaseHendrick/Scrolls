@@ -64,7 +64,7 @@ def is_val(papyrus):
 
 
 def ink_from_photo(img):
-    """Grey or RGB uint8 crop of dark ink on lighter papyrus -> float32 ink in [0, 1], or None if flat."""
+    """Gray or RGB uint8 crop of dark ink on lighter papyrus -> float32 ink in [0, 1], or None if flat."""
     g = np.asarray(img, dtype=np.float32)
     if g.ndim == 3:
         g = g[..., :3] @ np.array([0.299, 0.587, 0.114], np.float32)

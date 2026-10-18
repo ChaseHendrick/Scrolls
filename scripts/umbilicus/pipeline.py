@@ -1,10 +1,10 @@
-"""Cross-validated training of the centre network and the umbilicus files it writes.
+"""Cross-validated training of the center network and the umbilicus files it writes.
 
     python pipeline.py job JOB --data DIR --out DIR [--size 256 --width 32 --epochs 40 --time-s 900 --device cuda]
     python pipeline.py collect --data DIR --out DIR
     python pipeline.py trim SRC --data DIR --out DST     # drop mount and cap points from umbilicus JSONs already written
 
-JOB is fold<k>s<seed> (k = 0..3) or alls<seed>. A fold job trains on the labelled scrolls outside
+JOB is fold<k>s<seed> (k = 0..3) or alls<seed>. A fold job trains on the labeled scrolls outside
 that fold and predicts the fold's scrolls (scored, never seen in training) and any scrolls in slices.UNLABELLED.
 collect averages the seeds per fold for the held-out score. For each scroll in slices.UNLABELLED, if any,
 it takes the median of every model and writes an umbilicus JSON in the format of the published ones (control points
@@ -86,7 +86,7 @@ def _stats(e):
                 within_1mm=round(float((e <= 1).mean()), 3), within_2mm=round(float((e <= 2).mean()), 3))
 
 def centroid_baseline(data, s):
-    """Control: centre of the papyrus area in each slice, the obvious automatic answer."""
+    """Control: center of the papyrus area in each slice, the obvious automatic answer."""
     from scipy import ndimage as ndi
     d = np.load(os.path.join(data, f"{s}.npz")); ct = d["ct"]; f = 2 ** (int(d["level"]) if "level" in d.files else 3)
     P = []
@@ -95,7 +95,7 @@ def centroid_baseline(data, s):
         ys, xs = np.nonzero(m); P.append([ys.mean() * f, xs.mean() * f] if len(ys) else [np.nan, np.nan])
     return np.array(P), d["z_l0"]
 
-# Which slices get a centre in a written file. Both ends of every scan hold the mount (a thin strip) and caps, and
+# Which slices get a center in a written file. Both ends of every scan hold the mount (a thin strip) and caps, and
 # the hand-placed lines skip them, so the network is never trained or scored there. Rule (13 Oct 2026, from the 13
 # published scrolls only): drop 3 mm at each end of the slices with any papyrus, drop slices whose filled papyrus area
 # is under 30 % of the scroll's median, and keep the longest unbroken run. On the published scrolls it keeps 96 to
@@ -127,14 +127,14 @@ def keep_band(area, z, um, cap_mm=None, frac=None):
     out[best[1]:best[2]] = True
     return out
 
-# End-point rule (14 Oct 2026): keep_band can still keep heights near either end where the centre sits in air, beside
-# a broken end or inside a hollow one, because it looks at the papyrus area of the whole slice, not at the centre.
-# This rule looks at the centre: cast END_RAYS rays from it in the level-3 slice and count the share that meet papyrus
+# End-point rule (14 Oct 2026): keep_band can still keep heights near either end where the center sits in air, beside
+# a broken end or inside a hollow one, because it looks at the papyrus area of the whole slice, not at the center.
+# This rule looks at the center: cast END_RAYS rays from it in the level-3 slice and count the share that meet papyrus
 # (CT at or above Otsu's air/papyrus level) within END_RADIUS_MM. Points are dropped from each end of the kept band
 # inward until END_RUN_MM of consecutive slices reach END_SUPPORT; nothing between the first and last such run is
 # ever dropped, so the rule cannot punch holes in the middle of a line. END_SUPPORT (three quarters of directions) and
 # END_RUN_MM were set by meaning; END_RADIUS_MM is the smallest of 2, 3, 4, 5 mm at which, on the 13 published
-# scrolls, at most 0.5 % of published centres in the middle 80 % of each annotated band fall under the bar (0.18 %
+# scrolls, at most 0.5 % of published centers in the middle 80 % of each annotated band fall under the bar (0.18 %
 # at 4 mm, 1.2 % at 3 mm). Fixed on the 13 published scrolls only (endcheck.py calibrate).
 END_RADIUS_MM, END_SUPPORT, END_RUN_MM, END_RAYS = 4.0, 0.75, 2.0, 32
 
@@ -153,10 +153,10 @@ def papyrus_level(ct):
     return int(np.argmax(between)) + 1          # classes 0..t-1 and t..255
 
 def end_support(ct, yx, um, level_thr, level=3, origin=None, radius_mm=None, rays=None):
-    """Share of `rays` directions from each slice's centre that meet papyrus within radius_mm.
+    """Share of `rays` directions from each slice's center that meet papyrus within radius_mm.
 
     ct: (n, H, W) uint8 slices at pyramid level `level` (whole slices, or crops whose top-left corner in level
-    pixels is origin[i]); yx: (n, 2) centres in level-0 voxels (a NaN centre gives 0); level_thr from papyrus_level.
+    pixels is origin[i]); yx: (n, 2) centers in level-0 voxels (a NaN center gives 0); level_thr from papyrus_level.
     The slice is smoothed with a 3x3 mean first, so a single bright voxel in air does not count as papyrus; samples
     off the slice count as air. Defaults: END_RADIUS_MM and END_RAYS, read when called."""
     radius_mm = END_RADIUS_MM if radius_mm is None else radius_mm; rays = END_RAYS if rays is None else rays
@@ -199,8 +199,8 @@ def trim_ends(keep, support, z, um, min_support=None, run_mm=None):
     return keep
 
 def window_origins(yx, um, level=3, half_mm=None):
-    """Top-left corners (level pixels) and half side h of the windows the rule reads: 2h x 2h around each centre.
-    Rows whose centre is NaN get (0, 0). Default half_mm: END_RADIUS_MM + 0.5, read when called."""
+    """Top-left corners (level pixels) and half side h of the windows the rule reads: 2h x 2h around each center.
+    Rows whose center is NaN get (0, 0). Default half_mm: END_RADIUS_MM + 0.5, read when called."""
     half_mm = END_RADIUS_MM + 0.5 if half_mm is None else half_mm
     yx = np.asarray(yx, float); f = 2 ** level
     h = int(np.ceil(half_mm * 1000 / (um * f)))
@@ -239,12 +239,12 @@ def _trim_note(end_rule=True):
          f"at least {CAP_MM:g} mm inside the first and last slices with papyrus")
     if end_rule:
         t += (f"; end-point rule: dropped from each end until {END_RUN_MM:g} mm of slices where at least {END_SUPPORT:g} of "
-              f"{END_RAYS} rays from the centre meet papyrus within {END_RADIUS_MM:g} mm")
+              f"{END_RAYS} rays from the center meet papyrus within {END_RADIUS_MM:g} mm")
     return t
 
 def trim(src, data, dst, end_rule=True):
     """Drop the end-band points from umbilicus JSONs already written (src/*_umbilicus.json -> dst): keep_band, then
-    (end_rule) the end-point rule at the file's own centres, which must sit at the slice file's heights (a file
+    (end_rule) the end-point rule at the file's own centers, which must sit at the slice file's heights (a file
     written by this pipeline; for others use endcheck.py files without --data)."""
     os.makedirs(dst, exist_ok=True); out = {}
     for f in sorted(os.listdir(src)):
@@ -255,7 +255,7 @@ def trim(src, data, dst, end_rule=True):
             j = json.load(fh)
         d = np.load(os.path.join(data, f"{s}.npz")); um = float(d["um"]); z = np.asarray(d["z_l0"])
         keep = keep_band(papyrus_area(d["ct"]), z, um)
-        if end_rule:          # the file's own centres, at the slice heights they were written for
+        if end_rule:          # the file's own centers, at the slice heights they were written for
             P = sorted(j["control_points"], key=lambda p: p["z"]); yx = np.full((len(z), 2), np.nan)
             at = {int(v): i for i, v in enumerate(z)}
             off = [p["z"] for p in P if int(p["z"]) not in at]
@@ -324,7 +324,7 @@ def collect(data, out):
         keep = present & keep_band(papyrus_area(d["ct"]), z, um)   # no mount or caps
         keep, _, _ = end_trimmed_keep(d["ct"], sm, z, um, keep, level=int(d["level"]) if "level" in d.files else 3)
         j = umbilicus_json(s, z, sm, keep, um, p0["vol"], spread,
-                           f"automatic: median of {len(rs)} centre-network models, smoothed along z (scripts/umbilicus); {_trim_note()}")
+                           f"automatic: median of {len(rs)} center-network models, smoothed along z (scripts/umbilicus); {_trim_note()}")
         write_json(j, os.path.join(out, "umbilicus", f"{s}_umbilicus.json"), indent=1)
         res["unlabelled"][s] = dict(points=j["metadata"]["total_points"], models=len(rs), spread_mm_median=j["metadata"]["spread_mm_median"],
                                  spread_mm_p90=round(float(np.percentile(spread[keep], 90)), 3) if keep.any() and spread is not None else None,

@@ -22,7 +22,7 @@ Herculaneum ink is mainly carbon on a carbonized papyrus, so the two have simila
 An open competition launched on 15 March 2023 by Nat Friedman, Daniel Gross and Brent Seales to read the scrolls, run by Scroll Prize, Inc. ([Chapter 9](#ch-founding)).
 
 **How much prize money has been awarded?**
-This book's ledger counts 233 awards totalling $1,958,500 to 15 October 2026 ([Chapter 14](#ch-ledger)).
+This book's ledger counts 233 awards totaling $1,958,500 to 15 October 2026 ([Chapter 14](#ch-ledger)).
 
 **Who won the 2023 Grand Prize?**
 Youssef Nader, Luke Farritor and Julian Schilliger shared $700,000 for more than 15 columns of Scroll 1 (PHerc. Paris 4) ([Chapter 10](#ch-2023)).
@@ -37,7 +37,7 @@ A pool of $2,140,000 including the $1 million 2027 Grand Prize, First Letters pr
 Yes. Most contributions are software: segmentation, tracing, spiral fitting, ink detection, tooling and infrastructure. Papyrologists review readings ([Chapter 24](#ch-community), [Chapter 26](#ch-open-problems)).
 
 **Do I have to open-source my work?**
-To accept a prize, yes, under a permissive licence; training datasets must be public under CC BY-NC 4.0 ([Chapter 28](#ch-ethics)).
+To accept a prize, yes, under a permissive license; training datasets must be public under CC BY-NC 4.0 ([Chapter 28](#ch-ethics)).
 
 ## About the data
 
@@ -45,7 +45,7 @@ To accept a prize, yes, under a permissive licence; training datasets must be pu
 In the public S3 bucket `s3://vesuvius-challenge-open-data/`, readable anonymously; curated datasets and models are on Hugging Face ([Chapter 23](#ch-formats)).
 
 **How big is it?**
-The catalogue volumes total about 811 TB uncompressed; one 2.4 µm volume of a large scroll is about 40 to 125 TB uncompressed ([Chapter 25](#ch-compute), [Chapter 8](#ch-scans)).
+The catalog volumes total about 811 TB uncompressed; one 2.4 µm volume of a large scroll is about 40 to 125 TB uncompressed ([Chapter 25](#ch-compute), [Chapter 8](#ch-scans)).
 
 **What format is it in?**
 Volumes are OME-Zarr; traced surfaces are tifxyz (three float32 TIFFs plus metadata) or meshes ([Chapter 23](#ch-formats)).

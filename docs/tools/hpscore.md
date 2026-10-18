@@ -22,9 +22,9 @@
 
 ## What it does
 
-An ink model writes an ink map: one number per pixel of a flattened surface, higher where the model thinks there is ink. Pixel AUC ([`auc`](auc.md)) asks whether labelled ink pixels score above labelled non-ink pixels. It cannot tell a map that draws letters from a map that paints a soft blob over a line of text: both put high values on the ink pixels, and blurring a map often raises its AUC. `kit hpscore` gives the letter-scale score, a number that rewards strokes and edges at the size of letters and does not reward blobs.
+An ink model writes an ink map: one number per pixel of a flattened surface, higher where the model thinks there is ink. Pixel AUC ([`auc`](auc.md)) asks whether labeled ink pixels score above labeled non-ink pixels. It cannot tell a map that draws letters from a map that paints a soft blob over a line of text: both put high values on the ink pixels, and blurring a map often raises its AUC. `kit hpscore` gives the letter-scale score, a number that rewards strokes and edges at the size of letters and does not reward blobs.
 
-It works like this. Both the map and the key (the human ink labels: 1 for ink, 0 for non-ink, inside the supervision mask) are high-passed: each has its own 48 um Gaussian blur subtracted, so only detail finer than about 48 um is left. The score `hp_r` is the Pearson correlation of the two high-passed images over the pixels that are labelled, predicted, and have a fully labelled neighbourhood. The same correlation without the high pass is reported as `raw_r`. The method is a port of Chris Scheirer's `hp_score.py` and `score_crop.py` (ShribyrLabs/vesuvius-reports, report 02, MIT).
+It works like this. Both the map and the key (the human ink labels: 1 for ink, 0 for non-ink, inside the supervision mask) are high-passed: each has its own 48 um Gaussian blur subtracted, so only detail finer than about 48 um is left. The score `hp_r` is the Pearson correlation of the two high-passed images over the pixels that are labeled, predicted, and have a fully labeled neighborhood. The same correlation without the high pass is reported as `raw_r`. The method is a port of Chris Scheirer's `hp_score.py` and `score_crop.py` (ShribyrLabs/vesuvius-reports, report 02, MIT).
 
 Every result carries a null: the key is rolled 150, 300 and -300 px (at 9.362 um, about 1.4 and 2.8 mm) along the rows, the correlation is recomputed, and the largest absolute value is `null_max_abs`. It says how much a key that is in the wrong place still scores. With `--control`, the reverse-depth map (the same model run with the surface volume's layers in reverse order) is scored on the same label fields.
 
@@ -35,7 +35,7 @@ The score is a correlation against human labels, not a reading. A high `hp_r` ne
 ## When to use it
 
 - Next to `kit auc`, to see whether a gain in pixel AUC is a gain in letter-scale detail or only more blur, as with depth sharpening, which raised AUC by 0.018 to 0.062 on PHerc0841 but letter-scale r by only 0.002 to 0.004 (Bullo27's measurement, a Community report in [tricks.md](../tricks.md)).
-- Ranking settings or checkpoints of one reader on a labelled crop held out from it, at the same blur.
+- Ranking settings or checkpoints of one reader on a labeled crop held out from it, at the same blur.
 - Checking that a map's detail sits on the labels: forward above the reverse control and above the rolled-key null.
 
 Do not use it:
@@ -77,7 +77,7 @@ It worked when the exit code is 0 and the map line shows a letter-scale r. The n
 
 - **Rolled-key null** (always on). `null_max_abs` is the largest |r| of the high-passed map against the key rolled by 150, 300 and -300 px. A forward `hp_r` at or below it is not distinguishable from a misplaced key.
 - **Reverse-depth control** (`--control`). The forward map's `hp_r` must sit above its reverse's. A score reported without the control is not a result here (the rule that every check must be able to fail, in [`AGENTS.md`](../../AGENTS.md)).
-- **A real fail.** d9v2 on a fixed labelled crop of PHerc0139 w045 (a surface `ink_9um`, and so d9v2, trained on at 2.4 um) scored forward `hp_r` 0.0177, below its reverse 0.0214 and the null 0.0578, while its AUC was 0.9255 forward against 0.3346 reversed. The log's verdict: "The fine-detail check failed" ([follow-up log](../logs/2026-10-07-followup-tests.md); `followup_checks` in [`results.json`](../results.json), kind `labelled_reader_baseline`). So the score can fail where AUC passes.
+- **A real fail.** d9v2 on a fixed labeled crop of PHerc0139 w045 (a surface `ink_9um`, and so d9v2, trained on at 2.4 um) scored forward `hp_r` 0.0177, below its reverse 0.0214 and the null 0.0578, while its AUC was 0.9255 forward against 0.3346 reversed. The log's verdict: "The fine-detail check failed" ([follow-up log](../logs/2026-10-07-followup-tests.md); `followup_checks` in [`results.json`](../results.json), kind `labelled_reader_baseline`). So the score can fail where AUC passes.
 - **Real values on PHerc0841 w00's crop** (64 px edge left out): `ink_9um` seed 42 +0.029, d9v2 +0.015, Reader v2 +0.048; depth-shuffled inputs -0.011 to +0.002 ([tricks tables](../../scripts/experiments/2026-10-07-cloud/tricks/tables.md)). These are small numbers, and on ag896 several `ink_9um` variants were below 0.
 - **Scheirer's scale, for orientation only** (Community report, different key): noise 0.01, blobs 0.04, a map where a person made out four letters 0.076, the best 9 um maps 0.11 to 0.14, run-to-run noise 0.005 ([report 02](https://github.com/ShribyrLabs/vesuvius-reports/tree/main/02-9um-ink-reader-benchmark)). The report's own correction says the four-letter case sits on a scroll in the base model's training data.
 - **No interval.** The command gives no bootstrap; the follow-up runs used their own harness for `hp_bootstrap` intervals. A difference between two maps on one crop is not shown to be beyond noise by this command alone.
@@ -102,7 +102,7 @@ usage: python -m kit hpscore [-h] --labels LABELS --mask MASK
 | `prediction` | required | The ink map: a `.npy` file (read with numpy) or anything else read as a TIFF with tifffile, squeezed to 2D, on the segment's surface grid. Pixels at or below 0 count as unpredicted |
 | `--labels LABELS` | required | The segment's `inklabels.zarr`: a group with pyramid levels, or a single 2D array. Values above 0 are ink |
 | `--mask MASK` | required | The segment's `supervision.zarr`, same layout and shape as the labels at `--level`. Values above 0 are supervised |
-| `--voxel-um VOXEL_UM` | required | The map's pixel size in micrometres (9.362 for PHerc0139, 9.366 for PHerc0841). It sets the blur, sigma = 48 / VOXEL_UM px, and scales the null shifts. It is not checked: 0 crashes with `ZeroDivisionError`, and a negative value gives no score |
+| `--voxel-um VOXEL_UM` | required | The map's pixel size in micrometers (9.362 for PHerc0139, 9.366 for PHerc0841). It sets the blur, sigma = 48 / VOXEL_UM px, and scales the null shifts. It is not checked: 0 crashes with `ZeroDivisionError`, and a negative value gives no score |
 | `--control CONTROL` | none | The reverse-depth map of the same surface, same shape as the map, scored on the same label fields |
 | `--level LEVEL` | `2` | Pyramid level of the labels that matches the 9 um grid (`auc.DEFAULT_LEVEL`) |
 | `--crop Y0 Y1 X0 X1` | none | The map covers only this window of the surface: rows Y0 to Y1 and columns X0 to X1, ends excluded. Needs `--surface-shape` |
@@ -127,7 +127,7 @@ print(hpscore.format_result(result))
 | --- | --- | --- | --- |
 | `score_files(prediction, labels, mask, voxel_um, control=None, level=DEFAULT_LEVEL, crop=None, surface_shape=None, inner=0)` | The result dict under Outputs | `VerifyError` on bad input or without scipy; `FileNotFoundError` for a missing `.npy`; `ZeroDivisionError` for `voxel_um` 0 | What the command runs. `crop` is `[Y0, Y1, X0, X1]`, `surface_shape` is `[H, W]`. The label fields are filtered once per call and shared by the map and the control; nothing is cached between calls |
 | `score_array(prediction, ink, supervised, voxel_um, inner=0)` | `{"hp_r", "raw_r", "null_max_abs", "px", "sigma_px", "inner"}` | `VerifyError` without numpy or scipy, or when `inner` leaves nothing | A map against same-shape ink and supervision arrays already on its grid. Values outside `supervised` in `ink` are ignored, even NaN |
-| `high_pass(np, gf, img, m, sigma)` | float array, `img` minus its Gaussian mean over the pixels where `m` is set | Nothing of its own | Normalised convolution: `img - gf(img * m, sigma) / max(gf(m, sigma), 1e-3)`. `np` is numpy and `gf` is `scipy.ndimage.gaussian_filter`. [`surfacefix`](surfacefix.md) imports it |
+| `high_pass(np, gf, img, m, sigma)` | float array, `img` minus its Gaussian mean over the pixels where `m` is set | Nothing of its own | Normalized convolution: `img - gf(img * m, sigma) / max(gf(m, sigma), 1e-3)`. `np` is numpy and `gf` is `scipy.ndimage.gaussian_filter`. [`surfacefix`](surfacefix.md) imports it |
 | `format_result(result)` | str | Nothing | The text the command prints |
 
 `HIGH_PASS_UM = 48.0` and `NULL_SHIFTS_PX_AT_9362 = (150, 300, -300)` are the module's constants.
@@ -143,7 +143,7 @@ print(hpscore.format_result(result))
 
 The labels sit on the 2.4 um scan's grid; their level 2 is the 9 um surface grid up to a uniform scale (PHerc0841: 0.975 of the surface grid on both axes). Each map pixel takes the label at the nearest scaled position (the same mapping as `kit auc`). A scale that differs between the two axes by more than 0.5 % (`auc.MAX_AXIS_MISMATCH = 0.005`) is refused.
 
-The score needs labelled area around each scored pixel: only pixels whose 2 x sigma neighbourhood (about 10 px at 9.366 um) is entirely supervised are scored, and the 300 px null shift wraps around inside the map, so a map much smaller than the 640 px crops scores few pixels.
+The score needs labeled area around each scored pixel: only pixels whose 2 x sigma neighborhood (about 10 px at 9.366 um) is entirely supervised are scored, and the 300 px null shift wraps around inside the map, so a map much smaller than the 640 px crops scores few pixels.
 
 ## Outputs
 
@@ -156,7 +156,7 @@ With `--json`, one object:
 | `forward.hp_r` | float (4 decimals) or null | Pearson r of the high-passed map and key over the scored pixels; null with fewer than 3 pixels or a constant side |
 | `forward.raw_r` | float (4 decimals) or null | The same correlation without the high pass |
 | `forward.null_max_abs` | float (4 decimals) or null | Largest \|r\| of the high-passed map against the key rolled by each null shift; null when no shift could be scored |
-| `forward.px` | int | Pixels scored: supervised with a fully supervised neighbourhood, map above 0, inside `--inner` |
+| `forward.px` | int | Pixels scored: supervised with a fully supervised neighborhood, map above 0, inside `--inner` |
 | `forward.sigma_px` | float (3 decimals) | The Gaussian sigma in map pixels, 48 / `voxel_um` |
 | `forward.inner` | int | Edge left out, in pixels |
 | `control` | object, the same fields | Only with `--control` |
@@ -201,14 +201,14 @@ The JSON has no `files` or `level` field, unlike `kit auc`. A NaN score is print
 ## How it works
 
 1. Load the map (`.npy` with numpy, anything else with tifffile) and squeeze it to 2D; open the labels and mask at `--level`.
-2. Map every map pixel to a label pixel by nearest neighbour on the scaled grid, inside `--crop` when given (`auc.labels_on_map`, as in `kit auc`).
+2. Map every map pixel to a label pixel by nearest neighbor on the scaled grid, inside `--crop` when given (`auc.labels_on_map`, as in `kit auc`).
 3. Set sigma = `HIGH_PASS_UM` / `voxel_um` = 48 / `voxel_um` px (5.125 px at 9.366 um).
-4. Prepare the label fields once per call (`_label_fields`): the key is the ink labels inside the mask and 0 elsewhere; its high pass `kh` uses the mask as the weight; the core is the mask pixels whose Gaussian-smoothed mask at 2 x sigma is above 0.999, that is, whose whole neighbourhood is labelled.
+4. Prepare the label fields once per call (`_label_fields`): the key is the ink labels inside the mask and 0 elsewhere; its high pass `kh` uses the mask as the weight; the core is the mask pixels whose Gaussian-smoothed mask at 2 x sigma is above 0.999, that is, whose whole neighborhood is labeled.
 5. For each map (the map, then the control): the covered pixels are those above 0; the scored pixels are the core and covered, minus `--inner` at each edge. The map's high pass uses the covered pixels as the weight, so unpredicted zeros do not leak into it.
 6. `hp_r` is Pearson's r of the high-passed map and `kh` on the scored pixels; `raw_r` is Pearson's r of the map and the key there.
 7. The null: each shift in `NULL_SHIFTS_PX_AT_9362` = (150, 300, -300) is scaled by 9.362 / `voxel_um` and rounded; the scored pixels and `kh` are rolled by it along the rows (axis 0, wrapping round), r is computed on the pixels scored in both, and `null_max_abs` is the largest |r|.
 
-The high pass is a normalised convolution: `img - gf(img * m) / max(gf(m), 1e-3)`, where `gf` is `scipy.ndimage.gaussian_filter` (default reflect border, 4 sigma truncation). Published source: Chris Scheirer's `hp_score.py` and `score_crop.py` ([ShribyrLabs/vesuvius-reports, report 02](https://github.com/ShribyrLabs/vesuvius-reports/tree/main/02-9um-ink-reader-benchmark), MIT); our key is the human labels instead of his 2.4 um prediction.
+The high pass is a normalized convolution: `img - gf(img * m) / max(gf(m), 1e-3)`, where `gf` is `scipy.ndimage.gaussian_filter` (default reflect border, 4 sigma truncation). Published source: Chris Scheirer's `hp_score.py` and `score_crop.py` ([ShribyrLabs/vesuvius-reports, report 02](https://github.com/ShribyrLabs/vesuvius-reports/tree/main/02-9um-ink-reader-benchmark), MIT); our key is the human labels instead of his 2.4 um prediction.
 
 ## Cost and time
 
@@ -228,7 +228,7 @@ Time and memory grow with the map's pixel count: it runs seven Gaussian filters 
 - **Rerun:** Safe; it only reads its inputs and gives the same numbers. With `--slug`, each run appends one more check to `run.json`.
 - **Success:** Exit code 0 and a non-null, non-NaN `forward.hp_r`.
 - **Not a pass:** A forward `hp_r` with no control; a forward `hp_r` at or below `control.hp_r` or `forward.null_max_abs`; a comparison of two maps made at different blur; any comparison with ShribyrLabs' numbers; a score on a segment the model trained on; a map of logits (negatives are left out).
-- **Go-ahead:** Nothing for scoring. Publishing any score of a target-scroll map is never allowed; score only public labelled segments in public work.
+- **Go-ahead:** Nothing for scoring. Publishing any score of a target-scroll map is never allowed; score only public labeled segments in public work.
 - **Never:** Call a letter-scale score a reading or say letters were found; treat it as a legibility bar; pass a `--voxel-um` other than the map's pixel size.
 
 ## Tests
@@ -237,7 +237,7 @@ Time and memory grow with the map's pixel count: it runs seven Gaussian filters 
 python -m unittest tests.test_hpscore tests.test_hpscore_reuse -v
 ```
 
-Nine tests: a sharp map beats the same map blurred with a 12 px Gaussian by at least three times, noise scores near 0, unlabelled and unpredicted pixels and `--inner` are left out, a too-large `--inner` is refused, and an independent copy of the original per-map formula matches `score_files` and `score_array` field for field (with and without a control, with zero coverage, NaN outside the mask, an empty mask, changed labels and voxel size, a wrong-shape control), with the label filters computed once per call. They skip without numpy and scipy. They do not read real zarr stores or TIFFs (`score_files` is tested with its loaders patched), and they do not run the command line.
+Nine tests: a sharp map beats the same map blurred with a 12 px Gaussian by at least three times, noise scores near 0, unlabeled and unpredicted pixels and `--inner` are left out, a too-large `--inner` is refused, and an independent copy of the original per-map formula matches `score_files` and `score_array` field for field (with and without a control, with zero coverage, NaN outside the mask, an empty mask, changed labels and voxel size, a wrong-shape control), with the label filters computed once per call. They skip without numpy and scipy. They do not read real zarr stores or TIFFs (`score_files` is tested with its loaders patched), and they do not run the command line.
 
 ## History
 

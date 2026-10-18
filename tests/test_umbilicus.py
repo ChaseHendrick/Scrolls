@@ -1,4 +1,4 @@
-"""scripts/umbilicus: the centre network's coordinate frame, augmentation bookkeeping, job names, the end trims and
+"""scripts/umbilicus: the center network's coordinate frame, augmentation bookkeeping, job names, the end trims and
 the range reads."""
 import json
 import os
@@ -27,7 +27,7 @@ if np is None:
 centrenet = None
 
 
-_SHADOWED = {}   # same-named modules another test imported (scripts/strokenet/pipeline.py), put back afterwards
+_SHADOWED = {}   # same-named modules another test imported (scripts/strokenet/pipeline.py), put back afterward
 
 
 def setUpModule():
@@ -118,7 +118,7 @@ class RefineTest(unittest.TestCase):
         np.testing.assert_array_equal(out[1, 5:, :10], ct[0, 0:11, 50:60])
 
     def test_training_crop_centre_matches_a_dot(self):
-        """A dot at the centre stays under the training centre whatever the training offset."""
+        """A dot at the center stays under the training center whatever the training offset."""
         r = self.refine
         S, R = r.S, r.R
         ct = np.zeros((3, 600, 600), np.uint8)
@@ -161,8 +161,8 @@ class KeepBandTest(unittest.TestCase):
 
 def _synthetic_scroll(n=60, end=12, size=(200, 260), um=8.64):
     """A level-3 slice stack of a rolled scroll: rings of papyrus (120) with air (50) between them inside the volume
-    mask, 0 outside. The first `end` slices are a broken end (papyrus only below the centre), the last `end` a hollow
-    end (no papyrus within 70 px, 4.8 mm, of the centre). Centre at y 100, x 130 level-3 px (y 800, x 1040 level-0),
+    mask, 0 outside. The first `end` slices are a broken end (papyrus only below the center), the last `end` a hollow
+    end (no papyrus within 70 px, 4.8 mm, of the center). Center at y 100, x 130 level-3 px (y 800, x 1040 level-0),
     off the diagonal so that swapping y and x anywhere moves it into the papyrus or off it."""
     yy, xx = np.mgrid[:size[0], :size[1]]; r = np.hypot(yy - 100, xx - 130)
     body = np.where(r < 85, 50, 0).astype(np.uint8); body[(r < 80) & (r % 6 < 3)] = 120
@@ -195,7 +195,7 @@ class EndRuleTest(unittest.TestCase):
         thr = self.p.papyrus_level(ct)
         s = self.p.end_support(ct, yx, um, thr)
         self.assertTrue((s[12:-12] == 1).all())               # surrounded by windings
-        self.assertTrue((s[:12] < 0.5).all())                 # only the half below the centre has papyrus
+        self.assertTrue((s[:12] < 0.5).all())                 # only the half below the center has papyrus
         self.assertTrue((s[-12:] == 0).all())                 # hollow wider than the 4 mm radius
         bigger = self.p.end_support(ct[-1:], yx[-1:], um, thr, radius_mm=5.5)
         self.assertEqual(bigger[0], 1.0)                      # a 5.5 mm radius reaches the windings round the hollow
@@ -213,7 +213,7 @@ class EndRuleTest(unittest.TestCase):
         a = self.p.end_trimmed_keep(ct, yx, z, um, keep)
         b = self.p.apply_end_rule(win, org, yx, z, um, keep)
         np.testing.assert_array_equal(a[0], b[0]); np.testing.assert_array_equal(a[1], b[1]); self.assertEqual(a[2], b[2])
-        moved = yx + [[0.0, 8 * 3.0]]                         # a centre 3 level-3 px off still sits in the body
+        moved = yx + [[0.0, 8 * 3.0]]                         # a center 3 level-3 px off still sits in the body
         self.assertTrue((self.p.end_support(ct[20:40], moved[20:40], um, thr) == 1).all())
 
     def test_trim_ends_only_from_the_ends(self):
@@ -242,7 +242,7 @@ class EndRuleTest(unittest.TestCase):
             ends = self.p.trim(src, d, os.path.join(d, "b"))["S"]["z"]
             with open(os.path.join(d, "b", "S_umbilicus.json")) as fh:
                 j = json.load(fh)
-            self.assertEqual(ends, [int(z[12]), int(z[-13])])  # first and last slice with papyrus round the centre
+            self.assertEqual(ends, [int(z[12]), int(z[-13])])  # first and last slice with papyrus round the center
             self.assertLess(band[0], ends[0]); self.assertGreater(band[1], ends[1])   # keep_band alone keeps air
             self.assertIn("end-point rule", j["metadata"]["trimmed"])
             import endcheck
@@ -253,7 +253,7 @@ class EndRuleTest(unittest.TestCase):
 @unittest.skipIf(torch is None, "numpy or torch unavailable")
 class CollectEndRuleTest(unittest.TestCase):
     def test_collected_files_drop_the_broken_and_hollow_ends(self):
-        """collect and chain_collect write unlabelled scrolls' files with both end trims (labels and scrolls synthetic)."""
+        """collect and chain_collect write unlabeled scrolls' files with both end trims (labels and scrolls synthetic)."""
         import pipeline, refine
         ct, z, yx, um = _synthetic_scroll()
         T = np.array([[z[0], *yx[0]], [z[-1], *yx[-1]]])
@@ -401,7 +401,7 @@ class EndRulePromisesTest(unittest.TestCase):
                 self.assertEqual(self.p.trim_ends(np.ones(40, bool), s, z, um).any(), kept, (um, step, r))
 
     def test_radius_is_4_mm_for_each_voxel_size_and_level(self):
-        """A ring of papyrus whose inner edge is 3.85 mm from the centre counts, one at 4.15 mm does not, whole slices
+        """A ring of papyrus whose inner edge is 3.85 mm from the center counts, one at 4.15 mm does not, whole slices
         or windows, at both voxel sizes and levels 2 and 3."""
         for um in (8.64, 9.362):
             for level in (2, 3):
@@ -426,7 +426,7 @@ class EndRulePromisesTest(unittest.TestCase):
         for name in ("END_RADIUS_MM", "END_SUPPORT", "END_RUN_MM", "CAP_MM", "AREA_FRAC"):
             self.addCleanup(setattr, p, name, getattr(p, name))
         ct, z, yx, um = _synthetic_scroll()
-        hollow, thr = ct[-1:], p.papyrus_level(ct)            # no papyrus within 70 px (4.8 mm) of the centre
+        hollow, thr = ct[-1:], p.papyrus_level(ct)            # no papyrus within 70 px (4.8 mm) of the center
         self.assertEqual(p.end_support(hollow, yx[-1:], um, thr)[0], 0.0)
         h = p.window_origins(yx, um)[1]
         p.END_RADIUS_MM = 5.5

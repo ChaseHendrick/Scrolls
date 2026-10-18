@@ -21,7 +21,7 @@ Turn explicitly declared public CT and prediction grids into a Neuroglancer stat
 
 ## What it does
 
-CT volumes and derived predictions can use different voxel sizes. Giving them identical viewer scales makes a downsampled prediction appear too small. This helper creates a Neuroglancer state that gives each explicitly described grid its own physical spacing on a shared micrometre grid.
+CT volumes and derived predictions can use different voxel sizes. Giving them identical viewer scales makes a downsampled prediction appear too small. This helper creates a Neuroglancer state that gives each explicitly described grid its own physical spacing on a shared micrometer grid.
 
 The supported case is deliberately narrow: public open-data OME-Zarr roots whose source grid is dimensionless, starts at zero and has ZYX axes. One CT layer is required; one prediction layer is optional. An overlay requires the same declared frame and physical extent. The manifest supplies every value; the helper never guesses a missing scale from a URL or catalog row.
 
@@ -49,13 +49,13 @@ Observed on 2026-10-17:
 supplied metadata only; remote sources not verified
 ```
 
-The example is a CT of shape `[40, 60, 80]` at `[2, 3, 4]` micrometres per ZYX voxel and a prediction with half each dimension at twice each spacing. Both describe the same physical box. Do not open the example link expecting a real scan. For a real manifest, replace the fictional paths and all geometry fields with known source metadata. Use `--out NEW_FILE` instead of shell redirection to refuse overwriting an existing file.
+The example is a CT of shape `[40, 60, 80]` at `[2, 3, 4]` micrometers per ZYX voxel and a prediction with half each dimension at twice each spacing. Both describe the same physical box. Do not open the example link expecting a real scan. For a real manifest, replace the fictional paths and all geometry fields with known source metadata. Use `--out NEW_FILE` instead of shell redirection to refuse overwriting an existing file.
 
 ## Checks and controls
 
 `python -m unittest tests.test_volumeview -v` checks an anisotropic, non-cubic CT/prediction pair, physical point agreement, XYZ viewer dimension ordering, and state/link roundtrip. Negative controls refuse mismatched frame, extents, axis order, source scale/units, non-finite spacing, missing fields and unapproved URLs. CLI checks refuse input/output aliases and existing output files, and produce no output file for malformed input.
 
-These are software checks using synthetic metadata. No actual remote array was read or browser rendering asserted. Independent review also compared the generated state with the pinned official helper for a 2.4 micrometre CT and a level-2, 9.6 micrometre prediction.
+These are software checks using synthetic metadata. No actual remote array was read or browser rendering asserted. Independent review also compared the generated state with the pinned official helper for a 2.4 micrometer CT and a level-2, 9.6 micrometer prediction.
 
 Claim label: None (this tool checks declared metadata and generates visualization state, with no scientific-quality claim).
 
@@ -113,7 +113,7 @@ Each layer has exactly these fields:
 | `source` | string | Public OME-Zarr root URL, at most 4096 characters, ending in `.zarr` with optional trailing slash |
 | `frame` | string | Explicit coordinate-frame identifier, same text constraints as name; must match between layers |
 | `shape_zyx` | three integers | Positive source level-0 dimensions in ZYX order, each at most 1e12 |
-| `voxel_size_um_zyx` | three numbers | Positive finite physical spacing in micrometres, ZYX order, each at most 1e12 |
+| `voxel_size_um_zyx` | three numbers | Positive finite physical spacing in micrometers, ZYX order, each at most 1e12 |
 | `origin_um_zyx` | three numbers | Must be exactly `[0, 0, 0]`; translated grids are unsupported |
 | `source_grid` | object | Exactly `axes: ["z", "y", "x"]`, `scale: [1, 1, 1]`, `units: ["", "", ""]`, `origin: [0, 0, 0]` |
 
@@ -133,7 +133,7 @@ Allowed URLs are `s3://vesuvius-challenge-open-data/PATH.zarr`, or HTTPS at `ves
 | `state` | object | Neuroglancer state described below |
 | `url` | string | Encoded state at the fixed external viewer host |
 
-The state contains `dimensions` in XYZ order, each `[1e-6, "m"]`, `layout: "4panel"`, and `layers`. Each layer has `type: "image"`, `name`, `shader`, and `source`. The source contains a direct `zarr2://https://...` URL and `transform.inputDimensions`/`outputDimensions`, both XYZ ordered. Input dimensions use that layer's physical voxel spacing in metres; output dimensions use the shared micrometre grid. The prediction adds `blend: "additive"`. The viewer state includes source URLs, layer names and physical spacing; frame identifiers and shapes remain in the input manifest. Keep names suitable for sharing.
+The state contains `dimensions` in XYZ order, each `[1e-6, "m"]`, `layout: "4panel"`, and `layers`. Each layer has `type: "image"`, `name`, `shader`, and `source`. The source contains a direct `zarr2://https://...` URL and `transform.inputDimensions`/`outputDimensions`, both XYZ ordered. Input dimensions use that layer's physical voxel spacing in meters; output dimensions use the shared micrometer grid. The prediction adds `blend: "additive"`. The viewer state includes source URLs, layer names and physical spacing; frame identifiers and shapes remain in the input manifest. Keep names suitable for sharing.
 
 `--out` creates a new UTF-8 file with a trailing newline. It never opens a viewer or transfers the manifest. Manually opening a real link later uses Neuroglancer, an external service, and requests its declared public Zarr sources.
 
@@ -173,7 +173,7 @@ Messages from the command are prefixed `volumeview:`. Variable field names and J
 
 ## How it works
 
-Validate every field and convert allowed S3 URLs to direct public HTTPS, avoiding the old proxy. Convert each supplied ZYX voxel size from micrometres to metres with a factor of `1e-6`, then assign it to named XYZ viewer dimensions. Both transform dimension objects use the same XYZ order; Neuroglancer pairs their entries by position. Every output dimension uses `1e-6` metres. The dimensionless source-grid restriction prevents double scaling.
+Validate every field and convert allowed S3 URLs to direct public HTTPS, avoiding the old proxy. Convert each supplied ZYX voxel size from micrometers to meters with a factor of `1e-6`, then assign it to named XYZ viewer dimensions. Both transform dimension objects use the same XYZ order; Neuroglancer pairs their entries by position. Every output dimension uses `1e-6` meters. The dimensionless source-grid restriction prevents double scaling.
 
 For an overlay, compare frame strings and each `shape * spacing` physical extent. Extents must agree with relative tolerance `1e-10` and zero absolute tolerance; no registration is inferred. Serialize the state as JSON with non-finite values forbidden, then percent-encode it beneath the fixed `VIEWER` host. Receipts hash the original manifest bytes.
 

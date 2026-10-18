@@ -35,10 +35,10 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
-| [meshaudit](meshaudit.md) | Current | `python -m kit meshaudit transforms` | Not needed | `python -m kit meshaudit` checks the public catalogue's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders. |
+| [meshaudit](meshaudit.md) | Current | `python -m kit meshaudit transforms` | Not needed | `python -m kit meshaudit` checks the public catalog's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders. |
 | [overlap](overlap.md) | Current | `python -m kit overlap` | Not needed | `python -m kit overlap` measures how close two tifxyz meshes run (one sheet traced twice, or two surfaces) and how well their human labels agree there against displaced matches; `python -m kit collate` compares two traces' ink maps by gap, against a control. |
 | [stackcheck](stackcheck.md) | Current | `python -m kit stackcheck` | Not needed | `python -m kit stackcheck` checks a stack of consecutive tifxyz segments, inner to outer, against the scroll's umbilicus: winding order, coincident or oddly spaced pairs, missing sectors and runs, skipped windings, turn overlaps and stack ends, with masks of the flagged vertices. |
-| [umbilicus](umbilicus.md) | Current | `python scripts/umbilicus/predict.py` | Not needed | `scripts/umbilicus/` finds the winding centre (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder. |
+| [umbilicus](umbilicus.md) | Current | `python scripts/umbilicus/predict.py` | Not needed | `scripts/umbilicus/` finds the winding center (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder. |
 | [surfacefix](surfacefix.md) | Experimental | `python -m kit surfacefix prepare` | Not needed | `python -m kit surfacefix` writes copies of a traced surface shifted along its normal, then, from one ink model's maps of those copies and of a second trace of the same sheet, flags regions where the traces disagree and copies only control-passing shifts into a new surface. |
 
 ### Ink maps and models
@@ -46,10 +46,10 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
 | [ensemble](ensemble.md) | Current | `python -m kit ensemble` | Not needed | `python -m kit ensemble` combines two or more ink maps of the same surface on the same grid into one map, by a weighted mean of their scores or of their pixel ranks, keeping out every pixel where any input made no prediction. |
-| [mac-w045](mac-w045.md) | Current | `bash scripts/mac-w045.sh` | Not needed | `scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labelled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record. |
+| [mac-w045](mac-w045.md) | Current | `bash scripts/mac-w045.sh` | Not needed | `scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labeled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record. |
 | [soup](soup.md) | Current | `python scripts/soup.py` | Not needed | `scripts/soup.py` writes a checkpoint soup, the uniform mean of the weights of two or more checkpoints from one training run (such as `ink_9um` seed 42 at steps 40k to 75k), and refuses checkpoints whose `config.seed` differs, because a cross-seed weight average breaks the model. |
 | [v8in-run](v8in-run.md) | Current | `python scripts/v8in_run.py` | Not needed | `scripts/v8in_run.py` runs Youssef Nader's v8in ink model, or its PHerc1447 fine-tune, on a folder of numbered layer images and writes one ink probability map, with an optional fp16 autocast on Apple's MPS GPU and a final log line the Mac scripts parse. |
-| [fibertensor](fibertensor.md) | Retired | `python -m kit fibertensor train` | Not needed | `python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fibre orientation) and brightness features of one labelled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun. |
+| [fibertensor](fibertensor.md) | Retired | `python -m kit fibertensor train` | Not needed | `python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fiber orientation) and brightness features of one labeled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun. |
 | [inkfilter](inkfilter.md) | Branch only | `scrolls-inkfilter` | Not needed | Inkfilter 0.1.0 makes a map from a local surface-volume window using fixed operations and writes a reversed-depth control, with no trained model or weights. |
 
 ### Scoring and controls
@@ -67,7 +67,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | [phantom](phantom.md) | Current | `python -m kit phantom` | Not needed | `python -m kit phantom` makes small synthetic papyrus surface volumes carrying carbon-ink strokes whose truth is known at every pixel, stress-tests a baseline detector against its depth-reversed control, and compares the AUC spread between phantoms with the one-segment block bootstrap. |
 | [rowscore](rowscore.md) | Current | `python -m kit rowscore` | Not needed | `python -m kit rowscore` measures how strongly an ink map repeats at a 2.5 to 8 mm period in one direction, as rows of Greek text do, for forward and reverse maps: a triage aid that says where to look first, not a verdict. |
 | [verify](verify.md) | Current | `python -m kit verify` | Not needed | `python -m kit verify` compares a candidate ink map (such as an Apple GPU run) with a reference map (such as the CPU run) pixel by pixel, and counts agreement as a pass only when a control map that should differ is caught by the same test. |
-| [strokenet](strokenet.md) | Experimental | `python -m kit strokenet` | Not needed | `python -m kit strokenet` scores 6.1 mm windows of an organisers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test. |
+| [strokenet](strokenet.md) | Experimental | `python -m kit strokenet` | Not needed | `python -m kit strokenet` scores 6.1 mm windows of an organizers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test. |
 
 ### Letters and titles
 
@@ -84,7 +84,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
-| [segzoo](segzoo.md) | Experimental | `python -m kit segzoo` | Not needed | `python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with licence and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls. |
+| [segzoo](segzoo.md) | Experimental | `python -m kit segzoo` | Not needed | `python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with license and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls. |
 
 ### Compute and cost
 
@@ -108,7 +108,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
 | [doctor](doctor.md) | Current | `python -m kit doctor` | Not needed | `python -m kit doctor` checks this machine for what villa's First Letters workflow needs (an NVIDIA GPU with 12 GB, 16 GB of memory, 25 GB of free disk, git, uv and docker, a villa checkout and VC3D's tools) and prints pass, warn or fail for each. |
-| [plan](plan.md) | Current | `python -m kit plan` | Not needed | `python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labelled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars. |
+| [plan](plan.md) | Current | `python -m kit plan` | Not needed | `python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars. |
 | [prizes](prizes.md) | Current | `python -m kit prizes` | Not needed | `python -m kit prizes` prints each open Vesuvius Challenge prize with its money, deadline, days left and eligible scrolls, from a dated copy of scrollprize.org/prizes kept in `kit/data/`; `--json` prints the copy itself. The live page wins where they differ. |
 | [prizewatch](prizewatch.md) | Current | `python -m kit.prizewatch` | Not needed | `python -m kit.prizewatch` fetches https://scrollprize.org/prizes once and checks that every deadline, amount and eligible volume in kit's dated prize snapshot is on it and no unlisted volume is, so an agent knows when to add a new snapshot. |
 

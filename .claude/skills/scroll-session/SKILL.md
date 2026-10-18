@@ -26,7 +26,7 @@ If the prize snapshot is older than about a month, tell the user and suggest re-
 
 Read `docs/state-of-play.md`. Do not propose repeating a published null unchanged. Name the one variable the run will test.
 
-This repository is public. A target run (an eligible scroll without public labels) belongs in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private): do steps 3 to 5 from that checkout, so the preregistration, the ledger record and any candidate record never enter this repository, its PRs or its CI logs. Here, run only public labelled benchmarks (PHerc0841, w045, w035) and generic tools.
+This repository is public. A target run (an eligible scroll without public labels) belongs in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private): do steps 3 to 5 from that checkout, so the preregistration, the ledger record and any candidate record never enter this repository, its PRs or its CI logs. Here, run only public labeled benchmarks (PHerc0841, w045, w035) and generic tools.
 
 ## 3. Plan and preregister
 

@@ -1,10 +1,10 @@
 """Reading photograph-like pages: ink polarity, a tilt of a few degrees and a quarter turn.
 
 Pages come from letterdata.make_page(domain="photo"): dark ink on a light papyrus ground, the
-opposite polarity of an ink map, stored as 8-bit grey and each turned a few degrees by a true
+opposite polarity of an ink map, stored as 8-bit gray and each turned a few degrees by a true
 rotation (not the reader's shear). Each page is read at its true letter height with --polarity
 bright (the default), dark and auto, and once more dark with the rows the deskew shears in filled
-with 0, as every read did before read() filled them with the ground's grey for dark ink. Reported
+with 0, as every read did before read() filled them with the ground's gray for dark ink. Reported
 per read: the status, letters kept against the nulls, the character error over all read letters on
 lines matched in order to the true lines (eval_p172.match_lines, as in eval_pages.py), the deskew
 angle against the true one, the polarity auto chose (by its quick read both ways) and whether the
@@ -12,8 +12,8 @@ read carried the polarity hint (a read in a given polarity whose controls do not
 other polarity). Each page is also turned a quarter turn counter-clockwise (its lines then run up
 and down) and read with auto: the orientation reads should name rot90 as the best, and best_view
 should be --rotate 90. The same page on a dark mount and on a white mount, each making up 60% of
-the frame, compares auto's quick read with the grey-level guess (normalize(a, "auto")), which
-judges from the median grey. Pages with no letters, photo-like (read with auto and with dark) and
+the frame, compares auto's quick read with the gray-level guess (normalize(a, "auto")), which
+judges from the median gray. Pages with no letters, photo-like (read with auto and with dark) and
 ink-map-like (eval_pages.blank_page, read with auto and with bright), measure how much choosing
 the polarity by letter counts raises the chance of a pass where there is no text.
 
@@ -40,7 +40,7 @@ POLARITIES = ("bright", "dark", "auto")
 
 
 def turn(img, deg):
-    """img turned deg degrees counter-clockwise about its centre (bilinear), corners filled with the median grey."""
+    """img turned deg degrees counter-clockwise about its center (bilinear), corners filled with the median gray."""
     from PIL import Image
     im = Image.fromarray(np.asarray(img, np.float32), mode="F")
     return np.asarray(im.rotate(deg, resample=Image.BILINEAR, expand=True, fillcolor=float(np.median(img))),
@@ -48,7 +48,7 @@ def turn(img, deg):
 
 
 def eight_bit(img):
-    """The grey levels of an 8-bit photograph: 0 to 255, whole numbers."""
+    """The gray levels of an 8-bit photograph: 0 to 255, whole numbers."""
     return np.round(np.clip(img, 0, 1) * 255).astype(np.float32)
 
 

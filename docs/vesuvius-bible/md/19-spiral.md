@@ -16,7 +16,7 @@ r(θ) = (ω / 2π) θ,
 
 so each turn moves outward by one sheet spacing ω.
 
-**Deformation.** The damage is modelled as a diffeomorphism, "a smooth, differentiable, invertible map of 3D space". This guarantees that the sheet cannot tear, pass through itself or collapse, and that "any point in the scan maps back to a point on the ideal (i.e. flattened) scroll. That inverse map is the virtual unrolling" [VC-SpiralTutorial]. It is composed of [VC-SpiralTutorial]:
+**Deformation.** The damage is modeled as a diffeomorphism, "a smooth, differentiable, invertible map of 3D space". This guarantees that the sheet cannot tear, pass through itself or collapse, and that "any point in the scan maps back to a point on the ideal (i.e. flattened) scroll. That inverse map is the virtual unrolling" [VC-SpiralTutorial]. It is composed of [VC-SpiralTutorial]:
 
 1. a coarse global scale and shear;
 2. the integral of a **stationary velocity field** u, the most important part: points follow dφt(x)/dt = u(φt(x)) with φ0(x) = x, and the transform is φ1 (integrated with a few Runge-Kutta steps);
@@ -67,7 +67,7 @@ The code is in villa/spiral-fitting; the entry point is *fit_spiral.py*. It need
 The tutorial's advice [VC-SpiralTutorial]:
 
 - Think of the scroll "as a set of local shapes glued together", a C here, a J there, "or god forbid a Z". The **complexity of the local shape**, not the number of windings or curvature alone, is "the primary multiplier of annotation density".
-- Once a constraint describes a neighbourhood, adding more has little benefit.
+- Once a constraint describes a neighborhood, adding more has little benefit.
 - **Shears**, where the papyrus has broken and shifted, are hard for a smooth field; annotate heavily on both sides.
 - Regular spacing and smooth curvature, long runs of wide gaps, and areas of low curvature "even highly compressed ones" are easier.
 

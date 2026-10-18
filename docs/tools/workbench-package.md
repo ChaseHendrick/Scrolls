@@ -29,7 +29,7 @@ The core (prizes, plan, cost, fetch, the run ledger, provenance) is standard lib
 
 The name is not `kit` or `scrolls-kit` on purpose. AutoPipeline's released package is the distribution `vc-autopipeline`, with a `scrolls-kit` script, and both install a top-level package named `kit`. Installed into one environment, one would overwrite the other, so each goes in its own virtual environment.
 
-`check.yml` is the Kit checks workflow. It runs the whole test suite with no third-party package (the core), the letter reader as users get it on three systems, and every test with every extra plus the saved experiment regression tests. `CITATION.cff` gives the citation for the software (version 0.4.1) and for the reader's two sets of weights, which carry their own licences.
+`check.yml` is the Kit checks workflow. It runs the whole test suite with no third-party package (the core), the letter reader as users get it on three systems, and every test with every extra plus the saved experiment regression tests. `CITATION.cff` gives the citation for the software (version 0.4.1) and for the reader's two sets of weights, which carry their own licenses.
 
 Nothing here makes a claim. What the installed letter reader prints is model output, letter hypotheses for a person to check, not a reading.
 
@@ -76,7 +76,7 @@ That last line, with exit code 2, is the expected answer without the `reader` ex
 - **Installed, not the checkout.** The CI runs the installed package from outside the clone (`cd "$RUNNER_TEMP"`) and asserts that `kit` is imported from `site-packages`, so a test cannot pass by reading the checkout by accident.
 - **The core really has no dependencies.** The `test` job runs the whole suite with no third-party package installed; tests that need numpy and the others skip there and run in the `reader` and `verify` jobs. The no-extras install must stop the demo with `DEMO ERROR` and exit code 2, not a traceback.
 - **The released weights, end to end.** The `reader` job runs `scrolls-letterdemo` and `scrolls-letterread ... --weights letters-v2-ccby` on Linux, macOS and Windows with Python 3.10 and 3.13; the demo downloads the weights from the GitHub release named in `kit/data/letter-weights.json` and checks them by SHA-256.
-- **pyproject against the code.** `tests/test_packaging.py` checks the name and dynamic version, the Python floor against the guide and the CI matrix, the empty core and the extras, the console scripts against `kit.cli` and against AutoPipeline's `scrolls-kit`, that every data file in `kit/` is packaged, and the licence files.
+- **pyproject against the code.** `tests/test_packaging.py` checks the name and dynamic version, the Python floor against the guide and the CI matrix, the empty core and the extras, the console scripts against `kit.cli` and against AutoPipeline's `scrolls-kit`, that every data file in `kit/` is packaged, and the license files.
 
 Claim label: None; the package and the CI make no claim.
 
@@ -138,7 +138,7 @@ The installed Starter is checked outside the clone on Linux, macOS and Windows: 
 | --- | --- |
 | The source tree | `pyproject.toml` packages the folder `kit` (`packages = ["kit"]`) and its data files `kit/data/*.json` (the prize snapshots and the letter-weights registry), plus `kit/data/starter.html` and `starter.js` for the self-contained beginner app; nothing from `docs/`, `scripts/` or `tests/` |
 | `README.md` | The package's long description |
-| `LICENSE`, `NOTICE` | The licence files (`license-files`) |
+| `LICENSE`, `NOTICE` | The license files (`license-files`) |
 | The extra in brackets | `reader`, `maps`, `all`, or none |
 
 ## Outputs
@@ -193,7 +193,7 @@ Installing without extras from a local copy took about 6 s (2026-10-16, cloud co
 python -m unittest tests.test_packaging -v
 ```
 
-They check `pyproject.toml` (name, dynamic version, `requires-python`, empty core, extras, zarr pinned to 3 on Python 3.11 or newer, console scripts against `kit.cli` and AutoPipeline's, package data, licence files; these need `tomllib`, so they skip on Python 3.10), that each one-command script shows its own name in usage and errors, that `scrolls-workbench` runs every command, that the data the package reads lives in `kit/data/`, LF line endings in `.gitattributes`, and that the CI runs the reader and its demo on three systems. They do not build or install the package; the CI's `test` and `reader` jobs do.
+They check `pyproject.toml` (name, dynamic version, `requires-python`, empty core, extras, zarr pinned to 3 on Python 3.11 or newer, console scripts against `kit.cli` and AutoPipeline's, package data, license files; these need `tomllib`, so they skip on Python 3.10), that each one-command script shows its own name in usage and errors, that `scrolls-workbench` runs every command, that the data the package reads lives in `kit/data/`, LF line endings in `.gitattributes`, and that the CI runs the reader and its demo on three systems. They do not build or install the package; the CI's `test` and `reader` jobs do.
 
 ## History
 

@@ -13,7 +13,7 @@
 | Tests | `tests/test_kit.py` |
 | Needs | Python 3.10 or newer, standard library only (urllib, concurrent.futures); outbound HTTPS to the bucket. Reading what it fetched needs zarr (the map tools) |
 | Runs on | Any machine with network access. 33 objects (14.7 MB) took 3.9 s and 13 objects (0.12 MB) 6.8 s; a rerun with nothing to download 3.5 s (measured 2026-10-16, 4-core Xeon cloud container behind an HTTPS proxy). A whole surface volume (1.0 to 1.7 GB): Not measured |
-| Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honours `HTTPS_PROXY` |
+| Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honors `HTTPS_PROXY` |
 | Writes | The folder `DEST` and every subfolder it needs; one file per bucket object at `DEST/` plus the key minus the prefix, each written first as `NAME.part` and then renamed. Files already there at the listed size are left alone, files of another size are replaced, nothing is deleted |
 | Go-ahead | Not needed: anonymous downloads of public data; nothing is posted or rented |
 | Released | Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package |
@@ -40,7 +40,7 @@ It does not check contents beyond the byte count: a file of the right size but w
 Do not use it:
 
 - To fetch a single file: the prefix is always treated as a folder (`PREFIX/`), so a file's own key lists nothing. Download that one URL with any HTTPS client instead.
-- To find what the bucket holds: use `python -m kit run catalog` ([batch](batch.md)), which lists every volume, or the prefixes in `scripts/mac-w045.sh` ([mac-w045](mac-w045.md)) for the labelled segments.
+- To find what the bucket holds: use `python -m kit run catalog` ([batch](batch.md)), which lists every volume, or the prefixes in `scripts/mac-w045.sh` ([mac-w045](mac-w045.md)) for the labeled segments.
 - To read only a window of a remote volume: `kit.meshaudit.SurfaceVolume` ([meshaudit](meshaudit.md)) reads windows of a published surface volume straight from the bucket, without mirroring the whole store.
 - To prove the files are intact: it compares sizes only. Hash the files with [provenance](provenance.md) after the fetch, or delete them and fetch again.
 - To keep a full mirror in step with the bucket: it never deletes local files that the bucket no longer has.
@@ -115,11 +115,11 @@ objects, fetched, total = fetch.fetch_prefix(fetch.ALIASES["w045"], "data/w045_9
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| Prefix | A key prefix in the bucket, case sensitive | Layout used here: `SCROLL/segments/SEGMENT/surface-volumes/VOLUME.zarr` for a surface volume, and `SCROLL/segments/SEGMENT/ink-labels/VOLUME/DATE/inklabels.zarr` and `supervision.zarr` for labels. The labelled segments' prefixes are in `scripts/mac-w045.sh`; `python -m kit run catalog` lists every volume |
+| Prefix | A key prefix in the bucket, case sensitive | Layout used here: `SCROLL/segments/SEGMENT/surface-volumes/VOLUME.zarr` for a surface volume, and `SCROLL/segments/SEGMENT/ink-labels/VOLUME/DATE/inklabels.zarr` and `supervision.zarr` for labels. The labeled segments' prefixes are in `scripts/mac-w045.sh`; `python -m kit run catalog` lists every volume |
 | Objects | Any bytes | Each object is read whole into memory, then written. Memory is about `--workers` times the largest object: the largest object of w035 and w045 is 458,752 bytes (listed 2026-10-16), so this is small for zarr stores, but a single multi-GB object would need that much RAM |
 | Short names | `ALIASES` in `kit/fetch.py` | `w035`: `PHerc0139/segments/20260317000000-w035_2026031718/surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr`. `w045`: `PHerc0139/segments/20260126000000-w045_2026012619/surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr` |
 
-What came down in the Quick start: `inklabels.zarr` of PHerc0841 w00, a zarr 3 group with levels `0` to `5`; level `0` is 16,460 x 18,560 and level `2` is 4,115 x 4,640, both uint8 (read with zarr 3.4.1 on 2026-10-16). The w035 surface volume is an OME-Zarr (zarr 2 layout) group with levels `0` to `5`; its level `3` alone is 28 x 728 x 655 uint8 in 28 x 128 x 128 chunks (33 objects, 14.7 MB). The bucket's data carry the licence its `metadata.json` names; `kit/scancatalog.py` records CC BY-NC 4.0 (`LICENSE`).
+What came down in the Quick start: `inklabels.zarr` of PHerc0841 w00, a zarr 3 group with levels `0` to `5`; level `0` is 16,460 x 18,560 and level `2` is 4,115 x 4,640, both uint8 (read with zarr 3.4.1 on 2026-10-16). The w035 surface volume is an OME-Zarr (zarr 2 layout) group with levels `0` to `5`; its level `3` alone is 28 x 728 x 655 uint8 in 28 x 128 x 128 chunks (33 objects, 14.7 MB). The bucket's data carry the license its `metadata.json` names; `kit/scancatalog.py` records CC BY-NC 4.0 (`LICENSE`).
 
 ## Outputs
 
@@ -163,7 +163,7 @@ Files: one per object under `DEST`, at the key's path relative to the prefix. A 
 1. **Short names.** The command replaces `w035` or `w045` with `W035_9UM` or `W045_9UM` from `ALIASES`; any other text is used as the prefix.
 2. **List.** `list_prefix` strips slashes, adds one `/`, and requests `BUCKET_URL/?list-type=2&max-keys=1000&prefix=PREFIX/` (S3 ListObjectsV2, 1,000 keys per page, 60 s timeout). It follows `NextContinuationToken`, URL-encoded completely (`safe=""`), because a token holding `/` otherwise re-requests page 1 forever (commit `912135c`). A token seen twice raises `FetchError`. An empty result raises `FetchError`.
 3. **Download.** A `ThreadPoolExecutor` of `--workers` threads maps over the listing in order. For each object: refuse an unsafe key; skip it if the local file exists at the listed size (0 bytes counted); create its folder; then up to 4 tries of GET `BUCKET_URL/KEY` (key URL-quoted, slashes kept, 120 s timeout), read the whole body, check its length, write `NAME.part`, and `os.replace` it onto `NAME`, which is atomic on one filesystem. Tries follow each other at once, with no wait. After the fourth failure it raises `FetchError("KEY: LAST_ERROR")`.
-4. **Stop on failure.** The first failure stops the run when the in-order collection reaches it: objects not started yet are cancelled, and downloads already running finish. A rerun resumes from what is on disk.
+4. **Stop on failure.** The first failure stops the run when the in-order collection reaches it: objects not started yet are canceled, and downloads already running finish. A rerun resumes from what is on disk.
 5. **Count.** It returns the number of objects, the bytes downloaded and the total bytes, and the command prints them.
 
 Constants: `BUCKET_URL = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"`, 1,000 keys per listing page, 60 s listing timeout, 120 s download timeout, 4 tries per object, 16 workers by default. The module docstring describes the result as the same files `aws s3 sync --no-sign-request` would fetch. To decide what to skip, `kit fetch` compares sizes only, and it never deletes a local file.
@@ -210,7 +210,7 @@ They use a fake bucket (an `opener` that returns canned XML and bodies) and cove
 
 - [`auc`](auc.md): scores ink maps against the `inklabels.zarr` and `supervision.zarr` this fetches.
 - [`layers`](layers.md): turns a fetched surface volume into v8in's layer TIFFs, and writes the depth-shuffle control.
-- [`mac-w045`](mac-w045.md): fetches a segment's surface volume and labels with this command; it holds the prefixes of the labelled segments.
+- [`mac-w045`](mac-w045.md): fetches a segment's surface volume and labels with this command; it holds the prefixes of the labeled segments.
 - [`plan`](plan.md): its step 1b starts with `kit fetch w045`.
 - [`batch`](batch.md): `kit run catalog` lists every volume in the bucket.
 - [`provenance`](provenance.md): file digests, the content check this tool does not make.

@@ -7,7 +7,7 @@ A line sample is a band of fixed height around one text line, with letters about
 tall, the line's letter string, and each letter's horizontal extent. Glyphs come from two
 independent sources so a reader cannot overfit one geometry:
 
-- "skeleton": centreline strokes of a Herculaneum-style formal bookhand written here
+- "skeleton": centerline strokes of a Herculaneum-style formal bookhand written here
   (bilinear capitals, lunate sigma and epsilon, a small floating omicron, descending rho
   and phi), swept with a broad nib at a random pen angle.
 - "font": Greek capitals from whatever TrueType fonts are installed (DejaVu, FreeFont,
@@ -16,12 +16,12 @@ independent sources so a reader cannot overfit one geometry:
 - "bank" (only after use_bank): letters cropped from photographs of real papyri, see realforms.py.
 
 Domains:
-- "map": blur, ink dropout, crackle, papyrus fibre texture, false-ink speckle, faint
+- "map": blur, ink dropout, crackle, papyrus fiber texture, false-ink speckle, faint
   ghost text one line away, saturating tone, contrast compression and noise, like the
   output of an ink model.
 - "mask": thresholded strokes of a fairly even width, like hand-drawn ink labels.
 - "photo" (whole pages only, make_page; not used in training): dark ink on a light papyrus
-  ground with fibres, uneven light and holes, like a photograph of an opened papyrus.
+  ground with fibers, uneven light and holes, like a photograph of an opened papyrus.
 
 Text is uniform random letters by default, so a reader trained on it learns letter shapes
 and not Greek: language belongs in a separate, switchable language model.
@@ -38,12 +38,12 @@ import numpy as np
 
 ALPHABET = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"   # lunate sigma U+03F9
 H_PX = 16                    # letter height in the working band, px
-BAND_TOP = 1.1               # band rows from the letter centre line: [-BAND_TOP h, +BAND_BOT h)
+BAND_TOP = 1.1               # band rows from the letter center line: [-BAND_TOP h, +BAND_BOT h)
 BAND_BOT = 1.15
 SS = 3                       # supersampling for rendering
 
 # ------------------------------------------------------------------ skeleton hand
-# Centrelines in letter units: x right from the letter's left edge, y down, y = 0 top line,
+# Centerlines in letter units: x right from the letter's left edge, y down, y = 0 top line,
 # y = 1 base line. Each glyph: (advance width, [strokes]); a stroke is a list of points or
 # ("arc", cx, cy, rx, ry, a0_deg, a1_deg) with angles counterclockwise from +x, y up.
 
@@ -136,7 +136,7 @@ def render_skeleton_glyph(ch, h, rng, style):
             x = x * wf * hh
             yy = (y - 1.0) * hh                       # relative to the base line
             x = x + slant * (-yy)
-            # rotate about the base centre
+            # rotate about the base center
             xr, yr = x - cx, yy
             x2 = cx + xr * math.cos(rot) - yr * math.sin(rot)
             y2 = xr * math.sin(rot) + yr * math.cos(rot)
@@ -352,8 +352,8 @@ def _scale_style(st, h):
 
 
 def render_line(text, rng, style, h):
-    """Supersampled line image (float32 0..1, ink high) with the letter centre line at row h * 1.25 + pad,
-    plus per-letter (x0, x1) in that image and the centre row."""
+    """Supersampled line image (float32 0..1, ink high) with the letter center line at row h * 1.25 + pad,
+    plus per-letter (x0, x1) in that image and the center row."""
     st = _scale_style(style, h)
     glyphs = []
     for ch in text:
@@ -420,7 +420,7 @@ def gaussian(a, sigma):
 
 
 def dilate(a, r):
-    """Grey dilation by a disc of radius r px."""
+    """Gray dilation by a disk of radius r px."""
     ri = int(math.floor(r))
     if ri < 1:
         return a
@@ -489,7 +489,7 @@ def to_map_domain(clean, h, rng, ghost=None):
     p = (1 - np.exp(-gain * ink)) / (1 - math.exp(-gain))
     amp = rng.uniform(0.45, 1.0)
     p = amp * p
-    # background: papyrus fibres (anisotropic), slow shading, false-ink speckle
+    # background: papyrus fibers (anisotropic), slow shading, false-ink speckle
     bg = np.zeros((H, W), np.float32)
     if rng.random() < 0.85:
         horiz = rng.random() < 0.5
@@ -519,9 +519,9 @@ def to_photo_domain(clean, h, rng):
 
     The opposite polarity of an ink map, for testing the reader's --polarity dark and auto; never
     used in training. Ink is slightly blurred and abraded; the ground has horizontal and vertical
-    fibres, uneven light, a few light holes where the mount shows through, and camera noise.
+    fibers, uneven light, a few light holes where the mount shows through, and camera noise.
 
-    Every noise field is centred on its own mean: smooth_noise keeps the mean of its white noise, and
+    Every noise field is centered on its own mean: smooth_noise keeps the mean of its white noise, and
     with a correlation length near the page size that mean, divided by the small spread left, would
     make most of a page white or black."""
     H, W = clean.shape
@@ -547,7 +547,7 @@ def to_photo_domain(clean, h, rng):
 
 
 def normalize(a):
-    """The reader's own normalisation: 0.5 and 99.8 percentiles to [0, 1], clipped."""
+    """The reader's own normalization: 0.5 and 99.8 percentiles to [0, 1], clipped."""
     lo, hi = np.percentile(a, [0.5, 99.8])
     if hi <= lo:
         return np.zeros_like(a, dtype=np.float32)
@@ -588,11 +588,11 @@ def make_sample(rng, h=H_PX, domain=None, n_range=(3, 18), p_blank=0.07, lm=None
         line, boxes, centre = render_line(text, rng, style, hl)
     Hb = band_height(h) * SS
     W = line.shape[1]
-    dyc = rng.normal(0, 0.12) * hs                 # line centre off the band centre
+    dyc = rng.normal(0, 0.12) * hs                 # line center off the band center
     top = int(round(centre - BAND_TOP * hs + dyc))
     band = np.zeros((Hb, W), np.float32)
     _paste(band, line, -top, 0)
-    # neighbouring lines above and below
+    # neighboring lines above and below
     pitch = rng.uniform(1.55, 2.4) * hs
     ghost = None
     for sgn in (-1, 1):
@@ -605,7 +605,7 @@ def make_sample(rng, h=H_PX, domain=None, n_range=(3, 18), p_blank=0.07, lm=None
         g, _, cg = render_line(random_text(rng, n + 4), rng, style, hl)
         ghost = np.zeros_like(band)
         _paste(ghost, g, int(rng.uniform(-0.6, 0.6) * hs) - top, int(rng.uniform(-3, 3) * hs))
-    if blank and rng.random() < 0.5:   # non-letter ink: cracks, fibre bundles, blobs
+    if blank and rng.random() < 0.5:   # non-letter ink: cracks, fiber bundles, blobs
         band = np.maximum(band, _clutter(band.shape, hs, rng))
     if domain == "mask":
         img = to_mask_domain(band, hs, rng)
@@ -646,7 +646,7 @@ def _clutter(shape, h, rng):
 
 def make_page(rng, n_lines=6, h=40.0, n_letters=(8, 16), domain="map", lm=None, pitch_ratio=None, tilt_deg=None,
               style=None):
-    """A synthetic column: (float32 image, [line texts], [centre rows], letter height in px).
+    """A synthetic column: (float32 image, [line texts], [center rows], letter height in px).
 
     One style per page, lines pitch_ratio * h apart, the whole page tilted by tilt_deg. For testing
     the full reader (scale estimate, deskew, line finding) rather than the band network alone.

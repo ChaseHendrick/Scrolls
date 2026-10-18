@@ -427,7 +427,7 @@ def release(runs, out, name="strokenet-paris4-v1"):
     rel = cal["models"]["released"]
     meta.update({"name": name, "platt": rel["platt"], "val_blank_logit_q99": rel["q99"], "val_ref": cal["val_ref"],
                  "platt_mixture": MIXTURE, "run": choice["chosen"], "prereg": "docs/prereg/2026-10-14-strokenet.md",
-                 "trained_on": "organiser 2.4 um ink predictions of PHerc. Paris 4, July 2026 tracings, training split",
+                 "trained_on": "organizer 2.4 um ink predictions of PHerc. Paris 4, July 2026 tracings, training split",
                  "note": "Model output: a text-likeness score for 6.1 mm windows of a 48 um ink map, not a reading."})
     arrs["meta"] = np.array(json.dumps(meta))
     np.savez(out, **arrs)

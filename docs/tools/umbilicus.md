@@ -1,6 +1,6 @@
-# umbilicus: find a scroll's winding centre line in X-ray CT
+# umbilicus: find a scroll's winding center line in X-ray CT
 
-`scripts/umbilicus/` finds the winding centre (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder.
+`scripts/umbilicus/` finds the winding center (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder.
 
 | Field | Value |
 | --- | --- |
@@ -18,15 +18,15 @@
 | Go-ahead | Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights |
 | Released | Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository |
 | Release id | `umbilicus-finder` |
-| Guide | [Scroll centre finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licences) |
-| License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licences-credits-and-citation)) |
+| Guide | [Scroll center finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses) |
+| License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation)) |
 | Checked | 2026-10-16 against commit `63ee638` |
 
 ## What it does
 
-Tools that trace and orient the papyrus sheets of a scroll use its umbilicus: the line of its winding centre, one point per height. Many scrolls have none published, and people placing the same centre by hand often disagree by a few millimetres. This folder finds the line automatically and measures its error against the 13 published lines.
+Tools that trace and orient the papyrus sheets of a scroll use its umbilicus: the line of its winding center, one point per height. Many scrolls have none published, and people placing the same center by hand often disagree by a few millimeters. This folder finds the line automatically and measures its error against the 13 published lines.
 
-`predict.py` reads every 8th plane of pyramid level 3 (8 times downsampled) of a scroll's 1.2 m (about 9 um) scan from the open-data bucket, one slice every 64 level-0 voxels. A first U-Net (3.3 million parameters, `centrenet.py`) looks at three neighbouring slices squeezed into a 256 pixel frame and puts a heatmap peak on the centre, averaged over the 8 flips and rotations. A second U-Net of the same shape (the zoom stage, `refine.py`) looks at a 176 pixel level-3 window round that answer (12 to 13 mm across) and moves it onto the centre, twice. The line is smoothed along the height, then two end trims drop heights where a centre has nothing to sit on. The file it writes has control points `x`, `y`, `z` in level-0 voxels, as the published umbilicus files do.
+`predict.py` reads every 8th plane of pyramid level 3 (8 times downsampled) of a scroll's 1.2 m (about 9 um) scan from the open-data bucket, one slice every 64 level-0 voxels. A first U-Net (3.3 million parameters, `centrenet.py`) looks at three neighboring slices squeezed into a 256 pixel frame and puts a heatmap peak on the center, averaged over the 8 flips and rotations. A second U-Net of the same shape (the zoom stage, `refine.py`) looks at a 176 pixel level-3 window round that answer (12 to 13 mm across) and moves it onto the center, twice. The line is smoothed along the height, then two end trims drop heights where a center has nothing to sit on. The file it writes has control points `x`, `y`, `z` in level-0 voxels, as the published umbilicus files do.
 
 The other scripts make and check it: `slices.py` reads the slices and the published lines, `pipeline.py` trains and scores the first stage by fold and holds the trims and the file format, `refine.py` trains and chains the zoom stage, `endcheck.py` calibrates and applies the end-point rule, and `ctcheck.py` draws lines on CT slices for a person to check.
 
@@ -82,14 +82,14 @@ The end trims run offline. On the synthetic 60-slice scroll of `tests/test_umbil
 }
 ```
 
-and the trimmed file's `metadata.trimmed` reads `mount and cap slices dropped: kept the longest run with at least 0.3 of the median papyrus area, at least 3 mm inside the first and last slices with papyrus; end-point rule: dropped from each end until 2 mm of slices where at least 0.75 of 32 rays from the centre meet papyrus within 4 mm`.
+and the trimmed file's `metadata.trimmed` reads `mount and cap slices dropped: kept the longest run with at least 0.3 of the median papyrus area, at least 3 mm inside the first and last slices with papyrus; end-point rule: dropped from each end until 2 mm of slices where at least 0.75 of 32 rays from the center meet papyrus within 4 mm`.
 
 ## Checks and controls
 
 - **Held-out scoring with a control.** The 13 published lines were split into four groups by scroll on 13 October 2026 (`FOLDS` in `pipeline.py`); each group was scored by models trained on the other scrolls only. The control is the papyrus centroid of each slice, smoothed the same way. Over 3,414 held-out slices the median distance to the published line was 3.98 mm for the centroid, 1.20 mm for the first stage and 0.73 mm for both stages (90th percentile 9.97, 4.00 and 3.37 mm); the first stage beat the centroid on 13 of 13 scrolls (`umbilicus_checks` in [`results.json`](../results.json), [guide](../../scripts/umbilicus/README.md#held-out-results)).
 - **Rules fixed before each run** (13 October 2026): the first stage works if its pooled held-out median is at most 2.0 mm and it beats the centroid on at least 10 of 13 scrolls; the zoom stage is adopted if its pooled median is at least 0.1 mm lower and it is not worse on at least 9 of 13. Both passed. The plan that holds the rules is not published, so the timing cannot be checked from here.
 - **With the end trims.** Both trims keep 3,243 of the 3,414 scored slices, median 0.69 mm for both stages; the dropped slices were mostly worse than the rest (9 of 10 scrolls) ([`heldout-endrule.json`](../evidence/2026-10-14-umbilicus/heldout-endrule.json)). `endcheck.py score RUN_DIR` reproduces this from a run; its `pooled.all` must first equal the run's own `result.json`.
-- **Limits.** The reference is one person's line per scroll (ten of 13 by one annotator), people disagree by more than this error, two scrolls have more than one winding centre, and the settings were chosen while looking at some of the same scrolls, so it is not an untouched test set ([guide](../../scripts/umbilicus/README.md#read-these-numbers-with-care)). `spread_mm_median` measures agreement between models, not accuracy.
+- **Limits.** The reference is one person's line per scroll (ten of 13 by one annotator), people disagree by more than this error, two scrolls have more than one winding center, and the settings were chosen while looking at some of the same scrolls, so it is not an untouched test set ([guide](../../scripts/umbilicus/README.md#read-these-numbers-with-care)). `spread_mm_median` measures agreement between models, not accuracy.
 - **A person's check.** `ctcheck.py` draws a line (red) beside another (cyan) on whole and zoomed CT slices; nothing replaces looking at them.
 
 Claim label: Model output, for every line `predict.py` writes and for the held-out distances of 13 October 2026, scored against one person's published line per scroll.
@@ -98,7 +98,7 @@ Claim label: Model output, for every line `predict.py` writes and for the held-o
 
 ### `python scripts/umbilicus/predict.py`
 
-The centre line of any scroll from trained weights: no training, no labels.
+The center line of any scroll from trained weights: no training, no labels.
 
 ```
 usage: predict.py [-h] --first FIRST [FIRST ...] [--zoom [ZOOM ...]]
@@ -157,7 +157,7 @@ usage: pipeline.py [-h] --data DATA --out OUT [--size SIZE] [--width WIDTH]
 
 ### `python scripts/umbilicus/refine.py`
 
-The zoom stage: a check from offset published centres (`cv`), training on top of first-stage answers (`chain`), and its held-out score (`chain-collect`).
+The zoom stage: a check from offset published centers (`cv`), training on top of first-stage answers (`chain`), and its held-out score (`chain-collect`).
 
 ```
 usage: refine.py [-h] [--base BASE] --data DATA --out OUT
@@ -184,7 +184,7 @@ usage: refine.py [-h] [--base BASE] --data DATA --out OUT
 | `--every EVERY` | `1` | `cv`: score every Nth annotated slice |
 | `--side SIDE` | `176` | Crop side in level-3 pixels (`S`) |
 | `--reach REACH` | `64` | Largest training offset in level-3 pixels (`R`) |
-| `--offsets OFFSETS [OFFSETS ...]` | `0.0 1.2 2.5` | `cv`: median sizes in mm of the smooth random offsets added to the published centres |
+| `--offsets OFFSETS [OFFSETS ...]` | `0.0 1.2 2.5` | `cv`: median sizes in mm of the smooth random offsets added to the published centers |
 
 ### `python scripts/umbilicus/endcheck.py`
 
@@ -196,7 +196,7 @@ usage: endcheck.py [-h] [--cache CACHE] [--data DATA] [--out OUT]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `cmd` | required | `calibrate` (the rule at the 13 published centres), `score` (the rule on a run's held-out answers, one stage per folder), `files` (apply the rule to written `*_umbilicus.json`) |
+| `cmd` | required | `calibrate` (the rule at the 13 published centers), `score` (the rule on a run's held-out answers, one stage per folder), `files` (apply the rule to written `*_umbilicus.json`) |
 | `args` | none | `score`: `RUN_DIR`; `files`: `SRC DST` |
 | `--cache CACHE` | `work/umbilicus/endcheck-cache` | Cache of bucket reads |
 | `--data DATA` | none (bucket reads) | The pipeline's slice files instead of bucket reads |
@@ -219,8 +219,8 @@ usage: ctcheck.py [-h] --a A --b B --out OUT [--scrolls [SCROLLS ...]] [--n N]
 | `--scrolls [SCROLLS ...]` | none (every file in `--a`) | Scroll ids to draw |
 | `--n N` | `6` | Slices spread along the line, plus the height where A and B differ most and where A moves fastest sideways |
 | `--cache CACHE` | none (`OUT/.cache`) | Cache of plane reads |
-| `--a-label A_LABEL` | `centres A` | Legend label of A |
-| `--b-label B_LABEL` | `centres B` | Legend label of B |
+| `--a-label A_LABEL` | `centers A` | Legend label of A |
+| `--b-label B_LABEL` | `centers B` | Legend label of B |
 | `--zoom-mm ZOOM_MM` | `6.0` | Half width in mm of the level-1 zoom panel |
 | `--close-mm CLOSE_MM` | `2.0` | Half width in mm of the level-0 close-up panel |
 
@@ -275,7 +275,7 @@ The scripts import one another by file name (each puts its folder first on `sys.
 | `metadata.method` | str | The models used and the trims applied |
 | `metadata.spread_mm_median` | float or null | Median over kept slices of the distance in mm between each model's answer and the models' median; null when the last stage has one model, as in Quick start |
 
-`OUT/SCROLL_predict.json` holds per slice: `z`, `yx` (smoothed centre, level-0 voxels, null where no papyrus), `present`, `keep_band`, `kept`, `support` (share of 32 rays meeting papyrus), `spread_mm`; and `scroll`, `volume`, `voxelsize_um`, `papyrus_level`, `first`, `zoom` (weight file names) and `rule` (the trim constants). `pipeline.py trim` adds `metadata.trimmed`, `endcheck.py files` adds `metadata.end_trimmed`.
+`OUT/SCROLL_predict.json` holds per slice: `z`, `yx` (smoothed center, level-0 voxels, null where no papyrus), `present`, `keep_band`, `kept`, `support` (share of 32 rays meeting papyrus), `spread_mm`; and `scroll`, `volume`, `voxelsize_um`, `papyrus_level`, `first`, `zoom` (weight file names) and `rule` (the trim constants). `pipeline.py trim` adds `metadata.trimmed`, `endcheck.py files` adds `metadata.end_trimmed`.
 
 | Exit code | Meaning |
 | --- | --- |
@@ -308,7 +308,7 @@ The scripts import one another by file name (each puts its folder first on `sys.
 | `score RUN_DIR` | `endcheck.py score` without exactly one folder | Give one run folder |
 | `files SRC DST` | `endcheck.py files` without a source and a destination | Give both folders |
 | `ModuleNotFoundError: No module named 'torch'` | torch is missing for `predict.py`, `refine.py` or training | `python -m pip install torch` |
-| A line with `"points": 0` | No 2 mm run of slices has papyrus within 4 mm of the centre in three quarters of the directions, or no slice holds papyrus | Check the scan on CT; compare with `--no-end-rule` |
+| A line with `"points": 0` | No 2 mm run of slices has papyrus within 4 mm of the center in three quarters of the directions, or no slice holds papyrus | Check the scan on CT; compare with `--no-end-rule` |
 
 ## How it works
 
@@ -317,10 +317,10 @@ The scripts import one another by file name (each puts its folder first on `sys.
 3. **Zoom stage** (`refine.refine`): a 176 px (`S`) level-3 window round each guess, the same network shape, two rounds (`--rounds`), median over `--zoom` models.
 4. **Smoothing** (`slices.smooth_z`): running median over 9 slices, then a quadratic Savitzky-Golay filter over 11.
 5. **Mount and cap trim** (`pipeline.keep_band`): keep the longest unbroken run of slices with at least `AREA_FRAC` = 0.3 of the scroll's median papyrus area and at least `CAP_MM` = 3.0 mm inside the first and last slices with papyrus.
-6. **End-point rule** (`pipeline.end_trimmed_keep`): from each slice's centre cast `END_RAYS` = 32 rays in the 3 x 3 smoothed level-3 slice and count the share that meet papyrus (at or above Otsu's level over the kept windows) within `END_RADIUS_MM` = 4.0 mm; drop points from each end until `END_RUN_MM` = 2.0 mm of consecutive slices reach `END_SUPPORT` = 0.75. Nothing between the first and last such run is dropped. The radius was the smallest of 2, 3, 4 and 5 mm at which at most 0.5 % of published centres in the middle 80 % of each line fall under the bar ([`calibrate.json`](../evidence/2026-10-14-umbilicus/calibrate.json)).
+6. **End-point rule** (`pipeline.end_trimmed_keep`): from each slice's center cast `END_RAYS` = 32 rays in the 3 x 3 smoothed level-3 slice and count the share that meet papyrus (at or above Otsu's level over the kept windows) within `END_RADIUS_MM` = 4.0 mm; drop points from each end until `END_RUN_MM` = 2.0 mm of consecutive slices reach `END_SUPPORT` = 0.75. Nothing between the first and last such run is dropped. The radius was the smallest of 2, 3, 4 and 5 mm at which at most 0.5 % of published centers in the middle 80 % of each line fall under the bar ([`calibrate.json`](../evidence/2026-10-14-umbilicus/calibrate.json)).
 7. **File** (`pipeline.umbilicus_json`): one control point per kept slice.
 
-Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`), two first-stage seeds per fold plus one model on all 13 (`JOBS`), one zoom model per fold plus one on all (`CHAIN_JOBS`); the zoom stage trains from published centres plus random offsets up to `R` = 64 level-3 pixels and is chained onto the first stage's real answers.
+Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`), two first-stage seeds per fold plus one model on all 13 (`JOBS`), one zoom model per fold plus one on all (`CHAIN_JOBS`); the zoom stage trains from published centers plus random offsets up to `R` = 64 level-3 pixels and is chained onto the first stage's real answers.
 
 ## Cost and time
 
@@ -356,7 +356,7 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 
 ## Related
 
-- [Scroll centre finder guide](../../scripts/umbilicus/README.md): weights, held-out tables, the end-point rule, reproduction and credits.
+- [Scroll center finder guide](../../scripts/umbilicus/README.md): weights, held-out tables, the end-point rule, reproduction and credits.
 - [Evidence folder](../evidence/2026-10-14-umbilicus/README.md): `heldout-endrule.json` and `calibrate.json`.
 - [`results.json`](../results.json): `umbilicus_checks`, the held-out scores and the centroid control.
 - [`stackcheck`](stackcheck.md): checks a stack of segments against an umbilicus file.

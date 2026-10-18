@@ -4,11 +4,11 @@ A record names one text line of an image and what is written on it, in Greek cap
 
   image      the image file (any format the reader loads; a relative path is relative to the records file)
   text       the line's letters; '?' for a letter you cannot see or restore (a wildcard in training)
-  y          the line's centre row in image pixels (halfway between the letters' tops and feet)
+  y          the line's center row in image pixels (halfway between the letters' tops and feet)
   letter_px  the letters' height in image pixels
   x0, x1     optional: the columns where the line starts and ends (default: the whole width)
   crop       optional: [Y0, Y1, X0, X1], a window of the image as in the reader's --crop; y, x0 and x1 are
-             then relative to Y0 and X0, and the image is normalised over that window, as a read of it is
+             then relative to Y0 and X0, and the image is normalized over that window, as a read of it is
   key        optional: the array of a .npz or zarr, as the reader's --key
   polarity   optional: bright (ink brighter than the ground, as in ink maps; the default) or dark
   split      optional: any label, such as train or test, so one records file can hold lines to train on and
@@ -21,7 +21,7 @@ names (crop as four numbers separated by spaces). check_records() validates ever
 image is decoded and reports every problem at once; plan_text() is the dry run.
 
 cut_lines() cuts each line as the reader sees it: the image (or crop) loaded as the reader loads it
-(block-averaged while loading when over the pixel budget), normalised once, resized so letters are
+(block-averaged while loading when over the pixel budget), normalized once, resized so letters are
 the network's working height (16 px), and the band of 36 rows the reader reads on a line given as
 --lines Y with --deskew 0, from the line's first to its last column. The band is level: for a
 tilted line, give x0 and x1 close to its letters or a crop around it.
@@ -59,7 +59,7 @@ from . import letterread as R
 ALPHABET = "ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ"
 WILDCARD = "?"
 NET_LETTER_PX = 16          # the released network's working letter height (its weights' meta letter_px)
-BAND = (1.1, 1.15)          # band rows above and below the line centre, in letter heights (meta band)
+BAND = (1.1, 1.15)          # band rows above and below the line center, in letter heights (meta band)
 STRIDE = 4                  # input pixels per output frame at the working scale (meta stride)
 FIELDS = ("image", "text", "y", "letter_px", "x0", "x1", "crop", "key", "polarity", "split", "id")
 DEFAULT_FIELDS = ("image", "letter_px", "crop", "key", "polarity", "split")
@@ -431,7 +431,7 @@ def plan_text(plans, warnings=(), errors=()):
 def cut_lines(plans, net_letter_px=NET_LETTER_PX, band=BAND, max_pixels=R.MAX_PIXELS, progress=None):
     """The bands of check_records()'s plans as float32 arrays in 0..1 (36 rows by default), with texts and where.
 
-    Each image (or crop, polarity and letter size) is loaded once with load_reduced, normalised once
+    Each image (or crop, polarity and letter size) is loaded once with load_reduced, normalized once
     (normalize_for_reading) and resized to the working scale as analyze() resizes it; a line's band
     is the rows read_bands() reads at its row, from x0 to x1."""
     rows = int(round((band[0] + band[1]) * net_letter_px))

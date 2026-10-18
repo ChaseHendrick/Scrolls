@@ -92,7 +92,7 @@ Inputs, fixed in the code: `PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV
 
 | Output | What it is |
 | --- | --- |
-| `slice-z<Z>.png` | Greyscale CT slice at level 5, 207 x 207 px |
+| `slice-z<Z>.png` | Grayscale CT slice at level 5, 207 x 207 px |
 | `w035.tifxyz/` | `meta.json`, `x.tif`, `y.tif`, `z.tif` as in the bucket; points at -1 or non-finite are invalid |
 | `slice-with-w035.png` | The slice, 3 times enlarged, with w035's points within half a level-5 voxel of the slice in red |
 | `w035-ink-preview.jpg` | The published ink preview, about 0.5 MB |

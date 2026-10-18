@@ -73,7 +73,7 @@ def load_mesh(path, upsample=UPSAMPLE):
 
 
 def sample_grid(array, mesh):
-    """Values of a 2D array spanning the whole surface at each mesh point (nearest neighbour)."""
+    """Values of a 2D array spanning the whole surface at each mesh point (nearest neighbor)."""
     np = _numpy()
     gh, gw = mesh["shape"]
     r = np.minimum(((mesh["rows"] + 0.5) / gh * array.shape[0]).astype(np.int64), array.shape[0] - 1)
@@ -140,7 +140,7 @@ def _label_agreement(np, a, b, labels_a, labels_b, level, within, draws, seed, s
     res = {"points_both_labelled": int(both.sum()), "area_cm2": round(int(both.sum()) * (step * 1e-4) ** 2, 3)}
     if both.sum() < 50:
         res["dice"] = None
-        res["note"] = "too few points labelled on both traces"
+        res["note"] = "too few points labeled on both traces"
         return res
     dice = lambda x, y: 2 * float((x & y).sum()) / max(1, int(x.sum() + y.sum()))
     res["dice"] = round(dice(ia[both], ib[j][both]), 3)
@@ -251,7 +251,7 @@ def format_overlap(r):
         if lab.get("dice") is None:
             rows.append(f"labels: {lab.get('note')}")
         else:
-            rows.append(f"labels where both traces are labelled ({lab['area_cm2']} cm2): Dice {lab['dice']}, displaced "
+            rows.append(f"labels where both traces are labeled ({lab['area_cm2']} cm2): Dice {lab['dice']}, displaced "
                         f"matches mean {lab.get('null_dice_mean')}, 99th percentile {lab.get('null_dice_p99')}")
     return "\n".join(rows)
 

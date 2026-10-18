@@ -55,14 +55,14 @@ Do not use it:
 | `realforms.py` | Builds a glyph bank from Hell-Char and ICDAR 2023 crops (`build`), prints its stats (`stats`), draws a preview sheet (`preview`) | numpy, Pillow |
 | `train_linenet.py` | Trains the CTC line reader on shards and exports `linenet.npz` | torch |
 | `finetune_maps.py` | Fine-tunes exported or released weights on real lines (`train`), mixing in synthetic shards | torch |
-| `p1667_fetch.py` | Fetches PHerc. 1667's 19 maps at 2.4 um and the six labelled segments' ink labels from the open-data bucket; resumable | Standard library |
+| `p1667_fetch.py` | Fetches PHerc. 1667's 19 maps at 2.4 um and the six labeled segments' ink labels from the open-data bucket; resumable | Standard library |
 | `p1667_groups.py` | Cuts the six ink labels into letter groups by a fixed rule, with a PNG per group for blind transcription | numpy, scipy, zarr, Pillow |
-| `p1667_mapcrops.py` | Cuts the same windows from the maps (`--wide`: taller; `--region`: whole labelled regions), with an alignment check | numpy, tifffile, zarr |
+| `p1667_mapcrops.py` | Cuts the same windows from the maps (`--wide`: taller; `--region`: whole labeled regions), with an alignment check | numpy, tifffile, zarr |
 | `p1667_text.py` | Parses the published transcription (arXiv 2606.29085, columns 5 to 22) into one string per papyrus line, `?` for restored or illegible letters | pdftotext |
 | `p1667_align.py` | Places published lines on whole maps (`read`, `align`, `crops`, `show`), tested against shifted decoy texts | numpy |
 | `eval_p1667.py` | Reads the letter groups from the labels or the maps and scores character error (`read`); paired bootstrap of two results (`compare`) | numpy |
-| `eval_p1667_text.py` | Reads unlabelled PHerc. 1667 maps whole and scores the reads against the published text and decoys (`cut`, `read`, `decoys`, `score`, `compare`) | numpy |
-| `eval_p172.py` | Reads the PHerc. 172 hand-drawn labels and scores them against the labeller's preliminary transcription, with a dev and test split | numpy, Pillow, pdftotext |
+| `eval_p1667_text.py` | Reads unlabeled PHerc. 1667 maps whole and scores the reads against the published text and decoys (`cut`, `read`, `decoys`, `score`, `compare`) | numpy |
+| `eval_p172.py` | Reads the PHerc. 172 hand-drawn labels and scores them against the labeler's preliminary transcription, with a dev and test split | numpy, Pillow, pdftotext |
 | `compare_p172.py` | Paired bootstrap of two `eval_p172.py` results | numpy |
 | `eval_pages.py` | End-to-end check on synthetic pages (letter size, deskew, lines and reading together) and on blank pages | numpy, Pillow |
 | `eval_photos.py` | Photograph-like pages: polarity, tilt and a quarter turn, and blank pages | numpy, Pillow |
@@ -91,15 +91,15 @@ Each shard holds 10 lines: uint8 bands 36 rows tall (the network's band at a 16 
 Every benchmark script carries a control that can fail:
 
 - **Chance floors.** `eval_p1667.py` scores each read against references permuted across groups as well as the true ones; `eval_p172.py` and `eval_pages.py` match read lines to true lines in order. A real error must sit below the permuted one.
-- **Nulls.** Every read reports letters kept on its own tile-shuffled and phase-randomised copies; a read whose letters are not well above its nulls is noise.
-- **Decoy texts.** `eval_p1667_text.py` scores reads of unlabelled maps against the published text and against 99 (`N_DECOYS`) decoys each of four kinds (`shifted`, `words`, `corpus`, `shuffled`). Its test U1 passes only with at least 3 (`PAIR_FLOOR`) ordered pairs of lines matching the text, more than every decoy. On the thirteen PHerc. 1667 segments without labels it found no such pairs (Model output, a test with little power; [How well it reads](../letter-reader.md#how-well-it-reads)). `p1667_align.py` accepts a placed column only at p 0.01 or less (`P_ACCEPT`) against 99 shifted decoys.
+- **Nulls.** Every read reports letters kept on its own tile-shuffled and phase-randomized copies; a read whose letters are not well above its nulls is noise.
+- **Decoy texts.** `eval_p1667_text.py` scores reads of unlabeled maps against the published text and against 99 (`N_DECOYS`) decoys each of four kinds (`shifted`, `words`, `corpus`, `shuffled`). Its test U1 passes only with at least 3 (`PAIR_FLOOR`) ordered pairs of lines matching the text, more than every decoy. On the thirteen PHerc. 1667 segments without labels it found no such pairs (Model output, a test with little power; [How well it reads](../letter-reader.md#how-well-it-reads)). `p1667_align.py` accepts a placed column only at p 0.01 or less (`P_ACCEPT`) against 99 shifted decoys.
 - **Blank inputs.** `eval_controls.py blanks` and the blank pages of `eval_pages.py` and `eval_photos.py` must give `none` or `too_few`. Measured 14 October 2026 with `letters-v2-real`: 47 of 48 blank-page reads were `none` and one was `weak`; on 60 tile-shuffled windows of the w013 map the old verdict passed 17, all `too_few` under the 10-letter floor (`letter_reader_checks` in [`results.json`](../results.json)).
 - **Held-out choice.** Checkpoints are chosen on the PHerc. 172 dev half and reported once on the test half; `finetune_maps.py` keeps the last step of a fixed schedule, so nothing is chosen on test lines.
 - **Paired intervals.** `compare_p172.py` and `eval_p1667.py compare` resample lines, groups or segments (20,000 draws by default) and report B minus A with a 95 % interval; a difference whose interval includes 0 is not resolved.
-- **What a result looks like** (Model output, 14 October 2026, [benchmarks](../letter-reader.md#benchmarks-letters-v2-ccby-against-letters-v2-real)). `letters-v2-ccby` against `letters-v2-real`: 0.043 against 0.017 on the PHerc. 1667 drawings (+0.026, interval -0.018 to +0.079, not resolved) and 0.462 against 0.376 free-ends error on the same groups from the maps (+0.085, interval +0.017 to +0.155, worse). The six labelled PHerc. 1667 segments are in `ink_9um`'s training labels, so their maps may be cleaner than maps of new text.
-- **Alignment check.** `p1667_mapcrops.py` writes the mean map value under labelled ink against the rest, also for the label shifted by up to 3 grid pixels; the unshifted label should score best.
+- **What a result looks like** (Model output, 14 October 2026, [benchmarks](../letter-reader.md#benchmarks-letters-v2-ccby-against-letters-v2-real)). `letters-v2-ccby` against `letters-v2-real`: 0.043 against 0.017 on the PHerc. 1667 drawings (+0.026, interval -0.018 to +0.079, not resolved) and 0.462 against 0.376 free-ends error on the same groups from the maps (+0.085, interval +0.017 to +0.155, worse). The six labeled PHerc. 1667 segments are in `ink_9um`'s training labels, so their maps may be cleaner than maps of new text.
+- **Alignment check.** `p1667_mapcrops.py` writes the mean map value under labeled ink against the rest, also for the label shifted by up to 3 grid pixels; the unshifted label should score best.
 
-Claim label: Model output, for every read, character error and status these scripts produce; Null, for the unlabelled-map text test that found no ordered pairs.
+Claim label: Model output, for every read, character error and status these scripts produce; Null, for the unlabeled-map text test that found no ordered pairs.
 
 ## Commands and options
 
@@ -230,7 +230,7 @@ usage: p1667_mapcrops.py [-h] [--wide | --region] groups_dir maps_dir
 | `groups_dir` | required | `p1667_groups.py`'s output folder |
 | `maps_dir` | required | `p1667_fetch.py`'s `OUT/maps`, holding `wNNN.tif` |
 | `--wide` | off | Windows 2 letter heights (`WIDE_PAD_Y`) taller above and below, for `eval_p1667.py --source map-wide` |
-| `--region` | off | Each segment's whole labelled region, padded by 1 letter height (`REGION_PAD`), for `--source map-region` |
+| `--region` | off | Each segment's whole labeled region, padded by 1 letter height (`REGION_PAD`), for `--source map-region` |
 
 ### `python scripts/letters/p1667_text.py`
 
@@ -487,7 +487,7 @@ Every text scored must be in the reader's alphabet `ΑΒΓΔΕΖΗΘΙΚΛΜΝΞ
 | `SHARDS: no shard .npz files; make the synthetic lines with scripts/letters/gen_dataset.py` | `finetune_maps.py` found no shards and `--p-map` is below 1 | Make shards first |
 | A message naming a character outside the alphabet, with the alphabet printed | A reference or training line holds a Latin look-alike, a `Σ`, a final `ς` or other text | Write the reader's 24 capitals, lunate `Ϲ` for every sigma |
 | `REFS: no such file. Write the references first: docs/letter-reader.md, the References paragraph under the PHerc. 1667 tests, says how ({"agreed": {"w013-g000": "ΚΑΙ", ...}})` | `eval_p1667.py read` without a references file | Write the references as the guide says |
-| `GROUP: line centre Y is outside its crop (N rows)` | A group's centre does not fall in its crop | Rerun `p1667_groups.py` and `p1667_mapcrops.py` |
+| `GROUP: line center Y is outside its crop (N rows)` | A group's center does not fall in its crop | Rerun `p1667_groups.py` and `p1667_mapcrops.py` |
 | `the two results score different groups` | `eval_p1667.py compare` on results from different references or sources | Compare reads of the same groups |
 | `no matched lines in either result` | `compare_p172.py` on results with no matched lines (a traceback) | Check both `--out` files |
 | `corpus too short: N letters for 99 decoys of V` | `eval_p1667_text.py decoys` with too little corpus text (a traceback) | Give more Perseus texts |
@@ -507,13 +507,13 @@ Every text scored must be in the reader's alphabet `ΑΒΓΔΕΖΗΘΙΚΛΜΝΞ
 
 ## How it works
 
-- **Synthetic lines** (`letterdata.make_sample`): letters 16 px tall (`H_PX`) in a band from 1.1 letter heights above the centre to 1.15 below (`BAND_TOP`, `BAND_BOT`), drawn at 3 times supersampling (`SS`), 3 to 18 letters, about 7 % of lines blank (`p_blank` 0.07), degraded to the `map` or `mask` look.
+- **Synthetic lines** (`letterdata.make_sample`): letters 16 px tall (`H_PX`) in a band from 1.1 letter heights above the center to 1.15 below (`BAND_TOP`, `BAND_BOT`), drawn at 3 times supersampling (`SS`), 3 to 18 letters, about 7 % of lines blank (`p_blank` 0.07), degraded to the `map` or `mask` look.
 - **Glyph bank** (`realforms.py`): crops scaled so each papyrus's median plain letter is 48 px (`BANK_H`), papyri hashing to 0 mod 10 (`VAL_MOD`) kept for validation.
 - **Network** (`train_linenet.py`): 2D convolutions with BatchNorm over the band, a collapse to one row, dilated 1D residual convolutions and a 25-way CTC head (24 letters and the blank), stride 4; exported with BatchNorm folded into `linenet-v1`. AdamW with a one-cycle schedule.
 - **Fine-tuning** (`finetune_maps.py`): a published `?` is a wildcard that may be any letter or none, so the loss never asks for a letter in a hole; each batch mixes `--p-map` real lines with synthetic ones.
-- **PHerc. 1667 groups** (`p1667_groups.py`): label level 1 block-averaged by 8 (`D`) to about 38 um, ink pieces of at least 500 px (`MIN_AREA`), pieces joined when their centres differ by under 0.5 letter heights and their gap is under 0.6.
+- **PHerc. 1667 groups** (`p1667_groups.py`): label level 1 block-averaged by 8 (`D`) to about 38 um, ink pieces of at least 500 px (`MIN_AREA`), pieces joined when their centers differ by under 0.5 letter heights and their gap is under 0.6.
 - **Text test** (`eval_p1667_text.py`): Smith-Waterman local alignment (match +1, mismatch -1, gap -1, `?` 0) of every read line against every published line, against 99 decoys of each kind; the ordered-pair test U1 uses `PAIR_MIN` 5, `PAIR_STEP` 2 and `PAIR_FLOOR` 3.
-- **Alignment** (`p1667_align.py`): gutters at least 0.15 below neighbouring peaks (`GUTTER_DEPTH`), local alignment with `FLOOR` 3 and `ANCHOR` 5, a fitted row and margin per published column, crops with a 0.6 letter-pitch margin (`MARGIN`), accepted at p 0.01 or less against 99 shifted decoys.
+- **Alignment** (`p1667_align.py`): gutters at least 0.15 below neighboring peaks (`GUTTER_DEPTH`), local alignment with `FLOOR` 3 and `ANCHOR` 5, a fitted row and margin per published column, crops with a 0.6 letter-pitch margin (`MARGIN`), accepted at p 0.01 or less against 99 shifted decoys.
 
 The method's reasons are in the guide's [How it works](../letter-reader.md#how-it-works) and the [letter reader log](../logs/2026-10-14-letter-reader.md).
 

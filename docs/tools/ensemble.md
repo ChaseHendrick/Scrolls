@@ -222,7 +222,7 @@ They cover the dtype scaling of uint8 and uint16 maps and the valid mask, weight
 ## History
 
 - 2026-10-17: `.npy` inputs are squeezed and must be 2D like TIFFs, and a missing or unreadable `.npy` is reported as `cannot read PATH: ...`; before, a `.npy` was loaded as it was, with no 2D check, and a missing one ended in a `FileNotFoundError` traceback (`31e15a1`).
-- 2026-10-09: the module text says PHerc0841 may not be held out from Hecate; no behaviour change (`3ba683f`).
+- 2026-10-09: the module text says PHerc0841 may not be held out from Hecate; no behavior change (`3ba683f`).
 - 2026-10-07: first version, with `mean` and `rank`, the valid-pixel rule and uint16 or float32 output (`ebd4ae3`).
 
 ## Related

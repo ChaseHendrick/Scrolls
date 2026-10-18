@@ -22,7 +22,7 @@
 
 ## What it does
 
-Greek text on the Herculaneum scrolls sits in rows a few millimetres apart. An ink map (one number per pixel of a flattened surface, higher where a model thinks there is ink) that shows text should therefore repeat with a period of 2.5 to 8 mm in one direction. `kit rowscore` measures that: it takes the power spectrum of the map and divides the strongest peak in the 2.5 to 8 mm band by the band's median power. A map of rows gives a strong peak and a high score; speckle or blobs give a flat band and a score near the noise level.
+Greek text on the Herculaneum scrolls sits in rows a few millimeters apart. An ink map (one number per pixel of a flattened surface, higher where a model thinks there is ink) that shows text should therefore repeat with a period of 2.5 to 8 mm in one direction. `kit rowscore` measures that: it takes the power spectrum of the map and divides the strongest peak in the 2.5 to 8 mm band by the band's median power. A map of rows gives a strong peak and a high score; speckle or blobs give a flat band and a score near the noise level.
 
 It scores the largest connected piece of the mapped surface, after shrinking the map four times and eroding the edges of holes. Several forward maps (such as two checkpoints of one model) are averaged before scoring, and so are the reverse maps given with `--reverse`, which are the control: the same model run with the surface volume's layers in reverse order should show no rows. Averaging raised the score on real text in Bullo27's tests (w045: 84 and 111 alone, 125 averaged; Community report).
 
@@ -51,7 +51,7 @@ python -m kit rowscore MAP_A.tif MAP_B.tif --reverse MAP_A_reverse.tif MAP_B_rev
 
 - `MAP_A.tif`, `MAP_B.tif`: forward ink maps of one surface, such as `ink_9um` seeds 42 and 43 from villa's inference; one map is enough. They are averaged.
 - `MAP_A_reverse.tif`, `MAP_B_reverse.tif`: the same models with the layers reversed (villa writes them with `--direction both`). They are averaged into the control.
-- `--voxel-um 9.362`: the maps' pixel size in micrometres (9.362 for PHerc0139, 9.366 for PHerc0841).
+- `--voxel-um 9.362`: the maps' pixel size in micrometers (9.362 for PHerc0139, 9.366 for PHerc0841).
 
 On two synthetic 1,600 x 1,600 uint8 maps (letter-sized strokes placed only in rows 5 mm apart, under heavy noise) and a speckle map as the reverse, it printed:
 
@@ -70,7 +70,7 @@ It worked when the exit code is 0 and the forward line shows a row score. It mea
 - **Reverse maps** (`--reverse`). The forward score should be well above the reverse's. A forward score with no reverse is not a result here (the rule that every check must be able to fail, in [`AGENTS.md`](../../AGENTS.md)).
 - **It can fail on real data.** `ink_9um` seed 42 on whole PHerc0841 segments, a scroll the model did not train on: w00 13.7 forward against 23.6 reversed (the reverse higher), ag896 17.5 against 8.8, ag405 46.4 (5.82 mm) against 7.5 (`results` in [`results.json`](../results.json), keys `row_score_as_stored` and `row_score_reversed`; [community scan log](../logs/2026-10-07-community-scan.md)).
 - **On a training surface.** `ink_9um` on whole PHerc0139 w045: seed 42 79.8 (4.67 mm, horizontal) against 8.1 reversed, seed 43 68.3 against 10.6, both seeds averaged 95.9 against 9.5 (same sources). `ink_9um` trained on w045's 2.4 um render, so these show the pipeline runs, not that it generalizes ([log](../logs/2026-10-08-w045-not-held-out.md)).
-- **Area.** On w00 with 200 random windows per size: 0.25 cm2 windows (534 px) got no score (band empty); at 0.5, 1, 2 and 4 cm2 only 4.5 %, 4.0 %, 10.0 % and 6.0 % of forward windows beat the reverse windows' 95th percentile. Among labelled windows, forward beat reverse on row score in 45.6 % (2 cm2) and 38.2 % (4 cm2) of pairs, while forward beat reverse on AUC in 97.4 % and 100 % ([thresholds notes](../../scripts/experiments/2026-10-07-cloud/thresholds/notes.md)).
+- **Area.** On w00 with 200 random windows per size: 0.25 cm2 windows (534 px) got no score (band empty); at 0.5, 1, 2 and 4 cm2 only 4.5 %, 4.0 %, 10.0 % and 6.0 % of forward windows beat the reverse windows' 95th percentile. Among labeled windows, forward beat reverse on row score in 45.6 % (2 cm2) and 38.2 % (4 cm2) of pairs, while forward beat reverse on AUC in 97.4 % and 100 % ([thresholds notes](../../scripts/experiments/2026-10-07-cloud/thresholds/notes.md)).
 - **`--fast-resize` parity.** On the two real public inputs of the speed test every historical field matched the dense default; other shapes differ by float32 rounding, and near-tied FFT peaks can change the period or angle ([rows report](../evidence/2026-10-07-production-scaling/rows/report.md)). Keep the default for exact reproduction.
 
 Claim label: Model output, a triage order over ink maps; Bullo27's reference values quoted here are Community report.
@@ -91,7 +91,7 @@ usage: python -m kit rowscore [-h] [--fast-resize]
 | --- | --- | --- |
 | `forward` | required | One or more forward-direction maps (2D TIFFs of one shape). Several are averaged after each is scaled to 0 to 1, such as two checkpoints |
 | `--reverse REVERSE ...` | none (an empty list) | One or more reverse-direction maps, averaged the same way and scored as the control. Their shape is not checked against the forward maps' |
-| `--voxel-um VOXEL_UM` | required | The maps' pixel size in micrometres, such as 9.362. It sets the millimetre band and the reported period; a wrong value shifts both. It is not checked: 0 gives `band empty` |
+| `--voxel-um VOXEL_UM` | required | The maps' pixel size in micrometers, such as 9.362. It sets the millimeter band and the reported period; a wrong value shifts both. It is not checked: 0 gives `band empty` |
 | `--fast-resize` | off | Shrink with a sparse area resize (needs scipy) instead of the dense matrices: the same coefficients, much faster on large maps, but float32 rounding can differ and a near-tied peak can move. Adds `resize_mode` and `resize_note` to each direction and `fast_resize: true` to the result. A map with NaN keeps the dense path (`dense_nonfinite_fallback`); infinities are clipped to 0 or 1 first, so they do not |
 | `--json` | off | Print the result as JSON (the fields under Outputs) instead of text |
 | `--slug SLUG` | none | Attach the result as a check to the experiment SLUG in the ledger ([run-ledger](run-ledger.md)); the experiment must exist |
@@ -120,7 +120,7 @@ Constants: `DOWNSAMPLE = 4`, `ERODE_PX = 31`, `MIN_VALID_PX = 5000`, `MIN_BAND_B
 | Input | Format | Notes |
 | --- | --- | --- |
 | Forward and reverse maps | 2D TIFF (squeezed), any dtype tifffile reads; no `.npy` | Each map is scaled to 0 to 1 as float32: divided by 255 when its maximum is above 1.5 and at most 255, by 65,535 when above 255, kept as it is otherwise. Maps within one direction must share a shape. A single NaN makes the score NaN (with a meaningless period and angle): replace NaN with 0 first |
-| `--voxel-um` | Float, micrometres per pixel | Must be the maps' real pixel size |
+| `--voxel-um` | Float, micrometers per pixel | Must be the maps' real pixel size |
 
 Surface pixels are those of the averaged, scaled map above 0.01. For uint8 maps, values 0, 1 and 2 count as off the surface and 3 and up as on it; holes erode about 15 downsampled pixels (60 map pixels, about 0.56 mm at 9.362 um) around them, and the map's outer edge does not erode.
 
@@ -139,7 +139,7 @@ With `--json`, one object:
 | `forward.largest_piece` | bool | True when scipy was there to keep the largest connected piece; false when that step was skipped |
 | `forward.score` | float (1 decimal) or null | Strongest power in the 2.5 to 8 mm band over the band's median power; no upper bound |
 | `forward.reason` | str | Only when `score` is null: `too small: the surface needs to be over about 1 cm across` or `band empty: the map is too small for a 2.5 to 8 mm period` |
-| `forward.period_mm` | float (2 decimals) | Period of the strongest peak, in millimetres |
+| `forward.period_mm` | float (2 decimals) | Period of the strongest peak, in millimeters |
 | `forward.angle_deg` | float (1 decimal) | Direction of the peak's frequency vector, `atan2(fy, fx)` in degrees: plus or minus 90 means the pattern repeats down the map (horizontal rows), 0 or plus or minus 180 across it. An angle and the angle plus or minus 180 are the same peak |
 | `forward.mean_ink` | float (4 decimals) | Mean of the stretched map, `clip((a - 0.25) / 0.5, 0, 1)`, over surface pixels |
 | `forward.p99` | float (3 decimals) | Its 99th percentile |
@@ -170,7 +170,7 @@ With `--json`, one object:
 | `--fast-resize requires scipy; omit it for the original dense resize` | `--fast-resize` without scipy | Install scipy, or drop `--fast-resize` |
 | `no experiment at ROOT/SLUG/run.json` | `--slug` names an experiment that was never started | Start it with `python -m kit run init`, or fix `--slug` and `--root` |
 | `bad slug: '...'` | A slug that is empty, holds `/` or starts with `.` | Use a plain name |
-| `forward: no score (too small: the surface needs to be over about 1 cm across)`, exit code 0 | Fewer than 5,000 downsampled surface pixels after erosion, or no surface at all (many values at or below 0.01, or holes everywhere) | Score a larger area; check that the map is not mostly 0 to 2 grey levels |
+| `forward: no score (too small: the surface needs to be over about 1 cm across)`, exit code 0 | Fewer than 5,000 downsampled surface pixels after erosion, or no surface at all (many values at or below 0.01, or holes everywhere) | Score a larger area; check that the map is not mostly 0 to 2 gray levels |
 | `forward: no score (band empty: the map is too small for a 2.5 to 8 mm period)`, exit code 0 | Fewer than 20 frequency bins in the band: the piece is small, or `--voxel-um` is too small or 0 | Score a larger area, and give the real pixel size |
 | `forward: row score nan, ...`, exit code 0 | A NaN in a map spreads through the resize and the FFT; JSON then holds `NaN`, which strict JSON parsers refuse | Replace NaN with 0 (off the surface) before scoring |
 | `note: scipy not found, so the largest-piece step was skipped; thin strips can fake a period` | scipy is missing; the score covers every surface pixel, and `largest_piece` is false | Install scipy for a score comparable with others |
@@ -180,12 +180,12 @@ With `--json`, one object:
 
 1. Load each map (`load_map`), scale it to 0 to 1 (`_normalize`) and average the maps of each direction (`mean_map`).
 2. Stretch: `v = clip((a - 0.25) / 0.5, 0, 1)`, so 0.25 and below is 0 and 0.75 and above is 1. Surface pixels: `a > 0.01`.
-3. Shrink `v` by `DOWNSAMPLE = 4` with an area average (OpenCV's `INTER_AREA` as two matrix products, or sparse matrices with `--fast-resize`), and map the surface mask onto the same grid by nearest neighbour.
+3. Shrink `v` by `DOWNSAMPLE = 4` with an area average (OpenCV's `INTER_AREA` as two matrix products, or sparse matrices with `--fast-resize`), and map the surface mask onto the same grid by nearest neighbor.
 4. Erode the mask with a square of `ERODE_PX = 31` downsampled pixels using a summed-area table; outside the image counts as surface.
 5. Keep the largest 8-connected piece of the mask (`scipy.ndimage.label`) and crop both to its bounding box. Without scipy this step is skipped.
 6. Stop with `too small` if fewer than `MIN_VALID_PX = 5000` mask pixels remain.
 7. Fill pixels off the mask with the mean on it, subtract the mean, multiply by a 2D Hann window, and take the power spectrum of the 2D FFT.
-8. The band holds the frequencies whose radius lies between `px_mm / 8` and `px_mm / 2.5` cycles per downsampled pixel, where `px_mm = 4 x voxel_um / 1000` is a downsampled pixel's size in millimetres (`PERIOD_MM = (2.5, 8.0)`). Stop with `band empty` if it has fewer than `MIN_BAND_BINS = 20` bins.
+8. The band holds the frequencies whose radius lies between `px_mm / 8` and `px_mm / 2.5` cycles per downsampled pixel, where `px_mm = 4 x voxel_um / 1000` is a downsampled pixel's size in millimeters (`PERIOD_MM = (2.5, 8.0)`). Stop with `band empty` if it has fewer than `MIN_BAND_BINS = 20` bins.
 9. The score is the band's maximum power over its median power. The period is `px_mm` over the peak's radius, and the angle is the peak's direction.
 
 Published source: Bullo27's `analysis/rowscore.py` ([first-letters-survey](https://github.com/Bullo27/first-letters-survey), MIT). The dense resize is the default and reproduces older numbers; the sparse resize computes the same overlap coefficients and only their nonzero products ([rowscore.md](../rowscore.md)).

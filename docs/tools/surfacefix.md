@@ -26,7 +26,7 @@ A traced surface (a mesh, stored in villa's tifxyz form: three TIFF grids giving
 
 It works in two steps. `prepare` writes shifted copies of the source mesh, one per offset in voxels, each checked to be a pure normal shift within `--max-shift-um` that keeps holes, topology and scale and does not fold the grid, plus a `manifest.json` to fill in. Between the two steps you render every mesh with villa and run one ink model on each render three ways: forward (the depth order as stored), reverse (layers in reverse order) and shuffle (layers in a random order). `apply` then matches each source vertex to a point on the reference trace by geometry alone, before it reads any map, and compares high-pass-filtered map values region by region. A region gets a shift only when the best candidate, chosen on the even native rows, also passes on the held-back odd rows, beats the baseline by a margin on both, and beats every control: the reverse and shuffle maps in all pairings, and the reference map displaced 1 to 3 mm. Everything else is left unchanged and flagged.
 
-It does no rendering and no inference, and it never changes the source mesh. A shift it accepts is a geometry suggestion for one region, chosen from model output; it is not evidence of ink, not proof that the surface now follows the ink layer, and not a reading. Accepted shifts change the input context of neighbouring patches, so the merged copy must be rendered again and the reader run again before anyone claims an improvement (the tool says so in every report's `notice`). On real papyrus it has so far accepted no correction (see Checks and controls).
+It does no rendering and no inference, and it never changes the source mesh. A shift it accepts is a geometry suggestion for one region, chosen from model output; it is not evidence of ink, not proof that the surface now follows the ink layer, and not a reading. Accepted shifts change the input context of neighboring patches, so the merged copy must be rendered again and the reader run again before anyone claims an improvement (the tool says so in every report's `notice`). On real papyrus it has so far accepted no correction (see Checks and controls).
 
 Status is Experimental: its thresholds are defaults, not calibrated operating points, and no real correction has passed its own checks yet ([guide](../surfacefix.md#validation-scope)). villa already has surface snapping and optimization in Lasagna; this is a small selection and checking layer over existing pipeline outputs, not a replacement ([community needs log](../logs/2026-10-07-community-needs.md)).
 
@@ -38,7 +38,7 @@ Status is Experimental: its thresholds are defaults, not calibrated operating po
 
 ## When to use it
 
-- Testing, on public labelled data, whether bounded normal shifts chosen by agreement between two traces of one sheet would move a surface toward a better render.
+- Testing, on public labeled data, whether bounded normal shifts chosen by agreement between two traces of one sheet would move a surface toward a better render.
 - Flagging regions of a trace where two traces' ink maps disagree beyond their controls, as a list of places to look at.
 - A preregistered experiment with frozen thresholds (the preregistration rule, hard rule 3), where "no correction" is an acceptable and meaningful result.
 
@@ -66,7 +66,7 @@ python -m kit surfacefix apply work/surfacefix-candidates/manifest.json work/sur
 
 - `SOURCE.tifxyz`: the trace to correct, a tifxyz folder with `x.tif`, `y.tif`, `z.tif` and `meta.json`.
 - `REFERENCE`: a separate trace of the same sheet, in the same CT coordinates.
-- `9.366`: the CT voxel size in micrometres, which is also the map pixel size at render scale 1.
+- `9.366`: the CT voxel size in micrometers, which is also the map pixel size at render scale 1.
 
 Filling the manifest means setting `model` and `stride`, a `path` with the same `model` and `stride` for every map, and a `reference` record. Paths are relative to the manifest's folder (absolute paths also work):
 
@@ -98,13 +98,13 @@ The checks are built in; none can be switched off. A region's shift is accepted 
 - **Depth-order controls**: r at least `--control-margin` (0.1) above the largest absolute r among the six control pairings: source reverse with reference reverse, source reverse with reference forward, source forward with reference reverse, and the same three for shuffle. A shared artifact, such as a crack seen the same way in every depth order, makes these agree and refuses the shift.
 - **Spatial controls**: the reference forward map displaced 1, 2 and 3 mm along each native axis, both ways, kept only where the displaced point is really 1 to 3 mm away and covered. At least 2 must be usable, and they count in the same maximum.
 - **Held-back rows**: the winner is chosen on even native rows only, then checked once on odd rows; no runner-up is tried when it fails.
-- **Geometry**: every candidate must be the declared normal offset (tangential motion at most the rounding tolerance), keep holes and scale, stay within `max_shift_um`, and not fold the grid; the merged mesh is checked again and reverted whole if it folds; neighbouring vertices may differ by at most `--max-step-vox`.
+- **Geometry**: every candidate must be the declared normal offset (tangential motion at most the rounding tolerance), keep holes and scale, stay within `max_shift_um`, and not fold the grid; the merged mesh is checked again and reverted whole if it folds; neighboring vertices may differ by at most `--max-step-vox`.
 
 What a pass and a fail look like, with real numbers:
 
 - **Real PHerc0841, no labels in the crop** (schema 1 matching, before schema 2 existed; w00 and ag896 traces, `d9v2` reader, stride 42, 12 maps): 0 regions accepted, 16 flagged, 4 evaluable; 432 of 962 native points covered. All eight full searches with deliberately misregistered reference maps (shifted 150 and 300 px each way on each axis) also accepted 0 ([log](../logs/2026-10-07-real-surfacefix-validation.md), `surfacefix_checks` in [`results.json`](../results.json)).
-- **Real PHerc0841, supervised crop** (schema 2; a new w00 crop chosen from supervision and geometry before any map): 0 accepted, 16 flagged, 4 evaluable, 444 covered points; a sideways 0.5 voxel edit with recomputed hashes was refused; eight displaced-reference nulls accepted 0. Labels were read only afterwards: the baseline's forward AUC was 0.9211 (reverse 0.5951, shuffle 0.6439), and the +1 voxel candidate's 0.9300, a gain of 0.00889 with interval [-0.00461, 0.02239] that includes zero, so the refusal stood ([follow-up log](../logs/2026-10-07-followup-tests.md), `followup_checks` kinds `supervised_surfacefix_rejection` and `supervised_surfacefix_label_audit` in `results.json`).
-- **Synthetic**: `tests/test_surfacefix.py` recovers a known 1 voxel shift, and refuses when the controls share the signal, when a control has no variation, when the held-back rows disagree, and when neighbouring offsets jump.
+- **Real PHerc0841, supervised crop** (schema 2; a new w00 crop chosen from supervision and geometry before any map): 0 accepted, 16 flagged, 4 evaluable, 444 covered points; a sideways 0.5 voxel edit with recomputed hashes was refused; eight displaced-reference nulls accepted 0. Labels were read only afterward: the baseline's forward AUC was 0.9211 (reverse 0.5951, shuffle 0.6439), and the +1 voxel candidate's 0.9300, a gain of 0.00889 with interval [-0.00461, 0.02239] that includes zero, so the refusal stood ([follow-up log](../logs/2026-10-07-followup-tests.md), `followup_checks` kinds `supervised_surfacefix_rejection` and `supervised_surfacefix_label_audit` in `results.json`).
+- **Synthetic**: `tests/test_surfacefix.py` recovers a known 1 voxel shift, and refuses when the controls share the signal, when a control has no variation, when the held-back rows disagree, and when neighboring offsets jump.
 
 These real runs are dependent checks on one patch of one sheet; zero acceptances does not give a false-positive rate. Before any claim, rerender the merged copy and score it with [`auc`](auc.md) (with the reverse-depth control) and [`hpscore`](hpscore.md) where labels exist.
 
@@ -125,9 +125,9 @@ usage: python -m kit surfacefix prepare [-h] --voxel-um VOXEL_UM
 | --- | --- | --- |
 | `mesh` | required | The source tifxyz folder. It is read and hashed, never changed |
 | `out` | required | A new output folder, such as `work/surfacefix-candidates`. It must not exist, must not be the source or inside it, and must not contain it |
-| `--voxel-um VOXEL_UM` | required | CT voxel size in micrometres (9.366 for the PHerc0841 scan used in the real runs). Must be positive and finite. Converts offsets to micrometres for the bound |
+| `--voxel-um VOXEL_UM` | required | CT voxel size in micrometers (9.366 for the PHerc0841 scan used in the real runs). Must be positive and finite. Converts offsets to micrometers for the bound |
 | `--offsets OFFSETS ...` | `-1 1` | Candidate shifts in voxels along the unit normal, one `offset-NNN.tifxyz` each, numbered in the order given. Each must be finite, nonzero, unique, and at most `--max-shift-um` once multiplied by `--voxel-um`. Positive is along cross(row tangent, column tangent) of the native grid; check which side that is for your mesh |
-| `--max-shift-um MAX_SHIFT_UM` | `50.0` | Physical bound in micrometres on any vertex's shift, and on the reference matching distance in `apply`. Must be positive and finite |
+| `--max-shift-um MAX_SHIFT_UM` | `50.0` | Physical bound in micrometers on any vertex's shift, and on the reference matching distance in `apply`. Must be positive and finite |
 | `--json` | off | Print the manifest it wrote as JSON instead of the one-line message |
 
 ### `python -m kit surfacefix apply`
@@ -154,7 +154,7 @@ usage: python -m kit surfacefix apply [-h] [--region-points REGION_POINTS]
 | `--max-step-vox MAX_STEP_VOX` | `1.0` | Largest allowed difference in chosen offset between adjacent native vertices; both regions of a larger jump are reverted. Positive |
 | `--json` | off | Print the report as JSON instead of the one-line status |
 
-These thresholds are experimental defaults. Freeze them on held-out labelled data before a target run; changing them after seeing target maps invalidates that run's preregistration ([guide](../surfacefix.md#inputs-and-workflow)).
+These thresholds are experimental defaults. Freeze them on held-out labeled data before a target run; changing them after seeing target maps invalidates that run's preregistration ([guide](../surfacefix.md#inputs-and-workflow)).
 
 ## Python API
 
@@ -290,7 +290,7 @@ Every refusal below is printed as `surfacefix: MESSAGE` with exit code 2, and le
 | `PATH: meta.json scale must have two positive finite values` | `scale` is not two positive numbers | Fix `meta.json` |
 | `PATH: malformed holes or fewer than four valid points` | A vertex with some but not all coordinates at -1, or fewer than 4 valid vertices | Fix the mesh's holes |
 | `symlink inputs are not supported: PATH` | A file inside a mesh folder is a symbolic link | Copy the real file in |
-| `mesh has too few points with usable local normals` | Fewer than 4 vertices have neighbours on both axes and a nonzero normal | Use a larger, connected mesh |
+| `mesh has too few points with usable local normals` | Fewer than 4 vertices have neighbors on both axes and a nonzero normal | Use a larger, connected mesh |
 | `coordinate precision is inadequate for subvoxel normal-offset checks` | The rounding tolerance at the largest coordinate exceeds 0.1 voxel | Store coordinates in a wider float type |
 | `source mesh has degenerate native-grid triangles` | The source grid already has a zero-area or folded triangle | Repair the source trace first |
 | `offset would create negative coordinates or a hole` | A shift would push a vertex below 0 | Use a smaller offset |
@@ -322,24 +322,24 @@ Every refusal below is printed as `surfacefix: MESSAGE` with exit code 2, and le
 `prepare`:
 
 1. Read the mesh (`_mesh`): valid vertices are those with all coordinates at least 0 and a positive sum; holes are all -1 or all 0.
-2. Normals (`_normals`): central differences along rows and columns, one-sided beside holes and edges; the unit normal is cross(row tangent, column tangent). A vertex without a neighbour on both axes, or with a zero cross product, is unsupported and never moves.
+2. Normals (`_normals`): central differences along rows and columns, one-sided beside holes and edges; the unit normal is cross(row tangent, column tangent). A vertex without a neighbor on both axes, or with a zero cross product, is unsupported and never moves.
 3. For each offset, move supported vertices by offset x normal, cast to the stored dtype, and check the result (`_geometry`): same shape, holes and scale; every shift at most `max_shift_um` plus the rounding tolerance; tangential motion and error along the normal at most the tolerance (`_roundoff`, at least 0.001 voxel); normals still supported and not flipped; no triangle of the native grid flipped or degenerate (`_unfolded`).
 4. Only after every offset passes, create OUT, copy the source folder per offset, and write the manifest with SHA-256 hashes of every file.
 
 `apply` (`correct`):
 
 1. Check thresholds, the manifest's schema, matching mode, render declaration, voxel size, bound, model and stride.
-2. Schema 2: read only the baseline and reference geometry and run `project` (in `kit/_surface_geometry.py`) before any map is read. For each valid source vertex, find every valid reference quad (`quad_mask`) whose centre lies within `max_shift_um / voxel_um` plus the largest quad radius plus the tolerance (a scipy `cKDTree` ball query), prune by bounding box, and bracket the true distance to each bilinear quad by subdivision (`closest_quad`: triangle distances give a lower bound corrected for the quad's warp, points on the quad an upper bound; budget 4,096 boxes). A quad that does not converge, or whose unique nearest point is not certified by `_unique_minimum` (a sufficient strict-convexity test), makes the vertex unresolved if it could be within the bound. A second quad within numerical reach of the winner at another position, or any quad more than 2 native steps away within the bound (a remote winding), makes it ambiguous. Only a unique certified match at distance at most the bound is valid; the tolerance never enlarges the bound. Schema 1 instead takes the nearest valid reference vertex and accepts it within the bound.
+2. Schema 2: read only the baseline and reference geometry and run `project` (in `kit/_surface_geometry.py`) before any map is read. For each valid source vertex, find every valid reference quad (`quad_mask`) whose center lies within `max_shift_um / voxel_um` plus the largest quad radius plus the tolerance (a scipy `cKDTree` ball query), prune by bounding box, and bracket the true distance to each bilinear quad by subdivision (`closest_quad`: triangle distances give a lower bound corrected for the quad's warp, points on the quad an upper bound; budget 4,096 boxes). A quad that does not converge, or whose unique nearest point is not certified by `_unique_minimum` (a sufficient strict-convexity test), makes the vertex unresolved if it could be within the bound. A second quad within numerical reach of the winner at another position, or any quad more than 2 native steps away within the bound (a remote winding), makes it ambiguous. Only a unique certified match at distance at most the bound is valid; the tolerance never enlarges the bound. Schema 1 instead takes the nearest valid reference vertex and accepts it within the bound.
 3. Read every map (`_record`): check model, stride, shape, finiteness and sign; high-pass filter it (`high_pass` from `kit/hpscore.py`: the map minus its Gaussian mean over covered pixels, sigma `HIGH_PASS_UM / voxel_um` pixels, with `HIGH_PASS_UM = 48.0`); sample it at every native vertex with bilinear interpolation at (r / SY - 0.5, c / SX - 0.5) (`_sample_native`). For schema 2 the reference is sampled on its dense high-pass canvas at the matched fractional positions (`_sample_projected`), not from its vertex samples.
 4. Confirm the geometry did not change since step 2, the reference is a separate trace, and each candidate is the declared normal offset; check OUT.
 5. Covered vertices: valid, with a supported normal, matched, and covered in every map of the baseline, every candidate and the reference.
 6. Spatial controls: from the median spacing of adjacent reference vertices, shift the matched positions by 1, 2 and 3 mm along each axis, both ways (up to 12), without wrapping, keeping points really 1,000 to 3,000 um away.
 7. Per region (`--region-points` square), selection = covered vertices on even native rows, held back = odd rows. Score the baseline on both (`_scores`: Pearson r via `_r`, and the maximum absolute r over the six depth-order pairings and the spatial controls). A passing baseline is left alone; otherwise every candidate is scored on the selection rows, the best r wins, and the winner is scored once on the held-back rows. Accept only if both subsets pass `min_corr`, `min_gain` and `control_margin`; set the offset on the region's covered vertices.
-8. Revert both regions of any neighbouring jump above `max_step_vox` (plus 1e-8), repeating until nothing changes.
+8. Revert both regions of any neighboring jump above `max_step_vox` (plus 1e-8), repeating until nothing changes.
 9. Merge the accepted candidates' coordinates; if the merged grid folds or loses a normal, revert everything.
 10. Create OUT, write `corrected.tifxyz` (baseline folder copy, coordinates in their original dtype) and `report.json`.
 
-Constants: `KINDS = ("forward", "reverse", "shuffle")`, `CONTINUOUS_MODE = "certified_bilinear_reference_v1"`, `CONTINUOUS_RENDER` (the render declaration above), `HIGH_PASS_UM = 48.0`, the 1,000 to 3,000 um spatial controls, the 0.1 voxel precision limit, and the 4,096-box budget of `closest_quad`. The map registration (vertex at pixel r / SY - 0.5) follows villa's `vc_render_tifxyz` canvas centring, as checked against its source ([real validation log](../logs/2026-10-07-real-surfacefix-validation.md)).
+Constants: `KINDS = ("forward", "reverse", "shuffle")`, `CONTINUOUS_MODE = "certified_bilinear_reference_v1"`, `CONTINUOUS_RENDER` (the render declaration above), `HIGH_PASS_UM = 48.0`, the 1,000 to 3,000 um spatial controls, the 0.1 voxel precision limit, and the 4,096-box budget of `closest_quad`. The map registration (vertex at pixel r / SY - 0.5) follows villa's `vc_render_tifxyz` canvas centering, as checked against its source ([real validation log](../logs/2026-10-07-real-surfacefix-validation.md)).
 
 ## Cost and time
 
@@ -365,7 +365,7 @@ The tool itself needs no GPU and rents nothing. Its inputs do: rendering each me
 python -m unittest tests.test_surface_geometry tests.test_surfacefix -v
 ```
 
-`tests/test_surface_geometry.py` (15 tests) covers the correspondence: batched and scalar triangle distances across dtypes, child bounds, a half-grid plane match, the physical bound never widened by tolerance, holes and folded quads, a saddle's distance bracket against a dense search, budget exhaustion, shared edges, remote ties, unresolved rivals, a saddle with two nearest points, and a large far-centred quad. `tests/test_surfacefix.py` (24 tests) covers recovery of a known shift with holes, metadata and inputs preserved; shared-artifact and flat controls; a healthy baseline left unchanged; held-back rejection without a runner-up; missing coverage; mixed strides and missing controls; bad maps, offsets, overlap, hashes, tangential edits, jumps, folds, precision, anisotropic scale and map registration; schema 2 against schema 1; geometry frozen before maps; the render declaration; and the command line. They need numpy, scipy and tifffile and skip without them. They use synthetic meshes only, never real papyrus. On 2026-10-16 the 39 tests took 29 s of CPU (116 s wall on the busy shared 4-core container).
+`tests/test_surface_geometry.py` (15 tests) covers the correspondence: batched and scalar triangle distances across dtypes, child bounds, a half-grid plane match, the physical bound never widened by tolerance, holes and folded quads, a saddle's distance bracket against a dense search, budget exhaustion, shared edges, remote ties, unresolved rivals, a saddle with two nearest points, and a large far-centered quad. `tests/test_surfacefix.py` (24 tests) covers recovery of a known shift with holes, metadata and inputs preserved; shared-artifact and flat controls; a healthy baseline left unchanged; held-back rejection without a runner-up; missing coverage; mixed strides and missing controls; bad maps, offsets, overlap, hashes, tangential edits, jumps, folds, precision, anisotropic scale and map registration; schema 2 against schema 1; geometry frozen before maps; the render declaration; and the command line. They need numpy, scipy and tifffile and skip without them. They use synthetic meshes only, never real papyrus. On 2026-10-16 the 39 tests took 29 s of CPU (116 s wall on the busy shared 4-core container).
 
 ## History
 

@@ -1,36 +1,36 @@
 """Fresh letter-recognition test: read the drawn letter groups of PHerc. 1667's official ink labels.
 
-The groups come from p1667_groups.py (a fixed, model-free cut of the six labelled segments); the
+The groups come from p1667_groups.py (a fixed, model-free cut of the six labeled segments); the
 reference letters come from three independent blind transcriptions of the group images, and only
 groups on which all three agree exactly, with no unsure letter, are scored. No reader has seen
 PHerc. 1667, and no checkpoint is chosen here: the four checkpoints were chosen earlier on the
 PHerc. 172 dev half. The rule was fixed on 9 October 2026 before these reads (docs/logs/2026-10-14-letter-reader.md).
 
-Each group is read from its crop with the line centre and the segment's letter height given
-(lines=[centre], letter_px=h, one column), ink only and with the language model. Scored as
+Each group is read from its crop with the line center and the segment's letter height given
+(lines=[center], letter_px=h, one column), ink only and with the language model. Scored as
 character error over reference letters, one unit per group, plus two controls: letters kept on
 the reader's null images against the real crops, and the error against references permuted
 across groups (the chance floor). Every string is model output on public drawings, not a reading.
 
 With --source map the same windows are cut from the segments' 2.4 um ink-detection maps
-(p1667_mapcrops.py) instead of the drawings. A map window also shows the unlabelled letters on
+(p1667_mapcrops.py) instead of the drawings. A map window also shows the unlabeled letters on
 either side of a group, so every result also carries the free-ends error: the edit distance from
 the reference to the best-matching run of letters in the read, so letters read before and after
 the reference are not charged (errors_free_ends; compare --metric free_ends).
 
 With --source map-wide the windows are made two letter heights taller above and below
-(p1667_mapcrops.py --wide), so they hold the neighbouring lines, and the reader is given no line:
+(p1667_mapcrops.py --wide), so they hold the neighboring lines, and the reader is given no line:
 it finds the lines itself (lines=None). With --letter-px auto it is not given the letter height
-either (scale search). A group is scored on the read line nearest its true centre if that line is
+either (scale search). A group is scored on the read line nearest its true center if that line is
 within HIT_TOL letter heights of it, and counts every reference letter as an error if no line is;
 errors_free_ends_any is the lenient score, the best of all read lines.
 
-With --source map-region the reader reads each segment's whole labelled map region once
+With --source map-region the reader reads each segment's whole labeled map region once
 (p1667_mapcrops.py --region: several columns of about ten lines), finding columns, lines and
 letter positions itself (columns="auto", lines=None). A group is scored on the found line, in a
-reader column overlapping the group, whose row at the group's centre (undoing that column's
+reader column overlapping the group, whose row at the group's center (undoing that column's
 deskew) is nearest the group's line, if within HIT_TOL letter heights; its read is the letters on
-that line whose boxes centre inside the group's window span (the group's box widened by PAD_X
+that line whose boxes center inside the group's window span (the group's box widened by PAD_X
 letter heights each side, as in the windows). Ink only: the language-model decode has no letter
 positions, so it cannot be cut to a group.
 
@@ -61,7 +61,7 @@ from kit.letterlines import check_references  # noqa: E402
 
 NULLS = 2
 LM_WEIGHT = 0.5
-HIT_TOL = 0.5     # map-wide: a read line within this many letter heights of the group's centre is its line
+HIT_TOL = 0.5     # map-wide: a read line within this many letter heights of the group's center is its line
 
 
 def references(path):
@@ -117,7 +117,7 @@ def read(groups_dir, refs_path, weights, lm=None, source="label", letter_px="giv
         g, ref = meta[gid], refs[gid]
         c = np.load(groups_dir / ("npy" if source == "label" else "map-npy") / f"{gid}.npy")
         if not 0 <= g["centre_y"] < c.shape[0]:
-            raise SystemExit(f"{gid}: line centre {g['centre_y']} is outside its crop ({c.shape[0]} rows)")
+            raise SystemExit(f"{gid}: line center {g['centre_y']} is outside its crop ({c.shape[0]} rows)")
         res = R.analyze(c, net, letter_px=g["letter_h"], lines=[g["centre_y"]], columns="off", nulls=NULLS, seed=0,
                         lm=lm, lm_weight=LM_WEIGHT if lm else 0.0)
         decodes = {"ink_only": "".join("".join(l["glyph"] for l in L["letters"]) for L in res["lines"])}
@@ -152,7 +152,7 @@ def read(groups_dir, refs_path, weights, lm=None, source="label", letter_px="giv
 
 
 def read_wide(groups_dir, refs_path, weights, lm=None, letter_px="given"):
-    """Read the tall map windows with no line given; score the found line nearest the group's centre."""
+    """Read the tall map windows with no line given; score the found line nearest the group's center."""
     groups_dir = Path(groups_dir)
     meta = {g["id"]: g for g in json.loads((groups_dir / "groups.json").read_text())["groups"]}
     where = json.loads((groups_dir / "map-wide.json").read_text())["groups"]
@@ -279,7 +279,7 @@ def read_region(groups_dir, refs_path, weights, letter_px="given"):
                "lines_read": sum(s["lines"] for s in segs.values()),
                "letters_kept": sum(s["letters_kept"] for s in segs.values()),
                "null_letters_kept": [sum(s["null_letters_kept"][i] for s in segs.values()) for i in range(NULLS)]}
-    return {"note": R.NOTE, "data": "PHerc. 1667 2.4 um ink-detection maps, whole labelled region of each segment",
+    return {"note": R.NOTE, "data": "PHerc. 1667 2.4 um ink-detection maps, whole labeled region of each segment",
             "source": "map-region", "letter_px": letter_px, "hit_tol": HIT_TOL, "weights": str(weights),
             "nulls": NULLS, "lm_weight": None, "summary": summary, "regions": segs, "segments": rows}
 
@@ -289,7 +289,7 @@ GUIDE_ROWS = {   # (source, --letter-px): the row of docs/letter-reader.md's tab
     ("map", "given"): "row 2, Same 87 groups read from the 2.4 um ink maps, line given",
     ("map-wide", "given"): "row 3, Maps, windows about three lines tall, reader finds the line",
     ("map-wide", "auto"): "row 3's second value, the same windows with nothing given",
-    ("map-region", "auto"): "row 4, Maps, each segment's whole labelled region read once, nothing given",
+    ("map-region", "auto"): "row 4, Maps, each segment's whole labeled region read once, nothing given",
     ("map-region", "given"): "no row of the table: the whole regions with the letter height given (in the log; "
                              "row 4 is --letter-px auto)",
 }
@@ -299,7 +299,7 @@ def headline(res):
     """Lines printed before the summary JSON: the guide's measure first, then the other, and the controls.
 
     The guide quotes the plain character error for the drawings (--source label) and the free-ends error
-    for the maps, whose windows also show unlabelled letters beside a group. Printing only; the summary
+    for the maps, whose windows also show unlabeled letters beside a group. Printing only; the summary
     and the --out file are unchanged."""
     src, summ = res["source"], res["summary"]
     row = GUIDE_ROWS.get((src, res.get("letter_px", "given")), "no row of the guide's table")

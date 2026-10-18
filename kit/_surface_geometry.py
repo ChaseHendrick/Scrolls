@@ -223,8 +223,8 @@ def project(source, reference, max_distance, tolerance):
     radii = np.linalg.norm(corners - centers[:, None], axis=-1).max(1)
     lower_corner, upper_corner = corners.min(1), corners.max(1)
     radius = max_distance + float(radii.max()) + tolerance
-    # A quad that passes the box test below has its centre within max_distance + tolerance + reach of the point
-    # (reach: centre to the farthest box corner). The tree holds the quads of ordinary reach and is searched with
+    # A quad that passes the box test below has its center within max_distance + tolerance + reach of the point
+    # (reach: center to the farthest box corner). The tree holds the quads of ordinary reach and is searched with
     # their largest reach; the few far larger quads (one stray vertex) are always tried. Both filters below then
     # apply as before, so the quads tried are the same, without every point listing every quad.
     reach = np.linalg.norm(np.maximum(upper_corner - centers, centers - lower_corner), axis=-1)
