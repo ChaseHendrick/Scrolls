@@ -63,7 +63,7 @@ vc_render_tifxyz \
 
 ## Recipe 5. Train an ink model on one segment
 
-1. Download one labelled segment (about 25 GB):
+1. Download one labeled segment (about 25 GB):
 
 ```
 uvx --from huggingface_hub hf buckets sync \
@@ -142,7 +142,7 @@ Notes from the tutorial [VC-SpiralTutorial]:
 
 From the prize rules [VC-Prizes]:
 
-1. Open-source the work under a permissive licence, with documentation.
+1. Open-source the work under a permissive license, with documentation.
 2. Prefer community formats (OME-Zarr, tifxyz, meshes).
 3. Bundle a month's small fixes into one submission.
 4. Submissions "are evaluated monthly" through the submission form on the prizes page; the deadline current at the time of writing was "11:59pm Pacific, October 31st, 2026".

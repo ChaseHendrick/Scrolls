@@ -22,7 +22,7 @@ After the 2023 Grand Prize, the organizers listed what they believed was importa
 1. **"An inspiring goal and a clear target."** The unusual goal "drew more press and donations early on" and "attracted an intrinsically motivated community".
 2. **"A solid starting point."** Brent Seales's team "spent two decades making the first scroll scans, building Volume Cartographer, demonstrating the first success in virtual unwrapping, and proving that Herculaneum ink can be detected in CT".
 3. **"Blending competition and cooperation."** A grand prize alone "would suffer from information 'hoarding'". Progress prizes "often in the $1,000-10,000 range" every two months, conditional on open-sourcing, "leveled up" the community, let winners reinvest in equipment or time, and helped people form teams.
-4. **"Hiring an in-house segmentation team."** The "(then somewhat controversial)" decision to pay labellers, because segment quality was hard to judge before ink detection worked, labelling is tedious with "a long learning curve", and prize feedback loops are slow. "We were not dogmatically attached to just being referees; we were willing to run out onto the field and kick the ball a little."
+4. **"Hiring an in-house segmentation team."** The "(then somewhat controversial)" decision to pay labelers, because segment quality was hard to judge before ink detection worked, labeling is tedious with "a long learning curve", and prize feedback loops are slow. "We were not dogmatically attached to just being referees; we were willing to run out onto the field and kick the ball a little."
 5. **"Maximizing surface area for breakthroughs."** "Even ideas and discoveries landing outside the critical path were still important, because a massive search space had to be exhausted."
 
 At the start, "most of us estimated that we had a less than 30% probability of success within the year" [VC-GrandPrize].
@@ -42,7 +42,7 @@ Systematic membership counts are not published in the sources consulted. Indicat
 | Progress-prize submissions | 58, of which 13 awarded | July 2026 | [VC-July2026] |
 | Award entries in the winners list | 54, 92, 16, 71 | 2023, 2024, 2025, 2026 | [VC-Winners] |
 
-![Two-panel chart: left, segmented area of Scroll 1 data in 2023 rising from about 200 to over 1,000 square centimetres; right, number of prize awards per year 2023 to 2026.](../figures/charts/community_growth.svg)
+![Two-panel chart: left, segmented area of Scroll 1 data in 2023 rising from about 200 to over 1,000 square centimeters; right, number of prize awards per year 2023 to 2026.](../figures/charts/community_growth.svg)
 *Figure 24.1. Two public indicators of community activity: segmented area reported during 2023 (left) and number of awards per year in the winners list (right). Chart by the editors. Data: data/community_indicators.csv from [VC-SignsOfProgress], [VC-4thFragment], [VC-SegTooling2Winners] and [VC-Winners]. License: CC BY 4.0 (this book).*
 
 ## People named in public sources
@@ -77,8 +77,8 @@ Grand Prize 2023: Youssef Nader, Luke Farritor, Julian Schilliger. First Ink: Ca
 
 The norms below are stated in prize rules and tutorials:
 
-- **Open source to win.** Code must be released under a permissive licence to accept a prize [VC-Prizes].
-- **Release early.** Progress prizes favour work "released or open-sourced early", that "actually get used", improves results "on real data", fixes bugs in tools people use, reveals "insightful, actionable" information, and is "well documented" [VC-Prizes].
+- **Open source to win.** Code must be released under a permissive license to accept a prize [VC-Prizes].
+- **Release early.** Progress prizes favor work "released or open-sourced early", that "actually get used", improves results "on real data", fixes bugs in tools people use, reveals "insightful, actionable" information, and is "well documented" [VC-Prizes].
 - **Use community formats.** OME-Zarr or Zarr arrays, tifxyz quadmeshes, triangular meshes [VC-Prizes].
 - **Bundle small fixes.** Several small PRs in a month go in one submission [VC-Prizes].
 - **Embargo discoveries.** "Do not make your discovery public until the prize is officially announced" [VC-Prizes]; hidden text is not to be published without written approval [VC-FAQ].
