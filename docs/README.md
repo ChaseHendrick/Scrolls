@@ -4,7 +4,7 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 17 October 2026.
+Updated 18 October 2026.
 
 ## Where things stand
 
@@ -33,6 +33,7 @@ Updated 17 October 2026.
 | Repository map, one row per module and script | [`MAP.md`](MAP.md) | The top-level map in [`../AGENTS.md`](../AGENTS.md) |
 | How we measure (controls, AUC, tracing, splits, cost) beside the community's practice | [`STANDARDS.md`](STANDARDS.md) | [`QUALITY.md`](QUALITY.md) (what each kind of claim needs), [`TESTING.md`](TESTING.md) |
 | Claim labels (Sourced fact, Model output, ...) | [`NOVELTY.md`](NOVELTY.md) | |
+| What pictures and clips public Git may hold: the public media rule (no model output, no prize-eligible scrolls, at most 1920 px and 4 MB, a sidecar each) | [`media/README.md`](media/README.md) | [`assets/README.md`](assets/README.md); the AGENTS.md standing decision and [`DECISIONS.md`](DECISIONS.md) row of 18 October 2026 |
 | From idea to run to null or candidate | [`WORKFLOW.md`](WORKFLOW.md) | [`prereg/`](prereg/) |
 | Failures we hit, append-only | [`logs/errors.md`](logs/errors.md) | [`ERROR-LOG.md`](ERROR-LOG.md) is only the pointer and format |
 | CLI and output conventions | [`UI-UX.md`](UI-UX.md) | |
@@ -48,7 +49,7 @@ Updated 17 October 2026.
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package, 0.1.5, lives on branch `submission/progress-2026-10-fix5`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
-| README hero artwork: image provenance, dimensions and reuse | [`assets/README.md`](assets/README.md) | Root README and AutoPipeline reference |
+| Release media: heroes, cards, GIFs and clips, with provenance, dimensions, labels and reuse | [`assets/README.md`](assets/README.md) | [`media/README.md`](media/README.md) (the public media rule), [`tools/media.md`](tools/media.md), root README and AutoPipeline reference |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |
 | Scroll center (umbilicus) finder: a center line from CT, with its held-out error on the 13 published center lines | [`../scripts/umbilicus/README.md`](../scripts/umbilicus/README.md) | [`evidence/2026-10-14-umbilicus/`](evidence/2026-10-14-umbilicus/README.md) (end-point rule calibration; held-out scores with the end trims; weight hashes), `results.json` `umbilicus_checks` |

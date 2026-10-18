@@ -116,6 +116,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Herculaneum papyri (Herculaneum scrolls)**: Papyrus rolls from a Roman villa at Herculaneum, carbonized by Vesuvius in 79 CE.
 
+**hero (hero image)**: The wide picture at the top of a README or release entry. Here every released tool has one: 1920 x 640 pixels, WebP, at most 300 KB, in the charcoal, ivory and copper style of the root README's, with its media label in the caption. Made by `scripts/media/hero.py`; listed in [`docs/assets/README.md`](docs/assets/README.md).
+
 **Hugging Face**: A site that hosts models, datasets and small web apps called Spaces. Several released weights and the Unroll viewer live there.
 
 ## I
@@ -159,6 +161,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
 
 **mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labeled ink or trusted labels.
+
+**media label**: What a picture shows, written first in its caption and in its sidecar JSON: Concept illustration, Real data render, Model output or Synthetic demo ([`docs/assets/README.md`](docs/assets/README.md)). Public Scrolls holds concept illustrations, synthetic demos and real data renders allowed by the public media rule; model output pictures and real data renders of prize-eligible scrolls stay in Scrolls-private.
 
 **MedNeXt**: A U-Net built from ConvNeXt blocks (large depthwise kernels), in sizes S, B, M and L. In the nnU-Net Revisited comparison it is the one family that scored above nnU-Net's ResEnc L on every dataset, at about twice the training time.
 
@@ -218,6 +222,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **pseudo-label**: A provisional label created from model output and human review. Pseudo-labeling trains a model, keeps its confident predictions as new labels and trains again.
 
+**public media rule**: What pictures and clips public Scrolls' Git may hold (18 October 2026, set by the agents on Chase's delegation): concept illustrations, synthetic demos, and real data renders of public scans that are not prize eligible and show no held-out labels, each at most 1920 px wide and 4 MB with a sidecar; never model output of any scroll ([`docs/media/README.md`](docs/media/README.md)).
+
 ## R
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
@@ -255,6 +261,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.
 
 **sheet switch**: A tracing error in which a mesh jumps from one turn of papyrus to another.
+
+**sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).
 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
 

@@ -1,0 +1,55 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "starter-practice",
+  "label": "Synthetic demo",
+  "alt": "Scrolls Starter's practice exercise: a pointer drags the threshold slider until the drawn word INK survives and the noise-only control stays clean, turns on the gold outline of the drawn strokes, puts the pattern into the control so the result turns to a practice fail, then takes it out again and the pass returns.",
+  "caption": "Synthetic demo: Scrolls Starter's known-answer practice, a drawn word with noise beside a noise-only control. No scan, model or text recognition.",
+  "license": "Apache-2.0",
+  "release_id": "scrolls-starter",
+  "data": null,
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/blob/main/kit/data/starter.html"
+  ],
+  "outputs": [
+    {
+      "file": "starter-practice.mp4",
+      "bytes": 174969,
+      "sha256": "abd0279137515b65284a9c08bba2e837178b91127c101a6f3cfa07d0597d3460",
+      "width": 1280,
+      "height": 940,
+      "kind": "mp4",
+      "seconds": 11.83,
+      "frames": 142,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "starter-practice.gif",
+      "bytes": 191428,
+      "sha256": "b7d732d8794eccd3768f22cb073e9a67ec405fab46ce8f29e0b6091d7778a60d",
+      "width": 960,
+      "height": 705,
+      "kind": "gif",
+      "seconds": 11.83,
+      "frames": 59,
+      "settings": {
+        "width": 960,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "encode.py"
+    ],
+    "scripts_sha256": "ff071841598ae9b5a39e6967a61685c0c7268fef8450b1a7710039dfef7ed045",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python -m kit start --portable --out PAGE.html --no-open && python scripts/media/capture_web.py PAGE.html --out-dir FRAMES --actions scripts/media/captures/starter-practice.json --width 1280 --height 940 && python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 960 --mp4 docs/assets/starter/starter-practice.mp4 --gif docs/assets/starter/starter-practice.gif --meta scripts/media/captures/starter-practice.meta.json"
+}

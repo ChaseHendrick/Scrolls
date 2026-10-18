@@ -18,7 +18,7 @@
 | Go-ahead | Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module |
 | Guide | [AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026) |
-| Checked | 2026-10-16 against commit `d9eaf42` |
+| Checked | 2026-10-18 against commit `4a970bd` |
 
 ## What it does
 
@@ -177,13 +177,13 @@ registry_text, readme_text, action = releases.updated(open("docs/releases.json")
 | `dumps(registry)` | str: the written form of the list | `ReleaseListError` | JSON with a 2-space indent, `ensure_ascii=False` and a final newline; keys `schema_version`, then `pinned` only when it is not empty, then `releases`. Both repositories' copies write the same bytes |
 | `upsert(registry, entry)` | `(new list, "added" or "replaced")` | `ReleaseListError` | Does not change its input. A replacement keeps the old entry's position and pin |
 | `pin(registry, entry_id, on=True)` | The new list, validated | `ReleaseListError`, including `no entry with that id` | `on=False` unpins. Pinning puts the id at the end of the pins |
-| `render_entry(entry)` | list of str: one entry's Markdown lines | `ReleaseListError` | A `### TITLE` heading, the release sentence, the summary, the commands as a `bash` block and the details |
+| `render_entry(entry)` | list of str: one entry's Markdown lines | `ReleaseListError` | A `### TITLE` heading, the picture and its italic caption when the entry has an `image`, the release sentence, the summary, the commands as a `bash` block and the details |
 | `ordered(entries, pinned=())` | list: the entries in the section's order | `KeyError` for a pinned id that is not among the entries (`validate_list` prevents it) | Pinned first in pin order; then the newest `released` first; on the same day, the entry later in the list first |
 | `intro(registry)` | str: the section's first line | `KeyError` for a pin that is not listed | Names the pinned titles when there are pins |
 | `render(registry)` | str: the whole section, marker lines included | `ReleaseListError` | What `render` writes between the markers |
 | `apply(readme, registry)` | str: the README with its section rewritten | `ReleaseListError` when the markers are wrong or the list is invalid | Everything outside the markers is kept |
 | `updated(registry_text, readme_text, entry)` | `(new list text, new README text, "added" or "replaced")` | `ReleaseListError`; `json.JSONDecodeError` for a list text that is not JSON | Touches no file; the private exporter uses it |
-| `check(registry_path=REGISTRY, readme_path=README)` | list of str: problems, empty when the two agree | Nothing for unreadable files, bad JSON or an invalid list: each is returned as a problem | What `check` runs |
+| `check(registry_path=REGISTRY, readme_path=README)` | list of str: problems, empty when the two agree | Nothing for unreadable files, bad JSON or an invalid list: each is returned as a problem | What `check` runs; it also reports an `image.src` under `docs/assets/` that is not a file next to the README |
 | `write(registry_path, readme_path, registry)` | None | `OSError`; `ReleaseListError` | Reads the README, builds both texts, then writes the list and then the README |
 | `add_arguments(p)` | None | Nothing | Adds `--list`, `--readme` and the six actions to an argparse parser; `kit/cli.py` uses it for `python -m kit releases` |
 | `run(args)` | int: the exit code, 0, 1 or 2 | Nothing for `OSError` and `ValueError`, which it prints | The command; `kit/cli.py` sets it as the command's function |
@@ -211,6 +211,7 @@ No other top-level key is allowed.
 | `summary` | str | Required. One paragraph (no line breaks), at most 1,500 characters: what it does, the measured result with its claim label, the main limit |
 | `commands` | list of str | Optional. At most 12 lines, each one non-empty line of at most 300 characters with no code fence; shown as a `bash` block |
 | `details` | str | Optional. One line of at most 500 characters, such as links to the guide |
+| `image` | object | Optional. `{"src": S, "alt": A, "caption": C}`, exactly those keys: a picture shown under the title, with the caption in italics below it. `src` is a path under `docs/assets/` (resolved from the README, so it serves package entries too: the README that shows it is on `main`) or a full `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`, with no `..` part. `alt` is one line of at most 300 characters with no square brackets, asterisks or backticks. `caption` is one line of at most 500 characters, with no asterisk and no leading or trailing space, that starts with its media label, one of `LABELS`: `Concept illustration`, `Real data render`, `Model output` or `Synthetic demo` ([media labels](../assets/README.md)). Both follow the rules for every text value below; a package's caption links are full `https://` URLs |
 | `where` | `"main"`, or an object | Required. `"main"` for files merged here, or `{"branch": B, "commit": C, "path": P}` for a package on its own branch |
 
 Rules for every text value: no HTML comment marker (`<!--` or `-->`), and no long dash (U+2014 or U+2013). The `title`, `summary` and `details` may not hold raw HTML anywhere (a `<` followed by a letter, `/`, `!` or `?`; an `https://` autolink such as `<https://example.org>` is allowed, and so is a bare `<` such as `x<3`), and every link target in them, inline (a target in round brackets after the link text) or as a reference definition (`[x]: TARGET`), is either `https://...` or relative (no scheme such as `http:`, `javascript:` or `data:`, no `//host`, no backslash). Commands are exempt from both, since they are shown in a `bash` block. The `summary` and `details` may not start with a space, a tab, a code fence (three backticks or three tildes) or `<`, because a code block or HTML block opened there would run past the end marker and swallow the rest of the README.
@@ -261,7 +262,7 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `PATH is not in its written form; run python -m kit releases render` | `check`: the list is valid but was not written by the tool (other indentation, key order or no final newline) | Run `python -m kit releases render` |
 | `README needs exactly one releases:start line followed by one releases:end line` | A marker line is missing, doubled or in the wrong order | Restore the two marker lines exactly as in `START` and `END` |
 | `an entry must be a JSON object` | The entry file holds a list or a string | Give one object |
-| `ID: unknown fields [...]` | A field outside `id`, `title`, `released`, `summary`, `commands`, `details`, `where` | Remove it |
+| `ID: unknown fields [...]` | A field outside `id`, `title`, `released`, `summary`, `commands`, `details`, `image`, `where` | Remove it |
 | `ID: missing [...]` | A required field is missing | Add `id`, `title`, `released`, `summary` and `where` |
 | `id 'X' must be lowercase letters, digits and hyphens` | The id has capitals, underscores, a leading hyphen, or is over 63 characters | Use a short id such as `letter-reader` |
 | `ID: KEY must be a non-empty string` | A title, summary or details that is empty, blank or not a string | Write the text |
@@ -281,7 +282,14 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `ID: where.commit must be a full 40-character commit` | A short or uppercase hash | Give the full lowercase hash (`git rev-parse COMMIT`) |
 | `ID: where.path must be a simple relative path` | A leading `/`, `.` or `..` parts, or spaces | Give the package folder as a relative path |
 | `ID: a package's commands run its own files (python scripts/...), never "python -m kit", which the README checks against this repository's kit` | A package entry mentions `python -m kit` or `python3 -m kit` | Use the package's own entry points, such as `python scripts/NAME.py` |
-| `ID: a package's links are full https:// URLs at its commit` | A relative link in a package entry (an `http://` link is refused earlier, by the links rule for every entry) | Link the package's files by `https://` URL at its commit |
+| `ID: a package's links are full https:// URLs at its commit` | A relative link in a package entry, including its image caption (an `http://` link is refused earlier, by the links rule for every entry) | Link the package's files by `https://` URL at its commit |
+| `ID: image is {src, alt, caption}` | `image` is not an object, or has other or missing keys | Give exactly `src`, `alt` and `caption` |
+| `ID: image.src is a docs/assets/ path or an https:// URL ending in .webp, .png, .jpg, .jpeg or .gif` | The picture is elsewhere in the tree, has a space, a `..` part, another scheme, or a format GitHub does not show inline (such as `.svg` or `.mp4`) | Put the picture under `docs/assets/` (see [its README](../assets/README.md)) or give its `https://` URL |
+| `ID: image.KEY must be one line of at most N characters` | An empty, multi-line or too long `alt` (300) or `caption` (500), or not a string | Shorten it to one line |
+| `ID: image.alt is plain text, without square brackets, asterisks or backticks` | Markdown in the alt text, which would break the picture's syntax | Describe the picture in plain words |
+| `ID: image.caption has no asterisks and no leading or trailing space` | The caption is shown in italics, which an asterisk or edge space would break | Remove them |
+| `ID: image.caption starts with its label, one of Concept illustration, Real data render, Model output, Synthetic demo` | The caption does not begin with its media label | Start it with the label, such as `Concept illustration. ...` |
+| `PATH shows pictures that are not in the tree: SRC, ...` | `check`: an entry's `image.src` under `docs/assets/` names a file that is not there | Add the picture (with its row in `docs/assets/README.md`) or fix the path |
 | `ID: listed twice` | Two entries with one id (a hand edit) | Keep one entry per tool |
 | `the list is {"schema_version": 1, "pinned": [ids, optional], "releases": [...]}` | The list is not an object, `schema_version` is not 1, or it has other top-level keys | Restore the list's shape |
 | `releases must be a list` | `releases` is not a list | Restore it |
@@ -307,13 +315,14 @@ Constants that matter, from `kit/releases.py`:
 | `START` | `<!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->` (a README line is found by its start, `<!-- releases:start`) |
 | `END` | `<!-- releases:end -->` |
 | `INTRO` | `Released tools, newest first. Each entry comes from LINK.` (LINK is a Markdown link to `docs/releases.json`) |
-| `FIELDS`, `REQUIRED` | The seven entry fields; `id`, `title`, `released`, `summary`, `where` are required |
+| `FIELDS`, `REQUIRED` | The eight entry fields (`image` since 18 October 2026); `id`, `title`, `released`, `summary`, `where` are required |
 | `REPO_URL` | `https://github.com/ChaseHendrick/Scrolls`, the base of a package's link |
 | `BLOCK_OPENER` | Whitespace, three backticks, three tildes or `<` at the start of a summary or details |
 | `KIT_COMMAND` | `python3? -m kit ` (refused in a package entry) |
 | `RELATIVE_LINK` | `](` not followed by `https://` (refused in a package entry) |
 | `INLINE_HTML`, `HTTPS_AUTOLINK` | `<` followed by optional space and a letter, `/`, `!` or `?` (refused in a title, summary or details), after removing `<https://...>` autolinks |
 | `LINK_TARGET`, `URL_SCHEME` | A link target, inline or in a reference definition, and the scheme, `//` or backslash that makes it refused unless it starts with `https://` |
+| `IMAGE_FIELDS`, `IMAGE_SRC`, `LABELS` | An image's three keys; its `src` pattern (a `docs/assets/` path or an `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`); the four media labels a caption starts with |
 | Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters |
 
 The write is not atomic across the two files: the list is written first, then the README. If the README write failed, `check` would report the mismatch and `render` would repair it.

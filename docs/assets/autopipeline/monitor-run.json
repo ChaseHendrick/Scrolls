@@ -1,0 +1,34 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-run",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline 0.1.4's monitor during the synthetic demo run: stages turn green one by one until the run finishes.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.4's monitor following its synthetic demo run (made-up data, no scan, no model).",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "AutoPipeline 0.1.4 package, synthetic demo (docs/autopipeline/README.md)"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-run.gif",
+      "bytes": 393928,
+      "sha256": "48435cf3417ee5b4a60fd0e3744fe103e0eefc2ca833427f0c30ce2deef1d007",
+      "width": 960,
+      "height": 608,
+      "kind": "legacy",
+      "format": "gif",
+      "seconds": 13.4,
+      "frames": 161
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-16",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "8cae2ed"
+  },
+  "command": "Recorded from AutoPipeline 0.1.4's monitor during its synthetic demo run (commit 8cae2ed, 16 October 2026); predates scripts/media."
+}

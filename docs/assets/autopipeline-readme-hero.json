@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "autopipeline-readme-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.",
+  "caption": "Concept illustration: one papyrus sheet traced in copper and flattened into a grid. Generated art; no scan data, no model output, no recovered text.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "OpenAI image generation, 18 October 2026"
+  ],
+  "outputs": [
+    {
+      "file": "autopipeline-readme-hero.webp",
+      "bytes": 129882,
+      "sha256": "e267b3c284e1d6a4d4711fb38b0e8604b68cea66927daaa12b683e401cf54dff",
+      "width": 1920,
+      "height": 640,
+      "kind": "legacy",
+      "format": "webp"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "0824531"
+  },
+  "command": "Generated with OpenAI image generation at 2172 x 724, resized with Lanczos to 1920 x 640, saved as WebP at quality 83 (docs/assets/README.md, The reference style)."
+}

@@ -4228,6 +4228,154 @@
    ]
   },
   {
+   "id": "media",
+   "name": "media",
+   "tagline": "make release heroes, clips and captures that say what they show",
+   "summary": "`scripts/media/` makes the pictures for released tools: 1920 x 640 heroes in the style of the README's, social cards, GIFs and MP4s, and frame-stepped browser captures, each with a sidecar JSON that records its media label, license and how it was made.",
+   "status": "Current",
+   "kind": [
+    "script folder"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python scripts/media/hero.py",
+    "python scripts/media/encode.py",
+    "python scripts/media/capture_web.py",
+    "python scripts/media/sweep.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/media/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_media.py",
+    "tests/test_repo.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to make files. Publishing them anywhere (a Hugging Face Space thumbnail, release notes, a forum) needs Chase's yes first (the go-ahead rule, hard rule 8). Model output of any scroll and real-data media of prize-eligible scrolls never go into public Scrolls; other real-data media follow [the public media rule](../media/README.md)"
+   },
+   "checked": {
+    "date": "2026-10-18",
+    "commit": "4a970bd"
+   },
+   "license": "Apache 2.0 for the scripts and the procedural pictures; scan data and anything rendered from it is CC BY-NC 4.0",
+   "fields": {
+    "Id": "`media`",
+    "Status": "Current",
+    "Kind": "script folder",
+    "Area": "Releases and repository",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`",
+    "Code": "`scripts/media/`",
+    "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
+    "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
+    "Runs on": "Any CPU. A hero renders at 3840 x 1280 in 85 to 640 s on a 4-core cloud container shared with about ten other agents, with a peak of 1.7 GB of memory (measured 2026-10-18; see Cost and time). Encoding a 20 s clip takes seconds",
+    "Network": "None, except that `capture_web.py` opens the page it is given, which may be a URL",
+    "Writes": "`hero.py`: `NAME.webp`, `BASE-card.jpg` and `NAME.json` in `--out-dir` (with `--preview`, only `NAME-preview.png`). `encode.py`: the `--mp4` and `--gif` files and, with `--meta`, one `NAME.json` beside them. `capture_web.py`: `frame-NNNNN.png` frames and named shots in `--out-dir`. `sweep.py`: `frame-NNNNN.png` in `--out-dir`. Each overwrites files of the same name",
+    "Go-ahead": "Not needed to make files. Publishing them anywhere (a Hugging Face Space thumbnail, release notes, a forum) needs Chase's yes first (the go-ahead rule, hard rule 8). Model output of any scroll and real-data media of prize-eligible scrolls never go into public Scrolls; other real-data media follow [the public media rule](../media/README.md)",
+    "Released": "Not yet: local branch `claude/release-media`, not pushed (18 October 2026)",
+    "Guide": "[Media labels, the reference style and every asset](../assets/README.md)",
+    "License": "Apache 2.0 for the scripts and the procedural pictures; scan data and anything rendered from it is CC BY-NC 4.0",
+    "Checked": "2026-10-18 against commit `4a970bd` (with the review fixes of the same day)"
+   },
+   "page": "docs/tools/media.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 177,
+     "end_line": 180,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 181,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 188,
+     "end_line": 224,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 225,
+     "end_line": 272,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 273,
+     "end_line": 295,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 296,
+     "end_line": 309,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 310,
+     "end_line": 319,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 320,
+     "end_line": 323,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 324,
+     "end_line": 329,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 330,
+     "end_line": 335,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "meshaudit",
    "name": "meshaudit",
    "tagline": "audit published cross-scan transforms, meshes and render depth",
@@ -5805,8 +5953,8 @@
     "text": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "d9eaf42"
+    "date": "2026-10-18",
+    "commit": "4a970bd"
    },
    "license": null,
    "fields": {
@@ -5824,7 +5972,7 @@
     "Go-ahead": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module",
     "Guide": "[AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026)",
-    "Checked": "2026-10-16 against commit `d9eaf42`"
+    "Checked": "2026-10-18 against commit `4a970bd`"
    },
    "page": "docs/tools/releases.md",
    "sections": [
@@ -5867,55 +6015,55 @@
     {
      "name": "Inputs",
      "start_line": 192,
-     "end_line": 223,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 224,
-     "end_line": 249,
+     "start_line": 225,
+     "end_line": 250,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 250,
-     "end_line": 293,
+     "start_line": 251,
+     "end_line": 301,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 294,
-     "end_line": 320,
+     "start_line": 302,
+     "end_line": 329,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 321,
-     "end_line": 324,
+     "start_line": 330,
+     "end_line": 333,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 325,
-     "end_line": 334,
+     "start_line": 334,
+     "end_line": 343,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 335,
-     "end_line": 342,
+     "start_line": 344,
+     "end_line": 351,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 343,
-     "end_line": 352,
+     "start_line": 352,
+     "end_line": 361,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 353,
-     "end_line": 361,
+     "start_line": 362,
+     "end_line": 370,
      "applicable": true
     }
    ]

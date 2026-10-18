@@ -31,14 +31,18 @@ This repository contains public tools, public-data benchmarks and releasable rep
 
 ## Released tools
 
-![AutoPipeline's live monitor during the synthetic demo: stages turn green one by one, the run finishes, then a traced surface is turned in 3D](docs/assets/autopipeline/monitor-run.gif)
+![AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner](docs/assets/autopipeline/monitor-demo-v015.gif)
 
-*AutoPipeline 0.1.4's live monitor following `scripts/demo_synthetic.py`, recorded in real time: a synthetic scroll with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. More views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
+*Synthetic demo: AutoPipeline 0.1.5's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, captured frame by frame from a live run (the run part at about 4 times real speed) with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](docs/assets/autopipeline/monitor-demo-v015.mp4); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
 ### AutoPipeline
+
+![Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.](docs/assets/autopipeline-readme-hero.webp)
+
+*Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
 
 Released 18 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix5`: [`submissions/progress-2026-10-fix5/` at commit `9e50d61`](https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5).
 
@@ -56,6 +60,10 @@ Install, monitor controls, synthetic demo and limitations: [README](https://gith
 
 ### Unroll (interactive 3D scroll viewer)
 
+![Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.](docs/assets/unroll/unroll-hero.webp)
+
+*Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.*
+
 Released 16 October 2026.
 
 [Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, CT tools and an agent API. Status: released. Version: 1.5.0 (the Space's `version.json` and `CHANGELOG.md`). It shows nine scrolls from the Vesuvius Challenge open data, each as its traced segments with an X-ray layer, plus the published ink detection where the open data has it; PHerc. 139 also has an ink_9um (9 µm) layer over all 37 windings. The CT tools (1.2.0 to 1.5.0) add X-ray window and level with auto contrast, a CT volume view that shows a cube of the raw scan around any point of the papyrus, the traced segments drawn into that cube, and streaming from the open data bucket. Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
@@ -64,6 +72,10 @@ Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/
 
 ### Scrolls Starter: a beginner path into the tools
 
+![Two screenshots of Scrolls Starter floating at an angle over a dark floor: its introduction page and its practice exercise, a drawn word with noise beside a noise-only control.](docs/assets/starter/starter-hero.webp)
+
+*Synthetic demo: Scrolls Starter 0.4's introduction and its known-answer practice exercise (made-up pixels, no scan, no model), shown as floating panels.*
+
 Released 17 October 2026.
 
 A local browser introduction with a known-answer synthetic exercise, a control you can compare, a real setup checker and a command builder for Scroll Text Reader. The portable HTML works without installing Python; it explicitly leaves local setup unchecked. The guide connects our released tools and the official browser exercises to the official data notebook, VC3D and ink detection. It does not run models or download scans for you.
@@ -71,6 +83,10 @@ A local browser introduction with a known-answer synthetic exercise, a control y
 Start with [the beginner guide](docs/start-here.md), download [the portable page](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/Scrolls-Starter.html), or install [workbench 0.4.1](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.1) and run `scrolls-start`. The [tool reference](docs/tools/starter.md) covers setup checks and generated commands.
 
 ### Inkfilter: fixed surface-volume filters
+
+![Concept illustration of a stack of thin papyrus layers pierced by a copper sampling column, linked to an upright panel with a banded copper response and, behind it, a dimmer panel for the reversed-depth control.](docs/assets/inkfilter/inkfilter-hero.webp)
+
+*Concept illustration: a surface volume's layers, a fixed filter down through them, its response and the reversed-depth control. Synthetic fields only, no ink.*
 
 Released 17 October 2026 as a reviewed package on branch `submission/progress-2026-10-inkfilter`: [`submissions/progress-2026-10-inkfilter/` at commit `4953f17`](https://github.com/ChaseHendrick/Scrolls/tree/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter).
 
@@ -89,6 +105,10 @@ Local NumPy, TIFF and Zarr input, synthetic tests, scalar score evidence and lim
 
 ### Scroll Lens (3D DINO, ink and surface models on scan cubes)
 
+![Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.](docs/assets/scroll-lens/lens-hero.webp)
+
+*Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.*
+
 Released 17 October 2026.
 
 [Scroll Lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) shows what the Vesuvius Challenge's 3D models see inside a scroll scan. Pick one of 99 ready-made cubes or a point in one of twelve public 2.2 to 2.4 µm scans, and it runs the organizers' 3D DINO embeddings (dinovol), direct 3D ink model and recto surface model on a 128³ or 256³ cube read live from the open data. The three slice views are drawn in your browser, so sliders, dragging, zoom and layers answer at once. Click a patch to light up every patch the DINO model finds alike, the organizers' own few-click recipe; the concept carries across scans and downloads as `concept.npy`. Each cube shows how well the organizers' ink reference agrees with the ink model, beside controls that must fail. A 3D view turns the three views into one rotatable space of the cube, with the slices as moving planes and ink, surface and your matches as points. For AI agents and scripts, seven tools (an API and an MCP server) list the scans and the gallery, inspect and search cubes, and download their outputs. Status: released. Version: 1.1.0. It runs on ZeroGPU and falls back to the CPU when a visitor's GPU time runs out. License: Apache 2.0 for the code; the models are MIT; the scan data and the gallery cubes derived from it are CC BY-NC 4.0. Model output, not a reading: a cube is smaller than one letter.
@@ -96,6 +116,10 @@ Released 17 October 2026.
 Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens); MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).
 
 ### Scroll Text Reader
+
+![Concept illustration of a papyrus sheet curling up at its left end, with a copper reading lens over the flat part that shows the fibers magnified. Nothing is written on the sheet.](docs/assets/letter-reader/reader-hero.webp)
+
+*Concept illustration: a procedural papyrus sheet under a reading lens. No scroll data, no letters, no ink, not a reading.*
 
 Released 17 October 2026.
 
@@ -112,6 +136,10 @@ scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay 
 `scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. `--letter-px 86` is for PHerc. 1667's 38 um grid in [`scripts/letters/demo_p1667.py`](scripts/letters/demo_p1667.py). Install, profiles and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md). Local OCR and session switching: [`docs/tools/reader-backends.md`](docs/tools/reader-backends.md).
 
 ### Segment stack check
+
+![Concept illustration of one scroll's winding as a standing spiral strip cut into segments around a copper center post; one segment misses a sector whose torn edges glow ivory, and two neighboring windings touch at a copper glow.](docs/assets/stackcheck/stackcheck-hero.webp)
+
+*Concept illustration: synthetic segments around a center line, with a missing sector and a touching pair marked. No scan data.*
 
 Released 14 October 2026.
 
@@ -141,6 +169,10 @@ python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json          # weights down
 Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs/strokenet.md).
 
 ### Scroll centre (umbilicus) finder
+
+![Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.](docs/assets/umbilicus/umbilicus-hero.webp)
+
+*Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
 
 Released 14 October 2026.
 

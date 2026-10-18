@@ -1,0 +1,42 @@
+{
+  "name": "unroll-hero",
+  "release_id": "unroll",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.",
+  "caption": "Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.",
+  "license": "Apache-2.0",
+  "seed": 11,
+  "scene": {
+    "kind": "procedural",
+    "name": "unroll",
+    "params": {
+      "eye": [
+        -4.3,
+        2.0,
+        7.6
+      ],
+      "target": [
+        0.6,
+        0.4,
+        -0.4
+      ],
+      "key_power": 3.6
+    }
+  },
+  "grade": {
+    "duotone": 0.08,
+    "key": 0.42,
+    "rim": 0.08,
+    "vignette": 0.3,
+    "fade_right": 0.04,
+    "grain": 0.006
+  },
+  "card": {
+    "title": "Unroll",
+    "subtitle": "An interactive 3D viewer that virtually unrolls Herculaneum scroll scans, with ink layers and CT tools.",
+    "focus": [
+      0.24,
+      0.5
+    ]
+  }
+}

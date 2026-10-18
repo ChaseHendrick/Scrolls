@@ -68,7 +68,7 @@ One line per decision still in force. The dated record, with Chase's exact words
 - AutoPipeline's short name is AP, defined once per document; write it in full for villa and the community (2026-10-14).
 - Public commits: author and committer `Chase Hendrick <326338179+ChaseHendrick@users.noreply.github.com>`; never another `users.noreply.github.com` address or an AI account (2026-10-14).
 - One detailed page per tool in `docs/tools/` (2026-10-16, rule 16).
-- Public media: stills, GIFs and short videos only from public scans that are not prize-eligible, at most 1920 px and 4 MB, with a credit sidecar; never model output, prize-eligible scrolls, volumes, segments or weights (2026-10-18, [details](docs/DECISIONS.md)).
+- Public media: concept, synthetic and interface pictures; real-data stills, GIFs and short videos only from public scans that are not prize-eligible and show no held-out labels, at most 1920 px and 4 MB, with a credit sidecar; never model output, prize-eligible scrolls, volumes, segments or weights; hard rule 6 unchanged (2026-10-18, [rule](docs/media/README.md), [record](docs/DECISIONS.md)).
 - Merged branches are deleted automatically; start new work from `main` (2026-10-18).
 
 ## Repository map

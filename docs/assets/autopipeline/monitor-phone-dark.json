@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-phone-dark",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline's monitor at phone width, dark theme, during a synthetic run.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.4's monitor at phone width, dark theme (made-up data).",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "AutoPipeline 0.1.4 package, synthetic demo (docs/autopipeline/README.md)"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-phone-dark.png",
+      "bytes": 151055,
+      "sha256": "65f0a430e46c565fcb74ca75c6f4c11b017d5b4dcb932a5cc34cecd7ebe9c773",
+      "width": 780,
+      "height": 1688,
+      "kind": "legacy",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-16",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "8cae2ed"
+  },
+  "command": "Screenshot of AutoPipeline 0.1.4's monitor at phone width (commit 8cae2ed, 16 October 2026); predates scripts/media."
+}

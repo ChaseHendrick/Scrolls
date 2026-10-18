@@ -11,13 +11,22 @@
 - no tracked file outside docs/vesuvius-bible/ links a Discord message (the archive stays private);
 - every `kit/*.py` module has a row in the repository map, docs/MAP.md;
 - AGENTS.md and docs/HANDOFF.md stay short, since every agent reads them first;
-- every relative link in live Markdown resolves to a tracked file or directory.
+- every relative link in live Markdown resolves to a tracked file or directory;
+- every file under docs/assets/ has a row in docs/assets/README.md with its size, bytes, media label and license
+  and is named by a sidecar JSON with the same label, and every sidecar passes the public media rule
+  (docs/media/README.md, scripts/media/common.py public_problems): Concept illustration, Synthetic demo, or a Real
+  data render of a public scan that is not prize-eligible and shows no held-out labels, never model output; every
+  file at most 1920 px wide and 4 MB; heroes (*-hero.webp) exactly 1920 x 640 and at most 300 KB;
+- pictures and clips are tracked only under docs/assets/ (with a row and a sidecar) or docs/images/ (interface
+  screenshots that show no scan data), at most 1920 px wide and 4 MB.
 """
 
 import json
 import re
 import shutil
+import struct
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 from urllib.parse import unquote
@@ -25,6 +34,9 @@ from urllib.parse import unquote
 from kit import cli
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "scripts" / "media"))
+
+import common as media  # noqa: E402  (scripts/media/common.py: the public media rule, standard library only)
 TEXT = (".md", ".py", ".sh", ".txt", ".json", ".yml", ".yaml", ".toml")
 # Dated logs, evidence and experiment records keep their original wording; the correction is
 # docs/logs/2026-10-08-w045-not-held-out.md.
@@ -54,6 +66,26 @@ BASH4 = [
     (re.compile(r"\bcoproc\b"), "coproc"),
     (re.compile(r"\$\{[A-Za-z_][A-Za-z_0-9]*\[-1\]\}"), "negative array index"),
 ]
+
+
+# docs/assets/: media labels and the public media rule (docs/media/README.md, scripts/media/common.py) and size
+# limits. Model output of any scroll and renders of prize-eligible scrolls live in Scrolls-private's docs/media/.
+ASSET_ROW = re.compile(r"^\| \[`([^`]+)`\]\(([^)]+)\) \| ([^|]+) \| ([0-9,]+) \| ([^|]+) \| ([^|]+) \|")
+HERO_MAX_BYTES = 300_000
+# Picture and clip files: tracked only in these folders (docs/images/ holds interface screenshots, used as hero inputs).
+MEDIA_SUFFIXES = (".png", ".gif", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".mov", ".avif", ".tif", ".tiff", ".bmp")
+MEDIA_DIRS = ("docs/assets/", "docs/images/")
+
+
+def asset_rows():
+    """{path under docs/assets/: (size, bytes, label, license)} from docs/assets/README.md's tables."""
+    rows = {}
+    for line in (ROOT / "docs" / "assets" / "README.md").read_text(encoding="utf-8").splitlines():
+        m = ASSET_ROW.match(line)
+        if m:
+            rows[m.group(2)] = (m.group(3).strip(), int(m.group(4).replace(",", "")), m.group(5).strip(),
+                                m.group(6).strip())
+    return rows
 
 
 def tracked():
@@ -189,6 +221,116 @@ class RepoTest(unittest.TestCase):
         for rel, limit in {"AGENTS.md": 20_000, "docs/HANDOFF.md": 40_000}.items():
             size = len((ROOT / rel).read_bytes())
             self.assertLessEqual(size, limit, f"{rel} is {size} bytes, over {limit}; see the comment above")
+
+    def test_assets_are_listed_labeled_and_within_limits(self):
+        # Chase, 18 October 2026: every released tool gets a hero like the README's, plus GIFs and videos, and every
+        # picture says what it is. The public media rule (set on Chase's delegation the same day, docs/media/README.md)
+        # allows concept illustrations, synthetic demos and Real data renders of public scans that are not
+        # prize-eligible and show no held-out labels; never model output; every file at most 1920 px wide and 4 MB.
+        base = ROOT / "docs" / "assets"
+        rows = asset_rows()
+        table, _ = media.prize_scrolls()
+        files = sorted(f.relative_to(base).as_posix() for f in tracked()
+                       if f.exists() and base in f.parents and f.name != "README.md")
+        self.assertTrue(files, "no files under docs/assets/")
+        media_files = [f for f in files if not f.endswith(".json")]
+        missing = [f for f in media_files if f not in rows]
+        self.assertEqual(missing, [], "files under docs/assets/ without a row in docs/assets/README.md")
+        stale = [f for f in rows if not (base / f).is_file()]
+        self.assertEqual(stale, [], "rows in docs/assets/README.md for files that are not there")
+        dims_of = {}
+        for rel in media_files:
+            size, nbytes, label, license_ = rows[rel]
+            path = base / rel
+            actual = path.stat().st_size
+            self.assertEqual(nbytes, actual, f"{rel}: the README says {nbytes:,} bytes, the file has {actual:,}")
+            self.assertIn(label, media.PUBLIC_LABELS, f"{rel}: label {label!r} (public Git holds no model output)")
+            self.assertTrue(license_, f"{rel}: no license")
+            if label == "Real data render":
+                self.assertEqual(license_, media.DATA_LICENSE, f"{rel}: a Real data render carries the data's license")
+            self.assertLessEqual(actual, media.MAX_BYTES, f"{rel} is over 4 MB")
+            dims = media.media_size(path)
+            self.assertIsNotNone(dims, f"{rel}: its width and height cannot be read (PNG, GIF, JPEG, WebP or MP4)")
+            dims_of[rel] = dims
+            self.assertIn(f"{dims[0]} x {dims[1]} pixels", size, f"{rel}: the file is {dims[0]} x {dims[1]}")
+            self.assertLessEqual(dims[0], media.MAX_WIDTH, f"{rel} is {dims[0]} px wide, over {media.MAX_WIDTH}")
+            if rel.endswith("-hero.webp"):
+                self.assertEqual(dims, (1920, 640), f"{rel}: a hero is 1920 x 640")
+                self.assertLessEqual(actual, HERO_MAX_BYTES, f"{rel}: a hero is at most 300 KB")
+        # A sidecar NAME.json describes media beside it; it passes the rule, and its label, bytes and pixel sizes
+        # match the files and their rows.
+        described = set()
+        for rel in (f for f in files if f.endswith(".json")):
+            record = json.loads((base / rel).read_text(encoding="utf-8"))
+            self.assertEqual(media.public_problems(record, table), [], f"{rel}: the public media rule")
+            self.assertNotIn("/tmp/", json.dumps(record), f"{rel}: a scratch path; record commands with placeholders")
+            folder = rel.rsplit("/", 1)[0] + "/" if "/" in rel else ""
+            for out in record["outputs"]:
+                target = folder + out["file"]
+                self.assertIn(target, rows, f"{rel} names {target}, which has no row")
+                self.assertEqual(rows[target][2], record["label"], f"{target}: row and sidecar labels differ")
+                self.assertEqual(out["bytes"], (base / target).stat().st_size, f"{rel}: {target} changed since")
+                self.assertEqual((out["width"], out["height"]), dims_of[target], f"{rel}: {target}'s pixel size")
+                described.add(target)
+        undescribed = [f for f in media_files if f not in described]
+        self.assertEqual(undescribed, [], "files under docs/assets/ that no sidecar NAME.json describes")
+
+    def test_pictures_and_clips_live_in_the_media_folders(self):
+        # The rule is checked where the pictures live: a picture or clip anywhere else would skip its row, sidecar and
+        # prize check. docs/images/ holds interface screenshots that show no scan data (hero inputs).
+        outside, too_big = [], []
+        for f in tracked():
+            rel = f.relative_to(ROOT).as_posix()
+            if f.suffix.lower() not in MEDIA_SUFFIXES or not f.exists():
+                continue
+            if not rel.startswith(MEDIA_DIRS):
+                outside.append(rel)
+                continue
+            dims = media.media_size(f)
+            if f.stat().st_size > media.MAX_BYTES or (dims and dims[0] > media.MAX_WIDTH):
+                too_big.append(rel)
+        self.assertEqual(outside, [], "pictures or clips outside docs/assets/ and docs/images/ (docs/media/README.md)")
+        self.assertEqual(too_big, [], f"pictures or clips over {media.MAX_WIDTH} px wide or 4 MB")
+
+    def test_vector_files_carry_no_raster_pixels(self):
+        # SVG files are not pictures under the media rule (charts drawn from numbers may sit anywhere), so one that embeds
+        # or links a raster picture would carry scan pixels past every check above. tests/test_media.py shows this failing.
+        raster = [f.relative_to(ROOT).as_posix() for f in tracked()
+                  if f.suffix.lower() == ".svg" and f.exists()
+                  and media.svg_embeds_raster(f.read_text(encoding="utf-8", errors="replace"))]
+        self.assertEqual(raster, [], "SVG files that embed or link a raster picture (docs/media/README.md)")
+
+    def test_media_size_reads_headers(self):
+        # The checks above must be able to fail: they read real dimensions, so a wrong size string is caught.
+        png = b"\x89PNG\r\n\x1a\n" + b"\0\0\0\rIHDR" + struct.pack(">II", 1920, 640) + b"\0" * 8
+        gif = b"GIF89a" + struct.pack("<HH", 960, 540) + b"\0" * 8
+        vp8x = b"RIFF\0\0\0\0WEBPVP8X" + b"\0" * 8 + (1919).to_bytes(3, "little") + (639).to_bytes(3, "little")
+        jpeg = b"\xff\xd8\xff\xe0\x00\x04\x00\x00\xff\xc0\x00\x11\x08" + struct.pack(">HH", 630, 1200) + b"\0" * 8
+
+        def box(kind, body):
+            return struct.pack(">I", 8 + len(body)) + kind + body
+
+        def tkhd(w, h, version=0):
+            times = b"\0" * (32 if version else 20)
+            return box(b"tkhd", bytes([version, 0, 0, 3]) + times + b"\0" * 52 + struct.pack(">II", w << 16, h << 16))
+
+        audio = box(b"trak", tkhd(0, 0))
+        mp4 = box(b"ftyp", b"isom\0\0\x02\0") + box(b"moov", box(b"mvhd", b"\0" * 100) + audio
+                                                       + box(b"trak", tkhd(1280, 960, version=1)))
+        tmp = ROOT / "tests" / "_image_size_probe"
+        try:
+            for data, want in ((png, (1920, 640)), (gif, (960, 540)), (vp8x, (1920, 640)), (jpeg, (1200, 630)),
+                               (mp4, (1280, 960))):
+                tmp.write_bytes(data)
+                self.assertEqual(media.media_size(tmp), want)
+            tmp.write_bytes(b"not an image")
+            self.assertIsNone(media.media_size(tmp))
+        finally:
+            tmp.unlink(missing_ok=True)
+        self.assertIsNone(ASSET_ROW.match("| Asset | Size | Bytes | Label | License | Alt text |"))
+        m = ASSET_ROW.match("| [`a/b-hero.webp`](a/b-hero.webp) | 1920 x 640 pixels | 81,234 | Concept illustration "
+                            "| Apache-2.0 | A thing. |")
+        self.assertEqual(m.group(2, 4, 5), ("a/b-hero.webp", "81,234", "Concept illustration"))
 
     def test_relative_links_resolve(self):
         # Live Markdown only. Dated logs, evidence and experiment records (HISTORICAL) are frozen as
