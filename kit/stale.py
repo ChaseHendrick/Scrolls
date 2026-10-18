@@ -48,7 +48,9 @@ folded back there so the two files hold one text again:
      fails on attention.
   b. In a shallow clone, checks 1, 6 and 7 add an info line: git dates every line older than the clone's first commit
      to that commit, so ages are lower bounds. A finding still holds; a row can be older than it shows.
-  c. This paragraph, which replaces the private copy's note that the public copy was not yet written.
+  c. This paragraph, which replaces the private copy's note that the public copy was not yet written, and the one
+     before it, which counts check 7 as shared: it reads only docs/HANDOFF.md and git, so it runs in public too.
+     The private copy's section comment marks check 7 private; here it does not.
 """
 
 import argparse
@@ -576,7 +578,7 @@ def check_routines(root, git, now, days=DAYS["routines"]):
                    + _shallow_info(git))
 
 
-# ---------------------------------------------------------------- 7 handoff-paths (private)
+# ---------------------------------------------------------------- 7 handoff-paths
 
 def container_paths(row):
     return [p for p in dict.fromkeys(CONTAINER_PATH.findall(row)) if not CHECKOUT_ROOT.fullmatch(p)]

@@ -12,13 +12,13 @@
 | Code | `kit/routines.py`, `docs/routines.json`, `.github/workflows/routines.yml`, `.claude/settings.json`, `kit/cli.py` (`build_parser`) |
 | Tests | `tests/test_routines.py`, `tests/test_routines_workflow.py` |
 | Needs | Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only. A clone of this repository, since the registry `docs/routines.json` is read next to `kit/`. `git` on the PATH for the handoff's age in `check handoff` (without it that line says git cannot say). Each routine has its own needs: `autopipeline-watch` needs the network ([batch](batch.md)) |
-| Runs on | Any machine. `list`, `due`, `status` and `check handoff` took 0.11 to 0.15 s each (5 runs each), and `run --due` of six of the seven registered routines (all but `autopipeline-watch`) took 2.46 s wall, `prize-page` 0.6 s and `repo-tests` 1.2 s of it (measured 2026-10-17, 4-core Intel Xeon @ 2.80GHz cloud container, Python 3.13.16). `autopipeline-watch`: Not measured |
-| Network | None for `list`, `due`, `status` and `check`. `run` contacts only what its routines contact: `prize-page` makes one HTTPS GET of `https://scrollprize.org/prizes` ([prizewatch](prizewatch.md)); `autopipeline-watch` reads `vesuvius-challenge-open-data.s3.amazonaws.com` and `https://scrollprize.org/prizes` ([batch](batch.md)); `prizes`, `releases`, `leaderboard`, `handoff` and `repo-tests` contact nothing. The daily workflow runs on GitHub's runner and fetches `actions/checkout` and `actions/setup-python` there |
+| Runs on | Any machine. `list`, `due`, `status` and `check handoff` took 0.11 to 0.15 s each (5 runs each), and `run --due` of six of the seven registered routines (all but `autopipeline-watch`) took 2.46 s wall, `prize-page` 0.6 s and `repo-tests` 1.2 s of it (measured 2026-10-17, 4-core Intel Xeon @ 2.80GHz cloud container, Python 3.13.16). `autopipeline-watch`: Not measured. `stale`, added 2026-10-18, took 0.94 s wall on its own ([stale](stale.md)) |
+| Network | None for `list`, `due`, `status` and `check`. `run` contacts only what its routines contact: `prize-page` makes one HTTPS GET of `https://scrollprize.org/prizes` ([prizewatch](prizewatch.md)); `autopipeline-watch` reads `vesuvius-challenge-open-data.s3.amazonaws.com` and `https://scrollprize.org/prizes` ([batch](batch.md)); `prizes`, `releases`, `leaderboard`, `stale`, `handoff` and `repo-tests` contact nothing. The daily workflow runs on GitHub's runner and fetches `actions/checkout` and `actions/setup-python` there |
 | Writes | `list`, `due`, `status` and `check` write nothing. `run` writes in `work/routines/` (git-ignored by `/work/` in `.gitignore`), or in `--state DIR`: `state.json`, `summary.md`, `run.lock` while it runs, and with `--background` it appends to `last-run.log`; `.state.PID.tmp` and `.summary.PID.tmp` are renamed into place. The routines write their own files: `prize-page` rewrites `work/routines/prize-page.json`, and `autopipeline-watch` writes under `work/autobatch/` ([batch](batch.md)). With `GITHUB_STEP_SUMMARY` set, as in GitHub Actions, the summary is also appended to that file |
 | Go-ahead | Not needed. Routines only check: the registry refuses any command that would post, upload, push, release or start Modal (`OUTWARD`), and every routine runs with credential variables removed from its environment |
-| Released | Not on public `main` yet (checked 2026-10-17): added on branch `claude/project-thread-8zzi1i` (`5aed6e7`, 2026-10-16), in open [PR #100](https://github.com/ChaseHendrick/Scrolls/pull/100). The daily workflow starts running only once it is on `main`, because GitHub runs scheduled workflows on the default branch. Scrolls-private keeps an identical copy of the module with its own registry |
+| Released | On public `main` since [PR #100](https://github.com/ChaseHendrick/Scrolls/pull/100) merged on 2026-10-17 at 01:31 UTC (`fecd2bb`; first commit `5aed6e7` on branch `claude/project-thread-8zzi1i`, 2026-10-16). GitHub runs scheduled workflows on the default branch, so the daily workflow runs from `main`. The `stale` routine is on branch `claude/stale-guard` (`d882f33`) until that branch merges. Scrolls-private keeps an identical copy of the module with its own registry |
 | Guide | [AI-AGENTS.md, "Session start: repository routines"](../AI-AGENTS.md#session-start-repository-routines) |
-| Checked | 2026-10-17 against commit `1b620c6` |
+| Checked | 2026-10-18 against commit `d882f33` (the routine list and the workflow comment; the rest of the page as checked on 2026-10-17 against `1b620c6`) |
 
 ## What it does
 
@@ -34,7 +34,7 @@ It does not fix anything, post, comment, open issues, upload, push or start Moda
 
 ### The registered routines
 
-At commit `1b620c6`, `docs/routines.json` lists seven, all daily:
+At commit `d882f33`, `docs/routines.json` lists eight, all daily:
 
 | Routine | Timeout | `ci` | Command (after `{python} -m`) | What it checks |
 | --- | --- | --- | --- | --- |
@@ -42,6 +42,7 @@ At commit `1b620c6`, `docs/routines.json` lists seven, all daily:
 | `prizes` | 30 s | yes | `kit prizes` | The open prizes and days left from the snapshot ([prizes](prizes.md)) |
 | `releases` | 30 s | yes | `kit releases check` | The README's Released tools section matches `docs/releases.json` ([releases](releases.md)) |
 | `leaderboard` | 60 s | yes | `kit leaderboard check` (needs `kit/leaderboard.py`) | The ink reader leaderboard page matches `docs/results.json` ([leaderboard](leaderboard.md)) |
+| `stale` | 120 s | yes | `kit stale` | Live pages and registries that no longer hold: handoff rows unchanged for a week, branches the handoff names that are gone or quietly merged, retired names, dead relative links, `docs/MAP.md` rows and routines still waiting for a tool ([stale](stale.md)). In the workflow's depth-1 checkout the branch check skips and an age finding can appear only after that many days without a commit on `main` |
 | `autopipeline-watch` | 300 s | no | `kit run watch --exit-code` | New or changed open-data bucket volumes, queued and priced in dry run; it launches nothing ([batch](batch.md)). Not in the workflow: a runner keeps no state, so every volume would look new |
 | `handoff` | 60 s | no | `kit routines check handoff` | `AGENTS.md` and `docs/HANDOFF.md` sizes and the handoff's age |
 | `repo-tests` | 300 s | no | `unittest tests.test_repo` | Size limits, no long dashes, relative links, the map and documented commands (the workflow runs the whole suite instead) |
@@ -384,6 +385,7 @@ python -m unittest tests.test_routines tests.test_routines_workflow -v
 
 ## History
 
+- 2026-10-18: the `stale` routine, marked `ci`, so the daily workflow also runs the staleness check ([stale](stale.md), `d882f33`, branch `claude/stale-guard`).
 - 2026-10-17: this page; the kit command line's docstring names `routines` (`68f0b0f`, [PR #100](https://github.com/ChaseHendrick/Scrolls/pull/100)).
 - 2026-10-16: first version: `python -m kit routines` with `list`, `due`, `status`, `run` and `check handoff`, the registry with seven routines, the SessionStart hook and the daily workflow (`5aed6e7`, [PR #100](https://github.com/ChaseHendrick/Scrolls/pull/100)).
 
@@ -394,6 +396,7 @@ python -m unittest tests.test_routines tests.test_routines_workflow -v
 - [releases](releases.md): the `releases` routine, `python -m kit releases check`.
 - [leaderboard](leaderboard.md): the `leaderboard` routine, `python -m kit leaderboard check`.
 - [batch](batch.md): `python -m kit run watch`, the `autopipeline-watch` routine.
+- [stale](stale.md): the `stale` routine, `python -m kit stale`.
 - [tooldocs](tooldocs.md): the tool page check, which the whole test suite in the daily workflow runs.
 - [cli](cli.md): the `python -m kit` command line that holds `routines`.
 - [AI-AGENTS.md](../AI-AGENTS.md#session-start-repository-routines): the rulebook's session-start instruction for every agent.

@@ -5977,8 +5977,8 @@
     "text": "Not needed. Routines only check: the registry refuses any command that would post, upload, push, release or start Modal (`OUTWARD`), and every routine runs with credential variables removed from its environment"
    },
    "checked": {
-    "date": "2026-10-17",
-    "commit": "1b620c6"
+    "date": "2026-10-18",
+    "commit": "d882f33"
    },
    "license": null,
    "fields": {
@@ -5990,104 +5990,104 @@
     "Code": "`kit/routines.py`, `docs/routines.json`, `.github/workflows/routines.yml`, `.claude/settings.json`, `kit/cli.py` (`build_parser`)",
     "Tests": "`tests/test_routines.py`, `tests/test_routines_workflow.py`",
     "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`), standard library only. A clone of this repository, since the registry `docs/routines.json` is read next to `kit/`. `git` on the PATH for the handoff's age in `check handoff` (without it that line says git cannot say). Each routine has its own needs: `autopipeline-watch` needs the network ([batch](batch.md))",
-    "Runs on": "Any machine. `list`, `due`, `status` and `check handoff` took 0.11 to 0.15 s each (5 runs each), and `run --due` of six of the seven registered routines (all but `autopipeline-watch`) took 2.46 s wall, `prize-page` 0.6 s and `repo-tests` 1.2 s of it (measured 2026-10-17, 4-core Intel Xeon @ 2.80GHz cloud container, Python 3.13.16). `autopipeline-watch`: Not measured",
-    "Network": "None for `list`, `due`, `status` and `check`. `run` contacts only what its routines contact: `prize-page` makes one HTTPS GET of `https://scrollprize.org/prizes` ([prizewatch](prizewatch.md)); `autopipeline-watch` reads `vesuvius-challenge-open-data.s3.amazonaws.com` and `https://scrollprize.org/prizes` ([batch](batch.md)); `prizes`, `releases`, `leaderboard`, `handoff` and `repo-tests` contact nothing. The daily workflow runs on GitHub's runner and fetches `actions/checkout` and `actions/setup-python` there",
+    "Runs on": "Any machine. `list`, `due`, `status` and `check handoff` took 0.11 to 0.15 s each (5 runs each), and `run --due` of six of the seven registered routines (all but `autopipeline-watch`) took 2.46 s wall, `prize-page` 0.6 s and `repo-tests` 1.2 s of it (measured 2026-10-17, 4-core Intel Xeon @ 2.80GHz cloud container, Python 3.13.16). `autopipeline-watch`: Not measured. `stale`, added 2026-10-18, took 0.94 s wall on its own ([stale](stale.md))",
+    "Network": "None for `list`, `due`, `status` and `check`. `run` contacts only what its routines contact: `prize-page` makes one HTTPS GET of `https://scrollprize.org/prizes` ([prizewatch](prizewatch.md)); `autopipeline-watch` reads `vesuvius-challenge-open-data.s3.amazonaws.com` and `https://scrollprize.org/prizes` ([batch](batch.md)); `prizes`, `releases`, `leaderboard`, `stale`, `handoff` and `repo-tests` contact nothing. The daily workflow runs on GitHub's runner and fetches `actions/checkout` and `actions/setup-python` there",
     "Writes": "`list`, `due`, `status` and `check` write nothing. `run` writes in `work/routines/` (git-ignored by `/work/` in `.gitignore`), or in `--state DIR`: `state.json`, `summary.md`, `run.lock` while it runs, and with `--background` it appends to `last-run.log`; `.state.PID.tmp` and `.summary.PID.tmp` are renamed into place. The routines write their own files: `prize-page` rewrites `work/routines/prize-page.json`, and `autopipeline-watch` writes under `work/autobatch/` ([batch](batch.md)). With `GITHUB_STEP_SUMMARY` set, as in GitHub Actions, the summary is also appended to that file",
     "Go-ahead": "Not needed. Routines only check: the registry refuses any command that would post, upload, push, release or start Modal (`OUTWARD`), and every routine runs with credential variables removed from its environment",
-    "Released": "Not on public `main` yet (checked 2026-10-17): added on branch `claude/project-thread-8zzi1i` (`5aed6e7`, 2026-10-16), in open [PR #100](https://github.com/ChaseHendrick/Scrolls/pull/100). The daily workflow starts running only once it is on `main`, because GitHub runs scheduled workflows on the default branch. Scrolls-private keeps an identical copy of the module with its own registry",
+    "Released": "On public `main` since [PR #100](https://github.com/ChaseHendrick/Scrolls/pull/100) merged on 2026-10-17 at 01:31 UTC (`fecd2bb`; first commit `5aed6e7` on branch `claude/project-thread-8zzi1i`, 2026-10-16). GitHub runs scheduled workflows on the default branch, so the daily workflow runs from `main`. The `stale` routine is on branch `claude/stale-guard` (`d882f33`) until that branch merges. Scrolls-private keeps an identical copy of the module with its own registry",
     "Guide": "[AI-AGENTS.md, \"Session start: repository routines\"](../AI-AGENTS.md#session-start-repository-routines)",
-    "Checked": "2026-10-17 against commit `1b620c6`"
+    "Checked": "2026-10-18 against commit `d882f33` (the routine list and the workflow comment; the rest of the page as checked on 2026-10-17 against `1b620c6`)"
    },
    "page": "docs/tools/routines.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 48,
+     "end_line": 49,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 49,
-     "end_line": 65,
+     "start_line": 50,
+     "end_line": 66,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 66,
-     "end_line": 94,
+     "start_line": 67,
+     "end_line": 95,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 95,
-     "end_line": 104,
+     "start_line": 96,
+     "end_line": 105,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 105,
-     "end_line": 193,
+     "start_line": 106,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 194,
-     "end_line": 234,
+     "start_line": 195,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 235,
-     "end_line": 255,
+     "start_line": 236,
+     "end_line": 256,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 256,
-     "end_line": 299,
+     "start_line": 257,
+     "end_line": 300,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 300,
-     "end_line": 341,
+     "start_line": 301,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 342,
-     "end_line": 352,
+     "start_line": 343,
+     "end_line": 353,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 353,
-     "end_line": 366,
+     "start_line": 354,
+     "end_line": 367,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 367,
-     "end_line": 376,
+     "start_line": 368,
+     "end_line": 377,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 377,
-     "end_line": 384,
+     "start_line": 378,
+     "end_line": 385,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 385,
-     "end_line": 389,
+     "start_line": 386,
+     "end_line": 391,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 390,
-     "end_line": 400,
+     "start_line": 392,
+     "end_line": 403,
      "applicable": true
     }
    ]
