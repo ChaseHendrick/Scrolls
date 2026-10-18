@@ -23,7 +23,7 @@ The project skill `.claude/skills/scroll-session/` tells an agent how to start o
 
 A skill is a Markdown file of instructions that Claude Code loads when its description matches the task, or when the user types its name. This one, `SKILL.md`, describes a session of prize work in five steps, each with the exact commands: orient (read the handoff, `python -m kit prizes`, `python -m kit doctor`, `python -m kit run list`), pick a target with the user, plan and preregister (`python -m kit plan`, `python -m kit run init`), run, and record the outcome (`python -m kit run status`).
 
-Its main job is to keep the repository's hard rules in the agent's path at the moment they matter: the readout rule is written before anyone looks at target output (the preregistration rule), a GPU job or a long CPU job goes to Modal through a written run spec because Claude's cloud sessions cannot reach Modal (the Modal rule), local runs are wrapped in `python -m kit run local` so their cost reaches the ledger, and a possible finding is marked `candidate` and then not committed, pushed or described anywhere public (the no-findings rule).
+Its main job is to keep the repository's hard rules in the agent's path at the moment they matter: the readout rule is written before anyone looks at target output (the preregistration rule), a GPU job or a long CPU job goes to Modal, through a written run spec when the session cannot run Modal itself (a Claude cloud session can, after `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule; the Modal rule), local runs are wrapped in `python -m kit run local` so their cost reaches the ledger, and a possible finding is marked `candidate` and then not committed, pushed or described anywhere public (the no-findings rule).
 
 It also routes target work out of this repository. This repository is public; a run on an eligible scroll without public labels belongs in the private workbench repository, and steps 3 to 5 are done from that checkout. Here the skill runs only public labelled benchmarks (PHerc0841, w045, w035) and generic tools.
 
@@ -137,7 +137,7 @@ The ledger statuses step 5 uses are `null` and `candidate`; `python -m kit run s
 | `[fail] gpu     No NVIDIA GPU found ...` and `overall: fail` from `python -m kit doctor` | No CUDA GPU on this machine, as in Claude cloud sessions | Expected there; GPU work goes to Modal through a run spec (step 4) |
 | `no experiment at ROOT/SLUG/run.json` from a `run` action | The ledger record was never started | Run `python -m kit run init SLUG ...` first (step 3) |
 | The prize snapshot is more than about a month old | The snapshot inside `kit` was not refreshed | Tell the user and suggest re-checking the prize page and adding a dated snapshot |
-| A Modal sign-in fails from a Claude cloud session | Its proxy does not carry Modal's gRPC traffic | Do not retry; write the run spec and give the user a prompt for an agent that runs Modal, or commands for their computer |
+| A Modal sign-in fails from a Claude cloud session with "Could not connect to the Modal server" | The client lacks `python-socks`, which it needs to tunnel through the session proxy | `pip install 'modal[api-proxy-support]'` and retry once; if it still fails, write the run spec and give the user a prompt for an agent that runs Modal, or commands for their computer |
 | The run looks like possible letters | A candidate | `python -m kit run status SLUG candidate --note "..."`, then stop: no commit, push or public description; tell the user and wait |
 
 ## How it works

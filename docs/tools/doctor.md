@@ -44,7 +44,7 @@ Do not use it:
 - To show that ink inference runs: run the control (step 1 of [plan](plan.md); on a Mac, `bash scripts/mac-verify.sh`, see [mac-verify](mac-verify.md)).
 - To check that two devices give the same map (CPU against MPS): use [verify](verify.md), with its control.
 - To price a job: use `kit cost` ([plan](plan.md)) or the Modal calculator ([cloudcost](cloudcost.md)); for the time and electricity of a local run, [run-local](run-local.md).
-- To test whether Modal is reachable: Claude's cloud sessions cannot reach it at all (the Modal rule); write a run spec in [`docs/compute/modal-specs/`](../compute/modal-specs/README.md) instead.
+- To test whether Modal is reachable: a Claude cloud session needs `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule, then `modal app list` answers (the Modal rule); without them, write a run spec in [`docs/compute/modal-specs/`](../compute/modal-specs/README.md) instead.
 
 ## Quick start
 

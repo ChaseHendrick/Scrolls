@@ -1,6 +1,6 @@
 # Modal run specs
 
-One file per job that should run on Modal rather than for hours on CPU (AGENTS.md hard rule 11). Claude's cloud sessions cannot reach Modal (their proxy does not carry Modal's gRPC traffic), so they write the spec here and give the user a short prompt to paste into Codex, or commands to run on their own computer. The agent that runs it records the outcome in the spec and the time in the compute ledger ([`../../compute.md`](../../compute.md)).
+One file per job that should run on Modal rather than for hours on CPU (AGENTS.md hard rule 11). A Claude cloud session can run Modal after `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule (18 Oct 2026); an agent without Modal writes the spec here and gives the user a short prompt to paste into Codex, or commands to run on their own computer. The agent that runs it records the outcome in the spec and the time in the compute ledger ([`../../compute.md`](../../compute.md)).
 
 This folder is public. Only generic jobs on public data belong here; a job about a target scroll, or one whose outputs could show a possible finding, gets its spec in Scrolls-private instead (rule 1).
 

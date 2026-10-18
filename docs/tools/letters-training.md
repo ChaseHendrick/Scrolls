@@ -521,7 +521,7 @@ The method's reasons are in the guide's [How it works](../letter-reader.md#how-i
 
 From the guide (14 October 2026, 4-core cloud container unless named): synthetic lines about 137 s per 1,000 per process and about 10 MB per 1,000 lines; bank lines about 70 s per 1,000; the CPU recipe's data about 30 minutes with 4 processes and 0.65 GB; the CPU training run 25 minutes on 4 threads; the `letters-v2-real` recipe's 600,000 lines extrapolate to about 17 process-hours and 5.7 GB, and its training took about 8 minutes on one B200; fine-tuning 3.1 s a step on 4 threads, about 80 minutes for the default 1,500 steps; `p1667_fetch.py` about 1.9 GB of maps. On 2026-10-16 here, 20 synthetic lines took 2.2 s; an `eval_pages.py` run of 2 pages was stopped after more than 3 minutes on a shared container, so its time is Not measured.
 
-GPU training, and any CPU job over about an hour (such as the default fine-tune), runs on Modal under the Modal rule (hard rule 11): write a run spec in `docs/compute/modal-specs/` and give Chase a prompt; Claude cloud sessions cannot reach Modal. Renting compute needs Chase's go-ahead first.
+GPU training, and any CPU job over about an hour (such as the default fine-tune), runs on Modal under the Modal rule (hard rule 11): write a run spec in `docs/compute/modal-specs/` and give Chase a prompt; a Claude cloud session can run it after `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule. Renting compute needs Chase's go-ahead first.
 
 ## For agents
 

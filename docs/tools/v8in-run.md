@@ -219,7 +219,7 @@ Measured on 2026-10-07 (sources in the Runs on field):
 
 Tile counts: a 640 px crop has about 100 tiles at stride 64 and 784 at stride 21; a whole segment has tens of thousands (the model card's w062 surface, 4,668 x 8,864 px, has 69,794 at stride 21 and takes about 15 to 20 minutes on one recent GPU at batch 16 with about 11 GB, Community report). Memory: fp32 batch 8 about 10 GB of RAM; from the code, the stack takes height x width x 24 bytes and the stitching two float32 maps of the layers' size, which for the whole PHerc0139 w045 surface (5,980 x 8,240) is about 1.2 GB and 0.4 GB (arithmetic, not measured).
 
-Where it runs: a crop at stride 64 on the CPU is minutes, fine locally (log it with `kit run local`). A crop at stride 21 on 4 CPU cores is close to 2 hours, and a whole segment far more: those need a GPU, so they go to Modal (the Modal rule, hard rule 11). Write the run spec in [`docs/compute/modal-specs/`](../compute/modal-specs/README.md); Claude's cloud sessions cannot reach Modal. On 2026-10-07, before that rule, the stride 21 crop runs here ran on Chase's M1 Pro GPU.
+Where it runs: a crop at stride 64 on the CPU is minutes, fine locally (log it with `kit run local`). A crop at stride 21 on 4 CPU cores is close to 2 hours, and a whole segment far more: those need a GPU, so they go to Modal (the Modal rule, hard rule 11). Write the run spec in [`docs/compute/modal-specs/`](../compute/modal-specs/README.md); A Claude cloud session can run Modal after `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule. On 2026-10-07, before that rule, the stride 21 crop runs here ran on Chase's M1 Pro GPU.
 
 ## For agents
 
