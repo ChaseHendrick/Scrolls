@@ -10,7 +10,8 @@ Updated 18 October 2026.
 
 | Topic | Home | Also see |
 | --- | --- | --- |
-| Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
+| Current state, open items and next steps | [`HANDOFF.md`](HANDOFF.md), the one handoff every agent reads and updates; older dated sections in [`HANDOFF-archive.md`](HANDOFF-archive.md) |
+| Standing user decisions, dated, with Chase's words (including replaced ones) | [`DECISIONS.md`](DECISIONS.md); AGENTS.md lists the ones in force, one line each | [`plans/roadmap.md`](plans/roadmap.md) (pointer to the private roadmap) |
 | New here: browser tour, synthetic practice, setup and first tasks with official tools | [`start-here.md`](start-here.md), the shareable beginner guide | [`pipeline.md`](pipeline.md), [`tools/starter.md`](tools/starter.md) |
 | What Workbench is, what its tools look like and what to open first | [`workbench.md`](workbench.md), the picture guide | [`start-here.md`](start-here.md), [`tools/README.md`](tools/README.md) |
 | What a technical term means (A to Z) | [`../GLOSSARY.md`](../GLOSSARY.md) | [`vesuvius-bible/`](vesuvius-bible/bible.md#app-glossary) Appendix A |
@@ -32,7 +33,7 @@ Updated 18 October 2026.
 | Repository map, one row per module and script | [`MAP.md`](MAP.md) | The top-level map in [`../AGENTS.md`](../AGENTS.md) |
 | How we measure (controls, AUC, tracing, splits, cost) beside the community's practice | [`STANDARDS.md`](STANDARDS.md) | [`QUALITY.md`](QUALITY.md) (what each kind of claim needs), [`TESTING.md`](TESTING.md) |
 | Claim labels (Sourced fact, Model output, ...) | [`NOVELTY.md`](NOVELTY.md) | |
-| What pictures and clips public Git may hold: the public media rule (no model output, no prize-eligible scrolls, at most 1920 px and 4 MB, a sidecar each) | [`media/README.md`](media/README.md) | [`assets/README.md`](assets/README.md); AGENTS.md standing decision of 18 October 2026 |
+| What pictures and clips public Git may hold: the public media rule (no model output, no prize-eligible scrolls, at most 1920 px and 4 MB, a sidecar each) | [`media/README.md`](media/README.md) | [`assets/README.md`](assets/README.md); the AGENTS.md standing decision and [`DECISIONS.md`](DECISIONS.md) row of 18 October 2026 |
 | From idea to run to null or candidate | [`WORKFLOW.md`](WORKFLOW.md) | [`prereg/`](prereg/) |
 | Failures we hit, append-only | [`logs/errors.md`](logs/errors.md) | [`ERROR-LOG.md`](ERROR-LOG.md) is only the pointer and format |
 | CLI and output conventions | [`UI-UX.md`](UI-UX.md) | |
