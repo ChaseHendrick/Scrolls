@@ -139,7 +139,7 @@ Inference profiles (Assumption, each anchored as stated):
 | Profile | GPU | Reference GPU seconds per cm2 per pass (low / typical / high) | Anchor |
 | --- | --- | --- | --- |
 | `2p5d_9um`: 2.5D reader at about 9 um (public `ink_9um`, Hecate 9.6 um) | A10 | 1 / 3 / 10 at 9.4 um | M1 Pro measured about 8 s per cm2 |
-| `2p5d_2um`: 2.5D reader at 2.4 um (organiser 2 um canonical model, PHerc. 1667 iteration models, Hecate 2.4 um) | L40S | 20 / 40 / 120 at 2.4 um | tutorial: about 1 GPU hour per full segment; tutorial segment canvas 51,960 x 31,960 px = 95.6 cm2 at 2.4 um (header of its public prediction TIFF) |
+| `2p5d_2um`: 2.5D reader at 2.4 um (organizer 2 um canonical model, PHerc. 1667 iteration models, Hecate 2.4 um) | L40S | 20 / 40 / 120 at 2.4 um | tutorial: about 1 GPU hour per full segment; tutorial segment canvas 51,960 x 31,960 px = 95.6 cm2 at 2.4 um (header of its public prediction TIFF) |
 | `3d_l2`: native 3D reader at level 2 (9.6 um) | H100 | 60 / 95 / 200 at 9.6 um | tutorial: 2.5 h on an H100 over the 95.6 cm2 canvas |
 | `3d_2um`: native 3D reader at 2.4 um (mesh-free readers such as `ink_3d_dino_guided` assumed similar or heavier) | H100 | 300 / 760 / 1500 at 2.4 um | tutorial patch counts: 3x to 16x level 2; not measured |
 

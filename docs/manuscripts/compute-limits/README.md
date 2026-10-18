@@ -14,8 +14,8 @@ Reading the carbonized Herculaneum scrolls from X-ray CT is often described as a
 
 - **Measured:** every number in the tables, the figures and the text, each copied from a run record into `data/`. The ink detection results are pixel AUC on two development segments of PHerc. 841 (w00 and ag896, one sheet traced twice), under rules fixed before each run; the held-out segment ag405 was not read. The tracing results are one seed on PHerc. 139.
 - **Sourced:** prices, the released readers and the upstream villa issues and pull requests, cited with dates.
-- **Interpretation:** what limits the score, and what would help. These are labelled in the text.
-- **Not shown:** anything about methods not tried here (a large new architecture, new labelled data at scale, other CT inputs). A third self-training round and a test of a different reader architecture were under way at the time of writing and are not reported. No ink map in this paper is a reading of text, and nothing concerns a scroll eligible for a prize.
+- **Interpretation:** what limits the score, and what would help. These are labeled in the text.
+- **Not shown:** anything about methods not tried here (a large new architecture, new labeled data at scale, other CT inputs). A third self-training round and a test of a different reader architecture were under way at the time of writing and are not reported. No ink map in this paper is a reading of text, and nothing concerns a scroll eligible for a prize.
 
 ## Contents
 
