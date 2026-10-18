@@ -56,7 +56,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **CT (computed tomography)**: Building a 3D image of an object from many X-ray projections taken at different angles.
 
-**CTC**: Connectionist temporal classification, a way to train a network to output a sequence (here, letters along a line) without marking where each letter sits. The Greek letter reader uses a CTC line network.
+**CTC**: Connectionist temporal classification, a way to train a network to output a sequence (here, letters along a line) without marking where each letter sits. Scroll Text Reader's Greek LineNet uses a CTC line network.
 
 **CUDA**: NVIDIA's GPU programming platform. Most villa training and inference assume an NVIDIA GPU with CUDA.
 

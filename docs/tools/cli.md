@@ -118,7 +118,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `phantom` | none | `cmd_phantom` | [phantom](phantom.md) | synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise |
 | `view` | none | `cmd_view` | [view](view.md) | one static HTML page overlaying several ink maps, their disagreement and the labels |
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
-| `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | learned Greek letter reader for a 2D image, with null, control-map and orientation controls |
+| `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | Scroll Text Reader for a 2D image: Greek LineNet or local OCR, with null, control-map and orientation controls |
 | `letterlines` | `build`, `score` | `cmd_letterlines` | [letterlines](letterlines.md) | training lines for the letter reader from your own transcribed lines, and scores on lines kept apart |
 | `letterdemo` | none | `cmd_letterdemo` | [letterdemo](letterdemo.md) | offline check of the letter reader: synthetic Greek capitals and a noise image, DEMO PASS or DEMO FAIL |
 | `greeklm` | `build`, `score` | `cmd_greeklm` | [greeklm](greeklm.md) | letter n-gram language model for Greek in scriptio continua |

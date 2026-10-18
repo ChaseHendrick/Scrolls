@@ -1,6 +1,6 @@
 # letterread: Scroll Text Reader
 
-Scroll Text Reader (formerly Greek Letter Reader) uses `scrolls-letterread` or `python -m kit letterread` to propose Greek letters with LineNet or words with installed local Tesseract language packs, with model provenance and controls.
+Scroll Text Reader uses `scrolls-letterread` or `python -m kit letterread` to propose Greek letters with LineNet or words with installed local Tesseract language packs, with model provenance and controls.
 
 | Field | Value |
 | --- | --- |
@@ -24,7 +24,7 @@ Scroll Text Reader (formerly Greek Letter Reader) uses `scrolls-letterread` or `
 
 ## What it does
 
-The name covers both backends; commands, Python APIs and model identifiers keep their existing names. Outputs remain unverified hypotheses for a person to check.
+Scroll Text Reader was called Greek Letter Reader until 17 October 2026. The name covers both backends; commands, Python APIs and model identifiers keep their existing names. Outputs remain unverified hypotheses for a person to check.
 
 The default backend is the Greek LineNet described below. The separate [reader-backends page](reader-backends.md) documents `--backend tesseract`: Latin and other installed language packs, capability discovery, word output and its limitations. Greek weights cannot be relabeled as another language. The command checks a local LineNet checkpoint's actual alphabet before calling it Greek.
 

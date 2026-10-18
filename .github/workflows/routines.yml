@@ -11,7 +11,7 @@ permissions:
 jobs:
   routines:
     # The public routines marked "ci" in docs/routines.json (kit/routines.py: the live prize page against the
-    # snapshot, the prize table, the README's release list, the leaderboard page once it lands) and the whole
+    # snapshot, the prize table, the README's release list, the leaderboard page, the staleness check) and the whole
     # unit test suite, once a day on GitHub's free runners for public repositories. No secrets and a read-only
     # token: nothing is posted, uploaded, pushed or launched. A failed check fails the job, so GitHub notifies
     # the owner by email. Private work never runs here.

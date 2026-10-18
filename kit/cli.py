@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,volumeview,segzoo}.
+"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1361,6 +1361,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import routines
     routines.add_arguments(p)
     p.set_defaults(func=routines.run)
+
+    p = sub.add_parser("stale", help="what live pages and registries still say that is no longer true: old handoff "
+                                     "rows, gone branches, retired names, dead links, MAP rows (kit/stale.py; read-only)")
+    from . import stale
+    stale.add_arguments(p)
+    p.set_defaults(func=stale.run)
 
     p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
     releases.add_arguments(p)
