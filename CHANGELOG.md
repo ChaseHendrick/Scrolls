@@ -5,10 +5,10 @@ This file covers the `scrolls-workbench` package, the `kit` folder of this repos
 To install a fixed version, name its tag:
 
 ```bash
-python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.4.0"
+python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.4.1"
 ```
 
-## Unreleased
+## 0.4.1 (18 October 2026)
 
 - **Offline ink-map viewer:** hovering now reports the scaled disagreement encoded in the overlay, including intermediate values such as 0.71. It previously read the red color channel and displayed 1.00 wherever disagreement was nonzero. Regenerate existing HTML pages to use the fix.
 - **Gate A reference:** documents the existing blocked verdict on a Mac/CPU mismatch, replacement records and reverse-control edge checks. Scoring behavior is unchanged.

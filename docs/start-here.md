@@ -46,11 +46,11 @@ Optional: [Scroll Lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) com
 
 ## 2. Try Scrolls Starter on your computer
 
-**No install for practice:** download [Scrolls-Starter.html](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/Scrolls-Starter.html), then open the downloaded file in a modern browser. The page contains its exercise and works offline. It links to online tools when you choose to visit them. Start at **Try a check that can fail** and follow the practice steps below.
+**No install for practice:** download [Scrolls-Starter.html](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/Scrolls-Starter.html), then open the downloaded file in a modern browser. The page contains its exercise and works offline. It links to online tools when you choose to visit them. Start at **Try a check that can fail** and follow the practice steps below.
 
 The portable page cannot inspect your computer: its setup status is **not checked**. To get a real setup snapshot or run the optional reader, install the Python package below. Both versions have the same synthetic exercise and reader command builder. Opening Starter does not download scans or weights, run inference, rent compute or upload files. Generated reader commands are for you to inspect and run explicitly.
 
-The following optional installation adds workbench **0.4.0**, including Starter, into a folder of your own. The base package uses Python's standard library. A virtual environment keeps this program's Python packages separate from other programs. Internet is needed for Python and package installation; the synthetic Starter exercise then works locally. Set aside roughly 1 GB for a comfortable first installation, with more if you later add reader dependencies. This is a planning allowance, not a scan-storage estimate.
+The following optional installation adds workbench **0.4.1**, including Starter, into a folder of your own. The base package uses Python's standard library. A virtual environment keeps this program's Python packages separate from other programs. Internet is needed for Python and package installation; the synthetic Starter exercise then works locally. Set aside roughly 1 GB for a comfortable first installation, with more if you later add reader dependencies. This is a planning allowance, not a scan-storage estimate.
 
 ### macOS
 
@@ -60,7 +60,7 @@ Install Python 3.13 using the [python.org macOS installer](https://www.python.or
 mkdir scrolls-learning
 cd scrolls-learning
 python3.13 -m venv .venv
-.venv/bin/python -m pip install "https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/scrolls_workbench-0.4.0-py3-none-any.whl"
+.venv/bin/python -m pip install "https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/scrolls_workbench-0.4.1-py3-none-any.whl"
 .venv/bin/python -m kit start
 ```
 
@@ -80,7 +80,7 @@ Check that the printed version is at least 3.10. If an older Linux release suppl
 mkdir scrolls-learning
 cd scrolls-learning
 python3 -m venv .venv
-.venv/bin/python -m pip install "https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/scrolls_workbench-0.4.0-py3-none-any.whl"
+.venv/bin/python -m pip install "https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/scrolls_workbench-0.4.1-py3-none-any.whl"
 .venv/bin/python -m kit start
 ```
 
@@ -92,7 +92,7 @@ Install Python 3.13 from [python.org](https://www.python.org/downloads/windows/)
 mkdir scrolls-learning
 cd scrolls-learning
 py -3.13 -m venv .venv
-.venv\Scripts\python.exe -m pip install "https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/scrolls_workbench-0.4.0-py3-none-any.whl"
+.venv\Scripts\python.exe -m pip install "https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/scrolls_workbench-0.4.1-py3-none-any.whl"
 .venv\Scripts\python.exe -m kit start
 ```
 
@@ -152,14 +152,14 @@ Before inference or training, check the notebook's current model, environment, G
 Add the reader dependencies to your **workbench** environment using the same wheel:
 
 ```bash
-.venv/bin/python -m pip install "scrolls-workbench[reader] @ https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/scrolls_workbench-0.4.0-py3-none-any.whl"
+.venv/bin/python -m pip install "scrolls-workbench[reader] @ https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/scrolls_workbench-0.4.1-py3-none-any.whl"
 .venv/bin/python -m kit letterdemo --out first-reader
 ```
 
 On Windows:
 
 ```powershell
-.venv\Scripts\python.exe -m pip install "scrolls-workbench[reader] @ https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/scrolls_workbench-0.4.0-py3-none-any.whl"
+.venv\Scripts\python.exe -m pip install "scrolls-workbench[reader] @ https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/scrolls_workbench-0.4.1-py3-none-any.whl"
 .venv\Scripts\python.exe -m kit letterdemo --out first-reader
 ```
 

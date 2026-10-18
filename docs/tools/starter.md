@@ -16,9 +16,9 @@ Scrolls Starter guides newcomers through existing viewers, an offline controls e
 | Network | None for generation, checking or the embedded exercise. External links open their named sites only when selected; generated install or reader commands can download packages or weights only when the user runs them |
 | Writes | One new self-contained HTML file, by default in a new `scrolls-starter-*/index.html` temporary folder; `--check` prints JSON only. No image or model output is generated |
 | Go-ahead | Not needed for setup inspection, local practice or command preparation. Linked services and real workflows have their own resource and data requirements |
-| Released | Prepared for the public workbench 0.4.0 release; the portable HTML and installed command use the same assets |
+| Released | Public since workbench 0.4.0; included unchanged in workbench 0.4.1 except the reported package version. The portable HTML and installed command use the same assets |
 | Release id | `scrolls-starter` |
-| Checked | 2026-10-17 against commit `67ced6a` plus the Starter working changes |
+| Checked | 2026-10-17 against commit `36d64e2` |
 
 ## What it does
 

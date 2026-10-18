@@ -7411,7 +7411,7 @@
    },
    "checked": {
     "date": "2026-10-17",
-    "commit": "67ced6a"
+    "commit": "36d64e2"
    },
    "license": null,
    "fields": {
@@ -7427,9 +7427,9 @@
     "Network": "None for generation, checking or the embedded exercise. External links open their named sites only when selected; generated install or reader commands can download packages or weights only when the user runs them",
     "Writes": "One new self-contained HTML file, by default in a new `scrolls-starter-*/index.html` temporary folder; `--check` prints JSON only. No image or model output is generated",
     "Go-ahead": "Not needed for setup inspection, local practice or command preparation. Linked services and real workflows have their own resource and data requirements",
-    "Released": "Prepared for the public workbench 0.4.0 release; the portable HTML and installed command use the same assets",
+    "Released": "Public since workbench 0.4.0; included unchanged in workbench 0.4.1 except the reported package version. The portable HTML and installed command use the same assets",
     "Release id": "`scrolls-starter`",
-    "Checked": "2026-10-17 against commit `67ced6a` plus the Starter working changes"
+    "Checked": "2026-10-17 against commit `36d64e2`"
    },
    "page": "docs/tools/starter.md",
    "sections": [
@@ -9010,8 +9010,8 @@
     "text": "Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-17",
+    "commit": "36d64e2"
    },
    "license": "Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`)",
    "fields": {
@@ -9027,10 +9027,10 @@
     "Network": "The install fetches `setuptools>=77` and the chosen extras from PyPI, and clones GitHub for a `git+https` URL. The letter reader's commands download the released weights from GitHub. The CI runs on GitHub-hosted runners",
     "Writes": "pip writes the `kit` package into the environment's `site-packages` and the five console scripts into its `bin` (`Scripts` on Windows). A build from a source folder leaves `build/` and `scrolls_workbench.egg-info/` there (both gitignored)",
     "Go-ahead": "Not needed to install or test. Publishing the package anywhere new (such as PyPI) or tagging a release is an outward step that needs Chase's yes (the go-ahead rule, hard rule 8)",
-    "Released": "Public `main`: installable since 2026-10-14; version 0.4.0 includes Scrolls Starter and local viewer-state generation ([release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0))",
+    "Released": "Public `main`: installable since 2026-10-14; version 0.4.1 fixes the offline viewer hover readout and includes Scrolls Starter and local viewer-state generation ([release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.1))",
     "License": "Apache-2.0 ([LICENSE](../../LICENSE), [NOTICE](../../NOTICE)). The letter reader's weights are separate works: `letters-v2-ccby` is CC BY 4.0 and `letters-v2-real` CC BY-NC 4.0 (`CITATION.cff`)",
     "Guide": "[letter-reader.md, \"Install\"](../letter-reader.md#install)",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-17 against commit `36d64e2`"
    },
    "page": "docs/tools/workbench-package.md",
    "sections": [

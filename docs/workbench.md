@@ -16,7 +16,7 @@ Open a screenshot at full size to read its controls.
 
 ## 1. Open Starter first
 
-Download **[Scrolls-Starter.html](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.0/Scrolls-Starter.html)** and double-click the downloaded file. This first step needs a browser, with no Python, GPU or account. The page and its exercise work offline; links to other services need Internet.
+Download **[Scrolls-Starter.html](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/Scrolls-Starter.html)** and double-click the downloaded file. This first step needs a browser, with no Python, GPU or account. The page and its exercise work offline; links to other services need Internet.
 
 [![Scrolls Starter introduction, with buttons for looking around, trying controls, choosing an official task, checking setup and reading an image.](images/workbench/starter-introduction.png)](images/workbench/starter-introduction.png)
 
