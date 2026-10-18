@@ -358,7 +358,7 @@ All 233 awards compiled from the winners page [VC-Winners], retrieved 15 October
 | $1,000 | Lasagna & VC3D improvements: Santiago Pelufo |
 | $1,000 | First Letters on PHerc. 0826: Lutfiya Miller and Chris Müller |
 | $1,000 | nnInteractive label refinement: Benjamin Hamm |
-| $1,000 | Ink checkpoint benchmarking: Domenico Russo. Benchmarks all 14 released 9 µm ink checkpoints, and retrains from dense teacher labels instead of the sparse hand-labelled strips. |
+| $1,000 | Ink checkpoint benchmarking: Domenico Russo. Benchmarks all 14 released 9 µm ink checkpoints, and retrains from dense teacher labels instead of the sparse hand-labeled strips. |
 | $1,000 | Seeded sheet growing: Mihajlo Nestorović. A trained 3D model that grows a single papyrus sheet from a seed, along with a pipeline for generating harder sheet-level training data. |
 | $500 | Dense pseudo-labels & checkpoint repair: Erwin Nieuwlaar |
 | $500 | Assorted villa fixes: Oleksandr Kozlenko |

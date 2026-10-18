@@ -1,9 +1,9 @@
-"""Second stage: move a coarse centre onto the winding centre, looking at native level-3 crops.
+"""Second stage: move a coarse center onto the winding center, looking at native level-3 crops.
 
 The first stage (centrenet) sees the whole scroll squeezed into 256 pixels, about 0.3 mm each, too coarse for the
 innermost windings. This network sees a 176-pixel window of the level-3 slices (about 70 um per pixel, a 12 to 13 mm
-window) around a coarse guess and puts a heatmap peak on the centre. Trained on published umbilici, with the coarse
-guess replaced by the published centre plus a random offset; scored only on scrolls it did not train on.
+window) around a coarse guess and puts a heatmap peak on the center. Trained on published umbilici, with the coarse
+guess replaced by the published center plus a random offset; scored only on scrolls it did not train on.
 
     python refine.py cv --data DIR --out DIR [--folds 0 1 2 3 --epochs 12 --width 16 --device cpu]
     python refine.py chain fold<k>|all --data DIR --base FIRST_STAGE_RUN --out DIR [--epochs 30 --width 32 --time-s 300]
@@ -11,7 +11,7 @@ guess replaced by the published centre plus a random offset; scored only on scro
 
 cv trains one model per fold of pipeline.FOLDS (saved as refine_cv_fold<k>.pt, apart from chain's refine_fold<k>.pt)
 and scores each held-out scroll from coarse guesses that are the
-published centre plus a smooth random offset along z (median 1.2 mm, like the first stage's held-out error), before
+published center plus a smooth random offset along z (median 1.2 mm, like the first stage's held-out error), before
 and after refining. A smooth offset is a stand-in for the first stage's real error, which is also smooth along z
 but follows the CT's confusing structures; the real test chains the two stages.
 """
@@ -38,14 +38,14 @@ def crop(ct, i, cy, cx, side):
     return out, (y0, x0)
 
 def truth_l3(s, z):
-    """Published centre at each z in level-3 pixels, NaN outside the annotated range."""
+    """Published center at each z in level-3 pixels, NaN outside the annotated range."""
     _, T = slices.truth(s)
     t = np.stack([np.interp(z, T[:, 0], T[:, 1]), np.interp(z, T[:, 0], T[:, 2])], 1) / F3
     t[(z < T[0, 0]) | (z > T[-1, 0])] = np.nan
     return t
 
 def bands(ct, t):
-    """Training bands: for each slice with a centre, the 3-slice window of side S + 2R centred on it."""
+    """Training bands: for each slice with a center, the 3-slice window of side S + 2R centered on it."""
     B = S + 2 * R; keep = np.nonzero(np.isfinite(t[:, 0]))[0]
     out = np.zeros((len(keep), 3, B, B), np.uint8); org = np.zeros((len(keep), 2))
     for k, i in enumerate(keep):
@@ -53,7 +53,7 @@ def bands(ct, t):
     return out, org, t[keep]
 
 def train_offsets(rng, b, um):
-    """Training offsets in level-3 pixels: half from a 2-D normal with 1 mm sigma, half uniform over the disc of
+    """Training offsets in level-3 pixels: half from a 2-D normal with 1 mm sigma, half uniform over the disk of
     radius R, so the network sees both the usual small error and the far tail."""
     o = rng.normal(0, 1000 / (um * F3), (b, 2))
     r = R * np.sqrt(rng.random(b)); a = 2 * np.pi * rng.random(b)
@@ -85,7 +85,7 @@ def dihedral(x, t, rng):
     return torch.stack(out) * g + o, tt
 
 def train(data, epochs, seed, width=16, batch=16, lr=2e-3, time_s=None, device="cpu", log=print):
-    """data: {scroll: (bands uint8, band origins, centres in level-3 px, um)}."""
+    """data: {scroll: (bands uint8, band origins, centers in level-3 px, um)}."""
     torch.manual_seed(seed); rng = np.random.default_rng(seed)
     items = [(s, k) for s, v in data.items() for k in range(len(v[0]))]
     net = centrenet.Net(width).to(device)
@@ -128,7 +128,7 @@ def train(data, epochs, seed, width=16, batch=16, lr=2e-3, time_s=None, device="
     return net, dict(steps=st, planned_steps=steps, stopped=stopped, seconds=round(time.time() - t0, 1), items=len(items))
 
 def refine(net, ct, idx, guess, rounds=2, device="cpu"):
-    """Move guesses (level-3 px, one per slice index in idx) onto the centre; each round re-crops at the last answer."""
+    """Move guesses (level-3 px, one per slice index in idx) onto the center; each round re-crops at the last answer."""
     g = np.array(guess, float); peak = None
     for _ in range(rounds):
         crops = [crop(ct, i, *g[k], S) for k, i in enumerate(idx)]

@@ -4,7 +4,7 @@ Two tools, both numpy only, both runnable without any scroll data.
 
 ## `kit phantom`: synthetic carbon ink with known truth
 
-A phantom is a small surface volume (depth, height, width) built to look, to a detector, like a flattened papyrus sheet: a recto fibre layer and a verso fibre layer at right angles, a smooth brightness field across the sheet, per-voxel noise, and carbon ink strokes (random lines and arcs in rows of letter-sized cells) on the top surface. The ink adds a small density step in the top layers and a small thickness bump, both below the noise by default, because carbon ink is close to papyrus in density. The stroke mask is the label, so the truth of every pixel is known.
+A phantom is a small surface volume (depth, height, width) built to look, to a detector, like a flattened papyrus sheet: a recto fiber layer and a verso fiber layer at right angles, a smooth brightness field across the sheet, per-voxel noise, and carbon ink strokes (random lines and arcs in rows of letter-sized cells) on the top surface. The ink adds a small density step in the top layers and a small thickness bump, both below the noise by default, because carbon ink is close to papyrus in density. The stroke mask is the label, so the truth of every pixel is known.
 
 The strokes are not letters of any script. A score on a phantom says nothing about a scroll (label: Model output on synthetic data).
 

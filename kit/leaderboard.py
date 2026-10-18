@@ -43,7 +43,7 @@ HEADER = """# Ink reader leaderboard
 
 <!-- generated from docs/results.json by python -m kit leaderboard render; edit results.json, not this file -->
 
-Every released ink reader on the labelled test segments, with its controls beside it. Model output, not readings.
+Every released ink reader on the labeled test segments, with its controls beside it. Model output, not readings.
 Numbers come only from [`results.json`](results.json); this page is written from it, and
 `python -m kit leaderboard check` (run by the tests) fails when the two disagree.
 

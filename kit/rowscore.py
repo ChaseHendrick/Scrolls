@@ -1,7 +1,7 @@
 """Text-row periodicity score for an ink map: a triage aid, not a verdict.
 
 Port of Bullo27's `analysis/rowscore.py` (https://github.com/Bullo27/first-letters-survey,
-MIT, commit a5f9c51, read 2026-10-07). Greek text sits in rows a few millimetres apart, so
+MIT, commit a5f9c51, read 2026-10-07). Greek text sits in rows a few millimeters apart, so
 an ink map that shows text carries a spectral peak at a 2.5 to 8 mm period in one
 direction. The score is the peak power in that band over the band's median power,
 computed on the largest connected piece of the mapped surface.

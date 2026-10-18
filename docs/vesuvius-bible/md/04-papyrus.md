@@ -1,14 +1,14 @@
 # Papyrus: from Plant to Roll {#ch-papyrus}
 
-> **Chapter summary.** Papyrus is made from the pith of the sedge *Cyperus papyrus*, cut into strips, laid in two layers at right angles, pressed and dried. Sheets were glued edge to edge into rolls. Carbonization at Herculaneum shrank each sheet to about 0.15 mm, and the fibre structure that survives is the main thing that CT sees. This chapter collects the measured facts about the plant, its manufacture and the physical structure of a carbonized roll, with the voxel arithmetic that links them to scanning.
+> **Chapter summary.** Papyrus is made from the pith of the sedge *Cyperus papyrus*, cut into strips, laid in two layers at right angles, pressed and dried. Sheets were glued edge to edge into rolls. Carbonization at Herculaneum shrank each sheet to about 0.15 mm, and the fiber structure that survives is the main thing that CT sees. This chapter collects the measured facts about the plant, its manufacture and the physical structure of a carbonized roll, with the voxel arithmetic that links them to scanning.
 
-Throughout this chapter, numbers are labelled with their condition: **fresh** (living plant), **replica** (modern experimental papyrus), **ancient** (surviving ancient papyri) or **carbonized** (Herculaneum material). They should not be mixed without care.
+Throughout this chapter, numbers are labeled with their condition: **fresh** (living plant), **replica** (modern experimental papyrus), **ancient** (surviving ancient papyri) or **carbonized** (Herculaneum material). They should not be mixed without care.
 
 ## The plant
 
 *Cyperus papyrus* L. is a sedge (family Cyperaceae), native to central and tropical Africa including Madagascar. It was cultivated in Egypt from ancient times and is sometimes naturalized around the Mediterranean; it has almost disappeared from the lower Nile [Vaughan2011]. It grows from sea level to about 2,500 m and uses C4 photosynthesis [Vaughan2011]. Pliny the Elder places it in the marshes of Egypt or in still Nile water no deeper than two cubits [Pliny-NH13, 13.71]. The best-known European stands are in Sicily, where modern papyrus making at Siracusa underlies a widely used replica method; whether the Sicilian plants are native or introduced is **unverified** in the sources consulted [Waly2001].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Cyperus papyrus plants with tall green stems and umbrella-like flower heads.
+> **Photograph (not stored in git; see the caption for source and license):** Cyperus papyrus plants with tall green stems and umbrella-like flower heads.
 *Figure 4.1. Cyperus papyrus. Photo: Krzysztof Ziarnek (Kenraiz), via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Cyperus_papyrus_kz07.jpg>*
 
 | Quantity | Value | Condition | Source |
@@ -17,8 +17,8 @@ Throughout this chapter, numbers are labelled with their condition: **fresh** (l
 | Culm cross-section | three-sided (trigonous) | fresh | [Vaughan2011] [Pliny-NH13] |
 | Stem length according to Pliny | at most 10 cubits | ancient text | [Pliny-NH13] |
 | Rhizome thickness | 2 to 6 cm | fresh | [Vaughan2011] |
-| Fibre cell length | 1.8 mm (range 1 to 4) | fresh | [Vaughan2011] |
-| Fibre cell width | 12 µm (range 8 to 25) | fresh | [Vaughan2011] |
+| Fiber cell length | 1.8 mm (range 1 to 4) | fresh | [Vaughan2011] |
+| Fiber cell width | 12 µm (range 8 to 25) | fresh | [Vaughan2011] |
 | Vascular bundle spacing | 1.2 mm mean (0.6 to 2.0) | fresh | [Scora1991] |
 
 ### The pith
@@ -42,7 +42,7 @@ Bausch and colleagues found that ancient papyri dated from 200 BCE to 800 CE con
 
 Pliny's *Natural History* 13.68 to 89 is the only detailed ancient description of papyrus manufacture [Pliny-NH13]. The key steps, paraphrased from the Latin:
 
-1. **Splitting (13.74).** The stem is split with a point into very thin but as wide as possible strips (*philyrae*); the best come from the centre.
+1. **Splitting (13.74).** The stem is split with a point into very thin but as wide as possible strips (*philyrae*); the best come from the center.
 2. **Weaving (13.77).** All papyrus is "woven" on a board wetted with Nile water. A lengthwise layer is laid first and trimmed, then a cross layer on top.
 3. **Pressing and drying (13.77).** The sheets are pressed and dried in the sun, then joined into a roll, in descending order of quality, never more than twenty to a *scapus*.
 4. **Grading (13.78).** Quality is judged by thinness, density, whiteness and smoothness.
@@ -61,9 +61,9 @@ Pliny's *Natural History* 13.68 to 89 is the only detailed ancient description o
 | Claudia (after reform) | 1 foot | about 29.6 cm |
 | macrocollum | 1 cubit | not converted |
 
-Source: [Pliny-NH13], conversion using the standard Roman digit [WP-RomanUnits]. **Caution:** whether these widths refer to the strip, the finished sheet or the roll height, and what exactly a *scapus* is, are long-standing debates in the specialist literature (Lewis 1974; Hendriks 1980), which were not consulted directly for this book. The converted centimetres are arithmetic, not measurements.
+Source: [Pliny-NH13], conversion using the standard Roman digit [WP-RomanUnits]. **Caution:** whether these widths refer to the strip, the finished sheet or the roll height, and what exactly a *scapus* is, are long-standing debates in the specialist literature (Lewis 1974; Hendriks 1980), which were not consulted directly for this book. The converted centimeters are arithmetic, not measurements.
 
-> **Photograph (not stored in git; see the caption for source and licence):** A modern demonstration of papyrus making: strips laid in two layers on a board.
+> **Photograph (not stored in git; see the caption for source and license):** A modern demonstration of papyrus making: strips laid in two layers on a board.
 *Figure 4.2. Making papyrus: strips laid in crossed layers before pressing (modern demonstration). Photo: FrogUnderALilyPad, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Making_papyrus.jpg>*
 
 ## Modern reconstructions
@@ -89,16 +89,16 @@ This disagreement is unresolved. For CT the question matters because a paste lay
 
 ## Recto, verso and the roll
 
-A sheet consists of two layers of strips at right angles [Bonnerot-CSMC] [Scora1991] [Parsons2023]. The side with fibres running horizontally (parallel to the length of the roll) is the **recto**. It was written first and rolled inward; the **verso** shows vertical fibres [VC-OpenProblems2026] [Bonnerot-CSMC]. Text runs in columns along the horizontal fibres [Bukreeva2016].
+A sheet consists of two layers of strips at right angles [Bonnerot-CSMC] [Scora1991] [Parsons2023]. The side with fibers running horizontally (parallel to the length of the roll) is the **recto**. It was written first and rolled inward; the **verso** shows vertical fibers [VC-OpenProblems2026] [Bonnerot-CSMC]. Text runs in columns along the horizontal fibers [Bukreeva2016].
 
 Sheets were joined into a roll by overlapping and gluing their edges:
 
 - a **kollema** (plural kollemata) is one sheet within a roll; the **kollesis** is the glued join;
-- the **protokollon** is the first sheet, often turned so its fibres run vertically on the inside, protecting the start of the roll;
+- the **protokollon** is the first sheet, often turned so its fibers run vertically on the inside, protecting the start of the roll;
 - the **eschatokollion** is the last sheet;
 - an **agraphon** is an unwritten stretch, used for the blank spaces at the start and end of a roll [Romano2023].
 
-Overlaps at a kollesis are 1 to 2 cm. Joins run in the same direction through a roll, and a standard commercial roll had 20 sheets [UCL-Rolls] [Pliny-NH13]. Fibres are often disturbed at a join, and a vertical crack 1 to 1.5 cm before it is often mistaken for the join itself [Janko-HowTo].
+Overlaps at a kollesis are 1 to 2 cm. Joins run in the same direction through a roll, and a standard commercial roll had 20 sheets [UCL-Rolls] [Pliny-NH13]. Fibers are often disturbed at a join, and a vertical crack 1 to 1.5 cm before it is often mistaken for the join itself [Janko-HowTo].
 
 | Roll (Egypt) | Kollema widths | Roll height | Source |
 |---|---|---|---|
@@ -136,22 +136,22 @@ Romano and colleagues found lead-drawn ruling lines by macro X-ray fluorescence 
 | Single unrolled sheet, PHerc. 164 | about 0.15 mm | carbonized | [Romano2023] |
 | Fragments studied by thermography | about 0.15 mm | carbonized | [Ceccarelli2025] |
 | Paris fragments "made of different sheets" | about 0.3 mm average | carbonized | [Tack2016] |
-| Thickness assumed for ink-detection neighbourhoods | 150 µm ("varies considerably") | carbonized | [Parsons2023] |
+| Thickness assumed for ink-detection neighborhoods | 150 µm ("varies considerably") | carbonized | [Parsons2023] |
 | Replica sheets (Siracusa method) | up to 0.50 mm | replica | [Waly2001] |
 | Pith slices before pressing | 2 to 4 mm; about 2 mm | replica | [Bausch2022] [Scora1991] |
 | Bulk density of a whole carbonized roll (5 cm diameter, 20 cm, 141 g) | 0.36 g/cm3 | carbonized | [Tack2016] |
-| Fibre ridge width on sheet surface (SEM) | 50 to 200 µm | replica | [Parker2019] |
+| Fiber ridge width on sheet surface (SEM) | 50 to 200 µm | replica | [Parker2019] |
 | Rounded cells between ridges | about 50 to 100 µm | replica | [Parker2019] |
 
-Two to four millimetres of wet pith become a sheet a few tenths of a millimetre thick, consistent with the more than sixfold increase in bundle density on pressing [Scora1991]. A carbonized sheet of about 0.15 mm is thinner than replica sheets of up to 0.5 mm; no source consulted separates shrinkage due to carbonization from original thinness. Carbonization also makes sheets bubble and delaminate, so they can appear to have more layers than they do [Parsons2023], and rolls are crushed, with layers hardest to separate in the innermost windings [Mocella2015].
+Two to four millimeters of wet pith become a sheet a few tenths of a millimeter thick, consistent with the more than sixfold increase in bundle density on pressing [Scora1991]. A carbonized sheet of about 0.15 mm is thinner than replica sheets of up to 0.5 mm; no source consulted separates shrinkage due to carbonization from original thinness. Carbonization also makes sheets bubble and delaminate, so they can appear to have more layers than they do [Parsons2023], and rolls are crushed, with layers hardest to separate in the innermost windings [Mocella2015].
 
 The 0.36 g/cm3 figure is a whole-roll bulk density that includes the gaps between wraps [Tack2016]. Ink and carbonized papyrus have "almost the same density" [VC-Tutorial5], so absorption contrast between them is very low and phase effects dominate [Angelotti2026a].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Scanning electron micrograph of the surface of a papyrus sheet at 100 times magnification, showing crossing fibre bundles.
-*Figure 4.3. Scanning electron image of the surface of a (modern) papyrus sheet, 100x. The ridged fibre structure is what CT resolves as the papyrus grid in carbonized rolls. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_100x.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** Scanning electron micrograph of the surface of a papyrus sheet at 100 times magnification, showing crossing fiber bundles.
+*Figure 4.3. Scanning electron image of the surface of a (modern) papyrus sheet, 100x. The ridged fiber structure is what CT resolves as the papyrus grid in carbonized rolls. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_100x.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Scanning electron micrograph of a papyrus sheet surface at 1,000 times magnification, showing individual fibre cells.
-*Figure 4.4. The same kind of surface at 1,000x, showing individual fibre cells. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_1,000x.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** Scanning electron micrograph of a papyrus sheet surface at 1,000 times magnification, showing individual fiber cells.
+*Figure 4.4. The same kind of surface at 1,000x, showing individual fiber cells. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_1,000x.jpg>*
 
 ## Carbonization
 
@@ -166,7 +166,7 @@ Estimates of the thermal history of the papyri differ by method:
 
 Giordano and colleagues also report that the deposits stayed out of thermal equilibrium for more than 24 hours [Giordano2018]. The "few seconds" figure and a deposit that stayed hot for a day do not fit easily together; one reading is that rolls inside rooms or cases saw less heat than open deposits, so local histories varied. No source measures the temperature history of any particular roll.
 
-Bukreeva and colleagues distinguish the amorphous carbon of ink from the ordered carbon fibres of the substrate [Bukreeva2016]. That structural difference, rather than density, is a plausible physical basis for texture contrast between ink and papyrus. Very high resolution scans (0.55 µm) of carbonized fragments show fibres as cell walls around hollow lumens; these graphite-like structures act as tiny refractive lenses and degrade phase contrast, a phenomenon the Vesuvius Challenge calls "compressed-region haze" [VC-OpenProblems2026] [Angelotti2026a] (see [Chapter 7](#ch-xray)).
+Bukreeva and colleagues distinguish the amorphous carbon of ink from the ordered carbon fibers of the substrate [Bukreeva2016]. That structural difference, rather than density, is a plausible physical basis for texture contrast between ink and papyrus. Very high resolution scans (0.55 µm) of carbonized fragments show fibers as cell walls around hollow lumens; these graphite-like structures act as tiny refractive lenses and degrade phase contrast, a phenomenon the Vesuvius Challenge calls "compressed-region haze" [VC-OpenProblems2026] [Angelotti2026a] (see [Chapter 7](#ch-xray)).
 
 ## Voxel arithmetic
 
@@ -176,12 +176,12 @@ The table below converts physical sizes into voxels for the two voxel sizes most
 |---|---|---|---|---|
 | Ink layer on a phantom | 3 to 5 µm | 1.25 to 2.1 voxels | 0.38 to 0.63 voxels | [Parker2019] |
 | Apparent ink deposits (Scroll 1 at 2.4 µm) | 10 to 20 µm | 4.2 to 8.3 voxels | 1.3 to 2.5 voxels | [Angelotti2026a] |
-| Fibre cell width | 8 to 25 µm | 3.3 to 10.4 voxels | 1.0 to 3.2 voxels | [Vaughan2011] |
-| Fibre ridge | 50 to 200 µm | 21 to 83 voxels | 6.3 to 25 voxels | [Parker2019] |
+| Fiber cell width | 8 to 25 µm | 3.3 to 10.4 voxels | 1.0 to 3.2 voxels | [Vaughan2011] |
+| Fiber ridge | 50 to 200 µm | 21 to 83 voxels | 6.3 to 25 voxels | [Parker2019] |
 | Carbonized sheet | 150 µm | 62.5 voxels | 19 voxels | [Romano2023] |
 | Letter height | 3 to 4 mm | 1,250 to 1,667 voxels | 379 to 506 voxels | [Ceccarelli2025] |
 
-![Bar chart on a logarithmic scale comparing feature sizes from ink layers to letters with the 2.4 and 7.91 micrometre voxel sizes.](../figures/charts/feature_scales.svg)
+![Bar chart on a logarithmic scale comparing feature sizes from ink layers to letters with the 2.4 and 7.91 micrometer voxel sizes.](../figures/charts/feature_scales.svg)
 *Figure 4.5. Physical feature sizes of papyrus and ink compared with common voxel sizes (log scale). Chart by the editors from the sources in the table above. Data: data/feature_scales.csv. License: CC BY 4.0 (this book).*
 
-The practical lesson: at 7.91 µm a single fibre cell is one to three voxels and the thinnest ink layers are below one voxel, so ink detection at that resolution relies on texture and context rather than resolving the ink itself. At 2.4 µm fibres and apparent ink deposits span several voxels. Chapter 7 returns to the trade-off between resolution, field of view and data volume.
+The practical lesson: at 7.91 µm a single fiber cell is one to three voxels and the thinnest ink layers are below one voxel, so ink detection at that resolution relies on texture and context rather than resolving the ink itself. At 2.4 µm fibers and apparent ink deposits span several voxels. Chapter 7 returns to the trade-off between resolution, field of view and data volume.

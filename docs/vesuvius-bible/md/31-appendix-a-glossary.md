@@ -15,12 +15,12 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | book number | The number of a book in a multi-book work, written in an end title ([6](#ch-greek)). |
 | capitals (bookhand) | The upright Greek letters, without word division, in which literary papyri were written ([6](#ch-greek)). |
 | carbonization | Conversion of papyrus to carbon-rich material by heat in the eruption ([1](#ch-eruption), [4](#ch-papyrus)). |
-| catalogue | The challenge's machine-readable listing of samples, scans, volumes and models ([8](#ch-scans), [23](#ch-formats)). |
+| catalog | The challenge's machine-readable listing of samples, scans, volumes and models ([8](#ch-scans), [23](#ch-formats)). |
 | Ceres | An open-source C++ library for non-linear least-squares problems, used by GrowPatch [Ceres] ([18](#ch-tracing)). |
 | checkpoint | Saved weights of a trained model ([21](#ch-ink)). |
 | column | A block of text on a roll; Herculaneum columns are often 5 to 6 cm wide ([4](#ch-papyrus)). |
 | compressed region | Part of a scroll where wraps are pressed so tightly that scans lose layer separation ([8](#ch-scans), [26](#ch-open-problems)). |
-| Copy Out/In | A VC3D tracing method that predicts a neighbouring wrap's surface from a traced one ([18](#ch-tracing)). |
+| Copy Out/In | A VC3D tracing method that predicts a neighboring wrap's surface from a traced one ([18](#ch-tracing)). |
 | crackle | A fine cracked texture of ink seen in scroll CT, the first ink signal found directly in a closed scroll ([10](#ch-2023)). |
 | CT | Computed tomography: reconstruction of a 3D volume from many X-ray projections ([7](#ch-xray)). |
 | data agreement | The terms users accept for challenge data, including citation and no publication of hidden text without approval ([28](#ch-ethics)). |
@@ -32,7 +32,7 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | end title (subscriptio) | The title block at the end of a roll's text: author, title, book number, sometimes a line count ([6](#ch-greek)). |
 | Epicureanism | The philosophy of Epicurus, which most Herculaneum texts discuss ([2](#ch-villa)). |
 | ESRF | European Synchrotron Radiation Facility, Grenoble ([8](#ch-scans)). |
-| fibre (fiber) | A strand of the papyrus plant visible in CT; fibres run horizontally on the recto ([4](#ch-papyrus), [18](#ch-tracing)). |
+| fiber (fibre) | A strand of the papyrus plant visible in CT; fibers run horizontally on the recto ([4](#ch-papyrus), [18](#ch-tracing)). |
 | First Letters prize | A prize for the first letters found in a given scroll ([13](#ch-2026)). |
 | flattening | Mapping a traced 3D surface onto a plane with low distortion ([20](#ch-flatten)). |
 | flatboi | A community flattening tool based on SLIM ([20](#ch-flatten)). |
@@ -66,8 +66,8 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | Piaggio machine | The 18th-century unrolling device of Antonio Piaggio ([3](#ch-unrolling)). |
 | progress prize | Monthly prize for open-source contributions ([14](#ch-ledger)). |
 | propagation distance | Distance from sample to detector; controls phase contrast ([7](#ch-xray)). |
-| pseudo-labelling | Training on labels produced by a model's own confident predictions, iteratively ([21](#ch-ink)). |
-| recto | The written inner side of a roll, with horizontal fibres ([4](#ch-papyrus)). |
+| pseudo-labeling | Training on labels produced by a model's own confident predictions, iteratively ([21](#ch-ink)). |
+| recto | The written inner side of a roll, with horizontal fibers ([4](#ch-papyrus)). |
 | rendering | Sampling the volume along a traced surface into a stack of layers ([20](#ch-flatten)). |
 | ResNet3D | A 3D residual network [Hara2018], used in early ink models ([21](#ch-ink)). |
 | scorza | The hard outer shell of a carbonized roll, removed in early opening ([3](#ch-unrolling)). |
@@ -85,13 +85,13 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | tifxyz | A surface format of three float32 TIFFs giving x, y, z for each grid cell, with -1 for missing cells ([23](#ch-formats)). |
 | TimeSformer | A video transformer [Bertasius2021], used in the 2023 Grand Prize ink model ([21](#ch-ink)). |
 | topology-aware metric | A score that penalizes holes, mergers and sheet switches ([17](#ch-surface)). |
-| umbilicus | The central axis of a roll; in the data, the fitted centre line ([19](#ch-spiral)). |
-| uint8 | 8-bit unsigned integer; the data type of catalogue volumes ([23](#ch-formats)). |
+| umbilicus | The central axis of a roll; in the data, the fitted center line ([19](#ch-spiral)). |
+| uint8 | 8-bit unsigned integer; the data type of catalog volumes ([23](#ch-formats)). |
 | VC3D | Volume Cartographer 3D, the main viewing and tracing application ([18](#ch-tracing), [22](#ch-tools)). |
-| verso | The outer back side of a roll, with vertical fibres ([4](#ch-papyrus)). |
+| verso | The outer back side of a roll, with vertical fibers ([4](#ch-papyrus)). |
 | villa (repository) | The ScrollPrize monorepository containing VC3D, vesuvius and other tools ([22](#ch-tools)). |
 | Villa of the Papyri | The Herculaneum villa where the rolls were found ([2](#ch-villa)). |
 | virtual unwrapping | Recovering a rolled surface's content from 3D imaging without opening it ([3](#ch-unrolling)). |
 | volume | A reconstructed 3D CT image ([8](#ch-scans)). |
-| voxel | A volume element; the voxel size is its edge length in micrometres ([7](#ch-xray)). |
-| winding number | The count of turns from the centre of a spiral; relative winding annotations constrain spiral fits ([19](#ch-spiral)). |
+| voxel | A volume element; the voxel size is its edge length in micrometers ([7](#ch-xray)). |
+| winding number | The count of turns from the center of a spiral; relative winding annotations constrain spiral fits ([19](#ch-spiral)). |

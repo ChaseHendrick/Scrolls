@@ -254,7 +254,7 @@
     "date": "2026-10-18",
     "commit": "9e50d61"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licences and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`autopipeline`",
     "Status": "Branch only",
@@ -269,7 +269,7 @@
     "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
     "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
     "Released": "Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). The tag `autopipeline-v0.1.5` and its GitHub release with the wheel are not made yet. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licences and are not included",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
     "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
     "Branch": "`submission/progress-2026-10-fix5` at `9e50d61`",
     "Checked": "2026-10-18 against commit `9e50d61`"
@@ -1780,7 +1780,7 @@
     "Tests": "`tests/test_kit.py`",
     "Needs": "Python 3.10 or newer, standard library only (urllib, concurrent.futures); outbound HTTPS to the bucket. Reading what it fetched needs zarr (the map tools)",
     "Runs on": "Any machine with network access. 33 objects (14.7 MB) took 3.9 s and 13 objects (0.12 MB) 6.8 s; a rerun with nothing to download 3.5 s (measured 2026-10-16, 4-core Xeon cloud container behind an HTTPS proxy). A whole surface volume (1.0 to 1.7 GB): Not measured",
-    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honours `HTTPS_PROXY`",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honors `HTTPS_PROXY`",
     "Writes": "The folder `DEST` and every subfolder it needs; one file per bucket object at `DEST/` plus the key minus the prefix, each written first as `NAME.part` and then renamed. Files already there at the listed size are left alone, files of another size are replaced, nothing is deleted",
     "Go-ahead": "Not needed: anonymous downloads of public data; nothing is posted or rented",
     "Released": "Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package",
@@ -1884,8 +1884,8 @@
   {
    "id": "fibertensor",
    "name": "fibertensor",
-   "tagline": "a retired CPU ink reader built on fibre-orientation features",
-   "summary": "`python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fibre orientation) and brightness features of one labelled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun.",
+   "tagline": "a retired CPU ink reader built on fiber-orientation features",
+   "summary": "`python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fiber orientation) and brightness features of one labeled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun.",
    "status": "Retired",
    "kind": [
     "kit command",
@@ -1952,7 +1952,7 @@
     "Run": "`python -m kit fibertensor train`, `python -m kit fibertensor predict`, `from kit import fibertensor`",
     "Code": "`kit/fibertensor.py`, `kit/cli.py` (`cmd_fibertensor`), `kit/auc.py` (`labels_on_map`, `label_grid`, `_levels`), `kit/layers.py` (`_zarr`), `kit/verify.py` (`_numpy`, `VerifyError`)",
     "Tests": "`tests/test_fibertensor.py`",
-    "Needs": "Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), zarr (3.x on Python 3.11 or newer) to read the volume and labels, tifffile for `predict`. Data: a 9 um surface volume zarr of a labelled public segment and its label folder",
+    "Needs": "Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), zarr (3.x on Python 3.11 or newer) to read the volume and labels, tifffile for `predict`. Data: a 9 um surface volume zarr of a labeled public segment and its label folder",
     "Runs on": "Any CPU. On a 640 px crop of 28 layers, `train` took 33 s and `predict` 11 s with one BLAS thread (measured 2026-10-16, 4-core Xeon cloud container under load, synthetic data); the lane D log gives about 8 s per pair on Chase's Mac",
     "Network": "None",
     "Writes": "`train`: the model at `-o` (numpy adds `.npz` when the name lacks it). `predict`: a float32 TIFF map at `-o`. Both overwrite and print JSON",
@@ -4087,8 +4087,8 @@
   {
    "id": "mac-w045",
    "name": "mac-w045",
-   "tagline": "run ink_9um and v8in on a labelled segment on the Mac GPU and score them with controls",
-   "summary": "`scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labelled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record.",
+   "tagline": "run ink_9um and v8in on a labeled segment on the Mac GPU and score them with controls",
+   "summary": "`scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labeled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record.",
    "status": "Current",
    "kind": [
     "script"
@@ -4379,7 +4379,7 @@
    "id": "meshaudit",
    "name": "meshaudit",
    "tagline": "audit published cross-scan transforms, meshes and render depth",
-   "summary": "`python -m kit meshaudit` checks the public catalogue's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders.",
+   "summary": "`python -m kit meshaudit` checks the public catalog's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -4428,8 +4428,8 @@
     "Code": "`kit/meshaudit.py`, `kit/cli.py` (`cmd_meshaudit`)",
     "Tests": "`tests/test_meshaudit.py`",
     "Needs": "Python 3.10 or newer; numpy for `transforms`, `plan` and `depth`; tifffile (and imagecodecs for LZW meshes) for the mesh functions the study scripts use; zarr only for compressed surface volumes. The rest is the standard library. Checked with Python 3.13 and numpy 2.5",
-    "Runs on": "Any CPU. `transforms` on the live catalogue took 6 s and `plan` on a local copy 2 s; `canvas` for one scroll (PHerc0841) 17 s, almost all network reads (measured 2026-10-16, 4-core Xeon cloud container, shared). The whole 2026-10-07 study took about an hour on 4 CPUs ([data README](../data/mesh-hypothesis/README.md))",
-    "Network": "The open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over plain HTTPS: `metadata.json` (the catalogue, 1.4 MB gzipped) unless `--catalogue` is a local file; for `canvas`, each mesh's `meta.json` and two small range reads of its `x.tif`, and each surface volume's `.zattrs`; for `depth`, the surface volumes' `.zattrs`, `.zarray` and the chunks the tiles touch, from `--base`",
+    "Runs on": "Any CPU. `transforms` on the live catalog took 6 s and `plan` on a local copy 2 s; `canvas` for one scroll (PHerc0841) 17 s, almost all network reads (measured 2026-10-16, 4-core Xeon cloud container, shared). The whole 2026-10-07 study took about an hour on 4 CPUs ([data README](../data/mesh-hypothesis/README.md))",
+    "Network": "The open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` over plain HTTPS: `metadata.json` (the catalog, 1.4 MB gzipped) unless `--catalogue` is a local file; for `canvas`, each mesh's `meta.json` and two small range reads of its `x.tif`, and each surface volume's `.zattrs`; for `depth`, the surface volumes' `.zattrs`, `.zarray` and the chunks the tiles touch, from `--base`",
     "Writes": "Nothing (prints only). With `--out OUT`, the JSON result to OUT",
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07 (`e14b033`)",
@@ -5026,7 +5026,7 @@
    "id": "plan",
    "name": "plan",
    "tagline": "print a First Letters run plan for one eligible scroll, and price a run",
-   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labelled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.",
+   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -7052,8 +7052,8 @@
   {
    "id": "segzoo",
    "name": "segzoo",
-   "tagline": "modern segmentation models next to nnU-Net, with licences, trainers and controls",
-   "summary": "`python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with licence and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls.",
+   "tagline": "modern segmentation models next to nnU-Net, with licenses, trainers and controls",
+   "summary": "`python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with license and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls.",
    "status": "Experimental",
    "kind": [
     "kit command",
@@ -7683,7 +7683,7 @@
    "id": "strokenet",
    "name": "strokenet",
    "tagline": "score how text-like an ink map's windows look, with rotation and IAAFT controls",
-   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organisers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.",
+   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organizers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.",
    "status": "Experimental",
    "kind": [
     "kit command",
@@ -7734,10 +7734,10 @@
     "text": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-18",
+    "commit": "4a970bd"
    },
-   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release))",
+   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
    "fields": {
     "Id": "`strokenet`",
     "Status": "Experimental",
@@ -7753,99 +7753,99 @@
     "Go-ahead": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score",
     "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day",
     "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits)",
-    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release))",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
+    "Checked": "2026-10-18 against commit `4a970bd`"
    },
    "page": "docs/tools/strokenet.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 24,
-     "end_line": 35,
+     "end_line": 47,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 36,
-     "end_line": 49,
+     "start_line": 48,
+     "end_line": 61,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 50,
-     "end_line": 74,
+     "start_line": 62,
+     "end_line": 86,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 75,
-     "end_line": 84,
+     "start_line": 87,
+     "end_line": 96,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 85,
-     "end_line": 219,
+     "start_line": 97,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 220,
-     "end_line": 248,
+     "start_line": 232,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 249,
-     "end_line": 259,
+     "start_line": 261,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 260,
-     "end_line": 294,
+     "start_line": 272,
+     "end_line": 306,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 295,
-     "end_line": 361,
+     "start_line": 307,
+     "end_line": 373,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 362,
-     "end_line": 382,
+     "start_line": 374,
+     "end_line": 394,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 383,
-     "end_line": 388,
+     "start_line": 395,
+     "end_line": 400,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 389,
-     "end_line": 398,
+     "start_line": 401,
+     "end_line": 410,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 399,
-     "end_line": 406,
+     "start_line": 411,
+     "end_line": 418,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 407,
-     "end_line": 413,
+     "start_line": 419,
+     "end_line": 425,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 414,
-     "end_line": 422,
+     "start_line": 426,
+     "end_line": 434,
      "applicable": true
     }
    ]
@@ -8087,7 +8087,7 @@
     "Network": "None. It runs git locally and reads `git remote get-url origin` only to tell public Scrolls from Scrolls-private",
     "Writes": "`check`, `list`, `show` and `stale`: nothing (they print). `index`: rewrites the generated block of `docs/tools/README.md` and all of `docs/tools/index.json`. `new`: creates `docs/tools/ID.md`, and refuses when it exists",
     "Go-ahead": "Not needed",
-    "Released": "Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onwards)",
+    "Released": "Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onward)",
     "Guide": "[TOOL-DOCS.md](../TOOL-DOCS.md), the standard the pages follow",
     "Checked": "2026-10-16 against commit `63ee638`"
    },
@@ -8188,8 +8188,8 @@
   {
    "id": "umbilicus",
    "name": "umbilicus",
-   "tagline": "find a scroll's winding centre line in X-ray CT",
-   "summary": "`scripts/umbilicus/` finds the winding centre (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder.",
+   "tagline": "find a scroll's winding center line in X-ray CT",
+   "summary": "`scripts/umbilicus/` finds the winding center (the umbilicus) of a Herculaneum scroll from its 1.2 m scan in the open-data bucket with two small U-Nets, and writes it in the published umbilicus format; it also trains, scores and checks the finder.",
    "status": "Current",
    "kind": [
     "script folder"
@@ -8221,7 +8221,7 @@
     "date": "2026-10-16",
     "commit": "63ee638"
    },
-   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licences-credits-and-citation))",
+   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
    "fields": {
     "Id": "`umbilicus`",
     "Status": "Current",
@@ -8237,8 +8237,8 @@
     "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
     "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository",
     "Release id": "`umbilicus-finder`",
-    "Guide": "[Scroll centre finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licences)",
-    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licences-credits-and-citation))",
+    "Guide": "[Scroll center finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses)",
+    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
     "Checked": "2026-10-16 against commit `63ee638`"
    },
    "page": "docs/tools/umbilicus.md",
@@ -8359,7 +8359,7 @@
     "date": "2026-10-16",
     "commit": "7be3185"
    },
-   "license": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT licence",
+   "license": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT license",
    "fields": {
     "Id": "`unroll`",
     "Status": "Current",
@@ -8374,7 +8374,7 @@
     "Writes": "In the browser only: settings in `localStorage` under `unroll.settings.v1`; the installed app's service-worker caches `unroll-shell-<tag>`, `unroll-data-<tag>` and `unroll-runtime-<tag>`; scrolls opened with Open your own in browser storage; downloads you ask for (a picture, an Ink Bench bundle). Nothing is uploaded. `inkbench.py` writes the bundle given by `-o` (else prints it) and, with `adapt`, a 16-bit PNG",
     "Go-ahead": "Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data",
     "Released": "Hugging Face Space `SharpMeow/unroll`, version 1.5.0 of 2026-10-16 (the Space's `version.json`); in this README's \"Released tools\" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release",
-    "License": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT licence",
+    "License": "Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT license",
     "Guide": "[`docs/unroll-space.md`](../unroll-space.md)",
     "Checked": "2026-10-16 against commit `7be3185`"
    },

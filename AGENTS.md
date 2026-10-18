@@ -84,7 +84,7 @@ The full map, one row per module and script, is [`docs/MAP.md`](docs/MAP.md); se
 | Path | What it is |
 | --- | --- |
 | `kit/` | The `python -m kit` package: standard library only, except numpy, tifffile and zarr for the map tools; every subcommand is in `kit/cli.py` |
-| `scripts/` | Mac GPU scripts (bash 3.2), the letter reader's training and benchmarks, the scroll centre finder (`scripts/umbilicus/`), and `scripts/experiments/`: saved records of past public-data jobs, keep their wording |
+| `scripts/` | Mac GPU scripts (bash 3.2), the letter reader's training and benchmarks, the scroll center finder (`scripts/umbilicus/`), and `scripts/experiments/`: saved records of past public-data jobs, keep their wording |
 | `docs/` | Docs, indexed by [`docs/README.md`](docs/README.md): the handoff, benchmark numbers (`docs/results.json`), dated logs, Modal pricing and specs, and frozen evidence archives with hashes in `docs/evidence/` (do not edit) |
 | `spaces/` | Hugging Face Space sources: `scroll-lens/` ([page](docs/tools/scroll-lens.md)) |
 | `tests/` | `python -m unittest discover -s tests`; `tests/test_repo.py` checks the repository itself |
@@ -117,10 +117,10 @@ Testing the Mac scripts off a Mac: `SMOKE=1 EXPECT_GPU=cpu WORK=<scratch dir> ba
 | d9v2, Reader v2 | Community fine-tunes of `ink_9um` (TAUIL-Abd-Elilah; Domenico Russo); drop-in `ink_9um` checkpoints |
 | w035 | PHerc0139 training segment: a pipeline check only (the model reproduces its own labels there) |
 | w045 | PHerc0139 segment unseen by v8in but not held out from `ink_9um`, which trained on its 2.4 um render (pherc0139-w029); d9v2 and Reader v2 inherit that, and Reader v2 also trained on it; so did Hecate and its base model ([log](docs/logs/2026-10-08-w045-not-held-out.md), [exposure log](docs/logs/2026-10-16-reader-exposure.md)) |
-| PHerc0841 | Scroll with labelled segments w00, ag896, ag405, in the training data of none of `ink_9um`, v8in, v8in-1447, d9v2 and Reader v2: the fair generalization test for them. Not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md), `held_out` in [results.json](docs/results.json)) |
-| AUC | Probability a labelled ink pixel scores above a labelled background pixel, inside the supervision mask |
+| PHerc0841 | Scroll with labeled segments w00, ag896, ag405, in the training data of none of `ink_9um`, v8in, v8in-1447, d9v2 and Reader v2: the fair generalization test for them. Not held out from Hecate: its base model's committed trainer lists all three segments, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md), `held_out` in [results.json](docs/results.json)) |
+| AUC | Probability a labeled ink pixel scores above a labeled background pixel, inside the supervision mask |
 | As stored / reversed | Depth order of the surface volume; reversed is the control and should sit near or below 0.5 |
-| Crop, `--inner 64` | The 640 px window of densest labelled ink per segment; 64 px edge left out so bare-crop and full-map scores match |
+| Crop, `--inner 64` | The 640 px window of densest labeled ink per segment; 64 px edge left out so bare-crop and full-map scores match |
 | QUICK | `mac-w045.sh` mode that scores everything on the crop only |
 | Atlas | rodriguescarson's renders of 340 automatic meshes on eligible scrolls |
 | Provenance digest | SHA-256 over a run's record; publishable alone as a timestamped commitment |

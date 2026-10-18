@@ -75,7 +75,7 @@ It worked when both result lines read `verdict pass (exit 0)` and the control sh
 
 ## Checks and controls
 
-- **Reverse-depth control.** Both `kit verify` calls pass `--control WORK/predictions/w035_cpu_reverse.tif`, the CPU map with the surface volume's layers in reverse order. Agreement counts as `pass` only when that control is caught by the same test (at most 0.01 % of pixels more than 2 grey levels apart; see [`verify`](verify.md)). A control that agrees gives `control-not-caught`.
+- **Reverse-depth control.** Both `kit verify` calls pass `--control WORK/predictions/w035_cpu_reverse.tif`, the CPU map with the surface volume's layers in reverse order. Agreement counts as `pass` only when that control is caught by the same test (at most 0.01 % of pixels more than 2 gray levels apart; see [`verify`](verify.md)). A control that agrees gives `control-not-caught`.
 - **Repeat.** `gpu_repeat` compares two MPS runs, which catches nondeterminism, such as a torch bug that reads freed memory.
 - **No silent CPU fallback.** After the two GPU runs it greps each log for `Using MPS device` and stops with exit code 1 if either lacks it. Like [mac-w045](mac-w045.md), it unsets `PYTORCH_ENABLE_MPS_FALLBACK` at the start, so an op MPS lacks fails instead of running on the CPU.
 - **Recorded pass.** Apple M1 Pro, macOS 27.0, torch 2.14.1, villa `main` `e0bbb8b40` and PR #1865 `6723ad158`: CPU against MPS `pass` with max |diff| 1 and Pearson 0.99999999; MPS repeat bit-identical; control 73.12 % of pixels over tolerance ([w035 log](../logs/2026-10-07-w035-cpu.md); `device_checks` in [`results.json`](../results.json)).
@@ -145,7 +145,7 @@ The summary's result lines read, from each JSON: `verdict`, the `kit verify` exi
 | `gpu_a did not run on MPS; see WORK/logs/gpu_a.log` (or `gpu_b`), exit code 1 | The PR #1865 run did not print `Using MPS device`: it ran on the CPU, or PR #1865 changed its log line | Check `torch ... mps available: True` in the output and the PR's current code |
 | A Python `json.decoder.JSONDecodeError` traceback after `== 6/6 kit verify`, exit code 1 | A `kit verify` call exited 2 (an unreadable map), so its JSON file is empty and the summary step cannot read it | Run the `kit verify` command by hand with `WORK/venv/bin/python -m kit verify ...` to see its message |
 | `kit verify did not pass (cpu_vs_gpu exit V1, gpu_repeat exit V2); see the summary above and WORK/results` on stderr, exit code 1 | At least one check's verdict is not `pass`; the summary lines above it say which | See the rows below |
-| `cpu_vs_gpu: verdict fail (exit 1)` in the summary | More than 0.01 % of pixels differ by more than 2 grey levels between CPU and MPS | Use the CPU result; report the difference on PR #1865 (after Chase says yes) |
+| `cpu_vs_gpu: verdict fail (exit 1)` in the summary | More than 0.01 % of pixels differ by more than 2 gray levels between CPU and MPS | Use the CPU result; report the difference on PR #1865 (after Chase says yes) |
 | `gpu_repeat: verdict fail (exit 1)` | Two MPS runs of the same input differ | Note torch and macOS versions; this is the kind of bug the repeat is there to catch |
 | `verdict control-not-caught (exit 1)` | The reverse map also agreed, so the test cannot tell maps apart | Check that `w035_cpu_reverse.tif` is a real reverse run and not a copy |
 | A git, uv or Hugging Face error during steps 1/6 to 3/6, then the prompt | No network, or a ref, package or file that moved upstream (the script fixes `PR=1865`) | Fix the network and rerun; finished downloads are kept |
@@ -160,7 +160,7 @@ The summary's result lines read, from each JSON: `verdict`, the `kit verify` exi
 6. **5/6:** on `pr-1865`, run inference twice, forward, into `w035_gpu_a.tif` and `w035_gpu_b.tif`; switch villa back to `main`; with `EXPECT_GPU=mps`, require `Using MPS device` in both logs.
 7. **6/6:** run `kit verify` CPU against GPU a, and GPU a against GPU b, each with `--control w035_cpu_reverse.tif --json`, keeping their exit codes; write and print the summary; exit 1 if either code is not 0.
 
-Constants in the script: `PR=1865`; the checkpoint path `hybrid_3d2d-seed42/step-075000.pth`; the tolerance and allowed share are `kit verify`'s defaults (2 grey levels, 0.01 % of pixels). The method of a repeat plus a control follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md), as [mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment) describes.
+Constants in the script: `PR=1865`; the checkpoint path `hybrid_3d2d-seed42/step-075000.pth`; the tolerance and allowed share are `kit verify`'s defaults (2 gray levels, 0.01 % of pixels). The method of a repeat plus a control follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md), as [mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment) describes.
 
 ## Cost and time
 
@@ -201,7 +201,7 @@ python -m unittest tests.test_repo -v
 ## Related
 
 - [`verify`](verify.md): the comparison and control rule this script runs.
-- [mac-w045](mac-w045.md): the labelled generalization check on the same `WORK` folder.
+- [mac-w045](mac-w045.md): the labeled generalization check on the same `WORK` folder.
 - [mac.md](../mac.md): the Mac guide, the manual runbook and the upstream MPS PRs.
 - [w035 log](../logs/2026-10-07-w035-cpu.md): the recorded M1 Pro run and why w035 is a training segment.
 - `device_checks` in [`results.json`](../results.json): the recorded device checks.

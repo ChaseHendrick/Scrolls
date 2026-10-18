@@ -42,7 +42,7 @@ cd villa
 git fetch origin pull/1865/head:pr-1865 && git checkout pr-1865
 ```
 
-Record the PR and commit in your ledger (`--villa-commit`). Before trusting MPS output, run the PHerc0139 w035 control on the CPU and on MPS and compare the two maps. If they differ by more than a few grey levels, use the CPU result and report the difference on the PR.
+Record the PR and commit in your ledger (`--villa-commit`). Before trusting MPS output, run the PHerc0139 w035 control on the CPU and on MPS and compare the two maps. If they differ by more than a few gray levels, use the CPU result and report the difference on the PR.
 
 ## One command
 
@@ -66,10 +66,10 @@ bash scripts/mac-w045.sh
 1. Fetches w045 (1.7 GB) and its labels, plus `ink_9um` seeds 42 and 43 and v8in at a pinned revision; each `ink_9um` file must match its recorded SHA-256 or the script stops.
 2. Runs `ink_9um` on MPS through PR #1865, both seeds, both directions, and checks the logs for `Using MPS device`.
 3. Runs v8in on a 640 px crop on the CPU and on MPS, and stops unless `kit verify` passes, with the reverse map as the control.
-4. Runs v8in on MPS over the box around the labelled region, both directions. It picks the stride from the speed it measured and `V8IN_HOURS` (default 4), and the batch size from your memory: fp32 batch 8 needs about 10 GB.
+4. Runs v8in on MPS over the box around the labeled region, both directions. It picks the stride from the speed it measured and `V8IN_HOURS` (default 4), and the batch size from your memory: fp32 batch 8 needs about 10 GB.
 5. Prints a summary to paste: `kit auc` for every map against the labels (forward against reverse) and `kit rowscore`.
 
-The harder test: `SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh` runs the same comparison on PHerc0841, a scroll in neither model's training set, where the team traced three segments with labelled text (`0841-w00`, `0841-ag896`, `0841-ag405`; Bullo27's unseen-scroll calibration). Short on time? `QUICK=1 bash scripts/mac-w045.sh` stops after the crop: v8in at full density on the 640 px patch of densest labelled text, and `ink_9um` scored on that same patch, so the models are compared on one test in well under an hour. Knobs: `V8IN_FP16=1` (half precision on MPS; kept only if the crop check still passes and it is faster; on an M1 Pro it is not, see below), `V8IN_STRIDE`, `V8IN_BATCH`, `V8IN_REGION=full`. What to expect from the AUC: Bullo27 reports 0.74 to 0.81 for `ink_9um` on another scroll it never saw; about 0.5 means the model reads nothing. A forward AUC close to the reverse AUC means it reads brightness, not ink.
+The harder test: `SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh` runs the same comparison on PHerc0841, a scroll in neither model's training set, where the team traced three segments with labeled text (`0841-w00`, `0841-ag896`, `0841-ag405`; Bullo27's unseen-scroll calibration). Short on time? `QUICK=1 bash scripts/mac-w045.sh` stops after the crop: v8in at full density on the 640 px patch of densest labeled text, and `ink_9um` scored on that same patch, so the models are compared on one test in well under an hour. Knobs: `V8IN_FP16=1` (half precision on MPS; kept only if the crop check still passes and it is faster; on an M1 Pro it is not, see below), `V8IN_STRIDE`, `V8IN_BATCH`, `V8IN_REGION=full`. What to expect from the AUC: Bullo27 reports 0.74 to 0.81 for `ink_9um` on another scroll it never saw; about 0.5 means the model reads nothing. A forward AUC close to the reverse AUC means it reads brightness, not ink.
 
 **All of Phase 0 in one command:** `bash scripts/mac-phase0.sh` runs v8in and then Youssef's PHerc1447 fine-tune (`v8in-1447`) on the three PHerc0841 crops, one job at a time (about 20 min each in fp32 on the M1 Pro), skips any job already scored, and ends with `python -m kit gate`, the Gate A table. Ctrl-C and a rerun lose at most the job in progress. The Mac stays awake while it runs (`caffeinate`; closing the lid still sleeps it), and a notification says when it is done or a job failed. `DRY_RUN=1` shows the queue; `JOBS="v8in:0841-ag896"` picks jobs; `KEEP_GOING=1` continues past a failure. `python -m kit gate` alone prints the current table at any time.
 
@@ -108,7 +108,7 @@ Reruns skip finished passes (they print `finished in an earlier run, reused`). `
 
 ## Private target runs
 
-Target-run instructions, preregistrations and the atlas runner live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). Read its handoff before continuing private work. Keep public labelled device/model comparisons in this guide.
+Target-run instructions, preregistrations and the atlas runner live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required). Read its handoff before continuing private work. Keep public labeled device/model comparisons in this guide.
 
 ## Runbook: verify MPS against CPU on the control segment
 
@@ -145,7 +145,7 @@ uv run --project "$VILLA/vesuvius" --extra models python -m kit verify \
 
 `kit verify` exit codes: 0 pass; 1 fail, or the control was not caught; 2 unreadable input; 3 agreement with no control given. Add `--slug NAME` to store the result in an experiment record, and `python -m kit run record NAME --command "..." --file "$CKPT"` to store the command and checkpoint hash.
 
-Default acceptance: at most 0.01% of pixels differ by more than 2 grey levels. #1865 reported 1 level on 0.002% of pixels, so a healthy MPS run should pass with margin. The control is the reverse-depth CPU map: on w035 it should differ widely from the forward map. w035 is a training segment: its clean letters are the model reproducing its training labels ([log](logs/2026-10-07-w035-cpu.md)). That does not matter for a CPU vs MPS comparison, which only needs the same input on both, but it is not evidence that the model reads unseen ink. If it does not, the comparison cannot tell maps apart and the verdict says so.
+Default acceptance: at most 0.01% of pixels differ by more than 2 gray levels. #1865 reported 1 level on 0.002% of pixels, so a healthy MPS run should pass with margin. The control is the reverse-depth CPU map: on w035 it should differ widely from the forward map. w035 is a training segment: its clean letters are the model reproducing its training labels ([log](logs/2026-10-07-w035-cpu.md)). That does not matter for a CPU vs MPS comparison, which only needs the same input on both, but it is not evidence that the model reads unseen ink. If it does not, the comparison cannot tell maps apart and the verdict says so.
 
 Measured in the setup container on 2026-10-07: on the published 2.4 µm w035 ink map (22,640 × 20,400 pixels, about 462 million), `kit verify` passed a copy with 0.002% of pixels changed by one level and caught a 64-pixel-shifted control (34% of pixels beyond tolerance) in 36 s with 2.25 GB peak memory. The 9 µm w035 maps from this runbook are about 30 times smaller.
 

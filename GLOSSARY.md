@@ -8,7 +8,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
-**affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalogue publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
+**affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
 **AppImage**: A single-file Linux application package. villa releases VC3D as one; `kit vc3d` can run VC3D through it.
 
@@ -16,15 +16,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **At a glance table**: The two-column table at the top of every tool page in `docs/tools/` (Id, Status, Kind, Area, Run, Code, Tests, Needs, Runs on, Network, Writes, Go-ahead, Released, Checked). An agent reads it first. See [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md).
 
-**AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labelled ink pixels above labelled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
+**AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labeled ink pixels above labeled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
 
-**Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyses a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
+**Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyzes a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
 
 **AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix5`, version 0.1.5 (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
 
 ## B
 
-**B300**: An NVIDIA data-centre GPU. It is the default GPU for Modal jobs in this repository, falling back to B200, H200 and H100 when none is free.
+**B300**: An NVIDIA data-center GPU. It is the default GPU for Modal jobs in this repository, falling back to B200, H200 and H100 when none is free.
 
 **benchmark**: A fixed test with a fixed scoring rule, used to compare readers or tools. The numbers live in [`docs/results.json`](docs/results.json).
 
@@ -42,7 +42,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **carbonized**: Turned to carbon-rich material by heat. The Herculaneum scrolls were carbonized in the eruption of Vesuvius in 79 CE.
 
-**catalogue (catalog)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
+**catalog (catalogue)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
 
 **checkpoint**: The saved weights of a trained model.
 
@@ -52,7 +52,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 
-**crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labelled ink, with a 64 pixel inner edge left out (`--inner 64`).
+**crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labeled ink, with a 64 pixel inner edge left out (`--inner 64`).
 
 **CT (computed tomography)**: Building a 3D image of an object from many X-ray projections taken at different angles.
 
@@ -82,7 +82,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds. VC3D then caches the chunk as empty. `kit/s3retry.py` and `kit/s3relay.py` work around it.
 
-**fibre (fiber)**: A strand of the papyrus plant, visible in CT. Fibres run horizontally on the recto.
+**fiber (fibre)**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
 
 **fine-tune**: A model made by further training an existing model on new data.
 
@@ -100,7 +100,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Gate A**: The repository's rule for ranking two released ink readers (`python -m kit gate`, rule in `kit/gate.py`): a lead of at least 0.02 mean AUC over three PHerc0841 crops, with forward minus reverse AUC at least 0.10 on every crop.
 
-**generalization**: How well a model does on data it was not trained on. Claims of generalization need a held-out labelled segment.
+**generalization**: How well a model does on data it was not trained on. Claims of generalization need a held-out labeled segment.
 
 **GPU**: A graphics processor, used here for fast model training and inference.
 
@@ -110,7 +110,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## H
 
-**held-out**: Data a model never saw in training. A test on held-out data is the only kind that supports a claim about how well a model generalizes. For example, w045 is held out from v8in but not from `ink_9um`, which trained on its 2.4 µm render. Which released reader trained on which labelled segment is tabulated in [`docs/logs/2026-10-16-reader-exposure.md`](docs/logs/2026-10-16-reader-exposure.md).
+**held-out**: Data a model never saw in training. A test on held-out data is the only kind that supports a claim about how well a model generalizes. For example, w045 is held out from v8in but not from `ink_9um`, which trained on its 2.4 µm render. Which released reader trained on which labeled segment is tabulated in [`docs/logs/2026-10-16-reader-exposure.md`](docs/logs/2026-10-16-reader-exposure.md).
 
 **Hecate**: An ink model by Giorgio Angelotti, used in the PHerc. 343 First Letters result. Its base model is `scrollprize/ink_canonical_2um`, whose committed trainer lists all three PHerc0841 segments, so PHerc0841 is not held out from Hecate, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md)).
 
@@ -160,7 +160,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
 
-**mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labelled ink or trusted labels.
+**mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labeled ink or trusted labels.
 
 **media label**: What a picture shows, written first in its caption and in its sidecar JSON: Concept illustration, Real data render, Model output or Synthetic demo ([`docs/assets/README.md`](docs/assets/README.md)). Public Scrolls holds only concept illustrations and synthetic demos; real data renders and model output pictures stay in Scrolls-private.
 
@@ -170,9 +170,9 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
 
-**micro-CT**: CT at micrometre resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
+**micro-CT**: CT at micrometer resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
 
-**micrometre (µm, um)**: One thousandth of a millimetre. Written "um" in file names and some docs.
+**micrometer (µm, um)**: One thousandth of a millimeter. Written "um" in file names and some docs.
 
 **Modal**: A cloud computing service that runs jobs on rented GPUs and CPUs, billed by use. In this repository any job that needs a GPU, or more than about an hour of CPU, runs on Modal. Specs are in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and prices in [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md).
 
@@ -184,7 +184,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
 
-**nnU-Net**: A self-configuring U-Net framework: given a labelled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
+**nnU-Net**: A self-configuring U-Net framework: given a labeled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
 
 **normal**: A direction perpendicular to a surface. A normal grid is a published 3D field of such directions that tracing uses.
 
@@ -220,17 +220,17 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **provenance**: The record of who ran what, when, on which machine and from which inputs (`kit/provenance.py`).
 
-**pseudo-label**: A provisional label created from model output and human review. Pseudo-labelling trains a model, keeps its confident predictions as new labels and trains again.
+**pseudo-label**: A provisional label created from model output and human review. Pseudo-labeling trains a model, keeps its confident predictions as new labels and trains again.
 
 ## R
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
-**recto**: The written inner side of a roll, where the fibres run horizontally.
+**recto**: The written inner side of a roll, where the fibers run horizontally.
 
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
 
-**resolution (voxel size)**: The edge length of one voxel, given in micrometres, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
+**resolution (voxel size)**: The edge length of one voxel, given in micrometers, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
@@ -250,7 +250,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
-**SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial licence.
+**SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial license.
 
 **segment**: A traced piece of papyrus surface together with its rendered surface volume. Segments are named by id, for example w035 or w045 of PHerc0139.
 
@@ -300,11 +300,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## U
 
-**U-Net**: A common neural network shape for image segmentation. The scroll centre finder uses two small U-Nets.
+**U-Net**: A common neural network shape for image segmentation. The scroll center finder uses two small U-Nets.
 
-**uint8**: An 8-bit unsigned whole number (0 to 255), the data type of the catalogue volumes.
+**uint8**: An 8-bit unsigned whole number (0 to 255), the data type of the catalog volumes.
 
-**umbilicus**: The central axis of a roll. In the data it is a fitted centre line with one control point per height.
+**umbilicus**: The central axis of a roll. In the data it is a fitted center line with one control point per height.
 
 **Unroll**: A browser viewer on Hugging Face Spaces that rebuilds traced windings of PHerc. 139 ([`docs/unroll-space.md`](docs/unroll-space.md)).
 
@@ -316,7 +316,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **VC3D (Volume Cartographer 3D)**: The main application for viewing CT volumes and tracing, rendering and flattening surfaces. It is part of villa.
 
-**verso**: The outer back side of a roll, where the fibres run vertically.
+**verso**: The outer back side of a roll, where the fibers run vertically.
 
 **Vesuvius Challenge**: The public competition, with prizes, to read the Herculaneum scrolls from X-ray scans ([scrollprize.org](https://scrollprize.org/)).
 
@@ -326,13 +326,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **volume**: A reconstructed 3D CT image of a scroll or fragment.
 
-**voxel**: A volume element, the 3D version of a pixel. Voxel size is its edge length in micrometres.
+**voxel**: A volume element, the 3D version of a pixel. Voxel size is its edge length in micrometers.
 
 ## W
 
 **weights**: The learned numbers inside a trained model. Weights are never stored in git here; released weights are downloaded and checked by SHA-256.
 
-**winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the centre.
+**winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
 
 ## X
 

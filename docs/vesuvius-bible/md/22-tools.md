@@ -1,6 +1,6 @@
 # Tools and Repositories {#ch-tools}
 
-> **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, catalogued in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
+> **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, cataloged in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
 
 ## Where things are
 
@@ -51,10 +51,10 @@ The challenge maintains an "Awesome Scroll Tools" list of "awarded open source c
 | Segment Browser | Johannes Rudolph | web tool to browse layers and ink results of all released segments |
 | vesuvius-gui | Johannes Rudolph | single-binary GUI rendering volumes and segments on the fly |
 | vesuvius-phalanx | Marcel Roth | Python library and CLI for volume and fragment data |
-| vesuvius-c | Forrest McDonald | C library (now deprecated in favour of `vesuvius` and VC3D) |
-| scroll-data-audit | Matteo Bulloni | reconciles metadata.json against actual Zarr arrays; reported a PHerc. 172 catalogue shape error |
+| vesuvius-c | Forrest McDonald | C library (now deprecated in favor of `vesuvius` and VC3D) |
+| scroll-data-audit | Matteo Bulloni | reconciles metadata.json against actual Zarr arrays; reported a PHerc. 172 catalog shape error |
 | vesuvius-repro | TAUIL Abd Elilah | reproducibility spot checks of surface-prediction artifacts across 36 scrolls (Dice 0.9983 to 1.0000) |
-| vesuvius-catalog | (listed) | scriptable catalogue CLI for the bucket |
+| vesuvius-catalog | (listed) | scriptable catalog CLI for the bucket |
 | volcomp | Forrest McDonald | chunked compressor for CT and predictions, supported in VC3D |
 
 ### Segmentation

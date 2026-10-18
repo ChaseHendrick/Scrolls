@@ -795,7 +795,7 @@ function stepSlice(a, delta) {
 // ---------------------------------------------------------------- the 3D view
 //
 // One three.js scene (three 0.160, as Unroll uses) holding the cube: the three slices as planes textured with the
-// same images the flat views draw, so they move and recolour live; the cube's outline; ink and recto surface voxels
+// same images the flat views draw, so they move and recolor live; the cube's outline; ink and recto surface voxels
 // as points; and the patches like your concept or like the organizers' reference as larger glowing points. World
 // axes: x to the right, the scan's z up (z grows downward in the scan, as in the front and side views), y toward you.
 

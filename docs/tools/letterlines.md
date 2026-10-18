@@ -24,7 +24,7 @@
 
 The Greek letter reader ([letterread](letterread.md)) was trained on synthetic lines and letter crops of papyri. On a hand or a kind of image it has not seen it can do poorly, and when you know the text of some lines (your own transcription, or a published edition of a papyrus whose images you may use) you can fine-tune it on them. That needs two things done exactly right: the training lines must be cut the way the reader cuts a line when it reads, and the fine-tuned model must be judged on lines it never trained on.
 
-`build` does the first. You write one **record** per line: the image, the line's letters, its centre row and its letter height, optionally where it starts and ends, a crop, a polarity and a split label such as `train` or `test`. It checks every record before it decodes any image and lists every problem at once. Then it loads each image as the reader loads it, normalises it once, scales it so letters are the network's working height of 16 px, and cuts the reader's **band** around each line: 36 rows, from 1.1 letter heights above the centre to 1.15 below, from the line's first to its last column. The bands, their texts and where each came from go into `LINES.npz`, the format `scripts/letters/p1667_align.py` writes and `scripts/letters/finetune_maps.py` trains on.
+`build` does the first. You write one **record** per line: the image, the line's letters, its center row and its letter height, optionally where it starts and ends, a crop, a polarity and a split label such as `train` or `test`. It checks every record before it decodes any image and lists every problem at once. Then it loads each image as the reader loads it, normalizes it once, scales it so letters are the network's working height of 16 px, and cuts the reader's **band** around each line: 36 rows, from 1.1 letter heights above the center to 1.15 below, from the line's first to its last column. The bands, their texts and where each came from go into `LINES.npz`, the format `scripts/letters/p1667_align.py` writes and `scripts/letters/finetune_maps.py` trains on.
 
 `score` does the second. It reads every band of a `LINES.npz` with one or more models and reports each model's **character error**: the edit distance from the model's letters to your text, summed over lines, over the number of letters in your text. A `?` in your text (the **wildcard**, for a letter you cannot see or restore) matches any one letter or none at no cost. With two models or more it gives each later model's error minus the first's, with a 95 % interval from a bootstrap over lines.
 
@@ -145,13 +145,13 @@ print(LL.score_text(res))
 | `load_records(path)` | list of `(where, record)`, `where` being `FILE record N` (JSON) or `FILE line N` (CSV), with the JSON object's defaults applied | `RecordsError` for an unreadable or unparseable file, an unknown field or column, or a default it does not take | A CSV row's empty cells are left out |
 | `check_records(records, base_dir='.', split=None, net_letter_px=NET_LETTER_PX, band=BAND, stride=STRIDE)` | `(plans, errors, warnings)`; each plan holds `where`, `image`, `key`, `crop`, `window`, `y`, `x0`, `x1`, `letter_px`, `polarity`, `split`, `id`, `text`, `visible`, `wildcards`, `band_rows`, `width`, `frames`, `frames_needed`, `pitch` | Nothing: problems are returned as `errors` | Opens each image only to read its shape (no pixels decoded where the format allows) |
 | `plan_text(plans, warnings=(), errors=())` | str | Nothing | The dry run's text |
-| `cut_lines(plans, net_letter_px=NET_LETTER_PX, band=BAND, max_pixels=R.MAX_PIXELS, progress=None)` | `(imgs, texts, where)`: float32 bands in 0..1 (36 rows each), texts, and per band its origin | The reader's loading errors (`OSError`, `ValueError`, `ImportError`) | Each image, crop, polarity and letter size is loaded and normalised once |
+| `cut_lines(plans, net_letter_px=NET_LETTER_PX, band=BAND, max_pixels=R.MAX_PIXELS, progress=None)` | `(imgs, texts, where)`: float32 bands in 0..1 (36 rows each), texts, and per band its origin | The reader's loading errors (`OSError`, `ValueError`, `ImportError`) | Each image, crop, polarity and letter size is loaded and normalized once |
 | `save_lines(path, imgs, texts, where, meta)` | `path` | `OSError` | Writes the `LINES.npz` format (Outputs); bands as uint8, column-major |
 | `load_lines(path)` | `(imgs, texts, where, meta)`, bands as uint8 arrays | `OSError` for a missing file, `ValueError` for a file that is not a `.npz`, `zipfile.BadZipFile` for a damaged one, `KeyError` for a `.npz` without the fields | Reads this module's files and `p1667_align.py`'s |
 | `preview(path, imgs, texts, max_lines=100, scale=2)` | `path` | `ImportError` without Pillow; `OSError` | The first `max_lines` bands, each above its text |
 | `score_lines(path, weights, boot=2000, seed=0)` | The `score` result dict under Outputs | What `load_lines` and `letterread.load_weights` raise | `weights` is a list of names, paths or `LineNet`s |
 | `score_text(res)` | str | Nothing | The text `score` prints |
-| `clean_text(text)` | `(cleaned, problems)`: the text in the reader's alphabet with `?` kept, and each other character as `'X' (UNICODE NAME)` | Nothing | Drops accents, breathings, dots under letters and spaces; capitalises; every sigma becomes the lunate `Ϲ` |
+| `clean_text(text)` | `(cleaned, problems)`: the text in the reader's alphabet with `?` kept, and each other character as `'X' (UNICODE NAME)` | Nothing | Drops accents, breathings, dots under letters and spaces; capitalizes; every sigma becomes the lunate `Ϲ` |
 | `check_references(refs, alphabet=ALPHABET, wildcard=WILDCARD, source='references', limit=20)` | `refs` unchanged | `ValueError` naming each faulty reference (up to `limit`), every character at fault, what to write instead, and the alphabet | For reference texts compared letter for letter, so nothing is cleaned. `refs` is `{id: text}` or `(id, text)` pairs; `wildcard=None` allows no `?` |
 | `reference_problems(text, alphabet=ALPHABET, wildcard=WILDCARD)` | list of str, each faulty character once, as `'X' (NAME; what to write instead)` | Nothing | |
 | `letter_problem(c, alphabet=ALPHABET, wildcard=WILDCARD)` | `None` when the reader writes `c` (or it is the allowed wildcard), else the character's name and the fix | Nothing | Knows Latin and Cyrillic look-alikes (`LOOKALIKES`), sigmas, accents, `·`, spaces |
@@ -166,11 +166,11 @@ print(LL.score_text(res))
 | Field | Required | Meaning |
 | --- | --- | --- |
 | `image` | yes | The image file, in any format the reader loads (`.npy`, `.npz`, `.tif`, `.png`, `.jpg`, zarr); a relative path is relative to the records file's folder |
-| `text` | yes | The line's letters in Greek capitals. Accents, breathings and dots under letters are dropped, letters are capitalised, every sigma becomes the lunate `Ϲ` and spaces are dropped; `?` stands for a letter you cannot see or restore. Any other character is an error |
-| `y` | yes | The line's centre row, halfway between the letters' tops and feet, in image pixels (relative to Y0 with `crop`) |
+| `text` | yes | The line's letters in Greek capitals. Accents, breathings and dots under letters are dropped, letters are capitalized, every sigma becomes the lunate `Ϲ` and spaces are dropped; `?` stands for a letter you cannot see or restore. Any other character is an error |
+| `y` | yes | The line's center row, halfway between the letters' tops and feet, in image pixels (relative to Y0 with `crop`) |
 | `letter_px` | yes | The letters' height in image pixels, over 0 |
 | `x0`, `x1` | no | The columns where the line starts and ends (default 0 and the image's width); `0 <= x0 < x1 <= width` |
-| `crop` | no | `[Y0, Y1, X0, X1]`, four whole numbers, as the reader's `--crop`; the image is normalised over the crop, as a read of it is |
+| `crop` | no | `[Y0, Y1, X0, X1]`, four whole numbers, as the reader's `--crop`; the image is normalized over the crop, as a read of it is |
 | `key` | no | The array of a `.npz` or zarr, as the reader's `--key` |
 | `polarity` | no | `bright` (ink brighter than the ground, ink maps; the default) or `dark` (dark ink on a light ground, photographs) |
 | `split` | no | Any label, such as `train` or `test`; `--split` keeps one |
@@ -234,13 +234,13 @@ No local folder is recorded: images and the records file are named by file name 
 | `N problems in the records; nothing was cut:` then one `error: ...` line per problem, exit code 2 | `build` found problems in the records; the lines below name each | Fix every listed record and run the dry run again |
 | `error: FILE: [Errno 2] No such file or directory: ...` | The records file does not exist or cannot be read | Fix the path |
 | `error: NAME: empty, or no header row (give a first row of field names: image, text, y, letter_px, x0, x1, crop, key, polarity, split, id)` | An empty CSV | Add the header row |
-| `error: NAME: unknown column colour; the fields are ...` (or `unknown columns`) | A CSV header with a field it does not know | Rename or drop the column |
+| `error: NAME: unknown column color; the fields are ...` (or `unknown columns`) | A CSV header with a field it does not know | Rename or drop the column |
 | `error: NAME: not JSON (...); give a JSON list of records, an object with "lines", or a .csv file` | A JSON syntax error | Fix the JSON |
 | `error: NAME: a JSON object needs "lines", a list of records` | A JSON object without a `lines` list | Put the records under `lines` |
 | `error: NAME: x0 cannot be a default; the defaults are image, letter_px, crop, key, polarity, split` | A top-level key that cannot be a default | Move it into each record |
 | `error: NAME: give a JSON list of records, an object with "lines", or a .csv file` | JSON that is neither a list nor an object | Use one of the three forms |
 | `error: NAME record N: a record is an object such as {"image": ..., "text": ..., "y": ..., "letter_px": ...}` | A list item that is not an object | Make it an object |
-| `error: NAME record N: unknown field colour; the fields are ...` (or `unknown fields`) | A record field it does not know | Rename or drop it (`note` and `comment` are allowed) |
+| `error: NAME record N: unknown field color; the fields are ...` (or `unknown fields`) | A record field it does not know | Rename or drop it (`note` and `comment` are allowed) |
 | `error: WHERE: missing text` (or `image`, `y`, `letter_px`) | A required field is missing or empty | Add it |
 | `error: WHERE: y, letter_px, x0 and x1 must be numbers` | A value that is not a number | Give numbers |
 | `error: WHERE: letter_px H: give the letter height in image pixels, over 0` | `letter_px` 0, negative or not finite (or `y` not finite) | Give the letter height |
@@ -269,7 +269,7 @@ No local folder is recorded: images and the records file are named by file name 
 ## How it works
 
 1. **Load and validate** (`load_records`, `check_records`). Records are parsed, defaults applied, and each record checked in order; image shapes are read once per image and key without decoding pixels where the format allows (`letterread.image_shape`). The text is cleaned (`clean_text`). The working scale is `f = NET_LETTER_PX / letter_px` with `NET_LETTER_PX = 16`; the band's width is `round((x1 - x0) * f)` and its frames that width over `STRIDE = 4`, which must be at least `ctc_frames_needed(text)`. A pitch outside `PITCH_RANGE = (0.5, 2.0)` working letter heights (8 to 32 px a letter) is a warning.
-2. **Cut** (`cut_lines`). Records are grouped by image, key, crop, polarity and letter size. Each group's image is loaded with `letterread.load_reduced` (block-averaged by k while loading when over `--max-mpx`), normalised once with `letterread.normalize_for_reading` in its polarity, and resized by `letterread.resize` to `f / k`, as `analyze()` resizes it. A band is rows `round(y / k * f - 1.1 * 16)` onward for 36 rows (`BAND = (1.1, 1.15)`), columns `x0` to `x1` at that scale; rows beyond the image are 0. A test checks that this is exactly the band the reader reads on a line given as `--lines Y` with `--deskew 0`.
+2. **Cut** (`cut_lines`). Records are grouped by image, key, crop, polarity and letter size. Each group's image is loaded with `letterread.load_reduced` (block-averaged by k while loading when over `--max-mpx`), normalized once with `letterread.normalize_for_reading` in its polarity, and resized by `letterread.resize` to `f / k`, as `analyze()` resizes it. A band is rows `round(y / k * f - 1.1 * 16)` onward for 36 rows (`BAND = (1.1, 1.15)`), columns `x0` to `x1` at that scale; rows beyond the image are 0. A test checks that this is exactly the band the reader reads on a line given as `--lines Y` with `--deskew 0`.
 3. **Save** (`save_lines`): bands as uint8 (0..1 times 255, rounded), with texts, origins and `meta`, including the records file's SHA-256.
 4. **Score** (`score_lines`). Each band is divided by 255, run through the network (`LineNet.log_probs`) and decoded by best path (`letterread.ctc_greedy`) with every letter, no confidence floor. Each line's error is `wild_edit_distance(read, text)`; a model's character error is the sum over lines over the text's visible letters. With several models, `numpy.random.default_rng(seed)` draws `boot` resamples of the lines with replacement, computes each later model's error minus the first's on each, and takes the 2.5 and 97.5 percentiles.
 
@@ -317,5 +317,5 @@ They cover text cleaning and its refusals, the reference checks with each fault 
 - [letters-training](letters-training.md): `finetune_maps.py`, which trains on `LINES.npz`, and the public benchmarks.
 - [letterdemo](letterdemo.md): the offline check of an install.
 - [greeklm](greeklm.md): the optional letter language model, which cleans text the same way.
-- [Fine-tune on your own lines](../letter-reader.md#fine-tune-on-your-own-lines): the whole chain, with its limits and licences.
+- [Fine-tune on your own lines](../letter-reader.md#fine-tune-on-your-own-lines): the whole chain, with its limits and licenses.
 - `letter_reader_checks` in [`results.json`](../results.json): the chain check's numbers (2026-10-14).

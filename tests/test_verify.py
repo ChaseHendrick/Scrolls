@@ -40,7 +40,7 @@ class VerifyArraysTest(unittest.TestCase):
         self.reference = synthetic_map()
         rng = np.random.default_rng(1)
         self.candidate = self.reference.copy()
-        # Like the PR #1865 report: a few pixels off by one grey level.
+        # Like the PR #1865 report: a few pixels off by one gray level.
         idx = rng.choice(self.reference.size, size=3, replace=False)
         self.candidate.flat[idx] += 1
         # A wrong-method control: the map with its strokes moved, as a reverse read would.

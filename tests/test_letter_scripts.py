@@ -216,7 +216,7 @@ class BenchmarkScriptsTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.d = Path(self.tmp.name)
         self.weights = random_weights(self.d / "w.npz")
-        img = lined_image()          # four lines of 16 px letters, centred on rows 30, 60, 90 and 120
+        img = lined_image()          # four lines of 16 px letters, centered on rows 30, 60, 90 and 120
         g = self.d / "groups"
         (g / "npy").mkdir(parents=True)
         (g / "map-npy").mkdir()

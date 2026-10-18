@@ -17,7 +17,7 @@ BUCKET_UMB = {"PHerc0125": "PHerc0125/representations/umbilicus/20250821151825-u
 DROBKOV_SCROLLS = ["PHerc0191", "PHerc0257", "PHerc0268", "PHerc0358", "PHerc0800", "PHerc0813", "PHerc1203",
                    "PHerc1218", "PHerc1447", "PHerc1545"]
 LABELLED = list(BUCKET_UMB) + DROBKOV_SCROLLS
-# Optional: scrolls with no published centre line that training runs also predict (empty by default; see README.md)
+# Optional: scrolls with no published center line that training runs also predict (empty by default; see README.md)
 UNLABELLED = []
 
 _S = None
@@ -204,7 +204,7 @@ def extract_ranged(s, out, level=3, every=8, vol=None, threads=16):
 
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="Slice files for the centre finder: every 8th level-3 plane of a scan.")
+    ap = argparse.ArgumentParser(description="Slice files for the center finder: every 8th level-3 plane of a scan.")
     ap.add_argument("cmd", choices=["extract"]); ap.add_argument("scrolls", nargs="*", help="default: the 13 published scrolls")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()

@@ -2,7 +2,7 @@
 
 The cheapest gain the community reports: Hecate and Reader v2 averaged reach 0.866 AUC on
 PHerc0841 against 0.855 and 0.824 alone (Reader v2 model card; PHerc0841 is not held out
-from Hecate, whose base model's committed trainer lists its three labelled segments:
+from Hecate, whose base model's committed trainer lists its three labeled segments:
 docs/logs/2026-10-16-reader-exposure.md); d9v2 and Reader v2 averaged, 0.840 against 0.828
 and 0.826 (TAUIL's benchmark); two seeds' maps averaged,
 0.866 against 0.840 on the PHerc0139 title (Nieuwlaar), where averaging the two seeds'

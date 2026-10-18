@@ -20,7 +20,7 @@ MIT; Mamba, Gu and Dao 2023), written for this repository:
 
 When mamba-ssm is installed and the tensors are on CUDA, `fast=True` hands the scan to its selective_scan_fn
 kernel instead; the result is the same up to float rounding. Defaults follow VMamba's SS2D: d_state 16, expand 2,
-dt_rank ceil(dim / 16), dt initialised log-uniform in [0.001, 0.1], A_log = log(1..d_state).
+dt_rank ceil(dim / 16), dt initialized log-uniform in [0.001, 0.1], A_log = log(1..d_state).
 
 torch is the only dependency. Nothing here downloads anything.
 """

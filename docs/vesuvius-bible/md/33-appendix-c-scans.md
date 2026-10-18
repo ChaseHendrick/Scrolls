@@ -1,6 +1,6 @@
 # Appendix C. Scans and Volumes {#app-scans}
 
-Every scan (67) and reconstructed volume (74) listed in the open data catalogue [VC-Catalog] on 15 October 2026. Legacy EduceLab-Scrolls scans of Fragments 1 to 6 are not in this catalogue ([Chapter 15](#ch-inventory)). Sizes are uncompressed at 8 bits, computed by the editors from the array shapes. Data: data/catalog_scans.csv and data/catalog_volumes.csv.
+Every scan (67) and reconstructed volume (74) listed in the open data catalog [VC-Catalog] on 15 October 2026. Legacy EduceLab-Scrolls scans of Fragments 1 to 6 are not in this catalog ([Chapter 15](#ch-inventory)). Sizes are uncompressed at 8 bits, computed by the editors from the array shapes. Data: data/catalog_scans.csv and data/catalog_volumes.csv.
 
 ## Scans
 

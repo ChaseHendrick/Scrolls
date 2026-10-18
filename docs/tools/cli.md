@@ -34,7 +34,7 @@ The entry point makes no claim of its own. Nothing it prints is a result about i
 
 - To find which commands exist and what each does: `python -m kit --help`, or the table below.
 - To run any workbench command from a clone of the repository (`python -m kit COMMAND`), or from an installed package (`scrolls-workbench COMMAND`).
-- To call a command from Python with its exact command-line behaviour: `cli.main([...])`.
+- To call a command from Python with its exact command-line behavior: `cli.main([...])`.
 
 Do not use it:
 
@@ -102,7 +102,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `verify` | none | `cmd_verify` | [verify](verify.md) | compare two ink maps (e.g. CPU vs MPS) with a control |
 | `rowscore` | none | `cmd_rowscore` | [rowscore](rowscore.md) | text-row periodicity triage score for ink maps (Bullo27's method) |
 | `auc` | none | `cmd_auc` | [auc](auc.md) | pixel AUC of an ink map against a segment's published labels |
-| `fibertensor` | `train`, `predict` | `cmd_fibertensor` | [fibertensor](fibertensor.md) | fibre-orientation (structure tensor) features and a tiny CPU ink reader |
+| `fibertensor` | `train`, `predict` | `cmd_fibertensor` | [fibertensor](fibertensor.md) | fiber-orientation (structure tensor) features and a tiny CPU ink reader |
 | `hpscore` | none | `cmd_hpscore` | [hpscore](hpscore.md) | letter-scale score: 48 um high-passed correlation with the labels (Scheirer) |
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
@@ -158,7 +158,7 @@ code = cli.main(["prizes", "--json"])      # the same as python -m kit prizes --
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `main(argv=None, prog="python -m kit", sub_progs=None)` | The handler's return value: the exit code (an int, or `None`, which `sys.exit` treats as 0) | `SystemExit(2)` on a usage error and `SystemExit(0)` after `--help`, from argparse; whatever the handler raises | `argv` defaults to `sys.argv[1:]`. Uses the cached parser. For `run ... -- COMMAND`, parses the part before `--` and, when the action is `local`, appends everything after `--` to the child command unchanged |
-| `build_parser(prog="python -m kit", sub_progs=None)` | A new `argparse.ArgumentParser` with every command | Nothing of its own | `sub_progs` maps a command to the program name its usage and errors show; `letterread`, `letterlines` and `letterdemo` honour it. [tooldocs](tooldocs.md) reads this parser to check every page |
+| `build_parser(prog="python -m kit", sub_progs=None)` | A new `argparse.ArgumentParser` with every command | Nothing of its own | `sub_progs` maps a command to the program name its usage and errors show; `letterread`, `letterlines` and `letterdemo` honor it. [tooldocs](tooldocs.md) reads this parser to check every page |
 | `_parser(prog="python -m kit", sub_progs=None)` | The parser for `(prog, sub_progs)`, built once per process and kept in `_PARSERS` | Nothing of its own | The parser is over a thousand `add_argument` calls; pipelines and tests call `main()` many times in one process |
 | `_parse(parser, argv)` | A deep copy of `parser.parse_args(argv)` | `SystemExit` from argparse | The copy keeps a handler that changes a list default from leaking it into the next call |
 | `_console(script, argv=None)` | The handler's return value | `KeyError` for a script not in `CONSOLE_SCRIPTS`; `SystemExit` from argparse | Runs the one command of a console script, with a fresh parser whose usage shows the script's name |
@@ -192,7 +192,7 @@ The entry point prints nothing of its own except argparse's usage, help and erro
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `python -m kit: error: the following arguments are required: command`, exit code 2 | No command given | Add a command; `python -m kit --help` lists them |
-| `python -m kit: error: argument command: invalid choice: 'NAME' (choose from 'prizes', 'doctor', ...)`, exit code 2 | A misspelt command, or one that exists only on another branch or in Scrolls-private | Pick a command from the list; check the name in the table above |
+| `python -m kit: error: argument command: invalid choice: 'NAME' (choose from 'prizes', 'doctor', ...)`, exit code 2 | A misspelled command, or one that exists only on another branch or in Scrolls-private | Pick a command from the list; check the name in the table above |
 | `python -m kit run: error: the following arguments are required: action` (and the same for the other commands with actions), exit code 2 | A command with actions given without one | Add the action, such as `run init` or `provenance check` |
 | `scrolls-workbench: error: ...`, `scrolls-letterread: error: ...` and the like, exit code 2 | The same usage errors under an installed script's name | As above |
 | `/usr/bin/python3: No module named kit`, exit code 1 | `python -m kit` run outside the clone's root, with the package not installed | `cd` to the repository root, or install the package as [CHANGELOG.md](../../CHANGELOG.md) shows and use `scrolls-workbench` |

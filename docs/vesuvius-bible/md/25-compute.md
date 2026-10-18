@@ -1,6 +1,6 @@
 # Compute, Storage and Costs {#ch-compute}
 
-> **Chapter summary.** The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put a whole scroll at $1 to 5 million with current techniques and set a target of $5,000 or less. The public catalogue's volumes total about 811 TB uncompressed. Training the tutorial ink model takes about an hour and a half on one H100. This chapter collects the published numbers and the arithmetic that follows from them.
+> **Chapter summary.** The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put a whole scroll at $1 to 5 million with current techniques and set a target of $5,000 or less. The public catalog's volumes total about 811 TB uncompressed. Training the tutorial ink model takes about an hour and a half on one H100. This chapter collects the published numbers and the arithmetic that follows from them.
 
 ## The cost of unwrapping
 
@@ -17,8 +17,8 @@
 
 **Arithmetic.** Scrolls are "10cm-20cm wide and up to 15 meters long" [VC-MasterPlan]. A roll 15 m by 20 cm has 30,000 cm2 of surface; at $100 per cm2 manual tracing that is $3 million, consistent with the master plan's $1 to 5 million range. The $5,000 target is about $0.17 per cm2 for the same roll, a reduction of roughly 600 times. *These two figures are the editors' arithmetic from the quoted numbers, not published estimates.*
 
-![Bar chart on a logarithmic scale of published cost figures: manual tracing per square centimetre, cost per scroll today, target per scroll, stage budgets and prize totals.](../figures/charts/compute_costs.svg)
-*Figure 25.1. Published cost figures for unwrapping and for the programme (log scale). Chart by the editors. Data: data/compute_costs.csv from [VC-GrandPrize], [VC-MasterPlan], [VC-RaceIsOn], [VC-Winners] and [VC-Prizes]. License: CC BY 4.0 (this book).*
+![Bar chart on a logarithmic scale of published cost figures: manual tracing per square centimeter, cost per scroll today, target per scroll, stage budgets and prize totals.](../figures/charts/compute_costs.svg)
+*Figure 25.1. Published cost figures for unwrapping and for the program (log scale). Chart by the editors. Data: data/compute_costs.csv from [VC-GrandPrize], [VC-MasterPlan], [VC-RaceIsOn], [VC-Winners] and [VC-Prizes]. License: CC BY 4.0 (this book).*
 
 ## Human time limits in prize rules
 
@@ -29,7 +29,7 @@
 
 ## Data volume
 
-Volumes are 8-bit (uint8) in the catalogue, so uncompressed bytes equal voxels [VC-Catalog]. The 70 catalogue volumes with listed shapes total about **811 TB** uncompressed. By voxel size:
+Volumes are 8-bit (uint8) in the catalog, so uncompressed bytes equal voxels [VC-Catalog]. The 70 catalog volumes with listed shapes total about **811 TB** uncompressed. By voxel size:
 
 | Voxel size (µm, rounded) | Uncompressed total (TB) |
 |---|---|
@@ -44,8 +44,8 @@ Volumes are 8-bit (uint8) in the catalogue, so uncompressed bytes equal voxels [
 
 Largest samples: PHerc. 139 (180 TB across its volumes), PHerc. Paris 4 (153 TB), PHerc. Paris 3 (123 TB), PHerc. 814 (64 TB) [VC-Catalog]. Stored volumes are compressed and chunked, so on-disk sizes are smaller; *compressed sizes were not measured for this book*.
 
-![Bar chart of uncompressed catalogue volume size in terabytes by voxel size, dominated by 2.4 micrometre volumes at about 615 terabytes.](../figures/charts/storage_by_voxel.svg)
-*Figure 25.2. Uncompressed size of catalogue volumes by voxel size. Chart by the editors. Data: data/catalog_volumes.csv from [VC-Catalog]. License: CC BY 4.0 (this book).*
+![Bar chart of uncompressed catalog volume size in terabytes by voxel size, dominated by 2.4 micrometer volumes at about 615 terabytes.](../figures/charts/storage_by_voxel.svg)
+*Figure 25.2. Uncompressed size of catalog volumes by voxel size. Chart by the editors. Data: data/catalog_volumes.csv from [VC-Catalog]. License: CC BY 4.0 (this book).*
 
 The voxel-scaling rule ([Chapter 7](#ch-xray)) explains the concentration: halving the voxel size multiplies voxels by eight. The August 2025 post on the compressed regions noted that the reconstructed high-resolution volume "for the same region is about 64 times larger than a scan captured at a 2 µm pixel size, and 4,096 times larger than one captured at 8 µm" [VC-CompressedRegions]. The ratios imply a voxel size near 0.5 µm (editors' arithmetic).
 

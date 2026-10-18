@@ -71,7 +71,7 @@ The document's six callouts, paraphrased closely [VC-OpenProblems2026]:
 
 Two neural tracing approaches were put "on-hold" [VC-OpenProblems2026]:
 
-- **Neural tracer, extrapolation mode:** predicts how a surface displaces as it grows beyond its edge, without a neighbouring wrap.
+- **Neural tracer, extrapolation mode:** predicts how a surface displaces as it grows beyond its edge, without a neighboring wrap.
 - **Neural mesh autoregression:** predicts a continuation of a tifxyz lattice one vertex at a time from frozen 3D DINO features; "a first MVP", not wired into GrowPatch.
 
 Both share two "severe limitations": inference is "slow" at 2.4 µm, and multi-step rollouts "drift" because "small errors compound across steps instead of staying bounded." "Neither problem is solved yet."

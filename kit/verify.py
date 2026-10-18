@@ -6,7 +6,7 @@ agreement under a stated tolerance counts only if a deliberately wrong input, th
 control, is caught by the same comparison. Without a control the verdict says so.
 
 Default tolerance: villa PR #1865 reported CPU and MPS maps differing by at most 1 of
-255 grey levels on 0.002% of pixels. The defaults (2 levels, at most 0.01% of pixels
+255 gray levels on 0.002% of pixels. The defaults (2 levels, at most 0.01% of pixels
 beyond that) leave margin above that report without accepting a different map.
 
 The maps are villa's uint8 TIFFs. Reading them needs numpy and tifffile (and

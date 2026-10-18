@@ -2,7 +2,7 @@
 same sheet where sheets touch.
 
 Tracing fails where two windings press together: a tracer that follows "the bright layer" hops to the
-neighbouring sheet. SAM 2.1 (Meta, Apache-2.0) and MedSAM2 (bowang-lab; code Apache-2.0, weights for research
+neighboring sheet. SAM 2.1 (Meta, Apache-2.0) and MedSAM2 (bowang-lab; code Apache-2.0, weights for research
 and education only) treat a stack of slices as a video and carry a memory of the object they were shown, so
 they may keep one sheet's identity through a contact. Nobody has measured that on scrolls (Untested idea). This
 file is the harness for that measurement:
@@ -58,7 +58,7 @@ def write_frames(cube8, folder):
 
 
 def frames_tensor(cube8, size=512):
-    """MedSAM2's CT input: slices resized to size x size, 3 channels, ImageNet-normalised, float32 tensor
+    """MedSAM2's CT input: slices resized to size x size, 3 channels, ImageNet-normalized, float32 tensor
     (n, 3, size, size)."""
     import torch
     import torch.nn.functional as F
@@ -84,7 +84,7 @@ def seed_objects(seed):
         raise ValueError(f"the seed must be one 2D slice of labels, got shape {seed.shape}")
     ids = [int(v) for v in np.unique(seed) if v != 0]
     if not ids:
-        raise ValueError("the seed has no labelled pixel (0 is background)")
+        raise ValueError("the seed has no labeled pixel (0 is background)")
     return {i: seed == i for i in ids}
 
 
@@ -94,7 +94,7 @@ def follow(predictor, cube, seed, key, axis=0, prompt="box", mode="video_path", 
     """Propagate each seeded sheet from slice `key` through the cube; returns (labels (cube shape) uint16,
     info dict). `predictor` is a SAM 2 video predictor (sam2.sam2_video_predictor.SAM2VideoPredictor or
     MedSAM2's), used through init_state, add_new_points_or_box / add_new_mask, propagate_in_video and
-    reset_state. mode "video_path" writes JPEG frames (SAM 2.1); "tensor" passes MedSAM2's normalised tensor."""
+    reset_state. mode "video_path" writes JPEG frames (SAM 2.1); "tensor" passes MedSAM2's normalized tensor."""
     cube = np.asarray(cube)
     if cube.ndim != 3:
         raise ValueError(f"the cube must be 3D, got shape {cube.shape}")
@@ -152,7 +152,7 @@ def _match(seed, truth_key):
         ids, counts = np.unique(truth_key[m], return_counts=True)
         keep = ids != 0
         if not keep.any():
-            raise ValueError(f"seed object {oid} covers no labelled sheet on the key slice")
+            raise ValueError(f"seed object {oid} covers no labeled sheet on the key slice")
         out[oid] = int(ids[keep][np.argmax(counts[keep])])
     return out
 

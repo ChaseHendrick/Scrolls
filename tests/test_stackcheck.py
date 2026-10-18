@@ -3,7 +3,7 @@
 A clean stack of six windings of an Archimedean spiral, each segment exactly one turn, passes every check; each
 planted defect (a missing sector, two adjacent missing sectors, an inversion, a skipped winding, a turn overlap at
 either end of the turn, a missing stack end, a winding traced twice, one missing all the way, a segment on its
-neighbour's sheet) is flagged by its own check, so every check can fail; a check with nothing to look at keeps the
+neighbor's sheet) is flagged by its own check, so every check can fail; a check with nothing to look at keeps the
 stack from being reported clean; and bad inputs and outputs exit 2."""
 
 import contextlib
@@ -219,7 +219,7 @@ class PlantedDefectTest(unittest.TestCase):
             self.assertAlmostEqual(b["median_um"]["w01 to w03"], 2 * PITCH * VOXEL_UM, delta=3)
             self.assertAlmostEqual(b["median_um"]["w00 to w03"], 3 * PITCH * VOXEL_UM, delta=3)
         self.assertEqual(rep["summary"]["flagged"]["missing_runs"], [])
-        # the neighbours lie two pitches apart in the gap and elsewhere alike
+        # the neighbors lie two pitches apart in the gap and elsewhere alike
         sp = r["neighbour_spacing"]
         self.assertGreater(sp["gap"]["rays"], 100)
         self.assertAlmostEqual(sp["gap"]["median_um"], 2 * PITCH * VOXEL_UM, delta=3)
@@ -394,8 +394,8 @@ class PlantedDefectTest(unittest.TestCase):
         m = next(x for x in rep["missing_sectors"] if x["segment"] == "w03")
         self.assertEqual(m["gap_rays"], 0)
         self.assertGreater(m["gap_rays_outside_own_height"], 1000)
-        # below w03 its neighbours are simply two windings apart: no gap spacing, no missing-sector mask, but the
-        # neighbours' vertices there are on the stack-end mask
+        # below w03 its neighbors are simply two windings apart: no gap spacing, no missing-sector mask, but the
+        # neighbors' vertices there are on the stack-end mask
         self.assertEqual(m["neighbour_spacing"]["gap"]["rays"], 0)
         self.assertNotIn("gap_by_height", m)
         for name in masks:
@@ -490,7 +490,7 @@ class NothingToLookAtTest(unittest.TestCase):
         segs[0][1] &= ~sector(segs[0], 100, 160, 100, 300)
         rep, _ = check(segs)
         self.assertEqual(rep["summary"]["flagged"]["missing_sectors"], [])
-        self.assertIn("missing sectors of w00 and w05: the innermost and outermost segments have a neighbour on one "
+        self.assertIn("missing sectors of w00 and w05: the innermost and outermost segments have a neighbor on one "
                       "side only", rep["summary"]["not_covered"])
 
 

@@ -1,13 +1,13 @@
 # Inventory of Scrolls and Fragments {#ch-inventory}
 
-> **Chapter summary.** The open-data catalogue (retrieved 15 October 2026) lists 45 samples: 35 scrolls and 10 fragments. This chapter tabulates every sample with data, its aliases, scans, voxel sizes, energies and facilities, then gives a short profile of each sample that has a documented history or result. Counts of segments are those published in the catalogue, not totals of all segments ever made.
+> **Chapter summary.** The open-data catalog (retrieved 15 October 2026) lists 45 samples: 35 scrolls and 10 fragments. This chapter tabulates every sample with data, its aliases, scans, voxel sizes, energies and facilities, then gives a short profile of each sample that has a documented history or result. Counts of segments are those published in the catalog, not totals of all segments ever made.
 
 ## How to read the names
 
-- **PHerc.** numbers are inventory numbers of the Naples collection (Officina dei Papiri Ercolanesi, Biblioteca Nazionale di Napoli) [WP-HercPapyri]. Letters after the number (A, B) distinguish separately catalogued pieces of one roll; **P** marks a fragment piece scanned separately (for example PHerc. 343P beside the rolled PHerc. 343) [VC-Catalog].
-- **PHerc. Paris 1 to 4** are rolls held by the Institut de France; **PHerc. MAN** items are in the Museo Archeologico Nazionale di Napoli (photographs in the catalogue come from a "museum-photos" folder) [VC-Catalog]. *This expansion of MAN is the conventional one and is not stated in the catalogue itself (unverified against a primary source).*
+- **PHerc.** numbers are inventory numbers of the Naples collection (Officina dei Papiri Ercolanesi, Biblioteca Nazionale di Napoli) [WP-HercPapyri]. Letters after the number (A, B) distinguish separately cataloged pieces of one roll; **P** marks a fragment piece scanned separately (for example PHerc. 343P beside the rolled PHerc. 343) [VC-Catalog].
+- **PHerc. Paris 1 to 4** are rolls held by the Institut de France; **PHerc. MAN** items are in the Museo Archeologico Nazionale di Napoli (photographs in the catalog come from a "museum-photos" folder) [VC-Catalog]. *This expansion of MAN is the conventional one and is not stated in the catalog itself (unverified against a primary source).*
 - **Cr** (cornice, frame) and **Fr** (fragment) identify mounted fragments, for example PHerc. 1667 Cr 1 Fr 3 [VC-Catalog].
-- **Scroll 1 to 5** and **Fragment 1 to 6** are the challenge's older numbering. The mapping, from the catalogue's legacy data paths, is [VC-Catalog]:
+- **Scroll 1 to 5** and **Fragment 1 to 6** are the challenge's older numbering. The mapping, from the catalog's legacy data paths, is [VC-Catalog]:
 
 | Alias | Sample | Holding institution |
 |---|---|---|
@@ -23,7 +23,7 @@
 | Fragment 5 | PHerc. 1667 Cr 1 Fr 3 | Biblioteca Nazionale di Napoli |
 | Fragment 6 | PHerc. 51 Cr 4 Fr 8 | Biblioteca Nazionale di Napoli |
 
-The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris" names and is not stated in their catalogue entries.
+The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris" names and is not stated in their catalog entries.
 
 ## Scrolls
 
@@ -65,7 +65,7 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 | PHerc. . Paris 3 | Scroll 2 | scroll | 1 | 1 | 0 | 2.4 | 78 | 2026-03 | ESRF BM18 |
 | PHerc. . Paris 4 | Scroll 1 | scroll | 7 | 7 | 81 | 1.129, 2.4, 7.91, 45.532 | 54, 74, 78, 110, 137 | 2023-02, 2026-03 | DLS, ESRF BM18 |
 
-*Table 15.1. Every scroll in the open-data catalogue. Source: [VC-Catalog]; data file data/scroll_inventory.csv. "Facility" DLS is Diamond Light Source; BM18 and ID11 are ESRF beamlines.*
+*Table 15.1. Every scroll in the open-data catalog. Source: [VC-Catalog]; data file data/scroll_inventory.csv. "Facility" DLS is Diamond Light Source; BM18 and ID11 are ESRF beamlines.*
 
 ## Fragments
 
@@ -82,25 +82,25 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 | PHerc. . Paris 2 Fr 143 | Fragment 2 | fragment | 0 | 0 | 0 | legacy only |  |  |  |
 | PHerc. . Paris 2 Fr 47 | Fragment 1 | fragment | 0 | 0 | 0 | legacy only |  |  |  |
 
-*Table 15.2. Every fragment in the open-data catalogue. "Legacy only" means the catalogue entry has photographs and a legacy data path on the older data server but no scans in the new catalogue. Source: [VC-Catalog].*
+*Table 15.2. Every fragment in the open-data catalog. "Legacy only" means the catalog entry has photographs and a legacy data path on the older data server but no scans in the new catalog. Source: [VC-Catalog].*
 
-![Bar chart of scrolls and fragments by number of catalogued scans and segments](../figures/charts/inventory.svg)
-*Figure 15.1. Scans and published segments per sample in the open-data catalogue. Chart by the editors from [VC-Catalog] (data/scroll_inventory.csv). License: CC BY 4.0 (this book).*
+![Bar chart of scrolls and fragments by number of cataloged scans and segments](../figures/charts/inventory.svg)
+*Figure 15.1. Scans and published segments per sample in the open-data catalog. Chart by the editors from [VC-Catalog] (data/scroll_inventory.csv). License: CC BY 4.0 (this book).*
 
 ## Profiles
 
 ### PHerc. Paris 4 (Scroll 1)
 
 - **Holder:** Institut de France [VC-Catalog].
-- **Scans:** Diamond at 7.91 µm (catalogue date February 2023, in two halves 1A and 1B) [VC-NewData2024]; a 45.532 µm overview; ESRF BM18 at 2.4 µm and 1.129 µm in March 2026 [VC-Catalog]. Parsons et al. date the original Diamond scan to 2019 [Parsons2023]; the catalogue's date may be a processing date.
+- **Scans:** Diamond at 7.91 µm (catalog date February 2023, in two halves 1A and 1B) [VC-NewData2024]; a 45.532 µm overview; ESRF BM18 at 2.4 µm and 1.129 µm in March 2026 [VC-Catalog]. Parsons et al. date the original Diamond scan to 2019 [Parsons2023]; the catalog's date may be a processing date.
 - **Results:** first word (ΠΟΡΦΥΡΑϹ, October 2023) [VC-FirstLetters]; 2023 Grand Prize, about 5 percent of the scroll, Epicurean text on pleasure [VC-GrandPrize]; ink directly visible in the 2.4 µm data and matching the 2023 reading "one-to-one" [VC-FirstScroll]; about 140 columns unwrapped in June 2026 [VC-GP2027].
 - **Open:** its title; a $50,000 prize is open [VC-Prizes]. The prizes page notes that "the expected title region has shown no detectable ink so far" and that "the top rows are physically missing" [VC-Prizes].
-- **Segments in catalogue:** 81, the most of any sample.
+- **Segments in catalog:** 81, the most of any sample.
 
 ### PHerc. Paris 3 (Scroll 2)
 
 - **Holder:** Institut de France.
-- **Scans:** Diamond 7.91 µm in two halves (2A and 2B) [VC-NewData2024]; ESRF BM18 2.4 µm (March 2026) [VC-Catalog]. The original Diamond scan does not appear in the new catalogue.
+- **Scans:** Diamond 7.91 µm in two halves (2A and 2B) [VC-NewData2024]; ESRF BM18 2.4 µm (March 2026) [VC-Catalog]. The original Diamond scan does not appear in the new catalog.
 - **Results:** no letters reported in the sources consulted; first-letters prizes for Scroll 2 went unclaimed in 2024 [VC-FASP].
 
 ### PHerc. 332 (Scroll 3)
@@ -120,7 +120,7 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 ### PHerc. 172 (Scroll 5)
 
 - **Holder:** Bodleian Libraries, Oxford; "similar in size to PHerc. Paris 4" [VC-Catalog]. Given in 1802 or 1803 by Ferdinand IV to the future George IV [VC-Scroll5].
-- **Scans:** Diamond 7.91 µm, 53 keV, in two halves merged into one volume (catalogue date October 2024) [VC-Scroll5] [VC-Catalog].
+- **Scans:** Diamond 7.91 µm, 53 keV, in two halves merged into one volume (catalog date October 2024) [VC-Scroll5] [VC-Catalog].
 - **Results:** dense ink visible directly in the CT [VC-Scroll5]; title *Philodemus, On Vices, Book 1(?)* [VC-FirstTitle]; a final column quoting Theophrastus [VC-Column172]; about 70 percent unwrapped (7 m by 14 cm) [VC-PHerc172Seventy].
 
 ### PHerc. 139
@@ -135,7 +135,7 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 
 ### PHerc. 500P2 and PHerc. 9B
 
-Fragments with exposed ink used as ground truth for the generalist ink model [VC-SummerHaze] [VC-MultipleScrolls]. PHerc. 500P2 carries the highest-resolution scan in the catalogue (0.55 µm, ID11), which revealed fiber lumens [VC-CompressedRegions]. Hidden layers in PHerc. 9B were detected by the model [VC-MultipleScrolls].
+Fragments with exposed ink used as ground truth for the generalist ink model [VC-SummerHaze] [VC-MultipleScrolls]. PHerc. 500P2 carries the highest-resolution scan in the catalog (0.55 µm, ID11), which revealed fiber lumens [VC-CompressedRegions]. Hidden layers in PHerc. 9B were detected by the model [VC-MultipleScrolls].
 
 ### PHerc. 814, 841, 1447 and 826
 

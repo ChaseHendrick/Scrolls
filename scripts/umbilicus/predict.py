@@ -1,12 +1,12 @@
-"""Scroll centre (umbilicus) line for any scroll from trained weights: no training, no labels needed.
+"""Scroll center (umbilicus) line for any scroll from trained weights: no training, no labels needed.
 
     python predict.py SCROLL [SCROLL ...] --first W.pt [W.pt ...] [--zoom Z.pt ...] --data DIR --out DIR
                       [--volume PATH] [--device cpu] [--no-end-rule]
 
 For each scroll: the slices the models were trained on (every 8th level-3 plane of the scan, read from the
 open-data bucket with range requests into DIR/<scroll>.npz unless that file exists; an existing file is used only
-when it holds the scan asked for, --volume or by default slices.volume(), and holds some CT), the first-stage centre of each
---first model (median over models), then each --zoom model moves that guess onto the centre (median over models),
+when it holds the scan asked for, --volume or by default slices.volume(), and holds some CT), the first-stage center of each
+--first model (median over models), then each --zoom model moves that guess onto the center (median over models),
 then the line is smoothed along z and the ends are trimmed (mount and caps by pipeline.keep_band, then the
 end-point rule unless --no-end-rule). Writes OUT/<scroll>_umbilicus.json in the format of the published umbilicus
 files (control points x, y, z in level-0 voxels) and OUT/<scroll>_predict.json with per-slice details.
@@ -45,7 +45,7 @@ def load_net(path, device):
 
 
 def first_stage(npz, weights, device):
-    """Each model's centre per slice in level-0 voxels: (models, slices, 2), and the slices with any papyrus."""
+    """Each model's center per slice in level-0 voxels: (models, slices, 2), and the slices with any papyrus."""
     import centrenet
     imgs, fr = centrenet.frame(npz, FRAME, device=device)
     Y = []
@@ -56,7 +56,7 @@ def first_stage(npz, weights, device):
 
 
 def zoom_stage(ct, guess_l0, present, weights, device, level=3):
-    """Each zoom model's refined centre (level-0 voxels) from the same guess; NaN on slices without papyrus."""
+    """Each zoom model's refined center (level-0 voxels) from the same guess; NaN on slices without papyrus."""
     import refine
     f = 2 ** level; idx = np.nonzero(present)[0]; Y = []
     for w in weights:

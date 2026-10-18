@@ -40,7 +40,7 @@ a report with a SHA-256 digest.
 
 A plan has one of three purposes:
 
-- `benchmark` (default): a run on a published labelled segment or on traces, scored where labels exist.
+- `benchmark` (default): a run on a published labeled segment or on traces, scored where labels exist.
 - `target`: a run on a scroll without published ink. It needs a preregistered ledger experiment and is never scored
   inside the tool.
 - `smoke`: a run that only shows the chain works.
@@ -169,12 +169,12 @@ Prints the default settings as JSON.
 | `--host ADDR` | 127.0.0.1 | Listen address; any non-loopback address prints a warning. |
 | `--snapshot FILE.html` | none | Write one self-contained page and exit. |
 | `--open` | off | Open the page or snapshot in a browser. |
-| `--thumbs auto\|on\|off` | auto | Map thumbnails; auto shows them for smoke runs and published labelled segments only. |
+| `--thumbs auto\|on\|off` | auto | Map thumbnails; auto shows them for smoke runs and published labeled segments only. |
 | `--stale-minutes M` | 30 | No update for this long marks a running stage as stopped. |
 | `--text` | off | Print the run as text, maps in characters, and exit. |
 | `--width N` | 40 | With `--text`: map width in characters (at least 8). |
-| `--color auto\|on\|off` | auto | With `--text`: grey half blocks; `NO_COLOR` disables auto. |
-| `--dither` | off | With `--text` and no colour: ordered dithering. |
+| `--color auto\|on\|off` | auto | With `--text`: gray half blocks; `NO_COLOR` disables auto. |
+| `--dither` | off | With `--text` and no color: ordered dithering. |
 | `--watch SECONDS` | none | With `--text`: reprint every SECONDS (at least 1) until Ctrl-C. |
 
 ### Exit codes
@@ -255,7 +255,7 @@ segment (`0841-ag405` is a report-only surface, and a checkout may list more in 
 | `KIT_VC3D_PROGRESS_SECONDS` | Seconds between progress lines (default 10). |
 | `KIT_VC3D_CACHE_CHECK` | `0` turns off the guard against chunks VC3D cached as empty after a false 404. |
 | `KIT_HTTP_REUSE` | `0` turns off kept-alive HTTP connections. |
-| `NO_COLOR` | Disables colour in `monitor --text` under `--color auto`. |
+| `NO_COLOR` | Disables color in `monitor --text` under `--color auto`. |
 | `GITHUB_TOKEN` | Raises GitHub's API limit for `scripts/get_vc3d.py`. Never print it. |
 | `VILLA_DIR` | A villa checkout, for villa's own tools. |
 
@@ -308,7 +308,7 @@ A stage returning only a skip reason is `skipped`; a handoff is `handoff`; other
 9. **ink**: local, handoff or skip by `ink.where`. A later run takes a handoff back when the models and torch are
    present.
 10. **score**: AUCs of forward and reversed maps on published labels, or the transfer score; skipped for targets,
-    unlabelled scans and while ink is handed off.
+    unlabeled scans and while ink is handed off.
 11. **report**: `report.json` with its digest and, with `triage`, a reading order of the maps (kept inside the run
     folder for scrolls without published labels).
 
