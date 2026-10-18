@@ -1,6 +1,6 @@
 # strokenet: score how text-like an ink map's windows look, with rotation and IAAFT controls
 
-`python -m kit strokenet` scores 6.1 mm windows of an organisers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.
+`python -m kit strokenet` scores 6.1 mm windows of an organizers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.
 
 | Field | Value |
 | --- | --- |
@@ -18,24 +18,36 @@
 | Go-ahead | Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score |
 | Released | Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day |
 | Guide | [StrokeNet model card](../strokenet.md) (data, training, held-out results and limits) |
-| License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release)) |
-| Checked | 2026-10-16 against commit `63ee638` |
+| License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release)) |
+| Checked | 2026-10-18 against commit `4a970bd` |
 
 ## What it does
 
-StrokeNet is a small convolutional network (CNN) that gives one number, a logit, for a 6.1 mm by 6.1 mm window of a 2D ink map (128 by 128 pixels at 0.048 mm): how much the window looks like lines of body text of PHerc. Paris 4 as the organisers' 2026 ink model draws them. It was trained against blank papyrus and against copies of text windows whose arrangement or orientation was destroyed. "StrokeNet" is a project name: nothing here tests whether it responds to strokes or letters as such.
+StrokeNet is a small convolutional network (CNN) that gives one number, a logit, for a 6.1 mm by 6.1 mm window of a 2D ink map (128 by 128 pixels at 0.048 mm): how much the window looks like lines of body text of PHerc. Paris 4 as the organizers' 2026 ink model draws them. It was trained against blank papyrus and against copies of text windows whose arrangement or orientation was destroyed. "StrokeNet" is a project name: nothing here tests whether it responds to strokes or letters as such.
 
-`python -m kit strokenet` resamples a map to 0.048 mm, keeps only windows with at least 99 % core papyrus (usable papyrus more than 1.5 mm from any unusable pixel, the rule the training windows met), scores every kept window, and summarises the scores. Every result carries two controls on a seeded random sample of the kept windows: each window against itself turned by 90 degrees, and against an IAAFT copy of itself (iterative amplitude-adjusted Fourier transform: the same pixel values and nearly the same power spectrum, arrangement scrambled). It also prints an orientation hint. It runs in numpy only; the weights are downloaded once and checked by SHA-256.
+`python -m kit strokenet` resamples a map to 0.048 mm, keeps only windows with at least 99 % core papyrus (usable papyrus more than 1.5 mm from any unusable pixel, the rule the training windows met), scores every kept window, and summarizes the scores. Every result carries two controls on a seeded random sample of the kept windows: each window against itself turned by 90 degrees, and against an IAAFT copy of itself (iterative amplitude-adjusted Fourier transform: the same pixel values and nearly the same power spectrum, arrangement scrambled). It also prints an orientation hint. It runs in numpy only; the weights are downloaded once and checked by SHA-256.
 
 `scripts/strokenet/` holds the rest: the dataset builder (`data.py`), the null copies (`nulls.py`), training (`train.py`), the preregistered run (`pipeline.py`), the measures (`metrics.py`), eleven simple baseline scores (`baselines.py`), the evaluation and release (`evaluate.py`), the run's file hashes (`prov.py`) and the tile grid pilot (`gridpilot.py`).
 
-Status is Experimental because the model **missed its own preregistered bar**: on six held-out PHerc. Paris 4 tracings it failed two of nine bar items (blank papyrus against its own 90 degree turn, and blank windows above the threshold), simple scores such as ink density matched it elsewhere, and it beat every simple score only at telling text from its 90 degree turn ([model card](../strokenet.md#results)). It was trained and tested on one scroll, one hand and one ink model, with text and blank labels made by a rule from the maps, not by people.
+Status is Experimental because the model **missed its own preregistered bar**. What the held-out test showed, on six PHerc. Paris 4 tracings it never saw ([model card](../strokenet.md#in-short), `strokenet_checks` in [`results.json`](../results.json)):
+
+- **7 of 9 bar items passed, 2 missed**: T6, blank papyrus against its own 90 degree turn (0.639; the bar asks for within 0.10 of 0.5), and FPR_blank, blank windows above the threshold (0.021; bar 0.02).
+- **Simple ink density matches it on text against blank** (T1: density 0.996, StrokeNet 0.990), and simple scores met all 9 counted bar items.
+- **Where it adds value**: telling text from its own 90 degree turn (T4 0.994, +0.141 over the best simple score, `lines`, on 6 of 6 segments), which is what the orientation hint and the rotation control use. Window roughness tells text from dense ink better (T8).
+
+Its limits, before any further test:
+
+- **One reader's appearance.** It saw only the organizers' `new_canon_autoresearch_recipe` maps of one scroll; maps from other ink models look different (stroke width, contrast, background, tile pattern) and are outside what it learned.
+- **Paris 4's handwriting.** Its labels assumed a 4.5 to 9 mm line pitch with lines along the rows; smaller or larger writing, or a turned map, did not get text labels.
+- **Input assumptions.** The organizers' 0 to 255 scale, papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side.
+
+A rework (version 5) for maps from any ink reader and any scroll, judged on human ink labels with a preregistered leave-one-scroll-out test, is in progress in private work. Until it has a held-out result, this page and the command describe version 1 only.
 
 A score is model output, not a reading. A high score where no text is known is not evidence that text is there, and nothing StrokeNet prints may be described as letters found or read.
 
 ## When to use it
 
-- Finding where text-like ink sits on a large ink map of the organisers' 0 to 255 scale, as a pointer for a person to look.
+- Finding where text-like ink sits on a large ink map of the organizers' 0 to 255 scale, as a pointer for a person to look.
 - Telling text-like ink from ink that is merely dense, with the caveat that window roughness does this better on the test set (T8 in the model card).
 - Checking whether a map is on its side: the orientation hint and the rotation control.
 - Rebuilding or auditing the preregistered run from public data with the scripts.
@@ -53,7 +65,7 @@ Do not use it:
 python -m kit strokenet MAP.tif --pixel-mm 0.0024 --out RESULT.json
 ```
 
-- `MAP.tif`: one of the organisers' ink predictions (uint8, 0 to 255, ink bright), such as a PHerc. Paris 4 tracing from https://data.aws.ash2txt.org/samples/PHercParis4/segments/. `.npy`, `.npz` and `.png` work too.
+- `MAP.tif`: one of the organizers' ink predictions (uint8, 0 to 255, ink bright), such as a PHerc. Paris 4 tracing from https://data.aws.ash2txt.org/samples/PHercParis4/segments/. `.npy`, `.npz` and `.png` work too.
 - `0.0024`: the map's pixel size in mm (2.4 um). A uint8 map at a whole fraction of 0.048 mm is pooled exactly as the training windows were.
 - `RESULT.json`: where to keep the full result; add `--json` to print it instead of the text summary.
 - The first run downloads `strokenet-paris4-v1` (589,393 weights) into `~/.cache/scrolls-kit/strokenet/`; pass `--weights FILE.npz` to use a file.
@@ -77,7 +89,7 @@ The numbers mean nothing here (random weights); the run shows the shape of the o
 - **Rotation control** (`controls.rot90`). On `--sample` kept windows drawn at random with `--seed`, the share scoring above their own 90 degree turn and the mean logit drop. On the validation split the released model put 0.979 of text windows and 0.665 of blank windows above their turn (`val_ref` in [`calibration.json`](../evidence/2026-10-14-strokenet/calibration.json)); a map whose windows score near the blank value, or below it, shows no text-like orientation. A share well under 0.5 means the turned windows score higher: the map is probably on its side (the orientation hint says so).
 - **IAAFT control** (`controls.iaaft`, 200 iterations). IAAFT copies keep a small excess of high-frequency power, so a score can drop on them without using arrangement. Read the share against the validation values, not against 0.5: 1.0 for text and 0.913 for blank windows (`val_ref`). A share near the blank value says nothing about text.
 - **Blank threshold** (`learned_frac_above_val_blank_q99`). The share of windows above the 99th percentile of validation blank-window logits (1.704 for the released model, `models.released.q99` in `calibration.json`). By construction about 1 % of blank windows pass it; on the test split 2.1 % did (FPR_blank 0.0213, `strokenet_checks` in [`results.json`](../results.json)).
-- **The preregistered test.** The released model missed its bar on T6 (blank against turned blank, 0.639, bar within 0.10 of 0.5) and FPR_blank (0.021, bar 0.02); both seeds missed the same two. It passed T1 text against blank (0.990), T4 text against its turn (0.994), and the others, but simple scores met 9 of 9 counted bar items, and the artifact control (trained never to see text) reached 0.999 on T2, so T2, T3 and T7 show the organisers' tile grid, not text structure. Its one result beyond simple scores is T4, +0.141 over the `lines` score on 6 of 6 segments ([model card](../strokenet.md#results); `strokenet_checks` in `results.json`).
+- **The preregistered test.** The released model missed its bar on T6 (blank against turned blank, 0.639, bar within 0.10 of 0.5) and FPR_blank (0.021, bar 0.02); both seeds missed the same two. It passed T1 text against blank (0.990), T4 text against its turn (0.994), and the others, but simple scores met 9 of 9 counted bar items, and the artifact control (trained never to see text) reached 0.999 on T2, so T2, T3 and T7 show the organizers' tile grid, not text structure. Its one result beyond simple scores is T4, +0.141 over the `lines` score on 6 of 6 segments ([model card](../strokenet.md#results); `strokenet_checks` in `results.json`).
 - **No probability.** The Platt parameters were fitted on a fixed evaluation mixture, so `calibrate()` is not P(text) on a real map and the command never reports it.
 
 Claim label: Model output, for every score and control the command prints; Null, for the preregistered held-out test of 14 October 2026, which missed its bar.
@@ -97,7 +109,7 @@ usage: python -m kit strokenet [-h] --pixel-mm PIXEL_MM [--weights WEIGHTS]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `map` | required | The ink map: `.npy` (memory-mapped), `.npz` (the `--key` array or the first), `.tif` or `.tiff` (read lazily through zarr when installed), or an image Pillow reads such as `.png`. On the organisers' 0 to 255 scale, ink bright. Its dtype is kept |
+| `map` | required | The ink map: `.npy` (memory-mapped), `.npz` (the `--key` array or the first), `.tif` or `.tiff` (read lazily through zarr when installed), or an image Pillow reads such as `.png`. On the organizers' 0 to 255 scale, ink bright. Its dtype is kept |
 | `--pixel-mm PIXEL_MM` | required | Map pixel size in mm, such as 0.0024 for a 2.4 um map or 0.048 for a map already at the working size. Must be positive |
 | `--weights WEIGHTS` | none (the released `strokenet-paris4-v1`, or `$KIT_STROKENET_DEFAULT`) | A StrokeNet `.npz` file, or the name of a released model in `kit/data/strokenet-weights.json`, downloaded once and checked by SHA-256 |
 | `--key KEY` | none (the first array) | For an `.npz` map: the array's name |
@@ -111,7 +123,7 @@ usage: python -m kit strokenet [-h] --pixel-mm PIXEL_MM [--weights WEIGHTS]
 
 ### `python scripts/strokenet/data.py`
 
-Builds the dataset from the organisers' public PHerc. Paris 4 ink predictions; every step is deterministic, so two machines get the same windows byte for byte.
+Builds the dataset from the organizers' public PHerc. Paris 4 ink predictions; every step is deterministic, so two machines get the same windows byte for byte.
 
 ```
 usage: data.py [-h] [--work WORK] [--segments SEGMENTS] [--jobs JOBS]
@@ -232,7 +244,7 @@ print(strokenet.text_summary(res))
 | `weights_cache()` | `Path` of the download folder | Nothing | `$KIT_STROKENET_WEIGHTS`, else `~/.cache/scrolls-kit/strokenet` |
 | `released_weights(registry=None)` | `{name: entry}` with `file`, `sha256`, `url`, `licence`, `params`, `pixel_mm`, `window_px`, `input`, `card` | `OSError`, `ValueError` or `KeyError` for a missing or broken registry | Reads `kit/data/strokenet-weights.json` by default |
 | `resolve_weights(spec=None, cache=None, registry=None, download=True)` | `Path` of a weights file | `ValueError` for an unknown name, a file missing with `download=False`, an entry with no URL, or a SHA-256 mismatch; `OSError` (such as `URLError`) when the download fails | A path that exists is returned as it is, unchecked. A released name is downloaded once to a `.part` file, checked, then renamed |
-| `open_map(path, key=None)` | Context manager yielding a 2D array or a lazy 2D array-like | `ValueError` for a map that is not 2D; `ImportError` without tifffile or Pillow; `OSError` for an unreadable file; `KeyError` for a missing `.npz` key | Keeps the dtype. An RGB image whose channels are equal keeps its values; a real colour image is averaged |
+| `open_map(path, key=None)` | Context manager yielding a 2D array or a lazy 2D array-like | `ValueError` for a map that is not 2D; `ImportError` without tifffile or Pillow; `OSError` for an unreadable file; `KeyError` for a missing `.npz` key | Keeps the dtype. An RGB image whose channels are equal keeps its values; a real color image is averaged |
 | `to_working(ink, pixel_mm, strip=None)` | float32 array at 0.048 mm | `ValueError` for `pixel_mm` not positive or a map that is not 2D | Exact block pooling (rounded half to even for integer maps) at a whole fraction of 0.048 mm, exact area averaging otherwise; NaN and infinite values read as 0; reads `strip` rows at a time |
 | `usable_mask(a, use_scipy=None)` | bool array | `ImportError` only when `use_scipy=True` and scipy is missing | Value above 3, opened three times with a 3 x 3 cross, holes filled; the numpy fallback gives the same result |
 | `core_mask(a, use_scipy=None)` | bool array | As `usable_mask` | Usable pixels more than 1.5 mm from any unusable pixel; a map with no unusable pixel is all core |
@@ -250,12 +262,12 @@ print(strokenet.text_summary(res))
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| Ink map | 2D `.npy`, `.npz`, `.tif`/`.tiff`, or an image Pillow reads | The organisers' ink predictions on their 0 to 255 scale, ink bright, with text lines running along the rows as in their PHerc. Paris 4 maps (turned maps trip the orientation hint). Float or rescaled maps are outside the training distribution. Values of 3 or less, NaN and infinite values count as unusable |
-| Pixel size | `--pixel-mm`, mm per pixel | 0.0024 for the organisers' 2.4 um maps. An integer map whose pixel size is 0.048 mm divided by a whole number is pooled exactly as in training; any other size is area-averaged and is not exact |
+| Ink map | 2D `.npy`, `.npz`, `.tif`/`.tiff`, or an image Pillow reads | The organizers' ink predictions on their 0 to 255 scale, ink bright, with text lines running along the rows as in their PHerc. Paris 4 maps (turned maps trip the orientation hint). Float or rescaled maps are outside the training distribution. Values of 3 or less, NaN and infinite values count as unusable |
+| Pixel size | `--pixel-mm`, mm per pixel | 0.0024 for the organizers' 2.4 um maps. An integer map whose pixel size is 0.048 mm divided by a whole number is pooled exactly as in training; any other size is area-averaged and is not exact |
 | Size | At least 128 px at 0.048 mm on each side (6.1 mm) | Smaller maps, or crops, are refused. A large TIFF is read in strips of about 4 million source pixels (`STRIP_PX`) |
 | Weights | `.npz` with `n_conv`, `conv{i}_w`, `conv{i}_b`, `pool_after_{i}`, `head_w`, `head_b` and `meta` (JSON: `platt`, `val_blank_logit_q99`, `val_ref` and the run's settings) | Exported by `train.py` (batch norm folded into the convolutions) and completed by `evaluate.py release`. Weights are not in git |
 | Weights registry | `kit/data/strokenet-weights.json`, `{"about": ..., "models": {name: entry}}` | One entry, `strokenet-paris4-v1`: SHA-256 `e9c486be...`, 589,393 parameters, CC BY-NC 4.0 |
-| Training data (scripts) | The organisers' 2.4 um ink predictions of PHerc. Paris 4's 28 tracings of 1 July 2026 | Model `new_canon_autoresearch_recipe`, tile 256, stride 128. The innermost tracing, `w010-027`, is never used; the split is fixed by position in `data.py` `ORDER` |
+| Training data (scripts) | The organizers' 2.4 um ink predictions of PHerc. Paris 4's 28 tracings of 1 July 2026 | Model `new_canon_autoresearch_recipe`, tile 256, stride 128. The innermost tracing, `w010-027`, is never used; the split is fixed by position in `data.py` `ORDER` |
 
 ## Outputs
 
@@ -365,7 +377,7 @@ Scoring (`kit/strokenet.py`, what the command runs):
 
 1. Open the map keeping its dtype (`open_map`), crop it if asked (`snap_crop`), and resample it to 0.048 mm (`PIXEL_MM`) with `to_working`: block sums rounded half to even for an integer map at a whole fraction of 0.048 mm, which reproduces `data.py` `pool_array` exactly, otherwise exact area averaging.
 2. Mark usable papyrus (value above `USABLE_MIN` = 3, opened three times with a cross, holes filled) and core papyrus (more than `CORE_MM` = 1.5 mm from any unusable pixel), then lay out 128 px (`CROP`) windows every `--stride` pixels and keep those with at least `MIN_USABLE_FRAC` = 0.99 core pixels (`layout`).
-3. Score each kept window: normalise it on its own (median and MAD), run three-by-three convolutions with ReLU (batch norm folded in), 2 x 2 max pooling after each pair, global mean and max pooling, and one linear output. Then score the same windows turned by 90 degrees.
+3. Score each kept window: normalize it on its own (median and MAD), run three-by-three convolutions with ReLU (batch norm folded in), 2 x 2 max pooling after each pair, global mean and max pooling, and one linear output. Then score the same windows turned by 90 degrees.
 4. Draw `--sample` (`SAMPLE` = 64) kept windows at random with `numpy.random.default_rng(seed)`, make an IAAFT copy of each with `IAAFT_ITERS` = 200 iterations from the same generator, and report the share above each copy and the mean drop, next to the weights' `val_ref`.
 5. Orientation hint: compare the share above the blank threshold as given and turned, or the mean logit when the shares are equal or missing.
 
@@ -378,7 +390,7 @@ Training and the preregistered test (`scripts/strokenet/`):
 3. `pipeline.py`: six sweep configurations at seed 0, the best final monitor score chosen with ties within `TIE` = 0.002 going to fewer parameters; seeds 1 and 2, four ablations at three seeds, a no-jitter run, the permuted-label control and the artifact control; then validation, calibration and the gate (released T1 at least 0.90 and mean T1 to T4 at least 0.85, permuted control T1 under 0.95, numpy check within 1e-3: `GATE`, `CONTROL_T1_GATE`, `NUMPY_TOL`), and the single test read with markers that refuse a second read.
 4. `evaluate.py`: every measure against the bar fixed on 7 October (`BAR`), block-bootstrap intervals, the eleven baselines, and the verdict line.
 
-The tile grid: the organisers' maps carry a faint 6.4 px grid from their overlapping prediction tiles. `gridpilot.py` measured how much a finer tile stride removes it; the grid stays, so StrokeNet keeps its `grid` baseline and artifact control ([model card](../strokenet.md#known-limits-before-any-result)).
+The tile grid: the organizers' maps carry a faint 6.4 px grid from their overlapping prediction tiles. `gridpilot.py` measured how much a finer tile stride removes it; the grid stays, so StrokeNet keeps its `grid` baseline and artifact control ([model card](../strokenet.md#known-limits-before-any-result)).
 
 ## Cost and time
 
@@ -402,7 +414,7 @@ The tile grid: the organisers' maps carry a faint 6.4 px grid from their overlap
 python -m unittest tests.test_strokenet tests.test_strokenet_pipeline tests.test_strokenet_stats tests.test_gridpilot -v
 ```
 
-`test_strokenet` covers the numpy network against a naive convolution, the normalisation, resampling against brute force and against `data.py` pooling, strip reads, the usable and core masks (numpy against scipy and by hand), the window rule, NaN handling, the IAAFT copies against `nulls.py`, the controls on a random sample, the orientation hint, `open_map` dtypes, the SHA-256 check, `snap_crop` and the command line. `test_strokenet_pipeline` covers the splits, labels, nulls, numpy export against torch, the sweep choice, the one-time test read, and the evaluation rules; `test_strokenet_stats` the metrics and baselines; `test_gridpilot` the pilot. Parts skip without numpy, torch or scipy. They use synthetic maps and random weights; they do not download the released weights or run on real segments.
+`test_strokenet` covers the numpy network against a naive convolution, the normalization, resampling against brute force and against `data.py` pooling, strip reads, the usable and core masks (numpy against scipy and by hand), the window rule, NaN handling, the IAAFT copies against `nulls.py`, the controls on a random sample, the orientation hint, `open_map` dtypes, the SHA-256 check, `snap_crop` and the command line. `test_strokenet_pipeline` covers the splits, labels, nulls, numpy export against torch, the sweep choice, the one-time test read, and the evaluation rules; `test_strokenet_stats` the metrics and baselines; `test_gridpilot` the pilot. Parts skip without numpy, torch or scipy. They use synthetic maps and random weights; they do not download the released weights or run on real segments.
 
 ## History
 

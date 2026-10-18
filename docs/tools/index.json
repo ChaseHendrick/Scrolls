@@ -7535,7 +7535,7 @@
    "id": "strokenet",
    "name": "strokenet",
    "tagline": "score how text-like an ink map's windows look, with rotation and IAAFT controls",
-   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organisers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.",
+   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organizers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.",
    "status": "Experimental",
    "kind": [
     "kit command",
@@ -7586,10 +7586,10 @@
     "text": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-18",
+    "commit": "4a970bd"
    },
-   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release))",
+   "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
    "fields": {
     "Id": "`strokenet`",
     "Status": "Experimental",
@@ -7605,99 +7605,99 @@
     "Go-ahead": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score",
     "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day",
     "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits)",
-    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the licence of the organisers' scan data ([model card](../strokenet.md#licence-and-release))",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
+    "Checked": "2026-10-18 against commit `4a970bd`"
    },
    "page": "docs/tools/strokenet.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 24,
-     "end_line": 35,
+     "end_line": 47,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 36,
-     "end_line": 49,
+     "start_line": 48,
+     "end_line": 61,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 50,
-     "end_line": 74,
+     "start_line": 62,
+     "end_line": 86,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 75,
-     "end_line": 84,
+     "start_line": 87,
+     "end_line": 96,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 85,
-     "end_line": 219,
+     "start_line": 97,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 220,
-     "end_line": 248,
+     "start_line": 232,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 249,
-     "end_line": 259,
+     "start_line": 261,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 260,
-     "end_line": 294,
+     "start_line": 272,
+     "end_line": 306,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 295,
-     "end_line": 361,
+     "start_line": 307,
+     "end_line": 373,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 362,
-     "end_line": 382,
+     "start_line": 374,
+     "end_line": 394,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 383,
-     "end_line": 388,
+     "start_line": 395,
+     "end_line": 400,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 389,
-     "end_line": 398,
+     "start_line": 401,
+     "end_line": 410,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 399,
-     "end_line": 406,
+     "start_line": 411,
+     "end_line": 418,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 407,
-     "end_line": 413,
+     "start_line": 419,
+     "end_line": 425,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 414,
-     "end_line": 422,
+     "start_line": 426,
+     "end_line": 434,
      "applicable": true
     }
    ]
