@@ -25,7 +25,7 @@ A skill is a Markdown file of instructions that Claude Code loads when its descr
 
 Its main job is to keep the repository's hard rules in the agent's path at the moment they matter: the readout rule is written before anyone looks at target output (the preregistration rule), a GPU job or a long CPU job goes to Modal, through a written run spec when the session cannot run Modal itself (a Claude cloud session can, after `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule; the Modal rule), local runs are wrapped in `python -m kit run local` so their cost reaches the ledger, and a possible finding is marked `candidate` and then not committed, pushed or described anywhere public (the no-findings rule).
 
-It also routes target work out of this repository. This repository is public; a run on an eligible scroll without public labels belongs in the private workbench repository, and steps 3 to 5 are done from that checkout. Here the skill runs only public labelled benchmarks (PHerc0841, w045, w035) and generic tools.
+It also routes target work out of this repository. This repository is public; a run on an eligible scroll without public labels belongs in the private workbench repository, and steps 3 to 5 are done from that checkout. Here the skill runs only public labeled benchmarks (PHerc0841, w045, w035) and generic tools.
 
 It runs nothing by itself and makes no claim. An ink map a session produces is model output, not a reading, and the skill never lets an agent mark a run `published --announced` without the official announcement URL from the user.
 

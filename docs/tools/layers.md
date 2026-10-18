@@ -63,7 +63,7 @@ Run on 2026-10-16 on that real level, it printed:
 28 layers shuffled (seed 20261007, order [0, 25, 2, 9, 3, 15, 16, 19, 26, 6, 7, 8, 21, 13, 24, 10, 11, 20, 17, 22, 4, 5, 18, 1, 27, 14, 12, 23]) -> /tmp/claude-docs-public-layers/w035_l3_shuf.zarr
 ```
 
-It worked when the exit code is 0 and the folder holds `00.tif` to `27.tif`, each a 728 x 655 uint8 image. On that run the shuffled zarr's layer `i` equalled source layer `ORDER[i]` for all 28, and equalled the shuffled TIFF `i`.
+It worked when the exit code is 0 and the folder holds `00.tif` to `27.tif`, each a 728 x 655 uint8 image. On that run the shuffled zarr's layer `i` equaled source layer `ORDER[i]` for all 28, and equaled the shuffled TIFF `i`.
 
 ## Checks and controls
 
@@ -236,7 +236,7 @@ Fourteen tests, on small synthetic zarrs: a bare array exported in stored order,
 
 - 2026-10-17: `kit layers` refuses a folder that already holds numbered TIFFs; before, it replaced files of the same names and left higher-numbered TIFFs from a larger export, which v8in then read too (`0ec3659`).
 - 2026-10-17: `kit shuffle` refuses an `OUT` that already exists; before, it opened `OUT` in zarr's mode `w`, which deleted whatever was there (`b640173`).
-- 2026-10-07: the module text explains the banded read; no change in behaviour (`fda744f`).
+- 2026-10-07: the module text explains the banded read; no change in behavior (`fda744f`).
 - 2026-10-07: the depth-shuffle control: `kit shuffle` and `kit layers --shuffle`; on the PHerc0841 w00 crop, `ink_9um`, its checkpoint soup and d9v2 fell to 0.48 to 0.50 AUC shuffled against 0.50 to 0.59 reversed (`bd18778`).
 - 2026-10-07: the printed line shows the crop (`b121223`).
 - 2026-10-07: banded reads across all layers when they fit in 4 GiB; the whole w045 export takes 23 s instead of about 72 s of reads (`6081aab`).

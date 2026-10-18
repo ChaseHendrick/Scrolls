@@ -22,17 +22,17 @@
 
 ## What it does
 
-An ink model writes an ink map: one number per pixel of a flattened surface (a segment's 2D render, 9.366 um per pixel here), higher where the model thinks there is ink. For a few segments the Vesuvius Challenge publishes the ink that people marked by hand (`inklabels.zarr`) and the area where they marked both ink and non-ink (`supervision.zarr`). `kit auc` measures how well a map agrees with those labels. The AUC is the chance that a labelled ink pixel scores above a labelled non-ink pixel, counted only inside the supervision mask, with ties counted half. 1.0 is perfect and 0.5 is chance.
+An ink model writes an ink map: one number per pixel of a flattened surface (a segment's 2D render, 9.366 um per pixel here), higher where the model thinks there is ink. For a few segments the Vesuvius Challenge publishes the ink that people marked by hand (`inklabels.zarr`) and the area where they marked both ink and non-ink (`supervision.zarr`). `kit auc` measures how well a map agrees with those labels. The AUC is the chance that a labeled ink pixel scores above a labeled non-ink pixel, counted only inside the supervision mask, with ties counted half. 1.0 is perfect and 0.5 is chance.
 
 It also scores a control. The reverse-depth map is the same model run on the same surface volume with its layers in the opposite depth order: it sees the same brightness but not the ink in the order the model learned. A map that reads ink scores well above its reverse; a map that only follows brightness or texture scores about the same both ways. `--bootstrap` adds a 95 % interval by resampling 1 mm blocks of pixels, and `--compare` says whether one map is ahead of another beyond sampling noise on the same pixels.
 
-On a labelled segment held out from the model, the score is a generalization number. The `held_out` key of [`results.json`](../results.json) says which segment is held out from which model: PHerc0841 is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's ([log](../logs/2026-10-09-pherc0841-hecate.md)). On a segment the model trained on, the score only shows that the pipeline runs.
+On a labeled segment held out from the model, the score is a generalization number. The `held_out` key of [`results.json`](../results.json) says which segment is held out from which model: PHerc0841 is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's ([log](../logs/2026-10-09-pherc0841-hecate.md)). On a segment the model trained on, the score only shows that the pipeline runs.
 
 An AUC is a score against human labels, not a reading. It never means that letters were found.
 
 ## When to use it
 
-- Ranking ink models, checkpoints or settings on a labelled segment held out from all of them.
+- Ranking ink models, checkpoints or settings on a labeled segment held out from all of them.
 - Checking that a new pipeline step did not break ink detection, with the reverse map as the control.
 - Deciding whether a gap between two maps is real (`--compare`) before writing it down.
 
@@ -57,7 +57,7 @@ python -m kit auc MAP.tif --control MAP_reverse.tif \
 
 - `MAP.tif`: an ink map of w00 on its 9.366 um surface grid (4,220 x 4,760 px). `scripts/mac-w045.sh` makes one with `scripts/v8in_run.py`, and the reverse map with `--reverse`; villa's inference writes one too.
 - `MAP_reverse.tif`: the same model run with the surface volume's layers in reverse order.
-- The bucket prefixes of the other labelled segments are in `scripts/mac-w045.sh`.
+- The bucket prefixes of the other labeled segments are in `scripts/mac-w045.sh`.
 
 On a small synthetic map (600 x 800 px, made in the test style) it printed:
 
@@ -127,8 +127,8 @@ print(auc.format_result(result))
 | `score_array(prediction, ink, mask, keep_zero=False, inner=0)` | `{"auc", "ink_px", "background_px", "zero_px_in_mask", "zero_px_counted", "inner"}` | `VerifyError` when `inner` leaves nothing, or for NaN or inf in the map | A map against same-shape boolean ink and mask arrays already on its grid. `auc` is rounded to 4 decimals, or `None` |
 | `auc_scores(ink_scores, background_scores)` | float, or `None` when a class is empty | `VerifyError` for NaN or inf scores | Mann-Whitney AUC with ties half, exact on 65,536 integer levels. Scores that are not int64 are quantized together first |
 | `block_bootstrap(prediction, ink, mask, draws=300, block_px=BLOCK_PX, seed=0, other=None, keep_zero=False, inner=0)` | The `bootstrap` dict under Outputs | `VerifyError` for fewer than 20 draws, a block under 1 px, a compared map of another shape, NaN or inf in a map, or a mask with one class | The same pixels and the same draws for both maps when `other` is given |
-| `labels_on_map(labels, mask, level, surface_shape, crop, map_shape)` | `(ink, supervised)` boolean arrays of `map_shape` | `VerifyError` for unreadable stores, a missing level, or labels and mask of different shapes | Labels resampled onto the map's grid by nearest neighbour |
-| `label_grid(labels_shape, surface_shape, crop, map_shape)` | `(rows, cols)` integer index arrays into the labels | `VerifyError` for a scale that differs between axes, a crop outside the surface, or a crop that does not match the map | The nearest-neighbour lookup `labels_on_map` uses |
+| `labels_on_map(labels, mask, level, surface_shape, crop, map_shape)` | `(ink, supervised)` boolean arrays of `map_shape` | `VerifyError` for unreadable stores, a missing level, or labels and mask of different shapes | Labels resampled onto the map's grid by nearest neighbor |
+| `label_grid(labels_shape, surface_shape, crop, map_shape)` | `(rows, cols)` integer index arrays into the labels | `VerifyError` for a scale that differs between axes, a crop outside the surface, or a crop that does not match the map | The nearest-neighbor lookup `labels_on_map` uses |
 | `format_result(result)` | str | Nothing | The text the command prints |
 
 ## Inputs
@@ -201,12 +201,12 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 | `no supervised pixels to resample` | Nothing left in the mask after the crop, `--inner` and zeros | Check the crop and the mask |
 | `the mask holds only one class; no AUC to resample` | No ink or no background pixels left to bootstrap | Check the crop; the crops here are the 640 px windows of densest ink |
 | `no experiment at ROOT/SLUG/run.json` | `--slug` names an experiment that was never started | Start it with `python -m kit run init`, or fix `--slug` and `--root` |
-| `map: no AUC (ink 0 px, background N px in the mask)`, exit code 0 | No labelled ink (or no background) inside the scored area | Check the crop and `--inner` |
+| `map: no AUC (ink 0 px, background N px in the mask)`, exit code 0 | No labeled ink (or no background) inside the scored area | Check the crop and `--inner` |
 
 ## How it works
 
 1. Load the map and squeeze it to 2D, then open the labels and mask at `--level`.
-2. Map every map pixel to a label pixel by nearest neighbour on the scaled grid (`label_grid`), inside `--crop` when given.
+2. Map every map pixel to a label pixel by nearest neighbor on the scaled grid (`label_grid`), inside `--crop` when given.
 3. Quantize the whole map once to integers (`_quantize`), so ink and background pixels are on one scale: uint8 and uint16 as they are; a float map in 0..65535 by its known scale (0..1, 0..255 or 0..65535, from its maximum); a map outside that range, or one that would fall on fewer than `MIN_FLOAT_LEVELS` = 256 levels, stretched from its minimum to its maximum onto 0..65535. NaN or inf is refused.
 4. Keep pixels inside the mask, minus exact zeros (unless `--keep-zero`) and minus `--inner` pixels at each edge.
 5. Count the AUC: histogram ink and background scores on 65,536 levels and count, for each ink pixel, the background pixels below it plus half the ties (`auc_scores`). This equals the pairwise Mann-Whitney definition exactly, which `tests/test_auc_bootstrap_exact.py` checks.
@@ -214,7 +214,7 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 
 The point estimates (`forward.auc`, `control.auc`) are exact. The resampled AUCs, and so the intervals and the compare AUCs, come from the 1,024 bins and can differ from the exact value in the third or fourth decimal.
 
-Why blocks: neighbouring pixels are not independent, and a segment's labels cover about 1 cm2 (PHerc0841: 0.9 to 1.4 cm2 each), so a per-pixel bootstrap would give intervals that are far too narrow.
+Why blocks: neighboring pixels are not independent, and a segment's labels cover about 1 cm2 (PHerc0841: 0.9 to 1.4 cm2 each), so a per-pixel bootstrap would give intervals that are far too narrow.
 
 ## Cost and time
 
@@ -227,7 +227,7 @@ Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map
 - **Rerun:** Safe; it only reads its inputs. With `--slug`, each run appends one more check to `run.json`.
 - **Success:** Exit code 0 and a non-null `forward.auc`.
 - **Not a pass:** A forward AUC without its control; a map less than 0.10 above its control; a ranking whose `--compare` interval includes 0; any score on a segment the model trained on.
-- **Go-ahead:** Nothing for scoring. Publishing any score of a target-scroll map is never allowed; score only public labelled segments in public work.
+- **Go-ahead:** Nothing for scoring. Publishing any score of a target-scroll map is never allowed; score only public labeled segments in public work.
 - **Never:** Call an AUC a reading or say letters were found; call a score on w035, or on w045 for `ink_9um` and its fine-tunes, a generalization result.
 
 ## Tests

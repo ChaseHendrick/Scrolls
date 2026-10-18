@@ -22,7 +22,7 @@
 
 ## What it does
 
-A scroll is a spiral of papyrus. One turn of it is a winding, and the umbilicus is the scroll's centre line, published as control points with an x and y per height z. Tracers deliver one segment per winding: a tifxyz folder (`x.tif`, `y.tif`, `z.tif`, the position in voxels of each grid vertex, -1 for holes). When segments are used together, for a spiral fit or to count windings between two points, a segment that leaves its sheet, is missing in places, or runs past a full turn gives a wrong count.
+A scroll is a spiral of papyrus. One turn of it is a winding, and the umbilicus is the scroll's center line, published as control points with an x and y per height z. Tracers deliver one segment per winding: a tifxyz folder (`x.tif`, `y.tif`, `z.tif`, the position in voxels of each grid vertex, -1 for holes). When segments are used together, for a spiral fit or to count windings between two points, a segment that leaves its sheet, is missing in places, or runs past a full turn gives a wrong count.
 
 `kit stackcheck` takes consecutive segments, inner to outer, and checks them against each other and the umbilicus using only their vertex positions: no CT, no surface prediction, no ink. It casts rays from the umbilicus every degree on planes of constant z and walks along each vertex normal to the nearest other segment, then runs these checks:
 
@@ -31,7 +31,7 @@ A scroll is a spiral of papyrus. One turn of it is a winding, and the umbilicus 
 | Order | An adjacent pair where the inner segment lies outside the outer one by more than `--coincide-um` on a ray; per vertex, a lower winding outside or a higher one inside along the normal |
 | Coincident pair | An adjacent pair within `--coincide-um` of each other on a ray: one sheet traced twice, or sheets pressed closer than the traces can be told apart |
 | Pair spacing | An adjacent pair whose median spacing on the rays is under 0.5 or over 1.75 times the median of the pairs up to two places away: a winding counted twice, or one missing all the way |
-| Missing sector | Heights and angles where a segment has no vertex while both neighbours do, within its own z extent |
+| Missing sector | Heights and angles where a segment has no vertex while both neighbors do, within its own z extent |
 | Missing run | The same where two or more adjacent windings are missing between present ones |
 | Skipped winding | Vertices whose nearest other segment along the normal is two or more windings away and closer than half the local pitch, so nothing fits between |
 | Turn overlap | A segment traced past a full turn: the angle past 360 degrees per grid line, and the doubly traced end (the piece of the turn traced a second time, on the next or previous winding's sheet) |
@@ -50,8 +50,8 @@ Geometry alone cannot say which segment left its sheet, or whether papyrus layer
 Do not use it:
 
 - To ask whether two given segments trace the same sheet: use [`overlap`](overlap.md).
-- To check cross-scan meshes and transforms against the catalogue: use [`meshaudit`](meshaudit.md).
-- To find or fit the umbilicus itself: use the scroll centre finder, [`umbilicus`](umbilicus.md).
+- To check cross-scan meshes and transforms against the catalog: use [`meshaudit`](meshaudit.md).
+- To find or fit the umbilicus itself: use the scroll center finder, [`umbilicus`](umbilicus.md).
 - To judge whether a segment lies on papyrus: it reads no CT. Look at the CT in VC3D at the example vertices.
 - For one or two segments: a stack needs at least three, and the innermost and outermost get no missing-sector check.
 
@@ -77,10 +77,10 @@ To try it without downloads, this page wrote the test module's synthetic spiral 
 kit stackcheck: 6 segments, voxel 2.0 um; 40 planes z 5.0 to 395.0, 360 rays each
   w00: 11029 vertices, 0.04 cm2, z 0.0 to 400.0, radius 850.0 um, local pitch 99.9 um
 ...
-b. missing sectors (neighbours crossed, segment not)
+b. missing sectors (neighbors crossed, segment not)
   w02: 1342 gap rays (9.3 %) in its height, 0 beyond it; w01 to w03 median 200.0 um in the gap vs 200.0 um elsewhere; gap z 95.0 to 305.0, starts 100.0 to 100.0 and ends 160.0 to 160.0 deg (10th to 90th percentile)  FLAG
 ...
-not covered by any check: missing sectors of w00 and w05: the innermost and outermost segments have a neighbour on one side only
+not covered by any check: missing sectors of w00 and w05: the innermost and outermost segments have a neighbor on one side only
 not covered by any check: missing runs that include w00 or w05
 flagged: {"missing_sectors": ["w02"]}
 ```
@@ -89,8 +89,8 @@ and exited 1. The same stack without the gap ended `clean: every check looked an
 
 ## Checks and controls
 
-- **Every check can fail, and does on planted defects.** The tests build a clean six-winding Archimedean spiral that passes every check, then plant one defect at a time (a missing sector, two adjacent missing sectors, an inversion, a skipped winding, a turn overlap at either end of the turn, a missing stack end, a winding traced twice, one missing all the way, a segment on its neighbour's sheet) and require that defect's own check, and no other, to flag it (`tests/test_stackcheck.py`).
-- **A check that saw nothing is not a pass.** An adjacent pair no ray crosses once each, a segment with a neighbour along the normal for under half its vertices, or an order check left with under half its vertices is listed under `summary.not_checked`, and the stack is then not clean (exit 1). `summary.not_covered` names, in every report, what no check can see: missing sectors of the innermost and outermost segments, and missing runs that include them.
+- **Every check can fail, and does on planted defects.** The tests build a clean six-winding Archimedean spiral that passes every check, then plant one defect at a time (a missing sector, two adjacent missing sectors, an inversion, a skipped winding, a turn overlap at either end of the turn, a missing stack end, a winding traced twice, one missing all the way, a segment on its neighbor's sheet) and require that defect's own check, and no other, to flag it (`tests/test_stackcheck.py`).
+- **A check that saw nothing is not a pass.** An adjacent pair no ray crosses once each, a segment with a neighbor along the normal for under half its vertices, or an order check left with under half its vertices is listed under `summary.not_checked`, and the stack is then not clean (exit 1). `summary.not_covered` names, in every report, what no check can see: missing sectors of the innermost and outermost segments, and missing runs that include them.
 - **Control pairs for a missing sector.** For a missing sector the report gives `control_pairs`: other pairs as many windings apart as the outer pair (four), lying wholly inside or wholly outside the segment, with their spacing on the gap's rays against the rays where the segment is present. On PHerc0139 (run B) those pairs keep 0.91 to 1.12 times their spacing, against 0.46 for w033/w037 across the w035 gap (`stackcheck_checks.control_pairs_four_windings_apart_B` in [`results.json`](../results.json)).
 - **Real data.** On PHerc0139 w023 to w040 it flagged a gap in w035 (a median 258 degrees of its turn traced) and w023 to w034 traced a median 28 to 48 degrees per grid line past a full turn (66 for w026); the CT look at 12 places in the note is Interpretation ([note](../logs/2026-10-14-pherc0139-segment-defects.md)). It has been run on real data only for PHerc0139 w023 to w040.
 
@@ -129,12 +129,12 @@ The settings that show `none` take their value from `DEFAULTS` in `kit/stackchec
 | `--planes PLANES` | none (50) | Planes of constant z for the rays, spread evenly over the stack's height |
 | `--plane-z START STOP STEP` | none | Explicit plane heights in voxels, STOP included, instead of `--planes`; at least one must lie within the stack |
 | `--ray-step-deg RAY_STEP_DEG` | none (1) | Degrees between rays, above 0 and at most 10 |
-| `--max-normal-um MAX_NORMAL_UM` | none (600) | Farthest a neighbour is looked for along a vertex normal, um |
+| `--max-normal-um MAX_NORMAL_UM` | none (600) | Farthest a neighbor is looked for along a vertex normal, um |
 | `--coincide-um COINCIDE_UM` | none (20) | Two segments this close cannot be told apart: sets the coincident-pair check and mask, and which inversions count for the order flag (the note used 18.72, 2 voxels at 9.362 um) |
 | `--skip-frac SKIP_FRAC` | none (0.5) | A skipped winding is closer than this share of the local pitch; above 0 and at most 1 |
 | `--min-count MIN_COUNT` | none (10) | Rays or vertices a check must find to flag, at least 1 |
 | `--min-share MIN_SHARE` | none (0.01) | Share of the rays or vertices it looked at that a check must find to flag, 0 to 1 |
-| `--upsample UPSAMPLE` | none (2) | Neighbour grids are made this much denser (bilinear) for the normal search; 1 keeps them as they are |
+| `--upsample UPSAMPLE` | none (2) | Neighbor grids are made this much denser (bilinear) for the normal search; 1 keeps them as they are |
 | `--cache CACHE` | `work/stackcheck/cache` | Where bucket segments are kept; a file already there and not empty is not fetched again |
 | `--out OUT` | none | Write the JSON report here (parent folders are made); `work/` is git-ignored |
 | `--flags FLAGS` | none | Write the masks here as `.npz` (the suffix is added when missing); the report's `flags_file` names the file written |
@@ -183,7 +183,7 @@ stackcheck.write_flags("flags.npz", segs, masks, rep["frame"]["voxel_um"])
 | `folder_voxel_um(path)` | float or None | Nothing | N from a folder name ending `-N.NNNum.tifxyz` |
 | `folder_volume(path)` | str or None | Nothing | VOLUME from `ID-on-VOLUME-N.NNNum.tifxyz` |
 | `umbilicus_volume(umb)` | str or None | Nothing | From `metadata.volume`, else the file name `VOLUME-umbilicus-...json` |
-| `grid_geometry(xyz, valid)` | `(normals (H, W, 3), cell area per vertex in voxels squared, ok mask, median edge length)` | Nothing | Central differences where both neighbours are valid, else one-sided |
+| `grid_geometry(xyz, valid)` | `(normals (H, W, 3), cell area per vertex in voxels squared, ok mask, median edge length)` | Nothing | Central differences where both neighbors are valid, else one-sided |
 | `upsample(xyz, valid, k)` | `(xyz, valid)` on a grid of `((H - 1) k + 1, (W - 1) k + 1)` | Nothing | Bilinear; a new vertex is valid when every corner it uses is |
 | `turn_angles(xyz, valid, cx, cy)` | `(angles in degrees, along)`: unwrapped along the turn; `along` is 1 when columns run along the turn | Nothing | Two vertices one turn apart differ by 360 |
 | `plane_cut(tri, z0)` | (M, 2, 2) array of x, y pieces | Nothing | Where triangles cross z = z0 |
@@ -192,13 +192,13 @@ stackcheck.write_flags("flags.npz", segs, masks, rep["frame"]["voxel_um"])
 | `circ_range(deg)` | `[start, end, width]` or None | Nothing | The smallest arc holding every angle |
 | `circ_quantiles(deg, ps=(10, 50, 90))` | list of angles or None | Nothing | Percentiles about the circular mean |
 | `circular_runs(mask)` | list of `(start, end)` | Nothing | Runs of True in a circular array, inclusive |
-| `Dense(seg, k, umb)` | a neighbour index: dense points, normals, and a KD-tree on (height, arc length) | `VerifyError` without scipy | Arc length at the segment's median radius, repeated one turn either side |
+| `Dense(seg, k, umb)` | a neighbor index: dense points, normals, and a KD-tree on (height, arc length) | `VerifyError` without scipy | Arc length at the segment's median radius, repeated one turn either side |
 | `normal_hits(P, N, D, maxd, foot, chunk=50000)` | `(outward, inward)` signed distances along each normal, voxels, NaN where none | Nothing | Candidates at the point's height and angle, then refined around the crossing |
 | `neighbour_table(segs, umb, upsample_k, maxd, tol_cells, log=None)` | list per segment: `out_d`, `out_j`, `in_d`, `in_j` grids and `adj` (distance to each adjacent segment) | `VerifyError` without scipy | The normal search behind the vertex checks |
 | `sector_mask(mark, absent, present, tol_cells)` | bool grid of `mark` | Nothing | Vertices where no `absent` segment has a vertex at the same height and angle while `present` does |
 | `turn_overlap(seg)` | `(spans, past, outer piece mask, inner piece mask, "start" or "end")` | Nothing | Per grid line along the turn |
 | `main_sector(runs)` | list of the per-plane gap records followed up the stack | Nothing | The longest series of consecutive planes whose widest gaps overlap |
-| `plane_heights(segs, planes=None, plane_z=None)` | array of plane heights | `VerifyError` for a STEP of 0 or less, or STOP below START | Evenly over the stack, at the centres of `planes` bands |
+| `plane_heights(segs, planes=None, plane_z=None)` | array of plane heights | `VerifyError` for a STEP of 0 or less, or STOP below START | Evenly over the stack, at the centers of `planes` bands |
 
 ## Inputs
 
@@ -210,7 +210,7 @@ stackcheck.write_flags("flags.npz", segs, masks, rep["frame"]["voxel_um"])
 
 Frame: positions are tifxyz values in voxels of the umbilicus's volume. Angles are degrees about the umbilicus at the same z, `atan2(y - y_u, x - x_u)`, 0 to 360. Distances are um, radial along a ray or along a vertex normal. Areas are summed vertex cell areas in cm2.
 
-Memory: every segment's neighbour grid, made `--upsample` times denser, is held at once. At the defaults (`--stride 1 --upsample 2`) a full 2.399 um copy of one PHerc0139 winding needs about 2 GB, so use `--stride 2 --upsample 1` for such copies (the module docstring).
+Memory: every segment's neighbor grid, made `--upsample` times denser, is held at once. At the defaults (`--stride 1 --upsample 2`) a full 2.399 um copy of one PHerc0139 winding needs about 2 GB, so use `--stride 2 --upsample 1` for such copies (the module docstring).
 
 ## Outputs
 
@@ -230,7 +230,7 @@ The text summary has one block per check (`a. order`, `a2. pair spacing`, `b. mi
 | `summary.not_checked` | list of str | Checks that had nothing to look at |
 | `summary.not_covered` | list of str | What no check can see in this stack |
 | `order.pairs[]` | list | Per adjacent pair: `rays` crossing both once, `inverted_rays` and `_share`, `inverted_beyond_coincide_rays` and `_share`, `within_coincide_rays` and `_share`, `spacing_um_q10_25_50_75_90`, `inverted` (z, `angle_deg`, `rays_by_30_deg`, `depth_um_q25_50_75`), `normal_spacing_um_q25_50_75`, `spacing_against_nearby_pairs`, and `flagged`, `coincident_flagged`, `spacing_flagged` |
-| `order.vertices[]` | list | Per segment: out-of-order vertices (`vertices`, `share`, `area_cm2`, `z`, `angle_deg` as start, end and width, `parts`), `groups` by side and neighbour with `distance_um_q25_50_75`, `examples`, `flagged` |
+| `order.vertices[]` | list | Per segment: out-of-order vertices (`vertices`, `share`, `area_cm2`, `z`, `angle_deg` as start, end and width, `parts`), `groups` by side and neighbor with `distance_um_q25_50_75`, `examples`, `flagged` |
 | `missing_sectors[]` | list | Per segment except the end ones: `gap_rays`, `gap_share`, `rays_with_both_neighbours`, `gap_rays_outside_own_height`, `neighbour_spacing` (gap and present), `outer_pair_spacing`, `gap_by_height`, `control_pairs`, `gap_extent` (z, start and end angles with 10th, 50th and 90th percentiles, widths), `neighbour_vertices` with `examples`, `flagged`, and `per_plane` when flagged |
 | `missing_runs[]` | list | Per pair of segments with two or more missing between them: `between`, `missing`, `rays`, `rays_with_both`, `share`, `rays_beyond_their_heights`, `z`, `angle_deg`, `planes`, `spacing` (hole and all present), `per_plane`, `bounding_vertices`, `flagged` |
 | `skipped_windings[]` | list | Per segment: `local_pitch_um`, `limit_um`, the vertex counts and areas, `distance_um_q25_50_75`, `beyond_coincide`, `beyond_coincide_off_turn_overlap`, `on_own_doubly_traced_end_left_out`, `groups`, `in_missing_sector_share`, `in_turn_overlap_share`, `examples`, `flagged` |
@@ -306,11 +306,11 @@ Every message below goes to stderr with exit code 2.
 2. Per segment: normals by central differences, turned to point away from the umbilicus; cell areas; radius and angle of every vertex about the umbilicus at its own height (linear between control points); the angle unwrapped along the turn.
 3. Rays: cut each segment's triangles (two per grid cell with four valid corners) with planes of constant z (`--planes` evenly over the stack, or `--plane-z`), and cast `360 / --ray-step-deg` rays from the umbilicus on each plane. For every segment and ray, count the distinct crossings and keep the first four distances.
 4. Order and pair checks use only rays that cross both segments of an adjacent pair once: the spacing is the outer segment's first crossing minus the inner one's. The order flag counts rays inverted by more than `--coincide-um`; the coincident flag counts rays within `--coincide-um` either way; the pair-spacing flag compares the pair's median spacing with the median over the pairs up to two places away, itself included, outside `PAIR_SPACING = (0.5, 1.75)`.
-5. Neighbours along the normal: each other segment's grid is made `--upsample` times denser and indexed by height and arc length about the umbilicus. For every vertex, the nearest crossing of each other segment along the normal, within `--max-normal-um`, outward and inward, is found among that segment's vertices at the same height and angle and refined around the crossing. Vertices with another segment within `--coincide-um` go on the coincident mask.
+5. Neighbors along the normal: each other segment's grid is made `--upsample` times denser and indexed by height and arc length about the umbilicus. For every vertex, the nearest crossing of each other segment along the normal, within `--max-normal-um`, outward and inward, is found among that segment's vertices at the same height and angle and refined around the crossing. Vertices with another segment within `--coincide-um` go on the coincident mask.
 6. Turn overlaps first, so later checks can leave them out: per grid line along the turn, the angle traced past 360 degrees. The doubly traced end is the piece farther from the umbilicus, unless the nearer piece lies on the previous winding's sheet (its median distance to that segment under half of the rest's) where the previous segment's end is not marked already. The vertices of the segment whose sheet it lies on, at the same height and angle, are marked too.
 7. Local pitch: the median spacing along the normals between adjacent segments, outside the turn-overlap masks, over the pairs either side of a segment.
 8. Order per vertex: outside the coincident and turn-overlap masks, a lower winding nearest outside, or a higher one nearest inside.
-9. Missing sectors: for each segment but the end ones, rays at its heights where both neighbours are crossed and it is not; the gap is followed up the stack as the longest series of planes whose widest gaps (at least 3 rays) overlap. Missing runs: the same for two or more adjacent windings. The neighbours' vertices at those heights and angles go on the missing-sector masks.
+9. Missing sectors: for each segment but the end ones, rays at its heights where both neighbors are crossed and it is not; the gap is followed up the stack as the longest series of planes whose widest gaps (at least 3 rays) overlap. Missing runs: the same for two or more adjacent windings. The neighbors' vertices at those heights and angles go on the missing-sector masks.
 10. Skipped windings: vertices whose nearest segment along the normal is two or more windings away and closer than `--skip-frac` times the local pitch, leaving out the segment's own doubly traced end.
 11. Stack ends: from each segment's z extent, heights where an inner and an outer segment both reach but this one does not.
 12. A check flags when what it finds reaches both `--min-count` and `--min-share` of what it looked at; the pair-spacing and stack-end flags use their own limits instead (the ratio range, and a band taller than 1.5 grid steps).
@@ -344,7 +344,7 @@ Run A downloads about 100 MB once and run B about 25 MB (the note). It uses one 
 python -m unittest tests.test_stackcheck -v
 ```
 
-34 tests on synthetic Archimedean spirals built in the test file, with no downloads. They cover a clean stack passing every check; each planted defect flagged by its own check (missing sector, two adjacent missing sectors, inversion, an inversion within `--coincide-um` flagged only as coincident, skipped winding, turn overlap at the end and at the start of the turn and across a hole wider than half a turn, missing stack end, a winding traced twice, one missing all the way, a segment on its neighbour's sheet, control pairs keeping their spacing); checks with nothing to look at keeping the stack from being clean; the command line on files with a transform, the report and the masks; stride; names, URLs and `NAME=PATH`; catalog transforms and volume checks; settings, the umbilicus format, and exit codes 1 and 2; and that a fetch stays inside the cache, a cache host folder may be a link to another disk, and a grid TIFF declaring a size past the ceiling is refused. They do not fetch from the bucket and do not run on real segments. On 2026-10-16 they took about 5 minutes of wall clock in the shared container (82 s of CPU time).
+34 tests on synthetic Archimedean spirals built in the test file, with no downloads. They cover a clean stack passing every check; each planted defect flagged by its own check (missing sector, two adjacent missing sectors, inversion, an inversion within `--coincide-um` flagged only as coincident, skipped winding, turn overlap at the end and at the start of the turn and across a hole wider than half a turn, missing stack end, a winding traced twice, one missing all the way, a segment on its neighbor's sheet, control pairs keeping their spacing); checks with nothing to look at keeping the stack from being clean; the command line on files with a transform, the report and the masks; stride; names, URLs and `NAME=PATH`; catalog transforms and volume checks; settings, the umbilicus format, and exit codes 1 and 2; and that a fetch stays inside the cache, a cache host folder may be a link to another disk, and a grid TIFF declaring a size past the ceiling is refused. They do not fetch from the bucket and do not run on real segments. On 2026-10-16 they took about 5 minutes of wall clock in the shared container (82 s of CPU time).
 
 ## History
 
@@ -360,6 +360,6 @@ python -m unittest tests.test_stackcheck -v
 - [`results.json`](../results.json), key `stackcheck_checks`: the PHerc0139 numbers with their settings and times.
 - [`overlap`](overlap.md): whether two given segments trace one sheet.
 - [`meshaudit`](meshaudit.md): the catalog's cross-scan matrices, which `--transform catalog:...` uses.
-- [`umbilicus`](umbilicus.md): the scroll centre finder.
+- [`umbilicus`](umbilicus.md): the scroll center finder.
 - [`fetch`](fetch.md): downloads bucket folders, if you want local copies first.
 - [`GLOSSARY.md`](../../GLOSSARY.md): umbilicus, winding, tifxyz.

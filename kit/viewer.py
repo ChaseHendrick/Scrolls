@@ -38,7 +38,7 @@ def load_array(path):
 
 
 def png_bytes(img):
-    """Encode uint8 [h,w] (grey) or [h,w,3|4] (RGB, RGBA) as PNG with the standard library."""
+    """Encode uint8 [h,w] (gray) or [h,w,3|4] (RGB, RGBA) as PNG with the standard library."""
     np = _numpy()
     img = np.ascontiguousarray(img, dtype=np.uint8)
     if img.ndim == 2:

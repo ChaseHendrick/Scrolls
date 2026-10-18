@@ -25,7 +25,7 @@ The original line network can emit Greek capitals. Changing the requested langua
 
 The CLI and `read()` choose per call. `ReaderSession` keeps a selection across calls and validates a replacement before activating it, preserving the previous selection if a switch fails. Greek networks are validated with a small forward pass and stay loaded; Tesseract still launches a local process for each read. Neither interface is an automatic search for whichever model produces the most text. Unsupported languages, missing packs and incompatible options are errors. The Greek route retains its existing schema and controls. Tesseract returns a separate word schema; its confidence is neither a glyph probability nor the Greek reader's scroll validation gate.
 
-Tesseract is [Apache 2.0 code](https://github.com/tesseract-ocr/tesseract). The official [tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast) packs are Apache 2.0, but a local pack may be different. Results therefore record every local pack's SHA-256 and say its licence is not inferred from its filename. Check the source before redistributing any custom pack.
+Tesseract is [Apache 2.0 code](https://github.com/tesseract-ocr/tesseract). The official [tessdata_fast](https://github.com/tesseract-ocr/tessdata_fast) packs are Apache 2.0, but a local pack may be different. Results therefore record every local pack's SHA-256 and say its license is not inferred from its filename. Check the source before redistributing any custom pack.
 
 ## When to use it
 
@@ -112,7 +112,7 @@ Model files must exist locally as `CODE.traineddata`. Language codes contain let
 
 ## Outputs
 
-The Greek adapter adds `backend` to the existing result. Tesseract uses `schema: "scrolls-ocr-v1"`: `backend` (engine version and ordered language codes), `models` (filenames, SHA-256, script where known and licence qualification), normalized `input_sha256`, `input_shape`, `text`, `words`, `controls`, `above_controls`, `options`, `note` and `status`.
+The Greek adapter adds `backend` to the existing result. Tesseract uses `schema: "scrolls-ocr-v1"`: `backend` (engine version and ordered language codes), `models` (filenames, SHA-256, script where known and license qualification), normalized `input_sha256`, `input_shape`, `text`, `words`, `controls`, `above_controls`, `options`, `note` and `status`.
 
 Each word has `text`, raw `confidence`, `kept`, `box: [y0,y1,x0,x1]` and Tesseract's block/paragraph/line identifiers. All words remain available; `text` contains only words meeting the confidence floor. The API boxes are in the given array. CLI boxes are mapped back through rotation/mirror and crop into whole-image pixels after EXIF orientation; `options.box_frame` says so. Local folder names are not included in successful results. The normalized input hash covers the exact uint8 pixels sent to OCR; use its recorded shape with that hash.
 
@@ -124,7 +124,7 @@ Exit 0 means the operation completed; it never means a reading is verified. CLI 
 | --- | --- | --- |
 | `language must name a language code, such as grc, lat or heb`, `language must use recognition language codes; paths and osd are not languages` or `language codes must not repeat` | Input, configuration or engine output failed validation | Choose explicit recognition codes such as `lat` or `grc+lat`; paths and `osd` are refused |
 | `unknown reader backend ...; choose linenet or tesseract` or `linenet supports Greek (grc) only; use tesseract with an installed language pack` | Input, configuration or engine output failed validation | Choose a supported backend; Latin requires a suitable local OCR model |
-| `LineNet checkpoint alphabet is not Greek; no script relabelling or model substitution is allowed` | Input, configuration or engine output failed validation | The local checkpoint cannot be labelled Greek; select matching weights rather than relabelling the output |
+| `LineNet checkpoint alphabet is not Greek; no script relabeling or model substitution is allowed` | Input, configuration or engine output failed validation | The local checkpoint cannot be labeled Greek; select matching weights rather than relabeling the output |
 | `LineNet checkpoint alphabet must be a nonempty string` | Input, configuration or engine output failed validation | Malformed checkpoint metadata; use a valid LineNet file |
 | `Tesseract is not installed; install tesseract and its language packs explicitly` or `Tesseract could not start; install it and check PATH` | Input, configuration or engine output failed validation | Install it explicitly and check PATH |
 | `Tesseract exceeded its` or `Tesseract exited` | Input, configuration or engine output failed validation | A local process timed out or failed; inspect the error and choose a smaller crop or compatible pack |

@@ -1,14 +1,14 @@
-"""End-point rule for umbilicus (scroll centre) lines: measure it on the published scrolls and apply it to files.
+"""End-point rule for umbilicus (scroll center) lines: measure it on the published scrolls and apply it to files.
 
     python endcheck.py calibrate --cache DIR [--out calib.json] [--radius MM]
     python endcheck.py score RUN_DIR --cache DIR [--data NPZ_DIR] [--out score.json]
     python endcheck.py files SRC DST --cache DIR [--data NPZ_DIR]
 
-calibrate  the rule at the published centres of the 13 published scrolls (held constant past their first and last
+calibrate  the rule at the published centers of the 13 published scrolls (held constant past their first and last
            control points): how often the support falls under the bar inside each annotated band, and how many points
            the rule drops at each end. Public data only. --radius tries another radius than the rule's.
 score      the rule on a finished run's held-out predictions (refine_*.json of refine.py chain, or fold*.json of
-           pipeline.py job): per held-out scroll, the error against the published centre over all scored slices
+           pipeline.py job): per held-out scroll, the error against the published center over all scored slices
            (this must equal the run's result.json), over the slices pipeline.keep_band keeps, and over the slices
            the end-point rule keeps. One stage per folder: a folder with both kinds of record is refused.
 files      apply the rule to umbilicus JSONs already written (SRC/*_umbilicus.json to DST).
@@ -16,7 +16,7 @@ files      apply the rule to umbilicus JSONs already written (SRC/*_umbilicus.js
 Slices are the ones the pipeline reads (level-0 z = 32 + 64 k). With --data the pipeline's own slice files
 (<scroll>.npz from `slices.py extract`) are used. Without it, the open-data bucket is read with HTTP range requests:
 the whole level-5 plane of each slice (papyrus area for keep_band, a stand-in for the level-3 area the pipeline
-uses) and a level-3 window around each centre (the rule itself), about 40 to 90 MB per scroll, cached in --cache.
+uses) and a level-3 window around each center (the rule itself), about 40 to 90 MB per scroll, cached in --cache.
 A chunk the bucket does not hold reads as 0 (air), as in the slice files; missing_chunks counts those reads (one per
 plane and chunk, from the cache too), or is null when a cache file made before the count was stored was used.
 Cache files are named by scroll and by a hash of the scan's bucket path and hold that path, so two scans of one scroll
@@ -30,7 +30,7 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import pipeline, slices
 
 class Bucket:
-    """One scroll's slices from the bucket: level-5 area per slice and level-3 windows around given centres.
+    """One scroll's slices from the bucket: level-5 area per slice and level-3 windows around given centers.
     missing: chunk reads the bucket answered with NoSuchKey (read as 0), counted from the cache too; None once a
     cache file without a stored count was used."""
     def __init__(self, vol, cache, name):
@@ -133,8 +133,8 @@ def _ends(keep0, keep1, scored):
 
 
 def calibrate(cache, out=None, radius_mm=None):
-    """The rule at the published centres of the 13 published scrolls. radius_mm tries another radius than
-    pipeline.END_RADIUS_MM (the rule's constant is restored afterwards)."""
+    """The rule at the published centers of the 13 published scrolls. radius_mm tries another radius than
+    pipeline.END_RADIUS_MM (the rule's constant is restored afterward)."""
     if radius_mm is not None:
         old = pipeline.END_RADIUS_MM; pipeline.END_RADIUS_MM = float(radius_mm)
         try:
@@ -149,7 +149,7 @@ def calibrate(cache, out=None, radius_mm=None):
         yx = np.stack([np.interp(z, T[:, 0], T[:, 1]), np.interp(z, T[:, 0], T[:, 2])], 1)
         scored = (z >= T[0, 0]) & (z <= T[-1, 0])
         L = T[-1, 0] - T[0, 0]
-        interior = (z >= T[0, 0] + 0.1 * L) & (z <= T[-1, 0] - 0.1 * L)   # where a person placed a centre, away from the ends
+        interior = (z >= T[0, 0] + 0.1 * L) & (z <= T[-1, 0] - 0.1 * L)   # where a person placed a center, away from the ends
         kb = pipeline.keep_band(area, z, src.um) & present
         k2, sup, thr = _rule_bucket(src, z, yx, present, kb)
         pooled.append(sup[interior])
@@ -256,7 +256,7 @@ def files(src_dir, dst, cache, data=None):
         j["control_points"] = [q for q, k in zip(cp, keep) if k]
         j["metadata"]["total_points"] = len(j["control_points"])
         j["metadata"]["end_trimmed"] = (f"end-point rule: dropped from each end until {pipeline.END_RUN_MM:g} mm of slices where at least "
-                                        f"{pipeline.END_SUPPORT:g} of {pipeline.END_RAYS} rays from the centre meet papyrus within "
+                                        f"{pipeline.END_SUPPORT:g} of {pipeline.END_RAYS} rays from the center meet papyrus within "
                                         f"{pipeline.END_RADIUS_MM:g} mm (scripts/umbilicus/endcheck.py)")
         with open(os.path.join(dst, os.path.basename(f)), "w") as fh:
             json.dump(j, fh, indent=1)

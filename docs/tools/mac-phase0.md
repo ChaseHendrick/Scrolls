@@ -22,7 +22,7 @@
 
 ## What it does
 
-Phase 0 asks which released ink model (a "reader" here) is best on PHerc0841, by scoring each one against human labels on a scroll none of the main candidates trained on. PHerc0841 is that scroll: it is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's, and the glossary in [`AGENTS.md`](../../AGENTS.md) lists v8in-1447 among the models that did not train on it. The team traced three PHerc0841 segments with labelled text: `0841-w00`, `0841-ag896` and `0841-ag405`. Gate A is the rule that picks the winner; its public statement is in `kit/gate.py` and on the [gate](gate.md) page.
+Phase 0 asks which released ink model (a "reader" here) is best on PHerc0841, by scoring each one against human labels on a scroll none of the main candidates trained on. PHerc0841 is that scroll: it is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's, and the glossary in [`AGENTS.md`](../../AGENTS.md) lists v8in-1447 among the models that did not train on it. The team traced three PHerc0841 segments with labeled text: `0841-w00`, `0841-ag896` and `0841-ag405`. Gate A is the rule that picks the winner; its public statement is in `kit/gate.py` and on the [gate](gate.md) page.
 
 The CPU scores of several readers are already committed in [`results.json`](../results.json). v8in (Youssef Nader's ResNet3D-50 model, `YoussefMoNader/ink-8um-v8in`) and v8in-1447 (its PHerc1447 fine-tune) cost about 50 times as much per pixel as `ink_9um` (mac-w045's comment) and so run on the Mac GPU. This script queues them: for each job `MODEL:SEGMENT` it runs `MODEL=MODEL SEGMENT=SEGMENT QUICK=1 bash scripts/mac-w045.sh`, which scores the reader on the segment's standard 640 px crop with a 64 px edge left out, with the reverse-depth map as the control. Then it runs `python -m kit gate WORK`, which merges those Mac scores with the committed ones and prints the table and verdict.
 
@@ -164,7 +164,7 @@ The reverse control runs at stride 42 (a quarter of the tiles), so a job is less
 
 ## For agents
 
-- **Command:** `DRY_RUN=1 bash scripts/mac-phase0.sh` to see the queue; `python -m kit run local SLUG -- bash scripts/mac-phase0.sh` for the real queue on the Mac. Machine-readable result afterwards: `python -m kit gate WORK --json`.
+- **Command:** `DRY_RUN=1 bash scripts/mac-phase0.sh` to see the queue; `python -m kit run local SLUG -- bash scripts/mac-phase0.sh` for the real queue on the Mac. Machine-readable result afterward: `python -m kit gate WORK --json`.
 - **Parse:** each `[N/TOTAL]` line for skipped, would run or done; `WORK/phase0-gate.txt`, or `kit gate --json`, for the table and verdict; the per-job `WORK/SEGMENT/results/auc_v8in.json` and `auc_v8in1447.json` (`forward.auc`, `control.auc`).
 - **Rerun:** Safe: finished jobs are skipped and mac-w045 reuses finished passes. A rerun overwrites the log of each job it runs and `WORK/phase0-gate.txt`.
 - **Success:** Exit code 0, `Phase 0 done: ...`, and `v8in` and `v8in-1447` rows with all three crops and `ok` in the Control column.

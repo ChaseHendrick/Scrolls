@@ -31,7 +31,7 @@ class HpScoreTest(unittest.TestCase):
     def test_sharp_read_beats_a_blob_read_with_the_same_pixels_lit(self):
         from scipy.ndimage import gaussian_filter
         sharp = 0.2 + 0.6 * self.ink.astype(float)
-        blob = gaussian_filter(sharp, 12)  # ink smeared over its neighbourhood
+        blob = gaussian_filter(sharp, 12)  # ink smeared over its neighborhood
         s = hpscore.score_array(sharp, self.ink, self.mask, voxel_um=9.362)
         b = hpscore.score_array(blob, self.ink, self.mask, voxel_um=9.362)
         self.assertGreater(s["hp_r"], 0.9)

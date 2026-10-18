@@ -1,6 +1,6 @@
-"""Grid pilot: does a finer tile stride remove the organisers' 6.4 px tile grid?
+"""Grid pilot: does a finer tile stride remove the organizers' 6.4 px tile grid?
 
-The organisers' PHerc. Paris 4 ink maps are predicted in 256 px tiles at stride 128 on the 2.4 um
+The organizers' PHerc. Paris 4 ink maps are predicted in 256 px tiles at stride 128 on the 2.4 um
 grid, blended with a Hann window; pooled to 48 um they carry a grid every 6.4 px that repeats every
 32 px (docs/prereg/2026-10-14-strokenet.md, "The tile grid"). This pilot re-renders one region of
 one training segment with the same public checkpoint and recipe at strides 128, 64 and 32 and
@@ -36,7 +36,7 @@ TILE = 256
 MARGIN = 3 * 128                     # native px read around the region: every region pixel gets
                                      # its full set of tiles at every stride and both offsets
 STRIDES = (128, 64, 32)
-Z0, Z1 = 23, 85                      # production layer window (62 layers, centred on the surface)
+Z0, Z1 = 23, 85                      # production layer window (62 layers, centered on the surface)
 CLIP = 200
 CHUNK = 128                          # surface volume chunks: (109, 128, 128) uint8, uncompressed
 DEPTH = 109
@@ -47,7 +47,7 @@ REDUCED = 0.5                        # a finer stride "reduces" the effect at or
 MIN_R = 0.95                         # reproduction and content checks
 BATCH = 32
 # Tiles a full re-render of the 27 maps would forward at each stride (full_render_tiles on the
-# organisers' pooled maps, 14 October 2026); stride 128 is the published render.
+# organizers' pooled maps, 14 October 2026); stride 128 is the published render.
 FULL_TILES = {128: 17608559, 64: 70433274, 32: 281728900}
 ZARR = ("https://data.aws.ash2txt.org/samples/PHercParis4/segments/{stamp}-{seg}/surface-volumes/"
         "2.4um-0.22m-78keV-volume-20260411134726.zarr/0")
@@ -137,7 +137,7 @@ def read_crop(base, y, x, h, w, fetch=http_fetch, z0=Z0, z1=Z1, workers=32):
 
 # ------------------------------------------------------------------ rendering (villa's recipe)
 def hann2d(h, w):
-    """villa inference.hann2d: normalised 2D Hann window (sum 1)."""
+    """villa inference.hann2d: normalized 2D Hann window (sum 1)."""
     k = np.outer(np.hanning(h).astype(np.float32), np.hanning(w).astype(np.float32))
     s = k.sum()
     return k / (s if s > 0 else 1.0)
@@ -236,7 +236,7 @@ def phase_profile(d, usable, period=PERIOD):
 
 
 def verdict(published, maps, usable):
-    """The preregistered readout. published: the organisers' pooled map over the region; maps:
+    """The preregistered readout. published: the organizers' pooled map over the region; maps:
     pooled renders by name (A128, R128, B128, A64, B64, A32, B32; missing ones were not run);
     usable: the region's usable mask. Units are 0..255 pooled values."""
     u = np.asarray(usable, bool)

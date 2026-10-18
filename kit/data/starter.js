@@ -56,7 +56,7 @@
       }
       if (form.lines.trim()) {
         const lines = form.lines.trim().split(/[\s,]+/).map(Number);
-        if (lines.some(n => !Number.isFinite(n) || n < 0)) throw Error("Line centres must be nonnegative row numbers.");
+        if (lines.some(n => !Number.isFinite(n) || n < 0)) throw Error("Line centers must be nonnegative row numbers.");
         argv.push("--lines", ...lines.map(String));
       }
     }

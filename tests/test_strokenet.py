@@ -172,7 +172,7 @@ class StrokeNetTest(unittest.TestCase):
         cls.tmp.cleanup()
 
     def ink(self, shape, seed):
-        """A usable map on the organisers' 0 to 255 scale (every value above 3)."""
+        """A usable map on the organizers' 0 to 255 scale (every value above 3)."""
         return np.random.default_rng(seed).integers(4, 256, shape).astype(np.uint8)
 
     # -------------------------------------------------------------- network

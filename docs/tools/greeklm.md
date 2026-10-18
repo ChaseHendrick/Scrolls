@@ -76,7 +76,7 @@ It worked when both exit codes are 0, `train_letters` is not 0 and the held-out 
 - **What it did to reads (Model output).** On synthetic pages whose lines were Xenophon (not in the corpus), the prototype reader's character error fell from 0.138 to 0.108 on the ink-map look and from 0.019 to 0.008 on the drawn-label look (`letter_reader_checks[0].synthetic_pages`, 2026-10-08). On real drawings it does not help consistently: `letters-v2-real` on the PHerc. 1667 label groups, 0.025 ink only and 0.041 with the model (`letter_reader_checks[5]`); on the PHerc. 172 test half with columns found, `letters-v2-real` 0.426 and 0.451, `letters-v2-ccby` 0.541 and 0.500 (`letter_reader_checks[14]`, rows 5 and 6). Interpretation: treat `with_lm` as a diagnostic, not a better read.
 - **Greek-like is not the text.** In the dry run of the PHerc. 1667 text test (9 October 2026), 40 samples from this model fit the published text better than every shuffled decoy in all 40 draws (p = 0.01), with no link to the text at all ([log](../logs/2026-10-14-letter-reader.md)). A score that rewards Greek-like strings cannot show that a read carries a text.
 
-Claim label: Model output for bits per letter and for every decode made with the model; Sourced fact for the corpus and its licence (PerseusDL canonical-greekLit, CC BY-SA 4.0).
+Claim label: Model output for bits per letter and for every decode made with the model; Sourced fact for the corpus and its license (PerseusDL canonical-greekLit, CC BY-SA 4.0).
 
 ## Commands and options
 
@@ -115,7 +115,7 @@ print(lm.bits_per_letter(greeklm.clean_text("καὶ τὸν θεόν")))
 
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
-| `clean_text(s)` | str of letters from `ALPHABET` only | Nothing of its own | NFD-normalises, drops combining marks (accents, breathings, iota subscript), upper-cases, writes `Σ` and `ς` as `Ϲ`, and keeps only the 24 capitals |
+| `clean_text(s)` | str of letters from `ALPHABET` only | Nothing of its own | NFD-normalizes, drops combining marks (accents, breathings, iota subscript), upper-cases, writes `Σ` and `ς` as `Ϲ`, and keeps only the 24 capitals |
 | `tei_text(xml)` | str | Nothing of its own | Removes `<teiHeader>` and the elements `note`, `bibl`, `head`, `app`, `rdg`, `del`, `speaker`, `ref` and `foreign` with their content, then every other tag and every named entity (`&amp;`), each replaced by a space. Regular expressions, not an XML parser |
 | `KNLetterLM(order=5, discount=0.75)` | A model object, empty until `fit` or `load` | Nothing | Attributes: `order`, `D` (the discount), `counts` and `cont` (per order, a dict from a context tuple of letter indices to 24 counts), `file` and `sha256` (set by `load`, else `None`) |
 | `KNLetterLM.fit(texts)` | the model itself | Nothing of its own | Counts every n-gram of each string (letters outside `ALPHABET` are skipped) for orders 1 to `order`, then the continuation counts of the lower orders. Call it once: a second call adds counts again |

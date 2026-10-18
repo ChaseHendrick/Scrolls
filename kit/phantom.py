@@ -1,7 +1,7 @@
 """Synthetic carbon-ink-on-papyrus phantoms with known ground truth.
 
 A phantom is a small surface volume (depth, height, width) that looks, to a detector, like a
-flattened papyrus sheet: two fibre layers at right angles, a slowly varying brightness field,
+flattened papyrus sheet: two fiber layers at right angles, a slowly varying brightness field,
 CT-like noise, and carbon ink strokes laid in rows of letter-sized cells on the top surface.
 Carbon ink is nearly invisible in density, so by default the ink adds a small density step and
 a small thickness bump, well below the noise. The ink mask that made the strokes is the label,
@@ -72,7 +72,7 @@ def make_phantom(shape=(512, 512), depth=26, seed=0, letter_px=96, stroke_px=Non
                  ink_contrast=0.25, ink_bump=0.6, noise=1.0, drift=0.8, row_gap=0.5):
     """Return dict(volume float32 [depth,h,w], ink bool [h,w], mask bool [h,w], meta).
 
-    Units of contrast and noise: one unit is the papyrus fibre texture's standard deviation.
+    Units of contrast and noise: one unit is the papyrus fiber texture's standard deviation.
     ink_contrast: density added under ink in the top two layers. ink_bump: fraction of a layer
     the sheet surface rises under ink (carbon ink's thickness). noise: per-voxel Gaussian noise.
     drift: amplitude of a smooth brightness field across the sheet (confounds brightness)."""

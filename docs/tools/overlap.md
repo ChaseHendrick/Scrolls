@@ -24,7 +24,7 @@
 
 A segment's mesh is a tifxyz folder: three 2D float images, `x.tif`, `y.tif` and `z.tif`, that give each grid point's position in voxels of one CT volume. Villa and the team publish the grid at a fixed fraction of the segment's flattened surface (the `scale` in `meta.json`, usually 0.05, so one mesh point per 20 surface pixels), with holes marked -1. Here a "trace" is one segment's mesh, and the "gap" is the 3D distance from a point of one trace to the nearest point of the other, in voxels.
 
-`kit overlap` answers: do two segments trace the same papyrus? It makes both grids 4 times denser (`UPSAMPLE = 4`, about 47 um between points at 9.366 um), finds for every point of A the nearest point of B and the reverse, and reports the median gap and the share of A within 2, 5, 12, 25 and 50 voxels. Over `--within` voxels (default 12) the two are counted as one sheet. Given both segments' label folders, it also reports the Dice score (twice the shared ink, over the sum of both inks) of their human ink labels where both are labelled and the traces run within `--within`, against the same matches displaced 1 to 3 mm in the surface plane. Two traces of one sheet count twice in a benchmark, and a train and test split between them trains on the test sheet: PHerc0841 w00 and ag896 are such a pair ([log](../logs/2026-10-07-overlap-and-baseline.md), section 1).
+`kit overlap` answers: do two segments trace the same papyrus? It makes both grids 4 times denser (`UPSAMPLE = 4`, about 47 um between points at 9.366 um), finds for every point of A the nearest point of B and the reverse, and reports the median gap and the share of A within 2, 5, 12, 25 and 50 voxels. Over `--within` voxels (default 12) the two are counted as one sheet. Given both segments' label folders, it also reports the Dice score (twice the shared ink, over the sum of both inks) of their human ink labels where both are labeled and the traces run within `--within`, against the same matches displaced 1 to 3 mm in the surface plane. Two traces of one sheet count twice in a benchmark, and a train and test split between them trains on the test sheet: PHerc0841 w00 and ag896 are such a pair ([log](../logs/2026-10-07-overlap-and-baseline.md), section 1).
 
 `kit collate` treats two traces of one sheet as two copies of one text, as a decipherer collates two manuscripts: what both copies show is more likely real. For two ink maps, each on its own segment's surface grid, it reports by gap bin the Pearson correlation of the maps at matched points and the "reappear" share: of A's points in the top fraction of A's map (`--top`, default 0.2), the share whose matched B point is in the top fraction of B's map (chance is the fraction itself). Each number comes with displaced matches as a null, and the same numbers for a control pair (`--control-a`, `--control-b`), such as high-passed raw CT or the reverse-depth maps, which must agree less, or the agreement is not about ink.
 
@@ -32,8 +32,8 @@ Neither command says which trace is right, and neither registers or corrects a s
 
 ## When to use it
 
-- Before averaging scores over labelled segments, or splitting them into training and test: check that no two of them are one sheet traced twice.
-- To check that two labellings of one sheet agree beyond chance (labels Dice against the displaced null).
+- Before averaging scores over labeled segments, or splitting them into training and test: check that no two of them are one sheet traced twice.
+- To check that two labelings of one sheet agree beyond chance (labels Dice against the displaced null).
 - To ask whether two ink maps of overlapping traces agree where the traces run together, and whether that agreement beats a control such as raw CT texture.
 - With `--box`, to ask whether one candidate area of map A reappears on trace B.
 
@@ -72,7 +72,7 @@ B ag896  (grid 46.8 um)
 A to B: 12.71 cm2, median gap 8.6 vox, within 2 vox 2%, 5 vox 17%, 12 vox 75%, 25 vox 98%, 50 vox 100%
 B to A: 12.77 cm2, median gap 8.6 vox, within 2 vox 2%, 5 vox 17%, 12 vox 75%, 25 vox 98%, 50 vox 99%
 within 12 vox: 75% of A; overlapping traces: one sheet over this share of A; count it once in a benchmark
-labels where both traces are labelled (0.112 cm2): Dice 0.828, displaced matches mean 0.27, 99th percentile 0.668
+labels where both traces are labeled (0.112 cm2): Dice 0.828, displaced matches mean 0.27, 99th percentile 0.668
 ```
 
 These match the log's numbers (median 8.6 voxels; 17, 75 and 98 % within 5, 12 and 25; Dice 0.83). On synthetic data, `collate` of two traces 3 voxels apart with one map copied to both and a smooth-noise control printed:
@@ -155,7 +155,7 @@ print(r["same_sheet_share"], r["labels"]["dice"], r["labels"]["null_dice_p99"])
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `load_mesh(path, upsample=UPSAMPLE)` | dict: `points` (N, 3) float64 voxels, `rows` and `cols` on the upsampled grid, `shape`, `path`, `surface_px_per_point` (1 / scale / upsample) | `VerifyError` for an unreadable folder, grids that are not 2D of one shape, fewer than 4 valid points, or missing numpy or scipy; `ImportError` without tifffile | Holes: non-finite, any coordinate below 0, or all zero. The scale is `meta.json`'s `scale[0]`, 0.05 when missing |
-| `sample_grid(array, mesh)` | 1D array, one value per mesh point | Nothing of its own | Nearest neighbour of a 2D array that spans the whole surface, by proportional grid position |
+| `sample_grid(array, mesh)` | 1D array, one value per mesh point | Nothing of its own | Nearest neighbor of a 2D array that spans the whole surface, by proportional grid position |
 | `match(a, b)` | `(distances, indices)`: gaps in voxels from each point of `a`, and the index of `b`'s nearest point | `VerifyError` without scipy | A `cKDTree` query in 3D |
 | `overlap(mesh_a, mesh_b, voxel_um, within=12, labels_a=None, labels_b=None, level='2', draws=200, seed=0, upsample=UPSAMPLE)` | The `overlap` dict under Outputs | `VerifyError` for bad meshes or label stores, or only one of `labels_a`, `labels_b` | What `kit overlap` runs; labels only when both folders are given |
 | `collate(mesh_a, mesh_b, map_a, map_b, voxel_um, gaps=(0, 3, 6, 9, 12, 18, 30), top=0.2, control_a=None, control_b=None, box=None, draws=50, seed=0, upsample=UPSAMPLE)` | The `collate` dict under Outputs | `VerifyError` for bad meshes or maps, a box with no point of A, or only one of `control_a`, `control_b`; `FileNotFoundError` for a missing `.npy` | What `kit collate` runs; the control only when both control maps are given |
@@ -190,7 +190,7 @@ Text by default (see Quick start). With `--json`, `overlap` prints one object:
 | `verdict` | str | `overlapping traces: one sheet over this share of A; count it once in a benchmark` when `same_sheet_share` is at least 0.1, else `separate surfaces` |
 | `labels.points_both_labelled`, `labels.area_cm2` | int, float | Points of A within `--within`, supervised on both traces, and their area |
 | `labels.dice` | float (3 decimals) or null | Dice of the two ink labels on those points; null under 50 points |
-| `labels.note` | str | `too few points labelled on both traces`, only when `dice` is null |
+| `labels.note` | str | `too few points labeled on both traces`, only when `dice` is null |
 | `labels.null_dice_mean`, `labels.null_dice_p99` | float | Mean and 99th percentile of Dice over the displaced draws |
 | `labels.null_draws` | int | Draws with at least 50 points |
 
@@ -238,7 +238,7 @@ Text by default (see Quick start). With `--json`, `overlap` prints one object:
 | `the box holds no point of trace A` | `--box` lies outside the part of map A that trace A covers | Give the window in map A's pixels, rows first |
 | Every `collate` bin shows `(0 pts)`, exit code 0 | The two traces are the same mesh: every gap is exactly 0, and the first bin starts above 0 | Compare two different traces |
 | A bin with no `map r` in the text, or `"map": null` | Under 30 points in that bin with both maps nonzero | Read the bins that have points, or widen `--gaps` |
-| `labels: too few points labelled on both traces` | Under 50 points supervised on both traces within `--within` | The traces' labelled areas do not overlap; there is no label check to make |
+| `labels: too few points labeled on both traces` | Under 50 points supervised on both traces within `--within` | The traces' labeled areas do not overlap; there is no label check to make |
 | `label agreement needs labels for both segments: give --labels-a and --labels-b, or neither`, exit code 2 | `kit overlap` with only one of `--labels-a`, `--labels-b` | Give both, or neither |
 | `the control needs a map for both segments: give --control-a and --control-b, or neither`, exit code 2 | `kit collate` with only one of `--control-a`, `--control-b` | Give both, or neither |
 

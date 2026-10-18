@@ -1,11 +1,11 @@
-"""Draw umbilicus (scroll centre) files on CT slices so a person can check them by eye.
+"""Draw umbilicus (scroll center) files on CT slices so a person can check them by eye.
 
     python ctcheck.py --a DIR_A --b DIR_B --out OUT [--scrolls S ...] [--n 6] [--cache DIR]
 
-DIR_A holds the centres to check (drawn red), DIR_B the ones to compare with (drawn cyan); both hold
+DIR_A holds the centers to check (drawn red), DIR_B the ones to compare with (drawn cyan); both hold
 <scroll>_umbilicus.json files with control points in level-0 voxels. For each scroll, slices are taken at
 control-point heights spread along the file's band, plus the height where A and B differ most and the height
-where A moves fastest sideways. Each slice is shown whole (level 2) and zoomed around A's centre (level 1 and
+where A moves fastest sideways. Each slice is shown whole (level 2) and zoomed around A's center (level 1 and
 level 0). Planes are read from the open-data bucket with HTTP range requests (chunks are raw 128^3 uint8).
 Writes OUT/<scroll>_ct_check.png (one sheet), OUT/<scroll>/<scroll>_z<z>.png (one row per slice) and
 OUT/summary.json. The pictures show CT from the open-data bucket (CC BY-NC 4.0); keep OUT out of Git like other scan
@@ -140,7 +140,7 @@ def draw_row(ax3, r, s, zr, um, a, plt, Rectangle, Circle):
     ax.plot([X * 0.04, X * 0.04 + px], [Y * 0.96] * 2, color="white", lw=3)
     ax.text(X * 0.04, Y * 0.935, "5 mm", color="white", fontsize=9)
     pos = (r["z"] - zr[0]) / max(1, zr[1] - zr[0])
-    ax.set_title(f"{s}  z {r['z']}, {pos*100:.0f}% up the centre line\n({r['why']}); whole slice, level 2", fontsize=10)
+    ax.set_title(f"{s}  z {r['z']}, {pos*100:.0f}% up the center line\n({r['why']}); whole slice, level 2", fontsize=10)
     ax = ax3[1]; img, _ = norm(r["zoom"], *lohi); ax.imshow(img, cmap="gray", interpolation="lanczos")
     pa = r["ca"] / 2 - r["org1"]; pb = r["cb"] / 2 - r["org1"]
     rr = 0.25 * 1000 / um / 2
@@ -184,8 +184,8 @@ def main():
     ap.add_argument("--a", required=True); ap.add_argument("--b", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--scrolls", nargs="*"); ap.add_argument("--n", type=int, default=6)
     ap.add_argument("--cache", default=None)
-    ap.add_argument("--a-label", default="centres A")
-    ap.add_argument("--b-label", default="centres B")
+    ap.add_argument("--a-label", default="centers A")
+    ap.add_argument("--b-label", default="centers B")
     ap.add_argument("--zoom-mm", type=float, default=6.0, help="half width of the level-1 zoom")
     ap.add_argument("--close-mm", type=float, default=2.0, help="half width of the level-0 close-up")
     a = ap.parse_args()
@@ -235,7 +235,7 @@ def main():
             fig.subplots_adjust(top=0.88, bottom=0.01, left=0.005, right=0.995, wspace=0.03)
             f = os.path.join(a.out, s, f"{s}_z{r['z']:05d}.png"); fig.savefig(f, dpi=120); plt.close(fig); rowfiles.append(f)
         fn = os.path.join(a.out, f"{s}_ct_check.png")
-        stack(rowfiles, fn, f"{s}: automatic scroll centre on CT slices (Model output, not yet checked by a person)",
+        stack(rowfiles, fn, f"{s}: automatic scroll center on CT slices (Model output, not yet checked by a person)",
               f"red circle: {a.a_label}   cyan x: {a.b_label}   "
               f"yellow box: the next panel's window   scan {meta['volume']}", plt)
         summary[s] = dict(slices=[dict(z=r["z"], why=r["why"], gap_mm=round(r["gap_mm"], 3)) for r in rows],

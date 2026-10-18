@@ -1,6 +1,6 @@
 """Cut PHerc. 1667's official ink labels into letter groups, for a letter-recognition test of the reader.
 
-The official labels on the six labelled PHerc. 1667 segments (w013, w018, w023, w028, w029, w031;
+The official labels on the six labeled PHerc. 1667 segments (w013, w018, w023, w028, w029, w031;
 open-data bucket, PHerc1667/segments/<segment>/ink-labels/2.399um-volume-20251217075048/20260918/
 inklabels.zarr) are drawings of single letters and short runs of letters scattered over the
 columns, not whole lines. This script turns each label into groups by a fixed rule that looks at
@@ -11,13 +11,13 @@ the drawing only, never at a reader's output:
 2. Connected ink pieces of at least MIN_AREA pixels (letters are 1,300 px or more here; smaller
    pieces are stray marks).
 3. h, the segment's letter height, is the median height of its pieces.
-4. Pieces join one group when their vertical centres differ by less than 0.5 h and the horizontal
+4. Pieces join one group when their vertical centers differ by less than 0.5 h and the horizontal
    gap between them is under 0.6 h (union over all pairs), so a group is one run of letters on
    one line.
 5. Each group is read from a crop padded by PAD_X h left and right and PAD_Y h above and below,
-   with the line centre at the median of its pieces' vertical centres.
+   with the line center at the median of its pieces' vertical centers.
 
-Outputs groups.json (segment, group id, box, centre, h) and one PNG per group for the blind
+Outputs groups.json (segment, group id, box, center, h) and one PNG per group for the blind
 transcription (black letters on white, 96 px per letter height). Model-free: run it before any
 reader touches the data.
 
@@ -117,7 +117,7 @@ def main(labels_dir, out_dir):
             im = Image.fromarray(((1 - np.clip(c, 0, 1)) * 255).astype(np.uint8))
             im = im.resize((max(1, int(c.shape[1] * f)), max(1, int(c.shape[0] * f))), Image.LANCZOS)
             im.save(out_dir / "png" / f"{gid}.png")
-            # centre_y is the line centre in the crop's own rows (what the reader is given); the
+            # centre_y is the line center in the crop's own rows (what the reader is given); the
             # segment's row stays as centre_y_segment. (Before 9 October's fix, **g overwrote it.)
             rows.append({"id": gid, "segment": seg, "letter_h": h, **g, "centre_y_segment": g["centre_y"],
                          "centre_y": cy, "crop_shape": list(c.shape)})

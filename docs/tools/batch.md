@@ -321,7 +321,7 @@ They run on a synthetic catalog with no network and no Modal: catalog rows for c
 - 2026-10-16: `run watch` saves a row that failed to plan as last seen so the next run retries it, exits 3 for it with `--exit-code`, and prints names the catalog left out (`c1d38a2`).
 - 2026-10-16: the Modal rates moved to `kit/data/modal-rates.json`, shipped with the package, so `run all` works after a pip install (`b1a96d2`).
 - 2026-10-17: a scan whose `.zattrs` read fails is rejected and retried on the next run; before, `fetch_levels` returned `None` and the scan was planned with null `levels` and priced at level 0 (`4c360eb`).
-- 2026-10-17: ledger and status times are written in US Eastern time whatever the machine's zone; before, they were the machine's local time labelled ET, which on a UTC cloud or Modal machine was UTC (`80eb4fd`).
+- 2026-10-17: ledger and status times are written in US Eastern time whatever the machine's zone; before, they were the machine's local time labeled ET, which on a UTC cloud or Modal machine was UTC (`80eb4fd`).
 - 2026-10-17: the code comment on the reader rule no longer calls PHerc0139 w043 held out (`e6d07c7`).
 
 ## Related

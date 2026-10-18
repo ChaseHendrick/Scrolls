@@ -2,7 +2,7 @@
 
 Positives: text windows, half of them as they are and half rebuilt as seam-matched windows on the
 shuffle or strip lattice (nulls.jitter), so lattice seams carry no label. Negatives: blank papyrus
-windows (half of them rotated by 90 degrees, so fibre direction alone cannot look like text, and
+windows (half of them rotated by 90 degrees, so fiber direction alone cannot look like text, and
 jittered in the same shares as the positives) and nulls of text windows made on the fly
 (scripts/strokenet/nulls.py: IAAFT surrogates with 20 iterations, tile shuffle, rot90). The final
 checkpoint (cosine schedule to zero) is exported for numpy inference (kit/strokenet.py); a fixed
@@ -121,7 +121,7 @@ def load_model(run_dir, device="cpu", ckpt="final.pt"):
 # ------------------------------------------------------------------ scoring
 @contextmanager
 def fp32():
-    """Full fp32 convolutions and matrix products on CUDA (no TF32), restored afterwards."""
+    """Full fp32 convolutions and matrix products on CUDA (no TF32), restored afterward."""
     old = (torch.backends.cudnn.allow_tf32, torch.backends.cuda.matmul.allow_tf32)
     torch.backends.cudnn.allow_tf32 = False
     torch.backends.cuda.matmul.allow_tf32 = False
@@ -314,8 +314,8 @@ def main(argv=None):
             fv = torch.from_numpy(rng.uniform(size=B) < 0.5).to(dev)
             x = torch.where(fh[:, None, None, None], torch.flip(x, dims=(3,)), x)
             x = torch.where(fv[:, None, None, None], torch.flip(x, dims=(2,)), x)
-        # intensity augmentation the normalisation does not cancel: gamma per window, then noise
-        # with its own level per window (a gain or an offset would be removed by the normalisation)
+        # intensity augmentation the normalization does not cancel: gamma per window, then noise
+        # with its own level per window (a gain or an offset would be removed by the normalization)
         g = torch.from_numpy(rng.uniform(0.8, 1.25, size=(B, 1, 1, 1)).astype(np.float32)).to(dev)
         x = 255.0 * (x.clamp(0, 255) / 255.0) ** g
         sig = torch.from_numpy(rng.uniform(0, 3, size=(B, 1, 1, 1)).astype(np.float32)).to(dev)

@@ -2,17 +2,17 @@
 
 A small CNN (scripts/strokenet/train.py) looks at 6.1 mm windows of an ink map (128 x 128 pixels
 at 0.048 mm) and gives a logit for "looks like lines of body text of PHerc. Paris 4, as the
-organisers' 2026 ink model draws it", against blank papyrus and copies of text windows with
+organizers' 2026 ink model draws it", against blank papyrus and copies of text windows with
 their arrangement or orientation destroyed. It was trained and tested on one scroll's maps from
 one ink model, with text and blank labels made by a rule from the maps themselves
 (docs/strokenet.md gives the measured numbers and their limits). A high score is model output:
 it is never a reading, and never evidence by itself that text exists where none is known.
 
 Input, as in training:
-- the map is resampled to 0.048 mm (to_working). An integer map (the organisers' uint8
+- the map is resampled to 0.048 mm (to_working). An integer map (the organizers' uint8
   predictions) at a whole fraction of 0.048 mm, such as 2.4 um, is pooled exactly as the training
   windows were (block sums, rounded half to even); other inputs are area-averaged, then rounded
-  when the map is integer. Values are on the organisers' 0 to 255 scale. Float or rescaled maps
+  when the map is integer. Values are on the organizers' 0 to 255 scale. Float or rescaled maps
   are outside the training distribution.
 - only windows with at least 99 % core papyrus are scored, the rule the training windows met.
   Usable means a value above 3, opened three times with a cross and with holes filled
@@ -140,7 +140,7 @@ def _plane(z):
     a = np.squeeze(np.asarray(z))
     if a.ndim == 3 and a.shape[-1] in (3, 4):
         c = a[..., :3]
-        # a grey map saved as colour keeps its integer values; a real colour image is averaged
+        # a gray map saved as color keeps its integer values; a real color image is averaged
         a = c[..., 0] if (c == c[..., :1]).all() else c.mean(axis=-1, dtype=np.float64).astype(np.float32)
     if a.ndim != 2:
         raise ValueError(f"expected a 2D map, got shape {a.shape}")
@@ -218,7 +218,7 @@ def _source(ink):
 
 
 def _finite(blk):
-    """NaN and infinite values read as 0 (below the usable threshold, as the organisers' maps mark
+    """NaN and infinite values read as 0 (below the usable threshold, as the organizers' maps mark
     no data), so they count as unusable and never spread through the pooling sums."""
     if np.issubdtype(blk.dtype, np.floating) and not np.isfinite(blk).all():
         return np.where(np.isfinite(blk), blk, 0).astype(blk.dtype)
@@ -402,7 +402,7 @@ def snap_crop(crop, pixel_mm, shape=None):
     """A crop (y0, y1, x0, x1) in source pixels with its origin moved down to the training lattice.
 
     The training windows start every 32 px (1.536 mm) from the segment's origin, and the
-    organisers' ink maps carry a faint tile pattern (overlapping 256 px tiles at stride 128 on the
+    organizers' ink maps carry a faint tile pattern (overlapping 256 px tiles at stride 128 on the
     2.4 um grid) that repeats every 32 px at 0.048 mm, so every training window saw it at the same
     phase. When pixel_mm is a whole fraction of 0.048 mm, y0 and x0 are moved down to multiples of
     32 x k source pixels (k = 0.048 / pixel_mm), so the crop's windows keep that lattice, phase and
@@ -575,7 +575,7 @@ class StrokeNet:
         self.val_ref = self.meta.get("val_ref")               # validation values of the two controls
 
     def logits(self, windows, batch=16):
-        """(N, 128, 128) windows -> (N,) float32 logits; each batch is normalised on its own, so
+        """(N, 128, 128) windows -> (N,) float32 logits; each batch is normalized on its own, so
         memory stays bounded for any N."""
         out = []
         for i in range(0, len(windows), batch):
@@ -726,7 +726,7 @@ def text_summary(res):
              f"(0.048 mm), {m['learned_n_skipped']} skipped (under 99 % core papyrus)"]
     if not m["learned_n"]:
         lines.append(f"  no window has 99 % of its pixels above {USABLE_MIN} and {CORE_MM} mm inside the papyrus; "
-                     "StrokeNet expects maps on the organisers' 0 to 255 scale")
+                     "StrokeNet expects maps on the organizers' 0 to 255 scale")
     if m["learned_frac_above_val_blank_q99"] is not None:
         lines.append(f"  windows above the blank-papyrus threshold: {m['learned_frac_above_val_blank_q99']:.3f} as given, "
                      f"{r['learned_frac_above_val_blank_q99']:.3f} turned 90 degrees")

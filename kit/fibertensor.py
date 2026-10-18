@@ -1,20 +1,20 @@
 """Fiber-orientation-aware ink features and a tiny learned reader (lane D, 2026-10-07).
 
-Untested idea, made testable: papyrus fibres run in two near-perpendicular directions, and a
-pen stroke laid over them crosses fibres at other angles and fills the gaps between them. So
+Untested idea, made testable: papyrus fibers run in two near-perpendicular directions, and a
+pen stroke laid over them crosses fibers at other angles and fills the gaps between them. So
 the in-plane texture of inked papyrus should be less coherent, and oriented more often off
-the two fibre axes, than bare papyrus. Raw brightness at any one depth separates ink from
+the two fiber axes, than bare papyrus. Raw brightness at any one depth separates ink from
 background at most 0.58 AUC on PHerc0841 (docs/logs/2026-10-07-overlap-and-baseline.md);
 this module asks how much a 2D structure tensor, read per depth band and referred to the
-segment's own dominant fibre axis, adds on top of brightness, with a model small enough to
+segment's own dominant fiber axis, adds on top of brightness, with a model small enough to
 train on a CPU in seconds.
 
 Features per pixel (all from the surface volume alone, no labels):
 
 * brightness: z-scored mean of each depth band, smoothed at 1 and 4 px;
 * structure tensor of each band at integration scales `RHO` (px): log energy, coherence
-  (l1 - l2) / (l1 + l2), and the "off-fibre" angle, the distance of the local orientation
-  to the nearer of the two fibre axes (0 on a fibre, 1 at 45 degrees). The fibre axis is
+  (l1 - l2) / (l1 + l2), and the "off-fiber" angle, the distance of the local orientation
+  to the nearer of the two fiber axes (0 on a fiber, 1 at 45 degrees). The fiber axis is
   the energy-weighted mean of the doubled orientation angle over the whole input, found
   once per segment, so the feature is rotation-invariant across segments;
 * depth contrast: band to band differences of the means (ink sits at one depth).
@@ -22,7 +22,7 @@ Features per pixel (all from the surface volume alone, no labels):
 `raw` features (brightness only) are the ablation the method must beat.
 
 Model: logistic regression or a 1 hidden-layer MLP in numpy, trained on a balanced pixel
-sample with standardised features. The map is the predicted probability, shifted into
+sample with standardized features. The map is the predicted probability, shifted into
 (0.001, 1] so `kit auc` never drops a pixel as "no prediction".
 
     python -m kit fibertensor train  VOLUME.zarr LABEL_DIR --crop Y0 Y1 X0 X1 --surface-shape H W -o model.npz
@@ -74,7 +74,7 @@ def fibre_axis(np, ndi, img):
 
 
 def tensor_features(np, ndi, img, axis, rhos=RHO):
-    """Per-pixel log energy, coherence and off-fibre angle at each integration scale."""
+    """Per-pixel log energy, coherence and off-fiber angle at each integration scale."""
     gy = ndi.gaussian_filter(img, GRAD_SIGMA, order=(1, 0))
     gx = ndi.gaussian_filter(img, GRAD_SIGMA, order=(0, 1))
     out = []
@@ -86,14 +86,14 @@ def tensor_features(np, ndi, img, axis, rhos=RHO):
         d = np.sqrt((jxx - jyy) ** 2 + 4 * jxy ** 2)
         coh = d / (tr + EPS)
         theta = 0.5 * np.arctan2(2 * jxy, jxx - jyy) - axis
-        # two fibre axes 90 degrees apart: distance to the nearer one, scaled to 0..1
+        # two fiber axes 90 degrees apart: distance to the nearer one, scaled to 0..1
         off = np.abs(np.sin(2 * theta))
         out += [np.log(tr + EPS), coh, off]
     return out
 
 
 def features(volume, kind="fibre", bands=BANDS, axis=None):
-    """Feature stack (F, H, W) and the fibre axes used (one per band).
+    """Feature stack (F, H, W) and the fiber axes used (one per band).
 
     kind "raw": band brightness only (the baseline); "fibre": brightness, structure tensor
     and depth contrast. Pass `axis` (from training) to reuse fixed axes; by default each
