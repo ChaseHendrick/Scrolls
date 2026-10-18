@@ -24,6 +24,8 @@ def entry(**over):
     return {k: v for k, v in e.items() if v is not None}
 
 
+IMAGE = {"src": "docs/assets/demo/demo-hero.webp", "alt": "Concept illustration of a copper thread through a stack of discs.",
+         "caption": "Concept illustration. [Notes](docs/assets/README.md)."}
 PACKAGE = {"branch": "submission/progress-2026-10", "commit": "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284",
            "path": "submissions/progress-2026-10"}
 README = "# Title\n\nIntro.\n\n## Released tools\n\n" + r.START + "\nold text\n" + r.END + "\n\n## After\n\nKept.\n"
@@ -69,6 +71,30 @@ class ValidateTest(unittest.TestCase):
             with self.subTest(entry=e), self.assertRaises(r.ReleaseListError):
                 r.validate(e)
 
+    def test_image_field(self):
+        r.validate(entry(image=IMAGE))
+        r.validate(entry(image=dict(IMAGE, src="https://huggingface.co/spaces/a/b/resolve/main/og.png")))
+        r.validate(entry(image=dict(IMAGE, caption="Synthetic demo (stand-in tools, no scan data).")))
+        r.validate(entry(image=dict(IMAGE, alt="A model's map (not a reading) beside its control")))
+        r.validate(entry(where=PACKAGE, details=None, image=dict(IMAGE, caption="Model output, not a reading.")))
+        bad = [IMAGE["src"], dict(IMAGE, extra=1), {k: v for k, v in IMAGE.items() if k != "caption"},
+               dict(IMAGE, src="docs/other/x.webp"), dict(IMAGE, src="docs/assets/../README.md"),
+               dict(IMAGE, src="docs/assets/a/../../x.png"), dict(IMAGE, src="docs/assets/x.svg"),
+               dict(IMAGE, src="docs/assets/x.mp4"), dict(IMAGE, src="http://a.b/x.png"), dict(IMAGE, src="//a.b/x.png"),
+               dict(IMAGE, src="javascript:alert(1).png"), dict(IMAGE, src="docs/assets/a b.png"),
+               dict(IMAGE, src="docs/assets/x.png)"), dict(IMAGE, alt=""), dict(IMAGE, alt="a]b"), dict(IMAGE, alt="*x*"),
+               dict(IMAGE, alt="x" * 301), dict(IMAGE, alt="a\nb"), dict(IMAGE, alt="<img src=x onerror=alert(1)>"),
+               dict(IMAGE, caption="A copper thread."), dict(IMAGE, caption="concept illustration."),
+               dict(IMAGE, caption="Concept illustration *bold*"), dict(IMAGE, caption=" Concept illustration."),
+               dict(IMAGE, caption="Concept illustration" + chr(0x2014) + "x"),
+               dict(IMAGE, caption="Concept illustration. <details>"), dict(IMAGE, caption="Concept illustration\nx"),
+               dict(IMAGE, caption="Concept illustration. [x](javascript:alert(1))"), dict(IMAGE, caption=7)]
+        for image in bad:
+            with self.subTest(image=image), self.assertRaises(r.ReleaseListError):
+                r.validate(entry(image=image))
+        with self.assertRaises(r.ReleaseListError):   # a package's caption links are full URLs at its commit
+            r.validate(entry(where=PACKAGE, details=None, image=IMAGE))
+
     def test_list_rejects_duplicates_and_wrong_shape(self):
         for registry in ({"schema_version": 1, "releases": [entry(), entry()]},
                          {"schema_version": 2, "releases": []}, {"releases": []},
@@ -97,6 +123,13 @@ class RenderTest(unittest.TestCase):
                       "[`submissions/progress-2026-10/` at commit `faada83`](https://github.com/ChaseHendrick/Scrolls/tree/"
                       "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10).", text)
         self.assertNotIn("```", text)
+
+    def test_image_goes_under_the_title_with_its_caption(self):
+        text = "\n".join(r.render_entry(entry(image=IMAGE, commands=None, details=None)))
+        self.assertEqual(text, "### Demo tool\n\n![Concept illustration of a copper thread through a stack of discs.]"
+                               "(docs/assets/demo/demo-hero.webp)\n\n*Concept illustration. [Notes](docs/assets/README.md).*"
+                               "\n\nReleased 14 October 2026.\n\nDoes one thing on public data (Model output). Not a reading.")
+        self.assertNotIn("![", "\n".join(r.render_entry(entry())))
 
     def test_newest_first_and_later_entry_first_on_the_same_day(self):
         registry = {"schema_version": 1, "releases": [entry(id="old", released="2026-09-01"), entry(id="a"),
@@ -240,6 +273,24 @@ class CommandTest(unittest.TestCase):
         self.call("render")
         self.registry.write_text(json.dumps({"schema_version": 1, "releases": []}))   # valid but not written by dumps
         self.assertEqual(self.call("check")[0], 1)
+
+    def test_check_fails_when_a_picture_is_missing(self):
+        self.call("render")
+        f = self.dir / "entry.json"
+        f.write_text(json.dumps(entry(image=IMAGE)))
+        self.assertEqual(self.call("add", str(f))[0], 0)
+        self.assertIn("![Concept illustration of a copper thread", self.readme.read_text())
+        code, _, err = self.call("check")
+        self.assertEqual(code, 1)
+        self.assertIn("docs/assets/demo/demo-hero.webp", err)
+        picture = self.dir / "docs" / "assets" / "demo" / "demo-hero.webp"
+        picture.parent.mkdir(parents=True)
+        picture.write_bytes(b"RIFF")
+        self.assertEqual(self.call("check")[0], 0)
+        f.write_text(json.dumps(entry(image=dict(IMAGE, src="https://example.org/x.webp"))))
+        self.call("add", str(f))
+        picture.unlink()
+        self.assertEqual(self.call("check")[0], 0, "an https:// picture is not looked for in the tree")
 
     def test_bad_entry_changes_nothing(self):
         self.call("render")

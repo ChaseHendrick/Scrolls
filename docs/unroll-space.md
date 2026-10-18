@@ -1,5 +1,9 @@
 # Unroll: an interactive PHerc. 139 viewer
 
+![Concept illustration of a papyrus roll unrolling into a flat sheet, with a copper grid layer and a layer of ivory points floating above it.](assets/unroll/unroll-hero.webp)
+
+*Concept illustration: a roll unrolls flat and its layers lift apart. No scan data. [Artwork notes](assets/README.md).*
+
 **Link:** [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll)
 
 Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 traced windings of PHerc. 139 in 3D with three.js and lets a visitor unroll them in the browser. It runs on the client only; no install or account is needed.

@@ -1,0 +1,76 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "strokenet-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a sheet divided into square windows; a few windows with rows of abstract strokes float up and glow copper, and one has a turned copy beside it with a faint glow.",
+  "caption": "Concept illustration: scoring windows lift by a made-up score, beside a turned copy as the control. Abstract strokes, no letters, no scan data.",
+  "license": "Apache-2.0",
+  "release_id": "strokenet",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "strokenet-hero.webp",
+      "bytes": 89270,
+      "sha256": "855c94f81868125be6d11185bdfb9a1cea9c444ab0f6efd82a095e8619201bf2",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "strokenet-card.jpg",
+      "bytes": 109692,
+      "sha256": "0216951e178798c7e34f69869c789497bbcb234583e8959a85b5cf6f491ecb6a",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "3af6a533736330786baedcc08b9b3cd8886b3867a26d0166467be0a86074f143",
+    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/strokenet.json --out-dir docs/assets/strokenet",
+  "recipe": {
+    "name": "strokenet-hero",
+    "release_id": "strokenet",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of a sheet divided into square windows; a few windows with rows of abstract strokes float up and glow copper, and one has a turned copy beside it with a faint glow.",
+    "caption": "Concept illustration: scoring windows lift by a made-up score, beside a turned copy as the control. Abstract strokes, no letters, no scan data.",
+    "license": "Apache-2.0",
+    "seed": 9,
+    "scene": {
+      "kind": "procedural",
+      "name": "strokenet",
+      "params": {}
+    },
+    "grade": {
+      "duotone": 0.08,
+      "key": 0.08,
+      "rim": 0.08,
+      "vignette": 0.35,
+      "fade_right": 0.1,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "StrokeNet",
+      "subtitle": "A text-likeness score for windows of an ink map, reported with rotation and IAAFT controls.",
+      "focus": [
+        0.55,
+        0.5
+      ]
+    }
+  }
+}

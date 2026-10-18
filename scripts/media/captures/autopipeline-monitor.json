@@ -1,0 +1,96 @@
+[
+  {
+    "goto": "http://127.0.0.1:8793/"
+  },
+  {
+    "wait_for": "#banner"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "scroll": [
+      0,
+      270
+    ]
+  },
+  {
+    "frames": 90,
+    "every": 250
+  },
+  {
+    "hold": 6
+  },
+  {
+    "eval": "(() => { const s = document.getElementById('stage-filter'); s.value = 'ink'; s.dispatchEvent(new Event('change')); })()"
+  },
+  {
+    "wait": 400
+  },
+  {
+    "eval": "document.getElementById('stage-detail').scrollIntoView({block: 'center'})"
+  },
+  {
+    "wait": 300
+  },
+  {
+    "frame": 1
+  },
+  {
+    "hold": 14
+  },
+  {
+    "eval": "document.getElementById('log-section').scrollIntoView({block: 'start'})"
+  },
+  {
+    "wait": 300
+  },
+  {
+    "frame": 1
+  },
+  {
+    "hold": 10
+  },
+  {
+    "fill": [
+      "#log-search",
+      "fake"
+    ]
+  },
+  {
+    "wait": 300
+  },
+  {
+    "frame": 1
+  },
+  {
+    "hold": 14
+  },
+  {
+    "eval": "document.getElementById('files-section').scrollIntoView({block: 'start'})"
+  },
+  {
+    "wait": 300
+  },
+  {
+    "frame": 1
+  },
+  {
+    "hold": 14
+  },
+  {
+    "eval": "document.getElementById('surfaces').scrollIntoView({block: 'center'})"
+  },
+  {
+    "wait": 600
+  },
+  {
+    "frame": 1
+  },
+  {
+    "hold": 16
+  },
+  {
+    "shot": "monitor-015-inspect"
+  }
+]

@@ -1,0 +1,54 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-demo-v015",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline 0.1.5's monitor following the synthetic demo: stages turn green, the run finishes, then the Ink stage is inspected, the log is filtered, the run files are listed and the surface cards are shown.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.5's monitor following scripts/demo_synthetic.py, with stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-demo-v015.mp4",
+      "bytes": 564831,
+      "sha256": "a31235cb99cfe165f5b6bd4017298d04ee6c422d0779af06b91a69164060a64e",
+      "width": 1280,
+      "height": 800,
+      "kind": "mp4",
+      "seconds": 38.5,
+      "frames": 154,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "monitor-demo-v015.gif",
+      "bytes": 368479,
+      "sha256": "0f2eed00a665baea72bac4151c07336e3c4ccdccca3d6618c486ae02a3231f09",
+      "width": 960,
+      "height": 600,
+      "kind": "gif",
+      "seconds": 38.5,
+      "frames": 20,
+      "settings": {
+        "width": 960,
+        "fps": 4,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "encode.py"
+    ],
+    "scripts_sha256": "99aac16c3debc6044e76af86690ce133d272344f05baeeec9b2b5cd811f0b08d",
+    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+  },
+  "command": "python scripts/media/encode.py /tmp/claude-0/-home-user/c3092015-4d1c-5c18-82e5-886c6bd61b6a/scratchpad/mpub/apsel --fps 4 --gif-fps 4 --gif-width 960 --mp4 docs/assets/autopipeline/monitor-demo-v015.mp4 --gif docs/assets/autopipeline/monitor-demo-v015.gif --meta scripts/media/captures/autopipeline-monitor.meta.json --json"
+}

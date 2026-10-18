@@ -1,0 +1,30 @@
+{
+  "name": "reader-hero",
+  "release_id": "letter-reader",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a papyrus sheet curling at one end, with random synthetic Greek capitals in ink and thin copper boxes with confidence bars around a few of them.",
+  "caption": "Concept illustration: random synthetic Greek capitals on a procedural sheet, with proposal boxes. No scroll data, no words, not a reading.",
+  "license": "Apache-2.0",
+  "seed": 3,
+  "scene": {
+    "kind": "procedural",
+    "name": "reader",
+    "params": {}
+  },
+  "grade": {
+    "duotone": 0.08,
+    "key": 0.08,
+    "rim": 0.08,
+    "vignette": 0.35,
+    "fade_right": 0.1,
+    "grain": 0.006
+  },
+  "card": {
+    "title": "Scroll Text Reader",
+    "subtitle": "Proposes Greek letters, boxes and confidences on ink maps and images, as hypotheses with controls.",
+    "focus": [
+      0.6,
+      0.5
+    ]
+  }
+}

@@ -18,6 +18,11 @@
         "scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png"
       ],
       "details": "`scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. `--letter-px 86` is for PHerc. 1667's 38 um grid in [`scripts/letters/demo_p1667.py`](scripts/letters/demo_p1667.py). Install, profiles and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md). Local OCR and session switching: [`docs/tools/reader-backends.md`](docs/tools/reader-backends.md).",
+      "image": {
+        "src": "docs/assets/letter-reader/reader-hero.webp",
+        "alt": "Concept illustration of a papyrus sheet curling at one end, with random synthetic Greek capitals in ink and thin copper boxes with confidence bars around a few of them.",
+        "caption": "Concept illustration: random synthetic Greek capitals on a procedural sheet, with proposal boxes. No scroll data, no words, not a reading."
+      },
       "where": "main"
     },
     {
@@ -38,6 +43,11 @@
         "python -m unittest tests.test_umbilicus          # synthetic data, CPU"
       ],
       "details": "Guide, the 14 weight files with their SHA-256, held-out results with their limits, the end-point rule, training and licences: [`scripts/umbilicus/README.md`](scripts/umbilicus/README.md); evidence: [`docs/evidence/2026-10-14-umbilicus/`](docs/evidence/2026-10-14-umbilicus/README.md).",
+      "image": {
+        "src": "docs/assets/umbilicus/umbilicus-hero.webp",
+        "alt": "Concept illustration of seven synthetic scroll cross-sections floating in a row, a glowing copper thread passing through the winding center of each.",
+        "caption": "Concept illustration: synthetic cross-sections, cap to base, with a copper thread through each winding center. No scan data."
+      },
       "where": "main"
     },
     {
@@ -53,6 +63,11 @@
       ],
       "details": "Install, monitor controls, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). [Changes since 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md). The scientific settings and models are unchanged; a narrow cache-repair correction avoids counting the same repair twice.",
       "released": "2026-10-18",
+      "image": {
+        "src": "docs/assets/autopipeline-readme-hero.webp",
+        "alt": "Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.",
+        "caption": "Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data."
+      },
       "where": {
         "branch": "submission/progress-2026-10-fix5",
         "commit": "9e50d61b778a7ae4c36a12acbe32117feecfa847",
@@ -69,6 +84,11 @@
         "python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json          # weights downloaded once, SHA-256 checked"
       ],
       "details": "Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs/strokenet.md).",
+      "image": {
+        "src": "docs/assets/strokenet/strokenet-hero.webp",
+        "alt": "Concept illustration of a sheet divided into square windows; a few windows with rows of abstract strokes float up and glow copper, and one has a turned copy beside it with a faint glow.",
+        "caption": "Concept illustration: scoring windows lift by a made-up score, beside a turned copy as the control. Abstract strokes, no letters, no scan data."
+      },
       "where": "main"
     },
     {
@@ -84,6 +104,11 @@
         "python -m unittest tests.test_stackcheck      # synthetic stacks: a clean spiral passes, each planted defect is flagged"
       ],
       "details": "Usage, the PHerc0139 numbers, example vertices for VC3D, the CT look and limits: [`docs/logs/2026-10-14-pherc0139-segment-defects.md`](docs/logs/2026-10-14-pherc0139-segment-defects.md); each check is described in [`kit/stackcheck.py`](kit/stackcheck.py).",
+      "image": {
+        "src": "docs/assets/stackcheck/stackcheck-hero.webp",
+        "alt": "Concept illustration of nested curved sheets standing around a copper center post, with copper rays on the floor; one sheet has a gap with glowing edges and two sheets touch at an ivory glow.",
+        "caption": "Concept illustration: synthetic segments around a center line, with a missing sector and a touching pair marked. No scan data."
+      },
       "where": "main"
     },
     {
@@ -92,6 +117,11 @@
       "released": "2026-10-16",
       "summary": "[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, CT tools and an agent API. Status: released. Version: 1.5.0 (the Space's `version.json` and `CHANGELOG.md`). It shows nine scrolls from the Vesuvius Challenge open data, each as its traced segments with an X-ray layer, plus the published ink detection where the open data has it; PHerc. 139 also has an ink_9um (9 µm) layer over all 37 windings. The CT tools (1.2.0 to 1.5.0) add X-ray window and level with auto contrast, a CT volume view that shows a cube of the raw scan around any point of the papyrus, the traced segments drawn into that cube, and streaming from the open data bucket. Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).",
+      "image": {
+        "src": "docs/assets/unroll/unroll-hero.webp",
+        "alt": "Concept illustration of a papyrus roll unrolling into a flat sheet, with a copper grid layer and a layer of ivory points floating above it.",
+        "caption": "Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data."
+      },
       "where": "main"
     },
     {
@@ -100,6 +130,11 @@
       "released": "2026-10-17",
       "summary": "[Scroll Lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) shows what the Vesuvius Challenge's 3D models see inside a scroll scan. Pick one of 99 ready-made cubes or a point in one of twelve public 2.2 to 2.4 µm scans, and it runs the organizers' 3D DINO embeddings (dinovol), direct 3D ink model and recto surface model on a 128³ or 256³ cube read live from the open data. The three slice views are drawn in your browser, so sliders, dragging, zoom and layers answer at once. Click a patch to light up every patch the DINO model finds alike, the organizers' own few-click recipe; the concept carries across scans and downloads as `concept.npy`. Each cube shows how well the organizers' ink reference agrees with the ink model, beside controls that must fail. A 3D view turns the three views into one rotatable space of the cube, with the slices as moving planes and ink, surface and your matches as points. For AI agents and scripts, seven tools (an API and an MCP server) list the scans and the gallery, inspect and search cubes, and download their outputs. Status: released. Version: 1.1.0. It runs on ZeroGPU and falls back to the CPU when a visitor's GPU time runs out. License: Apache 2.0 for the code; the models are MIT; the scan data and the gallery cubes derived from it are CC BY-NC 4.0. Model output, not a reading: a cube is smaller than one letter.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens); MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).",
+      "image": {
+        "src": "docs/assets/scroll-lens/lens-hero.webp",
+        "alt": "Concept illustration of a floating cube cut by three glowing slices, with a cloud of matched points inside and smaller cubes receding to the right.",
+        "caption": "Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data."
+      },
       "where": "main"
     },
     {
@@ -116,6 +151,11 @@
       ],
       "details": "Local NumPy, TIFF and Zarr input, synthetic tests, scalar score evidence and limitations: [package README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-inkfilter/submissions/progress-2026-10-inkfilter/README.md). The package needs no GPU or model weights.",
       "released": "2026-10-17",
+      "image": {
+        "src": "docs/assets/inkfilter/inkfilter-hero.webp",
+        "alt": "Concept illustration of a stack of thin papyrus layers pierced by a copper probe, with a glowing copper map floating beside it and a dim control map further away.",
+        "caption": "Concept illustration: a surface volume's layers, a fixed filter through them, its map and the reversed-depth control. Synthetic fields only."
+      },
       "where": {
         "branch": "submission/progress-2026-10-inkfilter",
         "commit": "4953f17851aa9b2ffd3c26c86e85ecdabd659ca6",
@@ -126,9 +166,14 @@
       "id": "scrolls-starter",
       "title": "Scrolls Starter: a beginner path into the tools",
       "released": "2026-10-17",
-      "where": "main",
       "summary": "A local browser introduction with a known-answer synthetic exercise, a control you can compare, a real setup checker and a command builder for Scroll Text Reader. The portable HTML works without installing Python; it explicitly leaves local setup unchecked. The guide connects our released tools and the official browser exercises to the official data notebook, VC3D and ink detection. It does not run models or download scans for you.",
-      "details": "Start with [the beginner guide](docs/start-here.md), download [the portable page](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/Scrolls-Starter.html), or install [workbench 0.4.1](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.1) and run `scrolls-start`. The [tool reference](docs/tools/starter.md) covers setup checks and generated commands."
+      "details": "Start with [the beginner guide](docs/start-here.md), download [the portable page](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/Scrolls-Starter.html), or install [workbench 0.4.1](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.1) and run `scrolls-start`. The [tool reference](docs/tools/starter.md) covers setup checks and generated commands.",
+      "image": {
+        "src": "docs/assets/starter/starter-hero.webp",
+        "alt": "Two screenshots of Scrolls Starter floating at an angle over a dark floor: its introduction page and its practice exercise, a drawn word with noise beside a noise-only control.",
+        "caption": "Synthetic demo: Scrolls Starter 0.4's introduction and its known-answer practice exercise (made-up pixels, no scan, no model), shown as floating panels."
+      },
+      "where": "main"
     }
   ]
 }

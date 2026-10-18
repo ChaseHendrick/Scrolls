@@ -1,0 +1,54 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "starter-practice",
+  "label": "Synthetic demo",
+  "alt": "Scrolls Starter's practice exercise: the threshold slider rises until the drawn word INK survives and the noise-only control stays clean, the drawn strokes are outlined in gold, then the pattern is put into the control and the result turns to a practice fail.",
+  "caption": "Synthetic demo: Scrolls Starter's known-answer practice, a drawn word with noise beside a noise-only control. No scan, model or text recognition.",
+  "license": "Apache-2.0",
+  "release_id": "scrolls-starter",
+  "data": null,
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/blob/main/kit/data/starter.html"
+  ],
+  "outputs": [
+    {
+      "file": "starter-practice.mp4",
+      "bytes": 169072,
+      "sha256": "0436b20943d5799d14e64d6466f8118aebdd89b7660c410fd66a2c549ded158d",
+      "width": 1280,
+      "height": 940,
+      "kind": "mp4",
+      "seconds": 9.67,
+      "frames": 116,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "starter-practice.gif",
+      "bytes": 170846,
+      "sha256": "ae974f3413843a179f011db9316a070864b5418307d7e022e6a948046a023984",
+      "width": 960,
+      "height": 705,
+      "kind": "gif",
+      "seconds": 9.66,
+      "frames": 31,
+      "settings": {
+        "width": 960,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "encode.py"
+    ],
+    "scripts_sha256": "99aac16c3debc6044e76af86690ce133d272344f05baeeec9b2b5cd811f0b08d",
+    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+  },
+  "command": "python scripts/media/encode.py /tmp/claude-0/-home-user/c3092015-4d1c-5c18-82e5-886c6bd61b6a/scratchpad/mpub/stframes --fps 12 --gif-fps 12 --gif-width 960 --mp4 docs/assets/starter/starter-practice.mp4 --gif docs/assets/starter/starter-practice.gif --meta scripts/media/captures/starter-practice.meta.json"
+}

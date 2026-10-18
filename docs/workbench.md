@@ -1,5 +1,9 @@
 # What is Scrolls Workbench? A picture guide
 
+![Concept illustration of a still life on a dark bench: a small papyrus roll unrolling into a copper grid, a cube with glowing slices, and two cross-sections on a copper thread.](assets/workbench/workbench-hero.webp)
+
+*Concept illustration: the toolbox's motifs on one bench. No scan data. [Artwork notes](assets/README.md).*
+
 **Scrolls Workbench is an installable collection of tools for working with the Vesuvius Challenge.** It helps you practice, check images, suggest text from an existing image, and plan or record experiments. The Python package is named `scrolls-workbench`; its commands use `python -m kit`.
 
 There is no single Workbench window containing every tool. **Scrolls Starter is the beginner front door:** a small browser page that explains the choices and helps you prepare commands. This guide shows what you will actually see.
@@ -31,6 +35,10 @@ In Starter, select **2. Try the controls**. The left picture contains the drawn 
 [![Starter's synthetic INK pattern beside a noise-only control, with threshold and noise sliders and a passing result.](images/workbench/starter-practice.png)](images/workbench/starter-practice.png)
 
 *This is a teaching exercise with a known answer. No scroll, trained model or text recognition is involved.*
+
+![Scrolls Starter's practice exercise in motion: the threshold rises until the drawn word survives and the control stays clean, the strokes are outlined in gold, then the pattern is put into the control and the result turns to a practice fail.](assets/starter/starter-practice.gif)
+
+*Synthetic demo: the same exercise in the current portable Starter, from failing to passing and back to failing when the control is contaminated ([MP4](assets/starter/starter-practice.mp4)).*
 
 Your first success is understanding why a convincing-looking pattern still needs a control. This exercise runs entirely in the page and costs no compute credits.
 

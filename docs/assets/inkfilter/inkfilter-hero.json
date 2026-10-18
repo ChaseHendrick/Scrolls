@@ -1,0 +1,76 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "inkfilter-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a stack of thin papyrus layers pierced by a copper probe, with a glowing copper map floating beside it and a dim control map further away.",
+  "caption": "Concept illustration: a surface volume's layers, a fixed filter through them, its map and the reversed-depth control. Synthetic fields only.",
+  "license": "Apache-2.0",
+  "release_id": "inkfilter",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "inkfilter-hero.webp",
+      "bytes": 28208,
+      "sha256": "464c7f368a8eb67d0406011bce4c01ec3504a3fa815d63fa3feb032848b9f78b",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "inkfilter-card.jpg",
+      "bytes": 63416,
+      "sha256": "39a17bf6ff2c83123b6f95c015888a6075bd0809f7a9b4783db0cdb2a1230d06",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "3af6a533736330786baedcc08b9b3cd8886b3867a26d0166467be0a86074f143",
+    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/inkfilter.json --out-dir docs/assets/inkfilter",
+  "recipe": {
+    "name": "inkfilter-hero",
+    "release_id": "inkfilter",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of a stack of thin papyrus layers pierced by a copper probe, with a glowing copper map floating beside it and a dim control map further away.",
+    "caption": "Concept illustration: a surface volume's layers, a fixed filter through them, its map and the reversed-depth control. Synthetic fields only.",
+    "license": "Apache-2.0",
+    "seed": 6,
+    "scene": {
+      "kind": "procedural",
+      "name": "inkfilter",
+      "params": {}
+    },
+    "grade": {
+      "duotone": 0.08,
+      "key": 0.08,
+      "rim": 0.08,
+      "vignette": 0.35,
+      "fade_right": 0.1,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "Inkfilter",
+      "subtitle": "Model-free maps from a surface-volume window, each written with its reversed-depth control.",
+      "focus": [
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

@@ -13,6 +13,9 @@ An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2
            "summary": "One paragraph: what it does, the measured result with its claim label, the main limit.",
            "commands": ["python -m pip install numpy", "..."],          (optional; shown as a bash block)
            "details": "One line of links, such as the guide.",           (optional)
+           "image": {"src": "docs/assets/letter-reader/reader-hero.webp",  (optional; shown under the title)
+                     "alt": "What the picture shows, for screen readers.",
+                     "caption": "Synthetic demo. What it is and where it came from."},
            "where": "main"}
 "where" is "main" for files merged here, or {"branch": B, "commit": C, "path": P} for a reviewed package that lives on
 its own branch (the Progress Prize exporter's submission/<submission_id> branches), which the section links at that
@@ -21,6 +24,11 @@ commit.
 The list's optional "pinned" holds entry ids shown first, in that order, above the newest (Chase, 14 October 2026:
 keep AutoPipeline on top "so people see it"). A pin belongs to the list, not the entry, so a new version that replaces
 a pinned entry stays pinned.
+
+An entry's optional "image" is shown under its title, with its caption in italics below. The caption starts with one of
+the media labels in LABELS (Chase, 18 October 2026: every released tool gets a hero image, and each picture says what it
+is). Its src is a path under docs/assets/ on main, which also serves package entries, since the README that shows the
+picture is on main, or a full https:// URL. check() fails when a docs/assets/ picture is missing.
 
 The private repository's submission exporter carries an identical copy of this module and writes the entry of each
 package it releases with it, so keep the two copies the same. Standard library only.
@@ -41,7 +49,7 @@ START = ("<!-- releases:start (generated from docs/releases.json by python -m ki
          "edit that list, not this section) -->")
 END = "<!-- releases:end -->"
 INTRO = "Released tools, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
-FIELDS = {"id", "title", "released", "summary", "commands", "details", "where"}
+FIELDS = {"id", "title", "released", "summary", "commands", "details", "image", "where"}
 REQUIRED = ("id", "title", "released", "summary", "where")
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
@@ -59,6 +67,12 @@ INLINE_HTML = re.compile(r"<\s*[A-Za-z/!?]")
 HTTPS_AUTOLINK = re.compile(r"<https://[^\s<>]*>")
 LINK_TARGET = re.compile(r"\]\(\s*<?([^)\s>]*)|^\s{0,3}\[[^\]]*\]:\s*<?(\S*)")
 URL_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:|//|\\")
+# A picture: a file under docs/assets/ on main, or a full https:// URL, ending in a format GitHub shows inline.
+IMAGE_FIELDS = {"src", "alt", "caption"}
+IMAGE_SRC = re.compile(r"(?:docs/assets/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*|https://[A-Za-z0-9.-]+/[A-Za-z0-9_.~%/+-]+)"
+                       r"\.(?:webp|png|jpg|jpeg|gif)")
+# Every picture says what it is (docs/assets/README.md); a caption starts with one of these.
+LABELS = ("Concept illustration", "Real data render", "Model output", "Synthetic demo")
 
 
 class ReleaseListError(ValueError):
@@ -95,6 +109,30 @@ def _plain(entry, key, value):
             raise ReleaseListError(f"{entry.get('id', '?')}: {key} links must be https:// or relative, not {target[:40]!r}")
 
 
+def _image(entry):
+    image = entry["image"]
+    name = entry.get("id", "?")
+    if not isinstance(image, dict) or set(image) != IMAGE_FIELDS:
+        raise ReleaseListError(f"{name}: image is {{src, alt, caption}}")
+    src = image["src"]
+    if not isinstance(src, str) or not IMAGE_SRC.fullmatch(src) or ".." in src.split("/"):
+        raise ReleaseListError(f"{name}: image.src is a docs/assets/ path or an https:// URL ending in .webp, .png, "
+                               ".jpg, .jpeg or .gif")
+    for key, limit in (("alt", 300), ("caption", 500)):
+        value = image[key]
+        if not isinstance(value, str) or not value.strip() or len(value) > limit or "\n" in value or "\r" in value:
+            raise ReleaseListError(f"{name}: image.{key} must be one line of at most {limit} characters")
+        _plain(entry, f"image.{key}", value)
+    if any(ch in image["alt"] for ch in "[]*`"):
+        raise ReleaseListError(f"{name}: image.alt is plain text, without square brackets, asterisks or backticks")
+    if "*" in image["caption"] or image["caption"] != image["caption"].strip():
+        raise ReleaseListError(f"{name}: image.caption has no asterisks and no leading or trailing space")
+    if not image["caption"].startswith(LABELS):
+        raise ReleaseListError(f"{name}: image.caption starts with its label, one of {', '.join(LABELS)}")
+    if entry.get("where", "main") != "main" and RELATIVE_LINK.search(image["caption"]):
+        raise ReleaseListError(f"{name}: a package's links are full https:// URLs at its commit")
+
+
 def validate(entry):
     """Return the entry if it is well formed, else raise ReleaseListError naming the field."""
     if not isinstance(entry, dict):
@@ -119,6 +157,8 @@ def validate(entry):
         date.fromisoformat(released)
     except ValueError:
         raise ReleaseListError(f"{entry['id']}: released must be a date, YYYY-MM-DD") from None
+    if "image" in entry:
+        _image(entry)
     commands = entry.get("commands", [])
     if not isinstance(commands, list) or len(commands) > 12:
         raise ReleaseListError(f"{entry['id']}: commands must be a list of at most 12 lines")
@@ -219,7 +259,11 @@ def render_entry(entry):
         url = f"{REPO_URL}/tree/{where['commit']}/{where['path']}"
         when = (f"Released {_day(entry['released'])} as a reviewed package on branch `{where['branch']}`: "
                 f"[`{where['path']}/` at commit `{where['commit'][:7]}`]({url}).")
-    lines = [f"### {entry['title']}", "", when, "", entry["summary"]]
+    lines = [f"### {entry['title']}", ""]
+    if entry.get("image"):
+        image = entry["image"]
+        lines += [f"![{image['alt']}]({image['src']})", "", f"*{image['caption']}*", ""]
+    lines += [when, "", entry["summary"]]
     if entry.get("commands"):
         lines += ["", "```bash", *entry["commands"], "```"]
     if entry.get("details"):
@@ -285,6 +329,11 @@ def check(registry_path=REGISTRY, readme_path=README):
                     "run python -m kit releases render"]
         if Path(registry_path).read_text(encoding="utf-8") != dumps(registry):
             return [f"{registry_path} is not in its written form; run python -m kit releases render"]
+        missing = [e["image"]["src"] for e in registry["releases"] if e.get("image")
+                   and not e["image"]["src"].startswith("https://")
+                   and not (Path(readme_path).parent / e["image"]["src"]).is_file()]
+        if missing:
+            return [f"{registry_path} shows pictures that are not in the tree: {', '.join(missing)}"]
     except (OSError, ValueError) as exc:
         return [str(exc)]
     return []

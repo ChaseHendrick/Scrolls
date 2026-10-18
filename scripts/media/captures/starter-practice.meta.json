@@ -1,0 +1,8 @@
+{
+  "label": "Synthetic demo",
+  "release_id": "scrolls-starter",
+  "alt": "Scrolls Starter's practice exercise: the threshold slider rises until the drawn word INK survives and the noise-only control stays clean, the drawn strokes are outlined in gold, then the pattern is put into the control and the result turns to a practice fail.",
+  "caption": "Synthetic demo: Scrolls Starter's known-answer practice, a drawn word with noise beside a noise-only control. No scan, model or text recognition.",
+  "license": "Apache-2.0",
+  "sources": ["https://github.com/ChaseHendrick/Scrolls/blob/main/kit/data/starter.html"]
+}

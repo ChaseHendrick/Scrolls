@@ -1,0 +1,19 @@
+[
+  {"wait": 500},
+  {"eval": "window.scrollTo(0, document.getElementById('practice').getBoundingClientRect().top + window.scrollY - 8)"},
+  {"wait": 300},
+  {"set": ["#threshold", 22]},
+  {"frame": 1},
+  {"hold": 10},
+  {"tween": {"selector": "#threshold", "from": 22, "to": 62, "n": 28}},
+  {"hold": 18},
+  {"click": "#truth"},
+  {"frame": 1},
+  {"hold": 18},
+  {"click": "#contaminated"},
+  {"frame": 1},
+  {"hold": 24},
+  {"click": "#contaminated"},
+  {"frame": 1},
+  {"hold": 14}
+]

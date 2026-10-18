@@ -1,5 +1,9 @@
 # StrokeNet: a text-likeness score for 2D ink maps
 
+![Concept illustration of a sheet divided into square windows; a few windows with rows of abstract strokes float up and glow copper, and one has a turned copy beside it with a faint glow.](assets/strokenet/strokenet-hero.webp)
+
+*Concept illustration: scoring windows lift by a made-up score, beside a turned copy as the control. Abstract strokes, no letters, no scan data. [Artwork notes](assets/README.md).*
+
 Model card, written 14 October 2026 before the preregistered run; "Results" filled from the run's `results.json` the same day. **StrokeNet misses its preregistered bar** on the held-out test of [`prereg/2026-10-14-strokenet.md`](prereg/2026-10-14-strokenet.md) (two of nine items); see "Results".
 
 ## What it is
