@@ -431,4 +431,4 @@ python -m unittest tests.test_strokenet tests.test_strokenet_pipeline tests.test
 - [`results.json`](../results.json): `strokenet_checks`, the held-out numbers and the grid pilot.
 - [`auc`](auc.md): score an ink map against published labels.
 - [`hpscore`](hpscore.md): letter-scale score against labels.
-- [`letterread`](letterread.md): the learned Greek letter reader, with its own controls.
+- [`letterread`](letterread.md): Scroll Text Reader, the learned Greek reader, with its own controls.

@@ -2264,7 +2264,7 @@
     "Network": "None. It reads local files only; you download the TEI texts yourself",
     "Writes": "`build`: the model file OUT, at exactly that path (its folder made if missing), replacing any file there. `score`: nothing (prints only)",
     "Go-ahead": "Not needed",
-    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57), with the Greek letter reader); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day",
+    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57), with the reader now called Scroll Text Reader); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day",
     "Guide": "[letter-reader.md, Optional language model](../letter-reader.md#optional-language-model)",
     "Checked": "2026-10-16 against commit `29e7e8c`"
    },
@@ -3456,7 +3456,7 @@
    "id": "letterread",
    "name": "letterread",
    "tagline": "Scroll Text Reader",
-   "summary": "Scroll Text Reader (formerly Greek Letter Reader) uses `scrolls-letterread` or `python -m kit letterread` to propose Greek letters with LineNet or words with installed local Tesseract language packs, with model provenance and controls.",
+   "summary": "Scroll Text Reader uses `scrolls-letterread` or `python -m kit letterread` to propose Greek letters with LineNet or words with installed local Tesseract language packs, with model provenance and controls.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -3633,7 +3633,7 @@
    "id": "letters-training",
    "name": "letters-training",
    "tagline": "training data, training, fine-tuning and benchmarks of the letter reader",
-   "summary": "`scripts/letters/` holds the scripts that make the Greek letter reader's synthetic training lines, train and fine-tune its weights, fetch the public PHerc. 1667 and PHerc. 172 data, and run the benchmarks and control checks behind its published numbers.",
+   "summary": "`scripts/letters/` holds the scripts that make Scroll Text Reader's synthetic training lines, train and fine-tune its weights, fetch the public PHerc. 1667 and PHerc. 172 data, and run the benchmarks and control checks behind its published numbers.",
    "status": "Current",
    "kind": [
     "script folder"
@@ -7365,6 +7365,164 @@
      "name": "Related",
      "start_line": 357,
      "end_line": 365,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "stale",
+   "name": "stale",
+   "tagline": "what the live pages and registries still say that is no longer true",
+   "summary": "`python -m kit stale` checks the handoff, the live pages and the registries for staleness: old handoff rows, gone branches, retired names, dead links, map rows and waiting routines. Read-only; a daily routine, also run by the routines workflow.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m kit stale",
+    "python -m kit.stale",
+    "stale",
+    "docs/routines.json"
+   ],
+   "imports": [
+    "from kit import stale"
+   ],
+   "code": [
+    {
+     "path": "kit/stale.py",
+     "symbols": []
+    },
+    {
+     "path": "docs/renames.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_stale.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it only reads. Fixing what it reports follows the usual rules (a post or a branch deletion still needs its own yes)"
+   },
+   "checked": {
+    "date": "2026-10-18",
+    "commit": "b449398"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`stale`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Releases and repository",
+    "Run": "`python -m kit stale`, `python -m kit.stale`, `from kit import stale`; daily at session start, and in the daily routines workflow, as the routine `stale` in `docs/routines.json`",
+    "Code": "`kit/stale.py`, `docs/renames.json`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_stale.py`",
+    "Needs": "Python 3.10 or newer, standard library only; `git` on `PATH` for the checks that read history or refs (without it they are skipped and say so)",
+    "Runs on": "Any CPU: 0.94 s wall, 28 MB peak memory for all nine checks on this repository (measured 2026-10-18, 4-core Intel Xeon at 2.10 GHz cloud container)",
+    "Network": "None. Branch checks read the refs this clone already has, as of its last fetch",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed: it only reads. Fixing what it reports follows the usual rules (a post or a branch deletion still needs its own yes)",
+    "Released": "Public `main` from the change that adds it (18 Oct 2026). The same file is in Scrolls-private, as with `kit/routines.py`; the differences of this copy are listed at the top of `kit/stale.py`",
+    "Checked": "2026-10-18 against commit `b449398` plus this tool"
+   },
+   "page": "docs/tools/stale.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 45,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 57,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 88,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 89,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 117,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 152,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 165,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 187,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 209,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 220,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 224,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 234,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 242,
+     "end_line": 245,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 246,
+     "end_line": 252,
      "applicable": true
     }
    ]
