@@ -464,12 +464,14 @@ for any runner.
 In the package folder:
 
 ```bash
-python -m unittest discover -s tests               # 966 tests, 30 skipped, OK on 15 October 2026 (Python 3.13)
+python -m unittest discover -s tests               # 0.1.5: 978 tests, 36 skipped, OK on 18 October 2026 (Python 3.12)
 python -m unittest discover -s tests -p 'test_autopipe*.py'
 python scripts/demo_synthetic.py
 ```
 
-`tests/test_autopipe.py` runs the whole chain on a synthetic scroll with stand-in VC3D tools (`tests/vc3d_fakes.py`).
+The 18 October run took 1248 s on a shared 4-core cloud container without Playwright or the MCP SDK, so the seven
+browser tests and the MCP SDK client test skipped; `tests/test_autopipe_monitor_ui.py` needs the `playwright` package and a
+system `chromium`. `tests/test_autopipe.py` runs the whole chain on a synthetic scroll with stand-in VC3D tools (`tests/vc3d_fakes.py`).
 Run tests through `discover -s tests`; they import each other's helpers. For this repository's own checks:
 `python -m unittest tests.test_repo`.
 
