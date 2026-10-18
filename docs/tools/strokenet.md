@@ -37,9 +37,9 @@ Status is Experimental because the model **missed its own preregistered bar**. W
 
 Its limits, before any further test:
 
-- **One reader's appearance.** It saw only the organizers' `new_canon_autoresearch_recipe` maps of one scroll; maps from other ink models look different (stroke width, contrast, background, tile pattern) and are outside what it learned.
-- **Paris 4's handwriting.** Its labels assumed a 4.5 to 9 mm line pitch with lines along the rows; smaller or larger writing, or a turned map, did not get text labels.
-- **Input assumptions.** The organizers' 0 to 255 scale, papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side.
+- **One reader's appearance.** It saw only the organizers' `new_canon_autoresearch_recipe` maps of one scroll (Sourced fact, the run's data manifest); maps from other ink models look different (stroke width, contrast, background, tile pattern) and are outside what it learned (Interpretation).
+- **Paris 4's handwriting.** Its labels assumed a 4.5 to 9 mm line pitch with lines along the rows (Sourced fact, the label rule in `data.py`); smaller or larger writing, or a turned map, did not get text labels (Interpretation).
+- **Input assumptions.** The organizers' 0 to 255 scale, papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side (Sourced fact, `kit/strokenet.py`). Float or rescaled maps, other scrolls and other ink models are not tested in this page's published evidence (Interpretation: expect it to do worse there).
 
 A rework (version 5) for maps from any ink reader and any scroll, judged on human ink labels with a preregistered leave-one-scroll-out test, is in progress in private work. Until it has a held-out result, this page and the command describe version 1 only.
 
@@ -47,7 +47,7 @@ A score is model output, not a reading. A high score where no text is known is n
 
 ## When to use it
 
-- Finding where text-like ink sits on a large ink map of the organizers' 0 to 255 scale, as a pointer for a person to look.
+- Finding where text-like ink sits on a large ink map of the organizers' 0 to 255 scale, as a pointer for a person to look. Simple ink density did as well on its held-out test (T1 0.996 against 0.990), so rank by density too and compare.
 - Telling text-like ink from ink that is merely dense, with the caveat that window roughness does this better on the test set (T8 in the model card).
 - Checking whether a map is on its side: the orientation hint and the rotation control.
 - Rebuilding or auditing the preregistered run from public data with the scripts.
