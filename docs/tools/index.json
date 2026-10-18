@@ -4256,7 +4256,7 @@
    ],
    "go_ahead": {
     "needed": false,
-    "text": "Not needed to make files. Publishing them anywhere (a Hugging Face Space thumbnail, release notes, a forum) needs Chase's yes first (the go-ahead rule, hard rule 8), and real-data renders never go into public Scrolls"
+    "text": "Not needed to make files. Publishing them anywhere (a Hugging Face Space thumbnail, release notes, a forum) needs Chase's yes first (the go-ahead rule, hard rule 8). Model output of any scroll and real-data media of prize-eligible scrolls never go into public Scrolls; other real-data media follow [the public media rule](../media/README.md)"
    },
    "checked": {
     "date": "2026-10-18",
@@ -4275,7 +4275,7 @@
     "Runs on": "Any CPU. A hero renders at 3840 x 1280 in 85 to 640 s on a 4-core cloud container shared with about ten other agents, with a peak of 1.7 GB of memory (measured 2026-10-18; see Cost and time). Encoding a 20 s clip takes seconds",
     "Network": "None, except that `capture_web.py` opens the page it is given, which may be a URL",
     "Writes": "`hero.py`: `NAME.webp`, `BASE-card.jpg` and `NAME.json` in `--out-dir` (with `--preview`, only `NAME-preview.png`). `encode.py`: the `--mp4` and `--gif` files and, with `--meta`, one `NAME.json` beside them. `capture_web.py`: `frame-NNNNN.png` frames and named shots in `--out-dir`. `sweep.py`: `frame-NNNNN.png` in `--out-dir`. Each overwrites files of the same name",
-    "Go-ahead": "Not needed to make files. Publishing them anywhere (a Hugging Face Space thumbnail, release notes, a forum) needs Chase's yes first (the go-ahead rule, hard rule 8), and real-data renders never go into public Scrolls",
+    "Go-ahead": "Not needed to make files. Publishing them anywhere (a Hugging Face Space thumbnail, release notes, a forum) needs Chase's yes first (the go-ahead rule, hard rule 8). Model output of any scroll and real-data media of prize-eligible scrolls never go into public Scrolls; other real-data media follow [the public media rule](../media/README.md)",
     "Released": "Not yet: local branch `claude/release-media`, not pushed (18 October 2026)",
     "Guide": "[Media labels, the reference style and every asset](../assets/README.md)",
     "License": "Apache 2.0 for the scripts and the procedural pictures; scan data and anything rendered from it is CC BY-NC 4.0",

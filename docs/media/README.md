@@ -4,7 +4,7 @@ What pictures, GIFs and clips public Scrolls may hold, and how the rule is check
 
 ## Where the rule comes from
 
-On 18 October 2026, about 17:00 UTC, Chase left this decision to the agents: "and for band flags, and public media rule... idk do what you think is best" and "basically idk , you know more so do whats best". The coordinating agent set the rule below under that delegation the same day. It narrows nothing in hard rule 6 ("No scroll data, maps or weights in git"): a still or a short clip made to show what a released tool looks like is an illustration, not scroll data, and volumes, segments, ink maps and weights stay out of Git as before. Chase can change or withdraw the rule at any time; record that here and in the AGENTS.md row.
+On 18 October 2026, about 17:00 UTC, Chase left this decision to the agents: "and for band flags, and public media rule... idk do what you think is best" and "basically idk , you know more so do whats best". The coordinating agent set the rule below under that delegation the same day. Hard rule 6's short form in AGENTS.md ("No scroll data, maps or weights in git") is unchanged: a still or a short clip made to show what a released tool looks like is an illustration, not scroll data, and volumes, segments, surface volumes, ink maps and weights stay out of Git as before. Its full form, rule 10 of [the rulebook](../AI-AGENTS.md), did change the same day: it banned all renders and kept scan pixels out of `docs/assets/`, and it now bans surface volumes (rendered layer stacks) but allows the stills and clips this rule allows. Chase can change or withdraw the rule at any time; record that here and in the AGENTS.md row.
 
 ## The rule
 
@@ -20,7 +20,7 @@ Every file under `docs/assets/`, of any label, is at most **1920 px wide** and a
 | `data.scan` | The scroll, such as `PHerc0139` or `PHerc0172` |
 | `data.voxel_size` | The scan's voxel size, such as `2.399 um` |
 | `data.labels` | `none`, or the published labels drawn on it |
-| `data.credit` | Exactly `Vesuvius Challenge open data, CC BY-NC 4.0`, repeated in the caption |
+| `data.credit` | Exactly `Vesuvius Challenge open data, CC BY-NC 4.0`, repeated in the caption. The older credit `Data: Vesuvius Challenge, CC BY-NC 4.0`, which Scrolls-private's media scripts and sidecars still write, fails here: re-make such a render with these scripts, or update its sidecar and caption, before it moves to public |
 | `data.segment`, `data.volume` | The segment and the volume id, when they apply |
 | `license` | `CC BY-NC 4.0`, the license of the scan data |
 | `command`, `tool.scripts`, `tool.base_commit` | The command, the scripts and the commit that made it (`scripts/media/common.py` `write_sidecar()` fills the last two) |
@@ -45,7 +45,7 @@ Interpretation: public open-data scrolls off those lists include PHerc0139, PHer
 
 - **Before writing.** `write_guard()` refuses model output under any `docs/assets/` folder, and a Real data render whose record fails `real_data_problems()`: a missing data field, credit or license, an eligible scroll named in its data, caption, alt text or file names (scroll numbers, Paris and Scroll 1 to 5 names, and volume ids), or held-out labels drawn. `hero.py` and `encode.py` call it before they render or encode.
 - **After writing.** `size_guard()` removes a file written under `docs/assets/` that is over 1920 px wide or 4 MB; `encode.py` also caps its GIF and MP4 at 4 MB there.
-- **In the tests.** `tests/test_repo.py` runs `public_problems()` on every sidecar under `docs/assets/` (schema, label, caption, license, command, commit, every output's width and bytes, and the real-data checks), checks each file's real pixel size and bytes against its row and sidecar, and fails on a picture or clip tracked outside `docs/assets/` and `docs/images/`. `tests/test_media.py` shows each check failing on a bad record.
+- **In the tests.** `tests/test_repo.py` runs `public_problems()` on every sidecar under `docs/assets/` (schema, label, caption, license, command, commit, every output's width and bytes, and the real-data checks), checks each file's real pixel size and bytes against its row and sidecar, and fails on a picture or clip tracked outside `docs/assets/` and `docs/images/`. SVG files are vector drawings, not pictures under this rule, so charts drawn from published numbers may sit anywhere; the test fails on any tracked SVG that embeds or links a raster picture (`svg_embeds_raster()`). `tests/test_media.py` shows each check failing on a bad record.
 
 The eligible list comes from the newest `kit/data/prizes-*.json`; without one, the checks fail instead of passing. A label is only a claim, so a reviewer still looks at every new picture before it is merged.
 

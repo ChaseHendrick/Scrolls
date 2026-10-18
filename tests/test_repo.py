@@ -292,6 +292,14 @@ class RepoTest(unittest.TestCase):
         self.assertEqual(outside, [], "pictures or clips outside docs/assets/ and docs/images/ (docs/media/README.md)")
         self.assertEqual(too_big, [], f"pictures or clips over {media.MAX_WIDTH} px wide or 4 MB")
 
+    def test_vector_files_carry_no_raster_pixels(self):
+        # SVG files are not pictures under the media rule (charts drawn from numbers may sit anywhere), so one that embeds
+        # or links a raster picture would carry scan pixels past every check above. tests/test_media.py shows this failing.
+        raster = [f.relative_to(ROOT).as_posix() for f in tracked()
+                  if f.suffix.lower() == ".svg" and f.exists()
+                  and media.svg_embeds_raster(f.read_text(encoding="utf-8", errors="replace"))]
+        self.assertEqual(raster, [], "SVG files that embed or link a raster picture (docs/media/README.md)")
+
     def test_media_size_reads_headers(self):
         # The checks above must be able to fail: they read real dimensions, so a wrong size string is caught.
         png = b"\x89PNG\r\n\x1a\n" + b"\0\0\0\rIHDR" + struct.pack(">II", 1920, 640) + b"\0" * 8

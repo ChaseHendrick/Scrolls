@@ -92,6 +92,8 @@ class LabelTest(unittest.TestCase):
                    "an eligible scroll in the caption": ("Real data render", real(caption_extra=" beside PHerc0826")),
                    "an eligible volume id in the caption": ("Real data render", real(caption_extra=", volume 20250521135224")),
                    "held-out ag405 labels": ("Real data render", real("PHerc0841", "ag405", "ag405 inklabels")),
+                   "held-out labels in upper case": ("Real data render", real("PHerc0841", "AG405", "ink labels")),
+                   "held-out labels in mixed case": ("Real data render", real("PHerc0841", "w00", "Ag405 ink labels")),
                    "the old credit": ("Real data render", dict(REAL, data=dict(REAL["data"], credit="Data: x")))}
         for why, (label, meta) in refused.items():
             with self.subTest(why), self.assertRaises(common.MediaError):
@@ -128,6 +130,17 @@ class LabelTest(unittest.TestCase):
         for why, record in bad.items():
             with self.subTest(why):
                 self.assertNotEqual(common.public_problems(record), [])
+
+    def test_an_svg_with_raster_pixels_is_caught(self):
+        chart = '<svg xmlns="http://www.w3.org/2000/svg"><rect width="10" height="4"/><text>AUC 0.71</text></svg>'
+        self.assertFalse(common.svg_embeds_raster(chart))
+        for why, svg in {"an image element": '<svg><image href="slice.png" width="10" height="10"/></svg>',
+                         "a namespaced image": '<svg:svg><svg:IMAGE xlink:href="a.jpg"/></svg:svg>',
+                         "a data URI in CSS": '<svg><style>rect{fill:url(data:image/png;base64,AAAA)}</style></svg>',
+                         "a filter image": '<svg><filter><feImage href="b.webp"/></filter></svg>',
+                         "an HTML img": '<svg><foreignObject><img src="c.png"/></foreignObject></svg>'}.items():
+            with self.subTest(why):
+                self.assertTrue(common.svg_embeds_raster(svg))
 
     def test_size_guard_removes_a_file_over_the_limits(self):
         with tempfile.TemporaryDirectory() as tmp:

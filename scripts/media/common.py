@@ -171,7 +171,7 @@ def real_data_problems(meta, table=None):
         scan = normalize_scroll(data.get("scan") or "")
         where = " ".join([str(data.get("segment") or ""), labels, text])
         for held_scan, held_segment in HELD_OUT_LABELS:
-            if scan == normalize_scroll(held_scan) and (held_segment is None or held_segment in where):
+            if scan == normalize_scroll(held_scan) and (held_segment is None or held_segment.lower() in where.lower()):
                 problems.append(f"it draws held-out labels ({held_scan}{' ' + held_segment if held_segment else ''}); "
                                 "a public render shows none")
     return problems
@@ -273,6 +273,16 @@ def size_guard(path, width=None):
         path.unlink()
         raise MediaError(f"{path.name} is {width} px wide and {nbytes:,} bytes; a file under docs/assets/ is at most "
                          f"{MAX_WIDTH} px wide and {MAX_BYTES:,} bytes (removed it)")
+
+
+# An SVG may sit outside the media folders (charts drawn from published numbers), but it may carry no raster pixels:
+# an embedded or linked picture would skip the row, sidecar, size and prize checks that pictures get.
+SVG_RASTER = re.compile(r"<\s*(?:svg:)?(?:image|feImage|img)\b|data:image/", re.IGNORECASE)
+
+
+def svg_embeds_raster(text):
+    """True when SVG text embeds or links a raster picture: an <image>, <feImage> or <img> element, or a data:image URI."""
+    return bool(SVG_RASTER.search(text))
 
 
 def media_size(path):
