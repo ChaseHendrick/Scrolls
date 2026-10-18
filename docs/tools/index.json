@@ -7430,7 +7430,7 @@
     "Network": "None. Branch checks read the refs this clone already has, as of its last fetch",
     "Writes": "Nothing (prints only)",
     "Go-ahead": "Not needed: it only reads. Fixing what it reports follows the usual rules (a post or a branch deletion still needs its own yes)",
-    "Released": "Public `main` from the change that adds it (18 Oct 2026). The same file is in Scrolls-private, as with `kit/routines.py`; the differences of this copy are listed at the top of `kit/stale.py`",
+    "Released": "Public `main` from the change that adds it (18 Oct 2026). The same file is in Scrolls-private, as with `kit/routines.py`; the two copies are kept byte-identical (history at the top of `kit/stale.py`)",
     "Checked": "2026-10-18 against commit `b449398` plus this tool"
    },
    "page": "docs/tools/stale.md",
