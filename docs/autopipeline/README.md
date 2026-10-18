@@ -1,5 +1,9 @@
 # AutoPipeline reference
 
+![Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.](../assets/autopipeline-readme-hero.webp)
+
+*Concept illustration. [Artwork notes](../assets/README.md).*
+
 AutoPipeline runs villa's VC3D tools and ink detection unattended on one released Vesuvius Challenge scan, from the
 scan's headers to checked surfaces, ink maps with controls, and a report. This page is a reference for people and for
 agents. It documents the released package, AutoPipeline 0.1.4, as its code reads; every command, flag, setting and

@@ -4,7 +4,9 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](#quick-start-kit)
 [![Vesuvius Challenge](https://img.shields.io/badge/Vesuvius_Challenge-scrollprize.org-b4965a.svg)](https://scrollprize.org/)
 
-![Hero](docs/assets/readme-hero.svg)
+![Concept illustration of layered carbonized papyrus unfolding into a copper surface mesh.](docs/assets/scrolls-readme-hero.webp)
+
+*Concept illustration. [Artwork notes](docs/assets/README.md).*
 
 Research notes, a run planner, and an experiment ledger for the [Vesuvius Challenge](https://scrollprize.org/): reading the carbonized Herculaneum papyri from X-ray CT scans.
 
