@@ -32,6 +32,7 @@ READ_ONLY = {
     "kit leaderboard check",
     "kit releases check",
     "kit routines check handoff",
+    "kit stale",                     # reads committed files and local git history only
     "unittest tests.test_repo",
 }
 

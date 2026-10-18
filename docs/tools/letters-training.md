@@ -1,6 +1,6 @@
 # letters-training: training data, training, fine-tuning and benchmarks of the letter reader
 
-`scripts/letters/` holds the scripts that make the Greek letter reader's synthetic training lines, train and fine-tune its weights, fetch the public PHerc. 1667 and PHerc. 172 data, and run the benchmarks and control checks behind its published numbers.
+`scripts/letters/` holds the scripts that make Scroll Text Reader's synthetic training lines, train and fine-tune its weights, fetch the public PHerc. 1667 and PHerc. 172 data, and run the benchmarks and control checks behind its published numbers.
 
 | Field | Value |
 | --- | --- |

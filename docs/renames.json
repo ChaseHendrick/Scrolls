@@ -1,0 +1,15 @@
+{
+  "about": "Names the repository has retired, read by python -m kit stale (kit/stale.py, check names). A live page (the entry files, the indexes and every tool page) that still uses an old name needs a look: in a table row always, since a table names the thing, and in prose when the line does not also give the new name (or always, when the entry sets allow_formerly to false). Published records (docs/prereg/, docs/evidence/, docs/logs/, archives), code blocks, inline code spans and dated history lines from before the rename are left alone. Fields: old, new, since (YYYY-MM-DD), source (where the decision is recorded); optional keep (phrases, case-insensitive, where the old name is meant, such as the sentence that records the rename) and allow_formerly (default true). Entries are read in order: a line a longer old name flags is not flagged again by a shorter one listed after it. Add an entry in the same change that renames something. Scrolls-private also retires the shorter \"letter reader\"; this list gives only the full name for now, because public live pages still use \"the letter reader\" as a plain description on about 50 lines (the guide letter-reader.md, tool page titles) and the rename commit d3dc343 left those as they were.",
+  "renames": [
+    {
+      "old": "Greek letter reader",
+      "new": "Scroll Text Reader",
+      "since": "2026-10-17",
+      "source": "commit d3dc343, 17 Oct 2026 (Rename the reader to Scroll Text Reader); docs/HANDOFF.md, row Scroll Text Reader name",
+      "keep": [
+        "letter reader is called Scroll Text Reader",
+        "letter reader renamed Scroll Text Reader"
+      ]
+    }
+  ]
+}

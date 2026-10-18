@@ -16,7 +16,7 @@
 | Network | None. It reads local files only; you download the TEI texts yourself |
 | Writes | `build`: the model file OUT, at exactly that path (its folder made if missing), replacing any file there. `score`: nothing (prints only) |
 | Go-ahead | Not needed |
-| Released | Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57), with the Greek letter reader); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day |
+| Released | Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57), with the reader now called Scroll Text Reader); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day |
 | Guide | [letter-reader.md, Optional language model](../letter-reader.md#optional-language-model) |
 | Checked | 2026-10-16 against commit `29e7e8c` |
 
@@ -232,7 +232,7 @@ python -m unittest tests.test_letterread.PageTest.test_orientation_reads_leave_t
 
 ## Related
 
-- [letterread](letterread.md): the Greek letter reader whose `--lm` uses this model, beside the ink-only decode.
+- [letterread](letterread.md): Scroll Text Reader, whose `--lm` uses this model, beside the ink-only decode.
 - [letters-training](letters-training.md): training data, training and the benchmark scripts, several of which take `--lm`.
 - [letterlines](letterlines.md): training lines from your own transcriptions, and character error on lines kept apart.
 - [letterdemo](letterdemo.md): the offline check of a reader install.
