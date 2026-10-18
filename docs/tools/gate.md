@@ -24,7 +24,7 @@
 
 Several released ink readers (ink models) can be run on the same surface. Gate A is this repository's fixed rule for saying which of them is best before choosing one for further work. The rule belongs to Phase 0 of the project roadmap, which is now kept privately; the public statement of the rule is the docstring of `kit/gate.py`, and the [glossary](../../GLOSSARY.md) entry "Gate A" repeats it.
 
-The rule: score each reader on three 640 px crops of PHerc0841 (one each on segments w00, ag896 and ag405, the windows of densest labelled ink, with a 64 px edge left out), with [`auc`](auc.md) against the organizers' labels of 2026-09-18. Rank readers by their mean forward AUC over the three crops. A reader counts only if its forward AUC is at least 0.10 above its reverse-depth AUC on every crop (the reverse-depth map is the same model run with the volume's layers in the opposite order; see [auc](auc.md)). One reader beats another only by a lead of at least 0.02 in mean AUC.
+The rule: score each reader on three 640 px crops of PHerc0841 (one each on segments w00, ag896 and ag405, the windows of densest labeled ink, with a 64 px edge left out), with [`auc`](auc.md) against the organizers' labels of 2026-09-18. Rank readers by their mean forward AUC over the three crops. A reader counts only if its forward AUC is at least 0.10 above its reverse-depth AUC on every crop (the reverse-depth map is the same model run with the volume's layers in the opposite order; see [auc](auc.md)). One reader beats another only by a lead of at least 0.02 in mean AUC.
 
 `kit gate` applies that rule mechanically. It reads two sources of scores. The committed "bars" are the CPU scores in [`results.json`](../results.json) (rows of `results` with `window` "crop" and `inner_px` 64). The Mac results are the `kit auc --json` files that `scripts/mac-w045.sh` writes under `WORK/SEGMENT/results/` when run in QUICK mode (crop only) by `scripts/mac-phase0.sh`. A Mac file counts only if it was scored on the same crop with the same 64 px edge. As a device check, the Mac's `ink_9um` seed 42 score must equal the committed CPU bar to four decimals; a mismatch is printed as MISMATCH, blocks the verdict (no winner or lead) and makes the exit code 1.
 
@@ -33,14 +33,14 @@ It does not run any model, score any map, or test whether a lead is beyond sampl
 ## When to use it
 
 - After `scripts/mac-phase0.sh` (or any new crop scores) to see the Gate A table and verdict.
-- Before choosing which released reader to run on new data, to check which one the committed scores favour and by how much.
+- Before choosing which released reader to run on new data, to check which one the committed scores favor and by how much.
 - As a device check: a Mac `ink_9um` seed 42 run that does not reproduce the CPU bar shows up here.
 
 Do not use it:
 
 - To score a map: use [`auc`](auc.md) (with `--control`, `--crop ... --inner 64` for these crops).
 - To decide whether a small lead is real: use `kit auc MAP.tif --compare OTHER.tif --bootstrap 300` on each crop ([auc](auc.md)); the 0.02 lead sits inside the measured noise (Checks and controls).
-- To rank readers on any other segment or scroll: the segments are fixed in `SEGMENTS`. For w045 or other labelled segments, run [`auc`](auc.md) and compare by hand.
+- To rank readers on any other segment or scroll: the segments are fixed in `SEGMENTS`. For w045 or other labeled segments, run [`auc`](auc.md) and compare by hand.
 - To rank Hecate on PHerc0841: PHerc0841 may be in Hecate's training data (`held_out` in `results.json`, [log](../logs/2026-10-09-pherc0841-hecate.md)), so its scores there are not a fair test.
 
 ## Quick start
@@ -228,7 +228,7 @@ They cover ranking from committed bars alone with a clear win, a Mac reader whos
 - 2026-10-17: reference corrected to describe behavior already present in `cfb6792`: the blocked verdict, `replaced` records and mismatched control-edge rejection. No scoring behavior change.
 - 2026-10-17: a Mac `auc_*.json` whose `forward` or `control` is not an object is skipped with a message; before, it stopped the gate with an `AttributeError` traceback and exit code 1 (`107b379`).
 - 2026-10-14: a missing `docs/results.json`, as in an installed package, gives the "run it from a clone" message and exit code 2 instead of a traceback (`ca7b143`).
-- 2026-10-09: the docstring states the rule itself, since the roadmap moved to the private repository, and names the smallest committed gap (0.1015); no behaviour change (`3ba683f`).
+- 2026-10-09: the docstring states the rule itself, since the roadmap moved to the private repository, and names the smallest committed gap (0.1015); no behavior change (`3ba683f`).
 - 2026-10-07: first version, with committed bars, Mac `auc_*.json` files, the 0.10 control gap and the Mac against CPU check, run at the end of `scripts/mac-phase0.sh` (`bec6fb9`).
 
 ## Related

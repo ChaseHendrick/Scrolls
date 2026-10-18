@@ -15,10 +15,10 @@ prediction, no ink):
                     and the pair's median spacing against the median over the pairs up to two places away (itself
                     included), flagged below 0.5 or above 1.75 times it (a winding counted twice, or one missing
                     all the way)
-  missing sectors   heights and angles where a segment has no vertex while both its neighbours do, within the
-                    segment's own z extent: the neighbours' spacing on those rays against the rays where the segment
+  missing sectors   heights and angles where a segment has no vertex while both its neighbors do, within the
+                    segment's own z extent: the neighbors' spacing on those rays against the rays where the segment
                     is present (overall and by height), the same for the next pair out, a control of other pairs as
-                    many windings apart on the same rays, and the neighbours' vertices there
+                    many windings apart on the same rays, and the neighbors' vertices there
   missing runs      the same where two or more adjacent windings have no vertex while the windings either side do,
                     at heights within the z extent of at least one of them
   skipped windings  vertices whose nearest other segment along the normal is two or more windings away, outward or
@@ -33,9 +33,9 @@ prediction, no ink):
 
 A check is flagged when what it finds reaches both --min-count (rays or vertices) and --min-share (of the rays or
 vertices it looked at). A check that had nothing to look at (an adjacent pair that no ray crosses once each, a
-segment with a neighbour along the normal for under half of its vertices, or whose order check keeps under half of
+segment with a neighbor along the normal for under half of its vertices, or whose order check keeps under half of
 its vertices) is listed under summary.not_checked, and the stack is then not reported clean. The innermost and
-outermost segments have a neighbour on one side only, so they get no missing-sector check and a missing run that
+outermost segments have a neighbor on one side only, so they get no missing-sector check and a missing run that
 includes them cannot be seen; summary.not_covered says so in every report. Exit status: 0 when every check looked
 and none flagged, 1 when something is flagged or not checked, 2 when the run could not be made (bad input, an
 unwritable output or an unexpected error).
@@ -50,7 +50,7 @@ in the report is then in the umbilicus's volume, except the examples' row and co
 The voxel size is --voxel-um, else the umbilicus's metadata.voxelsize_um, else (without --transform) the segment
 folder name's "-N.NNNum.tifxyz"; any two of these that are known must agree to 1 %. Angles are degrees about the
 umbilicus at the same z, atan2(y - y_u, x - x_u), 0 to 360, with the umbilicus interpolated linearly between
-control points and held constant beyond them. Distances are micrometres: radial along a ray from the umbilicus, or
+control points and held constant beyond them. Distances are micrometers: radial along a ray from the umbilicus, or
 along a vertex normal for the vertex checks. Areas are summed vertex cell areas in cm2. A gap's width is the angle
 from its first ray to its last.
 
@@ -107,11 +107,11 @@ DEFAULTS = {
     "ray_step_deg": 1.0,        # rays from the umbilicus, one per this many degrees
     "planes": 50,               # planes of constant z, evenly over the stack's height (unless plane_z is given)
     "plane_z": None,            # (start, stop, step) in voxels, stop included
-    "max_normal_um": 600.0,     # farthest neighbour looked for along a vertex normal
+    "max_normal_um": 600.0,     # farthest neighbor looked for along a vertex normal
     "coincide_um": 20.0,        # another segment this close along the normal: the two cannot be told apart
     "skip_frac": 0.5,           # a skipped winding is closer than this share of the local pitch
     "tol_cells": 1.5,           # same height and angle: within this many grid steps of z and of arc
-    "upsample": 2,              # neighbour segments are made this much denser (bilinear) for the normal search
+    "upsample": 2,              # neighbor segments are made this much denser (bilinear) for the normal search
     "min_count": 10,            # a check is flagged at this many rays or vertices ...
     "min_share": 0.01,          # ... and this share of the rays or vertices it looked at
 }
@@ -331,7 +331,7 @@ def load_transform(spec, catalog=None):
 
 def grid_geometry(xyz, valid):
     """(unit normals (H, W, 3), cell area per vertex in voxels^2, ok, median edge length) of a grid: central
-    differences where both neighbours are valid, else one-sided; ok = valid with a finite normal."""
+    differences where both neighbors are valid, else one-sided; ok = valid with a finite normal."""
     np = _np()
     P = np.where(valid[..., None], xyz, np.nan)
     with np.errstate(invalid="ignore"):
@@ -551,7 +551,7 @@ def plane_cut(tri, z0):
 
 def ray_radii(pieces, centre, nrays, keep=4):
     """For rays from centre at angles 360 k / nrays: the number of distinct crossings of the pieces, and the
-    first `keep` crossing distances from the centre, sorted (NaN beyond the count)."""
+    first `keep` crossing distances from the center, sorted (NaN beyond the count)."""
     np = _np()
     counts = np.zeros(nrays, np.int16)
     R = np.full((nrays, keep), np.nan, np.float32)
@@ -657,10 +657,10 @@ def circular_runs(mask):
     return out
 
 
-# ---------------------------------------------------------------- neighbours along the normal
+# ---------------------------------------------------------------- neighbors along the normal
 
 class Dense:
-    """A neighbour segment for the normal search: its grid made denser, with normals, indexed by height and by arc
+    """A neighbor segment for the normal search: its grid made denser, with normals, indexed by height and by arc
     length about the umbilicus (angles mod 360 at the segment's median radius, repeated one turn either side), so
     every layer of it at a point's height and angle is found together."""
 
@@ -759,7 +759,7 @@ def neighbour_table(segs, umb, upsample_k, maxd, tol_cells, log=None):
                       "in_d": grid(np.where(np.isfinite(in_d), in_d, np.nan), np.nan), "in_j": grid(in_j, -1),
                       "adj": {b: grid(t, np.nan) for b, t in adj.items()}})
         if log:
-            log(f"stackcheck: neighbours along the normal of {A.name} ({time.time() - t0:.0f} s)")
+            log(f"stackcheck: neighbors along the normal of {A.name} ({time.time() - t0:.0f} s)")
     return table
 
 
@@ -825,7 +825,7 @@ def turn_overlap(seg):
     """Per line along the turn, the angle traced past a full turn (over half a grid step of arc), and the two pieces
     traced at the same angles, as (spans, past, outer piece mask, inner piece mask, which end of the turn the outer
     piece is). The outer piece is the one farther from the umbilicus; check_stack decides which piece is the
-    doubly traced one from the neighbours."""
+    doubly traced one from the neighbors."""
     np = _np()
     T = seg.turn if seg.along == 1 else seg.turn.T
     Rr = seg.radius if seg.along == 1 else seg.radius.T
@@ -1047,7 +1047,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
             not_checked.append(f"order {names[k]}/{names[k + 1]}: no ray crosses both once")
         pairs.append(rec)
     # each pair's median spacing on its rays against the median over the pairs up to two places away (itself
-    # included, so that one odd pair does not move its neighbours' reference)
+    # included, so that one odd pair does not move its neighbors' reference)
     ray_med = []
     for k, p in enumerate(pairs):
         both = (cnt[:, k] == 1) & (cnt[:, k + 1] == 1)
@@ -1061,14 +1061,14 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         if p["rays"] and len(near_pairs) < 2:
             not_checked.append(f"pair spacing {p['inner']}/{p['outer']}: no other pair nearby to compare with")
 
-    # neighbours along the normal
+    # neighbors along the normal
     table = neighbour_table(segs, umb, int(S["upsample"]), maxd, float(S["tol_cells"]), log)
     for s, tb in zip(segs, table):
         near = np.fmin(tb["out_d"], tb["in_d"])
         masks[s.name]["coincident"] = s.ok & (near <= coincide)
         found = s.ok & ((tb["out_j"] >= 0) | (tb["in_j"] >= 0))
         if found.sum() < 0.5 * s.n:
-            not_checked.append(f"vertex checks {s.name}: a neighbour along the normal for only "
+            not_checked.append(f"vertex checks {s.name}: a neighbor along the normal for only "
                                f"{100 * found.sum() / max(s.n, 1):.0f} % of its vertices")
 
     # d. turn overlaps (first: order conflicts leave the overlap masks out)
@@ -1089,7 +1089,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
     for k, s in enumerate(segs):
         spans, past, outer_p, inner_p, end = turn_overlap(s)
         rest = s.ok & ~outer_p & ~inner_p
-        # each piece against the rest of the segment: a piece on a neighbour's sheet lies much closer to it
+        # each piece against the rest of the segment: a piece on a neighbor's sheet lies much closer to it
         r_out = ratio(med_adj(k, k + 1, outer_p), med_adj(k, k + 1, rest)) if k + 1 < n else float("nan")
         r_in = ratio(med_adj(k, k - 1, inner_p), med_adj(k, k - 1, rest)) if k >= 1 else float("nan")
         # the far piece, as a rule (the turn ran on onto the next winding's sheet); the near piece when it lies on
@@ -1189,7 +1189,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         inz = (Z >= s.zmin) & (Z <= s.zmax)
         loose = present[:, k - 1] & present[:, k + 1]
         gap_l = loose & ~present[:, k]
-        gap_o = once[:, k - 1] & once[:, k + 1] & inz      # rays for spacing: each neighbour crossed once
+        gap_o = once[:, k - 1] & once[:, k + 1] & inz      # rays for spacing: each neighbor crossed once
         d = first[:, k + 1] - first[:, k - 1]
         lab = f"{names[k - 1]} to {names[k + 1]}"
         rec = {"segment": s.name, "neighbours": [names[k - 1], names[k + 1]],
@@ -1199,14 +1199,14 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
                "neighbour_spacing": {"gap": _spacing(d[gap_o & ~present[:, k]], vu),
                                      "present": _spacing(d[gap_o & present[:, k]], vu)}}
         if not (loose & inz).any():
-            not_checked.append(f"missing sectors {s.name}: no ray at its heights crosses both neighbours")
+            not_checked.append(f"missing sectors {s.name}: no ray at its heights crosses both neighbors")
         if k >= 2 and k + 2 < n:
             o2 = gap_o & once[:, k - 2] & once[:, k + 2]
             d2 = first[:, k + 2] - first[:, k - 2]
             rec["outer_pair_spacing"] = {"pair": [names[k - 2], names[k + 2]],
                                          "gap": _spacing(d2[o2 & ~present[:, k]], vu),
                                          "present": _spacing(d2[o2 & present[:, k]], vu)}
-        # by height: the neighbours' spacing in the gap, and where the outer neighbour lies against the next inner
+        # by height: the neighbors' spacing in the gap, and where the outer neighbor lies against the next inner
         # segment as well
         g = gap_o & ~present[:, k]
         if g.any():
@@ -1399,7 +1399,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         "tool": "kit stackcheck", "version": 1, "created": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "frame": {"positions": "tifxyz values, voxels of the umbilicus's volume", "voxel_um": vu,
                   "angles": "degrees about the umbilicus at the same z, atan2(y - y_u, x - x_u), 0 to 360",
-                  "distances": "micrometres, radial along rays from the umbilicus or along vertex normals",
+                  "distances": "micrometers, radial along rays from the umbilicus or along vertex normals",
                   "rows_cols": "examples' row and col are on each segment's input grid"},
         "umbilicus": umb.source,
         "settings": {**{k: (list(v) if isinstance(v, tuple) else v) for k, v in S.items()},
@@ -1414,7 +1414,7 @@ def check_stack(segs, umb, voxel_um, settings=None, log=None):
         "summary": {"clean": not any(flags.values()) and not not_checked, "flagged": flags,
                     "not_checked": not_checked,
                     "not_covered": [f"missing sectors of {names[0]} and {names[-1]}: the innermost and outermost "
-                                    f"segments have a neighbour on one side only",
+                                    f"segments have a neighbor on one side only",
                                     f"missing runs that include {names[0]} or {names[-1]}"]},
         "order": {"pairs": pairs, "vertices": order_v},
         "missing_sectors": missing, "missing_runs": missing_runs, "skipped_windings": skips,
@@ -1481,7 +1481,7 @@ def format_report(rep):
         L.append(f"  {p['inner']}/{p['outer']}: within {rep['settings']['coincide_um']} um on "
                  f"{100 * (p['within_coincide_share'] or 0):.1f} % of rays; median "
                  f"{p['spacing_against_nearby_pairs']} times the nearby pairs'{mark}")
-    L.append("b. missing sectors (neighbours crossed, segment not)")
+    L.append("b. missing sectors (neighbors crossed, segment not)")
     for r in rep["missing_sectors"]:
         if not r["gap_rays"] and not r["gap_rays_outside_own_height"]:
             continue

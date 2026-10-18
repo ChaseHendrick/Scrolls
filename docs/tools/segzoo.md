@@ -1,6 +1,6 @@
-# segzoo: modern segmentation models next to nnU-Net, with licences, trainers and controls
+# segzoo: modern segmentation models next to nnU-Net, with licenses, trainers and controls
 
-`python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with licence and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls.
+`python -m kit segzoo` lists twelve segmentation model families (nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv2 and v3, SAM 2, MedSAM2, Mamba) with license and fit; `scripts/segzoo/` trains them inside nnU-Net and scores them against controls.
 
 | Field | Value |
 | --- | --- |
@@ -21,11 +21,11 @@
 
 ## What it does
 
-Chase asked on 17 October 2026 to add nnU-Net "where needed", plus NVIDIA Auto3DSeg, MedSAM2, DINOv3, MedNeXt, Swin UNETR, SegFormer and SS2DNet or other Mamba-based models. "Where needed" here means: where a family could plausibly beat what a tool uses now, on known-answer data, and where its licence allows what we would do with it. This tool is the place where those families live, so that a benchmark can swap one in with one change and everything else held fixed.
+Chase asked on 17 October 2026 to add nnU-Net "where needed", plus NVIDIA Auto3DSeg, MedSAM2, DINOv3, MedNeXt, Swin UNETR, SegFormer and SS2DNet or other Mamba-based models. "Where needed" here means: where a family could plausibly beat what a tool uses now, on known-answer data, and where its license allows what we would do with it. This tool is the place where those families live, so that a benchmark can swap one in with one change and everything else held fixed.
 
 It has two parts:
 
-- **`kit segzoo`** (standard library) is a registry. For each family it records the package and version, the code and weights licences, whether the weights are gated, whether a tool trained from it could be released under a permissive licence (`release_ok`), the devices it runs on, how it would fit this repository's work (surfaces, ink, sheet following, letters), the published evidence for it, and a verdict: `baseline`, `benchmark`, `control`, `probe`, `private benchmark`, `private probe` or `not now`. `kit segzoo env` reports which families this Python can run, without importing anything. `kit segzoo datalist` turns an nnU-Net v2 raw dataset into the datalist and task file NVIDIA's Auto3DSeg (MONAI AutoRunner) reads, with the same fold split every time.
+- **`kit segzoo`** (standard library) is a registry. For each family it records the package and version, the code and weights licenses, whether the weights are gated, whether a tool trained from it could be released under a permissive license (`release_ok`), the devices it runs on, how it would fit this repository's work (surfaces, ink, sheet following, letters), the published evidence for it, and a verdict: `baseline`, `benchmark`, `control`, `probe`, `private benchmark`, `private probe` or `not now`. `kit segzoo env` reports which families this Python can run, without importing anything. `kit segzoo datalist` turns an nnU-Net v2 raw dataset into the datalist and task file NVIDIA's Auto3DSeg (MONAI AutoRunner) reads, with the same fold split every time.
 - **`scripts/segzoo/`** (torch) holds the code that runs them: nnU-Net v2 trainer classes that swap in MedNeXt, Swin UNETR, SegResNet, SegFormer or an SS2D U-Net while keeping nnU-Net's data, loss, ignore label and inference; a pure-PyTorch selective scan and SS2D block (the Mamba-style layer, no CUDA extension needed); a SAM 2 or MedSAM2 sheet follower with a scorer and a copy-seed control; and a frozen-feature probe that puts a logistic head on DINOv2 or DINOv3 features.
 
 It does not ship trained weights, it does not decide that a family is better, and it does not run anything on scroll data by itself. Every number a model here produces is model output, and an ink map made with any of them is model output, not a reading.
@@ -34,10 +34,10 @@ Terms: **nnU-Net** is the self-configuring U-Net framework the community's surfa
 
 ## When to use it
 
-- Before adding a new segmentation model anywhere: `kit segzoo show ID` says whether its licence allows a release and what evidence exists.
+- Before adding a new segmentation model anywhere: `kit segzoo show ID` says whether its license allows a release and what evidence exists.
 - To train a challenger to an nnU-Net model on the same dataset and plans: `segzoo_nnunet.py shim`, then `nnUNetv2_train ... -tr nnUNetTrainer_SZMedNeXtB` (or another class from `segzoo_nnunet.py list`).
 - To run NVIDIA Auto3DSeg on a dataset already in nnU-Net form: `kit segzoo datalist RAW --out DIR`, then point AutoRunner at `DIR/task.yaml`.
-- To ask whether SAM 2 or MedSAM2 can follow labelled sheets through a CT cube from one seeded slice: `segzoo_sam2.py follow`, then `score`, which compares it with copying the seed to every slice.
+- To ask whether SAM 2 or MedSAM2 can follow labeled sheets through a CT cube from one seeded slice: `segzoo_sam2.py follow`, then `score`, which compares it with copying the seed to every slice.
 - To ask, on a CPU, whether a frozen DINOv2 or DINOv3 backbone helps a small 2D task (single letters, triage windows): `segzoo_probe.py features`, then `fit`.
 
 Do not use it:
@@ -45,7 +45,7 @@ Do not use it:
 - To score a surface prediction against labels: use the surface scorers named on the [AutoPipeline page](autopipeline.md).
 - To score an ink map: use [`auc`](auc.md), with the reversed-depth control.
 - To run m7 or the released ink models as they are: the [AutoPipeline](autopipeline.md) runs them.
-- To release a model trained from SegFormer, DINOv3 or MedSAM2 weights: their licences are not permissive (`release_ok` is false); the prize requires a permissive licence for released tools.
+- To release a model trained from SegFormer, DINOv3 or MedSAM2 weights: their licenses are not permissive (`release_ok` is false); the prize requires a permissive license for released tools.
 
 ## Quick start
 
@@ -83,14 +83,14 @@ It worked when `list` shows twelve families, `env` shows `ready` for the familie
 Each runnable part carries a control that can fail:
 
 - **Trainers:** a challenger trained with a `nnUNetTrainer_SZ...` class differs from the nnU-Net baseline only in the network (and the optimizer its paper used), so a preregistered comparison has one change per arm. The comparison itself, with its held-out data and the null arm (the baseline retrained the same way), is set in the preregistration, not here.
-- **SAM 2 follower:** `score` reports, per labelled sheet, Dice on each slice, whether the sheet kept its identity, the first slice where it hopped to another sheet, and coverage, and the same numbers for the copy-seed control (the seed slice repeated through the cube). `beats_control` is true only when the follower's mean Dice is above the control's. On the tests' two flat sheets the control keeps identity on every slice, so a follower that hops loses to it.
+- **SAM 2 follower:** `score` reports, per labeled sheet, Dice on each slice, whether the sheet kept its identity, the first slice where it hopped to another sheet, and coverage, and the same numbers for the copy-seed control (the seed slice repeated through the cube). `beats_control` is true only when the follower's mean Dice is above the control's. On the tests' two flat sheets the control keeps identity on every slice, so a follower that hops loses to it.
 - **Frozen probe:** `fit` trains 20 heads on shuffled training labels and reports their accuracy on the test set (`control_shuffled_labels`); a probe has no signal unless its lower 95% bound is above that control's maximum. With `--against`, it also gives the paired difference against another method on the same items, with a bootstrap interval and a verdict (better, worse, no clear difference).
 - **Selective scan:** the chunked scan is checked against a step-by-step loop, values and gradients (tests, about 4e-5 and 3e-6).
 - **Dataset conversion:** malformed metadata, fewer than two folds, an empty dataset, duplicate case/channel files, and a label with the wrong file ending fail before either output is written. Synthetic regression tests check exit code 2 and preservation of existing output files. Valid datasets keep the same hash folds and paths.
 
 The registry's evidence lines are sourced: each family lists its paper or repository, and the margins quoted from them (such as MedNeXt L above ResEnc L on six of six datasets in the nnU-Net Revisited table, arXiv:2404.09556) are the papers' numbers. None of them was measured on scroll CT.
 
-Claim label: Sourced fact for the registry's licences and published numbers; Interpretation for its fit and verdict fields; Model output for anything a model here predicts.
+Claim label: Sourced fact for the registry's licenses and published numbers; Interpretation for its fit and verdict fields; Model output for anything a model here predicts.
 
 ## Commands and options
 
@@ -180,7 +180,7 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 
 - **`kit segzoo datalist`:** an nnU-Net v2 raw folder: `dataset.json` with `channel_names`, `labels`, `numTraining` and `file_ending`; `imagesTr/CASE_0000.nii.gz` (one file per channel, `_0000`, `_0001`, ...) and `labelsTr/CASE.nii.gz`. `channel_names` keys must be `"0"`, `"1"`, ... with no gaps. Only names are read, never the images. Supported endings are `.nii.gz`, `.nii`, `.nrrd`, `.mha`, `.tiff`, `.tif` and `.png`; this converter does not support `.b2nd`. Both images and labels must use the declared ending. Older datasets may omit `file_ending` and use `modality` instead of `channel_names`; duplicate case/channel files still fail. At least one case and two folds are required; check the printed fold counts before training because hashing does not guarantee nonempty folds.
 - **Trainers:** a dataset nnU-Net has planned and preprocessed (`nnUNetv2_plan_and_preprocess`). Patch sides must divide by the network's `multiple_of`; 2D-only networks need a `2d` configuration.
-- **`segzoo_sam2.py`:** a CT cube as `.npy` (Z, Y, X), any dtype (scaled to 0 to 255 per cube); a seed slice `.npy` (Y, X) of integer sheet ids; for `score`, the full instance labels of the cube, same shape. The tests use flat synthetic sheets; real known-answer cubes are instance-labelled public surface cubes.
+- **`segzoo_sam2.py`:** a CT cube as `.npy` (Z, Y, X), any dtype (scaled to 0 to 255 per cube); a seed slice `.npy` (Y, X) of integer sheet ids; for `score`, the full instance labels of the cube, same shape. The tests use flat synthetic sheets; real known-answer cubes are instance-labeled public surface cubes.
 - **`segzoo_probe.py`:** images as above; `labels` (class names), `groups` (for example a papyrus id, so cross-validation never splits one), `ids`.
 
 ## Outputs
@@ -232,7 +232,7 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 | `dims must be 2 or 3, got` | `build()` with another dims | Use 2 or 3 |
 | `segformer is 2D only: give the depth layers as channels (2.5D)` | SegFormer asked for in 3D | Use a 2D configuration, depth layers as channels |
 | `ss2dunet is 2D only` | SS2DUNet asked for in 3D | Use a 2D configuration |
-| `images need 1 or 3 channels, got` | `FrozenFeatures` given another channel count | Give grey or RGB images |
+| `images need 1 or 3 channels, got` | `FrozenFeatures` given another channel count | Give gray or RGB images |
 | `could not write the shim:` | nnU-Net's trainer folder is not writable (or nnunetv2 is missing) | Use `--target` on a writable folder that nnU-Net searches, or install nnunetv2 into a virtual environment |
 | `builds ..., which has no ... D form; use a` | A 2D-only trainer was run with a 3D configuration | Use the `2d` configuration |
 | `needs every patch side divisible by` | The nnU-Net plans' patch size does not divide by the network's multiple (for example SegFormer or Swin UNETR with a 48 patch) | Edit the plans' patch size to a multiple, or use another network |
@@ -243,13 +243,13 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 | `segzoo_probe` | Prefix of a probe error printed by the script, exit 2 | Read the rest of the line |
 | `model must be sam2 or medsam2` | `load_predictor` got another model name | Use one of the two |
 | `the seed must be one 2D slice of labels, got shape` | The seed `.npy` is not 2D | Save one slice of labels |
-| `the seed has no labelled pixel (0 is background)` | The seed slice is all zero | Label at least one sheet |
+| `the seed has no labeled pixel (0 is background)` | The seed slice is all zero | Label at least one sheet |
 | `the cube must be 3D, got shape` | The cube `.npy` is not 3D | Save a (Z, Y, X) cube |
 | `key slice ... is outside 0..` | `--key` beyond the cube along `--axis` | Use an index inside the cube |
 | `seed shape ... does not match a slice,` | The seed's shape differs from a slice of the cube along `--axis` | Cut the seed from the same cube and axis |
 | `prompt must be box or mask` | Another `--prompt` | Use box or mask |
 | `mode must be video_path or tensor` | `follow` called from Python with another mode | Use one of the two (MedSAM2 uses tensor) |
-| `seed object ... covers no labelled sheet on the key slice` | `score` found a seeded id with no true sheet under it | Check that the seed and the truth come from the same cube and key slice |
+| `seed object ... covers no labeled sheet on the key slice` | `score` found a seeded id with no true sheet under it | Check that the seed and the truth come from the same cube and key slice |
 | `prediction shape ... differs from truth` | `score` got labels and truth of different shapes | Score against the cube's own labels |
 | `segzoo_sam2 ... needs torch, Pillow and the sam2 package (...); pip install sam2==1.1.0, or MedSAM2's fork from github.com/bowang-lab/MedSAM2` | A package is missing | Install as the message says |
 | `delta shape ... must equal u shape` | `selective_scan` inputs disagree | Pass delta with the shape of u |
@@ -261,7 +261,7 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 
 ## How it works
 
-**Registry.** `REGISTRY` in `kit/segzoo.py` is a list of dicts with the fields in `FIELDS`. A family is `release_ok` only when both its code and its weights licences are permissive; SegFormer (NVIDIA source code licence, non-commercial), DINOv3 (DINOv3 License, gated) and MedSAM2 (weights for research and education) are not. `env` checks each family's import names with `importlib.util.find_spec` and reads versions from `importlib.metadata`, so it never loads torch.
+**Registry.** `REGISTRY` in `kit/segzoo.py` is a list of dicts with the fields in `FIELDS`. A family is `release_ok` only when both its code and its weights licenses are permissive; SegFormer (NVIDIA source code license, non-commercial), DINOv3 (DINOv3 License, gated) and MedSAM2 (weights for research and education) are not. `env` checks each family's import names with `importlib.util.find_spec` and reads versions from `importlib.metadata`, so it never loads torch.
 
 **Datalist.** Cases are the label file names; each image's channel comes from its `_000N` suffix. `fold_of(case, folds)` is the sha256 of the case id modulo the fold count, so the same case always lands in the same fold. When `dataset.json` has an `ignore` label, the summary notes that Auto3DSeg will treat it as a class.
 
@@ -271,7 +271,7 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 
 **SAM 2 follower.** The cube's slices along the axis become video frames; each seeded sheet is prompted on the key slice by its box or mask; the predictor propagates forward and backward; each pixel takes the sheet with the highest logit above the threshold. The scorer matches each predicted sheet to the true sheet it overlaps most on every slice.
 
-**Probe.** Features are standardised on the training set. A multinomial logistic head is fitted by L-BFGS in float64, with the L2 penalty chosen from `L2_GRID` (1e-4 to 1) by five-fold cross-validation over groups, then refitted on all training items and applied once to the test set. Intervals are 10,000 bootstrap resamples.
+**Probe.** Features are standardized on the training set. A multinomial logistic head is fitted by L-BFGS in float64, with the L2 penalty chosen from `L2_GRID` (1e-4 to 1) by five-fold cross-validation over groups, then refitted on all training items and applied once to the test set. Intervals are 10,000 bootstrap resamples.
 
 ## Cost and time
 
@@ -285,11 +285,11 @@ Measured 2026-10-17 on a 4-core Xeon cloud container (shared), CPU only: `kit se
 - **Success:** Exit 0. A follower result counts only with `beats_control` true; a probe only with `low` above the shuffled-label maximum.
 - **Not a pass:** A trainer that runs is not a better model: only a preregistered comparison on held-out known-answer data with a null arm says that. A probe accuracy without its control, or a follow score without the copy-seed control, is not evidence.
 - **Go-ahead:** Needed before any paid GPU run, before downloading gated weights with Chase's account, and before releasing anything trained from a family with `release_ok` false.
-- **Never:** Never release weights trained from SegFormer, DINOv3 or MedSAM2 under a permissive licence; never run these models on target-scroll data in this public repository; never call an ink map made with them a reading.
+- **Never:** Never release weights trained from SegFormer, DINOv3 or MedSAM2 under a permissive license; never run these models on target-scroll data in this public repository; never call an ink map made with them a reading.
 
 ## Tests
 
-`python -m unittest tests.test_segzoo tests.test_segzoo_models -v`. `test_segzoo` (standard library) covers the registry's fields, ids and licences, `env` without imports, and the datalist: hash folds, several channels, every refusal, and the command writing both files. `test_segzoo_models` skips without torch (and per package without monai, nnunetv2 or transformers): the chunked scan against the loop (values and gradients), every `build` name forward, the trainer checks for dims and divisibility, the SAM 2 follower and scorer with a stand-in predictor and the copy-seed control, and the probe's fit, control and paired verdict. Not covered: real SAM 2 weights, a real nnU-Net training run (done by hand on 17 October 2026 with a synthetic dataset), and any scroll data.
+`python -m unittest tests.test_segzoo tests.test_segzoo_models -v`. `test_segzoo` (standard library) covers the registry's fields, ids and licenses, `env` without imports, and the datalist: hash folds, several channels, every refusal, and the command writing both files. `test_segzoo_models` skips without torch (and per package without monai, nnunetv2 or transformers): the chunked scan against the loop (values and gradients), every `build` name forward, the trainer checks for dims and divisibility, the SAM 2 follower and scorer with a stand-in predictor and the copy-seed control, and the probe's fit, control and paired verdict. Not covered: real SAM 2 weights, a real nnU-Net training run (done by hand on 17 October 2026 with a synthetic dataset), and any scroll data.
 
 ## History
 

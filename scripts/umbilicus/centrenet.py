@@ -1,8 +1,8 @@
-"""A small heatmap CNN that places the winding centre (umbilicus) on a downsampled CT slice.
+"""A small heatmap CNN that places the winding center (umbilicus) on a downsampled CT slice.
 
 Trained on published hand-placed umbilici; every number it reports comes from scrolls it did not train on.
-Input: three neighbouring level-3 slices (z - 64, z, z + 64 level-0 voxels), resampled into a square frame
-around the scroll. Output: a heatmap at half resolution whose peak is the centre.
+Input: three neighboring level-3 slices (z - 64, z, z + 64 level-0 voxels), resampled into a square frame
+around the scroll. Output: a heatmap at half resolution whose peak is the center.
 """
 import os, time
 import numpy as np
@@ -35,7 +35,7 @@ class Frame:
     @staticmethod
     def net_to_l0(p, fr, level=3):
         f = 2 ** level
-        # net pixel p's centre samples level-`level` coordinate o + (p + 0.5) * step - 0.5 (grid_sample, align_corners=False)
+        # net pixel p's center samples level-`level` coordinate o + (p + 0.5) * step - 0.5 (grid_sample, align_corners=False)
         step = fr["px"] / f
         return np.stack([(fr["oy"] + (p[:, 0] + 0.5) * step - 0.5) * f, (fr["ox"] + (p[:, 1] + 0.5) * step - 0.5) * f], 1)
     @staticmethod
@@ -45,7 +45,7 @@ class Frame:
         return np.stack([(yx[:, 0] / f - fr["oy"] + 0.5) / step - 0.5, (yx[:, 1] / f - fr["ox"] + 0.5) / step - 0.5], 1)
 
 def truth_net(s, fr):
-    """Published centre at every slice in net px (NaN outside the annotated z range)."""
+    """Published center at every slice in net px (NaN outside the annotated z range)."""
     _, T = slices.truth(s); z = fr["z_l0"]
     ty, tx = np.interp(z, T[:, 0], T[:, 1]), np.interp(z, T[:, 0], T[:, 2])
     t = Frame.l0_to_net(np.stack([ty, tx], 1), fr).astype(np.float32)
@@ -74,7 +74,7 @@ def stack3(imgs, idx):
 
 def augment(x, t, rng):
     """Random dihedral transform, shift and contrast per sample. x on any device, t (b, 2) numpy in net px.
-    Random numbers and centre bookkeeping stay on the host, so the GPU never waits on them."""
+    Random numbers and center bookkeeping stay on the host, so the GPU never waits on them."""
     b, _, n, _ = x.shape
     out, tt = [], t.copy()
     for i in range(b):
@@ -84,7 +84,7 @@ def augment(x, t, rng):
         for _ in range(int(rng.integers(4))):   # rot90 counter-clockwise: (y, x) -> (n - 1 - x, y)
             xi = torch.rot90(xi, 1, (-2, -1)); y, xx = n - 1 - xx, y
         dy, dx = (int(v) for v in rng.integers(-(n // 10), n // 10 + 1, 2))
-        if not (0 <= y + dy < n and 0 <= xx + dx < n):   # torch.roll wraps: never push the centre off the frame
+        if not (0 <= y + dy < n and 0 <= xx + dx < n):   # torch.roll wraps: never push the center off the frame
             dy = dx = 0
         out.append(torch.roll(xi, (dy, dx), (-2, -1))); tt[i] = (y + dy, xx + dx)
     g = torch.from_numpy(rng.uniform(0.8, 1.25, (b, 1, 1, 1)).astype(np.float32)).to(x.device)
@@ -96,7 +96,7 @@ def heat(t, m, sigma):
     return torch.exp(-((yy[None, :, None] - t[:, 0, None, None]) ** 2 + (yy[None, None, :] - t[:, 1, None, None]) ** 2) / (2 * sigma ** 2))
 
 def train(data, epochs, seed, width=16, batch=16, lr=2e-3, time_s=None, device="cpu", log=print):
-    """data: {scroll: (imgs float16 numpy, published centres in net px from truth_net)}. Stops after `epochs` or
+    """data: {scroll: (imgs float16 numpy, published centers in net px from truth_net)}. Stops after `epochs` or
     `time_s` seconds."""
     torch.manual_seed(seed); rng = np.random.default_rng(seed)
     imgs = {s: torch.from_numpy(v[0]).to(device) for s, v in data.items()}
@@ -140,7 +140,7 @@ def train(data, epochs, seed, width=16, batch=16, lr=2e-3, time_s=None, device="
 
 @torch.no_grad()
 def predict(net, imgs, device="cpu"):
-    """Centre per slice in net px, averaged over the 8 dihedral transforms; and peak height (0..1)."""
+    """Center per slice in net px, averaged over the 8 dihedral transforms; and peak height (0..1)."""
     x_all = torch.from_numpy(imgs).to(device)
     return predict_stacked(net, lambda idx: stack3(x_all, idx).float(), len(imgs), device)
 

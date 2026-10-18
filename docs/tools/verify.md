@@ -26,7 +26,7 @@ When ink detection moves to a new device or code path, such as villa's Apple GPU
 
 A loose comparison passes everything, so agreement alone proves nothing. `kit verify` also takes a control: a map that must not agree with the reference, usually the reverse-direction map (the same model run with the surface volume's layers in reverse order). Agreement counts as a `pass` only when the same test also catches the control, which must have the reference's shape. Without a control the verdict is `pass-uncontrolled`, and when the control agrees too it is `control-not-caught`. This acceptance rule follows the [GENChase Apple GPU backend](https://github.com/ChaseHendrick/GENChase/blob/main/apps/validate/APPLE-GPU.md).
 
-The default test is the one villa PR #1865's report sets: there CPU and MPS maps differed by at most 1 of 255 grey levels on 0.002 % of pixels. The defaults, at most 0.01 % of pixels more than 2 grey levels apart, leave margin above that without accepting a different map.
+The default test is the one villa PR #1865's report sets: there CPU and MPS maps differed by at most 1 of 255 gray levels on 0.002 % of pixels. The defaults, at most 0.01 % of pixels more than 2 gray levels apart, leave margin above that without accepting a different map.
 
 It does not look at labels or ink. A `pass` says that the candidate reproduces the reference within the tolerance on this input; it says nothing about whether either map shows ink. A map is model output, not a reading. The module is also where the shared map loader (`load_map`) and error class (`VerifyError`) of the other scoring commands live.
 
@@ -40,7 +40,7 @@ It does not look at labels or ink. A `pass` says that the candidate reproduces t
 Do not use it:
 
 - To score a map against human labels: use [`auc`](auc.md) and [`hpscore`](hpscore.md).
-- To compare two different models or settings, which are expected to differ: use `auc --compare` on a labelled segment.
+- To compare two different models or settings, which are expected to differ: use `auc --compare` on a labeled segment.
 - To compare two maps that are not on the same grid (another crop or render): the shapes must match exactly.
 - On `.npy` maps: it reads TIFFs only.
 
@@ -90,7 +90,7 @@ usage: python -m kit verify [-h] [--control CONTROL] [--tolerance TOLERANCE]
 | `reference` | required | The reference map, such as the CPU run: a TIFF that squeezes to 2D |
 | `candidate` | required | The map to check, such as the MPS run, same shape as the reference |
 | `--control CONTROL` | none | A map that must not agree with the reference, such as the reverse-direction output. Compared with the reference by the same test |
-| `--tolerance TOLERANCE` | `2` | Largest absolute difference that still counts as agreeing, in the maps' own units (`DEFAULT_TOLERANCE`, grey levels of a uint8 map). A pixel is over when the difference is strictly larger. For float maps in 0 to 1 or uint16 maps, set it in their units |
+| `--tolerance TOLERANCE` | `2` | Largest absolute difference that still counts as agreeing, in the maps' own units (`DEFAULT_TOLERANCE`, gray levels of a uint8 map). A pixel is over when the difference is strictly larger. For float maps in 0 to 1 or uint16 maps, set it in their units |
 | `--max-fraction MAX_FRACTION` | `0.0001` | Largest share of pixels allowed over the tolerance (`DEFAULT_MAX_FRACTION`, 0.01 %). A map agrees when its share is at most this |
 | `--json` | off | Print the result as JSON (the fields under Outputs) instead of text |
 | `--slug SLUG` | none | Attach the result as a check to the experiment SLUG in the ledger ([run-ledger](run-ledger.md)); the experiment must exist |
@@ -121,7 +121,7 @@ print(result["verdict"], verify.format_result(result), sep="\n")
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| Reference, candidate, control | TIFF (tiled, BigTIFF and LZW are fine with imagecodecs), squeezed to 2D | Any dtype tifffile reads. Differences are computed on the raw values, so the tolerance is in the maps' own units: 2 is two grey levels of a uint8 map, two units of 65,535 in a uint16 map, and covers everything in a float map scaled 0 to 1. All three must have the same shape |
+| Reference, candidate, control | TIFF (tiled, BigTIFF and LZW are fine with imagecodecs), squeezed to 2D | Any dtype tifffile reads. Differences are computed on the raw values, so the tolerance is in the maps' own units: 2 is two gray levels of a uint8 map, two units of 65,535 in a uint16 map, and covers everything in a float map scaled 0 to 1. All three must have the same shape |
 
 The whole of each map is read into memory in its own dtype; the comparison then runs in float64 blocks of 1,024 rows. `.npy` files are not read (`cannot read X.npy: not a TIFF file: ...`).
 

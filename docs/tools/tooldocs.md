@@ -16,7 +16,7 @@
 | Network | None. It runs git locally and reads `git remote get-url origin` only to tell public Scrolls from Scrolls-private |
 | Writes | `check`, `list`, `show` and `stale`: nothing (they print). `index`: rewrites the generated block of `docs/tools/README.md` and all of `docs/tools/index.json`. `new`: creates `docs/tools/ID.md`, and refuses when it exists |
 | Go-ahead | Not needed |
-| Released | Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onwards) |
+| Released | Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onward) |
 | Guide | [TOOL-DOCS.md](../TOOL-DOCS.md), the standard the pages follow |
 | Checked | 2026-10-16 against commit `63ee638` |
 

@@ -144,7 +144,7 @@ class HecateSplitTest(unittest.TestCase):
 
 
 class HeldOutEntriesTest(unittest.TestCase):
-    """`held_out` in docs/results.json says, per labelled segment, which released reader trained on it."""
+    """`held_out` in docs/results.json says, per labeled segment, which released reader trained on it."""
 
     def setUp(self):
         import json

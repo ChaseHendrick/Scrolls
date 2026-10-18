@@ -4,7 +4,7 @@
   scrolls-letterdemo ...                 (the same, from an installed package)
 
 The demo draws four lines of Greek capitals, each line the 24 letters in an order fixed by a seed,
-with the repository's own skeleton hand (the centreline strokes of scripts/letters/letterdata.py,
+with the repository's own skeleton hand (the centerline strokes of scripts/letters/letterdata.py,
 copied below and held equal to it by tests/test_letterdemo.py), in numpy only: no system font and
 no Pillow. The strokes are blurred and set on a noisy ground, like a clean ink map. It also makes an
 image of the same noise with no letters. It reads both with the released weights (downloaded once
@@ -54,7 +54,7 @@ RULE = (f"pass when the text page's status is strong (more than {R.STRONG_FACTOR
 
 # ------------------------------------------------------------------ the skeleton hand
 # Copied from scripts/letters/letterdata.py (tests/test_letterdemo.py checks the two are equal).
-# Centrelines in letter units: x right from the letter's left edge, y down, y = 0 top line,
+# Centerlines in letter units: x right from the letter's left edge, y down, y = 0 top line,
 # y = 1 base line. Each glyph: (advance width, [strokes]); a stroke is a list of points.
 
 
@@ -160,7 +160,7 @@ def blur(a, sigma):
 
 
 def ground(shape, h, rng):
-    """A noisy ground like an ink map's background: smooth blotches, fibre streaks along the lines, and grain."""
+    """A noisy ground like an ink map's background: smooth blotches, fiber streaks along the lines, and grain."""
     blotch = blur(rng.standard_normal(shape), 0.3 * h)
     blotch /= max(float(blotch.std()), 1e-9)
     streak = blur(blur(rng.standard_normal(shape), 0.04 * h).T, 0.6 * h).T
@@ -178,7 +178,7 @@ def page_lines(seed=SEED, n_lines=N_LINES):
 def render_page(lines, h=LETTER_PX, seed=SEED):
     """(image, truth): the lines drawn h px tall with the skeleton hand, blurred, on a noisy ground (ink bright).
 
-    The image is float32 in 0 to 1. truth holds per line its text, its centre row and each letter's left edge,
+    The image is float32 in 0 to 1. truth holds per line its text, its center row and each letter's left edge,
     all in page pixels. The same lines, h and seed give the same image."""
     rng = np.random.default_rng(seed + 1)
     drawn, x_end = [], 0.0

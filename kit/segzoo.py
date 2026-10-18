@@ -2,7 +2,7 @@
 
 Chase asked on 17 October 2026 for nnU-Net, NVIDIA Auto3DSeg (MONAI), MedSAM2, DINOv3, MedNeXt, Swin UNETR,
 SegFormer and SS2DNet / Mamba-based models "where needed" in the tools. This module is the one list of those
-families: licence of the code and of the weights, whether the weights are gated, which devices run them, the
+families: license of the code and of the weights, whether the weights are gated, which devices run them, the
 pinned package, the place in our tools a family could beat what is there now, and the published evidence for
 or against it. The torch code that builds and runs the models lives in scripts/segzoo/; this module stays
 standard library, so `python -m kit segzoo list` works on any machine.
@@ -16,7 +16,7 @@ standard library, so `python -m kit segzoo list` works on any machine.
 Every fact in REGISTRY carries its source and the date it was read (labels as in docs/NOVELTY.md). A family's
 `release_ok` says whether its weights may ship in a released tool: the prize terms ask for "open source under a
 permissive license" (https://scrollprize.org/prizes, read 17 Oct 2026), so weights for research use only, or under
-a custom licence, can be measured privately but not released (Interpretation).
+a custom license, can be measured privately but not released (Interpretation).
 """
 
 import hashlib
@@ -29,7 +29,7 @@ from pathlib import Path
 
 READ = "2026-10-17"
 
-# Each family: id, name, kind, dims, packages (import name -> pip pin), code and weights licences,
+# Each family: id, name, kind, dims, packages (import name -> pip pin), code and weights licenses,
 # gated, release_ok, devices, weights, fit (where it plugs in here), evidence, verdict, sources.
 REGISTRY = [
     {
@@ -102,7 +102,7 @@ REGISTRY = [
         "dims": "2D, 3D",
         "packages": {"monai": "monai==1.6.1"},
         "licence_code": "Apache-2.0",
-        "licence_weights": "self-supervised model_swinvit.pt: no licence stated",
+        "licence_weights": "self-supervised model_swinvit.pt: no license stated",
         "gated": False,
         "release_ok": True,
         "devices": "CUDA; CPU; input sides must divide by 32",
@@ -149,7 +149,7 @@ REGISTRY = [
         "devices": "CUDA; CPU; MPS",
         "weights": "nvidia/mit-b0 ... nvidia/mit-b5 (ImageNet); random init needs no weights",
         "fit": "A 2.5D ink head with depth layers as channels, the decoder of the Kaggle 2023 ink winner; "
-               "nnUNetTrainer_SZSegFormer for 2D configurations. Research only: its licence blocks a released tool",
+               "nnUNetTrainer_SZSegFormer for 2D configurations. Research only: its license blocks a released tool",
         "evidence": "Kaggle Ink Detection 2023, 1st place: 3D encoders flattened over depth, then SegFormer b3/b5 "
                     "(Community report, github.com/ainatersol/Vesuvius-InkDetection). None against ink_9um or v8in",
         "verdict": "private benchmark",
@@ -171,7 +171,7 @@ REGISTRY = [
         "fit": "Frozen features with a small head for single letters, triage windows and per-slice ink "
                "(scripts/segzoo/segzoo_probe.py). Private only, and only after Chase has DINOv3 access on Hugging Face",
         "evidence": "Kaggle Surface Detection 2026: DINOv3 and MedDINOv3 lost (Community report). Frozen dinovol "
-                    "(the organisers' 3D DINO) failed both preregistered tests here (Model output)",
+                    "(the organizers' 3D DINO) failed both preregistered tests here (Model output)",
         "verdict": "private probe",
         "sources": ["https://github.com/facebookresearch/dinov3", "https://huggingface.co/facebook"],
     },
@@ -237,14 +237,14 @@ REGISTRY = [
         "kind": "architecture",
         "dims": "2D",
         "packages": {"torch": "torch>=2.1"},
-        "licence_code": "ours (repository licence); method from VMamba (MIT)",
+        "licence_code": "ours (repository license); method from VMamba (MIT)",
         "licence_weights": "none; trained here",
         "gated": False,
         "release_ok": True,
         "devices": "CPU, MPS and CUDA in pure PyTorch; mamba-ssm's CUDA kernel when installed",
         "weights": "none",
         "fit": "A Mamba-based 2D model that runs on the Mac: nnUNetTrainer_SZSS2D for 2D configurations "
-               "(triage windows, the centre finder's slices, 2.5D ink layers)",
+               "(triage windows, the center finder's slices, 2.5D ink layers)",
         "evidence": "SS2DNet (arXiv:2503.01306, nnUZoo): Dice within 0.02 of nnU-Net on six datasets at 5 to 20 "
                     "times the training time (Sourced fact). U-Mamba Bot within 0.3 Dice of its no-Mamba "
                     "ablation (nnU-Net Revisited, Sourced fact)",

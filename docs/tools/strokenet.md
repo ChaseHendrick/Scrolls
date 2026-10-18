@@ -54,7 +54,7 @@ A score is model output, not a reading. A high score where no text is known is n
 
 Do not use it:
 
-- To score a map against human labels: use [`auc`](auc.md) on a labelled segment, or [`hpscore`](hpscore.md) at letter scale.
+- To score a map against human labels: use [`auc`](auc.md) on a labeled segment, or [`hpscore`](hpscore.md) at letter scale.
 - To read letters: use [`letterread`](letterread.md), and treat its output as model output too.
 - On maps from other ink models, other scrolls, rescaled or float maps without checking first: they are outside the training data, and nothing here shows it works there.
 - To claim text exists on an unread area from a high score alone; target-scroll scores stay private (the no-findings rule in [`AGENTS.md`](../../AGENTS.md)).
@@ -386,7 +386,7 @@ The released network has width 16 and depth 5 (configuration `F_w16_d5_lr2e-3`, 
 Training and the preregistered test (`scripts/strokenet/`):
 
 1. `data.py`: pool each 2.4 um map 20 x 20 (`POOL`) to 0.048 mm; label text where the row profile repeats at a 4.5 to 9 mm line pitch (periodicity above 0.20) with ink density above 0.06, in blocks of at least 150 mm2, blank papyrus at least 3 mm from text with periodicity below 0.12 and density below 0.15, and dense ink as blank but with density at least 0.15; cut windows at strides `STRIDE` (training text 64, blank 32; held-out text 128, blank 64). The split takes the 28 tracings in order: index mod 4 = 0 test, 2 validation, odd train, then drops `w010-027`.
-2. `train.py`: AdamW, 6,000 steps of 128 windows, half text (a quarter each tile- and strip-jittered), half negatives in `DEFAULT_MIX`, with flips, a gamma of 0.8 to 1.25 and Gaussian noise with a standard deviation of 0 to 3 grey levels per window; the final checkpoint is exported.
+2. `train.py`: AdamW, 6,000 steps of 128 windows, half text (a quarter each tile- and strip-jittered), half negatives in `DEFAULT_MIX`, with flips, a gamma of 0.8 to 1.25 and Gaussian noise with a standard deviation of 0 to 3 gray levels per window; the final checkpoint is exported.
 3. `pipeline.py`: six sweep configurations at seed 0, the best final monitor score chosen with ties within `TIE` = 0.002 going to fewer parameters; seeds 1 and 2, four ablations at three seeds, a no-jitter run, the permuted-label control and the artifact control; then validation, calibration and the gate (released T1 at least 0.90 and mean T1 to T4 at least 0.85, permuted control T1 under 0.95, numpy check within 1e-3: `GATE`, `CONTROL_T1_GATE`, `NUMPY_TOL`), and the single test read with markers that refuse a second read.
 4. `evaluate.py`: every measure against the bar fixed on 7 October (`BAR`), block-bootstrap intervals, the eleven baselines, and the verdict line.
 

@@ -1,21 +1,21 @@
 """Cut PHerc. 1667's 2.4 um ink-detection maps at the letter groups of p1667_groups.py.
 
-Each labelled segment's ink map (`ink-detection/PHerc1667-<id>-2.399um-...-volume-20251217075048-
+Each labeled segment's ink map (`ink-detection/PHerc1667-<id>-2.399um-...-volume-20251217075048-
 ...-new_canon_autoresearch_recipe-tile256-stride128.tif` in the open-data bucket) has exactly the
 shape of its ink label's level 0, so the two share a grid. For every group this cuts the map over
 the same padded box as the label crop (level 0, block-averaged by 16 to the groups' 38 um grid,
 scaled to 0..1), so a reader sees the same window with the map in place of the drawing. Also
-reports the alignment check: mean map value under labelled ink against the rest of the crops,
+reports the alignment check: mean map value under labeled ink against the rest of the crops,
 and the same for the label shifted by up to 3 grid pixels (the unshifted label should score best).
 
   python scripts/letters/p1667_mapcrops.py GROUPS_DIR MAPS_DIR
   python scripts/letters/p1667_mapcrops.py GROUPS_DIR MAPS_DIR --wide
 MAPS_DIR holds <wNNN>.tif. Writes GROUPS_DIR/map-npy/<id>.npy and GROUPS_DIR/map-check.json.
 With --wide it instead writes GROUPS_DIR/map-wide-npy/<id>.npy: the same window made WIDE_PAD_Y
-letter heights taller above and below, so it holds the neighbouring lines and the reader has to
+letter heights taller above and below, so it holds the neighboring lines and the reader has to
 find the group's line itself (map-wide.json keeps where the group's line is, for checking only).
 With --region it writes GROUPS_DIR/map-region-npy/<segment>.npy instead: the segment's whole
-labelled frame (the box around all its labelled ink, several columns of about ten lines) padded
+labeled frame (the box around all its labeled ink, several columns of about ten lines) padded
 by REGION_PAD letter heights, read in bands to keep memory low; map-region.json keeps the padding.
 """
 import json
@@ -135,7 +135,7 @@ def parse_args(argv=None):
     ap.add_argument("maps_dir", help="p1667_fetch.py's OUT/maps, holding <wNNN>.tif")
     mode = ap.add_mutually_exclusive_group()
     mode.add_argument("--wide", action="store_true", help="windows two letter heights taller (eval_p1667.py --source map-wide)")
-    mode.add_argument("--region", action="store_true", help="each segment's whole labelled region (--source map-region)")
+    mode.add_argument("--region", action="store_true", help="each segment's whole labeled region (--source map-region)")
     return ap.parse_args(argv)
 
 

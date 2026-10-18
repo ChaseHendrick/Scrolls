@@ -1,6 +1,6 @@
 # plan: print a First Letters run plan for one eligible scroll, and price a run
 
-`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labelled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.
+`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.
 
 | Field | Value |
 | --- | --- |
@@ -28,7 +28,7 @@ The plan, in order:
 
 - **0. Setup:** clone villa, `uv sync --extra models`, check that PyTorch sees the GPU, and download the two `ink_9um` checkpoints the plan uses (the organizers' released 9 um ink model, `hybrid_3d2d` seeds 42 and 43 at step 75,000). `--mac` prints the Apple Silicon version (VC3D.app, Homebrew, an MPS check, and the open villa PR #1865 for GPU inference).
 - **1. The control:** PHerc0139 segment w035, which the released models were trained on: copy its mesh, render 28 layers at 9.362 um with `--flip-normals`, run inference. If no letters show here the pipeline is broken; if they do, that proves only that the pipeline runs, since the clean letters are the training labels reproduced ([log](../logs/2026-10-07-w035-cpu.md)).
-- **1b. A labelled check:** PHerc0139 w045 with `kit fetch w045`, inference in both depth directions, and [rowscore](rowscore.md) with the reverse map as the control. w045 is unseen by v8in (Youssef Nader's community ink model) but not held out from `ink_9um`, which trained on its 2.4 um render ([log](../logs/2026-10-08-w045-not-held-out.md)); PHerc0841 is the held-out test for these readers, possibly except Hecate ([log](../logs/2026-10-09-pherc0841-hecate.md)).
+- **1b. A labeled check:** PHerc0139 w045 with `kit fetch w045`, inference in both depth directions, and [rowscore](rowscore.md) with the reverse map as the control. w045 is unseen by v8in (Youssef Nader's community ink model) but not held out from `ink_9um`, which trained on its 2.4 um render ([log](../logs/2026-10-08-w045-not-held-out.md)); PHerc0841 is the held-out test for these readers, possibly except Hecate ([log](../logs/2026-10-09-pherc0841-hecate.md)).
 - **Surface checks** before rendering a target: tifxyz-doctor and windcheck (community tools that read the traced surface only).
 - **2. The target:** grow a surface in VC3D, render it the same way as the control, and run inference in both depth directions; then a block for v8in, which reads 24 layer TIFFs instead of a zarr.
 - **3. Rules before looking:** write the readout rule first (`kit run init`), `set -o pipefail`, compare forward and reverse depth, triage with rowscore. **4.** If letters appear: tell nobody in public, follow [WORKFLOW.md](../WORKFLOW.md), and the First Letters submission form.
@@ -46,7 +46,7 @@ What its output is not: a plan is a list of commands, not evidence. A map made b
 
 Do not use it:
 
-- On a scroll that is not First Letters eligible: it refuses. For a Grand Prize-only scroll such as PHerc1447, or a labelled public segment such as PHerc0841, follow the tutorial directly or use [mac-w045](mac-w045.md) for the labelled benchmarks.
+- On a scroll that is not First Letters eligible: it refuses. For a Grand Prize-only scroll such as PHerc1447, or a labeled public segment such as PHerc0841, follow the tutorial directly or use [mac-w045](mac-w045.md) for the labeled benchmarks.
 - As a pipeline that runs: it only prints. The [autopipeline](autopipeline.md) release runs villa end to end.
 - For Modal prices, rates and budgets: use the Modal calculator, `python -m kit.cloudcost` ([cloudcost](cloudcost.md)).
 - To record what a run cost: `kit run cost` writes it to the experiment ledger ([run-ledger](run-ledger.md)); `kit run local` records local time and electricity ([run-local](run-local.md)).
@@ -205,7 +205,7 @@ python -m unittest tests.test_kit.PlanTest tests.test_kit.CliTest -v
 
 - 2026-10-14: a refused scroll whose First Letters prize was awarded gets the award's date and source in the message, read from the 11 October snapshot, and survives an award entry without them; step 1b names v8in-1447 among the readers PHerc0841 is held out from (`19a1f4d`, `4053d23`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37)).
 - 2026-10-09: step 1b says PHerc0841 is possibly not held out from Hecate (`3ba683f`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37), [log](../logs/2026-10-09-pherc0841-hecate.md)).
-- 2026-10-08: step 1b becomes a labelled check, not a generalization check: `ink_9um` trained on w045's 2.4 um render (`d841e06`, [PR #36](https://github.com/ChaseHendrick/Scrolls/pull/36), [log](../logs/2026-10-08-w045-not-held-out.md)).
+- 2026-10-08: step 1b becomes a labeled check, not a generalization check: `ink_9um` trained on w045's 2.4 um render (`d841e06`, [PR #36](https://github.com/ChaseHendrick/Scrolls/pull/36), [log](../logs/2026-10-08-w045-not-held-out.md)).
 - 2026-10-07: `--flip-normals` on the target render (`2f025af`, [PR #2](https://github.com/ChaseHendrick/Scrolls/pull/2), [community scan log](../logs/2026-10-07-community-scan.md)).
 - 2026-10-07: step 1b on w045 with rowscore, the surface checks and the v8in commands (`b533efa`, [PR #2](https://github.com/ChaseHendrick/Scrolls/pull/2)).
 - 2026-10-07: step 1 says the w035 letters are the training labels reproduced (`3ebb108`, [PR #1](https://github.com/ChaseHendrick/Scrolls/pull/1), [log](../logs/2026-10-07-w035-cpu.md)).

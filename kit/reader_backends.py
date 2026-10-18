@@ -58,7 +58,7 @@ def validate_linenet(net):
         raise ValueError("LineNet checkpoint alphabet must be a nonempty string")
     letters = [character for character in net.alphabet if character.isalpha()]
     if not letters or any(not unicodedata.name(character, "").startswith("GREEK ") for character in letters):
-        raise ValueError("LineNet checkpoint alphabet is not Greek; no script relabelling or model substitution is allowed")
+        raise ValueError("LineNet checkpoint alphabet is not Greek; no script relabeling or model substitution is allowed")
     return net
 
 
@@ -122,7 +122,7 @@ def capabilities(tessdata=None):
     try:
         info = tesseract_info(tessdata)
         result["tesseract"] = {"available": True, "version": info["version"],
-                               "languages": [{"code": code, "script": SCRIPTS.get(code, "not catalogued")}
+                               "languages": [{"code": code, "script": SCRIPTS.get(code, "not cataloged")}
                                              for code in info["languages"]],
                                "output": "word hypotheses; confidence is not calibrated"}
     except ValueError as exc:
@@ -202,7 +202,7 @@ def read_tesseract(image, *, language="lat", tessdata=None, psm=3, timeout=60, m
     packs = []
     for code in codes:
         path = info["directory"] / f"{code}.traineddata"
-        packs.append({"language": code, "script": SCRIPTS.get(code, "not catalogued"), "file": path.name,
+        packs.append({"language": code, "script": SCRIPTS.get(code, "not cataloged"), "file": path.name,
                       "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
                       "license": "not inferred from local file; check the pack source before redistribution"})
     # Permute short horizontal tiles in each row; preserve contrast and ink count, destroy glyph shapes.

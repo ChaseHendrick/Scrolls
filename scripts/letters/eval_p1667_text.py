@@ -339,7 +339,7 @@ def score(read, decoys):
 
 
 def compare(A, B, n=20000, seed=SEED):
-    """Paired bootstrap over segments of B minus A: pairs (decisive) and excess (reported); positive favours B."""
+    """Paired bootstrap over segments of B minus A: pairs (decisive) and excess (reported); positive favors B."""
     segs = sorted(set(A["segments"]) & set(B["segments"]))
     rng = np.random.default_rng(seed)
     idx = [rng.integers(0, len(segs), len(segs)) for _ in range(n)]

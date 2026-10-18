@@ -182,11 +182,11 @@ def cmd_meshaudit(args):
     try:
         cat = meshaudit.load_catalogue(args.catalogue)
     except (OSError, ValueError) as exc:
-        print(f"meshaudit: cannot read the catalogue: {exc}. Give a metadata.json path or URL with --catalogue.",
+        print(f"meshaudit: cannot read the catalog: {exc}. Give a metadata.json path or URL with --catalogue.",
               file=sys.stderr)
         return 2
     if not isinstance(cat, dict) or not isinstance(cat.get("samples"), dict):
-        print("meshaudit: the catalogue has no samples object; give the bucket's metadata.json with --catalogue.",
+        print("meshaudit: the catalog has no samples object; give the bucket's metadata.json with --catalogue.",
               file=sys.stderr)
         return 2
     if args.action == "transforms":
@@ -214,12 +214,12 @@ def cmd_meshaudit(args):
     else:  # depth
         s = cat["samples"].get(args.sample)
         if not isinstance(s, dict):
-            print(f"meshaudit: the catalogue has no sample {args.sample!r}; samples: {', '.join(sorted(cat['samples']))}",
+            print(f"meshaudit: the catalog has no sample {args.sample!r}; samples: {', '.join(sorted(cat['samples']))}",
                   file=sys.stderr)
             return 2
         seg = (s.get("segments") or {}).get(args.segment)
         if not isinstance(seg, dict):
-            print(f"meshaudit: sample {args.sample} has no segment {args.segment!r} in the catalogue; "
+            print(f"meshaudit: sample {args.sample} has no segment {args.segment!r} in the catalog; "
                   f"check the id against samples.{args.sample}.segments in metadata.json", file=sys.stderr)
             return 2
         out = meshaudit.depth_segment(args.base, args.sample, seg, cross_ids=args.cross or None,
@@ -592,7 +592,7 @@ def cmd_letterread(args):
             if letter_px < letterread.MIN_LETTER_PX:
                 raise ValueError(f"--letter-mm {args.letter_mm:g} at --um-per-px {args.um_per_px:g} is a letter "
                                  f"{letter_px:.3g} px tall, under the {letterread.MIN_LETTER_PX} px the reader can read; "
-                                 "check the units (the letter height in millimetres, the pixel size in micrometres)")
+                                 "check the units (the letter height in millimeters, the pixel size in micrometers)")
         elif letter_px is not None and not letter_px >= letterread.MIN_LETTER_PX:
             raise ValueError(f"--letter-px {letter_px}: give the letter height in image pixels, at least "
                              f"{letterread.MIN_LETTER_PX} (the network reads letters 16 px tall, so smaller letters "
@@ -732,7 +732,7 @@ def cmd_letterread(args):
                     failed.append(exc)
     if args.overlay:
         try:
-            # a colour photograph is drawn in colour; other images from the read image in their own polarity
+            # a color photograph is drawn in color; other images from the read image in their own polarity
             base = letterread.display_image(args.image, args.crop, k)
             letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True,
                                base=base if base is not None and base.shape[:2] == a0.shape else None)
@@ -925,7 +925,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("reference", help="reference map, e.g. the CPU run")
     p.add_argument("candidate", help="map to check, e.g. the MPS run")
     p.add_argument("--control", help="a map that must NOT agree, e.g. the reverse-direction output")
-    p.add_argument("--tolerance", type=float, default=verify.DEFAULT_TOLERANCE, help="grey levels (0-255)")
+    p.add_argument("--tolerance", type=float, default=verify.DEFAULT_TOLERANCE, help="gray levels (0-255)")
     p.add_argument("--max-fraction", type=float, default=verify.DEFAULT_MAX_FRACTION,
                    help="largest fraction of pixels allowed beyond the tolerance")
     p.add_argument("--json", action="store_true")
@@ -939,7 +939,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
                    help="use sparse area resize (scipy); float32 rounding and near-tied FFT peaks can differ")
     p.add_argument("forward", nargs="+", help="forward-direction map(s); several are averaged, e.g. two checkpoints")
     p.add_argument("--reverse", nargs="+", default=[], help="reverse-direction map(s), averaged the same way")
-    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.362")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometers, e.g. 9.362")
     p.add_argument("--json", action="store_true")
     p.add_argument("--slug", help="attach the result to this experiment")
     p.add_argument("--name", default="rowscore")
@@ -949,7 +949,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("auc", help="pixel AUC of an ink map against a segment's published labels")
     p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
     p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
-    p.add_argument("--mask", required=True, help="supervision.zarr: where ink and non-ink were both labelled")
+    p.add_argument("--mask", required=True, help="supervision.zarr: where ink and non-ink were both labeled")
     p.add_argument("--control", help="reverse-direction map of the same surface")
     p.add_argument("--level", default=auc.DEFAULT_LEVEL, help="label pyramid level matching the 9 um grid")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
@@ -969,9 +969,9 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_auc)
 
-    p = sub.add_parser("fibertensor", help="fibre-orientation (structure tensor) features and a tiny CPU ink reader")
+    p = sub.add_parser("fibertensor", help="fiber-orientation (structure tensor) features and a tiny CPU ink reader")
     actions = p.add_subparsers(dest="action", required=True)
-    a = actions.add_parser("train", help="fit on one labelled segment window")
+    a = actions.add_parser("train", help="fit on one labeled segment window")
     a.add_argument("volume", help="surface volume zarr (9 um)")
     a.add_argument("labels", help="label folder with inklabels.zarr and supervision.zarr")
     a.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
@@ -995,7 +995,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
     p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
     p.add_argument("--mask", required=True, help="supervision.zarr")
-    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.366")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometers, e.g. 9.366")
     p.add_argument("--control", help="reverse-direction map of the same surface")
     p.add_argument("--level", default=auc.DEFAULT_LEVEL)
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
@@ -1050,12 +1050,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--plane-z", type=float, nargs=3, metavar=("START", "STOP", "STEP"),
                    help="explicit plane heights, instead of --planes")
     p.add_argument("--ray-step-deg", type=float, help="degrees between rays, at most 10 (default 1)")
-    p.add_argument("--max-normal-um", type=float, help="farthest neighbour along a normal (default 600)")
+    p.add_argument("--max-normal-um", type=float, help="farthest neighbor along a normal (default 600)")
     p.add_argument("--coincide-um", type=float, help="two segments this close cannot be told apart (default 20)")
     p.add_argument("--skip-frac", type=float, help="skipped winding: closer than this share of the pitch (default 0.5)")
     p.add_argument("--min-count", type=int, help="rays or vertices for a flag, at least 1 (default 10)")
     p.add_argument("--min-share", type=float, help="share of rays or vertices for a flag (default 0.01)")
-    p.add_argument("--upsample", type=int, help="neighbour grids made this much denser for the normal search (default 2)")
+    p.add_argument("--upsample", type=int, help="neighbor grids made this much denser for the normal search (default 2)")
     p.add_argument("--cache", default="work/stackcheck/cache", help="where bucket segments are kept")
     p.add_argument("--out", help="write the JSON report here (work/ is git-ignored)")
     p.add_argument("--flags", help="write per-vertex flag masks (.npz, added if missing) on each segment's input grid")
@@ -1065,7 +1065,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
 
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
     actions = p.add_subparsers(dest="action", required=True)
-    a = actions.add_parser("transforms", help="refit catalogue affines from their landmarks: residual, leave-one-out, round trip")
+    a = actions.add_parser("transforms", help="refit catalog affines from their landmarks: residual, leave-one-out, round trip")
     a = actions.add_parser("canvas", help="does a published mesh variant reproduce each surface volume's canvas size?")
     a.add_argument("--sample", action="append", help="limit to this sample (repeatable)")
     a.add_argument("--workers", type=int, default=16)
@@ -1074,7 +1074,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("--seed", type=int, default=meshaudit.SEED)
     a = actions.add_parser("depth", help="papyrus depth offset between a segment's native and cross-scan renders")
     a.add_argument("--sample", required=True)
-    a.add_argument("--segment", required=True, help="catalogue segment id")
+    a.add_argument("--segment", required=True, help="catalog segment id")
     a.add_argument("--cross", action="append", help="limit to this cross volume id (repeatable)")
     a.add_argument("--tiles", type=int, default=32)
     a.add_argument("--seed", type=int, default=meshaudit.SEED)
@@ -1195,7 +1195,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.set_defaults(func=cmd_view)
 
     p = sub.add_parser("strokenet", help="learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls")
-    p.add_argument("map", help=".npy, .npz, .tif or .png ink map on the organisers' 0 to 255 scale (ink bright)")
+    p.add_argument("map", help=".npy, .npz, .tif or .png ink map on the organizers' 0 to 255 scale (ink bright)")
     p.add_argument("--pixel-mm", type=float, required=True,
                    help="map pixel size in mm (0.0024 for a 2.4 um map; an integer map at a whole fraction of "
                         "0.048 mm is pooled exactly as the training windows)")
@@ -1225,7 +1225,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.set_defaults(func=cmd_volumeview)
 
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
-                                      "MedSAM2 and Mamba families, their licences and fit; Auto3DSeg datalists")
+                                      "MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists")
     from . import segzoo as _segzoo
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
@@ -1261,8 +1261,8 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--letter-px", type=float,
                    help="letter height in image pixels, at least 4 (default: estimated from the line pitch, with a "
                         "scale search; the read stops when the image shows no line pitch)")
-    p.add_argument("--letter-mm", type=float, help="letter height in millimetres; needs --um-per-px")
-    p.add_argument("--um-per-px", type=float, help="pixel size in micrometres (with --letter-mm)")
+    p.add_argument("--letter-mm", type=float, help="letter height in millimeters; needs --um-per-px")
+    p.add_argument("--um-per-px", type=float, help="pixel size in micrometers (with --letter-mm)")
     p.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6; letterread needs numpy
                    help="pixel budget in millions of pixels: a bigger image is block-averaged while it loads "
                         "(default %(default)g)")
@@ -1277,11 +1277,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--deskew", type=float, default=6.0, metavar="MAX_DEG",   # letterread.DESKEW_DEG
                    help="largest line tilt searched, degrees either way (default %(default)g; 0 turns deskew off)")
     p.add_argument("--lines", type=float, nargs="+",
-                   help="centre rows of the lines in image pixels (in the turned image with --rotate or --mirror), "
+                   help="center rows of the lines in image pixels (in the turned image with --rotate or --mirror), "
                         "each its row at the image's horizontal middle, which the deskew turns about (give --deskew 0 "
                         "for level bands); default: found")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
-    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4, at most 64)")
+    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomized controls (default 4, at most 64)")
     p.add_argument("--control", metavar="MAP_REVERSE",
                    help="a second map of the same surface on the same grid, such as its reverse-depth ink map: read on "
                         "the image's lines at the same letter size and confidence floor; the status needs the image "

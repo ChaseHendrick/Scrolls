@@ -3,7 +3,7 @@ text into real ink-map lines for training and testing the letter reader
 (docs/letter-reader.md, Reproduce the benchmarks).
 
 1. read: each segment's 2.4 um map (on the 38 um grid of eval_p1667_text.py cut) is split into text columns
-   at gutters (split_columns: a dip in the papyrus-normalised column profile, at least GUTTER_DEPTH below
+   at gutters (split_columns: a dip in the papyrus-normalized column profile, at least GUTTER_DEPTH below
    the peaks on both sides within GUTTER_REACH letter heights; image only), and each column is read by a
    reader (kit.letterread.analyze, columns off, lines found from the image), keeping every letter's box.
 2. align: every found line is scored against every published line by local alignment (match +1,
@@ -16,7 +16,7 @@ text into real ink-map lines for training and testing the letter reader
 3. Geometry, per segment and published column, from all its anchor points: rows y = a + b k + s x (outliers
    beyond ANCHOR_TOL line pitches dropped) and the left margin x = x0 + w j (common letter pitch w, one
    intercept per line, x0 their median: ancient columns are left-justified). Every published line k of the
-   column then has a crop: centred on its fitted row, from x0 - MARGIN w to x0 + (longest line + MARGIN) w.
+   column then has a crop: centered on its fitted row, from x0 - MARGIN w to x0 + (longest line + MARGIN) w.
    Nothing in a crop depends on that line's own letters beyond its line number.
 4. crops: cut those bands at the reader's working scale, for training or testing.
 
@@ -46,10 +46,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from eval_p1667_text import check_reference, local_scores  # noqa: E402
 from kit import letterread as R  # noqa: E402
 
-LETTER_PX = 86.0     # letter height on the 38 um grid (median of the labelled segments)
+LETTER_PX = 86.0     # letter height on the 38 um grid (median of the labeled segments)
 NET_PX = 16          # the reader's working letter height
-BAND = (1.1, 1.15)   # band rows above and below the line centre, in letter heights (letterdata.BAND_*)
-GUTTER_DEPTH = 0.15  # a gutter's profile is at least this far below the lower of its two neighbouring peaks
+BAND = (1.1, 1.15)   # band rows above and below the line center, in letter heights (letterdata.BAND_*)
+GUTTER_DEPTH = 0.15  # a gutter's profile is at least this far below the lower of its two neighboring peaks
 GUTTER_REACH = 12.0  # letter heights either side to find those peaks
 GUTTER_MIN_W = 10.0  # columns at least this many letter heights wide
 FLOOR = 3            # local score Greek-like noise reaches on a published line
@@ -65,7 +65,7 @@ SEED = 0
 # ------------------------------------------------------------------ columns and reading
 
 def split_columns(a, h=LETTER_PX):
-    """Spans (x0, x1) of text columns of a normalised map with letters h px tall: cut at gutters."""
+    """Spans (x0, x1) of text columns of a normalized map with letters h px tall: cut at gutters."""
     pap = a > 0.02
     den = pap.sum(axis=0)
     ok = den > 0.2 * a.shape[0]

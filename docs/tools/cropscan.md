@@ -21,7 +21,7 @@
 
 ## What it does
 
-The repository often scores an ink map on one crop: the 640 px window of densest labelled ink per segment, with a 64 px edge left out (`--inner 64` in [`auc`](auc.md)). A single crop is one place on the segment. `cropscan` asks how much the score would change if the crop had been put somewhere else: it computes the pixel AUC (the chance that a labelled ink pixel scores above a labelled background pixel inside the supervision mask, ties counted half) of every full window on a grid, in one pass.
+The repository often scores an ink map on one crop: the 640 px window of densest labeled ink per segment, with a 64 px edge left out (`--inner 64` in [`auc`](auc.md)). A single crop is one place on the segment. `cropscan` asks how much the score would change if the crop had been put somewhere else: it computes the pixel AUC (the chance that a labeled ink pixel scores above a labeled background pixel inside the supervision mask, ties counted half) of every full window on a grid, in one pass.
 
 Instead of cutting and scoring each window separately, it quantizes the whole map once, builds ink and background score histograms for each `tile` x `tile` cell, and sums them with a 2D cumulative sum, so each window costs one histogram difference. With `bins=65536` the result is exactly what `kit.auc.score_array` gives on the same window, for uint8, uint16 or float maps already normalized to [0, 1]. With fewer bins, uint16 and float scores share bins, which adds ties and can move the AUC; uint8 keeps all 256 levels at 256 bins or more.
 
@@ -39,7 +39,7 @@ Do not use it:
 - For the score of one crop or a whole segment: use [`auc`](auc.md) (`kit.auc.score_array` or `python -m kit auc`), which also gives the reverse-depth control and bootstrap intervals.
 - For speed: on the sizes measured, scoring each window with `score_array` was as fast or faster (see Cost and time).
 - For letter-scale detail: use [`hpscore`](hpscore.md).
-- To treat per-window AUCs as independent samples or confidence intervals: neighbouring windows overlap by half by default.
+- To treat per-window AUCs as independent samples or confidence intervals: neighboring windows overlap by half by default.
 - On float maps that are not in [0, 1] (raw logits, 0 to 255 floats): it refuses them; apply a sigmoid or convert to uint8 or uint16 first.
 
 ## Quick start
@@ -100,7 +100,7 @@ Arguments:
 | --- | --- | --- |
 | `prediction` | required | The ink map, a 2D numpy array: uint8, uint16, or a float dtype with every value in [0, 1]. All values must be finite |
 | `ink` | required | Boolean array, same shape: True where the labels say ink |
-| `mask` | required | Boolean array, same shape: True where the pixel is supervised (labelled ink or background) |
+| `mask` | required | Boolean array, same shape: True where the pixel is supervised (labeled ink or background) |
 | `window` | `640` | Window side in pixels; a positive multiple of `tile` |
 | `stride` | `320` | Step between window origins in pixels; a positive multiple of `tile` |
 | `inner` | `64` | Pixels left out at each edge of a window, as `--inner` in `auc`; a nonnegative multiple of `tile`, less than half of `window` |
@@ -184,7 +184,7 @@ In lane I, scanning the readers on PHerc0841 w00 took 297 s against 17.7 s for t
 - **Rerun:** Safe; it only reads its arguments and has no randomness, so the same inputs give the same list.
 - **Success:** A list with one dict per full window and no `VerifyError`; an empty list means the map is smaller than one window.
 - **Not a pass:** Per-window AUCs without the same scan of the reverse-depth map; AUCs at fewer than 65,536 bins on a uint16 or float map that were not checked against `score_array`; treating overlapping windows as independent samples; any score on a segment the model trained on; a claim that the scan is faster.
-- **Go-ahead:** Nothing. Publishing any score of a target-scroll map is never allowed; scan only public labelled segments in public work.
+- **Go-ahead:** Nothing. Publishing any score of a target-scroll map is never allowed; scan only public labeled segments in public work.
 - **Never:** Call an AUC a reading or say letters were found; read `auc: None` as a low score.
 
 ## Tests
