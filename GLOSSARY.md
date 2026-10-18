@@ -162,7 +162,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labeled ink or trusted labels.
 
-**media label**: What a picture shows, written first in its caption and in its sidecar JSON: Concept illustration, Real data render, Model output or Synthetic demo ([`docs/assets/README.md`](docs/assets/README.md)). Public Scrolls holds only concept illustrations and synthetic demos; real data renders and model output pictures stay in Scrolls-private.
+**media label**: What a picture shows, written first in its caption and in its sidecar JSON: Concept illustration, Real data render, Model output or Synthetic demo ([`docs/assets/README.md`](docs/assets/README.md)). Public Scrolls holds concept illustrations, synthetic demos and real data renders allowed by the public media rule; model output pictures and real data renders of prize-eligible scrolls stay in Scrolls-private.
 
 **MedNeXt**: A U-Net built from ConvNeXt blocks (large depthwise kernels), in sizes S, B, M and L. In the nnU-Net Revisited comparison it is the one family that scored above nnU-Net's ResEnc L on every dataset, at about twice the training time.
 
@@ -221,6 +221,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **provenance**: The record of who ran what, when, on which machine and from which inputs (`kit/provenance.py`).
 
 **pseudo-label**: A provisional label created from model output and human review. Pseudo-labeling trains a model, keeps its confident predictions as new labels and trains again.
+
+**public media rule**: What pictures and clips public Scrolls' Git may hold (18 October 2026, set by the agents on Chase's delegation): concept illustrations, synthetic demos, and real data renders of public scans that are not prize eligible and show no held-out labels, each at most 1920 px wide and 4 MB with a sidecar; never model output of any scroll ([`docs/media/README.md`](docs/media/README.md)).
 
 ## R
 

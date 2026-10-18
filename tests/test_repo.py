@@ -13,9 +13,12 @@
 - AGENTS.md and docs/HANDOFF.md stay short, since every agent reads them first;
 - every relative link in live Markdown resolves to a tracked file or directory;
 - every file under docs/assets/ has a row in docs/assets/README.md with its size, bytes, media label and license
-  and is named by a sidecar JSON with the same label; that label is Concept illustration or Synthetic demo (public
-  Git holds no scan renders or model maps); heroes (*-hero.webp) are exactly 1920 x 640 and at most 300 KB, and
-  nothing there is over 4 MB.
+  and is named by a sidecar JSON with the same label, and every sidecar passes the public media rule
+  (docs/media/README.md, scripts/media/common.py public_problems): Concept illustration, Synthetic demo, or a Real
+  data render of a public scan that is not prize-eligible and shows no held-out labels, never model output; every
+  file at most 1920 px wide and 4 MB; heroes (*-hero.webp) exactly 1920 x 640 and at most 300 KB;
+- pictures and clips are tracked only under docs/assets/ (with a row and a sidecar) or docs/images/ (interface
+  screenshots that show no scan data), at most 1920 px wide and 4 MB.
 """
 
 import json
@@ -23,6 +26,7 @@ import re
 import shutil
 import struct
 import subprocess
+import sys
 import unittest
 from pathlib import Path
 from urllib.parse import unquote
@@ -30,6 +34,9 @@ from urllib.parse import unquote
 from kit import cli
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(ROOT / "scripts" / "media"))
+
+import common as media  # noqa: E402  (scripts/media/common.py: the public media rule, standard library only)
 TEXT = (".md", ".py", ".sh", ".txt", ".json", ".yml", ".yaml", ".toml")
 # Dated logs, evidence and experiment records keep their original wording; the correction is
 # docs/logs/2026-10-08-w045-not-held-out.md.
@@ -61,43 +68,13 @@ BASH4 = [
 ]
 
 
-# docs/assets/: media labels (docs/assets/README.md, scripts/media/common.py) and size limits. Real data renders and
-# model output are labels too, but they live in Scrolls-private's docs/media/, never here.
-PUBLIC_MEDIA_LABELS = ("Concept illustration", "Synthetic demo")
+# docs/assets/: media labels and the public media rule (docs/media/README.md, scripts/media/common.py) and size
+# limits. Model output of any scroll and renders of prize-eligible scrolls live in Scrolls-private's docs/media/.
 ASSET_ROW = re.compile(r"^\| \[`([^`]+)`\]\(([^)]+)\) \| ([^|]+) \| ([0-9,]+) \| ([^|]+) \| ([^|]+) \|")
-ASSET_MAX_BYTES = 4_000_000
 HERO_MAX_BYTES = 300_000
-
-
-def image_size(path):
-    """(width, height) of a PNG, GIF, JPEG or WebP file from its header, or None; standard library only."""
-    data = Path(path).read_bytes()
-    if data[:8] == b"\x89PNG\r\n\x1a\n":
-        return struct.unpack(">II", data[16:24])
-    if data[:6] in (b"GIF87a", b"GIF89a"):
-        return struct.unpack("<HH", data[6:10])
-    if data[:4] == b"RIFF" and data[8:12] == b"WEBP":
-        chunk = data[12:16]
-        if chunk == b"VP8 ":
-            w, h = struct.unpack("<HH", data[26:30])
-            return w & 0x3FFF, h & 0x3FFF
-        if chunk == b"VP8L":
-            b = data[21:25]
-            return 1 + (((b[1] & 0x3F) << 8) | b[0]), 1 + (((b[3] & 0xF) << 10) | (b[2] << 2) | ((b[1] & 0xC0) >> 6))
-        if chunk == b"VP8X":
-            return 1 + int.from_bytes(data[24:27], "little"), 1 + int.from_bytes(data[27:30], "little")
-    if data[:2] == b"\xff\xd8":
-        i = 2
-        while i + 9 < len(data):
-            if data[i] != 0xFF:
-                i += 1
-                continue
-            marker = data[i + 1]
-            if 0xC0 <= marker <= 0xCF and marker not in (0xC4, 0xC8, 0xCC):
-                h, w = struct.unpack(">HH", data[i + 5:i + 9])
-                return w, h
-            i += 2 + struct.unpack(">H", data[i + 2:i + 4])[0]
-    return None
+# Picture and clip files: tracked only in these folders (docs/images/ holds interface screenshots, used as hero inputs).
+MEDIA_SUFFIXES = (".png", ".gif", ".jpg", ".jpeg", ".webp", ".mp4", ".webm", ".mov", ".avif", ".tif", ".tiff", ".bmp")
+MEDIA_DIRS = ("docs/assets/", "docs/images/")
 
 
 def asset_rows():
@@ -247,40 +224,45 @@ class RepoTest(unittest.TestCase):
 
     def test_assets_are_listed_labeled_and_within_limits(self):
         # Chase, 18 October 2026: every released tool gets a hero like the README's, plus GIFs and videos, and every
-        # picture says what it is. Public Git holds no scan renders or ink maps, so the only labels allowed here are
-        # Concept illustration and Synthetic demo; Real data renders live in Scrolls-private's docs/media/.
+        # picture says what it is. The public media rule (set on Chase's delegation the same day, docs/media/README.md)
+        # allows concept illustrations, synthetic demos and Real data renders of public scans that are not
+        # prize-eligible and show no held-out labels; never model output; every file at most 1920 px wide and 4 MB.
         base = ROOT / "docs" / "assets"
         rows = asset_rows()
+        table, _ = media.prize_scrolls()
         files = sorted(f.relative_to(base).as_posix() for f in tracked()
                        if f.exists() and base in f.parents and f.name != "README.md")
         self.assertTrue(files, "no files under docs/assets/")
-        media = [f for f in files if not f.endswith(".json")]
-        missing = [f for f in media if f not in rows]
+        media_files = [f for f in files if not f.endswith(".json")]
+        missing = [f for f in media_files if f not in rows]
         self.assertEqual(missing, [], "files under docs/assets/ without a row in docs/assets/README.md")
         stale = [f for f in rows if not (base / f).is_file()]
         self.assertEqual(stale, [], "rows in docs/assets/README.md for files that are not there")
-        for rel in media:
+        dims_of = {}
+        for rel in media_files:
             size, nbytes, label, license_ = rows[rel]
             path = base / rel
             actual = path.stat().st_size
             self.assertEqual(nbytes, actual, f"{rel}: the README says {nbytes:,} bytes, the file has {actual:,}")
-            self.assertIn(label, PUBLIC_MEDIA_LABELS, f"{rel}: label {label!r} (public Git holds only Concept "
-                          "illustrations and Synthetic demos)")
+            self.assertIn(label, media.PUBLIC_LABELS, f"{rel}: label {label!r} (public Git holds no model output)")
             self.assertTrue(license_, f"{rel}: no license")
-            self.assertLessEqual(actual, ASSET_MAX_BYTES, f"{rel} is over 4 MB")
-            dims = image_size(path) if path.suffix in (".png", ".gif", ".jpg", ".jpeg", ".webp") else None
-            if dims:
-                self.assertIn(f"{dims[0]} x {dims[1]} pixels", size, f"{rel}: the file is {dims[0]} x {dims[1]}")
+            if label == "Real data render":
+                self.assertEqual(license_, media.DATA_LICENSE, f"{rel}: a Real data render carries the data's license")
+            self.assertLessEqual(actual, media.MAX_BYTES, f"{rel} is over 4 MB")
+            dims = media.media_size(path)
+            self.assertIsNotNone(dims, f"{rel}: its width and height cannot be read (PNG, GIF, JPEG, WebP or MP4)")
+            dims_of[rel] = dims
+            self.assertIn(f"{dims[0]} x {dims[1]} pixels", size, f"{rel}: the file is {dims[0]} x {dims[1]}")
+            self.assertLessEqual(dims[0], media.MAX_WIDTH, f"{rel} is {dims[0]} px wide, over {media.MAX_WIDTH}")
             if rel.endswith("-hero.webp"):
                 self.assertEqual(dims, (1920, 640), f"{rel}: a hero is 1920 x 640")
                 self.assertLessEqual(actual, HERO_MAX_BYTES, f"{rel}: a hero is at most 300 KB")
-        # A sidecar NAME.json describes media beside it; its label and byte counts match the files and their rows.
+        # A sidecar NAME.json describes media beside it; it passes the rule, and its label, bytes and pixel sizes
+        # match the files and their rows.
         described = set()
         for rel in (f for f in files if f.endswith(".json")):
             record = json.loads((base / rel).read_text(encoding="utf-8"))
-            self.assertEqual(record.get("schema"), "scrolls-media/1", f"{rel}: not a media sidecar")
-            self.assertIn(record["label"], PUBLIC_MEDIA_LABELS, f"{rel}: label {record['label']!r}")
-            self.assertTrue(record["caption"].startswith(record["label"]), f"{rel}: caption does not start with label")
+            self.assertEqual(media.public_problems(record, table), [], f"{rel}: the public media rule")
             self.assertNotIn("/tmp/", json.dumps(record), f"{rel}: a scratch path; record commands with placeholders")
             folder = rel.rsplit("/", 1)[0] + "/" if "/" in rel else ""
             for out in record["outputs"]:
@@ -288,23 +270,53 @@ class RepoTest(unittest.TestCase):
                 self.assertIn(target, rows, f"{rel} names {target}, which has no row")
                 self.assertEqual(rows[target][2], record["label"], f"{target}: row and sidecar labels differ")
                 self.assertEqual(out["bytes"], (base / target).stat().st_size, f"{rel}: {target} changed since")
+                self.assertEqual((out["width"], out["height"]), dims_of[target], f"{rel}: {target}'s pixel size")
                 described.add(target)
-        undescribed = [f for f in media if f not in described]
+        undescribed = [f for f in media_files if f not in described]
         self.assertEqual(undescribed, [], "files under docs/assets/ that no sidecar NAME.json describes")
 
-    def test_image_size_reads_headers(self):
-        # The check above must be able to fail: it reads real dimensions, so a wrong size string is caught.
+    def test_pictures_and_clips_live_in_the_media_folders(self):
+        # The rule is checked where the pictures live: a picture or clip anywhere else would skip its row, sidecar and
+        # prize check. docs/images/ holds interface screenshots that show no scan data (hero inputs).
+        outside, too_big = [], []
+        for f in tracked():
+            rel = f.relative_to(ROOT).as_posix()
+            if f.suffix.lower() not in MEDIA_SUFFIXES or not f.exists():
+                continue
+            if not rel.startswith(MEDIA_DIRS):
+                outside.append(rel)
+                continue
+            dims = media.media_size(f)
+            if f.stat().st_size > media.MAX_BYTES or (dims and dims[0] > media.MAX_WIDTH):
+                too_big.append(rel)
+        self.assertEqual(outside, [], "pictures or clips outside docs/assets/ and docs/images/ (docs/media/README.md)")
+        self.assertEqual(too_big, [], f"pictures or clips over {media.MAX_WIDTH} px wide or 4 MB")
+
+    def test_media_size_reads_headers(self):
+        # The checks above must be able to fail: they read real dimensions, so a wrong size string is caught.
         png = b"\x89PNG\r\n\x1a\n" + b"\0\0\0\rIHDR" + struct.pack(">II", 1920, 640) + b"\0" * 8
         gif = b"GIF89a" + struct.pack("<HH", 960, 540) + b"\0" * 8
         vp8x = b"RIFF\0\0\0\0WEBPVP8X" + b"\0" * 8 + (1919).to_bytes(3, "little") + (639).to_bytes(3, "little")
         jpeg = b"\xff\xd8\xff\xe0\x00\x04\x00\x00\xff\xc0\x00\x11\x08" + struct.pack(">HH", 630, 1200) + b"\0" * 8
+
+        def box(kind, body):
+            return struct.pack(">I", 8 + len(body)) + kind + body
+
+        def tkhd(w, h, version=0):
+            times = b"\0" * (32 if version else 20)
+            return box(b"tkhd", bytes([version, 0, 0, 3]) + times + b"\0" * 52 + struct.pack(">II", w << 16, h << 16))
+
+        audio = box(b"trak", tkhd(0, 0))
+        mp4 = box(b"ftyp", b"isom\0\0\x02\0") + box(b"moov", box(b"mvhd", b"\0" * 100) + audio
+                                                       + box(b"trak", tkhd(1280, 960, version=1)))
         tmp = ROOT / "tests" / "_image_size_probe"
         try:
-            for data, want in ((png, (1920, 640)), (gif, (960, 540)), (vp8x, (1920, 640)), (jpeg, (1200, 630))):
+            for data, want in ((png, (1920, 640)), (gif, (960, 540)), (vp8x, (1920, 640)), (jpeg, (1200, 630)),
+                               (mp4, (1280, 960))):
                 tmp.write_bytes(data)
-                self.assertEqual(image_size(tmp), want)
+                self.assertEqual(media.media_size(tmp), want)
             tmp.write_bytes(b"not an image")
-            self.assertIsNone(image_size(tmp))
+            self.assertIsNone(media.media_size(tmp))
         finally:
             tmp.unlink(missing_ok=True)
         self.assertIsNone(ASSET_ROW.match("| Asset | Size | Bytes | Label | License | Alt text |"))

@@ -16,9 +16,11 @@ A recipe's "scene" is one of:
                                                           illustration, or a Synthetic demo for a screenshot scene)
   {"kind": "image", "path": PATH, "focus": [X, Y]}        an existing picture, cropped to 3:1 around focus (0 to 1)
 
-Under any docs/assets/ folder only a Concept illustration or a Synthetic demo is written, and only from pictures already
-under docs/images/ or docs/assets/ (public Git holds no renders); make real data renders and model output in
-Scrolls-private's docs/media/. A panels scene is always a Synthetic demo. Needs numpy and Pillow; the card needs the Inter font (or --font).
+Under any docs/assets/ folder the public media rule applies (docs/media/README.md, common.write_guard): a Concept
+illustration or a Synthetic demo is built only from pictures already under docs/images/ or docs/assets/, a Real data
+render only of a public scan that is not prize-eligible and shows no held-out labels, and model output never; make
+those in Scrolls-private's docs/media/. A panels scene is always a Synthetic demo. Needs numpy and Pillow; the card
+needs the Inter font (or --font).
 """
 
 import argparse
@@ -275,13 +277,14 @@ def render_source(recipe, size, log):
 
 
 def make(recipe_path, out_dir, preview=None, font=None, quiet=False):
-    """Make the hero, card and sidecar of one recipe. Returns the sidecar record."""
-    from PIL import Image
-
+    """Make the hero, card and sidecar of one recipe. Returns the sidecar record. The recipe and the public media rule
+    are checked before Pillow is imported, so a refusal needs no image libraries."""
     recipe = load_recipe(recipe_path)
     out_dir = Path(out_dir)
-    write_guard(recipe["label"], out_dir / f"{recipe['name']}.webp")
-    input_guard(input_pictures(recipe), out_dir / f"{recipe['name']}.webp", root=Path.cwd())
+    write_guard(recipe["label"], out_dir / f"{recipe['name']}.webp", recipe)
+    input_guard(input_pictures(recipe), out_dir / f"{recipe['name']}.webp", root=Path.cwd(), label=recipe["label"])
+    from PIL import Image
+
     out_dir.mkdir(parents=True, exist_ok=True)
 
     def log(msg):

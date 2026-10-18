@@ -25,10 +25,26 @@ HAVE_PLAYWRIGHT = importlib.util.find_spec("playwright") is not None
 
 GOOD = {"label": "Concept illustration", "alt": "A copper thread through discs.",
         "caption": "Concept illustration: discs on a thread. No scan data.", "license": "Apache-2.0"}
+# A Real data render the public media rule allows: PHerc0139 is on no prize list, and it draws no labels.
 REAL = {"label": "Real data render", "alt": "A slice.", "license": "CC BY-NC 4.0",
-        "caption": "Real data render: PHerc0139, 2.4 um. Data: Vesuvius Challenge, CC BY-NC 4.0",
-        "data": {"scan": "PHerc0139", "segment": "w035", "voxel_size": "2.399 um",
-                 "credit": "Data: Vesuvius Challenge, CC BY-NC 4.0"}}
+        "caption": "Real data render: PHerc0139, 2.4 um. Data: Vesuvius Challenge open data, CC BY-NC 4.0",
+        "data": {"scan": "PHerc0139", "segment": "w035", "voxel_size": "2.399 um", "labels": "none",
+                 "credit": "Vesuvius Challenge open data, CC BY-NC 4.0"}}
+
+
+def real(scan="PHerc0139", segment="w035", labels="none", caption_extra="", **data):
+    """REAL with another scan, segment or labels; caption_extra goes before the credit."""
+    meta = json.loads(json.dumps(REAL))
+    meta["data"].update(scan=scan, segment=segment, labels=labels, **data)
+    meta["caption"] = f"Real data render: {scan}{caption_extra}. Data: Vesuvius Challenge open data, CC BY-NC 4.0"
+    return meta
+
+
+def sidecar(meta, width=1920, nbytes=50_000, scripts=("common.py", "hero.py"), commit="0" * 40):
+    """A written sidecar record for meta, as write_sidecar() makes it."""
+    return dict(meta, schema="scrolls-media/1", command="python scripts/media/hero.py r.json --out-dir OUT",
+                outputs=[{"file": "a-hero.webp", "bytes": nbytes, "width": width, "height": 640}],
+                tool={"scripts": list(scripts), "scripts_sha256": "0" * 64, "base_commit": commit})
 
 
 class LabelTest(unittest.TestCase):
@@ -42,18 +58,96 @@ class LabelTest(unittest.TestCase):
                dict(GOOD, alt=""), dict(GOOD, license="\n"), dict(GOOD, caption="Concept illustration" + chr(0x2014)),
                {k: v for k, v in GOOD.items() if k != "license"}, dict(REAL, data=None),
                dict(REAL, data=dict(REAL["data"], credit="Data: someone")),
-               dict(REAL, caption="Real data render: PHerc0139."), dict(REAL, data=dict(REAL["data"], scan=""))]
+               dict(REAL, caption="Real data render: PHerc0139."), dict(REAL, data=dict(REAL["data"], scan="")),
+               dict(REAL, data={k: v for k, v in REAL["data"].items() if k != "labels"}),
+               dict(REAL, data=dict(REAL["data"], voxel_size="")),
+               dict(REAL, data=dict(REAL["data"], credit="Data: Vesuvius Challenge, CC BY-NC 4.0"),
+                    caption="Real data render: PHerc0139. Data: Vesuvius Challenge, CC BY-NC 4.0"),
+               dict(REAL, license="Apache-2.0")]
         for meta in bad:
             with self.subTest(meta=meta), self.assertRaises(common.MediaError):
                 common.check_meta(meta)
+        # segment is optional: a whole-scroll slice has none
+        common.check_meta(dict(REAL, data={k: v for k, v in REAL["data"].items() if k != "segment"}))
 
-    def test_scan_pixels_never_go_under_docs_assets(self):
-        common.write_guard("Concept illustration", ROOT / "docs" / "assets" / "x" / "a-hero.webp")
+    def test_the_public_media_rule_at_write_time(self):
+        out = ROOT / "docs" / "assets" / "x" / "a-hero.webp"
+        common.write_guard("Concept illustration", out)
         common.write_guard("Synthetic demo", ROOT / "docs" / "assets" / "x" / "a.gif")
-        common.write_guard("Real data render", Path("/tmp/Scrolls-private/docs/media/x/a-hero.webp"))
-        for label in ("Real data render", "Model output", "Something else"):
-            with self.subTest(label=label), self.assertRaises(common.MediaError):
-                common.write_guard(label, ROOT / "docs" / "assets" / "x" / "a-hero.webp")
+        common.write_guard("Real data render", out, REAL)
+        common.write_guard("Real data render", out, real("PHerc. 172", segment=None))
+        common.write_guard("Real data render", out, real("PHerc0841", segment="w00", labels="w00 inklabels"))
+        common.write_guard("Real data render", out, real("PHerc0841", segment="ag405"))  # its CT, no labels drawn
+        common.write_guard("Model output", Path("/tmp/Scrolls-private/docs/media/x/a-hero.webp"))
+        common.write_guard("Real data render", Path("/tmp/Scrolls-private/docs/media/x/a-hero.webp"),
+                           real("PHerc0800"))
+        refused = {"model output": ("Model output", GOOD), "an unknown label": ("Something else", GOOD),
+                   "a Real data render without its record": ("Real data render", None),
+                   "a Grand Prize scroll": ("Real data render", real("PHerc0800")),
+                   "a First Letters scroll by volume id": ("Real data render", real("PHerc0139", volume="20250821151701")),
+                   "a First Letters scroll named without its part": ("Real data render", real("PHerc. 175")),
+                   "the title prize's scroll": ("Real data render", real("Scroll 1")),
+                   "Paris 4 spelled out": ("Real data render", real("PHerc. Paris 4")),
+                   "PHerc1447": ("Real data render", real("PHerc1447")),
+                   "an eligible scroll in the caption": ("Real data render", real(caption_extra=" beside PHerc0826")),
+                   "an eligible volume id in the caption": ("Real data render", real(caption_extra=", volume 20250521135224")),
+                   "held-out ag405 labels": ("Real data render", real("PHerc0841", "ag405", "ag405 inklabels")),
+                   "the old credit": ("Real data render", dict(REAL, data=dict(REAL["data"], credit="Data: x")))}
+        for why, (label, meta) in refused.items():
+            with self.subTest(why), self.assertRaises(common.MediaError):
+                common.write_guard(label, out, meta)
+
+    def test_prize_list_comes_from_the_snapshot_and_fails_closed(self):
+        table, checked = common.prize_scrolls()
+        self.assertTrue(checked)
+        for name in ("PHerc0800", "PHerc. 826", "PHerc1447", "PHercParis4", "Scroll 1", "PHerc0175A", "PHerc0175"):
+            with self.subTest(eligible=name):
+                self.assertTrue(common.eligible_prizes(name, table))
+        for name in ("PHerc0139", "PHerc. 172", "PHerc0841", "PHerc0332", "Scroll 4", "PHerc0009B", "PHerc017"):
+            with self.subTest(not_eligible=name):
+                self.assertEqual(common.eligible_prizes(name, table), [])
+        self.assertEqual([common.normalize_scroll(n) for n in ("PHerc. 139", "pherc0139", "PHerc. Paris. 4", "scroll-1")],
+                         ["PHERC0139", "PHERC0139", "PHERCPARIS4", "PHERCPARIS4"])
+        with tempfile.TemporaryDirectory() as tmp, self.assertRaises(common.MediaError):
+            common.prize_scrolls(tmp)
+
+    def test_a_sidecar_is_checked_against_the_rule(self):
+        self.assertEqual(common.public_problems(sidecar(GOOD)), [])
+        self.assertEqual(common.public_problems(sidecar(REAL)), [])
+        committed = json.loads((ROOT / "docs" / "assets" / "umbilicus" / "umbilicus-hero.json").read_text())
+        self.assertEqual(common.public_problems(committed), [])
+        bad = {"model output": sidecar(dict(GOOD, label="Model output", caption="Model output: a map.")),
+               "too wide": sidecar(GOOD, width=1921), "too large": sidecar(GOOD, nbytes=4_000_001),
+               "no commit": sidecar(GOOD, commit=None), "no width": sidecar(GOOD, width=None),
+               "real data without its scripts": sidecar(REAL, scripts=()),
+               "real data of an eligible scroll": sidecar(real("PHerc1218")),
+               "an eligible scroll in a file name": dict(sidecar(REAL), outputs=[
+                   {"file": "unroll-pherc0800.webp", "bytes": 1, "width": 1920, "height": 640}]),
+               "no command": dict(sidecar(GOOD), command=""), "wrong schema": dict(sidecar(GOOD), schema="x"),
+               "not an object": []}
+        for why, record in bad.items():
+            with self.subTest(why):
+                self.assertNotEqual(common.public_problems(record), [])
+
+    def test_size_guard_removes_a_file_over_the_limits(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            folder = Path(tmp) / "docs" / "assets" / "x"
+            folder.mkdir(parents=True)
+            clip = folder / "a.gif"
+            clip.write_bytes(b"GIF89a" + (1920).to_bytes(2, "little") + (540).to_bytes(2, "little") + b"\0" * 8)
+            common.size_guard(clip)
+            common.size_guard(clip, 1920)
+            with self.assertRaises(common.MediaError):
+                common.size_guard(clip, 1921)
+            self.assertFalse(clip.exists())
+            wide = folder / "b.gif"
+            wide.write_bytes(b"GIF89a" + (2400).to_bytes(2, "little") + (540).to_bytes(2, "little") + b"\0" * 8)
+            with self.assertRaises(common.MediaError):
+                common.size_guard(wide)
+            big = Path(tmp) / "elsewhere.gif"
+            big.write_bytes(b"\0" * 10)
+            common.size_guard(big, 4000)
+            self.assertTrue(big.exists(), "outside docs/assets/ the limits do not apply")
 
     def test_public_pictures_are_built_only_from_the_public_tree(self):
         out = ROOT / "docs" / "assets" / "x" / "a-hero.webp"
@@ -62,6 +156,8 @@ class LabelTest(unittest.TestCase):
         for bad in ("/tmp/scan-render.png", "docs/../../elsewhere/render.png", "kit/data/render.png"):
             with self.subTest(source=bad), self.assertRaises(common.MediaError):
                 common.input_guard([bad], out)
+        # A Real data render is built from scan data; write_guard's rule checks stand in for the public-tree one.
+        common.input_guard(["/tmp/scan-render.png"], out, label="Real data render")
 
     def test_a_clip_under_docs_assets_needs_a_label(self):
         import encode
@@ -141,14 +237,19 @@ class RecipeTest(unittest.TestCase):
                     self.hero.make(path, ROOT / "docs" / "assets" / "never-written")
         self.assertFalse((ROOT / "docs" / "assets" / "never-written").exists())
 
-    def test_real_data_is_refused_under_docs_assets_before_rendering(self):
-        recipe = dict(json.loads((MEDIA / "recipes" / "umbilicus.json").read_text()), **REAL,
+    def test_an_eligible_scroll_is_refused_under_docs_assets_before_rendering(self):
+        recipe = dict(json.loads((MEDIA / "recipes" / "umbilicus.json").read_text()), **real("PHerc0800"),
                       scene={"kind": "image", "path": "missing.png"})
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "real.json"
             path.write_text(json.dumps(recipe))
             with self.assertRaises(common.MediaError):
                 self.hero.make(path, Path(tmp) / "docs" / "assets" / "x")
+            self.assertFalse((Path(tmp) / "docs").exists(), "refused before the folder was made")
+            # A scan off the prize lists passes the rule and gets as far as Pillow, then reading its picture.
+            path.write_text(json.dumps(dict(recipe, **REAL)))
+            with self.assertRaises(FileNotFoundError if HAVE_NUMPY else ImportError):
+                self.hero.make(path, Path(tmp) / "docs" / "assets" / "x", quiet=True)
 
 
 @unittest.skipUnless(HAVE_NUMPY, "needs numpy and Pillow")

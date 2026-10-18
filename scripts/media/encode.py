@@ -10,8 +10,9 @@ made in two passes: ffmpeg's palettegen with stats_mode=diff, then paletteuse wi
 rectangle diff mode, then gifsicle -O3 with --lossy. When a file is over its limit (GIF 4 MB, MP4 10 MB by default),
 the GIF is made again narrower, slower and lossier, and the MP4 at a higher CRF, until it fits or the steps run out
 (exit 3). META.json gives the media label, alt text, caption and license that the sidecars record (common.py); it is
-required for any output under docs/assets/, where only Concept illustrations and Synthetic demos are written.
-Needs ffmpeg and gifsicle on PATH.
+required for any output under docs/assets/, where the public media rule applies (docs/media/README.md): no model
+output, a Real data render only of a public scan that is not prize-eligible, and every file at most 1920 px wide and
+4 MB (the MP4 limit drops to 4 MB there). Needs ffmpeg and gifsicle on PATH.
 """
 
 import argparse
@@ -26,7 +27,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import ROOT, MediaError, check_meta, output_record, under_assets, write_guard, write_sidecar  # noqa: E402
+from common import (MAX_BYTES, ROOT, MediaError, check_meta, output_record, size_guard, under_assets,  # noqa: E402
+                    write_guard, write_sidecar)
 
 GIF_MAX_MB = 4.0
 MP4_MAX_MB = 10.0
@@ -162,7 +164,7 @@ def main(argv=None):
                    help="a command that made the frames (repeatable, in order), recorded in the sidecar before this "
                         "one; name the frames folder FRAMES in it")
     p.add_argument("--max-gif-mb", type=float, default=GIF_MAX_MB, help="GIF size limit in MB (default 4)")
-    p.add_argument("--max-mp4-mb", type=float, default=MP4_MAX_MB, help="MP4 size limit in MB (default 10)")
+    p.add_argument("--max-mp4-mb", type=float, default=MP4_MAX_MB, help="MP4 size limit in MB (default 10; at most 4 under docs/assets/)")
     p.add_argument("--json", action="store_true", help="print what was written as JSON")
     args = p.parse_args(argv)
     if not args.mp4 and not args.gif:
@@ -177,14 +179,17 @@ def main(argv=None):
             if not out:
                 continue
             if meta:
-                write_guard(meta["label"], out)
+                write_guard(meta["label"], out, meta)
             Path(out).parent.mkdir(parents=True, exist_ok=True)
+            cap = MAX_BYTES / 1e6 if under_assets(out) else float("inf")
             if kind == "mp4":
-                settings = encode_mp4(args.src, out, args.fps, args.crf, args.max_mp4_mb, args.mp4_width, log)
+                settings = encode_mp4(args.src, out, args.fps, args.crf, min(args.max_mp4_mb, cap), args.mp4_width,
+                                      log)
             else:
                 settings = encode_gif(args.src, out, args.fps, args.gif_fps, args.gif_width, args.lossy,
-                                      args.max_gif_mb, log, args.dither)
+                                      min(args.max_gif_mb, cap), log, args.dither)
             info = probe(out)
+            size_guard(out, info.get("width"))
             rec = output_record(out, info.get("width"), info.get("height"), kind=kind,
                                 seconds=info.get("seconds"), frames=info.get("frames"), settings=settings)
             written.append((Path(out), rec))

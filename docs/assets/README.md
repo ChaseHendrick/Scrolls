@@ -1,6 +1,6 @@
 # Release media: heroes, cards, GIFs and clips
 
-Every picture and clip under `docs/assets/` is listed here with its size, bytes, media label and license, and has a sidecar JSON (`NAME.json` beside it, schema `scrolls-media/1`) that records the same label, its sizes and SHA-256, its inputs and the command that made it. `tests/test_repo.py` fails when a file has no row or no sidecar, when a row's or sidecar's bytes or pixel size disagree with the file, when a label here is anything but Concept illustration or Synthetic demo, when a sidecar records a scratch path, when a hero (`*-hero.webp`) is not exactly 1920 x 640 or is over 300 KB, or when anything is over 4 MB. Chase asked on 18 October 2026 for a hero on every released tool, in the quality and dimensions of the root README's, and for images, GIFs and videos of released tools. [`scripts/media/`](../../scripts/media/) makes them ([tool page](../tools/media.md)).
+Every picture and clip under `docs/assets/` is listed here with its size, bytes, media label and license, and has a sidecar JSON (`NAME.json` beside it, schema `scrolls-media/1`) that records the same label, its sizes and SHA-256, its inputs and the command that made it. `tests/test_repo.py` fails when a file has no row or no sidecar, when a row's or sidecar's bytes or pixel size disagree with the file, when a sidecar breaks the public media rule ([`../media/README.md`](../media/README.md): model output, a prize-eligible scroll, held-out labels, a missing data field, command or commit), when a sidecar records a scratch path, when a hero (`*-hero.webp`) is not exactly 1920 x 640 or is over 300 KB, or when anything is over 1920 px wide or 4 MB. Chase asked on 18 October 2026 for a hero on every released tool, in the quality and dimensions of the root README's, and for images, GIFs and videos of released tools. [`scripts/media/`](../../scripts/media/) makes them ([tool page](../tools/media.md)).
 
 ## Media labels
 
@@ -10,10 +10,10 @@ Each picture says what it is, first in its caption and again in its sidecar:
 | --- | --- | --- |
 | Concept illustration | Generated or procedural art: no source scan, model output, recovered text or experimental result | Yes |
 | Synthetic demo | A tool running on made-up data, or a screenshot of an interface that shows only made-up data | Yes |
-| Real data render | Pixels made from a public scan, with the scan, segment, voxel size and "Data: Vesuvius Challenge, CC BY-NC 4.0" | No: public Git holds no scan renders. They are kept in Scrolls-private's `docs/media/` until Chase approves a host |
-| Model output | A model's map or score, never a reading | No, for the same reason |
+| Real data render | Pixels made from a public scan, with the scan, voxel size, labels drawn (or `none`), segment and volume when they apply, and the credit "Vesuvius Challenge open data, CC BY-NC 4.0" | Only of a public scan that is not prize-eligible, with no held-out labels (PHerc1447's, PHerc0841 ag405's), licensed CC BY-NC 4.0 ([the public media rule](../media/README.md)). Real-data pictures of prize-eligible scrolls stay in Scrolls-private's `docs/media/` |
+| Model output | A model's map or score, never a reading | No, for any scroll: Scrolls-private's `docs/media/` |
 
-No picture here shows letter boxes or a suggested reading, and none shows ink, StrokeNet or reader output for any scroll. `scripts/media/common.py` refuses to write any label but the first two under a `docs/assets/` folder, `hero.py` builds a picture for this folder only from files already under `docs/images/` or `docs/assets/`, `encode.py` requires a label for any clip written here, and `capture_web.py` never writes its unlabeled frames here.
+No picture here shows letter boxes or a suggested reading, and none shows ink, StrokeNet or reader output for any scroll. `scripts/media/common.py` refuses model output under a `docs/assets/` folder and a Real data render that breaks the public media rule, and removes a written file over 1920 px or 4 MB; `hero.py` builds an illustration or demo for this folder only from files already under `docs/images/` or `docs/assets/`, `encode.py` requires a label for any clip written here, and `capture_web.py` never writes its unlabeled frames here.
 
 ## The reference style
 
@@ -27,7 +27,7 @@ Keep any replacement free of lettering, fabricated ink, score badges and claims 
 
 ## Assets
 
-The License column is the license of the picture itself. Apache-2.0 is the repository's license; no picture here is derived from scan data. The sidecars of the pictures made before `scripts/media/` (the two generated heroes, the 0.1.4 monitor captures and the phantom panels) were written on 18 October 2026 from their commits and notes; they record how each was made but no script digest.
+The License column is the license of the picture itself. Apache-2.0 is the repository's license; a Real data render carries the scan data's CC BY-NC 4.0. No picture here is derived from scan data yet (audit of 18 October 2026 in [`../media/README.md`](../media/README.md#audit-18-october-2026)). The sidecars of the pictures made before `scripts/media/` (the two generated heroes, the 0.1.4 monitor captures and the phantom panels) were written on 18 October 2026 from their commits and notes; they record how each was made but no script digest.
 
 | Asset | Size | Bytes | Label | License | Alt text and notes |
 | --- | --- | --- | --- | --- | --- |
