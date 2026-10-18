@@ -46,7 +46,7 @@ Updated 17 October 2026.
 | Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
-| AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package lives on branch `submission/progress-2026-10-fix4`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
+| AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package, 0.1.5, lives on branch `submission/progress-2026-10-fix5`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |
 | README hero artwork: image provenance, dimensions and reuse | [`assets/README.md`](assets/README.md) | Root README and AutoPipeline reference |
 | Apple Silicon Mac: commands, timings | [`mac.md`](mac.md) | |
 | Compute: hardware, costs, local electricity ledger | [`compute.md`](compute.md) | [`compute/modal-pricing.md`](compute/modal-pricing.md) (Modal rates and default GPU), [`compute/modal-specs/`](compute/modal-specs/README.md), [`compute/digitalocean-workspace.md`](compute/digitalocean-workspace.md) |

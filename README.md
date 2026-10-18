@@ -40,19 +40,19 @@ Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and
 
 ### AutoPipeline
 
-Released 16 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix4`: [`submissions/progress-2026-10-fix4/` at commit `603fe14`](https://github.com/ChaseHendrick/Scrolls/tree/603fe14633201d6769776519646dc19cf203009f/submissions/progress-2026-10-fix4).
+Released 18 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix5`: [`submissions/progress-2026-10-fix5/` at commit `9e50d61`](https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5).
 
-AutoPipeline runs villa's pipeline from a released scan to a scored ink map, with a rule written down before the run in place of each choice a person usually makes by eye, and a control beside every check. It drives VC3D's command-line tools and villa's ink detection end to end: umbilicus, seed points, tracing with the published normal grids, surface checks, flattening, rendering, ink detection with reversed and shuffled maps, and scoring against published ink labels. Its default reader is now Domenico Russo's Reader v2, a community fine-tune of `ink_9um`: on PHerc0841 w00, from the released scan and the published segment, it scored AUC 0.8752 forward and 0.5659 reversed, against 0.7479 and 0.5012 for `ink_9um` seed 42 on the same render (Model output, development data, 15 October 2026). Traces grown from its own seed points are small patches with no held-out ink score yet. This is version 0.1.4, the fourth fix release: it passes remote volumes to VC3D's renderer in the form villa's builds since 12 October 2026 require (they refuse 0.1.3's), though no full remote render has run with it yet; the earlier releases stay on their own branches. Its last step, ink detection with the reversed-layer control, also runs in a browser with `ink_9um` seed 42: the [AutoPipeline ink Space](https://huggingface.co/spaces/SharpMeow/autopipeline-ink) maps a crop of a released segment, or a small surface volume you upload, and scores the crop where it has published ink labels.
+AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.5 makes its read-only run monitor interactive: inspect a stage and its recorded failure, filter the loaded log tail, pause or refresh the viewer, find run records, and prepare commands for review and copying. Copying never executes a command; stale views cannot retain a resume command. The synthetic install demo now fails if its fake model fails or required maps are missing. It also corrects rounded cache-repair timestamps that could cause an unnecessary render. These are software usability and correctness changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
 
 ```bash
-git clone --branch submission/progress-2026-10-fix4 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix4/autopipeline
+git clone --branch submission/progress-2026-10-fix5 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix5/autopipeline
 python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .                      # numpy, tifffile, zarr 3, scipy
-python scripts/demo_synthetic.py                # every step on a synthetic scroll; prints DEMO PASS
+python -m pip install -e .
+python scripts/demo_synthetic.py
 ```
 
-Setup, the run monitor and the limits: the package's [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md). What changed: [in 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/CHANGES.md) and [in 0.1.3](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix3/submissions/progress-2026-10-fix3/CHANGES.md).
+Install, monitor controls, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). [Changes since 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md). The scientific settings and models are unchanged; a narrow cache-repair correction avoids counting the same repair twice.
 
 ### Unroll (interactive 3D scroll viewer)
 
