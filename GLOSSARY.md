@@ -20,7 +20,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyses a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
 
-**AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix4` (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
+**AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix5`, version 0.1.5 (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
 
 ## B
 

@@ -171,15 +171,15 @@ Use Starter's command builder for a small image you already have. It creates a c
 
 ## 5. Optional: practice pipeline automation
 
-**AutoPipeline** connects the official tracing, rendering and ink stages and keeps their plans and controls together. Begin with its [released synthetic demo](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md). It uses a made-up scroll and stand-in tools. `DEMO PASS` checks orchestration, not the real VC3D binaries or an ink model.
+**AutoPipeline** connects the official tracing, rendering and ink stages and keeps their plans and controls together. Begin with its [released synthetic demo](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). It uses a made-up scroll and stand-in tools. `DEMO PASS` checks orchestration, not the real VC3D binaries or an ink model; since version 0.1.5 the demo prints `DEMO FAIL` instead when a stand-in model fails or a map is missing.
 
 **Use a separate environment and folder.** Both AutoPipeline (`vc-autopipeline`) and this workbench (`scrolls-workbench`) install a Python package named `kit`. Installing them together can overwrite files. A second virtual environment is required even though their command names differ.
 
 For macOS or Linux with Git and Python 3.11 or newer, open a new terminal outside `scrolls-learning`:
 
 ```bash
-git clone --depth 1 --branch submission/progress-2026-10-fix4 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix4/autopipeline
+git clone --depth 1 --branch submission/progress-2026-10-fix5 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix5/autopipeline
 python3 -m venv .venv-ap
 .venv-ap/bin/python -m pip install -e .
 .venv-ap/bin/python scripts/demo_synthetic.py --out demo-run

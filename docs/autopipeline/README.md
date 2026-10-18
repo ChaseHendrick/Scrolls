@@ -6,16 +6,17 @@
 
 AutoPipeline runs villa's VC3D tools and ink detection unattended on one released Vesuvius Challenge scan, from the
 scan's headers to checked surfaces, ink maps with controls, and a report. This page is a reference for people and for
-agents. It documents the released package, AutoPipeline 0.1.4, as its code reads; every command, flag, setting and
-variable below was taken from that code.
+agents. It documents the released package, AutoPipeline 0.1.5, as its code reads; every command, flag, setting and
+variable below was taken from that code. 0.1.5 changed the monitor page, the synthetic demo's checks and the cache's
+repair timestamps; its commands, flags, settings and variables are those of 0.1.4.
 
 | Item | Location |
 | --- | --- |
-| Package (0.1.4) | [`submissions/progress-2026-10-fix4/autopipeline`](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline) on branch `submission/progress-2026-10-fix4` |
-| Package README | [`autopipeline/README.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/README.md) |
-| Release notes | [`CHANGES.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/CHANGES.md) |
-| Main code | [`kit/autopipe.py`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/kit/autopipe.py), [`kit/autopipe_monitor.py`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/kit/autopipe_monitor.py) |
-| VC3D tool guides | [`docs/vc3d-agents.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/docs/vc3d-agents.md), [`docs/vc3d-headless.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix4/submissions/progress-2026-10-fix4/autopipeline/docs/vc3d-headless.md) |
+| Package (0.1.5) | [`submissions/progress-2026-10-fix5/autopipeline`](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline) on branch `submission/progress-2026-10-fix5` (commit `9e50d61`) |
+| Package README | [`autopipeline/README.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md) |
+| Release notes | [`CHANGES.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md) (0.1.5); [0.1.4's](https://github.com/ChaseHendrick/Scrolls/blob/603fe14633201d6769776519646dc19cf203009f/submissions/progress-2026-10-fix4/CHANGES.md) |
+| Main code | [`kit/autopipe.py`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/kit/autopipe.py), [`kit/autopipe_monitor.py`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/kit/autopipe_monitor.py) |
+| VC3D tool guides | [`docs/vc3d-agents.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/docs/vc3d-agents.md), [`docs/vc3d-headless.md`](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/docs/vc3d-headless.md) |
 | Agent rules for this page | [`AGENTS.md`](AGENTS.md) |
 | Local cost logging on this branch | [`../compute.md`](../compute.md#local-runs-time-and-electricity) |
 
@@ -97,8 +98,8 @@ Constants: `PLAN_VERSION = 2`; readable plan versions `(1, 2)`; `FAILURE_KINDS =
   `KIT_INK_PYTHON`.
 
 ```bash
-git clone --depth 1 --branch submission/progress-2026-10-fix4 https://github.com/ChaseHendrick/Scrolls.git ap
-cd ap/submissions/progress-2026-10-fix4/autopipeline
+git clone --depth 1 --branch submission/progress-2026-10-fix5 https://github.com/ChaseHendrick/Scrolls.git ap
+cd ap/submissions/progress-2026-10-fix5/autopipeline
 python3 -m venv .venv && . .venv/bin/activate
 python -m pip install -e .                       # keep -e: scripts/ and docs/ stay beside the code
 (cd /tmp && scrolls-kit autopipeline defaults)   # install check from any folder
@@ -379,13 +380,33 @@ Full rules: [`../compute.md`](../compute.md#local-runs-time-and-electricity).
 `run --monitor` or `monitor OUT` serves a read-only page on 127.0.0.1:8765 showing the current stage, the 11 stages
 with times, each surface's checks, a wireframe of each trace, ink maps beside their reversed controls, scores, and the
 log tail. Routes: `/`, `/summary.json`, `/favicon.ico`, `/thumb/<sid>/<model>/<f|r>.png`, `/wire/<surface>.json`. The
-page polls every 2 seconds and loads nothing from the internet. The server answers GET only, refuses unknown Host
+page polls every 2 seconds and loads nothing from the internet. The server answers GET and HEAD only, refuses unknown Host
 headers and sends a strict content security policy. Limits: stale after 1800 s, 60 log lines, 192 px thumbnails from
 at most 256 MiB decoded, 300 surfaces. A snapshot replaces the run folder's, kit home's and home folder's paths with
 `<run>`, `<kit>` and `~`, and shows other absolute paths by their last name; it still holds the run's records and
 log lines, so a snapshot of a scroll whose ink is not published is not for sharing.
 
-The pictures below are AutoPipeline 0.1.4's monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 16 October 2026. The demo's scroll, VC3D tools and ink model are stand-ins, so its ink maps are stripes, not ink.
+Since 0.1.5 the page has controls that work with a keyboard or on a narrow screen. They change only the view; the
+server still answers GET and HEAD only and never writes run files, and the headless commands and `/summary.json` keep
+their schema.
+
+- **Inspect a stage**: choose a stage, or Inspect current / stopped stage, for its recorded status, timing, failure
+  type and affected surfaces. A QA failure adds a geometry-review next step; the monitor does not locate bad regions or
+  repair a surface.
+- **Search log**: stage, event-type and text filters over the loaded log tail. The count is of loaded lines, not a
+  search of the whole log history; Clear filters shows the whole tail again.
+- **Pause viewer updates**, **Refresh now**, **Resume viewer updates**: pause the view, not the pipeline. A refresh
+  times out after 10 seconds.
+- **Find run files**: the plan, state, report, score and event records under the run folder, missing or unreadable
+  ones included. A listed file is not a validation pass, and there is no download route.
+- **Prepare status command**, **Prepare resume command**, **Copy command**: a quoted bash/zsh command to review and
+  copy. Copying runs nothing. Resume is unavailable for an active or finished run, an unreadable state, a plan-rule
+  refusal, or a paused view or one whose last good summary is 30 seconds old.
+
+A snapshot keeps stage inspection and the log filters but turns off refresh and command preparation, because its run
+path is redacted.
+
+The pictures below are AutoPipeline 0.1.4's monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 16 October 2026, before 0.1.5 added the controls above. The demo's scroll, VC3D tools and ink model are stand-ins, so its ink maps are stripes, not ink.
 
 The top of the page once the run has finished (dark theme):
 
@@ -412,7 +433,9 @@ On a phone:
 | `no surface passed the acceptance rule` | Read `qa.reasons` and `qa.unmeasured`; missing `vc_tifxyz_selfcross` or `vc_gen_umbilicus` leaves checks unmeasured (the `stable` AppImage lacks both). |
 | render refused over `max_missing` | Add `render.trim`. |
 | VC3D tool exit 139 | A tool from `usr/bin` was started without the AppImage loader; set `VC_APPIMAGE` to the AppImage or its `squashfs-root`. |
-| remote renders fail on a 0.1.3 install | Upgrade to 0.1.4 (villa ba2bf75 changed `--volume`). |
+| remote renders fail on a 0.1.3 install | Upgrade to 0.1.5, the current release (0.1.4 fixed it; villa ba2bf75 changed `--volume`). |
+| `DEMO FAIL` from `scripts/demo_synthetic.py` | A dependency is missing or a stand-in ink command failed (0.1.5 and newer check this); read the log it names. |
+| Prepare resume command is unavailable in the monitor | The run is active, finished, unreadable or refused by its plan's rules, or the view is paused or stale; press Refresh now. |
 
 ## 14. FAQ
 
@@ -452,6 +475,11 @@ Run tests through `discover -s tests`; they import each other's helpers. For thi
 
 ## 17. Changelog
 
+- **0.1.5** (`progress-2026-10-fix5`, 9e50d61, 18 October 2026): monitor controls (stage inspection, log filters,
+  viewer pause and refresh, run-record list, commands prepared for review and copying, never run); the synthetic demo
+  fails when a stand-in model fails or a map is missing; cache-repair times kept at full precision, so one repair
+  does not trigger an extra render; portable test fixtures. An ordinary software release; models and settings
+  unchanged.
 - **0.1.4** (`progress-2026-10-fix4`, 15 October 2026): remote renders pass the URL as `--volume` on villa builds
   since ba2bf75; snapshots keep no piece of the run folder's path; real-path comparison keeps private lists out of
   tracked folders on macOS; four macOS-only test failures fixed.
