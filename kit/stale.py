@@ -236,9 +236,10 @@ class Git:
         return bool(tip) and tip not in self.first_parents(default)
 
     def commit_time(self, rev):
-        out = self.run("log", "-1", "--format=%cI", rev, "--")
+        # Epoch seconds, not %cI: newer git writes UTC as "Z", which Python 3.10's fromisoformat refuses.
+        out = self.run("log", "-1", "--format=%ct", rev, "--")
         try:
-            return datetime.fromisoformat(out.strip()).astimezone(timezone.utc) if out and out.strip() else None
+            return datetime.fromtimestamp(int(out.strip()), timezone.utc) if out and out.strip() else None
         except ValueError:
             return None
 
@@ -247,10 +248,10 @@ class Git:
 
     def first_added(self, rel, needle):
         """UTC time of the first commit whose change to rel added or removed needle, or None."""
-        out = self.run("log", "--reverse", "--format=%cI", "-S", needle, "--", rel)
+        out = self.run("log", "--reverse", "--format=%ct", "-S", needle, "--", rel)
         first = (out or "").strip().splitlines()
         try:
-            return datetime.fromisoformat(first[0]).astimezone(timezone.utc) if first else None
+            return datetime.fromtimestamp(int(first[0]), timezone.utc) if first else None
         except ValueError:
             return None
 
