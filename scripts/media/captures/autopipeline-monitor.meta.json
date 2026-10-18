@@ -1,8 +1,10 @@
 {
   "label": "Synthetic demo",
   "release_id": "autopipeline",
-  "alt": "AutoPipeline 0.1.5's monitor following the synthetic demo: stages turn green, the run finishes, then the Ink stage is inspected, the log is filtered, the run files are listed and the surface cards are shown.",
-  "caption": "Synthetic demo: AutoPipeline 0.1.5's monitor following scripts/demo_synthetic.py, with stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+  "alt": "AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.5's monitor following scripts/demo_synthetic.py, captured frame by frame from a live run (the run part at about 4 times real speed); stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
   "license": "Apache-2.0",
-  "sources": ["https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5"]
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5"
+  ]
 }

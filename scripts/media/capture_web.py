@@ -20,13 +20,23 @@ PAGE is a URL or a local HTML file. ACTIONS.json is a list of steps, run in orde
   {"shot": NAME}                        one screenshot, NAME.png, in the out folder
   {"frame": 1}                          one numbered frame (frame-00000.png, frame-00001.png, ...)
   {"hold": N}                           repeat the last frame N times (a pause in the clip)
-  {"frames": N, "every": MS}            N frames, MS milliseconds apart (pages that run in real time)
+  {"frames": N, "every": MS}            N frames, MS milliseconds of wall clock apart (pages that run in real time):
+                                        screenshots as fast as possible, then each frame is the last one taken by
+                                        its time, so a slow machine repeats frames instead of stretching the clip
   {"tween": {"selector": S, "from": A, "to": B, "n": N}}
                                         move a slider from A to B, one frame per step
   {"step": {"js": "seek({t})", "n": N}} frame-stepped time: for t from 0 to 1 in N steps, run the JavaScript with
                                         {t} replaced, wait two animation frames, take a frame
+  {"cursor": "show" or "hide"}          draw a pointer in the palette (headless Chromium draws none)
+  {"point": {"selector": S, "n": N}}    move the pointer to S, eased, one frame per step
+  {"tap": {"selector": S, "n": N}}      click S and draw a copper ring growing from the pointer over N frames
+  {"glide": {"selector": S, "from": A, "to": B, "n": N}}
+                                        a tween whose pointer follows the slider's thumb
+  {"scrollto": {"selector": S, "offset": PX, "n": N}}
+                                        scroll smoothly until S's top is PX below the window's top, one frame per step
 
-Frame-stepping gives a smooth clip whatever the renderer's speed. Encode the frames with encode.py. It never downloads
+Frame-stepping gives a smooth clip whatever the renderer's speed. Encode the frames with encode.py. The out folder may
+not be under docs/assets/: raw frames carry no media label, so they stay in a scratch folder. It never downloads
 a browser: it uses --browser, $CHROMIUM_PATH, Playwright's own Chromium, or a system chromium, in that order. Needs the
 playwright Python package (pip install playwright; set PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 where a browser exists).
 """
@@ -43,7 +53,35 @@ CANDIDATES = ("/opt/pw-browsers/chromium", "chromium", "chromium-browser", "goog
               "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
               "/Applications/Chromium.app/Contents/MacOS/Chromium")
 STEP_KEYS = {"goto", "wait", "wait_for", "click", "fill", "press", "eval", "set", "scroll", "clip", "shot", "frame", "hold",
-             "frames", "every", "tween", "step"}
+             "frames", "every", "tween", "step", "cursor", "point", "tap", "glide", "scrollto"}
+EASE = "function(t){return t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;}"
+# A drawn pointer and click ring in the palette, so a clip shows where each interaction happens. Headless Chromium
+# draws no system cursor; this one lives in the page as two fixed elements that ignore pointer events.
+CURSOR_JS = """() => { if (window.__mediaCursor) return; const ease = """ + EASE + """;
+  const c = document.createElement('div'); c.style.cssText = 'position:fixed;left:0;top:0;width:24px;height:24px;' +
+    'z-index:2147483647;pointer-events:none;will-change:transform';
+  c.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24"><path d="M3 2 L3 19 L7.6 14.8 L10.8 21.6 L13.7 20.3 ' +
+    'L10.6 13.6 L16.8 13.6 Z" fill="#EEE7D9" stroke="#171A1C" stroke-width="1.5" stroke-linejoin="round"/></svg>';
+  const r = document.createElement('div'); r.style.cssText = 'position:fixed;left:0;top:0;width:46px;height:46px;' +
+    'margin:-23px 0 0 -23px;border:3px solid #B77A54;border-radius:50%;z-index:2147483646;pointer-events:none;opacity:0';
+  document.body.append(r, c);
+  let x = innerWidth * 0.55, y = innerHeight * 0.6, sx = x, sy = y;
+  const place = () => { c.style.transform = `translate(${x - 3}px,${y - 2}px)`; };
+  const center = (sel) => { const e = document.querySelector(sel); if (!e) throw new Error('no ' + sel);
+    const b = e.getBoundingClientRect(); return [b.left + Math.min(b.width / 2, 80), b.top + b.height / 2]; };
+  window.__mediaCursor = {
+    show(on) { c.style.opacity = on ? '1' : '0'; if (!on) r.style.opacity = '0'; },
+    point(sel, t) { if (t === 0) { sx = x; sy = y; } const [tx, ty] = center(sel), e = ease(t);
+      x = sx + (tx - sx) * e; y = sy + (ty - sy) * e; place(); },
+    ring(t) { r.style.left = x + 'px'; r.style.top = y + 'px'; r.style.opacity = String(Math.max(0, 1 - t));
+      r.style.transform = `scale(${0.35 + 1.15 * t})`; },
+    thumb(sel, value) { const e = document.querySelector(sel), b = e.getBoundingClientRect();
+      const lo = +e.min || 0, hi = +e.max || 100, k = (value - lo) / (hi - lo);
+      x = b.left + 8 + k * (b.width - 16); y = b.top + b.height / 2; place(); },
+    scrollTo(sel, offset, t) { if (t === 0) { this.s0 = scrollY;
+        this.s1 = document.querySelector(sel).getBoundingClientRect().top + scrollY - offset; }
+      scrollTo(0, this.s0 + (this.s1 - this.s0) * ease(t)); } };
+  place(); }"""
 
 
 class CaptureError(ValueError):
@@ -87,6 +125,18 @@ def fallback_browsers():
     return out
 
 
+def pick_timed(times, n, every):
+    """For output frames at 0, every, 2 * every, ... (n of them), the index of the last screenshot taken at or before
+    each time (the first one before any was taken). times are seconds since the first screenshot, ascending."""
+    out, j = [], 0
+    for k in range(n):
+        target = k * every
+        while j + 1 < len(times) and times[j + 1] <= target:
+            j += 1
+        out.append(j)
+    return out
+
+
 class Recorder:
     def __init__(self, page, out_dir):
         self.page, self.out = page, Path(out_dir)
@@ -107,6 +157,27 @@ class Recorder:
         self.n += 1
         self.last = path
         return path
+
+    def timed(self, n, every):
+        """n frames of a page that runs in real time, one per `every` seconds of wall clock. Screenshots are taken as
+        fast as the machine allows for n * every seconds, then each output frame is the last screenshot taken at or
+        before its time, so a slow machine repeats frames instead of slowing the clip down."""
+        tmp = self.out / ".timed"
+        tmp.mkdir(exist_ok=True)
+        shots, t0 = [], time.monotonic()
+        while True:
+            t = time.monotonic() - t0
+            path = tmp / f"{len(shots):05d}.png"
+            self.page.screenshot(path=str(path), clip=self._box(), animations="disabled", caret="hide")
+            shots.append((t, path))
+            if t >= n * every:
+                break
+        for i in pick_timed([t for t, _ in shots], n, every):
+            path = self.out / f"frame-{self.n:05d}.png"
+            shutil.copyfile(shots[i][1], path)
+            self.n += 1
+            self.last = path
+        shutil.rmtree(tmp)
 
     def hold(self, count):
         if self.last is None:
@@ -173,13 +244,7 @@ def run_actions(page, rec, actions):
         if "hold" in step:
             rec.hold(int(step["hold"]))
         if "frames" in step:
-            every = step.get("every", 100) / 1000
-            for _ in range(int(step["frames"])):
-                t0 = time.monotonic()
-                rec.frame()
-                left = every - (time.monotonic() - t0)
-                if left > 0:
-                    time.sleep(left)
+            rec.timed(int(step["frames"]), step.get("every", 100) / 1000)
         if "tween" in step:
             tw = step["tween"]
             n = int(tw.get("n", 30))
@@ -188,6 +253,45 @@ def run_actions(page, rec, actions):
                 if isinstance(tw["from"], int) and isinstance(tw["to"], int):
                     value = round(value)
                 page.evaluate(SETTER, [tw["selector"], value])
+                page.evaluate(RAF2)
+                rec.frame()
+        if "cursor" in step:
+            page.evaluate(CURSOR_JS)
+            page.evaluate("(on) => window.__mediaCursor.show(on)", step["cursor"] != "hide")
+        if "point" in step:
+            pt = step["point"]
+            n = int(pt.get("n", 10))
+            for i in range(n):
+                page.evaluate("([s, t]) => window.__mediaCursor.point(s, t)", [pt["selector"], i / max(n - 1, 1)])
+                page.evaluate(RAF2)
+                rec.frame()
+        if "tap" in step:
+            tp = step["tap"]
+            page.locator(tp["selector"]).first.click()
+            n = int(tp.get("n", 6))
+            for i in range(n):
+                page.evaluate("(t) => window.__mediaCursor.ring(t)", i / max(n - 1, 1))
+                page.evaluate(RAF2)
+                rec.frame()
+        if "glide" in step:
+            gl = step["glide"]
+            n = int(gl.get("n", 30))
+            for i in range(n):
+                value = gl["from"] + (gl["to"] - gl["from"]) * i / max(n - 1, 1)
+                if isinstance(gl["from"], int) and isinstance(gl["to"], int):
+                    value = round(value)
+                page.evaluate(SETTER, [gl["selector"], value])
+                page.evaluate("([s, v]) => window.__mediaCursor && window.__mediaCursor.thumb(s, v)",
+                              [gl["selector"], value])
+                page.evaluate(RAF2)
+                rec.frame()
+        if "scrollto" in step:
+            sc = step["scrollto"]
+            n = int(sc.get("n", 12))
+            page.evaluate(CURSOR_JS)
+            for i in range(n):
+                page.evaluate("([s, o, t]) => window.__mediaCursor.scrollTo(s, o, t)",
+                              [sc["selector"], sc.get("offset", 16), i / max(n - 1, 1)])
                 page.evaluate(RAF2)
                 rec.frame()
         if "step" in step:
@@ -202,6 +306,11 @@ def run_actions(page, rec, actions):
 
 def capture(page_or_url, out_dir, actions, width=1280, height=800, scale=1.0, scheme="dark", browser=None,
             timeout=60000):
+    out = Path(out_dir)
+    parts = out.resolve().parts
+    if any(parts[i:i + 2] == ("docs", "assets") for i in range(len(parts) - 1)):
+        raise CaptureError("capture into a scratch folder, not docs/assets/: raw frames carry no label; encode.py "
+                           "--meta or hero.py writes the labeled result there")
     try:
         from playwright.sync_api import Error as PlaywrightError
         from playwright.sync_api import sync_playwright

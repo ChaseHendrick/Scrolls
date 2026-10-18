@@ -1,28 +1,21 @@
 {
   "name": "workbench-hero",
   "label": "Concept illustration",
-  "alt": "Concept illustration of a still life on a dark bench: a small papyrus roll unrolling into a copper grid, a cube with glowing slices, and two cross-sections on a copper thread.",
-  "caption": "Concept illustration: the toolbox's motifs on one bench. No scan data.",
+  "alt": "Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.",
+  "caption": "Concept illustration: the toolbox's motifs on one tray. No scan data.",
   "license": "Apache-2.0",
   "seed": 8,
   "scene": {
     "kind": "procedural",
     "name": "workbench",
-    "params": {
-      "fov": 21,
-      "target": [
-        0.6,
-        0.0,
-        -1.0
-      ]
-    }
+    "params": {}
   },
   "grade": {
     "duotone": 0.08,
-    "key": 0.08,
+    "key": 0.42,
     "rim": 0.08,
-    "vignette": 0.35,
-    "fade_right": 0.1,
+    "vignette": 0.3,
+    "fade_right": 0.04,
     "grain": 0.006
   },
   "card": {

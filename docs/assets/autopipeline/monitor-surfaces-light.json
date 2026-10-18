@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-surfaces-light",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline's monitor surface cards with stand-in maps made of stripes, light theme.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.4's monitor surface cards with stand-in maps (stripes, not ink), light theme.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "AutoPipeline 0.1.4 package, synthetic demo (docs/autopipeline/README.md)"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-surfaces-light.png",
+      "bytes": 205994,
+      "sha256": "e92c54fadaaad77916662bd563a0177b23185265492975a06dc1c4145af2ec79",
+      "width": 975,
+      "height": 930,
+      "kind": "legacy",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-16",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "8cae2ed"
+  },
+  "command": "Screenshot of AutoPipeline 0.1.4's monitor surface cards (commit 8cae2ed, 16 October 2026); predates scripts/media."
+}

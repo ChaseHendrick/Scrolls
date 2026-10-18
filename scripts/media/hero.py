@@ -7,16 +7,18 @@
 
 The picture matches the repository's reference hero (docs/assets/README.md): 3:1, charcoal #171A1C, ivory #EEE7D9 and
 copper #B77A54, ivory key light from the upper left, a copper rim, no text, WebP at quality 83, Lanczos-resized from a
-render at twice the size. The card is the same picture cropped to 1200 x 630 with the title, a line of text and the
-media label in Inter, for Hugging Face thumbnails and GitHub's social preview.
+render at twice the size. The card (1200 x 630, for Hugging Face thumbnails and GitHub's social preview) puts the title,
+a line of text and the media label in Inter on a solid charcoal band over its left half, and the hero's subject,
+cropped around card.focus, in its right half.
 
 A recipe's "scene" is one of:
   {"kind": "procedural", "name": NAME, "params": {...}}   a scene from scenes.py (no scan pixels: a Concept
                                                           illustration, or a Synthetic demo for a screenshot scene)
   {"kind": "image", "path": PATH, "focus": [X, Y]}        an existing picture, cropped to 3:1 around focus (0 to 1)
 
-Real data renders and model output are refused under any docs/assets/ folder (public Git holds no renders); make them
-in Scrolls-private's docs/media/. Needs numpy and Pillow; the card needs the Inter font (or --font).
+Under any docs/assets/ folder only a Concept illustration or a Synthetic demo is written, and only from pictures already
+under docs/images/ or docs/assets/ (public Git holds no renders); make real data renders and model output in
+Scrolls-private's docs/media/. A panels scene is always a Synthetic demo. Needs numpy and Pillow; the card needs the Inter font (or --font).
 """
 
 import argparse
@@ -28,7 +30,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import MediaError, check_meta, output_record, write_guard, write_sidecar  # noqa: E402
+from common import MediaError, check_meta, input_guard, output_record, write_guard, write_sidecar  # noqa: E402
 
 HERO_SIZE = (1920, 640)
 CARD_SIZE = (1200, 630)
@@ -60,7 +62,17 @@ def load_recipe(path):
         raise MediaError('scene.kind is "procedural" or "image"')
     if scene["kind"] == "procedural" and recipe["label"] not in ("Concept illustration", "Synthetic demo"):
         raise MediaError("a procedural scene is a Concept illustration or a Synthetic demo")
+    if scene["kind"] == "procedural" and scene.get("name") == "panels" and recipe["label"] != "Synthetic demo":
+        raise MediaError("a panels scene floats screenshots, so it is a Synthetic demo (screenshots of made-up data)")
     return recipe
+
+
+def input_pictures(recipe):
+    """The picture files a recipe builds from: its image scene and its panels' screenshots."""
+    scene = recipe["scene"]
+    params = scene.get("params") or {}
+    paths = [scene["path"]] if scene["kind"] == "image" else []
+    return paths + list(params.get("inputs", [])) + [panel["image"] for panel in params.get("panels", [])]
 
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -71,7 +83,7 @@ def grade(rgb_linear, g=None):
     """Tone map linear RGB and give it the reference look. Returns sRGB floats in [0, 1]."""
     import numpy as np
 
-    from scene import COPPER, IVORY, CHARCOAL, EMBER, blur, smoothstep, to_srgb, wide_blur
+    from scene import COPPER, IVORY, CHARCOAL, EMBER, SHADOW, blur, smoothstep, to_srgb, wide_blur
 
     g = dict(g or {})
     exposure = g.get("exposure", 1.0)
@@ -89,13 +101,15 @@ def grade(rgb_linear, g=None):
         cols = np.stack([CHARCOAL, EMBER, COPPER, IVORY]).astype(np.float32)
         ramp = np.stack([np.interp(lum, stops, cols[:, k]) for k in range(3)], axis=-1)
         img = img * (1 - duo) + ramp * duo
-    # Ivory key light falloff from the upper left, darker toward the right.
+    # Ivory key light falloff from the upper left, darker toward the right: the reference's upper left corner
+    # measures about 80 to 88 of 255 in luminance, warm.
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     xs, ys = xx / w, yy / h
-    key = g.get("key", 0.10)
+    key = g.get("key", 0.40)
     if key:
-        r = np.sqrt(((xs - 0.05) / 0.6) ** 2 + ((ys + 0.1) / 1.0) ** 2)
-        img = img + key * np.exp(-r * r * 2.0)[..., None] * IVORY * (1 - img)
+        r = np.sqrt(((xs - 0.0) / 0.42) ** 2 + ((ys + 0.12) / 0.9) ** 2)
+        warm = IVORY * np.array([1.0, 0.93, 0.82], dtype=np.float32)
+        img = img + key * np.exp(-r * r * 2.2)[..., None] * warm * (1 - img) * 0.55
     rim = g.get("rim", 0.12)
     if rim:
         gy, gx = np.gradient(blur(lum, w / 1200))
@@ -105,15 +119,15 @@ def grade(rgb_linear, g=None):
     fade = g.get("fade_right", 0.0)
     if fade:
         t = smoothstep(1 - fade, 1.0, xs)[..., None]
-        img = img * (1 - t) + CHARCOAL * t
-    vig = g.get("vignette", 0.35)
+        img = img * (1 - t) + SHADOW * t
+    vig = g.get("vignette", 0.30)
     if vig:
         r = np.sqrt(((xs - 0.45) / 0.75) ** 2 + ((ys - 0.45) / 0.85) ** 2)
         t = np.clip(r - 0.55, 0, 1)[..., None] * vig
-        img = img * (1 - t) + CHARCOAL * t
-    lift = g.get("black", 1.0)          # keep the darkest pixels at the charcoal of the page, not pure black
+        img = img * (1 - t) + SHADOW * t
+    lift = g.get("black", 1.0)          # keep the darkest pixels at a warm charcoal, not pure black
     if lift:
-        img = np.maximum(img, CHARCOAL * 0.55 * lift + img * (1 - 0.55 * lift))
+        img = np.maximum(img, SHADOW * 0.85 * lift + img * (1 - 0.85 * lift))
     return np.clip(img, 0, 1).astype(np.float32)
 
 
@@ -174,22 +188,28 @@ def wrap(draw, text, font, width):
 
 
 def make_card(hero_full, recipe, font_override=None):
-    """The 1200 x 630 social card: the hero, darkened behind the text, with the title, a line and the label."""
+    """The 1200 x 630 social card: a solid charcoal band over the left half carries the kicker, title, subtitle,
+    media label and address in Inter; the hero's subject, cropped around card.focus, fills the right half, and a
+    feathered edge (12 % of the width) joins them. Nothing in the picture sits under the text."""
     import numpy as np
     from PIL import Image, ImageDraw, ImageFont
 
-    from scene import CHARCOAL, COPPER, IVORY
+    from scene import COPPER, IVORY, SHADOW
 
     card = recipe.get("card") or {}
-    focus = card.get("focus", [0.62, 0.5])
-    img = cover_crop(hero_full, CARD_SIZE, focus)
-    arr = np.asarray(img).astype(np.float32) / 255
+    focus = card.get("focus", [0.5, 0.5])
     w, h = CARD_SIZE
-    xs = np.linspace(0, 1, w, dtype=np.float32)[None, :, None]
-    ys = np.linspace(0, 1, h, dtype=np.float32)[:, None, None]
-    shade = np.clip(1.35 - xs * 1.45, 0, 0.9) * np.clip(0.55 + ys * 0.7, 0, 1)
-    arr = arr * (1 - shade) + CHARCOAL * shade
-    img = Image.fromarray((np.clip(arr, 0, 1) * 255 + 0.5).astype(np.uint8))
+    band, feather = int(w * 0.5), int(w * 0.12)
+    art_w = w - band + feather
+    art = cover_crop(hero_full, (art_w, h), focus)
+    canvas = np.empty((h, w, 3), dtype=np.float32)
+    canvas[:] = SHADOW
+    canvas[:, w - art_w:] = np.asarray(art).astype(np.float32) / 255
+    xs = np.arange(w, dtype=np.float32)
+    t = np.clip((xs - band) / feather, 0, 1)
+    t = (t * t * (3 - 2 * t))[None, :, None]               # 0 under the band, 1 past the feather
+    canvas = canvas * t + SHADOW * (1 - t) * 0.96 + canvas * (1 - t) * 0.04
+    img = Image.fromarray((np.clip(canvas, 0, 1) * 255 + 0.5).astype(np.uint8))
     draw = ImageDraw.Draw(img)
     semibold = find_font("Inter*SemiBold.otf", font_override) or find_font("Inter*.ttf", font_override)
     regular = find_font("Inter-Regular.otf", font_override) or semibold
@@ -199,24 +219,28 @@ def make_card(hero_full, recipe, font_override=None):
     ivory = tuple(int(c * 255 + 0.5) for c in IVORY)
     copper = tuple(int(c * 255 + 0.5) for c in COPPER)
     soft = tuple(int(c * 255 * 0.78 + 0.5) for c in IVORY)
-    x = 64
+    x, text_w = 64, band - 64 - 24
     kicker = card.get("kicker", "SCROLLS  |  RELEASED TOOL")
     draw.text((x, 70), kicker, font=ImageFont.truetype(medium, 22), fill=copper)
-    title_font = ImageFont.truetype(semibold, card.get("title_size", 66))
-    y = 118
-    for line in wrap(draw, card.get("title", recipe["name"]), title_font, 640):
+    draw.line([(x, 104), (x + 46, 104)], fill=copper, width=3)
+    size = card.get("title_size", 62)
+    title_font = ImageFont.truetype(semibold, size)
+    while len(wrap(draw, card.get("title", recipe["name"]), title_font, text_w)) > 2 and size > 40:
+        size -= 4
+        title_font = ImageFont.truetype(semibold, size)
+    y = 122
+    for line in wrap(draw, card.get("title", recipe["name"]), title_font, text_w):
         draw.text((x, y), line, font=title_font, fill=ivory)
         y += int(title_font.size * 1.12)
-    sub_font = ImageFont.truetype(regular, 28)
-    y += 14
-    for line in wrap(draw, card.get("subtitle", ""), sub_font, 560)[:4]:
+    sub_font = ImageFont.truetype(regular, 26)
+    y += 16
+    for line in wrap(draw, card.get("subtitle", ""), sub_font, text_w)[:5]:
         draw.text((x, y), line, font=sub_font, fill=soft)
-        y += 40
+        y += 37
     small = ImageFont.truetype(medium, 20)
     draw.text((x, h - 64), recipe["label"], font=small, fill=copper)
     url = card.get("url", "github.com/ChaseHendrick/Scrolls")
-    draw.text((w - 64 - draw.textlength(url, font=small), h - 64), url, font=small, fill=soft)
-    draw.line([(x, 104), (x + 46, 104)], fill=copper, width=3)
+    draw.text((x, h - 64 - 30), url, font=small, fill=soft)
     return img
 
 
@@ -257,6 +281,7 @@ def make(recipe_path, out_dir, preview=None, font=None, quiet=False):
     recipe = load_recipe(recipe_path)
     out_dir = Path(out_dir)
     write_guard(recipe["label"], out_dir / f"{recipe['name']}.webp")
+    input_guard(input_pictures(recipe), out_dir / f"{recipe['name']}.webp", root=Path.cwd())
     out_dir.mkdir(parents=True, exist_ok=True)
 
     def log(msg):
@@ -290,12 +315,7 @@ def make(recipe_path, out_dir, preview=None, font=None, quiet=False):
         card_path = out_dir / f"{recipe['name'].removesuffix('-hero')}-card.jpg"
         card.save(card_path, "JPEG", quality=CARD_QUALITY, optimize=True, progressive=True)
         outputs.append(output_record(card_path, *CARD_SIZE, kind="social card", format="jpeg", quality=CARD_QUALITY))
-    inputs = []
-    if recipe["scene"]["kind"] == "image":
-        inputs.append(output_record(recipe["scene"]["path"]) | {"file": str(recipe["scene"]["path"])})
-    params = recipe["scene"].get("params") or {}
-    for extra in list(params.get("inputs", [])) + [panel["image"] for panel in params.get("panels", [])]:
-        inputs.append(output_record(extra) | {"file": str(extra)})
+    inputs = [output_record(extra) | {"file": str(extra)} for extra in input_pictures(recipe)]
     meta = dict(recipe)
     sidecar = out_dir / f"{recipe['name']}.json"
     command = f"python scripts/media/hero.py {recipe_path} --out-dir {out_dir}"

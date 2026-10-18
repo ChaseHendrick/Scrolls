@@ -9,7 +9,8 @@ it (Chase, 18 October 2026). The four labels are the ones in docs/assets/README.
   Synthetic demo         a demo on made-up data, or a screenshot of a tool showing only made-up data
 
 Real data renders and model output never go into public Scrolls' docs/assets/ (public Git holds no renders: the
-no-scroll-data rule); write them under Scrolls-private's docs/media/ instead. write_guard() refuses that case.
+no-scroll-data rule); write them under Scrolls-private's docs/media/ instead. write_guard() refuses any label but
+Concept illustration or Synthetic demo there, and input_guard() refuses source pictures from outside the public tree.
 
 Standard library only, so the tests can import it without numpy or Pillow.
 """
@@ -23,6 +24,10 @@ from pathlib import Path
 LABELS = ("Concept illustration", "Real data render", "Model output", "Synthetic demo")
 # Labels whose pixels come from scans or models; never written under a public docs/assets/ folder.
 PRIVATE_ONLY = ("Real data render", "Model output")
+# The only labels a file under a public docs/assets/ folder may carry (tests/test_repo.py checks the same).
+PUBLIC_LABELS = ("Concept illustration", "Synthetic demo")
+# Pictures a public hero or panel may be built from: files already in the public tree, which its checks cover.
+PUBLIC_INPUT_DIRS = (("docs", "images"), ("docs", "assets"))
 DATA_CREDIT = "Data: Vesuvius Challenge, CC BY-NC 4.0"
 SCHEMA = "scrolls-media/1"
 LONG_DASHES = (chr(0x2014), chr(0x2013))
@@ -60,13 +65,33 @@ def check_meta(meta):
     return meta
 
 
+def under_assets(path):
+    """True when path lies under a docs/assets/ folder (public Scrolls' media home)."""
+    parts = Path(path).resolve().parts
+    return any(parts[i:i + 2] == ("docs", "assets") for i in range(len(parts) - 1))
+
+
 def write_guard(label, out_path):
-    """Refuse to write a Real data render or Model output into a docs/assets/ folder (public Git holds no renders)."""
-    parts = Path(out_path).resolve().parts
-    public = any(parts[i:i + 2] == ("docs", "assets") for i in range(len(parts) - 1))
-    if label in PRIVATE_ONLY and public:
+    """Refuse to write anything but a Concept illustration or a Synthetic demo into a docs/assets/ folder: public Git
+    holds no scan renders or model maps."""
+    if under_assets(out_path) and label not in PUBLIC_LABELS:
         raise MediaError(f"{label} may not be written under docs/assets/ (public Git holds no scan renders or maps); "
                          "write it under Scrolls-private's docs/media/ instead")
+
+
+def input_guard(inputs, out_path, root=ROOT):
+    """Refuse a picture under docs/assets/ that is built from a file outside the public tree's docs/images/ or
+    docs/assets/. A label is only a claim; this keeps a scan render from entering through a hero's source image."""
+    if not under_assets(out_path):
+        return
+    allowed = [Path(root).resolve().joinpath(*d) for d in PUBLIC_INPUT_DIRS]
+    for item in inputs:
+        p = Path(item)
+        p = (p if p.is_absolute() else Path(root) / p).resolve()
+        if not any(a in p.parents for a in allowed):
+            raise MediaError(f"{item} is not under docs/images/ or docs/assets/; a picture for docs/assets/ is built "
+                             "only from files already in the public tree (commit the source there, with its label, "
+                             "in the same reviewed change)")
 
 
 def sha256(path):

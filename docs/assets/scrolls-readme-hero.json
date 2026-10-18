@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scrolls-readme-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of layered carbonized papyrus unfolding into a copper surface mesh.",
+  "caption": "Concept illustration: a carbonized papyrus roll and a copper surface mesh. Generated art; no scan data, no model output, no recovered text.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [
+    "OpenAI image generation, 18 October 2026"
+  ],
+  "outputs": [
+    {
+      "file": "scrolls-readme-hero.webp",
+      "bytes": 163600,
+      "sha256": "227c571b3f9ac95352188c89eb12f95ef0dbfedc156fa9d8b61579fc87a65665",
+      "width": 1920,
+      "height": 640,
+      "kind": "legacy",
+      "format": "webp"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "0824531"
+  },
+  "command": "Generated with OpenAI image generation at 2172 x 724, resized with Lanczos to 1920 x 640, saved as WebP at quality 83 (docs/assets/README.md, The reference style)."
+}

@@ -2,8 +2,8 @@
   "schema": "scrolls-media/1",
   "name": "reader-hero",
   "label": "Concept illustration",
-  "alt": "Concept illustration of a papyrus sheet curling at one end, with random synthetic Greek capitals in ink and thin copper boxes with confidence bars around a few of them.",
-  "caption": "Concept illustration: random synthetic Greek capitals on a procedural sheet, with proposal boxes. No scroll data, no words, not a reading.",
+  "alt": "Concept illustration of a papyrus sheet curling up at its left end, with a copper reading lens over the flat part that shows the fibers magnified. Nothing is written on the sheet.",
+  "caption": "Concept illustration: a procedural papyrus sheet under a reading lens. No scroll data, no letters, no ink, not a reading.",
   "license": "Apache-2.0",
   "release_id": "letter-reader",
   "data": null,
@@ -11,8 +11,8 @@
   "outputs": [
     {
       "file": "reader-hero.webp",
-      "bytes": 76620,
-      "sha256": "0e92f7f6556b86a3391ebf532313a09be1774ea19ee94ec8b0a184b0d795f2c1",
+      "bytes": 64716,
+      "sha256": "0494cbf47c5e0086fec1d390844e5db4a302b6ec37795960955862074322e350",
       "width": 1920,
       "height": 640,
       "kind": "hero",
@@ -21,8 +21,8 @@
     },
     {
       "file": "reader-card.jpg",
-      "bytes": 100446,
-      "sha256": "344e5467f0cf899fb97cccb0775691c92619a272a2f4462bc8c0e09e8d5be965",
+      "bytes": 85673,
+      "sha256": "8e89edd499bbf7bab960604db35b92be14a53bbfd99799287167a36a75cc714c",
       "width": 1200,
       "height": 630,
       "kind": "social card",
@@ -39,36 +39,54 @@
       "scene.py",
       "scenes.py"
     ],
-    "scripts_sha256": "3af6a533736330786baedcc08b9b3cd8886b3867a26d0166467be0a86074f143",
-    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
   },
   "command": "python scripts/media/hero.py scripts/media/recipes/reader.json --out-dir docs/assets/letter-reader",
   "recipe": {
     "name": "reader-hero",
     "release_id": "letter-reader",
     "label": "Concept illustration",
-    "alt": "Concept illustration of a papyrus sheet curling at one end, with random synthetic Greek capitals in ink and thin copper boxes with confidence bars around a few of them.",
-    "caption": "Concept illustration: random synthetic Greek capitals on a procedural sheet, with proposal boxes. No scroll data, no words, not a reading.",
+    "alt": "Concept illustration of a papyrus sheet curling up at its left end, with a copper reading lens over the flat part that shows the fibers magnified. Nothing is written on the sheet.",
+    "caption": "Concept illustration: a procedural papyrus sheet under a reading lens. No scroll data, no letters, no ink, not a reading.",
     "license": "Apache-2.0",
     "seed": 3,
     "scene": {
       "kind": "procedural",
       "name": "reader",
-      "params": {}
+      "params": {
+        "eye": [
+          -3.0,
+          1.75,
+          5.6
+        ],
+        "target": [
+          0.5,
+          0.3,
+          -0.5
+        ],
+        "lens_radius": 0.72,
+        "lens_height": 0.62,
+        "lens_tilt": 26,
+        "lens_at": [
+          2.0,
+          0.1
+        ]
+      }
     },
     "grade": {
       "duotone": 0.08,
-      "key": 0.08,
+      "key": 0.42,
       "rim": 0.08,
-      "vignette": 0.35,
-      "fade_right": 0.1,
+      "vignette": 0.3,
+      "fade_right": 0.04,
       "grain": 0.006
     },
     "card": {
       "title": "Scroll Text Reader",
       "subtitle": "Proposes Greek letters, boxes and confidences on ink maps and images, as hypotheses with controls.",
       "focus": [
-        0.6,
+        0.36,
         0.5
       ]
     }

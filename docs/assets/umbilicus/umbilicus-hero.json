@@ -2,8 +2,8 @@
   "schema": "scrolls-media/1",
   "name": "umbilicus-hero",
   "label": "Concept illustration",
-  "alt": "Concept illustration of seven synthetic scroll cross-sections floating in a row, a glowing copper thread passing through the winding center of each.",
-  "caption": "Concept illustration: synthetic cross-sections, cap to base, with a copper thread through each winding center. No scan data.",
+  "alt": "Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.",
+  "caption": "Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.",
   "license": "Apache-2.0",
   "release_id": "umbilicus-finder",
   "data": null,
@@ -11,8 +11,8 @@
   "outputs": [
     {
       "file": "umbilicus-hero.webp",
-      "bytes": 82816,
-      "sha256": "a1dd409a00663f731dc77b4ce821f617832e7de86bb94ec4410e1106ac1f07be",
+      "bytes": 45400,
+      "sha256": "0c7af59224f690bf2bf38548a54fcadd2196ac6b4dd6ff77e2bae2e1071cb6ae",
       "width": 1920,
       "height": 640,
       "kind": "hero",
@@ -21,8 +21,8 @@
     },
     {
       "file": "umbilicus-card.jpg",
-      "bytes": 96550,
-      "sha256": "34660b82a8d6de762e8ea1fcf20f429a7b3f56151c506b94d630c54baf46acc1",
+      "bytes": 77745,
+      "sha256": "f4d7a44c4d87fec5064cf0ea39aa50cfc270bd28d51285c5498968f9a6489486",
       "width": 1200,
       "height": 630,
       "kind": "social card",
@@ -39,36 +39,59 @@
       "scene.py",
       "scenes.py"
     ],
-    "scripts_sha256": "3af6a533736330786baedcc08b9b3cd8886b3867a26d0166467be0a86074f143",
-    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
   },
   "command": "python scripts/media/hero.py scripts/media/recipes/umbilicus.json --out-dir docs/assets/umbilicus",
   "recipe": {
     "name": "umbilicus-hero",
     "release_id": "umbilicus-finder",
     "label": "Concept illustration",
-    "alt": "Concept illustration of seven synthetic scroll cross-sections floating in a row, a glowing copper thread passing through the winding center of each.",
-    "caption": "Concept illustration: synthetic cross-sections, cap to base, with a copper thread through each winding center. No scan data.",
+    "alt": "Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.",
+    "caption": "Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.",
     "license": "Apache-2.0",
     "seed": 7,
     "scene": {
       "kind": "procedural",
       "name": "umbilicus",
-      "params": {}
+      "params": {
+        "start": [
+          -3.0,
+          1.1,
+          0.9
+        ],
+        "end": [
+          5.2,
+          1.1,
+          -5.0
+        ],
+        "eye": [
+          0.4,
+          1.5,
+          6.0
+        ],
+        "target": [
+          1.4,
+          1.0,
+          -2.0
+        ],
+        "fov": 22,
+        "turns": 6.0
+      }
     },
     "grade": {
-      "duotone": 0.15,
-      "key": 0.08,
-      "rim": 0.1,
-      "vignette": 0.35,
-      "fade_right": 0.12,
+      "duotone": 0.1,
+      "key": 0.36,
+      "rim": 0.08,
+      "vignette": 0.3,
+      "fade_right": 0.04,
       "grain": 0.006
     },
     "card": {
       "title": "Scroll center finder",
       "subtitle": "Finds the winding center of a scroll in X-ray CT, one control point per height.",
       "focus": [
-        0.5,
+        0.3,
         0.5
       ]
     }

@@ -2,7 +2,7 @@
   "schema": "scrolls-media/1",
   "name": "starter-practice",
   "label": "Synthetic demo",
-  "alt": "Scrolls Starter's practice exercise: the threshold slider rises until the drawn word INK survives and the noise-only control stays clean, the drawn strokes are outlined in gold, then the pattern is put into the control and the result turns to a practice fail.",
+  "alt": "Scrolls Starter's practice exercise: a pointer drags the threshold slider until the drawn word INK survives and the noise-only control stays clean, turns on the gold outline of the drawn strokes, puts the pattern into the control so the result turns to a practice fail, then takes it out again and the pass returns.",
   "caption": "Synthetic demo: Scrolls Starter's known-answer practice, a drawn word with noise beside a noise-only control. No scan, model or text recognition.",
   "license": "Apache-2.0",
   "release_id": "scrolls-starter",
@@ -13,26 +13,26 @@
   "outputs": [
     {
       "file": "starter-practice.mp4",
-      "bytes": 169072,
-      "sha256": "0436b20943d5799d14e64d6466f8118aebdd89b7660c410fd66a2c549ded158d",
+      "bytes": 174969,
+      "sha256": "abd0279137515b65284a9c08bba2e837178b91127c101a6f3cfa07d0597d3460",
       "width": 1280,
       "height": 940,
       "kind": "mp4",
-      "seconds": 9.67,
-      "frames": 116,
+      "seconds": 11.83,
+      "frames": 142,
       "settings": {
         "crf": 20
       }
     },
     {
       "file": "starter-practice.gif",
-      "bytes": 170846,
-      "sha256": "ae974f3413843a179f011db9316a070864b5418307d7e022e6a948046a023984",
+      "bytes": 191428,
+      "sha256": "b7d732d8794eccd3768f22cb073e9a67ec405fab46ce8f29e0b6091d7778a60d",
       "width": 960,
       "height": 705,
       "kind": "gif",
-      "seconds": 9.66,
-      "frames": 31,
+      "seconds": 11.83,
+      "frames": 59,
       "settings": {
         "width": 960,
         "fps": 12,
@@ -44,11 +44,12 @@
   "made": "2026-10-18",
   "tool": {
     "scripts": [
+      "capture_web.py",
       "common.py",
       "encode.py"
     ],
-    "scripts_sha256": "99aac16c3debc6044e76af86690ce133d272344f05baeeec9b2b5cd811f0b08d",
-    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+    "scripts_sha256": "ff071841598ae9b5a39e6967a61685c0c7268fef8450b1a7710039dfef7ed045",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
   },
-  "command": "python scripts/media/encode.py /tmp/claude-0/-home-user/c3092015-4d1c-5c18-82e5-886c6bd61b6a/scratchpad/mpub/stframes --fps 12 --gif-fps 12 --gif-width 960 --mp4 docs/assets/starter/starter-practice.mp4 --gif docs/assets/starter/starter-practice.gif --meta scripts/media/captures/starter-practice.meta.json"
+  "command": "python -m kit start --portable --out PAGE.html --no-open && python scripts/media/capture_web.py PAGE.html --out-dir FRAMES --actions scripts/media/captures/starter-practice.json --width 1280 --height 940 && python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 960 --mp4 docs/assets/starter/starter-practice.mp4 --gif docs/assets/starter/starter-practice.gif --meta scripts/media/captures/starter-practice.meta.json"
 }

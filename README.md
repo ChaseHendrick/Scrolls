@@ -31,9 +31,9 @@ This repository contains public tools, public-data benchmarks and releasable rep
 
 ## Released tools
 
-![AutoPipeline 0.1.5's monitor following the synthetic demo: stages turn green, the run finishes, then the Ink stage is inspected, the log is filtered and the run files are listed](docs/assets/autopipeline/monitor-demo-v015.gif)
+![AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner](docs/assets/autopipeline/monitor-demo-v015.gif)
 
-*Synthetic demo: AutoPipeline 0.1.5's monitor following `scripts/demo_synthetic.py`, recorded in real time: a synthetic scroll with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](docs/assets/autopipeline/monitor-demo-v015.mp4); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
+*Synthetic demo: AutoPipeline 0.1.5's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, captured frame by frame from a live run (the run part at about 4 times real speed) with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](docs/assets/autopipeline/monitor-demo-v015.mp4); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
@@ -60,7 +60,7 @@ Install, monitor controls, synthetic demo and limitations: [README](https://gith
 
 ### Unroll (interactive 3D scroll viewer)
 
-![Concept illustration of a papyrus roll unrolling into a flat sheet, with a copper grid layer and a layer of ivory points floating above it.](docs/assets/unroll/unroll-hero.webp)
+![Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.](docs/assets/unroll/unroll-hero.webp)
 
 *Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.*
 
@@ -84,9 +84,9 @@ Start with [the beginner guide](docs/start-here.md), download [the portable page
 
 ### Inkfilter: fixed surface-volume filters
 
-![Concept illustration of a stack of thin papyrus layers pierced by a copper probe, with a glowing copper map floating beside it and a dim control map further away.](docs/assets/inkfilter/inkfilter-hero.webp)
+![Concept illustration of a stack of thin papyrus layers pierced by a copper sampling column, linked to an upright panel with a banded copper response and, behind it, a dimmer panel for the reversed-depth control.](docs/assets/inkfilter/inkfilter-hero.webp)
 
-*Concept illustration: a surface volume's layers, a fixed filter through them, its map and the reversed-depth control. Synthetic fields only.*
+*Concept illustration: a surface volume's layers, a fixed filter down through them, its response and the reversed-depth control. Synthetic fields only, no ink.*
 
 Released 17 October 2026 as a reviewed package on branch `submission/progress-2026-10-inkfilter`: [`submissions/progress-2026-10-inkfilter/` at commit `4953f17`](https://github.com/ChaseHendrick/Scrolls/tree/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter).
 
@@ -105,7 +105,7 @@ Local NumPy, TIFF and Zarr input, synthetic tests, scalar score evidence and lim
 
 ### Scroll Lens (3D DINO, ink and surface models on scan cubes)
 
-![Concept illustration of a floating cube cut by three glowing slices, with a cloud of matched points inside and smaller cubes receding to the right.](docs/assets/scroll-lens/lens-hero.webp)
+![Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.](docs/assets/scroll-lens/lens-hero.webp)
 
 *Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.*
 
@@ -117,9 +117,9 @@ Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/sp
 
 ### Scroll Text Reader
 
-![Concept illustration of a papyrus sheet curling at one end, with random synthetic Greek capitals in ink and thin copper boxes with confidence bars around a few of them.](docs/assets/letter-reader/reader-hero.webp)
+![Concept illustration of a papyrus sheet curling up at its left end, with a copper reading lens over the flat part that shows the fibers magnified. Nothing is written on the sheet.](docs/assets/letter-reader/reader-hero.webp)
 
-*Concept illustration: random synthetic Greek capitals on a procedural sheet, with proposal boxes. No scroll data, no words, not a reading.*
+*Concept illustration: a procedural papyrus sheet under a reading lens. No scroll data, no letters, no ink, not a reading.*
 
 Released 17 October 2026.
 
@@ -137,7 +137,7 @@ scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay 
 
 ### Segment stack check
 
-![Concept illustration of nested curved sheets standing around a copper center post, with copper rays on the floor; one sheet has a gap with glowing edges and two sheets touch at an ivory glow.](docs/assets/stackcheck/stackcheck-hero.webp)
+![Concept illustration of one scroll's winding as a standing spiral strip cut into segments around a copper center post; one segment misses a sector whose torn edges glow ivory, and two neighboring windings touch at a copper glow.](docs/assets/stackcheck/stackcheck-hero.webp)
 
 *Concept illustration: synthetic segments around a center line, with a missing sector and a touching pair marked. No scan data.*
 
@@ -157,10 +157,6 @@ Usage, the PHerc0139 numbers, example vertices for VC3D, the CT look and limits:
 
 ### StrokeNet text-likeness score
 
-![Concept illustration of a sheet divided into square windows; a few windows with rows of abstract strokes float up and glow copper, and one has a turned copy beside it with a faint glow.](docs/assets/strokenet/strokenet-hero.webp)
-
-*Concept illustration: scoring windows lift by a made-up score, beside a turned copy as the control. Abstract strokes, no letters, no scan data.*
-
 Released 14 October 2026.
 
 A small learned score for how much a 6.1 mm window of an organisers' ink map looks like lines of text, with rotation and IAAFT controls reported with every result. It needs only NumPy to run. Its held-out test on six PHerc. Paris 4 tracings, fixed before the read, is published in full: it misses its preregistered bar on two of nine items (blank papyrus against its own 90 degree turn, and blank windows above the threshold), simple scores such as ink density match it on the other items, and it beats every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). A score is model output, not a reading.
@@ -174,9 +170,9 @@ Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs
 
 ### Scroll centre (umbilicus) finder
 
-![Concept illustration of seven synthetic scroll cross-sections floating in a row, a glowing copper thread passing through the winding center of each.](docs/assets/umbilicus/umbilicus-hero.webp)
+![Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.](docs/assets/umbilicus/umbilicus-hero.webp)
 
-*Concept illustration: synthetic cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
+*Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
 
 Released 14 October 2026.
 

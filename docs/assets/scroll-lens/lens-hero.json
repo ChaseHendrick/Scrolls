@@ -2,7 +2,7 @@
   "schema": "scrolls-media/1",
   "name": "lens-hero",
   "label": "Concept illustration",
-  "alt": "Concept illustration of a floating cube cut by three glowing slices, with a cloud of matched points inside and smaller cubes receding to the right.",
+  "alt": "Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.",
   "caption": "Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.",
   "license": "Apache-2.0",
   "release_id": "scroll-lens",
@@ -11,8 +11,8 @@
   "outputs": [
     {
       "file": "lens-hero.webp",
-      "bytes": 42428,
-      "sha256": "e1a4d9bca442ab1366ad461153d00b0c1fa938f0f9bd1188ecb09287d8c0c74e",
+      "bytes": 56770,
+      "sha256": "6f0ee32dd671c683787717d7390418b8bd210c57bbc3f7f4139035ced1a9e356",
       "width": 1920,
       "height": 640,
       "kind": "hero",
@@ -21,8 +21,8 @@
     },
     {
       "file": "lens-card.jpg",
-      "bytes": 82082,
-      "sha256": "9f7b05ed5d8b409f46d49287eb1ba6d54f48720f864625670eddd221e9734416",
+      "bytes": 98970,
+      "sha256": "8fdc3bf4c888f54633a9dec595db604e6a6cd9b67f5ca5aa1035b6474529acfa",
       "width": 1200,
       "height": 630,
       "kind": "social card",
@@ -39,36 +39,42 @@
       "scene.py",
       "scenes.py"
     ],
-    "scripts_sha256": "3af6a533736330786baedcc08b9b3cd8886b3867a26d0166467be0a86074f143",
-    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
   },
   "command": "python scripts/media/hero.py scripts/media/recipes/lens.json --out-dir docs/assets/scroll-lens",
   "recipe": {
     "name": "lens-hero",
     "release_id": "scroll-lens",
     "label": "Concept illustration",
-    "alt": "Concept illustration of a floating cube cut by three glowing slices, with a cloud of matched points inside and smaller cubes receding to the right.",
+    "alt": "Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.",
     "caption": "Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.",
     "license": "Apache-2.0",
     "seed": 5,
     "scene": {
       "kind": "procedural",
       "name": "lens",
-      "params": {}
+      "params": {
+        "target": [
+          1.0,
+          0.95,
+          -0.9
+        ]
+      }
     },
     "grade": {
       "duotone": 0.08,
-      "key": 0.08,
+      "key": 0.42,
       "rim": 0.08,
-      "vignette": 0.35,
-      "fade_right": 0.1,
+      "vignette": 0.3,
+      "fade_right": 0.04,
       "grain": 0.006
     },
     "card": {
       "title": "Scroll Lens",
       "subtitle": "See what the Vesuvius Challenge's 3D DINO, ink and surface models find in a scan cube.",
       "focus": [
-        0.45,
+        0.3,
         0.5
       ]
     }

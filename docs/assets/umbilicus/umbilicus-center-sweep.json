@@ -2,7 +2,7 @@
   "schema": "scrolls-media/1",
   "name": "umbilicus-center-sweep",
   "label": "Concept illustration",
-  "alt": "Animated cross-section of a synthetic scroll swept from cap to base: the spiral of sheets shifts and its winding center, a copper ring, moves with it, while a side view draws the center's track down the scroll.",
+  "alt": "Animated cross-section of a synthetic scroll swept from cap to base in the scanner's fixed frame: the spiral of sheets turns and its winding center, a copper ring, drifts off the scanner's axes, while a side view at the same scale draws the center's track down the scroll.",
   "caption": "Concept illustration: a synthetic scroll swept from cap to base, its winding center marked in copper. Formulas only, no scan and no model run.",
   "license": "Apache-2.0",
   "release_id": "umbilicus-finder",
@@ -11,12 +11,12 @@
   "outputs": [
     {
       "file": "umbilicus-center-sweep.mp4",
-      "bytes": 175081,
-      "sha256": "68d40ceeb7d477678605c4fd9a28eaee736d1d0d7591db996e286a9a0e95e783",
+      "bytes": 247396,
+      "sha256": "ea60d754c7f2fc1a80e974e74f07f0e6fee160255da1047dfa3c397b9a16e277",
       "width": 960,
       "height": 540,
       "kind": "mp4",
-      "seconds": 4.67,
+      "seconds": 7.0,
       "frames": 84,
       "settings": {
         "crf": 20
@@ -24,17 +24,17 @@
     },
     {
       "file": "umbilicus-center-sweep.gif",
-      "bytes": 2381030,
-      "sha256": "94bb3624f22b2f087f7288f4e4cbd70e9daef3360b6833cfcb662492fe9a07a2",
+      "bytes": 2247301,
+      "sha256": "12f32be7a3de035ab51ed74694bd34ac42942de1f88c2548cfd66c9549b2d3b0",
       "width": 960,
       "height": 540,
       "kind": "gif",
-      "seconds": 4.67,
-      "frames": 70,
+      "seconds": 7.0,
+      "frames": 84,
       "settings": {
         "width": 960,
-        "fps": 15,
-        "lossy": 20
+        "fps": 12,
+        "lossy": 40
       }
     }
   ],
@@ -43,10 +43,11 @@
   "tool": {
     "scripts": [
       "common.py",
-      "encode.py"
+      "encode.py",
+      "sweep.py"
     ],
-    "scripts_sha256": "99aac16c3debc6044e76af86690ce133d272344f05baeeec9b2b5cd811f0b08d",
-    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+    "scripts_sha256": "20cfbdf0c790bf49956cbb49745f03c23703a4248a7472c3dc8e6a99eb5381f2",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
   },
-  "command": "python scripts/media/encode.py /tmp/claude-0/-home-user/c3092015-4d1c-5c18-82e5-886c6bd61b6a/scratchpad/mpub/sweep --fps 18 --gif-fps 15 --lossy 20 --gif-width 960 --mp4 docs/assets/umbilicus/umbilicus-center-sweep.mp4 --gif docs/assets/umbilicus/umbilicus-center-sweep.gif --meta scripts/media/captures/umbilicus-sweep.meta.json"
+  "command": "python scripts/media/sweep.py --out-dir FRAMES --frames 84 && python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 960 --dither none --mp4 docs/assets/umbilicus/umbilicus-center-sweep.mp4 --gif docs/assets/umbilicus/umbilicus-center-sweep.gif --meta scripts/media/captures/umbilicus-sweep.meta.json"
 }

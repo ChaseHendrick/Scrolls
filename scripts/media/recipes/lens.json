@@ -2,28 +2,34 @@
   "name": "lens-hero",
   "release_id": "scroll-lens",
   "label": "Concept illustration",
-  "alt": "Concept illustration of a floating cube cut by three glowing slices, with a cloud of matched points inside and smaller cubes receding to the right.",
+  "alt": "Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.",
   "caption": "Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.",
   "license": "Apache-2.0",
   "seed": 5,
   "scene": {
     "kind": "procedural",
     "name": "lens",
-    "params": {}
+    "params": {
+      "target": [
+        1.0,
+        0.95,
+        -0.9
+      ]
+    }
   },
   "grade": {
     "duotone": 0.08,
-    "key": 0.08,
+    "key": 0.42,
     "rim": 0.08,
-    "vignette": 0.35,
-    "fade_right": 0.1,
+    "vignette": 0.3,
+    "fade_right": 0.04,
     "grain": 0.006
   },
   "card": {
     "title": "Scroll Lens",
     "subtitle": "See what the Vesuvius Challenge's 3D DINO, ink and surface models find in a scan cube.",
     "focus": [
-      0.45,
+      0.3,
       0.5
     ]
   }

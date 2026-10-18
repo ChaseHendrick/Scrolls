@@ -49,10 +49,26 @@ class LabelTest(unittest.TestCase):
 
     def test_scan_pixels_never_go_under_docs_assets(self):
         common.write_guard("Concept illustration", ROOT / "docs" / "assets" / "x" / "a-hero.webp")
+        common.write_guard("Synthetic demo", ROOT / "docs" / "assets" / "x" / "a.gif")
         common.write_guard("Real data render", Path("/tmp/Scrolls-private/docs/media/x/a-hero.webp"))
-        for label in ("Real data render", "Model output"):
+        for label in ("Real data render", "Model output", "Something else"):
             with self.subTest(label=label), self.assertRaises(common.MediaError):
                 common.write_guard(label, ROOT / "docs" / "assets" / "x" / "a-hero.webp")
+
+    def test_public_pictures_are_built_only_from_the_public_tree(self):
+        out = ROOT / "docs" / "assets" / "x" / "a-hero.webp"
+        common.input_guard(["docs/images/workbench/starter-practice.png", "docs/assets/scrolls-readme-hero.webp"], out)
+        common.input_guard(["/tmp/scan-render.png"], Path("/tmp/Scrolls-private/docs/media/x/a-hero.webp"))
+        for bad in ("/tmp/scan-render.png", "docs/../../elsewhere/render.png", "kit/data/render.png"):
+            with self.subTest(source=bad), self.assertRaises(common.MediaError):
+                common.input_guard([bad], out)
+
+    def test_a_clip_under_docs_assets_needs_a_label(self):
+        import encode
+        with tempfile.TemporaryDirectory() as tmp:
+            target = ROOT / "docs" / "assets" / "never-written" / "clip.gif"
+            self.assertEqual(encode.main([tmp, "--gif", str(target)]), 2)
+        self.assertFalse(target.parent.exists())
 
     def test_sidecar_records_what_made_the_file(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -73,7 +89,7 @@ class RecipeTest(unittest.TestCase):
 
     def test_committed_recipes_are_valid(self):
         recipes = sorted((MEDIA / "recipes").glob("*.json"))
-        self.assertGreaterEqual(len(recipes), 9)
+        self.assertGreaterEqual(len(recipes), 8)
         for path in recipes:
             with self.subTest(recipe=path.name):
                 recipe = self.hero.load_recipe(path)
@@ -99,6 +115,31 @@ class RecipeTest(unittest.TestCase):
             bad = Path(tmp) / "bad.json"
             bad.write_text("{}")
             self.assertEqual(self.hero.main(["--check", str(bad)]), 2)
+
+    def test_a_panels_scene_is_a_synthetic_demo(self):
+        base = json.loads((MEDIA / "recipes" / "starter.json").read_text())
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "panels.json"
+            path.write_text(json.dumps(dict(base, label="Concept illustration",
+                                            caption="Concept illustration: two panels.")))
+            with self.assertRaises(common.MediaError):
+                self.hero.load_recipe(path)
+
+    def test_a_source_picture_from_outside_the_public_tree_is_refused(self):
+        # An honest-looking label on a scan render must not get it into docs/assets/ through an image scene or panel.
+        base = json.loads((MEDIA / "recipes" / "starter.json").read_text())
+        with tempfile.TemporaryDirectory() as tmp:
+            render = Path(tmp) / "render.png"
+            render.write_bytes(b"not a picture")
+            image = dict(base, scene={"kind": "image", "path": str(render)})
+            panels = json.loads(json.dumps(base))
+            panels["scene"]["params"]["panels"][0]["image"] = str(render)
+            for i, recipe in enumerate((image, panels)):
+                path = Path(tmp) / f"r{i}.json"
+                path.write_text(json.dumps(recipe))
+                with self.subTest(recipe=i), self.assertRaises(common.MediaError):
+                    self.hero.make(path, ROOT / "docs" / "assets" / "never-written")
+        self.assertFalse((ROOT / "docs" / "assets" / "never-written").exists())
 
     def test_real_data_is_refused_under_docs_assets_before_rendering(self):
         recipe = dict(json.loads((MEDIA / "recipes" / "umbilicus.json").read_text()), **REAL,
@@ -136,9 +177,10 @@ class RenderTest(unittest.TestCase):
         import numpy as np
 
         import hero
-        from scene import CHARCOAL
+        from scene import SHADOW
         out = hero.grade(np.zeros((20, 60, 3), np.float32))
-        self.assertTrue(np.all(out >= CHARCOAL * 0.5 - 1e-6), "black lifts toward charcoal, never pure black")
+        self.assertTrue(np.all(out >= SHADOW * 0.8 - 1e-6), "black lifts toward a warm charcoal, never pure black")
+        self.assertTrue(np.all(out[..., 0] >= out[..., 2]), "the field reads warm, as the reference does")
         self.assertTrue(np.all(hero.grade(np.full((20, 60, 3), 50.0, np.float32)) <= 1.0))
 
     def test_card_is_1200_by_630(self):
@@ -179,6 +221,17 @@ class EncodeTest(unittest.TestCase):
             rec = json.loads((out / "clip.json").read_text())
             self.assertEqual(sorted(o["file"] for o in rec["outputs"]), ["clip.gif", "clip.mp4"])
             self.assertEqual(rec["label"], "Synthetic demo")
+            self.assertNotIn(str(frames), rec["command"], "the sidecar names the frames folder FRAMES, not its path")
+            self.assertTrue(rec["command"].startswith("python scripts/media/encode.py FRAMES "))
+            code = encode.main([str(frames), "--fps", "6", "--gif-fps", "6", "--gif-width", "64", "--dither", "none",
+                                "--gif", str(out / "flat.gif"), "--meta", str(meta),
+                                "--made-with", "python scripts/media/sweep.py --out-dir FRAMES --frames 6"])
+            self.assertEqual(code, 0)
+            rec = json.loads((out / "flat.json").read_text())
+            self.assertTrue(rec["command"].startswith("python scripts/media/sweep.py --out-dir FRAMES --frames 6 && "
+                                                      "python scripts/media/encode.py FRAMES "))
+            self.assertNotIn("--made-with", rec["command"])
+            self.assertEqual(rec["tool"]["scripts"], ["common.py", "encode.py", "sweep.py"])
             self.assertEqual(encode.main([str(Path(tmp) / "nothing"), "--gif", str(out / "x.gif")]), 2)
 
     def test_frame_names_must_be_numbered(self):
@@ -197,6 +250,12 @@ class CaptureTest(unittest.TestCase):
             with self.subTest(actions=bad), self.assertRaises(capture_web.CaptureError):
                 capture_web.check_actions(bad)
         self.assertEqual(capture_web.page_url("about:blank"), "about:blank")
+        # real-time frames: each output frame is the last screenshot taken by its time; slow shots repeat frames
+        self.assertEqual(capture_web.pick_timed([0.0, 0.1, 0.3, 0.5, 0.75, 0.8], 4, 0.25), [0, 1, 3, 4])
+        self.assertEqual(capture_web.pick_timed([0.0, 1.0], 3, 0.25), [0, 0, 0])
+        with self.assertRaises(capture_web.CaptureError):
+            capture_web.capture("about:blank", ROOT / "docs" / "assets" / "never-written", [{"frame": 1}])
+        self.assertFalse((ROOT / "docs" / "assets" / "never-written").exists())
         with self.assertRaises(capture_web.CaptureError):
             capture_web.page_url("/no/such/page.html")
 
@@ -218,6 +277,14 @@ class CaptureTest(unittest.TestCase):
             self.assertEqual(res["frames"], 5)
             first, last = (Image.open(Path(tmp) / "f" / f"frame-0000{i}.png") for i in (0, 2))
             self.assertNotEqual(first.tobytes(), last.tobytes(), "the slider moved between frames")
+            # the drawn pointer: it moves to a button, taps it (a ring), drags the slider and scrolls smoothly
+            steps = [{"cursor": "show"}, {"point": {"selector": "#r", "n": 3}}, {"tap": {"selector": "#r", "n": 2}},
+                     {"glide": {"selector": "#r", "from": 0, "to": 10, "n": 3}},
+                     {"scrollto": {"selector": "#b", "offset": 0, "n": 2}}, {"cursor": "hide"}, {"frame": 1}]
+            res = capture_web.capture(page, Path(tmp) / "g", steps, 240, 60)
+            self.assertEqual(res["frames"], 11)
+            a, b = (Image.open(Path(tmp) / "g" / f"frame-0000{i}.png").convert("RGB") for i in (0, 2))
+            self.assertNotEqual(a.tobytes(), b.tobytes(), "the pointer moved")
 
 
 if __name__ == "__main__":

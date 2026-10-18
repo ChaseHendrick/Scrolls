@@ -1,8 +1,8 @@
 # Unroll: an interactive PHerc. 139 viewer
 
-![Concept illustration of a papyrus roll unrolling into a flat sheet, with a copper grid layer and a layer of ivory points floating above it.](assets/unroll/unroll-hero.webp)
+![Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.](assets/unroll/unroll-hero.webp)
 
-*Concept illustration: a roll unrolls flat and its layers lift apart. No scan data. [Artwork notes](assets/README.md).*
+*Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data. [Artwork notes](assets/README.md).*
 
 **Link:** [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll)
 

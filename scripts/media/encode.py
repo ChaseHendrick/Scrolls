@@ -9,7 +9,8 @@ H.264, yuv420p, CRF 20, preset slow, with the index at the front (+faststart) so
 made in two passes: ffmpeg's palettegen with stats_mode=diff, then paletteuse with sierra2_4a dithering and
 rectangle diff mode, then gifsicle -O3 with --lossy. When a file is over its limit (GIF 4 MB, MP4 10 MB by default),
 the GIF is made again narrower, slower and lossier, and the MP4 at a higher CRF, until it fits or the steps run out
-(exit 3). META.json gives the media label, alt text, caption and license that the sidecars record (common.py).
+(exit 3). META.json gives the media label, alt text, caption and license that the sidecars record (common.py); it is
+required for any output under docs/assets/, where only Concept illustrations and Synthetic demos are written.
 Needs ffmpeg and gifsicle on PATH.
 """
 
@@ -25,7 +26,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from common import MediaError, check_meta, output_record, write_guard, write_sidecar  # noqa: E402
+from common import ROOT, MediaError, check_meta, output_record, under_assets, write_guard, write_sidecar  # noqa: E402
 
 GIF_MAX_MB = 4.0
 MP4_MAX_MB = 10.0
@@ -93,7 +94,10 @@ def encode_mp4(src, out, fps, crf, max_mb, width=None, log=print):
     raise MediaError(f"{out} stays over {max_mb} MB; shorten the clip or lower its size")
 
 
-def encode_gif(src, out, fps, gif_fps, width, lossy, max_mb, log=print):
+DITHERS = {"sierra2_4a": "dither=sierra2_4a", "bayer": "dither=bayer:bayer_scale=4", "none": "dither=none"}
+
+
+def encode_gif(src, out, fps, gif_fps, width, lossy, max_mb, log=print, dither="sierra2_4a"):
     ffmpeg, gifsicle = tool("ffmpeg"), tool("gifsicle")
     inp, _ = frames_input(src, fps)
     steps = [(width, gif_fps, lossy), (width, max(8, gif_fps - 3), lossy + 30), (int(width * 0.85), max(8, gif_fps - 3),
@@ -105,13 +109,37 @@ def encode_gif(src, out, fps, gif_fps, width, lossy, max_mb, log=print):
             run([ffmpeg, "-y", "-loglevel", "error", *inp, "-vf", f"{chain},palettegen=stats_mode=diff:max_colors=256",
                  str(palette)])
             run([ffmpeg, "-y", "-loglevel", "error", *inp, "-i", str(palette), "-lavfi",
-                 f"{chain}[x];[x][1:v]paletteuse=dither=sierra2_4a:diff_mode=rectangle", str(raw)])
+                 f"{chain}[x];[x][1:v]paletteuse={DITHERS[dither]}:diff_mode=rectangle", str(raw)])
             run([gifsicle, "-O3", f"--lossy={lz}", "-o", str(out), str(raw)])
             size = Path(out).stat().st_size
             if size <= max_mb * 1e6:
                 return {"width": w, "fps": f, "lossy": lz}
             log(f"encode: {out} is {size / 1e6:.1f} MB at {w} px, {f} fps, lossy {lz}; over {max_mb} MB, trying smaller")
     raise MediaError(f"{out} stays over {max_mb} MB after every step; shorten the clip")
+
+
+def sidecar_command(argv, args):
+    """The whole chain that made a clip, for its sidecar: the --made-with commands, then this one, with the frames
+    folder written as FRAMES and no --made-with of its own. Scripts of scripts/media/ named in the chain are hashed
+    along with encode.py."""
+    out, skip = [], False
+    for a in argv:
+        if skip:
+            skip = False
+            continue
+        if a == "--made-with":
+            skip = True
+            continue
+        if a.startswith("--made-with="):
+            continue
+        if a == args.src:
+            a = "FRAMES"
+        elif a.startswith("/") and Path(a).resolve().is_relative_to(ROOT):
+            a = Path(a).resolve().relative_to(ROOT).as_posix()          # repository paths, as run from its root
+        out.append(a)
+    steps = list(args.made_with) + ["python scripts/media/encode.py " + " ".join(out)]
+    named = {Path(t).name for step in args.made_with for t in step.split() if t.startswith("scripts/media/")}
+    return " && ".join(steps), tuple(sorted(set(SCRIPTS) | {n for n in named if (HERE / n).is_file()}))
 
 
 def main(argv=None):
@@ -127,6 +155,12 @@ def main(argv=None):
     p.add_argument("--gif-fps", type=int, default=12, help="GIF frame rate (default 12)")
     p.add_argument("--gif-width", type=int, default=960, help="GIF width in pixels (default 960)")
     p.add_argument("--lossy", type=int, default=40, help="gifsicle --lossy level (default 40)")
+    p.add_argument("--dither", choices=sorted(DITHERS), default="sierra2_4a",
+                   help="GIF dithering: sierra2_4a (default) for photographic frames, bayer or none for flat fields, "
+                        "where error diffusion only adds noise and bytes")
+    p.add_argument("--made-with", action="append", default=[], metavar="COMMAND",
+                   help="a command that made the frames (repeatable, in order), recorded in the sidecar before this "
+                        "one; name the frames folder FRAMES in it")
     p.add_argument("--max-gif-mb", type=float, default=GIF_MAX_MB, help="GIF size limit in MB (default 4)")
     p.add_argument("--max-mp4-mb", type=float, default=MP4_MAX_MB, help="MP4 size limit in MB (default 10)")
     p.add_argument("--json", action="store_true", help="print what was written as JSON")
@@ -136,6 +170,8 @@ def main(argv=None):
     log = lambda msg: print(msg, file=sys.stderr)  # noqa: E731
     try:
         meta = check_meta(json.loads(Path(args.meta).read_text(encoding="utf-8"))) if args.meta else None
+        if meta is None and any(out and under_assets(out) for out in (args.mp4, args.gif)):
+            raise MediaError("a clip under docs/assets/ needs --meta: every clip there says what it is in a sidecar")
         written = []
         for out, kind in ((args.mp4, "mp4"), (args.gif, "gif")):
             if not out:
@@ -147,7 +183,7 @@ def main(argv=None):
                 settings = encode_mp4(args.src, out, args.fps, args.crf, args.max_mp4_mb, args.mp4_width, log)
             else:
                 settings = encode_gif(args.src, out, args.fps, args.gif_fps, args.gif_width, args.lossy,
-                                      args.max_gif_mb, log)
+                                      args.max_gif_mb, log, args.dither)
             info = probe(out)
             rec = output_record(out, info.get("width"), info.get("height"), kind=kind,
                                 seconds=info.get("seconds"), frames=info.get("frames"), settings=settings)
@@ -155,10 +191,10 @@ def main(argv=None):
             log(f"encode: wrote {out} ({rec['bytes']} bytes)")
         if meta:
             # one sidecar per name: OUT.mp4 and OUT.gif share OUT.json
-            cmd = "python scripts/media/encode.py " + " ".join(sys.argv[1:] if argv is None else argv)
+            cmd, scripts = sidecar_command(argv if argv is not None else sys.argv[1:], args)
             for stem in dict.fromkeys(path.with_suffix(".json") for path, _ in written):
                 write_sidecar(stem, meta, [r for path, r in written if path.with_suffix(".json") == stem],
-                              command=cmd, scripts=SCRIPTS)
+                              command=cmd, scripts=scripts)
         written = [r for _, r in written]
         if args.json:
             print(json.dumps(written, indent=2))

@@ -1,8 +1,8 @@
 # Scroll Text Reader
 
-![Concept illustration of a papyrus sheet curling at one end, with random synthetic Greek capitals in ink and thin copper boxes with confidence bars around a few of them.](assets/letter-reader/reader-hero.webp)
+![Concept illustration of a papyrus sheet curling up at its left end, with a copper reading lens over the flat part that shows the fibers magnified. Nothing is written on the sheet.](assets/letter-reader/reader-hero.webp)
 
-*Concept illustration: random synthetic Greek capitals on a procedural sheet, with proposal boxes. No scroll data, no words, not a reading. [Artwork notes](assets/README.md).*
+*Concept illustration: a procedural papyrus sheet under a reading lens. No scroll data, no letters, no ink, not a reading. [Artwork notes](assets/README.md).*
 
 Scroll Text Reader (formerly Greek Letter Reader) proposes text on 2D images: ink-detection maps, drawn ink labels and photographs of papyri. Its default Greek LineNet proposes capital letters with positions and confidences. The optional local Tesseract backend proposes words in Latin, Greek, Hebrew or other explicitly installed languages. Language support depends on the selected backend and weights; this is not a reader for every script.
 

@@ -12,8 +12,10 @@
 - every `kit/*.py` module has a row in the repository map, docs/MAP.md;
 - AGENTS.md and docs/HANDOFF.md stay short, since every agent reads them first;
 - every relative link in live Markdown resolves to a tracked file or directory;
-- every file under docs/assets/ has a row in docs/assets/README.md with its size, bytes, media label and license,
-  heroes (*-hero.webp) are exactly 1920 x 640 and at most 300 KB, and nothing there is over 4 MB.
+- every file under docs/assets/ has a row in docs/assets/README.md with its size, bytes, media label and license
+  and is named by a sidecar JSON with the same label; that label is Concept illustration or Synthetic demo (public
+  Git holds no scan renders or model maps); heroes (*-hero.webp) are exactly 1920 x 640 and at most 300 KB, and
+  nothing there is over 4 MB.
 """
 
 import json
@@ -59,8 +61,9 @@ BASH4 = [
 ]
 
 
-# docs/assets/: media labels (docs/assets/README.md, scripts/media/common.py) and size limits.
-MEDIA_LABELS = ("Concept illustration", "Real data render", "Model output", "Synthetic demo")
+# docs/assets/: media labels (docs/assets/README.md, scripts/media/common.py) and size limits. Real data renders and
+# model output are labels too, but they live in Scrolls-private's docs/media/, never here.
+PUBLIC_MEDIA_LABELS = ("Concept illustration", "Synthetic demo")
 ASSET_ROW = re.compile(r"^\| \[`([^`]+)`\]\(([^)]+)\) \| ([^|]+) \| ([0-9,]+) \| ([^|]+) \| ([^|]+) \|")
 ASSET_MAX_BYTES = 4_000_000
 HERO_MAX_BYTES = 300_000
@@ -242,10 +245,10 @@ class RepoTest(unittest.TestCase):
             size = len((ROOT / rel).read_bytes())
             self.assertLessEqual(size, limit, f"{rel} is {size} bytes, over {limit}; see the comment above")
 
-    def test_assets_are_listed_labelled_and_within_limits(self):
+    def test_assets_are_listed_labeled_and_within_limits(self):
         # Chase, 18 October 2026: every released tool gets a hero like the README's, plus GIFs and videos, and every
-        # picture says what it is. Public Git holds no scan renders or ink maps, so the labels here are normally
-        # Concept illustration or Synthetic demo; Real data renders live in Scrolls-private's docs/media/.
+        # picture says what it is. Public Git holds no scan renders or ink maps, so the only labels allowed here are
+        # Concept illustration and Synthetic demo; Real data renders live in Scrolls-private's docs/media/.
         base = ROOT / "docs" / "assets"
         rows = asset_rows()
         files = sorted(f.relative_to(base).as_posix() for f in tracked()
@@ -261,7 +264,8 @@ class RepoTest(unittest.TestCase):
             path = base / rel
             actual = path.stat().st_size
             self.assertEqual(nbytes, actual, f"{rel}: the README says {nbytes:,} bytes, the file has {actual:,}")
-            self.assertIn(label, MEDIA_LABELS, f"{rel}: label {label!r}")
+            self.assertIn(label, PUBLIC_MEDIA_LABELS, f"{rel}: label {label!r} (public Git holds only Concept "
+                          "illustrations and Synthetic demos)")
             self.assertTrue(license_, f"{rel}: no license")
             self.assertLessEqual(actual, ASSET_MAX_BYTES, f"{rel} is over 4 MB")
             dims = image_size(path) if path.suffix in (".png", ".gif", ".jpg", ".jpeg", ".webp") else None
@@ -271,16 +275,22 @@ class RepoTest(unittest.TestCase):
                 self.assertEqual(dims, (1920, 640), f"{rel}: a hero is 1920 x 640")
                 self.assertLessEqual(actual, HERO_MAX_BYTES, f"{rel}: a hero is at most 300 KB")
         # A sidecar NAME.json describes media beside it; its label and byte counts match the files and their rows.
+        described = set()
         for rel in (f for f in files if f.endswith(".json")):
             record = json.loads((base / rel).read_text(encoding="utf-8"))
             self.assertEqual(record.get("schema"), "scrolls-media/1", f"{rel}: not a media sidecar")
+            self.assertIn(record["label"], PUBLIC_MEDIA_LABELS, f"{rel}: label {record['label']!r}")
             self.assertTrue(record["caption"].startswith(record["label"]), f"{rel}: caption does not start with label")
+            self.assertNotIn("/tmp/", json.dumps(record), f"{rel}: a scratch path; record commands with placeholders")
             folder = rel.rsplit("/", 1)[0] + "/" if "/" in rel else ""
             for out in record["outputs"]:
                 target = folder + out["file"]
                 self.assertIn(target, rows, f"{rel} names {target}, which has no row")
                 self.assertEqual(rows[target][2], record["label"], f"{target}: row and sidecar labels differ")
                 self.assertEqual(out["bytes"], (base / target).stat().st_size, f"{rel}: {target} changed since")
+                described.add(target)
+        undescribed = [f for f in media if f not in described]
+        self.assertEqual(undescribed, [], "files under docs/assets/ that no sidecar NAME.json describes")
 
     def test_image_size_reads_headers(self):
         # The check above must be able to fail: it reads real dimensions, so a wrong size string is caught.

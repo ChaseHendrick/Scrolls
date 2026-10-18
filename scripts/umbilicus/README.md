@@ -1,14 +1,14 @@
 # Scroll centre finder (umbilicus)
 
-![Concept illustration of seven synthetic scroll cross-sections floating in a row, a glowing copper thread passing through the winding center of each.](../../docs/assets/umbilicus/umbilicus-hero.webp)
+![Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.](../../docs/assets/umbilicus/umbilicus-hero.webp)
 
-*Concept illustration: synthetic cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
+*Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
 
 This finds the winding centre (the umbilicus) of a Herculaneum scroll in X-ray CT and writes it in the same format as the published umbilicus files: one control point per height, `x`, `y`, `z` in level-0 voxels of the scan. Tools that trace and orient the papyrus sheets use such a line. Many scrolls have none, and two people placing the same centre by hand often disagree by a few millimetres (below), so an automatic answer with a measured error is useful.
 
 It is model output, not a measurement. Check a line on CT slices before you rely on it.
 
-![Animated cross-section of a synthetic scroll swept from cap to base, its winding center marked by a copper ring, beside a side view of the center's track.](../../docs/assets/umbilicus/umbilicus-center-sweep.gif)
+![Animated cross-section of a synthetic scroll swept from cap to base in the scanner's fixed frame: its winding center, a copper ring, drifts off the scanner's axes, beside a side view at the same scale that draws the center's track.](../../docs/assets/umbilicus/umbilicus-center-sweep.gif)
 
 *Concept illustration: what the finder looks for, a winding center that drifts from cap to base. Formulas only, no scan and no model run ([MP4](../../docs/assets/umbilicus/umbilicus-center-sweep.mp4)).*
 

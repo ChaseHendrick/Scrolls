@@ -40,7 +40,12 @@ CHARCOAL = hex_rgb("#171A1C")
 IVORY = hex_rgb("#EEE7D9")
 COPPER = hex_rgb("#B77A54")
 EMBER = hex_rgb("#3A2A22")
+# The reference heroes' field reads warm, (19, 18, 16) to (24, 22, 20), not the cool page charcoal: the darkest
+# pixels lift to SHADOW, and the floor under the key light is a warm sweep that falls to charcoal at the edges.
+SHADOW = hex_rgb("#161412")
+FLOOR_WARM = hex_rgb("#1E1A17")
 L_CHARCOAL, L_IVORY, L_COPPER, L_EMBER = (to_linear(c) for c in (CHARCOAL, IVORY, COPPER, EMBER))
+L_SHADOW, L_FLOOR_WARM = to_linear(SHADOW), to_linear(FLOOR_WARM)
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Noise
@@ -205,7 +210,9 @@ class Surface:
 
     The material returns "albedo" (n, 3, linear RGB) and optionally "metal" (0 to 1), "shine" (specular exponent),
     "spec" (specular strength), "emit" (n, 3, linear radiance), "keep" (bool mask: drop samples, for holes and ragged
-    edges), "bump" (a height field used to tilt normals) and "rim" (scale of the copper rim light).
+    edges), "bump" (a height field used to tilt normals) and "rim" (scale of the copper rim light). A material may
+    carry a bump_fn(u, v) attribute that returns a height field alone; the renderer then takes the normal's finite
+    differences from it (all three samples) instead of evaluating the whole material twice more.
     """
 
     def __init__(self, position, material, u=(0.0, 1.0), v=(0.0, 1.0), tiles=(48, 48), density=0.7,
@@ -275,33 +282,52 @@ class Surface:
             yield u.astype(np.float32), v.astype(np.float32)
 
 
-def papyrus(u, v, seed=0, scale=1.0, tone=1.0, char=0.0):
-    """Albedo and bump height of a procedural papyrus sheet at (u, v) in sheet units: two crossed fiber layers,
-    blotches and a few cracks. char (0 to 1) darkens it toward carbonized black-brown."""
+def ridges(x, y, octaves, seed, sharp):
+    """Thin bright lines where fractal noise crosses its middle: fibers, when y is stretched against x."""
+    n = fbm(x, y, octaves, seed)
+    return (1 - np.clip(np.abs(2 * n - 1) * 1.6, 0, 1)) ** sharp
+
+
+def papyrus(u, v, seed=0, scale=1.0, tone=1.0, char=0.0, detail=True):
+    """Albedo and bump height of a procedural carbonized papyrus sheet at (u, v) in sheet units.
+
+    Long fibers along u in strips of uneven tone (papyrus is pith strips laid side by side) with narrow gaps between
+    strips, a fainter layer across them, char mottling and pitting. Nothing in it is a dark stroke: no mark here may
+    look like ink. char (0 to 1) darkens it toward
+    black-brown. detail=False returns only the height, for bump mapping."""
     x, y = u * scale, v * scale
-    long_f = fbm(x * 2.2, y * 95, 3, seed)                       # fibers along u
-    long_f2 = fbm(x * 1.1 + 3.1, y * 240, 2, seed + 7)
-    cross_f = fbm(x * 70, y * 1.6, 3, seed + 13)                 # the second layer, across
-    blot = fbm(x * 3.0, y * 3.0, 4, seed + 29)
-    fiber = 0.55 * long_f + 0.25 * long_f2 + 0.20 * cross_f
-    streak = smoothstep(0.45, 0.75, fiber)
-    crack = smoothstep(0.035, 0.0, np.abs(fbm(x * 9, y * 1.2, 3, seed + 41) - 0.5)) * smoothstep(0.55, 0.75, blot)
-    dark = np.array([0.026, 0.024, 0.022], dtype=np.float32)
-    mid = np.array([0.072, 0.064, 0.056], dtype=np.float32)
-    light = np.array([0.19, 0.172, 0.150], dtype=np.float32)
-    t = np.clip(0.12 + 0.95 * streak * (0.35 + 0.9 * blot) - 0.12 * crack, 0, 1)[:, None]
-    alb = np.where(t < 0.5, dark + (mid - dark) * (t / 0.5), mid + (light - mid) * ((t - 0.5) / 0.5))
+    strands = ridges(x * 0.3, y * 48, 2, seed, 2.5)                     # fibers along u
+    fine = ridges(x * 0.6 + 3.1, y * 130, 1, seed + 7, 2.0)
+    strip = fbm(x * 0.25, y * 7.0, 2, seed + 11)                        # the pith strips, each its own tone
+    across = ridges(x * 38, y * 0.5, 2, seed + 13, 6.0)                 # the lower layer, faint
+    split = smoothstep(0.80, 0.95, ridges(x * 0.12, y * 16, 1, seed + 41, 1.0))   # gaps between strips, along u
+    height = 0.6 * strands + 0.25 * fine + 0.35 * strip + 0.08 * across - 0.6 * split
+    if not detail:
+        return height.astype(np.float32)
+    mott = fbm(x * 1.2, y * 4.0, 3, seed + 29)                          # char mottling, stretched along the fibers
+    pits = smoothstep(0.74, 0.86, fbm(x * 9, y * 40, 2, seed + 31)) * smoothstep(0.5, 0.7, mott)
+    t = (0.40 + 0.26 * strands + 0.10 * fine + 0.22 * (strip - 0.5) + 0.04 * across
+         - 0.12 * smoothstep(0.5, 0.85, mott) - 0.10 * pits - 0.18 * split)
+    t = np.clip(t, 0, 1)[:, None]
+    dark = np.array([0.036, 0.030, 0.025], dtype=np.float32)
+    mid = np.array([0.095, 0.080, 0.066], dtype=np.float32)
+    light = np.array([0.27, 0.236, 0.195], dtype=np.float32)
+    alb = np.where(t < 0.42, dark + (mid - dark) * (t / 0.42), mid + (light - mid) * ((t - 0.42) / 0.58))
     alb = alb * (1 - 0.65 * char) * tone
-    height = 0.6 * fiber + 0.25 * blot - 0.3 * crack
+    height = height - 0.4 * pits + 0.2 * mott
     return alb.astype(np.float32), height.astype(np.float32)
 
 
 def ragged(u, v, edge_u=(0.0, 1.0), edge_v=(0.0, 1.0), amount=0.012, seed=0, freq=60.0):
-    """Keep mask with torn edges: samples near the (u, v) borders are dropped where noise says so."""
-    n1 = fbm(u * freq, v * 3, 3, seed) * amount * 2
-    n2 = fbm(u * 3, v * freq, 3, seed + 5) * amount * 2
-    return ((v - edge_v[0]) > n1) & ((edge_v[1] - v) > fbm(u * freq + 9, v, 3, seed + 9) * amount * 2) & \
-           ((u - edge_u[0]) > n2) & ((edge_u[1] - u) > fbm(u, v * freq + 4, 3, seed + 11) * amount * 2)
+    """Keep mask with frayed edges: samples near the (u, v) borders are dropped where noise says so, with a few
+    fiber tufts that reach further in, so an edge reads as torn papyrus rather than a saw blade."""
+    def depth(a, b, sd):
+        tear = fbm(a * freq, b * 3, 3, sd) * amount * 2
+        tufts = smoothstep(0.72, 0.95, value_noise(a * freq * 5, b * 2, sd + 1)) * amount * 2.5
+        return tear + tufts
+
+    return ((v - edge_v[0]) > depth(u, v, seed)) & ((edge_v[1] - v) > depth(u + 9.3, v, seed + 9)) & \
+           ((u - edge_u[0]) > depth(v, u, seed + 5)) & ((edge_u[1] - u) > depth(v + 4.1, u, seed + 11))
 
 
 def grid_lines(a, b, na, nb, width):
@@ -377,16 +403,17 @@ def copper_metal(glow=0.0):
 
 
 class Scene:
-    def __init__(self, camera, surfaces, key=(-0.55, 0.75, 0.45), rim=(0.75, 0.35, -0.6), key_power=3.2,
+    def __init__(self, camera, surfaces, key=(-0.42, 0.78, 0.62), rim=(0.75, 0.35, -0.6), key_power=3.2,
                  rim_power=1.6, ambient=0.06, floor=True, floor_y=0.0, fog=0.02, bounds=None, shadow_soft=2.5,
                  contact=0.55, cavity=0.6, bloom=0.35, dof=1.0, background=None, floor_tone=1.0, exposure=1.0,
-                 spot=None):
+                 spot=None, backdrop=0.85):
         self.camera, self.surfaces = camera, surfaces
         self.key, self.rim = normalize(np.asarray(key, dtype=np.float32)), normalize(np.asarray(rim, dtype=np.float32))
         self.key_power, self.rim_power, self.ambient = key_power, rim_power, ambient
         self.floor, self.floor_y, self.fog, self.bounds = floor, floor_y, fog, bounds
         self.shadow_soft, self.contact, self.cavity, self.bloom, self.dof = shadow_soft, contact, cavity, bloom, dof
         self.background, self.floor_tone, self.exposure = background, floor_tone, exposure
+        self.backdrop = backdrop          # strength of the warm glow on the backdrop at the upper left
         # spot: (center xyz, radius): the key light pools around center and falls to 30 % far from it.
         self.spot = spot
 
@@ -486,10 +513,10 @@ def background(scene, w, h):
         return scene.background(w, h)
     yy, xx = np.mgrid[0:h, 0:w].astype(np.float32)
     x, y = xx / w, yy / h
-    d = np.sqrt(((x - 0.06) / 0.55) ** 2 + ((y + 0.15) / 0.9) ** 2)
-    glow = np.exp(-d * d * 1.6)[..., None]
-    base = L_CHARCOAL * (0.55 + 0.25 * (1 - x))[..., None]
-    return (base + glow * (to_linear(np.array([0.36, 0.30, 0.24])) * 0.55)).astype(np.float32)
+    d = np.sqrt(((x - 0.0) / 0.5) ** 2 + ((y + 0.12) / 0.85) ** 2)
+    glow = np.exp(-d * d * 1.5)[..., None]
+    base = L_SHADOW * (0.8 + 0.3 * (1 - x))[..., None]
+    return (base + glow * (to_linear(np.array([0.40, 0.345, 0.285])) * scene.backdrop)).astype(np.float32)
 
 
 def render(scene, seed=0, progress=None):
@@ -529,10 +556,14 @@ def render(scene, seed=0, progress=None):
                 # Tilt the normal along the height field's gradient (finite differences in u and v).
                 e = 2e-4
                 hb = np.asarray(m["bump"], dtype=np.float32)
-                mu = surf.material(u + e, v, p, n)
-                mv = surf.material(u, v + e, p, n)
-                gu = (np.asarray(mu["bump"], dtype=np.float32) - hb) / e
-                gv = (np.asarray(mv["bump"], dtype=np.float32) - hb) / e
+                fast = getattr(surf.material, "bump_fn", None)     # height only, cheaper than the whole material
+                if fast is not None:
+                    h0 = fast(u, v)
+                    gu = (fast(u + e, v) - h0) / e
+                    gv = (fast(u, v + e) - h0) / e
+                else:
+                    gu = (np.asarray(surf.material(u + e, v, p, n)["bump"], dtype=np.float32) - hb) / e
+                    gv = (np.asarray(surf.material(u, v + e, p, n)["bump"], dtype=np.float32) - hb) / e
                 n = normalize(n - surf.bump_scale * (gu[:, None] * tu + gv[:, None] * tv))
             if surf.cast:
                 light.splat(p)
@@ -623,9 +654,11 @@ def render(scene, seed=0, progress=None):
         cx, cz = (lo[0] + hi[0]) / 2, (lo[2] + hi[2]) / 2
         fall = np.exp(-(((p[:, 0] - cx) / (hi[0] - lo[0] + 1e-6)) ** 2 * 2.2
                         + ((p[:, 2] - cz) / (hi[2] - lo[2] + 1e-6)) ** 2 * 2.2))
-        alb = L_CHARCOAL * 1.05 * scene.floor_tone
-        col = alb[None, :] * (ndl * scene.key_power * vis * (0.35 + 0.65 * fall))[:, None] * L_IVORY / 0.9
-        col = col * occl[:, None] + alb[None, :] * scene.ambient * occl[:, None]
+        # A warm sweep under the light that cools to charcoal away from it.
+        warm = (0.25 + 0.75 * fall)[:, None]
+        alb = (L_FLOOR_WARM * 1.45 * warm + L_CHARCOAL * (1 - warm)) * scene.floor_tone
+        col = alb * (ndl * scene.key_power * vis * (0.35 + 0.65 * fall))[:, None] * L_IVORY / 0.9
+        col = col * occl[:, None] + alb * scene.ambient * occl[:, None]
         # A soft glossy sheen of the key light on the floor.
         v = view[floor_hit]
         refl = v * np.array([-1, 1, -1], dtype=np.float32)

@@ -1,96 +1,34 @@
 [
-  {
-    "goto": "http://127.0.0.1:8793/"
-  },
-  {
-    "wait_for": "#banner"
-  },
-  {
-    "wait": 600
-  },
-  {
-    "scroll": [
-      0,
-      270
-    ]
-  },
-  {
-    "frames": 90,
-    "every": 250
-  },
-  {
-    "hold": 6
-  },
-  {
-    "eval": "(() => { const s = document.getElementById('stage-filter'); s.value = 'ink'; s.dispatchEvent(new Event('change')); })()"
-  },
-  {
-    "wait": 400
-  },
-  {
-    "eval": "document.getElementById('stage-detail').scrollIntoView({block: 'center'})"
-  },
-  {
-    "wait": 300
-  },
-  {
-    "frame": 1
-  },
-  {
-    "hold": 14
-  },
-  {
-    "eval": "document.getElementById('log-section').scrollIntoView({block: 'start'})"
-  },
-  {
-    "wait": 300
-  },
-  {
-    "frame": 1
-  },
-  {
-    "hold": 10
-  },
-  {
-    "fill": [
-      "#log-search",
-      "fake"
-    ]
-  },
-  {
-    "wait": 300
-  },
-  {
-    "frame": 1
-  },
-  {
-    "hold": 14
-  },
-  {
-    "eval": "document.getElementById('files-section').scrollIntoView({block: 'start'})"
-  },
-  {
-    "wait": 300
-  },
-  {
-    "frame": 1
-  },
-  {
-    "hold": 14
-  },
-  {
-    "eval": "document.getElementById('surfaces').scrollIntoView({block: 'center'})"
-  },
-  {
-    "wait": 600
-  },
-  {
-    "frame": 1
-  },
-  {
-    "hold": 16
-  },
-  {
-    "shot": "monitor-015-inspect"
-  }
+  {"goto": "http://127.0.0.1:8793/"},
+  {"wait_for": "#banner"},
+  {"wait": 300},
+  {"frames": 46, "every": 350},
+  {"wait_for": "#b-badge:text-is('Finished')"},
+  {"wait": 400},
+  {"frame": 1},
+  {"hold": 10},
+  {"cursor": "show"},
+  {"point": {"selector": "button.stage-pick[data-stage='ink']", "n": 10}},
+  {"tap": {"selector": "button.stage-pick[data-stage='ink']", "n": 6}},
+  {"wait": 300},
+  {"frame": 1},
+  {"hold": 14},
+  {"scrollto": {"selector": "#log-section", "offset": 12, "n": 12}},
+  {"point": {"selector": "#log-search", "n": 8}},
+  {"tap": {"selector": "#log-search", "n": 4}},
+  {"fill": ["#log-search", "fake"]},
+  {"wait": 300},
+  {"frame": 1},
+  {"hold": 14},
+  {"scrollto": {"selector": "#files-section", "offset": 12, "n": 12}},
+  {"point": {"selector": "#status-command", "n": 8}},
+  {"tap": {"selector": "#status-command", "n": 6}},
+  {"wait": 300},
+  {"frame": 1},
+  {"hold": 14},
+  {"cursor": "hide"},
+  {"scrollto": {"selector": "body", "offset": 0, "n": 12}},
+  {"wait": 200},
+  {"frame": 1},
+  {"hold": 30}
 ]

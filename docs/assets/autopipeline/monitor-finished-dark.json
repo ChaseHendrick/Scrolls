@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-finished-dark",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline's optional monitor showing a finished synthetic run and its stage timeline, dark theme.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.4's monitor after a finished synthetic demo run, dark theme (made-up data).",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "AutoPipeline 0.1.4 package, synthetic demo (docs/autopipeline/README.md)"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-finished-dark.png",
+      "bytes": 192590,
+      "sha256": "6c03c2bbe81b1698b62c503b0bf64a7512e057ca0df70f8427bc6c135657fbf1",
+      "width": 1440,
+      "height": 900,
+      "kind": "legacy",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-16",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "8cae2ed"
+  },
+  "command": "Screenshot of AutoPipeline 0.1.4's monitor after its synthetic demo run (commit 8cae2ed, 16 October 2026); predates scripts/media."
+}

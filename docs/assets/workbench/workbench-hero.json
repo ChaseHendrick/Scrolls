@@ -2,8 +2,8 @@
   "schema": "scrolls-media/1",
   "name": "workbench-hero",
   "label": "Concept illustration",
-  "alt": "Concept illustration of a still life on a dark bench: a small papyrus roll unrolling into a copper grid, a cube with glowing slices, and two cross-sections on a copper thread.",
-  "caption": "Concept illustration: the toolbox's motifs on one bench. No scan data.",
+  "alt": "Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.",
+  "caption": "Concept illustration: the toolbox's motifs on one tray. No scan data.",
   "license": "Apache-2.0",
   "release_id": null,
   "data": null,
@@ -11,8 +11,8 @@
   "outputs": [
     {
       "file": "workbench-hero.webp",
-      "bytes": 39560,
-      "sha256": "40322027fb785a52de264de99f148449b907905f957e12faaa85bde4b9ed14a7",
+      "bytes": 51076,
+      "sha256": "07070d4030d7b78ae4304936a372deb9d63132685a4f359219f175d53b4a2930",
       "width": 1920,
       "height": 640,
       "kind": "hero",
@@ -21,8 +21,8 @@
     },
     {
       "file": "workbench-card.jpg",
-      "bytes": 80712,
-      "sha256": "b2136cee80adb52979a5445279a7f8bdb5086bf77ec159e3dc875e2847e91b5d",
+      "bytes": 94910,
+      "sha256": "ee105427c94d34702001a63e397caea05c9cb0a0118132c55a505068dc54d359",
       "width": 1200,
       "height": 630,
       "kind": "social card",
@@ -39,35 +39,28 @@
       "scene.py",
       "scenes.py"
     ],
-    "scripts_sha256": "3af6a533736330786baedcc08b9b3cd8886b3867a26d0166467be0a86074f143",
-    "base_commit": "4a970bdad11d1c26584b2c852cc3dd28ea7a4121"
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
   },
   "command": "python scripts/media/hero.py scripts/media/recipes/workbench.json --out-dir docs/assets/workbench",
   "recipe": {
     "name": "workbench-hero",
     "label": "Concept illustration",
-    "alt": "Concept illustration of a still life on a dark bench: a small papyrus roll unrolling into a copper grid, a cube with glowing slices, and two cross-sections on a copper thread.",
-    "caption": "Concept illustration: the toolbox's motifs on one bench. No scan data.",
+    "alt": "Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.",
+    "caption": "Concept illustration: the toolbox's motifs on one tray. No scan data.",
     "license": "Apache-2.0",
     "seed": 8,
     "scene": {
       "kind": "procedural",
       "name": "workbench",
-      "params": {
-        "fov": 21,
-        "target": [
-          0.6,
-          0.0,
-          -1.0
-        ]
-      }
+      "params": {}
     },
     "grade": {
       "duotone": 0.08,
-      "key": 0.08,
+      "key": 0.42,
       "rim": 0.08,
-      "vignette": 0.35,
-      "fade_right": 0.1,
+      "vignette": 0.3,
+      "fade_right": 0.04,
       "grain": 0.006
     },
     "card": {
