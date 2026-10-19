@@ -175,17 +175,20 @@ Use Starter's command builder for a small image you already have. It creates a c
 
 **Use a separate environment and folder.** Both AutoPipeline (`vc-autopipeline`) and this workbench (`scrolls-workbench`) install a Python package named `kit`. Installing them together can overwrite files. A second virtual environment is required even though their command names differ.
 
-For macOS or Linux with Git and Python 3.11 or newer, open a new terminal outside `scrolls-learning`:
+For macOS or Linux with Git and Python 3.11 or newer, open a new terminal outside `scrolls-learning`. On macOS, type `python3.13` where the commands say `python3`, as in section 2.
 
 ```bash
 git clone --depth 1 --branch submission/progress-2026-10-fix5 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
 cd scrolls-autopipeline/submissions/progress-2026-10-fix5/autopipeline
 python3 -m venv .venv-ap
 .venv-ap/bin/python -m pip install -e .
-.venv-ap/bin/python scripts/demo_synthetic.py --out demo-run
+.venv-ap/bin/python scripts/demo_synthetic.py --out work/demo-run
+.venv-ap/bin/scrolls-kit autopipeline defaults
 ```
 
-For Windows, this shell-tool demo uses a Linux environment such as WSL; the native Windows Starter and text-reader path above does not require WSL. Follow the release's requirements before choosing that additional setup. Keep `demo-run` to inspect the plan and stage outputs. To connect real tools afterward, follow the [AutoPipeline reference](autopipeline/README.md#3-install-and-requirements), verify VC3D's tools, and keep villa's ink Python environment separate too. Do not start a full scan as your first integration check.
+The demo should end with `DEMO PASS`. The last command is the install check: it prints AutoPipeline's default settings as JSON, which shows the `scrolls-kit` command is installed in `.venv-ap`. Keep the run folder under `work/`, which the package's `.gitignore` excludes. The demo refuses to write traces into a folder git would track inside the clone: it then prints `DEMO FAIL` with `expected two synthetic surfaces, got 0`, and its `state.json` says the folder `is inside the repository but not ignored by git`. Without `--out`, the demo uses a new temporary folder and prints its path.
+
+For Windows, this shell-tool demo uses a Linux environment such as WSL; the native Windows Starter and text-reader path above does not require WSL. Follow the release's requirements before choosing that additional setup. Keep `work/demo-run` to inspect the plan and stage outputs. To connect real tools afterward, follow the [AutoPipeline reference](autopipeline/README.md#3-install-and-requirements), verify VC3D's tools, and keep villa's ink Python environment separate too. Do not start a full scan as your first integration check.
 
 The released [Inkfilter](tools/inkfilter.md) is another optional small CPU exercise if you want to study surface-volume filters before using a trained ink model. Its synthetic demo writes a map, a reversed-depth control and a record. It uses a different standalone package and does not replace the official pipeline.
 
@@ -205,6 +208,8 @@ Choose the smallest public example that exercises the skill you need. Record its
 | Starter opens no browser | Open the HTML path printed by the command. On a remote computer, copy that generated page to your own computer and open it there |
 | An optional dependency is missing | The base practice still works. Install the `reader` extra only for the text reader, or follow the official tool's own setup |
 | `No module named kit` or the wrong command list | Check you are calling the workbench `.venv` Python, not AutoPipeline's environment. Recreate separate environments if their packages were mixed |
+| `scrolls-start: command not found` | Commands in this guide call the environment directly. Run `.venv/bin/python -m kit start`, or `.venv/bin/scrolls-start`, from `scrolls-learning` |
+| AutoPipeline's demo prints `DEMO FAIL` with `got 0`, and its `state.json` says a folder `is inside the repository but not ignored by git` | The run folder is inside the git clone. Rerun with `--out work/demo-run`, or leave out `--out` for a temporary folder |
 | A download fails | Check the URL and Internet access. For a company proxy or certificate error follow [reader network guidance](letter-reader.md#networks-proxies-and-offline-machines); keep certificate checks enabled |
 | The reader says `DEMO ERROR` | Read the named missing dependency or failed weight download. It is not a negative scientific result |
 | The reader says `DEMO FAIL`, or noise looks like text | Keep the failed check. Compare inputs, weights and controls; do not select a nicer output and call it a pass |

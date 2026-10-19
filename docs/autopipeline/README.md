@@ -125,7 +125,7 @@ The demo runs every stage on a synthetic scroll with stand-in VC3D tools, with n
 
 ```bash
 python scripts/demo_synthetic.py                 # prints DEMO PASS
-python scripts/demo_synthetic.py --out demo-run  # keeps the run folder
+python scripts/demo_synthetic.py --out work/demo-run  # keeps the run folder; work/ is git-ignored
 ```
 
 A benchmark on PHerc0841's published segment w00:
@@ -439,6 +439,7 @@ On a phone:
 | VC3D tool exit 139 | A tool from `usr/bin` was started without the AppImage loader; set `VC_APPIMAGE` to the AppImage or its `squashfs-root`. |
 | remote renders fail on a 0.1.3 install | Upgrade to 0.1.5, the current release (0.1.4 fixed it; villa ba2bf75 changed `--volume`). |
 | `DEMO FAIL` from `scripts/demo_synthetic.py` | A dependency is missing or a stand-in ink command failed (0.1.5 and newer check this); read the log it names. |
+| `DEMO FAIL` with `got 0` surfaces, and `state.json` says a folder `is inside the repository but not ignored by git` | `--out` named a folder git would track inside the clone, so the trace stage refused to write there. Use `--out work/demo-run`, or no `--out` for a temporary folder. |
 | Prepare resume command is unavailable in the monitor | The run is active, finished, unreadable or refused by its plan's rules, or the view is paused or stale; press Refresh now. |
 
 ## 14. FAQ
