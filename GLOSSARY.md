@@ -248,6 +248,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
+**Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the scroll center finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
+
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.

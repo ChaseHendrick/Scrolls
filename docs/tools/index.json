@@ -565,7 +565,8 @@
     "Network": "None of its own. Some commands contact hosts (such as `fetch` and `run all --refresh`); each command's page says which",
     "Writes": "Nothing of its own. Each command's writes are on its page",
     "Go-ahead": "Not needed to run the entry point. A command that posts, uploads or rents compute needs Chase's yes first (the go-ahead rule, hard rule 8); its page says so",
-    "Released": "Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`)",
+    "Released": "Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`). Since 2026-10-20 the README's \"Released tools\" lists the command-line tools as one entry, Scrolls kit (`scrolls-kit` in `docs/releases.json`), with one line per tool",
+    "Release id": "`scrolls-kit`",
     "Guide": "[CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it)",
     "Checked": "2026-10-16 against commit `63ee638`"
    },
@@ -573,92 +574,92 @@
    "sections": [
     {
      "name": "What it does",
-     "start_line": 23,
-     "end_line": 32,
+     "start_line": 24,
+     "end_line": 33,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 33,
-     "end_line": 44,
+     "start_line": 34,
+     "end_line": 45,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 45,
-     "end_line": 63,
+     "start_line": 46,
+     "end_line": 64,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 64,
-     "end_line": 74,
+     "start_line": 65,
+     "end_line": 75,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 75,
-     "end_line": 150,
+     "start_line": 76,
+     "end_line": 151,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 151,
-     "end_line": 174,
+     "start_line": 152,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 175,
-     "end_line": 178,
+     "start_line": 176,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 179,
-     "end_line": 189,
+     "start_line": 180,
+     "end_line": 190,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 190,
-     "end_line": 203,
+     "start_line": 191,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 204,
-     "end_line": 213,
+     "start_line": 205,
+     "end_line": 214,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 214,
-     "end_line": 217,
+     "start_line": 215,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 218,
-     "end_line": 227,
+     "start_line": 219,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 228,
-     "end_line": 235,
+     "start_line": 229,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 236,
-     "end_line": 245,
+     "start_line": 237,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 246,
-     "end_line": 252,
+     "start_line": 247,
+     "end_line": 253,
      "applicable": true
     }
    ]
@@ -3529,7 +3530,7 @@
     "Network": "Only when a released weights name is not yet in the cache: the download from `github.com`, which redirects to GitHub's release file host (`release-assets.githubusercontent.com` or `objects.githubusercontent.com`). It follows `HTTPS_PROXY` and `NO_PROXY`. Reading an image and the exports make no connection",
     "Writes": "The weights file into the cache folder on a released name's first use (`~/.cache/scrolls-kit/letters/`, or the folder `KIT_LETTER_WEIGHTS` names). With `--out`, `--csv`, `--page-xml` and `--overlay`, those files, overwritten on a rerun. Otherwise it prints only",
     "Go-ahead": "Not needed to read public data. Publishing a read, an overlay or an export of a prize-eligible or unpublished scroll is never allowed before the prize is announced (the no-findings rule, hard rule 1); posting any read needs Chase's yes (the go-ahead rule, hard rule 8)",
-    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57)); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day; listed in the README's \"Released tools\" as `letter-reader`",
+    "Released": "Public `main` since 2026-10-14 ([PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57)); in the installable package `scrolls-workbench` since [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58) the same day; listed in the README's \"Released tools\" as `letter-reader`, since 2026-10-20 a line of the Scrolls kit entry under the same id",
     "Release id": "`letter-reader`",
     "License": "Code: Apache-2.0 ([LICENSE](../../LICENSE)). Weights: `letters-v2-ccby` CC BY 4.0, `letters-v2-real` CC BY-NC 4.0 ([which weights](../letter-reader.md#which-weights))",
     "Guide": "[letter-reader.md](../letter-reader.md) (install, first reads, model cards, benchmarks, the result field by field)",
@@ -5953,8 +5954,8 @@
     "text": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)"
    },
    "checked": {
-    "date": "2026-10-18",
-    "commit": "4a970bd"
+    "date": "2026-10-20",
+    "commit": "457fc5c"
    },
    "license": null,
    "fields": {
@@ -5972,7 +5973,7 @@
     "Go-ahead": "Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module",
     "Guide": "[AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026)",
-    "Checked": "2026-10-18 against commit `4a970bd`"
+    "Checked": "2026-10-20 against commit `457fc5c`"
    },
    "page": "docs/tools/releases.md",
    "sections": [
@@ -6009,61 +6010,61 @@
     {
      "name": "Python API",
      "start_line": 164,
-     "end_line": 191,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 192,
-     "end_line": 224,
+     "start_line": 194,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 225,
-     "end_line": 250,
+     "start_line": 243,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 251,
-     "end_line": 301,
+     "start_line": 269,
+     "end_line": 332,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 302,
-     "end_line": 329,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 330,
-     "end_line": 333,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 334,
-     "end_line": 343,
-     "applicable": true
-    },
-    {
-     "name": "Tests",
-     "start_line": 344,
-     "end_line": 351,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 352,
+     "start_line": 333,
      "end_line": 361,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Cost and time",
      "start_line": 362,
-     "end_line": 370,
+     "end_line": 365,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 366,
+     "end_line": 375,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 376,
+     "end_line": 383,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 384,
+     "end_line": 393,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 394,
+     "end_line": 402,
      "applicable": true
     }
    ]
@@ -7419,7 +7420,7 @@
     "Network": "None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog`",
     "Writes": "Fetched segments under `--cache` (default `work/stackcheck/cache/HOST/PATH/`, kept for reuse); the JSON report with `--out`; the masks `.npz` with `--flags`. Otherwise it prints only",
     "Go-ahead": "Not needed",
-    "Released": "Public `main` since 2026-10-14 (`47cd607`); listed in the README's \"Released tools\" as the release `stackcheck` (Segment stack check)",
+    "Released": "Public `main` since 2026-10-14 (`47cd607`); listed in the README's \"Released tools\" as the release `stackcheck` (Segment stack check), since 2026-10-20 a line of the Scrolls kit entry under the same id",
     "Guide": "[The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits",
     "Checked": "2026-10-16 against commit `d9eaf42`"
    },
@@ -7909,7 +7910,7 @@
     "Network": "`kit strokenet` with a weights file: None. With a released model name not yet in the cache: one download of the weights from github.com (the `url` in `kit/data/strokenet-weights.json`). `data.py fetch`: data.aws.ash2txt.org, one TIFF of about 1.3 GB per segment, 27 segments. `gridpilot.py`: HTTP range reads of a surface volume's chunks at a base URL its caller gives (its cloud runner is not in this repository)",
     "Writes": "`kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file",
     "Go-ahead": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score",
-    "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day",
+    "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's \"Released tools\" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry",
     "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits)",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
     "Checked": "2026-10-18 against commit `4a970bd`"
@@ -8393,7 +8394,7 @@
     "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
     "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`",
     "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
-    "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository",
+    "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's \"Released tools\" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository)",
     "Release id": "`umbilicus-finder`",
     "Guide": "[Scroll center finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses)",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
