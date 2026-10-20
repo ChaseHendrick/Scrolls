@@ -1,14 +1,21 @@
 """Cross-validated training of the center network and the umbilicus files it writes.
 
     python pipeline.py job JOB --data DIR --out DIR [--size 256 --width 32 --epochs 40 --time-s 900 --device cuda]
-    python pipeline.py collect --data DIR --out DIR
-    python pipeline.py trim SRC --data DIR --out DST     # drop mount and cap points from umbilicus JSONs already written
+    python pipeline.py collect --data DIR --out DIR [--vc3d-name]
+    python pipeline.py trim SRC --data DIR --out DST [--vc3d-name]   # drop end points from umbilicus JSONs already written
 
 JOB is fold<k>s<seed> (k = 0..3) or alls<seed>. A fold job trains on the labeled scrolls outside
 that fold and predicts the fold's scrolls (scored, never seen in training) and any scrolls in slices.UNLABELLED.
 collect averages the seeds per fold for the held-out score. For each scroll in slices.UNLABELLED, if any,
 it takes the median of every model and writes an umbilicus JSON in the format of the published ones (control points
 in level-0 voxels) to OUT/umbilicus/.
+
+Umbilicus files (umbilicus_json, write_umbilicus) are named <scroll>_umbilicus.json, or with --vc3d-name
+<scroll>/umbilicus.json, the name VC3D searches for first and spiral-fitting reads. Their metadata carries the scan's
+level-0 width, height and slice count (all three or none), which VC3D uses to place the points on the volume it has
+open. Both follow villa main 8aa507c12: volume-cartographer/core/src/ScrollUmbilicus.cpp:74-75 (file names) and
+317-341 (rescale by the stamped grid), core/src/Umbilicus.cpp:272-426 (what VC3D accepts), apps/src/vc_gen_umbilicus.cpp:
+224-226 and 510-520 (villa's own writer of the triplet), spiral-fitting/fit_session.py:362-365 (umbilicus.json).
 """
 import argparse, json, os, sys, time
 import numpy as np
@@ -31,6 +38,110 @@ def read_json(path):
 def write_json(obj, path, **kw):
     with open(path, "w") as fh:
         json.dump(obj, fh, **kw)
+
+# The file name VC3D looks for first in each folder it searches (then estimated_umbilicus.json), and the one
+# spiral-fitting's dataset folder must hold: villa main 8aa507c12, volume-cartographer/core/src/ScrollUmbilicus.cpp:74-75
+# and spiral-fitting/fit_session.py:362-365.
+VC3D_NAME = "umbilicus.json"
+SUFFIX = "_umbilicus.json"            # this finder's default name, <scroll>_umbilicus.json, as the published files
+DIMS = ("volume_width", "volume_height", "volume_slices")    # Umbilicus.cpp:385-387; x, y and z of the grid
+
+def umbilicus_path(out, s, vc3d=False):
+    """OUT/<s>_umbilicus.json (the default), or with vc3d OUT/<s>/umbilicus.json: one folder per scroll holding the
+    name VC3D and spiral-fitting look for."""
+    return os.path.join(out, s, VC3D_NAME) if vc3d else os.path.join(out, s + SUFFIX)
+
+def write_umbilicus(j, out, s, vc3d=False):
+    """Write an umbilicus file where umbilicus_path says and return its path. Strict JSON (no NaN), which VC3D's
+    parser needs. Under the VC3D name a line with no points is not written, since VC3D refuses such a file
+    (Umbilicus.cpp:327-329) and would stop at it: a file there from an earlier run is removed, and None is returned."""
+    p = umbilicus_path(out, s, vc3d)
+    if vc3d and not j["control_points"]:
+        if os.path.exists(p):
+            os.remove(p)
+        print(f"{s}: no control points kept, so no {p} written (VC3D refuses an umbilicus file without points)",
+              file=sys.stderr)
+        return None
+    text = json.dumps(j, indent=1, allow_nan=False)      # before any file is touched, so a refusal leaves none
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p + ".tmp", "w") as fh:
+        fh.write(text)
+    os.replace(p + ".tmp", p)
+    return p
+
+def umbilicus_files(src):
+    """[(scroll, path, vc3d)] for the umbilicus files in folder src, in both layouts: SRC/<s>_umbilicus.json and
+    SRC/<s>/umbilicus.json. A scroll in both layouts is refused, since either could be meant."""
+    found = {}
+    for f in sorted(os.listdir(src)):
+        p = os.path.join(src, f)
+        if f.endswith(SUFFIX) and os.path.isfile(p):
+            s, vc3d = f[:-len(SUFFIX)], False
+        elif os.path.isfile(os.path.join(p, VC3D_NAME)):
+            s, vc3d, p = f, True, os.path.join(p, VC3D_NAME)
+        else:
+            continue
+        if s in found:
+            raise SystemExit(f"{src}: {s} has both {s}{SUFFIX} and {s}/{VC3D_NAME}; keep one")
+        found[s] = (s, p, vc3d)
+    return [found[s] for s in sorted(found)]
+
+def _rescales(fine, coarse, level):
+    """True when each coarse count is floor or ceil of the fine count over 2**level: the only counts an integer
+    downsampling gives, the test VC3D's uniformRescaleFactor applies (ScrollUmbilicus.cpp:273-291)."""
+    f = 2 ** int(level)
+    return len(fine) == len(coarse) and all(int(c) in (int(a) // f, -(-int(a) // f)) for a, c in zip(fine, coarse))
+
+def slice_volume(data, expected, name):
+    """Refuse a missing or different cache source before using its slices or dimensions for a line."""
+    held = str(data["vol"]).rstrip("/") if "vol" in data.files else ""
+    if not held:
+        raise SystemExit(f"{name}: slice file has no source volume; rebuild it with slices.py extract")
+    if expected and held != str(expected).rstrip("/"):
+        raise SystemExit(f"{name}: slice file holds {held}, not {expected}: use another --data folder")
+    return held
+
+def volume_dims(vol, held=None, planes=None, level=3):
+    """{volume_width, volume_height, volume_slices} of a scan's level-0 grid, for an umbilicus file's metadata, or {}.
+
+    The grid is `held` (a slice file's shape_l0, [z, y, x]) when given, else the scan's level-0 .zarray in the bucket.
+    `planes` (the (H, W) of a slice file's level-`level` planes) must be that grid downsampled 2**level times, or the
+    shape belongs to another scan and nothing is stamped. {} (with the reason on stderr) when the grid cannot be read:
+    the file then carries no triplet, never part of one (Umbilicus.cpp:389-421 refuses a partial triplet), and VC3D
+    falls back to the voxel size (ScrollUmbilicus.cpp:348-358)."""
+    why = None
+    if held is not None:
+        shape = [int(v) for v in np.asarray(held).ravel()]
+    else:
+        try:
+            shape = slices.level0_shape(vol)
+        except (RuntimeError, ValueError, OSError) as e:
+            shape, why = None, f"its level-0 .zarray could not be read ({e})"
+        if shape is None and why is None:
+            why = "the bucket has no level-0 .zarray at that path"
+    if shape is not None and not (len(shape) == 3 and all(v > 0 for v in shape)):
+        shape, why = None, f"level-0 shape {shape} is not three positive integers"
+    if shape is not None and planes is not None and not _rescales(shape[1:], list(planes), level):
+        shape, why = None, (f"level-0 shape {shape} does not downsample to the slice file's level-{level} planes "
+                            f"{list(planes)}")
+    if shape is None:
+        print(f"{vol}: no volume_width, volume_height or volume_slices stamped: {why}", file=sys.stderr)
+        return {}
+    z, y, x = shape
+    return dict(volume_width=x, volume_height=y, volume_slices=z)
+
+def stamp_dims(meta, dims, name):
+    """Put dims (volume_dims's answer) into an umbilicus file's metadata in place. An existing complete triplet must
+    equal dims; with dims empty it is kept. A partial triplet, which VC3D refuses, is replaced by dims or refused."""
+    have = [k for k in DIMS if k in meta]
+    if have and len(have) == 3 and dims and any(meta[k] != dims[k] for k in DIMS):
+        raise SystemExit(f"{name}: its volume dimensions {[meta[k] for k in DIMS]} are not the scan's "
+                         f"{[dims[k] for k in DIMS]}; the file is in another frame")
+    if have and len(have) < 3 and not dims:
+        raise SystemExit(f"{name}: metadata has {', '.join(have)} without the rest of volume_width, volume_height, "
+                         "volume_slices, which VC3D refuses, and the scan's level-0 shape could not be read")
+    meta.update(dims)
+    return meta
 
 def parse_job(job):
     """fold2s1 -> (2, 1); alls0 -> (None, 0)."""
@@ -242,19 +353,21 @@ def _trim_note(end_rule=True):
               f"{END_RAYS} rays from the center meet papyrus within {END_RADIUS_MM:g} mm")
     return t
 
-def trim(src, data, dst, end_rule=True):
-    """Drop the end-band points from umbilicus JSONs already written (src/*_umbilicus.json -> dst): keep_band, then
-    (end_rule) the end-point rule at the file's own centers, which must sit at the slice file's heights (a file
-    written by this pipeline; for others use endcheck.py files without --data)."""
+def trim(src, data, dst, end_rule=True, vc3d_name=False):
+    """Drop the end-band points from umbilicus JSONs already written (umbilicus_files(src) -> dst, each under its own
+    layout's name, or under SCROLL/umbilicus.json with vc3d_name): keep_band, then (end_rule) the end-point rule at the
+    file's own centers, which must sit at the slice file's heights (a file written by this pipeline; for others use
+    endcheck.py files without --data). The scan's level-0 width, height and slice count are stamped (stamp_dims)."""
     os.makedirs(dst, exist_ok=True); out = {}
-    for f in sorted(os.listdir(src)):
-        if not f.endswith("_umbilicus.json"):
-            continue
-        s = f[:-len("_umbilicus.json")]
-        with open(os.path.join(src, f)) as fh:
+    for s, f, vc3d in umbilicus_files(src):
+        with open(f) as fh:
             j = json.load(fh)
-        d = np.load(os.path.join(data, f"{s}.npz")); um = float(d["um"]); z = np.asarray(d["z_l0"])
-        keep = keep_band(papyrus_area(d["ct"]), z, um)
+        d = np.load(os.path.join(data, f"{s}.npz")); um = float(d["um"]); z = np.asarray(d["z_l0"]); ct = d["ct"]
+        level = int(d["level"]) if "level" in d.files else 3
+        vol = slice_volume(d, j.get("metadata", {}).get("source_volume"), f)
+        j.setdefault("metadata", {})
+        stamp_dims(j["metadata"], volume_dims(vol, d["shape_l0"] if "shape_l0" in d.files else None, ct.shape[1:], level), f)
+        keep = keep_band(papyrus_area(ct), z, um)
         if end_rule:          # the file's own centers, at the slice heights they were written for
             P = sorted(j["control_points"], key=lambda p: p["z"]); yx = np.full((len(z), 2), np.nan)
             at = {int(v): i for i, v in enumerate(z)}
@@ -265,24 +378,30 @@ def trim(src, data, dst, end_rule=True):
             for p in P:
                 yx[at[int(p["z"])]] = (p["y"], p["x"])
             keep = keep & np.isfinite(yx[:, 0])
-            keep, _, _ = end_trimmed_keep(d["ct"], yx, z, um, keep, level=int(d["level"]) if "level" in d.files else 3)
+            keep, _, _ = end_trimmed_keep(ct, yx, z, um, keep, level=level)
         zk = z[keep]
         cp = [p for p in j["control_points"] if len(zk) and zk[0] <= p["z"] <= zk[-1]]
         j["control_points"] = cp; j["metadata"]["total_points"] = len(cp)
         j["metadata"]["trimmed"] = _trim_note(end_rule)
-        with open(os.path.join(dst, f), "w") as fh:
-            json.dump(j, fh, indent=1)
-        out[s] = dict(points=len(cp), z=[int(zk[0]), int(zk[-1])] if len(zk) else None)
+        p = write_umbilicus(j, dst, s, vc3d or vc3d_name)
+        out[s] = dict(points=len(cp), z=[int(zk[0]), int(zk[-1])] if len(zk) else None, file=p)
     return out
 
-def umbilicus_json(s, z, yx, keep, um, vol, spread, note):
+def umbilicus_json(s, z, yx, keep, um, vol, spread, note, dims=None):
+    """The published umbilicus format: control points x, y, z in level-0 voxels, and metadata. dims: volume_dims's
+    {volume_width, volume_height, volume_slices} of the scan's level-0 grid, stamped as VC3D reads them."""
+    vol = str(vol).rstrip("/")         # metadata.volume must not be empty (Umbilicus.cpp:360-366)
     pts = [dict(x=int(round(x)), y=int(round(y)), z=int(zz), score=100) for zz, (y, x), k in zip(z, yx, keep) if k]
-    return dict(control_points=pts, metadata=dict(
-        source_volume=vol, volume=vol.split("/")[-1], voxelsize_um=um, total_points=len(pts),
-        created=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), method=note,
-        spread_mm_median=round(float(np.nanmedian(spread[keep])), 3) if keep.any() and spread is not None else None))
+    med = float(np.nanmedian(spread[keep])) if keep.any() and spread is not None and np.isfinite(spread[keep]).any() else None
+    if dims and (set(dims) != set(DIMS) or not all(int(v) > 0 for v in dims.values())):
+        raise ValueError(f"dims must hold all of {DIMS} as positive integers, got {dims}")   # all three or none
+    meta = dict(source_volume=vol, volume=vol.split("/")[-1], voxelsize_um=float(um))
+    meta.update({k: int(dims[k]) for k in DIMS} if dims else {})
+    meta.update(total_points=len(pts), created=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), method=note,
+                spread_mm_median=None if med is None else round(med, 3))
+    return dict(control_points=pts, metadata=meta)
 
-def collect(data, out):
+def collect(data, out, vc3d_name=False):
     import centrenet
     recs = [read_json(os.path.join(out, f)) for f in sorted(os.listdir(out)) if f.endswith(".json") and f[:3] in ("fol", "all")]
     res = dict(held_out={}, centroid={}, jobs=[{k: r[k] for k in ("job", "train_info", "size", "width", "epochs", "test")} | {"gpu": r.get("gpu")} for r in recs])
@@ -320,13 +439,17 @@ def collect(data, out):
         yx = np.median(Y, 0)
         spread = np.median(np.hypot(*(Y - yx[None]).transpose(2, 0, 1)), 0) * um / 1000 if len(rs) > 1 else None
         sm = centrenet.smooth_z(np.where(present[:, None], yx, np.nan))
-        d = np.load(os.path.join(data, f"{s}.npz"))
-        keep = present & keep_band(papyrus_area(d["ct"]), z, um)   # no mount or caps
-        keep, _, _ = end_trimmed_keep(d["ct"], sm, z, um, keep, level=int(d["level"]) if "level" in d.files else 3)
+        d = np.load(os.path.join(data, f"{s}.npz")); ct = d["ct"]; level = int(d["level"]) if "level" in d.files else 3
+        slice_volume(d, p0["vol"], s)
+        keep = present & keep_band(papyrus_area(ct), z, um)   # no mount or caps
+        keep, _, _ = end_trimmed_keep(ct, sm, z, um, keep, level=level)
+        dims = volume_dims(p0["vol"], d["shape_l0"] if "shape_l0" in d.files else None, ct.shape[1:], level)
         j = umbilicus_json(s, z, sm, keep, um, p0["vol"], spread,
-                           f"automatic: median of {len(rs)} center-network models, smoothed along z (scripts/umbilicus); {_trim_note()}")
-        write_json(j, os.path.join(out, "umbilicus", f"{s}_umbilicus.json"), indent=1)
+                           f"automatic: median of {len(rs)} center-network models, smoothed along z (scripts/umbilicus); {_trim_note()}",
+                           dims)
+        f = write_umbilicus(j, os.path.join(out, "umbilicus"), s, vc3d_name)
         res["unlabelled"][s] = dict(points=j["metadata"]["total_points"], models=len(rs), spread_mm_median=j["metadata"]["spread_mm_median"],
+                                 file=f,
                                  spread_mm_p90=round(float(np.percentile(spread[keep], 90)), 3) if keep.any() and spread is not None else None,
                                  peak_median=round(float(np.median(np.mean([r["preds"][s]["peak"] for r in rs], 0)[keep])), 3))
     write_json(res, os.path.join(out, "result.json"), indent=1)
@@ -340,10 +463,13 @@ if __name__ == "__main__":
     ap.add_argument("--epochs", type=int, default=40); ap.add_argument("--time-s", type=float, default=900)
     ap.add_argument("--batch", type=int, default=32); ap.add_argument("--device", default="cpu")
     ap.add_argument("--no-end-rule", action="store_true", help="trim: mount and caps only, without the end-point rule")
+    ap.add_argument("--vc3d-name", action="store_true",
+                    help="collect, trim: write SCROLL/umbilicus.json, the name VC3D and spiral-fitting look for, "
+                         "instead of SCROLL_umbilicus.json")
     a = ap.parse_args()
     if a.cmd == "job":
         run_job(a.job, a.data, a.out, a.size, a.width, a.epochs, a.time_s, a.device, a.batch)
     elif a.cmd == "collect":
-        print(json.dumps(collect(a.data, a.out), indent=1))
-    elif a.cmd == "trim":                  # pipeline.py trim SRC_DIR --data NPZ_DIR --out DST_DIR [--no-end-rule]
-        print(json.dumps(trim(a.job, a.data, a.out, end_rule=not a.no_end_rule), indent=1))
+        print(json.dumps(collect(a.data, a.out, vc3d_name=a.vc3d_name), indent=1))
+    elif a.cmd == "trim":                  # pipeline.py trim SRC_DIR --data NPZ_DIR --out DST_DIR [--no-end-rule] [--vc3d-name]
+        print(json.dumps(trim(a.job, a.data, a.out, end_rule=not a.no_end_rule, vc3d_name=a.vc3d_name), indent=1))

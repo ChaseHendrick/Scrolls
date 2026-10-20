@@ -3,7 +3,8 @@
     python ctcheck.py --a DIR_A --b DIR_B --out OUT [--scrolls S ...] [--n 6] [--cache DIR]
 
 DIR_A holds the centers to check (drawn red), DIR_B the ones to compare with (drawn cyan); both hold
-<scroll>_umbilicus.json files with control points in level-0 voxels. For each scroll, slices are taken at
+<scroll>_umbilicus.json or <scroll>/umbilicus.json files (predict.py --vc3d-name) with control points in level-0
+voxels. For each scroll, slices are taken at
 control-point heights spread along the file's band, plus the height where A and B differ most and the height
 where A moves fastest sideways. Each slice is shown whole (level 2) and zoomed around A's center (level 1 and
 level 0). Planes are read from the open-data bucket with HTTP range requests (chunks are raw 128^3 uint8).
@@ -71,6 +72,23 @@ class Level:
             sy, ey = max(gy, ya), min(gy + C, yb); sx, ex_ = max(gx, xa), min(gx + C, xb)
             out[sy - y0:ey - y0, sx - x0:ex_ - x0] = t[sy - gy:ey - gy, sx - gx:ex_ - gx]
         return out
+
+
+def umb_files(folder):
+    """{scroll: path} of the umbilicus files in folder: <scroll>_umbilicus.json and <scroll>/umbilicus.json (the name
+    VC3D looks for, written by predict.py --vc3d-name). A scroll in both layouts is refused."""
+    out = {}
+    for f in sorted(os.listdir(folder)):
+        p = os.path.join(folder, f)
+        s = f[:-len("_umbilicus.json")] if f.endswith("_umbilicus.json") and os.path.isfile(p) else None
+        if s is None and os.path.isfile(os.path.join(p, "umbilicus.json")):
+            s, p = f, os.path.join(p, "umbilicus.json")
+        if s is None:
+            continue
+        if s in out:
+            raise SystemExit(f"{folder}: {s} has both {s}_umbilicus.json and {s}/umbilicus.json; keep one")
+        out[s] = p
+    return out
 
 
 def load_umb(path):
@@ -196,11 +214,14 @@ def main():
 
     os.makedirs(a.out, exist_ok=True)
     cache = a.cache or os.path.join(a.out, ".cache"); os.makedirs(cache, exist_ok=True)
-    scrolls = a.scrolls or sorted(f[:-len("_umbilicus.json")] for f in os.listdir(a.a) if f.endswith("_umbilicus.json"))
+    fa, fb = umb_files(a.a), umb_files(a.b)
+    scrolls = a.scrolls or sorted(fa)
     summary = {}
     for s in scrolls:
-        A, meta = load_umb(os.path.join(a.a, f"{s}_umbilicus.json"))
-        Bp, _ = load_umb(os.path.join(a.b, f"{s}_umbilicus.json"))
+        if s not in fa or s not in fb:
+            raise SystemExit(f"{s}: no umbilicus file in {a.a if s not in fa else a.b}")
+        A, meta = load_umb(fa[s])
+        Bp, _ = load_umb(fb[s])
         vol = meta["source_volume"]; um = float(meta["voxelsize_um"])
         L2, L1, L0 = Level(vol, 2), Level(vol, 1), Level(vol, 0)
         tag = hashlib.sha256(str(vol).rstrip("/").encode()).hexdigest()[:12]

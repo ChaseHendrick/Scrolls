@@ -7,7 +7,7 @@ guess replaced by the published center plus a random offset; scored only on scro
 
     python refine.py cv --data DIR --out DIR [--folds 0 1 2 3 --epochs 12 --width 16 --device cpu]
     python refine.py chain fold<k>|all --data DIR --base FIRST_STAGE_RUN --out DIR [--epochs 30 --width 32 --time-s 300]
-    python refine.py chain-collect --data DIR --out DIR
+    python refine.py chain-collect --data DIR --out DIR [--vc3d-name]
 
 cv trains one model per fold of pipeline.FOLDS (saved as refine_cv_fold<k>.pt, apart from chain's refine_fold<k>.pt)
 and scores each held-out scroll from coarse guesses that are the
@@ -220,10 +220,11 @@ def chain_job(name, data_dir, base, out, epochs=30, width=32, time_s=300, device
     log(f"done {info}")
     return rec
 
-def chain_collect(data_dir, out):
+def chain_collect(data_dir, out, vc3d_name=False):
     """Held-out scores of the first stage alone and chained with the refine stage, both smoothed along z the same
     way; and, for each scroll in slices.UNLABELLED, if any, one umbilicus JSON from the median of the refine models
-    (both end trims applied) in OUT/umbilicus/."""
+    (both end trims applied, the scan's level-0 dimensions stamped) in OUT/umbilicus/, as SCROLL_umbilicus.json or with
+    vc3d_name SCROLL/umbilicus.json (pipeline.write_umbilicus)."""
     import pipeline
     recs = [pipeline.read_json(os.path.join(out, f)) for f in sorted(os.listdir(out)) if f.startswith("refine_") and f.endswith(".json")]
     res = dict(held_out={}, jobs=[{k: r[k] for k in ("job", "train_info", "test", "base")} | {"gpu": r.get("gpu")} for r in recs])
@@ -254,16 +255,18 @@ def chain_collect(data_dir, out):
         Y = np.array([r["preds"][s]["yx"] for r in rs], float); yx = np.nanmedian(Y, 0)
         spread = np.nanmedian(np.hypot(*(Y - yx[None]).transpose(2, 0, 1)), 0) * um / 1000 if len(rs) > 1 else None
         sm = centrenet.smooth_z(np.where(present[:, None], yx, np.nan))
-        d = np.load(os.path.join(data_dir, f"{s}.npz"))
-        keep = present & pipeline.keep_band(pipeline.papyrus_area(d["ct"]), z, um)
-        keep, _, _ = pipeline.end_trimmed_keep(d["ct"], sm, z, um, keep, level=int(d["level"]) if "level" in d.files else 3)
+        d = np.load(os.path.join(data_dir, f"{s}.npz")); ct = d["ct"]; level = int(d["level"]) if "level" in d.files else 3
+        pipeline.slice_volume(d, p0["vol"], s)
+        keep = present & pipeline.keep_band(pipeline.papyrus_area(ct), z, um)
+        keep, _, _ = pipeline.end_trimmed_keep(ct, sm, z, um, keep, level=level)
+        dims = pipeline.volume_dims(p0["vol"], d["shape_l0"] if "shape_l0" in d.files else None, ct.shape[1:], level)
         j = pipeline.umbilicus_json(s, z, sm, keep, um, p0["vol"], spread,
                                     f"automatic: first-stage median refined by {len(rs)} zoomed models, smoothed along z "
-                                    f"(scripts/umbilicus); {pipeline._trim_note()}")
-        pipeline.write_json(j, os.path.join(out, "umbilicus", f"{s}_umbilicus.json"), indent=1)
+                                    f"(scripts/umbilicus); {pipeline._trim_note()}", dims)
+        f = pipeline.write_umbilicus(j, os.path.join(out, "umbilicus"), s, vc3d_name)
         moved = np.hypot(*(sm - centrenet.smooth_z(np.where(present[:, None], np.array(p0["base_yx"], float), np.nan))).T) * um / 1000
         res["unlabelled"][s] = dict(points=j["metadata"]["total_points"], models=len(rs), spread_mm_median=j["metadata"]["spread_mm_median"],
-                                 moved_from_first_stage_mm_median=round(float(np.median(moved[keep])), 3) if keep.any() else None)
+                                 file=f, moved_from_first_stage_mm_median=round(float(np.median(moved[keep])), 3) if keep.any() else None)
     pipeline.write_json(res, os.path.join(out, "result.json"), indent=1)
     return res
 
@@ -278,6 +281,9 @@ if __name__ == "__main__":
     ap.add_argument("--device", default="cpu"); ap.add_argument("--every", type=int, default=1)
     ap.add_argument("--side", type=int, default=S); ap.add_argument("--reach", type=int, default=R)
     ap.add_argument("--offsets", type=float, nargs="+", default=[0.0, 1.2, 2.5])
+    ap.add_argument("--vc3d-name", action="store_true",
+                    help="chain-collect: write umbilicus/SCROLL/umbilicus.json, the name VC3D and spiral-fitting look for, "
+                         "instead of umbilicus/SCROLL_umbilicus.json")
     a = ap.parse_args()
     S, R = a.side, a.reach
     if a.cmd == "cv":
@@ -286,4 +292,4 @@ if __name__ == "__main__":
     elif a.cmd == "chain":
         chain_job(a.name, a.data, a.base, a.out, a.epochs, a.width, a.time_s, a.device, rounds=a.rounds)
     else:
-        print(json.dumps(chain_collect(a.data, a.out), indent=1))
+        print(json.dumps(chain_collect(a.data, a.out, vc3d_name=a.vc3d_name), indent=1))

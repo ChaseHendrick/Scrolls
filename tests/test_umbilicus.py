@@ -1,6 +1,8 @@
-"""scripts/umbilicus: the center network's coordinate frame, augmentation bookkeeping, job names, the end trims and
-the range reads."""
+"""scripts/umbilicus: the center network's coordinate frame, augmentation bookkeeping, job names, the end trims, the
+range reads, and the files VC3D and spiral-fitting read (the name umbilicus.json and the stamped volume dimensions,
+checked by a rule-for-rule copy of VC3D's reader at villa main 8aa507c12)."""
 import json
+import math
 import os
 import sys
 import tempfile
@@ -28,6 +30,7 @@ centrenet = None
 
 
 _SHADOWED = {}   # same-named modules another test imported (scripts/strokenet/pipeline.py), put back afterward
+_OFFLINE = []    # patches that keep slices.get and slices.get_range off the network while these tests run
 
 
 def setUpModule():
@@ -40,9 +43,19 @@ def setUpModule():
     if torch is not None:
         import centrenet as module
         centrenet = module
+    try:
+        import slices
+    except ImportError:          # numpy missing: every test that would read through slices skips
+        return
+    def offline(*a, **k):        # a test that needs bucket answers patches these itself (PlaneReaderTest)
+        raise RuntimeError("the umbilicus tests do not read the network")
+    for name in ("get", "get_range"):
+        patch = mock.patch.object(slices, name, offline); patch.start(); _OFFLINE.append(patch)
 
 
 def tearDownModule():
+    while _OFFLINE:
+        _OFFLINE.pop().stop()
     while UMB in sys.path:
         sys.path.remove(UMB)
     for name in MODULES:
@@ -277,6 +290,56 @@ class CollectEndRuleTest(unittest.TestCase):
                 self.assertEqual((min(zs), max(zs)), (int(z[12]), int(z[-13])))
                 self.assertEqual({(q["y"], q["x"]) for q in j["control_points"]}, {(800, 1040)})
                 self.assertIn("end-point rule", j["metadata"]["method"])
+
+    def test_collected_files_under_the_vc3d_name_carry_the_scan_grid(self):
+        """collect and chain_collect with vc3d_name write umbilicus/U/umbilicus.json, stamped with the slice file's
+        level-0 grid, and VC3D's reader (the copy above) accepts it."""
+        import pipeline, refine
+        ct, z, yx, um = _synthetic_scroll()
+        T = np.array([[z[0], *yx[0]], [z[-1], *yx[-1]]])
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(pipeline.slices, "LABELLED", ["S"]), mock.patch.object(pipeline.slices, "UNLABELLED", ["U"]), \
+                mock.patch.object(pipeline.slices, "truth", lambda s: ("S/volumes/1-8.640um-x", T)):
+            for s in ("S", "U"):
+                np.savez(os.path.join(d, f"{s}.npz"), ct=ct, z_l0=z, um=um, level=3, vol=f"{s}/volumes/1-8.640um-x",
+                         shape_l0=SHAPE_L0)
+            p = dict(z=z.tolist(), yx=yx.tolist(), base_yx=yx.tolist(), peak=[1.0] * len(z), present=[True] * len(z),
+                     um=um, vol="U/volumes/1-8.640um-x")
+            for job, rec in (("fold0s0", dict(job="fold0s0", test=["S"], train_info={}, size=64, width=4, epochs=1)),
+                             ("refine_fold0", dict(job="refine_fold0", test=["S"], train_info={}, base="b"))):
+                with open(os.path.join(d, f"{job}.json"), "w") as fh:
+                    json.dump(dict(rec, preds=dict(S=p, U=p)), fh)
+            for run in (pipeline.collect, refine.chain_collect):
+                res = run(d, d, vc3d_name=True)
+                f = os.path.join(d, "umbilicus", "U", "umbilicus.json")
+                self.assertEqual(res["unlabelled"]["U"]["file"], f)
+                self.assertEqual(vc3d_search(os.path.dirname(f)), f)
+                pts, errors = vc3d_read_file(f)
+                self.assertEqual((len(pts), errors), (len(z) - 24, []))
+                with open(f) as fh:
+                    meta = json.load(fh)["metadata"]
+                self.assertEqual({k: meta[k] for k in VC3D_DIMS}, GRID)
+                os.remove(f)
+            self.assertFalse(os.path.exists(os.path.join(d, "umbilicus", "U_umbilicus.json")))
+
+    def test_collect_refuses_a_cache_from_another_scan(self):
+        """A cached grid for another acquisition must never be stamped onto the predictions' source."""
+        import pipeline, refine
+        ct, z, yx, um = _synthetic_scroll()
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(pipeline.slices, "LABELLED", []), mock.patch.object(pipeline.slices, "UNLABELLED", ["U"]):
+            np.savez(os.path.join(d, "U.npz"), ct=ct, z_l0=z, um=um, level=3,
+                     vol="U/volumes/another-scan", shape_l0=SHAPE_L0)
+            p = dict(z=z.tolist(), yx=yx.tolist(), base_yx=yx.tolist(), peak=[1.0] * len(z),
+                     present=[True] * len(z), um=um, vol="U/volumes/original-scan")
+            for job, rec in (("alls0", dict(job="alls0", test=[], train_info={}, size=64, width=4, epochs=1)),
+                             ("refine_all", dict(job="refine_all", test=[], train_info={}, base="b"))):
+                with open(os.path.join(d, f"{job}.json"), "w") as fh:
+                    json.dump(dict(rec, preds=dict(U=p)), fh)
+            for run in (pipeline.collect, refine.chain_collect):
+                with self.subTest(run=run.__name__), self.assertRaisesRegex(SystemExit, "not U/volumes/original-scan"):
+                    run(d, d, vc3d_name=True)
+                self.assertFalse(os.path.exists(os.path.join(d, "umbilicus", "U", "umbilicus.json")))
 
     def test_collect_without_unlabelled_scrolls_writes_no_files(self):
         """With slices.UNLABELLED empty, collect and chain_collect score the held-out scroll and write no umbilicus/
@@ -765,6 +828,33 @@ class PlaneReaderTest(unittest.TestCase):
                 self.slices.extract_ranged("S", os.path.join(d, "S.npz"))
             self.assertEqual(os.listdir(d), [])
 
+    def test_level0_shape_is_read_and_kept_in_the_slice_file(self):
+        """The level-0 .zarray gives the grid an umbilicus file is stamped with; extract_ranged keeps it as shape_l0,
+        and leaves it out when the bucket has no level-0 .zarray."""
+        with tempfile.TemporaryDirectory() as d:
+            self.assertIsNone(self.slices.level0_shape(self.VOL))
+            self.assertNotIn("shape_l0", np.load(self.slices.extract_ranged("S", os.path.join(d, "a.npz"))).files)
+            l0 = [2400, 2320, 2160]                               # 8 times the level-3 shape (300, 290, 270)
+            self.store[f"{self.VOL}/0/.zarray"] = json.dumps({"shape": l0, "chunks": [128] * 3, "dtype": "|u1"}).encode()
+            self.assertEqual(self.slices.level0_shape(self.VOL + "/"), l0)
+            npz = np.load(self.slices.extract_ranged("S", os.path.join(d, "b.npz")))
+            self.assertEqual(npz["shape_l0"].tolist(), l0)
+            for bad in ([2400, 2320], [2400, 0, 2160], [2400.0, 2320, 2160]):
+                self.store[f"{self.VOL}/0/.zarray"] = json.dumps({"shape": bad}).encode()
+                with self.assertRaises(ValueError):
+                    self.slices.level0_shape(self.VOL)
+
+    def test_failed_optional_grid_request_keeps_downloaded_slices(self):
+        """An unavailable or malformed level-0 metadata response must not throw away the completed CT read."""
+        for error in (RuntimeError("503"), ValueError("invalid shape"), OSError("connection lost")):
+            with self.subTest(error=type(error).__name__), tempfile.TemporaryDirectory() as d, \
+                    mock.patch.object(self.slices, "level0_shape", side_effect=error), mock.patch("sys.stderr") as err:
+                with np.load(self.slices.extract_ranged("S", os.path.join(d, "S.npz"))) as cached:
+                    np.testing.assert_array_equal(cached["ct"], self.vol[4::8])
+                    self.assertNotIn("shape_l0", cached.files)
+                    self.assertEqual(str(cached["vol"]), self.VOL)
+                self.assertIn("CT slices are kept", "".join(str(c) for c in err.write.call_args_list))
+
     def test_extract_and_extract_ranged_write_the_same_file(self):
         """extract (whole chunks, the reader the training slices came from) and extract_ranged agree."""
         try:
@@ -776,6 +866,391 @@ class PlaneReaderTest(unittest.TestCase):
             b = np.load(self.slices.extract_ranged("S", os.path.join(d, "b.npz")))
             for k in ("ct", "z_l0", "um", "level", "vol"):
                 np.testing.assert_array_equal(a[k], b[k])
+
+
+# VC3D's umbilicus reader, rule for rule, at villa main 8aa507c12 (volume-cartographer/core/src). The tests below write
+# files with the scripts and read them back through these copies, so a file that VC3D would refuse, would not find,
+# or would place on another grid fails here.
+VC3D_NAMES = ("umbilicus.json", "estimated_umbilicus.json")      # ScrollUmbilicus.cpp:74-75, in priority order
+VC3D_DIMS = ("volume_width", "volume_height", "volume_slices")   # Umbilicus.cpp:385-387
+
+
+def _is_number(v):
+    """utils::Json is_number(): an integer or a float, never a boolean."""
+    return isinstance(v, (int, float)) and not isinstance(v, bool)
+
+
+def vc3d_load_json(doc):
+    """Umbilicus::LoadJsonFile (Umbilicus.cpp:272-426) on a parsed document: (points as (x, y, z), metadataErrors).
+    Raises ValueError where VC3D throws (the file is not loaded at all); a metadata error refuses the file in
+    resolveScrollUmbilicus (ScrollUmbilicus.cpp:204-208, 248-252)."""
+    if isinstance(doc, list):                                                    # 277-278
+        arr = doc
+    elif isinstance(doc, dict) and "points" in doc:                              # 279-284
+        arr = doc["points"]
+        if not isinstance(arr, list):
+            raise ValueError("'points' member in umbilicus json must be an array")
+    elif isinstance(doc, dict) and "control_points" in doc:                      # 285-290
+        arr = doc["control_points"]
+        if not isinstance(arr, list):
+            raise ValueError("'control_points' member in umbilicus json must be an array")
+    else:                                                                        # 291-293
+        raise ValueError("Umbilicus json root must be an array or contain a 'points' or 'control_points' array")
+    pts = []
+    for i, e in enumerate(arr):                                                  # 300-325
+        if isinstance(e, list):
+            if len(e) < 3:
+                raise ValueError(f"Umbilicus json entry at index {i} expected three values")
+            z, y, x = e[0], e[1], e[2]
+        elif isinstance(e, dict):
+            if not all(k in e for k in ("z", "y", "x")):
+                raise ValueError(f"Umbilicus json entry at index {i} missing z/y/x keys")
+            z, y, x = e["z"], e["y"], e["x"]
+        else:
+            raise ValueError(f"Umbilicus json entry at index {i} has unsupported type")
+        if not all(_is_number(v) for v in (z, y, x)):                            # get_double() throws
+            raise ValueError(f"Umbilicus json entry at index {i}: a coordinate is not a number")
+        pts.append((float(x), float(y), float(z)))
+    if not pts:                                                                  # 327-329
+        raise ValueError("Umbilicus json file contained no points")
+    errors = []
+    if isinstance(doc, dict) and "metadata" in doc:                              # 331-423
+        m = doc["metadata"]
+        if not isinstance(m, dict) and m is not None:
+            errors.append(f"metadata: expected an object, got {json.dumps(m)}")
+        elif isinstance(m, dict):
+            if "voxelsize_um" in m:
+                v = m["voxelsize_um"]
+                if not (_is_number(v) and math.isfinite(v) and v > 0):
+                    errors.append(f"voxelsize_um: expected a positive number, got {json.dumps(v)}")
+            if "volume" in m:
+                v = m["volume"]
+                if not (isinstance(v, str) and v):
+                    errors.append(f"volume: expected a non-empty string, got {json.dumps(v)}")
+            rejected, declared = False, []
+            for k in VC3D_DIMS:                                                  # is_number_integer() && get_int() > 0
+                if k not in m:
+                    continue
+                v = m[k]
+                if isinstance(v, int) and not isinstance(v, bool) and v > 0:
+                    declared.append(k)
+                else:
+                    rejected = True
+                    errors.append(f"{k}: expected a positive integer, got {json.dumps(v)}")
+            if not rejected and 0 < len(declared) < 3:
+                errors.append("volume dimensions: an incomplete triplet declares nothing; missing "
+                              + ", ".join(k for k in VC3D_DIMS if k not in declared))
+    return pts, errors
+
+
+def vc3d_read_file(path):
+    """utils::Json::parse_file then LoadJsonFile: strict JSON (no NaN or Infinity) with a .json name (Umbilicus.cpp:
+    199-208)."""
+    assert path.lower().endswith(".json"), path
+    def strict(c):
+        raise ValueError(f"{c} is not JSON")
+    with open(path) as fh:
+        return vc3d_load_json(json.load(fh, parse_constant=strict))
+
+
+def vc3d_search(root):
+    """One search root as scanUmbilicusCandidates walks it (ScrollUmbilicus.cpp:135-165): the first existing name in
+    priority order, or None."""
+    for name in VC3D_NAMES:
+        if os.path.exists(os.path.join(root, name)):
+            return os.path.join(root, name)
+    return None
+
+
+def vc3d_uniform_rescale_factor(stamped, target):
+    """uniformRescaleFactor (ScrollUmbilicus.cpp:262-315): the one integer factor n (or 1/m) that explains every axis
+    as floor or ceil of the other grid's count, or None."""
+    if any(not math.isfinite(v) or v < 1 for v in list(stamped) + list(target)):
+        return None
+    def explains(factor):
+        for a in range(3):
+            coarse = target[a] if factor >= 1 else stamped[a]
+            fine = stamped[a] if factor >= 1 else target[a]
+            step = factor if factor >= 1 else 1 / factor
+            exact = coarse / step
+            if fine != math.floor(exact) and fine != math.ceil(exact):
+                return False
+        return True
+    cands = [float(n) for n in range(1, 65) if explains(float(n))] + [1 / m for m in range(2, 65) if explains(1 / m)]
+    return cands[0] if len(cands) == 1 else None
+
+
+def vc3d_scale(meta, target_xyz, target_um):
+    """deriveUmbilicusScale's first two arms (ScrollUmbilicus.cpp:317-358): ("dimensions", factor) from a stamped
+    triplet, else ("voxel size", ratio), else None (VC3D then infers the grid from the points)."""
+    if all(k in meta for k in VC3D_DIMS):
+        f = vc3d_uniform_rescale_factor([meta[k] for k in VC3D_DIMS], target_xyz)
+        return None if f is None else ("dimensions", f)
+    if "voxelsize_um" in meta and target_um:
+        return ("voxel size", meta["voxelsize_um"] / target_um)
+    return None
+
+
+class VC3DReaderCopyTest(unittest.TestCase):
+    """The copies above refuse what VC3D refuses and agree with villa's own tests, so a pass below means something."""
+    POINTS = [{"x": 1, "y": 2, "z": 3, "score": 100}, {"x": 4, "y": 5, "z": 6, "score": 100}]
+
+    def errors(self, **meta):
+        return vc3d_load_json({"metadata": meta, "control_points": self.POINTS})[1]
+
+    def test_vc_gen_umbilicus_layout_passes(self):
+        """The layout villa's own writer produces (apps/src/vc_gen_umbilicus.cpp:490-524)."""
+        pts, err = vc3d_load_json({"metadata": {"total_points": 2, "tool": "vc_gen_umbilicus", "volume": "v.zarr",
+                                                "voxelsize_um": 9.362, "volume_width": 8174, "volume_height": 8174,
+                                                "volume_slices": 18946}, "control_points": self.POINTS})
+        self.assertEqual((pts, err), ([(1.0, 2.0, 3.0), (4.0, 5.0, 6.0)], []))
+        self.assertEqual(vc3d_load_json([[3, 2, 1]]), ([(1.0, 2.0, 3.0)], []))       # [z, y, x] rows, no metadata
+
+    def test_what_vc3d_refuses(self):
+        self.assertTrue(self.errors(volume_width=10, volume_height=10))              # a partial triplet
+        self.assertTrue(self.errors(volume_width=10.0, volume_height=10, volume_slices=10))   # not an integer
+        self.assertTrue(self.errors(volume_width=0, volume_height=10, volume_slices=10))
+        self.assertTrue(self.errors(volume_width=True, volume_height=10, volume_slices=10))
+        self.assertTrue(self.errors(volume=""))
+        self.assertTrue(self.errors(voxelsize_um=0))
+        self.assertTrue(vc3d_load_json({"metadata": [], "control_points": self.POINTS})[1])
+        # a rejected value is named once, without a second complaint about the incomplete triplet; null metadata is fine
+        self.assertEqual(self.errors(volume_width="x"), ['volume_width: expected a positive integer, got "x"'])
+        self.assertEqual(vc3d_load_json({"metadata": None, "control_points": self.POINTS})[1], [])
+        for bad in ({"control_points": []}, {"control_points": "p"}, {"metadata": {}}, {"control_points": [{"x": 1}]},
+                    {"control_points": [[1, 2]]}, {"control_points": [{"x": 1, "y": 2, "z": "3"}]}):
+            with self.assertRaises(ValueError):
+                vc3d_load_json(bad)
+
+    def test_rescale_agrees_with_villas_tests(self):
+        """villa's core/test/test_scroll_umbilicus.cpp:529-563, 565-602 and 662-672."""
+        stamp = {"volume_width": 8174, "volume_height": 8174, "volume_slices": 18946, "voxelsize_um": 9.6}
+        self.assertEqual(vc3d_scale(stamp, [32693, 32693, 75784], 2.4), ("dimensions", 4.0))
+        self.assertEqual(vc3d_scale(stamp, [8174, 8174, 18946], 9.6), ("dimensions", 1.0))
+        self.assertEqual(vc3d_uniform_rescale_factor([8174, 8174, 18946], [32699, 32699, 75781]), 4.0)
+        self.assertIsNone(vc3d_uniform_rescale_factor([8174, 8174, 18946], [32696, 32696, 75026]))
+        self.assertIsNone(vc3d_uniform_rescale_factor([100, 100, 1000], [51, 51, 500]))
+        self.assertIsNone(vc3d_scale(dict(stamp, volume_height=4000), [32693, 32693, 75784], 2.4))
+        self.assertEqual(vc3d_scale({"voxelsize_um": 9.6}, [32696, 32696, 75784], 2.4), ("voxel size", 4.0))
+
+    def test_search_takes_umbilicus_json_first(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.assertIsNone(vc3d_search(d))
+            for name in ("PHerc0000_umbilicus.json", "estimated_umbilicus.json", "umbilicus.json"):
+                open(os.path.join(d, name), "w").close()
+                found = vc3d_search(d)
+            self.assertEqual(os.path.basename(found), "umbilicus.json")
+            os.remove(found)
+            self.assertEqual(os.path.basename(vc3d_search(d)), "estimated_umbilicus.json")   # never the _umbilicus name
+
+
+# Level-0 grid of _synthetic_scroll's scan: its slices are level-3 planes (200 x 260) every 64 level-0 voxels.
+SHAPE_L0 = [60 * 64, 200 * 8, 260 * 8]                     # z, y, x
+GRID = dict(volume_width=2080, volume_height=1600, volume_slices=3840)
+
+
+class VC3DFilesTest(unittest.TestCase):
+    """predict.py, pipeline.py trim and endcheck.py files write umbilicus files that VC3D finds (umbilicus.json with
+    --vc3d-name), accepts (the copy of its reader) and places by the stamped level-0 grid; the old name stays the
+    default. numpy and scipy only: the first stage is replaced by the synthetic scroll's own centers."""
+    VOL = "S/volumes/1-8.640um-x"
+
+    def setUp(self):
+        try:
+            import scipy  # noqa: F401
+            import pipeline, predict, endcheck
+        except ImportError as e:
+            self.skipTest(str(e))
+        self.p, self.predict, self.endcheck = pipeline, predict, endcheck
+        self.ct, self.z, self.yx, self.um = _synthetic_scroll()
+        present = np.ones(len(self.z), bool)
+        patch = mock.patch.object(predict, "first_stage", lambda npz, w, device: (self.yx[None].copy(), present))
+        patch.start(); self.addCleanup(patch.stop)
+
+    def npz(self, d, **kw):
+        np.savez(os.path.join(d, "S.npz"), **dict(dict(ct=self.ct, z_l0=self.z, um=self.um, level=3, vol=self.VOL), **kw))
+
+    def check_vc3d(self, path, grid=GRID):
+        pts, errors = vc3d_read_file(path)
+        self.assertEqual(errors, [])
+        with open(path) as fh:
+            meta = json.load(fh)["metadata"]
+        self.assertEqual({k: meta.get(k) for k in VC3D_DIMS}, grid)
+        for k in VC3D_DIMS:
+            self.assertIs(type(meta[k]), int)
+        W, H, Z = (grid[k] for k in VC3D_DIMS)
+        self.assertTrue(all(0 <= x < W and 0 <= y < H and 0 <= zz < Z for x, y, zz in pts))   # inside the stamped grid
+        self.assertEqual(vc3d_scale(meta, [W, H, Z], self.um), ("dimensions", 1.0))           # the level-0 volume
+        self.assertEqual(vc3d_scale(meta, [-(-W // 8), -(-H // 8), -(-Z // 8)], self.um * 8), ("dimensions", 0.125))
+        return pts, meta
+
+    def test_predict_vc3d_name_writes_umbilicus_json_with_the_grid(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.npz(d, shape_l0=SHAPE_L0)
+            out = os.path.join(d, "out")
+            r = self.predict.predict("S", ["w.pt"], [], d, out, vol=self.VOL, vc3d_name=True)
+            f = os.path.join(out, "S", "umbilicus.json")
+            self.assertEqual(r["file"], f)
+            self.assertEqual(vc3d_search(os.path.join(out, "S")), f)
+            self.assertFalse(os.path.exists(os.path.join(out, "S_umbilicus.json")))
+            pts, meta = self.check_vc3d(f)
+            self.assertEqual(len(pts), r["points"]); self.assertEqual(r["points"], len(self.z) - 24)
+            self.assertEqual({(x, y) for x, y, _ in pts}, {(1040.0, 800.0)})
+            self.assertEqual((meta["volume"], meta["voxelsize_um"]), ("1-8.640um-x", self.um))
+            with open(os.path.join(out, "S_predict.json")) as fh:
+                det = json.load(fh)
+            self.assertEqual((det["volume_dims"], det["umbilicus"]), (GRID, f))
+
+    def test_predict_default_name_is_kept_and_stamped(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.npz(d, shape_l0=SHAPE_L0)
+            out = os.path.join(d, "out")
+            r = self.predict.predict("S", ["w.pt"], [], d, out, vol=self.VOL)
+            self.assertEqual(r["file"], os.path.join(out, "S_umbilicus.json"))
+            self.assertIsNone(vc3d_search(out))                    # the old name is not one VC3D searches for
+            self.check_vc3d(r["file"])
+
+    def test_grid_from_the_bucket_or_none_never_part(self):
+        """Without shape_l0 the level-0 .zarray is read; when it is absent, unreadable or of another scan, the file
+        has no dimension key at all (VC3D then uses the voxel size) and still loads."""
+        reads = []
+        def level0(vol):
+            reads.append(vol)
+            return SHAPE_L0
+        with tempfile.TemporaryDirectory() as d, mock.patch.object(self.p.slices, "level0_shape", level0):
+            self.npz(d)
+            r = self.predict.predict("S", ["w.pt"], [], d, os.path.join(d, "a"), vol=self.VOL + "/", vc3d_name=True)
+            self.check_vc3d(r["file"])
+            self.assertEqual(reads, [self.VOL])
+        cases = (dict(shape_l0=[3840, 1600, 4000]),                # not the slice file's grid: another scan
+                 dict(level0=lambda vol: None),                     # no level-0 .zarray
+                 dict(level0=mock.Mock(side_effect=RuntimeError("503"))))
+        for case in cases:
+            with tempfile.TemporaryDirectory() as d, \
+                    mock.patch.object(self.p.slices, "level0_shape", case.pop("level0", level0)), \
+                    mock.patch("sys.stderr") as err:
+                self.npz(d, **case)
+                r = self.predict.predict("S", ["w.pt"], [], d, os.path.join(d, "out"), vol=self.VOL, vc3d_name=True)
+                pts, errors = vc3d_read_file(r["file"])
+                with open(r["file"]) as fh:
+                    meta = json.load(fh)["metadata"]
+                self.assertEqual(errors, []); self.assertTrue(pts)
+                self.assertFalse(set(VC3D_DIMS) & set(meta))
+                self.assertEqual(vc3d_scale(meta, [2080, 1600, 3840], self.um), ("voxel size", 1.0))
+                self.assertIn("no volume_width", "".join(str(c) for c in err.write.call_args_list))
+
+    def test_trim_and_endcheck_stamp_and_rename(self):
+        with tempfile.TemporaryDirectory() as d:
+            self.npz(d, shape_l0=SHAPE_L0)
+            src = os.path.join(d, "src"); os.makedirs(src)
+            pts = [dict(x=1040, y=800, z=int(v), score=100) for v in self.z]
+            with open(os.path.join(src, "S_umbilicus.json"), "w") as fh:
+                json.dump(dict(control_points=pts, metadata=dict(voxelsize_um=self.um, source_volume=self.VOL)), fh)
+            r = self.p.trim(src, d, os.path.join(d, "t"), vc3d_name=True)["S"]
+            self.assertEqual(r["file"], os.path.join(d, "t", "S", "umbilicus.json"))
+            self.assertEqual(len(self.check_vc3d(r["file"])[0]), len(self.z) - 24)
+            r2 = self.p.trim(os.path.join(d, "t"), d, os.path.join(d, "t2"))["S"]        # a VC3D input keeps its name
+            self.assertEqual(r2["file"], os.path.join(d, "t2", "S", "umbilicus.json"))
+            r3 = self.p.trim(src, d, os.path.join(d, "t3"), end_rule=False)["S"]          # default: the old name
+            self.assertEqual(r3["file"], os.path.join(d, "t3", "S_umbilicus.json")); self.check_vc3d(r3["file"])
+            e = self.endcheck.files(src, os.path.join(d, "e"), cache=os.path.join(d, "c"), data=d, vc3d_name=True)["S"]
+            self.assertEqual(e["points_out"], len(self.z) - 24)
+            self.check_vc3d(e["file"])
+            os.makedirs(os.path.join(src, "S"))
+            with open(os.path.join(src, "S", "umbilicus.json"), "w") as fh:
+                json.dump(dict(control_points=pts, metadata=dict(voxelsize_um=self.um, source_volume=self.VOL)), fh)
+            for run in (lambda: self.p.trim(src, d, os.path.join(d, "x")),
+                        lambda: self.endcheck.files(src, os.path.join(d, "y"), cache=os.path.join(d, "c"), data=d)):
+                with self.assertRaisesRegex(SystemExit, "both"):                # two files for one scroll: refused
+                    run()
+
+    def test_trim_refuses_a_different_or_unknown_cached_scan(self):
+        with tempfile.TemporaryDirectory() as d:
+            src = os.path.join(d, "src"); os.makedirs(src)
+            pts = [dict(x=1040, y=800, z=int(v), score=100) for v in self.z]
+            with open(os.path.join(src, "S_umbilicus.json"), "w") as fh:
+                json.dump(dict(control_points=pts, metadata=dict(voxelsize_um=self.um, source_volume=self.VOL)), fh)
+            for source in ("S/volumes/another-scan", None):
+                kw = dict(ct=self.ct, z_l0=self.z, um=self.um, level=3, shape_l0=SHAPE_L0)
+                if source is not None:
+                    kw["vol"] = source
+                np.savez(os.path.join(d, "S.npz"), **kw)
+                out = os.path.join(d, "out")
+                with self.subTest(source=source), self.assertRaisesRegex(SystemExit, "slice file"):
+                    self.p.trim(src, d, out, vc3d_name=True)
+                self.assertFalse(os.path.exists(os.path.join(out, "S", "umbilicus.json")))
+            self.npz(d, shape_l0=SHAPE_L0, vol=self.VOL + "/")
+            result = self.p.trim(src, d, out, vc3d_name=True)["S"]
+            self.check_vc3d(result["file"])
+
+    def test_endcheck_from_the_bucket_reads_the_level0_zarray(self):
+        with tempfile.TemporaryDirectory() as d, \
+                mock.patch.object(self.endcheck.slices, "PlaneReader", lambda vol, level: _PlaneReader(self.ct, level)), \
+                mock.patch.object(self.endcheck.slices, "level0_shape", {self.VOL: SHAPE_L0}.get):
+            src = os.path.join(d, "src"); os.makedirs(os.path.join(src, "S"))
+            pts = [dict(x=1040, y=800, z=int(v), score=100) for v in self.z]
+            with open(os.path.join(src, "S", "umbilicus.json"), "w") as fh:
+                json.dump(dict(control_points=pts, metadata=dict(voxelsize_um=self.um, source_volume=self.VOL)), fh)
+            e = self.endcheck.files(src, os.path.join(d, "e"), cache=os.path.join(d, "c"))["S"]
+            self.assertEqual(e["file"], os.path.join(d, "e", "S", "umbilicus.json"))
+            self.assertEqual(e["points_out"], len(self.z) - 24)
+            self.check_vc3d(e["file"])
+
+    def test_stamp_dims_and_partial_triplets(self):
+        p = self.p
+        self.assertEqual(p.stamp_dims({"voxelsize_um": 9.0}, GRID, "f"), dict(GRID, voxelsize_um=9.0))
+        self.assertEqual(p.stamp_dims(dict(GRID), {}, "f"), GRID)                       # kept when the scan is unknown
+        self.assertEqual(p.stamp_dims({"volume_width": 7}, GRID, "f"), dict(GRID))       # a partial triplet replaced
+        with self.assertRaisesRegex(SystemExit, "another frame"):
+            p.stamp_dims(dict(GRID, volume_width=520), GRID, "f")
+        with self.assertRaisesRegex(SystemExit, "VC3D refuses"):
+            p.stamp_dims({"volume_width": 7}, {}, "f")
+        keep = np.ones(3, bool); args = ("S", [32, 96, 160], np.full((3, 2), 5.0), keep, 8.64, self.VOL, None, "n")
+        with self.assertRaises(ValueError):
+            p.umbilicus_json(*args, dims={"volume_width": 9, "volume_height": 9})
+        j = p.umbilicus_json(*args, dims=GRID)
+        self.assertEqual(vc3d_load_json(j)[1], [])
+        self.assertFalse(set(VC3D_DIMS) & set(p.umbilicus_json(*args)["metadata"]))
+
+    def test_an_empty_line_is_not_written_under_the_vc3d_name(self):
+        """VC3D refuses a file without points and stops its search there, so none is left under umbilicus.json; the
+        old name still gets the empty file, as before."""
+        j = dict(control_points=[], metadata=dict(voxelsize_um=8.64, total_points=0))
+        with tempfile.TemporaryDirectory() as d, mock.patch("sys.stderr"):
+            os.makedirs(os.path.join(d, "S"))
+            with open(os.path.join(d, "S", "umbilicus.json"), "w") as fh:
+                fh.write("{}")                                    # an earlier run's answer
+            self.assertIsNone(self.p.write_umbilicus(j, d, "S", vc3d=True))
+            self.assertIsNone(vc3d_search(os.path.join(d, "S")))
+            self.assertTrue(os.path.exists(self.p.write_umbilicus(j, d, "S")))
+
+    def test_strict_json_only(self):
+        """VC3D's parser takes no NaN: such a file is refused before anything is written."""
+        j = dict(control_points=[dict(x=1, y=2, z=3)], metadata=dict(spread_mm_median=float("nan")))
+        with tempfile.TemporaryDirectory() as d:
+            with self.assertRaises(ValueError):
+                self.p.write_umbilicus(j, d, "S", vc3d=True)
+            self.assertEqual(os.listdir(d), [])
+        keep = np.array([True, True])
+        j = self.p.umbilicus_json("S", [32, 96], np.full((2, 2), 5.0), keep, 8.64, self.VOL, np.array([np.nan, np.nan]), "n")
+        self.assertIsNone(j["metadata"]["spread_mm_median"])
+
+
+class CtcheckFilesTest(unittest.TestCase):
+    def test_both_names_are_read(self):
+        try:
+            import ctcheck
+        except ImportError as e:                  # it needs requests
+            self.skipTest(str(e))
+        with tempfile.TemporaryDirectory() as d:
+            os.makedirs(os.path.join(d, "B"))
+            for f in ("A_umbilicus.json", os.path.join("B", "umbilicus.json"), "notes.json"):
+                open(os.path.join(d, f), "w").close()
+            self.assertEqual(ctcheck.umb_files(d), {"A": os.path.join(d, "A_umbilicus.json"),
+                                                    "B": os.path.join(d, "B", "umbilicus.json")})
+            os.makedirs(os.path.join(d, "A")); open(os.path.join(d, "A", "umbilicus.json"), "w").close()
+            with self.assertRaisesRegex(SystemExit, "both"):
+                ctcheck.umb_files(d)
 
 
 if __name__ == "__main__":
