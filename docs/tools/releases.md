@@ -383,6 +383,7 @@ python -m unittest tests.test_releases -v
 
 ## History
 
+- 2026-10-20: grouped entries: an entry's optional `tools` lists command-line tools that share it, one line each; Scrolls kit groups Scroll Text Reader, StrokeNet, the segment stack check and the scroll center finder, whose old ids still resolve (`find`), and `list` shows each tool under its entry (Chase: "consolidate some releases like some of the released stuff on our scrolls readme seems more like kit tools") (`ba08f7e`).
 - 2026-10-16: the letter reader's entry gives the plain character error beside the free-ends error on PHerc. 1667 maps (`2b8c445`).
 - 2026-10-16: entries may not hold raw HTML in a title, summary or details, and their links must be `https://` or relative (`eb88e23`).
 - 2026-10-16: Unroll's entry added and pinned after AutoPipeline (`9896827`).
