@@ -373,7 +373,7 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 5. **VC3D files** (`vc3dout.py`). The kept map, as 0 or 1 to 255, is placed on a canvas the size of the segment grid
    over its scale (divided by the pooling, and by a whole number more when over 16,384 px), so its aspect equals the
    grid's within 2 % (the rule `kit.villafmt` checks in Scrolls-private). Records carry the segment's key in
-   `segment_id` and `segment_long_id`. Pins map render pixel to grid by the scale and to voxels by bilinear
+   `segment_id` only: VC3D hides a PNG whose `segment_long_id` group holds a catalog JPEG. Pins map render pixel to grid by the scale and to voxels by bilinear
    interpolation of the x, y and z bands; a pin on or next to a hole is dropped.
 6. **Space** (`app.py`). One `spaces.GPU` call per region with duration `ceil(4 + 0.012 x patches)` seconds, at most
    40; a region of at most 512 px with one window falls back to the CPU when ZeroGPU refuses.

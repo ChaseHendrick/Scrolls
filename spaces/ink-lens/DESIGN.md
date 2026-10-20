@@ -162,8 +162,8 @@ All rules cited to villa main `8aa507c12` (Sourced fact unless marked).
 | --- | --- | --- |
 | `SEGDIR/inklens/<run>.png` | Single-channel 8-bit PNG covering the whole segment canvas: 0 outside the region and where F <= T, else F rescaled to 1 to 255. The canvas aspect equals the tifxyz grid's (VC3D stretches the image over the whole grid and checks it) | `cv::imread(..., IMREAD_UNCHANGED)` and single-channel test, `InkDetectionOverlayController.cpp:512-536, 140-173`; single-channel pixels get alpha = value, so 0 is transparent, `:546-580`; stretch over the grid `:395-437`; aspect check `:584` |
 | `SEGDIR/inklens/mosaic.png` | Running maximum of every run on this segment, so regions add up into one layer | same |
-| `SEGDIR/ink-detections.json` | Existing records kept; one record per run and one for the mosaic: `local_file`, `label` ("Ink Lens d9v2 <status>"), `segment_id`, `segment_long_id`, `sample_id`, `artifact_type`, `original_source_uri` | `OpenDataSegmentCache.cpp:651-694` (a non-empty file replaces the catalog list, so existing records must be merged, never overwritten), `InkDetectionOverlayController.cpp:502-510` (key match) |
-| `SEGDIR/inklens/<run>.pins.json` | VC3D point collection `{"vc_pointcollections_json_version": "1", "collections": {...}}`, one collection "Ink Lens <run>", points `{p: [x, y, z], creation_time, wind_a: null}` | `core/src/PointCollections.cpp:36-119` (`p` required, `wind_a` may be null), `:571-662` |
+| `SEGDIR/ink-detections.json` | Existing records kept; one record per run and one for the mosaic: `local_file`, `label` ("Ink Lens d9v2 <status>"), `segment_id` (no `segment_long_id`, so a catalog JPEG of the segment does not hide the PNG), `sample_id`, `artifact_type` | `OpenDataSegmentCache.cpp:651-694` (a non-empty file replaces the catalog list, so existing records, or the `catalog-origin.json` list when the file has none, must be merged, never overwritten), `InkDetectionOverlayController.cpp:41-50, 243-253` (JPEG groups), `:502-510` (key match) |
+| `SEGDIR/inklens/<run>.pins.json` | VC3D point collection `{"vc_pointcollections_json_version": "1", "collections": {...}}`, one collection "Ink Lens <run>", points `{p: [x, y, z], creation_time (ms), wind_a: null}`, point ids after every saved one | `core/src/PointCollections.cpp:36-119` (`p` required, `wind_a` may be null), `:226` (ms), `:571-662` |
 | `SEGDIR/inklens/<run>.json` | Receipt: model and SHA-256, villa commit, region box in render pixels and grid cells, windows, T, excess, status, Text Reader result, GPU seconds, device | ours |
 
 Loading a point collection file in VC3D replaces all current collections (`PointCollections.cpp:647`, `clearAll`). So
@@ -197,8 +197,8 @@ point plus a size; `--from-vc3d` takes the current cursor point.
 - **Agent bridge and MCP**: an agent chains `vc3d_list_segments`, `inklens run --bridge`, `vc3d_load_points_json`,
   `vc3d_center_on_point`. The Space's own tools are an API and an MCP server, like Scroll Lens's: `lens_region`
   (an `.npz` surface volume in, maps, status and pins out), `list_samples`, `estimate`.
-- **VC3D plugin system**: being built today on villa branch `vc3d-plugins`, which did not exist in
-  `/home/user/villa-lane` at the time of writing. The CLI's JSON contract above is what a plugin entry would call; its
+- **VC3D plugin system**: being built today on a villa branch, `vc3d-plugins`, which did not exist yet at the time
+  of writing. The CLI's JSON contract above is what a plugin entry would call; its
   manifest is written when that system's format is known (Untested idea).
 - **Missing in VC3D** (a small villa PR to draft, Chase posts): an `ink.reload` bridge method so the Ink Detection panel
   rereads `ink-detections.json` without reopening the segment.

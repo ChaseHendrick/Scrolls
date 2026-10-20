@@ -166,6 +166,22 @@ class Gate(unittest.TestCase):
         none = gate.kept(self.F, {"status": "none", "threshold": 0.0}, self.ct)
         self.assertFalse(none.any())
 
+    def test_ink_that_does_not_beat_the_control_is_dropped(self):
+        F = self.F.copy()
+        F[300:360, 50:350] = 0.55                        # high, but under the control's 99th percentile (about 0.594)
+        d = gate.decide(F, self.R, self.ct)
+        self.assertEqual(d["status"], "ink")
+        self.assertGreater(d["threshold"], 0.55)
+        k = gate.kept(F, d, self.ct)
+        self.assertFalse(k[300:360, 50:350].any())
+        self.assertTrue(k[100:160, 50:350].any())
+        # the same faint block alone: the control explains it, so the region is none and nothing is kept
+        faint = self.R.copy()
+        faint[300:360, 50:350] = 0.55
+        d2 = gate.decide(faint, self.R, self.ct)
+        self.assertEqual(d2["status"], "none")
+        self.assertFalse(gate.kept(faint, d2, self.ct).any())
+
     def test_label_shares(self):
         kept = np.zeros((300, 300), np.float32)
         kept[100:150, 100:200] = 0.9
@@ -334,6 +350,8 @@ class VC3DFiles(unittest.TestCase):
         self.assertEqual(s["key"], "seg")
         other = fake_segment(self.dir / "cat", meta_extra={"vc_open_data_segment_long_id": "PHercX/seg-123"})
         self.assertEqual(vc3dout.segment(other)["key"], "PHercX/seg-123")
+        rep = fake_segment(self.dir / "rep", meta_extra={"vc_open_data_representation": "surface", "uuid": "rep-9"})
+        self.assertEqual(vc3dout.segment(rep)["key"], "rep-9")       # Segmentation::id() for a representation
         (self.dir / "bad").mkdir()
         with self.assertRaises(vc3dout.VC3DError):
             vc3dout.segment(self.dir / "bad")
@@ -370,10 +388,21 @@ class VC3DFiles(unittest.TestCase):
         self.assertEqual(recs[1]["label"], "Ink Lens a again")
         for r in recs[1:]:                      # VC3D offers a record only when its id is the segment's key
             self.assertIn(s["key"], (r.get("segment_id"), r.get("segment_long_id")))
+            self.assertFalse(r.get("segment_long_id"))     # else a catalog JPEG in its group hides the PNG
         (self.seg / "ink-detections.json").write_text('{"not": "a list"}')
         with self.assertRaises(vc3dout.VC3DError):
             vc3dout.merge_records(self.seg, [r1])
         self.assertEqual(json.loads((self.seg / "ink-detections.json").read_text()), {"not": "a list"})
+
+    def test_records_keep_the_catalog_list(self):
+        s = vc3dout.segment(self.seg)
+        cat = {"local_file": "ink-detections/a.jpg", "label": "catalog", "segment_id": "seg",
+               "segment_long_id": "long-seg"}
+        (self.seg / "catalog-origin.json").write_text(json.dumps({"ink_detections": [cat, "junk"]}))
+        (self.seg / "ink-detections.json").write_text("[]")        # empty: VC3D shows the catalog list
+        vc3dout.merge_records(self.seg, [vc3dout.record(s, "inklens/a.png", "Ink Lens a", "00", (480, 420))])
+        recs = json.loads((self.seg / "ink-detections.json").read_text())
+        self.assertEqual([r["label"] for r in recs], ["catalog", "Ink Lens a"])
 
     def test_mosaic(self):
         p = self.dir / "m.png"
@@ -409,6 +438,19 @@ class VC3DFiles(unittest.TestCase):
                                                   "collections": {"1": {"name": "x", "points": {"1": {}}}}}))
         with self.assertRaises(vc3dout.VC3DError):
             vc3dout.merge_points({"collections": []}, doc)
+
+    def test_points_ids_time_and_file_keys(self):
+        import time
+        doc = vc3dout.points_doc("Ink Lens r2", [[1.0, 2.0, 3.0], [4, 5, 6]])
+        t = doc["collections"]["1"]["points"]["1"]["creation_time"]
+        self.assertLess(abs(t - time.time() * 1000), 60_000)     # milliseconds, as VC3D stamps its points
+        saved = {"vc_pointcollections_json_version": "1", "spiral_workspace": {"keep": True},
+                 "collections": {"2": {"name": "seeds", "points": {"1": {"p": [0, 0, 1]}, "7": {"p": [0, 0, 2]}}}}}
+        merged = vc3dout.merge_points(saved, doc)
+        self.assertEqual(merged["spiral_workspace"], {"keep": True})
+        ids = [p for c in merged["collections"].values() for p in c["points"]]
+        self.assertEqual(len(ids), len(set(ids)))                # point ids are unique across collections
+        self.assertEqual(sorted(merged["collections"]["3"]["points"]), ["8", "9"])
 
     def test_tiff_size_and_grid_mapping(self):
         self.assertEqual(vc3dout.tiff_size(self.seg / "x.tif"), (24, 21))

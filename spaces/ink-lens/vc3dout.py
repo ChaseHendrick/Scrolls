@@ -3,16 +3,24 @@
 Every rule below is read from ScrollPrize/villa main 8aa507c12 (volume-cartographer/):
 
 - Ink overlay: VC3D reads SEGDIR/ink-detections.json, a JSON array of records whose local_file is relative to SEGDIR
-  (apps/VC3D/OpenDataSegmentCache.cpp:651-694). A non-empty file replaces the catalog's own list, so records already
-  there are kept and only a record for the same file is replaced (merge_records). A record is offered on a segment
-  only when its segment_id or segment_long_id equals the segment's key (InkDetectionOverlayController.cpp:52-65,
-  502-510): the catalog ids in meta.json when present, else the folder name (core/src/Segmentation.cpp:42-56).
+  (apps/VC3D/OpenDataSegmentCache.cpp:651-694). A file with at least one record replaces the list in
+  catalog-origin.json's ink_detections, which VC3D reads only when the file is missing or empty, so merge_records
+  starts from the file's records, or from that catalog list when the file has none, and replaces only a record for
+  the same file. A record is offered on a segment
+  only when its segment_id or segment_long_id equals the segment's key (overlays/InkDetectionOverlayController.cpp
+  52-65, 502-510): the catalog ids in meta.json when present, else the segment's id, which is meta.json's uuid for an
+  Open Data representation and the folder name otherwise (core/src/Segmentation.cpp:42-56). VC3D hides every
+  non-JPEG record in a group that has a JPEG, the group being segment_long_id when set (:41-50, 243-253), and catalog
+  maps are JPEGs, so our records carry the key in segment_id only and leave segment_long_id unset.
 - The image is read unchanged; a single-channel 8-bit image is drawn with alpha equal to the pixel value, so 0 is
   transparent (InkDetectionOverlayController.cpp:512-580). It is stretched over the whole segment grid, each axis on
   its own (:395-437), so the PNG covers the whole canvas and its aspect equals the grid's over meta.json's scale.
 - Points: a VC3D point collection file {"vc_pointcollections_json_version": "1", "collections": {id: {name, points:
   {id: {p: [x, y, z], creation_time, wind_a}}, metadata, color}}} (core/src/PointCollections.cpp:36-119, 571-662).
-  Loading one replaces every current collection (:647), so merge_points adds to a saved file instead.
+  creation_time is in milliseconds (:226). Loading one replaces every current collection and the file's other
+  top-level keys (:647), so merge_points adds to a saved file and keeps those keys. VC3D numbers points across all
+  collections (getNextPointId, :856), and a point id held by two collections is ambiguous to the agent bridge
+  (AgentBridgeHandlers_points.cpp:94-110), so merged points get ids after every existing one.
 - Grid to voxels: x.tif, y.tif and z.tif hold the voxel position of each grid vertex; a vertex with a -1 coordinate
   is a hole (core/src/QuadSurface.cpp:279) and one with z <= 0 is dropped on load (:1077-1096).
 """
@@ -167,6 +175,10 @@ def segment_key(segdir, meta):
         v = meta.get(k) if isinstance(meta, dict) else None
         if isinstance(v, str) and v:
             return v
+    if isinstance(meta, dict) and "vc_open_data_representation" in meta:
+        u = meta.get("uuid")
+        if isinstance(u, str) and u:
+            return u
     return Path(segdir).resolve().name
 
 
@@ -250,6 +262,8 @@ def merge_records(segdir, records):
             raise VC3DError(f"{path} is not readable JSON ({exc}); refusing to overwrite it") from None
         if not isinstance(old, list):
             raise VC3DError(f"{path} is not a JSON array; refusing to overwrite it")
+    if not any(isinstance(r, dict) for r in old):
+        old = catalog_records(segdir)       # what VC3D shows now; writing the file must not hide it
 
     def where(local_file):
         f = Path(local_file)
@@ -263,9 +277,21 @@ def merge_records(segdir, records):
     return {"file": str(path), "records": len(out), "kept_existing": len(kept)}
 
 
+def catalog_records(segdir):
+    """The ink_detections list of SEGDIR/catalog-origin.json (VC3D's fallback when ink-detections.json is missing or
+    empty), or [] when there is none or it does not parse, as VC3D treats it."""
+    path = Path(segdir) / "catalog-origin.json"
+    try:
+        origin = json.loads(path.read_text()) if path.is_file() else None
+    except (OSError, json.JSONDecodeError):
+        return []
+    items = origin.get("ink_detections") if isinstance(origin, dict) else None
+    return [r for r in items if isinstance(r, dict)] if isinstance(items, list) else []
+
+
 def record(seg, local_file, label, sha256, size, extra=None):
-    r = {"local_file": local_file, "label": label, "segment_id": seg["key"], "segment_long_id": seg["key"],
-         "sample_id": "", "artifact_type": "ink-lens", "ink_lens": {"sha256": sha256, "size": list(size), "note": NOTE}}
+    # no segment_long_id: VC3D groups records by it and hides PNGs in a group that has a catalog JPEG
+    r = {"local_file": local_file, "label": label, "segment_id": seg["key"], "sample_id": "", "artifact_type": "ink-lens", "ink_lens": {"sha256": sha256, "size": list(size), "note": NOTE}}
     if extra:
         r["ink_lens"].update(extra)
     return r
@@ -328,7 +354,7 @@ def voxel_to_grid(xyz, point):
 
 def points_doc(name, points, color=(0.2, 0.9, 1.0), metadata=None):
     """A VC3D point collection document with one collection."""
-    now = int(time.time())
+    now = int(time.time() * 1000)          # milliseconds, as VC3D stamps its own points
     pts = {str(i + 1): {"p": list(p), "creation_time": now, "wind_a": None} for i, p in enumerate(points)}
     md = {"winding_is_absolute": False}
     md.update(metadata or {})
@@ -366,8 +392,9 @@ def check_points_doc(doc):
 
 
 def merge_points(existing, new):
-    """existing (a document VC3D saved, or None) plus every collection of new, renumbered after the existing ids;
-    a collection of the same name is replaced."""
+    """existing (a document VC3D saved, or None) plus every collection of new: collections renumbered after the
+    existing collection ids, points after every existing point id (VC3D's ids are unique across collections), the
+    saved file's other top-level keys kept; a collection of the same name is replaced."""
     if existing is None:
         existing = {"vc_pointcollections_json_version": POINTS_VERSION, "collections": {}}
     probs = check_points_doc(existing)
@@ -377,7 +404,14 @@ def merge_points(existing, new):
     names = {c["name"] for c in new["collections"].values()}
     cols = {k: v for k, v in cols.items() if v.get("name") not in names}
     nxt = max([int(k) for k in cols] + [0]) + 1
+    pid = max([int(p) for c in cols.values() for p in (c.get("points") or {})] + [0]) + 1
     for c in new["collections"].values():
-        cols[str(nxt)] = c
+        pts = {}
+        for _, p in sorted((c.get("points") or {}).items(), key=lambda kv: int(kv[0])):
+            pts[str(pid)] = p
+            pid += 1
+        cols[str(nxt)] = dict(c, points=pts)
         nxt += 1
-    return {"vc_pointcollections_json_version": POINTS_VERSION, "collections": cols}
+    out = {k: v for k, v in existing.items() if k not in ("vc_pointcollections_json_version", "collections")}
+    out.update({"vc_pointcollections_json_version": POINTS_VERSION, "collections": cols})
+    return out
