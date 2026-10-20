@@ -70,6 +70,34 @@ Released 16 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
+### Scrolls kit
+
+![Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.](docs/assets/workbench/workbench-hero.webp)
+
+*Concept illustration: the toolbox's motifs on one tray. No scan data.*
+
+Its tools were released from 14 October 2026 to 17 October 2026; each line gives its tool's date.
+
+Command-line tools that live in this repository and run from a clone of it: three `python -m kit` commands and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.
+
+```bash
+git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git
+cd Scrolls
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -e ".[all]"
+scrolls-letterdemo
+# The scroll center finder also needs requests and torch
+python -m pip install requests torch
+```
+
+- **Scroll Text Reader** (weights `letters-v2-real` and `letters-v2-ccby`, released 17 October 2026). Proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs with NumPy on a CPU, with null and orientation controls, and has an optional local Tesseract backend for Latin, Greek, Hebrew and other installed languages. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for `letters-v2-real` against 0.462 for `letters-v2-ccby` (Model output; 117 letters in 84 groups; those maps may benefit from training-label exposure), and photo accuracy is untested. Its output is a hypothesis for a person to check, not a reading; `--letter-px 86` suits PHerc. 1667's 38 um grid. Run `scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png`; [tool page](docs/tools/letterread.md), [install, profiles and benchmarks](docs/letter-reader.md), [local OCR and session switching](docs/tools/reader-backends.md).
+- **StrokeNet text-likeness score** (weights `strokenet-paris4-v1`, released 14 October 2026). Scores how much a 6.1 mm window of an organizers' ink map looks like lines of text, with rotation and IAAFT controls in every result, using only NumPy. On its preregistered held-out test on six PHerc. Paris 4 tracings it missed its bar on two of nine items, simple scores such as ink density matched it on the others, and it beat every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). A score is model output, not a reading. Run `python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json`; [tool page](docs/tools/strokenet.md), [model card, held-out results and the tile grid pilot](docs/strokenet.md).
+- **Segment stack check** (released 14 October 2026). Checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone (no CT, no model): winding order, coincident or oddly spaced neighbors, missing sectors, skipped windings, turn overlaps and stack ends, with a JSON report and per-vertex masks to drop before a spiral fit or a winding count. On PHerc0139 w023 to w040 it measured, for example, that w035 covers a median 258 degrees of its turn (measured from the published segments and umbilicus, 14 October 2026). Geometry alone cannot say which segment left its sheet. Run `python -m kit stackcheck w033=SEGMENT_DIR w034=SEGMENT_DIR w035=SEGMENT_DIR --umbilicus UMBILICUS.json --out work/stackcheck/report.json --flags work/stackcheck/flags.npz`; [tool page](docs/tools/stackcheck.md), [the PHerc0139 note with the full bucket example, the numbers, a CT look and the limits](docs/logs/2026-10-14-pherc0139-segment-defects.md).
+- **Scroll center (umbilicus) finder** (weights release `umbilicus-v1`, released 14 October 2026). Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets, reading level-3 slices from the open-data bucket, and writes the published umbilicus format (`umbilicus.json` for VC3D and spiral-fitting with `--vc3d-name`). Against the 13 published center lines, each scroll held out of its own models' training, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the papyrus centroid control (Model output, 13 October 2026); each reference is one person's line, and the settings were chosen while looking at some of the same scrolls. A script folder run from a clone, not a `python -m kit` command: it needs torch and the two weight files, and its line is model output to check on CT slices. Run `python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name`; [tool page](docs/tools/umbilicus.md), [guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md).
+
+`scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. Every `python -m kit` command: [`docs/tools/cli.md`](docs/tools/cli.md); every tool page: [`docs/tools/`](docs/tools/README.md); a picture guide to the toolbox: [`docs/workbench.md`](docs/workbench.md).
+
 ### Scrolls Starter: a beginner path into the tools
 
 ![Two screenshots of Scrolls Starter floating at an angle over a dark floor: its introduction page and its practice exercise, a drawn word with noise beside a noise-only control.](docs/assets/starter/starter-hero.webp)
@@ -114,84 +142,6 @@ Released 17 October 2026.
 [Scroll Lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) shows what the Vesuvius Challenge's 3D models see inside a scroll scan. Pick one of 99 ready-made cubes or a point in one of twelve public 2.2 to 2.4 µm scans, and it runs the organizers' 3D DINO embeddings (dinovol), direct 3D ink model and recto surface model on a 128³ or 256³ cube read live from the open data. The three slice views are drawn in your browser, so sliders, dragging, zoom and layers answer at once. Click a patch to light up every patch the DINO model finds alike, the organizers' own few-click recipe; the concept carries across scans and downloads as `concept.npy`. Each cube shows how well the organizers' ink reference agrees with the ink model, beside controls that must fail. A 3D view turns the three views into one rotatable space of the cube, with the slices as moving planes and ink, surface and your matches as points. For AI agents and scripts, seven tools (an API and an MCP server) list the scans and the gallery, inspect and search cubes, and download their outputs. Status: released. Version: 1.1.0. It runs on ZeroGPU and falls back to the CPU when a visitor's GPU time runs out. License: Apache 2.0 for the code; the models are MIT; the scan data and the gallery cubes derived from it are CC BY-NC 4.0. Model output, not a reading: a cube is smaller than one letter.
 
 Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens); MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).
-
-### Scroll Text Reader
-
-![Concept illustration of a papyrus sheet curling up at its left end, with a copper reading lens over the flat part that shows the fibers magnified. Nothing is written on the sheet.](docs/assets/letter-reader/reader-hero.webp)
-
-*Concept illustration: a procedural papyrus sheet under a reading lens. No scroll data, no letters, no ink, not a reading.*
-
-Released 17 October 2026.
-
-Scroll Text Reader (formerly Greek Letter Reader). A small learned reader proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs using NumPy on CPU. Its output is a hypothesis for a person to check, with null and orientation controls, not a reading. The default now follows the task: given line positions select `letters-v2-real` (CC BY-NC 4.0); automatic layout selects `letters-v2-ccby` (CC BY 4.0). Explicit weights or a profile override that choice, and results record the profile, license and weight hash. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for real versus 0.462 for ccby; the paired difference interval was +0.017 to +0.155 (Model output; 117 letters in 84 groups). The whole-region comparison was unresolved; photo accuracy is untested. Those maps may benefit from training-label exposure, so this does not establish accuracy on new scrolls. An optional local Tesseract backend supports Latin, Greek, Hebrew and other installed language packs with pack hashes and blank/shuffled controls. Printed-text smoke checks establish that the backend works, not scroll accuracy; controls can fail. `ReaderSession` validates replacements before switching models, profiles, languages or backends and keeps the previous selection on failure. Checkpoint files and release tags are unchanged.
-
-```bash
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"
-scrolls-letterdemo
-scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png
-```
-
-`scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. `--letter-px 86` is for PHerc. 1667's 38 um grid in [`scripts/letters/demo_p1667.py`](scripts/letters/demo_p1667.py). Install, profiles and benchmarks: [`docs/letter-reader.md`](docs/letter-reader.md). Local OCR and session switching: [`docs/tools/reader-backends.md`](docs/tools/reader-backends.md).
-
-### Segment stack check
-
-![Concept illustration of one scroll's winding as a standing spiral strip cut into segments around a copper center post; one segment misses a sector whose torn edges glow ivory, and two neighboring windings touch at a copper glow.](docs/assets/stackcheck/stackcheck-hero.webp)
-
-*Concept illustration: synthetic segments around a center line, with a missing sector and a touching pair marked. No scan data.*
-
-Released 14 October 2026.
-
-Checks a stack of consecutive tifxyz segments of one scroll against the scroll's umbilicus, from segment geometry alone (no CT, no model): order on rays from the umbilicus every degree, adjacent segments that coincide or are spaced unlike the pairs near them, missing sectors of one winding or of several adjacent ones, skipped windings, turn overlaps and the ends of the stack. It reads local folders or the open-data bucket, writes a JSON report, and writes per-vertex masks to drop before a spiral fit or a relative winding count. On PHerc0139 w023 to w040 it measured that w035 covers a median 258 degrees of its turn, leaving a gap (followed from z 9,000 to 27,800, a median 98 degrees wide) where w036 lies a median 17 um outside w034, against 242 um where w035 is present, by an amount that swings with height from 96 um inside to 174 um outside; that near their ends w035 and w036 are missing together; that w035 lies inside w034 on 10 % of the rays that cross both (7 % by more than 18.72 um); and that w023 to w034 are each traced a median 28 to 48 degrees per grid line past a full turn (66 for w026), with more than half of each doubly traced end within 18.72 um of the next segment for w023 to w031 but not for w032 to w034 (measured from the published segments and umbilicus, 14 October 2026). Geometry alone cannot say which segment left its sheet; the note adds a look at the CT at 12 places.
-
-```bash
-python -m pip install numpy tifffile scipy
-B=https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139; S=""
-for id in 20260219000000-w033_2026021913 20260303000000-w034_2026030317 20260317000000-w035_2026031718 20260316000000-w036_2026031607 20260310000000-w037_2026031015; do w=${id#*-}; S="$S ${w%%_*}=$B/segments/$id/mesh/${id%%-*}-on-20260102150214-2.399um.tifxyz"; done
-python -m kit stackcheck $S --umbilicus $B/representations/umbilicus/20260102150214-umbilicus-20260826112529.json --stride 2 --upsample 1 --plane-z 8600 28800 200 --coincide-um 18.72 --out work/stackcheck/w033-w037.json --flags work/stackcheck/w033-w037-flags.npz
-python -m unittest tests.test_stackcheck      # synthetic stacks: a clean spiral passes, each planted defect is flagged
-```
-
-Usage, the PHerc0139 numbers, example vertices for VC3D, the CT look and limits: [`docs/logs/2026-10-14-pherc0139-segment-defects.md`](docs/logs/2026-10-14-pherc0139-segment-defects.md); each check is described in [`kit/stackcheck.py`](kit/stackcheck.py).
-
-### StrokeNet text-likeness score
-
-Released 14 October 2026.
-
-A small learned score for how much a 6.1 mm window of an organisers' ink map looks like lines of text, with rotation and IAAFT controls reported with every result. It needs only NumPy to run. Its held-out test on six PHerc. Paris 4 tracings, fixed before the read, is published in full: it misses its preregistered bar on two of nine items (blank papyrus against its own 90 degree turn, and blank windows above the threshold), simple scores such as ink density match it on the other items, and it beats every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). A score is model output, not a reading.
-
-```bash
-python -m pip install numpy tifffile
-python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json          # weights downloaded once, SHA-256 checked
-```
-
-Model card, held-out results and the tile grid pilot: [`docs/strokenet.md`](docs/strokenet.md).
-
-### Scroll centre (umbilicus) finder
-
-![Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.](docs/assets/umbilicus/umbilicus-hero.webp)
-
-*Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
-
-Released 14 October 2026.
-
-Finds the winding centre (the umbilicus) of a Herculaneum scroll in X-ray CT and writes it in the format of the published umbilicus files, one control point per height. It reads every 8th level-3 slice of the scroll's 1.2 m (about 9 um) scan from the open-data bucket with range requests; two small U-Nets place the centre, the first on the slice squeezed to 256 pixels and the second on a 12 to 13 mm window round the first answer, and two end trims drop heights where a centre has nothing to sit on. Scored against the 13 published centre lines with each scroll held out of its own models' training, the median distance over all 3,414 scored slices is 0.73 mm (90th percentile 3.37 mm), against 3.98 mm for the papyrus centroid control; over the 3,243 of those slices that the end trims keep, close to what a written line holds (this score's mount and cap trim used level-5 planes), it is 0.69 mm (Model output, two training runs of 13 October 2026). Each reference is one person's line, two people placing the same centre often disagree by a few millimetres, and the settings were chosen while looking at some of the same scrolls. When available, the scan's level-0 volume dimensions are recorded so VC3D can place the line; --vc3d-name writes it as umbilicus.json, the file VC3D and spiral-fitting look for. The line is model output: check it on CT slices before you rely on it.
-
-```bash
-python -m pip install numpy scipy requests torch
-U=https://github.com/ChaseHendrick/Scrolls/releases/download/umbilicus-v1
-mkdir -p work/umbilicus/weights
-for f in umbilicus-first-all.pt umbilicus-zoom-all.pt; do curl -fL -o work/umbilicus/weights/$f $U/$f; done
-(cd work/umbilicus/weights && shasum -a 256 -c) <<'EOF'
-c9b50aae2876e00f50b7ade5cf9a6facc84fb0f8ad9667dddf5565e5f06ae854  umbilicus-first-all.pt
-0a06fe2e108fbb5f252455f93862336ec4013a535eb922676ae8f846406fb4bb  umbilicus-zoom-all.pt
-EOF
-python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name
-python -m unittest tests.test_umbilicus          # synthetic data, CPU
-```
-
-Guide, the 14 weight files with their SHA-256, held-out results with their limits, the end-point rule, training and licences: [`scripts/umbilicus/README.md`](scripts/umbilicus/README.md); evidence: [`docs/evidence/2026-10-14-umbilicus/`](docs/evidence/2026-10-14-umbilicus/README.md).
 <!-- releases:end -->
 
 ## Interactive viewer

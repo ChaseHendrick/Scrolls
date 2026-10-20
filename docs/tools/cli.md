@@ -16,7 +16,8 @@
 | Network | None of its own. Some commands contact hosts (such as `fetch` and `run all --refresh`); each command's page says which |
 | Writes | Nothing of its own. Each command's writes are on its page |
 | Go-ahead | Not needed to run the entry point. A command that posts, uploads or rents compute needs Chase's yes first (the go-ahead rule, hard rule 8); its page says so |
-| Released | Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`) |
+| Released | Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`). Since 2026-10-20 the README's "Released tools" lists the command-line tools as one entry, Scrolls kit (`scrolls-kit` in `docs/releases.json`), with one line per tool |
+| Release id | `scrolls-kit` |
 | Guide | [CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it) |
 | Checked | 2026-10-16 against commit `63ee638` |
 

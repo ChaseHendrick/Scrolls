@@ -1138,10 +1138,13 @@ def render_index(pages, current=None):
 
 
 def releases_ids(root):
+    """Ids in docs/releases.json that need a tool page: every entry's, and every tool's in a grouped entry's tools
+    (the Scrolls kit entry, 20 October 2026), so a tool that joined a group keeps its page."""
     path = Path(root) / "docs" / "releases.json"
     try:
-        return [r["id"] for r in json.loads(path.read_text(encoding="utf-8")).get("releases", [])]
-    except (OSError, ValueError, KeyError, TypeError):
+        entries = json.loads(path.read_text(encoding="utf-8")).get("releases", [])
+        return [r["id"] for r in entries] + [t["id"] for r in entries for t in r.get("tools", [])]
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
         return []
 
 

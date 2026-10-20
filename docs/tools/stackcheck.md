@@ -16,7 +16,7 @@
 | Network | None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog` |
 | Writes | Fetched segments under `--cache` (default `work/stackcheck/cache/HOST/PATH/`, kept for reuse); the JSON report with `--out`; the masks `.npz` with `--flags`. Otherwise it prints only |
 | Go-ahead | Not needed |
-| Released | Public `main` since 2026-10-14 (`47cd607`); listed in the README's "Released tools" as the release `stackcheck` (Segment stack check) |
+| Released | Public `main` since 2026-10-14 (`47cd607`); listed in the README's "Released tools" as the release `stackcheck` (Segment stack check), since 2026-10-20 a line of the Scrolls kit entry under the same id |
 | Guide | [The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits |
 | Checked | 2026-10-16 against commit `d9eaf42` |
 

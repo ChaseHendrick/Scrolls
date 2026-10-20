@@ -487,6 +487,19 @@ class Coverage(unittest.TestCase):
         tagged = tooldocs.Page(Path("demo.md"), GOOD.replace("| Released |", "| Release id | `demo-tool` |\n| Released |"))
         self.assertNotIn("entry 'demo-tool'", self.found([], [tagged], releases=["demo-tool"]))
 
+    def test_tools_in_a_grouped_release_need_pages_too(self):
+        repo = Repo()
+        self.addCleanup(repo.tmp.cleanup)
+        repo.write("docs/releases.json", json.dumps({"schema_version": 1, "releases": [
+            {"id": "solo"}, {"id": "demo-kit", "tools": [{"id": "demo"}, {"id": "lone-cmd"}]}]}))
+        ids = tooldocs.releases_ids(repo.root)
+        self.assertEqual(ids, ["solo", "demo-kit", "demo", "lone-cmd"])
+        found = self.found([], releases=ids)
+        self.assertIn("entry 'lone-cmd'", found)
+        self.assertNotIn("entry 'demo'", found)
+        repo.write("docs/releases.json", "not json")
+        self.assertEqual(tooldocs.releases_ids(repo.root), [])
+
     def test_pending_suppresses_until_the_page_exists_and_then_must_shrink(self):
         pending = {"newtool": {"covers": ["kit/newtool.py", f"{KIT} other go", f"{KIT} other stop"]}}
         self.assertEqual(self.found(["kit/newtool.py"], pending=pending), "")

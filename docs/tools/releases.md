@@ -18,13 +18,13 @@
 | Go-ahead | Not needed to run it. An entry merged into public `main` is a public release: its exact text is part of the file list Chase approves (the releases rule, hard rule 15), and pushing or merging it needs his yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main` since 2026-10-14 ([PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60)); pins since 2026-10-14 ([PR #83](https://github.com/ChaseHendrick/Scrolls/pull/83)). Scrolls-private's submission exporter carries an identical copy of the module |
 | Guide | [AGENTS.md](../../AGENTS.md) (the releases rule, hard rule 15, and the standing decisions of 14 October 2026) |
-| Checked | 2026-10-18 against commit `4a970bd` |
+| Checked | 2026-10-20 against commit `457fc5c` |
 
 ## What it does
 
-Tools are built in the private repository, Scrolls-private, and some are later released into this public one. The README's "Released tools" section is where a visitor learns what has been released. Chase asked on 14 October 2026 that the README update itself on each release, so the section is no longer written by hand: it is generated from one list, [`docs/releases.json`](../releases.json), with one entry per tool. An entry is one JSON object with an id, a title, a release date, a one-paragraph summary, optional commands and a line of details, and where the files are.
+Tools are built in the private repository, Scrolls-private, and some are later released into this public one. The README's "Released tools" section is where a visitor learns what has been released. Chase asked on 14 October 2026 that the README update itself on each release, so the section is no longer written by hand: it is generated from one list, [`docs/releases.json`](../releases.json), with one entry per standalone product. An entry is one JSON object with an id, a title, a release date, a one-paragraph summary, optional commands and a line of details, and where the files are. Chase asked on 20 October 2026 to "consolidate some releases like some of the released stuff on our scrolls readme seems more like kit tools", so command-line tools that live in this repository share one grouped entry, Scrolls kit: its optional `tools` list holds one line per tool, each with its own id, release date, optional version, summary, command, tool page and evidence links. A tool's id is unique across entries and tools, so the id of an entry that became a tool (such as `letter-reader`) still names it: `find` resolves it to the grouped entry and the tool, and `add`, `pin` and `unpin` refuse it with the entry to edit instead.
 
-`python -m kit releases` keeps the two in step. `add` puts an entry into the list, or replaces the entry with the same id (a new version or fix of a released tool replaces its entry under the same id and title, Chase's "one entry per tool" decision of 14 October 2026), and rewrites the section. `render` rewrites the section from the list. `check` exits 1 when the section is not what the list gives, which is how a hand edit gets caught: `tests/test_releases.py` runs it on the repository, so the unit tests and CI fail on drift. `list` prints the entries in the section's order. `pin ID` shows an entry first, above newer ones, until `unpin ID`; a pin belongs to the list, not to the entry, so a new version that replaces a pinned entry stays pinned. At commit `29e7e8c`, AutoPipeline is pinned first (Chase, 14 October 2026, "so people see it") and Unroll second (added with Unroll's entry on 16 October 2026, `9896827`).
+`python -m kit releases` keeps the two in step. `add` puts an entry into the list, or replaces the entry with the same id (a new version or fix of a released tool replaces its entry under the same id and title, Chase's "one entry per tool" decision of 14 October 2026, narrowed on 20 October 2026 to one entry per standalone product, with kit tools as lines of the Scrolls kit entry), and rewrites the section. `render` rewrites the section from the list. `check` exits 1 when the section is not what the list gives, which is how a hand edit gets caught: `tests/test_releases.py` runs it on the repository, so the unit tests and CI fail on drift. `list` prints the entries in the section's order. `pin ID` shows an entry first, above newer ones, until `unpin ID`; a pin belongs to the list, not to the entry, so a new version that replaces a pinned entry stays pinned. At commit `29e7e8c`, AutoPipeline is pinned first (Chase, 14 October 2026, "so people see it") and Unroll second (added with Unroll's entry on 16 October 2026, `9896827`).
 
 An entry's `where` is either `"main"`, for files merged into this repository's `main`, or a package: `{"branch": B, "commit": C, "path": P}`, a reviewed copy that lives on its own branch, such as the Progress Prize exporter's `submission/<submission_id>` branches. The section links a package at its exact commit. The exporter is a private tool; it writes its package's entry with its copy of this module and pushes it as a `release-readme/<submission_id>` branch for a PR into `main`.
 
@@ -139,7 +139,7 @@ No options of its own. Exit 0 when the README section is what the list gives and
 usage: python -m kit releases list [-h]
 ```
 
-No options of its own. One line per entry, in the section's order: the release date, the id padded to 24 characters, the title, and `  (pinned)` for a pinned entry.
+No options of its own. One line per entry, in the section's order: the release date, the id padded to 24 characters, the title, and `  (pinned)` for a pinned entry. Under a grouped entry, one line per tool: its date, the id indented two spaces and padded to 22 characters, its name, and `  (in ID)` naming the entry.
 
 ### `python -m kit releases pin`
 
@@ -176,7 +176,9 @@ registry_text, readme_text, action = releases.updated(open("docs/releases.json")
 | `validate_list(registry)` | The list, unchanged | `ReleaseListError` | The list's shape, every entry, no id twice, and pins that name listed entries once each |
 | `dumps(registry)` | str: the written form of the list | `ReleaseListError` | JSON with a 2-space indent, `ensure_ascii=False` and a final newline; keys `schema_version`, then `pinned` only when it is not empty, then `releases`. Both repositories' copies write the same bytes |
 | `upsert(registry, entry)` | `(new list, "added" or "replaced")` | `ReleaseListError` | Does not change its input. A replacement keeps the old entry's position and pin |
+| `find(registry, some_id)` | `(entry, None)` for an entry's id, or `(grouped entry, tool)` for a tool's id | `ReleaseListError`, including `no entry or tool with that id` | How an old entry id that became a tool still resolves |
 | `pin(registry, entry_id, on=True)` | The new list, validated | `ReleaseListError`, including `no entry with that id` | `on=False` unpins. Pinning puts the id at the end of the pins |
+| `render_tool(tool)` | str: one tool's Markdown list line | Nothing; `render_entry` validates first | The line format under Inputs |
 | `render_entry(entry)` | list of str: one entry's Markdown lines | `ReleaseListError` | A `### TITLE` heading, the picture and its italic caption when the entry has an `image`, the release sentence, the summary, the commands as a `bash` block and the details |
 | `ordered(entries, pinned=())` | list: the entries in the section's order | `KeyError` for a pinned id that is not among the entries (`validate_list` prevents it) | Pinned first in pin order; then the newest `released` first; on the same day, the entry later in the list first |
 | `intro(registry)` | str: the section's first line | `KeyError` for a pin that is not listed | Names the pinned titles when there are pins |
@@ -212,13 +214,29 @@ No other top-level key is allowed.
 | `commands` | list of str | Optional. At most 12 lines, each one non-empty line of at most 300 characters with no code fence; shown as a `bash` block |
 | `details` | str | Optional. One line of at most 500 characters, such as links to the guide |
 | `image` | object | Optional. `{"src": S, "alt": A, "caption": C}`, exactly those keys: a picture shown under the title, with the caption in italics below it. `src` is a path under `docs/assets/` (resolved from the README, so it serves package entries too: the README that shows it is on `main`) or a full `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`, with no `..` part. `alt` is one line of at most 300 characters with no square brackets, asterisks or backticks. `caption` is one line of at most 500 characters, with no asterisk and no leading or trailing space, that starts with its media label, one of `LABELS`: `Concept illustration`, `Real data render`, `Model output` or `Synthetic demo` ([media labels](../assets/README.md)). Both follow the rules for every text value below; a package's caption links are full `https://` URLs |
+| `tools` | list of objects | Optional; makes a grouped entry (since 20 October 2026). 1 to 12 tools, shown after the commands as a Markdown list, one line each, in list order. The entry's `where` must be `"main"` and its `released` must be its newest tool's date; the release sentence then gives the range of the tools' dates |
 | `where` | `"main"`, or an object | Required. `"main"` for files merged here, or `{"branch": B, "commit": C, "path": P}` for a package on its own branch |
+
+**A tool** (each item of a grouped entry's `tools`), shown as one list line: the name in bold; in brackets the version, when given, and the release date; the summary; the word Run with the command as inline code; a link named tool page to its page; then the evidence links:
+
+| Field | Type | Rule |
+| --- | --- | --- |
+| `id` | str | Required. The id pattern above; unique across every entry and tool in the list, and not the entry's own id. A tool that had an entry of its own keeps that id |
+| `name` | str | Required. One line, at most 80 characters, no asterisks (it is shown in bold) |
+| `released` | str | Required. A real date, `YYYY-MM-DD`: the tool's own release date |
+| `version` | str | Optional. One line, at most 120 characters, such as ``weights `strokenet-paris4-v1` `` |
+| `summary` | str | Required. One paragraph, at most 800 characters: what it does, its result with its claim label, its main limit |
+| `command` | str | Required. One line, at most 300 characters, no backticks (it is shown as inline code) |
+| `page` | str | Required. Its tool page, `docs/tools/NAME.md`; `check` fails when the file is missing |
+| `evidence` | str | Optional. One line of links, at most 400 characters |
+
+Every tool text follows the rules for every text value below (no HTML comment, no long dash, no raw HTML, links `https://` or relative) and has no leading or trailing space.
 
 Rules for every text value: no HTML comment marker (`<!--` or `-->`), and no long dash (U+2014 or U+2013). The `title`, `summary` and `details` may not hold raw HTML anywhere (a `<` followed by a letter, `/`, `!` or `?`; an `https://` autolink such as `<https://example.org>` is allowed, and so is a bare `<` such as `x<3`), and every link target in them, inline (a target in round brackets after the link text) or as a reference definition (`[x]: TARGET`), is either `https://...` or relative (no scheme such as `http:`, `javascript:` or `data:`, no `//host`, no backslash). Commands are exempt from both, since they are shown in a `bash` block. The `summary` and `details` may not start with a space, a tab, a code fence (three backticks or three tildes) or `<`, because a code block or HTML block opened there would run past the end marker and swallow the rest of the README.
 
 Rules for a package (`where` is an object): exactly the three keys; `branch` matches `[A-Za-z0-9_][A-Za-z0-9_./-]{0,99}`, has no `..` and is not `main`; `commit` is the full 40-character lowercase hex commit; `path` is a simple relative path (no leading `/`, no `.` or `..` parts); the summary, details and commands never use `python -m kit` or `python3 -m kit` (a package runs its own files, and the repository test of documented kit commands checks every `python -m kit` in the README against this repository's kit); and every link in the summary and details is a full `https://` URL, because a relative link would point into `main`, not into the package. A `"main"` entry may use relative links; they resolve from the README, at the repository root.
 
-At `29e7e8c` the list holds 6 entries; the longest summary, AutoPipeline's, is 1,480 characters, near the 1,500 limit.
+At `29e7e8c` the list holds 6 entries; the longest summary, AutoPipeline's, is 1,480 characters, near the 1,500 limit. Since 20 October 2026 it holds 6 entries, one of them Scrolls kit with 4 tools.
 
 **The README** (or `--readme`): it must hold exactly one line that starts with `<!-- releases:start` and exactly one line that is `<!-- releases:end -->`, in that order. Everything between and including them is generated.
 
@@ -294,6 +312,19 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `the list is {"schema_version": 1, "pinned": [ids, optional], "releases": [...]}` | The list is not an object, `schema_version` is not 1, or it has other top-level keys | Restore the list's shape |
 | `releases must be a list` | `releases` is not a list | Restore it |
 | `pinned must list ids of entries in the list, each once` | A pin names an id that is not listed, an id twice, or a non-string | Fix `pinned`, or use `pin` and `unpin` |
+| `ID: tools must be a list of 1 to 12 tools` | `tools` is not a list, is empty, or has more than 12 tools | Give 1 to 12 tool objects |
+| `ID: an entry with tools lists tools merged here; its where is "main"` | A grouped entry with a package `where` | Group only tools merged into `main` |
+| `ID: released is its newest tool's date, DATE` | A grouped entry's `released` differs from its newest tool's | Set it to DATE |
+| `ID: each tool is a JSON object` | A tool is a string or a list | Give an object |
+| `ID: tool TOOL: unknown fields [...]`, `ID: tool TOOL: missing [...]`, `ID: tool id 'X' must be lowercase letters, digits and hyphens` | A field outside the tool fields, a required tool field missing, or a bad tool id | Use the tool fields under Inputs |
+| `ID: tool TOOL: listed twice`, `TOOL: listed twice` | A tool id used twice in the entry, equal to the entry's id, or equal to another entry's or tool's id | Keep one id per tool |
+| `ID: tool TOOL: KEY has a leading or trailing space` | A tool text starts or ends with a space | Trim it |
+| `ID: tool TOOL: name has no asterisks (it is shown in bold)` | An asterisk in the name | Remove it |
+| `ID: tool TOOL: command has no backticks (it is shown as inline code)` | A backtick in the command | Remove it, or move the example to the tool page |
+| `ID: tool TOOL: page is a tool page, docs/tools/NAME.md` | `page` is not a `docs/tools/` page path | Link the tool's page |
+| `PATH links tool pages that are not in the tree: PAGE, ...` | `check`: a tool's page is missing | Write the page (`python -m kit.tooldocs new`) or fix the path |
+| `TOOL: a tool in the ID entry, not an entry of its own; ...` | `add` of an entry, or `pin` or `unpin`, with a tool's id | Edit the tool's line in that entry's `tools` and `add` the whole entry, or pin the entry |
+| `ID: no entry or tool with that id` | `find` of an id that is in neither the entries nor their tools | Check the id with `list` |
 | `ID: no entry with that id` | `pin` or `unpin` of an id that is not in the list | Check the id with `list` |
 | `releases: Expecting value: line 1 column 1 (char 0)`, or another JSON message | The entry or the list is not valid JSON | Fix the JSON |
 | `releases: [Errno 2] No such file or directory: 'PATH'` | The entry file or the README is missing | Fix the path |
@@ -323,7 +354,8 @@ Constants that matter, from `kit/releases.py`:
 | `INLINE_HTML`, `HTTPS_AUTOLINK` | `<` followed by optional space and a letter, `/`, `!` or `?` (refused in a title, summary or details), after removing `<https://...>` autolinks |
 | `LINK_TARGET`, `URL_SCHEME` | A link target, inline or in a reference definition, and the scheme, `//` or backslash that makes it refused unless it starts with `https://` |
 | `IMAGE_FIELDS`, `IMAGE_SRC`, `LABELS` | An image's three keys; its `src` pattern (a `docs/assets/` path or an `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`); the four media labels a caption starts with |
-| Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters |
+| `TOOL_FIELDS`, `TOOL_REQUIRED`, `TOOL_PAGE`, `MAX_TOOLS` | A tool's eight fields and the six required ones; its page pattern (`docs/tools/NAME.md`); at most 12 tools in a grouped entry |
+| Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters; a tool's name 80, version 120, summary 800, command 300, evidence 400 |
 
 The write is not atomic across the two files: the list is written first, then the README. If the README write failed, `check` would report the mismatch and `render` would repair it.
 
@@ -339,7 +371,7 @@ Measured 2026-10-16 in a 4-core Xeon cloud container (`/proc/cpuinfo` reports 2.
 - **Success:** Exit code 0, then `python -m kit releases check` exits 0, and the README diff shows only the intended entry change.
 - **Not a pass:** `check` exit 0 shows only that the README and the list agree: not that links resolve, that a package's branch and commit exist, that the summary's claims are true and labelled, or that Chase approved the entry.
 - **Go-ahead:** Committing an entry to a branch is fine; merging or pushing it into public `main` releases the tool and needs Chase's yes on the exact file list, entry included (the go-ahead rule, hard rule 8). `pin` and `unpin` only when Chase says so; AutoPipeline stays pinned first until he says otherwise (standing decision of 14 October 2026).
-- **Never:** Edit the README's "Released tools" section by hand; add a second entry for a new version of a released tool (replace it under the same id and title); run `pin autopipeline` while it is already pinned (that moves it below Unroll); add an entry for private work or with target-scroll results; write `python -m kit` in a package entry; let a summary call an ink map or ink layer a reading.
+- **Never:** Edit the README's "Released tools" section by hand; add a second entry for a new version of a released tool (replace it under the same id and title; for a kit tool, replace its line in the Scrolls kit entry's `tools`); give a command-line kit tool an entry of its own (it joins the Scrolls kit entry); run `pin autopipeline` while it is already pinned (that moves it below Unroll); add an entry for private work or with target-scroll results; write `python -m kit` in a package entry; let a summary call an ink map or ink layer a reading.
 
 ## Tests
 
@@ -347,10 +379,11 @@ Measured 2026-10-16 in a 4-core Xeon cloud container (`/proc/cpuinfo` reports 2.
 python -m unittest tests.test_releases -v
 ```
 
-21 tests, 0.3 s (2026-10-16). They cover good and bad entries (every validation rule, including the package rules), the list's shape and pins, rendering of `main` and package entries, the order (newest first, later entry first on a day, pins first) and the intro, `apply` keeping the text outside the markers and refusing wrong markers, `upsert` adding then replacing without changing its input, pins surviving a new version, `updated`, the command line (the clone hint without a list, check, render, add, list, pin and unpin, hand edits caught, a bad entry changing nothing, the command registered in `kit/cli.py`), and `check` on this repository's own README and list. They do not cover `add -` (stdin), which was run by hand for this page, a README write failing halfway, or whether a package's branch and commit exist. `tests/test_repo.py` separately checks every `python -m kit` command written in the README and every relative link in it.
+29 tests, 0.2 s (2026-10-20). They cover good and bad entries (every validation rule, including the package rules), grouped entries (good and bad tools, one line per tool, unique and resolvable tool ids, `add` and `pin` refusing a tool's id, `list` and `check` with tool pages), the list's shape and pins, rendering of `main` and package entries, the order (newest first, later entry first on a day, pins first) and the intro, `apply` keeping the text outside the markers and refusing wrong markers, `upsert` adding then replacing without changing its input, pins surviving a new version, `updated`, the command line (the clone hint without a list, check, render, add, list, pin and unpin, hand edits caught, a bad entry changing nothing, the command registered in `kit/cli.py`), and `check` on this repository's own README and list. They do not cover `add -` (stdin), which was run by hand for this page, a README write failing halfway, or whether a package's branch and commit exist. `tests/test_repo.py` separately checks every `python -m kit` command written in the README and every relative link in it.
 
 ## History
 
+- 2026-10-20: grouped entries: an entry's optional `tools` lists command-line tools that share it, one line each; Scrolls kit groups Scroll Text Reader, StrokeNet, the segment stack check and the scroll center finder, whose old ids still resolve (`find`), and `list` shows each tool under its entry (Chase: "consolidate some releases like some of the released stuff on our scrolls readme seems more like kit tools") (`ba08f7e`).
 - 2026-10-16: the letter reader's entry gives the plain character error beside the free-ends error on PHerc. 1667 maps (`2b8c445`).
 - 2026-10-16: entries may not hold raw HTML in a title, summary or details, and their links must be `https://` or relative (`eb88e23`).
 - 2026-10-16: Unroll's entry added and pinned after AutoPipeline (`9896827`).
@@ -364,7 +397,7 @@ python -m unittest tests.test_releases -v
 - [README "Released tools"](../../README.md#released-tools): the section this tool writes.
 - [`releases.json`](../releases.json): the list itself.
 - [`tooldocs`](tooldocs.md): every release also needs a tool page whose id or Release id is the release id.
-- [`autopipeline`](autopipeline.md), [`unroll`](unroll.md), [`letterread`](letterread.md), [`umbilicus`](umbilicus.md), [`strokenet`](strokenet.md), [`stackcheck`](stackcheck.md): the pages of the six released tools.
+- [`autopipeline`](autopipeline.md), [`unroll`](unroll.md), [`scroll-lens`](scroll-lens.md), [`inkfilter`](inkfilter.md), [`starter`](starter.md): the pages of the standalone products; [`cli`](cli.md) (Release id `scrolls-kit`), [`letterread`](letterread.md), [`strokenet`](strokenet.md), [`stackcheck`](stackcheck.md), [`umbilicus`](umbilicus.md): the Scrolls kit entry and its tools.
 - [`cli`](cli.md): the `python -m kit` entry point that registers this command.
-- [AGENTS.md](../../AGENTS.md): the releases rule and the standing decisions on one entry per tool and on AutoPipeline's pin.
+- [AGENTS.md](../../AGENTS.md): the releases rule and the standing decisions on one entry per standalone product (kit tools share Scrolls kit) and on AutoPipeline's pin.
 - [Pull request template](../../.github/PULL_REQUEST_TEMPLATE.md): its checklist asks for the entry when a PR releases private work.

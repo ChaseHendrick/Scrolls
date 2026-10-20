@@ -25,7 +25,7 @@ Anything a person or an agent runs or calls. The checker finds the first eight i
 | Each project skill in `.claude/skills/` | Its Code field names the skill's folder |
 | Each CI workflow in `.github/workflows/` | Its Code field names the file |
 | The installable package, `pyproject.toml` | Its Code field names the file |
-| Each released tool in [`releases.json`](releases.json) | The page's id, or its Release id field, is the release's id |
+| Each released tool in [`releases.json`](releases.json): every entry, and every tool in a grouped entry's `tools` (the Scrolls kit entry, 20 October 2026) | The page's id, or its Release id field, is the release's or the tool's id |
 | Agent (MCP) tools, apps and Spaces, released weights and patches to villa | By hand: write the page when the thing is made |
 | Past tools: retired ones still in the tree, and tools whose code lives only on another branch or in history | By hand: a Retired or Branch only page |
 
