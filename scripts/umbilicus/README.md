@@ -4,7 +4,7 @@
 
 *Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.*
 
-This finds the winding center (the umbilicus) of a Herculaneum scroll in X-ray CT and writes it in the same format as the published umbilicus files: one control point per height, `x`, `y`, `z` in level-0 voxels of the scan. Tools that trace and orient the papyrus sheets use such a line. Many scrolls have none, and two people placing the same center by hand often disagree by a few millimeters (below), so an automatic answer with a measured error is useful.
+This finds the winding center (the umbilicus) of a Herculaneum scroll in X-ray CT and writes it in the same format as the published umbilicus files: one control point per height, `x`, `y`, `z` in level-0 voxels of the scan, with the scan's level-0 size stated when available so VC3D can place it. With `--vc3d-name` the file is named `umbilicus.json`, the name VC3D and spiral-fitting look for (see "Use it in VC3D and spiral-fitting"). Tools that trace and orient the papyrus sheets use such a line. Many scrolls have none, and two people placing the same center by hand often disagree by a few millimeters (below), so an automatic answer with a measured error is useful.
 
 It is model output, not a measurement. Check a line on CT slices before you rely on it.
 
@@ -36,9 +36,24 @@ python scripts/umbilicus/predict.py PHerc0125 \
     --data work/umbilicus/slices --out work/umbilicus/out
 ```
 
-This writes `work/umbilicus/out/PHerc0125_umbilicus.json` and `PHerc0125_predict.json` (every slice's center, which slices were kept and why, and the end-point support). `work/` is ignored by git, so the weights and slices stay out of it. The first run reads about 0.25 to 0.65 GB of slices from the bucket into `--data` (0.24 to 0.62 GB on the 13 published scrolls). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices (our run, with one first-stage and one zoom model of the released size). Give several `--first` or `--zoom` files to take the median of several models; `--volume` picks a scan when a scroll has more than one (a slice file already in `--data` must come from that scan, or by default from the default scan, and must hold some CT; otherwise `predict.py` stops and asks you to remove it); `--device cuda` runs it on an NVIDIA GPU (`mps` is untested); it also runs on a CPU. The held-out scores below were computed on NVIDIA GPUs under bfloat16 autocast; on a CPU the networks run in float32, so answers can differ slightly from what the scoring saw (Interpretation).
+This writes `work/umbilicus/out/PHerc0125_umbilicus.json` and `PHerc0125_predict.json` (every slice's center, which slices were kept and why, and the end-point support). Add `--vc3d-name` to write `work/umbilicus/out/PHerc0125/umbilicus.json` instead. `work/` is ignored by git, so the weights and slices stay out of it. The first run reads about 0.25 to 0.65 GB of slices from the bucket into `--data` (0.24 to 0.62 GB on the 13 published scrolls). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices (our run, with one first-stage and one zoom model of the released size). Give several `--first` or `--zoom` files to take the median of several models; `--volume` picks a scan when a scroll has more than one (a slice file already in `--data` must come from that scan, or by default from the default scan, and must hold some CT; otherwise `predict.py` stops and asks you to remove it); `--device cuda` runs it on an NVIDIA GPU (`mps` is untested); it also runs on a CPU. The held-out scores below were computed on NVIDIA GPUs under bfloat16 autocast; on a CPU the networks run in float32, so answers can differ slightly from what the scoring saw (Interpretation).
 
 It works on a scroll that has a 1.2 m (about 9 um) scan in the open-data bucket, stored as raw 128^3 uint8 chunks; the default scan is that one. The models were trained on 8.64 and 9.362 um scans only, so other voxel sizes are untested (Interpretation); `predict.py` refuses a `--volume` outside 8 to 10 um before reading it, and any slice file outside that range. The released models trained on all 13 published scrolls, so on those scrolls the answer is not a test; the held-out numbers below come from models that never saw the scroll they were scored on.
+
+## Use it in VC3D and spiral-fitting
+
+VC3D looks for an umbilicus file named `umbilicus.json` (then `estimated_umbilicus.json`) beside its project file and its segment folders, and nothing else; spiral-fitting's dataset folder must hold `umbilicus.json` (villa main `8aa507c12`: `volume-cartographer/core/src/ScrollUmbilicus.cpp:74-75`, `spiral-fitting/fit_session.py:362-365`). So:
+
+```sh
+python scripts/umbilicus/predict.py PHerc0125 ... --out work/umbilicus/out --vc3d-name
+# writes work/umbilicus/out/PHerc0125/umbilicus.json
+```
+
+Put the VC3D project file (`*.volpkg.json`) in that folder, copy `umbilicus.json` beside it, or set the project's `umbilicus` field to the file. For spiral-fitting, copy it into the dataset folder.
+
+When the source grid is available, the finder writes it under either name as the scan's level-0 grid as `volume_width`, `volume_height` and `volume_slices` (x, y and z in voxels), the three keys villa's own `vc_gen_umbilicus` stamps. VC3D uses them to find the one integer factor between that grid and the volume it has open, so the points land on the right voxels at any pyramid level; without them it falls back to the ratio of voxel sizes (`ScrollUmbilicus.cpp:262-358`). The grid comes from the slice file (`shape_l0`, stored by this version) or from the scan's level-0 `.zarray`. If neither can be read, or the shape does not match the slice file, no key is written (VC3D refuses a partial set, `core/src/Umbilicus.cpp:389-421`) and a line on stderr says why. The cached scan identity must match the input line or prediction record before its slices or dimensions are used. A failed optional metadata request keeps already downloaded CT slices. Under the VC3D name a line with no points is not written, since VC3D refuses such a file.
+
+`pipeline.py collect` and `trim`, `refine.py chain-collect` and `endcheck.py files` take `--vc3d-name` too; `trim` and `files` read both names and keep each file's unless it is given. `ctcheck.py` reads both. The tests read every written file back through rule-for-rule copies of VC3D's reader, its name search and its rescale rule; no VC3D binary was built or opened for them. Details and line references: the [tool page](../../docs/tools/umbilicus.md#use-it-in-vc3d-and-spiral-fitting).
 
 ## Weights
 
@@ -187,7 +202,7 @@ Training is not bit-for-bit repeatable on GPUs; expect small differences from th
 | `slices.py` | Published center lines (pinned sources), slice extraction by range requests (`slices.py extract`, `extract_ranged`), the smoothing along z; `extract` is the whole-chunk reader the training slices came from and needs numcodecs |
 | `centrenet.py` | First-stage network, training, prediction, coordinate frames |
 | `refine.py` | Zoom stage: training, cross-validation, chaining onto first-stage answers |
-| `pipeline.py` | Folds, training jobs, scoring, the mount and cap trim, the end-point rule, the file format |
+| `pipeline.py` | Folds, training jobs, scoring, the mount and cap trim, the end-point rule, the file format, its name (`--vc3d-name`) and the stamped volume dimensions |
 | `predict.py` | Center line for a scroll from trained weights |
 | `endcheck.py` | Calibrate the end-point rule on published scrolls, score it on held-out answers, apply it to written files |
 | `ctcheck.py` | Draw center lines on CT slices for a person to check; also needs matplotlib (`pip install matplotlib`, which brings Pillow) |

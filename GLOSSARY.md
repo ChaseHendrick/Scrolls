@@ -308,6 +308,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **umbilicus**: The central axis of a roll. In the data it is a fitted center line with one control point per height.
 
+**umbilicus.json**: The umbilicus file name VC3D searches for first, beside its project file and its segment folders (then `estimated_umbilicus.json`), and the one a spiral-fitting dataset folder must hold. Its `metadata` may state `volume_width`, `volume_height` and `volume_slices`, the voxel grid its points are in (all three or none; VC3D refuses a partial set), which VC3D uses to place the points on the volume it has open. `scripts/umbilicus/predict.py --vc3d-name` writes one with the scan's level-0 grid when available ([page](docs/tools/umbilicus.md#use-it-in-vc3d-and-spiral-fitting)).
+
 **Unroll**: A browser viewer on Hugging Face Spaces that rebuilds traced windings of PHerc. 139 ([`docs/unroll-space.md`](docs/unroll-space.md)).
 
 **UV (u, v)**: The two coordinates of a point on a surface's own 2D grid, as opposed to its x, y, z position in the scan. The u axis runs along the roll.
