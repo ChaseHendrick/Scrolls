@@ -16,7 +16,7 @@ Runs an openly licensed 9 um ink model on one region of a VC3D segment in both d
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing |
 | Writes | Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR |
 | Go-ahead | Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests |
-| Released | Not released: code on branch `claude/ink-lens` since 2026-10-20; the Space is not deployed |
+| Released | Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase, 20 Oct 2026, about 21:28 UTC: "can we not deploy to a HF space rn and wait until i ever get PRO to get more spaces"); local mode works now |
 | License | Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0 |
 | Checked | 2026-10-20 against commit `3c2445e` |
 
@@ -419,6 +419,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-20: merged in [#138](https://github.com/ChaseHendrick/Scrolls/pull/138) (`aee666a`); deployment held until Chase has Hugging Face PRO (his words in Released above).
 - 2026-10-20: design, preregistration and the gate (`3c2445e`); the engine, client, Space, tests and this page on
   branch `claude/ink-lens`.
 
