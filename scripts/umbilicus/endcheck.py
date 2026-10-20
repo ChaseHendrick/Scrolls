@@ -2,7 +2,7 @@
 
     python endcheck.py calibrate --cache DIR [--out calib.json] [--radius MM]
     python endcheck.py score RUN_DIR --cache DIR [--data NPZ_DIR] [--out score.json]
-    python endcheck.py files SRC DST --cache DIR [--data NPZ_DIR]
+    python endcheck.py files SRC DST --cache DIR [--data NPZ_DIR] [--vc3d-name]
 
 calibrate  the rule at the published centers of the 13 published scrolls (held constant past their first and last
            control points): how often the support falls under the bar inside each annotated band, and how many points
@@ -11,7 +11,9 @@ score      the rule on a finished run's held-out predictions (refine_*.json of r
            pipeline.py job): per held-out scroll, the error against the published center over all scored slices
            (this must equal the run's result.json), over the slices pipeline.keep_band keeps, and over the slices
            the end-point rule keeps. One stage per folder: a folder with both kinds of record is refused.
-files      apply the rule to umbilicus JSONs already written (SRC/*_umbilicus.json to DST).
+files      apply the rule to umbilicus JSONs already written (SRC/<scroll>_umbilicus.json or SRC/<scroll>/umbilicus.json
+           to DST under the same name, or as DST/<scroll>/umbilicus.json with --vc3d-name), stamping the scan's level-0
+           volume_width, volume_height and volume_slices (pipeline.volume_dims) as VC3D reads them.
 
 Slices are the ones the pipeline reads (level-0 z = 32 + 64 k). With --data the pipeline's own slice files
 (<scroll>.npz from `slices.py extract`) are used. Without it, the open-data bucket is read with HTTP range requests:
@@ -229,38 +231,42 @@ def score(run, cache, data=None, out=None):
     return res
 
 
-def files(src_dir, dst, cache, data=None):
-    """Apply the end-point rule to written umbilicus JSONs; points already dropped stay dropped."""
+def files(src_dir, dst, cache, data=None, vc3d_name=False):
+    """Apply the end-point rule to written umbilicus JSONs (pipeline.umbilicus_files: SRC/<s>_umbilicus.json and
+    SRC/<s>/umbilicus.json); points already dropped stay dropped. Each file keeps its name, or with vc3d_name goes to
+    DST/<s>/umbilicus.json, and gets the scan's level-0 dimensions (pipeline.stamp_dims)."""
     os.makedirs(dst, exist_ok=True); out = {}
-    for f in sorted(glob.glob(os.path.join(src_dir, "*_umbilicus.json"))):
-        s = os.path.basename(f)[:-len("_umbilicus.json")]
+    for s, f, vc3d in pipeline.umbilicus_files(src_dir):
         with open(f) as fh:
             j = json.load(fh)
         cp = sorted(j["control_points"], key=lambda q: q["z"])
         if not cp:
             continue
         z = np.array([q["z"] for q in cp], float); yx = np.array([[q["y"], q["x"]] for q in cp], float)
-        um = float(j["metadata"]["voxelsize_um"])
+        um = float(j["metadata"]["voxelsize_um"]); vol = j["metadata"]["source_volume"]
         if data:
-            d = _npz(data, s, j["metadata"]["source_volume"]); zz = np.asarray(d["z_l0"], float)
+            d = _npz(data, s, vol); zz = np.asarray(d["z_l0"], float); ct = d["ct"]
+            level = int(d["level"]) if "level" in d.files else 3
             idx = np.searchsorted(zz, z)
             if not (idx < len(zz)).all() or not np.array_equal(zz[np.minimum(idx, len(zz) - 1)], z):
                 raise SystemExit(f"{s}: control point heights are not the slice file's heights")
             full = np.full((len(zz), 2), np.nan); full[idx] = yx
-            k_all, _, thr = _rule_npz(d, full, np.isin(np.arange(len(zz)), idx))
+            k_all, _, thr = pipeline.end_trimmed_keep(ct, full, zz, float(d["um"]), np.isin(np.arange(len(zz)), idx), level=level)
             keep = k_all[idx]
+            dims = pipeline.volume_dims(vol, d["shape_l0"] if "shape_l0" in d.files else None, ct.shape[1:], level)
         else:
-            b = Bucket(j["metadata"]["source_volume"], cache, s)
+            b = Bucket(vol, cache, s)
             allp = np.ones(len(z), bool)
             keep, _, thr = _rule_bucket(b, z.astype(int), yx, allp, allp)
+            dims = pipeline.volume_dims(vol, None, b.L3.shape[1:], 3)
+        pipeline.stamp_dims(j["metadata"], dims, f)
         j["control_points"] = [q for q, k in zip(cp, keep) if k]
         j["metadata"]["total_points"] = len(j["control_points"])
         j["metadata"]["end_trimmed"] = (f"end-point rule: dropped from each end until {pipeline.END_RUN_MM:g} mm of slices where at least "
                                         f"{pipeline.END_SUPPORT:g} of {pipeline.END_RAYS} rays from the center meet papyrus within "
                                         f"{pipeline.END_RADIUS_MM:g} mm (scripts/umbilicus/endcheck.py)")
-        with open(os.path.join(dst, os.path.basename(f)), "w") as fh:
-            json.dump(j, fh, indent=1)
-        out[s] = dict(points_in=len(cp), points_out=int(keep.sum()), papyrus_level=thr)
+        p = pipeline.write_umbilicus(j, dst, s, vc3d or vc3d_name)
+        out[s] = dict(points_in=len(cp), points_out=int(keep.sum()), papyrus_level=thr, file=p)
     return out
 
 
@@ -272,6 +278,8 @@ if __name__ == "__main__":
     ap.add_argument("--data", help="the pipeline's slice files (<scroll>.npz) instead of bucket reads")
     ap.add_argument("--out", help="write the result JSON here")
     ap.add_argument("--radius", type=float, help="calibrate: try this radius in mm instead of the rule's")
+    ap.add_argument("--vc3d-name", action="store_true",
+                    help="files: write DST/SCROLL/umbilicus.json, the name VC3D and spiral-fitting look for")
     a = ap.parse_args()
     if a.cmd == "calibrate":
         r = calibrate(a.cache, a.out, a.radius)
@@ -283,4 +291,4 @@ if __name__ == "__main__":
     else:
         if len(a.args) != 2:
             raise SystemExit("files SRC DST")
-        print(json.dumps(files(a.args[0], a.args[1], a.cache, a.data), indent=1))
+        print(json.dumps(files(a.args[0], a.args[1], a.cache, a.data, a.vc3d_name), indent=1))
