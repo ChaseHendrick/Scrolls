@@ -1,0 +1,29 @@
+Ink Lens
+Copyright 2026 Chase Hendrick and Scrolls contributors
+
+The Ink Lens code (app.py, engine.py, gate.py, inklens.py, vc3dout.py, volio.py, bridge.py and tools/) is licensed
+under the Apache License, Version 2.0. See LICENSE. The staged Space also carries five modules of the Scrolls kit
+(kit/__init__.py, auc.py, fetch.py, layers.py, verify.py), Apache License 2.0, same copyright.
+
+engine.robust_np restates villa's normalize_robust and engine.hann2d villa's floored Hann blend map (both MIT,
+Copyright (c) Vesuvius Challenge) so the batched device version can be checked against them. Ink Lens copies no other
+third-party code. When it starts, it downloads the following at pinned versions and uses them under their own
+licenses, which still apply:
+
+- villa's vesuvius package, https://github.com/ScrollPrize/villa at commit
+  8aa507c1215f1fa8758f13d0538f7af9710e02d7: MIT License, Copyright (c) Vesuvius Challenge.
+- d9v2_ft-012000.pth, https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search release v1.0:
+  MIT License, Copyright (c) TAUIL-Abd-Elilah. A fine-tune of ink_9um.
+- scrollprize/ink_9um hybrid_3d2d-seed42/step-075000.pth, https://huggingface.co/scrollprize/ink_9um: MIT License,
+  Copyright (c) Vesuvius Challenge.
+
+The client's letter pins use the Scroll Text Reader (kit/letterread.py, Apache License 2.0) with the letters-v2-ccby
+weights (CC BY 4.0; credits in docs/letter-reader.md of ChaseHendrick/Scrolls).
+
+Scan data: Ink Lens reads CT scans from the Vesuvius Challenge open data, licensed CC BY-NC 4.0
+(https://creativecommons.org/licenses/by-nc/4.0/). Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael
+Dal Prà, Johannes Rudolph, Paul Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald,
+David Josey, Youssef Nader, C. Seth Parker, W. Brent Seales. Vesuvius Challenge: CT Scans of Herculaneum Papyri.
+Vesuvius Challenge. https://scrollprize.org/data
+
+Maps the Space returns are model outputs computed from that data or from the caller's region; the Space keeps none.
