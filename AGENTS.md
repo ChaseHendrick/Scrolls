@@ -80,7 +80,7 @@ The full map, one row per module and script, is [`docs/MAP.md`](docs/MAP.md); se
 | `kit/` | The `python -m kit` package: standard library only, except numpy, tifffile and zarr for the map tools; every subcommand is in `kit/cli.py` |
 | `scripts/` | Mac GPU scripts (bash 3.2), the letter reader's training and benchmarks, the scroll center finder (`scripts/umbilicus/`), and `scripts/experiments/`: saved records of past public-data jobs, keep their wording |
 | `docs/` | Docs, indexed by [`docs/README.md`](docs/README.md): the handoff, benchmark numbers (`docs/results.json`), dated logs, Modal pricing and specs, and frozen evidence archives with hashes in `docs/evidence/` (do not edit) |
-| `spaces/` | Hugging Face Space sources: `scroll-lens/` ([page](docs/tools/scroll-lens.md)) |
+| `spaces/` | Hugging Face Space sources: `scroll-lens/` ([page](docs/tools/scroll-lens.md)), `ink-lens/` ([page](docs/tools/ink-lens.md), not yet deployed) |
 | `tests/` | `python -m unittest discover -s tests`; `tests/test_repo.py` checks the repository itself |
 | `experiments/`, `templates/` | The local experiment ledger (gitignored except its README) and its record template |
 

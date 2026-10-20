@@ -1,0 +1,55 @@
+{
+ "note": "Public crops of released segments that are not prize-eligible. Ink Lens reads them anonymously from the open-data bucket when someone runs one; nothing is bundled. Crops are (y0, y1, x0, x1) on the segment's 9 um surface volume, the 640 px windows of densest labeled ink used in docs/results.json. A window chosen with the labels gives a development number, not a blind test.",
+ "bucket": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com",
+ "samples": [
+  {
+   "id": "0841-w00",
+   "title": "PHerc0841 w00 (held out from d9v2 and ink_9um)",
+   "scroll": "PHerc0841",
+   "segment": "20260220213127-w00",
+   "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "tifxyz": "mesh/20260220213127-on-20250821151531-9.366um.tifxyz",
+   "um_per_px": 9.366,
+   "surface_shape": [4220, 4760],
+   "crop": [2624, 3264, 2688, 3328],
+   "role": "development"
+  },
+  {
+   "id": "0841-ag896",
+   "title": "PHerc0841 auto-grown 896 (held out from d9v2 and ink_9um)",
+   "scroll": "PHerc0841",
+   "segment": "20260220214732-auto_grown_20260220144552896",
+   "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "um_per_px": 9.366,
+   "surface_shape": [4640, 4720],
+   "crop": [2496, 3136, 1600, 2240],
+   "role": "development"
+  },
+  {
+   "id": "0841-ag405",
+   "title": "PHerc0841 auto-grown 405 (held out from d9v2 and ink_9um)",
+   "scroll": "PHerc0841",
+   "segment": "20260221022814-auto_grown_20260220174252405",
+   "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "um_per_px": 9.366,
+   "surface_shape": [3760, 4900],
+   "crop": [1024, 1664, 2496, 3136],
+   "role": "development"
+  },
+  {
+   "id": "0139-w035",
+   "title": "PHerc0139 w035 (training segment: a pipeline check, not a test)",
+   "scroll": "PHerc0139",
+   "segment": "20260317000000-w035_2026031718",
+   "surface_volume": "surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr",
+   "labels": "ink-labels/2.399um-volume-20260102150214/20260918",
+   "um_per_px": 9.362,
+   "surface_shape": [5820, 5240],
+   "crop": [1920, 2560, 2304, 2944],
+   "role": "training"
+  }
+ ]
+}

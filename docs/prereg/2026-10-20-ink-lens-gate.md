@@ -40,3 +40,16 @@ windows chosen with the labels, not a blind test, and the status is model output
 ## Results
 
 Filled in after the checks run; nothing above this line changes.
+
+Run 20 October 2026 with `spaces/ink-lens/tools/check_gate.py` (CPU, 4 cores, fp32); every number is in
+[`scripts/experiments/2026-10-20-ink-lens-gate/results.json`](../../scripts/experiments/2026-10-20-ink-lens-gate/results.json)
+and `ink_lens_checks` in [`docs/results.json`](../results.json). Model output on development windows.
+
+| Crop | Status | Excess | Labeled ink kept | Labeled background kept | Swapped status |
+| --- | --- | --- | --- | --- | --- |
+| w00 | ink | 15.4 | 53.9 % | 3.1 % | none (excess 0.0) |
+| ag896 | ink | 21.2 | 52.3 % | 7.1 % | none (excess 0.0) |
+| ag405 | ink | 17.6 | 49.7 % | 7.1 % | none (excess 0.0) |
+
+Check 1: PASS. Check 2: PASS. Check 3: PASS by refusal (the corner window of w00 is all zero, so the engine refused
+it before the gate ran; the gate was not exercised off the papyrus).
