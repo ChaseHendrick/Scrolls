@@ -28,7 +28,39 @@ A surface volume is a stack rendered along a mesh's normal, with depth followed 
 
 The high-z face is the assumed ink side, so every command run also processes reversed depth. A map is filter output, not a reading. The default recipe was selected on published labels at approximately 4.8 um per pixel; other resolutions and custom recipes need their own evaluation. `face-mix-sharp` reduces smoothing for inspection and is not the confirmed recipe.
 
-On 56 confirmation windows from the same 28 segments and seven scrolls used in development, the default mean AUC was 0.7357, versus 0.7042 for the selected alpha-compositing baseline and 0.6276 for its reversed-depth control. Alpha alone wins on three scrolls; the reverse filter wins on one. This is a narrow comparison with tested fixed filters, not a trained-reader comparison or evidence of generalization to wholly unseen scrolls. The linked evidence gives all rows, intervals, controls and limitations.
+On 56 confirmation windows from the same 28 segments and seven scrolls used in development, the default mean AUC was 0.7357, versus 0.7042 for the selected alpha-compositing baseline and 0.6276 for its reversed-depth control. Alpha alone wins on three scrolls; the reverse filter wins on one. This is a narrow comparison with tested fixed filters, not a trained-reader comparison or evidence of generalization to wholly unseen scrolls. The linked evidence gives all rows, intervals, controls and limitations. A second frozen test on 44 fresh windows, run on 21 October 2026, is below.
+
+### Fresh-window check, 21 October 2026
+
+A second one-shot test scored the same frozen `face-mix` recipe on 44 windows nobody had scored before: windows 4 and 5, taken by the same greedy pick of balanced labeled ink and background, of 22 publicly labeled segments on six scrolls. They are new windows of segments used in development, not unseen scrolls. PHerc0814, where the reversed control won on 17 October, has no windows 4 and 5, so that case was not tested again. The rules and the window list were frozen in a private commit (`3b35f149`, 20 October 2026, 20:27 UTC) before any of these windows was read; that commit is not public, so the order cannot be checked from outside. The test ran once on CPU at no cost. A neighboring process pushed the machine out of memory after 24 windows, and the other 20 were rerun with the same code, as the frozen rules allow; no window was dropped.
+
+Model output. Each scroll is the mean of its segments and each segment the mean of its windows; intervals are segment-bootstrap 95 % intervals.
+
+| Comparison, mean of six scrolls | A | B | A minus B | 95 % interval | Scrolls where A is higher |
+| --- | --- | --- | --- | --- | --- |
+| `face-mix` minus alpha compositing | 0.693 | 0.652 | +0.040 | +0.030 to +0.050 | 4 of 6 |
+| `face-mix` minus its reversed-depth map | 0.693 | 0.549 | +0.144 | +0.107 to +0.175 | 5 of 6 |
+| Alpha compositing minus its reversed-depth map | 0.652 | 0.575 | +0.078 | +0.068 to +0.086 | 6 of 6 |
+
+| Scroll | Segments | `face-mix` | Alpha compositing | `face-mix` minus alpha | Reversed-depth `face-mix` |
+| --- | --- | --- | --- | --- | --- |
+| PHerc0009B | 1 | 0.810 | 0.749 | +0.061 | 0.473 |
+| PHerc0139 | 4 | 0.634 | 0.666 | -0.032 | 0.655 |
+| PHerc0500P2 | 1 | 0.625 | 0.560 | +0.066 | 0.526 |
+| PHerc0841 | 2 | 0.641 | 0.590 | +0.051 | 0.370 |
+| PHerc1667 | 6 | 0.663 | 0.686 | -0.024 | 0.592 |
+| PHercParis4 | 8 | 0.782 | 0.663 | +0.119 | 0.678 |
+
+What it shows (Interpretation):
+
+- `face-mix` stayed ahead of the selected alpha compositing on the six-scroll mean, and alpha again scored higher on PHerc0139 and PHerc1667, as on 17 October.
+- Most of the gain is again PHercParis4. Without it the five-scroll mean difference is +0.024; weighted by segment, the 14 segments outside PHercParis4 average -0.003, and 7 of them favor `face-mix`. These two numbers were computed after the test and are descriptive; the frozen rules do not name them.
+- On PHerc0139 the reversed-depth map scored higher than the forward map (0.655 against 0.634). Two sparsely labeled windows of one segment carry that (about 3,100 and 900 labeled ink pixels, against a median of about 256,000); without them the forward map is ahead on all six scrolls, but that check is post hoc and not part of the verdict. Counting PHerc0814 on 17 October, the reversed control has beaten the forward map on two of the seven scrolls tested.
+- Scores are lower than on 17 October (`face-mix` 0.693 against 0.736, alpha 0.652 against 0.704): six scrolls instead of seven, and later picks of the greedy window choice.
+
+The same test tried a label-free rule for choosing the inked face per segment, as a possible 0.1.1 change. It picks the opposite face when that face's map has a standard deviation more than 1.15 times the default face's. It flipped one segment, PHerc0841 w00, onto the worse face: -0.018 against `face-mix` (-0.035 to 0.000), a FAIL under the frozen rules. A secondary rule that picks the face with the larger skewness per window was behind (-0.056, -0.089 to -0.021). The released recipe and its default face are unchanged; there is no 0.1.1.
+
+There is still no comparison with a trained ink model and no test on wholly unseen scrolls. The frozen files (the preregistration, the face-rule code with its 1.15 ratio, and the window list) are private. Their SHA-256 digests are `c4fee1d497ae694410f0e2e4625390b53b4fdc1a5a5d39e5ca263c4ba0af3d5d`, `8f062b0f541b290915dd70fc678eb5a773c0288298454354271ba3884d59bf0a` and `703567225d67a07bcb456cca9b69f5f7dd19f8ec4faa1acb192236b6194e2531`. They were published here after the test ran, so they let a later release of those files be checked byte for byte; they do not show when the files were frozen.
 
 Claim label: Model output, for maps and numerical comparisons.
 
@@ -84,6 +116,7 @@ This release uses a self-contained package branch so it can be installed without
 ## History
 
 - 2026-10-17: Version 0.1.0 packages the frozen numerical filter with a local-file adapter, synthetic tests and scalar-score evidence; publication commit `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6`.
+- 2026-10-21: Fresh-window check of the 0.1.0 recipe (`4953f178`) on 44 windows of six scrolls: `face-mix` still ahead of alpha compositing on the mean (+0.040), mostly from PHercParis4; the label-free face rule tried for 0.1.1 failed, so the recipe is unchanged.
 
 ## Related
 
