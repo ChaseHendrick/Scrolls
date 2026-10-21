@@ -7,7 +7,8 @@
    "quote": "A traced surface's render comes out turned, and `ink_9um` reads it much worse until it is turned upright",
    "label": "Model output",
    "causal": [
-    "source r:orientation_checks/0 sha256:c42aaa51887dd94fe0d92af0f8b561e14c15895c16fae3d2f0b7c7e486ad0afd"
+    "source r:orientation_checks/0 sha256:c42aaa51887dd94fe0d92af0f8b561e14c15895c16fae3d2f0b7c7e486ad0afd",
+    "source r:orientation_checks/1 sha256:2dc29ea1604a9210e381395042dd987f18aa712143810f2dc863c3f6c66f9bd3  # the Reader v2 repeat the item also reports"
    ]
   },
   {

@@ -1,13 +1,13 @@
 {
  "ambiguous": [],
- "commit": "05604250c01dad045e2223dda2398d56397938da",
+ "commit": "14bd3f2148ead970cbe9ead0338fe002db7300ee",
  "counts": {
   "by_gap": {
    "claim": 8,
    "code": 6,
    "control": 5,
    "decision": 12,
-   "prereg": 13,
+   "prereg": 17,
    "record": 8,
    "run": 58
   },
@@ -18,7 +18,7 @@
    "release": 6,
    "result": 60
   },
-  "pairs": 110
+  "pairs": 114
  },
  "gaps": {
   "docs/evidence/2026-10-07-merge-review": [
@@ -98,6 +98,7 @@
    "run"
   ],
   "r:finetune_checks": [
+   "prereg",
    "run"
   ],
   "r:ink_lens_checks/0": [
@@ -163,9 +164,11 @@
    "run"
   ],
   "r:orientation_checks/0": [
+   "prereg",
    "run"
   ],
   "r:orientation_checks/1": [
+   "prereg",
    "run"
   ],
   "r:reconstruction_checks/0": [
@@ -279,6 +282,7 @@
    "control"
   ],
   "r:surfacefix_checks/0": [
+   "prereg",
    "run"
   ],
   "r:umbilicus_checks/0": [
@@ -387,6 +391,7 @@
     "run"
    ],
    "r:finetune_checks": [
+    "prereg",
     "run"
    ],
    "r:ink_lens_checks/0": [
@@ -452,9 +457,11 @@
     "run"
    ],
    "r:orientation_checks/0": [
+    "prereg",
     "run"
    ],
    "r:orientation_checks/1": [
+    "prereg",
     "run"
    ],
    "r:reconstruction_checks/0": [
@@ -568,6 +575,7 @@
     "control"
    ],
    "r:surfacefix_checks/0": [
+    "prereg",
     "run"
    ],
    "r:umbilicus_checks/0": [
@@ -608,7 +616,7 @@
    "finding:9": "ec79e1cf2d7105238bb8a1ca55adfbfefd2490a1cc7899e4a017e937a141b9a5"
   }
  },
- "initial_sha256": "c2f25901a0be80818d247476c26b62725b0218f030d75fc63288d1162dfc32f2",
+ "initial_sha256": "451441ae7a8aae21497a78838814645be409023187e11dfa2816d76635c5c951",
  "keys": 88,
  "legacy": {
   "finding:10": "bb3bddcf95ccbf4cfd59bfc65ee5c904f4c3dbb58f770dab25cc06200514ed6d",
@@ -634,6 +642,11 @@
    "old_initial_sha256": "938b1e0acdab80e2f6b2d7b48bad1710bf6c8324d33c6e87babfe5a424278d23",
    "reason": "origin/main gained the Ink Lens preregistration and its result (PR #138, merged 20 October 2026) after this branch cut its cutover baseline; both predate the cutover, and neither has a public run record or decision row, so they join the baseline as gaps instead of failing E10",
    "utc": "2026-10-21T03:04:22Z"
+  },
+  {
+   "old_initial_sha256": "c2f25901a0be80818d247476c26b62725b0218f030d75fc63288d1162dfc32f2",
+   "reason": "review of the 21 October 2026 backfill: four prereg none:development lines were wrong, because each entry or its log says a rule was fixed before the run (orientation_checks/0 and /1: the upright test preregistered 13 October, verdict GO, and its Reader v2 repeat, which its log reports against a rule; surfacefix_checks/0: thresholds fixed before maps, rule hash in its log, rule file not committed; finetune_checks: selection rule fixed in the run specification before training, specification not public). The lines were removed, so these four prereg gaps return to the baseline instead of carrying a false none: reason",
+   "utc": "2026-10-21T10:54:26Z"
   }
  ],
  "schema": "causal-baseline/1"

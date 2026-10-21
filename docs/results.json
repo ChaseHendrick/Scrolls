@@ -692,8 +692,7 @@
    }
   ],
   "causal": [
-   "source docs/logs/2026-10-08-d9v2-finetune-sweep.md",
-   "prereg none:development"
+   "source docs/logs/2026-10-08-d9v2-finetune-sweep.md"
   ]
  },
  "community": [
@@ -1181,10 +1180,7 @@
      }
     }
    ],
-   "limits": "One same-sheet patch; no labels; dependent null tests; no accepted recovery or significance established.",
-   "causal": [
-    "prereg none:development"
-   ]
+   "limits": "One same-sheet patch; no labels; dependent null tests; no accepted recovery or significance established."
   }
  ],
  "reconstruction_checks": [
@@ -10603,10 +10599,7 @@
     "rule": "preregistered 2026-10-13: seed 42 upright beats native, recovers at least half the gap to the published map, beats the 45 degree sham, and seed 43 upright beats native",
     "verdict": "GO"
    },
-   "held_out": "not run (labelled PHerc1447 windings, once); PHerc0841 ag405 labels not opened",
-   "causal": [
-    "prereg none:development"
-   ]
+   "held_out": "not run (labelled PHerc1447 windings, once); PHerc0841 ag405 labels not opened"
   },
   {
    "id": "orientation_checks/1",
@@ -10633,10 +10626,7 @@
     "native": 0.375,
     "upright": 0.202
    },
-   "result": "upright minus sham is not clearly above zero for Reader v2, so ink.orient stays opt in; the turn also raised the depth-reversed control",
-   "causal": [
-    "prereg none:development"
-   ]
+   "result": "upright minus sham is not clearly above zero for Reader v2, so ink.orient stays opt in; the turn also raised the depth-reversed control"
   }
  ],
  "umbilicus_checks": [
