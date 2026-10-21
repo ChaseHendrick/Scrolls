@@ -2310,7 +2310,8 @@ def _views(tool, job, outs, res):
     forward map and a flat control would both look full-contrast. The scale comes from the forward map (0.5 and 99.5
     percentiles of its finite pixels) and is applied unchanged to its controls; an 8-bit forward map keeps its values,
     and so does one stored as floats whose values are all whole numbers from 0 to 255 with a maximum above 1 (a 0 or
-    255 mask such as geomfix's approval.tif, which a percentile stretch would make flat when every pixel is 255).
+    255 mask written through kit's own float32 TIFF writer, which a percentile stretch would make flat when every
+    pixel is 255).
     VC3D stretches an ink detection over the whole segment grid, so a map of a crop is placed at its box on a canvas of
     the segment's size, 0 (transparent) elsewhere. The float originals stay for scoring."""
     maps = {n: p for n, p in outs.items() if tool.outputs[n]["kind"] == "overlay" and p.is_file()
