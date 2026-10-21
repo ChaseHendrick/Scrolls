@@ -218,6 +218,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **pixel AUC**: See AUC.
 
+**planted defect (`kit.planted`)**: A sheet switch, lens, skip, merger, hole or bridged hole put on purpose into a synthetic tifxyz surface whose every vertex records the winding it truly sits on, so a detector, stack check or labeler can be tested against a known answer. Synthetic data only ([`docs/tools/planted.md`](docs/tools/planted.md)).
+
 **preregistration**: Writing down the readout rule, data and pass bar before any result is seen (`python -m kit run init`, or a committed file in `docs/prereg/`). It stops a rule from being tuned to fit the answer.
 
 **prize eligible**: A scroll that one of the open prizes accepts results on. `python -m kit prizes` lists them from a dated snapshot; [scrollprize.org/prizes](https://scrollprize.org/prizes) wins where they differ. Results on a prize-eligible scroll stay private until the official announcement.
