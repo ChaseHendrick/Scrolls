@@ -52,6 +52,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **control**: A deliberately wrong or scrambled input run through the same check, so that the check is shown able to fail. Examples here are the reverse-depth map, the depth-shuffled volume, a displaced map and a rotated or IAAFT copy.
 
+**control-set threshold**: Ink Lens's threshold for one region: the 99th percentile of the region's own reverse-depth ink map over its papyrus. Only stored-order ink above it is kept, and the region's status compares the share above it with the control's 1 % ([`docs/prereg/2026-10-20-ink-lens-gate.md`](docs/prereg/2026-10-20-ink-lens-gate.md)).
+
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 
 **crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labeled ink, with a 64 pixel inner edge left out (`--inner 64`).
@@ -114,6 +116,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## H
 
+**Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
+
 **held-out**: Data a model never saw in training. A test on held-out data is the only kind that supports a claim about how well a model generalizes. For example, w045 is held out from v8in but not from `ink_9um`, which trained on its 2.4 µm render. Which released reader trained on which labeled segment is tabulated in [`docs/logs/2026-10-16-reader-exposure.md`](docs/logs/2026-10-16-reader-exposure.md).
 
 **Hecate**: An ink model by Giorgio Angelotti, used in the PHerc. 343 First Letters result. Its base model is `scrollprize/ink_canonical_2um`, whose committed trainer lists all three PHerc0841 segments, so PHerc0841 is not held out from Hecate, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md)).
@@ -131,6 +135,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **inference**: Running a trained model on new data to get predictions.
 
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
+
+**Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
 
 **ink label (inklabels)**: A human-drawn mask of where ink is on a segment (`inklabels.zarr`), used for training and scoring.
 
@@ -331,6 +337,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **v8in**: A community ink model (`YoussefMoNader/ink-8um-v8in`, released 28 September 2026). It never saw PHerc0139 w045, which makes w045 a held-out test for it.
 
 **VC3D (Volume Cartographer 3D)**: The main application for viewing CT volumes and tracing, rendering and flattening surfaces. It is part of villa.
+
+**VC3D plugin**: A JSON manifest that adds one external tool to VC3D's Plugins menu: the program, its arguments with placeholders for what VC3D has open, and how VC3D loads what it writes. Proposed on villa branch `vc3d-plugins`; this repository's manifests are in [`plugins/`](plugins/README.md).
 
 **verso**: The outer back side of a roll, where the fibers run vertically.
 

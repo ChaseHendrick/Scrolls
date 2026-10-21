@@ -24,6 +24,7 @@ Updated 21 October 2026.
 | Prize terms, amounts, deadlines, eligible scrolls | [`prizes.md`](prizes.md), `python -m kit prizes` | |
 | What has been released from private work | [`releases.json`](releases.json), shown as the README's "Released tools" section | `python -m kit releases list`; AGENTS.md rule 15 |
 | Unroll, the released interactive 3D viewer (Hugging Face Space, v1.0.0, Apache 2.0 for all code, CC BY-NC 4.0 scan data) | [`unroll-space.md`](unroll-space.md), live at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) | README "Released tools" |
+| Ink Lens, a control-checked ink map of your own region of a VC3D segment written back as VC3D files (ZeroGPU Space and client, not yet deployed, 20 October) | [`tools/ink-lens.md`](tools/ink-lens.md), code in [`../spaces/ink-lens/`](../spaces/ink-lens/), rule in [`prereg/2026-10-20-ink-lens-gate.md`](prereg/2026-10-20-ink-lens-gate.md) | [`tools/scroll-lens.md`](tools/scroll-lens.md) |
 | Scroll Lens, a ZeroGPU Space that shows the organizers' 3D DINO, ink and surface models on a cube of a public scan, with click search (v1.0.0, 17 October) | [`tools/scroll-lens.md`](tools/scroll-lens.md), live at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens), code in [`../spaces/scroll-lens/`](../spaces/scroll-lens/) | [`unroll-space.md`](unroll-space.md) |
 
 ## Rules and standards
@@ -46,6 +47,7 @@ Updated 21 October 2026.
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Every tool, one reference page each: options with defaults, inputs, outputs, failures, checks and rules for agents | [`tools/README.md`](tools/README.md) (generated index; [`tools/index.json`](tools/index.json) for agents) | `python -m kit.tooldocs list`; [`TOOL-DOCS.md`](TOOL-DOCS.md) |
+| Optional Harness2 agent-workflow evaluation with synthetic provenance fixtures | [`tools/harness2.md`](tools/harness2.md) | [`tools/provenance.md`](tools/provenance.md) |
 | Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
