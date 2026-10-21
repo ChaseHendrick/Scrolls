@@ -40,6 +40,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **canvas (render canvas)**: The 2D pixel grid onto which a traced surface is rendered. A published surface volume reproduces its canvas from its mesh.
 
+**canvas-boxes/1**: A JSON list of boxes on a segment's render canvas (frame `canvas`) or its tifxyz grid (frame `grid`), with labels; the tool registry's canvas-points converter turns each box's center into a point on the surface, so the boxes open in VC3D as a point collection ([page](docs/tools/toolreg.md)).
+
 **carbonized**: Turned to carbon-rich material by heat. The Herculaneum scrolls were carbonized in the eruption of Vesuvius in 79 CE.
 
 **catalog (catalogue)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
@@ -51,6 +53,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **control**: A deliberately wrong or scrambled input run through the same check, so that the check is shown able to fail. Examples here are the reverse-depth map, the depth-shuffled volume, a displaced map and a rotated or IAAFT copy.
 
 **control-set threshold**: Ink Lens's threshold for one region: the 99th percentile of the region's own reverse-depth ink map over its papyrus. Only stored-order ink above it is kept, and the region's status compares the share above it with the control's 1 % ([`docs/prereg/2026-10-20-ink-lens-gate.md`](docs/prereg/2026-10-20-ink-lens-gate.md)).
+
+**converter (tool registry)**: A tool manifest of kind `converter`: a format step that never gets a menu entry or a stage, run inside a tool's run folder when one of its outputs names it (`convert`), such as canvas-points (boxes to points on the surface) and layers (a surface-volume zarr to layer TIFFs); its result takes that output's place and is a stage of its own in `graph.json` ([page](docs/tools/toolreg.md)).
 
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 

@@ -61,6 +61,16 @@ elif mode == "conv":
     doc = {{"vc_pointcollections_json_version": "1", "collections": {{"1": {{"name": "c", "points": {{
         str(i + 1): {{"p": [float(v) for v in (q["xyz"] if isinstance(q, dict) else q)]}} for i, q in enumerate(pts)}}}}}}}}
     (Path(sys.argv[3]) / "collection.json").write_text(json.dumps(doc))
+elif mode == "two":
+    (Path(sys.argv[3]) / "main.json").write_text(json.dumps({{"main": 1}}))
+    (Path(sys.argv[3]) / "side.json").write_text(json.dumps({{"side": 2}}))
+elif mode == "pair":
+    both = {{"main": json.loads(Path(sys.argv[2]).read_text()), "side": json.loads(Path(sys.argv[4]).read_text()),
+            "side_path": sys.argv[4]}}
+    (Path(sys.argv[3]) / "pair.json").write_text(json.dumps(both))
+elif mode == "boxes":
+    (Path(sys.argv[3]) / "boxes.json").write_text(json.dumps({{"schema": "canvas-boxes/1", "frame": "grid",
+        "boxes": [{{"y0": 10, "y1": 12, "x0": 20, "x1": 22, "label": "w1"}}]}}))
 elif mode == "nometa":
     (Path(sys.argv[3]) / "seg").mkdir()
 elif mode in ("goodseg", "badseg"):
@@ -799,6 +809,10 @@ class FormatGateTest(Base):
 
 
 class ConvertTest(Base):
+    def converted(self, tool, folder, sel=None):
+        job = toolreg.prepare(tool, sel or toolreg.selection_from(), {"src": str(self.src)}, kind="public")
+        return toolreg.run(tool, job, run_dir=self.tmp / "run" / folder, root=self.tmp, registry=self.registry())
+
     def test_a_declared_converter_runs_in_the_run_folder_and_is_a_stage(self):
         conv = manifest("to-collection", mode="conv", kind="converter", outputs={
             "doc": {"kind": "points", "format": "vc3d-point-collection", "path": "{run}/collection.json"}})
@@ -818,6 +832,101 @@ class ConvertTest(Base):
         self.assertEqual(toolreg.plugin_result(tool, reg),
                          {"kind": "points", "path": "{output}/convert/pts/collection.json"})
         self.assertIn("never reaches a menu", " ".join(toolreg.validate_manifest(dict(conv, vc3d={"menu": "tools"}))))
+
+
+    def test_convert_with_hands_another_output_of_the_run_to_the_converter(self):
+        self.add(manifest("pairer", mode="pair", kind="converter",
+                          inputs={"src": {"from": "path"}, "side": {"from": "path"}},
+                          run={"argv": ["fake-tool", "pair", "{in.src}", "{run}", "{in.side}"], "timeout_s": 60},
+                          outputs={"pair": {"kind": "report", "format": "json", "path": "{run}/pair.json"}}))
+        outs = {"main": {"kind": "report", "format": "json", "path": "{run}/main.json", "convert": "pairer",
+                         "convert_with": {"side": "side"}},
+                "side": {"kind": "file", "format": "json", "path": "{run}/side.json"}}
+        tool = self.add(manifest("two", mode="two", outputs=outs))
+        res, code = self.converted(tool, "two")
+        self.assertEqual(code, toolreg.EXIT_OK, res)
+        side = str(self.tmp / "run" / "two" / "side.json")
+        self.assertEqual(res["conversions"][0]["with"], {"side": side})
+        made = json.loads((self.tmp / "run" / "two" / "convert" / "main" / "pair.json").read_text())
+        self.assertEqual((made["main"], made["side"], made["side_path"]), ({"main": 1}, {"side": 2}, side))
+        graph = json.loads((self.tmp / "run" / "two" / "graph.json").read_text())
+        self.assertIn({"from": "file:side.json", "to": "stage:convert:main", "rel": "read"}, graph["edges"])
+        bad = {"beside convert": {"main": dict(outs["main"], convert=None)},
+               "not another output": {"main": dict(outs["main"], convert_with={"side": "main"})},
+               "not another output of": {"main": dict(outs["main"], convert_with={"side": "gone"})}}
+        for want, change in bad.items():
+            o = {**outs, **change}
+            if o["main"].get("convert") is None:
+                o["main"] = {k: v for k, v in o["main"].items() if k != "convert"}
+            self.assertIn(want, " ".join(toolreg.validate_manifest(manifest("two", outputs=o))), want)
+        # a converter input the converter does not have fails the run, with the reason
+        tool = self.add(manifest("two", mode="two", outputs=dict(outs, main=dict(outs["main"],
+                                                                                 convert_with={"nope": "side"}))))
+        res, code = self.converted(tool, "two-bad")
+        self.assertEqual(code, toolreg.EXIT_FAILED)
+        self.assertIn("pairer has no input nope", " ".join(res["warnings"]))
+
+    @unittest.skipIf(np is None, "needs numpy and tifffile")
+    def test_canvas_points_puts_each_box_center_on_the_surface(self):
+        seg = self.tmp / "seg"
+        seg.mkdir()
+        yy, xx = np.mgrid[0:30, 0:40].astype(np.float32)
+        x = xx * 20 + 100
+        x[0:5, 0:5] = -1                                   # a hole in villa's mark
+        z = np.full_like(xx, 500.0)
+        z[20, 30] = 0                                      # a z <= 0 vertex VC3D does not show
+        for a, arr in (("x", x), ("y", yy * 20 + 100), ("z", z)):
+            tifffile.imwrite(seg / f"{a}.tif", arr)
+        (seg / "meta.json").write_text(json.dumps({"type": "seg", "format": "tifxyz", "uuid": "s",
+                                                   "scale": [0.05, 0.05]}))
+        boxes = self.tmp / "boxes.json"
+        boxes.write_text(json.dumps({"schema": toolreg.BOXES_SCHEMA, "frame": "canvas", "boxes": [
+            {"y0": 200, "y1": 220, "x0": 400, "x1": 420, "label": "a"},     # canvas 600 x 800 from scale 0.05
+            {"y0": 0, "y1": 60, "x0": 0, "x1": 60},                         # all in the hole: skipped
+            {"y0": 396, "y1": 424, "x0": 596, "x1": 624}]}))               # centered on the z = 0 vertex
+        out = self.tmp / "pts" / "points.json"
+        rep = toolreg.canvas_points(boxes, seg, out, report=self.tmp / "pts" / "report.json")
+        self.assertEqual((rep["boxes_total"], rep["placed"], rep["canvas"]), (3, 2, [600.0, 800.0]))
+        first, third = rep["points"]
+        self.assertEqual((first["how"], first["xyz"], first["label"]), ("bilinear", [509.5, 309.5, 500.0], "a"))
+        self.assertEqual(third["how"], "nearest")          # the z = 0 vertex is never used
+        self.assertGreater(third["xyz"][2], 0)
+        self.assertEqual([q["index"] for q in rep["skipped"]], [1])
+        doc = json.loads(out.read_text())
+        self.assertEqual(doc["vc_pointcollections_json_version"], "1")
+        self.assertEqual([[round(v, 3) for v in q["p"]] for q in doc["collections"]["1"]["points"].values()],
+                         [first["xyz"], third["xyz"]])
+        boxes.write_text(json.dumps({"schema": toolreg.BOXES_SCHEMA, "frame": "grid", "name": "windows",
+                                     "boxes": [{"y0": 10, "y1": 12, "x0": 20, "x1": 22}]}))
+        rep = toolreg.canvas_points(boxes, seg, out)
+        self.assertEqual(rep["points"][0]["xyz"], [510.0, 310.0, 500.0])   # vertex index 10.5, 20.5
+        self.assertEqual(json.loads(out.read_text())["collections"]["1"]["name"], "windows")
+        for doc, want in (({"boxes": []}, "not a canvas-boxes/1"),
+                          ({"schema": toolreg.BOXES_SCHEMA, "frame": "uv", "boxes": []}, "frame must be"),
+                          ({"schema": toolreg.BOXES_SCHEMA, "boxes": [{"y0": 1}]}, "needs numeric"),
+                          ({"schema": toolreg.BOXES_SCHEMA, "boxes": [{"y0": 5, "y1": 5, "x0": 0, "x1": 1}]},
+                           "y1 > y0")):
+            boxes.write_text(json.dumps(doc))
+            with self.assertRaises(toolreg.RegistryError) as cm:
+                toolreg.canvas_points(boxes, seg, out)
+            self.assertIn(want, str(cm.exception))
+        # the command line: exit 1 when boxes were given and none landed
+        boxes.write_text(json.dumps({"schema": toolreg.BOXES_SCHEMA, "frame": "grid",
+                                     "boxes": [{"y0": 0, "y1": 3, "x0": 0, "x1": 3}]}))
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = toolreg.main(["canvas-points", str(boxes), "--segment", str(seg), "--out", str(out)])
+        self.assertEqual(code, toolreg.EXIT_FAILED)
+
+    @unittest.skipIf(np is None, "needs numpy and tifffile")
+    def test_a_converter_whose_input_cannot_bind_fails_the_run(self):
+        self.add(manifest("to-points", kind="converter",
+                          inputs={"boxes": {"from": "path"}, "surface": {"from": "segment", "format": ["tifxyz"]}},
+                          run={"argv": ["fake-tool", "ok", "{in.boxes}", "{run}"], "timeout_s": 60}))
+        tool = self.add(manifest("boxer", mode="boxes", outputs={
+            "boxes": {"kind": "points", "format": "json", "path": "{run}/boxes.json", "convert": "to-points"}}))
+        res, code = self.converted(tool, "boxer")          # no active segment in the selection
+        self.assertEqual(code, toolreg.EXIT_FAILED)
+        self.assertIn("cannot bind its inputs", " ".join(res["warnings"]))
 
 
 class PlanConfirmTest(Base):
@@ -1188,7 +1297,8 @@ class CliTest(Base):
         code, out = self.capture(["tools", "list", "--door", "native", "--json"])
         self.assertEqual({t["id"] for t in json.loads(out)["tools"]} - {"villa-flatten", "villa-gen-umbilicus",
                                                                        "villa-grow-seg-from-seed",
-                                                                       "villa-render-tifxyz"}, set())
+                                                                       "villa-render-tifxyz", "villa-tifxyz2obj",
+                                                                       "villa-tifxyz-selfcross"}, set())
         code, out = self.capture(["tools", "show", "auc"])
         self.assertEqual(json.loads(out)["id"], "auc")
         code, out = self.capture(["tools", "plan", "doctor", "--json"])

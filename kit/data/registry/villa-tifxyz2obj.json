@@ -1,0 +1,13 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "villa-tifxyz2obj",
+ "repo": "community",
+ "kind": "native",
+ "title": "villa's tifxyz to OBJ mesh exporter (vc_tifxyz2obj)",
+ "native": {
+  "program": "vc_tifxyz2obj",
+  "vc3d_action": "VC3D runs it from its segment context menu (export a segment as OBJ, and the flatten round trip)",
+  "source": "ScrollPrize/villa volume-cartographer/apps/src/vc_tifxyz2obj.cpp (GPL-3.0; called, never copied)"
+ },
+ "notes": "Listed so the command line and agents see villa's own tools; the registry never runs them. VC3D runs it from its own segment context menu (OBJ export and the SLIM flatten round trip), so no plugin item duplicates it; no AutoPipeline stage calls it."
+}

@@ -3271,7 +3271,8 @@
     }
    ],
    "tests": [
-    "tests/test_layers.py"
+    "tests/test_layers.py",
+    "tests/test_toolreg_converters.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -3289,7 +3290,7 @@
     "Area": "Data and downloads",
     "Run": "`python -m kit layers`, `python -m kit shuffle`, `from kit import layers`",
     "Code": "`kit/layers.py`, `kit/cli.py` (`cmd_layers`, `cmd_shuffle`), `kit/verify.py` (`_numpy`, `VerifyError`)",
-    "Tests": "`tests/test_layers.py`",
+    "Tests": "`tests/test_layers.py`, `tests/test_toolreg_converters.py` (as the registry's converter)",
     "Needs": "Python 3.11 or newer with numpy, tifffile and zarr 3 (checked with numpy 2.5.3, tifffile 2026.10.15, zarr 3.4.1). `kit shuffle` writes with zarr 3's `create_array`, which zarr 2.18 lacks (`pyproject.toml`); `kit layers` only reads zarr. No imagecodecs needed: the TIFFs are zlib-compressed",
     "Runs on": "Any CPU. A 28 x 2,048 x 2,048 synthetic volume (117 MB) took 9.7 s to export and 7.2 s to shuffle (measured 2026-10-16, 4-core Xeon cloud container); the whole PHerc0139 w045 volume (28 x 5,980 x 8,240) exported in 23 s (commit `6081aab`, machine not recorded)",
     "Network": "None",
@@ -3367,27 +3368,39 @@
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Start from VC3D",
      "start_line": 217,
-     "end_line": 226,
+     "end_line": 220,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 227,
+     "name": "Open in VC3D",
+     "start_line": 221,
+     "end_line": 224,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 225,
      "end_line": 234,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 235,
-     "end_line": 244,
+     "end_line": 242,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 243,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 245,
-     "end_line": 254,
+     "start_line": 254,
+     "end_line": 263,
      "applicable": true
     }
    ]
@@ -8820,6 +8833,7 @@
     "python -m kit tools take",
     "python -m kit tools open",
     "python -m kit tools exec",
+    "python -m kit tools canvas-points",
     "python -m kit tools export-vc3d"
    ],
    "imports": [],
@@ -8859,6 +8873,7 @@
    "tests": [
     "tests/test_toolreg.py",
     "tests/test_toolreg_reports.py",
+    "tests/test_toolreg_converters.py",
     "tests/fake_vc3d_host.py",
     "tests/test_localcost.py"
    ],
@@ -8876,13 +8891,13 @@
     "Status": "Current",
     "Kind": "kit command, kit module",
     "Area": "Pipeline and agents",
-    "Run": "`python -m kit tools list`, `python -m kit tools show`, `python -m kit tools check`, `python -m kit tools availability`, `python -m kit tools selection`, `python -m kit tools plan`, `python -m kit tools run`, `python -m kit tools confirm`, `python -m kit tools take`, `python -m kit tools open`, `python -m kit tools exec`, `python -m kit tools export-vc3d`",
+    "Run": "`python -m kit tools list`, `python -m kit tools show`, `python -m kit tools check`, `python -m kit tools availability`, `python -m kit tools selection`, `python -m kit tools plan`, `python -m kit tools run`, `python -m kit tools confirm`, `python -m kit tools take`, `python -m kit tools open`, `python -m kit tools exec`, `python -m kit tools canvas-points`, `python -m kit tools export-vc3d`",
     "Code": "`kit/toolreg.py`, `kit/data/registry/`, `integrations/vc3d/`, `kit/cli.py` (`cmd_tools`), `kit/tooldocs.py` (`registry_problems`, `write_index`), `kit/localcost.py` (`run`)",
-    "Tests": "`tests/test_toolreg.py`, `tests/test_toolreg_reports.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py`",
+    "Tests": "`tests/test_toolreg.py`, `tests/test_toolreg_reports.py`, `tests/test_toolreg_converters.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py`",
     "Needs": "Python 3.10 or newer, standard library only; numpy and tifffile for the 8-bit views of float maps and for turning a VC3D focus region into a box on a segment's canvas (both skipped with a warning without them). Each tool needs what its own page says. Reading a running VC3D (`--from-app`, `open --live`) needs `kit/vc3d_bridge.py` (in the AutoPipeline package) and VC3D built with its agent bridge. VC3D's plugin host is villa's `apps/VC3D/plugins/` on the vc3d-plugins lane of the combined VC3D suite, not merged into villa yet",
     "Runs on": "Any CPU. The registry adds well under a second to a tool's own time: a synthetic 400 x 600 rowscore run took 3.2 s wall in all, 1.0 s CPU (measured 2026-10-20, cloud container)",
     "Network": "None. A tool it runs uses the network only as its own page and its manifest's `safety.network` say; reading a running VC3D uses its local socket",
-    "Writes": "Each run writes only its run folder: `--out RUN`, else `work/tools/ID-DIGEST10/` (or `experiments/SLUG/tools/` for a target run in Scrolls-private): `selection.json`, `registry-run.json`, the tool's outputs, `stdout.txt` and `stderr.txt` (unless the manifest captures stdout), `tmp/`, `vc3d/` (8-bit views, `scale.json`, point collections, `open-log.json`), `provenance.json`, `graph.json` and, last, `vc3d-result.json`. One cost entry per run in the ledger record `--slug`, else `tools-YYYYMMDD` (made once), under `KIT_TOOLS_LEDGER` or kit's ledger root. `export-vc3d DIR` writes `DIR/scrolls.ID.json` and `DIR/bin/scrolls-tool`. `python -m kit.tooldocs index` rewrites each manifest's facts block",
+    "Writes": "Each run writes only its run folder: `--out RUN`, else `work/tools/ID-DIGEST10/` (or `experiments/SLUG/tools/` for a target run in Scrolls-private): `selection.json`, `registry-run.json`, the tool's outputs, `stdout.txt` and `stderr.txt` (unless the manifest captures stdout), `tmp/`, `vc3d/` (8-bit views, `scale.json`, point collections, `open-log.json`), `provenance.json`, `graph.json` and, last, `vc3d-result.json`. One cost entry per run in the ledger record `--slug`, else `tools-YYYYMMDD` (made once), under `KIT_TOOLS_LEDGER` or kit's ledger root. `export-vc3d DIR` writes `DIR/scrolls.ID.json` and `DIR/bin/scrolls-tool`. `canvas-points` writes `--out` and `--report` only. `python -m kit.tooldocs index` rewrites each manifest's facts block",
     "Go-ahead": "Not needed: it runs local tools on local or public data and refuses anything that needs a yes, spends money or posts",
     "Released": "Not on public `main` yet: branch `claude/integration-1020` since 2026-10-20",
     "Checked": "2026-10-20 against commit `3bd77be`"
@@ -8916,67 +8931,67 @@
     {
      "name": "Commands and options",
      "start_line": 79,
-     "end_line": 356,
+     "end_line": 376,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 357,
-     "end_line": 407,
+     "start_line": 377,
+     "end_line": 429,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 408,
-     "end_line": 425,
+     "start_line": 430,
+     "end_line": 447,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 426,
-     "end_line": 456,
+     "start_line": 448,
+     "end_line": 478,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 457,
-     "end_line": 516,
+     "start_line": 479,
+     "end_line": 543,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 517,
-     "end_line": 532,
+     "start_line": 544,
+     "end_line": 559,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 533,
-     "end_line": 536,
+     "start_line": 560,
+     "end_line": 563,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 537,
-     "end_line": 546,
+     "start_line": 564,
+     "end_line": 573,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 547,
-     "end_line": 550,
+     "start_line": 574,
+     "end_line": 577,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 551,
-     "end_line": 556,
+     "start_line": 578,
+     "end_line": 584,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 557,
-     "end_line": 564,
+     "start_line": 585,
+     "end_line": 592,
      "applicable": true
     }
    ]

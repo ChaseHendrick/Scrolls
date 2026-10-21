@@ -1,0 +1,67 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "layers",
+ "repo": "public",
+ "kind": "converter",
+ "title": "surface-volume zarr to numbered layer TIFFs (v8in's input)",
+ "notes": "A convert step: an output that is a surface-volume zarr names it, and the layer folder takes its place, in the depth order as stored (v8in makes the reverse-depth control itself with --reverse). It never reaches a menu or an AutoPipeline stage. The layers are model inputs, not results.",
+ "inputs": {
+  "volume": {
+   "from": "path",
+   "format": [
+    "zarr",
+    "ome-zarr"
+   ],
+   "label": "the surface-volume zarr (layers, height, width), bare or an OME-Zarr group whose level 0 is read"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit",
+   "layers",
+   "{in.volume}",
+   "{run}/layers"
+  ],
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "layers": {
+   "kind": "volume",
+   "format": "tif-stack",
+   "path": "{run}/layers",
+   "label": "00.tif, 01.tif, ... in depth order as stored"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 25,
+  "disk_mb": 1500,
+  "ram_gb": 2,
+  "scales_with": "the volume's voxels: 9.7 s for 28 x 2,048 x 2,048 (117 MB), 23 s for a whole 28 x 5,980 x 8,240 segment"
+ },
+ "safety": {
+  "model_output": false,
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "facts": {
+  "title": "layers",
+  "tagline": "export a surface volume to layer TIFFs, and write the depth-shuffle control",
+  "status": "Current",
+  "kind": [
+   "kit command",
+   "kit module"
+  ],
+  "area": "Data and downloads",
+  "page": "docs/tools/layers.md",
+  "go_ahead": false,
+  "network": "None",
+  "license": null,
+  "checked": "2026-10-16 29e7e8c",
+  "success": "Exit code 0, N equal to the layers wanted, and files `00.tif` to the last one present (or array `0` in the zarr).",
+  "not_a_pass": "A forward score reported without the reverse control, with the shuffled one as a substitute; a shuffled score assumed to be 0.5 (it was 0.56 to 0.62 on some PHerc0841 crops); two shuffled runs with different layer counts treated as the same control.",
+  "never": "Point `kit shuffle`'s `OUT` at the source volume or any folder that holds other files (it is emptied); reverse layers at export (use the model's reverse option); commit layer TIFFs or zarrs to git (the no-data-in-git rule, hard rule 6); call a map made from these layers a reading."
+ }
+}

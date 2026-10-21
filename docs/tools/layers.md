@@ -10,7 +10,7 @@
 | Area | Data and downloads |
 | Run | `python -m kit layers`, `python -m kit shuffle`, `from kit import layers` |
 | Code | `kit/layers.py`, `kit/cli.py` (`cmd_layers`, `cmd_shuffle`), `kit/verify.py` (`_numpy`, `VerifyError`) |
-| Tests | `tests/test_layers.py` |
+| Tests | `tests/test_layers.py`, `tests/test_toolreg_converters.py` (as the registry's converter) |
 | Needs | Python 3.11 or newer with numpy, tifffile and zarr 3 (checked with numpy 2.5.3, tifffile 2026.10.15, zarr 3.4.1). `kit shuffle` writes with zarr 3's `create_array`, which zarr 2.18 lacks (`pyproject.toml`); `kit layers` only reads zarr. No imagecodecs needed: the TIFFs are zlib-compressed |
 | Runs on | Any CPU. A 28 x 2,048 x 2,048 synthetic volume (117 MB) took 9.7 s to export and 7.2 s to shuffle (measured 2026-10-16, 4-core Xeon cloud container); the whole PHerc0139 w045 volume (28 x 5,980 x 8,240) exported in 23 s (commit `6081aab`, machine not recorded) |
 | Network | None |
@@ -214,6 +214,14 @@ v8in lists layer files by their numeric stem (`int(stem)`, which the tests mirro
 
 Random data does not compress, so real volumes may write faster. For the whole w045 volume, commit `6081aab` records a 23 s export (machine not recorded). Memory is about the export's size while it fits in 4 GiB (w045: about 1.4 GB), else one layer; `kit shuffle` always holds the whole window, with no fallback. It needs no GPU and no Modal. On Chase's Mac, wrap a run with `python -m kit run local SLUG -- python -m kit layers ...` (the local compute rule in [`AGENTS.md`](../../AGENTS.md)).
 
+## Start from VC3D
+
+VC3D has no menu entry for `kit layers`, by design: it is a format step, so the tool registry ([toolreg](toolreg.md)) lists it as a converter (`kit/data/registry/layers.json`, kind `converter`). A tool whose output is a surface-volume zarr names it with `"convert": "layers"`, and when that tool runs (from VC3D's Scrolls menu, the command line or AutoPipeline), the registry runs `python -m kit layers ZARR RUN/convert/NAME/layers` inside the same run folder and records it as its own stage in `graph.json`. The layer folder then takes the zarr's place as that output, for v8in's input; the zarr stays where the tool wrote it. On the command line, run the command itself (Quick start).
+
+## Open in VC3D
+
+Nothing to open: numbered layer TIFFs are model input, and VC3D does not load a TIFF folder as a volume. The run's `vc3d-result.json` lists the folder under `outputs` (its kind `volume`, format `tif-stack`) and under `conversions` (from the zarr, by `layers`), and a map made from it later comes back through that map's own tool. It is not an AutoPipeline stage: AutoPipeline's ink step writes v8in's layer folder itself, in the same format (`scripts/vc3d/ink.py` in the AutoPipeline release).
+
 ## For agents
 
 - **Command:** `python -m kit layers VOLUME.zarr OUT_DIR --crop Y0 Y1 X0 X1` for v8in's input; add `--shuffle 20261007` for its shuffled control; `python -m kit shuffle VOLUME.zarr NEW.zarr --crop Y0 Y1 X0 X1` (seed 20261007 by default) for villa's inference. There is no JSON form; read the printed line, and for `kit shuffle` the group attribute `depth_shuffle`.
@@ -234,6 +242,7 @@ Fourteen tests, on small synthetic zarrs: a bare array exported in stored order,
 
 ## History
 
+- 2026-10-21: a tool registry converter manifest (`kit/data/registry/layers.json`), so a tool's surface-volume zarr output can become v8in's layer folder inside its run ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).
 - 2026-10-17: `kit layers` refuses a folder that already holds numbered TIFFs; before, it replaced files of the same names and left higher-numbered TIFFs from a larger export, which v8in then read too (`0ec3659`).
 - 2026-10-17: `kit shuffle` refuses an `OUT` that already exists; before, it opened `OUT` in zarr's mode `w`, which deleted whatever was there (`b640173`).
 - 2026-10-07: the module text explains the banded read; no change in behavior (`fda744f`).

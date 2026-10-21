@@ -103,6 +103,8 @@ SCHEMA = "scrolls-tool/1"
 SELECTION_SCHEMA = "vc3d-selection/1"
 RESULT_SCHEMA = "vc3d-result/1"
 PLAN_SCHEMA = "scrolls-tool-plan/1"
+# boxes on a segment's render canvas or tifxyz grid, which the canvas-points converter puts on the surface
+BOXES_SCHEMA = "canvas-boxes/1"
 # villa's VC3D plugin host: apps/VC3D/plugins/PluginManifest.cpp on the vc3d-plugins lane of the combined VC3D suite
 # (not merged into villa yet); read 20 Oct 2026.
 PLUGIN_SCHEMA = "vc3d-plugin/1"
@@ -159,7 +161,10 @@ PARAM_KEYS = ("type", "default", "enum", "help", "from", "required")
 PARAM_TYPES = {"integer": int, "number": (int, float), "string": str, "boolean": bool}
 PARAM_FROM = ("volume.voxel_um",)
 RUN_KEYS = ("argv", "optional_args", "stdout", "timeout_s")
-OUTPUT_KEYS = ("kind", "format", "path", "role", "on", "required", "label", "check", "axis_order", "convert")
+# convert_with: {converter input: another output of this manifest}, files of the same run a converter also reads
+# (canvasorient back reads the map and the transform the tool wrote beside it)
+OUTPUT_KEYS = ("kind", "format", "path", "role", "on", "required", "label", "check", "axis_order", "convert",
+               "convert_with")
 OUTPUT_KINDS = ("surface", "overlay", "volume", "overlay_volume", "points", "umbilicus", "project", "labels",
                 "report", "file", "link")
 COMPUTE_KEYS = ("where", "typical_s", "disk_mb", "ram_gb", "scales_with", "note")
@@ -627,6 +632,15 @@ def validate_manifest(m):
             p.append(f"{w}.axis_order must be one of {', '.join(AXIS_ORDERS)}")
         if "convert" in spec and (not isinstance(spec["convert"], str) or not ID_RE.match(spec["convert"])):
             p.append(f"{w}.convert names one converter manifest by its id")
+        if "convert_with" in spec:
+            cw = spec["convert_with"]
+            if "convert" not in spec or not isinstance(cw, dict) or not cw:
+                p.append(f"{w}.convert_with maps converter inputs to other outputs of this manifest, beside convert")
+            else:
+                for cin, other in cw.items():
+                    if not NAME_RE.match(str(cin)) or other == name or other not in outputs:
+                        p.append(f"{w}.convert_with.{cin} names {other!r}, which is not another output of this "
+                                 "manifest")
     comp = m.get("compute", {})
     if not isinstance(comp, dict) or set(comp) - set(COMPUTE_KEYS):
         p.append(f"compute must be an object with {', '.join(COMPUTE_KEYS)}")
@@ -2275,13 +2289,28 @@ def _convert(tool, job, outs, res, registry, root, ledger_root):
             return
         src = next(iter(conv.required_inputs()))
         cdir = job.run / "convert" / name
-        cjob = prepare(conv, job.sel, {src: str(outs[name])}, None, job.purpose, job.experiment, root=root)
+        explicit = {src: str(outs[name])}
+        with_files = {}
+        for cin, other in (spec.get("convert_with") or {}).items():
+            if cin not in conv.inputs or not outs[other].exists():
+                res.update(status="failed", exit=EXIT_FAILED)
+                res["warnings"].append(f"{name}: convert_with {cin}: " + (
+                    f"{cid} has no input {cin}" if cin not in conv.inputs else f"the output {other} is missing"))
+                return
+            explicit[cin] = with_files[cin] = str(outs[other])
+        try:
+            cjob = prepare(conv, job.sel, explicit, None, job.purpose, job.experiment, root=root)
+        except RegistryError as exc:
+            res.update(status="failed", exit=EXIT_FAILED)
+            res["warnings"].append(f"{name}: its converter {cid} cannot bind its inputs: {exc}")
+            return
         cres, code = run(conv, cjob, run_dir=cdir, root=root, ledger_root=ledger_root, registry=registry)
         made = [Path(s["path"].replace("{run}", str(cdir))) for s in conv.outputs.values()
                 if s.get("role", "forward") == "forward"]
         res.setdefault("conversions", []).append({"output": name, "converter": cid, "manifest_sha256": conv.digest,
                                                   "status": cres.get("status"), "run": str(cdir),
-                                                  "from": str(outs[name]), "to": str(made[0]) if made else None})
+                                                  "from": str(outs[name]), "to": str(made[0]) if made else None,
+                                                  **({"with": with_files} if with_files else {})})
         if code != EXIT_OK or not made or not made[0].exists():
             res.update(status="failed", exit=EXIT_FAILED)
             res["warnings"].append(f"{name}: its converter {cid} ended {cres.get('status')}")
@@ -2422,6 +2451,89 @@ def points_document(points, name, color=(1.0, 0.5, 0.0)):
     return {"vc_pointcollections_json_version": "1",
             "collections": {"1": {"name": name, "points": pts, "metadata": {"winding_is_absolute": False},
                                   "color": list(color)}}}
+
+
+def canvas_points(boxes, segment, out, name=None, report=None):
+    """Boxes on a segment's render canvas or tifxyz grid (a canvas-boxes/1 document) as one VC3D point collection:
+    each box's center looked up on the segment's tifxyz grid, in the volume's level-0 x, y, z (bilinear between the
+    four vertices around it when all four are valid, else the valid vertex nearest the center inside the box). A box
+    with no valid vertex is skipped and listed. Writes OUT (version 1) and, when given, REPORT; returns the report.
+    Validity follows VC3D: x = -1 marks a missing vertex, and a z <= 0 vertex is not valid. Needs numpy and
+    tifffile. The canvas-points converter runs it (python -m kit tools canvas-points)."""
+    try:
+        import numpy as np
+        import tifffile
+    except ImportError:
+        raise RegistryError("canvas-points needs numpy and tifffile") from None
+    try:
+        doc = _read_json(boxes)
+    except (OSError, ValueError) as exc:
+        raise RegistryError(f"{boxes}: {exc}") from exc
+    if not isinstance(doc, dict) or doc.get("schema") != BOXES_SCHEMA or not isinstance(doc.get("boxes"), list):
+        raise RegistryError(f"{boxes}: not a {BOXES_SCHEMA} document (schema, frame and a boxes list)")
+    frame = doc.get("frame", "canvas")
+    if frame not in ("canvas", "grid"):
+        raise RegistryError(f"{boxes}: frame must be canvas or grid, not {frame!r}")
+    seg = Path(segment)
+    try:
+        x, y, z = (np.asarray(tifffile.imread(seg / f"{a}.tif"), dtype=np.float64) for a in "xyz")
+    except (OSError, ValueError) as exc:
+        raise RegistryError(f"cannot read the segment's tifxyz grid in {seg}: {exc}") from exc
+    if not (x.ndim == 2 and x.shape == y.shape == z.shape):
+        raise RegistryError(f"{seg}: x, y and z are not one 2-D grid")
+    rows, cols = x.shape
+    valid = np.isfinite(x) & np.isfinite(y) & np.isfinite(z) & (x != -1) & (z > 0)
+    canvas = None
+    fy = fx = 1.0
+    if frame == "canvas":
+        canvas = doc.get("canvas") or _canvas_shape(seg)
+        if not (isinstance(canvas, (list, tuple)) and len(canvas) == 2 and all(_finite(v) and v > 0 for v in canvas)):
+            raise RegistryError(f"{boxes}: frame canvas needs the canvas size ([height, width], or the segment's "
+                                "meta.json scale)")
+        fy, fx = rows / float(canvas[0]), cols / float(canvas[1])
+    points, placed, skipped = [], [], []
+    for i, b in enumerate(doc["boxes"]):
+        try:
+            y0, y1, x0, x1 = (float(b[k]) for k in ("y0", "y1", "x0", "x1"))
+        except (KeyError, TypeError, ValueError):
+            raise RegistryError(f"{boxes}: box {i} needs numeric y0, y1, x0 and x1") from None
+        if not (all(_finite(v) for v in (y0, y1, x0, x1)) and y1 > y0 and x1 > x0):
+            raise RegistryError(f"{boxes}: box {i} needs y1 > y0 and x1 > x0")
+        label = b.get("label") if isinstance(b.get("label"), str) else None
+        # pixel or vertex index i covers [i, i + 1): the center index is (lo + hi - 1) / 2, in grid units
+        cy = min(max((y0 + y1 - 1) / 2 * fy, 0.0), rows - 1.0)
+        cx = min(max((x0 + x1 - 1) / 2 * fx, 0.0), cols - 1.0)
+        r0, c0 = int(np.floor(cy)), int(np.floor(cx))
+        r1, c1 = min(r0 + 1, rows - 1), min(c0 + 1, cols - 1)
+        how = None
+        if valid[r0, c0] and valid[r0, c1] and valid[r1, c0] and valid[r1, c1]:
+            wy, wx = cy - r0, cx - c0
+            xyz = [float((1 - wy) * ((1 - wx) * a[r0, c0] + wx * a[r0, c1]) + wy * ((1 - wx) * a[r1, c0]
+                                                                                 + wx * a[r1, c1])) for a in (x, y, z)]
+            grid, how = [cy, cx], "bilinear"
+        else:
+            lo_r, hi_r = max(int(np.floor(y0 * fy)), 0), min(int(np.ceil(y1 * fy)), rows)
+            lo_c, hi_c = max(int(np.floor(x0 * fx)), 0), min(int(np.ceil(x1 * fx)), cols)
+            rr, cc = np.nonzero(valid[lo_r:hi_r, lo_c:hi_c])
+            if rr.size:
+                k = int(np.argmin((rr + lo_r - cy) ** 2 + (cc + lo_c - cx) ** 2))
+                r, c = int(rr[k] + lo_r), int(cc[k] + lo_c)
+                xyz, grid, how = [float(x[r, c]), float(y[r, c]), float(z[r, c])], [float(r), float(c)], "nearest"
+        if how is None:
+            skipped.append({"index": i, "label": label, "why": "no valid vertex of the segment inside the box"})
+            continue
+        points.append(xyz)
+        placed.append({"index": i, "label": label, "xyz": [round(v, 3) for v in xyz],
+                       "grid": [round(v, 3) for v in grid], "how": how})
+    title = name or (doc.get("name") if isinstance(doc.get("name"), str) else None) or f"{seg.name} boxes"
+    _atomic_write(out, _dump(points_document(points, title)))
+    rep = {"schema": "canvas-points/1", "boxes": str(boxes), "segment": str(seg), "frame": frame,
+           "grid": [rows, cols], "canvas": [float(v) for v in canvas] if canvas else None, "out": str(out),
+           "boxes_total": len(doc["boxes"]), "placed": len(placed), "skipped": skipped, "points": placed,
+           "note": "points on the segment's surface at each box's center; they mark places, they are not results"}
+    if report:
+        _atomic_write(report, _dump(rep))
+    return rep
 
 
 def _open_listed(job, name, spec, path, res):
@@ -2829,6 +2941,11 @@ def _graph(tool, job, outs, run_dir, conversions=None):
                                          "made_by": f"tool:{tool.id}", "output": conv["output"]})
         edges.append({"from": stage, "to": f"file:{src}", "rel": "made"})
         edges.append({"from": f"file:{src}", "to": cstage, "rel": "read"})
+        for other in (conv.get("with") or {}).values():
+            orel = Path(other).resolve().relative_to(Path(run_dir).resolve()).as_posix()
+            nodes.setdefault(f"file:{orel}", {"id": f"file:{orel}", "kind": "file", "path": orel,
+                                              "made_by": f"tool:{tool.id}"})
+            edges.append({"from": f"file:{orel}", "to": cstage, "rel": "read"})
         if conv.get("to"):
             dst = Path(conv["to"]).resolve().relative_to(Path(run_dir).resolve()).as_posix()
             if f"file:{dst}" in nodes:
@@ -3427,6 +3544,14 @@ def add_arguments(parser):
     a.add_argument("id")
     a.add_argument("--sha256", help="the manifest digest prefix the plan pinned")
     a.add_argument("words", nargs="*", metavar="WORD", help="three words after --: INPUT OUTPUT REVERSE")
+    a = acts.add_parser("canvas-points", help="boxes on a segment's canvas or grid (canvas-boxes/1) as a VC3D point "
+                                              "collection of their centers on its surface (the canvas-points converter)")
+    a.add_argument("boxes", metavar="BOXES", help="a canvas-boxes/1 JSON file")
+    a.add_argument("--segment", required=True, help="the tifxyz folder the boxes are on")
+    a.add_argument("--out", required=True, help="the point collection to write (VC3D's version 1)")
+    a.add_argument("--report", help="also write where each box landed, and which were skipped, to this JSON file")
+    a.add_argument("--name", help="the collection's name (default the document's name, else SEGMENT boxes)")
+    a.add_argument("--json", action="store_true")
     a = acts.add_parser("export-vc3d", help="VC3D plugin manifests (vc3d-plugin/1) and their launcher")
     a.add_argument("dest", metavar="DIR", help="a folder VC3D reads: ~/.vc3d/plugins or one in VC3D_PLUGIN_PATH")
     a.add_argument("--check", action="store_true", help="only say which files differ (exit 1 when any)")
@@ -3566,6 +3691,12 @@ def cli(args, root=ROOT, env=None):
                 raise RegistryError("exec takes ID -- INPUT OUTPUT REVERSE (the ink command engine's {input}, "
                                     "{output} and {reverse})")
             return exec_ink(reg.get(args.id), *words, sha=args.sha256, root=root)
+        if act == "canvas-points":
+            doc = canvas_points(args.boxes, args.segment, args.out, args.name, args.report)
+            _print(doc, args.json, [f"canvas-points: {doc['placed']} of {doc['boxes_total']} boxes on the surface "
+                                    f"-> {args.out}"] +
+                   [f"  box {q['index']} skipped: {q['why']}" for q in doc["skipped"]])
+            return EXIT_FAILED if doc["boxes_total"] and not doc["placed"] else EXIT_OK
         if act == "export-vc3d":
             dest = Path(args.dest).expanduser()
             if args.include_private and _inside(dest, root):

@@ -1,0 +1,13 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "villa-tifxyz-selfcross",
+ "repo": "community",
+ "kind": "native",
+ "title": "villa's self-intersection census of a tifxyz surface (vc_tifxyz_selfcross)",
+ "native": {
+  "program": "vc_tifxyz_selfcross",
+  "vc3d_action": "none: VC3D has no menu for it; run villa's binary on a segment folder (--surface SEG -o REPORT): it reports transverse, coplanar and grazing contacts and changes nothing",
+  "source": "ScrollPrize/villa volume-cartographer/apps/src/vc_tifxyz_selfcross.cpp (GPL-3.0; called, never copied)"
+ },
+ "notes": "Listed so the command line and agents see villa's own tools; the registry never runs them. AutoPipeline's qa stage reads its census through the VC3D agent's check_surface (qa.max_selfcross) when the binary is installed; its report is a file to read beside the segment."
+}

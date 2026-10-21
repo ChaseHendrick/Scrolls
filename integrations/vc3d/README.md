@@ -44,7 +44,7 @@ python -m kit tools open RUN --live --apply        # sent to a running VC3D star
 
 ## Formats
 
-The tools read and write the community's formats: tifxyz segment folders (`x.tif`, `y.tif`, `z.tif`, `meta.json`), OME-Zarr volumes, VC3D point collections (version 1), villa's label names, and the `ink-detections.json` records VC3D reads for its Ink Detection overlay. Float maps also get 8-bit copies on one shared scale (`vc3d/views/`, with `vc3d/scale.json`), because VC3D stretches a non-8-bit image to its own range and would make a flat control look as strong as the map.
+The tools read and write the community's formats: tifxyz segment folders (`x.tif`, `y.tif`, `z.tif`, `meta.json`), OME-Zarr volumes, VC3D point collections (version 1), villa's label names, and the `ink-detections.json` records VC3D reads for its Ink Detection overlay. Float maps also get 8-bit copies on one shared scale (`vc3d/views/`, with `vc3d/scale.json`), because VC3D stretches a non-8-bit image to its own range and would make a flat control look as strong as the map. When a tool writes something VC3D does not open, a converter turns it into something it does inside the same run folder: boxes on a segment's canvas become a point collection of their centers on the surface (canvas-points), and a surface-volume zarr becomes the layer TIFFs v8in reads (layers). villa's own programs (vc_render_tifxyz, vc_flatten, vc_grow_seg_from_seed, vc_gen_umbilicus, vc_tifxyz_selfcross, vc_tifxyz2obj) are listed for agents (`python -m kit tools list --door native`) and never run from the Scrolls menu: VC3D runs them from its own menus, except vc_tifxyz_selfcross, which has none and runs from a terminal.
 
 ## Not tested yet
 

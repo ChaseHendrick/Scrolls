@@ -8,13 +8,13 @@
 | Status | Current |
 | Kind | kit command, kit module |
 | Area | Pipeline and agents |
-| Run | `python -m kit tools list`, `python -m kit tools show`, `python -m kit tools check`, `python -m kit tools availability`, `python -m kit tools selection`, `python -m kit tools plan`, `python -m kit tools run`, `python -m kit tools confirm`, `python -m kit tools take`, `python -m kit tools open`, `python -m kit tools exec`, `python -m kit tools export-vc3d` |
+| Run | `python -m kit tools list`, `python -m kit tools show`, `python -m kit tools check`, `python -m kit tools availability`, `python -m kit tools selection`, `python -m kit tools plan`, `python -m kit tools run`, `python -m kit tools confirm`, `python -m kit tools take`, `python -m kit tools open`, `python -m kit tools exec`, `python -m kit tools canvas-points`, `python -m kit tools export-vc3d` |
 | Code | `kit/toolreg.py`, `kit/data/registry/`, `integrations/vc3d/`, `kit/cli.py` (`cmd_tools`), `kit/tooldocs.py` (`registry_problems`, `write_index`), `kit/localcost.py` (`run`) |
-| Tests | `tests/test_toolreg.py`, `tests/test_toolreg_reports.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py` |
+| Tests | `tests/test_toolreg.py`, `tests/test_toolreg_reports.py`, `tests/test_toolreg_converters.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py` |
 | Needs | Python 3.10 or newer, standard library only; numpy and tifffile for the 8-bit views of float maps and for turning a VC3D focus region into a box on a segment's canvas (both skipped with a warning without them). Each tool needs what its own page says. Reading a running VC3D (`--from-app`, `open --live`) needs `kit/vc3d_bridge.py` (in the AutoPipeline package) and VC3D built with its agent bridge. VC3D's plugin host is villa's `apps/VC3D/plugins/` on the vc3d-plugins lane of the combined VC3D suite, not merged into villa yet |
 | Runs on | Any CPU. The registry adds well under a second to a tool's own time: a synthetic 400 x 600 rowscore run took 3.2 s wall in all, 1.0 s CPU (measured 2026-10-20, cloud container) |
 | Network | None. A tool it runs uses the network only as its own page and its manifest's `safety.network` say; reading a running VC3D uses its local socket |
-| Writes | Each run writes only its run folder: `--out RUN`, else `work/tools/ID-DIGEST10/` (or `experiments/SLUG/tools/` for a target run in Scrolls-private): `selection.json`, `registry-run.json`, the tool's outputs, `stdout.txt` and `stderr.txt` (unless the manifest captures stdout), `tmp/`, `vc3d/` (8-bit views, `scale.json`, point collections, `open-log.json`), `provenance.json`, `graph.json` and, last, `vc3d-result.json`. One cost entry per run in the ledger record `--slug`, else `tools-YYYYMMDD` (made once), under `KIT_TOOLS_LEDGER` or kit's ledger root. `export-vc3d DIR` writes `DIR/scrolls.ID.json` and `DIR/bin/scrolls-tool`. `python -m kit.tooldocs index` rewrites each manifest's facts block |
+| Writes | Each run writes only its run folder: `--out RUN`, else `work/tools/ID-DIGEST10/` (or `experiments/SLUG/tools/` for a target run in Scrolls-private): `selection.json`, `registry-run.json`, the tool's outputs, `stdout.txt` and `stderr.txt` (unless the manifest captures stdout), `tmp/`, `vc3d/` (8-bit views, `scale.json`, point collections, `open-log.json`), `provenance.json`, `graph.json` and, last, `vc3d-result.json`. One cost entry per run in the ledger record `--slug`, else `tools-YYYYMMDD` (made once), under `KIT_TOOLS_LEDGER` or kit's ledger root. `export-vc3d DIR` writes `DIR/scrolls.ID.json` and `DIR/bin/scrolls-tool`. `canvas-points` writes `--out` and `--report` only. `python -m kit.tooldocs index` rewrites each manifest's facts block |
 | Go-ahead | Not needed: it runs local tools on local or public data and refuses anything that needs a yes, spends money or posts |
 | Released | Not on public `main` yet: branch `claude/integration-1020` since 2026-10-20 |
 | Checked | 2026-10-20 against commit `3bd77be` |
@@ -27,7 +27,7 @@ Three front doors read the same manifests. The command line, `python -m kit tool
 
 Every run goes through the same gates before its command starts: no paid compute (Modal and GPU work is planned only, and `KIT_ALLOW_MODAL` and `MODAL_*` are removed from the child's environment), the local time and disk rule, writes only inside the run folder, no download without `--yes-download`, nothing whose page needs a yes, and no model output or readout of a prize-eligible scroll in public Scrolls. The command runs through `kit.localcost` (AGENTS.md rule 9) with its working folder and `TMPDIR` inside the run folder; every input, segment folder and project file is stat'ed before and after, and a change marks the run violated. Then come provenance, a causal-link graph and the VC3D handoff: 8-bit views of float maps on one shared scale, point collections, and a list of allow-listed VC3D calls in `vc3d-result.json`.
 
-After the run, the format gate checks each declared output (unless it sets `"check": false`) with its format's checker before anything opens or reaches AP: a tifxyz folder (meta.json, x, y, z as one 2-D grid, finite vertices, no z <= 0 vertex without villa's missing mark x = -1), an umbilicus as VC3D's reader takes it, a VC3D project, a point collection (version 1, three finite numbers per point), an overlay against the segment's canvas (aspect within 2 percent), and OME-Zarr (a zarr group, its multiscale levels and a voxel size in meta.json). When `kit/villafmt.py` (AP's format layer, rules cited to villa source lines) is present, its checks are used too. A failure is exit 3 and nothing opens. An output may name one converter manifest (`"convert": "ID"`, kind `converter`), which runs in `RUN/convert/NAME/`, takes that output's place and is its own stage in `graph.json`.
+After the run, the format gate checks each declared output (unless it sets `"check": false`) with its format's checker before anything opens or reaches AP: a tifxyz folder (meta.json, x, y, z as one 2-D grid, finite vertices, no z <= 0 vertex without villa's missing mark x = -1), an umbilicus as VC3D's reader takes it, a VC3D project, a point collection (version 1, three finite numbers per point), an overlay against the segment's canvas (aspect within 2 percent), and OME-Zarr (a zarr group, its multiscale levels and a voxel size in meta.json). When `kit/villafmt.py` (AP's format layer, rules cited to villa source lines) is present, its checks are used too. A failure is exit 3 and nothing opens. An output may name one converter manifest (`"convert": "ID"`, kind `converter`), which runs in `RUN/convert/NAME/`, takes that output's place and is its own stage in `graph.json`. A converter's first required input takes the output; its other inputs bind from the same selection (the active segment, for one), or from other outputs of the same run that the output names in `convert_with` (`{"transform": "transform"}` hands the tool's own `transform.json` to a converter that turns a map back). Two converters ship here: `canvas-points` (boxes on the segment's render canvas or tifxyz grid, in a `canvas-boxes/1` document, become a VC3D point collection of their centers on the surface, through `python -m kit tools canvas-points`) and `layers` (a surface-volume zarr becomes the numbered layer TIFFs v8in reads, through `python -m kit layers`).
 
 Work that should not run from a menu is planned there instead. A tool with GPU or Modal work, a first-use download or a typical time over the 600 s rule on Chase's Mac gets only a "Plan:" entry in VC3D, which writes `plan.json` with a digest and exits 0; a tool whose manifest sets `vc3d.confirm` also gets "Run planned:", which runs a written plan only when its inputs bind again to the same digest (`confirm`). Five "Open run output as KIND" entries (`take`) bring back any checked output of a finished run, such as a control map or a second output, without changing VC3D. VC3D's plugin host refuses to start an entry when a placeholder has no value, so a tool with an optional focus region (inkfilter, auc) gets a second entry, "LABEL (focus region)", that passes `{region}`; VC3D enables it only while a focus region is set.
 
@@ -331,6 +331,26 @@ usage: python -m kit tools exec [-h] [--sha256 SHA256] id [WORD ...]
 | `--sha256 SHA256` | none | the manifest digest prefix the plan pinned |
 | `WORD` | none | three words after `--`: INPUT OUTPUT REVERSE, the ink command engine's `{input}`, `{output}` and `{reverse}` |
 
+### `python -m kit tools canvas-points`
+
+```
+usage: python -m kit tools canvas-points [-h] --segment SEGMENT --out OUT
+                                         [--report REPORT] [--name NAME]
+                                         [--json]
+                                         BOXES
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `BOXES` | required | a canvas-boxes/1 JSON file |
+| `--segment SEGMENT` | required | the tifxyz folder the boxes are on |
+| `--out OUT` | required | the point collection to write (VC3D's version 1) |
+| `--report REPORT` | none | also write where each box landed, and which were skipped, to this JSON file |
+| `--name NAME` | none | the collection's name (default the document's name, else SEGMENT boxes) |
+| `--json` | off | print one JSON document instead of lines |
+
+`BOXES` is `{"schema": "canvas-boxes/1", "frame": "canvas" or "grid", "name": NAME, "canvas": [H, W], "boxes": [{"y0", "y1", "x0", "x1", "label"}]}`, ends exclusive. Frame `canvas` is the segment's render canvas (its tifxyz grid divided by `meta.json`'s scale, or `canvas` when the map was made at another size); frame `grid` is the tifxyz grid itself. Each box's center is looked up on the grid: bilinear between the four vertices around it when all four are valid, else the valid vertex nearest the center inside the box; a box with no valid vertex is skipped and listed. Exit 0, or 1 when boxes were given and none landed. The `canvas-points` converter runs it with `--report RUN/canvas-points.json`.
+
 ### `python -m kit tools export-vc3d`
 
 ```
@@ -382,6 +402,8 @@ usage: python -m kit tools export-vc3d [-h] [--check] [--include-private] DIR
 | `ink_models(registry=None)` | `{reg:ID: command-engine entry}` | nothing | in memory; never written to the model registry file |
 | `plugin_manifests(registry=None, include_private=False)` | `{key: vc3d-plugin/1 dict}` | nothing | run, "(focus region)", "Plan:" and "Run planned:" entries per tool, and the five "Open run output as KIND" entries |
 | `plugin_result(tool, registry=None)` | `{kind, path}` | nothing | what VC3D loads after a run: an ink detection, a segment, points, an umbilicus or a file |
+| `BOXES_SCHEMA` | `"canvas-boxes/1"` | nothing | boxes on a segment's canvas or grid, for the canvas-points converter |
+| `canvas_points(boxes, segment, out, name=None, report=None)` | the report: `placed`, `skipped`, `points` (index, label, xyz, grid, how) | `RegistryError` for a bad document or an unreadable grid | writes `out` (a VC3D point collection) and `report`; needs numpy and tifffile |
 | `export_vc3d(dest, registry=None, include_private=False, root=ROOT, check_only=False)` | the files written, or those that differ | `OSError` | removes stale `scrolls.*.json` |
 | `check(root=ROOT, commands=None, pages=None, env=None)` | list of problems | nothing | `python -m kit.tooldocs check` runs it |
 | `facts_for(page, root)` | the facts dict | nothing | from a `kit.tooldocs.Page` |
@@ -512,6 +534,11 @@ A manifest's params come from `--param NAME=VALUE`, their defaults, or the selec
 | `is outside its run folder; refusing`, `changed after its run (sha256 differs); refusing` | The result names a file outside the run, or the file changed since | Do not load it; run the tool again |
 | `is a PNG; VC3D's ink detection loader here takes a TIFF` | `take ink_overlay` of a PNG map | Use `take file`, or have the tool write a TIFF |
 | `no command given after --`, `command must be an argument list` | `kit.localcost.run` got no command or not a list (a broken manifest or caller) | Correct the manifest's `run.argv` |
+| `document (schema, frame and a boxes list)`, `: frame must be canvas or grid, not`, `needs numeric y0, y1, x0 and x1`, `needs y1 > y0 and x1 > x0` | `canvas-points` got a file that is not a `canvas-boxes/1` document, or a box without four numbers in order | Write the boxes as `canvas-points` describes (Commands and options) |
+| `: frame canvas needs the canvas size ([height, width], or the segment's meta.json scale)` | A canvas-frame document without `canvas` on a segment whose canvas cannot be worked out | Add `"canvas": [H, W]` to the document |
+| `: x, y and z are not one 2-D grid`, `canvas-points needs numpy and tifffile` | The segment's grid is broken, or numpy and tifffile are missing | Check the segment with VC3D; install numpy and tifffile |
+| `box N skipped: no valid vertex of the segment inside the box` (stdout, exit 1 when every box is skipped) | The box lies on a hole of the segment (x = -1 or z <= 0) or off its grid | Check the frame (canvas or grid) and the box; a skipped box is listed in the report |
+| `convert_with NAME: ID has no input NAME`, `the output NAME is missing`, `cannot bind its inputs` (in `warnings`, status failed) | An output's `convert_with` names an input its converter lacks or an output the tool did not write, or the converter needs something the selection lacks (an active segment) | Correct the manifest, or select what the converter needs |
 | `docs/tools/README.md has no generated block; refusing to overwrite its text` | `python -m kit.tooldocs index` (which also writes the facts blocks) found a hand-made index | Restore the two marker lines in `docs/tools/README.md` |
 
 ## How it works
@@ -550,6 +577,7 @@ The registry adds the gates, the audit and the handoff to a tool's own time: wel
 
 ## History
 
+- 2026-10-21: converters take other outputs of the run (`convert_with`); the `canvas-points` converter (`python -m kit tools canvas-points`, boxes in a `canvas-boxes/1` document to a VC3D point collection on the surface) and the `layers` converter; villa's `vc_tifxyz_selfcross` and `vc_tifxyz2obj` listed as native tools ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).
 - 2026-10-21: a manifest may name the tool page it belongs to (`page`), with its own `title`; a conditional Network field (`None for local inputs. ...`) fits `none` and `public-read` manifests ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).
 - 2026-10-21: the format gate, convert steps, plan and confirm (`plan --write`, `confirm`), `take` and its five VC3D entries, "Plan:" and "Run planned:" entries, bridge-bound inputs read once from the parent VC3D's bridge (`--bridge-path`, found by the launcher's parent pid, never the newest bridge), the inkfilter manifest (an AP ink backend, `reg:inkfilter`), quota and `axis_order`; VC3D's own `plugin-run.json` no longer makes `--out` look busy ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).
 - 2026-10-20: first version: the registry, `python -m kit tools`, eight public tool manifests and four of villa's tools, the VC3D plugin manifests and launcher in `integrations/vc3d/plugins/`, the AP door through `exec`, and `kit.localcost.run` with a working folder, environment, timeout and output files ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).

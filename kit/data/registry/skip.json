@@ -13,7 +13,6 @@
   "greeklm": "a letter language model for transcribed Greek text; no scan input",
   "harness2": "compares agent provenance workflows on generated files; it takes no selection and makes nothing VC3D or AutoPipeline opens",
   "heldout": "applies a published trainer's split rule to label masks; a records check with no VC3D output",
-  "layers": "a format step (surface-volume zarr to layer TIFFs) that other tools call; next, as a converter",
   "leaderboard": "writes docs/leaderboard.md from docs/results.json; a repository tool",
   "letterdemo": "a guided demo of the letter reader on bundled public data; no selection to bind",
   "letterlines": "builds training lines from transcribed lines; a training-data tool",

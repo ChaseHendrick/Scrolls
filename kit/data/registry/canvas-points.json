@@ -1,0 +1,86 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "canvas-points",
+ "repo": "public",
+ "kind": "converter",
+ "page": "toolreg",
+ "title": "boxes on a segment's canvas to points on its surface (the registry's canvas-to-volume converter)",
+ "notes": "A convert step, never a menu entry or a stage: an output of kind points in the canvas-boxes/1 format names it, and VC3D loads the point collection it writes. Each box's center is looked up on the active segment's tifxyz grid (x, y, z in level-0 voxels). The points mark places on the surface; they are not results.",
+ "inputs": {
+  "boxes": {
+   "from": "path",
+   "format": [
+    "json"
+   ],
+   "label": "a canvas-boxes/1 document: boxes on the segment's render canvas (frame canvas) or its tifxyz grid (frame grid)"
+  },
+  "surface": {
+   "from": "segment",
+   "format": [
+    "tifxyz"
+   ],
+   "label": "the segment the boxes are on (the run's active segment)"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit",
+   "tools",
+   "canvas-points",
+   "{in.boxes}",
+   "--segment",
+   "{in.surface}",
+   "--out",
+   "{run}/points.json",
+   "--report",
+   "{run}/canvas-points.json"
+  ],
+  "timeout_s": 600
+ },
+ "outputs": {
+  "points": {
+   "kind": "points",
+   "format": "vc3d-point-collection",
+   "path": "{run}/points.json",
+   "label": "one point per box that lands on a valid vertex, in box order"
+  },
+  "report": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/canvas-points.json",
+   "label": "where each box landed (bilinear or nearest vertex) and the boxes skipped"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 2,
+  "disk_mb": 1,
+  "ram_gb": 1,
+  "scales_with": "the segment's grid vertices (three TIFFs read once)"
+ },
+ "safety": {
+  "model_output": false,
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "facts": {
+  "title": "toolreg",
+  "tagline": "one registry of tools for the command line, VC3D and AutoPipeline",
+  "status": "Current",
+  "kind": [
+   "kit command",
+   "kit module"
+  ],
+  "area": "Pipeline and agents",
+  "page": "docs/tools/toolreg.md",
+  "go_ahead": false,
+  "network": "None. A tool it runs uses the network only as its own page and its manifest's `safety.network` say; reading a running VC3D uses its local socket",
+  "license": null,
+  "checked": "2026-10-20 3bd77be",
+  "success": "exit 0, `status` `ok`, `controls.verdict` `present` or `not applicable`, and no `format_gate` row with verdict `fail`.",
+  "not_a_pass": "`controls.verdict` `no control: not a pass`; exit 4 (planned, nothing ran); a `target` gate of `warn` read as a check that the scroll is not eligible; a tool's own report that its page's Not a pass rule names.",
+  "never": "pass `--allow-outside` or `--yes-download` without reading what the manifest says it writes or fetches; edit a manifest's facts block by hand; open a result whose status is not ok; call an ink map a reading."
+ }
+}
