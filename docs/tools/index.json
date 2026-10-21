@@ -2759,6 +2759,10 @@
      "symbols": []
     },
     {
+     "path": "plugins/ink-lens.json",
+     "symbols": []
+    },
+    {
      "path": "spaces/ink-lens/README.md",
      "symbols": []
     }
@@ -2781,7 +2785,7 @@
     "Kind": "app, agent tool, script",
     "Area": "Ink maps and models",
     "Run": "`python3 spaces/ink-lens/inklens.py run` (a region of a segment), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME`",
-    "Code": "`spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft plugin manifest), `spaces/ink-lens/README.md` (the Space card)",
+    "Code": "`spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft action list), `plugins/ink-lens.json` (the Plugins menu manifest, [vc3d-plugins](vc3d-plugins.md)), `spaces/ink-lens/README.md` (the Space card)",
     "Tests": "`tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them)",
     "Needs": "Python 3.10 or newer, numpy. Space mode: gradio_client and huggingface_hub, and the user's own Hugging Face token. Local mode and the Space: torch 2.13.0 and the pins in `spaces/ink-lens/requirements.txt`; villa's `vesuvius/src` at `8aa507c12` and the checkpoint are downloaded once (or `VILLA_SRC`, `INKLENS_D9V2`, `INKLENS_INK_9UM`). Pins: tifffile, and this repository's `kit/` (the Scroll Text Reader). Rendering a region: `vc_render_tifxyz` from a VC3D build. Label scoring: zarr",
     "Runs on": "ZeroGPU (Space mode, estimate only until deployed: 6 to 10 s for a 1024 px region, 1,350 patches). CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured",
@@ -8975,7 +8979,7 @@
    "id": "vc3d-plugins",
    "name": "vc3d-plugins",
    "tagline": "run Scrolls and community tools from VC3D's Plugins menu",
-   "summary": "Seven VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Text Reader, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.",
+   "summary": "Eight VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.",
    "status": "Experimental",
    "kind": [
     "data",
@@ -9002,8 +9006,8 @@
     "text": "Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1)"
    },
    "checked": {
-    "date": "2026-10-20",
-    "commit": "3bd77be"
+    "date": "2026-10-21",
+    "commit": "249096b"
    },
    "license": "Manifests and launcher: Apache 2.0 ([LICENSE](../../LICENSE)); each tool keeps its own license, named in its manifest's `license` field",
    "fields": {
@@ -9014,13 +9018,13 @@
     "Run": "VC3D built from villa branch `vc3d-plugins`, started with `VC3D_PLUGIN_PATH=plugins`; `python3 plugins/run_kit.py COMMAND ...` runs the kit from a plain clone",
     "Code": "`plugins/`",
     "Tests": "`tests/test_plugins.py`",
-    "Needs": "VC3D built from villa branch `vc3d-plugins` (commit `25d616e16`, on villa `main` `1eb51aecf`); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py`",
+    "Needs": "VC3D built from villa branch `vc3d-plugins` (commit `a0c8b9e6d`, on villa `main` `d1b95150e`); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py`",
     "Runs on": "Wherever VC3D runs; each tool takes the time its page gives. The manifest checks take about 1.2 s (measured 2026-10-20, 4-core cloud container)",
     "Network": "Only what each tool contacts, on its page (the scroll center finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases)",
-    "Writes": "VC3D writes each run into `~/.vc3d/plugin-runs/ID/TIME/` with `plugin-run.json`; by result kind it also attaches a segment or an umbilicus to the open project, appends a record to the active segment's `ink-detections.json`, or adds point collections",
+    "Writes": "VC3D writes each run into `~/.vc3d/plugin-runs/ID/TIME/` with `plugin-run.json`; by result kind it also attaches a segment or an umbilicus to the open project, appends a record to the active segment's `ink-detections.json`, or adds point collections. Ink Lens writes its overlay, pins and a merged `ink-detections.json` into the segment folder itself (its result kind is `none`)",
     "Go-ahead": "Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1)",
     "Released": "Not released; the villa side is a local branch, not pushed",
-    "Checked": "2026-10-20 against commit `3bd77be`",
+    "Checked": "2026-10-21 against commit `249096b`",
     "License": "Manifests and launcher: Apache 2.0 ([LICENSE](../../LICENSE)); each tool keeps its own license, named in its manifest's `license` field"
    },
    "page": "docs/tools/vc3d-plugins.md",
@@ -9106,13 +9110,13 @@
     {
      "name": "History",
      "start_line": 166,
-     "end_line": 169,
+     "end_line": 170,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 170,
-     "end_line": 174,
+     "start_line": 171,
+     "end_line": 175,
      "applicable": true
     }
    ]

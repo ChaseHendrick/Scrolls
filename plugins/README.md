@@ -25,9 +25,10 @@ VC3D also reads `~/.vc3d/plugins/`, so you can copy single manifests there inste
 | `villa-gen-umbilicus.json` | Volume Cartographer | villa's `vc_gen_umbilicus` on a normal grid folder | the `umbilicus.json` it writes | a volume; asks for the normal grid folder |
 | `villa-render-layers.json` | Volume Cartographer | villa's `vc_render_tifxyz`, Render segment defaults | nothing (reports the run folder) | a local volume and an active segment |
 | `villa-tifxyz2obj.json` | Volume Cartographer | villa's `vc_tifxyz2obj` | the OBJ, to open | an active segment |
+| `ink-lens.json` | Ink detection | [Ink Lens](../docs/tools/ink-lens.md), `spaces/ink-lens/inklens.py run --local` on a region of `{segment}` you give in render pixels | nothing; Ink Lens itself writes the overlay, pins and a merged `ink-detections.json` into the segment folder (reselect the segment to see it); exit 3, no ink above the control, shows as a failed run | an open volume and an active segment; asks for the region and the reader |
 | `v8in-ink.json` | Ink detection | Youssef Nader's v8in ink model through [`scripts/v8in_run.py`](../docs/tools/v8in-run.md) on `{segment}/layers` | the prediction PNG, added to the segment's ink detections | an active segment with a `layers/` folder; asks for the local v8in snapshot |
 
-Before the first run of each tool, set it up as its page says. For the scroll center finder that means the released weights in `work/umbilicus/weights/` of this checkout (its guide's Quick start); the slices it reads are cached in `work/umbilicus/slices/`. StrokeNet and the Scroll Text Reader download their released weights once, SHA-256 checked. v8in needs a local snapshot of its Hugging Face repository and its packages.
+Before the first run of each tool, set it up as its page says. For the scroll center finder that means the released weights in `work/umbilicus/weights/` of this checkout (its guide's Quick start); the slices it reads are cached in `work/umbilicus/slices/`. StrokeNet and the Scroll Text Reader download their released weights once, SHA-256 checked. Ink Lens downloads villa's code and its reader checkpoints once into `$INKLENS_CACHE` and needs torch and `vc_render_tifxyz`. v8in needs a local snapshot of its Hugging Face repository and its packages.
 
 ## What the results are, and are not
 

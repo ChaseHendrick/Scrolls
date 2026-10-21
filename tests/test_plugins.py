@@ -103,7 +103,7 @@ def load_all():
 class TestPluginManifests(unittest.TestCase):
     def test_every_manifest_loads_in_vc3d(self):
         manifests = load_all()
-        self.assertGreaterEqual(len(manifests), 7)
+        self.assertGreaterEqual(len(manifests), 8)
         for name, manifest in manifests.items():
             with self.subTest(manifest=name):
                 self.assertEqual(problems(manifest), [])
@@ -166,7 +166,7 @@ class TestPluginManifests(unittest.TestCase):
         # Scripts are not imported (they need torch); their argparse lines are read instead.
         for name, manifest in load_all().items():
             args = manifest.get("args", [])
-            if not args or not args[0].startswith("{plugin_dir}/../scripts/"):
+            if not args or not args[0].startswith(("{plugin_dir}/../scripts/", "{plugin_dir}/../spaces/")):
                 continue
             source = (PLUGINS / args[0][len("{plugin_dir}/"):]).resolve().read_text(encoding="utf-8")
             for flag in (a for a in args[1:] if a.startswith("--")):
