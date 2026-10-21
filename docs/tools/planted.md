@@ -219,7 +219,7 @@ A 20 x 160 plant is made, written and checked in well under a second; the 20 tes
 
 ## History
 
-- 2026-10-21: first public version, the same file as Scrolls-private's (PR to follow)
+- 2026-10-21: first public version, the same file as Scrolls-private's (`dd4a49f`)
 
 ## Related
 
