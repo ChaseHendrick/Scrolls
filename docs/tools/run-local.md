@@ -9,17 +9,17 @@
 | Kind | kit command, kit module, data |
 | Area | Compute and cost |
 | Run | `python -m kit run local`, `python -m kit run backfill`, `from kit import localcost` |
-| Code | `kit/localcost.py`, `scripts/backfill/`, `kit/cli.py` (`cmd_run`) |
-| Tests | `tests/test_localcost.py`, `tests/test_localcost_regressions.py` |
+| Code | `kit/localcost.py`, `scripts/backfill/`, `kit/cli.py` (`cmd_run`, `_local_record_start`, `_local_record_finish`) |
+| Tests | `tests/test_localcost.py`, `tests/test_localcost_regressions.py`, `tests/test_runrecord.py` |
 | Needs | Python 3.10 or newer, standard library only. An experiment made first with `python -m kit run init`, and an electricity rate (option, environment variable or local configuration file) |
 | Runs on | Mac or Linux; the CPU-time counter and the writer lock need a POSIX system, and elsewhere CPU time is recorded as null and writes must be serial. The wrapper's own overhead is not measured |
 | Network | None |
-| Writes | Appends cost entries to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`), replacing the file atomically through a temporary `.local-cost-*` file in that folder, and leaves a lock file `run.local-cost.lock` beside it. The wrapped command writes whatever it writes |
+| Writes | Appends cost entries to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`), replacing the file atomically through a temporary `.local-cost-*` file in that folder, and leaves a lock file `run.local-cost.lock` beside it. The wrapped command writes whatever it writes. Unless `--no-record`, also a run record in `work/causal/runs/` of this checkout (and with `--adopt`, `docs/causal/runs/`), through [runrecord](runrecord.md) |
 | Go-ahead | Not needed for the wrapper. Long local jobs fall under the Modal rule (hard rule 11): a job that needs a GPU or more than about an hour of CPU goes to Modal instead |
 | Released | Public `main` since 2026-10-07 (`7878089`) |
 | Guide | [compute.md, local runs](../compute.md#local-runs-time-and-electricity) |
 | License | Apache 2.0, the repository's [LICENSE](../../LICENSE), for the code and the backfill list |
-| Checked | 2026-10-16 against commit `63ee638` |
+| Checked | 2026-10-21 against commit `3bd77be` plus the run record wiring |
 
 ## What it does
 
@@ -87,7 +87,8 @@ Claim label: None. Wall time, CPU time and exit codes are measurements of the wr
 ```
 usage: python -m kit run local [-h]
                                [--device {apple-silicon-cpu,apple-silicon-gpu,apple-silicon-idle,cuda-gpu,x86-cpu}]
-                               [--watts WATTS] [--rate RATE]
+                               [--watts WATTS] [--rate RATE] [--causal LINE]
+                               [--adopt] [--no-record]
                                slug [cmd ...]
 ```
 
@@ -97,6 +98,9 @@ usage: python -m kit run local [-h]
 | `--device DEVICE` | none | Device class whose assumed watts to use: `apple-silicon-cpu` (30), `apple-silicon-gpu` (40), `apple-silicon-idle` (8), `x86-cpu` (65) or `cuda-gpu` (350). Without it: `device` from the configuration file, else `apple-silicon-cpu` on a Mac with Apple silicon and `x86-cpu` on anything else |
 | `--watts WATTS` | none | Average watts to assume instead of the device class's; the entry's `device` is then the `--device` given, or `override` |
 | `--rate RATE` | none | Electricity price in USD per kWh. Without it: `SCROLLS_ELECTRICITY_USD_PER_KWH`, then `electricity_usd_per_kwh` in the configuration file; with none of the three the command fails |
+| `--causal LINE` | none | A link line for the run record, in kit causal's grammar (repeatable), such as `prereg docs/prereg/X.md@COMMIT`; a line that does not parse or resolve, or (in this repository) a private or local reference, stops the run before the command starts (exit 2) |
+| `--adopt` | off | Adopt the finished run record into `docs/causal/runs/` ([runrecord](runrecord.md)) |
+| `--no-record` | off | Do not write a run record. By default (since 2026-10-21) a local run charged to the default ledger, or given `--causal` or `--adopt`, writes `work/causal/runs/TOKEN-SLUG.json` in this checkout with the code commit, argv, exit code and the `--causal` lines, marked public; a record that cannot be written is reported and the command still runs |
 | `cmd` | none | The command to run, after `--`. A leading `--` is dropped and the rest is passed as an argument list (no shell). Wrapper options must come before `--` |
 
 ### `python -m kit run backfill`
@@ -263,6 +267,7 @@ They cover the estimate arithmetic, the order of rate sources, refusing before l
 
 ## History
 
+- 2026-10-21: `kit run local` writes a run record by default (`--causal`, `--adopt`, `--no-record`), so local results can be traced with [causal](causal.md) (this change, on top of `3bd77be`).
 - 2026-10-17: when `run local` cannot write its ledger entry after the child has run, it keeps the child's nonzero exit code (2 when the child exited 0) and prints what was lost and how to backfill it; before, the write error replaced the child's exit code with 2 (`0a84855`).
 - 2026-10-07: review fixes: values must be finite and nonnegative, the backfill is validated whole, writes are locked and atomic, signals and launch failures are recorded, and child arguments survive the Python 3.10 parser (`7492129`).
 - 2026-10-07: first version, with `run local`, `run backfill` and the 7 October backfill list (`7878089`).

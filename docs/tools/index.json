@@ -485,6 +485,175 @@
    ]
   },
   {
+   "id": "causal",
+   "name": "causal",
+   "tagline": "trace every result, claim and tool output to its causes and effects",
+   "summary": "Reads the links the repository already holds (results, decisions, README claims, preregistrations, run and provenance records, releases, tool pages), derives the rest, and checks that anything added after the cutover carries its required causal links.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit causal why",
+    "python -m kit causal effects",
+    "python -m kit causal show",
+    "python -m kit causal gaps",
+    "python -m kit causal check",
+    "python -m kit causal parse",
+    "python -m kit causal link",
+    "python -m kit causal add",
+    "python -m kit causal backfill",
+    "python -m kit causal ratchet",
+    "python -m kit.causal",
+    "tests/test_causal_repo.py"
+   ],
+   "imports": [
+    "from kit import causal"
+   ],
+   "code": [
+    {
+     "path": "kit/causal.py",
+     "symbols": []
+    },
+    {
+     "path": "docs/causal/README.md",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_causal.py",
+    "tests/test_causal_repo.py",
+    "tests/test_causal_shared.py",
+    "tests/test_runrecord.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the tool. A `private:` digest written into a public file needs Chase's yes in its PR (hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "3bd77be"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`causal`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit causal why`, `python -m kit causal effects`, `python -m kit causal show`, `python -m kit causal gaps`, `python -m kit causal check`, `python -m kit causal parse`, `python -m kit causal link`, `python -m kit causal add`, `python -m kit causal backfill`, `python -m kit causal ratchet`, `python -m kit.causal`, `from kit import causal`; every test run, through `tests/test_causal_repo.py`",
+    "Code": "`kit/causal.py`, `docs/causal/README.md`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_causal.py`, `tests/test_causal_repo.py`, `tests/test_causal_shared.py`, `tests/test_runrecord.py`",
+    "Needs": "Python 3.10 or newer, standard library only, plus `kit/stale.py`, `kit/provenance.py` and `kit/tooldocs.py`; git for tracked files and pins (it falls back to the file tree without git); `gh` only with `--network`",
+    "Runs on": "Any CPU. On this repository `check --no-hash` 1.1 s, full `check` 1.4 s and `gaps --counts` 1.3 s wall (measured 2026-10-21, 4-core Intel Xeon at 2.80 GHz cloud container, 90 results entries, 62 tool pages)",
+    "Network": "None; `check --network` asks GitHub (`gh api repos/OWNER/REPO/commits/SHA`) about commits this clone cannot reach",
+    "Writes": "Nothing for why, effects, show, gaps, check and parse. `link` appends to `docs/causal/edges.jsonl`; `add result --write` edits one `docs/results.json` entry and copies its run record to `docs/causal/runs/TOKEN.json`; `add claim --write` edits `docs/causal/claims.json`; `backfill --write` edits `docs/results.json`, `docs/DECISIONS.md`, `docs/causal/claims.json` or `docs/causal/edges.jsonl` (by pass) and records the pass in `docs/causal/baseline.json`; `ratchet --write` writes `docs/causal/baseline.json`. Every writer refuses frozen paths (rule E13)",
+    "Go-ahead": "Not needed for the tool. A `private:` digest written into a public file needs Chase's yes in its PR (hard rule 8)",
+    "Released": "Public `main` from the change that adds it (21 Oct 2026). `kit/causal.py` is shared code, byte-identical in Scrolls-private, as `kit/stale.py` is; `tests/test_causal_shared.py` pins its bytes in both",
+    "Checked": "2026-10-21 against commit `3bd77be` plus this tool"
+   },
+   "page": "docs/tools/causal.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 264,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 265,
+     "end_line": 292,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 293,
+     "end_line": 312,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 313,
+     "end_line": 335,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 336,
+     "end_line": 384,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 385,
+     "end_line": 394,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 395,
+     "end_line": 398,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 399,
+     "end_line": 408,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 409,
+     "end_line": 412,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 413,
+     "end_line": 416,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 417,
+     "end_line": 424,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "cli",
    "name": "cli",
    "tagline": "the kit command line (python -m kit) and its list of commands",
@@ -6607,21 +6776,24 @@
     {
      "path": "kit/cli.py",
      "symbols": [
-      "cmd_run"
+      "cmd_run",
+      "_local_record_start",
+      "_local_record_finish"
      ]
     }
    ],
    "tests": [
     "tests/test_localcost.py",
-    "tests/test_localcost_regressions.py"
+    "tests/test_localcost_regressions.py",
+    "tests/test_runrecord.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed for the wrapper. Long local jobs fall under the Modal rule (hard rule 11): a job that needs a GPU or more than about an hour of CPU goes to Modal instead"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-21",
+    "commit": "3bd77be"
    },
    "license": "Apache 2.0, the repository's [LICENSE](../../LICENSE), for the code and the backfill list",
    "fields": {
@@ -6630,17 +6802,17 @@
     "Kind": "kit command, kit module, data",
     "Area": "Compute and cost",
     "Run": "`python -m kit run local`, `python -m kit run backfill`, `from kit import localcost`",
-    "Code": "`kit/localcost.py`, `scripts/backfill/`, `kit/cli.py` (`cmd_run`)",
-    "Tests": "`tests/test_localcost.py`, `tests/test_localcost_regressions.py`",
+    "Code": "`kit/localcost.py`, `scripts/backfill/`, `kit/cli.py` (`cmd_run`, `_local_record_start`, `_local_record_finish`)",
+    "Tests": "`tests/test_localcost.py`, `tests/test_localcost_regressions.py`, `tests/test_runrecord.py`",
     "Needs": "Python 3.10 or newer, standard library only. An experiment made first with `python -m kit run init`, and an electricity rate (option, environment variable or local configuration file)",
     "Runs on": "Mac or Linux; the CPU-time counter and the writer lock need a POSIX system, and elsewhere CPU time is recorded as null and writes must be serial. The wrapper's own overhead is not measured",
     "Network": "None",
-    "Writes": "Appends cost entries to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`), replacing the file atomically through a temporary `.local-cost-*` file in that folder, and leaves a lock file `run.local-cost.lock` beside it. The wrapped command writes whatever it writes",
+    "Writes": "Appends cost entries to `experiments/SLUG/run.json` (or `ROOT/SLUG/run.json` with `--root`), replacing the file atomically through a temporary `.local-cost-*` file in that folder, and leaves a lock file `run.local-cost.lock` beside it. The wrapped command writes whatever it writes. Unless `--no-record`, also a run record in `work/causal/runs/` of this checkout (and with `--adopt`, `docs/causal/runs/`), through [runrecord](runrecord.md)",
     "Go-ahead": "Not needed for the wrapper. Long local jobs fall under the Modal rule (hard rule 11): a job that needs a GPU or more than about an hour of CPU goes to Modal instead",
     "Released": "Public `main` since 2026-10-07 (`7878089`)",
     "Guide": "[compute.md, local runs](../compute.md#local-runs-time-and-electricity)",
     "License": "Apache 2.0, the repository's [LICENSE](../../LICENSE), for the code and the backfill list",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-21 against commit `3bd77be` plus the run record wiring"
    },
    "page": "docs/tools/run-local.md",
    "sections": [
@@ -6671,67 +6843,228 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 120,
+     "end_line": 124,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 121,
-     "end_line": 142,
+     "start_line": 125,
+     "end_line": 146,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 143,
-     "end_line": 164,
+     "start_line": 147,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 165,
-     "end_line": 207,
+     "start_line": 169,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 208,
-     "end_line": 231,
+     "start_line": 212,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 232,
-     "end_line": 241,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 242,
+     "start_line": 236,
      "end_line": 245,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 246,
-     "end_line": 255,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 250,
+     "end_line": 259,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 256,
-     "end_line": 263,
+     "start_line": 260,
+     "end_line": 267,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 264,
-     "end_line": 269,
+     "start_line": 268,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 270,
-     "end_line": 276,
+     "start_line": 275,
+     "end_line": 281,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "runrecord",
+   "name": "runrecord",
+   "tagline": "one provenance record per run, with the causal links it ran under",
+   "summary": "Writes a run record (a kit provenance record with a token, the tool, argv, settings digest, exit code and causal link lines) for any run, so kit causal can trace results back to the run, its code, inputs, control and decision.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit runrecord start",
+    "python -m kit runrecord finish",
+    "python -m kit runrecord wrap",
+    "python -m kit runrecord adopt",
+    "python -m kit runrecord check",
+    "python -m kit.runrecord"
+   ],
+   "imports": [
+    "from kit import runrecord"
+   ],
+   "code": [
+    {
+     "path": "kit/runrecord.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser",
+      "_local_record_start",
+      "_local_record_finish"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_runrecord.py",
+    "tests/test_causal.py",
+    "tests/test_causal_shared.py",
+    "tests/test_localcost.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed. Adopting a record here needs `public` true, from a public-data run"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "3bd77be"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`runrecord`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit runrecord start`, `python -m kit runrecord finish`, `python -m kit runrecord wrap`, `python -m kit runrecord adopt`, `python -m kit runrecord check`, `python -m kit.runrecord`, `from kit import runrecord`; by default inside every kit run local wrapper ([run-local](run-local.md))",
+    "Code": "`kit/runrecord.py`, `kit/cli.py` (`build_parser`, `_local_record_start`, `_local_record_finish`)",
+    "Tests": "`tests/test_runrecord.py`, `tests/test_causal.py`, `tests/test_causal_shared.py`, `tests/test_localcost.py`",
+    "Needs": "Python 3.10 or newer, standard library only, plus `kit/causal.py` (the link grammar) and `kit/provenance.py` (fingerprints and the record format); git for the code commit",
+    "Runs on": "Any CPU. Its own overhead is the input and output fingerprints: up to `HASH_BUDGET` (256 MB) hashed per record, the rest listed by reference; the 11 tests run in about 4.5 s (measured 2026-10-21, 4-core Intel Xeon at 2.80 GHz cloud container)",
+    "Network": "None",
+    "Writes": "`work/causal/runs/TOKEN.open.json` (start), `work/causal/runs/TOKEN.json` (finish, wrap), `docs/causal/runs/TOKEN.json` (adopt). Refuses frozen paths (kit causal rule E13)",
+    "Go-ahead": "Not needed. Adopting a record here needs `public` true, from a public-data run",
+    "Released": "Public `main` from the change that adds it (21 Oct 2026). `kit/runrecord.py` is shared code, byte-identical in Scrolls-private; `tests/test_causal_shared.py` pins its bytes in both",
+    "Checked": "2026-10-21 against commit `3bd77be` plus this tool"
+   },
+   "page": "docs/tools/runrecord.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 64,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 70,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 169,
+     "end_line": 185,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 186,
+     "end_line": 189,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 190,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 215,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 245,
+     "end_line": 253,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 254,
+     "end_line": 257,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 258,
+     "end_line": 267,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 268,
+     "end_line": 271,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 272,
+     "end_line": 275,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 276,
+     "end_line": 281,
      "applicable": true
     }
    ]

@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
+"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,causal,runrecord,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -9,6 +9,7 @@ import argparse
 import copy
 import json
 import os
+import re
 import sys
 from pathlib import Path
 from datetime import date
@@ -415,6 +416,58 @@ def cmd_batch(args):
         return 2
 
 
+def _local_record_start(args, cmd):
+    """The run record `kit run local` writes by default (kit runrecord) into this checkout's work/causal/runs/:
+    started before the command runs, so a bad --causal line stops the run before it costs anything. Written when the
+    experiment ledger is the default one, or with --causal or --adopt; never with --no-record. In a repository without
+    private extractors (kit.causal_ext) the record is marked public and private or local links are refused, so it can
+    be adopted there. A record that cannot be started for another reason is reported and the command still runs."""
+    if getattr(args, "no_record", False) or not cmd:
+        return None
+    default = args.root is None or Path(args.root).resolve() == Path(ledger.DEFAULT_ROOT).resolve()
+    if not (default or args.causal or args.adopt):
+        return None
+    from kit import causal, runrecord
+    lines = list(args.causal or ())
+    public = not causal._has_ext()      # a repository without private extractors records public-data runs only
+    try:
+        for line in lines:
+            causal.parse(line)
+        runrecord._validate(runrecord.ROOT, lines, public)
+    except (runrecord.RunRecordError, causal.CausalError) as exc:
+        raise localcost.CostError(f"run record refused: {exc}") from exc
+    slug = re.sub(r"[^a-z0-9-]+", "-", args.slug.lower()).strip("-") or "local"
+    base = runrecord.token(slug)
+    for n in range(1, 100):
+        tok = base if n == 1 else f"{base}-{n}"
+        if not any((runrecord.ROOT / runrecord.WORK_RUNS / f"{tok}{ext}").exists() for ext in (".json", ".open.json")):
+            break
+    try:
+        rec = runrecord.start(runrecord.ROOT, tool=f"kit run local {args.slug}", run_token=tok, causal_lines=lines,
+                              public=public, argv=cmd)
+    except (runrecord.RunRecordError, causal.CausalError, OSError) as exc:
+        print(f"{args.slug}: no run record: {exc}", file=sys.stderr)
+        return None
+    os.environ[runrecord.PARENT_ENV] = rec["token"]
+    return rec
+
+
+def _local_record_finish(args, rec, code):
+    """Finish (and with --adopt, adopt) the run record; a failure here is reported, never changes the exit code."""
+    if rec is None:
+        return
+    from kit import runrecord
+    os.environ.pop(runrecord.PARENT_ENV, None)
+    try:
+        done = runrecord.finish(runrecord.ROOT, rec["token"], exit_code=code)
+        where = f"{runrecord.WORK_RUNS}/{rec['token']}.json"
+        if getattr(args, "adopt", False):
+            where = str(runrecord.adopt(runrecord.ROOT, rec["token"]))
+        print(f"{args.slug}: run record {where} ({done['digest'][:12]})", file=sys.stderr)
+    except (runrecord.RunRecordError, OSError, ValueError) as exc:
+        print(f"{args.slug}: the run record was not finished: {exc}", file=sys.stderr)
+
+
 def cmd_run(args):
     if args.action in ("all", "watch", "catalog"):
         return cmd_batch(args)
@@ -442,11 +495,13 @@ def cmd_run(args):
             print(f"{args.slug}: ok")
         elif args.action == "local":
             cmd = args.cmd[1:] if args.cmd[:1] == ["--"] else args.cmd
+            rec = _local_record_start(args, cmd)
             code, item = localcost.run(args.slug, cmd, root=root, device=args.device,
                                        watts=args.watts, rate=args.rate)
             cpu = "unavailable" if item["cpu_s"] is None else f"{item['cpu_s']:.1f} s"
             print(f"{args.slug}: {item['wall_s']:.1f} s wall, {cpu} CPU, "
                   f"{item['kwh']:.4f} kWh, ${item['usd_exact']:.4f} (exit {code})", file=sys.stderr)
+            _local_record_finish(args, rec, code)
             if "ledger_error" in item:
                 print(f"{args.slug}: the command exited {code}, but its cost was not written to the ledger: "
                       f"{item['ledger_error']}. Record it with kit run backfill, using the wall time above.",
@@ -1368,6 +1423,19 @@ def build_parser(prog="python -m kit", sub_progs=None):
     stale.add_arguments(p)
     p.set_defaults(func=stale.run)
 
+    p = sub.add_parser("causal", help="causal links across the repository: why a result, claim or tool output "
+                                      "exists, what it changed, and a ratchet against new unlinked results "
+                                      "(kit/causal.py)")
+    from . import causal
+    causal.add_arguments(p)
+    p.set_defaults(func=causal.run)
+
+    p = sub.add_parser("runrecord", help="run records: one provenance record per run with the causal links it ran "
+                                         "under (kit/runrecord.py)")
+    from . import runrecord
+    runrecord.add_arguments(p)
+    p.set_defaults(func=runrecord.cli)
+
     p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
     releases.add_arguments(p)
     p.set_defaults(func=releases.run)
@@ -1405,6 +1473,10 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("--device", choices=sorted(localcost.DEVICE_WATTS), help="average-watts class (default: config or platform)")
     a.add_argument("--watts", type=float, help="override average watts")
     a.add_argument("--rate", type=float, help="USD per kWh (default: env var or local config)")
+    a.add_argument("--causal", action="append", default=[], metavar="LINE",
+                   help="a link line for the run record (kit causal's grammar; repeatable)")
+    a.add_argument("--adopt", action="store_true", help="adopt the finished run record into docs/causal/runs/")
+    a.add_argument("--no-record", action="store_true", help="do not write a run record (kit runrecord)")
     a.add_argument("cmd", nargs="*", help="put the command after --")
     a = actions.add_parser("backfill", help="add estimated local-run costs from a JSON list of logged durations")
     a.add_argument("slug")

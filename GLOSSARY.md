@@ -44,6 +44,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **catalog (catalogue)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
 
+**causal link**: A typed edge from an effect (a result, README claim, decision, preregistration, spec, run record, release or tool page) to what caused or produced it (a decision, preregistration, spec, run, code commit, input, control or source), written as a link line `REL REF [PIN]` or derived from fields the repository already has. `kit causal` reads and checks them ([page](docs/tools/causal.md), [rules](docs/causal/README.md)). A causal link is provenance: it never shows that a change caused a gain, which needs a matched null arm.
+
 **checkpoint**: The saved weights of a trained model.
 
 **chunk**: One stored block of a zarr array. Readers fetch only the chunks they need.
@@ -61,6 +63,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **CUDA**: NVIDIA's GPU programming platform. Most villa training and inference assume an NVIDIA GPU with CUDA.
 
 ## D
+
+**cutover (causal)**: The commit and day (21 October 2026) at which `kit causal`'s baseline was made: everything added after it must carry its required causal links, while the gaps that existed then sit in `docs/causal/baseline.json` and may only shrink.
 
 **d9v2**: A community fine-tune of `ink_9um`, usable as a drop-in `ink_9um` checkpoint.
 
@@ -204,6 +208,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **papyrologist**: A scholar of ancient papyri. Only the Vesuvius Challenge papyrology team decides whether an image is legible.
 
+**pass ledger**: The `passes` record in `docs/causal/baseline.json`: each named backfill pass of `kit causal` (ids, decision-ids, joins, claims, frozen) records its commit, time and count once, and runs again only with `--again --reason`, so nobody loops over the same old gaps.
+
 **patch**: A small piece. In tracing, a patch is one traced piece of surface that can be merged with others. In ink detection, a patch is the small 3D block of a surface volume that a model reads at one time.
 
 **phase contrast**: Image contrast from the shift in phase of X-rays passing through a sample, made visible by letting the beam travel to the detector.
@@ -226,6 +232,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## R
 
+**ratchet (causal)**: `kit causal`'s rule that its baseline of old gaps may only shrink: a filled gap is dropped with `kit causal ratchet --write`, a new gap fails the check (rule E11), and a rebuild needs a recorded reason.
+
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
@@ -241,6 +249,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **routine (`kit routines`)**: A recurring, read-only repository check listed in `docs/routines.json`, daily or weekly, that any agent runs at session start with `python3 -m kit routines run --due`, so it does not depend on one account's scheduler. Its results stay in the ignored `work/routines/`.
 
 ## S
+
+**run record**: One provenance record per run, written by `kit runrecord` (and by default by `kit run local`): the run token, tool, argv, settings digest, exit code, code commit, inputs and outputs with hashes, and the causal link lines the run was launched under, covered by one digest. Adopted records live in `docs/causal/runs/` ([page](docs/tools/runrecord.md)).
 
 **S3**: Amazon's object storage service, which hosts the open-data bucket.
 

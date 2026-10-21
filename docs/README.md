@@ -4,7 +4,7 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 18 October 2026.
+Updated 21 October 2026.
 
 ## Where things stand
 
@@ -16,7 +16,8 @@ Updated 18 October 2026.
 | What Workbench is, what its tools look like and what to open first | [`workbench.md`](workbench.md), the picture guide | [`start-here.md`](start-here.md), [`tools/README.md`](tools/README.md) |
 | What a technical term means (A to Z) | [`../GLOSSARY.md`](../GLOSSARY.md) | [`vesuvius-bible/`](vesuvius-bible/bible.md#app-glossary) Appendix A |
 | A cited reference book on the scrolls and the challenge, 2023 to 2026 (history, papyrus, imaging, prizes, inventory, pipeline, tools, glossary, timeline, FAQ, bibliography) | [`vesuvius-bible/`](vesuvius-bible/) ([`index.md`](vesuvius-bible/index.md), [`llms.txt`](vesuvius-bible/llms.txt), one file: [`bible.md`](vesuvius-bible/bible.md)) | [`start-here.md`](start-here.md) |
-| Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere) |
+| Every benchmark number, with settings and source | [`results.json`](results.json) | README "Novel findings" (only results not published elsewhere); each entry's `id` and `causal` link block ([format](causal/README.md#the-link-block-in-docsresultsjson)) |
+| Causal links across the repository: the link grammar, carriers, requirements, the cutover baseline and bounded backfill passes (`kit causal`, `kit runrecord`) | [`causal/README.md`](causal/README.md) | [`tools/causal.md`](tools/causal.md), [`tools/runrecord.md`](tools/runrecord.md), [`tools/provenance.md`](tools/provenance.md) |
 | Ink reader leaderboard: every released reader on PHerc0841 w00, ag896, ag405 and w045, with the reversed and shuffled controls, held-out status, window, source and date | [`leaderboard.md`](leaderboard.md), generated from `results.json` by `python -m kit leaderboard render` (`check` runs in the tests) | `results.json` `held_out` and `held_out_by_reader`; `kit gate` |
 | What has been read, tried and paid by everyone | [`state-of-play.md`](state-of-play.md) (checked 6 and 7 October; PHerc. 343 award row 9 and 14 October) | [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md), [`tricks.md`](tricks.md) |
 | Which scans exist and what we processed | [`scan-status.md`](scan-status.md) | |
