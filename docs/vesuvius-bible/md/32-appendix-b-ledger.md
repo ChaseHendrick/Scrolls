@@ -1,6 +1,8 @@
+<a id="app-ledger"></a>
+
 # Appendix B. Prize Ledger {#app-ledger}
 
-All 233 awards compiled from the winners page [VC-Winners], retrieved 15 October 2026, in the order listed there and grouped by round. Totals, method and limitations are in [Chapter 14](#ch-ledger). Machine-readable: data/prize_awards.csv. Names are given as listed on the winners page.
+All 233 awards compiled from the winners page [VC-Winners], retrieved 15 October 2026, in the order listed there and grouped by round. Totals, method and limitations are in [Chapter 14](14-ledger.md#ch-ledger). Machine-readable: data/prize_awards.csv. Names are given as listed on the winners page.
 
 
 ## 2023-04: Open Source ($10,000)

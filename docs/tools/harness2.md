@@ -175,6 +175,7 @@ and `new_proposer_calls`.
 
 | What you see | Why | What to do |
 | --- | --- | --- |
+| `harness2: MESSAGE` on stderr, exit code 2 | `run.py` refused or stopped: MESSAGE is one of the rows below (an `OSError`, `ValueError` or failed subprocess) | Read MESSAGE and find its row |
 | `this optional integration requires POSIX and Python >=3.12,<3.14` | Harness2 0.1.0 declares Python 3.12 or 3.13 on POSIX | Run with `python3.12` or `python3.13` on Linux or macOS |
 | `--upstream must be a checkout at` the pin | Wrong revision, or not a Git checkout | Check out `1cfe254e8d25b15f37048c3730134686abe60335` |
 | `upstream source differs from pin:` | A file in `harness2/` or `pyproject.toml` was edited | Restore it with `git checkout`, or use a fresh checkout |
@@ -184,7 +185,7 @@ and `new_proposer_calls`.
 | `upstream root import shadow is not allowed:` | A Python module sits at the checkout root | Remove it |
 | `recipe must contain exactly schema: 1 and recheck_files: boolean` | Missing, extra or wrongly typed field | Write exactly the two fields |
 | `recipe exceeds 1024 bytes`, `duplicate JSON key:`, `non-finite JSON value:` | Malformed candidate | Fix the JSON |
-| `expected a regular file of at most` N bytes | Candidate or saved file is too big or not a regular file | Pass a small regular file |
+| `expected a regular file of at most N bytes: PATH` | Candidate or saved file is too big or not a regular file | Pass a small regular file |
 | `parent traversal is not allowed:`, `symlink is not allowed:` | A path uses `..` or a link | Pass a plain absolute or relative path |
 | `output and upstream checkout must not overlap` | `--out` inside the checkout or the reverse | Keep them apart |
 | `output cannot replace the repository or an ancestor`, `outputs inside this repository must be under work/` | `--out` would mix with tracked files | Use `work/...` or a folder outside the repository |
@@ -202,9 +203,9 @@ and `new_proposer_calls`.
 | `the Harness2 engine writes only beneath --out, not` PATH | Code tried to write elsewhere; the run stops | Report it; nothing outside `--out` was written |
 | `the Harness2 engine refuses network use and other processes (EVENT)`, `the Harness2 engine launches only the fixed provenance worker` | Code tried to open a socket or start another program | Report it; the integration never needs either |
 | `the synthetic provenance worker cannot use network or launch processes`, `the synthetic provenance worker cannot write files` | The worker's own guard fired | Report it |
-| `fixed worker requires RECORD and true|false`, `usage: engine.py UPSTREAM OUT (run.py starts this)` | A helper was started by hand | Use `run.py` |
+| `fixed worker requires RECORD and true\|false`, `usage: engine.py UPSTREAM OUT (run.py starts this)` | A helper was started by hand | Use `run.py` |
 | `harness must hold only recipe.json, found`, `unknown task`, `unsafe run id` | A proposal or saved state broke the adapter's fixed layout; the rollout is recorded as failed | Read `engine.log`; the status will not be `ok` |
-| `worker failed with exit`, `worker output exceeded its byte limit` | kit's check crashed or printed more than 16384 bytes | Read `worker.out` in the execution directory |
+| `worker failed with exit N: OUTPUT` (the last 400 characters of its output), `worker output exceeded its byte limit` | kit's check crashed or printed more than 16384 bytes | Read `worker.out` in the execution directory |
 | `execution limit reached`, `local proposer call limit reached` | More than 48 executions or 64 proposer calls | Status `limit-exceeded`; report it, the counts are fixed |
 
 ## How it works

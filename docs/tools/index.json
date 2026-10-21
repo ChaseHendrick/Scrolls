@@ -599,67 +599,67 @@
     {
      "name": "Commands and options",
      "start_line": 76,
-     "end_line": 153,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 154,
-     "end_line": 177,
+     "start_line": 160,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 178,
-     "end_line": 181,
+     "start_line": 184,
+     "end_line": 187,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 182,
-     "end_line": 192,
+     "start_line": 188,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 193,
-     "end_line": 206,
+     "start_line": 199,
+     "end_line": 212,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 207,
-     "end_line": 216,
+     "start_line": 213,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 217,
-     "end_line": 220,
+     "start_line": 223,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 221,
-     "end_line": 230,
+     "start_line": 227,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 231,
-     "end_line": 238,
+     "start_line": 237,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 239,
-     "end_line": 248,
+     "start_line": 245,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 249,
-     "end_line": 255,
+     "start_line": 255,
+     "end_line": 261,
      "applicable": true
     }
    ]
@@ -2459,43 +2459,43 @@
     {
      "name": "Failure modes",
      "start_line": 174,
-     "end_line": 209,
+     "end_line": 210,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 210,
-     "end_line": 244,
+     "start_line": 211,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 245,
-     "end_line": 255,
+     "start_line": 246,
+     "end_line": 256,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 256,
-     "end_line": 270,
+     "start_line": 257,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 271,
-     "end_line": 286,
+     "start_line": 272,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 287,
-     "end_line": 291,
+     "start_line": 288,
+     "end_line": 292,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 292,
-     "end_line": 298,
+     "start_line": 293,
+     "end_line": 299,
      "applicable": true
     }
    ]
@@ -2986,43 +2986,43 @@
     {
      "name": "Failure modes",
      "start_line": 262,
-     "end_line": 356,
+     "end_line": 361,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 357,
-     "end_line": 386,
+     "start_line": 362,
+     "end_line": 391,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 387,
-     "end_line": 394,
+     "start_line": 392,
+     "end_line": 399,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 395,
-     "end_line": 408,
+     "start_line": 400,
+     "end_line": 413,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 409,
-     "end_line": 419,
+     "start_line": 414,
+     "end_line": 424,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 420,
-     "end_line": 425,
+     "start_line": 425,
+     "end_line": 430,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 426,
-     "end_line": 433,
+     "start_line": 431,
+     "end_line": 438,
      "applicable": true
     }
    ]
@@ -4524,43 +4524,43 @@
     {
      "name": "Failure modes",
      "start_line": 176,
-     "end_line": 197,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 198,
-     "end_line": 212,
+     "start_line": 199,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 213,
-     "end_line": 226,
+     "start_line": 214,
+     "end_line": 227,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 227,
-     "end_line": 236,
+     "start_line": 228,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 237,
-     "end_line": 244,
+     "start_line": 238,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 245,
-     "end_line": 259,
+     "start_line": 246,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 260,
-     "end_line": 269,
+     "start_line": 261,
+     "end_line": 270,
      "applicable": true
     }
    ]
@@ -4672,43 +4672,43 @@
     {
      "name": "Failure modes",
      "start_line": 225,
-     "end_line": 272,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 273,
-     "end_line": 295,
+     "start_line": 274,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 296,
-     "end_line": 309,
+     "start_line": 297,
+     "end_line": 310,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 310,
-     "end_line": 319,
+     "start_line": 311,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 320,
-     "end_line": 323,
+     "start_line": 321,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 324,
-     "end_line": 329,
+     "start_line": 325,
+     "end_line": 330,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 330,
-     "end_line": 335,
+     "start_line": 331,
+     "end_line": 336,
      "applicable": true
     }
    ]
@@ -5319,43 +5319,43 @@
     {
      "name": "Failure modes",
      "start_line": 223,
-     "end_line": 239,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 240,
-     "end_line": 253,
+     "start_line": 241,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 254,
-     "end_line": 271,
+     "start_line": 255,
+     "end_line": 272,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 272,
-     "end_line": 281,
+     "start_line": 273,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 282,
-     "end_line": 289,
+     "start_line": 283,
+     "end_line": 290,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 290,
-     "end_line": 295,
+     "start_line": 291,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 296,
-     "end_line": 303,
+     "start_line": 297,
+     "end_line": 304,
      "applicable": true
     }
    ]
@@ -6202,43 +6202,43 @@
     {
      "name": "Failure modes",
      "start_line": 121,
-     "end_line": 149,
+     "end_line": 156,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 150,
-     "end_line": 153,
+     "start_line": 157,
+     "end_line": 160,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 154,
-     "end_line": 157,
+     "start_line": 161,
+     "end_line": 164,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 158,
-     "end_line": 167,
+     "start_line": 165,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 168,
-     "end_line": 171,
+     "start_line": 175,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 172,
-     "end_line": 175,
+     "start_line": 179,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 176,
-     "end_line": 179,
+     "start_line": 183,
+     "end_line": 186,
      "applicable": true
     }
    ]
@@ -7479,67 +7479,67 @@
     {
      "name": "Commands and options",
      "start_line": 95,
-     "end_line": 151,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 152,
-     "end_line": 178,
+     "start_line": 158,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 179,
-     "end_line": 185,
+     "start_line": 185,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 186,
-     "end_line": 205,
+     "start_line": 192,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 206,
-     "end_line": 261,
+     "start_line": 212,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 262,
-     "end_line": 275,
+     "start_line": 269,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 276,
-     "end_line": 279,
+     "start_line": 283,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 280,
-     "end_line": 289,
+     "start_line": 287,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 290,
-     "end_line": 293,
+     "start_line": 297,
+     "end_line": 300,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 294,
-     "end_line": 297,
+     "start_line": 301,
+     "end_line": 304,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 298,
-     "end_line": 303,
+     "start_line": 305,
+     "end_line": 310,
      "applicable": true
     }
    ]
@@ -7972,43 +7972,43 @@
     {
      "name": "Failure modes",
      "start_line": 187,
-     "end_line": 208,
+     "end_line": 209,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 209,
-     "end_line": 219,
+     "start_line": 210,
+     "end_line": 220,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 220,
-     "end_line": 223,
+     "start_line": 221,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 224,
-     "end_line": 233,
+     "start_line": 225,
+     "end_line": 234,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 234,
-     "end_line": 241,
+     "start_line": 235,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 242,
-     "end_line": 245,
+     "start_line": 243,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 246,
-     "end_line": 252,
+     "start_line": 247,
+     "end_line": 253,
      "applicable": true
     }
    ]
@@ -8478,43 +8478,43 @@
     {
      "name": "Failure modes",
      "start_line": 265,
-     "end_line": 319,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 320,
-     "end_line": 343,
+     "start_line": 321,
+     "end_line": 344,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 344,
-     "end_line": 351,
+     "start_line": 345,
+     "end_line": 352,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 352,
-     "end_line": 361,
+     "start_line": 353,
+     "end_line": 362,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 362,
-     "end_line": 369,
+     "start_line": 363,
+     "end_line": 370,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 370,
-     "end_line": 377,
+     "start_line": 371,
+     "end_line": 378,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 378,
-     "end_line": 386,
+     "start_line": 379,
+     "end_line": 387,
      "applicable": true
     }
    ]
@@ -8610,73 +8610,73 @@
     {
      "name": "Checks and controls",
      "start_line": 73,
-     "end_line": 84,
+     "end_line": 85,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 85,
-     "end_line": 172,
+     "start_line": 86,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 173,
-     "end_line": 200,
+     "start_line": 174,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 201,
-     "end_line": 212,
+     "start_line": 202,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 213,
-     "end_line": 251,
+     "start_line": 214,
+     "end_line": 252,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 252,
-     "end_line": 328,
+     "start_line": 253,
+     "end_line": 329,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 329,
-     "end_line": 341,
+     "start_line": 330,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 342,
-     "end_line": 352,
+     "start_line": 343,
+     "end_line": 353,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 353,
-     "end_line": 362,
+     "start_line": 354,
+     "end_line": 363,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 363,
-     "end_line": 370,
+     "start_line": 364,
+     "end_line": 371,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 371,
-     "end_line": 378,
+     "start_line": 372,
+     "end_line": 379,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 379,
-     "end_line": 386,
+     "start_line": 380,
+     "end_line": 387,
      "applicable": true
     }
    ]

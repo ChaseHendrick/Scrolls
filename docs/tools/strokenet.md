@@ -426,7 +426,7 @@ python -m unittest tests.test_strokenet tests.test_strokenet_pipeline tests.test
 ## Related
 
 - [StrokeNet model card](../strokenet.md): data, training, every held-out number and its limits.
-- [Preregistration](../prereg/2026-10-14-strokenet.md) and [grid pilot preregistration](../prereg/2026-10-14-gridpilot.md): the rules fixed before the test.
+- [Preregistration](../prereg/2026-10-14-strokenet.md) and [grid pilot preregistration](../prereg/2026-10-14-gridpilot.md): the rules fixed before the test. The grid pilot preregistration's links to its Modal runner (`scripts/strokenet/modal_gridpilot.py`) and Modal spec do not resolve here: those two files were not released publicly, and the frozen preregistration keeps its wording. The released readout is `scripts/strokenet/gridpilot.py`.
 - [Evidence folder](../evidence/2026-10-14-strokenet/README.md): results, gate, calibration (`val_ref`, `q99`) and run histories.
 - [`results.json`](../results.json): `strokenet_checks`, the held-out numbers and the grid pilot.
 - [`auc`](auc.md): score an ink map against published labels.

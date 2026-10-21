@@ -1,6 +1,8 @@
+<a id="app-models"></a>
+
 # Appendix D. Models in the Catalog {#app-models}
 
-The 13 models listed in the open data catalog [VC-Catalog] on 15 October 2026. Models published only on Hugging Face (for example ink_9um and ink_canonical_2um) are described in [Chapter 21](#ch-ink). Data: data/catalog_models.csv.
+The 13 models listed in the open data catalog [VC-Catalog] on 15 October 2026. Models published only on Hugging Face (for example ink_9um and ink_canonical_2um) are described in [Chapter 21](21-ink.md#ch-ink). Data: data/catalog_models.csv.
 
 | ID | Name | Date | Architecture | Task | Resolution (µm) | Training dataset | Compatible |
 |---|---|---|---|---|---|---|---|

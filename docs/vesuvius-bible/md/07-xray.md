@@ -1,3 +1,5 @@
+<a id="ch-xray"></a>
+
 # X-ray Tomography for Carbonized Papyrus {#ch-xray}
 
 > **Chapter summary.** A CT scan does not deliver sheets or text; it delivers a three-dimensional grid of voxels, each holding an intensity. For carbonized papyrus with carbon ink, absorption contrast is weak, so the method depends on phase contrast, on resolution and on careful choice of three coupled parameters: voxel size, X-ray energy and the distance from sample to detector. This chapter explains the physics at the level needed to understand scan metadata and the trade-offs in the data.
@@ -9,15 +11,15 @@ X-ray computed tomography (CT) records hundreds to thousands of X-ray projection
 > **Photograph (not stored in git; see the caption for source and license):** Schematic of tomography: an object containing several shapes is projected from different directions onto detector planes, and the projections are combined to reconstruct the object.
 *Figure 7.1. The basic principle of tomography: projections of an object from different directions (S1, S2) are combined to reconstruct its interior. Illustration: Dtrx, via Wikimedia Commons. License: CC BY-SA 3.0 DE. <https://commons.wikimedia.org/wiki/File:TomographyPrinciple_Illustration.png>*
 
-When the voxel size is in the micrometer range the technique is called **micro-CT**. The first X-ray microtomography system was built by James C. Elliott in the early 1980s; its first published images had pixels of about 50 µm [WP-MicroCT]. Scroll scans in this book range from 45.5 µm (overview scans) to 0.55 µm (a small region of interest) ([Chapter 8](#ch-scans)).
+When the voxel size is in the micrometer range the technique is called **micro-CT**. The first X-ray microtomography system was built by James C. Elliott in the early 1980s; its first published images had pixels of about 50 µm [WP-MicroCT]. Scroll scans in this book range from 45.5 µm (overview scans) to 0.55 µm (a small region of interest) ([Chapter 8](08-scans.md#ch-scans)).
 
-A scan is often delivered as a **TIFF stack**: one image per horizontal slice, typically from the bottom of the scroll upward. At 10 µm voxel size, 100 slices cover 1 mm of the object [VC-Tutorial]. Modern distributions use chunked, multiresolution **OME-Zarr** instead ([Chapter 23](#ch-formats)).
+A scan is often delivered as a **TIFF stack**: one image per horizontal slice, typically from the bottom of the scroll upward. At 10 µm voxel size, 100 slices cover 1 mm of the object [VC-Tutorial]. Modern distributions use chunked, multiresolution **OME-Zarr** instead ([Chapter 23](23-formats.md#ch-formats)).
 
 The Vesuvius Challenge's 2026 overview emphasizes what the scan does *not* contain: "We do not get sheets. We do not get a mesh, a graph, or a map of which layer connects to which. We get a 3D grid of voxels" [VC-OpenProblems2026]. Everything downstream, from surface prediction to ink detection, is an attempt to infer structure that the scan only implies.
 
 ## Attenuation contrast
 
-As X-rays pass through matter they are absorbed and scattered. Materials that absorb more appear brighter in a reconstructed CT slice. This **attenuation contrast** separates papyrus from air very well. It separates carbon ink from carbonized papyrus very poorly, because both are mostly carbon of similar density [VC-OpenProblems2026] [VC-Tutorial5]. Exceptions are inks that contain heavier elements such as lead ([Chapter 5](#ch-inks)): heavier elements absorb much more strongly, which is why some scrolls show ink "by eye" [VC-Scroll5News].
+As X-rays pass through matter they are absorbed and scattered. Materials that absorb more appear brighter in a reconstructed CT slice. This **attenuation contrast** separates papyrus from air very well. It separates carbon ink from carbonized papyrus very poorly, because both are mostly carbon of similar density [VC-OpenProblems2026] [VC-Tutorial5]. Exceptions are inks that contain heavier elements such as lead ([Chapter 5](05-inks.md#ch-inks)): heavier elements absorb much more strongly, which is why some scrolls show ink "by eye" [VC-Scroll5News].
 
 Absorption depends on energy. Lower energies increase absorption contrast but penetrate less; higher energies penetrate thick objects but flatten contrast. Absorption also jumps at element-specific edges: lead's K edge at 88.0045 keV is where its mass attenuation coefficient rises from 1.910 to 7.683 cm2/g [NIST-Pb].
 

@@ -1,6 +1,7 @@
 #!/bin/bash
 # Demo of kit phantom and kit view on synthetic data only (no scroll data). Logs every command.
-set -eu
+# pipefail: every step runs through tee, so without it a failing step would not stop the demo (tee's status wins).
+set -euo pipefail
 # A fresh private folder by default (a fixed /tmp name could be a planted symlink); set OUT to choose one.
 OUT=${OUT:-$(mktemp -d "${TMPDIR:-/tmp}/phantom-demo.XXXXXX")}
 mkdir -p "$OUT"

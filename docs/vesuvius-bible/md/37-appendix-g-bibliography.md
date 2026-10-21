@@ -1,3 +1,5 @@
+<a id="app-bibliography"></a>
+
 # Appendix G. Bibliography {#app-bibliography}
 
 Sources are cited in the text by keys in square brackets. Web pages were accessed on 15 October 2026 unless noted. Entries marked as consulted through summaries or reviews were not read in full.

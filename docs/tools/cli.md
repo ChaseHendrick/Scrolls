@@ -79,7 +79,7 @@ Claim label: None; the entry point makes no claim, and each command's page label
 
 ```
 usage: python -m kit [-h]
-                     {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,run} ...
+                     {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,volumeview,segzoo,letterread,letterlines,letterdemo,greeklm,routines,stale,releases,leaderboard,run} ...
 ```
 
 | Option | Default | Meaning |
@@ -95,6 +95,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 
 | Command | Actions | Handler | Page | What it does (`--help`) |
 | --- | --- | --- | --- | --- |
+| `start` | none | `starter.run` (in `kit/starter.py`) | [starter](starter.md) | open Scrolls Starter: setup, practice and guided next steps |
 | `prizes` | none | `cmd_prizes` | [prizes](prizes.md) | open prizes from the dated snapshot |
 | `doctor` | none | `cmd_doctor` | [doctor](doctor.md) | check GPU, disk, tools and villa paths |
 | `plan` | none | `cmd_plan` | [plan](plan.md) | print a First Letters run plan for an eligible scroll |
@@ -121,11 +122,16 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `phantom` | none | `cmd_phantom` | [phantom](phantom.md) | synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise |
 | `view` | none | `cmd_view` | [view](view.md) | one static HTML page overlaying several ink maps, their disagreement and the labels |
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
+| `volumeview` | none | `cmd_volumeview` | [volumeview](volumeview.md) | build a local viewer link from explicit public volume metadata |
+| `segzoo` | none | `cmd_segzoo` | [segzoo](segzoo.md) | model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists |
 | `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | Scroll Text Reader for a 2D image: Greek LineNet or local OCR, with null, control-map and orientation controls |
 | `letterlines` | `build`, `score` | `cmd_letterlines` | [letterlines](letterlines.md) | training lines for the letter reader from your own transcribed lines, and scores on lines kept apart |
 | `letterdemo` | none | `cmd_letterdemo` | [letterdemo](letterdemo.md) | offline check of the letter reader: synthetic Greek capitals and a noise image, DEMO PASS or DEMO FAIL |
 | `greeklm` | `build`, `score` | `cmd_greeklm` | [greeklm](greeklm.md) | letter n-gram language model for Greek in scriptio continua |
+| `routines` | `list`, `due`, `status`, `run`, `check` | `routines.run` (in `kit/routines.py`) | [routines](routines.md) | recurring repository checks any agent runs at session start (kit/routines.py, docs/routines.json) |
+| `stale` | none | `stale.run` (in `kit/stale.py`) | [stale](stale.md) | what live pages and registries still say that is no longer true: old handoff rows, gone branches, retired names, dead links, MAP rows (kit/stale.py; read-only) |
 | `releases` | `add`, `render`, `check`, `list`, `pin`, `unpin` | `releases.run` (in `kit/releases.py`) | [releases](releases.md) | the list of tools released from private work, and the README section made from it |
+| `leaderboard` | `render`, `check` | `leaderboard.run` (in `kit/leaderboard.py`) | [leaderboard](leaderboard.md) | the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json |
 | `run` | `init`, `status`, `cost`, `record`, `check`, `list` | `cmd_run` | [run-ledger](run-ledger.md) | local experiment ledger (experiments/, gitignored) |
 | `run` | `local`, `backfill` | `cmd_run` | [run-local](run-local.md) | `local`: run a local command and log wall time, CPU time and electricity cost; `backfill`: add estimated local-run costs from a JSON list of logged durations |
 | `run` | `modal-row` | `cmd_run` | [modal-row](modal-row.md) | append one Modal job's row to a Modal ledger CSV, once per key (kit/modalledger.py) |

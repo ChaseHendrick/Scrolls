@@ -1,4 +1,6 @@
+import os
 import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -195,3 +197,59 @@ console.log(JSON.stringify(results));
 
 if __name__ == "__main__":
     unittest.main()
+
+
+STUB_PY = r"""#!/bin/bash
+# Stands in for python3 in scripts/phantom-demo.sh: logs each call and fails the step named by $STUB_FAIL
+# (make, stress, calibrate, inline or view).
+echo "$*" >> "$STUB_CALLS"
+if [ "$1" = - ]; then
+  cat > /dev/null
+  step=inline
+elif [ "$3" = phantom ]; then
+  step=$4
+else
+  step=$3
+fi
+if [ "$step" = "$STUB_FAIL" ]; then
+  echo "stub failure: $step" >&2
+  exit 3
+fi
+echo "ok: $step"
+exit 0
+"""
+
+
+@unittest.skipIf(shutil.which("bash") is None, "needs bash")
+class PhantomDemoScriptTest(unittest.TestCase):
+    """scripts/phantom-demo.sh pipes every step through tee; a failing step must still fail the demo."""
+
+    STEPS = ("make", "stress", "calibrate", "inline", "view")
+
+    def run_demo(self, fail):
+        with tempfile.TemporaryDirectory() as tmp:
+            t = Path(tmp)
+            (t / "bin").mkdir()
+            (t / "bin" / "python3").write_text(STUB_PY)
+            (t / "bin" / "python3").chmod(0o755)
+            calls = t / "calls"
+            env = dict(os.environ, PATH=f"{t / 'bin'}{os.pathsep}{os.environ.get('PATH', '')}",
+                       OUT=str(t / "out"), STUB_FAIL=fail, STUB_CALLS=str(calls))
+            script = Path(__file__).resolve().parent.parent / "scripts" / "phantom-demo.sh"
+            out = subprocess.run(["bash", str(script)], env=env, capture_output=True, text=True, timeout=60)
+            log = (t / "out" / "commands.log").read_text() if (t / "out" / "commands.log").exists() else ""
+            return out.returncode, calls.read_text().splitlines() if calls.exists() else [], log
+
+    def test_every_step_runs_when_all_pass(self):
+        code, calls, log = self.run_demo("none")
+        self.assertEqual(code, 0)
+        self.assertEqual(len(calls), len(self.STEPS))
+        for step in ("make", "stress", "calibrate", "view"):
+            self.assertIn(f"ok: {step}", log)
+
+    def test_a_failing_step_stops_the_demo_with_a_nonzero_exit(self):
+        for n, step in enumerate(self.STEPS, 1):
+            with self.subTest(step=step):
+                code, calls, _ = self.run_demo(step)
+                self.assertNotEqual(code, 0)
+                self.assertEqual(len(calls), n, calls)

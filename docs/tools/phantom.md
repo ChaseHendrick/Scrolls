@@ -235,7 +235,8 @@ The demo script always exits 0, even when a step fails (see Failure modes).
 | `TypeError: argument should be a str or an os.PathLike object ... not 'NoneType'` and a traceback, exit code 1 | `make` without `OUT` | Give the output folder |
 | `ModuleNotFoundError: No module named 'numpy'` and a traceback, exit code 1 | numpy is not installed (the command imports it first) | `python -m pip install numpy` |
 | `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is missing when calling `kit.phantom` from Python | Install numpy |
-| `No module named kit` for each step of the demo, and exit code 0 | `scripts/phantom-demo.sh` run outside the repository root; its `run` helper pipes every step through `tee`, so a failing step does not stop it | Run it from the repository root, and check that `$OUT/viewer.html` exists rather than trusting the exit code |
+| `No module named kit`, and the demo stops with a nonzero exit code | `scripts/phantom-demo.sh` run outside the repository root, so the first step fails; the script stops at the first failing step (`set -euo pipefail`; before 2026-10-21 its `tee` hid the failure and it ran on to exit code 0) | Run it from the repository root |
+| The demo stops partway with a nonzero exit code and the step's own error above it | One step failed; `$OUT/commands.log` ends with that step's command | Fix what that step's error names (a row above), then rerun the demo |
 
 ## How it works
 
@@ -275,7 +276,7 @@ Memory grows with depth times height times width (several float64 copies of the 
 - **Parse:** `stress`: `rows[].auc` and `rows[].auc_reversed`. `calibrate --json`: `ratio_bootstrap_to_empirical`, `intervals_covering_mean`, `auc_mean`, `bootstrap_half_width_mean`. `make`: the four files and `ink_fraction` in `meta.json`.
 - **Rerun:** Safe and deterministic for the same arguments and numpy version. `make` replaces its four files; `stress --save-maps` replaces the maps of the same seeds.
 - **Success:** Exit code 0; `auc` above `auc_reversed` in every `stress` row; no NaN in `calibrate`'s numbers.
-- **Not a pass:** A `nan` ratio; a ratio from a few phantoms read as precise; a detector that beats its reversed control on phantoms but has not been scored on real held-out labels; `calibrate` numbers expected to move with `--depth`, `--noise`, `--ink-contrast` or `--ink-bump`, which it ignores; the demo's exit code 0 without its output files.
+- **Not a pass:** A `nan` ratio; a ratio from a few phantoms read as precise; a detector that beats its reversed control on phantoms but has not been scored on real held-out labels; `calibrate` numbers expected to move with `--depth`, `--noise`, `--ink-contrast` or `--ink-bump`, which it ignores; an exit code 0 from a copy of the demo older than 2026-10-21, which did not show that every step ran.
 - **Go-ahead:** Nothing.
 - **Never:** Call a phantom stroke a letter or a phantom score a reading; cite a phantom AUC as evidence about a scroll or about a real model; put phantom numbers in `results.json` as segment results.
 
@@ -285,7 +286,7 @@ Memory grows with depth times height times width (several float64 copies of the 
 python -m unittest tests.test_phantom -v
 ```
 
-`PhantomTest` builds a 12 x 192 x 192 phantom and checks its shape and ink fraction, that the baseline detector scores above 0.55 forward and at least 0.05 lower reversed, that a near-perfect simulated reader scores above 0.95, and that the blur keeps the shape and the mean. The same file's `ViewerTest` covers [`view`](view.md), not this tool. They skip without numpy. They do not cover the command line, `calibrate`, `--save-maps`, the error messages or `scripts/phantom-demo.sh`.
+`PhantomTest` builds a 12 x 192 x 192 phantom and checks its shape and ink fraction, that the baseline detector scores above 0.55 forward and at least 0.05 lower reversed, that a near-perfect simulated reader scores above 0.95, and that the blur keeps the shape and the mean. The same file's `ViewerTest` covers [`view`](view.md), not this tool. They skip without numpy. `PhantomDemoScriptTest` runs `scripts/phantom-demo.sh` with a stub `python3` first on `PATH` (no numpy needed): with every step passing it exits 0 after all five steps, and when any one step fails (`make`, `stress`, `calibrate`, the inline map step or `view`) it stops at that step with a nonzero exit code. The tests do not cover the command line, `calibrate`'s numbers, `--save-maps` or the error messages.
 
 ## History
 

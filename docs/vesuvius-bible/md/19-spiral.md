@@ -1,3 +1,5 @@
+<a id="ch-spiral"></a>
+
 # The Spiral Fit {#ch-spiral}
 
 > **Chapter summary.** The spiral fit is the main whole-scroll method in 2026. It models the scroll as an ideal Archimedean spiral deformed by a smooth, invertible map (a diffeomorphism), and fits that map to all available evidence: verified patches, fibers, winding annotations, predicted normals and the umbilicus. Its output is one tifxyz mesh per winding; its inverse map is the virtual unrolling. It was introduced by Paul Henderson in 2024, published at WACV 2026, and used in the October 2026 PHerc. 343 first-letters result.
@@ -6,7 +8,7 @@
 
 "We know the scroll was originally one long rectangular sheet, rolled up into a neat spiral. The eruption of Vesuvius deformed that spiral into the crushed shape we see in the CT scan. Instead of reconstructing the surface piece by piece, we search for the combination of ideal scroll shape and smooth deformation that best explains everything we observe. Once we have those, virtual unrolling comes almost for free" [VC-SpiralTutorial]. A fit of PHerc. Paris 4 produced 130 windings [VC-SpiralTutorial].
 
-The method first appeared in Paul Henderson's FASP submission ([Chapter 11](#ch-2024)) [VC-FASP], and is described in "Virtually Unrolling the Herculaneum Papyri by Diffeomorphic Spiral Fitting" (WACV 2026, arXiv 2512.04927) [Henderson2026]. In 2026 Paul Henderson and Sean Johnson extended it to conform to patches, skeletons and points [VC-HardParts].
+The method first appeared in Paul Henderson's FASP submission ([Chapter 11](11-2024.md#ch-2024)) [VC-FASP], and is described in "Virtually Unrolling the Herculaneum Papyri by Diffeomorphic Spiral Fitting" (WACV 2026, arXiv 2512.04927) [Henderson2026]. In 2026 Paul Henderson and Sean Johnson extended it to conform to patches, skeletons and points [VC-HardParts].
 
 ## The mathematics
 

@@ -1,3 +1,5 @@
+<a id="ch-unrolling"></a>
+
 # Two and a Half Centuries of Unrolling {#ch-unrolling}
 
 > **Chapter summary.** From 1752 to the end of the twentieth century every attempt to read a Herculaneum roll involved opening it physically, and every method destroyed part of what it revealed. Slicing, Antonio Piaggio's thread machine (1756), chemical treatments, the Oslo peeling method and multispectral photography each recovered texts at a cost. From the 2000s, X-ray tomography offered a non-destructive route, culminating in the research program of Brent Seales and the EduceLab team that the Vesuvius Challenge built on in 2023.
@@ -57,7 +59,7 @@ In 1969 Marcello Gigante founded the International Centre for the Study of the H
 
 ## Seeing ink in the infrared (1999 to 2019)
 
-Carbon ink on carbonized papyrus is black on black to the eye, but in the near infrared the two reflect differently. From 1999 a team from Brigham Young University photographed the opened Herculaneum papyri at a wavelength of about 950 nm, and in June 2011 announced that 1,600 papyri had been digitized this way [WP-HercPapyri]. In 2019 a European team reported that shortwave-infrared hyperspectral imaging (1,000 to 2,500 nm) detects ink on opened papyri better than the 950 nm images [WP-HercPapyri]. Infrared photographs of opened fragments later became the ground-truth labels for machine-learning ink detection in CT ([Chapter 21](#ch-ink)).
+Carbon ink on carbonized papyrus is black on black to the eye, but in the near infrared the two reflect differently. From 1999 a team from Brigham Young University photographed the opened Herculaneum papyri at a wavelength of about 950 nm, and in June 2011 announced that 1,600 papyri had been digitized this way [WP-HercPapyri]. In 2019 a European team reported that shortwave-infrared hyperspectral imaging (1,000 to 2,500 nm) detects ink on opened papyri better than the 950 nm images [WP-HercPapyri]. Infrared photographs of opened fragments later became the ground-truth labels for machine-learning ink detection in CT ([Chapter 21](21-ink.md#ch-ink)).
 
 ## The turn to X-ray tomography (2007 to 2022)
 

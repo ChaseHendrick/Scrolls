@@ -1,3 +1,5 @@
+<a id="ch-community"></a>
+
 # Community and People {#ch-community}
 
 > **Chapter summary.** The Vesuvius Challenge is a hybrid of open competition and in-house work: a Discord community, open-source progress prizes, a paid segmentation (annotation) team from 2023, an in-house research team from 2025, a papyrology team, and partners at libraries and synchrotrons. The organizers credit five things for the 2023 success: an inspiring goal, a solid starting point, blending competition with cooperation, hiring segmenters, and many small breakthroughs. This chapter describes the structure, the people named in public sources, and the community's working norms.
@@ -86,6 +88,6 @@ The norms below are stated in prize rules and tutorials:
 
 ## AI in the work
 
-Machine learning is central to the pipeline ([Chapters 17](#ch-surface) and [21](#ch-ink)). Since 2026 the team has also used autonomous agents: "a swarm of automated agents that perform research on ink detection model architectures and training", inspired by an open-source autoresearch project, which found a cross-scroll configuration that nearly doubled validation Dice on PHerc. 1667 [VC-WeAreCooking] [VC-OpenProblems2026]. VC3D has an "agent bridge" that received fixes in a 2026 progress round [VC-Winners].
+Machine learning is central to the pipeline ([Chapters 17](17-surface.md#ch-surface) and [21](21-ink.md#ch-ink)). Since 2026 the team has also used autonomous agents: "a swarm of automated agents that perform research on ink detection model architectures and training", inspired by an open-source autoresearch project, which found a cross-scroll configuration that nearly doubled validation Dice on PHerc. 1667 [VC-WeAreCooking] [VC-OpenProblems2026]. VC3D has an "agent bridge" that received fixes in a 2026 progress round [VC-Winners].
 
 A broader comparison by the editors' research notes: undeciphered scripts such as Linear A lack a bilingual anchor, so statistical or AI methods "cannot confirm a reading"; the Herculaneum texts are in known languages, so the machine task is recovering ink and letters, not meaning. DeepMind's Ithaca (Greek inscriptions) and Aeneas (Latin inscriptions, *Nature* 2025) propose restorations and parallels that experts then judge [AIChallenges2026]. *These comparisons rest on secondary search summaries and are marked unverified.*

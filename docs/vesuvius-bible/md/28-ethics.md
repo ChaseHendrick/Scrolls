@@ -1,3 +1,5 @@
+<a id="ch-ethics"></a>
+
 # Data, Licenses and Responsible Practice {#ch-ethics}
 
 > **Chapter summary.** Challenge data is released under CC BY-NC 4.0 unless noted, and the legacy EduceLab-Scrolls scans are copyrighted by EduceLab and the University of Kentucky. Users agree to cite the dataset and not to publish "any revelation of hidden text" without written approval. Prize rules add open-source, open-data and reproducibility requirements and an embargo on discoveries. This chapter sets out those terms, the safeguards against machine "hallucination" of letters, and how this book handles images and data.
@@ -20,7 +22,7 @@ The FAQ summarizes the publication conditions "specified in the Data Agreement" 
 - "Any publications and presentations must cite the dataset(s) used."
 - "You won't publish any revelation of hidden text (or associated code) without the written approval of Vesuvius Challenge."
 
-The FAQ adds that researchers and students are "very much" encouraged to publish within those conditions [VC-FAQ]. Access to some data has required registration since 2023 ([Chapter 9](#ch-founding)).
+The FAQ adds that researchers and students are "very much" encouraged to publish within those conditions [VC-FAQ]. Access to some data has required registration since 2023 ([Chapter 9](09-founding.md#ch-founding)).
 
 ## Prize rules that shape practice
 
@@ -39,7 +41,7 @@ From the 2027 prize rules [VC-Prizes]:
 
 ## Guarding against invented letters
 
-A model with a large field of view can learn what letters look like and draw them where there is no ink. The rules say: "The larger your model's window size, the easier it is for it to invent plausible letterforms instead of recovering real ink. Large windows are fine, but you must demonstrate that the text is" supported by the data, and submissions must explain "False-positive mitigation" [VC-Prizes]. In 2024 the challenge discouraged windows larger than 0.5 x 0.5 mm ([Chapter 21](#ch-ink)) [VC-Prizes2024].
+A model with a large field of view can learn what letters look like and draw them where there is no ink. The rules say: "The larger your model's window size, the easier it is for it to invent plausible letterforms instead of recovering real ink. Large windows are fine, but you must demonstrate that the text is" supported by the data, and submissions must explain "False-positive mitigation" [VC-Prizes]. In 2024 the challenge discouraged windows larger than 0.5 x 0.5 mm ([Chapter 21](21-ink.md#ch-ink)) [VC-Prizes2024].
 
 The ink tutorial's safeguards for pseudo-labeling [VC-InkTutorial]:
 
@@ -52,7 +54,7 @@ The judges "may also run your method, following your instructions, on held-out d
 
 ## Cultural heritage
 
-The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris rolls, the Institut de France; Oxford's Bodleian Libraries hold rolls given in the nineteenth century ([Chapter 15](#ch-inventory)). The challenge's methods are non-invasive: the scrolls are imaged by X-ray CT and are not opened ([Chapter 7](#ch-xray)). The physical history in [Chapter 3](#ch-unrolling) shows what earlier opening methods destroyed, which is the main argument for virtual unwrapping.
+The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris rolls, the Institut de France; Oxford's Bodleian Libraries hold rolls given in the nineteenth century ([Chapter 15](15-inventory.md#ch-inventory)). The challenge's methods are non-invasive: the scrolls are imaged by X-ray CT and are not opened ([Chapter 7](07-xray.md#ch-xray)). The physical history in [Chapter 3](03-unrolling.md#ch-unrolling) shows what earlier opening methods destroyed, which is the main argument for virtual unwrapping.
 
 ## How this book handles images and data
 

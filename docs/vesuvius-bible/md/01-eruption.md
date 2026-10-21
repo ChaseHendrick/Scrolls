@@ -1,3 +1,5 @@
+<a id="ch-eruption"></a>
+
 # The Eruption of 79 CE {#ch-eruption}
 
 > **Chapter summary.** Mount Vesuvius buried the towns around the Bay of Naples in a two-phase eruption in 79 CE. Herculaneum, upwind of the first ash fall, was overwhelmed by pyroclastic surges that carbonized organic material, including a library of papyrus rolls, and sealed it under roughly 20 meters of volcanic deposit. This chapter summarizes what is known about the eruption, its date, and why Herculaneum preserved organic objects that Pompeii did not.
@@ -31,7 +33,7 @@ The stratigraphic study by Sigurdsson, Cashdollar and Sparks (1982) identified a
 
 The only surviving eyewitness account is a pair of letters written by Pliny the Younger to the historian Tacitus about 25 years after the event. Pliny, then 17, watched from Misenum, about 29 km from the volcano across the bay. His uncle Pliny the Elder, commander of the fleet and author of the *Natural History*, set out with ships to rescue friends and died on the shore near Stabiae [WP-Eruption79] [WP-PlinyYounger]. The first letter reconstructs the uncle's last day from witnesses; the second describes the nephew's own experience of tremors, a receding sea and a black cloud that shut out the daylight.
 
-Pliny the Elder matters to this book twice over. Besides dying in the eruption, he left the most detailed ancient description of how papyrus was made and graded (*Natural History* 13.68 to 89), which is discussed in [Chapter 4](#ch-papyrus).
+Pliny the Elder matters to this book twice over. Besides dying in the eruption, he left the most detailed ancient description of how papyrus was made and graded (*Natural History* 13.68 to 89), which is discussed in [Chapter 4](04-papyrus.md#ch-papyrus).
 
 > **Photograph (not stored in git; see the caption for source and license):** Statue of Pliny the Elder on the Loggia del Consiglio, Verona.
 *Figure 1.4. Statue of Pliny the Elder, Loggia del Consiglio, Piazza dei Signori, Verona. Photo: Dimitris Kamaras, via Wikimedia Commons. License: CC BY 2.0. <https://commons.wikimedia.org/wiki/File:Pliny_the_Elder,_Loggia_del_Consiglio,_Piazza_dei_Signori,_Verona_(37520060770)_(cropped).jpg>*
@@ -56,7 +58,7 @@ None of these is conclusive on its own. The graffito has no year, and charcoal i
 
 Pompeii was buried mainly by falling pumice and ash, about 4 m deep; Herculaneum was buried by about 20 m of pyroclastic surge and flow deposits that later consolidated into tuff [WP-Herculaneum]. The hot, oxygen-poor surges did not burn organic material so much as carbonize it: wooden roofs, beds, doors, food and papyrus survive at Herculaneum in charred form. Papyrus rolls exposed to the surges were converted almost instantly into compact, fragile, blackened cylinders and then sealed against air and water for nearly 1,700 years [WP-HercPapyri].
 
-The temperature the rolls experienced is itself a research question. Estimates of the deposit temperature at Herculaneum range from about 240 to 370 C in one study and average values near 270 and 350 C in others; laboratory and modeling work on papyrus suggests that a short exposure of the order of 320 C is enough to produce the observed carbonization (see [Chapter 4](#ch-papyrus) and [Caricchi2014] [Giordano2018]). The short duration of heating matters: it left the layered structure of the roll intact enough to be imaged, which is the physical precondition for everything else in this book.
+The temperature the rolls experienced is itself a research question. Estimates of the deposit temperature at Herculaneum range from about 240 to 370 C in one study and average values near 270 and 350 C in others; laboratory and modeling work on papyrus suggests that a short exposure of the order of 320 C is enough to produce the observed carbonization (see [Chapter 4](04-papyrus.md#ch-papyrus) and [Caricchi2014] [Giordano2018]). The short duration of heating matters: it left the layered structure of the roll intact enough to be imaged, which is the physical precondition for everything else in this book.
 
 ## Herculaneum after the eruption
 
