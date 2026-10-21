@@ -267,6 +267,23 @@ def _table_rows(lines):
     return rows
 
 
+def _tables(lines):
+    """[(header cells, [row cells])] of each table in these lines, separator rows left out."""
+    tables, current = [], None
+    for line in lines:
+        s = line.strip()
+        if not s.startswith("|"):
+            current = None
+            continue
+        cells = _cells(s)
+        if current is None:
+            current = (cells, [])
+            tables.append(current)
+        elif not all(re.fullmatch(r":?-{3,}:?", c) for c in cells):
+            current[1].append(cells)
+    return tables
+
+
 def _has_header(lines, header):
     want = _cells(header)
     return any(_cells(line) == want for line in lines if line.strip().startswith("|"))
@@ -1051,19 +1068,73 @@ def _option_row(rows, arg):
     return None
 
 
-def _rows_for(page, rel, path):
-    """The table rows under the '### ...' headings that name this file (and its subcommand, when the headings say),
-    and True; or every row under '## Commands and options' and False when no heading names it."""
+FILE_WORD = re.compile(r"[\w./-]+\.(?:py|sh)")
+
+
+def _file_names(rel):
+    """The ways a page names this file: its path, its file name and, for kit/, its module."""
     names = [rel, Path(rel).name]
     if rel.startswith("kit/"):
         names.append("kit." + (Path(rel).stem if Path(rel).name != "__main__.py" else Path(rel).parent.name))
+    return names
+
+
+def _named_files(text):
+    """The script files (`*.py`, `*.sh`) the code spans of a heading or table cell name, in order, by file name."""
+    out = []
+    for span in SPAN.findall(text):
+        for word in span.split():
+            word = word.strip("[](){}<>,.|:")
+            if FILE_WORD.fullmatch(word) and Path(word).name not in out:
+                out.append(Path(word).name)
+    return out
+
+
+def _owned_rows(heading, rows, rel):
+    """The rows under one heading that may hold a positional of this file. A row whose first cell names a script
+    file belongs to that file. A row that names no file belongs to the first file the heading names, or to any
+    file when the heading names none; so when one heading names several files, the positional of any file but
+    the first needs a row that names its file."""
+    me = Path(rel).name
+    listed = _named_files(heading)
+    out = []
+    for row in rows:
+        named = _named_files(row[0]) if row else []
+        if me in named or (not named and (not listed or listed[0] == me)):
+            out.append(row)
+    return out
+
+
+def _all_owned_rows(page, rel):
+    """Every row under '## Commands and options' that may hold a positional of this file, heading by heading."""
+    body = page.bodies.get("Commands and options", [])
+    top = []
+    for line in body:
+        if line.startswith("### "):
+            break
+        top.append(line)
+    rows = _owned_rows("", _table_rows(top), rel)
+    for h, b in page.subsections("Commands and options"):
+        rows += _owned_rows(h, _table_rows(b), rel)
+    return rows
+
+
+def _rows_for(page, rel, path, positional=False):
+    """The table rows under the '### ...' headings that name this file (and its subcommand, when the headings say),
+    and True; or every row under '## Commands and options' and False when no heading names it. With positional,
+    only the rows that may hold this file's positionals (see _owned_rows)."""
+    names = _file_names(rel)
     mine = [(h, b) for h, b in page.subsections("Commands and options")
             if any(re.search(r"(?<![\w./-])" + re.escape(n) + r"(?![\w/-])", h) for n in names)]
     if path:
         narrowed = [(h, b) for h, b in mine if all(_word_in(x, h) for x in path)]
         mine = narrowed or mine
     if mine:
+        if positional:
+            return [r for h, b in mine for r in _owned_rows(h, _table_rows(b), rel)], True
         return _table_rows([line for _, b in mine for line in b]), True
+    if positional:
+        return _all_owned_rows(page, rel), False
     return _table_rows(page.bodies.get("Commands and options", [])), False
 
 
@@ -1074,14 +1145,16 @@ def _check_static_parsers(page, rel, label, tree):
     if not parsers:
         return problems
     every = _table_rows(page.bodies.get("Commands and options", []))
+    every_owned = _all_owned_rows(page, rel)
     for p in parsers:
         rows, scoped = _rows_for(page, rel, p.path)
+        owned, _ = _rows_for(page, rel, p.path, positional=True)
         for a in p.args:
             if a.suppressed:
                 continue
-            row = _positional_row(rows, a) if a.positional else _option_row(rows, a)
+            row = _positional_row(owned, a) if a.positional else _option_row(rows, a)
             if row is None and scoped:
-                row = _positional_row(every, a) if a.positional else None
+                row = _positional_row(every_owned, a) if a.positional else None
                 scoped = scoped if row is None else False
             elif not scoped and not a.positional and sum(_option_row([r], a) is not None for r in every) > 1:
                 continue          # the option has rows for several tools and no heading says which is this one
@@ -1467,9 +1540,14 @@ def _heading_matches(heading, want, actions):
     return tokens[:n] == want and (len(tokens) == n or tokens[n] not in actions)
 
 
+HELP_COLUMN = "What it does (`--help`)"
+
+
 def _check_top(page, cmds, subsections):
     """A page whose Run names bare `python -m kit` documents the top-level parser: its usage block, matching
-    --help, and a row for every command (the command's name first in a row under '## Commands and options')."""
+    --help, and a row for every command (the command's name first in a row under '## Commands and options').
+    A column headed 'What it does (`--help`)' holds each command's help from the parser, word for word, in the
+    command's first row; later rows of the same command describe some of its actions and are not compared."""
     problems = []
     actions = set(cmds.aliases)
     matches = [body for head, body in subsections if _heading_matches(head, ["python", "-m", "kit"], actions)]
@@ -1489,6 +1567,21 @@ def _check_top(page, cmds, subsections):
         if name not in firsts and not any(a in firsts for a, c in cmds.aliases.items() if c == name):
             problems.append(f"command `{name}` of `python -m kit` has no row (its name first) under "
                             "'## Commands and options'")
+    subs = next(a for a in cmds.top._actions if isinstance(a, argparse._SubParsersAction))
+    helps = {cmds.aliases.get(c.dest, c.dest): c.help for c in subs._choices_actions if c.help}
+    for header, rows in _tables(page.bodies.get("Commands and options", [])):
+        if HELP_COLUMN not in header:
+            continue
+        col, done = header.index(HELP_COLUMN), set()
+        for row in rows:
+            spans = SPAN.findall(row[0]) if row else []
+            name = cmds.aliases.get(spans[0].split()[0]) if spans else None
+            if name in done:
+                continue
+            done.add(name)
+            if name in helps and _collapse(row[col] if col < len(row) else "") != _collapse(helps[name]):
+                problems.append(f"the {HELP_COLUMN} cell of `{name}` differs from its parser's help; paste "
+                                f"it: {helps[name][:80]}")
     return problems
 
 

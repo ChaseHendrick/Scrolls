@@ -130,6 +130,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **inference**: Running a trained model on new data to get predictions.
 
+**Ink Bench**: The ink map scoring in the Unroll Space. It aligns an ink map of one PHerc0139 winding with the published 2.4 um ink detection and reports Pearson r, IoU, Dice and average precision, with the X-ray intensity and uniform noise as floors; `tools/inkbench.py` in the Space gives the same numbers on the command line. It scores agreement with another model's output, not ground truth ([`docs/tools/unroll.md`](docs/tools/unroll.md)).
+
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
 
 **Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).

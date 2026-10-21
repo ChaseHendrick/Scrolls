@@ -195,10 +195,6 @@ console.log(JSON.stringify(results));
             self.assertTrue((Path(d) / "v.png").read_bytes().startswith(b"\x89PNG"))
 
 
-if __name__ == "__main__":
-    unittest.main()
-
-
 STUB_PY = r"""#!/bin/bash
 # Stands in for python3 in scripts/phantom-demo.sh: logs each call and fails the step named by $STUB_FAIL
 # (make, stress, calibrate, inline or view).
@@ -253,3 +249,7 @@ class PhantomDemoScriptTest(unittest.TestCase):
                 code, calls, _ = self.run_demo(step)
                 self.assertNotEqual(code, 0)
                 self.assertEqual(len(calls), n, calls)
+
+
+if __name__ == "__main__":
+    unittest.main()

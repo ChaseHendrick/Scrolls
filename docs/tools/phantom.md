@@ -218,7 +218,7 @@ A float can be `NaN` (blocks too large, or `--n 1`); the JSON then holds the bar
 | `1` | An error the command does not catch, with a Python traceback: `make` without `OUT`, or numpy missing |
 | `2` | Bad settings, with the message on stderr (see Failure modes), or a usage error from the argument parser |
 
-The demo script always exits 0, even when a step fails (see Failure modes).
+The demo stops at the first failing step and exits with that step's exit code (set -euo pipefail, since 2026-10-21); before that it always exited 0, because tee hid the failure.
 
 ## Failure modes
 

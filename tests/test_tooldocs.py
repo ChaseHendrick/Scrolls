@@ -459,6 +459,18 @@ def main(argv=None):
         return 2
 '''
 
+ENGINE_SCRIPT = '''import argparse
+
+
+def parser():
+    ap = argparse.ArgumentParser(prog="engine")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    e = sub.add_parser("estimate")
+    e.add_argument("height", type=int)
+    e.add_argument("width", type=int)
+    return ap
+'''
+
 SHELL_SCRIPT = '''#!/bin/bash
 case "$MODE" in
   a|b) ;;
@@ -525,6 +537,17 @@ class CheckerExtensions(unittest.TestCase):
                       self.found(text.replace(usage, usage.replace("[-h]", "[--help]"))))
         self.assertIn(f"no '### `{KIT}`' heading", self.found(text.replace(f"### `{KIT}`\n", "### Commands\n")))
 
+    def test_the_help_column_holds_each_commands_parser_help(self):
+        usage = COMMANDS.top.format_usage().strip()
+        text = GOOD.replace(f"| Run | `{KIT} demo`,", f"| Run | `{KIT}`, `{KIT} demo`,")
+        section = (f"### `{KIT}`\n\n```\n{usage}\n```\n\n| Command | What it does (`--help`) |\n| --- | --- |\n"
+                   "| `demo` | demo |\n| `demo` | its actions, described in a later row |\n| `other` | other |\n\n")
+        text = text.replace(f"### `{KIT} demo`\n", section + f"### `{KIT} demo`\n")
+        self.assertEqual(self.found(text), "")
+        self.assertIn("the What it does (`--help`) cell of `other` differs from its parser's help",
+                      self.found(text.replace("| `other` | other |", "| `other` | an older help |")))
+        self.assertIn("cell of `demo` differs", self.found(text.replace("| `demo` | demo |", "| `dm` | old |")))
+
     def test_shell_messages_before_a_failing_exit(self):
         self.assertEqual(tooldocs.sh_error_messages(SHELL_SCRIPT),
                          ["MODE must be a or b, not", "Another run holds the lock (pid", "Wait for it, or stop it",
@@ -573,6 +596,24 @@ class CheckerExtensions(unittest.TestCase):
         self.assertIn("lacks the positional `height`",
                       self.found(good.replace("usage: lens estimate [-h] [--json] height width",
                                               "usage: lens estimate [-h] [--json] width")))
+
+    def test_a_heading_with_several_files_keeps_each_files_positional_rows_apart(self):
+        # One heading names lens.py estimate and engine.py: an unnamed row belongs to the first file the heading
+        # names, and a row that names engine.py belongs to engine.py alone, so neither stands in for the other.
+        self.repo.write("spaces/lens/engine.py", ENGINE_SCRIPT)
+        good = self.lens_page().replace("`spaces/lens/lens.py`\n", "`spaces/lens/lens.py`, `spaces/lens/engine.py`\n", 1)
+        good = good.replace("`spaces/lens/lens.py` |", "`spaces/lens/lens.py`, `spaces/lens/engine.py` |", 1)
+        good = good.replace("### `spaces/lens/lens.py estimate`", "### `spaces/lens/lens.py estimate`, `spaces/lens/engine.py`")
+        good = good.replace("| `WIDTH` | required | Columns |\n",
+                            "| `WIDTH` | required | Columns |\n| `engine.py estimate HEIGHT WIDTH` | required | The same |\n")
+        self.assertEqual(self.found(good), "")
+        mine = self.found(good.replace("| `HEIGHT` | required | Rows |", "| `H` | required | Rows |"))
+        self.assertIn("positional `height` of spaces/lens/lens.py estimate has no row", mine)
+        self.assertNotIn("engine.py estimate has no row", mine)
+        theirs = self.found(good.replace("`engine.py estimate HEIGHT WIDTH`", "`engine.py estimate H W`"))
+        self.assertIn("positional `height` of spaces/lens/engine.py estimate has no row", theirs)
+        self.assertIn("positional `width` of spaces/lens/engine.py estimate has no row", theirs)
+        self.assertNotIn("lens.py estimate has no row", theirs)
 
     def test_whole_messages_with_placeholders(self):
         import ast
