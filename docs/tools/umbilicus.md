@@ -8,13 +8,13 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Surfaces and tracing |
-| Run | `python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py` |
-| Code | `scripts/umbilicus/` |
-| Tests | `tests/test_umbilicus.py` |
+| Run | `python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`, `python -m kit.umbfind` (the finder on the scan VC3D has open, as the tool registry runs it) |
+| Code | `scripts/umbilicus/`, `kit/umbfind.py` (VC3D and tool registry adapter), `kit/data/registry/umbilicus.json` (its tool registry manifest) |
+| Tests | `tests/test_umbilicus.py`, `tests/test_umbfind.py`, `tests/test_toolreg_rowumb.py` |
 | Needs | Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py` |
 | Runs on | `predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container) |
-| Network | vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl` |
-| Writes | `predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/` |
+| Network | vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`, or by `python -m kit.umbfind --download` into its run folder when they are not found |
+| Writes | `predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`. `python -m kit.umbfind`: only inside `--out RUN`: `umbilicus.json`, `predict.json`, `predict.log`, `predict/`, `slices/` and, with `--download`, `weights/` |
 | Go-ahead | Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights |
 | Released | Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's "Released tools" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository) |
 | Release id | `umbilicus-finder` |
@@ -234,6 +234,28 @@ usage: ctcheck.py [-h] --a A --b B --out OUT [--scrolls [SCROLLS ...]] [--n N]
 
 `centrenet.py` has no command line; the other scripts import it.
 
+### `python -m kit.umbfind`
+
+```
+usage: python -m kit.umbfind [-h] --out OUT [--first FIRST] [--zoom ZOOM]
+                             [--weights WEIGHTS] [--download] [--no-end-rule]
+                             [--json]
+                             volume
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `volume` | required | the scan: its open-data bucket URL, bucket key, or a local copy under the bucket's layout (`SCROLL/volumes/SCAN.zarr`); another location is refused |
+| `--out OUT` | required | the run folder: `umbilicus.json`, `predict.json`, `predict/`, `slices/` |
+| `--first FIRST` | none | first-stage weights to use instead of the released file (recorded, not pinned) |
+| `--zoom ZOOM` | none | zoom-stage weights to use instead of the released file (recorded, not pinned) |
+| `--weights WEIGHTS` | none | a folder holding the released `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` |
+| `--download` | off | fetch a missing released weight file into `OUT/weights` (checked against the release's SHA-256) |
+| `--no-end-rule` | off | trim mount and caps only, without the end-point rule |
+| `--json` | off | accepted; the summary is always JSON |
+
+It prints one JSON summary (`scroll`, `key`, `voxel_um`, `weights` with each file's SHA-256 and `pinned`, `points`, `umbilicus`, `claim`). Exit code 0 when the line has points; 1 when the finder failed or kept no point (no `umbilicus.json` is written then, because VC3D refuses an umbilicus without points); 2 for a refused volume (not in the bucket, or outside 8 to 10 um), missing weights or a bad argument. `KIT_CENTRENET_PREDICT` names another `predict.py` (the variable AP's `centrenet` backend reads).
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -261,6 +283,11 @@ The scripts import one another by file name (each puts its folder first on `sys.
 | `pipeline.stamp_dims(meta, dims, name)` | `meta` | `SystemExit` for a triplet of another grid, or a partial one with no scan shape | Puts the triplet into a file's metadata |
 | `pipeline.trim(src, data, dst, end_rule=True, vc3d_name=False)` | `{scroll: {"points", "z", "file"}}` | `SystemExit` for points off the slice heights | What `pipeline.py trim` runs |
 | `endcheck.files(src_dir, dst, cache, data=None, vc3d_name=False)` | `{scroll: {"points_in", "points_out", "papyrus_level", "file"}}` | `SystemExit` for points off the slice heights (with `data`) | Applies the end-point rule to any file in the published format |
+| `bucket_key(volume)` (`kit/umbfind.py`) | `(scroll, key, voxel_um)` | `UmbfindError` for a location outside the bucket, a name without a voxel size, or a scan outside 8 to 10 um | A bucket URL (`https://` or `s3://`), a bucket key, or a local copy under `SCROLL/volumes/SCAN.zarr` |
+| `find_weights(out, first=None, zoom=None, folder=None, download=False, env=None, opener=None)` | `{stage: {"path", "sha256", "pinned"}}` | `UmbfindError` for missing weights or a download whose SHA-256 differs | Explicit files as they are (not pinned), else the released files with the release's SHA-256 (`WEIGHTS`), else fetched into `OUT/weights` |
+| `find(volume, out, first=None, zoom=None, weights=None, download=False, env=None, python=None, opener=None, end_rule=True)` | `(summary, exit code)` | `UmbfindError` as above | Runs `predict.py` (`KIT_CENTRENET_PREDICT`, else this checkout's) on the CPU into `OUT` and copies the line to `OUT/umbilicus.json` |
+| `main(argv=None)` (`kit/umbfind.py`) | exit code | nothing | `python -m kit.umbfind` |
+| `UmbfindError` (`kit/umbfind.py`) | exception | | A refused volume, missing weights or a bad argument (exit 2) |
 
 ## Inputs
 
@@ -313,6 +340,14 @@ So: run with `--vc3d-name`, then put the project file in `OUT/SCROLL/` (or copy 
 | `NPZ holds no CT (every chunk read was absent or zero): remove the file and check the scan path` (`predict.py`) | A cached slice file holds only zeros, or every chunk it read was missing, usually from a wrong scan path or a false 404 | Remove the file, check `--volume`, and run again |
 | `VOL/LEVEL: all N chunk reads were absent (NoSuchKey); no slice file written` (`slices.py`) | Every chunk read for the sampled slices was missing, so the scan path or level is wrong | Check the volume URL and level, then rerun; nothing was cached |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `umbfind: VOLUME: the center finder reads its slices from the open-data bucket (vesuvius-challenge-open-data); open the scan by its bucket URL`, `...: not a bucket URL, bucket key or local folder`, `...: the center finder reads its slices from the open-data bucket by key; give the scan's bucket URL, its key (PHercNNNN/volumes/SCAN.zarr) or a local copy kept under that layout` (`kit.umbfind`, exit 2) | The volume is another host or a local folder that does not keep the bucket's layout | Open the scan by its bucket URL in VC3D, or keep the local copy at `.../PHercNNNN/volumes/SCAN.zarr` |
+| `umbfind: VOLUME: KEY is not a scan in the bucket (SCROLL/volumes/SCAN.zarr)` | The key does not name a scan folder | Use a key listed under `SCROLL/volumes/` |
+| `umbfind: VOLUME: 2.4 um voxels; the center finder takes 8 to 10 um scans (the 1.2 m scans)` | The open scan is outside `UM_RANGE` | Open the scroll's 1.2 m scan |
+| `umbfind: umbilicus-first-all.pt not found with the release's sha256 in ...: download it from ...` | No released weight file with the right SHA-256, and no `--download` | Download them as in Quick start into `work/umbilicus/weights` (or `KIT_UMBILICUS_WEIGHTS`), or pass `--download` (the registry's `--yes-download`) |
+| `umbfind: NAME: downloaded sha256 ..., the release pins ...` | The downloaded file is not the released one (a cut download or a proxy page) | Run again; nothing was kept |
+| `umbfind: give both --first and --zoom, or neither (the released all-scroll files)`, `umbfind: --first FILE does not exist` | Only one explicit weight file, or a missing one | Give both files, or neither |
+| `umbfind: PATH is missing: the finder ships in Scrolls under scripts/umbilicus/` | `KIT_CENTRENET_PREDICT` or `scripts/umbilicus/predict.py` is missing | Use a full Scrolls checkout, or correct the variable |
+| `umbfind: the finder exited N: ...`, `umbfind: the finder kept no point ...` (exit 1) | `predict.py` failed (see `RUN/predict.log`), or no run of slices met the end rules, so no `umbilicus.json` was written | Read `RUN/predict.log`; a missing torch or a failed bucket read shows there |
 | `--volume needs exactly one scroll` | `predict.py` with `--volume` and several scrolls | Run one scroll per `--volume` |
 | `VOLUME: no voxel size in the scan name (<timestamp>-<size>um-...)` | The `--volume` path does not name its voxel size | Give the bucket path of the scan, as listed under `SCROLL/volumes/` |
 | `WHAT: 2.4 um voxels; this finder takes 8 to 10 um scans (the models trained on 8.64 and 9.362 um scans only)` | The scan or slice file is outside `UM_RANGE` | Use the scroll's 1.2 m scan |
@@ -364,6 +399,20 @@ Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`
 - `pipeline.py trim` on a synthetic 60-slice scroll: 0.6 s (measured 2026-10-16, 4-core cloud container).
 - Stamping the grid: none extra when the slice file holds `shape_l0`; otherwise one read of a few hundred bytes per scroll.
 
+## Start from VC3D
+
+Open a 1.2 m scan (8 to 10 um) in VC3D by its open-data bucket URL, or a local copy kept under the bucket's layout (`.../PHercNNNN/volumes/SCAN.zarr`), and pick Scrolls > viewer > "Plan: Find the scroll's center line in the open volume (umbilicus finder)". It is a plan only, never a run: the finder reads 0.25 to 0.65 GB of slices, may fetch the two weight files (about 26 MB) and takes about 13 minutes on 4 CPU cores, over the 10 minute rule for Chase's Mac. VC3D shows `plan.json`, with the bound volume, the command, the time and download estimate and each gate's verdict. Run it from a terminal (or have an agent run it) where torch is installed, through the tool registry ([toolreg](toolreg.md)):
+
+```bash
+python -m kit tools run umbilicus --volume VOLUME_URL --yes-download --out RUN
+```
+
+`kit/umbfind.py` maps the volume to its bucket key, uses the released weights from `KIT_UMBILICUS_WEIGHTS` or `work/umbilicus/weights` when their SHA-256 matches the release (else fetches them into `RUN/weights`), runs `predict.py` on the CPU and copies the line to `RUN/umbilicus.json`. `--input first=FILE --input zoom=FILE` uses other weights, such as a fold's, and records their SHA-256 as not pinned. AutoPipeline (AP) runs the same finder as its umbilicus backend `centrenet`; where AP is installed, the registry's manifest digest travels with that backend into AP's records and `graph.json`.
+
+## Open in VC3D
+
+The plan's run writes `RUN/umbilicus.json`, which passes the registry's umbilicus check (VC3D's reader rules) before anything opens. Load it into VC3D with Scrolls > Open run output > "Open run output as umbilicus" (run folder `RUN`), or from a terminal `python -m kit tools take umbilicus --run RUN --out DIR`. The points are level-0 voxels of the scan named in `metadata.source_volume`, with its grid stamped when the bucket gives it, so VC3D places them on any pyramid level of that scan (see "Use it in VC3D and spiral-fitting" under Outputs). The line is model output, not a measured line; on the 13 scrolls with a published line it is not held out.
+
 ## For agents
 
 - **Command:** `python scripts/umbilicus/predict.py SCROLL --first W/umbilicus-first-all.pt --zoom W/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name` (weights checked by SHA-256 first, as in Quick start); the machine-readable output is `OUT/SCROLL/umbilicus.json` (without `--vc3d-name`, `OUT/SCROLL_umbilicus.json`) and `OUT/SCROLL_predict.json`.
@@ -382,8 +431,11 @@ python -m unittest tests.test_umbilicus -v
 
 They cover the first stage's coordinate frame and augmentation, the zoom crops and offsets, `keep_band`, the papyrus level, the end-point support and trims (from the ends only, at 2 mm and 4 mm for each voxel size), trimming written files, `collect` and `chain-collect`, `predict.py` writing a trimmed file from weights, its refusal of other scans, `endcheck.py` windows and missing-chunk counts, the range reader against a synthetic volume, `pipeline.py` refusing a mistyped command, and the files VC3D reads: rule-for-rule copies of VC3D's reader, name search and rescale rule (checked against villa's own test values) read back what `predict.py`, `trim`, `endcheck.py files`, `collect` and `chain-collect` write, with and without `--vc3d-name`, from a slice file's `shape_l0` or the level-0 `.zarray`, and with no triplet at all when the shape is missing or of another scan. All data is synthetic and read on the CPU; the module keeps `slices.get` off the network. On 2026-10-20 in a Linux cloud container, all 58 tests passed with numpy, scipy, CPU torch, requests and numcodecs, with no skips. The regressions include mismatched or missing slice-cache identity and an optional metadata failure after extraction. They do not read the bucket or the released weights.
 
+`python -m unittest tests.test_umbfind tests.test_toolreg_rowumb -v` covers the adapter and its manifest with a stand-in `predict.py` (`KIT_CENTRENET_PREDICT`): volume to bucket key (URL, key, local copy, refusals), the release's SHA-256 pins and explicit weights, a line with no points refused, VC3D's Plan: entry only, the run with `--yes-download` through the registry, the umbilicus check and taking the line back into VC3D.
+
 ## History
 
+- 2026-10-21: `python -m kit.umbfind` and the tool registry manifest: VC3D plans the finder on the open scan, and the run's line comes back as an umbilicus ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).
 - 2026-10-20: `--vc3d-name` writes `SCROLL/umbilicus.json`, the name VC3D and spiral-fitting look for; when available, written files carry the scan's level-0 `volume_width`, `volume_height` and `volume_slices`; slice files keep `shape_l0`; `ctcheck.py` reads both names; tests check the files with a copy of VC3D's reader at villa `8aa507c12`.
 - 2026-10-17: `pipeline.py` refuses a command other than `job`, `collect` or `trim` with a usage error; before, a mistyped command did nothing and exited 0 (`c03e227`).
 - 2026-10-16: slice caches are keyed by scan, and a slice file with no CT is refused (`91bc14e`).
@@ -396,4 +448,5 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 - [Evidence folder](../evidence/2026-10-14-umbilicus/README.md): `heldout-endrule.json` and `calibrate.json`.
 - [`results.json`](../results.json): `umbilicus_checks`, the held-out scores and the centroid control.
 - [`stackcheck`](stackcheck.md): checks a stack of segments against an umbilicus file.
-- [`autopipeline`](autopipeline.md): its umbilicus stage accepts a file in the published format.
+- [`autopipeline`](autopipeline.md): its umbilicus stage accepts a file in the published format, and runs this finder as its backend `centrenet`.
+- [`toolreg`](toolreg.md): the tool registry that starts it from VC3D and the command line.

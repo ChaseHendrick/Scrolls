@@ -9,8 +9,8 @@
 | Kind | kit command, kit module |
 | Area | Scoring and controls |
 | Run | `python -m kit rowscore`, `from kit import rowscore` |
-| Code | `kit/rowscore.py`, `kit/cli.py` (`cmd_rowscore`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`, `load`, `path_for`) |
-| Tests | `tests/test_rowscore.py`, `tests/test_rowscore_fast.py` |
+| Code | `kit/rowscore.py`, `kit/data/registry/rowscore.json` (its tool registry manifest), `kit/cli.py` (`cmd_rowscore`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`, `load`, `path_for`) |
+| Tests | `tests/test_rowscore.py`, `tests/test_rowscore_fast.py`, `tests/test_toolreg_rowumb.py` (from VC3D through the tool registry) |
 | Needs | Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs); scipy for the largest-piece step (skipped without it) and for `--fast-resize` |
 | Runs on | Any CPU. A 305-million-pixel public map took 39.7 s, or 5.7 s with `--fast-resize` ([production scaling log](../logs/2026-10-07-production-scaling.md), one core); a 9 um segment takes seconds to under a minute |
 | Network | None |
@@ -201,6 +201,20 @@ Published source: Bullo27's `analysis/rowscore.py` ([first-letters-survey](https
 
 Most of the dense time on large maps is the area resize (34.4 of 39.7 s on the full map); the FFT and the image-sized arrays are the rest. It runs on any machine in under a minute per map; nothing here needs Modal or a GPU.
 
+## Start from VC3D
+
+Make the segment active, select its forward ink map in the Ink Detection overlay and pick Scrolls > segment > "Text-row triage score (rowscore) of the selected ink map". VC3D passes the segment, the map and the open volume (its voxel size gives `--voxel-um`; type it when the volume has none). The reverse-depth twin is found by the tool registry ([toolreg](toolreg.md)): the segment's ink detection record with role `control:reverse` that shares the map's model, else `MAP_reverse` beside the map; without one the result says `no control: not a pass`. The same run from a terminal or an agent:
+
+```bash
+python -m kit tools run rowscore --segment SEG --ink-overlay SEG/MAP.tif --param voxel_um=9.362 --out RUN
+```
+
+A row score is a readout. In public Scrolls the registry refuses a map whose segment, map path or catalog ids name a prize-eligible scroll; in Scrolls-private it runs only with `--purpose target --experiment SLUG`, a preregistered record whose readout was fixed first. AutoPipeline (AP) runs the same score as its triage backend `rowscore`; where AP is installed, the manifest digest travels with that backend into AP's records and `graph.json`.
+
+## Open in VC3D
+
+VC3D opens the report, `RUN/rowscore.json`, as a file (Parse above: `forward.score`, `reverse.score`, `period_mm`, `angle_deg`), and `RUN/vc3d-result.json` says whether the control was present. Nothing is drawn on the segment: the score is one number per map, not a map. It is triage, not a reading.
+
 ## For agents
 
 - **Command:** `python -m kit rowscore FWD.tif [FWD2.tif ...] --reverse REV.tif [REV2.tif ...] --voxel-um 9.362 --json`; add `--fast-resize` for maps of hundreds of millions of pixels.
@@ -221,6 +235,7 @@ Twenty tests. `tests/test_rowscore.py` (12): rows 5 mm apart score above 50 at a
 
 ## History
 
+- 2026-10-21: the tool registry manifest takes the active segment too, so VC3D's entry finds the reverse twin from the segment's ink detection records and the target rule sees the segment's name ([branch claude/integration-1020](https://github.com/ChaseHendrick/Scrolls/tree/claude/integration-1020)).
 - 2026-10-17: the closing `triage only:` line names PHerc0139 w045 and w033 and says they are not held out from `ink_9um`; before, it called Bullo27's reference scores held-out controls (`851a29d`).
 - 2026-10-08: the module text no longer calls Bullo27's w045 and w033 scores held out, since `ink_9um` trained on w045's 2.4 um render (`d841e06`).
 - 2026-10-07: `--fast-resize`, an opt-in sparse area resize, 7.0 times faster on a 305-million-pixel map, with `resize_mode` in the JSON; the dense default is unchanged (`047ee06`, [PR #27](https://github.com/ChaseHendrick/Scrolls/pull/27)).
@@ -233,6 +248,7 @@ Twenty tests. `tests/test_rowscore.py` (12): rows 5 mm apart score above 50 at a
 - [`verify`](verify.md): agreement of two maps of the same input, with a control.
 - [`mac-w045`](mac-w045.md): runs this command on its maps and prints the scores in its summary.
 - [`plan`](plan.md): `kit plan` names this command as the triage step.
+- [`toolreg`](toolreg.md): the tool registry that starts it from VC3D and the command line.
 - [`autopipeline`](autopipeline.md): its `triage` step uses this score.
 - [`run-ledger`](run-ledger.md): the experiment ledger that `--slug` writes to.
 - [Community scan log](../logs/2026-10-07-community-scan.md) and `results` in [`results.json`](../results.json): row scores of `ink_9um` on w045 and PHerc0841.

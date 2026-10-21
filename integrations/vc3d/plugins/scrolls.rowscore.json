@@ -8,6 +8,8 @@
  "args": [
   "run",
   "rowscore",
+  "--segment",
+  "{segment}",
   "--ink-overlay",
   "{ink_overlay}",
   "--volume",

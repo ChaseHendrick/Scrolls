@@ -1,0 +1,110 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "umbilicus",
+ "repo": "public",
+ "notes": "The scroll center finder (scripts/umbilicus/predict.py) through kit/umbfind.py, which maps the open volume to its bucket key, finds the two released weight files (checked against the release's sha256) or fetches them into the run folder, and copies the finder's line to RUN/umbilicus.json. It reads every 8th level-3 plane of the scan from the open-data bucket into RUN/slices (0.25 to 0.65 GB) and needs torch in kit's Python, so VC3D gets a Plan: entry only; run the plan's command from a terminal with --yes-download. The line is model output (geometry, not an ink map), so the target rule does not apply to it. It is AutoPipeline's umbilicus backend centrenet.",
+ "inputs": {
+  "volume": {
+   "from": "volume",
+   "format": [
+    "url",
+    "zarr",
+    "ome-zarr"
+   ],
+   "label": "the open volume: a 1.2 m scan (8 to 10 um) by its open-data bucket URL, or a local copy kept under the bucket's layout (SCROLL/volumes/SCAN.zarr)"
+  },
+  "first": {
+   "from": "path",
+   "required": false,
+   "label": "first-stage weights to use instead of the released all-scroll file (recorded, not pinned)"
+  },
+  "zoom": {
+   "from": "path",
+   "required": false,
+   "label": "zoom-stage weights to use instead of the released all-scroll file (recorded, not pinned)"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit.umbfind",
+   "{in.volume}",
+   "--out",
+   "{run}",
+   "--download",
+   "--json"
+  ],
+  "optional_args": {
+   "first": [
+    "--first",
+    "{in.first}"
+   ],
+   "zoom": [
+    "--zoom",
+    "{in.zoom}"
+   ]
+  },
+  "stdout": "{run}/umbfind.json",
+  "timeout_s": 7200
+ },
+ "outputs": {
+  "umbilicus": {
+   "kind": "umbilicus",
+   "format": "umbilicus-json",
+   "path": "{run}/umbilicus.json",
+   "label": "the center line: control_points x, y, z in level-0 voxels, the scan's grid stamped when the bucket gives it"
+  },
+  "detail": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/predict.json",
+   "label": "the finder's per-slice record (centers, support, spread, trims)"
+  },
+  "call": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/umbfind.json",
+   "label": "the adapter's summary: scan, key, weights and their sha256, points"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 780,
+  "disk_mb": 700,
+  "ram_gb": 8,
+  "scales_with": "the scan's height (one level-3 plane every 64 level-0 voxels) and its bucket reads: about 13 minutes on 4 CPU cores for PHerc1203, 7 of them reading slices (scripts/umbilicus/README.md)"
+ },
+ "safety": {
+  "model_output": false,
+  "paid_compute": "never",
+  "network": "download",
+  "downloads_mb": 680
+ },
+ "pipeline": {
+  "stage": "umbilicus",
+  "existing": "centrenet"
+ },
+ "vc3d": {
+  "menu": "viewer",
+  "label": "Find the scroll's center line in the open volume (umbilicus finder)",
+  "result": "umbilicus"
+ },
+ "facts": {
+  "title": "umbilicus",
+  "tagline": "find a scroll's winding center line in X-ray CT",
+  "status": "Current",
+  "kind": [
+   "script folder"
+  ],
+  "area": "Surfaces and tracing",
+  "page": "docs/tools/umbilicus.md",
+  "go_ahead": false,
+  "network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`, or by `python -m kit.umbfind --download` into its run folder when they are not found",
+  "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
+  "checked": "2026-10-20 518556f",
+  "success": "Exit code 0, `points` above 0, and for VC3D the three `volume_*` keys present (no \"no volume_width\" line on stderr).",
+  "not_a_pass": "A line on one of the 13 published scrolls from the `-all` weights (they trained on it); a small `spread_mm_median` read as accuracy; a line not looked at on CT; held-out scores that do not first reproduce `result.json` in `endcheck.py score`; a file that passes the tests' copy of VC3D's reader taken as proof that a live VC3D window shows it right.",
+  "never": "Call a line a measurement or ground truth; run it on a scan outside 8 to 10 um by editing `UM_RANGE`; commit slice files, CT pictures or weights to git (scan data is CC BY-NC 4.0 and stays out of the repository); hand-edit `volume_width`, `volume_height` or `volume_slices` to another grid without converting the points."
+ }
+}

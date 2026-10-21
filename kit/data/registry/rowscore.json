@@ -3,6 +3,10 @@
  "id": "rowscore",
  "repo": "public",
  "inputs": {
+  "segment": {
+   "from": "segment",
+   "label": "the active segment's folder, which the map lies on: its ink detection records find the reverse-depth twin, and its name and catalog ids feed the target rule (rowscore itself reads only the maps)"
+  },
   "forward": {
    "from": "segment.overlay",
    "format": [
@@ -75,7 +79,8 @@
    "reverse"
   ],
   "paid_compute": "never",
-  "network": "none"
+  "network": "none",
+  "eligible_scrolls": "private-prereg"
  },
  "pipeline": {
   "stage": "triage",

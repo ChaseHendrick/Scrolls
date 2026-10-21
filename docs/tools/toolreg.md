@@ -558,5 +558,5 @@ The registry adds the gates, the audit and the handoff to a tool's own time: wel
 - [tooldocs](tooldocs.md): the pages each manifest's facts come from; `python -m kit.tooldocs check` runs the registry check.
 - [run-local](run-local.md): the cost wrapper every registry run goes through.
 - [autopipeline](autopipeline.md): the pipeline whose stages registry tools fill.
-- [auc](auc.md), [hpscore](hpscore.md), [rowscore](rowscore.md), [verify](verify.md), [overlap](overlap.md), [stackcheck](stackcheck.md), [view](view.md), [doctor](doctor.md): the tools with manifests so far.
+- [auc](auc.md), [hpscore](hpscore.md), [rowscore](rowscore.md), [verify](verify.md), [overlap](overlap.md), [stackcheck](stackcheck.md), [view](view.md), [doctor](doctor.md), [umbilicus](umbilicus.md): some of the tools with manifests (`python -m kit tools list` lists them all).
 - [provenance](provenance.md): the record every run writes.

@@ -44,7 +44,6 @@
   "surfacefix": "an experimental multi-step job that needs renders and GPU ink outside itself",
   "tooldocs": "the tool page checker",
   "toolreg": "the registry itself: it runs the other manifests",
-  "umbilicus": "needs torch and 0.25 to 0.65 GB of slice reads; next, with download consent",
   "v8in-run": "GPU inference, planned only; a plan-only manifest comes next",
   "volumeview": "builds a viewer link from a hand-written metadata file; next, with the open volume bound"
  }

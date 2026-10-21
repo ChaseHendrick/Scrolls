@@ -6648,6 +6648,10 @@
      "symbols": []
     },
     {
+     "path": "kit/data/registry/rowscore.json",
+     "symbols": []
+    },
+    {
      "path": "kit/cli.py",
      "symbols": [
       "cmd_rowscore"
@@ -6672,7 +6676,8 @@
    ],
    "tests": [
     "tests/test_rowscore.py",
-    "tests/test_rowscore_fast.py"
+    "tests/test_rowscore_fast.py",
+    "tests/test_toolreg_rowumb.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -6689,8 +6694,8 @@
     "Kind": "kit command, kit module",
     "Area": "Scoring and controls",
     "Run": "`python -m kit rowscore`, `from kit import rowscore`",
-    "Code": "`kit/rowscore.py`, `kit/cli.py` (`cmd_rowscore`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
-    "Tests": "`tests/test_rowscore.py`, `tests/test_rowscore_fast.py`",
+    "Code": "`kit/rowscore.py`, `kit/data/registry/rowscore.json` (its tool registry manifest), `kit/cli.py` (`cmd_rowscore`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
+    "Tests": "`tests/test_rowscore.py`, `tests/test_rowscore_fast.py`, `tests/test_toolreg_rowumb.py` (from VC3D through the tool registry)",
     "Needs": "Python 3.10 or newer, numpy, tifffile (imagecodecs for LZW or zstd TIFFs); scipy for the largest-piece step (skipped without it) and for `--fast-resize`",
     "Runs on": "Any CPU. A 305-million-pixel public map took 39.7 s, or 5.7 s with `--fast-resize` ([production scaling log](../logs/2026-10-07-production-scaling.md), one core); a 9 um segment takes seconds to under a minute",
     "Network": "None",
@@ -6769,27 +6774,39 @@
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Start from VC3D",
      "start_line": 204,
      "end_line": 213,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Open in VC3D",
      "start_line": 214,
-     "end_line": 221,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 218,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 228,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 222,
-     "end_line": 228,
+     "start_line": 236,
+     "end_line": 243,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 229,
-     "end_line": 240,
+     "start_line": 244,
+     "end_line": 256,
      "applicable": true
     }
    ]
@@ -8927,17 +8944,28 @@
     "python scripts/umbilicus/pipeline.py",
     "python scripts/umbilicus/refine.py",
     "python scripts/umbilicus/endcheck.py",
-    "python scripts/umbilicus/ctcheck.py"
+    "python scripts/umbilicus/ctcheck.py",
+    "python -m kit.umbfind"
    ],
    "imports": [],
    "code": [
     {
      "path": "scripts/umbilicus/",
      "symbols": []
+    },
+    {
+     "path": "kit/umbfind.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/registry/umbilicus.json",
+     "symbols": []
     }
    ],
    "tests": [
-    "tests/test_umbilicus.py"
+    "tests/test_umbilicus.py",
+    "tests/test_umbfind.py",
+    "tests/test_toolreg_rowumb.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -8953,13 +8981,13 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Surfaces and tracing",
-    "Run": "`python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`",
-    "Code": "`scripts/umbilicus/`",
-    "Tests": "`tests/test_umbilicus.py`",
+    "Run": "`python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`, `python -m kit.umbfind` (the finder on the scan VC3D has open, as the tool registry runs it)",
+    "Code": "`scripts/umbilicus/`, `kit/umbfind.py` (VC3D and tool registry adapter), `kit/data/registry/umbilicus.json` (its tool registry manifest)",
+    "Tests": "`tests/test_umbilicus.py`, `tests/test_umbfind.py`, `tests/test_toolreg_rowumb.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py`",
     "Runs on": "`predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container)",
-    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
-    "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`",
+    "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`, or by `python -m kit.umbfind --download` into its run folder when they are not found",
+    "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`. `python -m kit.umbfind`: only inside `--out RUN`: `umbilicus.json`, `predict.json`, `predict.log`, `predict/`, `slices/` and, with `--download`, `weights/`",
     "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
     "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's \"Released tools\" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository)",
     "Release id": "`umbilicus-finder`",
@@ -8996,67 +9024,79 @@
     {
      "name": "Commands and options",
      "start_line": 101,
-     "end_line": 242,
-     "applicable": true
-    },
-    {
-     "name": "Python API",
-     "start_line": 243,
      "end_line": 264,
      "applicable": true
     },
     {
-     "name": "Inputs",
+     "name": "Python API",
      "start_line": 265,
-     "end_line": 274,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 292,
+     "end_line": 301,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 275,
-     "end_line": 308,
+     "start_line": 302,
+     "end_line": 335,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 309,
-     "end_line": 346,
+     "start_line": 336,
+     "end_line": 381,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 347,
-     "end_line": 358,
+     "start_line": 382,
+     "end_line": 393,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 359,
-     "end_line": 366,
+     "start_line": 394,
+     "end_line": 401,
+     "applicable": true
+    },
+    {
+     "name": "Start from VC3D",
+     "start_line": 402,
+     "end_line": 411,
+     "applicable": true
+    },
+    {
+     "name": "Open in VC3D",
+     "start_line": 412,
+     "end_line": 415,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 367,
-     "end_line": 376,
+     "start_line": 416,
+     "end_line": 425,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 377,
-     "end_line": 384,
+     "start_line": 426,
+     "end_line": 435,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 385,
-     "end_line": 392,
+     "start_line": 436,
+     "end_line": 444,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 393,
-     "end_line": 399,
+     "start_line": 445,
+     "end_line": 452,
      "applicable": true
     }
    ]

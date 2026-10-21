@@ -1,0 +1,23 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.umbilicus.plan",
+ "name": "Plan: Find the scroll's center line in the open volume (umbilicus finder)",
+ "description": "find a scroll's winding center line in X-ray CT. A priced dry run: nothing runs (it downloads about 680 MB on first use, which needs --yes-download; about 780 s, over the 600 s local rule on Chase's Mac).",
+ "menu": "Scrolls/viewer",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "plan",
+  "umbilicus",
+  "--volume",
+  "{volume}",
+  "--write",
+  "{output}/plan.json",
+  "--json"
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/plan.json"
+ },
+ "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/umbilicus.md"
+}
