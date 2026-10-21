@@ -2392,8 +2392,8 @@
     "text": "Not needed: local synthetic checks, no service credentials, model calls or paid compute"
    },
    "checked": {
-    "date": "2026-10-20",
-    "commit": "457fc5c"
+    "date": "2026-10-21",
+    "commit": "249096b"
    },
    "license": null,
    "fields": {
@@ -2410,7 +2410,7 @@
     "Writes": "Generated fixtures, execution records, Harness2 state and `comparison.json` beneath `--out` only",
     "Go-ahead": "Not needed: local synthetic checks, no service credentials, model calls or paid compute",
     "Released": "Source in public Scrolls; no package release, no model weights",
-    "Checked": "2026-10-20 against commit `457fc5c`, with Harness2 at the pin above"
+    "Checked": "2026-10-21 against commit `249096b` (public `main`, merged into this branch), with Harness2 at the pin above"
    },
    "page": "docs/tools/harness2.md",
    "sections": [
@@ -2471,31 +2471,31 @@
     {
      "name": "Cost and time",
      "start_line": 245,
-     "end_line": 252,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 253,
-     "end_line": 267,
+     "start_line": 256,
+     "end_line": 270,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 268,
-     "end_line": 283,
+     "start_line": 271,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 284,
-     "end_line": 287,
+     "start_line": 287,
+     "end_line": 291,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 288,
-     "end_line": 294,
+     "start_line": 292,
+     "end_line": 298,
      "applicable": true
     }
    ]

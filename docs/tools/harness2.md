@@ -17,7 +17,7 @@ Use Harness2's recursion engine to compare bounded, local Scrolls provenance wor
 | Writes | Generated fixtures, execution records, Harness2 state and `comparison.json` beneath `--out` only |
 | Go-ahead | Not needed: local synthetic checks, no service credentials, model calls or paid compute |
 | Released | Source in public Scrolls; no package release, no model weights |
-| Checked | 2026-10-20 against commit `457fc5c`, with Harness2 at the pin above |
+| Checked | 2026-10-21 against commit `249096b` (public `main`, merged into this branch), with Harness2 at the pin above |
 
 ## What it does
 
@@ -248,7 +248,10 @@ No paid service, model call or GPU. Measured on 2026-10-20 in a shared 4-core Li
 under heavy load: `--k 1` makes 21 executions and 24 proposer calls in about 20 seconds; `--k 2`
 makes 42 executions and 48 proposer calls in about 30 seconds; a resume makes none. The fixed
 limits are 48 executions and 64 proposer calls per invocation and 300 seconds of wall time.
-Harness2's call counters are not a cost bound for any model-backed use.
+Harness2's call counters are not a cost bound for any model-backed use. On 2026-10-21, with
+the shared disk under heavy I/O pressure, the 13 pinned-core tests took about 10 minutes of wall
+time for about 15 seconds of CPU (45 to 70 seconds once the load eased), so a single run can
+near the 300 second wall limit on a stalled disk; a run that hits it exits 2 and writes no receipt.
 
 ## For agents
 
@@ -279,11 +282,12 @@ pin, on Python 3.12 or 3.13, the pinned-core checks run the real upstream: the `
 in both modes, resume with no new work, refusal of a different identity, a tampered artifact and
 an unfinished run, refusal of an edited, byte-compiled or `.env` upstream, the bad candidate
 evaluated exactly, and a `--k 2` comparison with selection sessions. All 13 passed on Python
-3.12 and 3.13 on 2026-10-20.
+3.12 and 3.13 on 2026-10-20, and again on 2026-10-21 after public `main` (`249096b`) was merged in.
 
 ## History
 
 - 2026-10-20: optional adapter on branch `claude/harness2`, finishing checkpoint `e042556` (engine, deterministic proposer, judge, tests and this page), reviewed against Harness2 at `1cfe254e8d25b15f37048c3730134686abe60335`.
+- 2026-10-21: recovery bundle and manifest hashes rechecked; public `main` `249096b` merged in; all 13 tests pass again on Python 3.12 and 3.13 with a fresh clone of the pin.
 
 ## Related
 
