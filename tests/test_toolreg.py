@@ -18,10 +18,11 @@ from unittest import mock
 from kit import cli, ledger, toolreg
 
 ROOT = Path(__file__).resolve().parent.parent
-# Scrolls-private carries the engine (kit/toolreg.py, byte-identical) without public Scrolls' manifests, so the tests
-# of the repository's own manifests and plugin entries run only where kit/data/registry exists
-needs_registry = unittest.skipUnless((ROOT / "kit" / "data" / "registry").is_dir(),
-                                     "this checkout has no kit/data/registry")
+# Scrolls-private carries the engine (kit/toolreg.py, byte-identical) and this file, but its kit/data/registry holds
+# only its private tools' manifests, so the tests of public Scrolls' own manifests and plugin entries run only where
+# those manifests are (auc.json marks them)
+needs_registry = unittest.skipUnless((ROOT / "kit" / "data" / "registry" / "auc.json").is_file(),
+                                     "this checkout has no public Scrolls manifests in kit/data/registry")
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import fake_vc3d_host as host  # noqa: E402
 
