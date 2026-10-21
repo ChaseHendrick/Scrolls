@@ -1,0 +1,15 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "community.v8in-ink",
+  "name": "v8in ink detection on active segment layers",
+  "description": "Youssef Nader's v8in ink model (YoussefMoNader/ink-8um-v8in) through scripts/v8in_run.py on the active segment's layers folder; the prediction PNG is added to the segment's ink detections. Model output, not a reading.",
+  "menu": "Ink detection",
+  "program": "python3",
+  "args": ["{plugin_dir}/../scripts/v8in_run.py", "--model-dir", "{input:model_dir}", "--layers", "{segment}/layers",
+           "--output", "{output}/prediction.png", "--device", "{input:device}"],
+  "inputs": [{"name": "model_dir", "label": "Local snapshot of the YoussefMoNader/ink-8um-v8in repository", "default": ""},
+             {"name": "device", "label": "Device: cpu, mps or cuda", "default": "cpu"}],
+  "result": {"kind": "ink_overlay", "path": "{output}/prediction.png"},
+  "homepage": "https://huggingface.co/YoussefMoNader/ink-8um-v8in",
+  "license": "Model MIT (docs/state-of-play.md); wrapper Apache-2.0"
+}

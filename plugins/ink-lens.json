@@ -1,0 +1,19 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "scrolls.ink-lens",
+  "name": "Ink Lens on a region of the active segment",
+  "description": "Chase Hendrick's Ink Lens (spaces/ink-lens/inklens.py run --local) on one region of the active segment: an openly licensed 9 um ink model in both depth orders, keeping only ink above the region's own reverse-depth control. Ink Lens writes the overlay, the pins and a merged ink-detections.json into the segment folder itself; reselect the segment to see the new record. Exit 3 (no ink above the control) shows as a failed run. Model output, not a reading.",
+  "menu": "Ink detection",
+  "program": "python3",
+  "args": ["{plugin_dir}/../spaces/ink-lens/inklens.py", "run", "--segment", "{segment}", "--volume", "{volume}",
+           "--box", "{input:x}", "{input:y}", "{input:w}", "{input:h}",
+           "--local", "--reader", "{input:reader}", "--json"],
+  "inputs": [{"name": "x", "label": "Region left edge in render pixels of the segment at scale 1", "default": ""},
+             {"name": "y", "label": "Region top edge in render pixels", "default": ""},
+             {"name": "w", "label": "Region width in render pixels", "default": "1024"},
+             {"name": "h", "label": "Region height in render pixels", "default": "1024"},
+             {"name": "reader", "label": "Reader: d9v2, ink_9um or both", "default": "d9v2"}],
+  "result": {"kind": "none"},
+  "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/ink-lens.md",
+  "license": "Code Apache-2.0; d9v2 and ink_9um MIT; scans CC BY-NC 4.0"
+}
