@@ -1,0 +1,14 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "scrolls.strokenet",
+  "name": "StrokeNet text-likeness of selected ink map",
+  "description": "Chase Hendrick's StrokeNet (python -m kit strokenet) on the ink detection selected in VC3D, with its rotation and IAAFT controls. Needs a full-resolution 8-bit map; a score is model output, not a reading.",
+  "menu": "Scrolls",
+  "program": "python3",
+  "args": ["{plugin_dir}/run_kit.py", "strokenet", "{ink_overlay}", "--pixel-mm", "{input:pixel_mm}",
+           "--out", "{output}/strokenet.json", "--grid", "{output}/strokenet-grid.npy", "--json"],
+  "inputs": [{"name": "pixel_mm", "label": "Pixel size of the selected map in mm (0.0024 for a full-resolution 2.4 um map)", "default": ""}],
+  "result": {"kind": "file", "path": "{output}/strokenet.json"},
+  "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/strokenet.md",
+  "license": "Code Apache-2.0; weights CC BY-NC 4.0"
+}

@@ -1,5 +1,5 @@
 {
- "about": "Draft VC3D plugin manifest for Ink Lens, written before VC3D had a plugin host (20 Oct 2026). The entry VC3D's plugin host reads (schema vc3d-plugin/1, the vc3d-plugins lane of the combined VC3D suite) is integrations/vc3d/plugins/scrolls.ink-lens.json, made from the tool registry's manifest kit/data/registry/ink-lens.json; it runs Ink Lens locally with downloads off and writes only into its run folder (--out). This file keeps the command-line contract of the bridge route (inklens.py run --from-vc3d --bridge).",
+ "about": "Draft VC3D plugin manifest for Ink Lens, written before VC3D had a plugin host (20 Oct 2026), kept for this action list and the command-line contract of the bridge route (inklens.py run --from-vc3d --bridge). The vc3d-plugin/1 manifests for the Plugins menu on villa branch vc3d-plugins are plugins/ink-lens.json and integrations/vc3d/plugins/scrolls.ink-lens.json (21 Oct 2026); both run the tool registry's manifest kit/data/registry/ink-lens.json, which runs Ink Lens locally with downloads off and writes only into its run folder (--out).",
  "manifest_version": "draft-1",
  "id": "ink-lens",
  "name": "Ink Lens",

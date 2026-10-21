@@ -46,6 +46,7 @@ Updated 21 October 2026.
 | Topic | Home | Also see |
 | --- | --- | --- |
 | Every tool, one reference page each: options with defaults, inputs, outputs, failures, checks and rules for agents | [`tools/README.md`](tools/README.md) (generated index; [`tools/index.json`](tools/index.json) for agents) | `python -m kit.tooldocs list`; [`TOOL-DOCS.md`](TOOL-DOCS.md) |
+| Optional Harness2 agent-workflow evaluation with synthetic provenance fixtures | [`tools/harness2.md`](tools/harness2.md) | [`tools/provenance.md`](tools/provenance.md) |
 | Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
 | Using every tool from VC3D, the command line or AutoPipeline: the tool registry, its manifests, VC3D plugin manifests and safety gates | [`../integrations/vc3d/README.md`](../integrations/vc3d/README.md) (Use your tools from VC3D) | [`tools/toolreg.md`](tools/toolreg.md), `python -m kit tools list` |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |

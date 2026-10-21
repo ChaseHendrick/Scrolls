@@ -1,0 +1,38 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "scrolls.ink-lens",
+  "name": "Ink Lens on the focus region of the active segment",
+  "description": "Chase Hendrick's Ink Lens on VC3D's focus region of the active segment, through the tool registry (python -m kit tools run ink-lens): an openly licensed 9 um ink model in both depth orders on this computer's CPU, keeping only ink above the region's own reverse-depth control. It writes only into this run's folder, never into the segment folder, and VC3D loads the kept ink as a new ink detection; the control and the letter-candidate pins come back with Scrolls > Open run output. Fetch the reader once first: python3 spaces/ink-lens/engine.py fetch d9v2. Model output, not a reading.",
+  "menu": "Ink detection",
+  "program": "python3",
+  "args": [
+    "{plugin_dir}/run_kit.py",
+    "tools",
+    "run",
+    "ink-lens",
+    "--segment",
+    "{segment}",
+    "--volume",
+    "{volume}",
+    "--region",
+    "{region}",
+    "--param",
+    "voxel_um={input:voxel_um}",
+    "--out",
+    "{output}",
+    "--json"
+  ],
+  "inputs": [
+    {
+      "name": "voxel_um",
+      "label": "The render's pixel size in micrometers (auto: from the volume)",
+      "default": "auto"
+    }
+  ],
+  "result": {
+    "kind": "ink_overlay",
+    "path": "{output}/vc3d/views/map_u8.tif"
+  },
+  "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/ink-lens.md",
+  "license": "Code Apache-2.0; d9v2 and ink_9um MIT; scans CC BY-NC 4.0"
+}

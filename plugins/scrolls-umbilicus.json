@@ -1,0 +1,17 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "scrolls.umbilicus",
+  "name": "Scroll center (umbilicus) from the open-data scan",
+  "description": "Chase Hendrick's scroll center finder (scripts/umbilicus/predict.py) on a scroll's 1.2 m scan in the open-data bucket; writes umbilicus.json with the scan's level-0 size and attaches it. Model output: check it on CT slices.",
+  "menu": "Scrolls",
+  "program": "python3",
+  "args": ["{plugin_dir}/../scripts/umbilicus/predict.py", "{input:scroll}",
+           "--first", "{plugin_dir}/../work/umbilicus/weights/umbilicus-first-all.pt",
+           "--zoom", "{plugin_dir}/../work/umbilicus/weights/umbilicus-zoom-all.pt",
+           "--data", "{plugin_dir}/../work/umbilicus/slices",
+           "--out", "{output}", "--vc3d-name"],
+  "inputs": [{"name": "scroll", "label": "Scroll id in the open-data bucket, such as PHerc0139", "default": ""}],
+  "result": {"kind": "umbilicus", "path": "{output}/{input:scroll}/umbilicus.json"},
+  "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/umbilicus.md",
+  "license": "Code Apache-2.0; weights CC BY-NC 4.0"
+}

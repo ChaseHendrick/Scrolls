@@ -1,0 +1,13 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "villa.gen-umbilicus",
+  "name": "Umbilicus from normal grids (vc_gen_umbilicus)",
+  "description": "villa's vc_gen_umbilicus on a normal grid folder made by vc_gen_normalgrids, with a fixed seed so a rerun repeats; attaches the umbilicus.json it writes.",
+  "menu": "Volume Cartographer",
+  "program": "vc_gen_umbilicus",
+  "args": ["-i", "{input:normal_grids}", "-o", "{output}/umbilicus.json", "--seed", "1", "--volume", "{volume}"],
+  "inputs": [{"name": "normal_grids", "label": "Normal grid folder (vc_gen_normalgrids output)", "default": ""}],
+  "result": {"kind": "umbilicus", "path": "{output}/umbilicus.json"},
+  "homepage": "https://github.com/ScrollPrize/villa/blob/main/volume-cartographer/apps/src/vc_gen_umbilicus.cpp",
+  "license": "GPL-3.0"
+}
