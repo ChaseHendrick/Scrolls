@@ -31,6 +31,23 @@ PACKAGE = {"branch": "submission/progress-2026-10", "commit": "faada83287d39bbd4
 README = "# Title\n\nIntro.\n\n## Released tools\n\n" + r.START + "\nold text\n" + r.END + "\n\n## After\n\nKept.\n"
 
 
+def tool(**over):
+    t = {"id": "demo-cmd", "name": "Demo command", "released": "2026-10-14", "version": "weights `demo-v1`",
+         "summary": "Scores one thing (Model output). Not a reading.", "command": "python -m kit prizes --json",
+         "page": "docs/tools/demo.md", "evidence": "[evidence](docs/demo.md)"}
+    t.update(over)
+    return {k: v for k, v in t.items() if v is not None}
+
+
+def group(*tools, **over):
+    tools = list(tools) or [tool(), tool(id="other-cmd", name="Other command", released="2026-10-16", version=None,
+                                      evidence=None, page="docs/tools/other.md")]
+    fields = dict(id="demo-kit", title="Demo kit", released=max(t["released"] for t in tools), commands=["pip install x"],
+                  details=None, tools=tools)
+    fields.update(over)
+    return entry(**fields)
+
+
 class ValidateTest(unittest.TestCase):
     def test_good_entries_pass(self):
         r.validate(entry())
@@ -202,6 +219,62 @@ class ApplyTest(unittest.TestCase):
         self.assertEqual(new_registry, r.dumps(json.loads(new_registry)))
 
 
+class GroupTest(unittest.TestCase):
+    """A grouped entry (Chase, 20 October 2026): command-line tools share one entry, one line each."""
+
+    def test_good_group_passes_and_renders_one_line_per_tool(self):
+        lines = r.render_entry(r.validate(group()))
+        self.assertEqual(lines[2], "Its tools were released from 14 October 2026 to 16 October 2026; each line gives its "
+                                   "tool's date.")
+        self.assertIn("- **Demo command** (weights `demo-v1`, released 14 October 2026). Scores one thing (Model output). "
+                      "Not a reading. Run `python -m kit prizes --json`; [tool page](docs/tools/demo.md), "
+                      "[evidence](docs/demo.md).", lines)
+        self.assertIn("- **Other command** (released 16 October 2026). Scores one thing (Model output). Not a reading. "
+                      "Run `python -m kit prizes --json`; [tool page](docs/tools/other.md).", lines)
+        self.assertLess(lines.index("```"), lines.index(next(x for x in lines if x.startswith("- **Demo"))),
+                        "the shared install comes before the tool lines")
+        one_day = r.render_entry(group(tool()))
+        self.assertIn("Released 14 October 2026.", one_day)
+
+    def test_bad_groups_fail(self):
+        bad = [group(released="2026-10-15"), group(tool(), tool()), group(tool(id="demo-kit")),
+               group(where=PACKAGE), entry(tools=[]), entry(tools="demo-cmd"), entry(tools=["demo-cmd"]),
+               entry(tools=[tool()] * 13), group(tool(page="docs/demo.md")), group(tool(page="docs/tools/../x.md")),
+               group(tool(command="run `x`")), group(tool(name="**Bold**")), group(tool(extra=1)),
+               group(tool(summary=None)), group(tool(command=None)), group(tool(page=None)), group(tool(id="Demo")),
+               group(tool(released="2026-02-30"), tool(id="other-cmd", released="2026-10-16")), group(tool(summary="a\nb")), group(tool(summary=" lead")),
+               group(tool(summary="x" * 801)), group(tool(evidence="[x](javascript:alert(1))")),
+               group(tool(version="a" + chr(0x2014) + "b")), group(tool(summary="<details> hidden"))]
+        for e in bad:
+            with self.subTest(entry=e), self.assertRaises(r.ReleaseListError):
+                r.validate(e)
+
+    def test_tool_ids_stay_unique_and_resolvable(self):
+        registry = {"schema_version": 1, "pinned": ["demo-kit"], "releases": [entry(id="first"), group()]}
+        r.validate_list(registry)
+        self.assertEqual([x["id"] for x in r.find(registry, "first") if x], ["first"])
+        found, t = r.find(registry, "demo-cmd")
+        self.assertEqual((found["id"], t["name"]), ("demo-kit", "Demo command"))
+        with self.assertRaises(r.ReleaseListError):
+            r.find(registry, "missing")
+        for clash in ({"schema_version": 1, "releases": [entry(id="demo-cmd"), group()]},
+                      {"schema_version": 1, "releases": [group(), entry(id="demo-cmd")]},
+                      {"schema_version": 1, "releases": [group(), dict(group(), id="demo-kit-2")]}):
+            with self.subTest(clash=[e["id"] for e in clash["releases"]]), self.assertRaises(r.ReleaseListError):
+                r.validate_list(clash)
+
+    def test_add_and_pin_refuse_a_tool_id_and_point_to_its_entry(self):
+        registry = {"schema_version": 1, "releases": [group()]}
+        with self.assertRaisesRegex(r.ReleaseListError, "a tool in the demo-kit entry"):
+            r.upsert(registry, entry(id="demo-cmd"))
+        with self.assertRaisesRegex(r.ReleaseListError, "a tool in the demo-kit entry"):
+            r.pin(registry, "demo-cmd")
+        replaced, action = r.upsert(registry, group(tool(), tool(id="new-cmd", released="2026-10-20")))
+        self.assertEqual((action, [t["id"] for t in replaced["releases"][0]["tools"]]), ("replaced", ["demo-cmd", "new-cmd"]))
+        with self.assertRaises(r.ReleaseListError):   # an old entry and a group that now holds it as a tool
+            r.upsert({"schema_version": 1, "releases": [entry(id="demo-cmd")]}, group())
+
+
 class CommandTest(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
@@ -301,6 +374,28 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(code, 2)
         self.assertIn("long dash", err)
         self.assertEqual(before, (self.registry.read_text(), self.readme.read_text()))
+
+    def test_group_lists_its_tools_and_check_needs_their_pages(self):
+        self.call("render")
+        f = self.dir / "entry.json"
+        f.write_text(json.dumps(group()))
+        self.assertEqual(self.call("add", str(f))[0], 0)
+        out = self.call("list")[1].split("\n")
+        self.assertEqual(out[:3], ["2026-10-16  demo-kit                 Demo kit",
+                                   "2026-10-14    demo-cmd               Demo command  (in demo-kit)",
+                                   "2026-10-16    other-cmd              Other command  (in demo-kit)"])
+        code, _, err = self.call("check")
+        self.assertEqual(code, 1)
+        self.assertIn("docs/tools/demo.md, docs/tools/other.md", err)
+        for name in ("demo", "other"):
+            page = self.dir / "docs" / "tools" / f"{name}.md"
+            page.parent.mkdir(parents=True, exist_ok=True)
+            page.write_text("# page\n")
+        self.assertEqual(self.call("check")[0], 0)
+        f.write_text(json.dumps(entry(id="demo-cmd")))
+        code, _, err = self.call("add", str(f))
+        self.assertEqual(code, 2)
+        self.assertIn("a tool in the demo-kit entry", err)
 
     def test_kit_command_is_registered(self):
         from kit import cli

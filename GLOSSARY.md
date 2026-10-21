@@ -50,6 +50,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **control**: A deliberately wrong or scrambled input run through the same check, so that the check is shown able to fail. Examples here are the reverse-depth map, the depth-shuffled volume, a displaced map and a rotated or IAAFT copy.
 
+**control-set threshold**: Ink Lens's threshold for one region: the 99th percentile of the region's own reverse-depth ink map over its papyrus. Only stored-order ink above it is kept, and the region's status compares the share above it with the control's 1 % ([`docs/prereg/2026-10-20-ink-lens-gate.md`](docs/prereg/2026-10-20-ink-lens-gate.md)).
+
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 
 **crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labeled ink, with a 64 pixel inner edge left out (`--inner 64`).
@@ -129,6 +131,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **inference**: Running a trained model on new data to get predictions.
 
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
+
+**Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
 
 **ink label (inklabels)**: A human-drawn mask of where ink is on a segment (`inklabels.zarr`), used for training and scoring.
 
@@ -249,6 +253,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **SAM 2**: Meta's Segment Anything Model 2: segments an object in an image or a video from a click, box or mask, and follows it from frame to frame. `scripts/segzoo/segzoo_sam2.py` treats a cube's slices as frames to follow papyrus sheets ([page](docs/tools/segzoo.md)).
 
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
+
+**Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the scroll center finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 

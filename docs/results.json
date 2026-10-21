@@ -11273,5 +11273,58 @@
    "checks": "bucket runs of the note's two commands gave reports and masks identical to runs on local copies of the same files; tests/test_stackcheck.py plants each defect in a synthetic spiral",
    "limits": "one scroll; the umbilicus is a published line; the ray checks use rays that cross each segment of a pair once; neighbours along a normal are searched up to 600 um at about the same height and angle; the innermost and outermost segments get no missing-sector check"
   }
+ ],
+ "ink_lens_checks": [
+  {
+   "date": "2026-10-20",
+   "source": "scripts/experiments/2026-10-20-ink-lens-gate/results.json",
+   "prereg": "docs/prereg/2026-10-20-ink-lens-gate.md",
+   "tool": "spaces/ink-lens (tools/check_gate.py)",
+   "claim": "Model output: d9v2 with three depth windows on the three PHerc0841 640 px crops (held out from d9v2 and ink_9um, not from Hecate); development windows chosen with the labels, not a blind test",
+   "settings": "d9v2_ft-012000.pth (sha256 50d2ad0e...a9f966), windows 0, 2, 4 of the middle 21 layers, villa 8aa507c12 flat inference, normalisation batched (engine.robust_torch), overlap 0.5, hann, CPU fp32; kit.auc inner 64",
+   "rule": "ink-lens-gate-v1",
+   "crops": {
+    "0841-w00": {
+     "status": "ink",
+     "excess": 15.4345,
+     "threshold": 0.527333,
+     "ink_kept_share": 0.53927,
+     "background_kept_share": 0.03108,
+     "auc_forward_3win": 0.9147,
+     "auc_reverse_3win": 0.5955,
+     "swapped_status": "none",
+     "swapped_excess": 0.0
+    },
+    "0841-ag896": {
+     "status": "ink",
+     "excess": 21.1552,
+     "threshold": 0.490485,
+     "ink_kept_share": 0.52252,
+     "background_kept_share": 0.07064,
+     "auc_forward_3win": 0.8299,
+     "auc_reverse_3win": 0.5606,
+     "swapped_status": "none",
+     "swapped_excess": 0.0
+    },
+    "0841-ag405": {
+     "status": "ink",
+     "excess": 17.6333,
+     "threshold": 0.552445,
+     "ink_kept_share": 0.49663,
+     "background_kept_share": 0.07073,
+     "auc_forward_3win": 0.8392,
+     "auc_reverse_3win": 0.6842,
+     "swapped_status": "none",
+     "swapped_excess": 0.0
+    }
+   },
+   "no_papyrus": "w00 rows and columns 0 to 640: refused by the engine (all zero), so the gate itself was not exercised off the papyrus",
+   "pass": {
+    "labeled_crops": true,
+    "swapped": true,
+    "no_papyrus": true,
+    "all": true
+   }
+  }
  ]
 }
