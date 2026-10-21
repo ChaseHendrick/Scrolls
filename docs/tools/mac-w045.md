@@ -245,6 +245,7 @@ python -m unittest tests.test_repo -v
 
 ## History
 
+- 2026-10-21: Failure modes has the `ink_9um` checkpoint SHA-256 refusal, and the v8in failure shows its log path (`bbecb37`).
 - 2026-10-08: comments corrected: w045 is not held out from `ink_9um`, which trained on its 2.4 um render (`d841e06`).
 - 2026-10-07: Phase 0 support: `MODEL=v8in-1447`, per-model summary and provenance names (`bec6fb9`).
 - 2026-10-07: fp16 is dropped when it is slower than fp32 (`ebd4ae3`).

@@ -178,6 +178,7 @@ Run `python -m unittest tests.test_reader_backends -v`. Tests cover script misma
 
 ## History
 
+- 2026-10-21: the session and checkpoint errors listed in prose are table rows with their causes, and the Tesseract timeout, exit and missing-pack messages are written whole (`bbecb37`).
 - 2026-10-17: working change against `869d621`, explicit per-call local backend selection and validated session switching, capability discovery, Latin/Greek/Hebrew pack discovery, word provenance and negative controls; no new trained model released.
 
 ## Related

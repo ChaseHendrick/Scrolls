@@ -287,6 +287,7 @@ evaluated exactly, and a `--k 2` comparison with selection sessions. All 13 pass
 
 ## History
 
+- 2026-10-21: Failure modes escapes the pipe in `true\|false`, which split its row into extra cells, and adds the `harness2: MESSAGE` prefix row (`bbecb37`).
 - 2026-10-20: optional adapter on branch `claude/harness2`, finishing checkpoint `e042556` (engine, deterministic proposer, judge, tests and this page), reviewed against Harness2 at `1cfe254e8d25b15f37048c3730134686abe60335`.
 - 2026-10-21: recovery bundle and manifest hashes rechecked; public `main` `249096b` merged in; all 13 tests pass again on Python 3.12 and 3.13 with a fresh clone of the pin.
 

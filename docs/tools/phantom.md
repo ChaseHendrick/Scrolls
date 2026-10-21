@@ -290,6 +290,7 @@ python -m unittest tests.test_phantom -v
 
 ## History
 
+- 2026-10-21: the demo runs with `set -euo pipefail`, so a failing step stops it with a nonzero exit code instead of exit 0 behind `tee`; `PhantomDemoScriptTest` checks it (`bbecb37`).
 - 2026-10-07: the demo log and panels; the demo's `calibrate` step uses quality 0.3 and 32 px blocks, since 107 px blocks gave `nan` on 256 px phantoms (`afe8d3c`).
 - 2026-10-16: the demo writes to a fresh `mktemp -d` folder by default instead of `/tmp/phantom-demo` (`da68987`).
 - 2026-10-07: first version: `make`, `stress`, `calibrate`, and `scripts/phantom-demo.sh` (`eeacf6a`).

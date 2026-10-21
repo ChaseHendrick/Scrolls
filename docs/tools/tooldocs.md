@@ -371,6 +371,7 @@ python -m unittest tests.test_tooldocs -v
 
 ## History
 
+- 2026-10-21: the checker compares the bare `python -m kit` usage and command rows, reads shell messages, reads the argparse code of scripts, `spaces/` files and entry points without running it (positional rows, literal defaults, pasted usage blocks), checks option rows of `spaces/` files, and matches messages whole in the What you see column from 9 characters; the pages it flagged were fixed (`bbecb37`).
 - 2026-10-17: a Branch only page whose commit the checked-out branch already holds is reported, so a merged tool's page becomes Current ([PR #104](https://github.com/ChaseHendrick/Scrolls/pull/104)).
 - 2026-10-16: defaults written as the checker expects: an empty string or list is none, and a path inside the checkout is written relative to it (`63ee638`).
 - 2026-10-16: standard v2, the tool-pages rule (hard rule 16), index rows and glossary terms (`29e7e8c`).

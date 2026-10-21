@@ -424,6 +424,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-21: rows for the positional arguments of `estimate`, `engine.py estimate` and `deploy.py`, and every refusal written whole, including `not a PNG`, `cannot read URL: ERROR` and the `demo --size` refusal (`bbecb37`).
 - 2026-10-20: merged in [#138](https://github.com/ChaseHendrick/Scrolls/pull/138) (`aee666a`); deployment held until Chase has Hugging Face PRO (his words in Released above).
 - 2026-10-20: design, preregistration and the gate (`3c2445e`); the engine, client, Space, tests and this page on
   branch `claude/ink-lens`.

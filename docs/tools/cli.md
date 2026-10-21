@@ -244,6 +244,7 @@ python -m unittest tests.test_cli_parser_cache tests.test_packaging tests.test_l
 
 ## History
 
+- 2026-10-21: the usage block and the command table list `start`, `volumeview`, `segzoo`, `routines`, `stale` and `leaderboard`, which they had left out; the checker now compares both (`bbecb37`).
 - 2026-10-17: a command whose output pipe closes early (`python -m kit prizes | head -1`) ends with exit code 1 and no traceback; before, it printed a `BrokenPipeError` traceback (`f3b1ac8`).
 - 2026-10-17: the module docstring's command list names `meshaudit` and `strokenet`, which it had left out (`e7dce03`).
 - 2026-10-16: package version 0.2.0 in `kit/__init__.py`, with `CHANGELOG.md` (`00b0097`).
