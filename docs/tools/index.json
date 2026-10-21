@@ -485,6 +485,150 @@
    ]
   },
   {
+   "id": "claimcheck",
+   "name": "claimcheck",
+   "tagline": "trace every README number to a pinned source",
+   "summary": "Checks that every number in the README's \"Novel findings\" section matches a results unit or repository file pinned by sha256 (or carries a stated reason), and that new results units cite a file; fails when a claim has no source.",
+   "status": "Experimental",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Records and provenance",
+   "commands": [
+    "python -m kit.claimcheck"
+   ],
+   "imports": [
+    "from kit import claimcheck"
+   ],
+   "code": [
+    {
+     "path": "kit/claimcheck.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_claimcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "2601c1f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`claimcheck`",
+    "Status": "Experimental",
+    "Kind": "kit module",
+    "Area": "Records and provenance",
+    "Run": "`python -m kit.claimcheck`, `from kit import claimcheck`",
+    "Code": "`kit/claimcheck.py`",
+    "Tests": "`tests/test_claimcheck.py`",
+    "Needs": "Python 3.10 or newer, standard library only; this checkout's `README.md`, `docs/results.json` and the files the ledger cites",
+    "Runs on": "CPU; `check` on this repository took 0.8 s on the 4-core cloud container (21 Oct 2026)",
+    "Network": "None",
+    "Writes": "Nothing for `items`, `trace`, `suggest` and `check`. `add --write`, `pin --write` and `results --write` rewrite `docs/claims/sources.json` (atomically, through `sources.tmp`)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from 21 Oct 2026",
+    "Checked": "2026-10-21 against commit `2601c1f`"
+   },
+   "page": "docs/tools/claimcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 64,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 70,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 159,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 181,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 188,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 209,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 224,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 232,
+     "end_line": 235,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 236,
+     "end_line": 245,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 246,
+     "end_line": 249,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 250,
+     "end_line": 253,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 254,
+     "end_line": 259,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "cli",
    "name": "cli",
    "tagline": "the kit command line (python -m kit) and its list of commands",
