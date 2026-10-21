@@ -1,0 +1,93 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "overlap",
+ "repo": "public",
+ "inputs": {
+  "mesh_a": {
+   "from": "segment",
+   "format": [
+    "tifxyz"
+   ],
+   "label": "segment A (the active segment)"
+  },
+  "mesh_b": {
+   "from": "path",
+   "format": [
+    "tifxyz"
+   ],
+   "label": "segment B, in the same volume",
+   "bind": "bridge"
+  }
+ },
+ "params": {
+  "voxel_um": {
+   "type": "number",
+   "from": "volume.voxel_um",
+   "help": "voxel size of the mesh coordinates (auto: from the volume)"
+  },
+  "within": {
+   "type": "integer",
+   "default": 12,
+   "help": "gap in voxels that counts as the same sheet"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit",
+   "overlap",
+   "{in.mesh_a}",
+   "{in.mesh_b}",
+   "--voxel-um",
+   "{param.voxel_um}",
+   "--within",
+   "{param.within}",
+   "--json"
+  ],
+  "stdout": "{run}/overlap.json",
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "report": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/overlap.json",
+   "label": "mesh gaps between the two traces"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 60,
+  "disk_mb": 10,
+  "ram_gb": 4,
+  "scales_with": "mesh vertices"
+ },
+ "safety": {
+  "model_output": false,
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "vc3d": {
+  "menu": "segments",
+  "result": "report"
+ },
+ "facts": {
+  "title": "overlap",
+  "tagline": "do two segments trace the same papyrus, and do their ink maps agree there",
+  "status": "Current",
+  "kind": [
+   "kit command",
+   "kit module"
+  ],
+  "area": "Surfaces and tracing",
+  "page": "docs/tools/overlap.md",
+  "go_ahead": false,
+  "network": "None",
+  "license": null,
+  "checked": "2026-10-16 63753fa",
+  "success": "Exit code 0, and for labels a non-null `labels.dice`.",
+  "not_a_pass": "a label Dice or a map agreement without its displaced null; `collate` without both control maps; a bin whose `map` is null; reading `same_sheet_share` under 0.1 as proof of two sheets (0.1 is a fixed cut, not a test); taking a gap bin as a normal offset; agreement of maps the model trained on (the team's PHerc0841 maps are probably in-sample).",
+  "never": "Call two agreeing ink maps a reading or say letters were found; use either command's result to say which trace is right; publish collate results on target-scroll meshes."
+ }
+}

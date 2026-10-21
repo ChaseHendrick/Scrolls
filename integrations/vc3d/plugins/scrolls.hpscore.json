@@ -1,0 +1,35 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.hpscore",
+ "name": "Letter-scale score (hpscore) against the segment's labels",
+ "description": "letter-scale score of an ink map against a segment's labels",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "hpscore",
+  "--ink-overlay",
+  "{ink_overlay}",
+  "--segment",
+  "{segment}",
+  "--volume",
+  "{volume}",
+  "--param",
+  "voxel_um={input:voxel_um}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "voxel_um",
+   "label": "map pixel size in micrometers (auto: from the volume)",
+   "default": "auto"
+  }
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/hpscore.json"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hpscore.md"
+}

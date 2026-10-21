@@ -1,0 +1,31 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.stackcheck",
+ "name": "stackcheck",
+ "description": "check consecutive segments of one scroll against its umbilicus, from geometry alone",
+ "menu": "Scrolls/segments",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "stackcheck",
+  "--input",
+  "segments={input:segments}",
+  "--umbilicus",
+  "{umbilicus}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "segments",
+   "label": "tifxyz folders of one scroll, inner to outer (segment ids, inner to outer, separated by commas)",
+   "default": ""
+  }
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/stackcheck.json"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/stackcheck.md"
+}

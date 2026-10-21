@@ -1,0 +1,98 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "stackcheck",
+ "repo": "public",
+ "inputs": {
+  "segments": {
+   "from": "segments",
+   "format": [
+    "tifxyz"
+   ],
+   "label": "tifxyz folders of one scroll, inner to outer",
+   "bind": "bridge"
+  },
+  "umbilicus": {
+   "from": "umbilicus",
+   "format": [
+    "umbilicus-json"
+   ],
+   "label": "the scroll's umbilicus JSON"
+  }
+ },
+ "params": {
+  "stride": {
+   "type": "integer",
+   "default": 1,
+   "help": "use every Nth grid row and column"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit",
+   "stackcheck",
+   "{in.segments}",
+   "--umbilicus",
+   "{in.umbilicus}",
+   "--stride",
+   "{param.stride}",
+   "--cache",
+   "{run}/cache",
+   "--out",
+   "{run}/stackcheck.json",
+   "--flags",
+   "{run}/flags.npz"
+  ],
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "report": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/stackcheck.json",
+   "label": "order, gaps, skipped windings, overlaps"
+  },
+  "flags": {
+   "kind": "report",
+   "format": "npz",
+   "path": "{run}/flags.npz",
+   "required": false,
+   "label": "per-vertex flag masks"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 120,
+  "disk_mb": 50,
+  "ram_gb": 4,
+  "scales_with": "segments and vertices"
+ },
+ "safety": {
+  "model_output": false,
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "vc3d": {
+  "menu": "segments",
+  "result": "report"
+ },
+ "facts": {
+  "title": "stackcheck",
+  "tagline": "check consecutive segments of one scroll against its umbilicus, from geometry alone",
+  "status": "Current",
+  "kind": [
+   "kit command",
+   "kit module"
+  ],
+  "area": "Surfaces and tracing",
+  "page": "docs/tools/stackcheck.md",
+  "go_ahead": false,
+  "network": "None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog`",
+  "license": null,
+  "checked": "2026-10-16 d9eaf42",
+  "success": "Exit code 0 means clean; 1 is a completed run that flagged something or could not check something; only 2 means it failed.",
+  "not_a_pass": "exit 1 with an empty `summary.flagged` (something was not checked); a clean report whose `not_covered` names the segment you care about (the innermost and outermost); a clean run with `--max-normal-um` or `--coincide-um` changed until nothing flags; any report on a stack given out of order or with a winding left out.",
+  "never": "Say a flag shows which segment left its sheet, or anything about ink or text; run it on segments of different volumes without `--transform`; treat exit 1 as a crash."
+ }
+}

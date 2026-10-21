@@ -1,0 +1,40 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.overlap",
+ "name": "overlap",
+ "description": "do two segments trace the same papyrus, and do their ink maps agree there",
+ "menu": "Scrolls/segments",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "overlap",
+  "--segment",
+  "{segment}",
+  "--input",
+  "mesh_b={input:mesh_b}",
+  "--volume",
+  "{volume}",
+  "--param",
+  "voxel_um={input:voxel_um}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "mesh_b",
+   "label": "segment B, in the same volume (a segment id)",
+   "default": ""
+  },
+  {
+   "name": "voxel_um",
+   "label": "voxel size of the mesh coordinates (auto: from the volume)",
+   "default": "auto"
+  }
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/overlap.json"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/overlap.md"
+}

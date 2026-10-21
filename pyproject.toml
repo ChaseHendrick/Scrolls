@@ -48,8 +48,9 @@ Source = "https://github.com/ChaseHendrick/Scrolls"
 packages = ["kit"]
 
 [tool.setuptools.package-data]
-# Everything kit reads from its own folder at run time: the prize snapshots and the letter-weights registry.
-kit = ["data/*.json", "data/starter.html", "data/starter.js"]
+# Everything kit reads from its own folder at run time: the prize snapshots, the letter-weights registry and the tool
+# manifests (kit/data/registry/, read by python -m kit tools).
+kit = ["data/*.json", "data/registry/*.json", "data/starter.html", "data/starter.js"]
 
 [tool.setuptools.dynamic]
 version = { attr = "kit.__version__" }

@@ -1,0 +1,23 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.inkfilter",
+ "name": "Inkfilter map of the active segment, with its reverse-depth control",
+ "description": "fixed image filters for surface volumes. Model output, not a reading.",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "inkfilter",
+  "--segment",
+  "{segment}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "result": {
+  "kind": "ink_overlay",
+  "path": "{output}/inkfilter.tif"
+ },
+ "license": "Original code: [Apache-2.0](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/LICENSE). Referenced data and methods keep their own licenses; data and upstream implementations are not bundled",
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/inkfilter.md"
+}

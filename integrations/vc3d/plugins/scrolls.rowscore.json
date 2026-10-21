@@ -1,0 +1,33 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.rowscore",
+ "name": "Text-row triage score (rowscore) of the selected ink map",
+ "description": "text-row periodicity triage score for ink maps",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "rowscore",
+  "--ink-overlay",
+  "{ink_overlay}",
+  "--volume",
+  "{volume}",
+  "--param",
+  "voxel_um={input:voxel_um}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "voxel_um",
+   "label": "map pixel size in micrometers (auto: from the volume)",
+   "default": "auto"
+  }
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/rowscore.json"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/rowscore.md"
+}

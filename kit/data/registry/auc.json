@@ -1,0 +1,126 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "auc",
+ "repo": "public",
+ "inputs": {
+  "prediction": {
+   "from": "segment.overlay",
+   "format": [
+    "tiff",
+    "npy"
+   ],
+   "role": "forward",
+   "label": "the ink map on the segment's 9 um surface grid"
+  },
+  "control": {
+   "from": "segment.overlay.reverse",
+   "pair_of": "prediction",
+   "format": [
+    "tiff",
+    "npy"
+   ],
+   "required": false,
+   "role": "control:reverse",
+   "label": "its reverse-depth map"
+  },
+  "labels": {
+   "from": "segment.labels",
+   "format": [
+    "zarr"
+   ],
+   "label": "the segment's inklabels.zarr"
+  },
+  "mask": {
+   "from": "segment.mask",
+   "format": [
+    "zarr"
+   ],
+   "label": "the segment's supervision zarr"
+  }
+ },
+ "params": {
+  "bootstrap": {
+   "type": "integer",
+   "default": 0,
+   "help": "block-bootstrap draws for a 95 % interval (300 is plenty; 0 for none)"
+  },
+  "inner": {
+   "type": "integer",
+   "default": 0,
+   "help": "pixels left out at every edge"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit",
+   "auc",
+   "{in.prediction}",
+   "--labels",
+   "{in.labels}",
+   "--mask",
+   "{in.mask}",
+   "--bootstrap",
+   "{param.bootstrap}",
+   "--inner",
+   "{param.inner}",
+   "--json"
+  ],
+  "optional_args": {
+   "control": [
+    "--control",
+    "{in.control}"
+   ]
+  },
+  "stdout": "{run}/auc.json",
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "report": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/auc.json",
+   "label": "forward and control AUC"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 60,
+  "disk_mb": 10,
+  "ram_gb": 4,
+  "scales_with": "map pixels"
+ },
+ "safety": {
+  "model_output": false,
+  "readout": true,
+  "controls": [
+   "control"
+  ],
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "vc3d": {
+  "menu": "segment",
+  "label": "AUC of the selected ink map against the segment's labels",
+  "result": "report"
+ },
+ "facts": {
+  "title": "auc",
+  "tagline": "score an ink map against a segment's published labels",
+  "status": "Current",
+  "kind": [
+   "kit command",
+   "kit module"
+  ],
+  "area": "Scoring and controls",
+  "page": "docs/tools/auc.md",
+  "go_ahead": false,
+  "network": "None",
+  "license": null,
+  "checked": "2026-10-16 d9eaf42",
+  "success": "Exit code 0 and a non-null `forward.auc`.",
+  "not_a_pass": "A forward AUC without its control; a map less than 0.10 above its control; a ranking whose `--compare` interval includes 0; any score on a segment the model trained on.",
+  "never": "Call an AUC a reading or say letters were found; call a score on w035, or on w045 for `ink_9um` and its fine-tunes, a generalization result."
+ }
+}

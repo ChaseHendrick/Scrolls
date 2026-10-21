@@ -1,0 +1,24 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.auc",
+ "name": "AUC of the selected ink map against the segment's labels",
+ "description": "score an ink map against a segment's published labels",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "auc",
+  "--ink-overlay",
+  "{ink_overlay}",
+  "--segment",
+  "{segment}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/auc.json"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/auc.md"
+}

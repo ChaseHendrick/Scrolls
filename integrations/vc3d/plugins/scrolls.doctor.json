@@ -1,0 +1,20 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.doctor",
+ "name": "Check this machine (kit doctor)",
+ "description": "check whether this machine can run villa's First Letters workflow",
+ "menu": "Scrolls/tools",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "doctor",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/doctor.txt"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/doctor.md"
+}

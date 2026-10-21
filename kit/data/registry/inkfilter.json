@@ -1,0 +1,109 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "inkfilter",
+ "repo": "public",
+ "notes": "The released package (scrolls-inkfilter on its branch) installed in kit's Python or on PATH; numpy and tifffile for TIFF stacks. Fixed filters, no weights. AutoPipeline's ink stage can use it as backend reg:inkfilter.",
+ "inputs": {
+  "volume": {
+   "from": "segment.render",
+   "format": [
+    "tif-stack",
+    "zarr",
+    "npy"
+   ],
+   "label": "the active segment's surface volume (layers/ or a zarr), shape Z, H, W"
+  },
+  "crop": {
+   "from": "region",
+   "space": "segment_canvas",
+   "required": false,
+   "label": "a box on the segment's canvas (from VC3D's focus region or --crop)"
+  }
+ },
+ "run": {
+  "argv": [
+   "scrolls-inkfilter",
+   "{in.volume}",
+   "--output",
+   "{run}/inkfilter.tif"
+  ],
+  "optional_args": {
+   "crop": [
+    "--crop",
+    "{in.crop.y0}",
+    "{in.crop.y1}",
+    "{in.crop.x0}",
+    "{in.crop.x1}"
+   ]
+  },
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "map": {
+   "kind": "overlay",
+   "format": "tiff-float32",
+   "path": "{run}/inkfilter.tif",
+   "role": "forward",
+   "on": "volume",
+   "label": "filter map (forward depth order)"
+  },
+  "reverse": {
+   "kind": "overlay",
+   "format": "tiff-float32",
+   "path": "{run}/inkfilter_reverse.tif",
+   "role": "control:reverse",
+   "on": "volume",
+   "label": "reverse-depth control"
+  },
+  "record": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/inkfilter.json",
+   "label": "the run's record: recipe, shape, crop"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 300,
+  "disk_mb": 1500,
+  "ram_gb": 8,
+  "scales_with": "surface-volume voxels; two float32 maps of the canvas (a crop is far smaller); real-data time not measured yet"
+ },
+ "safety": {
+  "model_output": true,
+  "controls": [
+   "reverse"
+  ],
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "pipeline": {
+  "stage": "ink",
+  "contract": "ink-command",
+  "input": "volume",
+  "reverse": "pair",
+  "pair_output": "reverse"
+ },
+ "vc3d": {
+  "menu": "segment",
+  "label": "Inkfilter map of the active segment, with its reverse-depth control",
+  "result": "map"
+ },
+ "facts": {
+  "title": "inkfilter",
+  "tagline": "fixed image filters for surface volumes",
+  "status": "Branch only",
+  "kind": [
+   "package"
+  ],
+  "area": "Ink maps and models",
+  "page": "docs/tools/inkfilter.md",
+  "go_ahead": false,
+  "network": "None for filtering, the synthetic demo or saved-score aggregation. Installing dependencies contacts the configured Python package index",
+  "license": "Original code: [Apache-2.0](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/LICENSE). Referenced data and methods keep their own licenses; data and upstream implementations are not bundled",
+  "checked": "2026-10-17 4953f17851aa9b2ffd3c26c86e85ecdabd659ca6",
+  "success": null,
+  "not_a_pass": null,
+  "never": "Call a filter map a reading, omit an unfavorable control, present the confirmation as unseen-scroll or trained-reader superiority, or publish a possible discovery or target-scroll map."
+ }
+}

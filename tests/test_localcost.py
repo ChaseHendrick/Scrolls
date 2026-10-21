@@ -64,6 +64,34 @@ class LocalCostTest(unittest.TestCase):
         self.assertIsNotNone(item["cpu_s"])
         self.assertAlmostEqual(item["kwh"], 100 * item["wall_s"] / 3.6e6, places=5)
 
+    def test_run_passes_cwd_env_and_output_files(self):
+        work = Path(self.tmp.name) / "work"
+        work.mkdir()
+        out = Path(self.tmp.name) / "out.txt"
+        script = "import os; print(os.getcwd()); print(os.environ.get('KIT_T'))"
+        with open(out, "w") as fh:
+            code, item = localcost.run("t1", [sys.executable, "-c", script], root=self.root, rate=0.1, watts=10,
+                                       cwd=str(work), env=dict(os.environ, KIT_T="seen"), stdout=fh)
+        self.assertEqual(code, 0)
+        lines = out.read_text().split()
+        self.assertEqual(Path(lines[0]).resolve(), work.resolve())
+        self.assertEqual(lines[1], "seen")
+        self.assertEqual(item["cwd"], str(work))
+        self.assertNotIn("timed_out", item)
+
+    def test_run_timeout_kills_and_records_124(self):
+        code, item = localcost.run("t1", [sys.executable, "-c", "import time; time.sleep(30)"], root=self.root,
+                                   rate=0.1, watts=10, timeout=0.5)
+        self.assertEqual(code, 124)
+        self.assertTrue(item["timed_out"])
+        self.assertEqual(item["timeout_s"], 0.5)
+        self.assertLess(item["wall_s"], 20)
+        self.assertEqual(ledger.load("t1", self.root)["costs"][-1]["local"]["exit_code"], 124)
+
+    def test_run_refuses_a_negative_timeout(self):
+        with self.assertRaises(localcost.CostError):
+            localcost.run("t1", [sys.executable, "-c", "pass"], root=self.root, rate=0.1, watts=10, timeout=-1)
+
     def test_backfill_marks_estimated(self):
         f = Path(self.tmp.name) / "b.json"
         f.write_text(json.dumps([{"what": "a", "wall_s": 3600, "device": "apple-silicon-cpu"},

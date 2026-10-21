@@ -183,8 +183,11 @@ def _utc():
     return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
 
-def run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=None):
-    """Run a child, record its cost, and return its shell-compatible exit code and entry."""
+def run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=None, cwd=None, env=None,
+        timeout=None, stdout=None, stderr=None):
+    """Run a child, record its cost, and return its shell-compatible exit code and entry. cwd, env, stdout and
+    stderr go to the child as subprocess takes them; a child still running after timeout seconds is killed and
+    recorded with exit code 124 and timed_out true (as timeout(1) reports it)."""
     if not command:
         raise CostError("no command given after --")
     if not isinstance(command, (list, tuple)) or not all(isinstance(x, (str, os.PathLike)) for x in command):
@@ -197,8 +200,13 @@ def run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=N
     started, t0 = _utc(), time.monotonic()
     before = resource.getrusage(resource.RUSAGE_CHILDREN) if resource is not None else None
     launch_error = None
+    timed_out = False
+    if timeout is not None:
+        timeout = _nonnegative(timeout, "timeout")
     try:
-        raw_code = subprocess.call(command)
+        raw_code = subprocess.call(command, cwd=cwd, env=env, timeout=timeout, stdout=stdout, stderr=stderr)
+    except subprocess.TimeoutExpired:
+        raw_code, timed_out = 124, True
     except KeyboardInterrupt:
         raw_code = 130
     except OSError as exc:
@@ -216,6 +224,11 @@ def run(slug, command, root=ledger.DEFAULT_ROOT, device=None, watts=None, rate=N
         item["raw_returncode"] = raw_code
     if launch_error is not None:
         item["launch_error"] = launch_error
+    if timed_out:
+        item["timed_out"] = True
+        item["timeout_s"] = timeout
+    if cwd is not None:
+        item["cwd"] = os.fspath(cwd)
     try:
         append(slug, item, root)
     except (OSError, ValueError, KeyError, TypeError, ledger.LedgerError, CostError) as exc:

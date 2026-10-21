@@ -1,0 +1,22 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.view",
+ "name": "Side-by-side page of the selected ink map and its control",
+ "description": "one offline HTML page that overlays several ink maps and the labels",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "view",
+  "--ink-overlay",
+  "{ink_overlay}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/view.html"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/view.md"
+}

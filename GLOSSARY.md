@@ -90,6 +90,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **flattening**: Mapping a traced 3D surface onto a flat plane with as little distortion as possible.
 
+**format gate**: The tool registry's check of every output a run declares, with its format's checker (tifxyz, umbilicus, VC3D project, point collection, an overlay against the segment's canvas, OME-Zarr), before anything is opened in VC3D or handed to AutoPipeline; a failure is exit 3 ([page](docs/tools/toolreg.md)).
+
 **fp16 (half precision)**: Storing and computing numbers with 16 bits instead of the usual 32 (fp32). It can make GPU inference faster at a small cost in accuracy. `V8IN_FP16=1` turns it on for v8in on MPS, where it is kept only if the crop check still passes and it is faster.
 
 **fragment**: A detached piece of papyrus, often with visible ink, used as ground truth for ink models.
@@ -296,7 +298,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
 
+**tool manifest**: One JSON file per tool in `kit/data/registry/` (schema `scrolls-tool/1`) saying what the tool takes and where each input binds from, its command, its outputs, its compute and its safety rules, with a facts block copied from its tool page. The tool registry reads it ([page](docs/tools/toolreg.md)).
+
 **tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
+
+**tool registry**: `python -m kit tools` ([page](docs/tools/toolreg.md)): every tool manifest, and the three front doors that read them: the command line, VC3D's plugin host (`integrations/vc3d/plugins/`) and AutoPipeline's stages. It binds a tool's inputs from what VC3D has selected, runs it through the safety gates and the local cost ledger, checks that it wrote only inside its run folder, and writes `vc3d-result.json`.
 
 **trace (tracer)**: A traced surface, and the program that grows it. villa's tracer grows a surface from a seed.
 
@@ -319,6 +325,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 ## V
 
 **v8in**: A community ink model (`YoussefMoNader/ink-8um-v8in`, released 28 September 2026). It never saw PHerc0139 w045, which makes w045 a held-out test for it.
+
+**vc3d-plugin/1**: The manifest schema of VC3D's plugin host (villa `apps/VC3D/plugins/`, on the vc3d-plugins lane of the combined VC3D suite): one program, arguments with placeholders for what VC3D has selected, and the result VC3D loads. `python -m kit tools export-vc3d` writes one per tool VC3D can start.
+
+**vc3d-result.json**: The last file of a tool registry run (schema `vc3d-result/1`): status, controls verdict, outputs with hashes, the page's rules for reading them and the allow-listed VC3D calls that open them.
 
 **VC3D (Volume Cartographer 3D)**: The main application for viewing CT volumes and tracing, rendering and flattening surfaces. It is part of villa.
 

@@ -1,0 +1,119 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "hpscore",
+ "repo": "public",
+ "inputs": {
+  "prediction": {
+   "from": "segment.overlay",
+   "format": [
+    "tiff",
+    "npy"
+   ],
+   "role": "forward",
+   "label": "the ink map on the segment's 9 um surface grid"
+  },
+  "control": {
+   "from": "segment.overlay.reverse",
+   "pair_of": "prediction",
+   "format": [
+    "tiff",
+    "npy"
+   ],
+   "required": false,
+   "role": "control:reverse",
+   "label": "its reverse-depth map"
+  },
+  "labels": {
+   "from": "segment.labels",
+   "format": [
+    "zarr"
+   ],
+   "label": "the segment's inklabels.zarr"
+  },
+  "mask": {
+   "from": "segment.mask",
+   "format": [
+    "zarr"
+   ],
+   "label": "the segment's supervision zarr"
+  }
+ },
+ "params": {
+  "voxel_um": {
+   "type": "number",
+   "from": "volume.voxel_um",
+   "help": "map pixel size in micrometers (auto: from the volume)"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit",
+   "hpscore",
+   "{in.prediction}",
+   "--labels",
+   "{in.labels}",
+   "--mask",
+   "{in.mask}",
+   "--voxel-um",
+   "{param.voxel_um}",
+   "--json"
+  ],
+  "optional_args": {
+   "control": [
+    "--control",
+    "{in.control}"
+   ]
+  },
+  "stdout": "{run}/hpscore.json",
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "report": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/hpscore.json",
+   "label": "letter-scale correlation and its control"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 60,
+  "disk_mb": 10,
+  "ram_gb": 4,
+  "scales_with": "map pixels"
+ },
+ "safety": {
+  "model_output": false,
+  "readout": true,
+  "controls": [
+   "control"
+  ],
+  "paid_compute": "never",
+  "network": "none"
+ },
+ "vc3d": {
+  "menu": "segment",
+  "label": "Letter-scale score (hpscore) against the segment's labels",
+  "result": "report"
+ },
+ "facts": {
+  "title": "hpscore",
+  "tagline": "letter-scale score of an ink map against a segment's labels",
+  "status": "Current",
+  "kind": [
+   "kit command",
+   "kit module"
+  ],
+  "area": "Scoring and controls",
+  "page": "docs/tools/hpscore.md",
+  "go_ahead": false,
+  "network": "None",
+  "license": null,
+  "checked": "2026-10-16 29e7e8c",
+  "success": "Exit code 0 and a non-null, non-NaN `forward.hp_r`.",
+  "not_a_pass": "A forward `hp_r` with no control; a forward `hp_r` at or below `control.hp_r` or `forward.null_max_abs`; a comparison of two maps made at different blur; any comparison with ShribyrLabs' numbers; a score on a segment the model trained on; a map of logits (negatives are left out).",
+  "never": "Call a letter-scale score a reading or say letters were found; treat it as a legibility bar; pass a `--voxel-um` other than the map's pixel size."
+ }
+}

@@ -3,7 +3,8 @@
   python -m kit.tooldocs check [--page ID ...] [--json]   every page, the index and coverage, or only the pages
                                              named (quick, while you write); exit 1 on any problem. A unit test
                                              runs the full check.
-  python -m kit.tooldocs index               rewrite the generated table in docs/tools/README.md and docs/tools/index.json
+  python -m kit.tooldocs index               rewrite the generated table in docs/tools/README.md, docs/tools/index.json
+                                             and the facts block of each tool manifest in kit/data/registry/
   python -m kit.tooldocs list [--json]       every tool: id, status, area, how to run it, one-line summary
   python -m kit.tooldocs show ID [--section NAME | --field NAME]   one page, one of its sections or one field
   python -m kit.tooldocs new ID --kind K --area A [--command "CMD [ACTION]" ...] [--code PATH ...] [--status S]
@@ -18,7 +19,8 @@ the For agents labels, the claim label, dated History bullets with a commit or l
 commit and link it names exists, that every option, positional argument and default of each kit command it runs
 matches the parser, that every public function, error message and environment variable of the code it names is on
 the page, and that every kit module, script, command, release, skill and workflow has a page (docs/tools/pending.json
-lists pages still to be written; it can only shrink).
+lists pages still to be written; it can only shrink). When kit/data/registry/ exists, check also runs the tool
+registry's check (kit/toolreg.py): every manifest against its page and the code, and every runnable tool covered.
 
 Standard library only. Scrolls-private carries a copy of this module; keep the two the same.
 """
@@ -1185,7 +1187,20 @@ def check_all(root=ROOT, page_ids=None, commands=None):
     index_json = pages_dir / "index.json"
     if not index_json.exists() or index_json.read_text(encoding="utf-8") != render_json(pages, root, ctx.kind):
         problems.append("docs/tools/index.json is out of date: run python -m kit.tooldocs index")
+    problems += registry_problems(root, pages, commands)
     return problems
+
+
+def registry_problems(root, pages, commands):
+    """The tool registry's problems (kit/toolreg.py: each manifest in kit/data/registry/ against its page), when
+    this kit has a registry."""
+    if not (Path(root) / "kit" / "data" / "registry").is_dir():
+        return []
+    try:
+        from . import toolreg
+    except ImportError as exc:
+        return [f"kit/data/registry/ exists but kit/toolreg.py cannot be imported: {exc}"]
+    return toolreg.check(root, commands=commands, pages={p.id: p for p in pages})
 
 
 def write_index(root=ROOT):
@@ -1198,6 +1213,9 @@ def write_index(root=ROOT):
         raise ValueError("docs/tools/README.md has no generated block; refusing to overwrite its text")
     index_md.write_text(render_index(pages, current), encoding="utf-8")
     (pages_dir / "index.json").write_text(render_json(pages, root, repo_kind(root)), encoding="utf-8")
+    if (root / "kit" / "data" / "registry").is_dir():
+        from . import toolreg
+        toolreg.write_facts(root)      # each manifest's facts block, copied from its page
     return len(pages)
 
 

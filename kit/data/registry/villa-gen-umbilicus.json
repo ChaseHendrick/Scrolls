@@ -1,0 +1,13 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "villa-gen-umbilicus",
+ "repo": "community",
+ "kind": "native",
+ "title": "villa's umbilicus estimator from normal grids (vc_gen_umbilicus)",
+ "native": {
+  "program": "vc_gen_umbilicus",
+  "vc3d_action": "VC3D's umbilicus tools",
+  "source": "ScrollPrize/villa volume-cartographer/apps/src/vc_gen_umbilicus.cpp (GPL-3.0; called, never copied)"
+ },
+ "notes": "Listed so the command line and agents see villa's own tools; the registry never runs them. VC3D runs them from its own menus, so no plugin item duplicates them, and AutoPipeline keeps them as its default backends."
+}

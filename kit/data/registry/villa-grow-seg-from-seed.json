@@ -1,0 +1,13 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "villa-grow-seg-from-seed",
+ "repo": "community",
+ "kind": "native",
+ "title": "villa's surface tracer from a seed (vc_grow_seg_from_seed)",
+ "native": {
+  "program": "vc_grow_seg_from_seed",
+  "vc3d_action": "VC3D's seeding and growth tools",
+  "source": "ScrollPrize/villa volume-cartographer/apps/src/vc_grow_seg_from_seed.cpp (GPL-3.0; called, never copied)"
+ },
+ "notes": "Listed so the command line and agents see villa's own tools; the registry never runs them. VC3D runs them from its own menus, so no plugin item duplicates them, and AutoPipeline keeps them as its default backends."
+}

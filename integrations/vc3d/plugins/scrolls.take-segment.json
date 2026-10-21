@@ -1,0 +1,35 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.take-segment",
+ "name": "Open run output as segment",
+ "description": "One checked output of a finished Scrolls tool run (status ok, format gate passed, sha256 unchanged), copied into this run's folder so VC3D loads it: controls, second outputs and AutoPipeline surfaces.",
+ "menu": "Scrolls/Open run output",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "take",
+  "segment",
+  "--run",
+  "{input:run}",
+  "--output",
+  "{input:output}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "run",
+   "label": "run folder (empty: the newest finished run)",
+   "default": ""
+  },
+  {
+   "name": "output",
+   "label": "output name (empty: the first that fits)",
+   "default": ""
+  }
+ ],
+ "result": {
+  "kind": "segment",
+  "path": "{output}/segment"
+ }
+}

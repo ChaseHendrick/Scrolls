@@ -1,0 +1,13 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "villa-flatten",
+ "repo": "community",
+ "kind": "native",
+ "title": "villa's surface flattener (vc_flatten)",
+ "native": {
+  "program": "vc_flatten",
+  "vc3d_action": "VC3D's flatten action on a segment",
+  "source": "ScrollPrize/villa volume-cartographer/apps/src/vc_flatten.cpp (GPL-3.0; called, never copied)"
+ },
+ "notes": "Listed so the command line and agents see villa's own tools; the registry never runs them. VC3D runs them from its own menus, so no plugin item duplicates them, and AutoPipeline keeps them as its default backends."
+}

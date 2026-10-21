@@ -1,0 +1,43 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.verify",
+ "name": "verify",
+ "description": "check that two ink maps of the same input agree, with a control",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "verify",
+  "--input",
+  "reference={input:reference}",
+  "--input",
+  "candidate={input:candidate}",
+  "--input",
+  "control={input:control}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "reference",
+   "label": "reference map, e.g. the CPU run (an ink detection label)",
+   "default": ""
+  },
+  {
+   "name": "candidate",
+   "label": "map to check, e.g. the MPS run (an ink detection label)",
+   "default": ""
+  },
+  {
+   "name": "control",
+   "label": "a map that must not agree, e.g. the reverse-depth output (an ink detection label)",
+   "default": ""
+  }
+ ],
+ "result": {
+  "kind": "file",
+  "path": "{output}/verify.json"
+ },
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/verify.md"
+}

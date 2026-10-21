@@ -4,7 +4,7 @@ Check this page before you research or write anything. Each topic has one home. 
 
 To search everything at once: `grep -rli "your words" docs/ README.md AGENTS.md`. Private plans, target-scroll work and submission material are not in this repository; they live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required), which has its own index.
 
-Updated 18 October 2026.
+Updated 21 October 2026.
 
 ## Where things stand
 
@@ -46,6 +46,7 @@ Updated 18 October 2026.
 | --- | --- | --- |
 | Every tool, one reference page each: options with defaults, inputs, outputs, failures, checks and rules for agents | [`tools/README.md`](tools/README.md) (generated index; [`tools/index.json`](tools/index.json) for agents) | `python -m kit.tooldocs list`; [`TOOL-DOCS.md`](TOOL-DOCS.md) |
 | Scrolls Starter: local setup check, synthetic practice and reader command builder | [`tools/starter.md`](tools/starter.md) | [`start-here.md`](start-here.md) |
+| Using every tool from VC3D, the command line or AutoPipeline: the tool registry, its manifests, VC3D plugin manifests and safety gates | [`../integrations/vc3d/README.md`](../integrations/vc3d/README.md) (Use your tools from VC3D) | [`tools/toolreg.md`](tools/toolreg.md), `python -m kit tools list` |
 | What villa does and what `kit/` adds | [`engine.md`](engine.md) | [`MAP.md`](MAP.md), the repository map |
 | The scroll pipeline in plain words | [`pipeline.md`](pipeline.md) | |
 | AutoPipeline reference: commands, settings, environment, stages, cost logging, agent rules (the released package, 0.1.5, lives on branch `submission/progress-2026-10-fix5`) | [`autopipeline/README.md`](autopipeline/README.md) | [`autopipeline/AGENTS.md`](autopipeline/AGENTS.md) |

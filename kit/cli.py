@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
+"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo,tools}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -851,6 +851,11 @@ CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "l
                    "scrolls-letterdemo": "letterdemo", "scrolls-start": "start"}
 
 
+def cmd_tools(args):
+    from . import toolreg
+    return toolreg.cli(args)
+
+
 def cmd_strokenet(args):
     try:
         import numpy as np
@@ -1223,6 +1228,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import volumeview
     volumeview.add_arguments(p)
     p.set_defaults(func=cmd_volumeview)
+
+    p = sub.add_parser("tools", help="the tool registry: every tool's manifest, run from the command line, VC3D's "
+                                     "plugin host or AutoPipeline (kit/toolreg.py)")
+    from . import toolreg as _toolreg
+    _toolreg.add_arguments(p)
+    p.set_defaults(func=cmd_tools)
 
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
                                       "MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists")

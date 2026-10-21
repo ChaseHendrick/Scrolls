@@ -8345,6 +8345,189 @@
    ]
   },
   {
+   "id": "toolreg",
+   "name": "toolreg",
+   "tagline": "one registry of tools for the command line, VC3D and AutoPipeline",
+   "summary": "`python -m kit tools` reads one manifest per tool (what it takes, what it writes, its command and its safety rules) and runs it the same way from the command line, from VC3D's plugin host or as an AutoPipeline backend, with a write audit and a VC3D handoff.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit tools list",
+    "python -m kit tools show",
+    "python -m kit tools check",
+    "python -m kit tools availability",
+    "python -m kit tools selection",
+    "python -m kit tools plan",
+    "python -m kit tools run",
+    "python -m kit tools confirm",
+    "python -m kit tools take",
+    "python -m kit tools open",
+    "python -m kit tools exec",
+    "python -m kit tools export-vc3d"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/toolreg.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/registry/",
+     "symbols": []
+    },
+    {
+     "path": "integrations/vc3d/",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_tools"
+     ]
+    },
+    {
+     "path": "kit/tooldocs.py",
+     "symbols": [
+      "registry_problems",
+      "write_index"
+     ]
+    },
+    {
+     "path": "kit/localcost.py",
+     "symbols": [
+      "run"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_toolreg.py",
+    "tests/fake_vc3d_host.py",
+    "tests/test_localcost.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it runs local tools on local or public data and refuses anything that needs a yes, spends money or posts"
+   },
+   "checked": {
+    "date": "2026-10-20",
+    "commit": "3bd77be"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`toolreg`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit tools list`, `python -m kit tools show`, `python -m kit tools check`, `python -m kit tools availability`, `python -m kit tools selection`, `python -m kit tools plan`, `python -m kit tools run`, `python -m kit tools confirm`, `python -m kit tools take`, `python -m kit tools open`, `python -m kit tools exec`, `python -m kit tools export-vc3d`",
+    "Code": "`kit/toolreg.py`, `kit/data/registry/`, `integrations/vc3d/`, `kit/cli.py` (`cmd_tools`), `kit/tooldocs.py` (`registry_problems`, `write_index`), `kit/localcost.py` (`run`)",
+    "Tests": "`tests/test_toolreg.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py`",
+    "Needs": "Python 3.10 or newer, standard library only; numpy and tifffile for the 8-bit views of float maps and for turning a VC3D focus region into a box on a segment's canvas (both skipped with a warning without them). Each tool needs what its own page says. Reading a running VC3D (`--from-app`, `open --live`) needs `kit/vc3d_bridge.py` (in the AutoPipeline package) and VC3D built with its agent bridge. VC3D's plugin host is villa's `apps/VC3D/plugins/` on the vc3d-plugins lane of the combined VC3D suite, not merged into villa yet",
+    "Runs on": "Any CPU. The registry adds well under a second to a tool's own time: a synthetic 400 x 600 rowscore run took 3.2 s wall in all, 1.0 s CPU (measured 2026-10-20, cloud container)",
+    "Network": "None. A tool it runs uses the network only as its own page and its manifest's `safety.network` say; reading a running VC3D uses its local socket",
+    "Writes": "Each run writes only its run folder: `--out RUN`, else `work/tools/ID-DIGEST10/` (or `experiments/SLUG/tools/` for a target run in Scrolls-private): `selection.json`, `registry-run.json`, the tool's outputs, `stdout.txt` and `stderr.txt` (unless the manifest captures stdout), `tmp/`, `vc3d/` (8-bit views, `scale.json`, point collections, `open-log.json`), `provenance.json`, `graph.json` and, last, `vc3d-result.json`. One cost entry per run in the ledger record `--slug`, else `tools-YYYYMMDD` (made once), under `KIT_TOOLS_LEDGER` or kit's ledger root. `export-vc3d DIR` writes `DIR/scrolls.ID.json` and `DIR/bin/scrolls-tool`. `python -m kit.tooldocs index` rewrites each manifest's facts block",
+    "Go-ahead": "Not needed: it runs local tools on local or public data and refuses anything that needs a yes, spends money or posts",
+    "Released": "Not on public `main` yet: branch `claude/integration-1020` since 2026-10-20",
+    "Checked": "2026-10-20 against commit `3bd77be`"
+   },
+   "page": "docs/tools/toolreg.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 70,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 71,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 79,
+     "end_line": 356,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 357,
+     "end_line": 405,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 406,
+     "end_line": 423,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 424,
+     "end_line": 453,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 454,
+     "end_line": 510,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 511,
+     "end_line": 526,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 527,
+     "end_line": 530,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 531,
+     "end_line": 540,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 541,
+     "end_line": 544,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 545,
+     "end_line": 549,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 550,
+     "end_line": 557,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "umbilicus",
    "name": "umbilicus",
    "tagline": "find a scroll's winding center line in X-ray CT",
