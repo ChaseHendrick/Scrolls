@@ -108,6 +108,8 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
 | `stackcheck` | none | `cmd_stackcheck` | [stackcheck](stackcheck.md) | check consecutive tifxyz segments against the umbilicus: order, missing sectors, skipped windings, turn overlaps, stack ends (geometry only) |
+| `uvgate` | none | `cmd_uvgate` (in `kit/uvgate_cli.py`) | [uvgate](uvgate.md) | check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough area, optionally one counterclockwise piece (geometry only) |
+| `windconsistency` | none | `cmd_windconsistency` (in `kit/windconsistency.py`) | [windconsistency](windconsistency.md) | check that relative winding counts (a to b is k windings) can all hold at once, around every closed path |
 | `meshaudit` | `transforms`, `canvas`, `plan`, `depth` | `cmd_meshaudit` | [meshaudit](meshaudit.md) | audit published meshes, cross-scan transforms and render depth offsets |
 | `surfacefix` | `prepare`, `apply` | `cmd_surfacefix` | [surfacefix](surfacefix.md) | experimental region flags and bounded, controlled surface corrections |
 | `provenance` | `write`, `check` | `cmd_provenance` | [provenance](provenance.md) | who ran what, when, from which inputs: a record and one digest |

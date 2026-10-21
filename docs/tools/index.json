@@ -599,67 +599,67 @@
     {
      "name": "Commands and options",
      "start_line": 76,
-     "end_line": 151,
+     "end_line": 153,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 152,
-     "end_line": 175,
+     "start_line": 154,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 176,
-     "end_line": 179,
+     "start_line": 178,
+     "end_line": 181,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 180,
-     "end_line": 190,
+     "start_line": 182,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 191,
-     "end_line": 204,
+     "start_line": 193,
+     "end_line": 206,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 205,
-     "end_line": 214,
+     "start_line": 207,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 215,
-     "end_line": 218,
+     "start_line": 217,
+     "end_line": 220,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 219,
-     "end_line": 228,
+     "start_line": 221,
+     "end_line": 230,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 229,
-     "end_line": 236,
+     "start_line": 231,
+     "end_line": 238,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 237,
-     "end_line": 246,
+     "start_line": 239,
+     "end_line": 248,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 247,
-     "end_line": 253,
+     "start_line": 249,
+     "end_line": 255,
      "applicable": true
     }
    ]
@@ -8969,6 +8969,176 @@
    ]
   },
   {
+   "id": "uvgate",
+   "name": "uvgate",
+   "tagline": "check that a flattened sheet's UV triangles do not overlap",
+   "summary": "`python -m kit uvgate` checks a flattened sheet's UV triangles: it fails on any positive-area overlap between two triangles, on too little summed area and, with `--mesh`, on a sheet that is not one counterclockwise piece. `scripts/bench_uvgate.py` runs and times it on an OBJ's texture coordinates.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "script"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit uvgate",
+    "python scripts/bench_uvgate.py"
+   ],
+   "imports": [
+    "from kit import uvgate, meshgate"
+   ],
+   "code": [
+    {
+     "path": "kit/uvgate.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/uvgate_cli.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/meshgate.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/bench_uvgate.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_uvgate.py",
+    "tests/test_meshgate.py",
+    "tests/test_uvgate_cli.py",
+    "tests/test_uvgate_fast.py",
+    "tests/test_bench_uvgate_obj.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads local files on the CPU. Results on a target-scroll mesh stay private (the no-disclosure rule, hard rule 1)"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "4e2e71e"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`uvgate`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, script",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit uvgate`, `python scripts/bench_uvgate.py`, `from kit import uvgate, meshgate`",
+    "Code": "`kit/uvgate.py`, `kit/uvgate_cli.py`, `kit/meshgate.py`, `scripts/bench_uvgate.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_uvgate.py`, `tests/test_meshgate.py`, `tests/test_uvgate_cli.py`, `tests/test_uvgate_fast.py`, `tests/test_bench_uvgate_obj.py`",
+    "Needs": "Python 3 (run here on 3.13.16; the Mac measurements used 3.14.8). `kit uvgate` needs only the standard library; with numpy installed (2.5.3 here) the overlap check uses a spatial grid, and without it the exact all-pairs path, whose work grows with the square of the triangle count. `scripts/bench_uvgate.py` needs numpy; it records tifffile's version when tifffile is installed and `null` otherwise. No villa, VC3D or scan data",
+    "Runs on": "Any CPU. On Chase's Mac (M1 Pro) the grid path checked the released PHerc0139 w039 flattened OBJ (193,772 triangles) in a median 1.0 s of gate time; on a 4-CPU Linux cloud session `kit uvgate --overlap-only --mesh` on about one million synthetic triangles took 33 to 38 s, most of it reading JSON and the pure-Python mesh check (both 2026-10-13, [log](../logs/2026-10-13-uvgate-fast.md))",
+    "Network": "None",
+    "Writes": "`kit uvgate`: nothing (prints one JSON object). `scripts/bench_uvgate.py --output FILE`: that JSON receipt, written as `FILE.PID.tmp` and renamed into place, with parent folders created",
+    "Go-ahead": "Not needed: it reads local files on the CPU. Results on a target-scroll mesh stay private (the no-disclosure rule, hard rule 1)",
+    "Released": "Public `main` since 2026-10-21; a line of the Scrolls kit entry in the README's \"Released tools\", id `uvgate`",
+    "Guide": "[UV overlap gate](../uvgate.md), [speed and parity log](../logs/2026-10-13-uvgate-fast.md)",
+    "Checked": "2026-10-21 against commit `4e2e71e`"
+   },
+   "page": "docs/tools/uvgate.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 41,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 54,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 87,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 130,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 148,
+     "end_line": 155,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 156,
+     "end_line": 210,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 211,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 252,
+     "end_line": 265,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 266,
+     "end_line": 279,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 280,
+     "end_line": 289,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 290,
+     "end_line": 297,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 298,
+     "end_line": 301,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 302,
+     "end_line": 307,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "v8in-run",
    "name": "v8in-run",
    "tagline": "run the v8in ink model on a layer folder, with opt-in fp16 on the Mac GPU",
@@ -9738,6 +9908,158 @@
      "name": "Related",
      "start_line": 208,
      "end_line": 213,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "windconsistency",
+   "name": "windconsistency",
+   "tagline": "check that relative winding counts can all hold at once",
+   "summary": "`python -m kit windconsistency` reads a JSON list of relative winding steps (point a to point b is k windings outward) and passes only when every count is an integer and all of them, across every chain and every closed path, can hold at the same time.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit windconsistency"
+   ],
+   "imports": [
+    "from kit.windconsistency import wind_check"
+   ],
+   "code": [
+    {
+     "path": "kit/windconsistency.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_windconsistency.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "4e2e71e"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`windconsistency`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit windconsistency`, `from kit.windconsistency import wind_check`",
+    "Code": "`kit/windconsistency.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_windconsistency.py`",
+    "Needs": "Python 3.10 or newer, standard library only",
+    "Runs on": "Any CPU. 100,000 steps take about 1.6 s inside Python and about 5 to 6.5 s for the whole command (measured 2026-10-16, 4-core Xeon cloud container under heavy shared load, synthetic chains)",
+    "Network": "None",
+    "Writes": "Nothing (prints one JSON line)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-21; a line of the Scrolls kit entry in the README's \"Released tools\", id `windconsistency`",
+    "Guide": "[windconsistency.md](../windconsistency.md)",
+    "Checked": "2026-10-21 against commit `4e2e71e`"
+   },
+   "page": "docs/tools/windconsistency.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 74,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 86,
+     "end_line": 101,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 102,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 122,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 140,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 150,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 161,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 165,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 175,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 183,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 187,
+     "end_line": 190,
      "applicable": true
     }
    ]

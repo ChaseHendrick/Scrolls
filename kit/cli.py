@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
+"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1062,6 +1062,18 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--json", action="store_true")
     p.add_argument("--verbose", action="store_true", help="progress to stderr")
     p.set_defaults(func=cmd_stackcheck)
+
+    p = sub.add_parser("uvgate", help="check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough "
+                                      "area, optionally one counterclockwise piece (geometry only)")
+    from . import uvgate_cli
+    uvgate_cli.build_parser(p)
+    p.set_defaults(func=uvgate_cli.cmd_uvgate)
+
+    p = sub.add_parser("windconsistency", help="check that relative winding counts (a to b is k windings) can all "
+                                               "hold at once, around every closed path")
+    from . import windconsistency
+    windconsistency.build_parser(p)
+    p.set_defaults(func=windconsistency.cmd_windconsistency)
 
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
     actions = p.add_subparsers(dest="action", required=True)
