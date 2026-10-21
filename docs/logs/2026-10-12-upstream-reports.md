@@ -63,6 +63,110 @@ The anchored 60-generation trace has no transverse self-crossings and 30 switch 
 
 **Limits.** This supports the refit proposed in #1843; it does not say the landmarks are exact, only that the CT agrees with them within a few micrometres. The check's code is not public here. README finding 11 (renders that follow the refit) remains post hoc and needs its calibrated rerun.
 
+## 4. Later fixes, 13 to 18 October: before and after
+
+From 13 to 18 October three more fixes went up on villa, each as an issue first. villa's CONTRIBUTING asks a bugfix PR for a screenshot of the error (terminal or in the tool) and of the tool running without error afterward. The PR bodies give both as text; this section collects them in one place, with the commands, so a reviewer can check each one without opening five pages. The numbers and log lines are the ones in the PR bodies unless a later recheck is named. Nothing here is ink model output.
+
+State, read 21 October 2026 at about 06:30 UTC (Sourced fact: each PR's page on villa, and `git ls-remote` and `git merge-tree` on a villa clone): villa `main` is `d1b95150e` (#2183, 20 October); the newest PR is #2185. #2060, #2063 and #2079 are open and ready for review; #2081 and #2136 are drafts; none is merged. Every head merges textually onto `d1b95150e`; a textual merge is not a rebuild.
+
+| PR | Issue | What changes | Last run on real data | Files the PR touches, changed on `main` since its base |
+| --- | --- | --- | --- | --- |
+| [#2060](https://github.com/ScrollPrize/villa/pull/2060) | [#2058](https://github.com/ScrollPrize/villa/issues/2058) | An S3 404 counts as a missing chunk only with `NoSuchKey` (section 1) | Tests on the merge with `d1b95150e` (head `6e02cfa`), 21 October: all 210 pass, and with `main`'s code the PR's two new tests fail 65 and 5 checks. Relay render with `main`'s renderer on `8aa507c`, 19 October; with the fix on `25f3c93`, 12 October | none (the head merges `d1b95150e`) |
+| [#2063](https://github.com/ScrollPrize/villa/pull/2063) | [#2059](https://github.com/ScrollPrize/villa/issues/2059) | Opt-in `seed_anchor_xyz` (section 2) | 60 generations on PHerc0139 (section 2) | `GrowPatch.cpp` (6 lines, #2077, 13 October) and `core/test/CMakeLists.txt` (test targets added by other PRs, 13 and 20 October) |
+| [#2079](https://github.com/ScrollPrize/villa/pull/2079) | [#2078](https://github.com/ScrollPrize/villa/issues/2078) | A local `metadata.json` with no `scan` record opens | `bcdf9bf`, 13 October | none |
+| [#2081](https://github.com/ScrollPrize/villa/pull/2081) | [#2080](https://github.com/ScrollPrize/villa/issues/2080) | One warning when no loss reads the volume | `bcdf9bf`, 13 October | `GrowPatch.cpp` (6 lines, #2077, 13 October) |
+| [#2136](https://github.com/ScrollPrize/villa/pull/2136) | [#2135](https://github.com/ScrollPrize/villa/issues/2135) | `zarr_tasks` pyramid levels use ceiling division | Shapes and VC3D tools on `1db9cd9`, 18 October; the new test rerun on `d1b95150e`, 21 October (below) | none |
+
+### #2136: `vesuvius.zarr_tasks` makes pyramid levels one voxel short
+
+Data: level 4 of PHerc1451 volume `20250521151225-8.640um-1.2m-116keV-masked.zarr` (1125 x 364 x 364), copied unchanged from the open-data bucket. Command: `vesuvius.zarr_tasks IN OUT --task recompress -n 2`. `zarr_tasks` sized each level with `round()`, which rounds half to even, so 1125 / 2 = 562.5 became 562.
+
+Before (villa `main` `1db9cd9`, 18 October; Measurement):
+
+```
+level 1: (562, 182, 182)  ceiling (563, 182, 182)  SHORT
+level 2: (281, 91, 91)  ceiling (282, 91, 91)  SHORT
+$ vc_create_segment_mask plane_z562 rebuilt_main.zarr mask.tif --overwrite
+Error processing volume: zarr level 1 shape [z,y,x]=(562, 182, 182) does not match synthesized dimensions from first found scale (slices=1125, height=364, width=364) in rebuilt_main.zarr
+exit=1
+```
+
+After (the PR; Measurement):
+
+```
+level 1: (563, 182, 182)  ceiling (563, 182, 182)  OK
+level 2: (282, 91, 91)  ceiling (282, 91, 91)  OK
+$ vc_create_segment_mask plane_z562 rebuilt_fixed.zarr mask.tif --overwrite
+Mask generated successfully at "mask_rebuilt_fixed.tif"
+  Dimensions: [60 x 60]
+  Valid pixels: 3600 / 3600 (100.0%)
+exit=0
+```
+
+The image in the fixed mask equals the same plane read with numpy (largest absolute difference 0). `vc_grow_seg_from_seed` refused the short pyramid with the same level shape error. The bucket's own pyramid of this volume already has 563 at level 5, so the published pyramids are fine; the bug hits volumes rebuilt with `zarr_tasks`.
+
+Rechecked 21 October 2026, about 02:00 UTC, on villa `main` `d1b95150e` (Measurement; Python 3.13.16, zarr 3.4.1, numpy 2.5.3, numcodecs 0.17.1). The PR's new test, `vesuvius/tests/image_proc/test_build_pyramid.py`, against `main`'s code: 3 failed, 1 passed (the passing case is the 4k + 3 shape, which was already right). With the PR merged onto `main` (tree `47342fc2`): 4 passed, and all 10 tests in `vesuvius/tests/image_proc` pass. The VC3D tools were not rebuilt for this recheck.
+
+Reproduce the recheck (no scan data needed):
+
+```bash
+git clone https://github.com/ScrollPrize/villa && cd villa
+git fetch origin pull/2136/head:pr-2136
+python3 -m venv venv && . venv/bin/activate
+pip install numpy zarr numcodecs tqdm pytest pynrrd opencv-python-headless requests pillow fsspec edt tifffile
+git checkout pr-2136 -- vesuvius/tests/image_proc/test_build_pyramid.py
+PYTHONPATH=vesuvius/src python -m pytest -q vesuvius/tests/image_proc/test_build_pyramid.py   # main's code: 3 failed, 1 passed
+git checkout pr-2136 -- vesuvius/src/vesuvius/image_proc/run/zarr_tasks/utils.py
+PYTHONPATH=vesuvius/src python -m pytest -q vesuvius/tests/image_proc/test_build_pyramid.py   # with the fix: 4 passed
+```
+
+The block was tested in a fresh venv on Python 3.13 on 21 October; another environment may need more of the `vesuvius` package's dependencies.
+
+### #2079: a downloaded surface prediction will not open
+
+Data: a local copy of the PHerc0139 surface prediction `20250728140407-surface-20260413222639-surface-m7-L0-th0.2.zarr` (its `metadata.json`, headers and the level-0 chunks around the seed, copied unchanged). Command: `vc_grow_seg_from_seed -v <local copy> -s 3471 4155 4603`, 15 generations, 1 thread, `VC_GROWPATCH_RNG_SEED=7`, normal grids from the prediction's published `.normal-grids/`.
+
+Before (villa `main` `bcdf9bf`, 13 October; Measurement):
+
+```
+$ vc_grow_seg_from_seed -v <local copy> -s 3471 4155 4603 ...
+Error: metadata.json missing 'scan' key
+```
+
+After (Measurement):
+
+| Build | `-v` | Result | `x/y/z.tif` sha256 (first 16) |
+| --- | --- | --- | --- |
+| `main` | local copy | `Error: metadata.json missing 'scan' key` | none |
+| `main` | URL | 0.257 cm² | `807140f13c275e0a` |
+| the PR | local copy | 0.257 cm² | `807140f13c275e0a` |
+
+42 of the 43 stores under `representations/predictions/surfaces/` on the open-data bucket have this `metadata.json` layout (checked 13 October). `test_volume_local` gains one test case; all 18 pass with the PR, and the new one fails with `main`'s `Volume.cpp`. Neither file the PR touches has changed on `main` since, so the result should still hold on `d1b95150e` (Interpretation; not rerun).
+
+### #2081: a trace without normal grids ignores the volume, with no warning
+
+Data: the same PHerc0139 surface prediction, with no `normal_grid_path`. Command: `vc_grow_seg_from_seed -s 3471 4155 4603`, 60 generations, 1 thread, `VC_GROWPATCH_RNG_SEED=7`.
+
+Before (villa `main` `bcdf9bf`, 13 October; Measurement): the run exits 0 with a normal-looking area and no warning. Only 0.12 of its vertices are on the predicted sheet, against 0.83 with the grids, and its `x/y/z.tif` are byte for byte those grown on an all-zero copy of the prediction.
+
+After (Measurement): the same run prints, once, before growth:
+
+```
+WARNING: no normal_grid_path given, and no other loss that reads the volume is enabled. The surface will be shaped by spacing and smoothness only and will not follow the surface prediction. Pass normal_grid_path (a published prediction's .normal-grids folder, or a folder holding normal-grids-remote.json; see docs/extending_and_modifying_segmentations.md).
+```
+
+| Run | Generations | Warning | `x/y/z.tif` sha256 (first 16), `main` | same, the PR |
+| --- | ---: | --- | --- | --- |
+| prediction, no grids | 60 | yes | `0693e7fbf82fbd73` | `0693e7fbf82fbd73` |
+| all-zero copy, no grids | 60 | yes | `0693e7fbf82fbd73` | `0693e7fbf82fbd73` |
+| prediction, published grids | 15 | no | `807140f13c275e0a` | `807140f13c275e0a` |
+
+No test, since the change is one log line; the table checks that the output does not change.
+
+### Limits
+
+All of this is our own work on our own machines; no maintainer or other user has rerun it. Each fix was measured on one scroll's data (PHerc0139 or PHerc1451). The before and after blocks are text copied from the run logs with local paths shortened, not screenshots. #2060 was rebuilt and its tests rerun on `d1b95150e`, but not its relay render; #2063, #2079 and #2081 were not rebuilt on `d1b95150e`.
+
 ## Not released
 
-Only the four items above went public on 12 October. Nothing else from the private workbench was released, and these posts do not authorize further posting, submission or compute.
+Only the four items in sections 1 to 3 went public on 12 October; section 4 adds three later fixes (13 to 18 October) and a recheck of 21 October. Nothing else from the private workbench was released, and these posts do not authorize further posting, submission or compute.
