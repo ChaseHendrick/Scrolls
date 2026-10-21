@@ -96,8 +96,8 @@
     {
       "id": "scrolls-kit",
       "title": "Scrolls kit",
-      "released": "2026-10-17",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: three `python -m kit` commands and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "released": "2026-10-21",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: five `python -m kit` commands and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -115,6 +115,24 @@
         "caption": "Concept illustration: the toolbox's motifs on one tray. No scan data."
       },
       "tools": [
+        {
+          "id": "uvgate",
+          "name": "UV overlap gate",
+          "released": "2026-10-21",
+          "summary": "Checks a flattened sheet's UV triangles (JSON or CSV) for any positive-area overlap between two triangles, with exact rational clipping behind a NumPy spatial grid, plus summed-area coverage and, with `--mesh`, one counterclockwise piece; `scripts/bench_uvgate.py` runs the overlap check on an OBJ's texture coordinates. On the released PHerc0139 w039 flattened OBJ (193,772 triangles) it passed in a median 1.0 s of gate time, 1,666 times faster than the exact reference on an 800-face prefix with identical verdicts, and caught a planted duplicate face (measured 13 October 2026). It checks the supplied UV only, not 3D sheet identity, ink or a reading.",
+          "command": "python -m kit uvgate TRIS.json --source-area AREA --mesh",
+          "page": "docs/tools/uvgate.md",
+          "evidence": "[guide](docs/uvgate.md), [speed and parity log](docs/logs/2026-10-13-uvgate-fast.md)"
+        },
+        {
+          "id": "windconsistency",
+          "name": "Relative winding consistency check",
+          "released": "2026-10-21",
+          "summary": "Reads relative winding steps (point a to point b is k windings outward) and passes only when every count is an integer and all of them can hold at once, around every closed path across all chains, in time linear in the input, with exact integers and the standard library only. Tested on synthetic chains only; a consistent but wrong set passes, so a pass means the counts agree, not that they are right.",
+          "command": "python -m kit windconsistency CHAINS.json",
+          "page": "docs/tools/windconsistency.md",
+          "evidence": "[guide](docs/windconsistency.md)"
+        },
         {
           "id": "letter-reader",
           "name": "Scroll Text Reader",
