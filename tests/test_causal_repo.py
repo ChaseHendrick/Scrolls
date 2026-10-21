@@ -13,7 +13,7 @@ from kit import causal
 
 ROOT = Path(__file__).resolve().parent.parent
 INITIAL_SHA256 = "938b1e0acdab80e2f6b2d7b48bad1710bf6c8324d33c6e87babfe5a424278d23"
-BASELINE_MAX = 207
+BASELINE_MAX = 108  # 207 at the cutover; 108 after the 21 October 2026 backfill
 
 
 class CausalRepoTest(unittest.TestCase):

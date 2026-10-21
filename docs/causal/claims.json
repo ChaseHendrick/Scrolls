@@ -1,0 +1,62 @@
+{
+ "schema": "causal-claims/1",
+ "claims": [
+  {
+   "id": "a-traced-surface-s-render-comes",
+   "readme_item": 1,
+   "quote": "A traced surface's render comes out turned, and `ink_9um` reads it much worse until it is turned upright",
+   "label": "Model output",
+   "causal": [
+    "source r:orientation_checks/0 sha256:c42aaa51887dd94fe0d92af0f8b561e14c15895c16fae3d2f0b7c7e486ad0afd"
+   ]
+  },
+  {
+   "id": "a-transient-404-from-s3-becomes",
+   "readme_item": 2,
+   "quote": "A transient 404 from S3 becomes a permanent hole of zeros in VC3D's renders and traces",
+   "label": "Measurement",
+   "causal": [
+    "source r:upstream_reports/0 sha256:b6761ce33c844f2bbc179b4080c6586b2c1678b78ca079780664a59c93164307",
+    "source docs/evidence/2026-10-12-false-404/ sha256:f65e4d081e5125486c204e9f062ebdd404c7ce6ba1ca90cc56b4033860a02e7b"
+   ]
+  },
+  {
+   "id": "villa-s-tracer-does-not-hold",
+   "readme_item": 3,
+   "quote": "villa's tracer does not hold an explicit seed, so a trace can start on the next winding",
+   "label": "Measurement",
+   "causal": [
+    "source r:upstream_reports/1 sha256:f194741de40cceabeb11fcc59aa52ad2bc16dbd4d9ce97733ad99dd5fed3e99e"
+   ]
+  },
+  {
+   "id": "on-pherc0139-w045-which-v8in-never",
+   "readme_item": 4,
+   "quote": "On PHerc0139 w045, which v8in never saw but `ink_9um` trained on through its 2.4 um render, v8in scores below `ink_9um`",
+   "label": "Model output",
+   "causal": [
+    "source r:results/7 sha256:aa7fbc416c089a6f912c6aea243ddbf5995851c8de0ff95bc692700ae566dd25",
+    "source r:results/8 sha256:e2c4db97a9d7dfa48f853ce79c927f26beaaba95cd7d43bdd8f6b98f65184dd9"
+   ]
+  },
+  {
+   "id": "scoring-a-crop-needs-an-edge",
+   "readme_item": 5,
+   "quote": "Scoring a crop needs an edge margin",
+   "label": "Measurement",
+   "causal": [
+    "source r:results/20 sha256:28b65202be97bd0c8fed11ee9e6df61ec04356077266e276cb7325eca6dae1c4",
+    "source r:results/17 sha256:64ac48e4b3922c7949f57c6f8d27f337af43e6589513e0ce98f143650fbc2a4d"
+   ]
+  },
+  {
+   "id": "one-stored-cross-scan-matrix-contradicts",
+   "readme_item": 13,
+   "quote": "one stored cross-scan matrix contradicts its own landmarks",
+   "label": "Measurement",
+   "causal": [
+    "source r:upstream_reports/2 sha256:ef188b4be5bef83d10f395707e38278340e2fec9d46e34cf84b26a9f283ad1c6"
+   ]
+  }
+ ]
+}

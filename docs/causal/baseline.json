@@ -3,23 +3,22 @@
  "commit": "3bd77be97ef888f417216f7bfca646bbd73efbce",
  "counts": {
   "by_gap": {
-   "claim": 14,
-   "code": 9,
-   "control": 15,
+   "claim": 8,
+   "code": 6,
+   "control": 5,
    "decision": 11,
-   "prereg": 75,
+   "prereg": 13,
    "record": 8,
-   "run": 74,
-   "source": 1
+   "run": 57
   },
   "by_kind": {
    "evidence": 8,
-   "finding": 14,
+   "finding": 8,
    "prereg": 5,
    "release": 6,
-   "result": 79
+   "result": 59
   },
-  "pairs": 207
+  "pairs": 108
  },
  "gaps": {
   "docs/evidence/2026-10-07-merge-review": [
@@ -61,9 +60,6 @@
   "docs/prereg/2026-10-14-strokenet.md": [
    "decision"
   ],
-  "finding:1": [
-   "claim"
-  ],
   "finding:10": [
    "claim"
   ],
@@ -73,22 +69,7 @@
   "finding:12": [
    "claim"
   ],
-  "finding:13": [
-   "claim"
-  ],
   "finding:14": [
-   "claim"
-  ],
-  "finding:2": [
-   "claim"
-  ],
-  "finding:3": [
-   "claim"
-  ],
-  "finding:4": [
-   "claim"
-  ],
-  "finding:5": [
    "claim"
   ],
   "finding:6": [
@@ -103,10 +84,6 @@
   "finding:9": [
    "claim"
   ],
-  "r:adaptive_geometry_checks": [
-   "prereg",
-   "run"
-  ],
   "r:device_checks/0": [
    "control",
    "prereg",
@@ -118,104 +95,39 @@
    "run"
   ],
   "r:finetune_checks": [
-   "prereg",
-   "run",
-   "source"
-  ],
-  "r:followup_checks/0": [
-   "code"
-  ],
-  "r:followup_checks/1": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/10": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/11": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/12": [
-   "code"
-  ],
-  "r:followup_checks/13": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/2": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/3": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/4": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/5": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/6": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/7": [
-   "prereg",
-   "run"
-  ],
-  "r:followup_checks/8": [
-   "code"
-  ],
-  "r:followup_checks/9": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/0": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/1": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/10": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/11": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/12": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/13": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/14": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/15": [
-   "prereg",
    "run"
   ],
   "r:letter_reader_checks/2": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/3": [
-   "control",
    "prereg",
    "run"
   ],
@@ -225,209 +137,145 @@
    "run"
   ],
   "r:letter_reader_checks/5": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/6": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/7": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/8": [
-   "control",
    "prereg",
    "run"
   ],
   "r:letter_reader_checks/9": [
-   "control",
    "prereg",
    "run"
   ],
   "r:orientation_checks/0": [
-   "prereg",
    "run"
   ],
   "r:orientation_checks/1": [
-   "prereg",
-   "run"
-  ],
-  "r:production_scaling_checks": [
-   "prereg",
-   "run"
-  ],
-  "r:production_speed_checks": [
-   "prereg",
    "run"
   ],
   "r:reconstruction_checks/0": [
    "run"
   ],
   "r:results/0": [
-   "prereg",
    "run"
   ],
   "r:results/1": [
-   "prereg",
    "run"
   ],
   "r:results/10": [
-   "prereg",
    "run"
   ],
   "r:results/11": [
-   "prereg",
    "run"
   ],
   "r:results/12": [
-   "prereg",
    "run"
   ],
   "r:results/13": [
-   "prereg",
    "run"
   ],
   "r:results/14": [
-   "prereg",
    "run"
   ],
   "r:results/15": [
-   "prereg",
    "run"
   ],
   "r:results/16": [
-   "prereg",
    "run"
   ],
   "r:results/17": [
-   "prereg",
    "run"
   ],
   "r:results/18": [
-   "prereg",
    "run"
   ],
   "r:results/19": [
-   "prereg",
    "run"
   ],
   "r:results/2": [
-   "prereg",
    "run"
   ],
   "r:results/20": [
-   "prereg",
    "run"
   ],
   "r:results/21": [
-   "prereg",
    "run"
   ],
   "r:results/22": [
-   "prereg",
    "run"
   ],
   "r:results/23": [
-   "prereg",
    "run"
   ],
   "r:results/24": [
-   "prereg",
    "run"
   ],
   "r:results/25": [
-   "prereg",
    "run"
   ],
   "r:results/26": [
-   "prereg",
    "run"
   ],
   "r:results/27": [
-   "prereg",
    "run"
   ],
   "r:results/28": [
-   "prereg",
    "run"
   ],
   "r:results/29": [
-   "prereg",
    "run"
   ],
   "r:results/3": [
-   "prereg",
    "run"
   ],
   "r:results/30": [
-   "prereg",
    "run"
   ],
   "r:results/31": [
-   "prereg",
    "run"
   ],
   "r:results/4": [
-   "prereg",
    "run"
   ],
   "r:results/5": [
-   "prereg",
    "run"
   ],
   "r:results/6": [
-   "prereg",
    "run"
   ],
   "r:results/7": [
-   "prereg",
    "run"
   ],
   "r:results/8": [
-   "prereg",
    "run"
   ],
   "r:results/9": [
    "control",
-   "prereg",
    "run"
   ],
   "r:stackcheck_checks/0": [
-   "prereg",
    "run"
   ],
   "r:strokenet_checks/0": [
-   "code",
-   "prereg"
+   "code"
   ],
   "r:strokenet_checks/1": [
    "code",
-   "control",
-   "prereg"
+   "control"
   ],
   "r:surfacefix_checks/0": [
-   "prereg",
    "run"
   ],
   "r:umbilicus_checks/0": [
-   "control",
-   "prereg",
-   "run"
-  ],
-  "r:upstream_reports/0": [
-   "prereg",
-   "run"
-  ],
-  "r:upstream_reports/1": [
-   "prereg",
-   "run"
-  ],
-  "r:upstream_reports/2": [
    "prereg",
    "run"
   ],
@@ -992,7 +840,7 @@
   }
  },
  "initial_sha256": "938b1e0acdab80e2f6b2d7b48bad1710bf6c8324d33c6e87babfe5a424278d23",
- "keys": 112,
+ "keys": 86,
  "legacy": {
   "finding:1": "5435efac34211bceae0913d242c5c5364a4c7d4368878523ad2b381ad9f4aeb7",
   "finding:10": "bb3bddcf95ccbf4cfd59bfc65ee5c904f4c3dbb58f770dab25cc06200514ed6d",
@@ -1096,6 +944,13 @@
   "r:upstream_reports/2": "ef188b4be5bef83d10f395707e38278340e2fec9d46e34cf84b26a9f283ad1c6"
  },
  "made": "2026-10-21",
- "passes": {},
+ "passes": {
+  "ids": {
+   "commit": "df18e2225937",
+   "reason": null,
+   "utc": "2026-10-21T02:58:19Z",
+   "wrote": 86
+  }
+ },
  "schema": "causal-baseline/1"
 }

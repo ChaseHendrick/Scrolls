@@ -293,7 +293,7 @@ Measured 2026-10-17 on a 4-core Xeon cloud container (shared), CPU only: `kit se
 
 ## History
 
-- 2026-10-17: Added: the registry and `kit segzoo`, nnU-Net trainers, the SS2D scan, the SAM 2 follower and the frozen probe ([public PR](https://github.com/ChaseHendrick/Scrolls/pulls?q=head%3Aclaude%2Fmodern-seg-models-txtw1n))
+- 2026-10-17: Added: the registry and `kit segzoo`, nnU-Net trainers, the SS2D scan, the SAM 2 follower and the frozen probe ([PR #116](https://github.com/ChaseHendrick/Scrolls/pull/116))
 
 ## Related
 
