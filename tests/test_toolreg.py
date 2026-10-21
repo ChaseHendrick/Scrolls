@@ -81,6 +81,10 @@ elif mode == "map":
     ramp = np.tile(np.linspace(0.0, 1.0, 64, dtype=np.float32), (32, 1))
     tifffile.imwrite(out.with_name(out.stem + ".tif"), ramp)
     tifffile.imwrite(out.with_name(out.stem + "_reverse.tif"), np.full((32, 64), 0.5, np.float32))
+elif mode == "f8mask":
+    import numpy as np, tifffile
+    out = Path(sys.argv[3])
+    tifffile.imwrite(out.with_name(out.stem + ".tif"), np.full((32, 64), 255.0, np.float32))
 elif mode == "u8map":
     import numpy as np, tifffile
     out = Path(sys.argv[3])
@@ -1110,6 +1114,13 @@ class AdapterTest(Base):
         view = tifffile.imread(res["views"]["map"])
         self.assertEqual(int(view.max()), 200)          # not stretched to 255
         self.assertEqual(toolreg.plugin_result(tool)["path"], "{output}/vc3d/views/map_u8.tif")
+        # a 0 or 255 mask stored as floats keeps its values too: a percentile stretch would make it flat 0
+        mask = self.add(manifest("mask", run={"argv": ["fake-tool", "f8mask", "{in.src}", "{run}/mask"]},
+                                 outputs={"mask": {"kind": "overlay", "format": "tiff", "path": "{run}/mask.tif"}}))
+        res, code = self.go(mask)
+        self.assertEqual(code, 0, res)
+        self.assertEqual(int(tifffile.imread(res["views"]["mask"]).min()), 255)
+        self.assertIsNone(json.loads((Path(res["run"]) / "vc3d" / "scale.json").read_text())["percentiles"])
 
     @needs_registry
     def test_region_entries_and_the_auc_window(self):

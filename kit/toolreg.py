@@ -2308,7 +2308,9 @@ def _views(tool, job, outs, res):
     """8-bit views of the maps on one shared scale, which is what VC3D loads: it stretches a non-8-bit image to its
     own minimum and maximum (InkDetectionOverlayController.cpp, toU8Scalar) and shows an 8-bit image as it is, so a
     forward map and a flat control would both look full-contrast. The scale comes from the forward map (0.5 and 99.5
-    percentiles of its finite pixels) and is applied unchanged to its controls; an 8-bit forward map keeps its values.
+    percentiles of its finite pixels) and is applied unchanged to its controls; an 8-bit forward map keeps its values,
+    and so does one stored as floats whose values are all whole numbers from 0 to 255 with a maximum above 1 (a 0 or
+    255 mask such as geomfix's approval.tif, which a percentile stretch would make flat when every pixel is 255).
     VC3D stretches an ink detection over the whole segment grid, so a map of a crop is placed at its box on a canvas of
     the segment's size, 0 (transparent) elsewhere. The float originals stay for scoring."""
     maps = {n: p for n, p in outs.items() if tool.outputs[n]["kind"] == "overlay" and p.is_file()
@@ -2336,6 +2338,8 @@ def _views(tool, job, outs, res):
     finite = ref[np.isfinite(ref)]
     if finite.size == 0:
         return
+    if not keep and finite.min() >= 0 and 1 < finite.max() <= 255 and bool(np.all(finite == np.round(finite))):
+        keep = True     # an 8-bit map or mask stored as floats (kit's own TIFF writer writes float32): kept as it is
     lo, hi = (0.0, 255.0) if keep else (float(v) for v in np.percentile(finite, [0.5, 99.5]))
     hi = hi if hi > lo else lo + 1.0
     box = _crop_box(job)
