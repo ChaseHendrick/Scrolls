@@ -2691,6 +2691,202 @@
    ]
   },
   {
+   "id": "ink-lens",
+   "name": "ink-lens",
+   "tagline": "control-checked ink maps of your own region, written back into VC3D",
+   "summary": "Runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps only ink above the region's own reverse-depth control, and writes the overlay and letter-candidate pins as VC3D's own files.",
+   "status": "Experimental",
+   "kind": [
+    "app",
+    "agent tool",
+    "script"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "python3 spaces/ink-lens/inklens.py run",
+    "python3 spaces/ink-lens/inklens.py demo SAMPLE",
+    "python3 spaces/ink-lens/inklens.py estimate H W",
+    "python3 spaces/ink-lens/inklens.py samples",
+    "python3 spaces/ink-lens/app.py",
+    "python3 spaces/ink-lens/engine.py estimate H W",
+    "python3 spaces/ink-lens/tools/check_gate.py OUT.json",
+    "python3 spaces/ink-lens/tools/deploy.py OWNER/NAME"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/ink-lens/inklens.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/engine.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/gate.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/vc3dout.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/volio.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/bridge.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/tools/deploy.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/tools/check_gate.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/samples.json",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/vc3d-plugin.json",
+     "symbols": []
+    },
+    {
+     "path": "spaces/ink-lens/README.md",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_inklens.py"
+   ],
+   "go_ahead": {
+    "needed": true,
+    "text": "Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests"
+   },
+   "checked": {
+    "date": "2026-10-20",
+    "commit": "3c2445e"
+   },
+   "license": "Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0",
+   "fields": {
+    "Id": "`ink-lens`",
+    "Status": "Experimental",
+    "Kind": "app, agent tool, script",
+    "Area": "Ink maps and models",
+    "Run": "`python3 spaces/ink-lens/inklens.py run` (a region of a segment), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME`",
+    "Code": "`spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft plugin manifest), `spaces/ink-lens/README.md` (the Space card)",
+    "Tests": "`tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them)",
+    "Needs": "Python 3.10 or newer, numpy. Space mode: gradio_client and huggingface_hub, and the user's own Hugging Face token. Local mode and the Space: torch 2.13.0 and the pins in `spaces/ink-lens/requirements.txt`; villa's `vesuvius/src` at `8aa507c12` and the checkpoint are downloaded once (or `VILLA_SRC`, `INKLENS_D9V2`, `INKLENS_INK_9UM`). Pins: tifffile, and this repository's `kit/` (the Scroll Text Reader). Rendering a region: `vc_render_tifxyz` from a VC3D build. Label scoring: zarr",
+    "Runs on": "ZeroGPU (Space mode, estimate only until deployed: 6 to 10 s for a 1024 px region, 1,350 patches). CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing",
+    "Writes": "Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR",
+    "Go-ahead": "Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests",
+    "Released": "Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase, 20 Oct 2026, about 21:28 UTC: \"can we not deploy to a HF space rn and wait until i ever get PRO to get more spaces\"); local mode works now",
+    "License": "Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0",
+    "Checked": "2026-10-20 against commit `3c2445e`"
+   },
+   "page": "docs/tools/ink-lens.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 51,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 65,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 88,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 119,
+     "end_line": 212,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 213,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 227,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 238,
+     "end_line": 261,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 262,
+     "end_line": 356,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 357,
+     "end_line": 386,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 387,
+     "end_line": 394,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 395,
+     "end_line": 408,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 409,
+     "end_line": 419,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 420,
+     "end_line": 425,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 426,
+     "end_line": 433,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "inkfilter",
    "name": "inkfilter",
    "tagline": "fixed image filters for surface volumes",
