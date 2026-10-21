@@ -1,4 +1,5 @@
-"""Planted defects with known answers on synthetic tifxyz surfaces: `python -m kit planted`.
+"""Planted defects with known answers on synthetic tifxyz surfaces: `python -m kit.planted` (or `kit planted` where
+kit's command line registers it).
 
   kit planted families [--json]
         the families, their short ids and the truth each one must get
