@@ -157,6 +157,7 @@ class CanvasPointsTest(Base):
         conv = res["conversions"][0]
         self.assertEqual((conv["converter"], conv["status"]), ("canvas-points", "ok"))
         self.assertEqual([g["verdict"] for g in res["format_gate"]], ["pass"])   # the converted collection
+        self.assertEqual([c["params"]["path"] for c in res["open"] if c["method"] == "points.load_json"], [rpath])
         loaded = host.load_result("points", rpath)
         self.assertEqual(loaded["kind"], "points")
         doc = json.loads(Path(rpath).read_text())

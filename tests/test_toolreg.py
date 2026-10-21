@@ -827,12 +827,27 @@ class ConvertTest(Base):
         self.assertEqual(res["conversions"][0]["converter"], "to-collection")
         self.assertTrue(res["outputs"][0]["path"].endswith("convert/pts/collection.json"))
         self.assertEqual(res["format_gate"][0]["format"], "vc3d-point-collection")   # checked as converted
+        self.assertEqual([(c["method"], Path(c["params"]["path"]).name) for c in res["open"]],
+                         [("points.load_json", "collection.json")])                  # opened as converted
+        self.assertEqual(res["warnings"], [])
         graph = json.loads((self.tmp / "run" / "pts" / "graph.json").read_text())
         self.assertIn("stage:convert:pts", [n["id"] for n in graph["nodes"]])
         self.assertEqual(toolreg.plugin_result(tool, reg),
                          {"kind": "points", "path": "{output}/convert/pts/collection.json"})
         self.assertIn("never reaches a menu", " ".join(toolreg.validate_manifest(dict(conv, vc3d={"menu": "tools"}))))
 
+
+    def test_a_converted_map_loads_from_its_8bit_view(self):
+        self.add(manifest("to-canvas", kind="converter", outputs={
+            "map": {"kind": "overlay", "format": "tiff-uint16", "path": "{run}/map.tif"}}))
+        tool = self.add(manifest("hec", outputs={
+            "map": {"kind": "overlay", "format": "png", "path": "{run}/map.png", "convert": "to-canvas"},
+            "rev": {"kind": "overlay", "format": "png", "path": "{run}/rev.png", "role": "control:reverse",
+                    "convert": "to-canvas"}},
+            safety={"model_output": True, "paid_compute": "never", "network": "none", "controls": ["rev"]},
+            vc3d={"menu": "segment", "result": "map"}))
+        self.assertEqual(toolreg.plugin_result(tool, self.registry()),
+                         {"kind": "ink_overlay", "path": "{output}/vc3d/views/map_u8.tif"})
 
     def test_convert_with_hands_another_output_of_the_run_to_the_converter(self):
         self.add(manifest("pairer", mode="pair", kind="converter",

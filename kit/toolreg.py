@@ -2411,6 +2411,8 @@ def _open(tool, job, outs, res):
     opens, plugin = [], None
     for name, p in outs.items():
         spec = tool.outputs[name]
+        if name in job.converted:          # a converted output opens as what its converter made
+            spec = dict(spec, format=job.converted[name])
         fn = OPENERS.get(spec["kind"]) or DEFAULT_OPENERS.get(spec["kind"])
         if fn is None or not p.exists():
             continue
@@ -2573,7 +2575,8 @@ def plugin_result(tool, registry=None):
             return {"kind": "points", "path": "{output}/vc3d/points/" + name + ".json"}
         if kind == "umbilicus" and fmt == "umbilicus-json":
             return {"kind": "umbilicus", "path": rel}
-        if kind == "overlay" and spec.get("role", "forward") == "forward" and not spec.get("convert"):
+        if kind == "overlay" and spec.get("role", "forward") == "forward":
+            # a converted map (canvasorient back, hecateprep back) has its view made from the converted file
             if fmt in ("tiff", "tiff-uint8", "tiff-uint16", "tiff-float32", "npy"):
                 return {"kind": "ink_overlay", "path": "{output}/vc3d/views/" + name + "_u8.tif"}
             if fmt == "png":
