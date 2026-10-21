@@ -249,7 +249,7 @@ Local and free. `check` on this repository: 0.8 s wall on the 4-core cloud conta
 
 ## History
 
-- 2026-10-21: first version, with the ledger for this README's 17 claimed blocks ([PR #PUBLICPR](https://github.com/ChaseHendrick/Scrolls/pull/PUBLICPR)).
+- 2026-10-21: first version, with the ledger for this README's 17 claimed blocks ([PR #147](https://github.com/ChaseHendrick/Scrolls/pull/147)).
 
 ## Related
 
