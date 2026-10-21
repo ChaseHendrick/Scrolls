@@ -182,7 +182,7 @@ python -m unittest tests.test_windconsistency -v
 
 ## History
 
-- 2026-10-21: first public release, from public `main` at `4e2e71e`, with `python -m kit windconsistency` in `kit/cli.py`; first written 13 October 2026 from a pair-only checker, under a new name so it does not clash with the external windcheck tool, adding the closed-path check across all chains.
+- 2026-10-21: first public release ([#144](https://github.com/ChaseHendrick/Scrolls/pull/144)), from public `main` at `4e2e71e`, with `python -m kit windconsistency` in `kit/cli.py`; first written 13 October 2026 from a pair-only checker, under a new name so it does not clash with the external windcheck tool, adding the closed-path check across all chains.
 
 ## Related
 

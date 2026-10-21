@@ -297,7 +297,7 @@ python -m unittest tests.test_uvgate tests.test_meshgate tests.test_uvgate_cli t
 
 ## History
 
-- 2026-10-21: first public release, from public `main` at `4e2e71e`: `kit uvgate`, `kit/meshgate.py`, the OBJ benchmark and the speed log (PHerc0139 w039 and synthetic runs); first written 13 to 16 October 2026.
+- 2026-10-21: first public release ([#144](https://github.com/ChaseHendrick/Scrolls/pull/144)), from public `main` at `4e2e71e`: `kit uvgate`, `kit/meshgate.py`, the OBJ benchmark and the speed log (PHerc0139 w039 and synthetic runs); first written 13 to 16 October 2026.
 
 ## Related
 
