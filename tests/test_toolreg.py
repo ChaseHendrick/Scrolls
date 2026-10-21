@@ -199,7 +199,7 @@ class ManifestTest(Base):
                                                     safety={"model_output": True, "paid_compute": "never",
                                                             "network": "none"}),
             "pipeline.reverse": manifest(pipeline={"stage": "ink", "contract": "ink-command", "input": "src"}),
-            "no generic registry runner": manifest(pipeline={"stage": "repair", "contract": "repair"}),
+            "no generic registry runner": manifest(pipeline={"stage": "flatten", "contract": "flatten"}),
             "pipeline.stage": manifest(pipeline={"stage": "score", "existing": "auc"}),
             "safety.paid_compute": manifest(safety={"model_output": False, "paid_compute": "sometimes",
                                                     "network": "none"}),
@@ -620,6 +620,67 @@ class PipelineTest(Base):
             toolreg.exec_ink(tool, str(self.src), str(work / "x.tif"), "0", sha="0" * 16, root=self.tmp)
         with self.assertRaisesRegex(toolreg.RegistryError, "not an ink-command"):
             toolreg.exec_ink(self.add(manifest()), str(self.src), str(work / "y.tif"), "0", root=self.tmp)
+
+
+class RepairContractTest(Base):
+    """The repair contract: AutoPipeline's qa stage hands a rejected trace, the plan's prediction and the trace's
+    seed to a registry tool and takes its repaired tifxyz copy back (exec_repair, stage choices reg:ID)."""
+
+    def repair_manifest(self, mode="goodseg", **pipe):
+        return manifest("fixy", run={"argv": ["fake-tool", mode, "{in.surface}", "{run}"]},
+                        inputs={"surface": {"from": "segment", "format": ["tifxyz"]},
+                                "prediction": {"from": "volume"},
+                                "seed": {"from": "point", "required": False}},
+                        outputs={"repaired": {"kind": "surface", "format": "tifxyz", "path": "{run}/seg"}},
+                        pipeline={"stage": "repair", "contract": "repair", "input": "surface",
+                                  "prediction": "prediction", "seed": "seed", "output": "repaired", **pipe})
+
+    def trace(self):
+        seg = self.tmp / "trace"
+        seg.mkdir(exist_ok=True)
+        (seg / "x.tif").write_text("x")
+        (seg / "meta.json").write_text(json.dumps({"format": "tifxyz", "uuid": "trace"}))
+        return seg
+
+    def test_the_contract_is_checked(self):
+        self.assertEqual(toolreg.validate_manifest(self.repair_manifest()), [])
+        bad = self.repair_manifest()
+        bad["pipeline"]["extra"] = 1
+        self.assertIn("pipeline must be an object", " ".join(toolreg.validate_manifest(bad)))
+        del bad["pipeline"]["extra"]
+        bad["pipeline"].update(input="prediction", output="nope", seed="surface")
+        bad["inputs"]["other"] = {"from": "path"}
+        bad["params"] = {"k": {"type": "integer"}}
+        text = " ".join(toolreg.validate_manifest(bad))
+        for want in ("from segment, format tifxyz", "kind surface, format tifxyz", "an optional input from point",
+                     "required input(s) other", "param(s) k need a default"):
+            self.assertIn(want, text)
+
+    def test_a_repair_tool_is_a_stage_choice_and_runs_into_its_run_folder(self):
+        tool = self.add(self.repair_manifest())
+        choices = toolreg.stage_choices("repair", self.registry())
+        self.assertEqual(choices["reg:fixy"]["settings"], {"qa": {"repair": {"method": "reg:fixy"}}})
+        self.assertEqual(choices["reg:fixy"]["registry"]["manifest_sha256"], tool.digest)
+        if np is None:
+            self.skipTest("needs numpy and tifffile for the stand-in's tifxyz")
+        trace, run_dir = self.trace(), self.tmp / "ap" / "repaired" / "t00.fixy"
+        (run_dir / "stale").mkdir(parents=True)
+        res, code, out = toolreg.exec_repair(tool, trace, run_dir, str(self.src), seed=[1, 2, 3], sha=tool.digest,
+                                             root=self.tmp)
+        self.assertEqual(code, toolreg.EXIT_OK, res.get("warnings"))
+        self.assertEqual(out, run_dir / "seg")
+        self.assertFalse((run_dir / "stale").exists())                    # the run folder is made fresh
+        seed = json.loads((run_dir / "registry-run.json").read_text())["inputs"]["seed"]["value"]
+        self.assertEqual(seed, [1.0, 2.0, 3.0])
+        self.assertEqual([g["verdict"] for g in res["format_gate"]], ["pass"])
+        self.assertEqual(json.loads((trace / "meta.json").read_text())["uuid"], "trace")
+        bad = self.add(self.repair_manifest("badseg"))
+        res, code, out = toolreg.exec_repair(bad, trace, self.tmp / "ap" / "bad", str(self.src), root=self.tmp)
+        self.assertEqual((code, out), (toolreg.EXIT_REFUSED, None))      # a copy that fails the gate is not handed on
+        with self.assertRaisesRegex(toolreg.RegistryError, "changed after the plan"):
+            toolreg.exec_repair(tool, trace, run_dir, str(self.src), sha="0" * 64, root=self.tmp)
+        with self.assertRaisesRegex(toolreg.RegistryError, "not a repair backend"):
+            toolreg.exec_repair(self.add(manifest()), trace, run_dir, str(self.src), root=self.tmp)
 
 
 class PluginHostTest(Base):

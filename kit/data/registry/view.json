@@ -3,6 +3,10 @@
  "id": "view",
  "repo": "public",
  "inputs": {
+  "segment": {
+   "from": "segment",
+   "label": "the active segment's folder, which the map lies on: its ink detection records find the reverse-depth twin and the labels, and its name and catalog ids feed the target rule (view itself reads only the maps and labels)"
+  },
   "forward": {
    "from": "segment.overlay",
    "format": [
@@ -22,6 +26,14 @@
    "required": false,
    "role": "control:reverse",
    "label": "its reverse-depth map"
+  },
+  "labels": {
+   "from": "segment.labels",
+   "format": [
+    "tiff"
+   ],
+   "required": false,
+   "label": "the segment's ink labels as a TIFF on the maps' grid (an ink-labels record, or SEG_inklabels.tif in villa's naming)"
   }
  },
  "run": {
@@ -36,6 +48,10 @@
   "optional_args": {
    "reverse": [
     "reverse={in.reverse}"
+   ],
+   "labels": [
+    "--labels",
+    "{in.labels}"
    ]
   },
   "stdout": "{run}/view.json",
@@ -88,7 +104,7 @@
   "go_ahead": false,
   "network": "None. The page loads nothing: every image is a PNG data URI inside the file",
   "license": null,
-  "checked": "2026-10-17 a6beee7",
+  "checked": "2026-10-21 8721373",
   "success": "Exit code 0 and `OUT.html` starting with `<!doctype html>`.",
   "not_a_pass": "`auc_on_view` as a reported score (subsampled view, no interval, and a control only if you added the reverse map as a reader); a high rank correlation taken as correctness; any number from a map of a segment the reader trained on taken as generalization.",
   "never": "Commit or share a page or PNG made from target-scroll maps (the HTML embeds the maps); commit any map-bearing HTML to this repository (no maps in git); say a letter was found or read from what the page shows."

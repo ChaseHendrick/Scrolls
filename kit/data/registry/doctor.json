@@ -9,7 +9,8 @@
    "kit",
    "doctor",
    "--disk",
-   "{run}"
+   "{run}",
+   "--exit-zero"
   ],
   "stdout": "{run}/doctor.txt",
   "timeout_s": 300
@@ -50,7 +51,7 @@
   "go_ahead": false,
   "network": "None",
   "license": null,
-  "checked": "2026-10-16 29e7e8c",
+  "checked": "2026-10-21 8721373",
   "success": "Exit code 0 with `overall: pass` or `overall: warn`. Exit code 1 with an `overall: fail` line is a finished report; exit code 1 without that line is a crash (see Failure modes).",
   "not_a_pass": "`overall: pass` does not mean CUDA, PyTorch or villa's inference work; only the control run shows that. A `gpu` pass says nothing about whether the card is free or the driver matches villa's PyTorch.",
   "never": "Try to sign in to Modal from a Claude cloud session because `gpu` failed (the Modal rule, hard rule 11): write a run spec instead; run hours of GPU work on a laptop CPU because the other checks passed."

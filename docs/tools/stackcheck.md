@@ -10,7 +10,7 @@
 | Area | Surfaces and tracing |
 | Run | `python -m kit stackcheck`, `from kit import stackcheck` |
 | Code | `kit/stackcheck.py`, `kit/cli.py` (`cmd_stackcheck`), `kit/meshaudit.py` (`_get`, `get_json`, `load_catalogue`, `sample_matrix`), `kit/verify.py` (`VerifyError`) |
-| Tests | `tests/test_stackcheck.py` |
+| Tests | `tests/test_stackcheck.py`, `tests/test_toolreg_reports.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (`cKDTree`, `ndimage.label`), tifffile. Inputs: the segments' tifxyz folders and the scroll's published umbilicus JSON. Checked with Python 3.13, numpy 2.5, scipy 1.18 |
 | Runs on | One CPU core. PHerc0139 run A (5 segments) took 49.8 s and 0.75 GB, run B (18 segments) 144.8 s and 1.7 GB (`stackcheck_checks` in `results.json`, 2026-10-14); a synthetic six-winding stack takes 13 to 16 s and 166 MB (measured 2026-10-16, 4-core Xeon cloud container, shared) |
 | Network | None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog` |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-14 (`47cd607`); listed in the README's "Released tools" as the release `stackcheck` (Segment stack check), since 2026-10-20 a line of the Scrolls kit entry under the same id |
 | Guide | [The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits |
-| Checked | 2026-10-16 against commit `d9eaf42` |
+| Checked | 2026-10-21 against commit `8721373` |
 
 ## What it does
 
@@ -112,7 +112,7 @@ usage: python -m kit stackcheck [-h] --umbilicus UMBILICUS
                                 [--min-count MIN_COUNT]
                                 [--min-share MIN_SHARE] [--upsample UPSAMPLE]
                                 [--cache CACHE] [--out OUT] [--flags FLAGS]
-                                [--json] [--verbose]
+                                [--json] [--verbose] [--exit-zero]
                                 segments [segments ...]
 ```
 
@@ -140,6 +140,7 @@ The settings that show `none` take their value from `DEFAULTS` in `kit/stackchec
 | `--flags FLAGS` | none | Write the masks here as `.npz` (the suffix is added when missing); the report's `flags_file` names the file written |
 | `--json` | off | Print the whole report as JSON instead of the text summary |
 | `--verbose` | off | Progress lines on stderr: fetched URLs, rays cast, and each segment's normal search with elapsed seconds |
+| `--exit-zero` | off | Exit 0 when the report is written even if something was flagged (`summary.clean` says so); errors still exit 2. VC3D's entry uses it so flags come back as a result |
 
 Two settings are fixed in the code and have no option: `tol_cells` 1.5 (same height and angle means within 1.5 grid steps of z and of arc; settable only through `settings` in the Python API) and `PAIR_SPACING` (0.5, 1.75).
 
@@ -327,6 +328,18 @@ The method is this repository's own; it follows no published method. Each check 
 | Synthetic six-winding stack, 40 planes | 13 to 16 s | 166 MB | This page, 2026-10-16, 4-core Xeon cloud container (shared) |
 
 Run A downloads about 100 MB once and run B about 25 MB (the note). It uses one core; nothing here needs Modal or a GPU. A full-resolution 2.399 um copy at the defaults needs about 2 GB per segment (the module docstring), so a large stack at full resolution may not fit a laptop's memory.
+
+## Start from VC3D
+
+Attach the scroll's umbilicus in VC3D and pick Scrolls > segments > "stackcheck". VC3D asks for the segments by their ids, inner to outer, separated by commas; the launcher turns the ids into folders through the agent bridge of the VC3D that started it (read-only calls, never another window's bridge), so start VC3D with its agent bridge on, or type folders instead. The registry runs `kit stackcheck ... --exit-zero`, so a stack with flags comes back as a result; `summary.clean` says whether anything was flagged. From a terminal or an agent ([toolreg](toolreg.md)):
+
+```bash
+python -m kit tools run stackcheck --input segments=W00,W01,W02 --umbilicus UMB.json --out RUN
+```
+
+## Open in VC3D
+
+VC3D shows `RUN/stackcheck.json` as the run's result file, with example vertices per flag to look at; `RUN/flags.npz` holds the masks. Loading the flagged vertices as a point collection is planned, not built. stackcheck checks finished segments against each other; it is not an AutoPipeline (AP) stage.
 
 ## For agents
 

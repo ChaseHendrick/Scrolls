@@ -1157,15 +1157,16 @@
     }
    ],
    "tests": [
-    "tests/test_kit.py"
+    "tests/test_kit.py",
+    "tests/test_toolreg_reports.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-21",
+    "commit": "8721373"
    },
    "license": null,
    "fields": {
@@ -1175,7 +1176,7 @@
     "Area": "Planning and prizes",
     "Run": "`python -m kit doctor`, `from kit import doctor`",
     "Code": "`kit/doctor.py`, `kit/cli.py` (`cmd_doctor`)",
-    "Tests": "`tests/test_kit.py`",
+    "Tests": "`tests/test_kit.py`, `tests/test_toolreg_reports.py`",
     "Needs": "Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) when it is on `PATH`, and reads the environment variables `VILLA` and `VC_BIN`",
     "Runs on": "Any machine. 0.34 to 0.43 s per call with no `nvidia-smi` installed (5 runs, measured 2026-10-16, 4-core Xeon cloud container). With `nvidia-smi`, add its run time, at most 20 s (the timeout)",
     "Network": "None",
@@ -1183,7 +1184,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-21 against commit `8721373`"
    },
    "page": "docs/tools/doctor.md",
    "sections": [
@@ -1214,67 +1215,79 @@
     {
      "name": "Commands and options",
      "start_line": 93,
-     "end_line": 112,
+     "end_line": 113,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 113,
-     "end_line": 137,
+     "start_line": 114,
+     "end_line": 138,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 138,
-     "end_line": 148,
+     "start_line": 139,
+     "end_line": 149,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 149,
-     "end_line": 169,
+     "start_line": 150,
+     "end_line": 170,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 170,
-     "end_line": 188,
+     "start_line": 171,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 189,
-     "end_line": 198,
+     "start_line": 190,
+     "end_line": 199,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 199,
-     "end_line": 202,
+     "start_line": 200,
+     "end_line": 203,
+     "applicable": true
+    },
+    {
+     "name": "Start from VC3D",
+     "start_line": 204,
+     "end_line": 211,
+     "applicable": true
+    },
+    {
+     "name": "Open in VC3D",
+     "start_line": 212,
+     "end_line": 215,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 203,
-     "end_line": 212,
+     "start_line": 216,
+     "end_line": 225,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 213,
-     "end_line": 220,
+     "start_line": 226,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 221,
-     "end_line": 226,
+     "start_line": 234,
+     "end_line": 239,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 227,
-     "end_line": 235,
+     "start_line": 240,
+     "end_line": 248,
      "applicable": true
     }
    ]
@@ -2717,15 +2730,16 @@
    ],
    "tests": [
     "tests/test_hpscore.py",
-    "tests/test_hpscore_reuse.py"
+    "tests/test_hpscore_reuse.py",
+    "tests/test_toolreg_reports.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-21",
+    "commit": "8721373"
    },
    "license": null,
    "fields": {
@@ -2735,7 +2749,7 @@
     "Area": "Scoring and controls",
     "Run": "`python -m kit hpscore`, `from kit import hpscore`",
     "Code": "`kit/hpscore.py`, `kit/cli.py` (`cmd_hpscore`), `kit/auc.py` (`_load`, `_levels`, `labels_on_map`, `label_grid`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/layers.py` (`_zarr`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
-    "Tests": "`tests/test_hpscore.py`, `tests/test_hpscore_reuse.py`",
+    "Tests": "`tests/test_hpscore.py`, `tests/test_hpscore_reuse.py`, `tests/test_toolreg_reports.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer). The `maps` extra of `pyproject.toml` installs all of them",
     "Runs on": "Any CPU. A 640 px crop with its control takes about 0.6 s as a fresh command; a 2,560 px crop about 8 s ([production scaling log](../logs/2026-10-07-production-scaling.md), one core). A full segment has not been measured",
     "Network": "None",
@@ -2743,7 +2757,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07",
     "Guide": "[STANDARDS.md](../STANDARDS.md) (where the letter-scale score sits among the measures), [tricks.md](../tricks.md) (where it came from and what it measured)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-21 against commit `8721373`"
    },
    "page": "docs/tools/hpscore.md",
    "sections": [
@@ -2814,27 +2828,39 @@
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Start from VC3D",
      "start_line": 224,
      "end_line": 233,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Open in VC3D",
      "start_line": 234,
-     "end_line": 241,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 238,
+     "end_line": 247,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 248,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 242,
-     "end_line": 246,
+     "start_line": 256,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 247,
-     "end_line": 256,
+     "start_line": 261,
+     "end_line": 270,
      "applicable": true
     }
    ]
@@ -5119,15 +5145,16 @@
     }
    ],
    "tests": [
-    "tests/test_overlap.py"
+    "tests/test_overlap.py",
+    "tests/test_toolreg_reports.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63753fa"
+    "date": "2026-10-21",
+    "commit": "8721373"
    },
    "license": null,
    "fields": {
@@ -5137,7 +5164,7 @@
     "Area": "Surfaces and tracing",
     "Run": "`python -m kit overlap`, `python -m kit collate`, `from kit import overlap`",
     "Code": "`kit/overlap.py`, `kit/cli.py` (`cmd_overlap`, `cmd_collate`), `kit/auc.py` (`_levels`), `kit/layers.py` (`_zarr`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`)",
-    "Tests": "`tests/test_overlap.py`",
+    "Tests": "`tests/test_overlap.py`, `tests/test_toolreg_reports.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (`cKDTree`, `ndimage.zoom`), tifffile; zarr for `--labels-a` and `--labels-b`; imagecodecs for LZW or zstd TIFF maps. Checked with Python 3.13, numpy 2.5, scipy 1.18, zarr 3.4",
     "Runs on": "Any CPU. PHerc0841 w00 against ag896 with labels takes 38 s and 254 MB; a full-size synthetic pair takes 9 s without labels, and `collate` with a control 37 s and 509 MB (measured 2026-10-16, 4-core Xeon cloud container, shared)",
     "Network": "None",
@@ -5145,7 +5172,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-07 (`25070df`)",
     "Guide": "[The overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md), sections 1, 4 and 6",
-    "Checked": "2026-10-16 against commit `63753fa`"
+    "Checked": "2026-10-21 against commit `8721373`"
    },
    "page": "docs/tools/overlap.md",
    "sections": [
@@ -5216,27 +5243,39 @@
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Start from VC3D",
      "start_line": 270,
-     "end_line": 279,
+     "end_line": 277,
+     "applicable": true
+    },
+    {
+     "name": "Open in VC3D",
+     "start_line": 278,
+     "end_line": 281,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 282,
+     "end_line": 291,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 280,
-     "end_line": 287,
+     "start_line": 292,
+     "end_line": 299,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 288,
-     "end_line": 293,
+     "start_line": 300,
+     "end_line": 305,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 294,
-     "end_line": 305,
+     "start_line": 306,
+     "end_line": 317,
      "applicable": true
     }
    ]
@@ -7797,15 +7836,16 @@
     }
    ],
    "tests": [
-    "tests/test_stackcheck.py"
+    "tests/test_stackcheck.py",
+    "tests/test_toolreg_reports.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "d9eaf42"
+    "date": "2026-10-21",
+    "commit": "8721373"
    },
    "license": null,
    "fields": {
@@ -7815,7 +7855,7 @@
     "Area": "Surfaces and tracing",
     "Run": "`python -m kit stackcheck`, `from kit import stackcheck`",
     "Code": "`kit/stackcheck.py`, `kit/cli.py` (`cmd_stackcheck`), `kit/meshaudit.py` (`_get`, `get_json`, `load_catalogue`, `sample_matrix`), `kit/verify.py` (`VerifyError`)",
-    "Tests": "`tests/test_stackcheck.py`",
+    "Tests": "`tests/test_stackcheck.py`, `tests/test_toolreg_reports.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy (`cKDTree`, `ndimage.label`), tifffile. Inputs: the segments' tifxyz folders and the scroll's published umbilicus JSON. Checked with Python 3.13, numpy 2.5, scipy 1.18",
     "Runs on": "One CPU core. PHerc0139 run A (5 segments) took 49.8 s and 0.75 GB, run B (18 segments) 144.8 s and 1.7 GB (`stackcheck_checks` in `results.json`, 2026-10-14); a synthetic six-winding stack takes 13 to 16 s and 166 MB (measured 2026-10-16, 4-core Xeon cloud container, shared)",
     "Network": "None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog`",
@@ -7823,7 +7863,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-14 (`47cd607`); listed in the README's \"Released tools\" as the release `stackcheck` (Segment stack check), since 2026-10-20 a line of the Scrolls kit entry under the same id",
     "Guide": "[The PHerc0139 segment note](../logs/2026-10-14-pherc0139-segment-defects.md): usage, the PHerc0139 numbers, example vertices for VC3D, a look at the CT and the limits",
-    "Checked": "2026-10-16 against commit `d9eaf42`"
+    "Checked": "2026-10-21 against commit `8721373`"
    },
    "page": "docs/tools/stackcheck.md",
    "sections": [
@@ -7854,67 +7894,79 @@
     {
      "name": "Commands and options",
      "start_line": 99,
-     "end_line": 154,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 155,
-     "end_line": 202,
+     "start_line": 156,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 203,
-     "end_line": 214,
+     "start_line": 204,
+     "end_line": 215,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 215,
-     "end_line": 250,
+     "start_line": 216,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 251,
-     "end_line": 302,
+     "start_line": 252,
+     "end_line": 303,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 303,
-     "end_line": 319,
+     "start_line": 304,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 320,
-     "end_line": 330,
+     "start_line": 321,
+     "end_line": 331,
+     "applicable": true
+    },
+    {
+     "name": "Start from VC3D",
+     "start_line": 332,
+     "end_line": 339,
+     "applicable": true
+    },
+    {
+     "name": "Open in VC3D",
+     "start_line": 340,
+     "end_line": 343,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 331,
-     "end_line": 340,
+     "start_line": 344,
+     "end_line": 353,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 341,
-     "end_line": 348,
+     "start_line": 354,
+     "end_line": 361,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 349,
-     "end_line": 356,
+     "start_line": 362,
+     "end_line": 369,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 357,
-     "end_line": 365,
+     "start_line": 370,
+     "end_line": 378,
      "applicable": true
     }
    ]
@@ -8806,6 +8858,7 @@
    ],
    "tests": [
     "tests/test_toolreg.py",
+    "tests/test_toolreg_reports.py",
     "tests/fake_vc3d_host.py",
     "tests/test_localcost.py"
    ],
@@ -8825,7 +8878,7 @@
     "Area": "Pipeline and agents",
     "Run": "`python -m kit tools list`, `python -m kit tools show`, `python -m kit tools check`, `python -m kit tools availability`, `python -m kit tools selection`, `python -m kit tools plan`, `python -m kit tools run`, `python -m kit tools confirm`, `python -m kit tools take`, `python -m kit tools open`, `python -m kit tools exec`, `python -m kit tools export-vc3d`",
     "Code": "`kit/toolreg.py`, `kit/data/registry/`, `integrations/vc3d/`, `kit/cli.py` (`cmd_tools`), `kit/tooldocs.py` (`registry_problems`, `write_index`), `kit/localcost.py` (`run`)",
-    "Tests": "`tests/test_toolreg.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py`",
+    "Tests": "`tests/test_toolreg.py`, `tests/test_toolreg_reports.py`, `tests/fake_vc3d_host.py`, `tests/test_localcost.py`",
     "Needs": "Python 3.10 or newer, standard library only; numpy and tifffile for the 8-bit views of float maps and for turning a VC3D focus region into a box on a segment's canvas (both skipped with a warning without them). Each tool needs what its own page says. Reading a running VC3D (`--from-app`, `open --live`) needs `kit/vc3d_bridge.py` (in the AutoPipeline package) and VC3D built with its agent bridge. VC3D's plugin host is villa's `apps/VC3D/plugins/` on the vc3d-plugins lane of the combined VC3D suite, not merged into villa yet",
     "Runs on": "Any CPU. The registry adds well under a second to a tool's own time: a synthetic 400 x 600 rowscore run took 3.2 s wall in all, 1.0 s CPU (measured 2026-10-20, cloud container)",
     "Network": "None. A tool it runs uses the network only as its own page and its manifest's `safety.network` say; reading a running VC3D uses its local socket",
@@ -8869,61 +8922,61 @@
     {
      "name": "Python API",
      "start_line": 357,
-     "end_line": 406,
+     "end_line": 407,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 407,
-     "end_line": 424,
+     "start_line": 408,
+     "end_line": 425,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 425,
-     "end_line": 455,
+     "start_line": 426,
+     "end_line": 456,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 456,
-     "end_line": 514,
+     "start_line": 457,
+     "end_line": 516,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 515,
-     "end_line": 530,
+     "start_line": 517,
+     "end_line": 532,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 531,
-     "end_line": 534,
+     "start_line": 533,
+     "end_line": 536,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 535,
-     "end_line": 544,
+     "start_line": 537,
+     "end_line": 546,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 545,
-     "end_line": 548,
+     "start_line": 547,
+     "end_line": 550,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 549,
-     "end_line": 554,
+     "start_line": 551,
+     "end_line": 556,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 555,
-     "end_line": 562,
+     "start_line": 557,
+     "end_line": 564,
      "applicable": true
     }
    ]
@@ -9567,15 +9620,16 @@
    ],
    "tests": [
     "tests/test_verify.py",
-    "tests/test_scoring_guards.py"
+    "tests/test_scoring_guards.py",
+    "tests/test_toolreg_reports.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "d9eaf42"
+    "date": "2026-10-21",
+    "commit": "8721373"
    },
    "license": null,
    "fields": {
@@ -9585,7 +9639,7 @@
     "Area": "Scoring and controls",
     "Run": "`python -m kit verify`, `from kit import verify`",
     "Code": "`kit/verify.py`, `kit/cli.py` (`cmd_verify`), `kit/ledger.py` (`add_check`, `load`, `path_for`)",
-    "Tests": "`tests/test_verify.py`, `tests/test_scoring_guards.py` (`VerifyGuardsTest`)",
+    "Tests": "`tests/test_verify.py`, `tests/test_scoring_guards.py` (`VerifyGuardsTest`), `tests/test_toolreg_reports.py`",
     "Needs": "Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. The maps extra installs all three (`python -m pip install \"scrolls-workbench[maps]\"`, `MAPS_INSTALL`); villa's environment has them too",
     "Runs on": "Any CPU. A 2.4 um w035 ink map of 22,640 x 20,400 px with a control took 36 s and 2.25 GB ([mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment), 2026-10-07); a 5,980 x 8,240 uint8 map with a control took 17 s and 512 MB (measured 2026-10-16, shared 4-core cloud container, synthetic maps)",
     "Network": "None",
@@ -9593,7 +9647,7 @@
     "Go-ahead": "Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8)",
     "Released": "Public `main` since 2026-10-07",
     "Guide": "[mac.md, \"Runbook: verify MPS against CPU on the control segment\"](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment)",
-    "Checked": "2026-10-16 against commit `d9eaf42`"
+    "Checked": "2026-10-21 against commit `8721373`"
    },
    "page": "docs/tools/verify.md",
    "sections": [
@@ -9624,67 +9678,79 @@
     {
      "name": "Commands and options",
      "start_line": 77,
-     "end_line": 99,
+     "end_line": 101,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 100,
-     "end_line": 119,
+     "start_line": 102,
+     "end_line": 121,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 120,
-     "end_line": 127,
+     "start_line": 122,
+     "end_line": 129,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 128,
-     "end_line": 160,
+     "start_line": 130,
+     "end_line": 162,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 161,
-     "end_line": 179,
+     "start_line": 163,
+     "end_line": 181,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 180,
-     "end_line": 191,
+     "start_line": 182,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 192,
-     "end_line": 201,
+     "start_line": 194,
+     "end_line": 203,
      "applicable": true
     },
     {
-     "name": "For agents",
-     "start_line": 202,
+     "name": "Start from VC3D",
+     "start_line": 204,
      "end_line": 211,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Open in VC3D",
      "start_line": 212,
-     "end_line": 219,
+     "end_line": 215,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 216,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 226,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 220,
-     "end_line": 226,
+     "start_line": 234,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 227,
-     "end_line": 235,
+     "start_line": 241,
+     "end_line": 249,
      "applicable": true
     }
    ]
@@ -9733,15 +9799,16 @@
     }
    ],
    "tests": [
-    "tests/test_phantom.py"
+    "tests/test_phantom.py",
+    "tests/test_toolreg_reports.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1)"
    },
    "checked": {
-    "date": "2026-10-17",
-    "commit": "a6beee7"
+    "date": "2026-10-21",
+    "commit": "8721373"
    },
    "license": null,
    "fields": {
@@ -9751,7 +9818,7 @@
     "Area": "Viewers and apps",
     "Run": "`python -m kit view`, `from kit import viewer`",
     "Code": "`kit/viewer.py`, `kit/cli.py` (`cmd_view`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/auc.py` (`score_array`)",
-    "Tests": "`tests/test_phantom.py` (class `ViewerTest`)",
+    "Tests": "`tests/test_phantom.py` (class `ViewerTest`), `tests/test_toolreg_reports.py`",
     "Needs": "Python 3.10 or newer, numpy; tifffile for `.tif` maps (imagecodecs too for LZW or zstd TIFFs). A web browser with JavaScript to open the page; nothing else",
     "Runs on": "Any CPU. Two 256 x 256 maps take about 1 s; three full-size 5,980 x 8,240 float32 maps with labels and mask take about 11 s and 765 MB peak memory (measured 2026-10-16, 4-core Xeon cloud container under load from other jobs, synthetic data)",
     "Network": "None. The page loads nothing: every image is a PNG data URI inside the file",
@@ -9759,7 +9826,7 @@
     "Go-ahead": "Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1)",
     "Released": "Public `main` since 2026-10-07 ([PR #13](https://github.com/ChaseHendrick/Scrolls/pull/13)); since 2026-10-14 also in the `scrolls-workbench` package installed from this repository, as `scrolls-workbench view`",
     "Guide": "[phantom-and-viewer.md](../phantom-and-viewer.md) (the phantoms and this viewer), [the phantom and viewer demo log](../logs/2026-10-07-phantom-demo.md)",
-    "Checked": "2026-10-17 against commit `a6beee7`"
+    "Checked": "2026-10-21 against commit `8721373`"
    },
    "page": "docs/tools/view.md",
    "sections": [
@@ -9830,27 +9897,39 @@
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Start from VC3D",
      "start_line": 222,
      "end_line": 231,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "Open in VC3D",
      "start_line": 232,
-     "end_line": 239,
+     "end_line": 235,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 236,
+     "end_line": 245,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 246,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 240,
-     "end_line": 246,
+     "start_line": 254,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 247,
-     "end_line": 255,
+     "start_line": 261,
+     "end_line": 269,
      "applicable": true
     }
    ]

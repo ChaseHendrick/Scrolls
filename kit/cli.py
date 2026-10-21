@@ -29,6 +29,8 @@ def cmd_prizes(args):
 def cmd_doctor(args):
     report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk))
     print(report)
+    if getattr(args, "exit_zero", False):
+        return 0                    # the report says overall: fail; VC3D's entry shows it as its result
     return 1 if worst == doctor.FAIL else 0
 
 
@@ -68,6 +70,8 @@ def cmd_verify(args):
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(result, indent=2) if args.json else verify.format_result(result))
+    if getattr(args, "exit_zero", False):
+        return 0                    # the verdict is in the printed result; the tool registry reads it from there
     return {verify.PASS: 0, verify.PASS_UNCONTROLLED: 3}.get(result["verdict"], 1)
 
 
@@ -175,7 +179,7 @@ def cmd_stackcheck(args):
         traceback.print_exc()
         print("kit stackcheck stopped on an unexpected error (above)", file=sys.stderr)
         return 2
-    return 0 if rep["summary"]["clean"] else 1
+    return 0 if rep["summary"]["clean"] or getattr(args, "exit_zero", False) else 1
 
 
 def cmd_meshaudit(args):
@@ -905,6 +909,9 @@ def build_parser(prog="python -m kit", sub_progs=None):
 
     p = sub.add_parser("doctor", help="check GPU, disk, tools and villa paths")
     p.add_argument("--disk", default=".", help="path whose free space to check")
+    p.add_argument("--exit-zero", action="store_true",
+                   help="exit 0 even when a check fails (the report's last line says so); VC3D's entry uses it so "
+                        "the report comes back as a result")
     p.set_defaults(func=cmd_doctor)
 
     p = sub.add_parser("plan", help="print a First Letters run plan for an eligible scroll")
@@ -938,6 +945,9 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--slug", help="attach the result to this experiment")
     p.add_argument("--name", default="device-agreement")
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
+    p.add_argument("--exit-zero", action="store_true",
+                   help="exit 0 whatever the verdict once the result is printed (it says the verdict); bad inputs "
+                        "still exit 2. VC3D's entry uses it so a FAIL comes back as a result")
     p.set_defaults(func=cmd_verify)
 
     p = sub.add_parser("rowscore", help="text-row periodicity triage score for ink maps (Bullo27's method)")
@@ -1071,6 +1081,9 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--flags", help="write per-vertex flag masks (.npz, added if missing) on each segment's input grid")
     p.add_argument("--json", action="store_true")
     p.add_argument("--verbose", action="store_true", help="progress to stderr")
+    p.add_argument("--exit-zero", action="store_true",
+                   help="exit 0 when the report is written even if something was flagged (summary.clean says so); "
+                        "errors still exit 2. VC3D's entry uses it so flags come back as a result")
     p.set_defaults(func=cmd_stackcheck)
 
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")

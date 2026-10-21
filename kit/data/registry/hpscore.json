@@ -111,7 +111,7 @@
   "go_ahead": false,
   "network": "None",
   "license": null,
-  "checked": "2026-10-16 29e7e8c",
+  "checked": "2026-10-21 8721373",
   "success": "Exit code 0 and a non-null, non-NaN `forward.hp_r`.",
   "not_a_pass": "A forward `hp_r` with no control; a forward `hp_r` at or below `control.hp_r` or `forward.null_max_abs`; a comparison of two maps made at different blur; any comparison with ShribyrLabs' numbers; a score on a segment the model trained on; a map of logits (negatives are left out).",
   "never": "Call a letter-scale score a reading or say letters were found; treat it as a legibility bar; pass a `--voxel-um` other than the map's pixel size."

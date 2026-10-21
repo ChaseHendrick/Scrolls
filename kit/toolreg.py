@@ -89,7 +89,7 @@ from pathlib import Path
 
 __all__ = ["SCHEMA", "SELECTION_SCHEMA", "RESULT_SCHEMA", "PLUGIN_SCHEMA", "Tool", "Registry", "RegistryError",
            "BindError", "load", "validate_manifest", "doors", "selection_from", "selection_from_app", "bind",
-           "plan", "run", "open_run", "exec_ink", "stage_choices", "existing_backends", "ink_models", "plugin_manifests", "export_vc3d",
+           "plan", "run", "open_run", "exec_ink", "exec_repair", "stage_choices", "existing_backends", "ink_models", "plugin_manifests", "export_vc3d",
            "check", "facts_for", "write_facts", "load_cached", "register_opener", "register_run_folder",
            "register_stage_check", "vc3d_reasons", "vc3d_plan_reasons", "vc3d_entries", "parent_bridge",
            "enrich_from_bridge", "format_gate", "write_plan", "find_plan", "confirm", "take", "launch",
@@ -171,7 +171,8 @@ ELIGIBLE = ("refuse-public", "private-prereg")
 PAID = ("never", "plan-only")
 NETWORKS = ("none", "public-read", "download")
 OUTSIDE_KINDS = ("volume-folder", "vc3d-cache-delete", "mirror", "kit-home", "segment-folder", "destructive")
-PIPELINE_KEYS = ("stage", "contract", "input", "reverse", "flag", "pair_output", "existing", "built_in")
+PIPELINE_KEYS = ("stage", "contract", "input", "prediction", "seed", "output", "reverse", "flag", "pair_output",
+                 "existing", "built_in")
 # AutoPipeline's swappable stages (kit/apbackends.py STAGES in the kit that has it) and the contract each one passes
 AP_STAGES = ("umbilicus", "trace", "flatten", "snap", "repair", "ink", "triage")
 CONTRACTS = {"umbilicus": "umbilicus", "trace": "trace", "flatten": "flatten", "snap": "snap", "repair": "repair",
@@ -736,9 +737,44 @@ def _check_pipeline(pipe, inputs, outputs, kind, params=None):
                 p.append("pipeline.pair_output names the output that holds the reverse-depth map (role control:NAME)")
         elif pipe["reverse"] == "flag" and not (isinstance(pipe.get("flag"), list) and pipe["flag"]):
             p.append("pipeline.flag is the argument list that makes the tool read the depth order reversed")
+    elif stage == "repair":
+        p += _check_repair(pipe, inputs, outputs, params or {})
     else:
         p.append(f"stage {stage} has no generic registry runner in AutoPipeline yet: name the stage's existing backend "
                  "with pipeline.existing, or mark the tool built_in")
+    return p
+
+
+def _check_repair(pipe, inputs, outputs, params):
+    """The repair contract: AutoPipeline's qa stage hands a trace it rejected for a sheet switch (input, a tifxyz
+    bound from the segment), the surface prediction the trace was made on (prediction, the plan's prediction_url)
+    and, when the manifest takes one, the trace's planned seed (seed, a point); the tool writes a repaired tifxyz
+    copy (output) inside its run folder, and qa checks the copy again by its own rule (exec_repair)."""
+    p = []
+    if set(pipe) - {"stage", "contract", "input", "prediction", "seed", "output"}:
+        p.append("pipeline for stage repair takes stage, contract, input, prediction, seed and output only")
+    trace = inputs.get(pipe.get("input")) if isinstance(pipe.get("input"), str) else None
+    if not isinstance(trace, dict) or trace.get("from") != "segment" or "tifxyz" not in (trace.get("format") or []):
+        p.append("pipeline.input names the input that takes the trace: from segment, format tifxyz")
+    pred = inputs.get(pipe.get("prediction")) if isinstance(pipe.get("prediction"), str) else None
+    if not isinstance(pred, dict) or pred.get("from") not in ("volume", "path"):
+        p.append("pipeline.prediction names the input that takes the surface prediction (from volume or path)")
+    if "seed" in pipe:
+        seed = inputs.get(pipe["seed"]) if isinstance(pipe["seed"], str) else None
+        if not isinstance(seed, dict) or seed.get("from") != "point" or seed.get("required", True):
+            p.append("pipeline.seed names an optional input from point that takes the trace's planned seed")
+    out = outputs.get(pipe.get("output")) if isinstance(pipe.get("output"), str) else None
+    if not isinstance(out, dict) or out.get("kind") != "surface" or out.get("format") != "tifxyz":
+        p.append("pipeline.output names the output that holds the repaired copy: kind surface, format tifxyz")
+    filled = {pipe.get(k) for k in ("input", "prediction", "seed")}
+    extra = sorted(n for n, s in inputs.items() if isinstance(s, dict) and s.get("required", True) and n not in filled)
+    if extra:
+        p.append(f"AutoPipeline's repair stage fills only the trace, the prediction and the seed; required input(s) "
+                 f"{', '.join(extra)} would be left unbound")
+    loose = sorted(n for n, s in params.items() if isinstance(s, dict) and s.get("default") is None
+                   and s.get("from") != "volume.voxel_um")
+    if loose:
+        p.append(f"AutoPipeline's repair stage sets only the voxel size; param(s) {', '.join(loose)} need a default")
     return p
 
 
@@ -2831,6 +2867,15 @@ def stage_choices(stage, registry=None):
             for name in existing_backends(tool):
                 out[name] = {"registry": block}
             continue
+        if stage == "repair" and pipe.get("contract") == "repair":
+            out[f"reg:{tool.id}"] = {
+                "origin": "ours" if tool["repo"] in ("public", "private") else "community",
+                "by": f"{tool.title} (tool registry, kit/data/registry/{tool.id}.json, through toolreg.exec_repair)",
+                "kind": "classical" if not tool.safety.get("model_output") else "learned",
+                "licence": tool.facts.get("license") or "this repository", "needs": [],
+                "compute": "gpu" if "gpu" in tool.compute.get("where", "local-cpu") else "cpu",
+                "settings": {"qa": {"repair": {"method": f"reg:{tool.id}"}}}, "registry": block}
+            continue
         if stage == "ink" and pipe.get("contract") == "ink-command":
             comp = tool.compute.get("where", "local-cpu")
             out[f"reg:{tool.id}"] = {
@@ -2910,6 +2955,31 @@ def exec_ink(tool, input_path, output, reverse, sha=None, root=ROOT, ledger_root
     else:
         shutil.copyfile(src, out)
     return EXIT_OK
+
+
+def exec_repair(tool, surface, run_dir, prediction, seed=None, voxel_um=None, sha=None, root=ROOT, ledger_root=None):
+    """AutoPipeline's qa stage calls this for a repair backend reg:ID (the repair contract, pipeline.input,
+    prediction, seed and output): the tool runs on the rejected trace and the plan's surface prediction in run_dir
+    (made fresh; it writes nothing else), through every gate, the local cost ledger, the write audit and the format
+    gate. Returns (result, exit code, the repaired tifxyz folder or None); qa then checks the copy by its own rule.
+    sha, the digest the plan froze, refuses a manifest edited since."""
+    pipe = tool["pipeline"] or {}
+    if pipe.get("stage") != "repair" or pipe.get("contract") != "repair":
+        raise RegistryError(f"{tool.id} is not a repair backend")
+    if sha and not tool.digest.startswith(sha):
+        raise RegistryError(f"{tool.id}'s manifest changed after the plan was made (digest {tool.digest[:16]}, the "
+                            f"plan froze {sha[:16]}): make a new plan")
+    explicit = {pipe["input"]: str(surface), pipe["prediction"]: str(prediction)}
+    if seed is not None and pipe.get("seed"):
+        explicit[pipe["seed"]] = ",".join(repr(float(v)) for v in seed)
+    sel = selection_from(source="autopipeline", voxel_um=voxel_um)
+    job = prepare(tool, sel, explicit)
+    run_dir = Path(run_dir)
+    if run_dir.exists():
+        shutil.rmtree(run_dir)
+    res, code = run(tool, job, run_dir=run_dir, root=root, ledger_root=ledger_root)
+    out = Path(tool.outputs[pipe["output"]]["path"].replace("{run}", str(run_dir)))
+    return res, code, (out if code == EXIT_OK and out.is_dir() else None)
 
 
 # ---------------------------------------------------------------- VC3D plugin manifests
@@ -3507,7 +3577,27 @@ def cli(args, root=ROOT, env=None):
     except RegistryError as exc:
         print(json.dumps({"error": str(exc), "exit": EXIT_BAD}) if getattr(args, "json", False) else
               f"tools: {exc}", file=sys.stderr)
+        _refusal_record(args, exc)
         return EXIT_BAD
+
+
+def _refusal_record(args, exc):
+    """A run or confirm refused before it started (an input that does not bind, a bad --param) leaves its reason in
+    vc3d-result.json when --out is the fresh folder VC3D's plugin host made (holding only its own plugin-run.json),
+    so the person sees why in the run folder VC3D names. Any other folder is left untouched."""
+    out = getattr(args, "out", None) if getattr(args, "action", None) in ("run", "confirm") else None
+    if not out:
+        return
+    out = Path(out).expanduser()
+    try:
+        if not out.is_dir() or (out / "vc3d-result.json").exists() or \
+                any(q.name not in HOST_FILES for q in out.iterdir()):
+            return
+        _write_result(out, {"schema": RESULT_SCHEMA, "tool": getattr(args, "id", None) or getattr(args, "tool", None),
+                            "status": "bad", "exit": EXIT_BAD, "error": str(exc), "finished_utc": utc_now(),
+                            "outputs": [], "open": [], "warnings": [], "next_steps": [], "applied": []})
+    except OSError:
+        pass
 
 
 def main(argv=None):

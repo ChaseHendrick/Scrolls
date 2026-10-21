@@ -10,7 +10,7 @@
 | Area | Surfaces and tracing |
 | Run | `python -m kit overlap`, `python -m kit collate`, `from kit import overlap` |
 | Code | `kit/overlap.py`, `kit/cli.py` (`cmd_overlap`, `cmd_collate`), `kit/auc.py` (`_levels`), `kit/layers.py` (`_zarr`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`) |
-| Tests | `tests/test_overlap.py` |
+| Tests | `tests/test_overlap.py`, `tests/test_toolreg_reports.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (`cKDTree`, `ndimage.zoom`), tifffile; zarr for `--labels-a` and `--labels-b`; imagecodecs for LZW or zstd TIFF maps. Checked with Python 3.13, numpy 2.5, scipy 1.18, zarr 3.4 |
 | Runs on | Any CPU. PHerc0841 w00 against ag896 with labels takes 38 s and 254 MB; a full-size synthetic pair takes 9 s without labels, and `collate` with a control 37 s and 509 MB (measured 2026-10-16, 4-core Xeon cloud container, shared) |
 | Network | None |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07 (`25070df`) |
 | Guide | [The overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md), sections 1, 4 and 6 |
-| Checked | 2026-10-16 against commit `63753fa` |
+| Checked | 2026-10-21 against commit `8721373` |
 
 ## What it does
 
@@ -266,6 +266,18 @@ Measured 2026-10-16 in a 4-core Xeon cloud container (2.8 GHz, shared with other
 | Either command on 30 x 40 point grids | about 2 s | |
 
 Most of the time goes to the displaced draws. It runs on any machine; nothing here needs Modal or a GPU. The PHerc0841 inputs of the Quick start are about 2 MB to download.
+
+## Start from VC3D
+
+Make segment A active and pick Scrolls > segments > "overlap". VC3D asks for segment B by its segment id (as VC3D's segment list shows it) and the voxel size (`auto`: the open volume's). An id becomes a path only through the agent bridge of the VC3D that started the entry, so start VC3D with its agent bridge on; the launcher reads that VC3D's segment list once, with read-only calls, and never another window's bridge. Without a bridge, type a tifxyz folder instead of an id. From a terminal or an agent ([toolreg](toolreg.md)):
+
+```bash
+python -m kit tools run overlap --segment SEG_A --input mesh_b=SEG_B --volume VOL --out RUN
+```
+
+## Open in VC3D
+
+VC3D shows `RUN/overlap.json` as the run's result file (`same_sheet_share`, `a_to_b` and `b_to_a`). Nothing is drawn yet: showing the matched or far vertices as a point collection is planned, not built. overlap compares two traces; it is not an AutoPipeline (AP) stage.
 
 ## For agents
 

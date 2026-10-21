@@ -8,6 +8,8 @@
  "args": [
   "run",
   "view",
+  "--segment",
+  "{segment}",
   "--ink-overlay",
   "{ink_overlay}",
   "--out",

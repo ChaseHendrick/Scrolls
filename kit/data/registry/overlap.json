@@ -85,7 +85,7 @@
   "go_ahead": false,
   "network": "None",
   "license": null,
-  "checked": "2026-10-16 63753fa",
+  "checked": "2026-10-21 8721373",
   "success": "Exit code 0, and for labels a non-null `labels.dice`.",
   "not_a_pass": "a label Dice or a map agreement without its displaced null; `collate` without both control maps; a bin whose `map` is null; reading `same_sheet_share` under 0.1 as proof of two sheets (0.1 is a fixed cut, not a test); taking a gap bin as a normal offset; agreement of maps the model trained on (the team's PHerc0841 maps are probably in-sample).",
   "never": "Call two agreeing ink maps a reading or say letters were found; use either command's result to say which trace is right; publish collate results on target-scroll meshes."

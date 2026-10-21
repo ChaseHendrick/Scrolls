@@ -10,7 +10,7 @@
 | Area | Scoring and controls |
 | Run | `python -m kit hpscore`, `from kit import hpscore` |
 | Code | `kit/hpscore.py`, `kit/cli.py` (`cmd_hpscore`), `kit/auc.py` (`_load`, `_levels`, `labels_on_map`, `label_grid`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/layers.py` (`_zarr`), `kit/ledger.py` (`add_check`, `load`, `path_for`) |
-| Tests | `tests/test_hpscore.py`, `tests/test_hpscore_reuse.py` |
+| Tests | `tests/test_hpscore.py`, `tests/test_hpscore_reuse.py`, `tests/test_toolreg_reports.py` |
 | Needs | Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), tifffile (imagecodecs for LZW or zstd TIFFs), zarr (3.x on Python 3.11 or newer). The `maps` extra of `pyproject.toml` installs all of them |
 | Runs on | Any CPU. A 640 px crop with its control takes about 0.6 s as a fresh command; a 2,560 px crop about 8 s ([production scaling log](../logs/2026-10-07-production-scaling.md), one core). A full segment has not been measured |
 | Network | None |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-07 |
 | Guide | [STANDARDS.md](../STANDARDS.md) (where the letter-scale score sits among the measures), [tricks.md](../tricks.md) (where it came from and what it measured) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-21 against commit `8721373` |
 
 ## What it does
 
@@ -220,6 +220,20 @@ The high pass is a normalized convolution: `img - gf(img * m) / max(gf(m), 1e-3)
 | Synthetic 2,560 x 2,560 map with a control | 31 s wall | 606 MB peak | Same machine and date, load average about 14 on 4 cores, so slower than the log's figure |
 
 Time and memory grow with the map's pixel count: it runs seven Gaussian filters of the full map size with a control (ten before 2026-10-07's reuse change). A full 9 um segment (about 20 to 50 million pixels) has not been measured; the HP report says the 2,560 px crop "does not establish full 305-million-pixel canvas throughput or memory viability". The crops here run in seconds on any machine; nothing needs Modal or a GPU.
+
+## Start from VC3D
+
+Make the segment active, select its forward ink map in the Ink Detection overlay and pick Scrolls > segment > "Letter-scale score (hpscore) against the segment's labels". VC3D passes the segment, the map and the open volume; the tool registry ([toolreg](toolreg.md)) finds the reverse-depth twin (a `control:reverse` record, else `MAP_reverse` beside the map) and the labels and mask (ink detection records first, then villa's `SEG_inklabels.zarr` and `SEG_supervision_mask.zarr`). The entry's voxel size field is `auto`: the open volume's voxel size, or the one the parent VC3D's agent bridge reports; type it when the volume has none, or nothing runs. From a terminal or an agent:
+
+```bash
+python -m kit tools run hpscore --segment SEG --ink-overlay SEG/MAP.tif --volume VOL --out RUN
+```
+
+A score is a readout: in public Scrolls a prize-eligible scroll is refused.
+
+## Open in VC3D
+
+VC3D shows `RUN/hpscore.json` as the run's result file (Parse below), and `RUN/vc3d-result.json` carries the controls verdict (`no control: not a pass` without the twin). Nothing is drawn on the segment. hpscore checks a map against published labels; it is not an AutoPipeline (AP) stage.
 
 ## For agents
 

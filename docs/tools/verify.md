@@ -10,7 +10,7 @@
 | Area | Scoring and controls |
 | Run | `python -m kit verify`, `from kit import verify` |
 | Code | `kit/verify.py`, `kit/cli.py` (`cmd_verify`), `kit/ledger.py` (`add_check`, `load`, `path_for`) |
-| Tests | `tests/test_verify.py`, `tests/test_scoring_guards.py` (`VerifyGuardsTest`) |
+| Tests | `tests/test_verify.py`, `tests/test_scoring_guards.py` (`VerifyGuardsTest`), `tests/test_toolreg_reports.py` |
 | Needs | Python 3.10 or newer, numpy, tifffile; imagecodecs for LZW-compressed TIFFs, which is how villa writes its maps. The maps extra installs all three (`python -m pip install "scrolls-workbench[maps]"`, `MAPS_INSTALL`); villa's environment has them too |
 | Runs on | Any CPU. A 2.4 um w035 ink map of 22,640 x 20,400 px with a control took 36 s and 2.25 GB ([mac.md](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment), 2026-10-07); a 5,980 x 8,240 uint8 map with a control took 17 s and 512 MB (measured 2026-10-16, shared 4-core cloud container, synthetic maps) |
 | Network | None |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed to run it. Posting its output, for example on a villa PR, needs Chase's yes (the go-ahead rule, hard rule 8) |
 | Released | Public `main` since 2026-10-07 |
 | Guide | [mac.md, "Runbook: verify MPS against CPU on the control segment"](../mac.md#runbook-verify-mps-against-cpu-on-the-control-segment) |
-| Checked | 2026-10-16 against commit `d9eaf42` |
+| Checked | 2026-10-21 against commit `8721373` |
 
 ## What it does
 
@@ -82,6 +82,7 @@ Claim label: Model output, for the agreement of two runs of a model on one input
 usage: python -m kit verify [-h] [--control CONTROL] [--tolerance TOLERANCE]
                             [--max-fraction MAX_FRACTION] [--json]
                             [--slug SLUG] [--name NAME] [--root ROOT]
+                            [--exit-zero]
                             reference candidate
 ```
 
@@ -96,6 +97,7 @@ usage: python -m kit verify [-h] [--control CONTROL] [--tolerance TOLERANCE]
 | `--slug SLUG` | none | Attach the result as a check to the experiment SLUG in the ledger ([run-ledger](run-ledger.md)); the experiment must exist |
 | `--name NAME` | `device-agreement` | Name of that check in `run.json` |
 | `--root ROOT` | `experiments` | Ledger folder (`ledger.DEFAULT_ROOT`) |
+| `--exit-zero` | off | Exit 0 whatever the verdict once the result is printed; the verdict stays in the result. Bad inputs still exit 2. VC3D's entry uses it so a `fail` comes back as a result |
 
 ## Python API
 
@@ -198,6 +200,18 @@ Constants: `DEFAULT_TOLERANCE = 2`, `DEFAULT_MAX_FRACTION = 1e-4`, `ROWS_PER_BLO
 | Synthetic 300 x 400 maps | 0.7 s wall | Not measured | Same |
 
 Memory is about the three maps in their own dtype plus a few float64 blocks of 1,024 rows. It runs on any machine; nothing here needs Modal or a GPU. The inference runs it compares are the expensive part.
+
+## Start from VC3D
+
+Make the segment active and pick Scrolls > segment > "verify". VC3D asks for three ink detection labels of the active segment (as its Ink Detection overlay lists them): the reference map, the map to check and the control that must not agree. VC3D's entry asks for all three, so a device check started there always carries its control. Labels become paths only through the agent bridge of the VC3D that started the entry (start VC3D with its agent bridge on); without one, type file paths. The registry runs `kit verify ... --exit-zero`, so a `fail` comes back as a result with the verdict in the report. From a terminal or an agent ([toolreg](toolreg.md)):
+
+```bash
+python -m kit tools run verify --input reference=CPU.tif --input candidate=MPS.tif --input control=CPU_reverse.tif --out RUN
+```
+
+## Open in VC3D
+
+VC3D shows `RUN/verify.json` as the run's result file: `verdict` (`pass`, `fail`, `control-not-caught` or `pass-uncontrolled`) and the statistics under Outputs. `RUN/vc3d-result.json` says `no control: not a pass` when the control was left out (possible only from a terminal). verify checks a run against another; it is not an AutoPipeline (AP) stage.
 
 ## For agents
 

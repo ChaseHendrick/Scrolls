@@ -42,7 +42,8 @@
    "--out",
    "{run}/stackcheck.json",
    "--flags",
-   "{run}/flags.npz"
+   "{run}/flags.npz",
+   "--exit-zero"
   ],
   "timeout_s": 1800
  },
@@ -90,7 +91,7 @@
   "go_ahead": false,
   "network": "None for local folders. For `https://` or `s3://` segments, the umbilicus or the catalog: the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (or the host the URL names), for each segment's `x.tif`, `y.tif`, `z.tif` and `meta.json`, the umbilicus JSON, and `metadata.json` for `--transform catalog:...` without a local `--catalog`",
   "license": null,
-  "checked": "2026-10-16 d9eaf42",
+  "checked": "2026-10-21 8721373",
   "success": "Exit code 0 means clean; 1 is a completed run that flagged something or could not check something; only 2 means it failed.",
   "not_a_pass": "exit 1 with an empty `summary.flagged` (something was not checked); a clean report whose `not_covered` names the segment you care about (the innermost and outermost); a clean run with `--max-normal-um` or `--coincide-um` changed until nothing flags; any report on a stack given out of order or with a winding left out.",
   "never": "Say a flag shows which segment left its sheet, or anything about ink or text; run it on segments of different volumes without `--transform`; treat exit 1 as a crash."

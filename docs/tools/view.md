@@ -10,7 +10,7 @@
 | Area | Viewers and apps |
 | Run | `python -m kit view`, `from kit import viewer` |
 | Code | `kit/viewer.py`, `kit/cli.py` (`cmd_view`), `kit/verify.py` (`load_map`, `_numpy`, `VerifyError`), `kit/auc.py` (`score_array`) |
-| Tests | `tests/test_phantom.py` (class `ViewerTest`) |
+| Tests | `tests/test_phantom.py` (class `ViewerTest`), `tests/test_toolreg_reports.py` |
 | Needs | Python 3.10 or newer, numpy; tifffile for `.tif` maps (imagecodecs too for LZW or zstd TIFFs). A web browser with JavaScript to open the page; nothing else |
 | Runs on | Any CPU. Two 256 x 256 maps take about 1 s; three full-size 5,980 x 8,240 float32 maps with labels and mask take about 11 s and 765 MB peak memory (measured 2026-10-16, 4-core Xeon cloud container under load from other jobs, synthetic data) |
 | Network | None. The page loads nothing: every image is a PNG data URI inside the file |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1) |
 | Released | Public `main` since 2026-10-07 ([PR #13](https://github.com/ChaseHendrick/Scrolls/pull/13)); since 2026-10-14 also in the `scrolls-workbench` package installed from this repository, as `scrolls-workbench view` |
 | Guide | [phantom-and-viewer.md](../phantom-and-viewer.md) (the phantoms and this viewer), [the phantom and viewer demo log](../logs/2026-10-07-phantom-demo.md) |
-| Checked | 2026-10-17 against commit `a6beee7` |
+| Checked | 2026-10-21 against commit `8721373` |
 
 ## What it does
 
@@ -218,6 +218,20 @@ Measured 2026-10-16 in a 4-core Intel Xeon cloud container (cpuinfo 2.80 GHz) th
 | Three 5,980 x 8,240 float32 maps (the size of PHerc0139 w045), labels, mask, `--png`, default `--max-side` (step 9, view 665 x 916) | 11.3 s | 765 MB | 6.4 MB HTML, 0.68 MB PNG (1518 x 272) |
 
 Memory grows with the full maps, which are all loaded at once before subsampling. It runs on any machine; nothing here needs Modal or a GPU. On Chase's Mac, wrap a run in `python -m kit run local SLUG -- COMMAND` so it reaches the compute ledger (the local compute rule in [`AGENTS.md`](../../AGENTS.md), [run-local](run-local.md)).
+
+## Start from VC3D
+
+Make the segment active, select its forward ink map in the Ink Detection overlay and pick Scrolls > segment > "Side-by-side page of the selected ink map and its control". VC3D passes the segment and the map; the tool registry ([toolreg](toolreg.md)) adds the reverse-depth twin (the segment's ink detection record with role `control:reverse`, else `MAP_reverse` beside the map) as a second reader, and the labels when the segment has them as a TIFF on the maps' grid (an ink-labels record, else `SEG_inklabels.tif` in villa's naming). A labels TIFF on another grid is refused by view and the run fails with its message; villa's `inklabels.zarr` is not read here (use `kit auc` or hpscore for it). From a terminal or an agent:
+
+```bash
+python -m kit tools run view --segment SEG --ink-overlay SEG/MAP.tif --out RUN
+```
+
+A page is a readout: in public Scrolls the registry refuses a map whose segment, path or catalog ids name a prize-eligible scroll.
+
+## Open in VC3D
+
+VC3D offers to open `RUN/view.html`, one offline page (every image is a data URI; it fetches nothing), and `RUN/view.json` holds the stats. `RUN/vc3d-result.json` says `no control: not a pass` when no reverse-depth twin was found. Nothing is drawn on the segment. view is a viewer, not an AutoPipeline (AP) stage: it stays reachable from the command line and VC3D only.
 
 ## For agents
 

@@ -43,7 +43,8 @@
    "verify",
    "{in.reference}",
    "{in.candidate}",
-   "--json"
+   "--json",
+   "--exit-zero"
   ],
   "optional_args": {
    "control": [
@@ -94,7 +95,7 @@
   "go_ahead": false,
   "network": "None",
   "license": null,
-  "checked": "2026-10-16 d9eaf42",
+  "checked": "2026-10-21 8721373",
   "success": "Exit code 0 and `verdict` equal to `pass`.",
   "not_a_pass": "Exit code 3 (`pass-uncontrolled`); `control-not-caught`; a `pass` on float maps with the default tolerance of 2; a `pass` with NaN statistics, which means NaN in both maps at the same pixels; any `pass` read as evidence that a map shows ink.",
   "never": "Call two agreeing maps a result about ink; report agreement without its control; drop the control to turn a failing check into exit code 3."

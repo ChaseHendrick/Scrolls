@@ -10,7 +10,7 @@
 | Area | Planning and prizes |
 | Run | `python -m kit doctor`, `from kit import doctor` |
 | Code | `kit/doctor.py`, `kit/cli.py` (`cmd_doctor`) |
-| Tests | `tests/test_kit.py` |
+| Tests | `tests/test_kit.py`, `tests/test_toolreg_reports.py` |
 | Needs | Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) when it is on `PATH`, and reads the environment variables `VILLA` and `VC_BIN` |
 | Runs on | Any machine. 0.34 to 0.43 s per call with no `nvidia-smi` installed (5 runs, measured 2026-10-16, 4-core Xeon cloud container). With `nvidia-smi`, add its run time, at most 20 s (the timeout) |
 | Network | None |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`) |
 | Guide | [mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-21 against commit `8721373` |
 
 ## What it does
 
@@ -95,12 +95,13 @@ Claim label: None for the report, which describes this machine and makes no clai
 ### `python -m kit doctor`
 
 ```
-usage: python -m kit doctor [-h] [--disk DISK]
+usage: python -m kit doctor [-h] [--disk DISK] [--exit-zero]
 ```
 
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `--disk DISK` | `.` | Path whose file system's free space is checked: the current folder by default. Point it at where volumes, renders and VC3D's cache will go. A path that does not exist stops with a `FileNotFoundError` traceback and exit code 1 |
+| `--exit-zero` | off | Exit 0 even when a check fails; the report's last line still says `overall: fail`. VC3D's entry uses it so the report comes back as a result |
 
 ### Environment variables
 
@@ -199,6 +200,18 @@ GPU sizes are printed as whole GB rounded down (23,028 MiB prints as `22 GB`), a
 ## Cost and time
 
 Measured 2026-10-16 in a 4-core Xeon cloud container with no `nvidia-smi`: 0.34 to 0.43 s per call over 5 runs, almost all Python start-up and the import of `kit.cli`. On a machine with `nvidia-smi`, add that program's run time; the call gives up after 20 s. It rents nothing and runs anywhere.
+
+## Start from VC3D
+
+Pick Scrolls > tools > "Check this machine (kit doctor)". It needs nothing selected. The tool registry ([toolreg](toolreg.md)) runs `kit doctor --disk RUN --exit-zero`, so the free space checked is that of VC3D's run folder and a machine that fails a check still gets its report. From a terminal or an agent:
+
+```bash
+python -m kit tools run doctor --out RUN
+```
+
+## Open in VC3D
+
+VC3D offers to open `RUN/doctor.txt`, the same report as above; its last line, `overall: pass`, `warn` or `fail`, is the answer. doctor is not an AutoPipeline (AP) stage.
 
 ## For agents
 

@@ -240,6 +240,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
 
+**repair contract**: The tool registry's rule for a backend of AutoPipeline's repair stage: the tool takes the trace AutoPipeline's acceptance rule rejected for a sheet switch, the plan's surface prediction and, optionally, the trace's seed, and writes a repaired tifxyz copy in its own run folder, which the acceptance rule then checks again; such a tool is the repair backend `reg:ID` ([page](docs/tools/toolreg.md)).
+
 **resolution (voxel size)**: The edge length of one voxel, given in micrometers, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
