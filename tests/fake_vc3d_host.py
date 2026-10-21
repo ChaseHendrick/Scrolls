@@ -224,6 +224,17 @@ def load_result(kind, path):
         if not doc.get("control_points"):
             raise HostError(f"{p} has no control_points")
         return {"kind": kind, "path": str(p)}
+    if kind == "ink_overlay":
+        # VC3D reads the image unchanged and stretches it over the whole segment grid, an 8-bit single channel drawn
+        # with alpha equal to the value (InkDetectionOverlayController.cpp); the test reads its shape and type
+        out = {"kind": kind, "path": str(p)}
+        try:
+            import tifffile
+            a = tifffile.imread(p)
+            out.update(shape=list(a.shape), dtype=str(a.dtype))
+        except ImportError:
+            pass
+        return out
     return {"kind": kind}
 
 

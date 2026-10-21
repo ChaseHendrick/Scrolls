@@ -89,6 +89,26 @@ class AucFilesTest(unittest.TestCase):
         self.assertGreater(part["auc"], 0.95)
         self.assertAlmostEqual(part["auc"], full["auc"], delta=0.02)
 
+    def test_window_of_a_whole_map_matches_its_crop(self):
+        crop = (40, 200, 50, 300)
+        y0, y1, x0, x1 = crop
+        tifffile.imwrite(self.root / "crop.tif", self.forward[y0:y1, x0:x1])
+        tifffile.imwrite(self.root / "full.tif", self.forward)
+        part = auc.score_files(self.root / "crop.tif", self.root / "inklabels.zarr", self.root / "supervision.zarr",
+                               crop=crop, surface_shape=self.surface)["forward"]
+        win = auc.score_files(self.root / "full.tif", self.root / "inklabels.zarr", self.root / "supervision.zarr",
+                              window=crop)
+        self.assertEqual(win["forward"]["auc"], part["auc"])
+        self.assertEqual(win["window"]["on_map"], list(crop))
+        # a window on a canvas twice the map's size is scaled down to the map's grid
+        canvas = (self.surface[0] * 2, self.surface[1] * 2)
+        twice = auc.score_files(self.root / "full.tif", self.root / "inklabels.zarr", self.root / "supervision.zarr",
+                                window=tuple(2 * v for v in crop), window_canvas=canvas)
+        self.assertEqual(twice["window"]["on_map"], list(crop))
+        with self.assertRaises(verify.VerifyError):
+            auc.score_files(self.root / "full.tif", self.root / "inklabels.zarr", self.root / "supervision.zarr",
+                            window=crop, crop=crop, surface_shape=self.surface)
+
     def test_unpredicted_pixels_are_left_out(self):
         zeroed = self.forward.copy()
         zeroed[:, :100] = 0

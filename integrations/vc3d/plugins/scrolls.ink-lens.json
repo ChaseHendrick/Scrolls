@@ -1,0 +1,36 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.ink-lens",
+ "name": "Ink Lens: control-checked ink map of the focus region",
+ "description": "control-checked ink maps of your own region, written back into VC3D. Model output, not a reading.",
+ "menu": "Scrolls/region",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "ink-lens",
+  "--segment",
+  "{segment}",
+  "--volume",
+  "{volume}",
+  "--region",
+  "{region}",
+  "--param",
+  "voxel_um={input:voxel_um}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "inputs": [
+  {
+   "name": "voxel_um",
+   "label": "the render's pixel size in micrometers (auto: from the volume)",
+   "default": "auto"
+  }
+ ],
+ "result": {
+  "kind": "ink_overlay",
+  "path": "{output}/vc3d/views/map_u8.tif"
+ },
+ "license": "Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0",
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/ink-lens.md"
+}

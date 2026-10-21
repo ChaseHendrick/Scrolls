@@ -87,7 +87,8 @@ def cmd_auc(args):
     try:
         result = auc.score_files(args.prediction, args.labels, args.mask, args.control, args.level,
                                  args.crop, args.surface_shape, args.keep_zero, args.inner,
-                                 args.bootstrap, args.block_px, args.compare, args.seed)
+                                 args.bootstrap, args.block_px, args.compare, args.seed, args.window,
+                                 args.window_canvas)
         if args.slug:
             ledger.add_check(args.slug, args.name, result, root=args.root)
     except (verify.VerifyError, ledger.LedgerError) as exc:
@@ -960,6 +961,10 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
                    help="the map covers only this window of the surface")
     p.add_argument("--surface-shape", type=int, nargs=2, metavar=("H", "W"), help="full surface shape, with --crop")
+    p.add_argument("--window", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="score only this window of a whole-surface map and its control (VC3D's focus region)")
+    p.add_argument("--window-canvas", type=int, nargs=2, metavar=("H", "W"),
+                   help="the canvas the window is on, when the map has another resolution (0 0: the map's own)")
     p.add_argument("--keep-zero", action="store_true", help="count pixels where the map is exactly 0")
     p.add_argument("--inner", type=int, default=0, metavar="PX",
                    help="leave out this many pixels at every edge (for maps inferred on a cropped input)")

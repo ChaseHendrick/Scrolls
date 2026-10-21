@@ -75,6 +75,20 @@ Output maps are float32 scores, not calibrated probabilities. The JSON record co
 
 This release uses a self-contained package branch so it can be installed without private repository helpers. Public `main` holds this reference page and the release entry. The released numerical filter is frozen; the new local-file adapter is verified on synthetic data only. Remote volume access and the original study's full baseline bank are not included.
 
+## Start from VC3D
+
+Make a segment active and pick Scrolls > segment > "Inkfilter map of the active segment, with its reverse-depth control". Its input is the segment's surface volume (`layers/` or a `.zarr` beside the segment). With a focus region set, the "(focus region)" entry filters only that box of the segment's canvas. `scrolls-inkfilter` must be on `PATH` (the package above). The same run from a terminal or an agent, through the tool registry ([toolreg](toolreg.md)):
+
+```bash
+python -m kit tools run inkfilter --segment SEG [--region X0,Y0,Z0,X1,Y1,Z1 | --crop Y0,Y1,X0,X1] --out RUN
+```
+
+AutoPipeline's ink stage, where AutoPipeline is installed, takes it as the hot-swappable backend `reg:inkfilter`; each stage run goes through `python -m kit tools exec inkfilter` with the manifest's digest, so a manifest changed after a plan is refused.
+
+## Open in VC3D
+
+VC3D loads the forward map as a new ink detection: the 8-bit view `RUN/vc3d/views/map_u8.tif`, on one scale shared with its control and, for a region run, placed at its box on the whole canvas (VC3D stretches an ink detection over the whole segment). The reverse-depth control comes back with Scrolls > Open run output > "Open run output as ink overlay" (output `reverse`), on the same scale; from a terminal, `python -m kit tools take ink_overlay --run RUN --output reverse --out DIR`. The float maps stay in the run folder for scoring. A filter map is model output, not a reading.
+
 ## For agents
 
 - **Revive:** Use the package commit above and its own virtual environment. Install only NumPy for `.npy` input/output, or the `io` extra for TIFF/Zarr. Run the synthetic tests before processing local surface-volume windows.

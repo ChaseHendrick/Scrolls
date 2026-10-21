@@ -80,6 +80,33 @@ elif mode == "map":
     ramp = np.tile(np.linspace(0.0, 1.0, 64, dtype=np.float32), (32, 1))
     tifffile.imwrite(out.with_name(out.stem + ".tif"), ramp)
     tifffile.imwrite(out.with_name(out.stem + "_reverse.tif"), np.full((32, 64), 0.5, np.float32))
+elif mode == "u8map":
+    import numpy as np, tifffile
+    out = Path(sys.argv[3])
+    a = np.zeros((32, 64), np.uint8)
+    a[4:8, 4:8] = 200
+    tifffile.imwrite(out.with_name(out.stem + ".tif"), a)
+    tifffile.imwrite(out.with_name(out.stem + "_reverse.tif"), np.zeros((32, 64), np.uint8))
+'''
+
+# a stand-in for the released scrolls-inkfilter command line (submission/progress-2026-10-inkfilter, cli.py): VOLUME
+# --output MAP [--crop Y0 Y1 X0 X1] writes MAP, MAP_reverse and MAP.json; a crop gives a map of the crop's size
+FAKE_INKFILTER = '''#!{py}
+import json, sys
+from pathlib import Path
+import numpy as np, tifffile
+args = sys.argv[1:]
+out = Path(args[args.index("--output") + 1])
+h, w = 40, 60
+crop = None
+if "--crop" in args:
+    i = args.index("--crop")
+    crop = [int(v) for v in args[i + 1:i + 5]]
+    h, w = crop[1] - crop[0], crop[3] - crop[2]
+ramp = np.tile(np.linspace(0.0, 1.0, w, dtype=np.float32), (h, 1))
+tifffile.imwrite(out, ramp)
+tifffile.imwrite(out.with_name(out.stem + "_reverse" + out.suffix), np.full((h, w), 0.5, np.float32))
+out.with_suffix(".json").write_text(json.dumps({{"crop": crop, "volume": args[0]}}))
 '''
 
 
@@ -151,6 +178,9 @@ class ManifestTest(Base):
             argv = tool["run"]["argv"]
             if argv[0] != "{python}":            # a released package's own program, named on its page
                 self.assertIn(argv[0], (ROOT / tool.facts["page"]).read_text(), tool.id)
+                continue
+            if argv[2].startswith("kit."):       # a kit module, such as kit.inklens for a tool kept outside kit/
+                self.assertTrue((ROOT / "kit" / f"{argv[2][4:]}.py").is_file(), tool.id)
                 continue
             self.assertEqual(argv[:3], ["{python}", "-m", "kit"], tool.id)
             self.assertIn(argv[3], commands.parsers, tool.id)
@@ -834,6 +864,200 @@ class TakeAndQuotaTest(Base):
         bad = manifest("q2", safety={"model_output": False, "paid_compute": "never", "network": "none",
                                      "quota": "zerogpu"}, facts={"go_ahead": False})
         self.assertIn("needs a yes", " ".join(toolreg.validate_manifest(bad)))
+
+
+class AdapterTest(Base):
+    """The adapters of inkfilter, auc and Ink Lens (and the engine pieces they need): VC3D starts them from its
+    selection through the committed plugin files, their outputs come back into VC3D on the segment's canvas, and the
+    AutoPipeline door lists the ink tools."""
+
+    def grid_segment(self, name="w00"):
+        seg = self.tmp / name
+        seg.mkdir()
+        rows, cols = np.mgrid[0:20, 0:30].astype(np.float32)
+        tifffile.imwrite(seg / "x.tif", cols * 4)
+        tifffile.imwrite(seg / "y.tif", rows * 4)
+        tifffile.imwrite(seg / "z.tif", np.full((20, 30), 100, np.float32))
+        (seg / "meta.json").write_text(json.dumps({"type": "seg", "uuid": name, "format": "tifxyz",
+                                                   "scale": [0.5, 0.5]}))       # a 40 x 60 canvas
+        (seg / "layers").mkdir()
+        tifffile.imwrite(seg / "layers" / "00.tif", np.zeros((40, 60), np.uint8))
+        return seg
+
+    def launch(self, plugin, ctx):
+        """VC3D's plugin host, in this process (so the mocked disk check holds): expand the entry's arguments as the
+        host does, write its plugin-run.json, run the launcher's action, load the declared result."""
+        out = Path(ctx["output"])
+        out.mkdir(parents=True, exist_ok=True)
+        args, rpath = host.expand(plugin, ctx)
+        (out / "plugin-run.json").write_text("{}")
+        with contextlib.redirect_stdout(io.StringIO()):
+            code = toolreg.launch(args, {"HOME": str(self.tmp / "home")}, 1)
+        loaded = host.load_result(plugin["doc"]["result"]["kind"], rpath) if Path(rpath).exists() else None
+        return code, loaded
+
+    @needs_registry
+    @unittest.skipIf(np is None, "needs numpy and tifffile")
+    def test_inkfilter_from_vc3d_whole_and_region_then_its_control_back(self):
+        fake = self.bin / "scrolls-inkfilter"
+        fake.write_text(FAKE_INKFILTER.format(py=sys.executable))
+        fake.chmod(0o755)
+        seg = self.grid_segment()
+        found, problems = host.scan([ROOT / toolreg.PLUGINS_REL])
+        self.assertEqual(problems, [])
+        code, loaded = self.launch(found["scrolls.inkfilter"], {"segment": str(seg), "output": str(self.tmp / "r1")})
+        self.assertEqual(code, toolreg.EXIT_OK)
+        self.assertEqual((loaded["shape"], loaded["dtype"]), ([40, 60], "uint8"))
+        # the region entry is enabled only with a focus region; its crop map is placed at its box on the canvas
+        self.assertFalse(host.enabled(found["scrolls.inkfilter.region"], {"segment": str(seg)})[0])
+        code, loaded = self.launch(found["scrolls.inkfilter.region"], {"segment": str(seg), "region":
+                                                                       [8, 4, 0, 20, 12, 200],
+                                                                       "output": str(self.tmp / "r2")})
+        self.assertEqual(code, toolreg.EXIT_OK)
+        res = json.loads((self.tmp / "r2" / "vc3d-result.json").read_text())
+        self.assertIn("--crop", res["argv"])
+        self.assertEqual(res["argv"][res["argv"].index("--crop") + 1:][:4], ["2", "8", "4", "12"])
+        view = tifffile.imread(loaded["path"])
+        self.assertEqual(view.shape, (40, 60))
+        self.assertGreater(int(view[2:8, 4:12].max()), 200)
+        self.assertEqual(int(view[:2].max()), 0)
+        self.assertEqual(int(view[:, 12:].max()), 0)
+        scale = json.loads((self.tmp / "r2" / "vc3d" / "scale.json").read_text())
+        self.assertEqual(scale["placed"], {"box": [2, 8, 4, 12], "canvas": [40, 60]})
+        # the reverse-depth control comes back through "Open run output as ink overlay": placed, on the same scale
+        doc = toolreg.take("ink_overlay", self.tmp / "r3", run=self.tmp / "r2", output="reverse")
+        rev = tifffile.imread(doc["path"])
+        self.assertEqual(rev.shape, (40, 60))
+        self.assertEqual(int(rev[:2].max()), 0)
+        inside = rev[2:8, 4:12]
+        self.assertLessEqual(int(inside.max()) - int(inside.min()), 1)       # a flat control stays flat
+        with open(scale["sha256"] and res["views"]["reverse"], "ab") as fh:
+            fh.write(b"0")
+        with self.assertRaisesRegex(toolreg.RegistryError, "changed after its run"):
+            toolreg.take("ink_overlay", self.tmp / "r4", run=self.tmp / "r2", output="reverse")
+
+    @needs_registry
+    def test_inkfilter_is_an_autopipeline_ink_backend(self):
+        reg = toolreg.load(ROOT, {})
+        self.assertIn("reg:inkfilter", toolreg.stage_choices("ink", reg))
+        cmd = toolreg.ink_models(reg)["reg:inkfilter"]["command"]
+        self.assertEqual(cmd[-4:], ["--", "{input}", "{output}", "{reverse}"])
+
+    def test_records_pair_controls_and_name_labels(self):
+        seg = self.tmp / "s1"
+        (seg / "ink").mkdir(parents=True)
+        (seg / "labels").mkdir()
+        (seg / "meta.json").write_text(json.dumps({"type": "seg", "uuid": "s1", "format": "tifxyz"}))
+        for f in ("ink/ink_9um-seed42-f.tif", "ink/ink_9um-seed42-r.tif", "ink/ink_9um-seed42-s.tif",
+                  "ink/reader-v2-r.tif"):
+            (seg / f).write_bytes(b"x")
+        for d in ("labels/mine_inklabels.zarr", "labels/mine_mask.zarr", "s1_inklabels.zarr",
+                  "s1_supervision_mask.zarr"):
+            (seg / d).mkdir()
+
+        def rec(f, label, model=None, **kw):
+            r = {"local_file": f, "label": label, "segment_id": "s1", "artifact_type": "ink detection", **kw}
+            if model:
+                r["kit_villafmt"] = {"model": model, "variant": f[-5]}
+            return r
+        records = [rec("ink/reader-v2-r.tif", "reader-v2 reverse-depth control", "reader-v2"),
+                   rec("ink/ink_9um-seed42-f.tif", "ink_9um-seed42 forward", "ink_9um-seed42"),
+                   rec("ink/ink_9um-seed42-r.tif", "ink_9um-seed42 reverse-depth control", "ink_9um-seed42"),
+                   rec("ink/ink_9um-seed42-s.tif", "ink_9um-seed42 depth-shuffled control", "ink_9um-seed42"),
+                   dict(rec("labels/mine_inklabels.zarr", "labels"), artifact_type="ink-labels"),
+                   dict(rec("labels/mine_mask.zarr", "mask"), artifact_type="supervision")]
+        (seg / "catalog-origin.json").write_text(json.dumps({"ink_detections": records}))
+        sel = toolreg.selection_from(segment=str(seg))      # VC3D's fallback: catalog-origin.json, no ink-detections
+        roles = {Path(o["path"]).name: o["role"] for o in sel["segment"]["overlays"]}
+        self.assertEqual(roles["ink_9um-seed42-s.tif"], "control:shuffle")
+        self.assertEqual(roles["mine_inklabels.zarr"], "labels")
+        fwd = str(seg / "ink" / "ink_9um-seed42-f.tif")
+        self.assertEqual(Path(toolreg._twin(fwd, sel)).name, "ink_9um-seed42-r.tif")     # its own model's, not another
+        tool = self.add(manifest("scorer", inputs={
+            "prediction": {"from": "segment.overlay", "role": "forward"},
+            "control": {"from": "segment.overlay.reverse", "pair_of": "prediction", "required": False},
+            "labels": {"from": "segment.labels", "format": ["zarr"]},
+            "mask": {"from": "segment.mask", "format": ["zarr"]}},
+            run={"argv": ["fake-tool", "ok", "{in.prediction}", "{run}"]}))
+        values, _ = toolreg.bind(tool, toolreg.selection_from(segment=str(seg), ink_overlay=fwd))
+        self.assertEqual(Path(values["in.labels"]).name, "mine_inklabels.zarr")       # records before villa's names
+        self.assertEqual(Path(values["in.mask"]).name, "mine_mask.zarr")
+        (seg / "ink-detections.json").write_text("[]")          # an empty file: VC3D still reads the catalog list
+        self.assertEqual(len(toolreg.selection_from(segment=str(seg))["segment"]["overlays"]), 6)
+        (seg / "catalog-origin.json").unlink()
+        values, _ = toolreg.bind(tool, toolreg.selection_from(segment=str(seg), ink_overlay=fwd))
+        self.assertEqual(Path(values["in.labels"]).name, "s1_inklabels.zarr")         # then villa's names
+        # ink.py's own names, with no record: ink_f's twin is ink_r beside it
+        run = self.tmp / "inkrun"
+        run.mkdir()
+        for f in ("ink_f.npy", "ink_r.npy"):
+            (run / f).write_bytes(b"x")
+        self.assertEqual(Path(toolreg._twin(str(run / "ink_f.npy"), toolreg.selection_from())).name, "ink_r.npy")
+
+    @unittest.skipIf(np is None, "needs numpy and tifffile")
+    def test_8_bit_maps_keep_their_values_in_vc3d(self):
+        m = manifest(run={"argv": ["fake-tool", "u8map", "{in.src}", "{run}/map"]},
+                     outputs={"map": {"kind": "overlay", "format": "tiff-uint8", "path": "{run}/map.tif",
+                                      "role": "forward"},
+                              "map_reverse": {"kind": "overlay", "format": "tiff-uint8",
+                                              "path": "{run}/map_reverse.tif", "role": "control:reverse"}},
+                     safety={"model_output": True, "controls": ["map_reverse"], "paid_compute": "never",
+                             "network": "none"}, vc3d={"menu": "segment", "result": "map"})
+        tool = self.add(m)
+        res, code = self.go(tool)
+        self.assertEqual(code, 0, res)
+        view = tifffile.imread(res["views"]["map"])
+        self.assertEqual(int(view.max()), 200)          # not stretched to 255
+        self.assertEqual(toolreg.plugin_result(tool)["path"], "{output}/vc3d/views/map_u8.tif")
+
+    @needs_registry
+    def test_region_entries_and_the_auc_window(self):
+        plugins = toolreg.plugin_manifests(toolreg.load(ROOT, {}))
+        self.assertIn("--region", plugins["auc.region"]["args"])
+        self.assertNotIn("--region", plugins["auc"]["args"])
+        self.assertIn("--region", plugins["ink-lens"]["args"])          # Ink Lens needs one: no whole-segment entry
+        self.assertNotIn("ink-lens.region", plugins)
+        from kit import auc
+        cut, on_map = auc._window_cut((2, 8, 4, 12), None, None, (20, 30), (40, 60))
+        self.assertEqual(on_map, [1, 4, 2, 6])
+        self.assertEqual(auc._window_cut((2, 8, 4, 12), None, None, (40, 60), (0, 0))[1], [2, 8, 4, 12])
+        with self.assertRaises(Exception):
+            auc._window_cut((2, 8, 4, 12), (0, 1, 0, 1), None, (40, 60))
+
+    @needs_registry
+    @unittest.skipIf(np is None, "needs numpy and tifffile")
+    def test_ink_lens_binds_from_vc3d_in_local_offline_mode_into_its_run_folder(self):
+        seg = self.grid_segment()
+        vol = self.tmp / "scan.zarr"
+        vol.mkdir()
+        (vol / "meta.json").write_text(json.dumps({"voxelsize": 7.91}))
+        tool = toolreg.load(ROOT, {}).get("ink-lens")
+        self.assertEqual(toolreg.vc3d_entries(tool), ["run"])
+        sel = toolreg.selection_from(segment=str(seg), volume=str(vol), region="8,4,0,20,12,200")
+        job = toolreg.prepare(tool, sel, None, {"voxel_um": "auto"}, kind="public", root=self.tmp)
+        job.run = self.tmp / "lens-run"
+        argv = job.argv()
+        self.assertEqual(argv[argv.index("--crop") + 1:][:4], ["2", "8", "4", "12"])
+        self.assertEqual(argv[argv.index("--um-per-px") + 1], "7.91")
+        for flag in ("--local", "--offline", "--out"):
+            self.assertIn(flag, argv)
+        self.assertEqual(argv[argv.index("--device") + 1], "cpu")
+        self.assertNotIn("--space", argv)
+        from kit import inklens
+        run_parser = inklens.load().parser()._subparsers._group_actions[0].choices["run"]
+        known = {o for act in run_parser._actions for o in act.option_strings}
+        self.assertLessEqual({w for w in argv if w.startswith("--")}, known)
+        self.assertEqual([o for o in tool.outputs if tool.outputs[o]["path"].startswith("{run}/")],
+                         list(tool.outputs))
+
+    def test_existing_may_name_a_param_whose_values_are_the_backends(self):
+        m = manifest("anyink", params={"model": {"type": "string", "enum": ["m1", "m2"], "default": "m1"}},
+                     pipeline={"stage": "ink", "existing": "{param.model}"})
+        tool = self.add(m)
+        self.assertEqual(toolreg.existing_backends(tool), ["m1", "m2"])
+        choices = toolreg.stage_choices("ink", self.registry())
+        self.assertEqual(choices["m2"]["registry"]["id"], "anyink")
+        self.assertTrue(toolreg.validate_manifest(dict(m, pipeline={"stage": "ink", "existing": "{param.nope}"})))
 
 
 class CliTest(Base):

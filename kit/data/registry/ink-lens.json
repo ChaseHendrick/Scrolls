@@ -1,0 +1,163 @@
+{
+ "schema": "scrolls-tool/1",
+ "id": "ink-lens",
+ "repo": "public",
+ "notes": "Local CPU mode only (--local --device cpu), with downloads off (--offline): fetch the reader checkpoint and villa's pinned source once with `python3 spaces/ink-lens/engine.py fetch d9v2` (INKLENS_CACHE names the cache; letter weights come from kit's letter cache). Only the region is rendered, with villa's vc_render_tifxyz, which ships with VC3D. Needs numpy, tifffile and torch. The Space mode spends ZeroGPU quota and never runs from here. Ink Lens writes into its run folder only (--out), never into the segment folder.",
+ "inputs": {
+  "segment": {
+   "from": "segment",
+   "format": [
+    "tifxyz"
+   ],
+   "label": "the active segment's tifxyz folder"
+  },
+  "volume": {
+   "from": "volume",
+   "format": [
+    "ome-zarr",
+    "zarr"
+   ],
+   "label": "the open scan volume; only the region is rendered from it"
+  },
+  "crop": {
+   "from": "region",
+   "space": "segment_canvas",
+   "label": "VC3D's focus region as a box on the segment's canvas (render pixels at scale 1)"
+  }
+ },
+ "params": {
+  "voxel_um": {
+   "type": "number",
+   "from": "volume.voxel_um",
+   "help": "the render's pixel size in micrometers (auto: from the volume)"
+  },
+  "reader": {
+   "type": "string",
+   "enum": [
+    "d9v2",
+    "ink_9um"
+   ],
+   "default": "d9v2",
+   "help": "the ink model (both are openly licensed 9 um readers)"
+  },
+  "windows": {
+   "type": "integer",
+   "enum": [
+    3,
+    1
+   ],
+   "default": 3,
+   "help": "depth windows (3 is steadier, 1 is faster)"
+  }
+ },
+ "run": {
+  "argv": [
+   "{python}",
+   "-m",
+   "kit.inklens",
+   "run",
+   "--segment",
+   "{in.segment}",
+   "--volume",
+   "{in.volume}",
+   "--crop",
+   "{in.crop.y0}",
+   "{in.crop.y1}",
+   "{in.crop.x0}",
+   "{in.crop.x1}",
+   "--um-per-px",
+   "{param.voxel_um}",
+   "--reader",
+   "{param.reader}",
+   "--windows",
+   "{param.windows}",
+   "--local",
+   "--device",
+   "cpu",
+   "--offline",
+   "--out",
+   "{run}",
+   "--json"
+  ],
+  "stdout": "{run}/inklens-run.json",
+  "timeout_s": 1800
+ },
+ "outputs": {
+  "map": {
+   "kind": "overlay",
+   "format": "tiff-uint8",
+   "path": "{run}/inklens.tif",
+   "role": "forward",
+   "on": "segment",
+   "label": "the kept ink on the whole segment canvas, 0 (transparent) elsewhere"
+  },
+  "reverse": {
+   "kind": "overlay",
+   "format": "tiff-uint8",
+   "path": "{run}/inklens_reverse.tif",
+   "role": "control:reverse",
+   "on": "segment",
+   "label": "the reverse-depth control's kept ink under the same threshold"
+  },
+  "pins": {
+   "kind": "points",
+   "format": "vc3d-point-collection",
+   "path": "{run}/inklens.pins.json",
+   "required": false,
+   "label": "letter-candidate pins (when the read is strong or weak)"
+  },
+  "letters": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/inklens.letters.json",
+   "required": false,
+   "label": "the Scroll Text Reader's output: hypotheses for a person, never a reading"
+  },
+  "receipt": {
+   "kind": "report",
+   "format": "json",
+   "path": "{run}/inklens.json",
+   "label": "the receipt: gate decision, reader, device, seconds, files"
+  }
+ },
+ "compute": {
+  "where": "local-cpu",
+  "typical_s": 400,
+  "disk_mb": 1500,
+  "ram_gb": 8,
+  "scales_with": "region area: a 1,024 px region at 9.6 um with three windows is 1,350 patches, 189 to 405 s at the 0.14 to 0.30 s per patch measured on 4 CPU cores (2026-10-20); the rendered region of a 2.4 um scan is 64 times larger on disk than at 9.6 um"
+ },
+ "safety": {
+  "model_output": true,
+  "readout": true,
+  "controls": [
+   "reverse"
+  ],
+  "paid_compute": "never",
+  "network": "download"
+ },
+ "vc3d": {
+  "menu": "region",
+  "label": "Ink Lens: control-checked ink map of the focus region",
+  "result": "map"
+ },
+ "facts": {
+  "title": "ink-lens",
+  "tagline": "control-checked ink maps of your own region, written back into VC3D",
+  "status": "Experimental",
+  "kind": [
+   "app",
+   "agent tool",
+   "script"
+  ],
+  "area": "Ink maps and models",
+  "page": "docs/tools/ink-lens.md",
+  "go_ahead": false,
+  "network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing",
+  "license": "Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0",
+  "checked": "2026-10-20 3c2445e",
+  "success": "Exit 0 with `gate.status` `ink` or `weak`; exit 3 is a valid answer (`none`), not an error.",
+  "not_a_pass": "A map with no status, a Space result whose status the client did not recompute, letters with",
+  "never": "Call a kept map or a pin a reading; publish a map, status or pin of a target or prize-eligible scroll in"
+ }
+}

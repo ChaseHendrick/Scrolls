@@ -15,7 +15,8 @@ run_reference() is the same algorithm in numpy with any predict function: the te
 and the torch path is checked against it.
 
   python3 engine.py estimate 1024 1024 --windows 3      patches and the GPU seconds one call asks for
-  python3 engine.py fetch d9v2                           download and check a checkpoint into the cache
+  python3 engine.py fetch d9v2                           download and check a checkpoint and villa's source into the
+                                                         cache (once, before any offline run)
 """
 
 from __future__ import annotations
@@ -280,6 +281,12 @@ def run_reference(volume, predict, windows=3):
 
 # ---------------------------------------------------------------- downloads
 
+def offline():
+    """True when INKLENS_OFFLINE is set: a missing checkpoint or villa source is refused, never downloaded (the tool
+    registry's route, `inklens.py run --offline`)."""
+    return os.environ.get("INKLENS_OFFLINE", "") not in ("", "0")
+
+
 def sha256_file(path, block=1 << 22):
     h = hashlib.sha256()
     with open(path, "rb") as fh:
@@ -306,6 +313,9 @@ def ensure_checkpoint(name, cache=CACHE):
     if not path.is_file():
         if env:
             raise EngineError(f"INKLENS_{name.upper()}={env} does not exist")
+        if offline():
+            raise EngineError(f"{path} is not in the cache and downloads are off (INKLENS_OFFLINE); fetch it once "
+                              f"with: python3 spaces/ink-lens/engine.py fetch {name} (INKLENS_CACHE names the cache)")
         _download(spec["url"], path)
     digest = sha256_file(path)
     if digest != spec["sha256"]:
@@ -352,6 +362,10 @@ def ensure_villa(cache=CACHE):
         info = {"source": "VILLA_SRC", "commit": _git_commit(src)}
     else:
         dest = Path(cache) / f"villa-{VILLA_COMMIT[:12]}"
+        if not (dest / "COMMIT").is_file() and offline():
+            raise EngineError(f"villa's source at {VILLA_COMMIT[:12]} is not in the cache ({dest}) and downloads are "
+                              "off (INKLENS_OFFLINE); fetch it once with: python3 spaces/ink-lens/engine.py fetch "
+                              "d9v2, or set VILLA_SRC to a villa checkout's vesuvius/src")
         if not (dest / "COMMIT").is_file():
             tmp = dest.with_name(dest.name + ".part")
             shutil.rmtree(tmp, ignore_errors=True)
@@ -530,7 +544,9 @@ def main(argv=None):
         if a.cmd == "estimate":
             print(json.dumps(estimate(a.height, a.width, a.windows, a.reader), indent=1))
         else:
-            print(json.dumps({"reader": a.reader, "path": str(ensure_checkpoint(a.reader))}))
+            villa = ensure_villa()
+            print(json.dumps({"reader": a.reader, "path": str(ensure_checkpoint(a.reader)),
+                              "villa": villa.get("commit"), "cache": str(CACHE)}))
     except EngineError as exc:
         print(f"refused: {exc}", file=sys.stderr)
         return 2

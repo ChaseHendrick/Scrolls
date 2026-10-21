@@ -625,6 +625,48 @@ class Client(unittest.TestCase):
         self.assertIn("not a JSON array", err)
         self.assertEqual((self.seg / "ink-detections.json").read_text(), '"not a list"')
 
+    def test_out_writes_only_into_the_run_folder(self):
+        before = sorted(str(f.relative_to(self.seg)) for f in self.seg.rglob("*"))
+        run = self.dir / "run"
+        args = ["run", "--segment", str(self.seg), "--surface-volume", str(self.sv), "--um-per-px", "9.4",
+                "--crop", "20", "404", "40", "424", "--local", "--offline", "--out", str(run), "--json", "--no-pins"]
+        with mock.patch.dict(os.environ, {"INKLENS_OFFLINE": ""}):
+            code, out, err = self.run_cli(*args)
+        self.assertEqual(code, 0, err)
+        self.assertEqual(sorted(str(f.relative_to(self.seg)) for f in self.seg.rglob("*")), before)
+        import tifffile
+        kept = tifffile.imread(run / "inklens.tif")
+        ctrl = tifffile.imread(run / "inklens_reverse.tif")
+        self.assertEqual((kept.shape, kept.dtype.name), ((420, 480), "uint8"))      # the whole canvas, 8-bit
+        self.assertEqual(ctrl.shape, (420, 480))
+        on = kept[20:404, 40:424] > 0
+        self.assertGreater(on[self.ink].mean(), 0.5)
+        self.assertGreater(on.mean(), (ctrl[20:404, 40:424] > 0).mean())
+        receipt = json.loads((run / "inklens.json").read_text())
+        self.assertEqual(receipt["box_render_px"], [20, 40, 384, 384])          # --crop is the same box as --box
+        self.assertFalse(receipt["wrote_into_segment"])
+        self.assertEqual(json.loads(out)["gate"]["status"], "ink")
+        # a region with nothing kept still exits 0 with --out: the files are the result, the status is in them
+        flat, _ = synthetic_volume(384, ink=False, seed=9)
+        full = np.zeros((28, 420, 480), np.uint8)
+        full[:, 20:404, 40:424] = flat
+        np.save(self.sv, full)
+        code, out, err = self.run_cli(*args[:-4], "--out", str(self.dir / "run2"), "--json", "--no-pins")
+        self.assertEqual(code, 0, err)
+        self.assertEqual(json.loads(out)["gate"]["status"], "none")
+        code, _, err = self.run_cli(*[a for a in args if a != "--local"])
+        self.assertEqual(code, inklens.EXIT_REFUSED)
+        self.assertIn("local mode", err)
+
+    def test_offline_refuses_to_download(self):
+        with mock.patch.dict(os.environ, {"INKLENS_OFFLINE": "1", "INKLENS_D9V2": ""}), \
+                mock.patch.object(engine, "_download", side_effect=AssertionError("downloaded")):
+            with self.assertRaisesRegex(engine.EngineError, "downloads are off"):
+                engine.ensure_checkpoint("d9v2", cache=self.dir / "cache")
+            with mock.patch.dict(os.environ, {"VILLA_SRC": ""}), \
+                    self.assertRaisesRegex(engine.EngineError, "downloads are off"):
+                engine.ensure_villa(cache=self.dir / "cache")
+
     def test_space_needs_the_users_token(self):
         vol, _ = synthetic_volume(256)
         with mock.patch.dict(os.environ, {"HF_TOKEN": ""}), mock.patch.object(inklens, "hf_token", lambda t=None: None):

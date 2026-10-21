@@ -86,7 +86,8 @@ Claim label: Model output, scored against the organizers' published labels of 20
 ```
 usage: python -m kit auc [-h] --labels LABELS --mask MASK [--control CONTROL]
                          [--level LEVEL] [--crop Y0 Y1 X0 X1]
-                         [--surface-shape H W] [--keep-zero] [--inner PX]
+                         [--surface-shape H W] [--window Y0 Y1 X0 X1]
+                         [--window-canvas H W] [--keep-zero] [--inner PX]
                          [--bootstrap N] [--block-px BLOCK_PX] [--compare MAP]
                          [--seed SEED] [--json] [--slug SLUG] [--name NAME]
                          [--root ROOT]
@@ -102,6 +103,8 @@ usage: python -m kit auc [-h] --labels LABELS --mask MASK [--control CONTROL]
 | `--level LEVEL` | `2` | Pyramid level of the labels that matches the 9 um grid (`DEFAULT_LEVEL`) |
 | `--crop Y0 Y1 X0 X1` | none | The map covers only this window of the surface: rows Y0 to Y1 and columns X0 to X1, ends excluded |
 | `--surface-shape H W` | none (the map's own shape) | The full surface's shape in pixels; required with `--crop` |
+| `--window Y0 Y1 X0 X1` | none | Score only this window of a whole-surface map and of its control (VC3D's focus region as a box on the canvas); not with `--crop` |
+| `--window-canvas H W` | none | The canvas the window is on, when the map has another resolution: the window is scaled to the map's grid, outward to whole pixels (`0 0`: the map's own grid) |
 | `--keep-zero` | off | Count pixels where the map is exactly 0; by default they are left out as unpredicted |
 | `--inner PX` | `0` | Leave out PX pixels at every edge of the map, for maps inferred on a cropped input (the crops here use 64) |
 | `--bootstrap N` | `0` | Block-bootstrap draws for a 95 % interval; 0 for none; at least 20; 300 is plenty |
@@ -123,7 +126,7 @@ print(auc.format_result(result))
 
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
-| `score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None, surface_shape=None, keep_zero=False, inner=0, bootstrap=0, block_px=BLOCK_PX, compare=None, seed=0)` | The result dict under Outputs | `VerifyError` on bad input, including NaN or inf in a map and a control that is the map's own file; `FileNotFoundError` for a missing `.npy` | What the command runs. `crop` is `[Y0, Y1, X0, X1]` and `surface_shape` is `[H, W]` |
+| `score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None, surface_shape=None, keep_zero=False, inner=0, bootstrap=0, block_px=BLOCK_PX, compare=None, seed=0, window=None, window_canvas=None)` | The result dict under Outputs (with `window`: asked, on the map, canvas) | `VerifyError` on bad input, including NaN or inf in a map and a control that is the map's own file; `FileNotFoundError` for a missing `.npy` | What the command runs. `crop` is `[Y0, Y1, X0, X1]` and `surface_shape` is `[H, W]`; `window` is a box of a whole map, `window_canvas` the `[H, W]` canvas it is on |
 | `score_array(prediction, ink, mask, keep_zero=False, inner=0)` | `{"auc", "ink_px", "background_px", "zero_px_in_mask", "zero_px_counted", "inner"}` | `VerifyError` when `inner` leaves nothing, or for NaN or inf in the map | A map against same-shape boolean ink and mask arrays already on its grid. `auc` is rounded to 4 decimals, or `None` |
 | `auc_scores(ink_scores, background_scores)` | float, or `None` when a class is empty | `VerifyError` for NaN or inf scores | Mann-Whitney AUC with ties half, exact on 65,536 integer levels. Scores that are not int64 are quantized together first |
 | `block_bootstrap(prediction, ink, mask, draws=300, block_px=BLOCK_PX, seed=0, other=None, keep_zero=False, inner=0)` | The `bootstrap` dict under Outputs | `VerifyError` for fewer than 20 draws, a block under 1 px, a compared map of another shape, NaN or inf in a map, or a mask with one class | The same pixels and the same draws for both maps when `other` is given |
@@ -178,6 +181,8 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `window scores part of a whole-surface map; crop and surface_shape describe a map that is itself a part: give one or the other` | `--window` with `--crop` or `--surface-shape` | A whole map takes `--window`; a map of a crop takes `--crop` and `--surface-shape` |
+| `window [...] is outside the H x W map` | The window, after scaling to the map's grid, leaves the map | Check the box and `--window-canvas` |
 | `numpy is required for python -m kit auc. Install the maps extra: python -m pip install "scrolls-workbench[maps]", or run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit auc ...` | numpy is not installed | Install the maps extra, or run inside villa's environment, as the message says |
 | `tifffile is required for python -m kit auc. Install the maps extra: ...` (the rest as for numpy) | tifffile is missing | The same; imagecodecs, in the maps extra, reads compressed TIFFs |
 | `zarr is required for python -m kit auc. Install the maps extra (its zarr needs Python 3.11 or newer): ...` | zarr is missing | The same, on Python 3.11 or newer |
@@ -220,6 +225,18 @@ Why blocks: neighboring pixels are not independent, and a segment's labels cover
 
 Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map the size of PHerc0139 w045 (5,980 x 8,240, uint8) with level-2 labels of 5,820 x 8,020: 4.8 s with `--control`, 5.8 s with `--bootstrap 300`, 5.0 s with `--compare`. Peak memory was about 1.1 GB with `--control` at that size. It runs on any machine; nothing here needs Modal or a GPU.
 
+## Start from VC3D
+
+Select an ink map in the segment's Ink Detection overlay and pick Scrolls > segment > "AUC of the selected ink map against the segment's labels". With a focus region set, the "(focus region)" entry scores only that box (`--window`, scaled to the map's grid with `--window-canvas`). The reverse-depth control and the labels are found from the segment's ink detection records first (a record whose role or artifact type says `ink-labels` or `supervision`; AutoPipeline's `MODEL reverse-depth control` record paired by its model), then by villa's names: `MAP_reverse`, `ink_r` beside `ink_f`, `SEG_inklabels.zarr`, `SEG_supervision_mask.zarr`. From a terminal or an agent ([toolreg](toolreg.md)):
+
+```bash
+python -m kit tools run auc --segment SEG --ink-overlay SEG/MAP.tif [--region X0,Y0,Z0,X1,Y1,Z1] --out RUN
+```
+
+## Open in VC3D
+
+VC3D shows `auc.json` as the run's result file. `RUN/vc3d-result.json` carries the controls verdict: a run without the reverse-depth control says `no control: not a pass`. AUC is not an AutoPipeline stage: it checks a stage's output against published labels.
+
 ## For agents
 
 - **Command:** `python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr --json`; on a crop add `--crop Y0 Y1 X0 X1 --surface-shape H W --inner 64`; for an interval add `--bootstrap 300`.
@@ -236,7 +253,7 @@ Measured 2026-10-16 in a 4-core 2.1 GHz Xeon cloud container, on a synthetic map
 python -m unittest tests.test_auc tests.test_auc_bootstrap_exact tests.test_scoring_guards.AucGuardsTest -v
 ```
 
-They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. They skip without numpy, tifffile and zarr. They do not run on real segment data.
+They cover the AUC against the pairwise definition, ties, float and uint16 maps, a forward map that reads ink and a reverse that does not, crops lining up with the full map, a `--window` of a whole map matching its crop (scaled from a larger canvas), unpredicted zeros, `--inner`, the refusals (crop outside, missing store, a scale that differs between axes, crop without shape), the command line, and the bootstrap against a per-pixel oracle with quantization, zeros and partial blocks. `AucGuardsTest` checks that maps with a tiny range, negative values or logits keep their ranks, a constant map outside the known scale ties, maps already on a known scale quantize as before, NaN and inf are refused, and the map cannot be its own control. They skip without numpy, tifffile and zarr. They do not run on real segment data.
 
 ## History
 

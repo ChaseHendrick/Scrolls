@@ -7,6 +7,8 @@
                          [--um-per-px UM] [--local | --space OWNER/NAME] [--reader d9v2|ink_9um|both]
                          [--windows 3|1] [--no-pins] [--letter-mm 3.0] [--bridge [NAME]] [--dry-run] [--json]
   python3 inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR --size 1024 ...
+  python3 inklens.py run --segment SEGDIR --volume OME_ZARR --crop Y0 Y1 X0 X1 --local --offline --out RUN
+                         (the tool registry's route: writes only into RUN, never downloads)
 
 What run does, in order, stopping at the first refusal (exit 2):
   1. reads the region: from a surface volume that covers the segment (zarr, .npy, .npz or .tif, layers first), or
@@ -22,7 +24,12 @@ What run does, in order, stopping at the first refusal (exit 2):
      inklens/<run>.pins.json (a VC3D point collection) and inklens/<run>.json (the receipt).
      With --bridge, the pins are merged into VC3D's current point collections and the view centers on the region.
 
-Exit codes: 0 ink or weak, 3 none or too_small, 2 refused. Everything it writes is model output, not a reading.
+With --out RUN (local mode only) step 6 writes into RUN instead and leaves SEGDIR untouched: inklens.tif and
+inklens_reverse.tif (the kept ink and the reverse-depth control's kept ink, 8-bit, whole canvas), inklens.pins.json,
+inklens.letters.json and inklens.json; VC3D loads them through the tool registry (python -m kit tools).
+
+Exit codes: 0 ink or weak (and with --out, any status once the files are written), 3 none or too_small, 2 refused.
+Everything it writes is model output, not a reading.
 """
 
 from __future__ import annotations
@@ -252,12 +259,18 @@ def check_space_gate(run, decision):
 
 
 def letters(kept, kept_r, um_per_px, letter_mm=LETTER_MM, weights=READER_WEIGHTS):
-    """The Scroll Text Reader on the kept map, the control's own kept map as its control map. None without kit."""
+    """The Scroll Text Reader on the kept map, the control's own kept map as its control map. None without kit.
+    With downloads off (engine.offline()), weights that are not cached yet skip the pins instead of downloading."""
     if find_kit() is None:
         return None, "no kit/ next to Ink Lens: letter pins need this repository"
     from kit import letterread
     if not kept.any():
         return None, "nothing kept, so nothing to read"
+    if engine.offline():
+        try:
+            weights = str(letterread.resolve_weights(weights, download=False))
+        except (OSError, ValueError) as exc:
+            return None, f"letter weights not cached and downloads are off: {exc}"
     lp = letterread.letter_px_from_units(letter_mm, um_per_px)
     res = letterread.read(kept, weights, letter_px=lp, control=kept_r, orientation=False)
     return res, None
@@ -316,6 +329,44 @@ def write_vc3d(segdir, rid, box_render, pool, kept_u8, decision, receipt, pins=N
     receipt = dict(receipt, files=files, canvas_size=list(canvas.shape[::-1]), canvas_divisor=div,
                    mosaic_merged=merged, pins_written=len(voxels), segment_key=seg["key"])
     files["receipt"] = str(vc3dout.atomic_write(out_dir / f"{rid}.json", json.dumps(receipt, indent=1) + "\n"))
+    return files, voxels
+
+
+def write_run_folder(out, segdir, box_render, pool, kept_u8, kept_r_u8, decision, receipt, pins=None, xyz=None,
+                     letters_doc=None):
+    """--out: the run's files in OUT only (the tool registry's run folder), never in the segment folder: inklens.tif
+    and inklens_reverse.tif (the kept ink and its reverse-depth control's kept ink, 8-bit, on the whole segment canvas,
+    0 elsewhere; VC3D draws 0 as transparent), inklens.pins.json (a VC3D point collection, when pins were placed),
+    inklens.letters.json and inklens.json (the receipt). Returns their paths and the pins' voxel points."""
+    import tifffile
+    seg = vc3dout.segment(segdir)
+    out = Path(out)
+    out.mkdir(parents=True, exist_ok=True)
+    canvas, div = vc3dout.canvas(seg, box_render, kept_u8, pool)
+    canvas_r, _ = vc3dout.canvas(seg, box_render, kept_r_u8, pool)
+    files = {}
+    for key, name, img in (("map", "inklens.tif", canvas), ("reverse", "inklens_reverse.tif", canvas_r)):
+        tmp = out / (name + ".part")
+        tifffile.imwrite(tmp, img)
+        os.replace(tmp, out / name)
+        files[key] = str(out / name)
+    voxels = []
+    if pins:
+        xyz = vc3dout.load_xyz(segdir) if xyz is None else xyz
+        for p in pins:
+            v = vc3dout.grid_to_voxel(xyz, *vc3dout.render_to_grid(seg, p["row"], p["col"]))
+            if v is not None:
+                voxels.append(v)
+        if voxels:
+            doc = vc3dout.points_doc(f"Ink Lens {receipt.get('run', '')}".strip(), voxels,
+                                     metadata={"ink_lens_run": receipt.get("run")})
+            files["pins"] = str(vc3dout.atomic_write(out / "inklens.pins.json", json.dumps(doc, indent=1) + "\n"))
+    if letters_doc:
+        files["letters"] = str(vc3dout.atomic_write(out / "inklens.letters.json", json.dumps(letters_doc, indent=1)))
+    receipt = dict(receipt, files=files, canvas_size=list(canvas.shape[::-1]), canvas_divisor=div,
+                   pins_written=len(voxels), segment_key=seg["key"], segment=seg["dir"],
+                   wrote_into_segment=False)
+    files["receipt"] = str(vc3dout.atomic_write(out / "inklens.json", json.dumps(receipt, indent=1) + "\n"))
     return files, voxels
 
 
@@ -510,8 +561,12 @@ def cmd_run(a):
     elif a.box:
         x, y, w, h = a.box
         box = (y, x, h, w)
+    elif a.crop:
+        y0, y1, x0, x1 = a.crop
+        box = (y0, x0, y1 - y0, x1 - x0)
     else:
-        raise Refused("give --box X Y W H (render pixels of the segment at scale 1) or --from-vc3d")
+        raise Refused("give --box X Y W H or --crop Y0 Y1 X0 X1 (render pixels of the segment at scale 1), or "
+                      "--from-vc3d")
     cw, ch = seg["canvas_px"]
     y, x, h, w = box
     if not (0 <= y and 0 <= x and y + h <= ch and x + w <= cw):
@@ -520,10 +575,18 @@ def cmd_run(a):
     est = engine.estimate(mh, mw, a.windows, a.reader)
     if a.dry_run:
         rid = run_id(a.reader, box)
+        would = ([str(Path(a.out) / n) for n in ("inklens.tif", "inklens_reverse.tif", "inklens.pins.json",
+                                                 "inklens.letters.json", "inklens.json")] if a.out else
+                 [f"inklens/{rid}.png", "inklens/mosaic.png", "ink-detections.json", f"inklens/{rid}.pins.json",
+                  f"inklens/{rid}.json"])
         emit({"segment": seg["dir"], "box_render_px": box, "pool": pool, "map_px": [mh, mw], "estimate": est,
-              "would_write": [f"inklens/{rid}.png", "inklens/mosaic.png", "ink-detections.json",
-                              f"inklens/{rid}.pins.json", f"inklens/{rid}.json"]}, a.json)
+              "would_write": would}, a.json)
         return EXIT_OK
+    if a.offline:
+        os.environ["INKLENS_OFFLINE"] = "1"
+    if a.out and not a.local:
+        raise Refused("--out is the tool registry's route and runs only in local mode (--local); the Space spends "
+                      "ZeroGPU quota, which needs a yes for each use")
     if not a.local and est.get("refused"):
         raise Refused(est["refused"])
     layers = engine.STACK * pool
@@ -541,6 +604,13 @@ def cmd_run(a):
     rid = run_id(a.reader, box)
     summary = summarize_letters(res, why)
     receipt = make_receipt(run, decision, a, box, pool, src, summary)
+    if a.out:
+        files, voxels = write_run_folder(a.out, seg["dir"], box, pool, gate.to_u8(kept), gate.to_u8(kept_r),
+                                         decision, dict(receipt, run=rid), letter_points(res, box, pool),
+                                         letters_doc=res)
+        emit({"run": rid, "segment": seg["dir"], "gate": decision, "letters": summary, "files": files,
+              "pins": len(voxels), "where": run["where"], "note": NOTE}, a.json)
+        return EXIT_OK      # the gate's status is in the receipt; the files are the result, an empty map included
     files, voxels = write_vc3d(seg["dir"], rid, box, pool, gate.to_u8(kept), decision, receipt,
                                letter_points(res, box, pool))
     if res:
@@ -600,6 +670,13 @@ def parser():
     r.add_argument("--render-binary", help="path to vc_render_tifxyz")
     r.add_argument("--um-per-px", type=float, help="pixel size of the render (default: from the OME-Zarr)")
     r.add_argument("--box", type=int, nargs=4, metavar=("X", "Y", "W", "H"), help="region in render pixels")
+    r.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
+                   help="the same region as a box on the segment's canvas (the tool registry's form)")
+    r.add_argument("--out", help="write the run's files into this folder only, never into the segment folder "
+                                 "(exit 0 whenever they are written; local mode only)")
+    r.add_argument("--offline", action="store_true",
+                   help="refuse a checkpoint, villa source or letter weights that are not cached, instead of "
+                        "downloading them (fetch them once with engine.py fetch)")
     r.add_argument("--from-vc3d", action="store_true", help="center the region on VC3D's cursor (needs --bridge)")
     r.add_argument("--size", type=int, default=1024, help="with --from-vc3d: region side at 9.6 um (default 1024)")
     r.add_argument("--bridge", nargs="?", const="", default=None,

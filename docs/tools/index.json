@@ -106,67 +106,79 @@
     {
      "name": "Commands and options",
      "start_line": 82,
-     "end_line": 115,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 116,
-     "end_line": 133,
+     "start_line": 119,
+     "end_line": 136,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 134,
-     "end_line": 144,
+     "start_line": 137,
+     "end_line": 147,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 145,
-     "end_line": 175,
+     "start_line": 148,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 176,
-     "end_line": 205,
+     "start_line": 179,
+     "end_line": 210,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 206,
-     "end_line": 218,
+     "start_line": 211,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 219,
-     "end_line": 222,
+     "start_line": 224,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Start from VC3D",
+     "start_line": 228,
+     "end_line": 235,
+     "applicable": true
+    },
+    {
+     "name": "Open in VC3D",
+     "start_line": 236,
+     "end_line": 239,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 223,
-     "end_line": 232,
+     "start_line": 240,
+     "end_line": 249,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 233,
-     "end_line": 240,
+     "start_line": 250,
+     "end_line": 257,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 241,
-     "end_line": 253,
+     "start_line": 258,
+     "end_line": 270,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 254,
-     "end_line": 261,
+     "start_line": 271,
+     "end_line": 278,
      "applicable": true
     }
    ]
@@ -2704,6 +2716,8 @@
    "area": "Ink maps and models",
    "commands": [
     "python3 spaces/ink-lens/inklens.py run",
+    "--out RUN --offline --local",
+    "python -m kit.inklens run",
     "python3 spaces/ink-lens/inklens.py demo SAMPLE",
     "python3 spaces/ink-lens/inklens.py estimate H W",
     "python3 spaces/ink-lens/inklens.py samples",
@@ -2716,6 +2730,14 @@
    "code": [
     {
      "path": "spaces/ink-lens/inklens.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/inklens.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/data/registry/ink-lens.json",
      "symbols": []
     },
     {
@@ -2764,11 +2786,12 @@
     }
    ],
    "tests": [
-    "tests/test_inklens.py"
+    "tests/test_inklens.py",
+    "tests/test_toolreg.py"
    ],
    "go_ahead": {
-    "needed": true,
-    "text": "Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests"
+    "needed": false,
+    "text": "Not needed for local mode (the tool registry's route from VC3D included) or the tests. Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota"
    },
    "checked": {
     "date": "2026-10-20",
@@ -2780,14 +2803,14 @@
     "Status": "Experimental",
     "Kind": "app, agent tool, script",
     "Area": "Ink maps and models",
-    "Run": "`python3 spaces/ink-lens/inklens.py run` (a region of a segment), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME`",
-    "Code": "`spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft plugin manifest), `spaces/ink-lens/README.md` (the Space card)",
-    "Tests": "`tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them)",
+    "Run": "`python3 spaces/ink-lens/inklens.py run` (a region of a segment; `--out RUN --offline --local` for the tool registry), `python -m kit.inklens run` (the same client from kit, as VC3D's Scrolls menu runs it through the tool registry), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME`",
+    "Code": "`spaces/ink-lens/inklens.py` (the client), `kit/inklens.py` (runs it from kit), `kit/data/registry/ink-lens.json` (its tool registry manifest), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft plugin manifest), `spaces/ink-lens/README.md` (the Space card)",
+    "Tests": "`tests/test_inklens.py`, 48 tests (those that need torch, tifffile or `VILLA_SRC` skip without them); `tests/test_toolreg.py` `AdapterTest` (the registry manifest bound from a VC3D selection)",
     "Needs": "Python 3.10 or newer, numpy. Space mode: gradio_client and huggingface_hub, and the user's own Hugging Face token. Local mode and the Space: torch 2.13.0 and the pins in `spaces/ink-lens/requirements.txt`; villa's `vesuvius/src` at `8aa507c12` and the checkpoint are downloaded once (or `VILLA_SRC`, `INKLENS_D9V2`, `INKLENS_INK_9UM`). Pins: tifffile, and this repository's `kit/` (the Scroll Text Reader). Rendering a region: `vc_render_tifxyz` from a VC3D build. Label scoring: zarr",
     "Runs on": "ZeroGPU (Space mode, estimate only until deployed: 6 to 10 s for a 1024 px region, 1,350 patches). CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing",
-    "Writes": "Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR",
-    "Go-ahead": "Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests",
+    "Writes": "With `--out RUN` (the tool registry's route): only into RUN, `inklens.tif`, `inklens_reverse.tif`, `inklens.pins.json`, `inklens.letters.json`, `inklens.json`, and nothing into the segment folder. Otherwise into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR",
+    "Go-ahead": "Not needed for local mode (the tool registry's route from VC3D included) or the tests. Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota",
     "Released": "Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase, 20 Oct 2026, about 21:28 UTC: \"can we not deploy to a HF space rn and wait until i ever get PRO to get more spaces\"); local mode works now",
     "License": "Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0",
     "Checked": "2026-10-20 against commit `3c2445e`"
@@ -2821,67 +2844,79 @@
     {
      "name": "Commands and options",
      "start_line": 119,
-     "end_line": 212,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 213,
-     "end_line": 226,
+     "start_line": 217,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 227,
-     "end_line": 237,
+     "start_line": 233,
+     "end_line": 243,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 238,
-     "end_line": 261,
+     "start_line": 244,
+     "end_line": 267,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 262,
-     "end_line": 356,
+     "start_line": 268,
+     "end_line": 367,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 357,
-     "end_line": 386,
+     "start_line": 368,
+     "end_line": 397,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 387,
-     "end_line": 394,
+     "start_line": 398,
+     "end_line": 405,
+     "applicable": true
+    },
+    {
+     "name": "Start from VC3D",
+     "start_line": 406,
+     "end_line": 416,
+     "applicable": true
+    },
+    {
+     "name": "Open in VC3D",
+     "start_line": 417,
+     "end_line": 420,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 395,
-     "end_line": 408,
+     "start_line": 421,
+     "end_line": 434,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 409,
-     "end_line": 419,
+     "start_line": 435,
+     "end_line": 445,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 420,
-     "end_line": 425,
+     "start_line": 446,
+     "end_line": 451,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 426,
-     "end_line": 433,
+     "start_line": 452,
+     "end_line": 459,
      "applicable": true
     }
    ]
@@ -2999,21 +3034,33 @@
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Start from VC3D",
      "start_line": 78,
-     "end_line": 83,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 84,
      "end_line": 87,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Open in VC3D",
      "start_line": 88,
-     "end_line": 93,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 92,
+     "end_line": 97,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 98,
+     "end_line": 101,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 102,
+     "end_line": 107,
      "applicable": true
     }
    ]
@@ -8664,61 +8711,61 @@
     {
      "name": "Python API",
      "start_line": 357,
-     "end_line": 405,
+     "end_line": 406,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 406,
-     "end_line": 423,
+     "start_line": 407,
+     "end_line": 424,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 424,
-     "end_line": 453,
+     "start_line": 425,
+     "end_line": 455,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 454,
-     "end_line": 510,
+     "start_line": 456,
+     "end_line": 514,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 511,
-     "end_line": 526,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 527,
+     "start_line": 515,
      "end_line": 530,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 531,
-     "end_line": 540,
+     "end_line": 534,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 541,
+     "name": "For agents",
+     "start_line": 535,
      "end_line": 544,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 545,
-     "end_line": 549,
+     "end_line": 548,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 549,
+     "end_line": 553,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 550,
-     "end_line": 557,
+     "start_line": 554,
+     "end_line": 561,
      "applicable": true
     }
    ]

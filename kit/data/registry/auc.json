@@ -2,6 +2,7 @@
  "schema": "scrolls-tool/1",
  "id": "auc",
  "repo": "public",
+ "notes": "From VC3D: the selected ink detection is the map; its reverse-depth control and the segment's labels come from the segment's ink detection records (role or artifact type), then from villa's file names (MAP_reverse, SEG_inklabels.zarr, SEG_supervision_mask.zarr). A run without the control is not a pass.",
  "inputs": {
   "prediction": {
    "from": "segment.overlay",
@@ -36,6 +37,12 @@
     "zarr"
    ],
    "label": "the segment's supervision zarr"
+  },
+  "window": {
+   "from": "region",
+   "space": "segment_canvas",
+   "required": false,
+   "label": "only this box of the map (VC3D's focus region on the segment's canvas)"
   }
  },
  "params": {
@@ -71,6 +78,16 @@
    "control": [
     "--control",
     "{in.control}"
+   ],
+   "window": [
+    "--window",
+    "{in.window.y0}",
+    "{in.window.y1}",
+    "{in.window.x0}",
+    "{in.window.x1}",
+    "--window-canvas",
+    "{in.window.canvas_h}",
+    "{in.window.canvas_w}"
    ]
   },
   "stdout": "{run}/auc.json",

@@ -1,0 +1,25 @@
+{
+ "schema": "vc3d-plugin/1",
+ "id": "scrolls.inkfilter.region",
+ "name": "Inkfilter map of the active segment, with its reverse-depth control (focus region)",
+ "description": "fixed image filters for surface volumes. Model output, not a reading.. Only the focus region, as a box on the segment's canvas.",
+ "menu": "Scrolls/segment",
+ "program": "bin/scrolls-tool",
+ "args": [
+  "run",
+  "inkfilter",
+  "--segment",
+  "{segment}",
+  "--region",
+  "{region}",
+  "--out",
+  "{output}",
+  "--json"
+ ],
+ "result": {
+  "kind": "ink_overlay",
+  "path": "{output}/vc3d/views/map_u8.tif"
+ },
+ "license": "Original code: [Apache-2.0](https://github.com/ChaseHendrick/Scrolls/blob/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter/LICENSE). Referenced data and methods keep their own licenses; data and upstream implementations are not bundled",
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/inkfilter.md"
+}

@@ -8,14 +8,14 @@ Runs an openly licensed 9 um ink model on one region of a VC3D segment in both d
 | Status | Experimental |
 | Kind | app, agent tool, script |
 | Area | Ink maps and models |
-| Run | `python3 spaces/ink-lens/inklens.py run` (a region of a segment), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME` |
-| Code | `spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft plugin manifest), `spaces/ink-lens/README.md` (the Space card) |
-| Tests | `tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them) |
+| Run | `python3 spaces/ink-lens/inklens.py run` (a region of a segment; `--out RUN --offline --local` for the tool registry), `python -m kit.inklens run` (the same client from kit, as VC3D's Scrolls menu runs it through the tool registry), `python3 spaces/ink-lens/inklens.py demo SAMPLE` (a public sample end to end), `python3 spaces/ink-lens/inklens.py estimate H W`, `python3 spaces/ink-lens/inklens.py samples`, `python3 spaces/ink-lens/app.py` (the Space page, API and MCP), `python3 spaces/ink-lens/engine.py estimate H W`, `python3 spaces/ink-lens/tools/check_gate.py OUT.json` (the preregistered check), `python3 spaces/ink-lens/tools/deploy.py OWNER/NAME` |
+| Code | `spaces/ink-lens/inklens.py` (the client), `kit/inklens.py` (runs it from kit), `kit/data/registry/ink-lens.json` (its tool registry manifest), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft plugin manifest), `spaces/ink-lens/README.md` (the Space card) |
+| Tests | `tests/test_inklens.py`, 48 tests (those that need torch, tifffile or `VILLA_SRC` skip without them); `tests/test_toolreg.py` `AdapterTest` (the registry manifest bound from a VC3D selection) |
 | Needs | Python 3.10 or newer, numpy. Space mode: gradio_client and huggingface_hub, and the user's own Hugging Face token. Local mode and the Space: torch 2.13.0 and the pins in `spaces/ink-lens/requirements.txt`; villa's `vesuvius/src` at `8aa507c12` and the checkpoint are downloaded once (or `VILLA_SRC`, `INKLENS_D9V2`, `INKLENS_INK_9UM`). Pins: tifffile, and this repository's `kit/` (the Scroll Text Reader). Rendering a region: `vc_render_tifxyz` from a VC3D build. Label scoring: zarr |
 | Runs on | ZeroGPU (Space mode, estimate only until deployed: 6 to 10 s for a 1024 px region, 1,350 patches). CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing |
-| Writes | Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR |
-| Go-ahead | Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests |
+| Writes | With `--out RUN` (the tool registry's route): only into RUN, `inklens.tif`, `inklens_reverse.tif`, `inklens.pins.json`, `inklens.letters.json`, `inklens.json`, and nothing into the segment folder. Otherwise into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR |
+| Go-ahead | Not needed for local mode (the tool registry's route from VC3D included) or the tests. Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota |
 | Released | Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase, 20 Oct 2026, about 21:28 UTC: "can we not deploy to a HF space rn and wait until i ever get PRO to get more spaces"); local mode works now |
 | License | Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0 |
 | Checked | 2026-10-20 against commit `3c2445e` |
@@ -123,7 +123,7 @@ chosen with the labels, not a blind test); Untested idea for the GPU timings unt
 ```text
 inklens.py run --segment SEGDIR (--surface-volume PATH | --volume OME_ZARR) --box X Y W H [--um-per-px UM]
                [--local | --space OWNER/NAME] [--reader d9v2|ink_9um|both] [--windows 3|1] [--no-pins]
-               [--letter-mm MM] [--bridge [NAME]] [--dry-run] [--json]
+               [--letter-mm MM] [--bridge [NAME]] [--dry-run] [--json] [--crop Y0 Y1 X0 X1] [--out RUN] [--offline]
 inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 ```
 
@@ -135,6 +135,9 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 | `--render-binary` | `vc_render_tifxyz` on PATH | Path to `vc_render_tifxyz` |
 | `--um-per-px` | from the OME-Zarr | Pixel size of the render in micrometers; sets the pooling (4 for 2.4 um, 1 at 7 um and above) |
 | `--box` | none | Region `X Y W H` in render pixels of the segment at scale 1 |
+| `--crop` | none | The same region as `Y0 Y1 X0 X1`, a box on the segment's canvas (the tool registry's form) |
+| `--out` | none | Write the run's files into this folder only, never into the segment folder; exit 0 whenever they are written; local mode only |
+| `--offline` | off | Refuse a checkpoint, villa source or letter weights that are not cached instead of downloading them (fetch once with `engine.py fetch`) |
 | `--from-vc3d` | off | Center the region on VC3D's cursor (needs a running VC3D with `--agent-bridge`) |
 | `--size` | 1024 | With `--from-vc3d`: the region side at 9.6 um |
 | `--bridge` | off | Merge the pins into VC3D's point collections and center the view; a name or socket path, or empty for the newest bridge |
@@ -206,6 +209,7 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `INKLENS_SPACE` | `SharpMeow/ink-lens` | The Space the client calls |
 | `HF_TOKEN` | the stored `hf auth login` token | Your Hugging Face token, so your ZeroGPU quota pays |
 | `INKLENS_CACHE` | `TMPDIR/ink-lens` | Where villa and the checkpoints are downloaded |
+| `INKLENS_OFFLINE` | unset | Set (by `--offline`): a checkpoint, villa source or letter weights not in the cache are refused, never downloaded |
 | `VILLA_SRC` | unset | A local villa `vesuvius/src` instead of the pinned download |
 | `INKLENS_D9V2`, `INKLENS_INK_9UM` | unset | A local copy of a checkpoint (its SHA-256 is still checked); read as `INKLENS_` plus the reader name in capitals |
 | `SPACES_ZERO_GPU` | set by Hugging Face | The Space attaches the GPU through `spaces.GPU` when it is true |
@@ -223,6 +227,8 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `inklens.run_space(volume, space, reader, windows, token)` | run dict | `Refused` | Your token, your quota |
 | `inklens.write_vc3d(segdir, run_id, box, pool, kept_u8, decision, receipt, pins)` | `(files, voxels)` | `VC3DError` | |
 | `vc3dout.merge_records`, `vc3dout.points_doc`, `vc3dout.merge_points`, `vc3dout.check_points_doc` | | `VC3DError` | VC3D's file rules |
+| `inklens.write_run_folder(out, segdir, box, pool, kept_u8, kept_r_u8, decision, receipt, pins, letters_doc=None)` | `(files, voxels)` | `VC3DError` | `--out`: the run folder only |
+| `load()`, `main(argv)` in `kit/inklens.py` | the client module; its exit code | `FileNotFoundError` (load) | `python -m kit.inklens` |
 
 ## Inputs
 
@@ -264,6 +270,11 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `--out is the tool registry's route and runs only in local mode (--local); the Space spends ZeroGPU quota, which needs a yes for each use` | `--out` without `--local` | Add `--local`; the Space spends quota and needs a yes for each use |
+| `give --box X Y W H or --crop Y0 Y1 X0 X1 (render pixels of the segment at scale 1), or --from-vc3d` | No region was given | Give a box, a crop, or start from VC3D |
+| `is missing: Ink Lens ships in public Scrolls under spaces/ink-lens/` | `python -m kit.inklens` in a kit without `spaces/ink-lens/` | Use a public Scrolls checkout |
+| `PATH is not in the cache and downloads are off (INKLENS_OFFLINE); fetch it once with: python3 spaces/ink-lens/engine.py fetch NAME (INKLENS_CACHE names the cache)` | `--offline` (the tool registry's route) and the checkpoint is not cached | Run `python3 spaces/ink-lens/engine.py fetch d9v2` once with the same `INKLENS_CACHE` |
+| `villa's source at COMMIT is not in the cache (DEST) and downloads are off (INKLENS_OFFLINE); fetch it once with: python3 spaces/ink-lens/engine.py fetch d9v2, or set VILLA_SRC to a villa checkout's vesuvius/src` | `--offline` and villa's pinned source is not cached | The same fetch, or set `VILLA_SRC` to a villa checkout's `vesuvius/src` |
 | `; the samples are` | The sample id is not in `samples.json` | Run `inklens.py samples` |
 | `samples must come from` | `samples.json` names another bucket | Restore the file; samples come only from the open-data bucket |
 | `must be a plain path inside the segment` | A sample path is absolute, a URL or climbs out | Restore `samples.json` |
@@ -391,6 +402,21 @@ z windows also works as a simple ensemble", read 2026-10-20).
 - ZeroGPU: not measured. Estimate 3 to 6 ms per patch with batching and fp16, so 6 to 10 s for a 1024 px region with
   three windows (requested 21 s). Chase's 300 s covers one calibration call and then about 25 such regions.
 - Local CUDA and Apple MPS: not measured.
+
+## Start from VC3D
+
+Set a focus region on the active segment and pick Scrolls > region > "Ink Lens: control-checked ink map of the focus region". The tool registry ([toolreg](toolreg.md)) runs Ink Lens in local CPU mode with downloads off, writing only into its run folder (`--local --device cpu --offline --out RUN`), never the Space. Before the first run, fetch the reader and villa's source once and keep `INKLENS_CACHE` the same for VC3D; `vc_render_tifxyz` must be on `PATH` (it ships with VC3D builds):
+
+```bash
+python3 spaces/ink-lens/engine.py fetch d9v2
+python -m kit tools run ink-lens --segment SEG --volume VOL --region X0,Y0,Z0,X1,Y1,Z1 --param voxel_um=auto --out RUN
+```
+
+`python -m kit.inklens run ... --out RUN` is the same client called directly. A region of a prize-eligible scroll is refused in public Scrolls.
+
+## Open in VC3D
+
+VC3D loads the kept ink (`RUN/inklens.tif`, 8-bit on the whole canvas, 0 drawn transparent) as a new ink detection. The reverse-depth control's kept ink comes back with "Open run output as ink overlay" (output `reverse`) and the letter-candidate pins with "Open run output as points" (output `pins`). With `--out` nothing is written into the segment folder; the terminal route without `--out` still writes `SEGDIR/inklens/` and `ink-detections.json` as before. Ink Lens is not an AutoPipeline stage: it maps a region, not a whole segment.
 
 ## For agents
 

@@ -13,7 +13,8 @@ The labels sit on the 2.4 um scan's grid. Its pyramid level 2 is the 9 um surfac
 to a uniform scale (w045: 5,820 x 8,020 labels for 5,980 x 8,240 surface pixels), so labels
 are mapped onto the map by nearest neighbor, and a scale that differs between the axes is
 refused. A map that covers only a window of the surface gives that window with `crop` and
-the full surface shape with `surface_shape`.
+the full surface shape with `surface_shape`; `window` scores only a window of a whole-surface map
+(and of its control), such as VC3D's focus region as a box on the segment's canvas.
 
 The reverse-direction map is the control: it reads the same CT, so it is shown the same
 ink, but in the wrong depth order. A forward AUC well above the reverse AUC says the model
@@ -30,6 +31,8 @@ with the same draws and reports the difference, its interval, and the share of d
 which the first map is not ahead. On PHerc0841 a strong map's interval is +-0.01 to +-0.04,
 so a ranking by a smaller margin on one segment is noise (docs/logs/2026-10-07-overlap-and-baseline.md).
 """
+
+import math
 
 from .layers import _zarr
 from .verify import VerifyError, _numpy, load_map
@@ -279,13 +282,38 @@ def block_bootstrap(prediction, ink, mask, draws=300, block_px=BLOCK_PX, seed=0,
     return result
 
 
+def _window_cut(window, crop, surface_shape, shape, canvas=None):
+    """The slices of a whole-surface map that a window (y0, y1, x0, x1) scores, or None without one. A window is a
+    part of a whole map (VC3D's focus region as a box on the canvas); crop is for a map that is itself a part. With
+    canvas (H, W), the window is on a canvas of that size and is scaled to the map's grid (outward, whole pixels)."""
+    if window is None:
+        return None
+    if crop is not None or surface_shape is not None:
+        raise VerifyError("window scores part of a whole-surface map; crop and surface_shape describe a map that is "
+                          "itself a part: give one or the other")
+    y0, y1, x0, x1 = (int(v) for v in window)
+    if canvas and all(int(c) > 0 for c in canvas) and tuple(int(c) for c in canvas) != tuple(shape):
+        fy, fx = shape[0] / int(canvas[0]), shape[1] / int(canvas[1])
+        y0, y1 = int(math.floor(y0 * fy)), min(shape[0], int(math.ceil(y1 * fy)))
+        x0, x1 = int(math.floor(x0 * fx)), min(shape[1], int(math.ceil(x1 * fx)))
+    if not (0 <= y0 < y1 <= shape[0] and 0 <= x0 < x1 <= shape[1]):
+        raise VerifyError(f"window {[y0, y1, x0, x1]} is outside the {shape[0]} x {shape[1]} map")
+    return (slice(y0, y1), slice(x0, x1)), [y0, y1, x0, x1]
+
+
 def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, crop=None,
                 surface_shape=None, keep_zero=False, inner=0, bootstrap=0, block_px=BLOCK_PX,
-                compare=None, seed=0):
+                compare=None, seed=0, window=None, window_canvas=None):
     np = _numpy()
     pred = np.squeeze(_load(prediction))
     if pred.ndim != 2:
         raise VerifyError(f"{prediction}: expected a 2D map, got shape {pred.shape}")
+    got = _window_cut(window, crop, surface_shape, pred.shape, window_canvas)
+    cut = None
+    if got is not None:
+        cut, crop = got
+        surface_shape = pred.shape
+        pred = pred[cut]
     if surface_shape is None:
         if crop is not None:
             raise VerifyError("a cropped map needs the full surface shape (surface_shape)")
@@ -295,8 +323,13 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
               "files": {"prediction": str(prediction), "labels": str(labels), "mask": str(mask),
                         "control": None if control is None else str(control)},
               "level": level, "crop": crop}
+    if cut is not None:
+        result["window"] = {"asked": [int(v) for v in window], "on_map": list(crop),
+                            "canvas": [int(c) for c in window_canvas] if window_canvas else None}
     if control is not None:
         ctrl = np.squeeze(_load(control))
+        if cut is not None:
+            ctrl = ctrl[cut] if ctrl.shape == tuple(surface_shape) else ctrl
         if ctrl.shape != pred.shape:
             raise VerifyError(f"control shape {ctrl.shape} differs from the map's {pred.shape}")
         # the same file is refused; an identical copy still scores, and its zero gap fails the control honestly
@@ -308,6 +341,7 @@ def score_files(prediction, labels, mask, control=None, level=DEFAULT_LEVEL, cro
         other = None
         if compare is not None:
             other = np.squeeze(_load(compare))
+            other = other[cut] if cut is not None and other.shape == tuple(surface_shape) else other
             result["files"]["compare"] = str(compare)
         result["bootstrap"] = block_bootstrap(pred, ink, supervised, bootstrap or 300, block_px, seed, other,
                                               keep_zero, inner)

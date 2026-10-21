@@ -89,7 +89,7 @@ from pathlib import Path
 
 __all__ = ["SCHEMA", "SELECTION_SCHEMA", "RESULT_SCHEMA", "PLUGIN_SCHEMA", "Tool", "Registry", "RegistryError",
            "BindError", "load", "validate_manifest", "doors", "selection_from", "selection_from_app", "bind",
-           "plan", "run", "open_run", "exec_ink", "stage_choices", "ink_models", "plugin_manifests", "export_vc3d",
+           "plan", "run", "open_run", "exec_ink", "stage_choices", "existing_backends", "ink_models", "plugin_manifests", "export_vc3d",
            "check", "facts_for", "write_facts", "load_cached", "register_opener", "register_run_folder",
            "register_stage_check", "vc3d_reasons", "vc3d_plan_reasons", "vc3d_entries", "parent_bridge",
            "enrich_from_bridge", "format_gate", "write_plan", "find_plan", "confirm", "take", "launch",
@@ -144,7 +144,9 @@ FROM_PLACEHOLDER = {"volume": "volume", "segment": "segment", "segment.render": 
                     "segment.overlay": "ink_overlay", "segment.overlay.reverse": None, "segment.labels": "segment",
                     "segment.mask": "segment", "point": "point", "region": "region", "umbilicus": "umbilicus",
                     "project": "project"}
-FIELDS = {"point": ("x", "y", "z"), "region:segment_canvas": ("y0", "y1", "x0", "x1"),
+# a box on the segment's canvas carries the canvas size it is on (canvas_h, canvas_w; 0 when no segment is known), so
+# a tool reading a map of another resolution can scale the box to it
+FIELDS = {"point": ("x", "y", "z"), "region:segment_canvas": ("y0", "y1", "x0", "x1", "canvas_h", "canvas_w"),
           "region:volume": ("x0", "y0", "z0", "x1", "y1", "z1")}
 SPACES = ("volume", "segment_canvas")
 FORMATS = ("tifxyz", "ome-zarr", "zarr", "zarr-v2", "tif-stack", "volpkg-json", "vc3d-point-collection",
@@ -670,7 +672,7 @@ def validate_manifest(m):
                      "in safety.controls")
     pipe = m.get("pipeline")
     if pipe is not None:
-        p += _check_pipeline(pipe, inputs, outputs, kind)
+        p += _check_pipeline(pipe, inputs, outputs, kind, m.get("params") if isinstance(m.get("params"), dict) else None)
     vc = m.get("vc3d")
     if vc is not None:
         if not isinstance(vc, dict) or set(vc) - set(VC3D_KEYS):
@@ -693,7 +695,7 @@ def validate_manifest(m):
     return p
 
 
-def _check_pipeline(pipe, inputs, outputs, kind):
+def _check_pipeline(pipe, inputs, outputs, kind, params=None):
     p = []
     if not isinstance(pipe, dict) or set(pipe) - set(PIPELINE_KEYS):
         return [f"pipeline must be an object with {', '.join(PIPELINE_KEYS)}"]
@@ -707,6 +709,12 @@ def _check_pipeline(pipe, inputs, outputs, kind):
     if "existing" in pipe:
         if not isinstance(pipe["existing"], str) or set(pipe) - {"stage", "existing"}:
             p.append("pipeline.existing names the stage's backend this tool already is; it takes only stage")
+        elif PLACEHOLDER.fullmatch(pipe["existing"]):
+            ref = pipe["existing"][1:-1]
+            spec = (params or {}).get(ref[6:]) if ref.startswith("param.") else None
+            if not isinstance(spec, dict) or not isinstance(spec.get("enum"), list) or not spec["enum"]:
+                p.append("pipeline.existing as {param.NAME} names a declared param with an enum: each value is one "
+                         "of the stage's backends")
         return p
     if pipe.get("contract") != CONTRACTS[stage]:
         p.append(f"pipeline.contract for stage {stage} is {CONTRACTS[stage]!r}")
@@ -832,23 +840,49 @@ def _volume_info(location, voxel_um=None):
     return info
 
 
+LABEL_TYPES = {"labels": ("ink-labels", "inklabels", "ink labels", "labels"),
+               "mask": ("supervision", "supervision-mask", "supervision mask", "supervision_mask", "mask")}
+
+
+def _record_role(r, label):
+    """A record's role: kit_role when given, else labels or mask from its artifact_type, else from its label text
+    (reverse and shuffle mark controls, as AutoPipeline's records name them), else forward."""
+    if r.get("kit_role"):
+        return str(r["kit_role"])
+    kind = str(r.get("artifact_type") or "").strip().lower()
+    for role, names in LABEL_TYPES.items():
+        if kind in names:
+            return role
+    low = label.lower()
+    return "control:reverse" if "reverse" in low else "control:shuffle" if "shuffle" in low else "forward"
+
+
 def _ink_records(segdir):
-    path = Path(segdir) / "ink-detections.json"
-    if not path.is_file():
-        return []
-    try:
-        recs = _read_json(path)
-    except (OSError, ValueError):
-        return []
+    """SEGDIR's ink detection records as VC3D reads them: ink-detections.json, else, when that file is missing or
+    empty, catalog-origin.json's ink_detections (OpenDataSegmentCache.cpp). Each is {path, label, role, pair}; pair
+    is the model a record's maps share (AutoPipeline's kit_villafmt.model), so a forward map finds its own controls."""
+    recs = []
+    for path, key in ((Path(segdir) / "ink-detections.json", None), (Path(segdir) / "catalog-origin.json",
+                                                                       "ink_detections")):
+        if recs or not path.is_file():
+            continue
+        try:
+            doc = _read_json(path)
+        except (OSError, ValueError):
+            continue
+        doc = doc.get(key) if key and isinstance(doc, dict) else doc
+        recs = doc if isinstance(doc, list) else []
     out = []
-    for r in recs if isinstance(recs, list) else []:
+    for r in recs:
         if isinstance(r, dict) and isinstance(r.get("local_file"), str) and r["local_file"]:
             f = Path(r["local_file"])
             f = f if f.is_absolute() else Path(segdir) / f
             label = str(r.get("label") or f.name)
-            role = r.get("kit_role") or ("control:reverse" if "reverse" in label.lower() else
-                                         "control:shuffle" if "shuffle" in label.lower() else "forward")
-            out.append({"path": str(f), "label": label, "role": role})
+            rec = {"path": str(f), "label": label, "role": _record_role(r, label)}
+            meta = r.get("kit_villafmt") if isinstance(r.get("kit_villafmt"), dict) else {}
+            if meta.get("model"):
+                rec["pair"] = str(meta["model"])
+            out.append(rec)
     return out
 
 
@@ -1085,6 +1119,19 @@ def _segment(sel, need):
     return seg
 
 
+def _labels_in_records(seg, role, formats):
+    """A label or mask file the segment's ink detection records name (artifact_type or kit_role), when it exists in
+    one of the formats asked for; records come before villa's file names."""
+    exts = {"zarr": ".zarr", "zarr-v2": ".zarr", "ome-zarr": ".zarr", "tiff": (".tif", ".tiff"), "png": ".png"}
+    allowed = [e for f in (formats or ["zarr", "tiff", "png"]) for e in
+               (exts.get(f) if isinstance(exts.get(f), tuple) else (exts.get(f),)) if e]
+    for o in seg.get("overlays") or []:
+        p = Path(o["path"])
+        if o.get("role") == role and p.exists() and p.suffix.lower() in allowed:
+            return str(p)
+    return None
+
+
 def _labels_in(segdir, segid, stems, formats):
     exts = {"zarr": (".zarr",), "zarr-v2": (".zarr",), "ome-zarr": (".zarr",), "tiff": (".tif", ".tiff"),
             "png": (".png",)}
@@ -1098,17 +1145,30 @@ def _labels_in(segdir, segid, stems, formats):
     return None
 
 
+def _twin_stems(stem):
+    """The stems a reverse-depth twin of a forward map's stem may have: STEM_reverse or STEM-reverse, and for a map
+    named with a forward variant letter (ink.py's ink_f, AutoPipeline's MODEL-f) the same name with r."""
+    out = [f"{stem}_reverse", f"{stem}-reverse"]
+    m = re.match(r"^(.*[_-])f$", stem)
+    if m:
+        out.append(m.group(1) + "r")
+    return out
+
+
 def _twin(forward, sel):
-    """The reverse-depth control of a forward map: the segment's ink-detections.json record with role
-    control:reverse, else FILE_reverse.EXT or FILE-reverse.EXT beside it."""
+    """The reverse-depth control of a forward map: the segment's ink detection record with role control:reverse that
+    shares its model (pair) or its stem rule, else a file beside it by the stem rule (_twin_stems)."""
     fwd = Path(forward)
-    for o in (sel.get("segment") or {}).get("overlays") or []:
-        if o.get("role") == "control:reverse":
-            stem = Path(o["path"]).stem
-            if stem.replace("_reverse", "").replace("-reverse", "") == fwd.stem:
-                return o["path"]
-    for sep in ("_", "-"):
-        cand = fwd.with_name(f"{fwd.stem}{sep}reverse{fwd.suffix}")
+    stems = _twin_stems(fwd.stem)
+    recs = (sel.get("segment") or {}).get("overlays") or []
+    mine = next((o for o in recs if Path(o["path"]) == fwd), None)
+    for o in recs:
+        if o.get("role") != "control:reverse":
+            continue
+        if Path(o["path"]).stem in stems or (mine and mine.get("pair") and o.get("pair") == mine["pair"]):
+            return o["path"]
+    for stem in stems:
+        cand = fwd.with_name(stem + fwd.suffix)
         if cand.exists():
             return str(cand)
     return None
@@ -1300,7 +1360,8 @@ def _bind_one(name, spec, sel, values):
     if src in ("segment.labels", "segment.mask"):
         seg = _segment(sel, f"input {name}")
         stems = ("inklabels",) if src == "segment.labels" else ("supervision_mask", "supervision", "mask")
-        found = _labels_in(seg["path"], seg["id"], stems, fmt)
+        found = _labels_in_records(seg, "labels" if src == "segment.labels" else "mask", fmt) or \
+            _labels_in(seg["path"], seg["id"], stems, fmt)
         if not found:
             what = "ink labels" if src == "segment.labels" else "supervision mask"
             raise BindError(f"input {name} needs the segment's {what} ({seg['id']}_{stems[0]} in villa's naming, "
@@ -1323,10 +1384,16 @@ def _bind_one(name, spec, sel, values):
     if src == "region":
         if spec.get("space") == "segment_canvas":
             if sel.get("crop"):
-                return {k: sel["crop"][k] for k in FIELDS["region:segment_canvas"]}
-            if sel.get("region"):
-                return _canvas_crop(sel, _segment(sel, f"input {name}")["path"])
-            raise BindError(f"input {name} needs a box on the segment's canvas (--crop Y0,Y1,X0,X1) or a focus region")
+                box = {k: sel["crop"][k] for k in ("y0", "y1", "x0", "x1")}
+            elif sel.get("region"):
+                box = _canvas_crop(sel, _segment(sel, f"input {name}")["path"])
+            else:
+                raise BindError(f"input {name} needs a box on the segment's canvas (--crop Y0,Y1,X0,X1) or a focus "
+                                "region")
+            seg = (sel.get("segment") or {}).get("path")
+            canvas = _canvas_shape(seg) if seg else None
+            box["canvas_h"], box["canvas_w"] = (int(round(canvas[0])), int(round(canvas[1]))) if canvas else (0, 0)
+            return box
         if not sel.get("region"):
             raise BindError(f"input {name} needs an enabled focus region")
         r = sel["region"]
@@ -2184,11 +2251,24 @@ def _convert(tool, job, outs, res, registry, root, ledger_root):
 # ---------------------------------------------------------------- VC3D handoff (opener)
 
 
+def _crop_box(job):
+    """(y0, y1, x0, x1) of the box on the segment's canvas this run was cropped to, or None."""
+    for n, spec in job.tool.inputs.items():
+        if spec.get("from") == "region" and spec.get("space") == "segment_canvas" and f"in.{n}.y0" in job.values:
+            try:
+                return tuple(int(float(job.values[f"in.{n}.{k}"])) for k in ("y0", "y1", "x0", "x1"))
+            except (TypeError, ValueError):
+                return None
+    return None
+
+
 def _views(tool, job, outs, res):
-    """8-bit views of float maps on one shared scale: VC3D stretches a non-8-bit image to its own minimum and maximum
-    (InkDetectionOverlayController.cpp, toU8Scalar) and shows an 8-bit image as it is, so a forward map and a flat
-    control would both look full-contrast. The scale comes from the forward map (0.5 and 99.5 percentiles of its
-    finite pixels) and is applied unchanged to its controls; the float originals stay for scoring."""
+    """8-bit views of the maps on one shared scale, which is what VC3D loads: it stretches a non-8-bit image to its
+    own minimum and maximum (InkDetectionOverlayController.cpp, toU8Scalar) and shows an 8-bit image as it is, so a
+    forward map and a flat control would both look full-contrast. The scale comes from the forward map (0.5 and 99.5
+    percentiles of its finite pixels) and is applied unchanged to its controls; an 8-bit forward map keeps its values.
+    VC3D stretches an ink detection over the whole segment grid, so a map of a crop is placed at its box on a canvas of
+    the segment's size, 0 (transparent) elsewhere. The float originals stay for scoring."""
     maps = {n: p for n, p in outs.items() if tool.outputs[n]["kind"] == "overlay" and p.is_file()
             and p.suffix in (".tif", ".tiff", ".npy")}
     fwd = [n for n in maps if tool.outputs[n].get("role", "forward") == "forward"]
@@ -2198,36 +2278,57 @@ def _views(tool, job, outs, res):
         import numpy as np
         import tifffile
     except ImportError:
-        res["warnings"].append("no numpy or tifffile here: 8-bit views of the maps were not written")
+        res["warnings"].append("no numpy or tifffile here: 8-bit views of the maps were not written, so VC3D has "
+                               "nothing to load")
         return
 
     def read(p):
         return np.load(p) if p.suffix == ".npy" else tifffile.imread(p)
     try:
-        ref = np.asarray(read(maps[fwd[0]]), dtype=np.float64)
+        raw = np.asarray(read(maps[fwd[0]]))
     except (OSError, ValueError) as exc:
         res["warnings"].append(f"cannot read {maps[fwd[0]]} for its 8-bit view: {exc}")
         return
-    if ref.dtype == np.uint8:
-        return
+    keep = raw.dtype == np.uint8
+    ref = raw.astype(np.float64)
     finite = ref[np.isfinite(ref)]
     if finite.size == 0:
         return
-    lo, hi = (float(v) for v in np.percentile(finite, [0.5, 99.5]))
+    lo, hi = (0.0, 255.0) if keep else (float(v) for v in np.percentile(finite, [0.5, 99.5]))
     hi = hi if hi > lo else lo + 1.0
+    box = _crop_box(job)
+    seg = (job.sel.get("segment") or {}).get("path")
+    canvas = _canvas_shape(seg) if box and seg else None
+    placed = None
     vdir = job.run / "vc3d" / "views"
     vdir.mkdir(parents=True, exist_ok=True)
-    views = {}
+    views, shas = {}, {}
     for name, p in maps.items():
-        a = np.asarray(read(p), dtype=np.float64)
+        a = np.squeeze(np.asarray(read(p), dtype=np.float64))
         u8 = np.clip(np.nan_to_num((a - lo) / (hi - lo), nan=0.0) * 255.0, 0, 255).round().astype(np.uint8)
+        if canvas and u8.ndim == 2:
+            y0, y1, x0, x1 = box
+            H, W = int(round(canvas[0])), int(round(canvas[1]))
+            if abs(u8.shape[0] - (y1 - y0)) <= 1 and abs(u8.shape[1] - (x1 - x0)) <= 1 and (u8.shape != (H, W)):
+                full = np.zeros((H, W), np.uint8)
+                h, w = min(u8.shape[0], H - y0), min(u8.shape[1], W - x0)
+                full[y0:y0 + h, x0:x0 + w] = u8[:h, :w]
+                u8, placed = full, {"box": [y0, y1, x0, x1], "canvas": [H, W]}
+            elif u8.shape != (H, W):
+                res["warnings"].append(f"{name}: {u8.shape[0]} x {u8.shape[1]} is neither the crop "
+                                       f"{y1 - y0} x {x1 - x0} nor the canvas {H} x {W}; its view is not placed")
         out = vdir / f"{name}_u8.tif"
         tifffile.imwrite(out, u8)
         views[name] = str(out)
-    _atomic_write(job.run / "vc3d" / "scale.json", _dump({
-        "from": fwd[0], "low": lo, "high": hi, "percentiles": [0.5, 99.5], "applied_to": sorted(views),
-        "note": "one scale for the forward map and its controls; " + CLAIM}))
+        shas[name] = _sha256_file(out)
+    doc = {"from": fwd[0], "low": lo, "high": hi, "percentiles": None if keep else [0.5, 99.5],
+           "applied_to": sorted(views), "sha256": shas,
+           "note": "one scale for the forward map and its controls; " + CLAIM}
+    if placed:
+        doc["placed"] = placed
+    _atomic_write(job.run / "vc3d" / "scale.json", _dump(doc))
     res["views"] = views
+    res["views_sha256"] = shas
 
 
 def _open(tool, job, outs, res):
@@ -2313,6 +2414,11 @@ def plugin_result(tool, registry=None):
             return {"kind": "points", "path": "{output}/vc3d/points/" + name + ".json"}
         if kind == "umbilicus" and fmt == "umbilicus-json":
             return {"kind": "umbilicus", "path": rel}
+        if kind == "overlay" and spec.get("role", "forward") == "forward" and not spec.get("convert"):
+            if fmt in ("tiff", "tiff-uint8", "tiff-uint16", "tiff-float32", "npy"):
+                return {"kind": "ink_overlay", "path": "{output}/vc3d/views/" + name + "_u8.tif"}
+            if fmt == "png":
+                return {"kind": "ink_overlay", "path": rel}
         if kind == "overlay" and fmt in ("tiff", "tiff-uint8", "tiff-uint16", "tiff-float32", "png") and \
                 spec.get("role", "forward") == "forward":
             return {"kind": "ink_overlay", "path": rel}
@@ -2542,6 +2648,15 @@ def take(kind, dest, run=None, output=None, env=None):
     elif kind == "points" and row["format"] == "json-points":
         pts = [[float(c) for c in (q.get("xyz", q.get("p")) if isinstance(q, dict) else q)] for q in _read_json(src)]
         _atomic_write(target, _dump(points_document(pts, f"{res.get('tool')} {row['name']}")))
+    elif kind == "ink_overlay" and (res.get("views") or {}).get(row["name"]):
+        view = Path(res["views"][row["name"]])     # the 8-bit view: the run's shared scale, placed on the canvas
+        if not _inside(view, src_run) or not view.is_file():
+            raise RegistryError(f"{view}: the 8-bit view of {row['name']} is missing or outside its run folder")
+        want = (res.get("views_sha256") or {}).get(row["name"])
+        if not want or _sha256_file(view) != want:
+            raise RegistryError(f"{view} changed after its run (sha256 differs or was not recorded); refusing")
+        shutil.copyfile(view, target)
+        src = view
     elif kind == "ink_overlay" and src.suffix == ".npy":
         import numpy as np
         import tifffile
@@ -2685,6 +2800,17 @@ def _graph(tool, job, outs, run_dir, conversions=None):
 # ---------------------------------------------------------------- AutoPipeline door
 
 
+def existing_backends(tool):
+    """The stage backends a tool already is: pipeline.existing, or every enum value of the param it names as
+    {param.NAME} (one tool that runs any of the stage's models, such as AutoPipeline's ink script)."""
+    ex = (tool["pipeline"] or {}).get("existing")
+    if not isinstance(ex, str) or not ex:
+        return []
+    if PLACEHOLDER.fullmatch(ex) and ex[1:-1].startswith("param."):
+        return [str(v) for v in (tool.params.get(ex[7:-1]) or {}).get("enum") or []]
+    return [ex]
+
+
 def stage_choices(stage, registry=None):
     """{backend name: entry} the registry adds to one AutoPipeline stage: an ink-command tool becomes reg:ID; a tool
     that is already a stage's backend annotates that entry (existing). Each entry carries the manifest digest."""
@@ -2696,7 +2822,8 @@ def stage_choices(stage, registry=None):
             continue
         block = {"id": tool.id, "manifest_sha256": tool.digest, "manifest": str(tool.path)}
         if pipe.get("existing"):
-            out[pipe["existing"]] = {"registry": block}
+            for name in existing_backends(tool):
+                out[name] = {"registry": block}
             continue
         if stage == "ink" and pipe.get("contract") == "ink-command":
             comp = tool.compute.get("where", "local-cpu")
@@ -2814,6 +2941,11 @@ def _plugin_args(tool):
     return flags, inputs
 
 
+def _optional_region(tool):
+    return any(not spec.get("required", True) and spec.get("from") == "region" and spec.get("bind") != "bridge"
+               for spec in tool.inputs.values())
+
+
 def plugin_manifests(registry=None, include_private=False):
     """{entry key: vc3d-plugin/1 manifest} for every tool whose doors include vc3d (vc3d_entries: a run entry, or a
     "Plan:" entry and, for vc3d.confirm, a "Run planned:" entry), plus the generic "Open run output as KIND"
@@ -2845,6 +2977,14 @@ def plugin_manifests(registry=None, include_private=False):
                 m["inputs"] = inputs
             m["result"] = plugin_result(tool, reg)
             out[tool.id] = dict(m, **extra)
+            if _optional_region(tool) and "{region}" not in flags:
+                # the host refuses a start when a placeholder has no value, so an optional focus region gets its own
+                # entry, which VC3D enables only while a focus region is set
+                out[f"{tool.id}.region"] = dict(m, id=f"scrolls.{tool.id}.region", name=f"{label} (focus region)",
+                                                description=f"{desc}. Only the focus region, as a box on the "
+                                                            "segment's canvas.",
+                                                args=["run", tool.id] + flags + ["--region", "{region}", "--out",
+                                                                                 "{output}", "--json"], **extra)
         if "plan" in modes:
             why = vc3d_plan_reasons(tool)
             m = dict(base, id=f"scrolls.{tool.id}.plan", name=f"Plan: {label}",
@@ -3027,7 +3167,9 @@ def check(root=ROOT, commands=None, pages=None, env=None):
         elif not isinstance(why, str) or len(why.strip()) < 12:
             problems.append(f"{REGISTRY_REL / SKIP_FILE}: {tid} needs a reason of a few words")
     runnable = ("kit command", "kit entry point", "script", "script folder", "kit module")
-    for pid, page in sorted(pages.items()):
+    # every runnable tool has a manifest or a reason: public Scrolls' rule; Scrolls-private's folder holds only the
+    # manifests of its private tools so far (its open-items row), so there the rule is not applied
+    for pid, page in sorted(pages.items()) if kind != "private" else ():
         kinds = [k.strip() for k in page.field("Kind").split(",")]
         if page.field("Status") in ("Current", "Experimental") and any(k in runnable for k in kinds):
             if pid not in reg.tools and pid not in reg.skip:
