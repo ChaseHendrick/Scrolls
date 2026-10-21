@@ -1,0 +1,55 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "first-run",
+  "label": "Synthetic demo",
+  "alt": "A terminal running AutoPipeline 0.1.5's synthetic demo: eleven stage lines and DEMO PASS, then the monitor's text view with every stage Done or Skipped, then the start of the status JSON.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.5's first run in a terminal, drawn frame by frame from output captured on 21 October 2026 (package folder shortened to $AP_DIR). Made-up scroll, stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5"
+  ],
+  "outputs": [
+    {
+      "file": "first-run.mp4",
+      "bytes": 201231,
+      "sha256": "dd32a5a52b30d1de4e6cd4a1d4786204e290549ed6a8f869fc49142c40987020",
+      "width": 1280,
+      "height": 720,
+      "kind": "mp4",
+      "seconds": 22.0,
+      "frames": 264,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "first-run.gif",
+      "bytes": 95387,
+      "sha256": "4fd6e432437db2687f641ce5e8b99316709a1ec1ae6f50d8ea734471f26b8a2a",
+      "width": 1280,
+      "height": 720,
+      "kind": "gif",
+      "seconds": 22.0,
+      "frames": 83,
+      "settings": {
+        "width": 1280,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-21",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "encode.py",
+      "termcast.py"
+    ],
+    "scripts_sha256": "2eb8b1e0a719f6afdeba7437e1556aadfc8d0bcc561ad09a275e21e0d41e5cab",
+    "base_commit": "249096b93d70dad9ae13866738f053c50645e73d"
+  },
+  "command": "python scripts/media/termcast.py scripts/media/captures/autopipeline-first-run.json --out-dir FRAMES --fps 12 && python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 1280 --dither none --gif docs/assets/autopipeline/guide/first-run.gif --mp4 docs/assets/autopipeline/guide/first-run.mp4 --meta scripts/media/captures/autopipeline-first-run.meta.json"
+}

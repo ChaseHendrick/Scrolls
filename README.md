@@ -56,7 +56,7 @@ python -m pip install -e .
 python scripts/demo_synthetic.py
 ```
 
-Install, monitor controls, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). [Changes since 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md). The scientific settings and models are unchanged; a narrow cache-repair correction avoids counting the same repair twice.
+[How-to guide](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/autopipeline/guide.md), with VC3D both ways. Install, monitor and limits: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). [Changes since 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md). Scientific settings and models unchanged.
 
 ### Unroll (interactive 3D scroll viewer)
 

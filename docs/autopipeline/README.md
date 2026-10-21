@@ -4,6 +4,8 @@
 
 *Concept illustration. [Artwork notes](../assets/README.md).*
 
+New here? Start with the [how-to guide](guide.md): install, first run, your own work and VC3D, in short steps.
+
 AutoPipeline runs villa's VC3D tools and ink detection unattended on one released Vesuvius Challenge scan, from the
 scan's headers to checked surfaces, ink maps with controls, and a report. This page is a reference for people and for
 agents. It documents the released package, AutoPipeline 0.1.5, as its code reads; every command, flag, setting and

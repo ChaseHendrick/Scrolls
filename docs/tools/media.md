@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/termcast.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -168,6 +168,27 @@ usage: python scripts/media/sweep.py [-h] --out-dir OUT_DIR [--frames FRAMES] [-
 | `--height HEIGHT` | `540` | Frame height in pixels |
 | `--seed SEED` | `7` | Noise seed |
 
+### `python scripts/media/termcast.py`
+
+```text
+usage: termcast.py [-h] [--out-dir OUT_DIR] [--fps FPS] [--size SIZE] [--srt SRT] [--still STILL] [--at AT]
+                   [--meta META]
+                   cast
+```
+
+Draws a scripted terminal session, title cards, the AutoPipeline and VC3D loop diagram and side-by-side panels from a cast JSON into PNG frames for `encode.py` (pass this command with `--made-with`), or one PNG with its own sidecar. Terminal text is pasted from real runs; it never runs a command. Scene types (`DRAW`): `terminal` (steps of `cmd` typed at `TYPE_CPS` = 30 characters a second and `out` lines shown at `LINES_PS` = 40 a second, then `pause` seconds), `card` (`kicker`, `title`, `lines`), `image` (`src` under `docs/assets/` or `docs/images/`, a slow `zoom`), `diagram` (two `steps` labels and `lines`) and `split` (`left` and `right` panels, the right one shown from `reveal_at` seconds). Each scene has `seconds`, a `label` drawn in the corner and an optional burned-in `caption` of at most 2 lines of 42 characters (`CAPTION_LINES`, `CAPTION_CHARS`). Casts: `scripts/media/captures/autopipeline-first-run.json`, `autopipeline-vc3d-loop.json` and `autopipeline-trailer.json` (with its Oro score `autopipeline-trailer.oro.txt`).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `cast` | required | The cast JSON |
+| `--out-dir OUT_DIR` | none | Write `frame-00000.png`, `frame-00001.png`, ... here |
+| `--fps FPS` | `12.0` | Frames per second |
+| `--size SIZE` | `1280x720` | `WIDTHxHEIGHT` |
+| `--srt SRT` | none | Also write the captions as an `.srt` file |
+| `--still STILL` | none | Write one PNG instead of frames, with a sidecar when `--meta` is given |
+| `--at AT` | `0.0` | With `--still`: the time in seconds |
+| `--meta META` | none | With `--still`: label, alt text, caption and license for its sidecar |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -230,6 +251,14 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | `actions must be a JSON list of steps` | `--actions` holds an object or a string | Wrap the steps in a list |
 | `no such page:` | The local HTML file is not there | Fix the path, or give a URL |
 | `capture_web:` | The prefix of every `capture_web.py` error, followed by the reason | Read the rest of the line |
+| `termcast:` | The prefix of every `termcast.py` error, followed by the reason | Read the rest of the line |
+| `none of these fonts is installed:` | `termcast.py` needs DejaVu Sans Mono and Inter | Install them (Debian: `fonts-dejavu-core`, `fonts-inter`) |
+| `caption over` | A scene caption is longer than 2 lines of 42 characters | Shorten it |
+| `has no scenes` | The cast has no `scenes` list | Add scenes |
+| `: type must be one of` | A scene's `type` is not terminal, card, image, diagram or split | Fix the type |
+| `: seconds must be above 0` | A scene has no length | Give `seconds` |
+| `give --out-dir for frames or --still for one picture` | Neither output was asked for | Add one |
+| `is past the cast's end` | `--at` is after the last scene | Pick a time inside the cast |
 | `: unknown or empty step` | A step with a key outside `STEP_KEYS`, or `{}` | Use the steps listed under Commands and options |
 | `: every goes with frames` | `every` without `frames` | Add `"frames": N` to the step |
 | `clip element` | The `clip` selector matched nothing visible | Fix the selector, or clip to `null` |
@@ -323,6 +352,7 @@ Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier len
 
 ## History
 
+- 2026-10-21: added `termcast.py`, which draws terminal sessions, cards, a diagram and split panels into frames, for the AutoPipeline guide's first-run GIF, its VC3D loop diagram and a 60 s trailer draft timed to an Oro score (branch `claude/apguide-1020`, from `249096b`).
 - 2026-10-18: added `hero.py`, `scene.py`, `scenes.py`, `encode.py`, `capture_web.py`, `sweep.py` and `common.py`, with heroes and clips for every released tool and the `image` field of `kit/releases.py` (branch `claude/release-media`, `4a970bd` is the base commit).
 - 2026-10-18: after review of `c33e159`, the guards check sources and clips, not only labels (`common.input_guard`, `--meta` required under `docs/assets/`, no raw frames there, panels always a Synthetic demo), and `tests/test_repo.py` allows only Concept illustration and Synthetic demo there and requires a sidecar for every file. The heroes were remade with the reference's warm key light, low cameras and diagonal subjects, fibrous papyrus, spiral cross-sections and cards with a solid text band; the Scroll Text Reader hero no longer draws letters, boxes or bars, and StrokeNet's hero is withdrawn until its rework. The AutoPipeline clip was recaptured at 12 fps from the first stage with a pointer (`cursor`, `point`, `tap`, `glide`, `scrollto`, wall-clock `frames`), the umbilicus sweep redrawn in the scanner's fixed frame, and `encode.py` gained `--dither` and `--made-with`.
 - 2026-10-18: the public media rule ([`docs/media/README.md`](../media/README.md), set on Chase's delegation) replaced "only Concept illustrations and Synthetic demos": `common.write_guard` now also allows a Real data render of a public scan that is not prize-eligible and shows no held-out labels (`real_data_problems`, `prize_scrolls`, `eligible_prizes`), `common.size_guard` and `encode.py` hold every file there to 1920 px and 4 MB, `common.public_problems` checks every committed sidecar, `common.media_size` reads MP4 sizes too, the credit became "Vesuvius Challenge open data, CC BY-NC 4.0", `data.labels` is required and `data.segment` optional, and `hero.py` checks the rule before importing Pillow. The audit found every existing file conforming.

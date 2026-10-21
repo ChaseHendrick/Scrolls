@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "vc3d-loop",
+  "label": "Concept illustration",
+  "alt": "Two boxes, VC3D and AutoPipeline. A copper arrow carries the focus point and scan from VC3D to an AutoPipeline plan; a green arrow brings accepted surfaces and seed points back. Below, the three ap_vc3d.py commands: here, start and open.",
+  "caption": "Concept illustration: how a VC3D point becomes an AutoPipeline plan and how a run's accepted surfaces come back to VC3D. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "vc3d-loop.png",
+      "bytes": 37483,
+      "sha256": "97c1def96b1b549cf181d7ff59be09145d74937f06d5fec5cdba225fc40b8734",
+      "width": 1280,
+      "height": 720,
+      "kind": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-21",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "termcast.py"
+    ],
+    "scripts_sha256": "ecfdee11dd41b50ef3f5232116e564cb4bdea5b90a38bb63ad9f78043db3d9cb",
+    "base_commit": "249096b93d70dad9ae13866738f053c50645e73d"
+  },
+  "command": "python scripts/media/termcast.py scripts/media/captures/autopipeline-vc3d-loop.json --still vc3d-loop.png --at 3.5 --size 1280x720 --meta scripts/media/captures/autopipeline-vc3d-loop.meta.json"
+}

@@ -268,9 +268,9 @@
     "Network": "The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network",
     "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
     "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
-    "Released": "Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). The tag `autopipeline-v0.1.5` and its GitHub release with the wheel are not made yet. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
+    "Released": "Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). Tag `autopipeline-v0.1.5` and its [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.5), with `vc_autopipeline-0.1.5-py3-none-any.whl` and `SHA256SUMS`, since 2026-10-18 (checked 2026-10-21). Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
     "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
-    "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
+    "Guide": "[`docs/autopipeline/guide.md`](../autopipeline/guide.md), the how-to guide for people (first run, own work, VC3D both ways); [`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
     "Branch": "`submission/progress-2026-10-fix5` at `9e50d61`",
     "Checked": "2026-10-18 against commit `9e50d61`"
    },
@@ -315,13 +315,166 @@
     {
      "name": "History",
      "start_line": 177,
-     "end_line": 184,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 185,
-     "end_line": 192,
+     "start_line": 186,
+     "end_line": 195,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "autopipeline-vc3d",
+   "name": "autopipeline-vc3d",
+   "tagline": "plan AutoPipeline runs from a VC3D point and open the results in VC3D",
+   "summary": "`integrations/vc3d/ap_vc3d.py` links the released AutoPipeline (0.1.5) and villa's VC3D both ways: it plans a run seeded at a VC3D focus point, starts that exact plan, and copies or attaches the accepted surfaces and seed points back in VC3D.",
+   "status": "Experimental",
+   "kind": [
+    "script"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python3 integrations/vc3d/ap_vc3d.py here",
+    "python3 integrations/vc3d/ap_vc3d.py start",
+    "python3 integrations/vc3d/ap_vc3d.py load",
+    "python3 integrations/vc3d/ap_vc3d.py open",
+    "python3 integrations/vc3d/ap_vc3d.py manifests"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "integrations/vc3d/ap_vc3d.py",
+     "symbols": []
+    },
+    {
+     "path": "integrations/vc3d/README.md",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_integrations_vc3d.py",
+    "tests/vc3d_plugin_host.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it plans and runs AutoPipeline locally and never starts paid compute; ink without a GPU environment stops at a handoff file. Posting its media or output anywhere needs Chase's yes (the go-ahead rule, hard rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "249096b"
+   },
+   "license": "Apache License 2.0, the repository's",
+   "fields": {
+    "Id": "`autopipeline-vc3d`",
+    "Status": "Experimental",
+    "Kind": "script",
+    "Area": "Pipeline and agents",
+    "Run": "`python3 integrations/vc3d/ap_vc3d.py here`, `python3 integrations/vc3d/ap_vc3d.py start`, `python3 integrations/vc3d/ap_vc3d.py load`, `python3 integrations/vc3d/ap_vc3d.py open`, `python3 integrations/vc3d/ap_vc3d.py manifests`",
+    "Code": "`integrations/vc3d/ap_vc3d.py`, `integrations/vc3d/README.md`",
+    "Tests": "`tests/test_integrations_vc3d.py`, with the stand-in plugin host `tests/vc3d_plugin_host.py`",
+    "Needs": "Python 3.10 or newer, standard library only. `here` and `start`: an AutoPipeline environment with `scrolls-kit` (0.1.5, `submission/progress-2026-10-fix5`). `here --bridge` and `open`: VC3D from villa `main` started with `--agent-bridge`, on Linux or macOS (Unix socket). `manifests`: useful only with VC3D's plugin host, which is not in villa yet",
+    "Runs on": "Any CPU. `here` against the released 0.1.5 package took about 1 s on PHerc0841 (catalog headers only; 21 October 2026, Claude cloud container). `start` returns in under 2.5 s by test. `load` copies tifxyz folders, a few MB per trace",
+    "Network": "Only what `scrolls-kit autopipeline plan` reads (the open-data bucket's headers). The script itself opens no network connection; the bridge is a local Unix socket",
+    "Writes": "`AP_VC3D_HOME` (default `~/.autopipeline-vc3d`): `last.json`, `runs/DIGEST16.pid` and `runs/DIGEST16.log`, `open/DIGEST16/` for `open`. `load`: `DEST/segments/ap-DIGEST10-SID/`, `DEST/seeds.json`, `DEST/load.json`. `--summary FILE` writes the printed text. `manifests --install DIR`: four `autopipeline-*.json` files. AutoPipeline itself writes its run folder",
+    "Go-ahead": "Not needed: it plans and runs AutoPipeline locally and never starts paid compute; ink without a GPU environment stops at a handoff file. Posting its media or output anywhere needs Chase's yes (the go-ahead rule, hard rule 8)",
+    "Released": "Not yet: branch `claude/apguide-1020` of public Scrolls, for a PR into `main` (21 October 2026)",
+    "Guide": "[AutoPipeline how-to guide](../autopipeline/guide.md), sections 5 and 6; [`integrations/vc3d/README.md`](../../integrations/vc3d/README.md)",
+    "License": "Apache License 2.0, the repository's",
+    "Checked": "2026-10-21 against commit `249096b`"
+   },
+   "page": "docs/tools/autopipeline-vc3d.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 79,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 162,
+     "end_line": 165,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 166,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 174,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 195,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 226,
+     "end_line": 233,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 234,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 238,
+     "end_line": 247,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 248,
+     "end_line": 251,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 252,
+     "end_line": 255,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 256,
+     "end_line": 262,
      "applicable": true
     }
    ]
@@ -4438,7 +4591,8 @@
     "python scripts/media/hero.py",
     "python scripts/media/encode.py",
     "python scripts/media/capture_web.py",
-    "python scripts/media/sweep.py"
+    "python scripts/media/sweep.py",
+    "python scripts/media/termcast.py"
    ],
    "imports": [],
    "code": [
@@ -4465,7 +4619,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/termcast.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -4507,67 +4661,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 176,
+     "end_line": 197,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 177,
-     "end_line": 180,
+     "start_line": 198,
+     "end_line": 201,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 181,
-     "end_line": 187,
+     "start_line": 202,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 188,
-     "end_line": 224,
+     "start_line": 209,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 225,
-     "end_line": 272,
+     "start_line": 246,
+     "end_line": 301,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 273,
-     "end_line": 295,
+     "start_line": 302,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 296,
-     "end_line": 309,
+     "start_line": 325,
+     "end_line": 338,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 310,
-     "end_line": 319,
+     "start_line": 339,
+     "end_line": 348,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 320,
-     "end_line": 323,
+     "start_line": 349,
+     "end_line": 352,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 324,
-     "end_line": 329,
+     "start_line": 353,
+     "end_line": 359,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 330,
-     "end_line": 335,
+     "start_line": 360,
+     "end_line": 365,
      "applicable": true
     }
    ]

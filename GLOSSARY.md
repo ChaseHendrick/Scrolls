@@ -10,6 +10,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
+**agent bridge (VC3D)**: An opt-in JSON-RPC server inside VC3D, started with `VC3D --agent-bridge`, that lets a program drive the running app: open volumes, attach segments, load points, read the focus point. villa's `apps/VC3D/agent_bridge/SPEC.md` defines it; `integrations/vc3d/ap_vc3d.py` uses it to open AutoPipeline results in VC3D.
+
 **AppImage**: A single-file Linux application package. villa releases VC3D as one; `kit vc3d` can run VC3D through it.
 
 **Apple Silicon**: Apple's own Mac processors (M1 and later). VC3D, rendering and flattening run natively on them; see [`docs/mac.md`](docs/mac.md).
@@ -91,6 +93,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **First Letters prize**: A Vesuvius Challenge prize for the first letters found in a given scroll. Current eligible scrolls are listed by `python -m kit prizes`.
 
 **flattening**: Mapping a traced 3D surface onto a flat plane with as little distortion as possible.
+
+**focus point (VC3D)**: The point VC3D's viewers center on, as x, y, z in full-resolution voxels of the open volume. AutoPipeline's `seeds.points` uses the same frame, so a focus point can seed a run ([guide](docs/autopipeline/guide.md)).
 
 **fp16 (half precision)**: Storing and computing numbers with 16 bits instead of the usual 32 (fp32). It can make GPU inference faster at a small cost in accuracy. `V8IN_FP16=1` turns it on for v8in on MPS, where it is kept only if the crop check still passes and it is faster.
 
@@ -216,6 +220,12 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **pixel AUC**: See AUC.
 
+**plan digest (AutoPipeline)**: The SHA-256 over an AutoPipeline plan's settings and resolved inputs, written in `plan.json`. A run refuses a plan whose content no longer matches it, so a changed setting means a new plan and a new run folder.
+
+**plugin manifest (VC3D)**: One JSON file (schema `vc3d-plugin/1`) that adds an entry to VC3D's Plugins menu: the program to run, its arguments with placeholders such as `{point}`, and the kind of result VC3D loads back. Part of a VC3D change not yet in villa ([integrations/vc3d](integrations/vc3d/README.md)).
+
+**point collection (VC3D)**: VC3D's file of named sets of 3D points (`vc_pointcollections_json_version` 1), saved and loaded in its Point Collections panel. `ap_vc3d.py load` writes AutoPipeline's seed points in this format.
+
 **preregistration**: Writing down the readout rule, data and pass bar before any result is seen (`python -m kit run init`, or a committed file in `docs/prereg/`). It stops a rule from being tuned to fit the answer.
 
 **prize eligible**: A scroll that one of the open prizes accepts results on. `python -m kit prizes` lists them from a dated snapshot; [scrollprize.org/prizes](https://scrollprize.org/prizes) wins where they differ. Results on a prize-eligible scroll stay private until the official announcement.
@@ -245,6 +255,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **routine (`kit routines`)**: A recurring, read-only repository check listed in `docs/routines.json`, daily or weekly, that any agent runs at session start with `python3 -m kit routines run --due`, so it does not depend on one account's scheduler. Its results stay in the ignored `work/routines/`.
 
 ## S
+
+**run folder (AutoPipeline)**: The one folder that holds an AutoPipeline run: `plan.json`, `state.json`, the event log, traces, renders, ink maps and the report. Running the same folder again resumes the run.
 
 **S3**: Amazon's object storage service, which hosts the open-data bucket.
 

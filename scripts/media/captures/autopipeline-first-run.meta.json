@@ -1,0 +1,10 @@
+{
+ "label": "Synthetic demo",
+ "alt": "A terminal running AutoPipeline 0.1.5's synthetic demo: eleven stage lines and DEMO PASS, then the monitor's text view with every stage Done or Skipped, then the start of the status JSON.",
+ "caption": "Synthetic demo: AutoPipeline 0.1.5's first run in a terminal, drawn frame by frame from output captured on 21 October 2026 (package folder shortened to $AP_DIR). Made-up scroll, stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+ "license": "Apache-2.0",
+ "release_id": "autopipeline",
+ "sources": [
+  "https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5"
+ ]
+}

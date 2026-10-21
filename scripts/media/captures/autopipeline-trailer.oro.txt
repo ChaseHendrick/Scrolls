@@ -1,0 +1,53 @@
+title autopipeline-guide-trailer
+bpm 96
+bars 24
+beats 4
+key D
+mode major
+voicing patch
+
+cue problem 4
+cue demo 12
+cue vc3d 52
+cue reveal 64
+cue limits 80
+cue call 88
+
+pad Dmaj3 0 8 0.24
+pad Bm@3 8 8 0.24
+pad Gmaj3 16 8 0.24
+pad Asus4@3 24 8 0.24
+pad Dmaj3 32 8 0.24
+pad Bm@3 40 8 0.24
+pad Gmaj3 48 8 0.24
+pad Amaj3 56 8 0.24
+pad Gmaj3 64 8 0.3
+pad Amaj3 72 8 0.3
+pad Bm@3 80 8 0.3
+pad Dmaj3 88 8 0.3
+drone D2 0 64 0.18
+drone D2 64 32 0.2
+
+hat x 8 0.08 0.18 every 1 until 64
+hat x 64 0.08 0.24 every 0.5 until 80
+kick x 32 0.25 0.35 every 4 until 64
+kick x 64 0.25 0.45 every 2 until 80
+snare x 66 0.25 0.3 every 4 until 80
+
+celesta A5 4 2 0.2
+celesta D6 12 2 0.2
+celesta F#5 20 2 0.2
+celesta A5 28 2 0.2
+celesta B5 36 2 0.2
+celesta A5 44 2 0.2
+celesta D6 52 2 0.2
+celesta E6 56 2 0.2
+riser D4 60 4 0.3
+impact D2 64 2 0.5
+crash x 64 4 0.3
+celesta D6 64 4 0.26
+celesta A5 66 2 0.2
+celesta F#6 72 2 0.2
+celesta D6 80 4 0.18
+pad Dmaj3 88 8 0.22
+celesta D6 88 6 0.18

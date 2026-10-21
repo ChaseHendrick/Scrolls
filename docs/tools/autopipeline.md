@@ -16,9 +16,9 @@ AutoPipeline (AP) 0.1.5 runs villa's VC3D tools and ink detection on one release
 | Network | The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network |
 | Writes | A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file |
 | Go-ahead | Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run |
-| Released | Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of "Released tools"). The tag `autopipeline-v0.1.5` and its GitHub release with the wheel are not made yet. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4` |
+| Released | Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of "Released tools"). Tag `autopipeline-v0.1.5` and its [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.5), with `vc_autopipeline-0.1.5-py3-none-any.whl` and `SHA256SUMS`, since 2026-10-18 (checked 2026-10-21). Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4` |
 | License | Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included |
-| Guide | [`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md) |
+| Guide | [`docs/autopipeline/guide.md`](../autopipeline/guide.md), the how-to guide for people (first run, own work, VC3D both ways); [`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md) |
 | Branch | `submission/progress-2026-10-fix5` at `9e50d61` |
 | Checked | 2026-10-18 against commit `9e50d61` |
 
@@ -176,6 +176,7 @@ It is a reviewed contribution package. 0.1.0 to 0.1.4 were released by the Progr
 
 ## History
 
+- 2026-10-21: the how-to guide `docs/autopipeline/guide.md` and the VC3D link `integrations/vc3d/ap_vc3d.py` added on `main`'s side; the Released row now records the 0.1.5 tag and GitHub release (branch `claude/apguide-1020`, from `249096b`). The package is unchanged.
 - 2026-10-18: 0.1.5 (`progress-2026-10-fix5`), an ordinary software release: keyboard-accessible monitor controls (stage inspection, log filters, viewer pause and refresh, run-record list, commands prepared for review and copying); a synthetic demo that fails when a fake model fails or a map is missing; cache-repair times at full precision; portable test fixtures for hosts with an ancestor Git checkout and for MCP SDK 1.x (`9e50d61`).
 - 2026-10-15: 0.1.4 (`progress-2026-10-fix4`): remote renders pass the URL as `--volume` on villa builds since ba2bf75; monitor snapshots keep no piece of the run folder's path; real paths keep private lists out of tracked folders on macOS; four macOS-only test failures fixed (`603fe14`).
 - 2026-10-15: 0.1.3 (`progress-2026-10-fix3`): Reader v2 the default reader; `ink.orient` fallback; faster remote reads; Docker build and AppImage download fixed (`bd7d6cf`).
@@ -184,6 +185,8 @@ It is a reviewed contribution package. 0.1.0 to 0.1.4 were released by the Progr
 
 ## Related
 
+- [`docs/autopipeline/guide.md`](../autopipeline/guide.md): the how-to guide for people, with the first-run GIF.
+- [autopipeline-vc3d](autopipeline-vc3d.md): plan a run from a VC3D point and open its accepted surfaces in VC3D.
 - [`docs/autopipeline/README.md`](../autopipeline/README.md): the full reference, sections 1 to 19, including every setting and the every-scan catalog, batch and watcher.
 - [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md): rules for agents that describe or run it.
 - [batch](batch.md): `python -m kit run all`, `run watch` and `run catalog` on `main`, which plan AutoPipeline over every bucket volume and launch nothing.

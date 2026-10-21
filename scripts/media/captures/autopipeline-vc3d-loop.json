@@ -1,0 +1,19 @@
+{
+ "about": "Concept diagram of the link between VC3D and AutoPipeline for docs/autopipeline/guide.md.",
+ "scenes": [
+  {
+   "type": "diagram",
+   "seconds": 4,
+   "label": "Concept illustration",
+   "steps": [
+    "focus point and scan: a plan",
+    "accepted surfaces and seed points"
+   ],
+   "lines": [
+    "$ python3 ap_vc3d.py here --bridge     # plan at VC3D's point",
+    "$ python3 ap_vc3d.py start --run last  # run that exact plan",
+    "$ python3 ap_vc3d.py open --run last   # attach results in VC3D"
+   ]
+  }
+ ]
+}

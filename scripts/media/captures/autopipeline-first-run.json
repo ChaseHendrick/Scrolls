@@ -1,0 +1,96 @@
+{
+ "about": "AutoPipeline's first run for docs/autopipeline/guide.md: the released 0.1.5 package's synthetic demo, its monitor in text and its status. The output lines were captured from real runs on 21 October 2026 in a Claude cloud container (Python 3.13); the package folder is shortened to $AP_DIR. Synthetic data and stand-in VC3D tools and ink model.",
+ "scenes": [
+  {
+   "type": "terminal",
+   "seconds": 7.5,
+   "label": "Synthetic demo",
+   "title": "AutoPipeline 0.1.5",
+   "caption": "1. Run the demo on a made-up scroll",
+   "steps": [
+    {
+     "cmd": "python scripts/demo_synthetic.py --out work/demo-run",
+     "out": [
+      "acquire    done",
+      "umbilicus  done",
+      "seeds      done",
+      "trace      done",
+      "bench      skipped",
+      "qa         done",
+      "flatten    done",
+      "render     done",
+      "ink        done",
+      "score      skipped",
+      "report     done",
+      "surface t00: accepted=True flatten=flattened render=yes ink maps={'fake-ink': ['f', 'r', 's']}",
+      "surface t01: accepted=True flatten=flattened render=yes ink maps={'fake-ink': ['f', 'r', 's']}",
+      "plan digest 36b9491143c1b290..., run folder $AP_DIR/work/demo-run/run, 20.3 s",
+      "DEMO PASS"
+     ],
+     "pause": 3.0
+    }
+   ]
+  },
+  {
+   "type": "terminal",
+   "seconds": 7.5,
+   "label": "Synthetic demo",
+   "title": "AutoPipeline 0.1.5",
+   "caption": "2. Read the run as text with the monitor",
+   "steps": [
+    {
+     "cmd": "scrolls-kit autopipeline monitor work/demo-run/run --text",
+     "out": [
+      "AP Monitor | run | Plan 36b9491143c1 | PHercSynthetic | Volume V1",
+      "Finished (Finished)",
+      "  11 stages ended (2 skipped). Report digest 6b2122524d2d... matches report.json.",
+      "Stages",
+      "  Acquire    Done                   0.0 s",
+      "  Umbilicus  Done                   0.0 s",
+      "  Seeds      Done                   0.3 s",
+      "  Trace      Done                   0.4 s",
+      "  Bench      Skipped                0.0 s",
+      "  QA         Done                   4.1 s",
+      "  Flatten    Done                   0.6 s",
+      "  Render     Done                   3.9 s",
+      "  Ink        Done                   6.8 s",
+      "  Score      Skipped                0.0 s",
+      "  Report     Done                   0.0 s",
+      "",
+      "Every surface, map and score here is model output, not a reading. Maps of target scrolls must not be shared."
+     ],
+     "pause": 3.0
+    }
+   ]
+  },
+  {
+   "type": "terminal",
+   "seconds": 7.0,
+   "label": "Synthetic demo",
+   "title": "AutoPipeline 0.1.5",
+   "caption": "3. Or as JSON for scripts and agents",
+   "steps": [
+    {
+     "cmd": "scrolls-kit autopipeline status work/demo-run/run",
+     "out": [
+      "{",
+      " \"out\": \"$AP_DIR/work/demo-run/run\",",
+      " \"digest\": \"36b9491143c1b29089b58c6dfb89bf151dab1f77e88432aca048136046644f65\",",
+      " \"running\": null,",
+      " \"stages\": {",
+      "  \"acquire\": {",
+      "   \"status\": \"done\",",
+      "   \"at\": \"2026-10-21T01:43:40Z\",",
+      "   \"error\": null,",
+      "   \"seconds\": 0.0",
+      "  },",
+      "  \"umbilicus\": {",
+      "   \"status\": \"done\",",
+      " ..."
+     ],
+     "pause": 3.0
+    }
+   ]
+  }
+ ]
+}
