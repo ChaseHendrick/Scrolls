@@ -29,7 +29,7 @@ It derives first. Each extractor reads one carrier as it stands: an alias map tu
 
 A link records what produced or cited something. It does not show that a change caused a gain; that needs a matched null arm or a controlled swap. Its output is provenance, never a reading of a scroll, and an ink map stays model output.
 
-Status is Experimental: the cutover baseline is fresh and no backfill pass has been written yet (each has only been dry-run).
+Status is Experimental: the cutover baseline is fresh; one backfill pass (`ids`, 86 ids) and the reviewed link lines of 21 October 2026 are written, and the baseline was repinned once after merging `main` (the reason is under `repins` in `docs/causal/baseline.json`).
 
 ## When to use it
 
