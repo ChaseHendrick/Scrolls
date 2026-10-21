@@ -12,8 +12,8 @@ from pathlib import Path
 from kit import causal
 
 ROOT = Path(__file__).resolve().parent.parent
-INITIAL_SHA256 = "938b1e0acdab80e2f6b2d7b48bad1710bf6c8324d33c6e87babfe5a424278d23"
-BASELINE_MAX = 108  # 207 at the cutover; 108 after the 21 October 2026 backfill
+INITIAL_SHA256 = "c2f25901a0be80818d247476c26b62725b0218f030d75fc63288d1162dfc32f2"  # repinned 21 Oct 2026 (repins in the baseline)
+BASELINE_MAX = 110  # 207 at the cutover; 108 after the 21 October 2026 backfill; 110 with the Ink Lens pair
 
 
 class CausalRepoTest(unittest.TestCase):

@@ -11610,6 +11610,7 @@
  ],
  "ink_lens_checks": [
   {
+   "id": "ink_lens_checks/0",
    "date": "2026-10-20",
    "source": "scripts/experiments/2026-10-20-ink-lens-gate/results.json",
    "prereg": "docs/prereg/2026-10-20-ink-lens-gate.md",
