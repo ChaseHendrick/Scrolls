@@ -125,7 +125,9 @@ PLACEHOLDER = re.compile(r"\{([^{}]*)\}")
 PLACEHOLDER_NAME = re.compile(r"^(?:in\.[a-z][a-z0-9_]*(?:\.[a-z0-9_]+)?|param\.[a-z][a-z0-9_]*|run|python)$")
 ROLE_RE = re.compile(r"^(?:forward|control:[a-z0-9-]+)$")
 
-TOP_KEYS = ("schema", "id", "repo", "kind", "title", "notes", "inputs", "params", "run", "outputs", "compute",
+# page: the id of the tool page a manifest belongs to, when it is not the manifest's own id (one page documents several
+# entry points, such as an agent's tools: each gets its own manifest and shares the page's facts)
+TOP_KEYS = ("schema", "id", "repo", "kind", "title", "notes", "page", "inputs", "params", "run", "outputs", "compute",
             "safety", "pipeline", "vc3d", "native", "facts")
 REPOS = ("public", "private", "community")
 KINDS = ("tool", "native", "pipeline", "converter")
@@ -326,7 +328,9 @@ class Tool:
 
     @property
     def title(self):
-        return self.facts.get("title") or self.m.get("title") or self.id
+        # a manifest that shares another tool's page (page) is one entry point of it: its own title names that entry
+        own = self.m.get("title") if self.m.get("page") else None
+        return own or self.facts.get("title") or self.m.get("title") or self.id
 
     @property
     def inputs(self):
@@ -497,6 +501,8 @@ def validate_manifest(m):
     for key in ("title", "notes"):
         if key in m and not isinstance(m[key], str):
             p.append(f"{key} must be a string")
+    if "page" in m and (not isinstance(m["page"], str) or not ID_RE.match(m["page"])):
+        p.append("page names a tool page by its id (docs/tools/ID.md)")
     if kind == "native":
         nat = m.get("native")
         if not isinstance(nat, dict) or not isinstance(nat.get("program"), str) or not PROGRAM_RE.match(
@@ -3100,7 +3106,7 @@ def write_facts(root=ROOT):
             m = _read_json(path)
         except (OSError, ValueError):
             continue
-        page = pages.get(m.get("id")) if isinstance(m, dict) else None
+        page = pages.get(m.get("page") or m.get("id")) if isinstance(m, dict) else None
         if page is None:
             continue
         new = dict(m, facts=facts_for(page, root))
@@ -3135,13 +3141,14 @@ def check(root=ROOT, commands=None, pages=None, env=None):
     rel = lambda t: t.path.relative_to(root).as_posix() if str(t.path).startswith(str(root)) else str(t.path)  # noqa: E731
     for tool in reg:
         where = rel(tool)
-        page = pages.get(tool.id)
+        pid = tool["page"] or tool.id
+        page = pages.get(pid)
         if tool["repo"] == "community" or tool.kind == "native":
             if page is not None:
-                problems.append(f"{where}: {tool.id} has a tool page, so its repo is public or private")
+                problems.append(f"{where}: {pid} has a tool page, so its repo is public or private")
             continue
         if page is None:
-            problems.append(f"{where}: no tool page docs/tools/{tool.id}.md; a manifest belongs to a tool with a page")
+            problems.append(f"{where}: no tool page docs/tools/{pid}.md; a manifest belongs to a tool with a page")
             continue
         if kind == "public" and tool["repo"] != "public":
             problems.append(f"{where}: repo {tool['repo']} in public Scrolls; private manifests live in Scrolls-private")
@@ -3150,10 +3157,15 @@ def check(root=ROOT, commands=None, pages=None, env=None):
             problems.append(f"{where}: {tool.id} is Retired; a retired tool carries no manifest")
         want = facts_for(page, root)
         if tool.facts != want:
-            problems.append(f"{where}: facts are out of date with docs/tools/{tool.id}.md: run python -m kit.tooldocs "
+            problems.append(f"{where}: facts are out of date with docs/tools/{pid}.md: run python -m kit.tooldocs "
                             "index")
-        net_none = page.field("Network").startswith("None")
-        if net_none != (tool.safety.get("network") == "none"):
+        net = page.field("Network")
+        net_none = net.startswith("None")
+        # "None for local inputs. With a URL, ...": a page whose tool reads the network only when given a remote input
+        # fits a manifest that never does (none) and one whose inputs may be URLs (public-read)
+        conditional = net_none and re.match(r"None (?:for|with|when|unless|except)\b", net) is not None
+        if net_none != (tool.safety.get("network") == "none") and not (
+                conditional and tool.safety.get("network") == "public-read"):
             problems.append(f"{where}: the page's Network field ({page.field('Network')[:40]!r}) and safety.network "
                             f"({tool.safety.get('network')}) disagree")
         problems += [f"{where}: {m}" for m in _check_program(tool, page, root, commands, status)]
@@ -3167,12 +3179,13 @@ def check(root=ROOT, commands=None, pages=None, env=None):
         elif not isinstance(why, str) or len(why.strip()) < 12:
             problems.append(f"{REGISTRY_REL / SKIP_FILE}: {tid} needs a reason of a few words")
     runnable = ("kit command", "kit entry point", "script", "script folder", "kit module")
+    covered = {t["page"] or t.id for t in reg}
     # every runnable tool has a manifest or a reason: public Scrolls' rule; Scrolls-private's folder holds only the
     # manifests of its private tools so far (its open-items row), so there the rule is not applied
     for pid, page in sorted(pages.items()) if kind != "private" else ():
         kinds = [k.strip() for k in page.field("Kind").split(",")]
         if page.field("Status") in ("Current", "Experimental") and any(k in runnable for k in kinds):
-            if pid not in reg.tools and pid not in reg.skip:
+            if pid not in covered and pid not in reg.skip:
                 problems.append(f"docs/tools/{pid}.md: no manifest in {REGISTRY_REL}/ and no reason in "
                                 f"{REGISTRY_REL / SKIP_FILE}; every runnable tool has one or the other")
     plugins = root / PLUGINS_REL

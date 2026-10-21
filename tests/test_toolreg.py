@@ -241,6 +241,45 @@ class ManifestTest(Base):
             self.assertIn("ap", toolreg.doors(reg.get("rowscore")))
         self.assertNotIn("ap", toolreg.doors(reg.get("rowscore")))
 
+    def test_a_manifest_may_belong_to_another_tools_page(self):
+        root = self.tmp / "repo"
+        (root / "docs" / "tools").mkdir(parents=True)
+        shutil.copy(ROOT / "docs" / "tools" / "toolreg.md", root / "docs" / "tools" / "toolreg.md")
+        folder = root / toolreg.REGISTRY_REL
+        folder.mkdir(parents=True)
+        for tid, page in (("toolreg-extra", "toolreg"), ("orphan", "nope")):
+            m = {k: v for k, v in manifest(tid).items() if k != "title"}
+            (folder / f"{tid}.json").write_text(json.dumps(dict(m, repo="public", page=page)))
+        toolreg.write_facts(root)
+        extra = json.loads((folder / "toolreg-extra.json").read_text())
+        self.assertEqual(extra["facts"]["page"], "docs/tools/toolreg.md")      # the shared page's facts
+        self.assertEqual(toolreg.Tool(extra, "x.json", "kit").title, "toolreg")
+        self.assertEqual(toolreg.Tool(dict(extra, title="extra entry"), "x.json", "kit").title, "extra entry")
+        self.assertEqual(toolreg.Tool(dict(manifest(), title="own", facts={"title": "page"}), "x.json", "kit").title,
+                         "page")                                              # without page, the page's name wins
+        problems = "\n".join(toolreg.check(root, commands=None))
+        self.assertNotIn("toolreg-extra.json: no tool page", problems)
+        self.assertNotIn("toolreg-extra.json: facts are out of date", problems)
+        self.assertIn("no tool page docs/tools/nope.md", problems)
+        # a page whose Network field is "None for local inputs. ..." fits none and public-read, never download
+        page = root / "docs" / "tools" / "toolreg.md"
+        text = page.read_text()
+        field = next(line for line in text.splitlines() if line.startswith("| Network |"))
+        page.write_text(text.replace(field, "| Network | None for local inputs. A URL is read anonymously |"))
+        toolreg.write_facts(root)
+        for net, ok in (("none", True), ("public-read", True), ("download", False)):
+            doc = json.loads((folder / "toolreg-extra.json").read_text())
+            doc["safety"]["network"] = net
+            (folder / "toolreg-extra.json").write_text(json.dumps(doc))
+            problems = "\n".join(toolreg.check(root, commands=None))
+            self.assertEqual("toolreg-extra.json: the page's Network field" not in problems, ok, net)
+        page.write_text(text.replace(field, "| Network | Reads the bucket |"))
+        doc["safety"]["network"] = "none"
+        (folder / "toolreg-extra.json").write_text(json.dumps(doc))
+        toolreg.write_facts(root)
+        self.assertIn("toolreg-extra.json: the page's Network field", "\n".join(toolreg.check(root, commands=None)))
+        self.assertIn("page names a tool page", " ".join(toolreg.validate_manifest(dict(manifest(), page="A B"))))
+
     def test_digest_ignores_generated_facts(self):
         a = toolreg.Tool(manifest(), "a.json", "kit")
         b = toolreg.Tool(dict(manifest(), facts={"title": "x"}), "a.json", "kit")
