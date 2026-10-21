@@ -326,6 +326,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **VC3D (Volume Cartographer 3D)**: The main application for viewing CT volumes and tracing, rendering and flattening surfaces. It is part of villa.
 
+**VC3D plugin**: A JSON manifest that adds one external tool to VC3D's Plugins menu: the program, its arguments with placeholders for what VC3D has open, and how VC3D loads what it writes. Proposed on villa branch `vc3d-plugins`; this repository's manifests are in [`plugins/`](plugins/README.md).
+
 **verso**: The outer back side of a roll, where the fibers run vertically.
 
 **Vesuvius Challenge**: The public competition, with prizes, to read the Herculaneum scrolls from X-ray scans ([scrollprize.org](https://scrollprize.org/)).

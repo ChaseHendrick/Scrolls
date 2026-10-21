@@ -8972,6 +8972,152 @@
    ]
   },
   {
+   "id": "vc3d-plugins",
+   "name": "vc3d-plugins",
+   "tagline": "run Scrolls and community tools from VC3D's Plugins menu",
+   "summary": "Seven VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Text Reader, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.",
+   "status": "Experimental",
+   "kind": [
+    "data",
+    "patch"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "vc3d-plugins",
+    "VC3D_PLUGIN_PATH=plugins",
+    "python3 plugins/run_kit.py COMMAND ..."
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "plugins/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_plugins.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1)"
+   },
+   "checked": {
+    "date": "2026-10-20",
+    "commit": "3bd77be"
+   },
+   "license": "Manifests and launcher: Apache 2.0 ([LICENSE](../../LICENSE)); each tool keeps its own license, named in its manifest's `license` field",
+   "fields": {
+    "Id": "`vc3d-plugins`",
+    "Status": "Experimental",
+    "Kind": "data, patch",
+    "Area": "Viewers and apps",
+    "Run": "VC3D built from villa branch `vc3d-plugins`, started with `VC3D_PLUGIN_PATH=plugins`; `python3 plugins/run_kit.py COMMAND ...` runs the kit from a plain clone",
+    "Code": "`plugins/`",
+    "Tests": "`tests/test_plugins.py`",
+    "Needs": "VC3D built from villa branch `vc3d-plugins` (commit `25d616e16`, on villa `main` `1eb51aecf`); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py`",
+    "Runs on": "Wherever VC3D runs; each tool takes the time its page gives. The manifest checks take about 1.2 s (measured 2026-10-20, 4-core cloud container)",
+    "Network": "Only what each tool contacts, on its page (the scroll center finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases)",
+    "Writes": "VC3D writes each run into `~/.vc3d/plugin-runs/ID/TIME/` with `plugin-run.json`; by result kind it also attaches a segment or an umbilicus to the open project, appends a record to the active segment's `ink-detections.json`, or adds point collections",
+    "Go-ahead": "Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1)",
+    "Released": "Not released; the villa side is a local branch, not pushed",
+    "Checked": "2026-10-20 against commit `3bd77be`",
+    "License": "Manifests and launcher: Apache 2.0 ([LICENSE](../../LICENSE)); each tool keeps its own license, named in its manifest's `license` field"
+   },
+   "page": "docs/tools/vc3d-plugins.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 64,
+     "end_line": 71,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 72,
+     "end_line": 82,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 83,
+     "end_line": 86,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 87,
+     "end_line": 105,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 106,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 128,
+     "end_line": 139,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 140,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 148,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 152,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 162,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 166,
+     "end_line": 169,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 170,
+     "end_line": 174,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "verify",
    "name": "verify",
    "tagline": "check that two ink maps of the same input agree, with a control",
