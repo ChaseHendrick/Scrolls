@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 22 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| README findings (Chase, 22 Oct: "make the novel findings on both scrolls readmes more concise and actually up to date. have a more detailed document with findings in docs") | Draft PR on `claude/project-thread-9pjrzr`: the README section is one line per finding; the full text of findings 1 to 14 moved unchanged (links rebased) to [`FINDINGS.md`](FINDINGS.md), with new findings 15 to 17 (center finder against `vc_gen_umbilicus`, StrokeNet held-out, Inkfilter) from already-public evidence | Merge only after Chase approves the exact text. When the StrokeNet two-density PR #155 merges, add its result as finding 18 |
+
 ## Continuation, 20 October 2026
 
 | Item | State | Next step |
