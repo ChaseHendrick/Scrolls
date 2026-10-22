@@ -1,3 +1,5 @@
+<a id="app-images"></a>
+
 # Appendix F. Image Credits {#app-images}
 
 Every photograph in the book, with author, source and license as recorded on its Wikimedia Commons file page. Charts and diagrams are the editors' own (CC BY 4.0, data in data/). No CT scan data or renders from the challenge are reproduced.

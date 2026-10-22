@@ -1,3 +1,5 @@
+<a id="ch-pipeline"></a>
+
 # The Pipeline at a Glance {#ch-pipeline}
 
 > **Chapter summary.** Reading a closed scroll is a chain: scan, predict surfaces, build meshes, fit them into a consistent whole, flatten, render surface volumes, detect ink, and have papyrologists read the result. The CT scan gives "a 3D grid of voxels" and nothing else; every later stage adds structure that the data do not contain explicitly. This chapter maps the chain, its file formats and its failure modes, and points to the chapters that cover each stage.
@@ -15,14 +17,14 @@ The challenge summarizes the pipeline as Scanning, Unwrapping, Flattening and In
 
 | Stage | Input | Output | Main tools (Oct 2026) | Chapter |
 |---|---|---|---|---|
-| 1. Scanning and reconstruction | the scroll | CT volume (OME-Zarr) | synchrotron beamlines, phase retrieval | [7](#ch-xray), [8](#ch-scans) |
-| 2. Surface prediction | CT volume | voxelwise recto-surface probability; normals; winding-density fields | 3D U-Net, nnU-Net (surface_recto_3dunet, surface_m7_nnunet) | [17](#ch-surface) |
-| 3. Meshing and tracing | surface predictions | patches as tifxyz quad meshes | VC3D GrowPatch, Copy Out/In, Neural Tracer, Lasagna, ScrollFiesta, fiber tracing | [18](#ch-tracing) |
-| 4. Global fit | patches, fibers, winding annotations, umbilicus | one tifxyz mesh per winding | spiral fitter (fit_spiral.py) | [19](#ch-spiral) |
-| 5. Flattening | 3D mesh | 2D parameterization | flatboi (SLIM) | [20](#ch-flatten) |
-| 6. Rendering | mesh plus volume | surface volume (layers along the normal) | vc_render_tifxyz | [20](#ch-flatten) |
-| 7. Ink detection | surface volume, or the raw volume in 3D modes | ink probability image | 2.5D models (TimeSformer era, hybrid 3D to 2D ink_9um, reader-v2, Hecate), native 3D models | [21](#ch-ink) |
-| 8. Reading | ink images | transcription | papyrologists | [6](#ch-greek) |
+| 1. Scanning and reconstruction | the scroll | CT volume (OME-Zarr) | synchrotron beamlines, phase retrieval | [7](07-xray.md#ch-xray), [8](08-scans.md#ch-scans) |
+| 2. Surface prediction | CT volume | voxelwise recto-surface probability; normals; winding-density fields | 3D U-Net, nnU-Net (surface_recto_3dunet, surface_m7_nnunet) | [17](17-surface.md#ch-surface) |
+| 3. Meshing and tracing | surface predictions | patches as tifxyz quad meshes | VC3D GrowPatch, Copy Out/In, Neural Tracer, Lasagna, ScrollFiesta, fiber tracing | [18](18-tracing.md#ch-tracing) |
+| 4. Global fit | patches, fibers, winding annotations, umbilicus | one tifxyz mesh per winding | spiral fitter (fit_spiral.py) | [19](19-spiral.md#ch-spiral) |
+| 5. Flattening | 3D mesh | 2D parameterization | flatboi (SLIM) | [20](20-flatten.md#ch-flatten) |
+| 6. Rendering | mesh plus volume | surface volume (layers along the normal) | vc_render_tifxyz | [20](20-flatten.md#ch-flatten) |
+| 7. Ink detection | surface volume, or the raw volume in 3D modes | ink probability image | 2.5D models (TimeSformer era, hybrid 3D to 2D ink_9um, reader-v2, Hecate), native 3D models | [21](21-ink.md#ch-ink) |
+| 8. Reading | ink images | transcription | papyrologists | [6](06-greek.md#ch-greek) |
 
 Sources: [VC-OpenProblems2026] [VC-SpiralTutorial] [VC-InkTutorial] [VC-Winners].
 

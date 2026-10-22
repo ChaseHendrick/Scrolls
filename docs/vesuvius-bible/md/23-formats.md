@@ -1,3 +1,5 @@
+<a id="ch-formats"></a>
+
 # Data Formats {#ch-formats}
 
 > **Chapter summary.** Volumes are distributed as chunked, multiresolution OME-Zarr; surfaces as tifxyz quad meshes (three float32 TIFFs of x, y and z plus metadata) or OBJ; surface volumes as Zarr or TIFF stacks; labels as binary images; metadata as JSON. The bucket is organized by sample, then volumes, segments and representations. Scan identifiers encode date, voxel size, propagation distance and energy.
@@ -28,7 +30,7 @@ A catalog long identifier has the form `YYYYMMDDHHMMSS-<voxel>um-<distance>m-<en
 
 ### Sizes
 
-Uncompressed size is voxels times bytes per voxel. The catalog's largest volume, PHerc. Paris 3 at 2.4 µm, has shape 68,417 x 42,403 x 42,403, about 1.23 x 10^14 voxels, roughly 123 TB at one byte per voxel ([Chapter 8](#ch-scans)) [VC-Catalog]. This is why tools stream chunks instead of downloading.
+Uncompressed size is voxels times bytes per voxel. The catalog's largest volume, PHerc. Paris 3 at 2.4 µm, has shape 68,417 x 42,403 x 42,403, about 1.23 x 10^14 voxels, roughly 123 TB at one byte per voxel ([Chapter 8](08-scans.md#ch-scans)) [VC-Catalog]. This is why tools stream chunks instead of downloading.
 
 ## tifxyz
 

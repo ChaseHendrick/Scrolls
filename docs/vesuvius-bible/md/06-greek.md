@@ -1,3 +1,5 @@
+<a id="ch-greek"></a>
+
 # Greek and Papyrology Basics {#ch-greek}
 
 > **Chapter summary.** The Herculaneum papyri are mostly written in Greek capitals in narrow columns, without word division. This chapter gives the minimum that a technical contributor needs to recognize what an ink model is showing: the alphabet and its letterforms on papyrus, the layout of a roll, numerals, the conventions of end titles and line counts (stichometry), and the editorial signs used in published transcriptions. It is an orientation, not a substitute for a papyrologist; under the Vesuvius Challenge rules, readings are made and published by the papyrological team.
@@ -67,14 +69,14 @@ Book numbers in Herculaneum titles are written as overlined alphabetic numerals;
 
 ## The layout of a roll
 
-A literary roll is written in columns (Greek *selides*) parallel to the short side of the roll, on the recto, across the horizontal fibers ([Chapter 4](#ch-papyrus)). The reader holds the roll horizontally, unrolls with the right hand and rolls up with the left, so the text advances column by column from left to right. Terms in common use:
+A literary roll is written in columns (Greek *selides*) parallel to the short side of the roll, on the recto, across the horizontal fibers ([Chapter 4](04-papyrus.md#ch-papyrus)). The reader holds the roll horizontally, unrolls with the right hand and rolls up with the left, so the text advances column by column from left to right. Terms in common use:
 
 | Term | Meaning |
 |---|---|
 | column (selis) | one block of text lines |
 | intercolumn | the blank space between columns |
 | upper and lower margin | blank space above and below the columns |
-| kollema, kollesis | sheet and sheet join ([Chapter 4](#ch-papyrus)) |
+| kollema, kollesis | sheet and sheet join ([Chapter 4](04-papyrus.md#ch-papyrus)) |
 | agraphon | unwritten stretch at the start or end of a roll [Romano2023] |
 | initial title | a title at the start of a roll |
 | end title, subscription (subscriptio) | the title block written at the end of the text |
@@ -82,7 +84,9 @@ A literary roll is written in columns (Greek *selides*) parallel to the short si
 | paragraphos | a short horizontal stroke under the start of a line, marking a change of section |
 | stichometry | counting lines ([below](#stichometry)) |
 
-Herculaneum columns are narrow, often 5 to 6 cm, with 20 to 45 lines of 16 to 40 letters ([Chapter 4](#ch-papyrus)). Columns often slant to the left (Maas's law) [Romano2023].
+Herculaneum columns are narrow, often 5 to 6 cm, with 20 to 45 lines of 16 to 40 letters ([Chapter 4](04-papyrus.md#ch-papyrus)). Columns often slant to the left (Maas's law) [Romano2023].
+
+<a id="end-titles"></a>
 
 ## End titles {#end-titles}
 
@@ -106,6 +110,8 @@ Because a roll was normally stored rewound to its beginning, the end of the text
 *Figure 6.4. P.Oxy. X 1231 fr. 56, a second-century CE Sappho papyrus showing the end of the first book of her collected poems, from Grenfell and Hunt, The Oxyrhynchus Papyri, Part X (1914). An example of an end title from Egypt, not Herculaneum. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:P.Oxy._X_1231_fr._56.jpg>*
 
 Specialist catalogs of Herculaneum titles exist. Del Mastro (2014) catalogs titles and bibliological annotations of 118 Greek papyri from Herculaneum, including initial, intermediate and final titles, stichometry and kollema counts [DelMastro2014]. Capasso has published a series of studies of titles in Herculaneum papyri [Capasso-Titoli]. For non-Herculaneum rolls, Schironi (2010) studied book-ends and layout in papyri of hexameter poetry and reports that end titles are normally written larger than the text [Schironi2010].
+
+<a id="stichometry"></a>
 
 ## Stichometry {#stichometry}
 
@@ -134,8 +140,8 @@ These are general papyrological conventions supplied by the editors; consult a p
 
 ## What contributors should and should not do
 
-The Vesuvius Challenge's papyrological team, led in recent years by Federica Nicolardi, reads and publishes the texts [VC-FirstTitle]. Technical contributors produce images; the data agreement requires approval before anyone publishes hidden text from the scrolls ([Chapter 28](#ch-ethics)). Some practical guidance follows from the material in this chapter:
+The Vesuvius Challenge's papyrological team, led in recent years by Federica Nicolardi, reads and publishes the texts [VC-FirstTitle]. Technical contributors produce images; the data agreement requires approval before anyone publishes hidden text from the scrolls ([Chapter 28](28-ethics.md#ch-ethics)). Some practical guidance follows from the material in this chapter:
 
-1. **Do not read letters into noise.** Ink predictions are probabilistic; fiber crossings, cracks and sheet boundaries can look like strokes. The prize rules warn that large model windows can "hallucinate" letterforms and limit window sizes accordingly ([Chapter 21](#ch-ink)).
+1. **Do not read letters into noise.** Ink predictions are probabilistic; fiber crossings, cracks and sheet boundaries can look like strokes. The prize rules warn that large model windows can "hallucinate" letterforms and limit window sizes accordingly ([Chapter 21](21-ink.md#ch-ink)).
 2. **Report geometry and provenance, not readings.** A useful submission states the scroll, scan, segment, coordinates, model and settings, so that experts can check the image.
 3. **Expect lunate sigma, scriptio continua and leaning columns.** An image that shows them is more likely to be real text than one that shows printed-looking capitals in tidy words.

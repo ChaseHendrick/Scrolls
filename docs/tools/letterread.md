@@ -332,7 +332,7 @@ Routing and weight selection can also fail before reading:
 | Message | Cause and action |
 | --- | --- |
 | `--tessdata and --ocr-* options require --backend tesseract` | Select Tesseract explicitly or remove its options |
-| `unknown weight profile` | Choose ink-lines or permissive |
+| `unknown weight profile 'NAME'; choose ink-lines, permissive` | `--weight-profile` names neither registered profile; choose ink-lines or permissive |
 | `weight profile ... names unregistered weights` | The registry is invalid; do not substitute a different model |
 | `choose --weights or --weight-profile, not both` | Make one explicit selection |
 

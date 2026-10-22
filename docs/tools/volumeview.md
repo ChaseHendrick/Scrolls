@@ -149,10 +149,10 @@ Messages from the command are prefixed `volumeview:`. Variable field names and J
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` | Missing or invalid CLI argument | Follow Commands and options |
-| `JSON: non-finite number` or `JSON: duplicate key` | Ambiguous or nonstandard JSON | Supply one finite value per field |
+| `JSON: non-finite number VALUE is not supported` or `JSON: duplicate key KEY is not supported` | Ambiguous or nonstandard JSON | Supply one finite value per field |
 | `: expected exactly` | Missing or extra object fields | Match the Inputs schema |
 | `: expected nonempty text of at most 120 characters without controls` | Invalid name or frame | Supply short explicit text |
-| `: expected three positive finite numbers in ZYX order` or `: expected positive` | Wrong vector length, type or bounds | Supply three positive numbers; shapes must be integers |
+| `: expected three positive finite numbers in ZYX order` or `FIELD: expected positive numbers at most 1e12` (`integers` for a shape) | Wrong vector length, type or bounds | Supply three positive numbers; shapes must be integers |
 | `source: expected a public Vesuvius OME-Zarr root URL` or `source: invalid URL` | Invalid URL text | Use a supported public root |
 | `source: credentials, ports, queries and fragments are not supported` | URL includes unsupported components | Use the ordinary public source URL |
 | `source: expected a .zarr root path without escapes or traversal` | Invalid root path | Supply a direct `.zarr` group path |
