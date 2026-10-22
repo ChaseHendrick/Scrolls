@@ -310,6 +310,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **training labels**: The labels a model learned from. Scoring a model on its own training labels shows only that the pipeline runs, not that the model generalizes.
 
+**two-density score**: A simple ink score with no network (`kit strokenet --two-density`): for each 48 px label window (about 2.2 mm) of a pooled ink map, z(logit of its ink density) plus 0.25 times z(logit of the ink density of the 128 px window around it), z taken within one map, so it ranks windows of one map and never compares maps. Its one test was on PHerc0500P2 with ink_9um ([model card](docs/strokenet.md#the-two-density-score)). Model output, not a reading.
+
 ## U
 
 **U-Net**: A common neural network shape for image segmentation. The scroll center finder uses two small U-Nets.
