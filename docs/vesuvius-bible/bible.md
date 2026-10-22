@@ -1,5 +1,7 @@
 <!-- The Vesuvius Challenge Bible. Edition of 15 October 2026. One file per chapter is in md/. -->
 
+<a id="ch-preface"></a>
+
 # About This Book {#ch-preface}
 
 *The Vesuvius Challenge Bible* is a reference for anyone working on reading the Herculaneum scrolls: the history of the rolls, the physics of imaging them, the record of the Vesuvius Challenge from 2023 to October 2026, every scroll and fragment in the public catalog, the full virtual unwrapping pipeline, the tools and formats, and the open problems. It is written for two kinds of reader: people, who will mostly read it as a PDF, and AI agents, which can read the same text as Markdown with machine-readable data alongside.
@@ -38,6 +40,8 @@ The Markdown edition has one file per chapter in `md/`, the whole book in one fi
 
 This is an independent compilation. It is not published or endorsed by the Vesuvius Challenge, Scroll Prize, Inc., EduceLab, or any library or facility named in it. Corrections are welcome; the sources cited are authoritative where they differ from this book.
 
+
+<a id="ch-eruption"></a>
 
 # The Eruption of 79 CE {#ch-eruption}
 
@@ -118,6 +122,8 @@ The town lay hidden until the early eighteenth century. According to the traditi
 | Eyewitness | Pliny the Younger, two letters to Tacitus (Epistulae 6.16 and 6.20) | [WP-PlinyYounger] |
 | Herculaneum rediscovered | 1709 (well dig), systematic tunneling from 1738 | [WP-Herculaneum] |
 
+
+<a id="ch-villa"></a>
 
 # The Villa of the Papyri and its Library {#ch-villa}
 
@@ -217,6 +223,8 @@ A recurring question is whether more papyri lie in the unexcavated lower levels 
 | Main holding | Officina dei Papiri, National Library, Naples | [WP-HercPapyri] |
 | Other holdings | Institut de France (Paris), Bodleian Library (Oxford), British Library (London) | [WP-HercPapyri] |
 
+
+<a id="ch-unrolling"></a>
 
 # Two and a Half Centuries of Unrolling {#ch-unrolling}
 
@@ -324,6 +332,8 @@ The Vesuvius Challenge, founded in March 2023, attacked all three with prizes, o
 | 2019 | ML ink recovery shown on fragments; Paris 4 scanned at Diamond (date per [Parsons2023]) | [Parker2019] [Parsons2023] |
 | 2023 | EduceLab-Scrolls dataset; Vesuvius Challenge launched | [Parsons2023] [VC-Launch] |
 
+
+<a id="ch-papyrus"></a>
 
 # Papyrus: from Plant to Roll {#ch-papyrus}
 
@@ -514,6 +524,8 @@ The table below converts physical sizes into voxels for the two voxel sizes most
 The practical lesson: at 7.91 µm a single fiber cell is one to three voxels and the thinnest ink layers are below one voxel, so ink detection at that resolution relies on texture and context rather than resolving the ink itself. At 2.4 µm fibers and apparent ink deposits span several voxels. Chapter 7 returns to the trade-off between resolution, field of view and data volume.
 
 
+<a id="ch-inks"></a>
+
 # Inks and Writing {#ch-inks}
 
 > **Chapter summary.** Herculaneum scribes wrote with a reed pen in a carbon-based ink that is chemically almost identical to carbonized papyrus, which is why the ink is so hard to see in X-ray CT. Some Herculaneum ink contains lead, at tens of micrograms per square centimeter. Published estimates of ink thickness range from a few micrometers to more than 100 µm. This chapter sets out what is measured, what is disputed and why it matters for ink detection.
@@ -610,6 +622,8 @@ Text runs in columns along the horizontal fibers of the recto [Bukreeva2016]. Li
 | Fragment benchmark (EduceLab) | Dice 0.48; character recall 0.42 | [Parsons2023] |
 
 
+<a id="ch-greek"></a>
+
 # Greek and Papyrology Basics {#ch-greek}
 
 > **Chapter summary.** The Herculaneum papyri are mostly written in Greek capitals in narrow columns, without word division. This chapter gives the minimum that a technical contributor needs to recognize what an ink model is showing: the alphabet and its letterforms on papyrus, the layout of a roll, numerals, the conventions of end titles and line counts (stichometry), and the editorial signs used in published transcriptions. It is an orientation, not a substitute for a papyrologist; under the Vesuvius Challenge rules, readings are made and published by the papyrological team.
@@ -696,6 +710,8 @@ A literary roll is written in columns (Greek *selides*) parallel to the short si
 
 Herculaneum columns are narrow, often 5 to 6 cm, with 20 to 45 lines of 16 to 40 letters ([Chapter 4](#ch-papyrus)). Columns often slant to the left (Maas's law) [Romano2023].
 
+<a id="end-titles"></a>
+
 ## End titles {#end-titles}
 
 Many Herculaneum rolls end with a title block. The Vesuvius Challenge's public description of the convention, based on opened rolls, is [VC-TitlePrize2024]:
@@ -718,6 +734,8 @@ Because a roll was normally stored rewound to its beginning, the end of the text
 *Figure 6.4. P.Oxy. X 1231 fr. 56, a second-century CE Sappho papyrus showing the end of the first book of her collected poems, from Grenfell and Hunt, The Oxyrhynchus Papyri, Part X (1914). An example of an end title from Egypt, not Herculaneum. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:P.Oxy._X_1231_fr._56.jpg>*
 
 Specialist catalogs of Herculaneum titles exist. Del Mastro (2014) catalogs titles and bibliological annotations of 118 Greek papyri from Herculaneum, including initial, intermediate and final titles, stichometry and kollema counts [DelMastro2014]. Capasso has published a series of studies of titles in Herculaneum papyri [Capasso-Titoli]. For non-Herculaneum rolls, Schironi (2010) studied book-ends and layout in papyri of hexameter poetry and reports that end titles are normally written larger than the text [Schironi2010].
+
+<a id="stichometry"></a>
 
 ## Stichometry {#stichometry}
 
@@ -752,6 +770,8 @@ The Vesuvius Challenge's papyrological team, led in recent years by Federica Nic
 2. **Report geometry and provenance, not readings.** A useful submission states the scroll, scan, segment, coordinates, model and settings, so that experts can check the image.
 3. **Expect lunate sigma, scriptio continua and leaning columns.** An image that shows them is more likely to be real text than one that shows printed-looking capitals in tidy words.
 
+
+<a id="ch-xray"></a>
 
 # X-ray Tomography for Carbonized Papyrus {#ch-xray}
 
@@ -860,6 +880,8 @@ Resolution is not the whole story. The open-problems overview stresses that a fa
 | Structured-light 3D scanning (Artec Space Spider) | surface shape of PHerc. 118, 2018 | surface | [WP-HercPapyri] |
 
 
+<a id="ch-scans"></a>
+
 # Synchrotrons and Scan Campaigns {#ch-scans}
 
 > **Chapter summary.** The Herculaneum scrolls have been scanned at two synchrotrons: the Diamond Light Source in Oxfordshire (beamline I12, from 2019 to 2025) and the European Synchrotron (ESRF) in Grenoble (beamlines BM18 and ID11, from 2025). The public open-data catalog lists 67 scans of 45 samples. This chapter describes the facilities, the logistics of a scan session, and every campaign represented in the public data, with voxel sizes, energies and distances.
@@ -945,6 +967,8 @@ Source: [VC-Catalog] (shape field); sizes are the product of the shape, not the 
 Scan volumes in the open-data catalog carry one of two licenses: **CC BY-NC 4.0** (67 volumes, including all ESRF data) or the **EduceLab Data License** (7 volumes, the older Diamond data) [VC-Catalog]. Publication of hidden text derived from the data is additionally governed by the Vesuvius Challenge data agreement ([Chapter 28](#ch-ethics)). This book reproduces no images derived from the scan data.
 
 
+<a id="ch-founding"></a>
+
 # Founding the Vesuvius Challenge {#ch-founding}
 
 > **Chapter summary.** The Vesuvius Challenge was launched on 15 March 2023 by Nat Friedman, Daniel Gross and Brent Seales, with CT data from EduceLab, a Kaggle ink-detection competition and a grand prize for reading text inside a closed scroll. A week after launch the prize pool reached one million dollars. The challenge is run by Scroll Prize, Inc., a 501(c)(3) non-profit. This chapter describes its origins, organization, data agreement, prize philosophy and the teams behind it.
@@ -1002,6 +1026,8 @@ The master plan (as updated in July 2025) describes the work in stages [VC-Maste
 
 The plan states that "full scrolls are 10cm-20cm wide and up to 15 meters long", that "with current techniques, it could cost $1-5 million to unwrap an entire scroll", which for 300 scrolls is "clearly impractical", and that "we believe it's possible to bring the cost of unwrapping an entire scroll to $5000 or below. It might even be possible to fully automate it" [VC-MasterPlan]. [Chapter 25](#ch-compute) returns to these numbers.
 
+
+<a id="ch-2023"></a>
 
 # The 2023 Season: First Letters and the Grand Prize {#ch-2023}
 
@@ -1097,6 +1123,8 @@ These principles became permanent features of the prize rules ([Chapter 21](#ch-
 | Fraction of Scroll 1 read | about 5 percent | [VC-GrandPrize] |
 
 
+<a id="ch-2024"></a>
+
 # 2024: From Five Percent to Autosegmentation {#ch-2024}
 
 > **Chapter summary.** In 2024 the challenge set a goal of reading 90 percent of four scrolls, launched more than $500,000 in prizes including monthly progress prizes, released the second halves of Scrolls 1 and 2 and a new scroll (PHerc. 172), and pushed segmentation from manual tracing toward automation. The Grand Prize and the first-letters prizes for Scrolls 2 to 4 went unclaimed; two automated segmentation submissions shared $60,000; and PHerc. 172 showed ink visible directly in the CT.
@@ -1176,6 +1204,8 @@ These two approaches, bottom-up tracing and top-down spiral fitting, define the 
 "Despite multiple legitimate submissions for the First Letters and First Title prizes, we still have not been able to conclusively recover text from Scrolls 2, 3, or 4 - those prizes went unclaimed in 2024", and "the 2024 Grand Prize also went unclaimed" [VC-FASP]. Prize rounds dated 2024 in the winners list total $340,500, with the FASP awards dated December 2024 although announced in January 2025 ([Chapter 14](#ch-ledger)).
 
 
+<a id="ch-2025"></a>
+
 # 2025: Titles, Scanning at Scale and Better Scans {#ch-2025}
 
 > **Chapter summary.** 2025 brought the first title recovered from a still-rolled Herculaneum scroll (PHerc. 172, *Philodemus, On Vices, Book 1(?)*), a production scanning session of twenty scrolls, the move to phase-contrast tomography at the ESRF, an explanation of the "compressed region" haze, a column of PHerc. 172 quoting Theophrastus, letters in several new scrolls from a generalist ink model, a $100,000 Kaggle surface-detection competition (later doubled), and finally letters in Scroll 4. The challenge also built an in-house research team.
@@ -1244,6 +1274,8 @@ PHerc. 1667 (Scroll 4) had shown "zero evidence of letters" after almost two yea
 | Scroll 4 rescan | 2.4 µm, 78 keV, 22 cm | [VC-Scroll4Letters] |
 | Prize rounds dated 2025 in the winners list | $88,000 | [VC-Winners] |
 
+
+<a id="ch-2026"></a>
 
 # 2026: A Scroll Read in Full {#ch-2026}
 
@@ -1346,6 +1378,8 @@ Nieuwlaar describes starting "small by fixing bugs", which led to his first prog
 
 Activity in the week before publication included a September progress prize post (12 October), commits to the `villa` repository on photogrammetry, fiber neural tracing in VC3D, spiral-fitting tutorials and tifxyz fixes, and a new alphaXiv listing for the June preprint [Recent-2026-10-15].
 
+
+<a id="ch-ledger"></a>
 
 # The Prize Ledger {#ch-ledger}
 
@@ -1494,6 +1528,8 @@ Read from the tables above:
 3. **Tool builders recur.** Contributors to segmentation and viewing tools (Khartes, Volume Cartographer and VC3D, the Segment Browser, ScrollFiesta) appear repeatedly across years.
 4. **Open prize money outstanding.** The open pool at 15 October 2026 is $2,140,000 [VC-Prizes], more than everything awarded to date.
 
+
+<a id="ch-inventory"></a>
 
 # Inventory of Scrolls and Fragments {#ch-inventory}
 
@@ -1655,6 +1691,8 @@ Source: [VC-Prizes], which lists each with a specific volume identifier.
 The master plan speaks of "all the remaining 300 scrolls in the collection" for Stage Three [VC-MasterPlan], and the April 2025 scanning post speaks of "all 300 known scrolls" [VC-ScanningAtScale]. [Chapter 2](#ch-villa) explains why the numbers of papyri in the collection (around 1,800 inventory numbers) and of intact rolls differ.
 
 
+<a id="ch-pipeline"></a>
+
 # The Pipeline at a Glance {#ch-pipeline}
 
 > **Chapter summary.** Reading a closed scroll is a chain: scan, predict surfaces, build meshes, fit them into a consistent whole, flatten, render surface volumes, detect ink, and have papyrologists read the result. The CT scan gives "a 3D grid of voxels" and nothing else; every later stage adds structure that the data do not contain explicitly. This chapter maps the chain, its file formats and its failure modes, and points to the chapters that cover each stage.
@@ -1717,6 +1755,8 @@ The same document gives a bottleneck table [VC-OpenProblems2026]:
 The August 2026 workflow post recommends a route for newcomers: "choose an eligible scroll, inspect it in VC3D, recover a papyrus surface, flatten and render a surface volume, run ink detection, inspect, iterate, and search", while noting that "it is not the only way to win" [VC-Workflow2026].
 
 
+<a id="ch-surface"></a>
+
 # Surface Prediction {#ch-surface}
 
 > **Chapter summary.** Surface prediction labels each voxel as papyrus recto surface or background, producing the cue that meshing follows. The standard architecture is a 3D U-Net, and since the 2025 to 2026 Kaggle competition, nnU-Net ensembles trained for very long schedules. Predictions are not final geometry: holes, mergers and sheet switches remain, and approximate training labels are now a main bottleneck.
@@ -1768,6 +1808,8 @@ Its conclusion: "a smaller set of precise labels in hard regions may be more use
 
 Sean Johnson adapted Meta's DINO [Caron2021] to full volumes ("DINO 3D") [VC-WeAreCooking]. The implementation, *dinovol*, has released checkpoints, and a version fine-tuned with supervised contrastive learning on three classes (air, fiber, ignore) on the PHerc. Paris 4 2.4 µm scan guides a background and fiber segmentation model, *fiber_dinoguided_2class* [VC-OpenProblems2026]. "The future likely lies in training self-supervised methods to extract relevant features without (or with minimal) annotation" [VC-HardParts].
 
+
+<a id="ch-tracing"></a>
 
 # Meshing and Surface Tracing {#ch-tracing}
 
@@ -1841,6 +1883,8 @@ Will Stevens's earlier ball-and-spring method grows a mesh by inserting candidat
 
 The January 2026 report put the VC3D pipeline at "more than 10x faster than a fully manual workflow in the original Volume Cartographer", with sheet-switch fixing as the main remaining manual work [VC-PHerc172Seventy]. Unwrapping PHerc. 172's lower 70 percent produced about 7 m by 14 cm of surface [VC-PHerc172Seventy].
 
+
+<a id="ch-spiral"></a>
 
 # The Spiral Fit {#ch-spiral}
 
@@ -1924,6 +1968,8 @@ The tutorial's advice [VC-SpiralTutorial]:
 Erwin Nieuwlaar's prize-winning surface came from the open-source spiral fitter "adapted to run on the 8.64 µm scan of PHerc. 343, with his own estimate of the scroll axis (umbilicus)", plus a new method "to snap the segments more accurately to the papyrus surface". The letters lay on windings w047 and w048, joined across θ = 0 [VC-PHerc343].
 
 
+<a id="ch-flatten"></a>
+
 # Flattening and Rendering {#ch-flatten}
 
 > **Chapter summary.** Flattening assigns each mesh point a 2D coordinate with as little distortion as possible; VC3D's production tool, flatboi, uses SLIM to minimize the symmetric Dirichlet energy. Rendering then samples the CT volume along the mesh and its normals to produce a **surface volume**, a stack of flat images centered on the papyrus surface, which is what most ink models read.
@@ -1966,6 +2012,8 @@ Surface volumes are sensitive to where the surface sits in depth. The ink tutori
 
 Native 3D ink models skip rendering: "for every training patch it uses the .tifxyz coordinates to find where the segment passes through the original scroll volume, samples a 3D crop there on the fly, and projects the 2D labels into the crop around the surface" [VC-InkTutorial]. [Chapter 21](#ch-ink) describes them.
 
+
+<a id="ch-ink"></a>
 
 # Ink Detection {#ch-ink}
 
@@ -2069,6 +2117,8 @@ The safeguards, as stated by the challenge:
 When a model finds nothing, "the right conclusion here is neither 'the scan failed' nor 'the model failed'." Possible causes: the scan may not capture the signal; the surface may be misplaced; labels may not match the true ink location; the architecture may miss the right features; ink may differ across scrolls; or the signal may be "below the current pipeline's ability to use it". Hence "better diagnostics matter just as much as better models" [VC-OpenProblems2026].
 
 
+<a id="ch-tools"></a>
+
 # Tools and Repositories {#ch-tools}
 
 > **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, cataloged in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
@@ -2165,6 +2215,8 @@ All rows: [VC-CommunityProjects], with prize details in [VC-Winners].
 The tutorials use **uv** throughout: `uv sync --extra models` in villa/vesuvius for ink detection [VC-InkTutorial], `uv sync` in villa/spiral-fitting [VC-SpiralTutorial], and `uvx --from huggingface_hub hf buckets sync ...` to fetch datasets resumably [VC-InkTutorial]. The ink tutorial assumes Linux (Windows users are advised to use WSL2) and an NVIDIA GPU with CUDA [VC-InkTutorial].
 
 
+<a id="ch-formats"></a>
+
 # Data Formats {#ch-formats}
 
 > **Chapter summary.** Volumes are distributed as chunked, multiresolution OME-Zarr; surfaces as tifxyz quad meshes (three float32 TIFFs of x, y and z plus metadata) or OBJ; surface volumes as Zarr or TIFF stacks; labels as binary images; metadata as JSON. The bucket is organized by sample, then volumes, segments and representations. Scan identifiers encode date, voxel size, propagation distance and energy.
@@ -2249,6 +2301,8 @@ The *spiral-input* dataset (July 2026) is organized by scroll and contains verif
 
 New scans: "Vesuvius Challenge - CT Scans of Herculaneum Papyri", with the author list given on the data page. Scrolls 1 to 4 and Fragments 1 to 6 scanned at Diamond before 2025: cite EduceLab-Scrolls (Parsons et al. 2023) and state that data "were obtained from the EduceLab-Scrolls dataset" [VC-Data] [Parsons2023].
 
+
+<a id="ch-community"></a>
 
 # Community and People {#ch-community}
 
@@ -2343,6 +2397,8 @@ Machine learning is central to the pipeline ([Chapters 17](#ch-surface) and [21]
 A broader comparison by the editors' research notes: undeciphered scripts such as Linear A lack a bilingual anchor, so statistical or AI methods "cannot confirm a reading"; the Herculaneum texts are in known languages, so the machine task is recovering ink and letters, not meaning. DeepMind's Ithaca (Greek inscriptions) and Aeneas (Latin inscriptions, *Nature* 2025) propose restorations and parallels that experts then judge [AIChallenges2026]. *These comparisons rest on secondary search summaries and are marked unverified.*
 
 
+<a id="ch-compute"></a>
+
 # Compute, Storage and Costs {#ch-compute}
 
 > **Chapter summary.** The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put a whole scroll at $1 to 5 million with current techniques and set a target of $5,000 or less. The public catalog's volumes total about 811 TB uncompressed. Training the tutorial ink model takes about an hour and a half on one H100. This chapter collects the published numbers and the arithmetic that follows from them.
@@ -2434,6 +2490,8 @@ Drawn from the tutorials:
 3. "If you run out of GPU memory, reduce `batch_size` to 1, or reduce the `patch_size` to `[64, 128, 128]`" [VC-InkTutorial].
 4. The tutorial's first-letters workflow uses the ~9 µm `ink_9um` models [VC-InkTutorial]. Data at 9.4 µm is smaller than 2.4 µm data by about (2.4/9.4)^3, roughly 1/60 (editors' arithmetic).
 
+
+<a id="ch-open-problems"></a>
 
 # Open Problems {#ch-open-problems}
 
@@ -2533,6 +2591,8 @@ These are drawn from tutorials and rules, not from a single list:
 | How to extend first-letters searches to every newly scanned scroll | [VC-Prizes] [VC-PHerc343] |
 | How to scan and read "all the remaining 300 scrolls" in the planned "2-3 years" | [VC-MasterPlan] |
 
+
+<a id="ch-howto"></a>
 
 # How-Tos {#ch-howto}
 
@@ -2696,6 +2756,8 @@ From the prize rules [VC-Prizes]:
 | Validation accuracy stalls while loss drops | overfitting to labels | more segments, held-out validation regions [VC-InkTutorial] |
 
 
+<a id="ch-ethics"></a>
+
 # Data, Licenses and Responsible Practice {#ch-ethics}
 
 > **Chapter summary.** Challenge data is released under CC BY-NC 4.0 unless noted, and the legacy EduceLab-Scrolls scans are copyrighted by EduceLab and the University of Kentucky. Users agree to cite the dataset and not to publish "any revelation of hidden text" without written approval. Prize rules add open-source, open-data and reproducibility requirements and an embargo on discoveries. This chapter sets out those terms, the safeguards against machine "hallucination" of letters, and how this book handles images and data.
@@ -2760,6 +2822,8 @@ The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris ro
 - **Quotations** from scrollprize.org and the Substack are short and attributed. *The book's own license for text is the editors' choice and should be confirmed before redistribution.*
 - **Unverified statements** are written in italics and labeled.
 
+
+<a id="ch-timeline"></a>
 
 # Timeline {#ch-timeline}
 
@@ -2844,6 +2908,8 @@ The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris ro
 
 *Dates before the challenge are as given in the cited secondary sources; Chapters 1 to 3 discuss disagreements, such as the day of the eruption.*
 
+
+<a id="ch-faq"></a>
 
 # Frequently Asked Questions {#ch-faq}
 
@@ -2937,6 +3003,8 @@ No. It is an independent compilation and is not endorsed by the Vesuvius Challen
 **How should an AI agent use it?**
 Read `llms.txt` for the map, `bible.md` for the full text, and `data/` for machine-readable tables. Citation keys in square brackets resolve in Appendix G.
 
+
+<a id="app-glossary"></a>
 
 # Appendix A. Glossary {#app-glossary}
 
@@ -3036,6 +3104,8 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | voxel | A volume element; the voxel size is its edge length in micrometers ([7](#ch-xray)). |
 | winding number | The count of turns from the center of a spiral; relative winding annotations constrain spiral fits ([19](#ch-spiral)). |
 
+
+<a id="app-ledger"></a>
 
 # Appendix B. Prize Ledger {#app-ledger}
 
@@ -3448,6 +3518,8 @@ All 233 awards compiled from the winners page [VC-Winners], retrieved 15 October
 **Total: $1,958,500 in 233 awards.**
 
 
+<a id="app-scans"></a>
+
 # Appendix C. Scans and Volumes {#app-scans}
 
 Every scan (67) and reconstructed volume (74) listed in the open data catalog [VC-Catalog] on 15 October 2026. Legacy EduceLab-Scrolls scans of Fragments 1 to 6 are not in this catalog ([Chapter 15](#ch-inventory)). Sizes are uncompressed at 8 bits, computed by the editors from the array shapes. Data: data/catalog_scans.csv and data/catalog_volumes.csv.
@@ -3604,6 +3676,8 @@ Every scan (67) and reconstructed volume (74) listed in the open data catalog [V
 | PHercParis4 | 20260608103018 | 1.129 | 78.0 | 59969 x 36006 x 32354 | 69,860 |
 
 
+<a id="app-models"></a>
+
 # Appendix D. Models in the Catalog {#app-models}
 
 The 13 models listed in the open data catalog [VC-Catalog] on 15 October 2026. Models published only on Hugging Face (for example ink_9um and ink_canonical_2um) are described in [Chapter 21](#ch-ink). Data: data/catalog_models.csv.
@@ -3624,6 +3698,8 @@ The 13 models listed in the open data catalog [VC-Catalog] on 15 October 2026. M
 | 20260801084232 | 20260801084232-lasagna | 2026-08-01 | fiber3d/unet | lasagna |  |  |  |
 | 20260915212757 | 20260915212757-lasagna | 2026-09-15 | fiber3d/unet | lasagna |  | scrollprize/lasagna-fiber |  |
 
+
+<a id="app-substack"></a>
 
 # Appendix E. Newsletter Index {#app-substack}
 
@@ -3701,6 +3777,8 @@ All 68 posts of the Vesuvius Challenge newsletter on Substack that were collecte
 | 2026-10-08 | [$50K First Letters Prize awarded for PHerc. 343](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for) | VC-PHerc343 |
 
 
+<a id="app-images"></a>
+
 # Appendix F. Image Credits {#app-images}
 
 Every photograph in the book, with author, source and license as recorded on its Wikimedia Commons file page. Charts and diagrams are the editors' own (CC BY 4.0, data in data/). No CT scan data or renders from the challenge are reproduced.
@@ -3743,6 +3821,8 @@ Every photograph in the book, with author, source and license as recorded on its
 
 License summary: CC BY 2.0: 1; CC BY 4.0: 2; CC BY-SA 3.0: 2; CC BY-SA 3.0 de: 1; CC BY-SA 4.0: 8; CC0: 1; Public domain: 18. Total: 33 photographs.
 
+
+<a id="app-bibliography"></a>
 
 # Appendix G. Bibliography {#app-bibliography}
 
@@ -3900,6 +3980,8 @@ Sources are cited in the text by keys in square brackets. Web pages were accesse
 - <span id="bib-WP-Villa"></span>**[WP-Villa]** Wikipedia, "Villa of the Papyri", accessed October 2026. <https://en.wikipedia.org/wiki/Villa_of_the_Papyri>
 - <span id="bib-WP-Weber"></span>**[WP-Weber]** Wikipedia, "Karl Jakob Weber", accessed October 2026. <https://en.wikipedia.org/wiki/Karl_Jakob_Weber>
 
+
+<a id="app-index"></a>
 
 # Index {#app-index}
 

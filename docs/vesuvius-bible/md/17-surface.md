@@ -1,3 +1,5 @@
+<a id="ch-surface"></a>
+
 # Surface Prediction {#ch-surface}
 
 > **Chapter summary.** Surface prediction labels each voxel as papyrus recto surface or background, producing the cue that meshing follows. The standard architecture is a 3D U-Net, and since the 2025 to 2026 Kaggle competition, nnU-Net ensembles trained for very long schedules. Predictions are not final geometry: holes, mergers and sheet switches remain, and approximate training labels are now a main bottleneck.
@@ -19,14 +21,14 @@ Two released checkpoints "anchor the current pipeline": *surface_recto_3dunet*, 
 
 - **Task:** "Detect the papyrus surface inside 3D CT scans" from CT chunks and binary masks of smoothed sheet positions [VC-KaggleSurface].
 - **Metric:** "a topology-aware linear blend rewarding both voxel accuracy and surface connectivity (no gaps, holes, sheet-switches or mergers)" [VC-KaggleSurface].
-- **Prizes:** $100,000, doubled to $200,000 [VC-Scroll4Letters]; awarded March 2026 ([Chapter 13](#ch-2026)).
+- **Prizes:** $100,000, doubled to $200,000 [VC-Scroll4Letters]; awarded March 2026 ([Chapter 13](13-2026.md#ch-2026)).
 - **What won:** "take an off-the-shelf nnU-Net model configured for a couple of patch sizes, train it for a very long time (well over the default 1,000 epochs), and average their predictions together" [VC-OpenProblems2026]. "Almost all of the top 10 submissions used large ensembles of our baseline, a ResEncUNet trained with the nn-UNet framework", some training "for more than 4,000 epochs", with post-processing against holes [VC-WeAreCooking]. The fifth-place write-up used a distance transform rather than binary segmentation, which the challenge highlights as worth investigating [VC-OpenProblems2026].
 
 The challenge then planned to retrain "using a combination of the best shared techniques, but this time on our 2.4 um high resolution dataset" [VC-WeAreCooking].
 
 ## Other predicted fields
 
-The Lasagna optimizer ([Chapter 18](#ch-tracing)) needs richer fields [VC-OpenProblems2026]:
+The Lasagna optimizer ([Chapter 18](18-tracing.md#ch-tracing)) needs richer fields [VC-OpenProblems2026]:
 
 - **Normals.** "A normal is simply a vector perpendicular to a surface"; a coarse 3D field of them is a **normal grid**, built by *vc_gen_normalgrids*. A U-Net also predicts a dense normal volume.
 - **Fractional winding position** and **gradient magnitude.** A second U-Net predicts, for each voxel, "how much further out in the scroll do we get, moving from one side of this voxel to the other point, expressed as a fraction of one full winding". The field is built from distance transforms to sheet skeletons and normalized into a monotone field; its gradient magnitude measures local winding density: "High gradient magnitude means sheets are packed tightly together locally; low means they're far apart."

@@ -232,7 +232,7 @@ Constants: `BANDS = 5`, `RHO = (2.0, 4.0, 8.0)`, `GRAD_SIGMA = 1.0`, `EPS = 1e-6
 | `error: cannot open LABEL_DIR/inklabels.zarr as zarr: ...` | The label folder lacks `inklabels.zarr` or `supervision.zarr`, or they are not zarr | Fetch both into one folder and pass that folder |
 | `error: PATH: no level '2'; levels: [...]` | The label stores have other level keys | The command always reads level `2`; use the published stores |
 | `error: labels (...) and mask (...) differ in shape at level 2` | Labels and mask from different segments | Use the pair from one segment |
-| `error: labels (...) and surface (...) differ in scale between axes (...); they are not the same grid` | `--surface-shape` is wrong, or the labels belong to another segment | Give the segment's full surface shape |
+| `error: labels (...) and surface (...) differ in scale between axes (SY vs SX); they are not the same grid` | `--surface-shape` is wrong, or the labels belong to another segment | Give the segment's full surface shape |
 | `error: crop [...] is outside the H x W surface` | The crop runs past `--surface-shape` | Fix the crop |
 | `error: map shape (...) does not match the window h x w` | The crop runs past the volume's edge, or without `--crop` the volume's shape differs from `--surface-shape` | Keep the crop inside the volume; check the shape |
 | `error: training labels hold only one class inside the mask` | The window has no labeled ink, or no background, inside the supervision mask | Choose a window with both, such as the crops above |

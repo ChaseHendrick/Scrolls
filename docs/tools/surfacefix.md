@@ -269,6 +269,7 @@ Every refusal below is printed as `surfacefix: MESSAGE` with exit code 2, and le
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument, such as `prepare` without `--voxel-um` | Check the command against Commands and options |
+| `surfacefix: MESSAGE` on stderr, exit code 2 | A refusal (a `VerifyError`, `OSError` or `ValueError`); MESSAGE is one of the rows below | Read MESSAGE and find its row |
 | `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed | `python -m pip install numpy scipy tifffile`, or run inside villa's environment |
 | `ModuleNotFoundError: No module named 'scipy'` (or `'tifffile'`) and a traceback, exit code 1 | scipy or tifffile is missing | Install it |
 | `tifffile is required (it is in villa's environment)` | tifffile is missing when a TIFF map is read | Install tifffile |
