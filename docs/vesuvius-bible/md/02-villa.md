@@ -1,3 +1,5 @@
+<a id="ch-villa"></a>
+
 # The Villa of the Papyri and its Library {#ch-villa}
 
 > **Chapter summary.** The Villa of the Papyri, on the coast just outside Herculaneum, held the only library from the Graeco-Roman world that survives as a physical collection. Tunnelers working for the Bourbon kings of Naples found its carbonized rolls between 1752 and 1754. The library is dominated by Epicurean philosophy, above all by the works of Philodemus of Gadara. This chapter covers the villa, its probable owner, the discovery of the papyri, the inventory numbers and what the library contains.
@@ -59,7 +61,7 @@ The library is philosophical, mostly Greek, and mostly Epicurean. Philodemus is 
 
 Because the scrolls were written and collected before 79 CE, they preserve texts that were never copied in the medieval manuscript tradition. None of Philodemus's prose was known before the Herculaneum finds [WP-Villa]. That is the reason for the effort described in this book: every newly read roll is likely to contain text that has not been seen for nearly two thousand years.
 
-The Vesuvius Challenge has itself added to this list. Its published results include passages from PHerc. Paris 4 on pleasure (the 2023 Grand Prize), the title *Philodemus, On Vices* from PHerc. 172, with the book number read as "Book 1(?)" (May 2025), a complete reading of PHerc. 1667 as a Stoic ethical text naming the philosopher Aristocreon (June 2026), and the title *Philodemus, On Gods, Book 8* from PHerc. 139 (June 2026) [VC-FirstScroll] [VC-FirstTitle]. These are reported in [Chapter 10](#ch-2023) to [Chapter 13](#ch-2026).
+The Vesuvius Challenge has itself added to this list. Its published results include passages from PHerc. Paris 4 on pleasure (the 2023 Grand Prize), the title *Philodemus, On Vices* from PHerc. 172, with the book number read as "Book 1(?)" (May 2025), a complete reading of PHerc. 1667 as a Stoic ethical text naming the philosopher Aristocreon (June 2026), and the title *Philodemus, On Gods, Book 8* from PHerc. 139 (June 2026) [VC-FirstScroll] [VC-FirstTitle]. These are reported in [Chapter 10](10-2023.md#ch-2023) to [Chapter 13](13-2026.md#ch-2026).
 
 > **Photograph (not stored in git; see the caption for source and license):** Herm-style portrait head of Epicurus, a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome.
 *Figure 2.4. Portrait of Epicurus (born 342 or 341 BCE), a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome (inv. 197306). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Epicurus_Massimo_Inv197306.jpg>*

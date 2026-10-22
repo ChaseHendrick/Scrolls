@@ -1,10 +1,12 @@
+<a id="ch-scans"></a>
+
 # Synchrotrons and Scan Campaigns {#ch-scans}
 
 > **Chapter summary.** The Herculaneum scrolls have been scanned at two synchrotrons: the Diamond Light Source in Oxfordshire (beamline I12, from 2019 to 2025) and the European Synchrotron (ESRF) in Grenoble (beamlines BM18 and ID11, from 2025). The public open-data catalog lists 67 scans of 45 samples. This chapter describes the facilities, the logistics of a scan session, and every campaign represented in the public data, with voxel sizes, energies and distances.
 
 ## What a synchrotron is
 
-A synchrotron is a particle accelerator that keeps electrons circulating at nearly the speed of light in a storage ring. When magnets bend their path, the electrons emit **synchrotron radiation**: intense, highly collimated light from the infrared to hard X-rays [WP-SynchrotronRadiation]. Experimental stations called **beamlines** branch off the ring. For tomography of scrolls the key properties are high flux (short scans at fine resolution), a choice of monochromatic energies, and, at fourth-generation sources, high spatial coherence, which strengthens propagation-based phase contrast ([Chapter 7](#ch-xray)) [VC-SummerHaze].
+A synchrotron is a particle accelerator that keeps electrons circulating at nearly the speed of light in a storage ring. When magnets bend their path, the electrons emit **synchrotron radiation**: intense, highly collimated light from the infrared to hard X-rays [WP-SynchrotronRadiation]. Experimental stations called **beamlines** branch off the ring. For tomography of scrolls the key properties are high flux (short scans at fine resolution), a choice of monochromatic energies, and, at fourth-generation sources, high spatial coherence, which strengthens propagation-based phase contrast ([Chapter 7](07-xray.md#ch-xray)) [VC-SummerHaze].
 
 ## Diamond Light Source
 
@@ -76,8 +78,8 @@ The open-data catalog records the array shape of each volume. The largest public
 | PHerc. MAN B | 2025 BM18 | 2.399 µm | 72,681 x 26,723 x 26,723 | about 52 TB |
 | PHerc. 814 | 2025 BM18 | 2.399 µm | 74,568 x 23,891 x 23,891 | about 43 TB |
 
-Source: [VC-Catalog] (shape field); sizes are the product of the shape, not the stored size. Volumes are distributed as masked, compressed OME-Zarr, so the stored size is much smaller; the bounding box also includes empty space around the scroll. See [Chapter 25](#ch-compute) for storage and compute.
+Source: [VC-Catalog] (shape field); sizes are the product of the shape, not the stored size. Volumes are distributed as masked, compressed OME-Zarr, so the stored size is much smaller; the bounding box also includes empty space around the scroll. See [Chapter 25](25-compute.md#ch-compute) for storage and compute.
 
 ## Licenses of the scan data
 
-Scan volumes in the open-data catalog carry one of two licenses: **CC BY-NC 4.0** (67 volumes, including all ESRF data) or the **EduceLab Data License** (7 volumes, the older Diamond data) [VC-Catalog]. Publication of hidden text derived from the data is additionally governed by the Vesuvius Challenge data agreement ([Chapter 28](#ch-ethics)). This book reproduces no images derived from the scan data.
+Scan volumes in the open-data catalog carry one of two licenses: **CC BY-NC 4.0** (67 volumes, including all ESRF data) or the **EduceLab Data License** (7 volumes, the older Diamond data) [VC-Catalog]. Publication of hidden text derived from the data is additionally governed by the Vesuvius Challenge data agreement ([Chapter 28](28-ethics.md#ch-ethics)). This book reproduces no images derived from the scan data.

@@ -1,3 +1,5 @@
+<a id="ch-compute"></a>
+
 # Compute, Storage and Costs {#ch-compute}
 
 > **Chapter summary.** The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put a whole scroll at $1 to 5 million with current techniques and set a target of $5,000 or less. The public catalog's volumes total about 811 TB uncompressed. Training the tutorial ink model takes about an hour and a half on one H100. This chapter collects the published numbers and the arithmetic that follows from them.
@@ -47,7 +49,7 @@ Largest samples: PHerc. 139 (180 TB across its volumes), PHerc. Paris 4 (153 TB)
 ![Bar chart of uncompressed catalog volume size in terabytes by voxel size, dominated by 2.4 micrometer volumes at about 615 terabytes.](../figures/charts/storage_by_voxel.svg)
 *Figure 25.2. Uncompressed size of catalog volumes by voxel size. Chart by the editors. Data: data/catalog_volumes.csv from [VC-Catalog]. License: CC BY 4.0 (this book).*
 
-The voxel-scaling rule ([Chapter 7](#ch-xray)) explains the concentration: halving the voxel size multiplies voxels by eight. The August 2025 post on the compressed regions noted that the reconstructed high-resolution volume "for the same region is about 64 times larger than a scan captured at a 2 µm pixel size, and 4,096 times larger than one captured at 8 µm" [VC-CompressedRegions]. The ratios imply a voxel size near 0.5 µm (editors' arithmetic).
+The voxel-scaling rule ([Chapter 7](07-xray.md#ch-xray)) explains the concentration: halving the voxel size multiplies voxels by eight. The August 2025 post on the compressed regions noted that the reconstructed high-resolution volume "for the same region is about 64 times larger than a scan captured at a 2 µm pixel size, and 4,096 times larger than one captured at 8 µm" [VC-CompressedRegions]. The ratios imply a voxel size near 0.5 µm (editors' arithmetic).
 
 Dataset sizes quoted by the challenge:
 

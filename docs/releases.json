@@ -148,10 +148,10 @@
           "name": "StrokeNet text-likeness score",
           "released": "2026-10-14",
           "version": "weights `strokenet-paris4-v1`",
-          "summary": "Scores how much a 6.1 mm window of an organizers' ink map looks like lines of text, with rotation and IAAFT controls in every result, using only NumPy. On its preregistered held-out test on six PHerc. Paris 4 tracings it missed its bar on two of nine items, simple scores such as ink density matched it on the others, and it beat every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). A score is model output, not a reading.",
+          "summary": "Scores how much a 6.1 mm window of an organizers' ink map looks like lines of text, with rotation and IAAFT controls in every result, using only NumPy. On its preregistered held-out test on six PHerc. Paris 4 tracings it missed its bar on two of nine items, simple scores such as ink density matched it on the others, and it beat every simple score only at telling text from its 90 degree turn (AUC 0.994 against 0.865). `--two-density` (22 October 2026) adds a score with no network: a window's ink density plus a quarter of the density around it. On its preregistered test it came out ahead of ink density inside segments on PHerc0500P2 with ink_9um (Model output; mean within-segment AUC 0.701 against 0.662, 11 segments), a scroll ink_9um reads weakly. A score is model output, not a reading.",
           "command": "python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json",
           "page": "docs/tools/strokenet.md",
-          "evidence": "[model card, held-out results and the tile grid pilot](docs/strokenet.md)"
+          "evidence": "[model card, held-out results, the tile grid pilot and the two-density score](docs/strokenet.md)"
         },
         {
           "id": "stackcheck",
@@ -166,11 +166,11 @@
           "id": "umbilicus-finder",
           "name": "Scroll center (umbilicus) finder",
           "released": "2026-10-14",
-          "version": "weights release `umbilicus-v1`",
+          "version": "weights release `umbilicus-v1`; center lines for 11 scrolls, release `umbilicus-lines-v1`",
           "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets, reading level-3 slices from the open-data bucket, and writes the published umbilicus format (`umbilicus.json` for VC3D and spiral-fitting with `--vc3d-name`). Against the 13 published center lines, each scroll held out of its own models' training, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the papyrus centroid control (Model output, 13 October 2026); each reference is one person's line, and the settings were chosen while looking at some of the same scrolls. A script folder run from a clone, not a `python -m kit` command: it needs torch and the two weight files, and its line is model output to check on CT slices.",
           "command": "python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name",
           "page": "docs/tools/umbilicus.md",
-          "evidence": "[guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md)"
+          "evidence": "[guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md), [center lines for 11 scrolls with each end's check status (Model output, no person's check)](docs/evidence/2026-10-21-umbilicus-lines/README.md)"
         }
       ],
       "where": "main"

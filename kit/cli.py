@@ -851,7 +851,47 @@ CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "l
                    "scrolls-letterdemo": "letterdemo", "scrolls-start": "start"}
 
 
+def cmd_strokenet_two_density(args):
+    """kit strokenet --two-density: the two-density score of every label window (no network, no download)."""
+    import numpy as np
+    from . import strokenet
+    strokenet.check_pixel_mm(args.pixel_mm)
+    for name in ("weights", "crop", "png"):
+        if getattr(args, name):
+            raise ValueError(f"--{name} does not apply to --two-density")
+    with strokenet.open_map(args.map, args.key) as img:
+        ink = np.asarray(img, np.float32)                               # the tested maps were read as float32
+    mask = None
+    if args.mask:
+        with strokenet.open_map(args.mask) as m:
+            mask = np.asarray(m)
+    res, grid = strokenet.two_density_analyze(ink, args.pixel_mm, stride=args.label_stride, mask=mask,
+                                              with_grid=bool(args.grid))
+    if args.grid:
+        gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
+        np.save(gpath, grid)
+        res["grid_file"] = gpath
+    if args.out:
+        Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
+    return res
+
+
 def cmd_strokenet(args):
+    if args.two_density:
+        try:
+            res = cmd_strokenet_two_density(args)
+        except ImportError as exc:
+            print(import_advice(exc), file=sys.stderr)
+            return 2
+        except (OSError, KeyError, ValueError) as exc:
+            print(exc, file=sys.stderr)
+            return 2
+        if args.json:
+            print(json.dumps(res, indent=1))
+        else:
+            from . import strokenet
+            print(strokenet.two_density_summary(res))
+        return 0
     try:
         import numpy as np
         from . import strokenet
@@ -864,17 +904,22 @@ def cmd_strokenet(args):
                 y0, y1, x0, x1 = used
                 img = img[y0:y1, x0:x1]
                 crop = {"requested": list(args.crop), "used": used, "origin_moved_to_lattice": moved}
-            res, grid = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
-                                          seed=args.seed, with_grid=True)
+            res, grid, work = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
+                                                seed=args.seed, with_grid=True, with_working=True)
         if crop:
             res["crop"] = crop
+        if args.png:
+            res["png_file"] = strokenet.heatmap(work, grid, res["window_y_px"], res["window_x_px"], args.png)
         if args.grid:
             gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
             np.save(gpath, grid)
             res["grid_file"] = gpath
         if args.out:
             Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
-    except (ImportError, OSError, KeyError, ValueError) as exc:
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(res, indent=1) if args.json else strokenet.text_summary(res))
@@ -1228,6 +1273,15 @@ def build_parser(prog="python -m kit", sub_progs=None):
                                   "row and column starts are window_y_px and window_x_px in the result, every stride "
                                   "except the last, which ends at the map's edge")
     p.add_argument("--out", help="also write the result as JSON")
+    p.add_argument("--png", help="also write a picture: the map with each window's score painted over it "
+                                 "(blue low, red high; needs Pillow)")
+    p.add_argument("--two-density", action="store_true",
+                   help="score 48 px label windows with the two-density score instead of the network (no weights, "
+                        "numpy only): s = z(logit label density) + 0.25 z(logit 128 px window density), z within the map")
+    p.add_argument("--mask", help="--two-density: papyrus mask at the map's resolution (nonzero is papyrus); labels "
+                                  "under half papyrus are skipped. Without it every whole label is scored")
+    p.add_argument("--label-stride", type=int, default=6,
+                   help="--two-density: label step in pooled pixels (default 6, the tested stride)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
 

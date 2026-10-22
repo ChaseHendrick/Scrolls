@@ -60,7 +60,7 @@ One line per decision still in force. The dated record, with Chase's exact words
 
 - Private plans, findings and submission material live in Scrolls-private (2026-10-07).
 - Leave `docs/contrib/villa-1865-m1pro-comment.md` alone (2026-10-07).
-- Paid compute only inside the approved budget; GPU work on Modal, B300 first, 16 reserved cores for CPU, inside the Starter plan's limits (2026-10-07 to 10-13, rule 11).
+- Paid compute only inside the approved budget (Modal ceiling 600 USD this cycle, 2026-10-21); GPU work on Modal, B300 first, 16 reserved cores for CPU, inside the Starter plan's limits (2026-10-07 to 10-13, rule 11).
 - Public writing for villa: clear titles, community terms, short, in Chase's voice; Chase posts (2026-10-12, rule 12).
 - Hugging Face, forum and Discord posts need Chase's yes for each, never with private work; no forum posts for now (2026-10-13); a standing yes covers redeploying approved Spaces and byte-identical releases (2026-10-18, rule 8); packages from Scrolls-private go to GitHub after an agent leak and quality review, without Chase reviewing each file list (2026-10-21, rule 8).
 - Call the owner Chase (Chase Hendrick), never Bob (2026-10-13).

@@ -165,9 +165,9 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `estimate H W` | | Patches and requested GPU seconds for an H x W region at 9.6 um; `--windows`, `--reader`, `--json` |
+| `estimate HEIGHT WIDTH` | required | Patches and requested GPU seconds for a HEIGHT x WIDTH region at 9.6 um (both in px); `--windows`, `--reader`, `--json` |
 | `samples` | | The public samples as JSON |
-| `engine.py estimate H W` | | The same estimate from the engine; `--windows`, `--reader` |
+| `engine.py estimate HEIGHT WIDTH` | required | The same estimate from the engine; `--windows`, `--reader` |
 | `engine.py fetch READER` | | Download and check one checkpoint into the cache |
 
 ### `tools/check_gate.py`, `tools/deploy.py`
@@ -179,7 +179,7 @@ inklens.py run --from-vc3d [--bridge NAME] --volume OME_ZARR [--size 1024] ...
 | `--device` | best available | `cuda`, `mps` or `cpu` |
 | `deploy.py files` | | The Space's files with SHA-256 |
 | `deploy.py stage DEST` | | Copy them into DEST |
-| `deploy.py OWNER/NAME` | | Check the login, list differences, ask y/N, upload, ask for `zero-a10g` |
+| `deploy.py SPACE` | required | SPACE is the Space as OWNER/NAME: check the login, list differences, ask y/N, upload, ask for `zero-a10g` |
 | `--private` | off | Create the Space private |
 
 ### Deploying the Space (Chase only, after a yes)
@@ -266,93 +266,98 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `; the samples are` | The sample id is not in `samples.json` | Run `inklens.py samples` |
 | `samples must come from` | `samples.json` names another bucket | Restore the file; samples come only from the open-data bucket |
-| `must be a plain path inside the segment` | A sample path is absolute, a URL or climbs out | Restore `samples.json` |
-| `is listed twice` | Two samples share an id | Restore `samples.json` |
-| `is outside the` | A crop, box or read lies outside the surface or volume | Give a box inside the segment |
-| `px region at rows` | `--at` puts the square outside the surface | Pick a corner further in |
+| `no sample 'ID'; the samples are IDS` | `demo SAMPLE` names neither a sample id nor a title in `samples.json` | Run `inklens.py samples` and use one of the ids it lists |
+| `ID: PART must be a plain path inside the segment` | A sample path is absolute, a URL or climbs out | Restore `samples.json` |
+| `sample ID is listed twice` | Two samples share an id | Restore `samples.json` |
+| `ID: crop [Y0, Y1, X0, X1] is outside the H x W surface` | A sample's crop in `samples.json` lies outside its surface | Restore `samples.json` |
+| `a SIZE px region at rows Y, columns X is outside the H x W surface` | `--at` puts the square outside the surface | Pick a corner further in |
 | `label scoring needs this repository's kit/ (and zarr)` | `--score` outside this repository | Run from the repository with zarr installed |
-| `MB. Use a smaller region or --local` | The packed region is over 64 MB | Use a smaller region or local mode |
+| `the region packs to N MB; the Space takes at most 64 MB. Use a smaller region or --local` | The packed region is over 64 MB | Use a smaller region or local mode |
 | `Space mode runs on your own ZeroGPU quota, so it needs your Hugging Face token: run 'hf auth login' or set HF_TOKEN (a read token is enough). Or use --local to run on this machine` | No token was found | Log in, set `HF_TOKEN`, or use `--local` |
 | `Space mode needs gradio_client (pip install gradio_client), or use --local` | gradio_client is missing | Install it or use `--local` |
 | `the Space refused the region:` | The Space returned an error (size, quota, loading) | Read the reason; retry later or use `--local` |
-| `here; nothing is written` | The Space's status differs from the one recomputed from its maps | Nothing to trust; report it, rerun locally |
+| `the Space says 'STATUS' but its own maps give 'STATUS' here; nothing is written` | The Space's status differs from the one recomputed from its maps | Nothing to trust; report it, rerun locally |
 | `vc_render_tifxyz is not on PATH (it ships with VC3D builds); give --render-binary, or render the segment's surface volume yourself and pass --surface-volume` | No renderer found | Give `--render-binary` or `--surface-volume` |
-| `vc_render_tifxyz failed (` | The renderer exited with an error | Read its stderr tail in the message |
+| `vc_render_tifxyz failed (CODE): OUTPUT` | The renderer exited with an error; OUTPUT is the last 600 characters of its stderr (or stdout) | Read OUTPUT |
 | `give --segment SEGDIR (a tifxyz folder), or --from-vc3d with a running VC3D` | No segment | Give one |
 | `give --um-per-px (the render's pixel size in micrometers)` | The pixel size is unknown | Give `--um-per-px` |
-| `is outside the segment canvas` | The box does not fit the canvas | Fix the box (render pixels at scale 1) |
+| `the box rows Y..Y2, columns X..X2 is outside the segment canvas W x H` | The box does not fit the canvas | Fix the box (render pixels at scale 1) |
 | `give --box X Y W H (render pixels of the segment at scale 1) or --from-vc3d` | No region | Give one |
 | `give --surface-volume PATH or --volume OME_ZARR` | No voxels | Give one |
-| `has no tifxyz mesh listed; pick one that does for --vc3d-out` | The sample has no mesh in `samples.json` | Use `0841-w00` |
-| `of its tifxyz mesh is missing from the bucket` | The bucket no longer has the mesh file | Report it; use another sample |
-| `voxels from the active segment; put it on the segment` | The VC3D cursor is off the active segment | Put the cursor on the segment |
-| `: choose one of` | Unknown reader | `d9v2`, `ink_9um` or `both` |
-| `: use 1 or 3` | Unknown window count | 1 or 3 |
-| `s one call may ask for; use a smaller region, one depth window, or local mode` | Over 40 GPU seconds | Smaller region, `--windows 1`, or `--local` |
+| `sample ID has no tifxyz mesh listed; pick one that does for --vc3d-out` | The sample has no mesh in `samples.json` | Use `0841-w00` |
+| `ID: FILE of its tifxyz mesh is missing from the bucket` | The bucket no longer has the mesh file | Report it; use another sample |
+| `the cursor is N voxels from the active segment; put it on the segment` | The VC3D cursor is off the active segment | Put the cursor on the segment |
+| `reader 'NAME': choose one of d9v2, ink_9um, both` | Unknown reader | `d9v2`, `ink_9um` or `both` |
+| `windows N: use 1 or 3` | Unknown window count | 1 or 3 |
+| `N patches need about S GPU seconds, more than the 40 s one call may ask for; use a smaller region, one depth window, or local mode` | Over 40 GPU seconds | Smaller region, `--windows 1`, or `--local` |
 | `a surface volume has 3 axes (layers, rows, columns), this one has` | Wrong array shape | Give layers x rows x columns |
-| `: the engine takes uint8 (volio.to_uint8 converts uint16)` | Wrong type reached the engine | Convert with `volio.to_uint8` |
-| `layers, layers first` | Too few or too many layers | 21 to 65 layers (17 for one window) |
-| `px a side at 9.6 um` | Region side outside 128 to 2048 px | Resize the region |
+| `type DTYPE: the engine takes uint8 (volio.to_uint8 converts uint16)` | Wrong type reached the engine | Convert with `volio.to_uint8` |
+| `L layers: 3 depth windows need 21 to 65 layers, layers first` (`1 depth window needs 17 to 65 layers`) | Too few or too many layers | 21 to 65 layers (17 for one window) |
+| `NAME SIDE px: a region is 128 to 2048 px a side at 9.6 um` | Region side outside 128 to 2048 px | Resize the region |
 | `the region is all zero (off the segment, or a hole in it)` | No voxels in the region | Pick a region on the segment |
-| `; refusing it` | A checkpoint's SHA-256 does not match | Delete the cached file; check the source |
-| `does not exist` | `INKLENS_<READER>` names a missing file | Fix the variable |
-| `held no vesuvius/src files` | The villa tarball was empty | Retry, or set `VILLA_SRC` |
+| `PATH has SHA-256 DIGEST, expected DIGEST for NAME; refusing it` | A checkpoint's SHA-256 does not match | Delete the cached file; check the source |
+| `INKLENS_READER=PATH does not exist` | `INKLENS_<READER>` names a missing file | Fix the variable |
+| `the villa tarball for COMMIT held no vesuvius/src files` | The villa tarball was empty | Retry, or set `VILLA_SRC` |
 | `holds no villa vesuvius package` | `VILLA_SRC` or the download is not villa | Point `VILLA_SRC` at `vesuvius/src` |
-| `; Ink Lens is built for` | The checkpoint's patch or depth is not 128 and 17 | Use a 9 um flat checkpoint |
-| `, which Ink Lens does not run` | Unknown preprocessing in the checkpoint | Use a 9 um flat checkpoint |
-| `is not loaded here` | The reader was not loaded in this engine | Load it, or pick a loaded reader |
+| `NAME has patch and depth (P, D); Ink Lens is built for (128, 17)` | The checkpoint's patch or depth is not 128 and 17 | Use a 9 um flat checkpoint |
+| `NAME asks for preprocessing 'X', which Ink Lens does not run` | Unknown preprocessing in the checkpoint | Use a 9 um flat checkpoint |
+| `reader NAME is not loaded here` | The reader was not loaded in this engine | Load it, or pick a loaded reader |
 | `the CT layer is 2-D, not` | Wrong CT input to the gate | Pass the middle layer |
-| `must be 2-D and the same shape` | Maps of different shapes | Pass both maps of the same region |
-| `differ in shape` | CT and maps of different regions | Pass matching arrays |
+| `the map (H, W) and its control (H, W) must be 2-D and the same shape` | Maps of different shapes | Pass both maps of the same region |
+| `the CT layer (H, W) and the maps (H, W) differ in shape` | CT and maps of different regions | Pass matching arrays |
 | `a PNG here is a non-empty 2-D uint8 array, not` | Wrong array for the PNG writer | Pass uint8 |
 | `a PNG with no IHDR` | A broken mosaic file | Delete `inklens/mosaic.png` |
-| `only 8-bit grayscale non-interlaced PNGs are read here (depth` | The mosaic was replaced by another PNG | Delete it; Ink Lens writes a new one |
+| `only 8-bit grayscale non-interlaced PNGs are read here (depth D, type T)` | The mosaic was replaced by another PNG | Delete it; Ink Lens writes a new one |
 | `PNG filter type` | A broken PNG | Delete it |
-| `is not a TIFF` | A band is not a TIFF | Check the segment |
-| `is not a TIFF (magic` | A band is not a TIFF | Check the segment |
+| `PATH is not a TIFF` | A band is not a TIFF | Check the segment |
+| `PATH is not a TIFF (magic BYTES)` | A band is not a TIFF | Check the segment |
 | `: no image width or height tag` | A band lacks size tags | Check the segment |
 | `has no meta.json; give a tifxyz segment folder` | Not a segment folder | Give the tifxyz folder |
-| `, VC3D needs tifxyz` | meta.json is not tifxyz | Give a tifxyz segment |
-| `is not two positive numbers` | meta.json's scale is broken | Fix the segment |
-| `; the segment is too small for this map resolution` | The canvas would lose the grid's aspect | Use a larger segment or a finer render |
-| `lies outside the segment's canvas` | The region is off the canvas | Fix the box |
+| `PATH: format is 'X', VC3D needs tifxyz` | meta.json is not tifxyz | Give a tifxyz segment |
+| `PATH: scale [...] is not two positive numbers` | meta.json's scale is broken | Fix the segment |
+| `a W x H canvas would not keep the grid's aspect A; the segment is too small for this map resolution` | The canvas would lose the grid's aspect | Use a larger segment or a finer render |
+| `the region at rows Y, columns X lies outside the segment's canvas W x H` | The region is off the canvas | Fix the box |
 | `: x, y and z bands differ in size` | Broken segment | Fix the segment |
 | `the segment has no valid vertex` | Every vertex is a hole | Fix the segment |
 | `is not a JSON array; refusing to overwrite it` | `ink-detections.json` is not a list; VC3D would ignore it | Fix or move the file, then rerun |
-| `); refusing to overwrite it` | `ink-detections.json` is not readable JSON | Fix or move the file |
+| `PATH is not readable JSON (ERROR); refusing to overwrite it` | `ink-detections.json` is not readable JSON | Fix or move the file |
 | `mapping pins onto the segment needs tifffile (pip install tifffile)` | No tifffile | Install it, or `--no-pins` |
-| `: give a uint8 or uint16 surface volume` | Other voxel type | Convert the volume |
-| `um must be positive` | Bad `--um-per-px` | Give the pixel size |
-| `volume is smaller than one` | The region is smaller than one pooling block | Give a larger region |
-| `axes; a surface volume has 3 (layers, rows, columns)` | A zarr or file with other axes | Give a 3-axis surface volume |
-| `: a chunk holds` | A zarr chunk has the wrong size | Check the zarr |
+| `type DTYPE: give a uint8 or uint16 surface volume` | Other voxel type | Convert the volume |
+| `pixel size UM um must be positive` | Bad `--um-per-px` | Give the pixel size |
+| `a (L, H, W) volume is smaller than one K x K x K block` | The region is smaller than one pooling block | Give a larger region |
+| `PATH has N axes; a surface volume has 3 (layers, rows, columns)` | A zarr or file with other axes | Give a 3-axis surface volume |
+| `PATH: a chunk holds N values, not M` | A zarr chunk has the wrong size | Check the zarr |
 | `is not a zarr array (no .zarray or zarr.json)` | Not a zarr | Check the path |
 | `is a zarr group, not an array` | A group without multiscales | Give the array path |
-| `need the zarr package; read it with zarr and pass a .npy instead` | Compressed zarr v3 | Convert to `.npy` |
-| `); install numcodecs` | Compressed zarr v2 | Install numcodecs |
-| `is outside the volume's shape` | The box is outside the zarr | Fix the box |
+| `PATH: zarr v3 codecs [...] need the zarr package; read it with zarr and pass a .npy instead` | Compressed zarr v3 | Convert to `.npy` |
+| `PATH is compressed (ID); install numcodecs` | Compressed zarr v2 | Install numcodecs |
+| `box [Y, X, H, W] is outside the volume's shape (L, H, W)` | The box is outside the zarr | Fix the box |
 | `: give a .zarr, .npy, .npz or multi-page .tif surface volume` | Unknown file type | Convert it |
 | `: an .npz needs an array named 'volume'; it has` | Wrong array name | Save it as `volume` |
 | `reading a .tif needs tifffile (pip install tifffile)` | No tifffile | Install it |
 | `VC3D has no active segment; open one first` | `--from-vc3d` with no segment open | Open a segment in VC3D |
-| `VC3D's active segment` | The active segment has no folder on disk | Save it, or give `--segment` |
+| `VC3D's active segment ID has no folder on disk` | The active segment has no folder on disk | Save it, or give `--segment` |
 | `canvas.get_cursor_volume_point returned no volumePoint:` | The cursor is not on a viewer | Hover over the segment view |
-| `cannot connect to the VC3D bridge at` | The bridge socket is gone | Start VC3D with `--agent-bridge` |
+| `cannot connect to the VC3D bridge at PATH: ERROR` | The bridge socket is gone | Start VC3D with `--agent-bridge` |
 | `the bridge closed the connection during` | VC3D closed the socket | Restart the bridge |
 | `the readers are still loading (about a minute after the Space wakes up); try again shortly` | The Space is starting | Wait a minute |
 | `the readers failed to load:` | The Space could not load a reader | Read the reason in the Space logs |
-| `px with one window; run larger regions in local mode (python3 inklens.py run --local ...), or try again later` | ZeroGPU refused and the region is too big for the CPU fallback | Try later or use local mode |
+| `REASON. The CPU fallback takes regions up to 512 px with one window; run larger regions in local mode (python3 inklens.py run --local ...), or try again later` | ZeroGPU refused and the region is too big for the CPU fallback | Try later or use local mode |
 | `, and the Space's CPU is busy with another fallback run; try again in a minute` | One CPU fallback at a time | Wait a minute |
 | `upload an .npz first` | No file | Upload one |
-| `MB; the limit is` | Upload over 64 MB | Use a smaller region |
+| `the upload is N MB; the limit is 64 MB` | Upload over 64 MB | Use a smaller region |
 | `upload an .npz with one array named 'volume' (uint8, layers x rows x columns)` | Not an `.npz` | Save the region as `.npz` |
 | `not a readable .npz:` | A broken file | Save it again |
-| `; it needs volume` | No `volume` array | Save it as `volume` |
+| `the .npz holds [NAMES]; it needs volume` | No `volume` array | Save it as `volume` |
 | `the volume is larger than a region may be (2048 x 2048 px, 65 layers)` | Too large uncompressed | Use a smaller region |
 | `missing Space files:` | A staged file is missing | Restore it |
 | `is not empty` | `stage` into a non-empty folder | Give an empty folder |
 | `give the Space as OWNER/NAME` | Bad Space name | `OWNER/NAME` |
-| `not logged in to Hugging Face (` | No login on this computer | `hf auth login` |
+| `not logged in to Hugging Face (ERRORTYPE). Run: hf auth login` | No login on this computer | `hf auth login` |
+| `size N: use 128 to MAX px for ID` | `demo --size` is below 128 px or larger than the sample's crop (MAX is the crop's shorter side) | Give a size from 128 px up to the crop's side, or leave `--size` out for the whole crop |
+| `box rows Y..Y2, columns X..X2 is outside the (H, W) volume` | `--box` reaches past a `.npy`, `.npz` or `.tif` surface volume | Give a box inside the volume |
+| `not a PNG` | `inklens/mosaic.png` in the segment folder was replaced by a file that is not a PNG | Delete it; Ink Lens writes a new one |
+| `cannot read URL: ERROR` | A sample, label or mesh file could not be fetched from the open-data bucket after three tries (network down, or a proxy refused) | Check the connection and retry; a missing file (HTTP 404) does not raise this, it is reported where the file is used |
 
 ## How it works
 
@@ -419,6 +424,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-21: rows for the positional arguments of `estimate`, `engine.py estimate` and `deploy.py`, and every refusal written whole, including `not a PNG`, `cannot read URL: ERROR` and the `demo --size` refusal (`bbecb37`).
 - 2026-10-20: merged in [#138](https://github.com/ChaseHendrick/Scrolls/pull/138) (`aee666a`); deployment held until Chase has Hugging Face PRO (his words in Released above).
 - 2026-10-20: design, preregistration and the gate (`3c2445e`); the engine, client, Space, tests and this page on
   branch `claude/ink-lens`.

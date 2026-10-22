@@ -193,11 +193,11 @@ The text view prints `kit stale: N checks, K need a look (NOW)`, one line per ch
 | `needs a list under "routines"` | `docs/routines.json` does not hold a `routines` list | Fix the registry ([routines](routines.md)) |
 | `needs a list under "freezes"` | A freeze registry exists but does not hold a `freezes` list (Scrolls-private only) | Fix the registry's shape |
 | `is not JSON:` | A registry does not parse | Fix the JSON |
-| `] needs old, new, since and source` | A rename entry lacks a field | Fill it in |
-| `].keep must be a list of phrases` | A rename's `keep` is not a list of non-empty strings | Write a list of phrases |
-| `].allow_formerly must be true or false` | A rename's `allow_formerly` is not a boolean | Write `true` or `false` |
+| `docs/renames.json renames[N] needs old, new, since and source` | A rename entry lacks a field | Fill it in |
+| `docs/renames.json renames[N].keep must be a list of phrases` | A rename's `keep` is not a list of non-empty strings | Write a list of phrases |
+| `docs/renames.json renames[N].allow_formerly must be true or false` | A rename's `allow_formerly` is not a boolean | Write `true` or `false` |
 | `kit stale: --now is not an ISO time:` | `--now` did not parse (exit 2) | Write it as `2026-10-18T20:00:00Z` |
-| `].since is not YYYY-MM-DD:` | A rename's date is in another format | Write YYYY-MM-DD |
+| `docs/renames.json renames[N].since is not YYYY-MM-DD: VALUE` | A rename's date is in another format | Write YYYY-MM-DD |
 | `skipped` with `git cannot say when rows changed` or `no branch refs in this clone` | No git, or a clone without refs | Run from a clone |
 | `skipped` with `this clone holds a single branch` | A CI checkout or a single-branch clone, where every other named branch would look deleted | Nothing in CI; locally, `git fetch origin` to get the other branches |
 | `skipped` with `no docs/compute/freezes.json` (or another input) | The input is not in this repository | Nothing; that check does not apply here |
@@ -205,6 +205,7 @@ The text view prints `kit stale: N checks, K need a look (NOW)`, one line per ch
 | `names branch B, which is merged into D, but the row says not merged or not pushed beside it` | The row still describes the branch as open | Write "merged (#PR)" in the clause that names it, or move the row on |
 | `says "OLD", renamed "NEW" on DATE` | A live page still uses a retired name | Write the new name on that line; a table row gives the new name alone |
 | `link to X does not resolve` | A live page links to a file git does not track | Fix the link, or commit the file |
+| `fail` on `approvals` with `cannot read docs/compute/modal-ledger.csv: REASON` | The Modal ledger exists but cannot be read or has a malformed row (Scrolls-private, where `kit.budget` exists; here the check is skipped) | Fix the row the reason names, or restore the file from git |
 
 ## How it works
 

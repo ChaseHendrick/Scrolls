@@ -127,7 +127,9 @@ Exit 0 means the operation completed; it never means a reading is verified. CLI 
 | `LineNet checkpoint alphabet is not Greek; no script relabeling or model substitution is allowed` | Input, configuration or engine output failed validation | The local checkpoint cannot be labeled Greek; select matching weights rather than relabeling the output |
 | `LineNet checkpoint alphabet must be a nonempty string` | Input, configuration or engine output failed validation | Malformed checkpoint metadata; use a valid LineNet file |
 | `Tesseract is not installed; install tesseract and its language packs explicitly` or `Tesseract could not start; install it and check PATH` | Input, configuration or engine output failed validation | Install it explicitly and check PATH |
-| `Tesseract exceeded its` or `Tesseract exited` | Input, configuration or engine output failed validation | A local process timed out or failed; inspect the error and choose a smaller crop or compatible pack |
+| `Tesseract exceeded its N second timeout` | One local Tesseract run took longer than the OCR timeout | Choose a smaller crop, or raise the timeout (at most 600 seconds) |
+| `Tesseract exited CODE: STDERR` (the last 2000 characters of its stderr) | The local Tesseract process failed | Read its stderr; check the language packs and `--tessdata` |
+| `Tesseract could not load every requested language pack: STDERR` | Tesseract exited zero but its stderr reports a failed language initialization; running only part of a requested language combination is not accepted | Install the missing packs, or request only installed ones |
 | `Tesseract did not report its data directory; give --tessdata explicitly` or `Tesseract did not report its version` | Input, configuration or engine output failed validation | The executable did not provide the expected metadata; check installation and `--tessdata` |
 | `Tesseract returned malformed TSV`, `Tesseract returned malformed word coordinates or confidence` or `Tesseract returned invalid word coordinates or confidence` | Input, configuration or engine output failed validation | The engine's output cannot be parsed safely; no result is accepted |
 | `OCR image must be a nonempty finite 2D numeric array` | Input, configuration or engine output failed validation | Correct input shape/type and non-finite pixels |
@@ -136,16 +138,21 @@ Exit 0 means the operation completed; it never means a reading is verified. CLI 
 | `OCR timeout must be positive and at most 600 seconds per invocation` | Input, configuration or engine output failed validation | Set a finite timeout from above zero to 600 seconds per invocation |
 | `OCR min confidence must be from 0 to 100` or `OCR seed must be a nonnegative integer` | Input, configuration or engine output failed validation | Correct the numeric option |
 | `OCR control image must have the same shape as the input` | Input, configuration or engine output failed validation | Supply a control on the same grid |
-| `Tesseract language packs not installed:` | Input, configuration or engine output failed validation | Install the named packs explicitly or point `--tessdata` at a directory containing them; no fallback occurs |
+| `Tesseract language packs not installed: CODES; installed: CODES; install explicitly, or use --tessdata` | A requested pack is not in Tesseract's data directory | Install the named packs explicitly or point `--tessdata` at a directory containing them; no fallback occurs |
 | `Tesseract uses local language packs, not LineNet weights; give tessdata instead` | Input, configuration or engine output failed validation | Use `tessdata`, not a Greek `.npz` |
 | `the LineNet Python API needs explicit weights` | Input, configuration or engine output failed validation | Give a model name, path or loaded network |
 | `Tesseract does not support these LineNet options` | Input, configuration or engine output failed validation | Remove the named options and use the OCR options documented above |
 | `OCR max-mpx must be positive and finite`, `OCR output folder does not exist` or `OCR image exceeds max-mpx; give a smaller crop (no implicit resampling)` | Input, configuration or engine output failed validation | Correct the output/budget or choose a smaller crop before reading |
+| `LineNet sessions do not use tessdata` | `ReaderSession` or `switch()` with the LineNet backend and a `tessdata` folder | Drop `tessdata`, or switch to the Tesseract backend |
+| `Tesseract sessions use language packs, not Greek weights or profiles` | A Tesseract session given `weights` or `weight_profile` | Drop them; select languages instead |
+| `change a ReaderSession model with switch(), not read() options` | `read()` given `backend`, `language`, `weights`, `weight_profile` or `tessdata` | Call `switch()` first; model changes are never inferred from a read |
+| `a selected Tesseract pack changed; call switch() to validate the replacement` | A language pack file's SHA-256 differs from the one recorded when the session selected it | Call `switch()` again so the new pack is checked and recorded |
+| `the selected Tesseract model or engine changed during the read` | The packs or the Tesseract version reported by the read differ from the active selection | Call `switch()` again; the result is not accepted |
+| `LineNet checkpoint failed its initialization check: REASON` | A replacement checkpoint could not run on the bounded blank band (REASON is the error, such as the two rows below) | Use a valid LineNet file; the previous selection stays active |
+| `invalid band size or letter size` | The checkpoint's band rows are not an integer from 1 to 4096, or its letter size is not above 0 and at most 512 px | The file is malformed; use a released checkpoint |
+| `invalid or non-finite logits` | The blank-band test read gave the wrong shape or non-finite values | The file is malformed or incompatible; use a released checkpoint |
 
-
-Additional session errors: `LineNet sessions do not use tessdata`, `Tesseract sessions use language packs, not Greek weights or profiles`, `change a ReaderSession model with switch(), not read() options`, `a selected Tesseract pack changed; call switch() to validate the replacement`, and `the selected Tesseract model or engine changed during the read`. Correct the selection explicitly; a failed replacement does not activate it.
-
-Checkpoint initialization errors include `LineNet checkpoint failed its initialization check:`, `invalid band size or letter size`, and `invalid or non-finite logits`. These mean a replacement cannot run even on the bounded blank band and is not activated. `Tesseract could not load every requested language pack:` also fails when Tesseract exits zero but reports a failed language initialization; running only part of a requested language combination is not accepted.
+A failed `switch()` never activates the replacement: the session keeps its previous working selection.
 
 ## How it works
 
@@ -171,6 +178,7 @@ Run `python -m unittest tests.test_reader_backends -v`. Tests cover script misma
 
 ## History
 
+- 2026-10-21: the session and checkpoint errors listed in prose are table rows with their causes, and the Tesseract timeout, exit and missing-pack messages are written whole (`bbecb37`).
 - 2026-10-17: working change against `869d621`, explicit per-call local backend selection and validated session switching, capability discovery, Latin/Greek/Hebrew pack discovery, word provenance and negative controls; no new trained model released.
 
 ## Related

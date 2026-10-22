@@ -13,7 +13,7 @@ Start with AGENTS.md (rules, commands, glossary), then the current state at the 
 - [docs/HANDOFF-archive.md](docs/HANDOFF-archive.md): older handoff sections, newest first; search, do not read whole
 - [docs/plans/roadmap.md](docs/plans/roadmap.md): pointer to the access-required private roadmap
 - [docs/results.json](docs/results.json): every benchmark number with settings and source (machine-readable)
-- [README.md](README.md): includes "Novel findings (Chase Hendrick)", only results not published elsewhere
+- [README.md](README.md): includes "Novel findings", only results not published elsewhere
 - [docs/releases.json](docs/releases.json): tools released from private work since the list began on 14 October 2026, newest first; the README's "Released tools" section is generated from it
 
 ## Research
@@ -28,12 +28,13 @@ Start with AGENTS.md (rules, commands, glossary), then the current state at the 
 
 ## Tools
 
+- [docs/tools/README.md](docs/tools/README.md): one page per tool, grouped by area, each with commands, options, failure modes and a "For agents" section; [docs/tools/index.json](docs/tools/index.json) is the same list for agents. `python -m kit.tooldocs list --json` lists every tool, `python -m kit.tooldocs show ID` prints a page and `python -m kit.tooldocs show ID --section "For agents"` prints one section
 - [kit/auc.py](kit/auc.py): pixel AUC against labels, reverse control, crop and edge options
 - [kit/gate.py](kit/gate.py): Gate A decision from committed and Mac scores
 - [scripts/mac-phase0.sh](scripts/mac-phase0.sh): the Phase 0 Mac queue in one command
 - [kit/hpscore.py](kit/hpscore.py): letter-scale score (48 um high-pass correlation) against labels
 - [scripts/umbilicus/README.md](scripts/umbilicus/README.md): scroll center (umbilicus) finder from CT, in the published umbilicus format, with its held-out error on the 13 published center lines; model output
-- [docs/letter-reader.md](docs/letter-reader.md): Greek letter reader for ink maps (`python -m kit letterread`), its model card and measured accuracy on PHerc. 1667; letter hypotheses, not readings
+- [docs/letter-reader.md](docs/letter-reader.md): Scroll Text Reader (formerly the Greek letter reader) for ink maps (`python -m kit letterread`), its model card and measured accuracy on PHerc. 1667; letter hypotheses, not readings
 - [kit/stackcheck.py](kit/stackcheck.py): `python -m kit stackcheck`, geometry checks of consecutive tifxyz segments against the umbilicus (order, coincident or oddly spaced pairs, missing sectors, skipped windings, turn overlaps, stack ends) with per-vertex masks; [PHerc0139 note](docs/logs/2026-10-14-pherc0139-segment-defects.md)
 - [kit/ensemble.py](kit/ensemble.py): average several maps of one surface (mean or rank mean)
 - [scripts/soup.py](scripts/soup.py): checkpoint soup within one training run
@@ -43,6 +44,13 @@ Start with AGENTS.md (rules, commands, glossary), then the current state at the 
 - [kit/layers.py](kit/layers.py): surface-volume zarr to layer TIFFs
 - [scripts/mac-w045.sh](scripts/mac-w045.sh): one-command labeled test of ink models on a Mac GPU
 - [docs/mac.md](docs/mac.md): Apple Silicon guide and timings
+- [docs/tools/uvgate.md](docs/tools/uvgate.md): `python -m kit uvgate`, fails a flattened sheet whose UV triangles overlap, cover too little area or (with `--mesh`) do not form one counterclockwise piece
+- [docs/tools/windconsistency.md](docs/tools/windconsistency.md): `python -m kit windconsistency`, passes only when a set of relative winding counts are integers and can all hold at once
+- [docs/tools/strokenet.md](docs/tools/strokenet.md): `python -m kit strokenet`, StrokeNet's text-likeness score for ink-map windows with rotation and IAAFT controls; experimental, model output
+- [docs/tools/starter.md](docs/tools/starter.md): `python -m kit start` (Scrolls Starter), a local introduction for newcomers: viewers, an offline controls exercise and first official tasks
+- [docs/tools/scroll-lens.md](docs/tools/scroll-lens.md): Scroll Lens, a Hugging Face Space (source in `spaces/scroll-lens/`) that runs the organizers' 3D DINO, ink and surface models on a cube of a public scan, with an API and MCP tools
+- [docs/tools/unroll.md](docs/tools/unroll.md): Unroll, the browser 3D viewer that virtually unrolls traced windings with X-ray and ink layers and scores ink maps (Ink Bench); guide: [docs/unroll-space.md](docs/unroll-space.md)
+- [docs/tools/ink-lens.md](docs/tools/ink-lens.md): Ink Lens (`spaces/ink-lens/`), control-checked ink maps of one region of a VC3D segment, written back as VC3D files; experimental
 
 ## Rules
 
