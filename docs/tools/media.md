@@ -229,16 +229,17 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `actions must be a JSON list of steps` | `--actions` holds an object or a string | Wrap the steps in a list |
 | `no such page:` | The local HTML file is not there | Fix the path, or give a URL |
-| `capture_web:` | The prefix of every `capture_web.py` error, followed by the reason | Read the rest of the line |
-| `: unknown or empty step` | A step with a key outside `STEP_KEYS`, or `{}` | Use the steps listed under Commands and options |
-| `: every goes with frames` | `every` without `frames` | Add `"frames": N` to the step |
-| `clip element` | The `clip` selector matched nothing visible | Fix the selector, or clip to `null` |
+| `capture_web: MESSAGE` on stderr, exit code 2 | The prefix of every `capture_web.py` refusal (a `CaptureError`, `OSError` or `ValueError`); MESSAGE is one of the rows here | Read MESSAGE and find its row |
+| `capture_web: ERRORTYPE: FIRST LINE` on stderr, exit code 1 | Playwright itself failed: a selector that never appears, a page that will not load, or a timeout (`--timeout`) | Check the selector and the page in a browser; raise `--timeout` for a slow page |
+| `step N: unknown or empty step STEP` | A step with a key outside `STEP_KEYS`, or `{}` | Use the steps listed under Commands and options |
+| `step N: every goes with frames` | `every` without `frames` | Add `"frames": N` to the step |
+| `clip element 'SELECTOR' has no box` | The `clip` selector matched nothing visible | Fix the selector, or clip to `null` |
 | `hold needs an earlier frame` | `hold` before any `frame` | Take a frame first |
 | `the playwright package is missing: pip install playwright (with PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 where a Chromium is installed)` | No `playwright` module | Install it as the message says; never run `playwright install` where a browser exists |
 | `no Chromium could start (give --browser PATH):` | Playwright's own Chromium is a different version and no system Chromium was found | Give `--browser` or set `CHROMIUM_PATH` |
-| `did not answer within` | A `goto` URL refused connections for 60 s | Start the server, or check its port |
+| `URL did not answer within 60 s: ERROR` | A `goto` URL refused connections for 60 s | Start the server, or check its port |
 | `the media record must be a JSON object` | `--meta` or a recipe is not an object | Fix the JSON |
-| `label must be one of` | The label is not Concept illustration, Real data render, Model output or Synthetic demo | Use one of the four |
+| `label must be one of Concept illustration, Real data render, Model output, Synthetic demo, not 'LABEL'` | The label is not Concept illustration, Real data render, Model output or Synthetic demo | Use one of the four |
 | `caption must start with its label,` | The caption does not begin with the label | Start it with the label |
 | `LABEL may not be written under docs/assets/ (the public media rule: no model output of any scroll); write it under Scrolls-private's docs/media/ instead` | Model output or an unknown label aimed at a `docs/assets/` folder | Write model output in Scrolls-private's `docs/media/` |
 | `this Real data render may not be written under docs/assets/ (the public media rule, docs/media/README.md): ` | A Real data render that breaks the public media rule; the rest of the line names each problem, such as `is prize-eligible`, `draws held-out labels` or a missing `data.` field | Keep real-data pictures of prize-eligible scrolls in Scrolls-private's `docs/media/`; otherwise fix the record ([`docs/media/README.md`](../media/README.md)) |
@@ -254,9 +255,9 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | `a Real data render is licensed` | Its license is not the scan data's | Set `license` to `CC BY-NC 4.0` |
 | `has a long dash (house style: none)` | U+2014 or U+2013 in a text field | Use a comma, a colon or "to" |
 | `no such frames folder or video:` | `src` does not exist | Fix the path |
-| `MB; shorten the clip or lower its size` | The MP4 stayed over its limit at CRF + 9 | Shorten the clip or give `--mp4-width` |
-| `MB after every step; shorten the clip` | The GIF stayed over its limit at 70 % width, 8 fps and lossy + 80 | Shorten the clip or lower `--gif-width` |
-| `is not on PATH; install it (macOS: brew install` | ffmpeg or gifsicle is missing | Install it |
+| `OUT stays over MAX MB; shorten the clip or lower its size` | The MP4 stayed over its limit at CRF + 9 | Shorten the clip or give `--mp4-width` |
+| `OUT stays over MAX MB after every step; shorten the clip` | The GIF stayed over its limit at 70 % width, 8 fps and lossy + 80 | Shorten the clip or lower `--gif-width` |
+| `NAME is not on PATH; install it (macOS: brew install NAME)` | ffmpeg or gifsicle is missing | Install it |
 | `no PNG frames in` | The frames folder has no PNG | Capture first |
 | `frame names must end in a number, such as frame-00000.png, not` | A frame name without a trailing number | Rename the frames |
 | `give --mp4, --gif or both` | Neither output was asked for | Add one |

@@ -599,67 +599,67 @@
     {
      "name": "Commands and options",
      "start_line": 76,
-     "end_line": 153,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 154,
-     "end_line": 177,
+     "start_line": 160,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 178,
-     "end_line": 181,
+     "start_line": 184,
+     "end_line": 187,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 182,
-     "end_line": 192,
+     "start_line": 188,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 193,
-     "end_line": 206,
+     "start_line": 199,
+     "end_line": 212,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 207,
-     "end_line": 216,
+     "start_line": 213,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 217,
-     "end_line": 220,
+     "start_line": 223,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 221,
-     "end_line": 230,
+     "start_line": 227,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 231,
-     "end_line": 238,
+     "start_line": 237,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 239,
-     "end_line": 248,
+     "start_line": 245,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 249,
-     "end_line": 255,
+     "start_line": 256,
+     "end_line": 262,
      "applicable": true
     }
    ]
@@ -2459,43 +2459,43 @@
     {
      "name": "Failure modes",
      "start_line": 174,
-     "end_line": 209,
+     "end_line": 210,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 210,
-     "end_line": 244,
+     "start_line": 211,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 245,
-     "end_line": 255,
+     "start_line": 246,
+     "end_line": 256,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 256,
-     "end_line": 270,
+     "start_line": 257,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 271,
-     "end_line": 286,
+     "start_line": 272,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 287,
-     "end_line": 291,
+     "start_line": 288,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 292,
-     "end_line": 298,
+     "start_line": 294,
+     "end_line": 300,
      "applicable": true
     }
    ]
@@ -2986,43 +2986,43 @@
     {
      "name": "Failure modes",
      "start_line": 262,
-     "end_line": 356,
+     "end_line": 361,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 357,
-     "end_line": 386,
+     "start_line": 362,
+     "end_line": 391,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 387,
-     "end_line": 394,
+     "start_line": 392,
+     "end_line": 399,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 395,
-     "end_line": 408,
+     "start_line": 400,
+     "end_line": 413,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 409,
-     "end_line": 419,
+     "start_line": 414,
+     "end_line": 424,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 420,
-     "end_line": 425,
+     "start_line": 425,
+     "end_line": 431,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 426,
-     "end_line": 433,
+     "start_line": 432,
+     "end_line": 439,
      "applicable": true
     }
    ]
@@ -4524,43 +4524,43 @@
     {
      "name": "Failure modes",
      "start_line": 176,
-     "end_line": 197,
+     "end_line": 198,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 198,
-     "end_line": 212,
+     "start_line": 199,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 213,
-     "end_line": 226,
+     "start_line": 214,
+     "end_line": 227,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 227,
-     "end_line": 236,
+     "start_line": 228,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 237,
-     "end_line": 244,
+     "start_line": 238,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 245,
-     "end_line": 259,
+     "start_line": 246,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 260,
-     "end_line": 269,
+     "start_line": 262,
+     "end_line": 271,
      "applicable": true
     }
    ]
@@ -4672,43 +4672,43 @@
     {
      "name": "Failure modes",
      "start_line": 225,
-     "end_line": 272,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 273,
-     "end_line": 295,
+     "start_line": 274,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 296,
-     "end_line": 309,
+     "start_line": 297,
+     "end_line": 310,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 310,
-     "end_line": 319,
+     "start_line": 311,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 320,
-     "end_line": 323,
+     "start_line": 321,
+     "end_line": 324,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 324,
-     "end_line": 329,
+     "start_line": 325,
+     "end_line": 330,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 330,
-     "end_line": 335,
+     "start_line": 331,
+     "end_line": 336,
      "applicable": true
     }
    ]
@@ -5319,43 +5319,43 @@
     {
      "name": "Failure modes",
      "start_line": 223,
-     "end_line": 239,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 240,
-     "end_line": 253,
+     "start_line": 241,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 254,
-     "end_line": 271,
+     "start_line": 255,
+     "end_line": 272,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 272,
-     "end_line": 281,
+     "start_line": 273,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 282,
-     "end_line": 289,
+     "start_line": 283,
+     "end_line": 290,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 290,
-     "end_line": 295,
+     "start_line": 291,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 296,
-     "end_line": 303,
+     "start_line": 298,
+     "end_line": 305,
      "applicable": true
     }
    ]
@@ -6344,43 +6344,43 @@
     {
      "name": "Failure modes",
      "start_line": 121,
-     "end_line": 149,
+     "end_line": 156,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 150,
-     "end_line": 153,
+     "start_line": 157,
+     "end_line": 160,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 154,
-     "end_line": 157,
+     "start_line": 161,
+     "end_line": 164,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 158,
-     "end_line": 167,
+     "start_line": 165,
+     "end_line": 174,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 168,
-     "end_line": 171,
+     "start_line": 175,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 172,
-     "end_line": 175,
+     "start_line": 179,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 176,
-     "end_line": 179,
+     "start_line": 184,
+     "end_line": 187,
      "applicable": true
     }
    ]
@@ -7621,67 +7621,67 @@
     {
      "name": "Commands and options",
      "start_line": 95,
-     "end_line": 151,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 152,
-     "end_line": 178,
+     "start_line": 158,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 179,
-     "end_line": 185,
+     "start_line": 185,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 186,
-     "end_line": 205,
+     "start_line": 192,
+     "end_line": 211,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 206,
-     "end_line": 261,
+     "start_line": 212,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 262,
-     "end_line": 275,
+     "start_line": 269,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 276,
-     "end_line": 279,
+     "start_line": 283,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 280,
-     "end_line": 289,
+     "start_line": 287,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 290,
-     "end_line": 293,
+     "start_line": 297,
+     "end_line": 300,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 294,
-     "end_line": 297,
+     "start_line": 301,
+     "end_line": 304,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 298,
-     "end_line": 303,
+     "start_line": 305,
+     "end_line": 310,
      "applicable": true
     }
    ]
@@ -8114,43 +8114,43 @@
     {
      "name": "Failure modes",
      "start_line": 187,
-     "end_line": 208,
+     "end_line": 209,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 209,
-     "end_line": 219,
+     "start_line": 210,
+     "end_line": 220,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 220,
-     "end_line": 223,
+     "start_line": 221,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 224,
-     "end_line": 233,
+     "start_line": 225,
+     "end_line": 234,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 234,
-     "end_line": 241,
+     "start_line": 235,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 242,
-     "end_line": 245,
+     "start_line": 243,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 246,
-     "end_line": 252,
+     "start_line": 247,
+     "end_line": 253,
      "applicable": true
     }
    ]
@@ -8321,7 +8321,7 @@
    "id": "strokenet",
    "name": "strokenet",
    "tagline": "score how text-like an ink map's windows look, with rotation and IAAFT controls",
-   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organizers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, and reports rotation and IAAFT controls with every result; `scripts/strokenet/` holds its data, training and preregistered test.",
+   "summary": "`python -m kit strokenet` scores 6.1 mm windows of an organizers' ink map with StrokeNet, a small CNN trained on PHerc. Paris 4, with rotation and IAAFT controls, or with `--two-density` a two-number ink density score; `scripts/strokenet/` holds the training and tests.",
    "status": "Experimental",
    "kind": [
     "kit command",
@@ -8333,6 +8333,7 @@
    "area": "Scoring and controls",
    "commands": [
     "python -m kit strokenet",
+    "python -m kit strokenet --two-density",
     "python scripts/strokenet/data.py",
     "python scripts/strokenet/train.py",
     "python scripts/strokenet/pipeline.py",
@@ -8357,7 +8358,8 @@
     {
      "path": "kit/cli.py",
      "symbols": [
-      "cmd_strokenet"
+      "cmd_strokenet",
+      "cmd_strokenet_two_density"
      ]
     }
    ],
@@ -8372,8 +8374,8 @@
     "text": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score"
    },
    "checked": {
-    "date": "2026-10-18",
-    "commit": "4a970bd"
+    "date": "2026-10-22",
+    "commit": "044a9ef"
    },
    "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
    "fields": {
@@ -8381,109 +8383,115 @@
     "Status": "Experimental",
     "Kind": "kit command, kit module, script folder, model, data",
     "Area": "Scoring and controls",
-    "Run": "`python -m kit strokenet`, `from kit import strokenet`, `python scripts/strokenet/data.py`, `python scripts/strokenet/train.py`, `python scripts/strokenet/pipeline.py`, `python scripts/strokenet/evaluate.py`",
-    "Code": "`kit/strokenet.py`, `kit/data/strokenet-weights.json`, `scripts/strokenet/`, `kit/cli.py` (`cmd_strokenet`)",
+    "Run": "`python -m kit strokenet`, `python -m kit strokenet --two-density` (the two-density score, no network), `from kit import strokenet`, `python scripts/strokenet/data.py`, `python scripts/strokenet/train.py`, `python scripts/strokenet/pipeline.py`, `python scripts/strokenet/evaluate.py`",
+    "Code": "`kit/strokenet.py`, `kit/data/strokenet-weights.json`, `scripts/strokenet/`, `kit/cli.py` (`cmd_strokenet`, `cmd_strokenet_two_density`)",
     "Tests": "`tests/test_strokenet.py`, `tests/test_strokenet_pipeline.py`, `tests/test_strokenet_stats.py`, `tests/test_gridpilot.py`",
-    "Needs": "Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`)",
-    "Runs on": "Scoring runs on any CPU. A synthetic 300 x 400 px map at 0.048 mm (43 windows) with a small random test network took 4.4 s (measured 2026-10-16, 4-core cloud container); the released network on a whole segment: Not measured. Training runs on a GPU: each run of the preregistered sweep, finals and controls took 666 to 2,356 s on CUDA, the released configuration 1,506 s (`train_wall_s` in [the evidence's run histories](../evidence/2026-10-14-strokenet/README.md))",
-    "Network": "`kit strokenet` with a weights file: None. With a released model name not yet in the cache: one download of the weights from github.com (the `url` in `kit/data/strokenet-weights.json`). `data.py fetch`: data.aws.ash2txt.org, one TIFF of about 1.3 GB per segment, 27 segments. `gridpilot.py`: HTTP range reads of a surface volume's chunks at a base URL its caller gives (its cloud runner is not in this repository)",
-    "Writes": "`kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file",
+    "Needs": "Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images and for `--png`. From a clone, `python -m pip install -e \".[all]\"` brings all of them; a plain `pip install .` brings none, and the command then names the packages to install. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`)",
+    "Runs on": "Scoring runs on any CPU. A synthetic 300 x 400 px map at 0.048 mm (43 windows) with a small random test network took 4.4 s (measured 2026-10-16, 4-core cloud container); the released network on a whole segment: Not measured. `--two-density` on a synthetic 700 x 760 px map at 0.009362 mm (208 labels) took 0.26 s (measured 2026-10-22, same kind of container). Training runs on a GPU: each run of the preregistered sweep, finals and controls took 666 to 2,356 s on CUDA, the released configuration 1,506 s (`train_wall_s` in [the evidence's run histories](../evidence/2026-10-14-strokenet/README.md))",
+    "Network": "`kit strokenet` with a weights file, or with `--two-density`: None. With a released model name not yet in the cache: one download of the weights from github.com (the `url` in `kit/data/strokenet-weights.json`). `data.py fetch`: data.aws.ash2txt.org, one TIFF of about 1.3 GB per segment, 27 segments. `gridpilot.py`: HTTP range reads of a surface volume's chunks at a base URL its caller gives (its cloud runner is not in this repository)",
+    "Writes": "`kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid, `--png` a picture of the map with each window's score painted over it (with `--two-density`, `--out` and `--grid` write that score's JSON and label grid; `--png` is refused); the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file",
     "Go-ahead": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score",
-    "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's \"Released tools\" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry",
-    "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits)",
+    "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's \"Released tools\" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry; `--two-density` added 2026-10-22",
+    "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits; [the two-density score](../strokenet.md#the-two-density-score))",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
-    "Checked": "2026-10-18 against commit `4a970bd`"
+    "Checked": "2026-10-22 against commit `044a9ef` (the two-density score, `--two-density`, `--mask` and `--label-stride`)"
    },
    "page": "docs/tools/strokenet.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 24,
-     "end_line": 47,
+     "end_line": 49,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 48,
-     "end_line": 61,
+     "start_line": 50,
+     "end_line": 65,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 62,
-     "end_line": 86,
+     "start_line": 66,
+     "end_line": 91,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 87,
-     "end_line": 96,
+     "start_line": 92,
+     "end_line": 101,
+     "applicable": true
+    },
+    {
+     "name": "The two-density score (`--two-density`)",
+     "start_line": 102,
+     "end_line": 137,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 97,
-     "end_line": 231,
+     "start_line": 138,
+     "end_line": 277,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 232,
-     "end_line": 260,
+     "start_line": 278,
+     "end_line": 322,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 261,
-     "end_line": 271,
+     "start_line": 323,
+     "end_line": 333,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 272,
-     "end_line": 306,
+     "start_line": 334,
+     "end_line": 388,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 307,
-     "end_line": 373,
+     "start_line": 389,
+     "end_line": 460,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 374,
-     "end_line": 394,
+     "start_line": 461,
+     "end_line": 489,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 395,
-     "end_line": 400,
+     "start_line": 490,
+     "end_line": 496,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 401,
-     "end_line": 410,
+     "start_line": 497,
+     "end_line": 506,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 411,
-     "end_line": 418,
+     "start_line": 507,
+     "end_line": 514,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 419,
-     "end_line": 425,
+     "start_line": 515,
+     "end_line": 522,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 426,
-     "end_line": 434,
+     "start_line": 523,
+     "end_line": 532,
      "applicable": true
     }
    ]
@@ -8620,43 +8628,43 @@
     {
      "name": "Failure modes",
      "start_line": 265,
-     "end_line": 319,
+     "end_line": 320,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 320,
-     "end_line": 343,
+     "start_line": 321,
+     "end_line": 344,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 344,
-     "end_line": 351,
+     "start_line": 345,
+     "end_line": 352,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 352,
-     "end_line": 361,
+     "start_line": 353,
+     "end_line": 362,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 362,
-     "end_line": 369,
+     "start_line": 363,
+     "end_line": 370,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 370,
-     "end_line": 377,
+     "start_line": 371,
+     "end_line": 378,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 378,
-     "end_line": 386,
+     "start_line": 379,
+     "end_line": 387,
      "applicable": true
     }
    ]
@@ -8752,73 +8760,73 @@
     {
      "name": "Checks and controls",
      "start_line": 73,
-     "end_line": 84,
+     "end_line": 85,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 85,
-     "end_line": 172,
+     "start_line": 86,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 173,
-     "end_line": 200,
+     "start_line": 174,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 201,
-     "end_line": 212,
+     "start_line": 202,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 213,
-     "end_line": 251,
+     "start_line": 214,
+     "end_line": 252,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 252,
-     "end_line": 328,
+     "start_line": 253,
+     "end_line": 331,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 329,
-     "end_line": 341,
+     "start_line": 332,
+     "end_line": 344,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 342,
-     "end_line": 352,
+     "start_line": 345,
+     "end_line": 355,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 353,
-     "end_line": 362,
+     "start_line": 356,
+     "end_line": 365,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 363,
-     "end_line": 370,
+     "start_line": 366,
+     "end_line": 373,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 371,
-     "end_line": 378,
+     "start_line": 374,
+     "end_line": 382,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 379,
-     "end_line": 386,
+     "start_line": 383,
+     "end_line": 390,
      "applicable": true
     }
    ]
@@ -8856,8 +8864,8 @@
     "text": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights"
    },
    "checked": {
-    "date": "2026-10-20",
-    "commit": "518556f"
+    "date": "2026-10-21",
+    "commit": "c65e8a2"
    },
    "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
    "fields": {
@@ -8873,11 +8881,11 @@
     "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
     "Writes": "`predict.py`: `DATA/SCROLL.npz` (slices, when missing), `OUT/SCROLL_umbilicus.json` (or `OUT/SCROLL/umbilicus.json` with `--vc3d-name`) and `OUT/SCROLL_predict.json`. `slices.py extract`: `OUT/SCROLL.npz`. `pipeline.py`: `OUT/JOB.pt` and `OUT/JOB.json` (job), `OUT/result.json` and `OUT/umbilicus/` (collect), `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (trim). `refine.py`: `refine_NAME.pt` and `.json` (chain), `refine_cv_fold<k>.pt` and `refine_cv.json` (cv), `result.json` and `umbilicus/` (chain-collect). `endcheck.py`: its cache (default `work/umbilicus/endcheck-cache`), the `--out` JSON, `DST/SCROLL_umbilicus.json` or `DST/SCROLL/umbilicus.json` (files). `ctcheck.py`: `OUT/SCROLL_ct_check.png`, `OUT/SCROLL/SCROLL_zZ.png`, `OUT/summary.json` and `OUT/.cache/`",
     "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
-    "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's \"Released tools\" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository)",
+    "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's \"Released tools\" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository); center lines for 11 scrolls with their end-check status are the GitHub release `umbilicus-lines-v1` ([README](../evidence/2026-10-21-umbilicus-lines/README.md))",
     "Release id": "`umbilicus-finder`",
     "Guide": "[Scroll center finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses)",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
-    "Checked": "2026-10-20 against commit `518556f`"
+    "Checked": "2026-10-21 against commit `c65e8a2`"
    },
    "page": "docs/tools/umbilicus.md",
    "sections": [
@@ -8902,73 +8910,73 @@
     {
      "name": "Checks and controls",
      "start_line": 90,
-     "end_line": 100,
+     "end_line": 101,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 101,
-     "end_line": 242,
+     "start_line": 102,
+     "end_line": 243,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 243,
-     "end_line": 264,
+     "start_line": 244,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 265,
-     "end_line": 274,
+     "start_line": 266,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 275,
-     "end_line": 308,
+     "start_line": 276,
+     "end_line": 309,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 309,
-     "end_line": 346,
+     "start_line": 310,
+     "end_line": 347,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 347,
-     "end_line": 358,
+     "start_line": 348,
+     "end_line": 359,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 359,
-     "end_line": 366,
+     "start_line": 360,
+     "end_line": 367,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 367,
-     "end_line": 376,
+     "start_line": 368,
+     "end_line": 377,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 377,
-     "end_line": 384,
+     "start_line": 378,
+     "end_line": 385,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 385,
-     "end_line": 392,
+     "start_line": 386,
+     "end_line": 394,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 393,
-     "end_line": 399,
+     "start_line": 395,
+     "end_line": 402,
      "applicable": true
     }
    ]

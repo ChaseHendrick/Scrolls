@@ -582,12 +582,50 @@ class StrokeNetTest(unittest.TestCase):
         self.assertIn("carry a small excess of high-frequency power", doc)
         self.assertNotIn("isolates", doc)
 
+    def test_unit_float_map_is_scaled_and_heatmap_written(self):
+        net = N.StrokeNet(self.path)
+        rng = np.random.default_rng(1)
+        u8 = rng.integers(20, 255, (300, 300)).astype(np.uint8)
+        res_u8, grid_u8 = N.analyze(u8, N.PIXEL_MM, net, sample=2, iaaft_iters=2, with_grid=True)
+        res_f, grid_f, work = N.analyze(u8.astype(np.float32) / 255.0, N.PIXEL_MM, net, sample=2, iaaft_iters=2,
+                                        with_grid=True, with_working=True)
+        self.assertTrue(res_f["scaled_from_0_1"])
+        self.assertFalse(res_u8["scaled_from_0_1"])
+        self.assertEqual(res_f["map"]["learned_n"], res_u8["map"]["learned_n"])
+        np.testing.assert_allclose(grid_f, grid_u8, rtol=1e-3, atol=1e-3, equal_nan=True)
+        self.assertIn("scaled to the 0 to 255 scale", N.text_summary(res_f))
+        self.assertEqual(res_f["scaled_from"], "0-1")
+        self.assertIsNone(res_u8["scaled_from"])
+        self.assertIsNone(N.unit_scale(np.full((4, 4), 2.0, np.float32), np.float32)[1])
+        self.assertIsNone(N.unit_scale(np.ones((4, 4), np.float32), np.uint8)[1])
+        self.assertIsNone(N.unit_scale(np.full((4, 4), -1.0, np.float32), np.float32)[1])
+        self.assertIsNone(N.unit_scale(np.full((4, 4), 70000.0, np.float32), np.float32)[1])
+        # a 16-bit map (as kit ensemble writes) scores like the same map on 0 to 255
+        u16 = (u8.astype(np.uint32) * 257).astype(np.uint16)
+        res_16, grid_16 = N.analyze(u16, N.PIXEL_MM, net, sample=2, iaaft_iters=2, with_grid=True)
+        self.assertEqual(res_16["scaled_from"], "0-65535")
+        self.assertFalse(res_16["scaled_from_0_1"])
+        self.assertEqual(res_16["map"]["learned_n"], res_u8["map"]["learned_n"])
+        np.testing.assert_allclose(grid_16, grid_u8, rtol=1e-3, atol=1e-3, equal_nan=True)
+        self.assertIn("lie in 0 to 65535", N.text_summary(res_16))
+        self.assertEqual(N.unit_scale(np.full((4, 4), 300.0, np.float32), np.float32)[1], "0-65535")
+        try:
+            import PIL  # noqa: F401
+        except ImportError:
+            return
+        with tempfile.TemporaryDirectory() as d:
+            out = N.heatmap(work, grid_f, res_f["window_y_px"], res_f["window_x_px"], Path(d) / "h.png")
+            from PIL import Image
+            with Image.open(out) as im:
+                self.assertEqual(im.size, (work.shape[1], work.shape[0]))
+                self.assertEqual(im.mode, "RGB")
+
     def test_orientation_hint_ties_and_empty_maps(self):
         net = N.StrokeNet(self.path)
         flat = np.full((200, 200), 100, np.uint8)              # every window and its turned copy score the same
         res = N.analyze(flat, N.PIXEL_MM, net, sample=2, iaaft_iters=2)
         self.assertEqual(res["orientation_hint"], "no difference between the map as given and turned by 90 degrees")
-        empty = N.analyze(np.ones((200, 200), np.float32), N.PIXEL_MM, net, sample=4)
+        empty = N.analyze(np.full((200, 200), 2.0, np.float32), N.PIXEL_MM, net, sample=4)   # under 3 on 0 to 255
         self.assertEqual((empty["map"]["learned_n"], empty["controls"]["windows"]), (0, 0))
         self.assertEqual(empty["orientation_hint"], "no window was scored")
         self.assertEqual(empty["top_windows"], [])
@@ -915,6 +953,81 @@ class FastPathTest(unittest.TestCase):
                 want = reference(windows, np.random.default_rng(3), iters)
                 self.assertSameBits(got, want)
 
+
+
+class TwoDensityTest(unittest.TestCase):
+    """The two-density score (docs/strokenet.md, "The two-density score")."""
+
+    def setUp(self):
+        if np is None:
+            self.skipTest("needs numpy")
+
+    def test_window_densities_match_brute_force(self):
+        rng = np.random.default_rng(0)
+        pooled = rng.integers(4, 256, size=(90, 100)).astype(np.uint8)
+        pos = N.label_positions(pooled.shape, 6)
+        d48, d128 = N.window_densities(pooled, pos)
+        padded = np.pad(pooled.astype(np.float64), 40, constant_values=4)
+        for i in (0, len(pos) // 2, len(pos) - 1):
+            y, x = pos[i]
+            self.assertAlmostEqual(d48[i], pooled[y:y + 48, x:x + 48].mean() / 255.0, places=12)
+            self.assertAlmostEqual(d128[i], padded[y:y + 128, x:x + 128].mean() / 255.0, places=12)
+
+    def test_score_is_frozen_weighted_z_within_map(self):
+        rng = np.random.default_rng(1)
+        d48, d128 = rng.uniform(0.05, 0.9, 50), rng.uniform(0.05, 0.9, 50)
+        z = lambda v: (v - v.mean()) / v.std()
+        lg = lambda d: np.log(d / (1 - d))
+        np.testing.assert_allclose(N.two_density(d48, d128), z(lg(d48)) + 0.25 * z(lg(d128)), atol=1e-12)
+        self.assertEqual(N.TD_WEIGHTS, (1.0, 0.25))
+        self.assertTrue((N.zscore(np.full(5, 0.3)) == 0).all())
+
+    def test_matches_the_tested_run(self):
+        """Values from the preregistered run's own code (not published), frozen 22 Oct 2026, on this synthetic map
+        at PHerc0500P2's 9.362 um."""
+        rng = np.random.default_rng(20261022)
+        a = rng.uniform(0, 1, size=(700, 760)).astype(np.float32)
+        a[a < 0.3] = 0
+        mask = np.ones(a.shape, bool)
+        mask[:, :250] = False
+        res, grid = N.two_density_analyze(a, 0.009362, mask=mask, with_grid=True)
+        self.assertEqual((res["pooled_k"], res["labels_scored"]), (5, 208))
+        self.assertEqual((res["label_y_px"][:3], res["label_x_px"][:3]), ([0, 0, 0], [150, 180, 210]))
+        np.testing.assert_allclose(res["s"][:4], [-0.4202603202, -0.4960582821, -0.5256798415, -0.3205042693],
+                                   atol=1e-9)
+        self.assertAlmostEqual(res["s"][-1], -0.3540342039, places=9)
+        self.assertAlmostEqual(float(np.std(res["s"])), 0.9338532284, places=9)
+        self.assertEqual(int(np.isfinite(grid).sum()), 208)
+
+    def test_mask_skips_labels_under_half_papyrus(self):
+        pooled = np.full((60, 120), 100, np.uint8)
+        pap = np.zeros(pooled.shape, np.float32)
+        pap[:, 60:] = 1
+        pos = N.label_positions(pooled.shape, 6, papyrus=pap)
+        self.assertTrue(len(pos) > 0)
+        self.assertTrue((pos[:, 1] >= 36).all())        # 36: 24 of 48 columns on papyrus
+        with self.assertRaises(ValueError):
+            N.label_positions(pooled.shape, 0)
+
+    def test_cli(self):
+        rng = np.random.default_rng(2)
+        with tempfile.TemporaryDirectory() as d:
+            np.save(Path(d) / "m.npy", rng.uniform(0, 1, (400, 420)).astype(np.float32))
+            out = io.StringIO()
+            with contextlib.redirect_stdout(out):
+                rc = cli.main(["strokenet", str(Path(d) / "m.npy"), "--pixel-mm", "0.0048", "--two-density",
+                               "--grid", str(Path(d) / "g"), "--json"])
+            self.assertEqual(rc, 0)
+            res = json.loads(out.getvalue())
+            self.assertEqual(res["score"], "two-density")
+            self.assertEqual(res["pooled_k"], 10)
+            g = np.load(Path(d) / "g.npy")
+            self.assertEqual(int(np.isfinite(g).sum()), res["labels_scored"])
+            err = io.StringIO()
+            with contextlib.redirect_stderr(err):
+                rc = cli.main(["strokenet", str(Path(d) / "m.npy"), "--pixel-mm", "0.0048", "--two-density",
+                               "--png", str(Path(d) / "p.png")])
+            self.assertEqual(rc, 2)
 
 if __name__ == "__main__":
     unittest.main()

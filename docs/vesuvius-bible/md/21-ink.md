@@ -1,10 +1,12 @@
+<a id="ch-ink"></a>
+
 # Ink Detection {#ch-ink}
 
 > **Chapter summary.** Ink detection is "signal recovery, not reading": a model looks at a small patch of a surface volume and predicts, per pixel, the probability of ink. Labels began with fragments photographed in infrared, grew through crackle annotation and the 2023 TimeSformer models, and now come from conservative iterative pseudo-labeling. In 2026 the main families are scroll-specific 2.4 µm models, cross-scroll hybrid 3D to 2D models at about 9 µm (ink_9um), community models such as reader-v2 and Hecate, and native 3D ink segmentation. Small windows, held-out validation and papyrological review are the safeguards against hallucination.
 
 ## The problem
 
-"The carbon ink and the carbonized papyrus have almost the same density, so in an X-ray scan the ink is nearly invisible to the naked eye." On a detached fragment, letters are faint in color photographs, "crisp and legible" at 1000 nm infrared, and nearly gone in CT [VC-InkTutorial]. The remaining signal varies: in PHerc. Paris 4 ink "often shows up as a crackle, a texture like cracked mud, raised slightly above the papyrus"; elsewhere "the signal is more subtle and heterogeneous" [VC-InkTutorial]. The master plan noted in 2025 that the signal amplified in the first two readable scrolls "corresponds either to large morphological cracks or to brighter spots under X-ray, indicating a higher concentration of metals", and that models trained on those cues did not perform well on other scrolls [VC-MasterPlan]. [Chapter 5](#ch-inks) covers the physics and chemistry.
+"The carbon ink and the carbonized papyrus have almost the same density, so in an X-ray scan the ink is nearly invisible to the naked eye." On a detached fragment, letters are faint in color photographs, "crisp and legible" at 1000 nm infrared, and nearly gone in CT [VC-InkTutorial]. The remaining signal varies: in PHerc. Paris 4 ink "often shows up as a crackle, a texture like cracked mud, raised slightly above the papyrus"; elsewhere "the signal is more subtle and heterogeneous" [VC-InkTutorial]. The master plan noted in 2025 that the signal amplified in the first two readable scrolls "corresponds either to large morphological cracks or to brighter spots under X-ray, indicating a higher concentration of metals", and that models trained on those cues did not perform well on other scrolls [VC-MasterPlan]. [Chapter 5](05-inks.md#ch-inks) covers the physics and chemistry.
 
 Two tasks are distinguished [VC-OpenProblems2026]:
 
@@ -51,7 +53,7 @@ The tutorial's 2.5D configuration uses `mode: "flat"`, a `vesuvius_unet` with ma
 
 ## Fragments as ground truth
 
-Fragments exist because early unrolling attempts broke scrolls ([Chapter 3](#ch-unrolling)); their exposed ink can be photographed in infrared and CT-scanned, which gives a training pair: "input: CT data around the papyrus surface; label: visible ink from the photograph" [VC-OpenProblems2026]. The limitation is that "fragment labels are 2D: the photograph tells us where ink appears on the exposed surface, but not exactly where the ink signal sits in depth" [VC-OpenProblems2026]. The 2025 generalist model trained on PHerc. 500P2, 343P and 9B, registered with infrared images [VC-MultipleScrolls] [VC-Scroll4Letters].
+Fragments exist because early unrolling attempts broke scrolls ([Chapter 3](03-unrolling.md#ch-unrolling)); their exposed ink can be photographed in infrared and CT-scanned, which gives a training pair: "input: CT data around the papyrus surface; label: visible ink from the photograph" [VC-OpenProblems2026]. The limitation is that "fragment labels are 2D: the photograph tells us where ink appears on the exposed surface, but not exactly where the ink signal sits in depth" [VC-OpenProblems2026]. The 2025 generalist model trained on PHerc. 500P2, 343P and 9B, registered with infrared images [VC-MultipleScrolls] [VC-Scroll4Letters].
 
 ## Iterative pseudo-labeling
 
@@ -82,7 +84,7 @@ Two native modes exist in the training code: `full_3d`, and `full_3d_single_wrap
 
 ## Resolution
 
-"We have evidence that working on 1.1 µm data yields cleaner results than 2.4 µm data. But scanning at high resolution is impractical" [VC-OpenProblems2026]. The example given: at 1.1 µm "]οὐδὲ γὰρ ]τὰ μέλλοντα τελεῖϲθαι πρ[" is legible where at 2.4 µm only "τὰ μέλλοντα" is [VC-OpenProblems2026]. The Scroll 4 rescan at 2.4 µm turned "zero evidence of letters" into readable text [VC-Scroll4Letters]. A topography study found median Dice falling from 0.89 at 0.34 µm to about 0.47 at 10.88 µm ([Chapter 5](#ch-inks)) [Angelotti2026b].
+"We have evidence that working on 1.1 µm data yields cleaner results than 2.4 µm data. But scanning at high resolution is impractical" [VC-OpenProblems2026]. The example given: at 1.1 µm "]οὐδὲ γὰρ ]τὰ μέλλοντα τελεῖϲθαι πρ[" is legible where at 2.4 µm only "τὰ μέλλοντα" is [VC-OpenProblems2026]. The Scroll 4 rescan at 2.4 µm turned "zero evidence of letters" into readable text [VC-Scroll4Letters]. A topography study found median Dice falling from 0.89 at 0.34 µm to about 0.47 at 10.88 µm ([Chapter 5](05-inks.md#ch-inks)) [Angelotti2026b].
 
 ## Guarding against hallucination
 

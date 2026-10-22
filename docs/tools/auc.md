@@ -189,7 +189,7 @@ With `--slug`, the same object is stored as the check's result in `run.json` ([r
 | `cannot open PATH as zarr: ...` | A wrong path, or not a zarr store | Point `--labels` and `--mask` at the `.zarr` folders |
 | `PATH: no level '2'; levels: [...]` | The store has other level keys | Pick the level that matches the 9 um grid with `--level` |
 | `labels (...) and mask (...) differ in shape at level 2` | Labels and mask from different segments or levels | Use the pair from the same segment |
-| `labels (...) and surface (...) differ in scale between axes (...); they are not the same grid` | The map is not on this segment's surface grid, or `--surface-shape` is wrong | Check the map's segment and the full surface shape |
+| `labels (...) and surface (...) differ in scale between axes (SY vs SX); they are not the same grid` | The map is not on this segment's surface grid, or `--surface-shape` is wrong | Check the map's segment and the full surface shape |
 | `a cropped map needs the full surface shape (surface_shape)` | `--crop` without `--surface-shape` | Add `--surface-shape H W` |
 | `crop [...] is outside the H x W surface` | A crop larger than the surface | Fix the crop |
 | `map shape (...) does not match the window h x w` | The crop does not match the map's size | Give the window the map was cut from |

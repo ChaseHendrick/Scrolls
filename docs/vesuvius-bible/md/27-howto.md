@@ -1,3 +1,5 @@
+<a id="ch-howto"></a>
+
 # How-Tos {#ch-howto}
 
 > **Chapter summary.** Step-by-step recipes adapted from the official tutorials as of October 2026: getting the code, viewing a scroll and growing a segment in VC3D, rendering a segment, training and running an ink model, searching an unread scroll for first letters with the shared 9 µm models, and fitting the spiral. Commands are quoted from the tutorials; check the live pages before running them, because the tools change quickly. Nothing here requires private data.
@@ -13,7 +15,7 @@ uv sync --extra models
 uv run --extra models python -c "import torch; print(torch.__version__, '| cuda:', torch.cuda.is_available())"
 ```
 
-`uv sync --extra models` "creates a virtual environment and installs the exact locked dependencies" [VC-InkTutorial]. The `vesuvius` package also provides the data-access API shown in [Chapter 22](#ch-tools).
+`uv sync --extra models` "creates a virtual environment and installs the exact locked dependencies" [VC-InkTutorial]. The `vesuvius` package also provides the data-access API shown in [Chapter 22](22-tools.md#ch-tools).
 
 ## Recipe 2. Install VC3D
 
@@ -38,7 +40,7 @@ Following the VC3D tutorial, which uses PHerc. 1447 [VC-VC3DTutorial]:
 6. **Segmentation, Enable Editing**; grow with keys `1` (left), `2` (up), `3` (down), `4` (right), `5` (all directions).
 7. For hard regions, use **Line Annotation** from the `ctrl+right click` menu; the first time, VC3D asks to load the Lasagna normals.
 
-Inspect for sheet switches as you grow ([Chapter 18](#ch-tracing)).
+Inspect for sheet switches as you grow ([Chapter 18](18-tracing.md#ch-tracing)).
 
 ## Recipe 4. Render a segment to a surface volume
 
@@ -114,7 +116,7 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \
    - Run both seeds, several steps, and `--direction both` when the surface orientation is unknown [VC-InkTutorial].
 5. Before submitting, follow the prize rules on false-positive mitigation: "The larger your model's window size, the easier it is for it to invent plausible letterforms instead of recovering real ink", and do not publish findings before the prize is announced [VC-Prizes].
 
-The PHerc. 343 award in October 2026 shows how a winning first-letters submission documented its method ([Chapter 13](#ch-2026)) [VC-PHerc343].
+The PHerc. 343 award in October 2026 shows how a winning first-letters submission documented its method ([Chapter 13](13-2026.md#ch-2026)) [VC-PHerc343].
 
 ## Recipe 8. Fit the spiral
 

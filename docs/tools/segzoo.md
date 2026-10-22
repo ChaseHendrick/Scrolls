@@ -133,7 +133,13 @@ usage: python -m kit segzoo [-h] [--out OUT] [--folds FOLDS]
 | `--device` | `cuda` | torch device |
 | `--out` | required | output `.npz` with `labels`, `seed` and `info` |
 
-`python scripts/segzoo/segzoo_sam2.py score RESULT TRUTH [--json]`: `RESULT` is the `.npz` from `follow`, `TRUTH` a `.npy` (Z, Y, X) of instance labels; `--json` prints one line.
+### `python scripts/segzoo/segzoo_sam2.py score RESULT TRUTH`
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `result` | required | the `.npz` that `follow` wrote |
+| `truth` | required | `.npy` (Z, Y, X) instance labels, one id per sheet, 0 background |
+| `--json` | off | print the score as one JSON line |
 
 ### `python scripts/segzoo/segzoo_probe.py`
 
@@ -209,38 +215,38 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `unknown segzoo action` | An action other than list, show, env, datalist reached `cmd_segzoo` from Python | Use one of the four |
-| `unknown family` | `show` or `family()` got an id not in the registry | `kit segzoo list` for the ids |
+| `unknown family 'NAME'; known: IDS` | `show` or `family()` got an id not in the registry | `kit segzoo list` for the ids |
 | `segzoo show needs a family id` | `show` without a name | Add an id |
-| `unsupported file type:` or `unsupported dataset file_ending` | The ending is outside this converter's supported list | Convert the dataset to one of the formats listed under Inputs |
+| `unsupported file type:` or `unsupported dataset file_ending 'ENDING'; supported: ENDINGS` | The ending is outside this converter's supported list | Convert the dataset to one of the formats listed under Inputs |
 | `folds must be an integer of at least 2` | Zero, one, a negative count or a non-integer Python value was supplied | Use at least two folds and inspect the fold counts before training |
 | `dataset.json must contain an object`, `dataset.json labels must be an object` or `dataset.json numTraining must be a positive integer` | Metadata has the wrong JSON type or count | Correct dataset.json before converting |
 | `dataset.json channel_names keys must be consecutive integers starting at 0` | A channel key is missing or renamed | Use `"0"`, `"1"`, ... and matching `_000N` image suffixes |
-| `duplicate image for case` or `duplicate label for case` | More than one file maps to the same case/channel or label, often two formats of one image | Keep the intended file; the converter will not choose for you |
+| `duplicate image for case 'CASE' channel N: FILE and FILE` or `duplicate label for case 'CASE': FILE and FILE` | More than one file maps to the same case/channel or label, often two formats of one image | Keep the intended file; the converter will not choose for you |
 | `imagesTr contains no training cases` | The dataset has no visible image files | Supply the training images before exporting a plan |
 | `no dataset.json in` | RAW is not an nnU-Net raw dataset folder | Point at the `DatasetNNN_Name` folder |
 | `dataset.json has no channel_names` | An nnU-Net v1 or hand-written dataset.json | Add `channel_names` as nnU-Net v2 expects |
 | `needs imagesTr/ and labelsTr/` | A folder is missing | Check the dataset layout |
 | `cases without labels: ... ; labels without images:` | Image and label case names do not pair up | Fix the names; each case needs both |
-| `dataset.json says numTraining` | The count in dataset.json differs from the images found | Fix `numTraining` or the files |
+| `dataset.json says numTraining N but imagesTr holds M cases` | The count in dataset.json differs from the images found | Fix `numTraining` or the files |
 | `segzoo datalist needs RAW (an nnU-Net raw dataset folder) and --out DIR` | One of the two is missing | Give both |
 | `does not end with the dataset's file_ending` | A file with another ending sits in imagesTr or labelsTr | Remove it or convert it |
-| `channel ... but dataset.json names` | An image's channel suffix is beyond the channels dataset.json lists | Fix the suffix or `channel_names` |
-| `channels ..., expected 0..` | A case is missing one of its channel files | Add the missing `_000N` file |
+| `FILE: channel N but dataset.json names M` | An image's channel suffix is beyond the channels dataset.json lists | Fix the suffix or `channel_names` |
+| `case CASE: channels [...], expected 0..N` | A case is missing one of its channel files | Add the missing `_000N` file |
 | `segzoo datalist:` | Prefix of any of the dataset errors above, from the command | Read the rest of the line |
-| `lacks nnU-Net's _0000 channel suffix` | An image name has no `_0000` channel suffix | Rename to `CASE_0000.EXT` |
-| `unknown network` | `build()` got a name it does not know | Use one of `segzoo_nets.names()` |
+| `image 'NAME' lacks nnU-Net's _0000 channel suffix` | An image name has no `_0000` channel suffix | Rename to `CASE_0000.EXT` |
+| `unknown network 'NAME'; known: NAMES` | `build()` got a name it does not know | Use one of `segzoo_nets.names()` |
 | `dims must be 2 or 3, got` | `build()` with another dims | Use 2 or 3 |
 | `segformer is 2D only: give the depth layers as channels (2.5D)` | SegFormer asked for in 3D | Use a 2D configuration, depth layers as channels |
 | `ss2dunet is 2D only` | SS2DUNet asked for in 3D | Use a 2D configuration |
 | `images need 1 or 3 channels, got` | `FrozenFeatures` given another channel count | Give gray or RGB images |
 | `could not write the shim:` | nnU-Net's trainer folder is not writable (or nnunetv2 is missing) | Use `--target` on a writable folder that nnU-Net searches, or install nnunetv2 into a virtual environment |
-| `builds ..., which has no ... D form; use a` | A 2D-only trainer was run with a 3D configuration | Use the `2d` configuration |
-| `needs every patch side divisible by` | The nnU-Net plans' patch size does not divide by the network's multiple (for example SegFormer or Swin UNETR with a 48 patch) | Edit the plans' patch size to a multiple, or use another network |
+| `TRAINER builds NET, which has no ND form; use a 2D configuration` | A 2D-only trainer was run with a 3D configuration | Use the `2d` configuration |
+| `NET needs every patch side divisible by M; the plans give PATCH` | The nnU-Net plans' patch size does not divide by the network's multiple (for example SegFormer or Swin UNETR with a 48 patch) | Edit the plans' patch size to a multiple, or use another network |
 | `float images must lie in [0, 1]` | Float images outside [0, 1] | Scale them, or pass uint8 |
 | `paired hits must cover the same items` | The two hit lists differ in length | Pass hits for the same items |
 | `test labels never seen in training:` | A test class has no training example | Add training examples or drop the class |
 | `--against lacks ... test items, such as` | The other method's hits do not cover every test item | Give hits for every test id |
-| `segzoo_probe` | Prefix of a probe error printed by the script, exit 2 | Read the rest of the line |
+| `segzoo_probe ACTION: MESSAGE` on stderr, exit code 2 | Prefix of a probe error (a `ValueError`, `OSError` or `KeyError`) printed by the script | Read MESSAGE; it is one of the rows here |
 | `model must be sam2 or medsam2` | `load_predictor` got another model name | Use one of the two |
 | `the seed must be one 2D slice of labels, got shape` | The seed `.npy` is not 2D | Save one slice of labels |
 | `the seed has no labeled pixel (0 is background)` | The seed slice is all zero | Label at least one sheet |
@@ -251,13 +257,14 @@ from segzoo_probe import run_fit, fit_softmax, paired, permutation_control
 | `mode must be video_path or tensor` | `follow` called from Python with another mode | Use one of the two (MedSAM2 uses tensor) |
 | `seed object ... covers no labeled sheet on the key slice` | `score` found a seeded id with no true sheet under it | Check that the seed and the truth come from the same cube and key slice |
 | `prediction shape ... differs from truth` | `score` got labels and truth of different shapes | Score against the cube's own labels |
+| `segzoo_sam2 ACTION: MESSAGE` on stderr, exit code 2 | Prefix of a `follow` or `score` error (a `ValueError`, `OSError` or `KeyError`) printed by the script | Read MESSAGE; it is one of the rows here |
 | `segzoo_sam2 ... needs torch, Pillow and the sam2 package (...); pip install sam2==1.1.0, or MedSAM2's fork from github.com/bowang-lab/MedSAM2` | A package is missing | Install as the message says |
 | `delta shape ... must equal u shape` | `selective_scan` inputs disagree | Pass delta with the shape of u |
 | `A has ... rows, u has ... channels` | `selective_scan` state matrix and input disagree | Give A one row per channel |
 | `B and C must be (batch, groups, d_state, L)` | `selective_scan` B or C has another rank | Reshape them |
 | `channels do not split into ... groups` | Channel count not a multiple of the group count | Pick a group count that divides it |
 | `chunk must be at least 1` | `selective_scan` with chunk 0 | Use 16 (the default) |
-| `SS2DUNet needs H and W divisible by` | Input sides not a multiple of the network's downsampling | Pad or crop to a multiple of 8 |
+| `SS2DUNet needs H and W divisible by F, got (H, W)` | Input sides not a multiple of the network's downsampling | Pad or crop to a multiple of 8 |
 
 ## How it works
 

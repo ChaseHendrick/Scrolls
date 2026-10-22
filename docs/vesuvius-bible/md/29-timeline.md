@@ -1,3 +1,5 @@
+<a id="ch-timeline"></a>
+
 # Timeline {#ch-timeline}
 
 > **Chapter summary.** A single chronology from the eruption to the 2027 prize deadline, compiled from the chapters of this book. Each row cites its source; the machine-readable version is data/timeline.csv. Dates of Substack-announced events are the dates of the announcing post unless the chapter gives another date.

@@ -1,3 +1,5 @@
+<a id="app-substack"></a>
+
 # Appendix E. Newsletter Index {#app-substack}
 
 All 68 posts of the Vesuvius Challenge newsletter on Substack that were collected for this book, with the citation key where one is used. Archive: <https://scrollprize.substack.com/archive> [VC-Substack].
