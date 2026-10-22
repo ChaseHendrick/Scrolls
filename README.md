@@ -280,6 +280,7 @@ python -m unittest discover -s tests -v
 15. **Scroll center finder:** 0.73 mm median from the 13 published lines with each scroll held out, and level with villa's `vc_gen_umbilicus` on two sealed lines (0.56 against 0.81 mm; closer on PHerc0139 only) (13 and 22 October 2026, model output).
 16. **StrokeNet missed two of nine items of its held-out bar;** ink density did as well at text against blank, and StrokeNet beat simple scores only on text against its 90 degree turn (14 October 2026).
 17. **Inkfilter's face mix** scored mean AUC 0.736 against 0.704 for alpha compositing on 56 confirmation windows, from the segments it was developed on; not a trained-reader comparison (17 October 2026).
+18. **StrokeNet's two-density score, with no network, came out ahead of ink density inside segments on PHerc0500P2 with ink_9um** (mean within-segment AUC 0.701 against 0.662, 11 segments; a reader that reads this scroll weakly; 22 October 2026, model output).
 
 **Pipeline and reader checks** ([details](docs/FINDINGS.md#pipeline-and-reader-checks))
 
