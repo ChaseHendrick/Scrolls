@@ -176,14 +176,15 @@ usage: python -m kit.planted check [-h] [--json] dir
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
 | `a surface needs at least 4 rows and 8 columns` | The grid is too small for a site | Use at least 4 x 8 |
-| `unknown family` | The family name is not in FAMILIES | `kit planted families` |
-| `is outside the` | The site leaves the grid or is empty | Give rows and columns inside the shape, end excluded |
+| `unknown family 'x'; families: [...]` | The family name is not in FAMILIES | `kit planted families` |
+| `site rows 0..9 cols 0..9 is outside the 8 x 8 grid or empty` | The site leaves the grid or is empty | Give rows and columns inside the shape, end excluded |
 | `needs a nonzero dk` | A moving family was asked to move by 0 | Give a nonzero `--dk` |
 | `exists and is not empty` | OUT already holds files | Pick a new folder or pass `--overwrite` |
 | `has no planted.json` | The folder was not written by kit planted | Point `check` at a `make` output |
+| `planted.json: schema 'x' is not kit-planted/1` | The record was written by another version of kit planted, or edited | Write the folder again with `make` |
 | `kit planted:` | Any usage error, exit 2 | Read the rest of the line |
 | `kit planted needs numpy` | numpy is not installed | Install numpy |
-| `geometry must be one of` | The geometry is not spiral or planes | Use one of the two |
+| `geometry must be one of ('spiral', 'planes'), not 'x'` | The geometry is not spiral or planes | Use one of the two |
 | `pitch, step and zstep must be positive` | A spacing is zero or negative | Give positive values |
 | `hand must be 1 or -1` | The spiral's sense is not 1 or -1 | Use 1 or -1 |
 | `writing a tifxyz needs kit.vc3d_io or tifffile` | Neither tifffile nor kit's TIFF writer is importable | Install tifffile |
