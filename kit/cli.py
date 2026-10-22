@@ -864,17 +864,22 @@ def cmd_strokenet(args):
                 y0, y1, x0, x1 = used
                 img = img[y0:y1, x0:x1]
                 crop = {"requested": list(args.crop), "used": used, "origin_moved_to_lattice": moved}
-            res, grid = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
-                                          seed=args.seed, with_grid=True)
+            res, grid, work = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
+                                                seed=args.seed, with_grid=True, with_working=True)
         if crop:
             res["crop"] = crop
+        if args.png:
+            res["png_file"] = strokenet.heatmap(work, grid, res["window_y_px"], res["window_x_px"], args.png)
         if args.grid:
             gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
             np.save(gpath, grid)
             res["grid_file"] = gpath
         if args.out:
             Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
-    except (ImportError, OSError, KeyError, ValueError) as exc:
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(res, indent=1) if args.json else strokenet.text_summary(res))
@@ -1228,6 +1233,8 @@ def build_parser(prog="python -m kit", sub_progs=None):
                                   "row and column starts are window_y_px and window_x_px in the result, every stride "
                                   "except the last, which ends at the map's edge")
     p.add_argument("--out", help="also write the result as JSON")
+    p.add_argument("--png", help="also write a picture: the map with each window's score painted over it "
+                                 "(blue low, red high; needs Pillow)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
 

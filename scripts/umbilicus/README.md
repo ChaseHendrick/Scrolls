@@ -78,6 +78,10 @@ Release [`umbilicus-v1`](https://github.com/ChaseHendrick/Scrolls/releases/tag/u
 
 The two `-all` files are the ones `predict.py` needs; the 12 fold files reproduce the held-out scores (group k is `FOLDS[k - 1]` in `pipeline.py`).
 
+## Published center lines
+
+Release [`umbilicus-lines-v1`](https://github.com/ChaseHendrick/Scrolls/releases/tag/umbilicus-lines-v1) holds center lines for 11 scrolls that have none in the open-data bucket, with an automatic end check and each end's status: [README](../../docs/evidence/2026-10-21-umbilicus-lines/README.md). They are model output, and no person has checked them on CT; use each file between `metadata.z_valid` and only at the ends where `usable_ends` is true.
+
 ## Held-out results
 
 How the score works. The 13 published center lines used here are all on 1.2 m scans (8.64 or 9.362 um). Their scrolls were split into four groups by scroll on 13 October 2026, before the two training runs below: group 1 {PHerc0125, 0268, 1203}, group 2 {0211, 0800, 0191, 1545}, group 3 {0826, 1218, 0257} and group 4 {1447, 0358, 0813}. Our record first shows the groups in the same entry as a CPU prototype of the first stage that had already been scored with group 1 held out, so it cannot show which came first (Interpretation; see "Not an untouched test set"). Each group was scored by models trained on the other 9 or 10 scrolls only (two first-stage seeds averaged, then one zoom model). The score is the distance in the slice plane between the smoothed line and the published line, at every slice inside the published line's height range, 3,414 slices in all. The control is the centroid of the papyrus in each slice, smoothed the same way.

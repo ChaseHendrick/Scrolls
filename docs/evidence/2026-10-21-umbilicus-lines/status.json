@@ -1,0 +1,697 @@
+{
+ "release": "umbilicus-lines-v1",
+ "group": "A",
+ "study": "end-cap study, collected 19 October 2026",
+ "label": "Model output; no end has been checked on CT by a person",
+ "files": [
+  {
+   "file": "PHerc0175A_20250521115057_umbilicus.json",
+   "scroll": "PHerc0175A",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250521115057-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 146,
+   "z_valid": [
+    1824.0,
+    10976.0
+   ],
+   "papyrus_ends": [
+    1824.0,
+    10976.0
+   ],
+   "verdict": "FLAG",
+   "void_checks": [],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "flag",
+     "band": "not judged (no reference line)",
+     "flags": [
+      "tilt"
+     ],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    }
+   }
+  },
+  {
+   "file": "PHerc0175B_20250521125822_umbilicus.json",
+   "scroll": "PHerc0175B",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250521125822-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 200,
+   "z_valid": [
+    1376.0,
+    13984.0
+   ],
+   "papyrus_ends": [
+    1376.0,
+    13984.0
+   ],
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    }
+   }
+  },
+  {
+   "file": "PHerc0306B_20250521133212_umbilicus.json",
+   "scroll": "PHerc0306B",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250521133212-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 189,
+   "z_valid": [
+    2016.0,
+    13920.0
+   ],
+   "papyrus_ends": [
+    2016.0,
+    13920.0
+   ],
+   "verdict": "PASS",
+   "void_checks": [],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    }
+   }
+  },
+  {
+   "file": "PHerc0483A_20250521140913_umbilicus.json",
+   "scroll": "PHerc0483A",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250521140913-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 196,
+   "z_valid": [
+    1248.0,
+    13600.0
+   ],
+   "papyrus_ends": [
+    1248.0,
+    13600.0
+   ],
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    }
+   }
+  },
+  {
+   "file": "PHerc0483B_20251124083638_umbilicus.json",
+   "scroll": "PHerc0483B",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20251124083638-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 150,
+   "z_valid": [
+    1824.0,
+    11232.0
+   ],
+   "papyrus_ends": [
+    1824.0,
+    11232.0
+   ],
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    }
+   }
+  },
+  {
+   "file": "PHerc0490A_20250521151210_umbilicus.json",
+   "scroll": "PHerc0490A",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250521151210-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 125,
+   "z_valid": [
+    1888.0,
+    9696.0
+   ],
+   "papyrus_ends": [
+    1888.0,
+    9696.0
+   ],
+   "verdict": "FLAG",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    },
+    "high": {
+     "coverage": "flag",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [
+      "short"
+     ],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": false
+    }
+   }
+  },
+  {
+   "file": "PHerc0490B_20250521151215_umbilicus.json",
+   "scroll": "PHerc0490B",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250521151215-8.640um-1.2m-116keV-masked.zarr",
+   "um": 8.64,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 117,
+   "z_valid": [
+    1760.0,
+    9056.0
+   ],
+   "papyrus_ends": [
+    1760.0,
+    9056.0
+   ],
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": true
+    }
+   }
+  },
+  {
+   "file": "PHerc0846B_20250804142305_umbilicus.json",
+   "scroll": "PHerc0846B",
+   "step": "a",
+   "frame": "own scan",
+   "scan": "20250804142305-9.362um-1.2m-113keV-masked.zarr",
+   "um": 9.362,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 178,
+   "z_valid": [
+    1312.0,
+    12512.0
+   ],
+   "papyrus_ends": [
+    1312.0,
+    12512.0
+   ],
+   "verdict": "FLAG",
+   "void_checks": [],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "flag",
+     "band": "not judged (no reference line)",
+     "flags": [
+      "tilt"
+     ],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "flag",
+     "band": "not judged (no reference line)",
+     "flags": [
+      "tilt"
+     ],
+     "mount": "seen",
+     "ct_look": "unchecked",
+     "human_check": "none",
+     "extension_left_out": false,
+     "usable": false
+    }
+   }
+  },
+  {
+   "file": "PHerc0814_20250804134230_umbilicus.json",
+   "scroll": "PHerc0814",
+   "step": "c",
+   "frame": "own scan",
+   "scan": "20250804134230-9.362um-1.2m-113keV-masked.zarr",
+   "um": 9.362,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 262,
+   "z_valid": [
+    1760.0,
+    18464.0
+   ],
+   "papyrus_ends": [
+    1760.0,
+    18464.0
+   ],
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    }
+   }
+  },
+  {
+   "file": "PHerc0841_20250821151531_umbilicus.json",
+   "scroll": "PHerc0841",
+   "step": "c",
+   "frame": "own scan",
+   "scan": "20250821151531-9.366um-1.2m-113keV-masked.zarr",
+   "um": 9.366,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 258,
+   "z_valid": [
+    1632.0,
+    18080.0
+   ],
+   "papyrus_ends": [
+    1632.0,
+    18400.0
+   ],
+   "verdict": "PASS",
+   "void_checks": [],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    }
+   }
+  },
+  {
+   "file": "PHerc0172_20241024131838_umbilicus.json",
+   "scroll": "PHerc0172",
+   "step": "d",
+   "frame": "own scan",
+   "scan": "20241024131838-7.910um-53keV-masked.zarr",
+   "um": 7.91,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 307,
+   "z_valid": [
+    544.0,
+    20128.0
+   ],
+   "papyrus_ends": [
+    544.0,
+    20128.0
+   ],
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    }
+   }
+  },
+  {
+   "file": "PHerc0814_20260309142202_umbilicus.json",
+   "scroll": "PHerc0814",
+   "step": "c",
+   "frame": "mapped from 20250804134230",
+   "scan": "20260309142202-2.399um-0.2m-78keV-masked.zarr",
+   "um": 2.399,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 264,
+   "z_valid": [
+    6004.24,
+    71020.96
+   ],
+   "papyrus_ends": null,
+   "verdict": "VOID",
+   "void_checks": [
+    "tilt:high",
+    "tilt:low"
+   ],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "void",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    }
+   }
+  },
+  {
+   "file": "PHerc0841_20260319124803_umbilicus.json",
+   "scroll": "PHerc0841",
+   "step": "c",
+   "frame": "mapped from 20250821151531",
+   "scan": "20260319124803-2.403um-0.2m-77keV-masked.zarr",
+   "um": 2.403,
+   "licences": [
+    {
+     "name": "CC BY-NC 4.0",
+     "url": "https://creativecommons.org/licenses/by-nc/4.0/"
+    }
+   ],
+   "points": 258,
+   "z_valid": [
+    0.0,
+    15120.0
+   ],
+   "papyrus_ends": null,
+   "verdict": "PASS",
+   "void_checks": [],
+   "ends": {
+    "low": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    },
+    "high": {
+     "coverage": "pass",
+     "support": "pass",
+     "tilt": "pass",
+     "band": "not judged (no reference line)",
+     "flags": [],
+     "mount": "not clear: papyrus",
+     "ct_look": "not clear: papyrus",
+     "human_check": "none",
+     "extension_left_out": true,
+     "usable": false
+    }
+   }
+  }
+ ]
+}
