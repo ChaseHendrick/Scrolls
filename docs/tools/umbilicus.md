@@ -385,7 +385,7 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 
 ## History
 
-- 2026-10-22: held-out comparison with villa's `vc_gen_umbilicus` on PHerc0139 and PHerc1451: closer on PHerc0139, level on PHerc1451.
+- 2026-10-22: held-out comparison with villa's `vc_gen_umbilicus` on PHerc0139 and PHerc1451: closer on PHerc0139, level on PHerc1451 ([#154](https://github.com/ChaseHendrick/Scrolls/pull/154)).
 - 2026-10-20: `--vc3d-name` writes `SCROLL/umbilicus.json`, the name VC3D and spiral-fitting look for; when available, written files carry the scan's level-0 `volume_width`, `volume_height` and `volume_slices`; slice files keep `shape_l0`; `ctcheck.py` reads both names; tests check the files with a copy of VC3D's reader at villa `8aa507c12`.
 - 2026-10-17: `pipeline.py` refuses a command other than `job`, `collect` or `trim` with a usage error; before, a mistyped command did nothing and exited 0 (`c03e227`).
 - 2026-10-16: slice caches are keyed by scan, and a slice file with no CT is refused (`91bc14e`).
