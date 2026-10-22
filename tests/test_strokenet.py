@@ -594,8 +594,21 @@ class StrokeNetTest(unittest.TestCase):
         self.assertEqual(res_f["map"]["learned_n"], res_u8["map"]["learned_n"])
         np.testing.assert_allclose(grid_f, grid_u8, rtol=1e-3, atol=1e-3, equal_nan=True)
         self.assertIn("scaled to the 0 to 255 scale", N.text_summary(res_f))
-        self.assertEqual(N.unit_scale(np.full((4, 4), 2.0, np.float32), np.float32)[1], False)
-        self.assertEqual(N.unit_scale(np.ones((4, 4), np.float32), np.uint8)[1], False)
+        self.assertEqual(res_f["scaled_from"], "0-1")
+        self.assertIsNone(res_u8["scaled_from"])
+        self.assertIsNone(N.unit_scale(np.full((4, 4), 2.0, np.float32), np.float32)[1])
+        self.assertIsNone(N.unit_scale(np.ones((4, 4), np.float32), np.uint8)[1])
+        self.assertIsNone(N.unit_scale(np.full((4, 4), -1.0, np.float32), np.float32)[1])
+        self.assertIsNone(N.unit_scale(np.full((4, 4), 70000.0, np.float32), np.float32)[1])
+        # a 16-bit map (as kit ensemble writes) scores like the same map on 0 to 255
+        u16 = (u8.astype(np.uint32) * 257).astype(np.uint16)
+        res_16, grid_16 = N.analyze(u16, N.PIXEL_MM, net, sample=2, iaaft_iters=2, with_grid=True)
+        self.assertEqual(res_16["scaled_from"], "0-65535")
+        self.assertFalse(res_16["scaled_from_0_1"])
+        self.assertEqual(res_16["map"]["learned_n"], res_u8["map"]["learned_n"])
+        np.testing.assert_allclose(grid_16, grid_u8, rtol=1e-3, atol=1e-3, equal_nan=True)
+        self.assertIn("lie in 0 to 65535", N.text_summary(res_16))
+        self.assertEqual(N.unit_scale(np.full((4, 4), 300.0, np.float32), np.float32)[1], "0-65535")
         try:
             import PIL  # noqa: F401
         except ImportError:

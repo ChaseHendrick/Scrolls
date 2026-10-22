@@ -664,21 +664,33 @@ def _control(v, copy, ref, name):
 
 
 def unit_scale(a, dtype):
-    """(map, scaled): a float map whose values all lie in 0 to 1 (as many ink models write) is put on the
-    organizers' 0 to 255 scale StrokeNet was trained on; any other map is returned as it is."""
-    if np.issubdtype(np.dtype(dtype), np.floating) and a.size:
-        hi = float(np.max(a))
-        if 0.0 < hi <= 1.0 and float(np.min(a)) >= 0.0:
-            return a * np.float32(255.0), True
-    return a, False
+    """(map, source range): a map on another common scale is put on the organizers' 0 to 255 scale
+    StrokeNet was trained on, and the second value names the range it came from. A float map whose
+    values all lie in 0 to 1 (as many ink models write) is multiplied by 255 ("0-1"); a 16-bit
+    integer map, or a float map, whose values lie in 0 to 65535 and reach above 255 (a 16-bit TIFF
+    such as kit ensemble writes) is multiplied by 255 / 65535 ("0-65535"). Any other map is returned
+    as it is, with None."""
+    dtype = np.dtype(dtype)
+    if not a.size:
+        return a, None
+    lo, hi = float(np.min(a)), float(np.max(a))
+    if lo < 0.0:
+        return a, None
+    if np.issubdtype(dtype, np.floating) and 0.0 < hi <= 1.0:
+        return a * np.float32(255.0), "0-1"
+    sixteen = np.issubdtype(dtype, np.integer) and dtype.itemsize == 2
+    if (sixteen or np.issubdtype(dtype, np.floating)) and 255.0 < hi <= 65535.0:
+        return a * np.float32(255.0 / 65535.0), "0-65535"
+    return a, None
 
 
 def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters=IAAFT_ITERS, with_grid=False,
             with_working=False):
     """Score a map and run both controls. Returns a JSON-ready dict, or (dict, logit grid) with
     with_grid=True (grid as score_map: NaN where a window was skipped), and the 0.048 mm working map
-    after them with with_working=True. A float map in 0 to 1 is scaled to 0 to 255 first (unit_scale;
-    "scaled_from_0_1" says so).
+    after them with with_working=True. A float map in 0 to 1, or a 16-bit or float map in 0 to 65535, is
+    scaled to 0 to 255 first (unit_scale; "scaled_from" names the range, "scaled_from_0_1" is kept for
+    earlier callers).
 
     map: summary of the kept windows (windows under 99 % core pixels are skipped and counted).
     rotated_90: the same windows, each turned by 90 degrees (orientation_hint compares the two).
@@ -704,7 +716,7 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     idx = np.sort(rng.choice(len(pos), k, replace=False)) if k else np.zeros(0, int)
     sv = net.logits(iaaft(_windows(a, ys, xs, pos[idx]), rng, iaaft_iters)) if k else np.zeros(0, np.float32)
     res = {"note": NOTE, "weights": Path(net.path).name, "pixel_mm": float(pixel_mm), "stride_px": int(stride_px),
-           "scaled_from_0_1": scaled, "working_shape": list(a.shape), "grid_shape": list(keep.shape),
+           "scaled_from": scaled, "scaled_from_0_1": scaled == "0-1", "working_shape": list(a.shape), "grid_shape": list(keep.shape),
            "map": net.summarise(v, skipped), "rotated_90": net.summarise(vt, skipped),
            "controls": {"windows": k, "seed": int(seed),
                         "rot90": _control(v[idx], vt[idx], net.val_ref, "rot90"),
@@ -771,8 +783,9 @@ def text_summary(res):
     m, r, c = res["map"], res["rotated_90"], res["controls"]
     lines = [f"StrokeNet ({res['weights']}), {m['learned_n']} windows of 6.1 mm scored at stride {res['stride_px']} px "
              f"(0.048 mm), {m['learned_n_skipped']} skipped (under 99 % core papyrus)"]
-    if res.get("scaled_from_0_1"):
-        lines.append("  the map's values lie in 0 to 1, so they were scaled to the 0 to 255 scale StrokeNet expects")
+    if res.get("scaled_from"):
+        lines.append(f"  the map's values lie in {res['scaled_from'].replace('-', ' to ')}, so they were scaled to the 0 to 255 "
+                     "scale StrokeNet expects")
     if not m["learned_n"]:
         lines.append(f"  no window has 99 % of its pixels above {USABLE_MIN} and {CORE_MM} mm inside the papyrus; "
                      "StrokeNet expects maps on the organizers' 0 to 255 scale")
