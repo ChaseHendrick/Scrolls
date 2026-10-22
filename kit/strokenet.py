@@ -663,9 +663,22 @@ def _control(v, copy, ref, name):
     return out
 
 
-def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters=IAAFT_ITERS, with_grid=False):
+def unit_scale(a, dtype):
+    """(map, scaled): a float map whose values all lie in 0 to 1 (as many ink models write) is put on the
+    organizers' 0 to 255 scale StrokeNet was trained on; any other map is returned as it is."""
+    if np.issubdtype(np.dtype(dtype), np.floating) and a.size:
+        hi = float(np.max(a))
+        if 0.0 < hi <= 1.0 and float(np.min(a)) >= 0.0:
+            return a * np.float32(255.0), True
+    return a, False
+
+
+def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters=IAAFT_ITERS, with_grid=False,
+            with_working=False):
     """Score a map and run both controls. Returns a JSON-ready dict, or (dict, logit grid) with
-    with_grid=True (grid as score_map: NaN where a window was skipped).
+    with_grid=True (grid as score_map: NaN where a window was skipped), and the 0.048 mm working map
+    after them with with_working=True. A float map in 0 to 1 is scaled to 0 to 255 first (unit_scale;
+    "scaled_from_0_1" says so).
 
     map: summary of the kept windows (windows under 99 % core pixels are skipped and counted).
     rotated_90: the same windows, each turned by 90 degrees (orientation_hint compares the two).
@@ -678,7 +691,7 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     stride_px, except the last row and column, which end at the map's edge.
     orientation_hint compares the share above the blank threshold as given and turned, or the mean
     logit when the shares are equal or missing (orientation_hint_from names which)."""
-    a = to_working(ink, pixel_mm)
+    a, scaled = unit_scale(to_working(ink, pixel_mm), _source(ink)[2])
     ys, xs, keep = layout(a, stride_px)
     pos = np.argwhere(keep)
     v = net._kept_logits(a, ys, xs, pos)
@@ -691,7 +704,7 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     idx = np.sort(rng.choice(len(pos), k, replace=False)) if k else np.zeros(0, int)
     sv = net.logits(iaaft(_windows(a, ys, xs, pos[idx]), rng, iaaft_iters)) if k else np.zeros(0, np.float32)
     res = {"note": NOTE, "weights": Path(net.path).name, "pixel_mm": float(pixel_mm), "stride_px": int(stride_px),
-           "working_shape": list(a.shape), "grid_shape": list(keep.shape),
+           "scaled_from_0_1": scaled, "working_shape": list(a.shape), "grid_shape": list(keep.shape),
            "map": net.summarise(v, skipped), "rotated_90": net.summarise(vt, skipped),
            "controls": {"windows": k, "seed": int(seed),
                         "rot90": _control(v[idx], vt[idx], net.val_ref, "rot90"),
@@ -713,7 +726,41 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     res["window_y_px"], res["window_x_px"] = [int(y) for y in ys], [int(x) for x in xs]   # grid rows and columns
     top = np.argsort(-v, kind="stable")[:10]
     res["top_windows"] = [{"y_px": int(ys[pos[i][0]]), "x_px": int(xs[pos[i][1]]), "logit": float(v[i])} for i in top]
-    return (res, grid) if with_grid else res
+    out = (res,) + ((grid,) if with_grid else ()) + ((a,) if with_working else ())
+    return out if len(out) > 1 else res
+
+
+def heatmap(working, grid, ys, xs, path, max_side=2000):
+    """Write a PNG of the 0.048 mm working map with each scored window's logit painted over its centre
+    block (blue low, red high, no colour where a window was skipped), so a person can see where the
+    score is high. Needs Pillow. A picture of model output, not a reading."""
+    from PIL import Image
+    w = np.clip(np.asarray(working, np.float32), 0, 255)
+    base = np.repeat(w[..., None], 3, axis=2)
+    over = np.zeros_like(base)
+    alpha = np.zeros(w.shape, np.float32)
+    g = np.asarray(grid, np.float32)
+    ok = np.isfinite(g)
+    if ok.any():
+        lo, hi = np.percentile(g[ok], [2, 98]) if ok.sum() > 1 else (g[ok][0] - 1, g[ok][0] + 1)
+        t = np.clip((g - lo) / max(hi - lo, 1e-6), 0, 1)
+        step = max(1, (ys[1] - ys[0]) if len(ys) > 1 else (xs[1] - xs[0]) if len(xs) > 1 else CROP)
+        h = step // 2
+        for i, y in enumerate(ys):
+            for j, x in enumerate(xs):
+                if not ok[i, j]:
+                    continue
+                cy, cx = y + CROP // 2, x + CROP // 2
+                sl = (slice(max(0, cy - h), cy + h), slice(max(0, cx - h), cx + h))
+                over[sl] = (255.0 * t[i, j], 60.0, 255.0 * (1 - t[i, j]))
+                alpha[sl] = 0.45
+    img = base * (1 - alpha[..., None]) + over * alpha[..., None]
+    im = Image.fromarray(np.round(img).astype(np.uint8))
+    if max(im.size) > max_side:
+        f = max_side / float(max(im.size))
+        im = im.resize((max(1, int(im.size[0] * f)), max(1, int(im.size[1] * f))))
+    im.save(str(path))
+    return str(path)
 
 
 def _f(x, fmt=".2f"):
@@ -724,6 +771,8 @@ def text_summary(res):
     m, r, c = res["map"], res["rotated_90"], res["controls"]
     lines = [f"StrokeNet ({res['weights']}), {m['learned_n']} windows of 6.1 mm scored at stride {res['stride_px']} px "
              f"(0.048 mm), {m['learned_n_skipped']} skipped (under 99 % core papyrus)"]
+    if res.get("scaled_from_0_1"):
+        lines.append("  the map's values lie in 0 to 1, so they were scaled to the 0 to 255 scale StrokeNet expects")
     if not m["learned_n"]:
         lines.append(f"  no window has 99 % of its pixels above {USABLE_MIN} and {CORE_MM} mm inside the papyrus; "
                      "StrokeNet expects maps on the organizers' 0 to 255 scale")

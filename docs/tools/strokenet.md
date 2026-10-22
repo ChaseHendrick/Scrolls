@@ -11,15 +11,15 @@
 | Run | `python -m kit strokenet`, `from kit import strokenet`, `python scripts/strokenet/data.py`, `python scripts/strokenet/train.py`, `python scripts/strokenet/pipeline.py`, `python scripts/strokenet/evaluate.py` |
 | Code | `kit/strokenet.py`, `kit/data/strokenet-weights.json`, `scripts/strokenet/`, `kit/cli.py` (`cmd_strokenet`) |
 | Tests | `tests/test_strokenet.py`, `tests/test_strokenet_pipeline.py`, `tests/test_strokenet_stats.py`, `tests/test_gridpilot.py` |
-| Needs | Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`) |
+| Needs | Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images and for `--png`. From a clone, `python -m pip install -e ".[all]"` brings all of them; a plain `pip install .` brings none, and the command then names the packages to install. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`) |
 | Runs on | Scoring runs on any CPU. A synthetic 300 x 400 px map at 0.048 mm (43 windows) with a small random test network took 4.4 s (measured 2026-10-16, 4-core cloud container); the released network on a whole segment: Not measured. Training runs on a GPU: each run of the preregistered sweep, finals and controls took 666 to 2,356 s on CUDA, the released configuration 1,506 s (`train_wall_s` in [the evidence's run histories](../evidence/2026-10-14-strokenet/README.md)) |
 | Network | `kit strokenet` with a weights file: None. With a released model name not yet in the cache: one download of the weights from github.com (the `url` in `kit/data/strokenet-weights.json`). `data.py fetch`: data.aws.ash2txt.org, one TIFF of about 1.3 GB per segment, 27 segments. `gridpilot.py`: HTTP range reads of a surface volume's chunks at a base URL its caller gives (its cloud runner is not in this repository) |
-| Writes | `kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file |
+| Writes | `kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid, `--png` a picture of the map with each window's score painted over it; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file |
 | Go-ahead | Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score |
 | Released | Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's "Released tools" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry |
 | Guide | [StrokeNet model card](../strokenet.md) (data, training, held-out results and limits) |
 | License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release)) |
-| Checked | 2026-10-18 against commit `4a970bd` |
+| Checked | 2026-10-22 against commit `a9f80f1` (`--png` and 0 to 1 scaling added on top) |
 
 ## What it does
 
@@ -39,7 +39,7 @@ Its limits, before any further test:
 
 - **One reader's appearance.** It saw only the organizers' `new_canon_autoresearch_recipe` maps of one scroll (Sourced fact, the run's data manifest); maps from other ink models look different (stroke width, contrast, background, tile pattern) and are outside what it learned (Interpretation).
 - **Paris 4's handwriting.** Its labels assumed a 4.5 to 9 mm line pitch with lines along the rows (Sourced fact, the label rule in `data.py`); smaller or larger writing, or a turned map, did not get text labels (Interpretation).
-- **Input assumptions.** The organizers' 0 to 255 scale, papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side (Sourced fact, `kit/strokenet.py`). Float or rescaled maps, other scrolls and other ink models are not tested in this page's published evidence (Interpretation: expect it to do worse there).
+- **Input assumptions.** The organizers' 0 to 255 scale (a float map whose values all lie in 0 to 1, as many ink models write, is scaled to it first and the result says so), papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side (Sourced fact, `kit/strokenet.py`). Float or rescaled maps, other scrolls and other ink models are not tested in this page's published evidence (Interpretation: expect it to do worse there).
 
 A rework (version 5) for maps from any ink reader and any scroll, judged on human ink labels with a preregistered leave-one-scroll-out test, is in progress in private work. Until it has a held-out result, this page and the command describe version 1 only.
 
@@ -62,12 +62,13 @@ Do not use it:
 ## Quick start
 
 ```bash
-python -m kit strokenet MAP.tif --pixel-mm 0.0024 --out RESULT.json
+python -m kit strokenet MAP.tif --pixel-mm 0.0024 --out RESULT.json --png RESULT.png
 ```
 
 - `MAP.tif`: one of the organizers' ink predictions (uint8, 0 to 255, ink bright), such as a PHerc. Paris 4 tracing from https://data.aws.ash2txt.org/samples/PHercParis4/segments/. `.npy`, `.npz` and `.png` work too.
 - `0.0024`: the map's pixel size in mm (2.4 um). A uint8 map at a whole fraction of 0.048 mm is pooled exactly as the training windows were.
 - `RESULT.json`: where to keep the full result; add `--json` to print it instead of the text summary.
+- `RESULT.png`: the map at 0.048 mm with every scored window's score painted over its centre, blue low and red high, uncoloured where a window was skipped (at most 2,000 px a side). It shows where the score is high; it is model output, not a reading.
 - The first run downloads `strokenet-paris4-v1` (589,393 weights) into `~/.cache/scrolls-kit/strokenet/`; pass `--weights FILE.npz` to use a file.
 
 On a synthetic 300 x 400 px uint8 map at 0.048 mm (bands every 9 px, a blank strip on the left) with a small random-weights network made as `tests/test_strokenet.py` makes one (`--weights weights.npz --sample 8 --grid grid --out res.json`), it printed:
@@ -103,13 +104,13 @@ usage: python -m kit strokenet [-h] --pixel-mm PIXEL_MM [--weights WEIGHTS]
                                [--key KEY] [--crop Y0 Y1 X0 X1]
                                [--stride STRIDE] [--sample SAMPLE]
                                [--seed SEED] [--grid GRID] [--out OUT]
-                               [--json]
+                               [--png PNG] [--json]
                                map
 ```
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `map` | required | The ink map: `.npy` (memory-mapped), `.npz` (the `--key` array or the first), `.tif` or `.tiff` (read lazily through zarr when installed), or an image Pillow reads such as `.png`. On the organizers' 0 to 255 scale, ink bright. Its dtype is kept |
+| `map` | required | The ink map: `.npy` (memory-mapped), `.npz` (the `--key` array or the first), `.tif` or `.tiff` (read lazily through zarr when installed), or an image Pillow reads such as `.png`. On the organizers' 0 to 255 scale, ink bright; a float map whose values all lie in 0 to 1 is scaled to it (the result's `scaled_from_0_1`). Its dtype is kept |
 | `--pixel-mm PIXEL_MM` | required | Map pixel size in mm, such as 0.0024 for a 2.4 um map or 0.048 for a map already at the working size. Must be positive |
 | `--weights WEIGHTS` | none (the released `strokenet-paris4-v1`, or `$KIT_STROKENET_DEFAULT`) | A StrokeNet `.npz` file, or the name of a released model in `kit/data/strokenet-weights.json`, downloaded once and checked by SHA-256 |
 | `--key KEY` | none (the first array) | For an `.npz` map: the array's name |
@@ -119,6 +120,7 @@ usage: python -m kit strokenet [-h] --pixel-mm PIXEL_MM [--weights WEIGHTS]
 | `--seed SEED` | `0` | Seed of the control sample and of the IAAFT copies; the same seed gives the same controls |
 | `--grid GRID` | none | Also save the window logit grid as `.npy` (`.npy` is added when missing), NaN where a window was skipped. Its rows and columns start at `window_y_px` and `window_x_px` of the result |
 | `--out OUT` | none | Also write the result as JSON (indented) to this file |
+| `--png PNG` | none | Also write a picture: the map at 0.048 mm with each scored window's score painted over its centre, blue low and red high, uncoloured where a window was skipped, at most 2,000 px a side (needs Pillow). The result's `png_file` names it |
 | `--json` | off | Print the result as JSON instead of the text summary |
 
 ### `python scripts/strokenet/data.py`
