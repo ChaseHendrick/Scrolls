@@ -39,7 +39,7 @@ Its limits, before any further test:
 
 - **One reader's appearance.** It saw only the organizers' `new_canon_autoresearch_recipe` maps of one scroll (Sourced fact, the run's data manifest); maps from other ink models look different (stroke width, contrast, background, tile pattern) and are outside what it learned (Interpretation).
 - **Paris 4's handwriting.** Its labels assumed a 4.5 to 9 mm line pitch with lines along the rows (Sourced fact, the label rule in `data.py`); smaller or larger writing, or a turned map, did not get text labels (Interpretation).
-- **Input assumptions.** The organizers' 0 to 255 scale (a float map whose values all lie in 0 to 1, as many ink models write, is scaled to it first and the result says so), papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side (Sourced fact, `kit/strokenet.py`). Float or rescaled maps, other scrolls and other ink models are not tested in this page's published evidence (Interpretation: expect it to do worse there).
+- **Input assumptions.** The organizers' 0 to 255 scale (a float map whose values all lie in 0 to 1, as many ink models write, or a 16-bit or float map in 0 to 65535, such as kit ensemble's 16-bit TIFF, is scaled to it first and `scaled_from` in the result says which), papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window and maps of at least 128 px at 0.048 mm per side (Sourced fact, `kit/strokenet.py`). Float or rescaled maps, other scrolls and other ink models are not tested in this page's published evidence (Interpretation: expect it to do worse there).
 
 A rework (version 5) for maps from any ink reader and any scroll, judged on human ink labels with a preregistered leave-one-scroll-out test, is in progress in private work. Until it has a held-out result, this page and the command describe version 1 only.
 
@@ -110,7 +110,7 @@ usage: python -m kit strokenet [-h] --pixel-mm PIXEL_MM [--weights WEIGHTS]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `map` | required | The ink map: `.npy` (memory-mapped), `.npz` (the `--key` array or the first), `.tif` or `.tiff` (read lazily through zarr when installed), or an image Pillow reads such as `.png`. On the organizers' 0 to 255 scale, ink bright; a float map whose values all lie in 0 to 1 is scaled to it (the result's `scaled_from_0_1`). Its dtype is kept |
+| `map` | required | The ink map: `.npy` (memory-mapped), `.npz` (the `--key` array or the first), `.tif` or `.tiff` (read lazily through zarr when installed), or an image Pillow reads such as `.png`. On the organizers' 0 to 255 scale, ink bright; a float map whose values all lie in 0 to 1, or a 16-bit or float map in 0 to 65535, is scaled to it (the result's `scaled_from` names the range). Its dtype is kept |
 | `--pixel-mm PIXEL_MM` | required | Map pixel size in mm, such as 0.0024 for a 2.4 um map or 0.048 for a map already at the working size. Must be positive |
 | `--weights WEIGHTS` | none (the released `strokenet-paris4-v1`, or `$KIT_STROKENET_DEFAULT`) | A StrokeNet `.npz` file, or the name of a released model in `kit/data/strokenet-weights.json`, downloaded once and checked by SHA-256 |
 | `--key KEY` | none (the first array) | For an `.npz` map: the array's name |
