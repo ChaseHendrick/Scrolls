@@ -582,12 +582,37 @@ class StrokeNetTest(unittest.TestCase):
         self.assertIn("carry a small excess of high-frequency power", doc)
         self.assertNotIn("isolates", doc)
 
+    def test_unit_float_map_is_scaled_and_heatmap_written(self):
+        net = N.StrokeNet(self.path)
+        rng = np.random.default_rng(1)
+        u8 = rng.integers(20, 255, (300, 300)).astype(np.uint8)
+        res_u8, grid_u8 = N.analyze(u8, N.PIXEL_MM, net, sample=2, iaaft_iters=2, with_grid=True)
+        res_f, grid_f, work = N.analyze(u8.astype(np.float32) / 255.0, N.PIXEL_MM, net, sample=2, iaaft_iters=2,
+                                        with_grid=True, with_working=True)
+        self.assertTrue(res_f["scaled_from_0_1"])
+        self.assertFalse(res_u8["scaled_from_0_1"])
+        self.assertEqual(res_f["map"]["learned_n"], res_u8["map"]["learned_n"])
+        np.testing.assert_allclose(grid_f, grid_u8, rtol=1e-3, atol=1e-3, equal_nan=True)
+        self.assertIn("scaled to the 0 to 255 scale", N.text_summary(res_f))
+        self.assertEqual(N.unit_scale(np.full((4, 4), 2.0, np.float32), np.float32)[1], False)
+        self.assertEqual(N.unit_scale(np.ones((4, 4), np.float32), np.uint8)[1], False)
+        try:
+            import PIL  # noqa: F401
+        except ImportError:
+            return
+        with tempfile.TemporaryDirectory() as d:
+            out = N.heatmap(work, grid_f, res_f["window_y_px"], res_f["window_x_px"], Path(d) / "h.png")
+            from PIL import Image
+            with Image.open(out) as im:
+                self.assertEqual(im.size, (work.shape[1], work.shape[0]))
+                self.assertEqual(im.mode, "RGB")
+
     def test_orientation_hint_ties_and_empty_maps(self):
         net = N.StrokeNet(self.path)
         flat = np.full((200, 200), 100, np.uint8)              # every window and its turned copy score the same
         res = N.analyze(flat, N.PIXEL_MM, net, sample=2, iaaft_iters=2)
         self.assertEqual(res["orientation_hint"], "no difference between the map as given and turned by 90 degrees")
-        empty = N.analyze(np.ones((200, 200), np.float32), N.PIXEL_MM, net, sample=4)
+        empty = N.analyze(np.full((200, 200), 2.0, np.float32), N.PIXEL_MM, net, sample=4)   # under 3 on 0 to 255
         self.assertEqual((empty["map"]["learned_n"], empty["controls"]["windows"]), (0, 0))
         self.assertEqual(empty["orientation_hint"], "no window was scored")
         self.assertEqual(empty["top_windows"], [])
