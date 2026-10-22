@@ -42,7 +42,7 @@ The line is model output, not a measurement: check it on CT slices before relyin
 
 Do not use it:
 
-- On scans finer or coarser than 8 to 10 um: `predict.py` refuses them; villa's `vc_gen_umbilicus` is another finder (the two have not been compared on the same slices).
+- On scans finer or coarser than 8 to 10 um: `predict.py` refuses them; villa's `vc_gen_umbilicus` is another finder (compared below on two held-out scrolls).
 - To check segment stacking against a line: use [`stackcheck`](stackcheck.md), which takes an umbilicus file.
 - Inside AutoPipeline runs: [`autopipeline`](autopipeline.md) takes the catalog's file or villa's estimate, and accepts a file in the published format such as this one.
 - As ground truth: a line from this finder is model output and its spread between models is not accuracy.
@@ -92,11 +92,12 @@ Without `--vc3d-name` the file is `trimmed/S_umbilicus.json`, as before. Either 
 - **Held-out scoring with a control.** The 13 published lines were split into four groups by scroll on 13 October 2026 (`FOLDS` in `pipeline.py`); each group was scored by models trained on the other scrolls only. The control is the papyrus centroid of each slice, smoothed the same way. Over 3,414 held-out slices the median distance to the published line was 3.98 mm for the centroid, 1.20 mm for the first stage and 0.73 mm for both stages (90th percentile 9.97, 4.00 and 3.37 mm); the first stage beat the centroid on 13 of 13 scrolls (`umbilicus_checks` in [`results.json`](../results.json), [guide](../../scripts/umbilicus/README.md#held-out-results)).
 - **Rules fixed before each run** (13 October 2026): the first stage works if its pooled held-out median is at most 2.0 mm and it beats the centroid on at least 10 of 13 scrolls; the zoom stage is adopted if its pooled median is at least 0.1 mm lower and it is not worse on at least 9 of 13. Both passed. The plan that holds the rules is not published, so the timing cannot be checked from here.
 - **With the end trims.** Both trims keep 3,243 of the 3,414 scored slices, median 0.69 mm for both stages; the dropped slices were mostly worse than the rest (9 of 10 scrolls) ([`heldout-endrule.json`](../evidence/2026-10-14-umbilicus/heldout-endrule.json)). `endcheck.py score RUN_DIR` reproduces this from a run; its `pooled.all` must first equal the run's own `result.json`.
+- **Against villa's `vc_gen_umbilicus` on two held-out scrolls** (22 October 2026, rules fixed before the lines were opened). The published center lines of PHerc0139 and PHerc1451 were never used to train or tune either tool. On their 1.2 m scans, at 525 heights, the median distance to the published line was 0.56 mm for this finder, 0.81 mm for `vc_gen_umbilicus` (villa `13a88a6`, seed 1, one repeat) and 2.64 mm for the papyrus centroid control. Per height, this finder was closer on PHerc0139 (median -0.46 mm, 95% interval -1.09 to -0.16) and level on PHerc1451 (+0.04 mm, -0.08 to 0.20); pooled -0.15 mm (-0.35 to -0.05). The rule for "better" needed both scrolls, so the result is level overall, not a win. Limits: one person's line per scroll; PHerc1451's two scans sit a half turn apart, and mapping its line into the scan passed its check with a small margin; whether either annotator started from `vc_gen_umbilicus` output is unknown.
 - **Limits.** The reference is one person's line per scroll (ten of 13 by one annotator), people disagree by more than this error, two scrolls have more than one winding center, and the settings were chosen while looking at some of the same scrolls, so it is not an untouched test set ([guide](../../scripts/umbilicus/README.md#read-these-numbers-with-care)). `spread_mm_median` measures agreement between models, not accuracy.
 - **A person's check.** `ctcheck.py` draws a line (red) beside another (cyan) on whole and zoomed CT slices; nothing replaces looking at them.
 - **VC3D reads the file.** The tests read every written file back through rule-for-rule copies of VC3D's reader (`Umbilicus::LoadJsonFile`), its file-name search and its rescale rule at villa main `8aa507c12`; the copies refuse a partial triplet, a float or zero dimension, an empty `volume` and a file without points, and agree with villa's own tests of the rescale. They are copies: no VC3D binary was built or opened for this page.
 
-Claim label: Model output, for every line `predict.py` writes and for the held-out distances of 13 October 2026, scored against one person's published line per scroll.
+Claim label: Model output, for every line `predict.py` writes and for the held-out distances of 13 October 2026, scored against one person's published line per scroll, and for the held-out comparison of 22 October 2026.
 
 ## Commands and options
 
@@ -384,6 +385,7 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 
 ## History
 
+- 2026-10-22: held-out comparison with villa's `vc_gen_umbilicus` on PHerc0139 and PHerc1451: closer on PHerc0139, level on PHerc1451.
 - 2026-10-20: `--vc3d-name` writes `SCROLL/umbilicus.json`, the name VC3D and spiral-fitting look for; when available, written files carry the scan's level-0 `volume_width`, `volume_height` and `volume_slices`; slice files keep `shape_l0`; `ctcheck.py` reads both names; tests check the files with a copy of VC3D's reader at villa `8aa507c12`.
 - 2026-10-17: `pipeline.py` refuses a command other than `job`, `collect` or `trim` with a usage error; before, a mistyped command did nothing and exited 0 (`c03e227`).
 - 2026-10-16: slice caches are keyed by scan, and a slice file with no CT is refused (`91bc14e`).
