@@ -11385,5 +11385,138 @@
     "all": true
    }
   }
+ ],
+ "text_restoration_checks": [
+  {
+   "date": "2026-10-22",
+   "source": "docs/prereg/2026-10-22-greek-restoration.md",
+   "evidence": "docs/evidence/greek-restoration-20261022/score.json",
+   "claim": "Model output: hosted text models and an order-8 Kneser-Ney letter model restoring hidden letters in the second half of Philodemus, De Musica (First1KGreek tlg1595.tlg221, Kemke), public edited text, under a rule frozen before any request; no scroll data",
+   "claim_wording": "no hosted model beats the letter model; all three do clearly worse",
+   "verdict": "FAIL",
+   "rule": "beats KN: parsed share >= 0.90, gap letter accuracy >= KN + 0.05, one-sided letter-weighted bootstrap lower bound (20,000 resamples, seed 0, quantile 0.05/3) above 0; memorised: probe letter accuracy >= 0.50",
+   "items": {
+    "gaps": 190,
+    "gaps_per_length": 38,
+    "gap_lengths": [
+     1,
+     2,
+     3,
+     5,
+     8
+    ],
+    "probes": 40,
+    "window_symbols": 150,
+    "seed": 20261022,
+    "test_letters": 29095
+   },
+   "requests": 690,
+   "replies": 690,
+   "priced_usd": 0.066,
+   "cap_usd": 1.2,
+   "kn": {
+    "model": "order-8 interpolated modified Kneser-Ney letter model, general (16 million symbols of Perseus and First1KGreek) mixed 0.728 and 0.272 with Volumina Rhetorica (tlg1595.tlg370); beam 256, 24 symbols of right context",
+    "letter_acc": 0.331,
+    "probe_acc": 0.0814,
+    "acc_by_gap_length": {
+     "1": 0.8947,
+     "2": 0.6711,
+     "3": 0.5,
+     "5": 0.3,
+     "8": 0.1316
+    },
+    "exact_by_gap_length": {
+     "1": 0.8947,
+     "2": 0.6053,
+     "3": 0.3158,
+     "5": 0.1053,
+     "8": 0.0
+    }
+   },
+   "hosted": [
+    {
+     "model": "deepseek-ai/DeepSeek-V3-0324:deepinfra",
+     "letter_acc": 0.1814,
+     "diff_from_kn": -0.1496,
+     "diff_lower_one_sided": -0.2064,
+     "parsed_share": 1.0,
+     "probe_acc": 0.0845,
+     "acc_by_gap_length": {
+      "1": 0.4474,
+      "2": 0.2895,
+      "3": 0.2719,
+      "5": 0.1368,
+      "8": 0.1151
+     },
+     "exact_by_gap_length": {
+      "1": 0.4474,
+      "2": 0.2105,
+      "3": 0.0789,
+      "5": 0.0,
+      "8": 0.0
+     }
+    },
+    {
+     "model": "moonshotai/Kimi-K2-Instruct-0905:novita",
+     "letter_acc": 0.1814,
+     "diff_from_kn": -0.1496,
+     "diff_lower_one_sided": -0.2073,
+     "parsed_share": 0.9217,
+     "probe_acc": 0.0789,
+     "acc_by_gap_length": {
+      "1": 0.4474,
+      "2": 0.3289,
+      "3": 0.1667,
+      "5": 0.1895,
+      "8": 0.1118
+     },
+     "exact_by_gap_length": {
+      "1": 0.3947,
+      "2": 0.1579,
+      "3": 0.0263,
+      "5": 0.0,
+      "8": 0.0
+     }
+    },
+    {
+     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507:deepinfra",
+     "letter_acc": 0.1177,
+     "diff_from_kn": -0.2133,
+     "diff_lower_one_sided": -0.2748,
+     "parsed_share": 1.0,
+     "probe_acc": 0.0775,
+     "acc_by_gap_length": {
+      "1": 0.3421,
+      "2": 0.1184,
+      "3": 0.1754,
+      "5": 0.1211,
+      "8": 0.0658
+     },
+     "exact_by_gap_length": {
+      "1": 0.3421,
+      "2": 0.0263,
+      "3": 0.0263,
+      "5": 0.0,
+      "8": 0.0
+     }
+    }
+   ],
+   "settings": "Hugging Face router, temperature 0, at most 48 output tokens, provider pinned in the model name, one prompt per task",
+   "pins": {
+    "manifest.json": "ed544db8e3faaf0642217589d0dba44bac5466940145a5846747a82f6f401991",
+    "key.json": "177c43b61f77734da5fe88784a75dc268f3404e43af8dbe6e64f97cb93a35405",
+    "baseline.json": "99175529f2e39545c8e321aa3c3aa03904bfa9ed0cdaa0cf0ca3d8c5c63b7e0a",
+    "corpus": "5c7c4684b7a4515ebd8840b963757b5a7680cfd2c986375a487b3d66bdb594bf"
+   },
+   "reproduced": "2026-10-22: score.json rescored byte-identical from the frozen replies; corpus and the three prep files rebuilt byte-identical from the pinned clones with kit/greekfill.py",
+   "disclosure": "the test half was scored once before (bits per symbol, 16 Oct 2026) in an earlier unpublished letter-model evaluation whose frozen KN settings are reused; the hosted models may have seen De Musica in training (probe accuracy about 0.08 for every arm)",
+   "limits": [
+    "one text, one editor's normalisation",
+    "edited text, not papyrus damage patterns, with word spaces that papyri lack",
+    "three hosted models, one prompt each, one run",
+    "letter accuracy does not reward near misses",
+    "KN always returns exactly L letters and one of its components was trained on another Philodemus text"
+   ]
+  }
  ]
 }

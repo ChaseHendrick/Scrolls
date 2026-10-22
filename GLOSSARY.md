@@ -102,6 +102,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## G
 
+**gap letter accuracy**: In the Greek gap restoration benchmark (`python -m kit.greekfill`, [page](docs/tools/greekfill.md)), the share of hidden letters a model puts back in the right place, counted position by position, so a reply of the wrong length loses the letters it misplaces.
+
 **Gate A**: The repository's rule for ranking two released ink readers (`python -m kit gate`, rule in `kit/gate.py`): a lead of at least 0.02 mean AUC over three PHerc0841 crops, with forward minus reverse AUC at least 0.10 on every crop.
 
 **generalization**: How well a model does on data it was not trained on. Claims of generalization need a held-out labeled segment.
@@ -154,6 +156,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **kit**: The repository's Python package (`python -m kit`). It plans and records runs of the official pipeline, scores ink maps, checks results and keeps the experiment ledger. Every subcommand is in `kit/cli.py`; the full list is in [`docs/MAP.md`](docs/MAP.md).
 
+**Kneser-Ney (KN) letter model**: A letter n-gram language model that predicts each letter from the few before it, with modified Kneser-Ney smoothing (Chen and Goodman 1999). Here it is the baseline of the Greek gap restoration benchmark (`kit/greekkn.py`, order 8) and, separately, Scroll Text Reader's optional order-5 prior (`kit/greeklm.py`).
+
 ## L
 
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
@@ -169,6 +173,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 ## M
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
+
+**memorisation probe**: In the Greek gap restoration benchmark, an item that shows the start of a passage and asks for the next letters exactly; high accuracy would mean a model recalls the text rather than restores it.
 
 **mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labeled ink or trusted labels.
 

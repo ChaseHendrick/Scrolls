@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 460" width="760" height="460" role="img" aria-labelledby="t d">
+<title id="t">Gap letter accuracy by gap length</title>
+<desc id="d">Greek gap restoration on Philodemus, De Musica: share of hidden letters restored in place, by number of hidden letters, for a Kneser-Ney letter model and three hosted text models. Model output. 38 gaps per length.</desc>
+<style>svg{font-family:system-ui,-apple-system,'Segoe UI',sans-serif}.bg{fill:#fcfcfb}.t1{fill:#0b0b0b}.t2{fill:#52514e}.grid{stroke:#e4e3df}.axis{stroke:#9c9a94}.s0{fill:#2a78d6}.s1{fill:#eb6834}.s2{fill:#1baf7a}.s3{fill:#eda100}@media (prefers-color-scheme: dark){.bg{fill:#1a1a19}.t1{fill:#f0efec}.t2{fill:#c3c2b7}.grid{stroke:#33332f}.axis{stroke:#6f6e68}.s0{fill:#3987e5}.s1{fill:#d95926}.s2{fill:#199e70}.s3{fill:#c98500}}</style>
+<rect class="bg" width="760" height="460" rx="8"/>
+<text class="t1" x="24" y="34" font-size="18" font-weight="600">Gap letter accuracy by gap length</text>
+<text class="t2" x="24" y="56" font-size="13">Philodemus, De Musica, second half: 38 gaps per length, one run, 22 October 2026. Model output.</text>
+<rect class="s0" x="24" y="74" width="12" height="12" rx="2"/>
+<text class="t2" x="41" y="85" font-size="12">Kneser-Ney letter model (ours), all gaps 0.331</text>
+<rect class="s1" x="384" y="74" width="12" height="12" rx="2"/>
+<text class="t2" x="401" y="85" font-size="12">DeepSeek-V3-0324, all gaps 0.181</text>
+<rect class="s2" x="24" y="96" width="12" height="12" rx="2"/>
+<text class="t2" x="41" y="107" font-size="12">Kimi-K2-Instruct-0905, all gaps 0.181</text>
+<rect class="s3" x="384" y="96" width="12" height="12" rx="2"/>
+<text class="t2" x="401" y="107" font-size="12">Qwen3-235B-A22B-Instruct-2507, all gaps 0.118</text>
+<line class="axis" x1="64" x2="736" y1="404.0" y2="404.0"/>
+<text class="t2" x="56" y="408.0" font-size="12" text-anchor="end">0.00</text>
+<line class="grid" x1="64" x2="736" y1="337.0" y2="337.0"/>
+<text class="t2" x="56" y="341.0" font-size="12" text-anchor="end">0.25</text>
+<line class="grid" x1="64" x2="736" y1="270.0" y2="270.0"/>
+<text class="t2" x="56" y="274.0" font-size="12" text-anchor="end">0.50</text>
+<line class="grid" x1="64" x2="736" y1="203.0" y2="203.0"/>
+<text class="t2" x="56" y="207.0" font-size="12" text-anchor="end">0.75</text>
+<line class="grid" x1="64" x2="736" y1="136.0" y2="136.0"/>
+<text class="t2" x="56" y="140.0" font-size="12" text-anchor="end">1.00</text>
+<path class="s0" d="M84.2 404.0v-235.8a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v235.8z"><title>Kneser-Ney letter model (ours), 1 letter: 0.895</title></path>
+<path class="s1" d="M108.2 404.0v-115.9a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v115.9z"><title>DeepSeek-V3-0324, 1 letter: 0.447</title></path>
+<path class="s2" d="M132.2 404.0v-115.9a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v115.9z"><title>Kimi-K2-Instruct-0905, 1 letter: 0.447</title></path>
+<path class="s3" d="M156.2 404.0v-87.7a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v87.7z"><title>Qwen3-235B-A22B-Instruct-2507, 1 letter: 0.342</title></path>
+<text class="t1" x="131.2" y="424" font-size="13" text-anchor="middle">1</text>
+<path class="s0" d="M218.6 404.0v-175.9a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v175.9z"><title>Kneser-Ney letter model (ours), 2 letters: 0.671</title></path>
+<path class="s1" d="M242.6 404.0v-73.6a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v73.6z"><title>DeepSeek-V3-0324, 2 letters: 0.289</title></path>
+<path class="s2" d="M266.6 404.0v-84.1a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v84.1z"><title>Kimi-K2-Instruct-0905, 2 letters: 0.329</title></path>
+<path class="s3" d="M290.6 404.0v-27.7a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v27.7z"><title>Qwen3-235B-A22B-Instruct-2507, 2 letters: 0.118</title></path>
+<text class="t1" x="265.6" y="424" font-size="13" text-anchor="middle">2</text>
+<path class="s0" d="M353.0 404.0v-130.0a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v130.0z"><title>Kneser-Ney letter model (ours), 3 letters: 0.500</title></path>
+<path class="s1" d="M377.0 404.0v-68.9a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v68.9z"><title>DeepSeek-V3-0324, 3 letters: 0.272</title></path>
+<path class="s2" d="M401.0 404.0v-40.7a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v40.7z"><title>Kimi-K2-Instruct-0905, 3 letters: 0.167</title></path>
+<path class="s3" d="M425.0 404.0v-43.0a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v43.0z"><title>Qwen3-235B-A22B-Instruct-2507, 3 letters: 0.175</title></path>
+<text class="t1" x="400.0" y="424" font-size="13" text-anchor="middle">3</text>
+<path class="s0" d="M487.4 404.0v-76.4a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v76.4z"><title>Kneser-Ney letter model (ours), 5 letters: 0.300</title></path>
+<path class="s1" d="M511.4 404.0v-32.7a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v32.7z"><title>DeepSeek-V3-0324, 5 letters: 0.137</title></path>
+<path class="s2" d="M535.4 404.0v-46.8a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v46.8z"><title>Kimi-K2-Instruct-0905, 5 letters: 0.190</title></path>
+<path class="s3" d="M559.4 404.0v-28.5a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v28.5z"><title>Qwen3-235B-A22B-Instruct-2507, 5 letters: 0.121</title></path>
+<text class="t1" x="534.4" y="424" font-size="13" text-anchor="middle">5</text>
+<path class="s0" d="M621.8 404.0v-31.3a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v31.3z"><title>Kneser-Ney letter model (ours), 8 letters: 0.132</title></path>
+<path class="s1" d="M645.8 404.0v-26.8a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v26.8z"><title>DeepSeek-V3-0324, 8 letters: 0.115</title></path>
+<path class="s2" d="M669.8 404.0v-26.0a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v26.0z"><title>Kimi-K2-Instruct-0905, 8 letters: 0.112</title></path>
+<path class="s3" d="M693.8 404.0v-13.6a4.0 4.0 0 0 1 4.0 -4.0h14.0a4.0 4.0 0 0 1 4.0 4.0v13.6z"><title>Qwen3-235B-A22B-Instruct-2507, 8 letters: 0.066</title></path>
+<text class="t1" x="668.8" y="424" font-size="13" text-anchor="middle">8</text>
+<text class="t2" x="400.0" y="444" font-size="12" text-anchor="middle">letters hidden in the gap</text>
+<text class="t2" transform="translate(18 270.0) rotate(-90)" font-size="12" text-anchor="middle">letter accuracy</text>
+</svg>

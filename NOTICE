@@ -12,6 +12,15 @@ The Contributor Covenant text in CODE_OF_CONDUCT.md is adapted from version
 https://www.contributor-covenant.org/version/2/1/code_of_conduct/
 https://creativecommons.org/licenses/by/4.0/
 
+The files key.json, manifest.json, replies.jsonl and baseline.json in
+docs/evidence/greek-restoration-20261022/ quote or derive from Philodemus,
+De Musica, ed. Johannes Kemke, from OpenGreekAndLatin/First1KGreek
+(data/tlg1595/tlg221/tlg1595.tlg221.1st1K-grc1.xml, commit 03776b39), normalised
+to Greek capitals and cut into windows. They are licensed under Creative
+Commons Attribution-ShareAlike 4.0 International, as the source file states:
+https://creativecommons.org/licenses/by-sa/4.0/
+Details and attribution: docs/evidence/greek-restoration-20261022/README.md
+
 The Neuroglancer state and shader conventions in kit/volumeview.py follow
 the Vesuvius Challenge website's dataAccess.js, inspected 2026-10-17:
 https://github.com/ScrollPrize/villa/blob/1db9cd94487c2fb5e759cc4ee72018dcb7359984/scrollprize.org/src/components/atlas/dataAccess.js
