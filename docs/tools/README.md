@@ -106,6 +106,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | --- | --- | --- | --- | --- |
 | [provenance](provenance.md) | Current | `python -m kit provenance write` | Not needed | `python -m kit provenance write` records who ran a job, when, on which machine, from which code commits, and the SHA-256 of its models, inputs and outputs, sealed by one digest; `check` recomputes the digest and, with `--files`, rehashes every file. |
 | [run-ledger](run-ledger.md) | Current | `python -m kit run init` | Not needed | `python -m kit run init`, `status`, `cost`, `record`, `check` and `list` keep one `run.json` per experiment under `experiments/`: the question, a readout rule hashed before any output is seen, a status that cannot jump to published, costs, file hashes and checks. |
+| [claimcheck](claimcheck.md) | Experimental | `python -m kit.claimcheck` | Not needed | Checks that every number in the README's "Novel findings" section matches a results unit or repository file pinned by sha256 (or carries a stated reason), and that new results units cite a file; fails when a claim has no source. |
 | [experiment-records](experiment-records.md) | Retired | None: saved records. Their regression tests run as under Tests | Not needed | `scripts/experiments/` keeps, word for word, the scripts, logs and result JSON of the public-data jobs run on 7 October 2026 (the CPU cloud jobs, Grok's lanes A to I, the tricks runs and the mesh study), so their numbers can be traced and their checks rerun. |
 
 ### Planning and prizes

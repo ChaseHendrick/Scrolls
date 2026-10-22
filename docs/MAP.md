@@ -17,6 +17,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/auc.py` | Pixel AUC against a segment's `inklabels.zarr` inside `supervision.zarr`; reverse map as control; `--crop`, `--inner` |
 | `kit/rowscore.py` | Text-row periodicity triage score (port of Bullo27's); a reading order, not a verdict |
 | `kit/provenance.py` | Who ran what, when, on which machine, from which inputs; one digest over the record |
+| `kit/claimcheck.py` | Claims check, `python -m kit.claimcheck items/trace/suggest/add/pin/check/results`: every number in the README's Novel findings matched to a results unit or repository file pinned by sha256 in `docs/claims/sources.json` (or a stated reason), and results units that cite no file held to a baseline; `tests/test_claimcheck.py` fails on a claim with no source ([page](tools/claimcheck.md)) |
 | `kit/ensemble.py` | Average maps of one surface (`python -m kit ensemble OUT MAP MAP ... [--method rank]`); map-level, never cross-seed weights |
 | `kit/fibertensor.py` | `kit fibertensor train/predict`: structure-tensor (fiber orientation) features plus a tiny numpy MLP, CPU; a measured null on PHerc0841 and w045 ([log](logs/2026-10-07-grok-laneD.md)) |
 | `kit/hpscore.py` | Letter-scale score (Scheirer's 48 um high-pass correlation) against the labels, rolled-key null; pixel AUC rewards blur, this does less |
