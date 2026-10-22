@@ -31,7 +31,7 @@ Open these when the task needs them:
 
 - [`docs/plans/roadmap.md`](docs/plans/roadmap.md): pointer to the roadmap, which now lives in Scrolls-private (access required). Gate A's public rule is in `kit/gate.py`.
 - [`docs/results.json`](docs/results.json): every benchmark number with its settings and source. It is over 200 KB, so print only the part you need; `python3 -c "import json; print(list(json.load(open('docs/results.json'))))"` lists its sections.
-  The README section "Novel findings" lists only results not published elsewhere; reproductions stay in results.json and the logs. Keep both in step when numbers change.
+  The README section "Novel findings" lists only results not published elsewhere, one line each; their full text is [`docs/FINDINGS.md`](docs/FINDINGS.md). Reproductions stay in results.json and the logs. Keep all three in step when numbers change.
 - [`docs/logs/`](docs/logs/): dated research notes; open the one a handoff row or the docs index names, and the newest for the latest numbers.
   Literature (arXiv, journals, Zenodo, Kaggle): [`docs/logs/2026-10-07-literature.md`](docs/logs/2026-10-07-literature.md) and machine-readable [`docs/papers.json`](docs/papers.json).
 
