@@ -1,6 +1,6 @@
 # StrokeNet: a text-likeness score for 2D ink maps
 
-Model card, written 14 October 2026 before the preregistered run; "Results" filled from the run's `results.json` the same day; "In short" added 18 October 2026 from the same numbers. **StrokeNet misses its preregistered bar** on the held-out test of [`prereg/2026-10-14-strokenet.md`](prereg/2026-10-14-strokenet.md) (two of nine items); see "Results".
+Model card, written 14 October 2026 before the preregistered run; "Results" filled from the run's `results.json` the same day; "In short" added 18 October 2026 from the same numbers; "The two-density score", a simpler score with no network, added 22 October 2026. **StrokeNet misses its preregistered bar** on the held-out test of [`prereg/2026-10-14-strokenet.md`](prereg/2026-10-14-strokenet.md) (two of nine items); see "Results".
 
 ## In short
 
@@ -11,7 +11,9 @@ This describes version 1, the released model `strokenet-paris4-v1`. Every number
 - **Where it adds value: orientation.** It tells text windows from their own 90 degree turns far better than any simple score (T4 0.994; +0.141 over the `lines` score, 6 of 6 segments ahead), and the artifact control, which never saw text, stays near chance there (0.559). Window roughness tells text from dense ink better than StrokeNet does (T8, -0.055).
 - **T2, T3 and T7 measure the tile grid, not text**: the artifact control reaches 0.999 on them.
 - **Limits.** One reader's appearance: it saw only the organizers' `new_canon_autoresearch_recipe` maps, so maps from other ink models are outside what it learned (Interpretation). One handwriting: the label rule assumes Paris 4's line pitch (4.5 to 9 mm) with lines running along the rows (Sourced fact, `data.py`), so other writing sizes and turned maps got no text labels (Interpretation). Fixed input assumptions: the organizers' 0 to 255 scale, papyrus as values above 3, windows with at least 99 % core papyrus, a fixed 6.1 mm window, and maps at least 128 px at 0.048 mm on a side (Sourced fact, `kit/strokenet.py`). Float or rescaled maps, other scrolls and other ink models are not tested in this card's published evidence (Interpretation: expect it to do worse there).
-- **A rework is in progress.** A version 5, for maps from any ink reader and any scroll and judged on human ink labels with a preregistered leave-one-scroll-out test, is being built in private work. Until it has a held-out result, this card and `kit strokenet` describe version 1 only.
+- **A rework is in progress.** A version 5, for maps from any ink reader and any scroll and judged on human ink labels with a preregistered leave-one-scroll-out test, is being built in private work. Until it has a held-out result, this card's network and `kit strokenet` without `--two-density` describe version 1 only.
+- **A simpler score, with no network** (22 October 2026). `kit strokenet --two-density` ranks small windows of one map by two ink densities, the window's own and its surroundings'. On its preregistered test it came out ahead of ink density inside segments on PHerc0500P2 with ink_9um (Model output), with a reader that reads that scroll weakly; numbers and limits under "The two-density score".
+
 ## What it is
 
 StrokeNet is a small convolutional network (the released model has 589,393 weights at width 16, depth 5, the configuration the preregistered sweep chose: pairs of 3 x 3 convolutions with batch norm and ReLU, max pooling, global mean and max pooling, one linear output). It gives one logit for a 6.1 mm by 6.1 mm window of a 2D ink map (128 by 128 pixels at 0.048 mm): how much the window looks like lines of body text of PHerc. Paris 4 as the organizers' 2026 ink model draws them. It is trained against blank papyrus and against copies of text windows with their arrangement or orientation destroyed; dense ink without line structure is never a training negative and serves only to choose the configuration, in the calibration mixture and in the tests (T8, FPR_dense).
@@ -58,6 +60,12 @@ python -m kit strokenet MAP.tif --pixel-mm 0.0024 [--weights W.npz] [--crop Y0 Y
 
 numpy only (scipy is used when present and gives the same result). The map must be on the organizers' 0 to 255 scale; an integer map at a whole fraction of 0.048 mm is pooled exactly as in training. `--pixel-mm` must lie between 0.0001 and 1 mm: at 1 mm a 6.1 mm window spans about 6 map pixels and a letter 2 to 4, so nothing coarser shows strokes, and a coarser value would only enlarge the map further; 0.0001 mm (0.1 um) is ten times finer than any scroll scan. Other values, and values that are not finite, stop with an error before anything is loaded. Only windows with 99 % core papyrus are scored, and skipped windows are counted. Every result carries two controls on a random sample of the scored windows (each window against its 90 degree turn and against an IAAFT copy of itself), read against the validation reference values stored with the weights, and an orientation hint. `--crop` moves its origin down to the 32 px training lattice and records both boxes.
 
+```sh
+python -m kit strokenet MAP.tif --pixel-mm 0.009362 --two-density [--mask PAPYRUS.tif] [--grid G.npy] [--out R.json] [--json]
+```
+
+runs the two-density score below instead of the network: no weights, no download, numpy only.
+
 ## Results
 
 Run `20261014T141348Z` (14 October 2026): sweep at `d1f9dbfd`, then resumed at `fb65f0b3` after the cost guard stopped it, with every executed file except the runner unchanged (commits of the private working repository; `results.json` records each executed file's SHA-256, and the copies here match them); finals on L4 and A10G, validation and the single test read on A10. Evidence: [`evidence/2026-10-14-strokenet/`](evidence/2026-10-14-strokenet/README.md) (`results.json` has every value below, per-segment values for every model and baseline, and the intervals). Test split: six whole held-out segments (w053-058, w073-076, w089-091, w101-103, w113-115, w122-123), 3859 text, 1407 blank and 354 dense windows, read once. All numbers are Model output on held-out tracings of one scroll from one ink model with rule-made labels.
@@ -91,6 +99,43 @@ Seeds 1 and 2 miss the same two items (T6 0.696 and 0.648; FPR_blank 0.025 and 0
 **Ablations** (effects that meet the preregistered seed-and-segment rule): with no null training at all, T2, T3, T4 and T7 fall to 0.66, 0.62, 0.59 and 0.45; without rot90 copies T4 falls to 0.64; without shuffle copies T3 and T7 fall to 0.59 and 0.40; without IAAFT copies T2 falls to 0.65. Each null type teaches the measure built on it, which is what training against them was for.
 
 **Reading (Interpretation).** StrokeNet is a strong text-against-blank detector, but density alone does as well. Its one result beyond simple scores is orientation: it tells text windows from their 90 degree turns far better than any simple score (0.994 against 0.865). That is not pure text structure either: it also tells blank papyrus from turned blank papyrus at 0.639, which is the T6 failure, so part of what it learned is the direction of the papyrus or of the map, not of the writing. It does not tell text from dense ink better than roughness, and the null tests T2, T3 and T7 are explained by the tile grid. So the honest summary is: a held-out, controlled test of a text-likeness score that misses its bar, with one orientation result that survives the controls.
+
+## The two-density score
+
+Added 22 October 2026. Plain ink density is the score StrokeNet has to beat, and on its own test it did not (T1 above). The two-density score is a small step past it, with no network and no training: it adds to a window's own ink density how much ink surrounds the window. `python -m kit strokenet MAP --pixel-mm P --two-density` computes it with numpy only; the tool page has every option and output field.
+
+**The score.** The map is stretched linearly to 0 to 255, from its lowest value to its 99.9th percentile, and pooled by the whole number of pixels nearest 48 um (5 for a 9.362 um map, so one pooled pixel is 46.8 um). Label windows of 48 pooled pixels (about 2.2 mm) are laid every 6 pooled pixels; with a papyrus mask, labels under half papyrus are skipped. For each label, d48 is its mean ink on 0 to 1 and d128 the mean ink of the 128 px window (about 6 mm) centered on it, with the map padded as empty. Then
+
+```text
+s = z(logit d48) + 0.25 z(logit d128)
+```
+
+where z is taken within the map over every scored label (population standard deviation). The first term ranks labels exactly as plain density does; the second adds the surroundings. The weights 1.0 and 0.25 were fixed before the test, on maps of other segments, not on ink_9um maps. Because z is taken within one map, s ranks windows of that map; it does not compare maps.
+
+**The test.** One run on 22 October 2026 on public PHerc0500P2 data, preregistered before any map of a test segment existed (the preregistration is not published here). The reader was ink_9um (`scrollprize/ink_9um`, step 75,000) run with villa's inference on the segments' 9.362 um surface volumes: seed 42 is the primary reader and the verdict rests on it; seed 43 was scored the same way as a descriptive replication. ink_9um's label dataset lists no PHerc0500P2 segment (Sourced fact, S7 in the [reader exposure log](logs/2026-10-16-reader-exposure.md)). Text and blank labels were made by a fixed rule from the team's published 2.215 um ink map of each segment (`new_canon_autoresearch_recipe`), so they are model output from a finer scan, not human labels. 11 test segments had at least 10 text and 10 blank labels; together they hold 62,220 text and 6,468 blank label positions.
+
+The measure: within each segment, the AUC of text against blank for s and for plain density (logit d48), and d, the mean over segments of AUC(s) minus AUC(density), with a 95 % interval from a block bootstrap (1 cm blocks resampled within each segment). The verdict "ahead" needed the interval's lower bound above 0, and no verdict was allowed unless two controls passed, each requiring the control's mean within-segment AUC of s to be at least 0.10 below the real one: s on the reverse-depth maps (the depth order reversed, see the glossary's "As stored / reversed"), and s against labels moved by cyclic shifts of at least 10 mm (the median over 20 shifts).
+
+**Results** (Model output, all on the 11 segments):
+
+| Reader | Mean d within segments (95 % interval) | Mean within-segment AUC, s / density | Segments where s beats density | Reverse-depth control | Shifted-label control | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| ink_9um seed 42 (primary) | 0.040 (0.028 to 0.050) | 0.701 / 0.662 | 11 of 11 | 0.574, pass | 0.507, pass | ahead |
+| ink_9um seed 43 (descriptive only) | 0.048 | Not stated here | 11 of 11 | **fail** | Not stated here | none |
+
+The preregistered claim, the only wording this result may be quoted in: **"ahead of ink density inside segments on PHerc0500P2 with ink_9um"**. With seed 42 the per-segment gain ran from +0.010 to +0.104, median +0.029. Seed 43's reverse-depth control failed: its s on the reverse-depth maps was less than 0.10 below its s on the real maps, so its row is not evidence for the score (Interpretation), although it too put s above density in 11 of 11 segments.
+
+**Limits.**
+
+- **A weak reader.** ink_9um reads this scroll weakly: plain density's mean within-segment AUC is 0.66, and on one segment it is below 0.5. A gain over a weak baseline says nothing about how s does with a strong reader.
+- **One scroll, one reader, one read.** The verdict rests on one reader's maps of one scroll, read once. Other scrolls, other ink models and other resolutions are untested.
+- **The interval is likely too narrow.** Three pairs of test segments share papyrus, while the bootstrap treats segments as independent.
+- **The wide window also reads the footprint.** Off-papyrus pixels and the padding count as empty, so a label near a segment edge or a hole gets a lower d128 whatever its ink. Part of the gain may come from where blank labels lie on the papyrus rather than from ink. This was not tested (Untested idea).
+- **The weights were set elsewhere.** 1.0 and 0.25 were chosen on maps of other segments before the test; whether they suit ink_9um, or any other reader, is untested.
+- **Labels from a model.** The text and blank labels come from the team's finer-scan ink map, not from people.
+- **Not StrokeNet's network.** The score uses no learned weights and says nothing about strokes, lines or letters. A score is model output, not a reading, and a high score is never by itself evidence that text is there.
+
+Claim label: Model output, for every number in this section; the claim covers PHerc0500P2 with ink_9um only.
 
 ## License and release
 

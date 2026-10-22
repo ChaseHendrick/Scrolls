@@ -10560,6 +10560,65 @@
     "32": 6.315
    },
    "tiles_per_s_b300": 107.0
+  },
+  {
+   "date": "2026-10-22",
+   "source": "docs/strokenet.md#the-two-density-score",
+   "evidence": "Not published here: the run's report; the numbers below are copied from it",
+   "claim": "Model output on 11 public PHerc0500P2 segments with ink_9um maps, against text and blank labels made by a fixed rule from the team's 2.215 um new_canon_autoresearch_recipe ink map of each segment (model output, not human labels), read once under a preregistration frozen before any test map existed",
+   "score": "two-density: s = z(logit d48) + 0.25 z(logit d128), z within each segment over every scored 48 px label; kit/strokenet.py two_density_analyze",
+   "run": "not published",
+   "claim_wording": "ahead of ink density inside segments on PHerc0500P2 with ink_9um",
+   "verdict": "ahead (seed 42, primary): lower 95 % bound of the mean within-segment AUC difference above 0, both controls passed",
+   "segments": 11,
+   "labels": {
+    "text": 62220,
+    "blank": 6468
+   },
+   "reader_exposure": "ink_9um's label dataset lists no PHerc0500P2 segment (S7, docs/logs/2026-10-16-reader-exposure.md)",
+   "seed42_primary": {
+    "mean_within_segment_d": 0.04,
+    "d_ci95": [
+     0.028,
+     0.05
+    ],
+    "within_segment_auc_s": 0.701,
+    "within_segment_auc_density": 0.662,
+    "segments_s_above_density": "11 of 11",
+    "per_segment_gain": {
+     "min": 0.01,
+     "median": 0.029,
+     "max": 0.104
+    },
+    "controls": {
+     "reverse_depth_within_auc_s": {
+      "value": 0.574,
+      "rule": "at least 0.10 below 0.701",
+      "pass": true
+     },
+     "shifted_labels_median_of_20_within_auc_s": {
+      "value": 0.507,
+      "rule": "at least 0.10 below 0.701",
+      "pass": true
+     }
+    }
+   },
+   "seed43_descriptive": {
+    "mean_within_segment_d": 0.048,
+    "segments_s_above_density": "11 of 11",
+    "controls": {
+     "reverse_depth": {
+      "pass": false
+     }
+    }
+   },
+   "limits": [
+    "ink_9um reads this scroll weakly: density's mean within-segment AUC 0.66, below 0.5 on one segment; a gain over a weak baseline says nothing about strong readers",
+    "one scroll, one reader for the verdict, a single read",
+    "three test pairs share papyrus, so the interval is likely too narrow",
+    "the 128 px window also reads the map's footprint; untested",
+    "the weights were set on maps of other segments"
+   ]
   }
  ],
  "stackcheck_checks": [
