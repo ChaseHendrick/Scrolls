@@ -8230,8 +8230,8 @@
     "text": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score"
    },
    "checked": {
-    "date": "2026-10-18",
-    "commit": "4a970bd"
+    "date": "2026-10-22",
+    "commit": "a9f80f1"
    },
    "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
    "fields": {
@@ -8242,15 +8242,15 @@
     "Run": "`python -m kit strokenet`, `from kit import strokenet`, `python scripts/strokenet/data.py`, `python scripts/strokenet/train.py`, `python scripts/strokenet/pipeline.py`, `python scripts/strokenet/evaluate.py`",
     "Code": "`kit/strokenet.py`, `kit/data/strokenet-weights.json`, `scripts/strokenet/`, `kit/cli.py` (`cmd_strokenet`)",
     "Tests": "`tests/test_strokenet.py`, `tests/test_strokenet_pipeline.py`, `tests/test_strokenet_stats.py`, `tests/test_gridpilot.py`",
-    "Needs": "Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`)",
+    "Needs": "Scoring: Python 3.10 or newer and numpy; scipy is used when present and gives the same masks; tifffile for TIFF maps (with zarr installed a TIFF is read lazily), Pillow for PNG and other images and for `--png`. From a clone, `python -m pip install -e \".[all]\"` brings all of them; a plain `pip install .` brings none, and the command then names the packages to install. The scripts also need torch (`train.py`, `nulls.py`, `pipeline.py`, the `randcnn` baseline), scipy (`data.py` labels), tifffile and zarr (`data.py` pooling). The preregistered run used torch 2.14.1+cu130 (`config.torch` in the evidence's `runs/*.history.json`)",
     "Runs on": "Scoring runs on any CPU. A synthetic 300 x 400 px map at 0.048 mm (43 windows) with a small random test network took 4.4 s (measured 2026-10-16, 4-core cloud container); the released network on a whole segment: Not measured. Training runs on a GPU: each run of the preregistered sweep, finals and controls took 666 to 2,356 s on CUDA, the released configuration 1,506 s (`train_wall_s` in [the evidence's run histories](../evidence/2026-10-14-strokenet/README.md))",
     "Network": "`kit strokenet` with a weights file: None. With a released model name not yet in the cache: one download of the weights from github.com (the `url` in `kit/data/strokenet-weights.json`). `data.py fetch`: data.aws.ash2txt.org, one TIFF of about 1.3 GB per segment, 27 segments. `gridpilot.py`: HTTP range reads of a surface volume's chunks at a base URL its caller gives (its cloud runner is not in this repository)",
-    "Writes": "`kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file",
+    "Writes": "`kit strokenet`: nothing by default (prints only); `--out` writes the result JSON, `--grid` a `.npy` logit grid, `--png` a picture of the map with each window's score painted over it; the first use of a released name writes the weights to `~/.cache/scrolls-kit/strokenet/` (or `$KIT_STROKENET_WEIGHTS`) through a `.part` file. Scripts: `data.py` writes `WORK/raw/`, `WORK/pooled/`, `WORK/labels/`, `WORK/crops/`; `train.py` writes `RUN/config.json`, `checkpoint.pt`, `final.pt`, `strokenet.npz`, `history.json`; `pipeline.py` writes the run folder's monitor, baselines, evaluation sets, reads, `choice.json`, `calibration.json`, `gate.json` and `WORK/read_test.started.json`; `evaluate.py` writes `calibration.json` and its `--out` file",
     "Go-ahead": "Not needed to score a map. Needed before renting GPUs for `train.py` or `pipeline.py` (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before uploading new weights or posting any score",
     "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's \"Released tools\" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry",
     "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits)",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
-    "Checked": "2026-10-18 against commit `4a970bd`"
+    "Checked": "2026-10-22 against commit `a9f80f1` (`--png` and 0 to 1 scaling added on top)"
    },
    "page": "docs/tools/strokenet.md",
    "sections": [
@@ -8269,79 +8269,79 @@
     {
      "name": "Quick start",
      "start_line": 62,
-     "end_line": 86,
+     "end_line": 87,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 87,
-     "end_line": 96,
+     "start_line": 88,
+     "end_line": 97,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 97,
-     "end_line": 231,
+     "start_line": 98,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 232,
-     "end_line": 260,
+     "start_line": 234,
+     "end_line": 262,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 261,
-     "end_line": 271,
+     "start_line": 263,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 272,
-     "end_line": 306,
+     "start_line": 274,
+     "end_line": 308,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 307,
-     "end_line": 373,
+     "start_line": 309,
+     "end_line": 375,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 374,
-     "end_line": 394,
+     "start_line": 376,
+     "end_line": 396,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 395,
-     "end_line": 400,
+     "start_line": 397,
+     "end_line": 402,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 401,
-     "end_line": 410,
+     "start_line": 403,
+     "end_line": 412,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 411,
-     "end_line": 418,
+     "start_line": 413,
+     "end_line": 420,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 419,
-     "end_line": 425,
+     "start_line": 421,
+     "end_line": 427,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 426,
-     "end_line": 434,
+     "start_line": 428,
+     "end_line": 436,
      "applicable": true
     }
    ]
@@ -8760,73 +8760,73 @@
     {
      "name": "Checks and controls",
      "start_line": 90,
-     "end_line": 100,
+     "end_line": 101,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 101,
-     "end_line": 242,
+     "start_line": 102,
+     "end_line": 243,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 243,
-     "end_line": 264,
+     "start_line": 244,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 265,
-     "end_line": 274,
+     "start_line": 266,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 275,
-     "end_line": 308,
+     "start_line": 276,
+     "end_line": 309,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 309,
-     "end_line": 346,
+     "start_line": 310,
+     "end_line": 347,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 347,
-     "end_line": 358,
+     "start_line": 348,
+     "end_line": 359,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 359,
-     "end_line": 366,
+     "start_line": 360,
+     "end_line": 367,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 367,
-     "end_line": 376,
+     "start_line": 368,
+     "end_line": 377,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 377,
-     "end_line": 384,
+     "start_line": 378,
+     "end_line": 385,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 385,
-     "end_line": 392,
+     "start_line": 386,
+     "end_line": 394,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 393,
-     "end_line": 400,
+     "start_line": 395,
+     "end_line": 402,
      "applicable": true
     }
    ]
