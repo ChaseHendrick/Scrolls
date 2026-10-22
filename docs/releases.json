@@ -96,8 +96,8 @@
     {
       "id": "scrolls-kit",
       "title": "Scrolls kit",
-      "released": "2026-10-21",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: five `python -m kit` commands, a planted-defect generator for tests and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "released": "2026-10-22",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: five `python -m kit` commands, a planted-defect generator for tests, a Greek gap restoration benchmark and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -115,6 +115,15 @@
         "caption": "Concept illustration: the toolbox's motifs on one tray. No scan data."
       },
       "tools": [
+        {
+          "id": "greekfill",
+          "name": "Greek gap restoration benchmark",
+          "released": "2026-10-22",
+          "summary": "Hides 1 to 8 letters in 190 windows of Philodemus, De Musica (public First1KGreek text) and scores hosted text models against an order-8 Kneser-Ney letter model under a frozen rule, with a memorisation probe and a cost cap; the corpus builder and the letter model come with it, and the frozen files reproduce byte for byte. In the run of 22 October 2026 the letter model restored 0.331 of hidden letters against 0.181, 0.181 and 0.118 for DeepSeek-V3-0324, Kimi-K2-Instruct-0905 and Qwen3-235B-A22B-Instruct-2507, and 0.895 of single letters against 0.447 at best (Model output; one text, one prompt, one run). Public edited text, no scroll data; a fill is not a reading.",
+          "command": "python -m kit.greekfill score docs/evidence/greek-restoration-20261022 --out work/greekfill-score.json",
+          "page": "docs/tools/greekfill.md",
+          "evidence": "[preregistration and result](docs/prereg/2026-10-22-greek-restoration.md), [frozen files, reproduction and the text's CC BY-SA 4.0 licence](docs/evidence/greek-restoration-20261022/README.md)"
+        },
         {
           "id": "planted",
           "name": "Planted defect generator",

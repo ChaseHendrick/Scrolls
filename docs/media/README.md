@@ -1,6 +1,6 @@
 # The public media rule
 
-What pictures, GIFs and clips public Scrolls may hold, and how the rule is checked. The files themselves live in [`docs/assets/`](../assets/README.md), each with a row there and a sidecar JSON; this folder holds only the rule. Scrolls-private's own `docs/media/` keeps the real-data media that stay private.
+What pictures, GIFs and clips public Scrolls may hold, and how the rule is checked. The files themselves live in [`docs/assets/`](../assets/README.md), each with a row there and a sidecar JSON; this folder holds the rule and charts drawn from published numbers, which are SVG drawings and not pictures under the rule (below), each with a sidecar JSON: [`greek-restoration-by-gap-length.svg`](greek-restoration-by-gap-length.svg) ([sidecar](greek-restoration-by-gap-length.json)), made by `python -m kit.greekfill chart` from the Greek gap restoration benchmark's frozen `score.json`. Scrolls-private's own `docs/media/` keeps the real-data media that stay private.
 
 ## Where the rule comes from
 

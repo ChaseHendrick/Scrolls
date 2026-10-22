@@ -78,6 +78,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [greekfill](greekfill.md) | Current | `python -m kit.greekfill` | Not needed | Runs and scores the Greek gap restoration benchmark: hosted text models and an order-8 Kneser-Ney letter model fill hidden letters in Philodemus, De Musica, under a frozen rule with a memorisation probe; the frozen files reproduce byte for byte. |
 | [greeklm](greeklm.md) | Current | `python -m kit greeklm build` | Not needed | `python -m kit greeklm` builds a Kneser-Ney letter n-gram model of Greek written as capitals with no spaces from TEI editions, and scores strings in bits per letter; the letter reader can add a decode with it beside its ink-only letters. |
 | [letterdemo](letterdemo.md) | Current | `python -m kit letterdemo` | Not needed | `python -m kit letterdemo` draws four lines of Greek capitals and a noise image in numpy, reads both with the letter reader's released weights, and prints DEMO PASS or DEMO FAIL under a fixed rule: an offline check that the reader, its weights and numpy work together. |
 | [letterlines](letterlines.md) | Current | `python -m kit letterlines build` | Not needed | `python -m kit letterlines build` checks records of lines you transcribed and cuts each line as the letter reader sees it into a `LINES.npz` for fine-tuning; `letterlines score` gives one or more models' character error on lines kept apart, with a paired interval. |

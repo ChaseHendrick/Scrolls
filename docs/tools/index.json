@@ -2354,6 +2354,158 @@
    ]
   },
   {
+   "id": "greekfill",
+   "name": "greekfill",
+   "tagline": "Greek gap restoration benchmark, hosted text models against a letter model",
+   "summary": "Runs and scores the Greek gap restoration benchmark: hosted text models and an order-8 Kneser-Ney letter model fill hidden letters in Philodemus, De Musica, under a frozen rule with a memorisation probe; the frozen files reproduce byte for byte.",
+   "status": "Current",
+   "kind": [
+    "kit entry point",
+    "kit module"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python -m kit.greekfill"
+   ],
+   "imports": [
+    "from kit import greekfill",
+    "from kit import greekkn"
+   ],
+   "code": [
+    {
+     "path": "kit/greekfill.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/greekkn.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_greekfill.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for `corpus`, `prep`, `score`, `check`, `chart` and `run --dry-run`. Needed for `run`: it sends paid requests to Hugging Face's router (renting compute: the go-ahead rule, hard rule 8), and the frozen test on these items is closed"
+   },
+   "checked": {
+    "date": "2026-10-22",
+    "commit": "0fbc49a"
+   },
+   "license": "Code Apache-2.0; the frozen files that quote De Musica are CC BY-SA 4.0 ([evidence README](../evidence/greek-restoration-20261022/README.md#licence-of-the-text))",
+   "fields": {
+    "Id": "`greekfill`",
+    "Status": "Current",
+    "Kind": "kit entry point, kit module",
+    "Area": "Letters and titles",
+    "Run": "`python -m kit.greekfill`, `from kit import greekfill`, `from kit import greekkn`",
+    "Code": "`kit/greekfill.py`, `kit/greekkn.py`",
+    "Tests": "`tests/test_greekfill.py`",
+    "Needs": "Python 3.10 or newer and numpy (the `reader` or `all` extra installs it); the rest is the standard library. To rebuild the corpus: git clones of [PerseusDL/canonical-greekLit](https://github.com/PerseusDL/canonical-greekLit) at `0189b9c8d8d1f148133f2f0af309b4ee90ea4332` and [OpenGreekAndLatin/First1KGreek](https://github.com/OpenGreekAndLatin/First1KGreek) at `03776b39f4047c5cff06f5296fae4b2bae4b08fb` (CC BY-SA 4.0, about 1 GB together). For `run` only: a Hugging Face token with inference credit",
+    "Runs on": "Any CPU. On a 4-core Claude cloud container (22 Oct 2026): `score` 1.4 s, `corpus` 5 min 26 s with `--nproc 4`, `prep` 1 min 57 s; the original `run` of 690 requests took about 11 minutes of replies",
+    "Network": "`run` only: `https://router.huggingface.co/v1/chat/completions`, to ask the hosted models (`--dry-run` contacts nothing). Every other command reads local files; you clone the TEI repositories yourself",
+    "Writes": "`corpus`: CORPUS.tsv. `prep`: OUT_DIR/`manifest.json`, `key.json`, `baseline.json` (and, with `--cache`, `general.npz` and `phil.npz` there). `run`: appends OUT_DIR/`replies.jsonl`. `score`: OUT_DIR/`score.json`, or the `--out` file. `chart`: OUT.svg. `check`: nothing (prints only)",
+    "Go-ahead": "Not needed for `corpus`, `prep`, `score`, `check`, `chart` and `run --dry-run`. Needed for `run`: it sends paid requests to Hugging Face's router (renting compute: the go-ahead rule, hard rule 8), and the frozen test on these items is closed",
+    "Released": "Public `main` from the merge of its pull request (prepared 22 Oct 2026), ported from the copy that ran the frozen test",
+    "Guide": "[Preregistration and result](../prereg/2026-10-22-greek-restoration.md)",
+    "License": "Code Apache-2.0; the frozen files that quote De Musica are CC BY-SA 4.0 ([evidence README](../evidence/greek-restoration-20261022/README.md#licence-of-the-text))",
+    "Checked": "2026-10-22 against commit `0fbc49a`"
+   },
+   "page": "docs/tools/greekfill.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 82,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 92,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 183,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 220,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 227,
+     "end_line": 257,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 258,
+     "end_line": 269,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 270,
+     "end_line": 279,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 280,
+     "end_line": 283,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 284,
+     "end_line": 293,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 294,
+     "end_line": 297,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 298,
+     "end_line": 301,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 302,
+     "end_line": 309,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "greeklm",
    "name": "greeklm",
    "tagline": "letter language model for Greek in scriptio continua",

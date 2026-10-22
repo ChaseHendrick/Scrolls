@@ -252,6 +252,21 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "three-hosted-text-models-restored-hidden-greek-letters": {
+   "line": 285,
+   "sources": {
+    "r:text_restoration_checks/0": "f030bf477aa0ff96c846459374e1e2be222ea20bdbf975a55c5bc6a70e9497df",
+    "docs/prereg/2026-10-22-greek-restoration.md": "b4d7e24f5e10699fec2894126f3afd161ea913da771fff2c48a495e75dfd47a3"
+   }
+  },
+  "three-hosted-text-models-restored-hidden-greek-letters-2": {
+   "line": 13,
+   "sources": {
+    "docs/prereg/2026-10-22-greek-restoration.md": "b4d7e24f5e10699fec2894126f3afd161ea913da771fff2c48a495e75dfd47a3",
+    "r:text_restoration_checks/0": "f030bf477aa0ff96c846459374e1e2be222ea20bdbf975a55c5bc6a70e9497df"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
   "two-of-pherc0841-s-three-labeled-segments-are": {
    "line": 293,
    "sources": {
