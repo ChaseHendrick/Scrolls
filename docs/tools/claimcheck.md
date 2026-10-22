@@ -210,13 +210,14 @@ Text by default, JSON with `--json`. The ledger, `docs/claims/sources.json`:
 
 | What you see | Why | What to do |
 | --- | --- | --- |
-| `'s Novel findings (python -m kit.claimcheck items)` | The key names no block | Run `items` and copy the key |
-| `must be {"schema": "` | The ledger is malformed | Restore `{"schema": "claimcheck/1", "blocks": {...}}` from git |
+| `no block 'K' in README.md's Novel findings (python -m kit.claimcheck items)` | The key names no block | Run `items` and copy the key |
+| `docs/claims/sources.json must be {"schema": "claimcheck/1", "blocks": {...}}` | The ledger is malformed | Restore `{"schema": "claimcheck/1", "blocks": {...}}` from git |
+| `claimcheck: ...` on stderr, exit code 2 | Any of the errors below; the rest of the line says which | Read the rest of the line |
 | `not found under` | No README at the root | Pass `--root` |
-| `does not state` | A `--reason` names a number the block does not have | Copy the token from `trace` |
-| `match none of the sources and have no --reason` | `add` would leave numbers untraced | Add the source that holds them, or a reason |
+| `--reason for 640, which block K does not state` | A `--reason` names a number the block does not have | Copy the token from `trace` |
+| `block K: 640 match none of the sources and have no --reason` | `add` would leave numbers untraced | Add the source that holds them, or a reason |
 | `is not JSON:` | `docs/results.json` does not parse | Fix the JSON |
-| `: write TOKEN=KIND: text, KIND one of` | A reason without `=` or a known kind | Write `640=setting: the crop size` |
+| `--reason '640': write TOKEN=KIND: text, KIND one of ...` | A reason without `=` or a known kind | Write `640=setting: the crop size` |
 | `is not a unit of` | `r:ID` names no results unit | Check the section, index or id |
 | `: a source is a results unit or a path inside the repository` | An absolute path, `..` or a URL | Cite the results unit or the file in this repository |
 | `does not exist` | The cited path is gone | Cite where the number lives now, then `pin --write` |
