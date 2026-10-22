@@ -1,5 +1,10 @@
 """Claims check: every number in the README's "Novel findings" section traced to a source with a digest.
 
+The ledger's optional "documents" list names more files whose whole text is checked the same way, block by block
+(docs/FINDINGS.md, the detailed register the README section links to, since 22 Oct 2026). Block keys are unique
+across the README section and every document, the README's first, so a block moved verbatim from the README into a
+document keeps its key and its ledger entry.
+
 `python -m kit.claimcheck items|trace|add|pin|check|results`.
 
 items    the blocks of the README's "## Novel findings" section (list items and paragraphs, up to the next "## "
@@ -27,7 +32,9 @@ causal pins), or a repository file or folder (a folder's digest covers every fil
 source when the source holds a number that rounds to it at the README's precision (0.738 matches 0.7382, an
 integer only an equal integer; "96 %" also matches 0.96), so a README number that is a rounding of a measured value
 passes and one that is not fails. When docs/causal/claims.json (kit causal) exists, its `source` lines for a
-Novel findings item are read as sources of that item too, so the two tools share one list of causes.
+Novel findings item are read as sources of that item too, so the two tools share one list of causes. That read is
+optional: kit causal is not merged on 21 Oct 2026, so without the file (or with --no-causal) only this tool's own
+ledger is read, and `check` says so in one line; a causal file it cannot read is reported, never a failure.
 
 What it does not do: a match shows that a pinned source holds the number, not that it is the right quantity in
 that source (a small integer can match by chance in a long log); the reasons are a reviewer's statement. It
@@ -95,6 +102,16 @@ def section_blocks(text):
         start = next(i for i, ln in enumerate(lines) if ln.strip() == SECTION)
     except StopIteration:
         return []
+    return _keyed(_blocks(lines, start, stop_at_h2=True))
+
+
+def document_blocks(text):
+    """[{key, kind, line, text}] for every list item and paragraph of a whole document (a ledger "documents"
+    entry); headings separate blocks and never end the read."""
+    return _keyed(_blocks(text.splitlines(), -1, stop_at_h2=False))
+
+
+def _blocks(lines, start, stop_at_h2):
     blocks, cur = [], None
 
     def close():
@@ -103,7 +120,7 @@ def section_blocks(text):
 
     for i in range(start + 1, len(lines)):
         ln = lines[i]
-        if ln.startswith("## "):
+        if stop_at_h2 and ln.startswith("## "):
             break
         s = ln.strip()
         if not s or s.startswith(("#", ">", "<!--")):
@@ -119,7 +136,11 @@ def section_blocks(text):
         else:
             cur["text"] += " " + s
     close()
-    seen = {}
+    return blocks
+
+
+def _keyed(blocks, seen=None):
+    seen = {} if seen is None else seen
     for b in blocks:
         lead = RE_BOLD.search(b["text"])
         base = _slug(lead.group(1) if lead and b["text"].lstrip().startswith("**") else b["text"])
@@ -313,23 +334,45 @@ def save_ledger(root, doc, path=LEDGER):
     os.replace(tmp, p)
 
 
-def causal_sources(root, blocks):
-    """{block key: [refs]} from docs/causal/claims.json (kit causal), matched by quote; empty when absent."""
+CAUSAL_SCHEMA = "causal-claims/1"
+
+
+def causal_claims(root, use=True):
+    """(claims, status): the claims of docs/causal/claims.json (kit causal) and one line saying whether they were
+    read. The file is optional: absent, switched off, unreadable or of another schema gives no claims and a
+    status that says why, never an error, so this tool works with or without kit causal merged."""
     p = Path(root) / CAUSAL_CLAIMS
+    if not use:
+        return [], f"causal ledger {CAUSAL_CLAIMS}: not read (--no-causal); only {LEDGER} is used"
     if not p.exists():
-        return {}
+        return [], (f"causal ledger {CAUSAL_CLAIMS}: absent (kit causal is not installed here); "
+                    f"only {LEDGER} is used")
     try:
-        claims = json.loads(p.read_text(encoding="utf-8")).get("claims", [])
-    except ValueError:
-        return {}
+        doc = json.loads(p.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        return [], f"causal ledger {CAUSAL_CLAIMS}: not read, not JSON ({exc}); only {LEDGER} is used"
+    if not isinstance(doc, dict) or doc.get("schema") != CAUSAL_SCHEMA or not isinstance(doc.get("claims"), list):
+        got = doc.get("schema") if isinstance(doc, dict) else type(doc).__name__
+        return [], (f"causal ledger {CAUSAL_CLAIMS}: not read, schema {got!r} is not {CAUSAL_SCHEMA!r}; "
+                    f"only {LEDGER} is used")
+    claims = [c for c in doc["claims"] if isinstance(c, dict)]
+    return claims, f"causal ledger {CAUSAL_CLAIMS}: read, {len(claims)} claims"
+
+
+def causal_sources(root, blocks, use=True):
+    """{block key: [refs]} from docs/causal/claims.json (kit causal), matched by quote; empty when absent, switched
+    off or unreadable (causal_claims says which)."""
+    claims, _ = causal_claims(root, use)
     out = {}
     for c in claims:
         quote = c.get("quote") or ""
+        if not isinstance(quote, str):
+            continue
         hit = [b["key"] for b in blocks if quote and quote in b["text"]]
         if len(hit) != 1:
             continue
-        for line in c.get("causal", []):
-            parts = line.split()
+        for line in c.get("causal") or []:
+            parts = line.split() if isinstance(line, str) else []
             if len(parts) >= 2 and parts[0] == "source":
                 out.setdefault(hit[0], []).append(parts[1].rstrip("/"))
     return out
@@ -351,35 +394,53 @@ def trace_block(src, block, refs, reasons=None):
     return rows, bad
 
 
-def _readme_blocks(root, readme, text=None):
-    if text is not None:
-        return section_blocks(text)
+def _readme_blocks(root, readme, text=None, documents=()):
+    """The README section's blocks, then each document's, keyed uniquely across all of them; each block names
+    its file in "doc". text, when given, stands in for the README's content."""
     p = Path(root) / readme
-    if not p.exists():
-        raise ClaimError(f"{readme} not found under {root}")
-    return section_blocks(p.read_text(encoding="utf-8"))
+    if text is None:
+        if not p.exists():
+            raise ClaimError(f"{readme} not found under {root}")
+        text = p.read_text(encoding="utf-8")
+    lines = text.splitlines()
+    start = next((i for i, ln in enumerate(lines) if ln.strip() == SECTION), None)
+    parts = [(readme, _blocks(lines, start, stop_at_h2=True) if start is not None else [])]
+    for rel in documents:
+        d = Path(root) / rel
+        if not d.exists():
+            raise ClaimError(f"{rel} (a ledger document) not found under {root}")
+        parts.append((rel, _blocks(d.read_text(encoding="utf-8").splitlines(), -1, stop_at_h2=False)))
+    seen, out = {}, []
+    for rel, blocks in parts:
+        for b in _keyed(blocks, seen):
+            b["doc"] = rel
+            out.append(b)
+    return out
 
 
-def check(root=".", ledger=LEDGER, readme_text=None):
-    """{"exit", "findings": [{code, where, text}], "counts"} for the README's Novel findings and results units
-    (readme_text, when given, stands in for the README's content)."""
+def check(root=".", ledger=LEDGER, readme_text=None, causal=True):
+    """{"exit", "findings": [{code, where, text}], "counts", "causal"} for the README's Novel findings and results
+    units (readme_text, when given, stands in for the README's content; causal=False leaves kit causal's ledger
+    unread; "causal" is the one-line status of that optional read)."""
     doc = load_ledger(root, ledger)
     readme = doc.get("readme", README)
-    blocks = _readme_blocks(root, readme, readme_text)
+    blocks = _readme_blocks(root, readme, readme_text, doc.get("documents", ()))
     src = Sources(root)
-    extra = causal_sources(root, blocks)
+    extra = causal_sources(root, blocks, causal)
+    causal_note = causal_claims(root, causal)[1]
     findings, counts = [], {"blocks": 0, "numbers": 0, "sourced": 0, "reasoned": 0, "sources": 0}
 
     def add(code, where, text):
         findings.append({"code": code, "where": where, "text": text})
 
     keys = {b["key"] for b in blocks}
+    checked = {readme, *doc.get("documents", ())}
     for b in blocks:
         nums = numbers(b["text"])
         if not nums:
             continue
         counts["blocks"] += 1
-        where = f"{readme}:{b['line']} [{b['key']}]"
+        where = f"{b['doc']}:{b['line']} [{b['key']}]"
         entry = doc["blocks"].get(b["key"])
         if entry is None:
             add("C1", where, f"states {len(nums)} numbers ({', '.join(n['token'] for n in nums[:6])}"
@@ -387,6 +448,9 @@ def check(root=".", ledger=LEDGER, readme_text=None):
                              f"source (python -m kit.claimcheck add {b['key']} --source REF ...)")
             continue
         pins = entry.get("sources", {})
+        for ref in [r for r in pins if r.rstrip("/") in checked]:
+            add("C3", where, f"{ref} is a file this tool checks; a claim cannot be its own source")
+        pins = {r: v for r, v in pins.items() if r.rstrip("/") not in checked}
         for ref, pin in pins.items():
             counts["sources"] += 1
             try:
@@ -415,7 +479,8 @@ def check(root=".", ledger=LEDGER, readme_text=None):
                 add("C5", where, f"reason for {tok} must start with one of {', '.join(REASON_KINDS)}:")
     for key in doc["blocks"]:
         if key not in keys:
-            add("C6", f"{ledger} [{key}]", f"no block {key} in {readme}'s Novel findings; remove or rename it")
+            add("C6", f"{ledger} [{key}]", f"no block {key} in {readme}'s Novel findings or the ledger's documents; "
+                                           f"remove or rename it")
     unsourced = results_unsourced(root)
     counts["results_units"], counts["results_unsourced"] = unsourced["units"], len(unsourced["unsourced"])
     base = set(doc.get("results_baseline", []))
@@ -423,7 +488,7 @@ def check(root=".", ledger=LEDGER, readme_text=None):
         if u["sha12"] not in base:
             add("C7", f"{RESULTS} {u['ref']}", "a results unit that cites no existing repository file and is not "
                                                "in the baseline: add its source or evidence path")
-    return {"exit": 1 if findings else 0, "findings": findings, "counts": counts}
+    return {"exit": 1 if findings else 0, "findings": findings, "counts": counts, "causal": causal_note}
 
 
 def _reason_ok(text):
@@ -483,12 +548,16 @@ RE_REL_LINK = re.compile(r"\]\(((?!https?:|#|mailto:)[^)\s#]+)(?:#[^)]*)?\)")
 def suggest(root, key, ledger=LEDGER, limit=8):
     """{"chosen": [{ref, covers}], "left": [tokens]}: a greedy cover of one block's numbers, linked files first."""
     doc = load_ledger(root, ledger)
-    block, _ = _find_block(root, doc.get("readme", README), key)
+    block, _ = _find_block(root, doc.get("readme", README), key, doc.get("documents", ()))
     src = Sources(root)
     nums = numbers(block["text"])
     left = list(range(len(nums)))
     linked = []
+    base = Path(block.get("doc", README)).parent
     for rel in RE_REL_LINK.findall(block["text"]):
+        rel = os.path.normpath(base / rel).replace(os.sep, "/")
+        if rel.startswith(".."):
+            continue
         try:
             src.resolve(rel)
             linked.append(rel)
@@ -514,21 +583,26 @@ def suggest(root, key, ledger=LEDGER, limit=8):
 
 # ---------------------------------------------------------------- commands
 
-def _find_block(root, readme, key):
-    blocks = _readme_blocks(root, readme)
+def _find_block(root, readme, key, documents=()):
+    blocks = _readme_blocks(root, readme, documents=documents)
     for b in blocks:
         if b["key"] == key:
             return b, blocks
-    raise ClaimError(f"no block {key!r} in {readme}'s Novel findings (python -m kit.claimcheck items)")
+    raise ClaimError(f"no block {key!r} in {readme}'s Novel findings or the ledger's documents "
+                     f"(python -m kit.claimcheck items)")
 
 
-def add_entry(root, key, refs, reasons=(), ledger=LEDGER, write=False):
-    """Build (and with write, store) one block's ledger entry; ClaimError when a number stays untraced."""
+def add_entry(root, key, refs, reasons=(), ledger=LEDGER, write=False, causal=True):
+    """Build (and with write, store) one block's ledger entry; ClaimError when a number stays untraced or a given
+    source names nothing. A kit causal source that names nothing is listed in "causal_bad", not an error."""
     doc = load_ledger(root, ledger)
-    block, blocks = _find_block(root, doc.get("readme", README), key)
+    block, blocks = _find_block(root, doc.get("readme", README), key, doc.get("documents", ()))
     src = Sources(root)
     pins = {}
+    checked = {doc.get("readme", README), *doc.get("documents", ())}
     for r in refs:
+        if r.rstrip("/") in checked:
+            raise ClaimError(f"{r} is a file this tool checks; a claim cannot be its own source")
         pins[r] = src.resolve(r)[0]
     why = {}
     for item in reasons:
@@ -536,10 +610,11 @@ def add_entry(root, key, refs, reasons=(), ledger=LEDGER, write=False):
         if not sep or not _reason_ok(text):
             raise ClaimError(f"--reason {item!r}: write TOKEN=KIND: text, KIND one of {', '.join(REASON_KINDS)}")
         why[tok] = text
-    extra = [r for r in causal_sources(root, blocks).get(key, []) if r not in pins]
+    extra = [r for r in causal_sources(root, blocks, causal).get(key, []) if r not in pins]
     rows, bad = trace_block(src, block, list(pins) + extra, why)
-    if bad:
-        raise ClaimError("; ".join(bad.values()))
+    own_bad = [v for r, v in bad.items() if r in pins]
+    if own_bad:
+        raise ClaimError("; ".join(own_bad))
     tokens = {r["token"] for r in rows}
     stale = [t for t in why if t not in tokens]
     if stale:
@@ -548,12 +623,15 @@ def add_entry(root, key, refs, reasons=(), ledger=LEDGER, write=False):
     if loose:
         raise ClaimError(f"block {key}: {', '.join(loose)} match none of the sources and have no --reason")
     entry = {"line": block["line"], "sources": pins}
+    if block.get("doc", README) != doc.get("readme", README):
+        entry["doc"] = block["doc"]
     if why:
         entry["reasons"] = why
     if write:
         doc["blocks"][key] = entry
         save_ledger(root, doc, ledger)
-    return {"key": key, "entry": entry, "rows": rows, "written": write}
+    return {"key": key, "entry": entry, "rows": rows, "written": write,
+            "causal_bad": {r: v for r, v in bad.items() if r not in pins}}
 
 
 def pin(root, ledger=LEDGER, write=False):
@@ -575,6 +653,8 @@ def main(argv=None):
     ap.add_argument("--root", default=".", help="repository root (default: the current folder)")
     ap.add_argument("--ledger", default=LEDGER, help=f"ledger path under the root (default {LEDGER})")
     ap.add_argument("--json", action="store_true", help="print JSON")
+    ap.add_argument("--no-causal", action="store_true",
+                    help=f"do not read kit causal's {CAUSAL_CLAIMS} (it is optional; absent where kit causal is not installed)")
     sub = ap.add_subparsers(dest="cmd", required=True)
     sub.add_parser("items", help="the Novel findings blocks and the numbers each states")
     p = sub.add_parser("trace", help="one block's numbers against sources")
@@ -597,13 +677,15 @@ def main(argv=None):
     root = a.root
     try:
         if a.cmd == "items":
-            readme = load_ledger(root, a.ledger).get("readme", README)
-            out = [{"key": b["key"], "line": b["line"], "numbers": [n["token"] for n in numbers(b["text"])]}
-                   for b in _readme_blocks(root, readme)]
-            text = "\n".join(f"{o['line']:>4} {o['key']}: {' '.join(o['numbers']) or '(none)'}" for o in out)
+            doc = load_ledger(root, a.ledger)
+            out = [{"key": b["key"], "doc": b["doc"], "line": b["line"],
+                    "numbers": [n["token"] for n in numbers(b["text"])]}
+                   for b in _readme_blocks(root, doc.get("readme", README), documents=doc.get("documents", ()))]
+            text = "\n".join(f"{o['doc']}:{o['line']} {o['key']}: {' '.join(o['numbers']) or '(none)'}"
+                              for o in out)
         elif a.cmd == "trace":
             doc = load_ledger(root, a.ledger)
-            block, _ = _find_block(root, doc.get("readme", README), a.key)
+            block, _ = _find_block(root, doc.get("readme", README), a.key, doc.get("documents", ()))
             entry = doc["blocks"].get(a.key, {})
             refs = a.source or list(entry.get("sources", {}))
             rows, bad = trace_block(Sources(root), block, refs, entry.get("reasons"))
@@ -616,8 +698,9 @@ def main(argv=None):
             text = "\n".join([f"{c['ref']}: {' '.join(c['covers'])}" for c in out["chosen"]] +
                              [f"left: {' '.join(out['left']) or '(none)'}"])
         elif a.cmd == "add":
-            out = add_entry(root, a.key, a.source, a.reason, a.ledger, a.write)
-            text = json.dumps(out["entry"], indent=1) + ("\nwritten" if a.write else "\n(not written; --write)")
+            out = add_entry(root, a.key, a.source, a.reason, a.ledger, a.write, causal=not a.no_causal)
+            text = json.dumps(out["entry"], indent=1) + ("\nwritten" if a.write else "\n(not written; --write)") + \
+                "".join(f"\ncausal source not read: {v}" for v in out["causal_bad"].values())
         elif a.cmd == "pin":
             out = pin(root, a.ledger, a.write)
             text = "\n".join(f"{c['block']} {c['ref']} {c['old'][:12]} -> {c['new'][:12]}" for c in out["changes"]) \
@@ -631,9 +714,10 @@ def main(argv=None):
             text = "\n".join(f"{u['ref']} {u['sha12']}" for u in out["unsourced"]) + \
                 f"\n{len(out['unsourced'])} of {out['units']} units cite no existing file"
         else:
-            out = check(root, a.ledger)
+            out = check(root, a.ledger, causal=not a.no_causal)
             c = out["counts"]
             text = "\n".join(f"{f['code']} {f['where']}: {f['text']}" for f in out["findings"]) + \
+                f"\n{out['causal']}" + \
                 (f"\n{c['numbers']} numbers in {c['blocks']} blocks: {c['sourced']} sourced, {c['reasoned']} with a "
                  f"reason; {c['results_unsourced']} of {c['results_units']} results units cite no file "
                  f"(baseline {len(load_ledger(root, a.ledger).get('results_baseline', []))}); "

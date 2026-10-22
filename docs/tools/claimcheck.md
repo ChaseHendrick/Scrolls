@@ -11,23 +11,29 @@ Checks that every number in the README's "Novel findings" section matches a resu
 | Run | `python -m kit.claimcheck`, `from kit import claimcheck` |
 | Code | `kit/claimcheck.py` |
 | Tests | `tests/test_claimcheck.py` |
-| Needs | Python 3.10 or newer, standard library only; this checkout's `README.md`, `docs/results.json` and the files the ledger cites |
-| Runs on | CPU; `check` on this repository took 0.8 s on the 4-core cloud container (21 Oct 2026) |
+| Needs | Python 3.10 or newer, standard library only; this checkout's `README.md`, the ledger's `documents` (`docs/FINDINGS.md`), `docs/results.json` and the files the ledger cites |
+| Runs on | CPU; `check` on this repository took 0.3 s on the 4-core cloud container (22 Oct 2026) |
 | Network | None |
 | Writes | Nothing for `items`, `trace`, `suggest` and `check`. `add --write`, `pin --write` and `results --write` rewrite `docs/claims/sources.json` (atomically, through `sources.tmp`) |
 | Go-ahead | Not needed |
-| Released | Public `main` from 21 Oct 2026 |
-| Checked | 2026-10-21 against commit `2601c1f` |
+| Released | Public `main` from 22 Oct 2026 ([PR #147](https://github.com/ChaseHendrick/Scrolls/pull/147)) |
+| Checked | 2026-10-22 against commit `cb6594d` |
 
 ## What it does
 
-The README's "Novel findings" section states about 190 numbers (AUCs, distances, counts, shares). AGENTS.md asks that the README claim, `docs/results.json` and the linked source stay in step. Nothing checked that until now: a number could be edited, rounded wrongly or left behind when its source changed.
+The README's "Novel findings" section states about 30 numbers, and the register it links to, `docs/FINDINGS.md`, about 220 more (AUCs, distances, counts, shares). AGENTS.md asks that the README claim, `docs/results.json` and the linked source stay in step. Nothing checked that until now: a number could be edited, rounded wrongly or left behind when its source changed.
 
 `kit.claimcheck` splits the section into blocks (each list item and each paragraph, up to the next `## ` heading) and pulls out every number a block states. It leaves out dates, years, times, issue and PR numbers (`#2058`), references such as "finding 12" or "lines 200-207", code spans, link targets and identifiers with digits in them (PHerc0841, w045, `ink_9um`, commit hashes). The ledger, `docs/claims/sources.json`, names each block's sources: results units (`r:results/7`, `r:axis_parity_checks/1`, `r:community/8`) or repository files and folders (a log, an evidence folder), each pinned to its sha256 at the time it was reviewed. A number passes when one of its block's sources holds a number that rounds to it at the README's precision (0.738 matches a stored 0.7382; an integer matches only an equal integer; "96 %" also matches 0.96). A number no source holds (a setting such as the 640 px crop, or a value derived from the source, such as a difference) needs a reason in the ledger that starts with `setting:`, `count:`, `derived:`, `external:` or `context:`.
+
+The ledger may also list `documents`: files read whole, every list item and paragraph a block, with headings only separating blocks. Since 22 Oct 2026 it lists [`docs/FINDINGS.md`](../FINDINGS.md), the detailed register the README section now links to, so its numbers are traced the same way. Keys are unique across the README section and every document, README first, so a block moved verbatim from the README into the register keeps its key and its ledger entry; a block that appears in both gets a `-2` key and needs its own entry. A file the tool checks cannot be a source of a claim: `add` refuses it and `check` reports it as C3.
 
 For `docs/results.json` it checks the other direction too: every unit should cite an existing repository file in one of its string values (`source`, `evidence`, ...), and a community row may cite its publication's URL instead. The units that do not today are listed in the ledger's `results_baseline` (by the first 12 hex digits of their unit sha256), and any other unit that cites no file fails the check, so the gap cannot grow.
 
 The results unit digest is kit causal's `unit_sha256` (the unit's canonical JSON without `id` and `causal`). When `docs/causal/claims.json` (written by kit causal, where that tool is installed) exists, its `source` lines for a Novel findings item are read as that block's sources too, so the two tools share one list of causes. kit causal checks each claim as a whole (its quote, label and pinned causes); this tool checks each number.
+
+That read is optional, so this tool does not depend on kit causal. Without the file, or with `--no-causal`, only `docs/claims/sources.json` is read, and `check` prints one line that says so (`causal ledger docs/causal/claims.json: absent ...`). A causal file that does not parse or has another schema is reported on that line and skipped, never a failure; a causal source that names nothing is listed by `add`, not an error. The pins of causal sources are kit causal's to check: this tool pins only its own ledger's sources.
+
+Two ledgers, where kit causal is installed: `docs/causal/claims.json` (claim level, one entry per README item, its own `sha256:` pins) and this tool's `docs/claims/sources.json` (number level, per block). Until they are merged into one list, a source cited in both is pinned twice, and a change to it needs `pin --write` here and kit causal's own re-pin there.
 
 What it does not do: a match shows that a pinned source holds the number, not that it is the right quantity there; a small integer can match by chance in a long log, and a reason is the reviewer's statement. It does not check words, labels or whether a finding is true.
 
@@ -46,10 +52,10 @@ Do not use it:
 
 ```bash
 python -m kit.claimcheck check
-python -m kit.claimcheck trace scoring-a-crop-needs-an-edge-margin
+python -m kit.claimcheck trace scoring-a-crop-needs-an-edge-margin-2
 ```
 
-On 21 Oct 2026 `check` printed `187 numbers in 17 blocks: 177 sourced, 10 with a reason; 2 of 92 results units cite no file (baseline 2); ok` and exited 0. `trace` printed one line per number:
+On 22 Oct 2026 `check` printed `250 numbers in 30 blocks: 239 sourced, 11 with a reason; 2 of 93 results units cite no file (baseline 2); ok` and exited 0. `trace` printed one line per number:
 
 ```text
        640  reason: setting: the crop is a 640 px window (the glossary's Crop)
@@ -75,6 +81,7 @@ Every command takes the global options before the command name.
 
 ```text
 usage: python -m kit.claimcheck [-h] [--root ROOT] [--ledger LEDGER] [--json]
+                                [--no-causal]
                                 {items,trace,suggest,add,pin,check,results} ...
 ```
 
@@ -83,6 +90,7 @@ usage: python -m kit.claimcheck [-h] [--root ROOT] [--ledger LEDGER] [--json]
 | `--root ROOT` | `.` | Repository root |
 | `--ledger LEDGER` | `docs/claims/sources.json` | Ledger path under the root |
 | `--json` | off | Print JSON instead of text |
+| `--no-causal` | off | Do not read kit causal's `docs/causal/claims.json` (optional; absent where kit causal is not installed) |
 
 ### `python -m kit.claimcheck items`
 
@@ -144,7 +152,7 @@ usage: python -m kit.claimcheck pin [-h] [--write]
 usage: python -m kit.claimcheck check [-h]
 ```
 
-Exit 1 on any finding (codes under Outputs). No options.
+Exit 1 on any finding (codes under Outputs). No options. The output ends with the causal ledger line (read, absent, not read and why) and the counts.
 
 ### `python -m kit.claimcheck results`
 
@@ -162,6 +170,7 @@ usage: python -m kit.claimcheck results [-h] [--write]
 | --- | --- | --- | --- |
 | `ClaimError()` | an exception | | Bad ref, ledger or reason |
 | `section_blocks(text)` | list of dict | | [{key, kind, line, text}] for the list items and paragraphs under the README's "## Novel findings" heading, |
+| `document_blocks(text)` | list of dict | | [{key, kind, line, text}] for every list item and paragraph of a whole document (a ledger "documents" entry); headings separate blocks |
 | `numbers(text)` | list of dict | | [{"token", "value", "decimals", "percent"}] for each number the text states, in order. |
 | `unit_sha256(entry)` | str | | sha256 of a results unit's canonical JSON without `id` and `causal` (kit causal's unit_sha256). |
 | `results_units(data)` | dict | | {ref: entry} for every unit of a results file: r:SECTION for a dict section, r:SECTION/INDEX for each object |
@@ -169,12 +178,13 @@ usage: python -m kit.claimcheck results [-h] [--write]
 | `matches(num, values)` | bool | | True when some source value rounds to the README number at its precision (an integer: equals it). |
 | `load_ledger(root, path=LEDGER)` | dict | `ClaimError` | An empty ledger when the file is missing |
 | `save_ledger(root, doc, path=LEDGER)` | None | | Sorted, atomic write |
-| `causal_sources(root, blocks)` | dict | | {block key: [refs]} from docs/causal/claims.json (kit causal), matched by quote; empty when absent. |
+| `causal_claims(root, use=True)` | (list, str) | | The claims of docs/causal/claims.json and a one-line status; absent, switched off or unreadable gives no claims and says why. |
+| `causal_sources(root, blocks, use=True)` | dict | | {block key: [refs]} from docs/causal/claims.json (kit causal), matched by quote; empty when absent, switched off or unreadable. |
 | `trace_block(src, block, refs, reasons=None)` | (rows, bad) | | [{token, sources, reason}] for each number of a block against the refs (errors per ref in 'bad'). |
-| `check(root='.', ledger=LEDGER, readme_text=None)` | dict | `ClaimError` | {"exit", "findings": [{code, where, text}], "counts"} for the README's Novel findings and results units |
+| `check(root='.', ledger=LEDGER, readme_text=None, causal=True)` | dict | `ClaimError` | {"exit", "findings": [{code, where, text}], "counts", "causal"} for the README's Novel findings and results units |
 | `results_unsourced(root)` | dict | `ClaimError` | {"units", "unsourced": [{ref, sha12}]}: results units none of whose string values names an existing |
 | `suggest(root, key, ledger=LEDGER, limit=8)` | dict | `ClaimError` | {"chosen": [{ref, covers}], "left": [tokens]}: a greedy cover of one block's numbers, linked files first. |
-| `add_entry(root, key, refs, reasons=(), ledger=LEDGER, write=False)` | dict | `ClaimError` | Build (and with write, store) one block's ledger entry; ClaimError when a number stays untraced. |
+| `add_entry(root, key, refs, reasons=(), ledger=LEDGER, write=False, causal=True)` | dict | `ClaimError` | Build (and with write, store) one block's ledger entry; ClaimError when a number stays untraced or a given source names nothing; bad causal sources go to `causal_bad`. |
 | `pin(root, ledger=LEDGER, write=False)` | dict | `ClaimError` | {"changes": [{block, ref, old, new}], "written"} |
 | `main(argv=None)` | int | | The command line; returns the exit code |
 
@@ -183,7 +193,7 @@ usage: python -m kit.claimcheck results [-h] [--write]
 - `README.md`: the `## Novel findings` section, up to the next `## ` heading. Blockquotes, headings and HTML comments are skipped.
 - `docs/results.json`: units are dict sections (`r:SECTION`), object rows of list sections (`r:SECTION/INDEX`) and rows with an explicit `id` (`r:ID`); `schema`, `updated`, `about`, `held_out`, `segments` and `pending` are not units.
 - Repository files and folders the ledger cites. Text files (`.md`, `.json`, `.jsonl`, `.csv`, `.tsv`, `.txt`, `.log`, `.yaml`, `.yml`, `.xml`) up to 8 MB are read for numbers; every file is hashed.
-- `docs/causal/claims.json` when present (schema `causal-claims/1`).
+- `docs/causal/claims.json` when present (schema `causal-claims/1`); optional, skipped with `--no-causal`.
 
 ## Outputs
 
@@ -210,7 +220,9 @@ Text by default, JSON with `--json`. The ledger, `docs/claims/sources.json`:
 
 | What you see | Why | What to do |
 | --- | --- | --- |
-| `no block 'K' in README.md's Novel findings (python -m kit.claimcheck items)` | The key names no block | Run `items` and copy the key |
+| `no block 'K' in README.md's Novel findings or the ledger's documents (python -m kit.claimcheck items)` | The key names no block | Run `items` and copy the key |
+| `(a ledger document) not found under` | A file in the ledger's `documents` is missing | Restore it, or remove it from `documents` and its blocks' entries |
+| `is a file this tool checks; a claim cannot be its own source` | A source is the README or a ledger document (C3 in `check`) | Cite the preregistration, log, evidence or results unit the number comes from |
 | `docs/claims/sources.json must be {"schema": "claimcheck/1", "blocks": {...}}` | The ledger is malformed | Restore `{"schema": "claimcheck/1", "blocks": {...}}` from git |
 | `claimcheck: ...` on stderr, exit code 2 | Any of the errors below; the rest of the line says which | Read the rest of the line |
 | `not found under` | No README at the root | Pass `--root` |
@@ -221,6 +233,8 @@ Text by default, JSON with `--json`. The ledger, `docs/claims/sources.json`:
 | `is not a unit of` | `r:ID` names no results unit | Check the section, index or id |
 | `: a source is a results unit or a path inside the repository` | An absolute path, `..` or a URL | Cite the results unit or the file in this repository |
 | `does not exist` | The cited path is gone | Cite where the number lives now, then `pin --write` |
+| `causal ledger docs/causal/claims.json: absent` | kit causal is not merged here | Nothing: only this ledger is read |
+| `causal ledger docs/causal/claims.json: not read` | The causal file does not parse or has another schema | Fix it in kit causal, or pass `--no-causal` |
 
 ## How it works
 
@@ -232,7 +246,7 @@ Text by default, JSON with `--json`. The ledger, `docs/claims/sources.json`:
 
 ## Cost and time
 
-Local and free. `check` on this repository: 0.8 s wall on the 4-core cloud container (21 Oct 2026); the tests take about 3 s.
+Local and free. `check` on this repository: 4.1 s wall on the 4-core cloud container (21 Oct 2026); the tests take about 10 s, most of it the two runs over the real repository.
 
 ## For agents
 
@@ -246,11 +260,12 @@ Local and free. `check` on this repository: 0.8 s wall on the 4-core cloud conta
 
 ## Tests
 
-`python -m unittest tests.test_claimcheck`: extraction (dates, identifiers, references left out), block splitting, rounding rules, every finding C1 to C7 on a synthetic repository, `add` refusals, the results ratchet, kit causal compatibility, `suggest`, the CLI, and this repository's README with its control. They do not check that a reason is true.
+`python -m unittest tests.test_claimcheck`: extraction (dates, identifiers, references left out), block splitting, rounding rules, every finding C1 to C7 on a synthetic repository, `add` refusals, the results ratchet, kit causal compatibility (absent, unreadable and other-schema files are reported and skipped; a causal source traces a number only while the read is on, the control), `suggest`, the CLI, and this repository's README with its control. They do not check that a reason is true.
 
 ## History
 
 - 2026-10-21: first version, with the ledger for this README's 17 claimed blocks ([PR #147](https://github.com/ChaseHendrick/Scrolls/pull/147)).
+- 2026-10-22: the optional kit causal read gets a status line and `--no-causal`; the ledger may list `documents`, so `docs/FINDINGS.md` (from [#156](https://github.com/ChaseHendrick/Scrolls/pull/156)) is traced block by block and a block moved there from the README keeps its entry ([PR #147](https://github.com/ChaseHendrick/Scrolls/pull/147)).
 
 ## Related
 

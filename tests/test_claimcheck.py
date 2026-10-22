@@ -123,6 +123,36 @@ class LedgerTest(unittest.TestCase):
         self.assertIn("C1", codes)     # beta-renamed has no entry
         self.assertEqual(self.codes(), ["C2", "C3"])
 
+    def test_documents_are_checked_and_a_moved_block_keeps_its_entry(self):
+        doc = cc.load_ledger(self.root)
+        doc["documents"] = ["docs/FINDINGS.md"]
+        cc.save_ledger(self.root, doc)
+        with self.assertRaises(cc.ClaimError):
+            cc.check(self.root)                                                # a listed document must exist
+        alpha = next(ln for ln in README.splitlines() if ln.startswith("- **Alpha holds**"))
+        findings = ("# Findings\n\n## Held up\n\n" + alpha.replace("](docs/logs/a.md)", "](logs/a.md)") +
+                    "\n\n## Failed\n\n- **Epsilon failed** at 0.3141.\n")
+        (self.root / "docs" / "FINDINGS.md").write_text(findings)
+        moved = README.replace(alpha + "\n", "")
+        codes = self.codes(readme_text=moved)
+        self.assertEqual(codes, ["C1"])                                       # alpha's entry carries; epsilon has none
+        out = cc.check(self.root, readme_text=moved)
+        self.assertTrue(any(f["where"].startswith("docs/FINDINGS.md:") and "epsilon-failed" in f["where"]
+                            for f in out["findings"]))
+        (self.root / "README.md").write_text(moved)
+        self.assertEqual(cc.suggest(self.root, "alpha-holds")["chosen"][0]["ref"], "docs/logs/a.md")
+        (self.root / "docs" / "logs" / "e.md").write_text("the run gave 0.31409\n")
+        entry = cc.add_entry(self.root, "epsilon-failed", ["docs/logs/e.md"], write=True)["entry"]
+        self.assertEqual(entry["doc"], "docs/FINDINGS.md")
+        with self.assertRaises(cc.ClaimError):
+            cc.add_entry(self.root, "epsilon-failed", ["docs/FINDINGS.md"])     # a checked file cannot be a source
+        self.assertEqual(self.codes(), [])
+        self.assertEqual(self.codes(readme_text=README), ["C1"])             # the same key in both: alpha-holds-2
+        doc = cc.load_ledger(self.root)
+        doc["blocks"]["epsilon-failed"]["sources"]["docs/FINDINGS.md"] = "0" * 64
+        cc.save_ledger(self.root, doc)
+        self.assertEqual(self.codes(), ["C3"])                                # the control: a self-citation fails
+
     def test_add_refuses_untraced_numbers_and_bad_reasons(self):
         with self.assertRaises(cc.ClaimError):
             cc.add_entry(self.root, "alpha-holds", ["docs/logs/a.md"])          # 640 untraced
@@ -155,6 +185,48 @@ class LedgerTest(unittest.TestCase):
              "causal": ["source docs/evidence/x/ sha256:abc"]}]}))
         blocks = cc.section_blocks(README)
         self.assertEqual(cc.causal_sources(self.root, blocks), {"beta-also-holds": ["docs/evidence/x"]})
+
+    def write_causal(self, doc):
+        (self.root / "docs" / "causal").mkdir(exist_ok=True)
+        path = self.root / "docs" / "causal" / "claims.json"
+        path.write_text(doc if isinstance(doc, str) else json.dumps(doc))
+
+    def test_causal_ledger_is_optional_and_says_so(self):
+        # kit causal is not merged: without its file the check runs on this ledger alone and says so in one line
+        out = cc.check(self.root)
+        self.assertEqual(out["exit"], 0, out["findings"])
+        self.assertIn("absent", out["causal"])
+        # a file it cannot read is reported, never a crash or a failure
+        for bad in ("{not json", json.dumps([1, 2]), json.dumps({"schema": "other/9", "claims": []})):
+            self.write_causal(bad)
+            out = cc.check(self.root)
+            self.assertEqual(out["exit"], 0, out["findings"])
+            self.assertIn("not read", out["causal"])
+            self.assertEqual(cc.causal_sources(self.root, cc.section_blocks(README)), {})
+        with contextlib.redirect_stdout(io.StringIO()) as buf:
+            self.assertEqual(cc.main(["--root", str(self.root), "check"]), 0)
+        self.assertIn("causal ledger", buf.getvalue())
+
+    def test_control_causal_source_is_read_unless_switched_off(self):
+        # a number only kit causal's source holds: traced with the causal ledger, C2 with --no-causal
+        (self.root / "docs" / "logs" / "b.md").write_text("spread 0.123\n")
+        text = README.replace("0.914 on", "0.914 and 0.123 on")
+        self.write_causal({"schema": "causal-claims/1", "claims": [
+            {"id": "a", "quote": "Reader AUC 0.738", "causal": ["source docs/logs/b.md sha256:abc", 7, "note x"]}]})
+        out = cc.check(self.root, readme_text=text)
+        self.assertEqual(out["exit"], 0, out["findings"])
+        self.assertIn("read, 1 claims", out["causal"])
+        out = cc.check(self.root, readme_text=text, causal=False)
+        self.assertEqual([f["code"] for f in out["findings"]], ["C2"])
+        self.assertIn("--no-causal", out["causal"])
+
+    def test_bad_causal_source_does_not_block_add(self):
+        self.write_causal({"schema": "causal-claims/1", "claims": [
+            {"id": "a", "quote": "Reader AUC 0.738", "causal": ["source docs/logs/gone.md"]}]})
+        got = cc.add_entry(self.root, "alpha-holds", ["docs/logs/a.md"], ["640=setting: the crop size"])
+        self.assertEqual(list(got["causal_bad"]), ["docs/logs/gone.md"])
+        with self.assertRaises(cc.ClaimError):       # a source the reviewer gave still has to exist
+            cc.add_entry(self.root, "alpha-holds", ["docs/logs/gone.md"], ["640=setting: x"])
 
     def test_suggest_and_cli(self):
         s = cc.suggest(self.root, "alpha-holds")
