@@ -5515,6 +5515,148 @@
    ]
   },
   {
+   "id": "planted",
+   "name": "planted",
+   "tagline": "planted sheet switches, holes and mergers with known answers",
+   "summary": "One shared generator of planted defects (sheet switches, lenses, skips, mergers, holes and bridged holes) on synthetic tifxyz surfaces, each with its true winding per vertex, so stack checks, switch detectors and reference labelers test against the same known answers.",
+   "status": "Current",
+   "kind": [
+    "kit entry point"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit.planted"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/planted.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_planted.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-21",
+    "commit": "2601c1f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`planted`",
+    "Status": "Current",
+    "Kind": "kit entry point",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit.planted`",
+    "Code": "`kit/planted.py`",
+    "Tests": "`tests/test_planted.py`",
+    "Needs": "Python 3.9 or newer and numpy; tifffile or kit's own TIFF writer (`kit/vc3d_io.py`) to write tifxyz. No scan data, villa or GPU.",
+    "Runs on": "CPU anywhere; a 20 x 160 plant is made, written and checked in well under a second (measured 2026-10-21, Claude cloud container)",
+    "Network": "None",
+    "Writes": "`make`: the OUT tifxyz folder (`x.tif`, `y.tif`, `z.tif`, `meta.json`, `planted.json`); `families` and `check` print only",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the merge of its pull request (21 Oct 2026); the same file is in Scrolls-private",
+    "Checked": "2026-10-21 against commit `2601c1f`"
+   },
+   "page": "docs/tools/planted.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 40,
+     "end_line": 51,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 52,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 70,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 76,
+     "end_line": 122,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 123,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 143,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 148,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 173,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 195,
+     "end_line": 202,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 203,
+     "end_line": 206,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 207,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 217,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 221,
+     "end_line": 224,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 225,
+     "end_line": 228,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "prizes",
    "name": "prizes",
    "tagline": "list the open Vesuvius Challenge prizes from a dated snapshot",
