@@ -805,3 +805,186 @@ def text_summary(res):
     lines.append(f"  {res['orientation_hint']}")
     lines.append(res["note"])
     return "\n".join(lines)
+
+
+# ------------------------------------------------------------------ the two-density score (no network)
+# StrokeNet's simple score (docs/strokenet.md, "The two-density score"): for each 48 px label window of a pooled ink map,
+# s = 1.0 z(logit d48) + 0.25 z(logit d128), where d48 is the label's mean ink, d128 the mean ink of the 128 px window
+# centred on it (the map padded by 40 px read as no ink), and z is taken within the map over every scored label. The map
+# preparation is the one the score was tested with. It needs numpy only and no weights. Every score is model output.
+TD_WIN = 128                    # the wider window, pooled pixels (about 6 mm)
+TD_LABEL = 48                   # the label window at its centre, pooled pixels (about 2.2 mm)
+TD_PAD = (TD_WIN - TD_LABEL) // 2   # the pooled map is padded by this much, so every label has its window
+TD_PAD_VALUE = 4                # the empty map's value after density_stretch (it adds 4)
+TD_STRIDE = 6                   # label stride of the test (48 // 8)
+TD_POOL_UM = 48.0               # maps are block-averaged by the whole number nearest 48 um / pixel size
+TD_PAPYRUS_MIN = 0.5            # with a papyrus mask, labels with less papyrus are skipped (the test's rule)
+TD_WEIGHTS = (1.0, 0.25)        # the frozen weights of z(logit d48) and z(logit d128)
+DENSITY_CLIP = (1e-3, 1 - 1e-3)
+NOTE_TD = ("Model output: an ink density score for each label window of one map, ranked within that map. "
+           "Not a reading; it never shows by itself that text is present.")
+
+
+def logit01(d):
+    """logit of a mean on 0..1, clipped to DENSITY_CLIP."""
+    d = np.clip(np.asarray(d, np.float64), *DENSITY_CLIP)
+    return np.log(d / (1 - d))
+
+
+def density_stretch(ink):
+    """(uint8 map, info): the map on the tested 0 to 255 scale. The map is read as float32 and mapped linearly from its
+    lowest finite value to its 99.9th percentile onto 0 to 255, clipped (an integer map is stretched too); NaN becomes 0;
+    then times 251 / 255, rounded, plus 4, so the emptiest pixel is 4 (TD_PAD_VALUE). info: floor and top of the
+    stretch, None when no value is finite."""
+    a = np.asarray(ink, np.float32)
+    if a.ndim != 2:
+        raise ValueError(f"expected a 2D map, got shape {a.shape}")
+    v = a.astype(np.float64).ravel()
+    v = v[np.isfinite(v)]
+    info = {"floor": None, "top": None}
+    if v.size:
+        lo, top = float(v.min()), float(v.max())
+        hi = float(np.percentile(v, 99.9))
+        if hi <= lo:
+            hi = top if top > lo else lo + 1.0
+        a = (np.clip((a - lo) / (hi - lo), 0, 1) * 255.0).astype(np.float32)
+        info = {"floor": lo, "top": hi}
+    del v
+    return np.clip(np.rint(np.nan_to_num(a) * (251.0 / 255.0)) + 4, 0, 255).astype(np.uint8), info
+
+
+def density_pool_k(pixel_mm):
+    """The block side a map is pooled by: the whole number nearest 48 um / pixel size, at least 1 (5 for a 9.362 um
+    map, so its pooled pixel is 46.8 um, not exactly 48)."""
+    check_pixel_mm(pixel_mm)
+    return max(1, int(round(TD_POOL_UM / (float(pixel_mm) * 1000.0))))
+
+
+def _block_mean(a, k, rows=4096):
+    """k x k block means of a 2D array in float64, rows and columns past the last whole block dropped."""
+    H, W = (a.shape[0] // k) * k, (a.shape[1] // k) * k
+    out = np.empty((H // k, W // k), np.float64)
+    step = max(k, rows // k * k)
+    for y in range(0, H, step):
+        y1 = min(H, y + step)
+        out[y // k:y1 // k] = a[y:y1, :W].reshape((y1 - y) // k, k, W // k, k).astype(np.float64).mean(axis=(1, 3))
+    return out
+
+
+def density_working(ink, pixel_mm):
+    """(pooled uint8 map, info): density_stretch, then k x k block means rounded half to even (k = density_pool_k).
+    info adds k and the pooled pixel size in mm."""
+    k = density_pool_k(pixel_mm)
+    a, info = density_stretch(ink)
+    pooled = np.round(_block_mean(a, k)).astype(np.uint8)
+    return pooled, dict(info, k=k, pixel_mm=float(pixel_mm) * k)
+
+
+def density_papyrus(mask, pixel_mm):
+    """The papyrus share of each pooled pixel from a mask at the map's resolution (nonzero is papyrus)."""
+    return _block_mean(np.asarray(mask) != 0, density_pool_k(pixel_mm)).astype(np.float32)
+
+
+def _sat(a):
+    """Summed-area table with a zero first row and column."""
+    s = np.zeros((a.shape[0] + 1, a.shape[1] + 1), np.float64)
+    s[1:, 1:] = np.cumsum(np.cumsum(np.asarray(a, np.float64), axis=0), axis=1)
+    return s
+
+
+def _win_sum(s, y, x, n):
+    return s[y + n, x + n] - s[y, x + n] - s[y + n, x] + s[y, x]
+
+
+def label_positions(shape, stride=TD_STRIDE, papyrus=None, min_share=TD_PAPYRUS_MIN):
+    """Top-left corners (y, x) of the 48 px label windows on the pooled grid, every `stride` pixels from the origin
+    (none past the last whole label), as an (N, 2) int64 array. With a papyrus share map (density_papyrus) only labels
+    with at least min_share papyrus are kept."""
+    if int(stride) < 1:
+        raise ValueError("the label stride must be at least 1")
+    H, W = shape
+    if H < TD_LABEL or W < TD_LABEL:
+        return np.zeros((0, 2), np.int64)
+    ys, xs = np.arange(0, H - TD_LABEL + 1, int(stride)), np.arange(0, W - TD_LABEL + 1, int(stride))
+    pos = np.stack(np.meshgrid(ys, xs, indexing="ij"), -1).reshape(-1, 2).astype(np.int64)
+    if papyrus is not None:
+        p = np.asarray(papyrus, np.float64)
+        if p.shape != tuple(shape):
+            raise ValueError(f"papyrus shares {p.shape} and the pooled map {tuple(shape)} differ")
+        share = _win_sum(_sat(p), pos[:, 0], pos[:, 1], TD_LABEL) / (TD_LABEL * TD_LABEL)
+        pos = pos[share >= min_share]
+    return pos
+
+
+def window_densities(pooled, pos):
+    """(d48, d128) on 0..1 for each label at pos: the mean of the 48 px label, and of the 128 px window centred on it
+    in the pooled map padded by TD_PAD pixels of TD_PAD_VALUE (padding reads as no ink)."""
+    pos = np.asarray(pos, np.int64).reshape(-1, 2)
+    a = np.asarray(pooled, np.float64)
+    d48 = _win_sum(_sat(a), pos[:, 0], pos[:, 1], TD_LABEL) / (TD_LABEL * TD_LABEL * 255.0)
+    p = np.pad(a, TD_PAD, mode="constant", constant_values=TD_PAD_VALUE)
+    d128 = _win_sum(_sat(p), pos[:, 0], pos[:, 1], TD_WIN) / (TD_WIN * TD_WIN * 255.0)
+    return d48, d128
+
+
+def zscore(v):
+    """(v - mean) / sd over every value given (population sd); all zeros when the values do not vary."""
+    v = np.asarray(v, np.float64)
+    if not len(v):
+        return v
+    sd = v.std()
+    return (v - v.mean()) / sd if sd > 0 else np.zeros_like(v)
+
+
+def two_density(d48, d128, weights=TD_WEIGHTS):
+    """s for each label: weights[0] z(logit d48) + weights[1] z(logit d128), z over all the labels given (one map or
+    segment; z over labeled windows only, or across maps, is a different score)."""
+    return weights[0] * zscore(logit01(d48)) + weights[1] * zscore(logit01(d128))
+
+
+def two_density_analyze(ink, pixel_mm, stride=TD_STRIDE, mask=None, with_grid=False):
+    """Score every label window of a map: (result dict, grid or None). The grid is s on the label lattice (rows and
+    columns of label positions), NaN where a label was skipped for papyrus. mask: papyrus at the map's resolution
+    (nonzero is papyrus); without it every whole label is scored."""
+    pooled, info = density_working(ink, pixel_mm)
+    pap = None
+    if mask is not None:
+        m = np.asarray(mask)
+        if m.shape != np.asarray(ink).shape:
+            raise ValueError(f"the mask {m.shape} and the map {np.asarray(ink).shape} differ in shape")
+        pap = density_papyrus(m, pixel_mm)
+    every = label_positions(pooled.shape, stride)
+    pos = label_positions(pooled.shape, stride, papyrus=pap)
+    d48, d128 = window_densities(pooled, pos)
+    s = two_density(d48, d128)
+    k = info["k"]
+    q = (lambda v: [float(x) for x in np.percentile(v, [10, 50, 90])]) if len(s) else (lambda v: None)
+    res = {"score": "two-density", "weights": list(TD_WEIGHTS), "pixel_mm": float(pixel_mm), "pooled_k": k,
+           "pooled_pixel_mm": info["pixel_mm"], "label_px": TD_LABEL, "window_px": TD_WIN, "stride_px": int(stride),
+           "stretch": {"floor": info["floor"], "top": info["top"]}, "mask": mask is not None,
+           "labels_scored": int(len(pos)), "labels_skipped": int(len(every) - len(pos)),
+           "label_mm": TD_LABEL * info["pixel_mm"], "density_q10_q50_q90": q(d48), "s_q10_q50_q90": q(s),
+           "label_y_px": [int(y) * k for y in pos[:, 0]], "label_x_px": [int(x) * k for x in pos[:, 1]],
+           "s": [float(v) for v in s], "d48": [float(v) for v in d48], "d128": [float(v) for v in d128],
+           "note": NOTE_TD}
+    grid = None
+    if with_grid:
+        H, W = pooled.shape
+        ny = (H - TD_LABEL) // int(stride) + 1 if H >= TD_LABEL else 0
+        nx = (W - TD_LABEL) // int(stride) + 1 if W >= TD_LABEL else 0
+        grid = np.full((ny, nx), np.nan, np.float32)
+        if len(pos):
+            grid[pos[:, 0] // int(stride), pos[:, 1] // int(stride)] = s
+    return res, grid
+
+
+def two_density_summary(res):
+    lines = [f"StrokeNet two-density score: {res['labels_scored']} label windows of {res['label_mm']:.2f} mm scored at "
+             f"a stride of {res['stride_px']} pooled px of {res['pooled_pixel_mm']:.4f} mm, {res['labels_skipped']} skipped "
+             f"(under {TD_PAPYRUS_MIN:.0%} papyrus)" + ("" if res["mask"] else "; no papyrus mask given")]
+    if res["s_q10_q50_q90"]:
+        a, b, c = res["s_q10_q50_q90"]
+        lines.append(f"  s at the 10th, 50th and 90th percentiles: {a:.2f}, {b:.2f}, {c:.2f} (z units within this map)")
+    lines.append("  s ranks windows within this map only; compare positions, not maps.")
+    lines.append(res["note"])
+    return "\n".join(lines)
