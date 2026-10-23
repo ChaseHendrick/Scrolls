@@ -128,7 +128,7 @@ The index groups pages by area: `Pipeline and agents`, `Data and downloads`, `Su
 | `## Outputs` | What it prints, every file it writes, every JSON field (`\| Field \| Type \| Meaning \|`, with units), and for anything runnable a table `\| Exit code \| Meaning \|` |
 | `## Failure modes` | A table `\| What you see \| Why \| What to do \|` with every error message the code can show, copied exactly |
 | `## How it works` | The method step by step, the constants that matter (name and value from the code) and the source of any published method it follows |
-| `## Cost and time` | Measured times and memory with date, machine and source; where it must run (GPU work and long CPU jobs go to Modal: the Modal rule, hard rule 11); the cost if it rents anything. Write Not measured rather than guess |
+| `## Cost and time` | Measured times and memory with date, machine and source; where it must run (GPU work and long CPU jobs go to Hugging Face: hard rule 11); the cost if it rents anything. Write Not measured rather than guess |
 | `## For agents` | The labeled bullets in the next section |
 | `## Tests` | The command that runs this tool's tests, what they cover and what they do not |
 | `## History` | Dated bullets, newest first: `- YYYY-MM-DD: what changed (`COMMIT` or a PR link)`. For a retired tool, why it was retired |
