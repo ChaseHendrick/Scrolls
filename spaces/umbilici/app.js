@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.2.0';
+const VERSION = '1.2.1';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -177,7 +177,7 @@ function tube(points3, color, radius, opacity = 1) {
   const curve = new THREE.CatmullRomCurve3(points3.map((p) => new THREE.Vector3(...p)), false, 'centripetal');
   const g = new THREE.TubeGeometry(curve, Math.min(900, points3.length * 4), radius, 8, false);
   const m = new THREE.MeshBasicMaterial({ color: color.clone().multiplyScalar(1.35), transparent: true, opacity, depthWrite: true, toneMapped: false });
-  const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 3; return mesh;
+  const mesh = new THREE.Mesh(g, m); mesh.renderOrder = 3; mesh.userData.base = opacity; return mesh;
 }
 function ring(r, y, color, opacity, seg = 96) {
   const pts = []; for (let i = 0; i <= seg; i++) { const a = i / seg * Math.PI * 2; pts.push(new THREE.Vector3(Math.cos(a) * r, y, Math.sin(a) * r)); }
@@ -710,6 +710,7 @@ $('hint-x').addEventListener('click', markSeen);
 const ray = new THREE.Raycaster(); const ndc = new THREE.Vector2(); let downAt = null;
 canvas.addEventListener('pointermove', (e) => {
   if (S.mode !== 'array') return;
+  if (e.buttons || moving) { if (S.hot) { S.hot = null; S.dirty = true; } $('tip').hidden = true; return; }
   ndc.set(e.clientX / innerWidth * 2 - 1, -e.clientY / innerHeight * 2 + 1); ray.setFromCamera(ndc, camera);
   const h = ray.intersectObjects(hitMeshes, false)[0]; const name = h ? h.object.userData.scroll : null;
   if (name !== S.hot) { S.hot = name; S.dirty = true; document.querySelectorAll('#rail li').forEach((li) => li.classList.toggle('hot', li.dataset.scroll === name)); }
@@ -727,11 +728,19 @@ canvas.addEventListener('pointerup', (e) => {
 });
 
 // highlight the hovered scan
+// Hover dims the other scans, easing over a few frames; it never jumps, and it waits while the camera is dragged,
+// since a drag sweeping the pointer across scans used to halve and restore the whole glow many times a second.
 function applyHot() {
+  let busy = false;
   for (const g of arrayGroup.children) {
     if (!g.userData.scroll) continue; const on = !S.hot || g.userData.scroll === S.hot;
-    g.traverse((o) => { if (o.material && o.material.opacity !== undefined && o.isMesh && o.material.visible !== false) o.material.opacity = on ? 1 : 0.28; });
+    g.traverse((o) => {
+      if (!o.isMesh || !o.material || o.material.visible === false || o.material.opacity === undefined) return;
+      const base = o.userData.base ?? 1, goal = on ? base : base * 0.4, cur = o.material.opacity;
+      if (Math.abs(goal - cur) > 0.004) { o.material.opacity = cur + (goal - cur) * 0.18; busy = true; } else o.material.opacity = goal;
+    });
   }
+  if (busy) S.dirty = true;
 }
 
 // ---------- URL and agent API ----------
