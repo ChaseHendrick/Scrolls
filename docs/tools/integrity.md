@@ -295,7 +295,7 @@ Measured on a 4-core cloud container, 23 Oct 2026: `results` 0.26 s wall; `text`
 
 ## History
 
-- 2026-10-23: Added: `kit integrity`, the `vesuvius-integrity` Claude skill and the guide; `results.json` gains Hecate's w045 status (not held out, as `held_out.w045` already said).
+- 2026-10-23: Added: `kit integrity`, the `vesuvius-integrity` Claude skill and the guide; `results.json` gains Hecate's w045 status (not held out, as `held_out.w045` already said) (`71a0840`)
 
 ## Related
 
