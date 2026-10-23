@@ -9328,7 +9328,7 @@
     "Go-ahead": "Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights",
     "Released": "Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's \"Released tools\" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository); center lines for 11 scrolls with their end-check status are the GitHub release `umbilicus-lines-v1` ([README](../evidence/2026-10-21-umbilicus-lines/README.md))",
     "Release id": "`umbilicus-finder`",
-    "Guide": "[Scroll center finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses)",
+    "Guide": "[Center Finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses)",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation))",
     "Checked": "2026-10-21 against commit `c65e8a2`"
    },
@@ -9881,7 +9881,7 @@
    "id": "vc3d-plugins",
    "name": "vc3d-plugins",
    "tagline": "run Scrolls and community tools from VC3D's Plugins menu",
-   "summary": "Eight VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.",
+   "summary": "Eight VC3D plugin manifests (the Center Finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.",
    "status": "Experimental",
    "kind": [
     "data",
@@ -9922,7 +9922,7 @@
     "Tests": "`tests/test_plugins.py`",
     "Needs": "VC3D built from villa branch `vc3d-plugins` (commit `a0c8b9e6d`, on villa `main` `d1b95150e`); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py`",
     "Runs on": "Wherever VC3D runs; each tool takes the time its page gives. The manifest checks take about 1.2 s (measured 2026-10-20, 4-core cloud container)",
-    "Network": "Only what each tool contacts, on its page (the scroll center finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases)",
+    "Network": "Only what each tool contacts, on its page (the Center Finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases)",
     "Writes": "VC3D writes each run into `~/.vc3d/plugin-runs/ID/TIME/` with `plugin-run.json`; by result kind it also attaches a segment or an umbilicus to the open project, appends a record to the active segment's `ink-detections.json`, or adds point collections. Ink Lens writes its overlay, pins and a merged `ink-detections.json` into the segment folder itself (its result kind is `none`)",
     "Go-ahead": "Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1)",
     "Released": "Not released; the villa side is a local branch, not pushed",

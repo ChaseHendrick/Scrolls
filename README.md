@@ -78,7 +78,7 @@ Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/
 
 Its tools were released from 14 October 2026 to 23 October 2026; each line gives its tool's date.
 
-Command-line tools that live in this repository and run from a clone of it: six `python -m kit` commands (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.
+Command-line tools that live in this repository and run from a clone of it: six `python -m kit` commands (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the Center Finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.
 
 ```bash
 git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git
@@ -87,7 +87,7 @@ python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[all]"
 scrolls-letterdemo
-# The scroll center finder also needs requests and torch
+# The Center Finder also needs requests and torch
 python -m pip install requests torch
 ```
 
@@ -280,7 +280,7 @@ python -m unittest discover -s tests -v
 
 **Tool results** ([details](docs/FINDINGS.md#tool-results))
 
-15. **Scroll center finder:** 0.73 mm median from the 13 published lines with each scroll held out, and level with villa's `vc_gen_umbilicus` on two sealed lines (0.56 against 0.81 mm; closer on PHerc0139 only) (13 and 22 October 2026, model output).
+15. **Center Finder:** 0.73 mm median from the 13 published lines with each scroll held out, and level with villa's `vc_gen_umbilicus` on two sealed lines (0.56 against 0.81 mm; closer on PHerc0139 only) (13 and 22 October 2026, model output).
 18. **StrokeNet's two-density score, with no network, came out ahead of ink density inside segments on PHerc0500P2 with ink_9um** (mean within-segment AUC 0.701 against 0.662, ahead in all 11 segments, both controls passed; 22 October 2026, model output; ink_9um reads this scroll weakly).
 16. **StrokeNet tells text from the same text turned 90 degrees far better than any simple score** (AUC 0.994 against 0.865, six held-out PHerc. Paris 4 tracings, 14 October 2026, model output); it passed 7 of the 9 bars of that first test, plain ink density matched it at text against blank papyrus, and part of its sense of orientation may come from the direction of the papyrus rather than the writing.
 17. **Inkfilter's face mix** scored mean AUC 0.736 against 0.704 for alpha compositing on 56 confirmation windows, from the segments it was developed on; not a trained-reader comparison (17 October 2026).
@@ -332,7 +332,7 @@ Third-party software, datasets, labels, renders and model weights retain their
 own licenses. Scroll Text Reader's Greek weights are CC BY 4.0 for `letters-v2-ccby`
 and CC BY-NC 4.0 for `letters-v2-real`, which uses ICDAR 2023 Greek letters in its training data.
 Local OCR language packs keep their source licenses. The code license does not grant rights to those materials.
-The scroll center finder's released weights (release `umbilicus-v1`) are CC BY-NC 4.0, because the CT they learned from is.
+The Center Finder's released weights (release `umbilicus-v1`) are CC BY-NC 4.0, because the CT they learned from is.
 Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
 before use or redistribution.
 
