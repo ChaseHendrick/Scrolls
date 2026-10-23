@@ -6,6 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
+| Umbilici Space (Chase, 23 Oct 06:31 UTC: "create space on HF with a visualizer with all 22 centers and the lasagna and then it links to the data ... a la unroll with xray"; 07:11: "yes, make Umbilici public", "make it be able to link to VC3D and villa, and be useful to all degrees of people") | `spaces/umbilici/` and [its page](tools/umbilici.md) on branch `claude/project-thread-xrkbs0`; Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.1.0 deployed (Space commit `1db9a117`): guide for every level, VC3D and villa notes cited to villa source, Data tables with CSV and JSON, per-line statistics. CT streams from the open-data bucket in the visitor's browser; nothing is rehosted. Releases entry `umbilici` added | Chase: switch the Space to public in its settings (the cloud session is not allowed to change visibility). Lasagna links read "(soon)" until SharpMeow/pherc0175a-lasagna is public; then recheck the Space live |
 | Terminal look (Chase, 23 Oct 00:21 UTC: "apply that fancy ascii terminal that one thing had to all our current and future terminals"; 01:36 UTC: "Yes, open a public PR") | Draft PR on `claude/project-thread-72xswo`: `kit/termstyle.py` and `kit/termview.py` from Scrolls-private, `kit live` and `kit style` in `kit/cli.py`, tests, [page](tools/termstyle.md), AGENTS.md rule 17, a line in the Scrolls kit release entry | Chase reads and merges |
 
 ## Continuation, 22 October 2026

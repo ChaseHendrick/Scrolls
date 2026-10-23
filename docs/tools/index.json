@@ -9277,6 +9277,182 @@
    ]
   },
   {
+   "id": "umbilici",
+   "name": "umbilici",
+   "tagline": "view every public center line of the 22 prize scans over live X-ray CT",
+   "summary": "A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
+   "status": "Current",
+   "kind": [
+    "app",
+    "agent tool",
+    "script"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python3 spaces/umbilici/tools/build_lines.py DATASET_DIR OUT.json",
+    "python3 spaces/umbilici/tools/build_lasagna.py DATASET_DIR OUT_DIR",
+    "python3 -m http.server",
+    "spaces/umbilici/"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/umbilici/app.js",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/index.html",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/style.css",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/tools/build_lines.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/tools/build_lasagna.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/README.md",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/NOTICE",
+     "symbols": []
+    },
+    {
+     "path": "spaces/umbilici/LICENSE",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_umbilici.py"
+   ],
+   "go_ahead": {
+    "needed": true,
+    "text": "Needed to make the Space public: Chase's yes, given 2026-10-23 (\"yes, make Umbilici public\"). Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "9edd7a8"
+   },
+   "license": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
+   "fields": {
+    "Id": "`umbilici`",
+    "Status": "Current",
+    "Kind": "app, agent tool, script",
+    "Area": "Viewers and apps",
+    "Run": "[huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) (the page), `python3 spaces/umbilici/tools/build_lines.py DATASET_DIR OUT.json`, `python3 spaces/umbilici/tools/build_lasagna.py DATASET_DIR OUT_DIR`, `python3 -m http.server` in `spaces/umbilici/` (the page locally, after the two builds)",
+    "Code": "`spaces/umbilici/app.js` (the page), `spaces/umbilici/index.html`, `spaces/umbilici/style.css`, `spaces/umbilici/tools/build_lines.py`, `spaces/umbilici/tools/build_lasagna.py`, `spaces/umbilici/README.md` (the Space card), `spaces/umbilici/NOTICE`, `spaces/umbilici/LICENSE`",
+    "Tests": "`tests/test_umbilici.py`, 11 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
+    "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library. `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
+    "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
+    "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
+    "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; one `localStorage` key, `umbilici.seen`, hides the first-visit hint). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
+    "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23 (\"yes, make Umbilici public\"). Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.1.0 (Space commit `1db9a117`, 2026-10-23); public once its visibility is switched in the Space settings (Chase said yes on 2026-10-23); README \"Released tools\" entry `umbilici`",
+    "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
+    "Checked": "2026-10-23 against commit `9edd7a8`"
+   },
+   "page": "docs/tools/umbilici.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 60,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 61,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 70,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 105,
+     "end_line": 113,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 114,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 120,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 143,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 152,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 161,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 165,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 175,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 179,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 184,
+     "end_line": 188,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "umbilicus",
    "name": "umbilicus",
    "tagline": "find a scroll's winding center line in X-ray CT",
