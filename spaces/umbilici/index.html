@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=3">
+<link rel="stylesheet" href="style.css?v=4">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -112,7 +112,7 @@
   <div class="ctl" id="ctl-scan" hidden>
     <label><input type="checkbox" id="t-ct" checked> live CT</label>
     <label>render <select id="render"><option value="xray">radiograph</option><option value="mip">max intensity</option></select></label>
-    <label>contrast <input type="range" id="gain" min="5" max="100" value="55"></label>
+    <label>contrast <input type="range" id="gain" min="5" max="100" value="44"></label>
     <span class="dim" id="ct-status"></span>
   </div>
   <div class="ctl" id="ctl-las" hidden>
@@ -165,9 +165,9 @@
     <ul>
       <li><span class="grade PASS">PASS</span> both ends passed.</li>
       <li><span class="grade FLAG">FLAG</span> it found a problem at an end: a lean, or a line that stops short of the papyrus.</li>
-      <li><span class="grade VOID">VOID</span> the tilt test failed its own control on that scan, so the check tells us nothing either way.</li>
+      <li><span class="grade VOID">VOID</span> the tilt test failed its own control on that scan, so the check tells us nothing either way. The test plants a known tilt at an end and must catch it; on these lines the middle bends as much as the planted tilt, so a real lean cannot be told from a bend. The same control fails on 5 of the 13 lines made by people, so VOID is not a mark against the line.</li>
     </ul>
-    <p>Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
+    <p>The grades come from an automatic check only; no person has graded these ends. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
     <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
   </section>
 
@@ -269,6 +269,6 @@
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=4"></script>
+<script type="module" src="app.js?v=6"></script>
 </body>
 </html>

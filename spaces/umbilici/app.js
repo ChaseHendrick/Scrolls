@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.2.1';
+const VERSION = '1.2.3';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -18,7 +18,7 @@ const $ = (id) => document.getElementById(id);
 // ---------- state ----------
 const S = {
   data: null, las: null, mode: 'array', sel: null, hot: null, ex: 3, z: null,
-  ct: true, render: 'xray', gain: 55, sheets: true, needles: true, ct2: false, ori: false, blend: 70,
+  ct: true, render: 'xray', gain: 44, sheets: true, needles: true, ct2: false, ori: false, blend: 70,
   dirty: true, status: '',
 };
 
@@ -85,7 +85,7 @@ function usable(note) { const m = /usable ends: ([a-z, ]+)/.exec(note || ''); re
 const GRADE_TEXT = {
   PASS: 'both ends passed the automatic end check',
   FLAG: 'the end check found a problem at an end (a lean, or a line that stops short of the papyrus)',
-  VOID: 'the tilt test failed its own control on this scan, so the check says nothing either way',
+  VOID: 'the tilt test failed its own control on this scan, so the check says nothing either way: the line bends in its middle as much as the planted test tilt, so a real lean at an end cannot be told from a bend (5 of the 13 lines made by people fail the same control)',
 };
 
 // ---------- statistics (definitions: Guide, For researchers) ----------
