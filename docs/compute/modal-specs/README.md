@@ -1,5 +1,7 @@
 # Modal run specs
 
+**Historical since 23 Oct 2026.** Paid compute now runs on Hugging Face (AGENTS.md hard rule 11): no new paid Modal launches. These specs record past runs; launch rules for new runs are in Scrolls-private's AGENTS.md rule 10 (access required).
+
 One file per job that should run on Modal rather than for hours on CPU (AGENTS.md hard rule 11). A Claude cloud session can run Modal after `pip install 'modal[api-proxy-support]'`, Chase's sign-in and an allow rule (18 Oct 2026); an agent without Modal writes the spec here and gives the user a short prompt to paste into Codex, or commands to run on their own computer. The agent that runs it records the outcome in the spec and the time in the compute ledger ([`../../compute.md`](../../compute.md)).
 
 This folder is public. Only generic jobs on public data belong here; a job about a target scroll, or one whose outputs could show a possible finding, gets its spec in Scrolls-private instead (rule 1).

@@ -24,7 +24,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## B
 
-**B300**: An NVIDIA data-center GPU. It is the default GPU for Modal jobs in this repository, falling back to B200, H200 and H100 when none is free.
+**B300**: An NVIDIA data-center GPU. It was the default GPU for Modal jobs in this repository until 23 Oct 2026, falling back to B200, H200 and H100 when none was free. Hugging Face Jobs, where paid work runs now, do not offer it.
 
 **benchmark**: A fixed test with a fixed scoring rule, used to compare readers or tools. The numbers live in [`docs/results.json`](docs/results.json).
 
@@ -192,7 +192,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **micrometer (µm, um)**: One thousandth of a millimeter. Written "um" in file names and some docs.
 
-**Modal**: A cloud computing service that runs jobs on rented GPUs and CPUs, billed by use. In this repository any job that needs a GPU, or more than about an hour of CPU, runs on Modal. Specs are in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and prices in [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md).
+**Modal**: A cloud computing service that runs jobs on rented GPUs and CPUs, billed by use. Until 23 Oct 2026 any job here that needed a GPU, or more than about an hour of CPU, ran on Modal; paid work now runs on Hugging Face (AGENTS.md hard rule 11). Past specs are in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and prices in [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md).
 
 **model card**: A short document that describes a released model: its training data, intended use, results and limits.
 
