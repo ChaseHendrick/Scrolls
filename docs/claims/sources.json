@@ -127,13 +127,6 @@
     "docs/logs/2026-10-07-production-speed.md": "512bbdd0f0129b81502bc236a190cd30e9b2b4903d44437efdf4b5ac675b0102"
    }
   },
-  "on-its-preregistered-held-out-test-strokenet-missed": {
-   "line": 10,
-   "sources": {
-    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
-   },
-   "doc": "docs/FINDINGS.md"
-  },
   "on-pherc0139-w045-which-v8in-never-saw-but": {
    "line": 289,
    "sources": {
@@ -224,12 +217,6 @@
     "docs/tools/umbilicus.md": "518d74fe985d721a1daa2c77e80d0823e8c3f6f12d2bd5e41cd58d5aaac903b4"
    }
   },
-  "strokenet-missed-two-of-nine-items-of-its": {
-   "line": 281,
-   "sources": {
-    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
-   }
-  },
   "strokenet-s-two-density-score-which-needs-no": {
    "line": 12,
    "sources": {
@@ -244,6 +231,19 @@
     "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81",
     "r:strokenet_checks/2": "c90c7e31ff047146b3b082e8390158fe42d0c42d68d48624ebfbf7bc1a3d4f30"
    }
+  },
+  "strokenet-tells-text-from-the-same-text-turned": {
+   "line": 284,
+   "sources": {
+    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
+   }
+  },
+  "strokenet-told-text-from-the-same-text-turned": {
+   "line": 10,
+   "sources": {
+    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
+   },
+   "doc": "docs/FINDINGS.md"
   },
   "the-scroll-center-finder-s-held-out-lines": {
    "line": 9,
