@@ -154,6 +154,14 @@ class Page(unittest.TestCase):
         for n in names - {"version"}:
             self.assertIn(f"`{n}(", readme, n)
 
+    def test_every_setting_is_documented(self):
+        # each key of the viewer's settings, including the slice panel's inset and turn, is named on the Space card
+        keys = re.findall(r"(\w+):", re.search(r"const SET_DEFAULT = \{(.*?)\};", self.text("app.js")).group(1))
+        row = next(l for l in self.text("README.md").splitlines() if l.startswith("| `settings(obj)`"))
+        self.assertIn("inset", keys)
+        for k in keys:
+            self.assertIn(f"`{k}`", row, k)
+
     def test_no_ct_is_shipped(self):
         # CT is read by the visitor's browser from the open-data bucket; the Space ships no volume of its own
         self.assertIn("vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com", build_lines.S3)

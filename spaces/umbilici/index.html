@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -59,6 +59,8 @@
   <label>quality <select id="s-quality"><option value="auto">auto (adapts to your device)</option><option value="high">high (sharpest)</option><option value="low">low (fastest)</option></select></label>
   <label class="row"><input type="checkbox" id="s-film" checked> film grain and scan lines</label>
   <label class="row"><input type="checkbox" id="s-spin" checked> slow spin on the array</label>
+  <label class="row"><input type="checkbox" id="s-inset" checked> slice panel in X-ray and Lasagna</label>
+  <label class="row"><input type="checkbox" id="s-turn"> turn the slice with the 3D view</label>
   <div class="s-foot"><button id="s-reset">reset</button><span class="dim">saved in this browser</span></div>
 </section>
 
@@ -96,7 +98,7 @@
   <div class="inset-head mono small">
     <span id="i-title">AXIAL SLICE</span>
     <span class="dim" id="i-z"></span>
-    <button class="mini" id="i-copy" title="Copy each line's x, y, z at this height">copy x,y,z</button>
+    <span class="i-btns"><button class="mini" id="i-copy" title="Copy each line's x, y, z at this height">copy x,y,z</button><button class="mini" id="i-hide" title="Hide the slice (the button at bottom right brings it back)" aria-label="Hide the slice">hide</button></span>
   </div>
   <div class="inset-body">
     <canvas id="slice" width="640" height="640"></canvas>
@@ -105,6 +107,7 @@
   <div class="inset-foot mono small">
     <label id="blend-wrap" hidden>CT <input type="range" id="blend" min="0" max="100" value="70"> sheets</label>
     <label><input type="checkbox" id="t-ori"> <span id="t-ori-l">orientation</span></label>
+    <label title="Turn the slice so it faces the way the 3D view does"><input type="checkbox" id="t-turn"> turn with view</label>
     <span class="dim" id="i-status"></span>
   </div>
 </section>
@@ -134,6 +137,7 @@
   </div>
 </div>
 
+<button class="i-show mono small" id="i-show" hidden title="Show the axial slice">&#9634; slice</button>
 <div class="tip mono small" id="tip" hidden></div>
 <div class="toast mono small" id="toast" hidden></div>
 <div class="boot mono small" id="boot">loading lines…</div>
@@ -269,6 +273,6 @@
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=8"></script>
+<script type="module" src="app.js?v=9"></script>
 </body>
 </html>

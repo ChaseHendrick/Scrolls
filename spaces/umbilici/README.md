@@ -29,7 +29,9 @@ volumes and PHerc1447, read 23 October 2026), over X-ray CT that your browser st
 - **Array**: all 22 lines side by side, heights to scale in millimetres. Person-made lines are ice blue; the nine
   lines from Chase Hendrick's Center Finder are amber. The slider exaggerates side-to-side drift (default 3x).
 - **X-ray**: one scan. A radiograph (or maximum intensity) render of the whole scan at about 0.3 mm per voxel,
-  the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked.
+  the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked. The slice
+  follows its height slider live (from the 0.3 mm CT already loaded, then sharpens when the slider rests), can turn
+  with the 3D view ("turn with view"), and can be hidden and brought back from the bottom right.
 - **Lasagna**: PHerc0175A with villa's lasagna field: its sheet channel (cos) at nine heights, its surface
   normals as short needles coloured by orientation, and the Center Finder's line through them.
 - **Data**: every number on the page as sortable tables (29 lines, 22 scans), with `lines.csv`, `scans.csv`,
@@ -116,7 +118,7 @@ The page is driven from the console or a headless browser through `window.umbili
 | `table('lines' or 'scans')`, `csv('lines' or 'scans' or 'points')` | the Data tables as objects or CSV text |
 | `guide(tab)`, `data(tab)` | open the guide (`basics`, `vc3d`, `research`, `data`, `credits`) or the Data tables |
 | `bench(n)` | renders `n` frames and returns milliseconds per frame and the pixel ratio |
-| `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin` |
+| `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin`, `inset` (the slice panel shown), `turn` (the slice turns with the 3D view) |
 
 URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,
 `?guide=vc3d`, `?data=lines`, `?glow=1.5`. The gear button holds the settings (glow strength and spread, quality,
