@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Umbilici · center lines of 22 Herculaneum scrolls</title>
+<meta name="description" content="Every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans, in X-ray, with the PHerc0175A lasagna field. Data links, sources and licences included.">
+<meta property="og:title" content="Umbilici · center lines of 22 Herculaneum scrolls">
+<meta property="og:description" content="Every public center line for the 22 prize-eligible scans, streamed over live X-ray CT, plus the PHerc0175A lasagna field.">
+<meta property="og:image" content="https://huggingface.co/spaces/SharpMeow/umbilici/resolve/main/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#02060a">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2302060a'/%3E%3Cpath d='M16 3v26' stroke='%2389f0ff' stroke-width='2'/%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%2389f0ff' stroke-opacity='.45'/%3E%3Ccircle cx='16' cy='16' r='5' fill='none' stroke='%23ffb347' stroke-opacity='.8'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=6">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="gl" aria-label="3D view of the center lines"></canvas>
+<div class="film" aria-hidden="true"></div>
+<div class="scan-lines" aria-hidden="true"></div>
+<div id="labels" aria-hidden="true"></div>
+
+<header class="hud tl">
+  <div class="kicker mono dim">VESUVIUS CHALLENGE<span class="sep">/</span>OPEN DATA<span class="sep">/</span><span id="k-count">22</span> PRIZE SCANS</div>
+  <h1>The <em>center lines</em> of twenty-two scrolls</h1>
+  <p class="lede" id="lede">Every public center line (umbilicus) for the scans on the prize page, in one place, drawn over X-ray CT streamed live from the open data. <span class="amber">Amber</span> lines came from Chase Hendrick's Center Finder; <span class="ice">ice</span> lines were made by people.</p>
+  <div class="hint mono small" id="hint" hidden>
+    <span>First time here?</span>
+    <button id="hint-go">Start with the guide</button>
+    <button id="hint-x" class="dim" aria-label="Dismiss">&times;</button>
+  </div>
+</header>
+
+<nav class="hud tr" aria-label="View">
+  <div class="seg" role="tablist">
+    <button class="chip on" data-mode="array" role="tab">Array</button>
+    <button class="chip" data-mode="scan" role="tab">X-ray</button>
+    <button class="chip las" data-mode="lasagna" role="tab">Lasagna</button>
+  </div>
+  <button class="tbtn" id="b-sheet" title="Every number on this page, as tables you can download">Data</button>
+  <button class="tbtn" id="b-about" title="Guide: basics, VC3D and villa, research notes, data details, credits">Guide</button>
+  <button class="icon" id="b-set" title="Settings: glow, quality, film" aria-label="Settings">&#9881;&#xFE0E;</button>
+</nav>
+<section class="settings mono small" id="settings" hidden>
+  <div class="s-head">SETTINGS</div>
+  <label>glow strength <b id="s-glow-v">0.80</b><input type="range" id="s-glow" min="0" max="300" value="80"></label>
+  <label>glow spread <b id="s-radius-v">0.50</b><input type="range" id="s-radius" min="0" max="100" value="50"></label>
+  <label>quality <select id="s-quality"><option value="auto">auto (adapts to your device)</option><option value="high">high (sharpest)</option><option value="low">low (fastest)</option></select></label>
+  <label class="row"><input type="checkbox" id="s-film" checked> film grain and scan lines</label>
+  <label class="row"><input type="checkbox" id="s-spin" checked> slow spin on the array</label>
+  <div class="s-foot"><button id="s-reset">reset</button><span class="dim">saved in this browser</span></div>
+</section>
+
+<aside class="rail" id="rail" aria-label="Scans">
+  <div class="rail-head mono"><span>SCAN</span><span>SOURCES</span><span>ENDS</span></div>
+  <ol id="rail-list"></ol>
+  <div class="legend mono small">
+    <span><i class="sw ice"></i>person</span><span><i class="sw amber"></i>Center Finder (model output)</span>
+  </div>
+</aside>
+
+<section class="card" id="card" hidden>
+  <div class="card-top">
+    <div>
+      <div class="mono dim small" id="c-kick"></div>
+      <h2 id="c-title"></h2>
+    </div>
+    <button class="x" id="c-close" aria-label="Back to the array">&times;</button>
+  </div>
+  <div id="c-lines"></div>
+  <div id="c-pair"></div>
+  <div class="here" id="c-here"></div>
+  <div class="acts mono small" id="c-acts">
+    <button data-act="view" title="Copy a link that reopens this exact view">copy view link</button>
+    <button data-act="zarr" title="Copy the scan's OME-Zarr URL, for VC3D, zarr-python or any OME-Zarr reader">copy OME-Zarr URL</button>
+    <button data-act="csv" title="Every control point of this scan's lines, one row each">points CSV</button>
+    <button data-act="json" title="This scan, its CT pyramid and its lines with every statistic">scan JSON</button>
+    <button data-act="use" title="How to load these lines in VC3D and villa">use in VC3D / villa</button>
+  </div>
+  <details class="pyr mono small"><summary>CT pyramid</summary><div id="c-pyr"></div></details>
+  <div class="mono small dim" id="c-vol"></div>
+</section>
+
+<section class="inset" id="inset" hidden>
+  <div class="inset-head mono small">
+    <span id="i-title">AXIAL SLICE</span>
+    <span class="dim" id="i-z"></span>
+    <button class="mini" id="i-copy" title="Copy each line's x, y, z at this height">copy x,y,z</button>
+  </div>
+  <div class="inset-body">
+    <canvas id="slice" width="640" height="640"></canvas>
+    <input type="range" id="z" min="0" max="1000" value="500" aria-label="Slice height" orient="vertical">
+  </div>
+  <div class="inset-foot mono small">
+    <label id="blend-wrap" hidden>CT <input type="range" id="blend" min="0" max="100" value="70"> sheets</label>
+    <label><input type="checkbox" id="t-ori"> <span id="t-ori-l">orientation</span></label>
+    <span class="dim" id="i-status"></span>
+  </div>
+</section>
+
+<div class="hud bl mono small">
+  <div class="ctl" id="ctl-array">
+    <label>lateral wander &times;<b id="ex-v">3</b> <input type="range" id="ex" min="1" max="20" value="3"></label>
+    <span class="dim">exaggerates side-to-side drift so the shapes show; heights are true</span>
+  </div>
+  <div class="ctl" id="ctl-scan" hidden>
+    <label><input type="checkbox" id="t-ct" checked> live CT</label>
+    <label>render <select id="render"><option value="xray">radiograph</option><option value="mip">max intensity</option></select></label>
+    <label>contrast <input type="range" id="gain" min="5" max="100" value="44"></label>
+    <span class="dim" id="ct-status"></span>
+  </div>
+  <div class="ctl" id="ctl-las" hidden>
+    <label><input type="checkbox" id="t-sheets" checked> sheet slices</label>
+    <label><input type="checkbox" id="t-needle" checked> normals</label>
+    <label><input type="checkbox" id="t-ct2"> live CT</label>
+    <span class="dim">villa lasagna predict3d, model output</span>
+  </div>
+  <div class="data" id="data-links">
+    <span class="dim">DATA</span>
+    <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines" target="_blank" rel="noopener">vesuvius-center-lines</a>
+    <a href="https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna" target="_blank" rel="noopener">pherc0175a-lasagna</a>
+    <a href="https://scrollprize.org/data" target="_blank" rel="noopener">open data</a>
+  </div>
+</div>
+
+<div class="tip mono small" id="tip" hidden></div>
+<div class="toast mono small" id="toast" hidden></div>
+<div class="boot mono small" id="boot">loading lines…</div>
+
+<dialog id="about" class="about wide">
+  <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
+  <h2>Guide</h2>
+  <div class="tabs mono" role="tablist">
+    <button data-tab="basics" class="on" role="tab">Start here</button>
+    <button data-tab="vc3d" role="tab">VC3D and villa</button>
+    <button data-tab="research" role="tab">For researchers</button>
+    <button data-tab="data" role="tab">Data details</button>
+    <button data-tab="credits" role="tab">Credits</button>
+  </div>
+
+  <section data-pane="basics">
+    <p>The Herculaneum scrolls are rolls of papyrus that the eruption of Vesuvius in 79 AD carbonized. They are too fragile to unroll, so the <a href="https://scrollprize.org" target="_blank" rel="noopener">Vesuvius Challenge</a> scans them with X-ray CT, and people and programs trace the wound sheet in 3D to unwrap it virtually. A scroll is wound around a center. The <b>center line</b>, or <b>umbilicus</b>, follows that center from the bottom of the scan to the top. Tracing tools start from it, so a good line for every scan saves everyone time.</p>
+    <p>This page draws every public center line we know of for the <b id="g-nscan">22</b> scans on the <a href="https://scrollprize.org/prizes" target="_blank" rel="noopener">prize page</a> (the 21 First Letters volumes and PHerc1447, read 23 October 2026): <b id="g-nline">29</b> lines from <b id="g-nsrc">5</b> sources.</p>
+    <h3>How to look around</h3>
+    <ol class="steps">
+      <li><b>Array</b> stands every scan's lines side by side at true height. Drag to orbit, scroll or pinch to zoom, hover for names. One row holds the lines made by people, the other the Center Finder's lines.</li>
+      <li><b>Click a scan</b> (in the 3D view or the list) to open its <b>X-ray</b>: a radiograph your browser builds from CT it streams from the open data, with the lines inside.</li>
+      <li>The square at the bottom right is one <b>horizontal slice</b> through the scan. Drag its slider or scroll over it to move up and down. Rings mark where each line crosses that slice; a good line sits in the middle of the innermost turns.</li>
+      <li><b>Lasagna</b> shows villa's sheet model on PHerc0175A: where it thinks papyrus is, and which way each sheet faces.</li>
+      <li><b>Data</b> opens every number on this page as tables you can sort and download.</li>
+    </ol>
+    <h3>Colours and grades</h3>
+    <p><span class="ice">Ice</span> lines were made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m scans nobody had traced; no person has checked their ends on CT. An automatic end check graded each Center Finder line:</p>
+    <ul>
+      <li><span class="grade PASS">PASS</span> both ends passed.</li>
+      <li><span class="grade FLAG">FLAG</span> it found a problem at an end: a lean, or a line that stops short of the papyrus.</li>
+      <li><span class="grade VOID">VOID</span> the tilt test failed its own control on that scan, so the check tells us nothing either way. The test plants a known tilt at an end and must catch it; on these lines the middle bends as much as the planted tilt, so a real lean cannot be told from a bend. The same control fails on 5 of the 13 lines made by people, so VOID is not a mark against the line.</li>
+    </ul>
+    <p>The grades come from an automatic check only; no person has graded these ends. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
+    <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
+  </section>
+
+  <section data-pane="vc3d" hidden>
+    <p>Every line is a JSON file in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines" target="_blank" rel="noopener">SharpMeow/vesuvius-center-lines</a>: a list <code>control_points</code> of <code>{"x", "y", "z"}</code> in the <b>level-0 voxels</b> of the scan the file names, plus a <code>metadata</code> block in most files. Each scan card has a <b>download</b> link per line, a <b>copy URL</b> for its raw file, the scan's <b>OME-Zarr URL</b>, and <b>copy x,y,z</b> for the crossing on the slice you are looking at.</p>
+    <h3>VC3D</h3>
+    <p>VC3D (<a href="https://github.com/ScrollPrize/villa/tree/main/volume-cartographer" target="_blank" rel="noopener">volume-cartographer</a> in villa) reads an umbilicus JSON that is a bare array of points, or an object with <code>points</code> or <code>control_points</code>; every point needs <code>x</code>, <code>y</code> and <code>z</code>. It also reads an optional <code>metadata</code> block: <code>voxelsize_um</code>, <code>volume</code>, and the grid <code>volume_width</code>, <code>volume_height</code>, <code>volume_slices</code>, all three or none. <b id="g-stamped">22</b> of the files here carry that stamp, matching their scan's level-0 grid; <span id="g-unstamped">the others</span> are bare points. Between control points VC3D interpolates linearly; past the last point it holds that point's x and y.</p>
+    <p class="cite">Source: villa <code>main</code>, <a href="https://github.com/ScrollPrize/villa/blob/main/volume-cartographer/core/src/Umbilicus.cpp" target="_blank" rel="noopener">volume-cartographer/core/src/Umbilicus.cpp</a>, read 23 Oct 2026.</p>
+    <h3>villa spiral fitting</h3>
+    <p>villa's <a href="https://scrollprize.org/tutorial_spiral" target="_blank" rel="noopener">spiral tutorial</a> (last updated 16 Sep 2026) calls the umbilicus <i>required</i>: <code>fit_spiral.py</code> takes a <code>--dataset</code> root and reads <code>umbilicus.json</code> from it, beside <code>lasagna_inputs/*.ome.zarr</code> and the other inputs, and <code>infer_winding_volume.py</code> takes <code>--umbilicus</code> (or finds it from the checkpoint's dataset). Every input has to be in the fit's own voxel frame.</p>
+    <p>spiral-fitting's JSON reader sorts <code>control_points</code> by z, multiplies x, y and z by <code>coordinate_scale</code> (or 1/<code>downsample_factor</code>), ignores <code>metadata</code>, and <b>extrapolates linearly</b> past both ends. The files here are level 0, so a fit on pyramid level L needs a scale of 1/2<sup>L</sup>. Because VC3D holds the ends and the fit extrapolates them, the same file can behave differently above and below its last points: check the line's usable ends first.</p>
+    <p class="cite">Sources: the tutorial above; villa <code>main</code>, <a href="https://github.com/ScrollPrize/villa/blob/main/spiral-fitting/umbilicus.py" target="_blank" rel="noopener">spiral-fitting/umbilicus.py</a>, read 23 Oct 2026.</p>
+    <h3>villa lasagna</h3>
+    <p>villa's <a href="https://github.com/ScrollPrize/villa/tree/main/lasagna" target="_blank" rel="noopener">lasagna</a> <code>predict3d</code> is, in its README's words, "the Lasagna cos/normal wrapper around the shared 3D tiled inference code". The PHerc0175A field in the Lasagna view is its output on the whole scan, in villa's own OME-Zarr layout: <a href="https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna" target="_blank" rel="noopener">SharpMeow/pherc0175a-lasagna</a>.</p>
+    <h3>In Python</h3>
+    <p>Read a line and find its center at any height, the way both readers do between points:</p>
+    <pre id="g-py1"></pre>
+    <p>Read the CT voxel under it straight from the open data (levels here are raw uint8 in 128-voxel chunks, so one HTTP range read is one axial row of a chunk; a 404 is a masked, empty chunk):</p>
+    <pre id="g-py2"></pre>
+    <p class="dim small">Both snippets were run against the live dataset and bucket on 23 Oct 2026. They use the selected scan when one is open.</p>
+  </section>
+
+  <section data-pane="research" hidden>
+    <p>Every statistic below is in the <b>Data</b> tables and the downloads, computed in your browser from the control points (rounded to whole level-0 voxels; the downloaded files keep full precision). Millimetres use each scan's voxel size.</p>
+    <table class="defs">
+      <tr><th>points</th><td>number of control points</td></tr>
+      <tr><th>z start, end</th><td>first and last control point height, level-0 voxels</td></tr>
+      <tr><th>height</th><td>z end minus z start, in mm</td></tr>
+      <tr><th>coverage</th><td>height as a share of the scan's z extent</td></tr>
+      <tr><th>median, max step</th><td>median and largest z gap between neighbouring control points, voxels; a big max step is a stretch the line interpolates across</td></tr>
+      <tr><th>mean x, y</th><td>average position of the control points, voxels</td></tr>
+      <tr><th>off center</th><td>distance from that mean to the middle of the scan grid, mm</td></tr>
+      <tr><th>stray</th><td>largest distance of any control point from the mean, mm</td></tr>
+      <tr><th>tilt</th><td>angle from vertical of a least-squares straight line through the points, degrees</td></tr>
+      <tr><th>wiggle</th><td>RMS distance of the points from that straight line, mm</td></tr>
+      <tr><th>path</th><td>length along the line, mm; path over height above 1 means it wanders</td></tr>
+      <tr><th>stamped</th><td>whether the file's metadata names the voxel size and grid VC3D reads</td></tr>
+      <tr><th>pair gap</th><td>for two lines on one scan: median, min and max horizontal distance between them every 64 voxels where both exist, mm</td></tr>
+    </table>
+    <h3>How to read them</h3>
+    <ul>
+      <li>Where a scan has two lines, the gap shows how far two independent tracings disagree. It does not say which one is closer to the true center.</li>
+      <li>A line's own spread (stray, wiggle) is not an error. Scrolls are crushed and bent, so the center can wander; a straight line through a bent scroll would be wrong.</li>
+      <li>The end check grade applies only to Center Finder lines. Person-made lines have no grade here; that is not a pass.</li>
+      <li>The radiograph is a view, not a measurement: it uses scan level 5 (32 times coarser than level 0), with a z stride, and a display curve.</li>
+    </ul>
+    <h3>For agents</h3>
+    <p>Everything is scriptable through <code>window.umbilici</code> in a browser or headless Chromium: <code>scans()</code>, <code>lines(scroll)</code>, <code>at(scroll, z)</code>, <code>stats(scroll)</code>, <code>table()</code>, <code>csv('lines' | 'scans' | 'points')</code>, <code>select(scroll, mode)</code>, <code>mode(m)</code>, <code>setZ(z)</code>, <code>state()</code>, <code>image()</code>, <code>slice()</code>. URL parameters: <code>?mode=scan&amp;scan=PHerc0191&amp;z=10400</code>, <code>?guide=vc3d</code>, <code>?data=lines</code>.</p>
+  </section>
+
+  <section data-pane="data" hidden>
+    <h3>Lines</h3>
+    <ul>
+      <li>Dataset <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines" target="_blank" rel="noopener">SharpMeow/vesuvius-center-lines</a>, release <code id="g-made"></code>. Frame: <span id="g-frame"></span>. Each file's sha256 is in the dataset's <code>index.json</code> and <code>SHA256SUMS</code>, and in the Data table.</li>
+      <li>This page's copy is <a href="data/lines.json" target="_blank" rel="noopener">data/lines.json</a>, built by <code>tools/build_lines.py</code>: control points (sorted by z, rounded to whole voxels), the public index fields, each file's frame stamp, and each scan's OME-Zarr pyramid read from the bucket. Nothing else from the files' metadata is copied.</li>
+      <li>Scan ids are the 14-digit time stamps in the volume names. A line belongs to one scan; moving it to another scan of the same scroll needs a registration.</li>
+    </ul>
+    <h3>CT</h3>
+    <ul>
+      <li>Read live from <code>vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com</code>, OME-Zarr v2, never stored on this Space. The bucket allows cross-origin range reads.</li>
+      <li>All <b id="g-nlev">132</b> pyramid levels of the 22 scans (6 each) are <b>uint8</b> in <b>128 x 128 x 128</b> chunks with <b>no compressor</b>, checked when <code>lines.json</code> was built. Level L has voxels 2<sup>L</sup> times the level-0 size. Each scan card's "CT pyramid" lists its shapes.</li>
+      <li>The page reads one axial plane of a chunk per request (16,384 bytes). Masked chunks outside the scroll are absent and read as empty. The 3D view uses level 5 with a z stride (at most 120 heights, 72 on touch screens; every fourth height first). The slice uses level 4, then level 3, with a 1st to 99.5th percentile window.</li>
+    </ul>
+    <h3>Lasagna field, PHerc0175A</h3>
+    <ul>
+      <li>Source: villa lasagna <code>predict3d</code> over the whole scan (ScrollPrize/villa db3dbea2, model scrollprize/lasagna de45f011), in <a href="https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna" target="_blank" rel="noopener">SharpMeow/pherc0175a-lasagna</a>: cos at OME-Zarr level 1 (2x down), grad_mag, nx and ny at level 2 (4x down), each with its pyramid. Normals are stored as uint8, v x 127 + 128; nz is not stored.</li>
+      <li>This page's derivative (<code>data/lasagna/</code>, by <code>tools/build_lasagna.py</code>): <span id="g-las"></span></li>
+      <li>Raw model output; nobody has checked it by eye.</li>
+    </ul>
+  </section>
+
+  <section data-pane="credits" hidden>
+    <h3>Lines and their makers</h3>
+    <ul id="a-sources"></ul>
+    <h3>Data and code</h3>
+    <ul>
+      <li>CT scans: <a href="https://scrollprize.org/data" target="_blank" rel="noopener">Vesuvius Challenge open data</a>, CC BY-NC 4.0.</li>
+      <li>Lasagna: <a href="https://github.com/ScrollPrize/villa" target="_blank" rel="noopener">ScrollPrize/villa</a> and <a href="https://huggingface.co/scrollprize/lasagna" target="_blank" rel="noopener">scrollprize/lasagna</a>; the field dataset is CC BY-NC 4.0.</li>
+      <li>The lines bundle is non-commercial because some files are; each file keeps its own licence (above).</li>
+      <li>This page: Apache 2.0, by Chase Hendrick, a sibling of <a href="https://huggingface.co/spaces/SharpMeow/unroll" target="_blank" rel="noopener">Unroll</a>. three.js is MIT.</li>
+    </ul>
+    <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
+  </section>
+</dialog>
+
+<dialog id="sheet" class="about sheet">
+  <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
+  <h2>Data</h2>
+  <div class="tabs mono" role="tablist">
+    <button data-tab="lines" class="on" role="tab">Lines</button>
+    <button data-tab="scans" role="tab">Scans</button>
+    <span class="grow"></span>
+    <button class="dl" data-dl="lines">lines.csv</button>
+    <button class="dl" data-dl="scans">scans.csv</button>
+    <button class="dl" data-dl="points">points.csv</button>
+    <button class="dl" data-dl="json">umbilici.json</button>
+  </div>
+  <p class="dim small" id="sheet-note">Click a column to sort, a row to open its scan. Definitions: Guide, For researchers.</p>
+  <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
+</dialog>
+
+<script type="module" src="app.js?v=8"></script>
+</body>
+</html>
