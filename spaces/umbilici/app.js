@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.2.3';
+const VERSION = '1.3.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -53,7 +53,11 @@ const SET = { ...SET_DEFAULT };
 try { Object.assign(SET, JSON.parse(localStorage.getItem('umbilici.settings') || '{}')); } catch { /* storage blocked */ }
 { const q = new URLSearchParams(location.search); if (q.has('glow')) SET.glow = Math.max(0, Math.min(3, +q.get('glow') || 0)); }
 function saveSet() { try { localStorage.setItem('umbilici.settings', JSON.stringify(SET)); } catch { /* storage blocked */ } }
-function pixelRatio() { const d = Math.min(devicePixelRatio || 1, 2); return SET.quality === 'low' ? Math.min(1, d) * 0.75 : SET.quality === 'high' ? d : DPR; }
+// auto quality starts at 1.5 pixels per CSS pixel (1.25 on touch screens) and steps down, at most twice, when frames
+// run slow; 'high' is the screen's full density and 'low' is 0.75
+let autoLevel = 0;
+function autoSteps() { const d = Math.min(devicePixelRatio || 1, 2); return [Math.min(d, COARSE ? 1.25 : 1.5), Math.min(d, 1), 0.75]; }
+function pixelRatio() { const d = Math.min(devicePixelRatio || 1, 2); return SET.quality === 'low' ? 0.75 : SET.quality === 'high' ? d : autoSteps()[autoLevel]; }
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), SET.glow, SET.radius, 0.55);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
@@ -290,6 +294,7 @@ void main(){
     vec3 p = o + d * (t.x + (float(i) + j) * dt) + 0.5;
     float v = texture(uVol, vec3(p.x, p.z, p.y)).r;
     acc += v * dt; mx = max(mx, v);
+    if (uMode == 0 ? acc * uGain > 7.0 : mx > 0.995) break;   // the pixel is already white
   }
   float I;
   if (uMode == 0) I = 1.0 - exp(-max(acc - 0.015, 0.0) * uGain);
@@ -337,7 +342,7 @@ async function loadVolume(s, parent) {
     done[i] = 1;
     if (i % 4 === 0) for (let k = i + 1; k < Math.min(D, i + 4); k++) if (!done[k]) data.copyWithin(k * plane, i * plane, (i + 1) * plane);
     vol && vol.tex === tex && (vol.loaded++);
-    const now = performance.now(); if (now - lastUp > 220 || vol?.loaded === D) { lastUp = now; tex.needsUpdate = true; S.dirty = true; setStatus(); }
+    const now = performance.now(); if (now - lastUp > 400 || vol?.loaded === D) { lastUp = now; tex.needsUpdate = true; S.dirty = true; setStatus(); }
   };
   try {
     let k = 0; const lanes = Array.from({ length: 3 }, async () => { while (k < order.length) { await one(order[k++]); } });
@@ -758,23 +763,35 @@ window.umbilici = {
   select: (name, mode = 'scan') => select(name, mode),
   mode: (m) => setMode(m),
   setZ: (z) => setZ(z, true),
-  state: () => ({ mode: S.mode, scan: S.sel?.scroll ?? null, z: S.z, ex: S.ex, ct: { loaded: vol?.loaded ?? 0, total: vol?.total ?? 0 }, render: S.render }),
+  state: () => ({ mode: S.mode, scan: S.sel?.scroll ?? null, z: S.z, ex: S.ex, ct: { loaded: vol?.loaded ?? 0, total: vol?.total ?? 0 }, render: S.render, pixel_ratio: renderer.getPixelRatio(), auto_level: autoLevel }),
   image: () => { composer.render(); return renderer.domElement.toDataURL('image/png'); },
   slice: () => sc.toDataURL('image/png'),
   stats: (name) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? { lines: s.lines.map((l) => ({ source: l.source, file: RAW(l), ...statsOf(s, l) })), pairs: pairsOf(s) } : null; },
   table: (which = 'lines') => (which === 'scans' ? scanRows() : lineRows()),
   csv: (which = 'lines') => toCSV(which === 'scans' ? scanRows() : which === 'points' ? pointRows() : lineRows()),
   guide: (tab) => openGuide(tab),
+  bench: (n = 20) => { const t0 = performance.now(); const gl = renderer.getContext(), px = new Uint8Array(4); for (let i = 0; i < n; i++) { composer.render(); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); } return { ms_per_frame: +((performance.now() - t0) / n).toFixed(1), pixel_ratio: renderer.getPixelRatio(), size: [innerWidth, innerHeight] }; },
   settings: (s) => { if (s) { Object.assign(SET, s); applySettings(); } return { ...SET }; },
   data: (tab) => openSheet(tab),
 };
 
 // ---------- loop ----------
+const frames = []; let lastFrame = 0, stepPending = false;
 function tick() {
   requestAnimationFrame(tick);
   controls.update();
   if (S.mode === 'array') applyHot();
-  if (S.dirty || controls.autoRotate) { composer.render(); placeLabels(); S.dirty = false; }
+  if (S.dirty || controls.autoRotate) {
+    composer.render(); placeLabels(); S.dirty = false;
+    const now = performance.now();
+    if (now - lastFrame < 250) frames.push(now - lastFrame);
+    lastFrame = now;
+    if (frames.length >= 24) {
+      const m = median(frames); frames.length = 0;
+      if (SET.quality === 'auto' && m > 25 && autoLevel < 2) stepPending = true;
+    }
+    if (stepPending && !moving) { stepPending = false; const s = autoSteps(); let k = autoLevel + 1; while (k < 2 && s[k] >= s[autoLevel]) k++; if (s[k] < s[autoLevel]) { autoLevel = k; applySettings(false); } }
+  }
 }
 
 // ---------- boot ----------

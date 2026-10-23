@@ -115,6 +115,7 @@ The page is driven from the console or a headless browser through `window.umbili
 | `stats(scroll)` | every statistic of each line (points, z range, coverage, steps, stray, tilt, wiggle, path, stamp) and the pair gaps |
 | `table('lines' or 'scans')`, `csv('lines' or 'scans' or 'points')` | the Data tables as objects or CSV text |
 | `guide(tab)`, `data(tab)` | open the guide (`basics`, `vc3d`, `research`, `data`, `credits`) or the Data tables |
+| `bench(n)` | renders `n` frames and returns milliseconds per frame and the pixel ratio |
 | `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin` |
 
 URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,
