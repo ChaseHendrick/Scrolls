@@ -4,7 +4,7 @@
   --ice-dim: rgba(137, 240, 255, 0.55);
   --amber: #ffb347;
   --pass: #7dffb2;
-  --flag: #ff8a5c;
+  --flag: #ff5c72;
   --void: #a99cff;
   --fg: #e3f3f7;
   --dim: #6f8a93;
@@ -92,6 +92,11 @@ body.focus .kicker::after { content: ""; }
 .src.cf { border-color: rgba(255,179,71,.7); color: var(--amber); }
 .grade { font-size: 9px; letter-spacing: .1em; text-align: right; }
 .grade.PASS { color: var(--pass); } .grade.FLAG { color: var(--flag); } .grade.VOID { color: var(--void); }
+/* per-end grades: a small coloured pill per end, so a FLAG never reads as the Center Finder's amber */
+.end { display: inline-flex; gap: 4px; align-items: baseline; white-space: nowrap; }
+.end .grade { text-align: left; font-size: inherit; padding: 0 4px; border: 1px solid currentColor; line-height: 1.5; }
+.end .rc { color: var(--dim); font-size: .9em; }
+.ends { display: inline-flex; gap: 8px; flex-wrap: wrap; }
 .legend { display: flex; gap: 14px; padding: 9px 12px; color: var(--dim); border-top: 1px solid var(--line); position: sticky; bottom: 0; background: rgba(3,12,18,.95); }
 .sw { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 6px; }
 .sw.ice { background: var(--ice); box-shadow: 0 0 6px var(--ice); }

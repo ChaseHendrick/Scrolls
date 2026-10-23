@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.6.0';
+const VERSION = '1.6.1';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -99,6 +99,9 @@ function usable(l) {
 }
 // one end's grade as the dataset words it, e.g. "low PASS (CT recap)"
 function endText(l, k) { const e = l.ends && l.ends[k]; return e ? `${k} ${e.grade}${e.recapped ? ' (CT recap)' : ''}` : ''; }
+// the same, as coloured HTML
+function endHTML(l, k) { const e = l.ends && l.ends[k]; return e ? `<span class="end">${k} <span class="grade ${e.grade}">${e.grade}</span>${e.recapped ? '<span class="rc">CT recap</span>' : ''}</span>` : ''; }
+function endsHTML(l) { return `<span class="ends">${['low', 'high'].map((k) => endHTML(l, k)).filter(Boolean).join('')}</span>`; }
 function endsText(l) { return l.ends && Object.keys(l.ends).length ? ['low', 'high'].map((k) => endText(l, k)).filter(Boolean).join(', ') : ''; }
 const GRADE_TEXT = {
   PASS: 'both ends passed the automatic CT end check',
@@ -554,7 +557,7 @@ function railRow(s) {
   const srcs = s.lines.map((l) => `<span class="src ${isFinder(l) ? 'cf' : ''}" title="${S.data.sources[l.source].label}">${S.data.sources[l.source].short}</span>`).join('');
   const g = gradeOf(s);
   const prize = s.grand_prize ? 'GP' : 'FL';
-  li.innerHTML = `<span class="nm">${s.scroll}<small>${prize}</small></span><span class="srcs">${srcs}</span><span class="grade ${g || ''}">${g || '·'}</span>`;
+  li.innerHTML = `<span class="nm">${s.scroll}<small>${prize}</small></span><span class="srcs">${srcs}</span><span class="grade ${g || ''}" title="${(() => { const f = s.lines.find(isFinder); return f ? endsText(f) : ''; })()}">${g || '·'}</span>`;
   li.addEventListener('click', () => select(s.scroll, S.mode === 'array' ? 'scan' : S.mode));
   li.addEventListener('mouseenter', () => { S.hot = s.scroll; S.dirty = true; });
   li.addEventListener('mouseleave', () => { S.hot = null; S.dirty = true; });
@@ -572,7 +575,7 @@ function buildCard(s) {
     const up = /^https?:/.test(l.upstream) ? `<a href="${l.upstream}" target="_blank" rel="noopener">upstream</a>` : '';
     const grade = l.grade ? `<span class="grade ${l.grade}" title="${GRADE_TEXT[l.grade]}">END CHECK ${l.grade}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
     const ends = endsText(l);
-    const note = f ? `<div class="note">${ends ? `CT end check: ${ends}` : (GRADE_TEXT[l.grade] || '')}. Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
+    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : (GRADE_TEXT[l.grade] || '')}. Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}.</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     return `<div class="ln"><div class="who"><b class="${f ? 'cf' : 'p'}">${src.label}</b>${grade}</div>
@@ -590,7 +593,7 @@ function buildCard(s) {
         ${row('licence', l.licence)}
         ${row('sha256', `<button class="lk mono" data-copy="${l.sha256}" data-what="sha256 copied" title="copy">${l.sha256.slice(0, 16)}…</button>`)}
         ${row('file', `<code>${l.file}</code>`)}
-        ${l.ends && Object.keys(l.ends).length ? row('CT end check', ['low', 'high'].filter((k) => l.ends[k]).map((k) => `${endText(l, k)}, ${fmt(l.ends[k].D_mm, 2)} mm from the CT center`).join('<br>')) : ''}
+        ${l.ends && Object.keys(l.ends).length ? row('CT end check', ['low', 'high'].filter((k) => l.ends[k]).map((k) => `${endHTML(l, k)} ${fmt(l.ends[k].D_mm, 2)} mm from the CT center`).join('<br>')) : ''}
         ${l.note ? row('note', l.note) : ''}
       </table></details></div>`;
   }).join('');
@@ -710,6 +713,7 @@ const SHEET = { tab: 'lines', key: null, dir: 1 };
 function cellHTML(k, v) {
   if (v == null || v === '') return '<span class="dim">·</span>';
   if (k === 'grade') return `<span class="grade ${v}">${v}</span>`;
+  if (k === 'ct_end_low' || k === 'ct_end_high') { const m = /^(\w+) (PASS|FLAG)( \(CT recap\))?$/.exec(v); if (m) return `<span class="end"><span class="grade ${m[2]}">${m[2]}</span>${m[3] ? '<span class="rc">CT recap</span>' : ''}</span>`; }
   if (k === 'sha256') return `<button class="lk mono" data-copy="${v}" data-what="sha256 copied">${v.slice(0, 10)}…</button>`;
   if (typeof v === 'boolean') return v ? 'yes' : '<span class="dim">no</span>';
   if (k === 'coverage') return `${fmt(v * 100, 0)}%`;
@@ -785,7 +789,7 @@ canvas.addEventListener('pointermove', (e) => {
   const tip = $('tip');
   if (name) {
     const s = S.data.scrolls.find((q) => q.scroll === name); const g = gradeOf(s);
-    tip.innerHTML = `<b>${name}</b><br>${s.lines.map((l) => S.data.sources[l.source].label).join(', ')}${g ? `<br>end check <span class="grade ${g}">${g}</span>` : ''}<br><span class="dim">click to open in X-ray</span>`;
+    tip.innerHTML = `<b>${name}</b><br>${s.lines.map((l) => S.data.sources[l.source].label).join(', ')}${g ? `<br>end check ${(() => { const f = s.lines.find(isFinder); return f && f.ends && Object.keys(f.ends).length ? endsHTML(f) : `<span class="grade ${g}">${g}</span>`; })()}` : ''}<br><span class="dim">click to open in X-ray</span>`;
     tip.style.left = `${e.clientX + 14}px`; tip.style.top = `${e.clientY + 14}px`; tip.hidden = false; canvas.style.cursor = 'pointer';
   } else { tip.hidden = true; canvas.style.cursor = ''; }
 });

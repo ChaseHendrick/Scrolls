@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -169,7 +169,7 @@
     <ul>
       <li><span class="grade PASS">PASS</span> both ends passed.</li>
       <li><span class="grade FLAG">FLAG</span> one end sits more than 4 mm from the center the CT shows there; the card names which end.</li>
-      <li><b>CT recap</b> marks a passing end whose last 10 mm was replaced by a straight fit to the CT at heights the check doesn't judge, so the pass says the CT supports that end, not that a separate check confirmed it.</li>
+      <li><span class="end"><span class="grade PASS">PASS</span><span class="rc">CT recap</span></span> marks a passing end whose last 10 mm was replaced by a straight fit to the CT at heights the check doesn't judge, so the pass says the CT supports that end, not that a separate check confirmed it.</li>
     </ul>
     <p>The grades come from an automatic check only. Model output: no end has been checked on CT by a person. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
     <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
@@ -273,6 +273,6 @@
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=10"></script>
+<script type="module" src="app.js?v=11"></script>
 </body>
 </html>
