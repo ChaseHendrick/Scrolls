@@ -7,6 +7,7 @@ Existing files of the right size are skipped, so an interrupted fetch resumes.
 import concurrent.futures
 import os
 import re
+import shutil
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -60,8 +61,40 @@ def local_path(dest, prefix, key):
     return Path(dest) / relative
 
 
-def fetch_prefix(prefix, dest, workers=16, opener=urllib.request.urlopen, base=BUCKET_URL):
+MARGIN_BYTES = 1 << 30   # leave at least 1 GiB free after a fetch
+
+
+def plan(prefix, dest, opener=urllib.request.urlopen, base=BUCKET_URL):
+    """What a fetch would do, before it starts: objects, total bytes, bytes still missing at dest, free bytes there."""
     prefix, entries = list_prefix(prefix, opener, base)
+    if not entries:
+        raise FetchError(f"nothing under s3://vesuvius-challenge-open-data/{prefix}")
+    missing = 0
+    for key, size in entries:
+        out = local_path(dest, prefix, key)
+        if not (out.exists() and out.stat().st_size == size):
+            missing += size
+    probe = Path(dest)
+    while not probe.exists() and probe != probe.parent:
+        probe = probe.parent
+    free = shutil.disk_usage(probe).free
+    return {"prefix": prefix, "objects": len(entries), "total_bytes": sum(s for _, s in entries),
+            "missing_bytes": missing, "free_bytes": free, "fits": missing + MARGIN_BYTES <= free,
+            "entries": entries}
+
+
+def human(n):
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if abs(n) < 1000 or unit == "TB":
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1000
+
+
+def fetch_prefix(prefix, dest, workers=16, opener=urllib.request.urlopen, base=BUCKET_URL, entries=None):
+    if entries is None:
+        prefix, entries = list_prefix(prefix, opener, base)
+    else:
+        prefix = prefix.strip("/") + "/"
     if not entries:
         raise FetchError(f"nothing under s3://vesuvius-challenge-open-data/{prefix}")
 
