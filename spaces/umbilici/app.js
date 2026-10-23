@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.5.0';
+const VERSION = '1.6.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -93,11 +93,17 @@ function drift(s, l) { const [mx, my] = lineMean(l); let d = 0; for (const q of 
 const isFinder = (l) => l.source === 'finder';
 const hasFinder = (s) => s.lines.some(isFinder);
 function gradeOf(s) { const f = s.lines.find(isFinder); return f ? f.grade : null; }
-function usable(note) { const m = /usable ends: ([a-z, ]+)/.exec(note || ''); return m ? m[1] : null; }
+function usable(l) {
+  if (Array.isArray(l.usable)) return l.usable.length ? l.usable.join(', ') : 'none';
+  const m = /usable ends: ([a-z, ]+)/.exec(l.note || ''); return m ? m[1] : null;
+}
+// one end's grade as the dataset words it, e.g. "low PASS (CT recap)"
+function endText(l, k) { const e = l.ends && l.ends[k]; return e ? `${k} ${e.grade}${e.recapped ? ' (CT recap)' : ''}` : ''; }
+function endsText(l) { return l.ends && Object.keys(l.ends).length ? ['low', 'high'].map((k) => endText(l, k)).filter(Boolean).join(', ') : ''; }
 const GRADE_TEXT = {
-  PASS: 'both ends passed the automatic end check',
-  FLAG: 'the end check found a problem at an end (a lean, or a line that stops short of the papyrus)',
-  VOID: 'the tilt test failed its own control on this scan, so the check says nothing either way: the line bends in its middle as much as the planted test tilt, so a real lean at an end cannot be told from a bend (5 of the 13 lines made by people fail the same control)',
+  PASS: 'both ends passed the automatic CT end check',
+  FLAG: 'the automatic CT end check flagged an end: there the line sits more than 4 mm from the center the CT shows',
+  VOID: 'the end check could not judge this line',
 };
 
 // ---------- statistics (definitions: Guide, For researchers) ----------
@@ -139,7 +145,7 @@ function lineRows() {
     const t = statsOf(s, l);
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
-      kind: l.kind, grade: l.grade || '', usable_ends: isFinder(l) ? (usable(l.note) || '') : '', withdrawn: l.note.includes('withdrawn'),
+      kind: l.kind, grade: l.grade || '', ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'),
       ...t, licence: l.licence, sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
   }));
@@ -565,7 +571,8 @@ function buildCard(s) {
     const src = S.data.sources[l.source]; const f = isFinder(l); const t = statsOf(s, l);
     const up = /^https?:/.test(l.upstream) ? `<a href="${l.upstream}" target="_blank" rel="noopener">upstream</a>` : '';
     const grade = l.grade ? `<span class="grade ${l.grade}" title="${GRADE_TEXT[l.grade]}">END CHECK ${l.grade}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
-    const note = f ? `<div class="note">${GRADE_TEXT[l.grade] || ''}. Usable ends: ${usable(l.note) || 'see note'}. Model output; no end checked on CT by a person.</div>`
+    const ends = endsText(l);
+    const note = f ? `<div class="note">${ends ? `CT end check: ${ends}` : (GRADE_TEXT[l.grade] || '')}. Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}.</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     return `<div class="ln"><div class="who"><b class="${f ? 'cf' : 'p'}">${src.label}</b>${grade}</div>
@@ -583,6 +590,7 @@ function buildCard(s) {
         ${row('licence', l.licence)}
         ${row('sha256', `<button class="lk mono" data-copy="${l.sha256}" data-what="sha256 copied" title="copy">${l.sha256.slice(0, 16)}…</button>`)}
         ${row('file', `<code>${l.file}</code>`)}
+        ${l.ends && Object.keys(l.ends).length ? row('CT end check', ['low', 'high'].filter((k) => l.ends[k]).map((k) => `${endText(l, k)}, ${fmt(l.ends[k].D_mm, 2)} mm from the CT center`).join('<br>')) : ''}
         ${l.note ? row('note', l.note) : ''}
       </table></details></div>`;
   }).join('');
@@ -691,7 +699,7 @@ $('about').querySelector('.tabs').addEventListener('click', (e) => { const b = e
 
 // data sheet
 const COLS = {
-  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
+  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
     ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['licence', 'licence'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],

@@ -165,13 +165,13 @@
       <li><b>Data</b> opens every number on this page as tables you can sort and download.</li>
     </ol>
     <h3>Colours and grades</h3>
-    <p><span class="ice">Ice</span> lines were made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m scans nobody had traced; no person has checked their ends on CT. An automatic end check graded each Center Finder line:</p>
+    <p><span class="ice">Ice</span> lines were made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m scans nobody had traced; no person has checked their ends on CT. An automatic CT end check graded each end of each Center Finder line (release v2.2, 23 Oct 2026). It compares the end with the scroll center the CT itself shows there, estimated from the scan alone (sheet orientations in three slices, never the line), 0, 1 and 2 mm inside the end, with a 4 mm bar. A planted fake tilt is caught at all 18 ends. 14 of the 18 ends pass and 4 are flagged.</p>
     <ul>
       <li><span class="grade PASS">PASS</span> both ends passed.</li>
-      <li><span class="grade FLAG">FLAG</span> it found a problem at an end: a lean, or a line that stops short of the papyrus.</li>
-      <li><span class="grade VOID">VOID</span> the tilt test failed its own control on that scan, so the check tells us nothing either way. The test plants a known tilt at an end and must catch it; on these lines the middle bends as much as the planted tilt, so a real lean cannot be told from a bend. The same control fails on 5 of the 13 lines made by people, so VOID is not a mark against the line.</li>
+      <li><span class="grade FLAG">FLAG</span> one end sits more than 4 mm from the center the CT shows there; the card names which end.</li>
+      <li><b>CT recap</b> marks a passing end whose last 10 mm was replaced by a straight fit to the CT at heights the check doesn't judge, so the pass says the CT supports that end, not that a separate check confirmed it.</li>
     </ul>
-    <p>The grades come from an automatic check only; no person has graded these ends. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
+    <p>The grades come from an automatic check only. Model output: no end has been checked on CT by a person. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
     <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
   </section>
 
@@ -273,6 +273,6 @@
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=9"></script>
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>

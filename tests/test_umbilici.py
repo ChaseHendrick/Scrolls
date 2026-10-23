@@ -111,6 +111,30 @@ class BuildLines(unittest.TestCase):
         self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder"})
 
 
+    def test_per_end_ct_grades(self):
+        # from v2.2 each Center Finder end has its own CT grade; a line is FLAG when either end is
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            fake_dataset(root)
+            ix = json.loads((root / "index.json").read_text())
+            c = ix["files"][2]
+            c["note"] = "CT end check: low PASS (CT recap), high FLAG; no end checked on CT by a person"
+            c["ct_ends"] = {"low": {"grade": "PASS", "recapped": True, "D_mm": 1.1, "sweep_D_mm": 9.0},
+                            "high": {"grade": "FLAG", "recapped": False, "D_mm": 10.7, "sweep_D_mm": 16.1}}
+            (root / "index.json").write_text(json.dumps(ix))
+            f = root / c["file"]
+            doc = json.loads(f.read_text())
+            doc["metadata"]["usable_ends"] = {"low": True, "high": False}
+            f.write_text(json.dumps(doc))
+            out = root / "lines.json"
+            with mock.patch.object(build_lines, "get_json", fake_get_json), mock.patch("builtins.print"):
+                build_lines.main(root, out)
+            line = json.loads(out.read_text())["scrolls"][1]["lines"][0]
+        self.assertEqual(line["grade"], "FLAG")
+        self.assertEqual(line["ends"]["low"], {"grade": "PASS", "recapped": True, "D_mm": 1.1})
+        self.assertEqual(line["usable"], ["low"])
+
+
 @unittest.skipIf(np is None, "needs numpy")
 class Lasagna(unittest.TestCase):
     @classmethod

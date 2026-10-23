@@ -58,11 +58,12 @@ Every file, with its hash, upstream link and note, is in
 PHerc1203 curve is shown faded: its author withdrew it from recommended use (repository README, 16 Aug 2026).
 
 The nine Center Finder lines are model output, made for the 1.2 m scans that had no person's line. No person has
-checked their ends on CT. An automatic end check graded each one, and the page shows the grade: PASS (both ends
-passed: PHerc0306B, PHerc0846A), FLAG (a problem at an end, such as a lean or a line that stops short of the
-papyrus: PHerc0175A, PHerc0490A, PHerc0846B) or VOID (the tilt test failed its own control on that scan, so the
-check says nothing either way: PHerc0175B, PHerc0483A, PHerc0483B, PHerc0490B). Each line's card says which
-ends are usable.
+checked their ends on CT. An automatic CT end check (dataset release v2.2, 23 Oct 2026) compares each end with the
+scroll center the CT shows there, estimated from the scan alone, with a 4 mm bar: 14 of the 18 ends pass and 4 are
+flagged (PHerc0175B high, PHerc0306B low, PHerc0490B low, PHerc0846A high). Five passing ends are marked CT recap:
+their last 10 mm was replaced by a straight fit to the CT, so the pass says the CT supports that end. The page shows
+PASS or FLAG per line and the grade of each end on its card. Model output: no end has been checked on CT by a
+person. Each line's card says which ends are usable.
 
 ## Using the lines in VC3D and villa
 
