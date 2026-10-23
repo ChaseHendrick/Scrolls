@@ -160,7 +160,7 @@ python -m kit letterread MAP-2.4um.tif --weights letters-v2-ccby --letter-mm 3.3
 
 ### Letter size matters most
 
-The network reads letters about 16 pixels tall; the reader rescales your image to that. Give the letter height when you know it, either in image pixels with `--letter-px`, or in millimeters with `--letter-mm` together with the pixel size in micrometers, `--um-per-px`; the reader works out
+The network reads letters about 16 pixels tall; the reader rescales your image to that. Give the letter height when you know it, either in image pixels with `--letter-px`, or in millimeters with `--letter-mm` together with the pixel size in micrometers, `--um-per-px`; the reader works out <!-- integrity: allow text-reading -->
 
 letter_px = letter_mm * 1000 / um_per_px
 
@@ -299,7 +299,7 @@ Turned a quarter turn, so the lines run up and down, and read with auto: the ori
 | P.Oxy. 551, `--letter-px 22` | `none`: 4 letters kept, nulls 45, 10, 38, 24; hint (quick read as dark ink 155 against 41, 18; as bright 1 against 11, 8) | `strong`: 394 kept, nulls 105, 19, 122, 33, ratio 3.23; 20 lines in one column | chose dark; letters, boxes and controls the same as dark |
 | P.Oxy. 1183, `--letter-px 28` | `none`: 3 kept, nulls 21, 17, 29, 15; hint (dark 81 against 18, 8; bright 1 against 10, 8) | `weak`: 188 kept, nulls 76, 49, 84, 38, ratio 2.24; 26 lines in one column | chose dark; the same as dark |
 
-The orientation reads in dark ink kept the most as the photographs are stored: 394, against 294 mirrored, 307 turned 180 degrees and 113 and 122 turned 90 and 270 (P.Oxy. 551); 188, against 160, 181, 98 and 127 (P.Oxy. 1183). By eye (Interpretation): on P.Oxy. 551 the boxes sit on written lines, but its two columns were read as one, since the space between them is not empty from top to bottom, and the written lines between rows 590 and 968 got no line at all; on P.Oxy. 1183 boxes sit on parts of many written lines and many others got none.
+The orientation reads in dark ink kept the most as the photographs are stored: 394, against 294 mirrored, 307 turned 180 degrees and 113 and 122 turned 90 and 270 (P.Oxy. 551); 188, against 160, 181, 98 and 127 (P.Oxy. 1183). By eye (Interpretation): on P.Oxy. 551 the boxes sit on written lines, but its two columns were read as one, since the space between them is not empty from top to bottom, and the written lines between rows 590 and 968 got no line at all; on P.Oxy. 1183 boxes sit on parts of many written lines and many others got none. <!-- integrity: allow text-reading -->
 
 **Untested.** No character error was measured on a real photograph: no reference transcription aligned with these lines was at hand, so how well the reader names letters on whole photographs is untested. The statuses above say only that confident letters stand above the nulls; the measured character errors are for synthetic pages. Fragments with ragged edges and columns also defeat the line and column finding; `--crop` one column at a time, or give `--columns N`. The numbers are in [`results.json`](results.json) under `letter_reader_checks` (14 October 2026).
 

@@ -97,7 +97,7 @@
       "id": "scrolls-kit",
       "title": "Scrolls kit",
       "released": "2026-10-23",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: six `python -m kit` commands (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the Center Finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: seven `python -m kit` commands (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the Center Finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -197,6 +197,15 @@
           "summary": "Gives every kit command, and every script in a Scrolls checkout, one styled look on a terminal: a title line, colour by line rules (headings, key: value, PASS and FAIL, USD amounts, clickable links), wrapping that keeps a line's own spacing, and a closing line with the exit code and time. Pipes, logs, --json and NO_COLOR get the program's own bytes. No install step: the first styled run adds a startup hook to that Python. kit live runs any command in a full-screen view with wheel scrolling, search and clickable links.",
           "command": "python -m kit live -- python -m kit prizes",
           "page": "docs/tools/termstyle.md"
+        },
+        {
+          "id": "integrity",
+          "name": "Research integrity checks for Vesuvius claims",
+          "released": "2026-10-23",
+          "summary": "Checks a claim before it is posted, put in a PR or sent with a prize form: an ink score needs its reverse-depth control on the same pixels, a held-out status from that reader (from the public exposure table), the supervision mask, a number copied from its run, and an interval for any comparison; wording must not call model output a reading or call a training surface held out; a preregistration must be committed before its result and only appended to; arXiv ids and titles must match arXiv. Every command first runs 27 planted faults it must catch. Comes with a guide and the vesuvius-integrity Claude skill, which builds on the Research-Integrity skill. A pass means the record survives these rules, not that the claim is true.",
+          "command": "python -m kit integrity text DRAFT.md",
+          "page": "docs/tools/integrity.md",
+          "evidence": "[guide](docs/integrity.md), [tests](tests/test_integrity.py)"
         }
       ],
       "where": "main"
