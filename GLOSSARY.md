@@ -306,6 +306,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## T
 
+**termstyle**: The terminal look of every Scrolls command (`kit/termstyle.py`): colour, wrapping and a title and closing line on a terminal, plain text everywhere else; `kit live` is its mouse viewer ([page](docs/tools/termstyle.md)).
+
 **Tesseract**: An open-source local OCR engine with separate language packs. The reader can explicitly select an installed pack and records its hash; printed-text accuracy does not establish accuracy on scroll ink maps.
 
 **threshold**: A cut-off value that turns a probability map into a yes or no mask.

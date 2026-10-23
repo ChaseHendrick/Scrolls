@@ -79,7 +79,7 @@ Claim label: None; the entry point makes no claim, and each command's page label
 
 ```
 usage: python -m kit [-h]
-                     {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,volumeview,segzoo,letterread,letterlines,letterdemo,greeklm,routines,stale,releases,leaderboard,run} ...
+                     {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,volumeview,segzoo,letterread,letterlines,letterdemo,greeklm,routines,stale,releases,leaderboard,run} ...
 ```
 
 | Option | Default | Meaning |
@@ -97,6 +97,8 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | --- | --- | --- | --- | --- |
 | `start` | none | `starter.run` (in `kit/starter.py`) | [starter](starter.md) | open Scrolls Starter: setup, practice and guided next steps |
 | `prizes` | none | `cmd_prizes` | [prizes](prizes.md) | open prizes from the dated snapshot |
+| `live` | none | `termview.main` (in `kit/termview.py`) | [termstyle](termstyle.md) | run a command (after --) or page piped output in a full-screen, mouse-driven view in the Scrolls look |
+| `style` | none | `termstyle.main` (in `kit/termstyle.py`) | [termstyle](termstyle.md) | the Scrolls terminal look: hook install, remove or status (style every script in a checkout), demo, pipe |
 | `doctor` | none | `cmd_doctor` | [doctor](doctor.md) | check GPU, disk, tools and villa paths |
 | `plan` | none | `cmd_plan` | [plan](plan.md) | print a First Letters run plan for an eligible scroll |
 | `cost` | none | `cmd_cost` | [plan](plan.md) | estimate run cost in USD |
