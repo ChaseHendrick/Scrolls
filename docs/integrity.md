@@ -79,7 +79,7 @@ Checker: `ink-heldout` fails a record that calls an in-sample score held out and
 
 Real cases, both from this repository's public logs (Interpretation where the logs say so):
 
-- From 7 to 8 October this repository used w045 as a generalization check for v8in, d9v2 and `ink_9um`. It is held out
+- From 7 to 8 October this repository used w045 as a generalization check for v8in, d9v2 and `ink_9um`. It is held out <!-- integrity: allow text-heldout -->
   only from v8in: the `ink_9um` label dataset holds the same surface under another name (`pherc0139-w029`), because annotation
   names "do not track the public segment w-numbering" ([log](logs/2026-10-08-w045-not-held-out.md)). No number
   changed; the wording around the numbers did.
