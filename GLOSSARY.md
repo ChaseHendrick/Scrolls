@@ -150,6 +150,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **intercolumn**: The blank space between two columns of text.
 
+**integrity check (`kit integrity`)**: This repository's checker for Vesuvius claims: an ink score needs its reverse-depth control and a held-out status from that reader, wording must not call model output a reading, a preregistration must precede its result, citations must match arXiv. It plants faults it must catch before it reports anything. The `vesuvius-integrity` Claude skill states the same rules as instructions ([guide](docs/integrity.md)).
+
 ## K
 
 **Kaggle**: A data-science competition platform that has hosted Vesuvius Challenge competitions.

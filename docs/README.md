@@ -35,6 +35,7 @@ Updated 18 October 2026.
 | Agent rules and standing decisions | [`../AGENTS.md`](../AGENTS.md) | [`AI-AGENTS.md`](AI-AGENTS.md) (full rulebook, public writing guide) |
 | Repository map, one row per module and script | [`MAP.md`](MAP.md) | The top-level map in [`../AGENTS.md`](../AGENTS.md) |
 | How we measure (controls, AUC, tracing, splits, cost) beside the community's practice | [`STANDARDS.md`](STANDARDS.md) | [`QUALITY.md`](QUALITY.md) (what each kind of claim needs), [`TESTING.md`](TESTING.md) |
+| Research integrity for Vesuvius claims: the rules with real cases, the `kit integrity` checker and the `vesuvius-integrity` Claude skill (23 Oct 2026) | [`integrity.md`](integrity.md) | [`tools/integrity.md`](tools/integrity.md), [`STANDARDS.md`](STANDARDS.md) |
 | Claim labels (Sourced fact, Model output, ...) | [`NOVELTY.md`](NOVELTY.md) | |
 | What pictures and clips public Git may hold: the public media rule (no model output, no prize-eligible scrolls, at most 1920 px and 4 MB, a sidecar each) | [`media/README.md`](media/README.md) | [`assets/README.md`](assets/README.md); the AGENTS.md standing decision and [`DECISIONS.md`](DECISIONS.md) row of 18 October 2026 |
 | From idea to run to null or candidate | [`WORKFLOW.md`](WORKFLOW.md) | [`prereg/`](prereg/) |

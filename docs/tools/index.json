@@ -743,67 +743,67 @@
     {
      "name": "Commands and options",
      "start_line": 76,
-     "end_line": 161,
+     "end_line": 162,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 162,
-     "end_line": 185,
+     "start_line": 163,
+     "end_line": 186,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 186,
-     "end_line": 189,
+     "start_line": 187,
+     "end_line": 190,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 190,
-     "end_line": 200,
+     "start_line": 191,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 201,
-     "end_line": 214,
+     "start_line": 202,
+     "end_line": 215,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 215,
-     "end_line": 224,
+     "start_line": 216,
+     "end_line": 225,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 225,
-     "end_line": 228,
+     "start_line": 226,
+     "end_line": 229,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 229,
-     "end_line": 238,
+     "start_line": 230,
+     "end_line": 239,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 239,
-     "end_line": 246,
+     "start_line": 240,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 247,
-     "end_line": 257,
+     "start_line": 248,
+     "end_line": 258,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 258,
-     "end_line": 264,
+     "start_line": 259,
+     "end_line": 265,
      "applicable": true
     }
    ]
@@ -3451,6 +3451,164 @@
      "name": "Related",
      "start_line": 88,
      "end_line": 93,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "integrity",
+   "name": "integrity",
+   "tagline": "research integrity checks for Vesuvius Challenge claims",
+   "summary": "Checks Vesuvius claims before they go out: ink scores need their reverse-depth control and a held-out status from that reader, wording must not call model output a reading, preregistrations must precede results, citations must match arXiv; it plants faults first.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "skill"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit integrity"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/integrity.py",
+     "symbols": []
+    },
+    {
+     "path": ".claude/skills/vesuvius-integrity/",
+     "symbols": []
+    },
+    {
+     "path": "templates/ink-claim.json",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_integrity.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it. What you post after it passes still needs whatever go-ahead posting needs"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "b849745"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`integrity`",
+    "Status": "Current",
+    "Kind": "kit command,skill",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit integrity`",
+    "Code": "`kit/integrity.py`, `.claude/skills/vesuvius-integrity/`, `templates/ink-claim.json`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_integrity.py`",
+    "Needs": "Python 3.10 or newer, standard library only. `git` on `PATH` and a clone with its history for `prereg`. Network access to export.arxiv.org for `cite` (not with `--offline`). The exposure table in `docs/results.json` (`held_out_by_reader`, `segments`), or another file in that form given with `--results`",
+    "Runs on": "Any CPU. On this repository (4-core cloud container, 23 Oct 2026): `results` over 31 AUC rows 0.26 s; `text` over 149 Markdown files 1.5 s; `selftest` alone well under 1 s; `cite` over 8 arXiv ids one request plus a 3.5 s pause",
+    "Network": "None, except `cite`: the arXiv export API (export.arxiv.org), 20 ids a request, 3.5 s between requests, backing off on HTTP 429",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed to run it. What you post after it passes still needs whatever go-ahead posting needs",
+    "Released": "Public `main` from the change that adds it (23 Oct 2026)",
+    "Guide": "[Research integrity for Vesuvius Challenge claims](../integrity.md): the rules, real cases and how to install the Claude skill",
+    "Checked": "2026-10-23 against commit `b849745` plus this tool"
+   },
+   "page": "docs/tools/integrity.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 67,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 190,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 191,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 215,
+     "end_line": 222,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 223,
+     "end_line": 242,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 243,
+     "end_line": 269,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 270,
+     "end_line": 277,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 278,
+     "end_line": 281,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 282,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 292,
+     "end_line": 295,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 296,
+     "end_line": 299,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 300,
+     "end_line": 307,
      "applicable": true
     }
    ]
