@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 23 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Terminal look (Chase, 23 Oct 00:21 UTC: "apply that fancy ascii terminal that one thing had to all our current and future terminals"; 01:36 UTC: "Yes, open a public PR") | Draft PR on `claude/project-thread-72xswo`: `kit/termstyle.py` and `kit/termview.py` from Scrolls-private, `kit live` and `kit style` in `kit/cli.py`, tests, [page](tools/termstyle.md), AGENTS.md rule 17, a line in the Scrolls kit release entry | Chase reads and merges |
+
 ## Continuation, 22 October 2026
 
 | Item | State | Next step |

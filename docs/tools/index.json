@@ -743,67 +743,67 @@
     {
      "name": "Commands and options",
      "start_line": 76,
-     "end_line": 159,
+     "end_line": 161,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 160,
-     "end_line": 183,
+     "start_line": 162,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 184,
-     "end_line": 187,
+     "start_line": 186,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 188,
-     "end_line": 198,
+     "start_line": 190,
+     "end_line": 200,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 199,
-     "end_line": 212,
+     "start_line": 201,
+     "end_line": 214,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 213,
-     "end_line": 222,
+     "start_line": 215,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 223,
-     "end_line": 226,
+     "start_line": 225,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 227,
-     "end_line": 236,
+     "start_line": 229,
+     "end_line": 238,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 237,
-     "end_line": 244,
+     "start_line": 239,
+     "end_line": 246,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 245,
-     "end_line": 255,
+     "start_line": 247,
+     "end_line": 257,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 256,
-     "end_line": 262,
+     "start_line": 258,
+     "end_line": 264,
      "applicable": true
     }
    ]
@@ -8961,6 +8961,155 @@
      "name": "Related",
      "start_line": 379,
      "end_line": 387,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "termstyle",
+   "name": "termstyle",
+   "tagline": "one terminal look for every Scrolls command",
+   "summary": "Gives every kit command and every script in a checkout one look on a terminal (colour, spacing, wrapping, a title and a closing line), keeps plain text for pipes and logs, and opens any output in a mouse-driven viewer (`kit live`).",
+   "status": "Current",
+   "kind": [
+    "kit module",
+    "kit command"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python -m kit style",
+    "python -m kit live"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/termstyle.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/termview.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_termstyle.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed. It only changes how output looks on a terminal; `kit live` runs exactly the command typed after `--`, so that command's own gates apply"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "1b52e70"
+   },
+   "license": "This repository's license; no third-party code",
+   "fields": {
+    "Id": "`termstyle`",
+    "Status": "Current",
+    "Kind": "kit module,kit command",
+    "Area": "Viewers and apps",
+    "Run": "`python -m kit style`, `python -m kit live`",
+    "Code": "`kit/termstyle.py`, `kit/termview.py`",
+    "Tests": "`tests/test_termstyle.py`",
+    "Needs": "Python 3.10 or newer (uses `sys.orig_argv`), standard library only; `curses` for `kit live` (macOS and Linux Python have it, Windows does not). A terminal with 256 colours; links are clickable in terminals that support OSC 8 hyperlinks (iTerm2; macOS Terminal opens a URL on Cmd-double-click either way)",
+    "Runs on": "Any machine. `python -m kit style demo` took 0.1 s end to end in a pseudo-terminal (measured 2026-10-23, 4-core cloud container, Python 3.13)",
+    "Network": "None. `kit live` opens a clicked link in the default browser",
+    "Writes": "On a terminal only, the startup hook: `scrolls_termhook.py`, `scrolls_termhook.pth` and `scrolls_termhook_look.py` (its copy of the look) in the running Python's site-packages, written once by the first styled kit command or script (`ensure_hook`), or by `kit style hook install` (`--site DIR` for another environment); `hook remove` deletes them",
+    "Go-ahead": "Not needed. It only changes how output looks on a terminal; `kit live` runs exactly the command typed after `--`, so that command's own gates apply",
+    "Released": "Public `main` from the merge of its pull request (23 Oct 2026); the same files are in Scrolls-private",
+    "License": "This repository's license; no third-party code",
+    "Checked": "2026-10-23 against commit `1b52e70`"
+   },
+   "page": "docs/tools/termstyle.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 48,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 49,
+     "end_line": 68,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 69,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 75,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 107,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 155,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 159,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 169,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 183,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 187,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 201,
+     "end_line": 204,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 205,
+     "end_line": 208,
      "applicable": true
     }
    ]

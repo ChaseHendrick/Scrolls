@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
+"""Command line: python -m kit {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -942,6 +942,16 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--today", help="override today's date (YYYY-MM-DD)")
     p.set_defaults(func=cmd_prizes)
 
+    p = sub.add_parser("live", help="run a command (after --) or page piped output in a full-screen, mouse-driven "
+                                    "view in the Scrolls look")
+    p.add_argument("cmd", nargs=argparse.REMAINDER, help="the command to run, after --")
+    p.set_defaults(func=lambda a: __import__("kit.termview", fromlist=["x"]).main(a.cmd))
+
+    p = sub.add_parser("style", help="the Scrolls terminal look: hook install, remove or status (style every "
+                                     "script in a checkout), demo, pipe")
+    p.add_argument("cmd", nargs=argparse.REMAINDER)
+    p.set_defaults(func=lambda a: __import__("kit.termstyle", fromlist=["x"]).main(a.cmd))
+
     p = sub.add_parser("doctor", help="check GPU, disk, tools and villa paths")
     p.add_argument("--disk", default=".", help="path whose free space to check")
     p.set_defaults(func=cmd_doctor)
@@ -1525,7 +1535,16 @@ def _parse(parser, argv):
 
 
 def main(argv=None, prog="python -m kit", sub_progs=None):
+    if argv is None and sys.stdout.isatty():
+        # The Scrolls terminal look, on a terminal only (kit/termstyle.py). Never loaded for pipes, logs or
+        # containers.
+        from . import termstyle
+        termstyle.auto()
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv[:1] == ["live"]:
+        return __import__("kit.termview", fromlist=["x"]).main(argv[1:])
+    if argv[:1] == ["style"]:
+        return __import__("kit.termstyle", fromlist=["x"]).main(argv[1:])
     parser = _parser(prog, sub_progs)
     # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
     # Parse the wrapper separately, leaving every child flag and literal intact.

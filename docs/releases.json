@@ -96,8 +96,8 @@
     {
       "id": "scrolls-kit",
       "title": "Scrolls kit",
-      "released": "2026-10-22",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: five `python -m kit` commands, a planted-defect generator for tests, a Greek gap restoration benchmark and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "released": "2026-10-23",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: six `python -m kit` commands (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the scroll center finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -189,6 +189,14 @@
           "command": "python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name",
           "page": "docs/tools/umbilicus.md",
           "evidence": "[guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md), [center lines for 11 scrolls with each end's check status (Model output, no person's check)](docs/evidence/2026-10-21-umbilicus-lines/README.md)"
+        },
+        {
+          "id": "termstyle",
+          "name": "Terminal look and mouse viewer",
+          "released": "2026-10-23",
+          "summary": "Gives every kit command, and every script in a Scrolls checkout, one styled look on a terminal: a title line, colour by line rules (headings, key: value, PASS and FAIL, USD amounts, clickable links), wrapping that keeps a line's own spacing, and a closing line with the exit code and time. Pipes, logs, --json and NO_COLOR get the program's own bytes. No install step: the first styled run adds a startup hook to that Python. kit live runs any command in a full-screen view with wheel scrolling, search and clickable links.",
+          "command": "python -m kit live -- python -m kit prizes",
+          "page": "docs/tools/termstyle.md"
         }
       ],
       "where": "main"
