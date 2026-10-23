@@ -1,5 +1,7 @@
 # Modal pricing and a cost calculator for scroll compute
 
+**Historical since 23 Oct 2026.** Paid compute now runs on Hugging Face (AGENTS.md hard rule 11): no new paid Modal launches. The rates and defaults below describe past runs and jobs already running.
+
 Checked 2026-10-07. Every figure below was read on that date from the linked page. Prices change: re-check [modal.com/pricing](https://modal.com/pricing) before spending. Labels follow [`../NOVELTY.md`](../NOVELTY.md): **Sourced fact** (a published figure), **Community report**, **Interpretation** (our arithmetic or reading of sources), **Assumption** (not verified; used only to size estimates).
 
 Files: run ledger template [`modal-ledger.csv`](modal-ledger.csv); rates and limits with source URLs in [`kit/data/modal-rates.json`](../../kit/data/modal-rates.json); job assumptions in [`modal-jobs.json`](modal-jobs.json); calculator [`kit/cloudcost.py`](../../kit/cloudcost.py) (standard library, no network). Nothing in this document was run on Modal; all job costs are estimates.
