@@ -19,7 +19,7 @@ VC3D also reads `~/.vc3d/plugins/`, so you can copy single manifests there inste
 
 | File | Menu | Runs | VC3D loads | Needs in VC3D |
 | --- | --- | --- | --- | --- |
-| `scrolls-umbilicus.json` | Scrolls | [scroll center finder](../docs/tools/umbilicus.md), `scripts/umbilicus/predict.py --vc3d-name` | the `umbilicus.json` it writes, as the project's umbilicus | a project; asks for the scroll id |
+| `scrolls-umbilicus.json` | Scrolls | [Center Finder](../docs/tools/umbilicus.md), `scripts/umbilicus/predict.py --vc3d-name` | the `umbilicus.json` it writes, as the project's umbilicus | a project; asks for the scroll id |
 | `scrolls-strokenet.json` | Scrolls | [StrokeNet](../docs/tools/strokenet.md), `python -m kit strokenet` | the result JSON, to open | a selected ink detection; asks for its pixel size |
 | `scrolls-letterread.json` | Scrolls | [Scroll Text Reader](../docs/tools/letterread.md), `python -m kit letterread` with `letters-v2-ccby` | the overlay PNG, to open (JSON, CSV and PAGE XML beside it) | a selected ink detection |
 | `villa-gen-umbilicus.json` | Volume Cartographer | villa's `vc_gen_umbilicus` on a normal grid folder | the `umbilicus.json` it writes | a volume; asks for the normal grid folder |
@@ -28,11 +28,11 @@ VC3D also reads `~/.vc3d/plugins/`, so you can copy single manifests there inste
 | `ink-lens.json` | Ink detection | [Ink Lens](../docs/tools/ink-lens.md), `spaces/ink-lens/inklens.py run --local` on a region of `{segment}` you give in render pixels | nothing; Ink Lens itself writes the overlay, pins and a merged `ink-detections.json` into the segment folder (reselect the segment to see it); exit 3, no ink above the control, shows as a failed run | an open volume and an active segment; asks for the region and the reader |
 | `v8in-ink.json` | Ink detection | Youssef Nader's v8in ink model through [`scripts/v8in_run.py`](../docs/tools/v8in-run.md) on `{segment}/layers` | the prediction PNG, added to the segment's ink detections | an active segment with a `layers/` folder; asks for the local v8in snapshot |
 
-Before the first run of each tool, set it up as its page says. For the scroll center finder that means the released weights in `work/umbilicus/weights/` of this checkout (its guide's Quick start); the slices it reads are cached in `work/umbilicus/slices/`. StrokeNet and the Scroll Text Reader download their released weights once, SHA-256 checked. Ink Lens downloads villa's code and its reader checkpoints once into `$INKLENS_CACHE` and needs torch and `vc_render_tifxyz`. v8in needs a local snapshot of its Hugging Face repository and its packages.
+Before the first run of each tool, set it up as its page says. For the Center Finder that means the released weights in `work/umbilicus/weights/` of this checkout (its guide's Quick start); the slices it reads are cached in `work/umbilicus/slices/`. StrokeNet and the Scroll Text Reader download their released weights once, SHA-256 checked. Ink Lens downloads villa's code and its reader checkpoints once into `$INKLENS_CACHE` and needs torch and `vc_render_tifxyz`. v8in needs a local snapshot of its Hugging Face repository and its packages.
 
 ## What the results are, and are not
 
-- An umbilicus from the scroll center finder is model output. On the 13 published scrolls the released weights trained on that scroll, so the line is not a test there. Check it on CT slices before relying on it. It is in level-0 voxels of the scroll's 1.2 m scan; VC3D places it on another pyramid level of that scan from the stamped `volume_width`, `volume_height` and `volume_slices`.
+- An umbilicus from the Center Finder is model output. On the 13 published scrolls the released weights trained on that scroll, so the line is not a test there. Check it on CT slices before relying on it. It is in level-0 voxels of the scroll's 1.2 m scan; VC3D places it on another pyramid level of that scan from the stamped `volume_width`, `volume_height` and `volume_slices`.
 - StrokeNet scores and Scroll Text Reader output are model output, not a reading. StrokeNet needs the organizers' full-resolution 8-bit map (a downsampled JPEG preview is not a fair input). The reader run here has no reverse-depth `--control`, so its `control.status` is `no_control`, which is not a pass; run it from the command line with `--control` for a read that can fail. Never put its overlay in a prize image.
 - An ink detection is model output, not a reading.
 - Output from prize-eligible or unpublished scrolls stays private until the prize announcement (hard rule 1).

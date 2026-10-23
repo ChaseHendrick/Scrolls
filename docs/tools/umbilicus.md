@@ -18,7 +18,7 @@
 | Go-ahead | Not needed to run `predict.py` on public scans. Needed before renting GPUs to train (the go-ahead rule, hard rule 8, and the Modal rule, hard rule 11), and before posting a line or uploading weights |
 | Released | Public `main` since 2026-10-14 (`76e4591`); the 14 weight files are the GitHub release `umbilicus-v1` of this repository; in the README's "Released tools" as `umbilicus-finder`, since 2026-10-20 a line of the Scrolls kit entry (run from a clone like the kit commands, with its weights as a release of this repository); center lines for 11 scrolls with their end-check status are the GitHub release `umbilicus-lines-v1` ([README](../evidence/2026-10-21-umbilicus-lines/README.md)) |
 | Release id | `umbilicus-finder` |
-| Guide | [Scroll center finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses) |
+| Guide | [Center Finder guide](../../scripts/umbilicus/README.md) (weights and their SHA-256, held-out results, end-point rule, reproduction, licenses) |
 | License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0 ([guide](../../scripts/umbilicus/README.md#licenses-credits-and-citation)) |
 | Checked | 2026-10-21 against commit `c65e8a2` |
 
@@ -394,7 +394,7 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 
 ## Related
 
-- [Scroll center finder guide](../../scripts/umbilicus/README.md): weights, held-out tables, the end-point rule, reproduction and credits.
+- [Center Finder guide](../../scripts/umbilicus/README.md): weights, held-out tables, the end-point rule, reproduction and credits.
 - [Evidence folder](../evidence/2026-10-14-umbilicus/README.md): `heldout-endrule.json` and `calibrate.json`.
 - [Center lines for 11 scrolls](../evidence/2026-10-21-umbilicus-lines/README.md): release `umbilicus-lines-v1`, with each end's check status. Model output; no person has checked them on CT.
 - [`results.json`](../results.json): `umbilicus_checks`, the held-out scores and the centroid control.

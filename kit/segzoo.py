@@ -244,7 +244,7 @@ REGISTRY = [
         "devices": "CPU, MPS and CUDA in pure PyTorch; mamba-ssm's CUDA kernel when installed",
         "weights": "none",
         "fit": "A Mamba-based 2D model that runs on the Mac: nnUNetTrainer_SZSS2D for 2D configurations "
-               "(triage windows, the center finder's slices, 2.5D ink layers)",
+               "(triage windows, the Center Finder's slices, 2.5D ink layers)",
         "evidence": "SS2DNet (arXiv:2503.01306, nnUZoo): Dice within 0.02 of nnU-Net on six datasets at 5 to 20 "
                     "times the training time (Sourced fact). U-Mamba Bot within 0.3 Dice of its no-Mamba "
                     "ablation (nnU-Net Revisited, Sourced fact)",

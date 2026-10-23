@@ -73,6 +73,12 @@
    },
    "doc": "docs/FINDINGS.md"
   },
+  "center-finder": {
+   "line": 280,
+   "sources": {
+    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+   }
+  },
   "cross-trace-agreement-suggests-a-label-free-triage": {
    "line": 297,
    "sources": {
@@ -211,12 +217,6 @@
     "0.03": "derived: 0.821 minus 0.793 is 0.028, rounded"
    }
   },
-  "scroll-center-finder": {
-   "line": 280,
-   "sources": {
-    "docs/tools/umbilicus.md": "518d74fe985d721a1daa2c77e80d0823e8c3f6f12d2bd5e41cd58d5aaac903b4"
-   }
-  },
   "strokenet-s-two-density-score-which-needs-no": {
    "line": 12,
    "sources": {
@@ -245,10 +245,10 @@
    },
    "doc": "docs/FINDINGS.md"
   },
-  "the-scroll-center-finder-s-held-out-lines": {
+  "the-center-finder-s-held-out-lines-sit": {
    "line": 9,
    "sources": {
-    "docs/tools/umbilicus.md": "518d74fe985d721a1daa2c77e80d0823e8c3f6f12d2bd5e41cd58d5aaac903b4"
+    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
    },
    "doc": "docs/FINDINGS.md"
   },

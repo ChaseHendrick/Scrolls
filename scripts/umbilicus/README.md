@@ -1,4 +1,4 @@
-# Scroll center finder (umbilicus)
+# Center Finder (umbilicus)
 
 ![Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.](../../docs/assets/umbilicus/umbilicus-hero.webp)
 

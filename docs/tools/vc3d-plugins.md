@@ -1,6 +1,6 @@
 # vc3d-plugins: run Scrolls and community tools from VC3D's Plugins menu
 
-Eight VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.
+Eight VC3D plugin manifests (the Center Finder, StrokeNet, the Scroll Text Reader, Ink Lens, three villa commands and the v8in ink model) for the Plugins menu proposed on villa branch `vc3d-plugins`, with a kit launcher and tests.
 
 | Field | Value |
 | --- | --- |
@@ -13,7 +13,7 @@ Eight VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Tex
 | Tests | `tests/test_plugins.py` |
 | Needs | VC3D built from villa branch `vc3d-plugins` (commit `a0c8b9e6d`, on villa `main` `d1b95150e`); each tool's own needs, on its page; Python 3.10 or newer for `plugins/run_kit.py` |
 | Runs on | Wherever VC3D runs; each tool takes the time its page gives. The manifest checks take about 1.2 s (measured 2026-10-20, 4-core cloud container) |
-| Network | Only what each tool contacts, on its page (the scroll center finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases) |
+| Network | Only what each tool contacts, on its page (the Center Finder reads the open-data bucket; StrokeNet and the Scroll Text Reader download their released weights once from this repository's GitHub releases) |
 | Writes | VC3D writes each run into `~/.vc3d/plugin-runs/ID/TIME/` with `plugin-run.json`; by result kind it also attaches a segment or an umbilicus to the open project, appends a record to the active segment's `ink-detections.json`, or adds point collections. Ink Lens writes its overlay, pins and a merged `ink-detections.json` into the segment folder itself (its result kind is `none`) |
 | Go-ahead | Not needed to run on public data. Opening the villa PR needs Chase's yes (rule 8); output from prize-eligible scrolls stays private (rule 1) |
 | Released | Not released; the villa side is a local branch, not pushed |
@@ -22,17 +22,17 @@ Eight VC3D plugin manifests (the scroll center finder, StrokeNet, the Scroll Tex
 
 ## What it does
 
-Community members use VC3D, villa's viewer, every day, and a VC3D maintainer said the team prefers VC3D extensions over new viewers. Our tools already write formats VC3D reads (the scroll center finder writes `umbilicus.json`, ink models write PNG predictions), but using them meant leaving VC3D, running a command and attaching the file by hand.
+Community members use VC3D, villa's viewer, every day, and a VC3D maintainer said the team prefers VC3D extensions over new viewers. Our tools already write formats VC3D reads (the Center Finder writes `umbilicus.json`, ink models write PNG predictions), but using them meant leaving VC3D, running a command and attaching the file by hand.
 
 The villa branch `vc3d-plugins` adds a **Plugins** menu to VC3D. A plugin is one JSON manifest: one program, its arguments with placeholders such as `{segment}`, `{volume}`, `{ink_overlay}` and `{output}`, and a result kind that says how VC3D loads what the program writes (`none`, `file`, `segment`, `ink_overlay`, `points` or `umbilicus`). VC3D shows the exact command and asks before each run, runs it through its existing command-line tool runner with an argument list (no shell), and loads only the declared result from the run's own folder with its existing loaders. No plugin code is loaded into VC3D.
 
-This folder holds manifests for four of Chase's public tools that write or read community formats (the scroll center finder, StrokeNet, the Scroll Text Reader and Ink Lens) and for four community tools: villa's `vc_gen_umbilicus`, `vc_render_tifxyz` and `vc_tifxyz2obj`, and Youssef Nader's v8in ink model. `plugins/run_kit.py` runs `python -m kit` from this checkout so the kit manifests work without an install.
+This folder holds manifests for four of Chase's public tools that write or read community formats (the Center Finder, StrokeNet, the Scroll Text Reader and Ink Lens) and for four community tools: villa's `vc_gen_umbilicus`, `vc_render_tifxyz` and `vc_tifxyz2obj`, and Youssef Nader's v8in ink model. `plugins/run_kit.py` runs `python -m kit` from this checkout so the kit manifests work without an install.
 
 It adds no model, no weights and no accuracy result. Everything a plugin produces is what the underlying tool produces: an ink detection or a StrokeNet score is model output, not a reading, and an umbilicus is model output to be checked on CT.
 
 ## When to use it
 
-- You work in VC3D and want the scroll center finder's line attached to the project, an ink model's prediction shown on the active segment, or a StrokeNet or Scroll Text Reader result on the selected ink detection, without leaving VC3D.
+- You work in VC3D and want the Center Finder's line attached to the project, an ink model's prediction shown on the active segment, or a StrokeNet or Scroll Text Reader result on the selected ink detection, without leaving VC3D.
 - You maintain a tool and want a manifest others can drop into `~/.vc3d/plugins/`.
 
 Do not use it:
@@ -101,7 +101,7 @@ A manifest (`vc3d-plugin/1`) has these keys:
 
 Placeholders: `{volume}`, `{volume_id}`, `{segment}`, `{segment_id}`, `{point}` (`x,y,z`), `{point_x}`, `{point_y}`, `{point_z}`, `{region}` (`x0,y0,z0,x1,y1,z1`), `{ink_overlay}`, `{umbilicus}`, `{project}`, `{output}`, `{plugin_dir}`, `{input:NAME}`. Coordinates are full-resolution voxels of the current volume. A placeholder with no value (no active segment, say) stops the run with a message naming what is missing.
 
-Per manifest, see the table in [`plugins/README.md`](../../plugins/README.md). The scroll center finder expects its released weights in `work/umbilicus/weights/` of this checkout; v8in asks for a local snapshot of `YoussefMoNader/ink-8um-v8in`.
+Per manifest, see the table in [`plugins/README.md`](../../plugins/README.md). The Center Finder expects its released weights in `work/umbilicus/weights/` of this checkout; v8in asks for a local snapshot of `YoussefMoNader/ink-8um-v8in`.
 
 ## Outputs
 
@@ -147,7 +147,7 @@ Each run folder `~/.vc3d/plugin-runs/ID/TIME/` holds what the tool wrote and `pl
 
 ## Cost and time
 
-Not measured inside VC3D. Each tool's time is on its page; the scroll center finder took about 13 minutes on 4 CPU cores for PHerc1203 ([guide](../../scripts/umbilicus/README.md)). A villa build and test run on Modal's 64-core runner costs at most 2.69 USD worst case (the runner's plan, 2026-10-20). Nothing here rents compute.
+Not measured inside VC3D. Each tool's time is on its page; the Center Finder took about 13 minutes on 4 CPU cores for PHerc1203 ([guide](../../scripts/umbilicus/README.md)). A villa build and test run on Modal's 64-core runner costs at most 2.69 USD worst case (the runner's plan, 2026-10-20). Nothing here rents compute.
 
 ## For agents
 
