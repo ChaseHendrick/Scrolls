@@ -39,7 +39,7 @@
   {"id": "arXiv:2504.11485", "kind": "paper", "title": "Deciphering scrolls with tomography: A training experiment",
    "authors": ["Sonia Foschiatti", "Axel Kittenberger", "Otmar Scherzer"], "date": "2025-04", "url": "https://arxiv.org/abs/2504.11485",
    "relevance": "Educational; not useful here."},
-  {"id": "arXiv:1602.08071", "kind": "paper", "title": "Enhanced X-ray phase-contrast tomography of Philodemus papyri", "date": "2016",
+  {"id": "arXiv:1602.08071", "kind": "paper", "title": "Enhanced X-ray-phase-contrast-tomography brings new clarity to the 2000-year-old 'voice' of Epicurean philosopher Philodemus", "date": "2016",
    "url": "https://arxiv.org/abs/1602.08071", "relevance": "Early XPCT work; background."},
   {"id": "10.1371/journal.pone.0215775", "kind": "paper+code", "title": "From invisibility to readability: Recovering the ink of Herculaneum",
    "authors": ["Clifford Seth Parker", "Stephen Parsons", "Jack Bandy", "Christy Chapman", "Frederik Coppens", "W. Brent Seales"],
