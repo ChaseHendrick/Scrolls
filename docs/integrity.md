@@ -79,8 +79,8 @@ Checker: `ink-heldout` fails a record that calls an in-sample score held out and
 
 Real cases, both from this repository's public logs (Interpretation where the logs say so):
 
-- From 7 to 8 October this repository called w045 "held out from `ink_9um`, v8in and d9v2". It is held out only from
-  v8in: the `ink_9um` label dataset holds the same surface under another name (`pherc0139-w029`), because annotation
+- From 7 to 8 October this repository used w045 as a generalization check for v8in, d9v2 and `ink_9um`. It is held out
+  only from v8in: the `ink_9um` label dataset holds the same surface under another name (`pherc0139-w029`), because annotation
   names "do not track the public segment w-numbering" ([log](logs/2026-10-08-w045-not-held-out.md)). No number
   changed; the wording around the numbers did.
 - PHerc0841 is validation-only under Hecate's own published split rule, but Hecate's starting weights come from a

@@ -9,7 +9,7 @@
   "PHerc1447": "w058 and w060: held out from every released reader except v8in-1447, which fine-tuned on both (training/configs/loo_w062.json at 2bf9f42). Neither is in the label lists of ink_9um, v8in, d9v2 or Reader v2, in the ink dataset behind Hecate (it has no PHerc1447 folder) or in the canonical trainer's committed list. w062's labels are not released. See docs/logs/2026-10-16-reader-exposure.md"
  },
  "held_out_by_reader": {
-  "about": "Per reader family, whether each test group was outside its training data, in one word, for python -m kit leaderboard. The reasons and sources are in held_out above; keep the two in step. A row for a family with no status here fails kit leaderboard check.",
+  "about": "Per reader family, whether each test group was outside its training data, in one word, for python -m kit leaderboard and python -m kit integrity. The reasons and sources are in held_out above and in docs/logs/2026-10-16-reader-exposure.md; keep the two in step. A row for a family with no status here fails kit leaderboard check.",
   "w045": {
    "v8in": "held out",
    "ink_9um": "not held out",
