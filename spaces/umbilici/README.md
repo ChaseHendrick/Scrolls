@@ -115,9 +115,11 @@ The page is driven from the console or a headless browser through `window.umbili
 | `stats(scroll)` | every statistic of each line (points, z range, coverage, steps, stray, tilt, wiggle, path, stamp) and the pair gaps |
 | `table('lines' or 'scans')`, `csv('lines' or 'scans' or 'points')` | the Data tables as objects or CSV text |
 | `guide(tab)`, `data(tab)` | open the guide (`basics`, `vc3d`, `research`, `data`, `credits`) or the Data tables |
+| `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin` |
 
 URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,
-`?guide=vc3d`, `?data=lines`.
+`?guide=vc3d`, `?data=lines`, `?glow=1.5`. The gear button holds the settings (glow strength and spread, quality,
+film grain, spin), saved in the browser.
 `data/lines.json` is the page's whole line table, built by `tools/build_lines.py` from a copy of the dataset.
 
 ## Licence

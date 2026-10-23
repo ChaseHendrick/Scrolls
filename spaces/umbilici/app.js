@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.1.0';
+const VERSION = '1.2.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -39,12 +39,22 @@ controls.target.set(0, 90, 0);
 controls.autoRotate = false;
 controls.autoRotateSpeed = 0.35;
 controls.addEventListener('change', () => { S.dirty = true; });
-controls.addEventListener('start', () => { renderer.setPixelRatio(DPR * (COARSE ? 0.5 : 0.7)); composer.setPixelRatio(DPR * (COARSE ? 0.5 : 0.7)); controls.autoRotate = false; });
-controls.addEventListener('end', () => { setTimeout(() => { renderer.setPixelRatio(DPR); composer.setPixelRatio(DPR); S.dirty = true; }, 180); });
+// While the camera moves, the X-ray takes fewer ray steps instead of dropping resolution: changing the pixel ratio
+// mid-drag resized the bloom buffers and made the glow pop and flicker.
+let moving = false, settleT = 0;
+controls.addEventListener('start', () => { moving = true; clearTimeout(settleT); controls.autoRotate = false; applyVolUniforms(); });
+controls.addEventListener('end', () => { clearTimeout(settleT); settleT = setTimeout(() => { moving = false; applyVolUniforms(); S.dirty = true; }, 150); });
 
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
-const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), 0.8, 0.5, 0.55);
+// ---------- settings (glow, quality, film), kept per viewer ----------
+const SET_DEFAULT = { glow: 0.8, radius: 0.5, quality: 'auto', film: true, spin: true };
+const SET = { ...SET_DEFAULT };
+try { Object.assign(SET, JSON.parse(localStorage.getItem('umbilici.settings') || '{}')); } catch { /* storage blocked */ }
+{ const q = new URLSearchParams(location.search); if (q.has('glow')) SET.glow = Math.max(0, Math.min(3, +q.get('glow') || 0)); }
+function saveSet() { try { localStorage.setItem('umbilici.settings', JSON.stringify(SET)); } catch { /* storage blocked */ } }
+function pixelRatio() { const d = Math.min(devicePixelRatio || 1, 2); return SET.quality === 'low' ? Math.min(1, d) * 0.75 : SET.quality === 'high' ? d : DPR; }
+const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), SET.glow, SET.radius, 0.55);
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 
@@ -264,18 +274,19 @@ async function ctSlice(s, L, z0, signal) {
 const VOL_VS = `varying vec3 vPos; void main(){ vPos = position; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const VOL_FS = `
 precision highp float; precision highp sampler3D;
-uniform sampler3D uVol; uniform vec3 uCam; uniform float uGain; uniform int uMode; uniform float uFill;
+uniform sampler3D uVol; uniform vec3 uCam; uniform float uGain; uniform int uMode; uniform float uFill; uniform int uN;
 varying vec3 vPos;
 vec2 box(vec3 o, vec3 d){ vec3 iv = 1.0 / d; vec3 a = (vec3(-0.5) - o) * iv, b = (vec3(0.5) - o) * iv;
   vec3 lo = min(a, b), hi = max(a, b); return vec2(max(max(lo.x, lo.y), lo.z), min(min(hi.x, hi.y), hi.z)); }
 void main(){
   vec3 o = uCam, d = normalize(vPos - uCam);
   vec2 t = box(o, d); t.x = max(t.x, 0.0); if (t.x >= t.y) discard;
-  const int N = ${COARSE ? 140 : 220};
-  float dt = (t.y - t.x) / float(N);
+  const int N = 220;
+  float dt = (t.y - t.x) / float(uN);
   float j = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
   float acc = 0.0, mx = 0.0;
   for (int i = 0; i < N; i++) {
+    if (i >= uN) break;
     vec3 p = o + d * (t.x + (float(i) + j) * dt) + 0.5;
     float v = texture(uVol, vec3(p.x, p.z, p.y)).r;
     acc += v * dt; mx = max(mx, v);
@@ -301,7 +312,7 @@ async function loadVolume(s, parent) {
   tex.format = THREE.RedFormat; tex.type = THREE.UnsignedByteType; tex.minFilter = tex.magFilter = THREE.LinearFilter; tex.unpackAlignment = 1; tex.needsUpdate = true;
   const mat = new THREE.ShaderMaterial({
     vertexShader: VOL_VS, fragmentShader: VOL_FS, side: THREE.BackSide, transparent: true, depthWrite: false, depthTest: false,
-    blending: THREE.AdditiveBlending, uniforms: { uVol: { value: tex }, uCam: { value: new THREE.Vector3() }, uGain: { value: S.gain }, uMode: { value: 0 }, uFill: { value: 1 } },
+    blending: THREE.AdditiveBlending, uniforms: { uVol: { value: tex }, uCam: { value: new THREE.Vector3() }, uGain: { value: S.gain }, uMode: { value: 0 }, uFill: { value: 1 }, uN: { value: COARSE ? 140 : 220 } },
   });
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
   mesh.scale.set(mm(s, X * 32), mm(s, zs[D - 1] * 32 + stride * 32), mm(s, Y * 32));
@@ -335,7 +346,9 @@ async function loadVolume(s, parent) {
 }
 function applyVolUniforms() {
   if (!vol) return; const u = vol.mesh.material.uniforms; u.uGain.value = S.render === 'mip' ? S.gain / 10 + 0.5 : 0.5 + S.gain * S.gain / 700; u.uMode.value = S.render === 'mip' ? 1 : 0;
-  vol.mesh.visible = S.mode === 'scan' ? S.ct : S.ct2; u.uFill.value = S.mode === 'lasagna' ? 0.55 : 1; S.dirty = true;
+  vol.mesh.visible = S.mode === 'scan' ? S.ct : S.ct2; u.uFill.value = S.mode === 'lasagna' ? 0.55 : 1;
+  const full = SET.quality === 'low' ? 140 : COARSE && SET.quality !== 'high' ? 140 : 220;
+  u.uN.value = moving ? Math.round(full / 2) : full; S.dirty = true;
 }
 function setStatus() {
   const el = $('ct-status'); if (!el) return;
@@ -666,6 +679,26 @@ $('tbl').addEventListener('click', (e) => {
 });
 $('b-sheet').addEventListener('click', () => openSheet(SHEET.tab));
 
+// settings
+function applySettings(save = true) {
+  bloom.strength = SET.glow; bloom.radius = SET.radius;
+  const pr = pixelRatio(); if (Math.abs(renderer.getPixelRatio() - pr) > 1e-3) { renderer.setPixelRatio(pr); composer.setPixelRatio(pr); }
+  document.body.classList.toggle('nofilm', !SET.film);
+  $('s-glow').value = Math.round(SET.glow * 100); $('s-glow-v').textContent = SET.glow.toFixed(2);
+  $('s-radius').value = Math.round(SET.radius * 100); $('s-radius-v').textContent = SET.radius.toFixed(2);
+  $('s-quality').value = SET.quality; $('s-film').checked = SET.film; $('s-spin').checked = SET.spin;
+  if (!SET.spin) controls.autoRotate = false;
+  applyVolUniforms(); S.dirty = true; if (save) saveSet();
+}
+$('b-set').addEventListener('click', (e) => { e.stopPropagation(); $('settings').hidden = !$('settings').hidden; });
+document.addEventListener('pointerdown', (e) => { if (!$('settings').hidden && !e.target.closest('#settings, #b-set')) $('settings').hidden = true; });
+$('s-glow').addEventListener('input', (e) => { SET.glow = e.target.value / 100; applySettings(); });
+$('s-radius').addEventListener('input', (e) => { SET.radius = e.target.value / 100; applySettings(); });
+$('s-quality').addEventListener('change', (e) => { SET.quality = e.target.value; applySettings(); });
+$('s-film').addEventListener('change', (e) => { SET.film = e.target.checked; applySettings(); });
+$('s-spin').addEventListener('change', (e) => { SET.spin = e.target.checked; applySettings(); });
+$('s-reset').addEventListener('click', () => { Object.assign(SET, SET_DEFAULT); applySettings(); });
+
 // first visit
 function seen() { try { return localStorage.getItem('umbilici.seen') === '1'; } catch { return true; } }
 function markSeen() { try { localStorage.setItem('umbilici.seen', '1'); } catch { /* private window */ } $('hint').hidden = true; }
@@ -723,6 +756,7 @@ window.umbilici = {
   table: (which = 'lines') => (which === 'scans' ? scanRows() : lineRows()),
   csv: (which = 'lines') => toCSV(which === 'scans' ? scanRows() : which === 'points' ? pointRows() : lineRows()),
   guide: (tab) => openGuide(tab),
+  settings: (s) => { if (s) { Object.assign(SET, s); applySettings(); } return { ...SET }; },
   data: (tab) => openSheet(tab),
 };
 
@@ -760,11 +794,11 @@ function tick() {
   }).catch(() => {});
   const q = new URLSearchParams(location.search);
   if (q.get('ex')) { S.ex = Math.max(1, Math.min(30, +q.get('ex'))); $('ex').value = S.ex; $('ex-v').textContent = S.ex; }
-  buildRail(); buildArray();
+  applySettings(false); buildRail(); buildArray();
   $('boot').remove();
   tick();
   if (q.get('scan')) { const m = q.get('mode') || 'scan'; select(q.get('scan'), m); if (q.get('z')) setZ(+q.get('z'), true); }
-  else { setMode('array'); controls.autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches; }
+  else { setMode('array'); controls.autoRotate = SET.spin && !matchMedia('(prefers-reduced-motion: reduce)').matches; }
   if (q.get('guide')) openGuide(q.get('guide'));
   else if (q.get('data')) openSheet(q.get('data') === 'scans' ? 'scans' : 'lines');
   else if (!seen() && !navigator.webdriver) $('hint').hidden = false;

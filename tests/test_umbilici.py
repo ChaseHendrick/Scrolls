@@ -149,7 +149,7 @@ class Page(unittest.TestCase):
         api = re.search(r"window\.umbilici = \{(.*?)\n\};", self.text("app.js"), re.S).group(1)
         names = set(re.findall(r"^\s+(\w+):", api, re.M))
         self.assertEqual(names, {"version", "scans", "lines", "at", "select", "mode", "setZ", "state", "image", "slice",
-                                 "stats", "table", "csv", "guide", "data"})
+                                 "stats", "table", "csv", "guide", "data", "settings"})
         readme = self.text("README.md")
         for n in names - {"version"}:
             self.assertIn(f"`{n}(", readme, n)

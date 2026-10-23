@@ -9352,9 +9352,9 @@
     "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library. `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
     "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
     "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
-    "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; one `localStorage` key, `umbilici.seen`, hides the first-visit hint). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
+    "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
     "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23 (\"yes, make Umbilici public\"). Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.1.0, public since 2026-10-23 07:38 UTC (Space commit `1db9a117`; Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.2.0 (Space commit `a1af38e8`), public since 2026-10-23 07:38 UTC ( Chase switched it public); README \"Released tools\" entry `umbilici`",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
     "Checked": "2026-10-23 against commit `9edd7a8`"
    },
@@ -9387,67 +9387,67 @@
     {
      "name": "Commands and options",
      "start_line": 70,
-     "end_line": 104,
+     "end_line": 105,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 105,
-     "end_line": 113,
+     "start_line": 106,
+     "end_line": 114,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 114,
-     "end_line": 119,
+     "start_line": 115,
+     "end_line": 120,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 120,
-     "end_line": 142,
+     "start_line": 121,
+     "end_line": 143,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 143,
-     "end_line": 151,
+     "start_line": 144,
+     "end_line": 152,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 152,
-     "end_line": 160,
+     "start_line": 153,
+     "end_line": 161,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 161,
-     "end_line": 164,
+     "start_line": 162,
+     "end_line": 165,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 165,
-     "end_line": 174,
+     "start_line": 166,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 175,
-     "end_line": 178,
+     "start_line": 176,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 179,
-     "end_line": 183,
+     "start_line": 180,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 184,
-     "end_line": 188,
+     "start_line": 186,
+     "end_line": 190,
      "applicable": true
     }
    ]

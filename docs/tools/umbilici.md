@@ -14,9 +14,9 @@ A static Hugging Face Space that draws every public center line (umbilicus) for 
 | Needs | In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library. `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow |
 | Runs on | The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23) |
 | Network | The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy) |
-| Writes | The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; one `localStorage` key, `umbilici.seen`, hides the first-visit hint). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json` |
+| Writes | The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json` |
 | Go-ahead | Needed to make the Space public: Chase's yes, given 2026-10-23 ("yes, make Umbilici public"). Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds |
-| Released | Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.1.0, public since 2026-10-23 07:38 UTC (Space commit `1db9a117`; Chase switched it public); README "Released tools" entry `umbilici` |
+| Released | Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.2.0 (Space commit `a1af38e8`), public since 2026-10-23 07:38 UTC (Chase switched it public); README "Released tools" entry `umbilici` |
 | License | Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0 |
 | Checked | 2026-10-23 against commit `9edd7a8` |
 
@@ -101,6 +101,7 @@ python3 tools/build_lasagna.py DATASET_DIR OUT_DIR
 | `ex` | `3` | Side-to-side exaggeration in the Array view, 1 to 20 |
 | `guide` | none | Opens the guide at a tab: `basics`, `vc3d`, `research`, `data`, `credits` |
 | `data` | none | Opens the Data tables: `lines` or `scans` |
+| `glow` | `0.8` | Glow (bloom) strength, 0 to 3; the gear button's settings also hold glow spread, quality, film grain and spin, saved in `localStorage` under `umbilici.settings` |
 
 ## Python API
 
@@ -153,7 +154,7 @@ python3 tools/build_lasagna.py DATASET_DIR OUT_DIR
 
 1. `build_lines.py` reads the dataset index, finds each scan's volume, reads its pyramid (every level's shape, chunks, dtype, compressor) from the bucket, and writes the control points, sorted by z, with each line's public fields and frame stamp.
 2. The page draws each line as a tube through its control points (Catmull-Rom). World units are millimetres: voxels times the voxel size from the volume name.
-3. The X-ray view picks a z stride so the level-5 volume has at most 120 heights (72 on touch screens), fetches every fourth height first and copies it into the gap, then fills the rest, three heights at a time and at most ten requests at once. A raymarching shader takes 220 samples per pixel (140 on touch screens) and shows either `1 - exp(-gain * sum)` (radiograph) or the brightest sample.
+3. The X-ray view picks a z stride so the level-5 volume has at most 120 heights (72 on touch screens), fetches every fourth height first and copies it into the gap, then fills the rest, three heights at a time and at most ten requests at once. A raymarching shader takes 220 samples per pixel (140 on touch screens or at low quality, half while the camera moves) and shows either `1 - exp(-gain * sum)` (radiograph) or the brightest sample.
 4. The slice reads level 4, draws it, waits 220 ms, then reads level 3. Contrast is the 1st to 99.5th percentile of non-empty pixels. Each line's position at the slice height is interpolated between control points.
 5. The statistics are computed in the browser from the rounded control points: a least-squares line x(z), y(z) gives the tilt (its angle from vertical) and the wiggle (RMS distance from it); the pair gap samples both lines every 64 voxels where both exist. The Data downloads are made in the browser from the same numbers.
 6. `build_lasagna.py` reads level-3 chunks of cos, grad_mag, nx and ny into a 16x field (normals subsampled, the others averaged) and level-2 chunks at nine heights. Needles sit on a 96 by 96 by 192 voxel grid where cos is above 40 and grad_mag above 20.
@@ -165,7 +166,7 @@ Free: a static Space, and CT comes from the public bucket at the visitor's end. 
 ## For agents
 
 - **Command:** open `https://sharpmeow-umbilici.static.hf.space/?mode=scan&scan=PHerc0191&z=10400` in a headless browser with WebGL, then call `window.umbilici.state()`.
-- **Parse:** `scans()` lists scans with `sources` and `grade`; `lines(scroll)` gives control points `[x, y, z]`; `at(scroll, z)` gives each line's `xy` at a height; `stats(scroll)` gives every statistic and the pair gaps; `table('lines')`, `table('scans')` and `csv('lines' | 'scans' | 'points')` give the Data tables; `state().ct` is `{loaded, total}` for the CT stream; `image()` and `slice()` return PNG data URLs.
+- **Parse:** `scans()` lists scans with `sources` and `grade`; `lines(scroll)` gives control points `[x, y, z]`; `at(scroll, z)` gives each line's `xy` at a height; `stats(scroll)` gives every statistic and the pair gaps; `settings({glow: 1.5})` sets the glow; `table('lines')`, `table('scans')` and `csv('lines' | 'scans' | 'points')` give the Data tables; `state().ct` is `{loaded, total}` for the CT stream; `image()` and `slice()` return PNG data URLs.
 - **Rerun:** safe; the page writes nothing. The builds overwrite their outputs.
 - **Success:** `state().ct.loaded === state().ct.total` and the status line names the level and heights.
 - **Not a pass:** a line drawn through bright CT is not a checked line; only the end-check grades and a person's look on CT say anything about a line's quality.
@@ -180,6 +181,7 @@ Free: a static Space, and CT comes from the public bucket at the visitor's end. 
 
 - 2026-10-23: first version, private Space preview (Space commit `45a55be`); code added here in the PR for branch `claude/project-thread-xrkbs0`.
 - 2026-10-23: 1.1.0 (Space commit `1db9a117`). Guide (five tabs), Data tables with CSV and JSON downloads, per-line statistics, VC3D and villa hooks (raw file URLs, OME-Zarr URL, x, y, z at a slice, view links), CT pyramids and frame stamps in `lines.json`; "Center Finder" written as a name (Chase, 2026-10-23). The lasagna dataset links read "(soon)" until that dataset is on the Hub.
+- 2026-10-23: 1.2.0 (Space commit `a1af38e8`). Settings (gear button): glow strength and spread, quality, film grain, spin (Chase: "can there be settings and change the glow strength"). The glow no longer flickers while the camera moves: the X-ray takes fewer ray steps during a drag instead of lowering the pixel ratio, which had resized the bloom buffers (Chase: "the glow is glitchy when moving the camera").
 
 ## Related
 
