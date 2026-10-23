@@ -29,7 +29,9 @@ volumes and PHerc1447, read 23 October 2026), over X-ray CT that your browser st
 - **Array**: all 22 lines side by side, heights to scale in millimetres. Person-made lines are ice blue; the nine
   lines from Chase Hendrick's Center Finder are amber. The slider exaggerates side-to-side drift (default 3x).
 - **X-ray**: one scan. A radiograph (or maximum intensity) render of the whole scan at about 0.3 mm per voxel,
-  the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked.
+  the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked. The slice
+  follows its height slider live (from the 0.3 mm CT already loaded, then sharpens when the slider rests), can turn
+  with the 3D view ("turn with view"), and can be hidden and brought back from the bottom right.
 - **Lasagna**: PHerc0175A with villa's lasagna field: its sheet channel (cos) at nine heights, its surface
   normals as short needles coloured by orientation, and the Center Finder's line through them.
 - **Data**: every number on the page as sortable tables (29 lines, 22 scans), with `lines.csv`, `scans.csv`,
@@ -56,11 +58,12 @@ Every file, with its hash, upstream link and note, is in
 PHerc1203 curve is shown faded: its author withdrew it from recommended use (repository README, 16 Aug 2026).
 
 The nine Center Finder lines are model output, made for the 1.2 m scans that had no person's line. No person has
-checked their ends on CT. An automatic end check graded each one, and the page shows the grade: PASS (both ends
-passed: PHerc0306B, PHerc0846A), FLAG (a problem at an end, such as a lean or a line that stops short of the
-papyrus: PHerc0175A, PHerc0490A, PHerc0846B) or VOID (the tilt test failed its own control on that scan, so the
-check says nothing either way: PHerc0175B, PHerc0483A, PHerc0483B, PHerc0490B). Each line's card says which
-ends are usable.
+checked their ends on CT. An automatic CT end check (dataset release v2.2, 23 Oct 2026) compares each end with the
+scroll center the CT shows there, estimated from the scan alone, with a 4 mm bar: 14 of the 18 ends pass and 4 are
+flagged (PHerc0175B high, PHerc0306B low, PHerc0490B low, PHerc0846A high). Five passing ends are marked CT recap:
+their last 10 mm was replaced by a straight fit to the CT, so the pass says the CT supports that end. The page shows
+PASS or FLAG per line and the grade of each end on its card. Model output: no end has been checked on CT by a
+person. Each line's card says which ends are usable.
 
 ## Using the lines in VC3D and villa
 
@@ -116,7 +119,7 @@ The page is driven from the console or a headless browser through `window.umbili
 | `table('lines' or 'scans')`, `csv('lines' or 'scans' or 'points')` | the Data tables as objects or CSV text |
 | `guide(tab)`, `data(tab)` | open the guide (`basics`, `vc3d`, `research`, `data`, `credits`) or the Data tables |
 | `bench(n)` | renders `n` frames and returns milliseconds per frame and the pixel ratio |
-| `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin` |
+| `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin`, `inset` (the slice panel shown), `turn` (the slice turns with the 3D view) |
 
 URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,
 `?guide=vc3d`, `?data=lines`, `?glow=1.5`. The gear button holds the settings (glow strength and spread, quality,

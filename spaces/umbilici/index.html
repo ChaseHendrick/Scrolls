@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -59,6 +59,8 @@
   <label>quality <select id="s-quality"><option value="auto">auto (adapts to your device)</option><option value="high">high (sharpest)</option><option value="low">low (fastest)</option></select></label>
   <label class="row"><input type="checkbox" id="s-film" checked> film grain and scan lines</label>
   <label class="row"><input type="checkbox" id="s-spin" checked> slow spin on the array</label>
+  <label class="row"><input type="checkbox" id="s-inset" checked> slice panel in X-ray and Lasagna</label>
+  <label class="row"><input type="checkbox" id="s-turn"> turn the slice with the 3D view</label>
   <div class="s-foot"><button id="s-reset">reset</button><span class="dim">saved in this browser</span></div>
 </section>
 
@@ -96,7 +98,7 @@
   <div class="inset-head mono small">
     <span id="i-title">AXIAL SLICE</span>
     <span class="dim" id="i-z"></span>
-    <button class="mini" id="i-copy" title="Copy each line's x, y, z at this height">copy x,y,z</button>
+    <span class="i-btns"><button class="mini" id="i-copy" title="Copy each line's x, y, z at this height">copy x,y,z</button><button class="mini" id="i-hide" title="Hide the slice (the button at bottom right brings it back)" aria-label="Hide the slice">hide</button></span>
   </div>
   <div class="inset-body">
     <canvas id="slice" width="640" height="640"></canvas>
@@ -105,6 +107,7 @@
   <div class="inset-foot mono small">
     <label id="blend-wrap" hidden>CT <input type="range" id="blend" min="0" max="100" value="70"> sheets</label>
     <label><input type="checkbox" id="t-ori"> <span id="t-ori-l">orientation</span></label>
+    <label title="Turn the slice so it faces the way the 3D view does"><input type="checkbox" id="t-turn"> turn with view</label>
     <span class="dim" id="i-status"></span>
   </div>
 </section>
@@ -134,6 +137,7 @@
   </div>
 </div>
 
+<button class="i-show mono small" id="i-show" hidden title="Show the axial slice">&#9634; slice</button>
 <div class="tip mono small" id="tip" hidden></div>
 <div class="toast mono small" id="toast" hidden></div>
 <div class="boot mono small" id="boot">loading lines…</div>
@@ -161,13 +165,13 @@
       <li><b>Data</b> opens every number on this page as tables you can sort and download.</li>
     </ol>
     <h3>Colours and grades</h3>
-    <p><span class="ice">Ice</span> lines were made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m scans nobody had traced; no person has checked their ends on CT. An automatic end check graded each Center Finder line:</p>
+    <p><span class="ice">Ice</span> lines were made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m scans nobody had traced; no person has checked their ends on CT. An automatic CT end check graded each end of each Center Finder line (release v2.2, 23 Oct 2026). It compares the end with the scroll center the CT itself shows there, estimated from the scan alone (sheet orientations in three slices, never the line), 0, 1 and 2 mm inside the end, with a 4 mm bar. A planted fake tilt is caught at all 18 ends. 14 of the 18 ends pass and 4 are flagged.</p>
     <ul>
       <li><span class="grade PASS">PASS</span> both ends passed.</li>
-      <li><span class="grade FLAG">FLAG</span> it found a problem at an end: a lean, or a line that stops short of the papyrus.</li>
-      <li><span class="grade VOID">VOID</span> the tilt test failed its own control on that scan, so the check tells us nothing either way. The test plants a known tilt at an end and must catch it; on these lines the middle bends as much as the planted tilt, so a real lean cannot be told from a bend. The same control fails on 5 of the 13 lines made by people, so VOID is not a mark against the line.</li>
+      <li><span class="grade FLAG">FLAG</span> one end sits more than 4 mm from the center the CT shows there; the card names which end.</li>
+      <li><b>CT recap</b> marks a passing end whose last 10 mm was replaced by a straight fit to the CT at heights the check doesn't judge, so the pass says the CT supports that end, not that a separate check confirmed it.</li>
     </ul>
-    <p>The grades come from an automatic check only; no person has graded these ends. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
+    <p>The grades come from an automatic check only. Model output: no end has been checked on CT by a person. Each line's card says which of its ends are usable. A faded line is one its author withdrew from recommended use.</p>
     <p class="dim small">A center line is geometry. Nothing here is a reading of any text.</p>
   </section>
 
@@ -269,6 +273,6 @@
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=8"></script>
+<script type="module" src="app.js?v=10"></script>
 </body>
 </html>

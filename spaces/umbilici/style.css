@@ -249,3 +249,9 @@ body.nofilm .film::after, body.nofilm .scan-lines { display: none; }
 @media (max-width: 860px) { .settings { top: calc(var(--gut) + 112px); left: var(--gut); right: var(--gut); width: auto; } body.focus .settings { top: calc(var(--gut) + 60px); } }
 .chip { white-space: nowrap; }
 @media (max-width: 860px) { .chip { padding: 8px 10px; letter-spacing: .1em; } }
+/* v1.5: slice panel hide and show */
+.i-btns { display: inline-flex; gap: 6px; }
+.i-show { position: fixed; z-index: 6; right: var(--gut); bottom: calc(var(--gut) + 64px); padding: 7px 11px; border: 1px solid var(--line-strong); background: var(--panel);
+  color: var(--ice); letter-spacing: .12em; text-transform: uppercase; }
+.i-show:hover { border-color: var(--ice); }
+@media (max-width: 860px) { .i-show { bottom: calc(var(--gut) + 84px); } }

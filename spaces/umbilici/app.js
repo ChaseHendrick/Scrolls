@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.4.0';
+const VERSION = '1.6.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -51,15 +51,15 @@ controls.addEventListener('end', () => { clearTimeout(settleT); settleT = setTim
 const composer = new EffectComposer(renderer);
 composer.addPass(new RenderPass(scene, camera));
 // ---------- settings (glow, quality, film), kept per viewer ----------
-const SET_DEFAULT = { glow: 0.8, radius: 0.5, quality: 'auto', film: true, spin: true };
+const SET_DEFAULT = { glow: 0.8, radius: 0.5, quality: 'auto', film: true, spin: true, inset: true, turn: false };
 const SET = { ...SET_DEFAULT };
 try { Object.assign(SET, JSON.parse(localStorage.getItem('umbilici.settings') || '{}')); } catch { /* storage blocked */ }
 { const q = new URLSearchParams(location.search); if (q.has('glow')) SET.glow = Math.max(0, Math.min(3, +q.get('glow') || 0)); }
 function saveSet() { try { localStorage.setItem('umbilici.settings', JSON.stringify(SET)); } catch { /* storage blocked */ } }
-// auto quality starts at 1.5 pixels per CSS pixel (1.25 on touch screens) and steps down, at most twice, when frames
+// auto quality starts at 1.25 pixels per CSS pixel (1 on touch screens) and steps down, at most twice, when frames
 // run slow; 'high' is the screen's full density and 'low' is 0.75
 let autoLevel = 0;
-function autoSteps() { const d = Math.min(devicePixelRatio || 1, 2); return [Math.min(d, COARSE ? 1.25 : 1.5), Math.min(d, 1), 0.75]; }
+function autoSteps() { const d = Math.min(devicePixelRatio || 1, 2); return [Math.min(d, COARSE ? 1 : 1.25), Math.min(d, 1), 0.75]; }
 function pixelRatio() { const d = Math.min(devicePixelRatio || 1, 2); return SET.quality === 'low' ? 0.75 : SET.quality === 'high' ? d : autoSteps()[autoLevel]; }
 const bloom = new UnrealBloomPass(new THREE.Vector2(innerWidth, innerHeight), SET.glow, SET.radius, 0.55);
 composer.addPass(bloom);
@@ -93,11 +93,17 @@ function drift(s, l) { const [mx, my] = lineMean(l); let d = 0; for (const q of 
 const isFinder = (l) => l.source === 'finder';
 const hasFinder = (s) => s.lines.some(isFinder);
 function gradeOf(s) { const f = s.lines.find(isFinder); return f ? f.grade : null; }
-function usable(note) { const m = /usable ends: ([a-z, ]+)/.exec(note || ''); return m ? m[1] : null; }
+function usable(l) {
+  if (Array.isArray(l.usable)) return l.usable.length ? l.usable.join(', ') : 'none';
+  const m = /usable ends: ([a-z, ]+)/.exec(l.note || ''); return m ? m[1] : null;
+}
+// one end's grade as the dataset words it, e.g. "low PASS (CT recap)"
+function endText(l, k) { const e = l.ends && l.ends[k]; return e ? `${k} ${e.grade}${e.recapped ? ' (CT recap)' : ''}` : ''; }
+function endsText(l) { return l.ends && Object.keys(l.ends).length ? ['low', 'high'].map((k) => endText(l, k)).filter(Boolean).join(', ') : ''; }
 const GRADE_TEXT = {
-  PASS: 'both ends passed the automatic end check',
-  FLAG: 'the end check found a problem at an end (a lean, or a line that stops short of the papyrus)',
-  VOID: 'the tilt test failed its own control on this scan, so the check says nothing either way: the line bends in its middle as much as the planted test tilt, so a real lean at an end cannot be told from a bend (5 of the 13 lines made by people fail the same control)',
+  PASS: 'both ends passed the automatic CT end check',
+  FLAG: 'the automatic CT end check flagged an end: there the line sits more than 4 mm from the center the CT shows',
+  VOID: 'the end check could not judge this line',
 };
 
 // ---------- statistics (definitions: Guide, For researchers) ----------
@@ -139,7 +145,7 @@ function lineRows() {
     const t = statsOf(s, l);
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
-      kind: l.kind, grade: l.grade || '', usable_ends: isFinder(l) ? (usable(l.note) || '') : '', withdrawn: l.note.includes('withdrawn'),
+      kind: l.kind, grade: l.grade || '', ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'),
       ...t, licence: l.licence, sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
   }));
@@ -268,9 +274,18 @@ async function rangeGet(url, off, len, signal) {
   } catch (e) { if (e.name === 'AbortError') throw e; return null; } finally { free(); }
 }
 // one axial slice of level L at level-0 height z0, as a Uint8Array (Y by X)
+const sliceCache = new Map(); // `${zarr}/${L}/${z}` -> slice, last 48 kept
 async function ctSlice(s, L, z0, signal) {
   const m = await zmeta(s, L); const [Z, Y, X] = m.shape; const [cz, cy, cx] = m.chunks;
   const z = Math.min(Z - 1, Math.max(0, Math.floor(z0 / 2 ** L)));
+  const key = `${s.zarr}/${L}/${z}`; const hit = sliceCache.get(key);
+  if (hit) { sliceCache.delete(key); sliceCache.set(key, hit); return hit; }
+  const res = await ctSliceFetch(s, L, z, m, signal);
+  if (!signal?.aborted) { sliceCache.set(key, res); if (sliceCache.size > 48) sliceCache.delete(sliceCache.keys().next().value); }
+  return res;
+}
+async function ctSliceFetch(s, L, z, m, signal) {
+  const [, Y, X] = m.shape; const [cz, cy, cx] = m.chunks;
   const out = new Uint8Array(X * Y); const jobs = [];
   for (let by = 0; by * cy < Y; by++) for (let bx = 0; bx * cx < X; bx++) {
     jobs.push(rangeGet(`${s.zarr}/${L}/${Math.floor(z / cz)}/${by}/${bx}`, (z % cz) * cy * cx, cy * cx, signal).then((b) => {
@@ -333,11 +348,11 @@ async function loadVolume(s, parent) {
   mesh.onBeforeRender = (r, sc, cam) => { mat.uniforms.uCam.value.copy(cam.position).applyMatrix4(new THREE.Matrix4().copy(mesh.matrixWorld).invert()); };
   parent.add(mesh);
   const abort = new AbortController();
-  vol = { s, mesh, tex, abort, loaded: 0, total: D };
+  vol = { s, mesh, tex, abort, loaded: 0, total: D, data, zs, X, Y, stride, done: null };
   applyVolUniforms();
   // coarse to fine: every 4th slice first (copied into its gap), then the rest
   const order = []; for (let i = 0; i < D; i += 4) order.push(i); for (let i = 0; i < D; i++) if (i % 4) order.push(i);
-  const done = new Uint8Array(D); let lastUp = 0;
+  const done = new Uint8Array(D); vol.done = done; let lastUp = 0;
   const one = async (i) => {
     const z = zs[i]; const plane = X * Y; const tasks = [];
     for (let by = 0; by * cy < Y; by++) for (let bx = 0; bx * cx < X; bx++) {
@@ -350,7 +365,7 @@ async function loadVolume(s, parent) {
     done[i] = 1;
     if (i % 4 === 0) for (let k = i + 1; k < Math.min(D, i + 4); k++) if (!done[k]) data.copyWithin(k * plane, i * plane, (i + 1) * plane);
     vol && vol.tex === tex && (vol.loaded++);
-    const now = performance.now(); if (now - lastUp > 400 || vol?.loaded === D) { lastUp = now; tex.needsUpdate = true; S.dirty = true; setStatus(); }
+    const now = performance.now(); if (now - lastUp > 1200 || vol?.loaded === D) { lastUp = now; tex.needsUpdate = true; S.dirty = true; setStatus(); }
   };
   try {
     let k = 0; const lanes = Array.from({ length: 3 }, async () => { while (k < order.length) { await one(order[k++]); } });
@@ -381,7 +396,7 @@ function buildScan(s) {
   const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D)), new THREE.LineBasicMaterial({ color: ICE, transparent: true, opacity: 0.12 }));
   frame.position.y = H / 2; scanGroup.add(frame);
   // slice plane, textured from the inset canvas
-  sliceTex = new THREE.CanvasTexture($('slice')); sliceTex.colorSpace = THREE.SRGBColorSpace;
+  sliceTex = new THREE.CanvasTexture(tc); sliceTex.colorSpace = THREE.SRGBColorSpace;
   slicePlane = new THREE.Mesh(new THREE.PlaneGeometry(W, D), new THREE.MeshBasicMaterial({ map: sliceTex, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
   slicePlane.rotation.x = -Math.PI / 2; slicePlane.renderOrder = 2; scanGroup.add(slicePlane);
   const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(W, D)), new THREE.LineBasicMaterial({ color: ICE, transparent: true, opacity: 0.5, toneMapped: false }));
@@ -435,7 +450,25 @@ function applyLasVis() {
 }
 
 // ---------- slice inset ----------
-const sc = $('slice'), sx = sc.getContext('2d');
+// The slice is composed off screen (CT and lasagna only) and shown in one step by present(), so the inset never shows
+// a cleared black frame while CT is still streaming. present() also turns it with the 3D view when asked and draws
+// the line marks last, upright.
+const sc = $('slice'), vx = sc.getContext('2d');
+const buf = document.createElement('canvas'); buf.width = sc.width; buf.height = sc.height; const sx = buf.getContext('2d');
+let shownAngle = null;
+function viewAngle() { return SET.turn && S.mode !== 'array' ? controls.getAzimuthalAngle() : 0; }
+// the 3D slice plane keeps its own unturned copy, since it already sits in the scene's frame
+const tc = document.createElement('canvas'); tc.width = sc.width; tc.height = sc.height; const tx = tc.getContext('2d');
+function present(turnOnly = false) {
+  const s = S.sel; if (!s) return;
+  const a = viewAngle(); shownAngle = a; const W = sc.width, c = W / 2;
+  vx.setTransform(1, 0, 0, 1, 0, 0); vx.fillStyle = '#000'; vx.fillRect(0, 0, W, W);
+  vx.translate(c, c); vx.rotate(a); vx.translate(-c, -c); vx.drawImage(buf, 0, 0); vx.setTransform(1, 0, 0, 1, 0, 0);
+  drawMarks(vx, s, S.z, a);
+  if (turnOnly) return;
+  tx.drawImage(buf, 0, 0); drawMarks(tx, s, S.z, 0);
+  if (sliceTex) sliceTex.needsUpdate = true; S.dirty = true;
+}
 let sliceJob = 0, sliceAbort = null;
 const sheetImgs = new Map();
 function sheetImg(path) { if (!sheetImgs.has(path)) { const im = new Image(); im.src = path; sheetImgs.set(path, new Promise((r) => { im.onload = () => r(im); im.onerror = () => r(null); })); } return sheetImgs.get(path); }
@@ -448,16 +481,17 @@ function drawCT(sl, alpha = 1) {
   const h = new Uint32Array(256); let n = 0; for (let i = 0; i < sl.data.length; i += 7) { const v = sl.data[i]; if (v > 2) { h[v]++; n++; } }
   let lo = 0, hi = 255, c = 0; for (let v = 0; v < 256; v++) { c += h[v]; if (c < n * 0.01) lo = v; if (c < n * 0.995) hi = v; }
   const span = Math.max(8, hi - lo);
-  const im = new ImageData(sl.X, sl.Y); const d = im.data;
-  for (let i = 0; i < sl.data.length; i++) { const v = sl.data[i]; const t = v <= 2 ? 0 : Math.max(0, Math.min(255, (v - lo) * 255 / span)); const q = LUT[t | 0]; d[i * 4] = q[0]; d[i * 4 + 1] = q[1]; d[i * 4 + 2] = q[2]; d[i * 4 + 3] = 255; }
+  const im = new ImageData(sl.X, sl.Y); const d32 = new Uint32Array(im.data.buffer); const map = new Uint32Array(256);
+  for (let v = 0; v < 256; v++) { const t = v <= 2 ? 0 : Math.max(0, Math.min(255, (v - lo) * 255 / span)); const q = LUT[t | 0]; map[v] = (255 << 24 | (q[2] & 255) << 16 | (q[1] & 255) << 8 | (q[0] & 255)) >>> 0; }
+  for (let i = 0, n = sl.data.length; i < n; i++) d32[i] = map[sl.data[i]];
   const tmp = new OffscreenCanvas(sl.X, sl.Y); tmp.getContext('2d').putImageData(im, 0, 0);
   sx.globalAlpha = alpha; sx.drawImage(tmp, 0, 0, sc.width, sc.height); sx.globalAlpha = 1;
 }
-function drawMarks(s, z) {
-  const k = sc.width / s.shape[2];
+function drawMarks(sx, s, z, a = 0) {
+  const k = sc.width / s.shape[2], c = sc.width / 2, ca = Math.cos(a), sa = Math.sin(a);
   for (const l of s.lines) {
     const p = lineAt(l, z); if (!p) continue;
-    const x = p[0] * k, y = p[1] * k; const col = isFinder(l) ? '#ffb347' : '#89f0ff';
+    const u = p[0] * k - c, v = p[1] * k - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = isFinder(l) ? '#ffb347' : '#89f0ff';
     sx.strokeStyle = col; sx.lineWidth = 1.6; sx.shadowColor = col; sx.shadowBlur = 10;
     sx.beginPath(); sx.arc(x, y, 9, 0, Math.PI * 2); sx.stroke();
     sx.beginPath(); sx.moveTo(x - 22, y); sx.lineTo(x - 12, y); sx.moveTo(x + 12, y); sx.lineTo(x + 22, y); sx.moveTo(x, y - 22); sx.lineTo(x, y - 12); sx.moveTo(x, y + 12); sx.lineTo(x, y + 22); sx.stroke();
@@ -479,17 +513,16 @@ async function drawSlice() {
       const ctOn = S.blend < 100;
       if (ctOn) { $('i-status').textContent = 'streaming CT…'; const sl = await ctSlice(s, 3, z, sig); if (job !== sliceJob) return; drawCT(sl, 1); }
       if (im) { sx.globalCompositeOperation = ctOn ? 'screen' : 'source-over'; sx.globalAlpha = S.blend / 100; if (!S.ori) sx.filter = 'sepia(1) saturate(2.2) hue-rotate(-12deg) brightness(1.05)'; sx.drawImage(im, 0, 0, sc.width, sc.height); sx.filter = 'none'; sx.globalAlpha = 1; sx.globalCompositeOperation = 'source-over'; }
-      drawMarks(s, z); $('i-status').textContent = 'model output · villa lasagna';
+      present(); $('i-status').textContent = 'model output · villa lasagna';
     } else {
       $('i-status').textContent = 'streaming…';
       const quick = await ctSlice(s, 4, z, sig); if (job !== sliceJob) return;
-      sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(quick); drawMarks(s, z); if (sliceTex) sliceTex.needsUpdate = true; S.dirty = true;
+      sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(quick); present();
       await new Promise((r) => setTimeout(r, 220)); if (job !== sliceJob) return;
       const fine = await ctSlice(s, 3, z, sig); if (job !== sliceJob) return;
-      sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(fine); drawMarks(s, z);
+      sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(fine); present();
       $('i-status').textContent = `CT level 3 · ${fmt(s.voxel_um * 8, 0)} µm px`;
     }
-    if (sliceTex) sliceTex.needsUpdate = true; S.dirty = true;
   } catch (e) { if (e.name !== 'AbortError') { $('i-status').textContent = 'CT unavailable'; console.warn(e); } }
 }
 let zTimer = 0;
@@ -498,8 +531,19 @@ function setZ(z, now = false) {
   if (S.mode === 'lasagna' && S.las && s.scroll === LASAGNA_SCROLL) { const zs = S.las.slice_z; z = zs.reduce((a, b) => Math.abs(b - z) < Math.abs(a - z) ? b : a, zs[0]); }
   S.z = Math.max(0, Math.min(s.shape[0] - 1, z));
   $('z').value = Math.round(1000 * S.z / s.shape[0]);
-  clearTimeout(zTimer); if (now) drawSlice(); else zTimer = setTimeout(drawSlice, 90);
-  if (slicePlane) slicePlane.position.y = mm(s, S.z); S.dirty = true; drawHere(); syncURL();
+  clearTimeout(zTimer); if (now) drawSlice(); else { livePreview(s); zTimer = setTimeout(drawSlice, 90); }
+  if (slicePlane) slicePlane.position.y = mm(s, S.z); S.dirty = true; drawHere(); syncURLSoon();
+}
+// While the height slider moves, the inset follows at once from the level-5 CT already in memory for the 3D view
+// (or from a cached finer slice), and the finer levels replace it when the slider rests.
+function livePreview(s) {
+  if (S.mode === 'lasagna') return;
+  const z = S.z; $('i-z').textContent = `z ${Math.round(z)} · ${fmt(mm(s, z), 1)} mm`;
+  for (const L of [3, 4]) { const hit = sliceCache.get(`${s.zarr}/${L}/${Math.floor(z / 2 ** L)}`); if (hit) { sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(hit); present(); return; } }
+  const v = vol && vol.s === s && vol.done ? vol : null; if (!v) return;
+  const i = Math.max(0, Math.min(v.zs.length - 1, Math.round(z / 32 / v.stride))); if (!v.done[i] && !v.done[i - (i % 4)]) return;
+  const plane = v.X * v.Y; const sl = { data: v.data.subarray(i * plane, (i + 1) * plane), X: v.X, Y: v.Y };
+  sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(sl); present();
 }
 $('z').addEventListener('input', (e) => { if (S.sel) setZ(e.target.value / 1000 * S.sel.shape[0]); });
 sc.addEventListener('wheel', (e) => { if (!S.sel) return; e.preventDefault(); const step = S.mode === 'lasagna' ? 1280 * Math.sign(e.deltaY) : S.sel.shape[0] / 200 * Math.sign(e.deltaY); setZ(S.z - step); }, { passive: false });
@@ -527,7 +571,8 @@ function buildCard(s) {
     const src = S.data.sources[l.source]; const f = isFinder(l); const t = statsOf(s, l);
     const up = /^https?:/.test(l.upstream) ? `<a href="${l.upstream}" target="_blank" rel="noopener">upstream</a>` : '';
     const grade = l.grade ? `<span class="grade ${l.grade}" title="${GRADE_TEXT[l.grade]}">END CHECK ${l.grade}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
-    const note = f ? `<div class="note">${GRADE_TEXT[l.grade] || ''}. Usable ends: ${usable(l.note) || 'see note'}. Model output; no end checked on CT by a person.</div>`
+    const ends = endsText(l);
+    const note = f ? `<div class="note">${ends ? `CT end check: ${ends}` : (GRADE_TEXT[l.grade] || '')}. Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}.</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     return `<div class="ln"><div class="who"><b class="${f ? 'cf' : 'p'}">${src.label}</b>${grade}</div>
@@ -545,6 +590,7 @@ function buildCard(s) {
         ${row('licence', l.licence)}
         ${row('sha256', `<button class="lk mono" data-copy="${l.sha256}" data-what="sha256 copied" title="copy">${l.sha256.slice(0, 16)}…</button>`)}
         ${row('file', `<code>${l.file}</code>`)}
+        ${l.ends && Object.keys(l.ends).length ? row('CT end check', ['low', 'high'].filter((k) => l.ends[k]).map((k) => `${endText(l, k)}, ${fmt(l.ends[k].D_mm, 2)} mm from the CT center`).join('<br>')) : ''}
         ${l.note ? row('note', l.note) : ''}
       </table></details></div>`;
   }).join('');
@@ -568,7 +614,7 @@ function setMode(m) {
   const prev = S.mode; S.mode = m; document.body.classList.toggle('focus', m !== 'array');
   document.querySelectorAll('.chip').forEach((c) => c.classList.toggle('on', c.dataset.mode === m));
   arrayGroup.visible = m === 'array'; scanGroup.visible = m !== 'array';
-  $('card').hidden = m === 'array'; $('inset').hidden = m === 'array';
+  $('card').hidden = m === 'array'; showInset();
   $('ctl-array').hidden = m !== 'array'; $('ctl-scan').hidden = m !== 'scan'; $('ctl-las').hidden = m !== 'lasagna';
   $('blend-wrap').hidden = m !== 'lasagna'; $('t-ori').parentElement.hidden = m !== 'lasagna';
   document.querySelectorAll('#rail li').forEach((li) => li.classList.toggle('sel', !!S.sel && li.dataset.scroll === S.sel.scroll && m !== 'array'));
@@ -593,7 +639,8 @@ function select(name, mode = 'scan') {
 document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => setMode(c.dataset.mode)));
 $('c-close').addEventListener('click', () => setMode('array'));
 $('b-about').addEventListener('click', () => { markSeen(); openGuide(); });
-$('ex').addEventListener('input', (e) => { S.ex = +e.target.value; $('ex-v').textContent = S.ex; buildArray(); syncURL(); });
+let exQueued = false;
+$('ex').addEventListener('input', (e) => { S.ex = +e.target.value; $('ex-v').textContent = S.ex; if (!exQueued) { exQueued = true; requestAnimationFrame(() => { exQueued = false; buildArray(); }); } syncURLSoon(); });
 $('t-ct').addEventListener('change', (e) => { S.ct = e.target.checked; applyVolUniforms(); });
 $('t-ct2').addEventListener('change', (e) => { S.ct2 = e.target.checked; applyVolUniforms(); });
 $('render').addEventListener('change', (e) => { S.render = e.target.value; applyVolUniforms(); });
@@ -652,7 +699,7 @@ $('about').querySelector('.tabs').addEventListener('click', (e) => { const b = e
 
 // data sheet
 const COLS = {
-  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
+  lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
     ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['licence', 'licence'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],
@@ -700,9 +747,12 @@ function applySettings(save = true) {
   $('s-glow').value = Math.round(SET.glow * 100); $('s-glow-v').textContent = SET.glow.toFixed(2);
   $('s-radius').value = Math.round(SET.radius * 100); $('s-radius-v').textContent = SET.radius.toFixed(2);
   $('s-quality').value = SET.quality; $('s-film').checked = SET.film; $('s-spin').checked = SET.spin;
+  $('s-inset').checked = SET.inset; $('s-turn').checked = SET.turn; $('t-turn').checked = SET.turn;
   if (!SET.spin) controls.autoRotate = false;
+  showInset(); if (S.sel && S.mode !== 'array') present(true);
   applyVolUniforms(); S.dirty = true; if (save) saveSet();
 }
+function showInset() { const off = S.mode === 'array'; $('inset').hidden = off || !SET.inset; $('i-show').hidden = off || SET.inset; }
 $('b-set').addEventListener('click', (e) => { e.stopPropagation(); $('settings').hidden = !$('settings').hidden; });
 document.addEventListener('pointerdown', (e) => { if (!$('settings').hidden && !e.target.closest('#settings, #b-set')) $('settings').hidden = true; });
 $('s-glow').addEventListener('input', (e) => { SET.glow = e.target.value / 100; applySettings(); });
@@ -710,6 +760,11 @@ $('s-radius').addEventListener('input', (e) => { SET.radius = e.target.value / 1
 $('s-quality').addEventListener('change', (e) => { SET.quality = e.target.value; applySettings(); });
 $('s-film').addEventListener('change', (e) => { SET.film = e.target.checked; applySettings(); });
 $('s-spin').addEventListener('change', (e) => { SET.spin = e.target.checked; applySettings(); });
+$('s-inset').addEventListener('change', (e) => { SET.inset = e.target.checked; applySettings(); });
+$('s-turn').addEventListener('change', (e) => { SET.turn = e.target.checked; applySettings(); });
+$('t-turn').addEventListener('change', (e) => { SET.turn = e.target.checked; applySettings(); });
+$('i-hide').addEventListener('click', () => { SET.inset = false; applySettings(); });
+$('i-show').addEventListener('click', () => { SET.inset = true; applySettings(); });
 $('s-reset').addEventListener('click', () => { Object.assign(SET, SET_DEFAULT); applySettings(); });
 
 // first visit
@@ -757,6 +812,8 @@ function applyHot() {
 }
 
 // ---------- URL and agent API ----------
+let urlT = 0;
+function syncURLSoon() { clearTimeout(urlT); urlT = setTimeout(syncURL, 300); }
 function syncURL() {
   const q = new URLSearchParams();
   if (S.mode !== 'array') { q.set('mode', S.mode); q.set('scan', S.sel.scroll); q.set('z', Math.round(S.z)); }
@@ -795,6 +852,7 @@ function tick(now = performance.now()) {
   const dt = lastTick ? Math.min(0.1, (now - lastTick) / 1000) : 1 / 60; lastTick = now;
   controls.update(dt);
   if (S.mode === 'array') applyHot();
+  else if (SET.turn && S.sel && !$('inset').hidden && shownAngle !== null && Math.abs(controls.getAzimuthalAngle() - shownAngle) > 0.003) present(true);
   if (S.dirty || controls.autoRotate) {
     composer.render(); placeLabels(); S.dirty = false;
     // slow means frames arriving well after the cap allows, not the cap itself

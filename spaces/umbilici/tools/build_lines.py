@@ -2,8 +2,8 @@
 
 Usage: python3 tools/build_lines.py DATASET_DIR OUT.json
 DATASET_DIR is a copy of SharpMeow/vesuvius-center-lines (index.json plus lines/). Only the control points, the
-public fields of index.json and each file's frame stamp (voxel size, volume name and grid) are copied; the rest
-of each file's metadata is not. Scan shapes are read from the
+public fields of index.json (with each Center Finder line's per-end CT end check, ct_ends), each file's frame
+stamp (voxel size, volume name and grid) and its usable_ends are copied; the rest of each file's metadata is not. Scan shapes are read from the
 Vesuvius Challenge open-data bucket.
 """
 import json
@@ -62,14 +62,23 @@ def main(src, out):
             flat = []
             for p in sorted(pts, key=lambda p: p["z"]):
                 flat += [round(p["x"]), round(p["y"]), round(p["z"])]
+            # v2.2 and later grade each end on CT (index ct_ends); a line is FLAG if either end is. Older releases
+            # carried one grade in the note.
+            ends = {k: {q: e[q] for q in ("grade", "recapped", "D_mm") if q in e} for k, e in (f.get("ct_ends") or {}).items()}
             grade = None
-            m = re.search(r"end check (PASS|FLAG|VOID)", f.get("note", ""))
-            if m:
-                grade = m.group(1)
+            if ends:
+                grade = "FLAG" if any(e.get("grade") != "PASS" for e in ends.values()) else "PASS"
+            else:
+                m = re.search(r"end check (PASS|FLAG|VOID)", f.get("note", ""))
+                if m:
+                    grade = m.group(1)
+            use = md.get("usable_ends")
             lines.append({
                 "source": f["source"], "kind": f["kind"], "credit": f["credit"], "licence": f["licence"],
                 "upstream": f["upstream"], "file": f["file"], "sha256": f["sha256"], "z": f["z"],
-                "note": f.get("note", ""), "grade": grade, "stamp": stamp, "points": flat,
+                "note": f.get("note", ""), "grade": grade, "ends": ends,
+                "usable": [k for k in ("low", "high") if use.get(k)] if isinstance(use, dict) else None,
+                "stamp": stamp, "points": flat,
             })
         lines.sort(key=lambda l: list(SOURCES).index(l["source"]))
         scrolls.append({
