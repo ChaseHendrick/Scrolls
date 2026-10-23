@@ -17,7 +17,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 <script type="importmap">
 { "imports": {
   "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
@@ -35,6 +35,11 @@
   <div class="kicker mono dim">VESUVIUS CHALLENGE<span class="sep">/</span>OPEN DATA<span class="sep">/</span><span id="k-count">22</span> PRIZE SCANS</div>
   <h1>The <em>center lines</em> of twenty-two scrolls</h1>
   <p class="lede" id="lede">Every public center line (umbilicus) for the scans on the prize page, in one place, drawn over X-ray CT streamed live from the open data. <span class="amber">Amber</span> lines came from Chase Hendrick's Center Finder; <span class="ice">ice</span> lines were made by people.</p>
+  <div class="hint mono small" id="hint" hidden>
+    <span>First time here?</span>
+    <button id="hint-go">Start with the guide</button>
+    <button id="hint-x" class="dim" aria-label="Dismiss">&times;</button>
+  </div>
 </header>
 
 <nav class="hud tr" aria-label="View">
@@ -131,11 +136,6 @@
 
 <div class="tip mono small" id="tip" hidden></div>
 <div class="toast mono small" id="toast" hidden></div>
-<div class="hint mono small" id="hint" hidden>
-  <span>First time here?</span>
-  <button id="hint-go">Start with the guide</button>
-  <button id="hint-x" class="dim" aria-label="Dismiss">&times;</button>
-</div>
 <div class="boot mono small" id="boot">loading lines…</div>
 
 <dialog id="about" class="about wide">
@@ -269,6 +269,6 @@
   <div class="tbl-wrap"><table class="tbl" id="tbl"></table></div>
 </dialog>
 
-<script type="module" src="app.js?v=7"></script>
+<script type="module" src="app.js?v=8"></script>
 </body>
 </html>

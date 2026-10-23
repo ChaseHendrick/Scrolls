@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.3.0';
+const VERSION = '1.4.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -24,7 +24,9 @@ const S = {
 
 // ---------- renderer ----------
 const canvas = $('gl');
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, preserveDrawingBuffer: true, powerPreference: 'high-performance' });
+// No canvas antialias or preserved buffer: the composer draws into its own targets, so both only cost memory and a
+// copy per frame; image() reads the canvas in the same task as its render.
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, preserveDrawingBuffer: false, powerPreference: 'high-performance' });
 const DPR = Math.min(devicePixelRatio || 1, 2);
 renderer.setPixelRatio(DPR);
 renderer.setSize(innerWidth, innerHeight);
@@ -42,7 +44,8 @@ controls.addEventListener('change', () => { S.dirty = true; });
 // While the camera moves, the X-ray takes fewer ray steps instead of dropping resolution: changing the pixel ratio
 // mid-drag resized the bloom buffers and made the glow pop and flicker.
 let moving = false, settleT = 0;
-controls.addEventListener('start', () => { moving = true; clearTimeout(settleT); controls.autoRotate = false; applyVolUniforms(); });
+let userMoved = false;
+controls.addEventListener('start', () => { moving = true; userMoved = true; clearTimeout(settleT); controls.autoRotate = false; applyVolUniforms(); });
 controls.addEventListener('end', () => { clearTimeout(settleT); settleT = setTimeout(() => { moving = false; applyVolUniforms(); S.dirty = true; }, 150); });
 
 const composer = new EffectComposer(renderer);
@@ -64,8 +67,13 @@ composer.addPass(new OutputPass());
 
 addEventListener('resize', () => {
   camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix();
-  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight); S.dirty = true;
+  renderer.setSize(innerWidth, innerHeight); composer.setSize(innerWidth, innerHeight);
+  // the Hub sizes the Space's frame after the page loads; keep the opening view framed until the visitor moves it
+  if (S.mode === 'array' && !userMoved) fitArray();
+  S.dirty = true;
 });
+function fitArray() { const k = Math.max(1, 1.25 / camera.aspect); const a = controls.getAzimuthalAngle(); const r = Math.hypot(620, 2350) * k;
+  camera.position.set(Math.sin(a) * r, 330 * k, Math.cos(a) * r); camera.far = 20000; camera.updateProjectionMatrix(); }
 
 // ---------- helpers ----------
 const mm = (s, v) => v * s.voxel_um / 1000;
@@ -776,19 +784,25 @@ window.umbilici = {
 };
 
 // ---------- loop ----------
-const frames = []; let lastFrame = 0, stepPending = false;
-function tick() {
+// Frames are capped at 60 a second, and at 30 while the array only spins by itself: a 120 Hz screen (MacBook Pro)
+// otherwise draws the full X-ray and glow twice as often for no visible gain. The spin is timed, not per frame.
+const frames = []; let lastFrame = 0, lastTick = 0, stepPending = false;
+function tick(now = performance.now()) {
   requestAnimationFrame(tick);
-  controls.update();
+  const idleSpin = controls.autoRotate && !S.dirty && !moving;
+  const gap = idleSpin ? 1000 / 30 : 1000 / 60;
+  if (now - lastTick < gap - 2) return;
+  const dt = lastTick ? Math.min(0.1, (now - lastTick) / 1000) : 1 / 60; lastTick = now;
+  controls.update(dt);
   if (S.mode === 'array') applyHot();
   if (S.dirty || controls.autoRotate) {
     composer.render(); placeLabels(); S.dirty = false;
-    const now = performance.now();
-    if (now - lastFrame < 250) frames.push(now - lastFrame);
+    // slow means frames arriving well after the cap allows, not the cap itself
+    if (now - lastFrame < 250) frames.push(now - lastFrame - gap);
     lastFrame = now;
     if (frames.length >= 24) {
       const m = median(frames); frames.length = 0;
-      if (SET.quality === 'auto' && m > 25 && autoLevel < 2) stepPending = true;
+      if (SET.quality === 'auto' && m > 9 && autoLevel < 2) stepPending = true;
     }
     if (stepPending && !moving) { stepPending = false; const s = autoSteps(); let k = autoLevel + 1; while (k < 2 && s[k] >= s[autoLevel]) k++; if (s[k] < s[autoLevel]) { autoLevel = k; applySettings(false); } }
   }

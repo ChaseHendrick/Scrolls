@@ -191,7 +191,8 @@ table.kv code { font-size: 10px; color: var(--ice); word-break: break-all; }
 .acts button[data-act=use] { border-color: rgba(255,179,71,.6); color: var(--amber); }
 details.pyr { padding-bottom: 6px; }
 .toast { position: fixed; z-index: 20; left: 50%; bottom: calc(var(--gut) + 8px); transform: translateX(-50%); padding: 7px 12px; color: var(--bg); background: var(--ice); box-shadow: 0 0 22px rgba(137,240,255,.45); letter-spacing: .1em; }
-.hint { position: fixed; z-index: 8; left: 50%; top: var(--gut); transform: translateX(-50%); display: flex; gap: 12px; align-items: center; padding: 8px 12px;
+/* the first-visit hint sits under the intro, clear of the view buttons at every width */
+.hint { position: relative; margin-top: 16px; pointer-events: auto; display: inline-flex; gap: 12px; align-items: center; padding: 8px 12px;
   border: 1px solid rgba(255,179,71,.55); background: rgba(10,8,3,.88); box-shadow: 0 0 24px rgba(255,179,71,.18); }
 .hint #hint-go { color: var(--amber); border-bottom: 1px solid rgba(255,179,71,.6); letter-spacing: .1em; text-transform: uppercase; }
 .hint #hint-x { font-size: 16px; line-height: 1; }
@@ -223,7 +224,7 @@ table.tbl tr.cf td:first-child { color: var(--amber); }
 table.tbl tr.wd { opacity: .55; }
 @media (max-width: 860px) {
   .tbtn { height: 31px; padding: 0 9px; font-size: 10px; }
-  .hint { top: calc(var(--gut) + 128px); bottom: auto; width: calc(100vw - 2 * var(--gut)); justify-content: space-between; }
+  .hint { position: fixed; z-index: 8; left: var(--gut); margin: 0; top: calc(var(--gut) + 128px); bottom: auto; width: calc(100vw - 2 * var(--gut)); justify-content: space-between; }
   .acts button { padding: 4px 6px; }
   .about { padding: 16px 16px; }
   .tabs [data-tab] { padding: 6px 8px; font-size: 9.5px; }
