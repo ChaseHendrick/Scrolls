@@ -51,7 +51,7 @@ Do not use it:
 
 - To ask whether two given segments trace the same sheet: use [`overlap`](overlap.md).
 - To check cross-scan meshes and transforms against the catalog: use [`meshaudit`](meshaudit.md).
-- To find or fit the umbilicus itself: use the scroll center finder, [`umbilicus`](umbilicus.md).
+- To find or fit the umbilicus itself: use the Center Finder, [`umbilicus`](umbilicus.md).
 - To judge whether a segment lies on papyrus: it reads no CT. Look at the CT in VC3D at the example vertices.
 - For one or two segments: a stack needs at least three, and the innermost and outermost get no missing-sector check.
 
@@ -360,6 +360,6 @@ python -m unittest tests.test_stackcheck -v
 - [`results.json`](../results.json), key `stackcheck_checks`: the PHerc0139 numbers with their settings and times.
 - [`overlap`](overlap.md): whether two given segments trace one sheet.
 - [`meshaudit`](meshaudit.md): the catalog's cross-scan matrices, which `--transform catalog:...` uses.
-- [`umbilicus`](umbilicus.md): the scroll center finder.
+- [`umbilicus`](umbilicus.md): the Center Finder.
 - [`fetch`](fetch.md): downloads bucket folders, if you want local copies first.
 - [`GLOSSARY.md`](../../GLOSSARY.md): umbilicus, winding, tifxyz.

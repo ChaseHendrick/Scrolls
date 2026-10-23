@@ -44,6 +44,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **catalog (catalogue)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
 
+**Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
+
 **checkpoint**: The saved weights of a trained model.
 
 **claims ledger (`docs/claims/sources.json`)**: The list, per block of the README's Novel findings, of the results units and files its numbers come from, each pinned to its sha256, and a reason (setting, count, derived, external or context) for any number no source holds. `python -m kit.claimcheck check` fails when a number has neither. See [`docs/tools/claimcheck.md`](docs/tools/claimcheck.md).
@@ -266,7 +268,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
-**Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the scroll center finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
+**Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the Center Finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
 
@@ -326,7 +328,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## U
 
-**U-Net**: A common neural network shape for image segmentation. The scroll center finder uses two small U-Nets.
+**U-Net**: A common neural network shape for image segmentation. The Center Finder uses two small U-Nets.
 
 **uint8**: An 8-bit unsigned whole number (0 to 255), the data type of the catalog volumes.
 

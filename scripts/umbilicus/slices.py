@@ -229,7 +229,7 @@ def extract_ranged(s, out, level=3, every=8, vol=None, threads=16):
 
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="Slice files for the center finder: every 8th level-3 plane of a scan.")
+    ap = argparse.ArgumentParser(description="Slice files for the Center Finder: every 8th level-3 plane of a scan.")
     ap.add_argument("cmd", choices=["extract"]); ap.add_argument("scrolls", nargs="*", help="default: the 13 published scrolls")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()
