@@ -5963,6 +5963,7 @@
     "python scripts/media/capture_web.py",
     "python scripts/media/sweep.py",
     "python scripts/media/tifxyz_stills.py",
+    "python scripts/media/isometry_media.py",
     "python scripts/media/coverage_still.py"
    ],
    "imports": [],
@@ -5990,7 +5991,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/coverage_still.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -6032,67 +6033,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 205,
+     "end_line": 217,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 206,
-     "end_line": 209,
+     "start_line": 218,
+     "end_line": 221,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 210,
-     "end_line": 216,
+     "start_line": 222,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 217,
-     "end_line": 253,
+     "start_line": 229,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 254,
-     "end_line": 303,
+     "start_line": 266,
+     "end_line": 315,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 304,
-     "end_line": 326,
+     "start_line": 316,
+     "end_line": 338,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 327,
-     "end_line": 340,
+     "start_line": 339,
+     "end_line": 352,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 341,
-     "end_line": 350,
+     "start_line": 353,
+     "end_line": 362,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 351,
-     "end_line": 354,
+     "start_line": 363,
+     "end_line": 366,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 355,
-     "end_line": 360,
+     "start_line": 367,
+     "end_line": 372,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 361,
-     "end_line": 366,
+     "start_line": 373,
+     "end_line": 378,
      "applicable": true
     }
    ]
@@ -10962,6 +10963,7 @@
    "commands": [
     "python -m kit tifxyz info",
     "python -m kit tifxyz stretch",
+    "python -m kit tifxyz isometry",
     "python -m kit tifxyz check",
     "python -m kit tifxyz obj",
     "python -m kit tifxyz preview",
@@ -11003,7 +11005,7 @@
     "Status": "Current",
     "Kind": "kit command, kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit tifxyz chunks`, `python -m kit tifxyz diff`, `python -m kit.tifxyz`, `from kit import tifxyz`",
+    "Run": "`python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz isometry`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit tifxyz chunks`, `python -m kit tifxyz diff`, `python -m kit.tifxyz`, `from kit import tifxyz`",
     "Code": "`kit/tifxyz.py`, `kit/cli.py` (`build_parser`)",
     "Tests": "`tests/test_tifxyz.py`, `tests/test_tifxyz_chunks_diff.py`",
     "Needs": "Python 3.10 or newer, numpy and tifffile; scipy when installed (finds holes faster; a numpy fallback gives the same answer). No VC3D, villa or GPU",
@@ -11019,91 +11021,91 @@
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 38,
+     "end_line": 39,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 39,
-     "end_line": 56,
+     "start_line": 40,
+     "end_line": 57,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 57,
-     "end_line": 107,
+     "start_line": 58,
+     "end_line": 108,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 108,
-     "end_line": 118,
+     "start_line": 109,
+     "end_line": 119,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 119,
-     "end_line": 261,
+     "start_line": 120,
+     "end_line": 279,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 262,
-     "end_line": 288,
+     "start_line": 280,
+     "end_line": 308,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 289,
-     "end_line": 293,
+     "start_line": 309,
+     "end_line": 313,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 294,
-     "end_line": 326,
+     "start_line": 314,
+     "end_line": 348,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 327,
-     "end_line": 354,
+     "start_line": 349,
+     "end_line": 376,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 355,
-     "end_line": 367,
+     "start_line": 377,
+     "end_line": 389,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 368,
-     "end_line": 371,
+     "start_line": 390,
+     "end_line": 393,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 372,
-     "end_line": 381,
+     "start_line": 394,
+     "end_line": 403,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 382,
-     "end_line": 385,
+     "start_line": 404,
+     "end_line": 407,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 386,
-     "end_line": 390,
+     "start_line": 408,
+     "end_line": 413,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 391,
-     "end_line": 397,
+     "start_line": 414,
+     "end_line": 420,
      "applicable": true
     }
    ]

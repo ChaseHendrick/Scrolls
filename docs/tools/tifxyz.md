@@ -409,7 +409,7 @@ Seconds on a laptop CPU for any published mesh (times in the At a glance table, 
 
 - 2026-10-23: added `info`, `stretch`, `check`, `obj`, `preview` and `facing` (`3376687`).
 - 2026-10-24: added `chunks` and `diff` (`ad3fddc`).
-- 2026-10-24: added `isometry`, the reference for the block proposed in villa issue #2279, with its still and GIF from `scripts/media/isometry_media.py`.
+- 2026-10-24: added `isometry`, the reference for the block proposed in villa issue #2279, with its still and GIF from `scripts/media/isometry_media.py` ([#177](https://github.com/ChaseHendrick/Scrolls/pull/177)).
 
 ## Related
 
