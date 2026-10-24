@@ -15,8 +15,9 @@
    "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
    "note": "Every row of the atlas names its mesh folder in url; the table's mesh folder link opens it. Read live from the open-data bucket, never copied here."},
   {"id": "page", "title": "This page's code and data", "kind": "page-api",
-   "url": "https://sharpmeow-segment-lens.static.hf.space/",
+   "url": "https://sharpmeow-segment-lens.hf.space/",
    "links": [{"label": "The whole atlas as one CSV", "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas/resolve/main/atlas.csv"},
+             {"label": "API and MCP for agents (list_scrolls, list_segments, get_segment, segment_picture)", "url": "https://sharpmeow-segment-lens.hf.space/agents/"},
              {"label": "Page source", "url": "https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/segment-lens"}],
    "license": "Page code Apache 2.0; data as above",
    "note": "python -m kit atlas show SCROLL and python -m kit tifxyz check MESH_URL reproduce the numbers from a clone of ChaseHendrick/Scrolls."}
