@@ -133,6 +133,18 @@ hf download SharpMeow/pherc0175a-lasagna README.md --repo-type dataset --local-d
 curl -L -O https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna/resolve/main/README.md
 ```
 
+## Lasagna fields, ten scans
+
+`https://huggingface.co/spaces/SharpMeow/lasagna-fields`
+
+License: CC BY-NC 4.0. villa lasagna predict3d output (model output) for ten scans, public and read live: each scan's cos, grad_mag, nx and ny fields as OME-Zarr plus a SCAN.lasagna.json for VC3D's Attach Remote Lasagna Manifest. That Space has its own Connect your tool section.
+
+### Links and embed (tested 2026-10-24)
+
+```text
+Lasagna Fields: every field's OME-Zarr URL, VC3D manifest and tested snippets: https://huggingface.co/spaces/SharpMeow/lasagna-fields
+```
+
 ## This page's own data and API
 
 `https://sharpmeow-umbilici.static.hf.space/`
