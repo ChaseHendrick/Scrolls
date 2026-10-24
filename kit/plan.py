@@ -4,7 +4,14 @@ The commands are copied from the official ink detection tutorial
 (https://scrollprize.org/tutorial5, villa commit e0bbb8b, checked 2026-10-06). This
 module prints them; it never runs them. Paths and flags change upstream, so treat the
 tutorial as the authority when a command fails.
+
+`spiral_chain` prints the large-surface route instead: a public center line, a public lasagna
+field, villa's spiral fit and flattening, a region render and an Ink Lens check, read from
+villa's spiral-fitting code at VILLA_SPIRAL (checked 2026-10-24).
 """
+
+import json
+from pathlib import Path
 
 from . import prizes
 
@@ -17,6 +24,8 @@ brew install uv awscli
 xattr -dr com.apple.quarantine /Applications/VC3D.app
 export VC_BIN=/Applications/VC3D.app/Contents/MacOS   # vc_render_tifxyz and friends ship here
 export PATH="$VC_BIN:$PATH"
+#    The render commands below pass the bucket URL as --volume, which current builds stream
+#    (villa e2254eb); an older build needs --volume DIR --remote-url URL instead.
 git clone https://github.com/ScrollPrize/villa.git
 cd villa/vesuvius && uv sync --extra models
 #    Not yet tried on macOS by this repo. If the volume-cartographer Python package fails to
@@ -44,8 +53,7 @@ aws s3 sync --no-sign-request \\
   s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/ \\
   ink-dataset/pherc0139/w035/w035.tifxyz
 vc_render_tifxyz \\
-  --volume volume-cache/20250728140407.zarr \\
-  --remote-url s3://vesuvius-challenge-open-data/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/ \\
+  --volume s3://vesuvius-challenge-open-data/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/ \\
   --segmentation ink-dataset/pherc0139/w035/w035.tifxyz \\
   --zarr-output ink-dataset/pherc0139/w035/w035_9um.zarr \\
   --scale 1 --group-idx 0 --num-slices 28 --cache-gb 16 \\
@@ -68,6 +76,8 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
   hybrid_3d2d-seed43/step-075000.pth --local-dir checkpoints/ink_9um
 # Build vc_render_tifxyz from current villa main. The published VC3D container was
 # reported stale (villa issue #1588) and lacked --flip-normals.
+# Current vc_render_tifxyz streams a remote OME-Zarr given as --volume URL (villa e2254eb);
+# it refuses a local --volume DIR next to a different --remote-url URL. Older builds need that pair.
 """
 
 HELD_OUT = """\
@@ -112,8 +122,7 @@ TARGET = """\
 #    https://scrollprize.org/tutorial_VC3D
 #    Then render it the same way as the control:
 vc_render_tifxyz \\
-  --volume volume-cache/{volume}.zarr \\
-  --remote-url s3://vesuvius-challenge-open-data/{scroll}/volumes/{zarr}/ \\
+  --volume s3://vesuvius-challenge-open-data/{scroll}/volumes/{zarr}/ \\
   --segmentation work/{slug}/surface.tifxyz \\
   --zarr-output work/{slug}/surface_9um.zarr \\
   --scale 1 --group-idx 0 --num-slices 28 --cache-gb 16 \\
@@ -182,3 +191,187 @@ def first_letters(scroll, batch=None, snapshot=None, mac=False):
 
 def cost(gpu_hours, rate_per_hour, cpu_hours=0.0, cpu_rate=0.0, storage_usd=0.0):
     return round(gpu_hours * rate_per_hour + cpu_hours * cpu_rate + storage_usd, 2)
+
+
+VILLA_SPIRAL = "e2254ebe0168a232e5ba7b94997c749b4e6a4544"   # villa main, 23 Oct 2026
+SPIRAL_INPUTS = Path(__file__).with_name("data") / "spiral-inputs-2026-10-24.json"
+BUCKET_S3 = "s3://vesuvius-challenge-open-data"
+# villa fit_spiral.py settings for a fit from the lasagna field and a center line alone: grad_mag spacing, every
+# other input off, room for 300 windings, no outer shell. The same settings as the whole-scan PHerc0841 pilot.
+SPIRAL_OVERRIDES = {
+    "optimizer_num_training_steps": 30000, "optimizer_random_seed": 1,
+    "dense_spacing_mode": "grad_mag", "dense_grad_mag_factor": 0.14,
+    "input_use_winding_inference": False, "input_use_verified_patches": False, "input_disable_patches": True,
+    "input_use_tracks": False, "input_use_fibers": False, "input_use_fiber_directions": False,
+    "input_use_pcl_absolute": False, "input_use_pcl_relative": False, "input_use_pcl_same_winding": False,
+    "input_use_pcl_drawn_control_points": False, "input_use_outer_shell": False, "loss_weight_shell_outer": 0.0,
+    "shell_outer_winding_idx": 300, "model_gap_expander_capacity_windings": 304,
+    "model_initial_dr_per_winding": 16.0, "loss_start_unattached_pcl_dt": 30000,
+}
+REGION_PX = 1024
+
+SPIRAL_HEAD = """\
+# First Letters large-surface chain for {scroll}: center line, lasagna field, spiral fit, flatten, render, Ink Lens
+# (prize snapshot {checked}, inputs read {inputs_checked}; check scrollprize.org/prizes first)
+# Status: not yet run end to end. Each command was read from the tool's code or page at the pinned commits;
+#   an upstream change can break one, and then the tool's own docs win.
+# Needs: git, uv, the AWS CLI or the hf CLI, a VC3D build (vc_render_tifxyz on PATH), this Scrolls checkout
+#   (python -m kit, spaces/ink-lens), and a CUDA GPU for the fit: villa's Triton kernels are CUDA only, and
+#   the fitter falls back to MPS or the CPU without them. You pay for your own compute; nothing here uploads.
+set -euo pipefail
+export W="$PWD/work/{slug}" DS="$PWD/work/{slug}/spiral-dataset"
+Z0="${{Z0:-0}}" Z1="${{Z1:-{slices}}}"        # the fit window in level-0 slices; the whole scan unless you set them
+mkdir -p "$DS/lasagna_inputs"
+
+# 0. Setup (once): villa at the commit these commands were read from, and its spiral-fitting environment.
+git clone https://github.com/ScrollPrize/villa.git "$W/villa"
+git -C "$W/villa" checkout {villa}
+(cd "$W/villa/spiral-fitting" && UV_PYTHON=3.14 uv sync --frozen)
+export SF="$W/villa/spiral-fitting" SPY="$W/villa/spiral-fitting/.venv/bin/python"
+
+# 1. Center line: the best public line for {scroll}, sha256-checked, written as $DS/umbilicus.json.
+python -m kit centerline get {scroll} --into "$DS"
+#    Check the volume it prints: it must be {volume} (level-0 voxels). `kit centerline list {scroll}` shows the rest.
+"""
+
+SPIRAL_LASAGNA_BUCKET = """\
+# 2. Lasagna field: the organizers' run in the open data, OME-Zarr level 2 (4x down) of the three stores the fit reads.
+for c in nx ny grad_mag; do
+  aws s3 sync --no-sign-request "{bucket}/{prefix}{scroll}_$c.ome.zarr/" "$DS/lasagna_inputs/{scroll}_$c.ome.zarr/" \\
+    --exclude "*" --include ".z*" --include "2/*"
+done
+"""
+
+SPIRAL_LASAGNA_HF = """\
+# 2. Lasagna field: villa's lasagna predict3d over the whole scan, shared as {dataset} (CC BY-NC 4.0).
+#    The open data has none for this volume. Its card: https://huggingface.co/datasets/{dataset}
+hf download {dataset} --repo-type dataset --local-dir "$W/lasagna"
+(cd "$W/lasagna" && sha256sum -c SHA256SUMS && for f in parts/*.tar; do tar -xf "$f"; done \\
+  && tar -xf {scroll}-lasagna-pyramid-fix.tar)
+for c in nx ny grad_mag; do mv "$W/lasagna/{scroll}_$c.ome.zarr" "$DS/lasagna_inputs/"; done
+"""
+
+SPIRAL_FIT = """\
+# 3. The scroll specification villa's fitter requires ({spec_note}).
+cat > "$DS/spiral-scroll.json" <<EOF
+{spec}
+EOF
+
+# 4. Pack the lasagna stores: the fitter reads them only through these sidecars.
+(cd "$SF" && PYTHONPATH="$SF" "$SPY" pack_resident_pools.py "$DS/lasagna_inputs" \\
+  --what normals,grad_mag --normal-group 2 --verify 2000)
+
+# 5. Fit one spiral from the lasagna field and the center line alone (no traces, fibers or point collections).
+(cd "$SF" && FIT_SPIRAL_DEVICE=cuda WANDB_MODE=disabled FIT_SPIRAL_OUT_DIR="$W/fit" FIT_SPIRAL_CACHE_DIR="$W/fit-cache" \\
+  FIT_SPIRAL_CONFIG_OVERRIDES="{{\\"z_begin\\": $Z0, \\"z_end\\": $Z1, {overrides}}}" \\
+  PYTHONPATH="$SF" "$SPY" fit_spiral.py --dataset "$DS")
+CKPT="$(find "$W/fit" -name checkpoint_fitted.ckpt | head -n 1)"
+
+# 6. Flatten it with villa's one-shot exporter (a private Lasagna flatten; it never overwrites an output).
+(cd "$SF" && PYTHONPATH="$SF" "$SPY" flatten_spiral_checkpoint.py "$CKPT" "$W/surface.tifxyz" \\
+  --umbilicus "$DS/umbilicus.json" --lasagna-dir "$W/villa/lasagna" --voxel-size-um {voxel})
+"""
+
+SPIRAL_QA = """\
+# 7. Check the surface before any ink model sees it (both read the tifxyz only):
+#      tifxyz-doctor (github.com/aviad12g/tifxyz-doctor): file, metadata and topology checks
+#      windcheck check "$W/surface.tifxyz" (github.com/joe-carr-data/windcheck): self-intersections
+#    A spiral fit is a model of the whole scroll; where it sits between sheets it carries no ink. Measure
+#    how much of it lies on papyrus in your area before you trust a map of it.
+"""
+
+SPIRAL_RULES = """\
+# 8. Before any ink model runs on the surface:
+#    - Write your readout rule in experiments/{slug}/run.json (python -m kit run init): the region, the
+#      reader, and what counts as a pass. Pick the region from the geometry, not from an ink map.
+#    - First Letters needs an ink model that never trained on your area: check each reader's training list.
+"""
+
+SPIRAL_INK = """\
+# 9. Render one region of the surface ({px} px at the top left X, Y, in render pixels) and check it with
+#    Ink Lens: both depth orders, three depth windows, ink kept only above the region's own reverse-depth control.
+X="${{X:?set X}}" Y="${{Y:?set Y}}"
+vc_render_tifxyz \\
+  --volume {bucket}/{scroll}/volumes/{zarr}/ \\
+  --segmentation "$W/surface.tifxyz" --zarr-output "$W/region_{x0}.zarr" \\
+  --crop-x "$X" --crop-y "$Y" --crop-width {px} --crop-height {px} \\
+  --scale 1 --group-idx 0 --num-slices 28 --cache-gb 16 \\
+  --voxel-size {voxel} --voxel-unit micrometer {flip}
+python3 spaces/ink-lens/inklens.py run --segment "$W/surface.tifxyz" \\
+  --volume {bucket}/{scroll}/volumes/{zarr}/ \\
+  --box "$X" "$Y" {px} {px} --um-per-px {voxel} --local --json > "$W/inklens.json"
+#    gate.status ink or weak (exit 0) is model output that passed its control, not a reading; none exits 3,\n#    which stops this script.
+#    --local keeps the region on your machine; without it the region goes to the SharpMeow/ink-lens Space,
+#    which runs on your own Hugging Face token and keeps no upload.
+"""
+
+SPIRAL_AFTER = """\
+# 10. If you see letters: tell nobody in public, keep everything in work/ (gitignored), and follow
+#     docs/WORKFLOW.md to submit: {submit}
+"""
+
+
+def spiral_inputs(path=None):
+    return json.loads(Path(path or SPIRAL_INPUTS).read_text())
+
+
+def spiral_spec(scroll, voxel_um, row, group="2", scale=4):
+    """spiral-scroll.json for villa's fitter: the catalog's two properties when both are known (villa then derives
+    the sense, ACW exactly when they differ, and checks the one given), else a sense the user must supply."""
+    spec = {"schema_version": 1, "name": scroll, "voxel_size_um": voxel_um}
+    z, lh = row.get("z_direction_is_top_to_bottom"), row.get("left_handed_coordinates")
+    if isinstance(z, bool) and isinstance(lh, bool):
+        spec.update(z_direction_is_top_to_bottom=z, left_handed_coordinates=lh,
+                    spiral_outward_sense="ACW" if z != lh else "CW")
+    else:
+        spec["spiral_outward_sense"] = "$SENSE"
+    spec.update(normal_zarr_group=group, lasagna_scale=scale, umbilicus={"coordinate_scale": 1.0})
+    return spec
+
+
+def spiral_chain(scroll, snapshot=None, inputs=None):
+    snapshot = snapshot or prizes.load()
+    entry = prizes.eligible_entry(snapshot, scroll)
+    if entry is None:
+        first_letters(scroll, snapshot=snapshot)       # raises the same refusal as the ink plan
+    inputs = inputs or spiral_inputs()
+    canonical = entry["scroll"]
+    row = inputs["scans"].get(canonical)
+    if row is None or row.get("volume") != entry["volume"]:
+        raise ValueError(f"{canonical}: no public spiral-fit inputs recorded for volume {entry['volume']} "
+                         f"(inputs read {inputs['checked']}); see docs/tools/plan.md")
+    slug = canonical.lower()
+    las = row["lasagna"]
+    if "bucket" in las:
+        lasagna = SPIRAL_LASAGNA_BUCKET.format(bucket=BUCKET_S3, prefix=las["bucket"], scroll=canonical)
+    else:
+        lasagna = SPIRAL_LASAGNA_HF.format(dataset=las["dataset"], scroll=canonical)
+    spec = spiral_spec(canonical, entry["voxel_um"], row, inputs["normal_zarr_group"], inputs["lasagna_scale"])
+    known = spec["spiral_outward_sense"] != "$SENSE"
+    if known:
+        spec_note = (f"the catalog's two properties; villa derives {spec['spiral_outward_sense']} from them and "
+                     "checks the sense given")
+        sense_line = ""
+    else:
+        spec_note = ("the catalog gives no z direction for this volume, so villa needs the spiral's outward sense "
+                     "read off the CT in VC3D by a person, or from an earlier fit: CW or ACW")
+        sense_line = 'SENSE="${SENSE:?set SENSE to CW or ACW, read off the CT in VC3D}"\n'
+    body = json.dumps(spec, indent=1)
+    overrides = json.dumps(SPIRAL_OVERRIDES)[1:-1].replace('"', '\\"')
+    fit = SPIRAL_FIT.format(spec_note=spec_note, spec=body, overrides=overrides, voxel=entry["voxel_um"])
+    if sense_line:
+        fit = fit.replace('cat > "$DS/spiral-scroll.json"', sense_line + 'cat > "$DS/spiral-scroll.json"', 1)
+    lh = row.get("left_handed_coordinates")
+    flip = "--flip-normals" if lh is False else "# --flip-normals when left_handed_coordinates is false (villa)"
+    submit = prizes.find(snapshot, "first-letters-2027")["submit"]
+    return "\n".join([
+        SPIRAL_HEAD.format(scroll=canonical, checked=snapshot["checked"], inputs_checked=inputs["checked"],
+                           slug=slug, slices=row["slices"], villa=VILLA_SPIRAL, volume=entry["volume"]),
+        lasagna,
+        fit,
+        SPIRAL_QA,
+        SPIRAL_RULES.format(slug=slug),
+        SPIRAL_INK.format(px=REGION_PX, bucket=BUCKET_S3, scroll=canonical, zarr=entry["zarr"], voxel=entry["voxel_um"],
+                          flip=flip, x0="$X-$Y"),
+        SPIRAL_AFTER.format(submit=submit),
+    ])

@@ -3,6 +3,7 @@ import contextlib
 import io
 import json
 import os
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -224,6 +225,99 @@ class PlanTest(unittest.TestCase):
     def test_cost_matches_published_run(self):
         # bnleft/first-light-pherc0211: about 6.5 GPU hours on an A10 at $1.10/h, "about $7".
         self.assertEqual(plan.cost(6.5, 1.10), 7.15)
+
+    def test_render_commands_pass_the_bucket_url_as_volume(self):
+        # villa e2254eb's vc_render_tifxyz exits with an error for a local --volume next to a different --remote-url.
+        for text in (plan.first_letters("PHerc0826"), plan.first_letters("PHerc0826", mac=True),
+                     plan.spiral_chain("PHerc0826")):
+            self.assertNotIn("--remote-url s3", text)
+            self.assertNotIn("--volume volume-cache/", text)
+        self.assertIn("--volume s3://vesuvius-challenge-open-data/PHerc0826/volumes/"
+                      "20250821151701-9.362um-1.2m-113keV-masked.zarr/", plan.first_letters("PHerc0826"))
+
+
+class SpiralChainTest(unittest.TestCase):
+    def test_inputs_cover_exactly_the_eligible_volumes(self):
+        from kit import prizes
+        letters = prizes.find(prizes.load(), "first-letters-2027")
+        inputs = plan.spiral_inputs()
+        self.assertEqual(set(inputs["scans"]), {e["scroll"] for e in letters["eligible"]})
+        for e in letters["eligible"]:
+            row = inputs["scans"][e["scroll"]]
+            self.assertEqual(row["volume"], e["volume"])
+            self.assertGreater(row["slices"], 0)
+            self.assertEqual(len([k for k in ("bucket", "dataset") if k in row["lasagna"]]), 1, e["scroll"])
+        self.assertEqual((inputs["normal_zarr_group"], inputs["lasagna_scale"]), ("2", 4))
+
+    def test_bucket_scan_chain_in_order(self):
+        text = plan.spiral_chain("PHerc. 826")
+        steps = ["python -m kit centerline get PHerc0826 --into \"$DS\"",
+                 "aws s3 sync --no-sign-request \"s3://vesuvius-challenge-open-data/PHerc0826/representations/"
+                 "predictions/lasagna/20250821151701-lasagna-20260419180421/PHerc0826_$c.ome.zarr/\"",
+                 '"spiral_outward_sense": "ACW"', "pack_resident_pools.py", "fit_spiral.py --dataset",
+                 "flatten_spiral_checkpoint.py", "experiments/pherc0826/run.json", "vc_render_tifxyz \\\n  --volume",
+                 "spaces/ink-lens/inklens.py run", "tell nobody in public"]
+        at = [text.index(s) for s in steps]
+        self.assertEqual(at, sorted(at))
+        self.assertIn(plan.VILLA_SPIRAL, text)
+        self.assertIn('--include "2/*"', text)
+        self.assertIn('Z1="${Z1:-16920}"', text)
+        self.assertIn('\\"z_begin\\": $Z0, \\"z_end\\": $Z1', text)
+        self.assertIn("--um-per-px 9.362 --local --json", text)
+        self.assertIn("--voxel-unit micrometer --flip-normals", text)
+        self.assertIn("not yet run end to end", text)
+        self.assertNotIn("hf download", text)
+
+    def test_hf_scan_reads_the_public_dataset(self):
+        text = plan.spiral_chain("PHerc0846B")
+        self.assertIn("hf download SharpMeow/pherc0846b-lasagna --repo-type dataset", text)
+        self.assertIn("tar -xf PHerc0846B-lasagna-pyramid-fix.tar", text)
+        self.assertIn("sha256sum -c SHA256SUMS", text)
+        self.assertNotIn("aws s3 sync", text)
+        self.assertIn('"spiral_outward_sense": "CW"', text)
+
+    def test_spec_follows_villas_sense_rule(self):
+        row = {"z_direction_is_top_to_bottom": True, "left_handed_coordinates": True}
+        self.assertEqual(plan.spiral_spec("S", 9.0, row)["spiral_outward_sense"], "CW")
+        row["left_handed_coordinates"] = False
+        self.assertEqual(plan.spiral_spec("S", 9.0, row)["spiral_outward_sense"], "ACW")
+        spec = plan.spiral_spec("S", 9.0, {"z_direction_is_top_to_bottom": None, "left_handed_coordinates": False})
+        self.assertEqual(spec["spiral_outward_sense"], "$SENSE")
+        self.assertNotIn("z_direction_is_top_to_bottom", spec)
+
+    def test_unknown_sense_needs_the_user(self):
+        text = plan.spiral_chain("PHerc0490A")
+        self.assertIn('SENSE="${SENSE:?', text)
+        self.assertIn('"spiral_outward_sense": "$SENSE"', text)
+        self.assertLess(text.index('SENSE="${SENSE:?'), text.index('cat > "$DS/spiral-scroll.json"'))
+        self.assertNotIn("SENSE:?", plan.spiral_chain("PHerc0826"))
+
+    def test_fit_uses_the_lasagna_field_and_center_line_alone(self):
+        o = plan.SPIRAL_OVERRIDES
+        self.assertEqual(o["dense_spacing_mode"], "grad_mag")
+        used = [k for k, v in o.items() if k.startswith("input_use_") and v]
+        self.assertEqual(used, [])
+        self.assertTrue(o["input_disable_patches"])
+        self.assertEqual(o["loss_weight_shell_outer"], 0.0)
+
+    def test_refusals(self):
+        with self.assertRaisesRegex(ValueError, "awarded on 2026-10-08"):
+            plan.spiral_chain("PHerc0343")
+        inputs = plan.spiral_inputs()
+        inputs["scans"]["PHerc0826"]["volume"] = "19990101000000"
+        with self.assertRaisesRegex(ValueError, "no public spiral-fit inputs recorded for volume 20250821151701"):
+            plan.spiral_chain("PHerc0826", inputs=inputs)
+
+    @unittest.skipUnless(shutil.which("bash"), "needs bash")
+    def test_every_chain_is_valid_bash(self):
+        for scroll in plan.spiral_inputs()["scans"]:
+            with tempfile.NamedTemporaryFile("w", suffix=".sh", delete=False) as fh:
+                fh.write(plan.spiral_chain(scroll))
+            try:
+                r = subprocess.run(["bash", "-n", fh.name], capture_output=True, text=True)
+                self.assertEqual(r.returncode, 0, f"{scroll}: {r.stderr}")
+            finally:
+                os.unlink(fh.name)
 
 
 class LedgerTest(unittest.TestCase):
