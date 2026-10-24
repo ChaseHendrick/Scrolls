@@ -7262,7 +7262,7 @@
     "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`",
     "Runs on": "Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes \"on the order of an hour on a single GPU\" ([tutorial5](https://scrollprize.org/tutorial5))",
     "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data`",
-    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `volume-cache/`, `predictions/`, `work/SCROLL_SLUG/`); see Outputs",
+    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; see Outputs",
     "Go-ahead": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs)",
@@ -7321,43 +7321,43 @@
     {
      "name": "Failure modes",
      "start_line": 161,
-     "end_line": 172,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 173,
-     "end_line": 181,
+     "start_line": 174,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 182,
-     "end_line": 185,
+     "start_line": 183,
+     "end_line": 186,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 186,
-     "end_line": 195,
+     "start_line": 187,
+     "end_line": 196,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 196,
-     "end_line": 203,
+     "start_line": 197,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 204,
-     "end_line": 214,
+     "start_line": 205,
+     "end_line": 217,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 215,
-     "end_line": 225,
+     "start_line": 218,
+     "end_line": 228,
      "applicable": true
     }
    ]
