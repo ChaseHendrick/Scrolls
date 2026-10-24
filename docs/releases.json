@@ -173,10 +173,10 @@
           "id": "windlabel-box",
           "name": "Relative windings in a box",
           "released": "2026-10-24",
-          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. On 18 fresh PHerc0139 boxes, under a readout fixed beforehand, it scored 0.9758 step accuracy on 13,969 judged steps against the published hand windings (Model output, 24 October 2026); one scroll, held out in position only, not yet run inside a VC3D build.",
+          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it scored 0.9758 step accuracy on 13,969 judged steps of 18 fresh PHerc0139 boxes and, with its split rule v2, 0.9786 on 5,938 judged steps of 20 fresh PHerc1667 boxes, against the published hand windings (Model output, 24 October 2026); split rule v1 missed the PHerc1667 keep floor. It ran inside a VC3D build from the plugin branch, where a fix to keep the windings relative on load is pending.",
           "command": "python -m kit windlabel-box --prediction PRED --grad-mag GM --umbilicus UMB.json --point X,Y,Z --out RUN",
           "page": "docs/tools/windlabel-box.md",
-          "evidence": "[fresh-box check](docs/evidence/windlabel-box-20261024/README.md)"
+          "evidence": "[PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md)"
         },
         {
           "id": "letter-reader",
