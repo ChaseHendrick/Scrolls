@@ -70,6 +70,19 @@ Released 16 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
+### dinovol embeddings of PHerc0841
+
+Released 24 October 2026.
+
+Precomputed embeddings of the whole PHerc0841 9.366 um scan from the Vesuvius Challenge's self-supervised dinovol model (`scrollprize/dinovol_8um_ps192_102126`, step 640,000), so anyone can search, cluster or segment by feature similarity without a GPU. One zarr in the public bucket [SharpMeow/dinovol-embeddings](https://huggingface.co/buckets/SharpMeow/dinovol-embeddings) holds `tokens_unit` (480 numbers per 8 voxel cube), `dense` (64 per 4 voxel cube) and `ink` (32 per 4 voxel cube), int8 with a scale per vector, 539 GB; read any region by URL. Made on Hugging Face Jobs with villa's `embed_volume.py` at `4ea26d9c`; every slab read back by URL with unit-length vectors that cover exactly the scan's nonzero voxels. Raw model output, not checked by eye. CC BY-NC 4.0, like the scan.
+
+```bash
+pip install "zarr>=3" fsspec aiohttp
+python3 -c "import zarr; g = zarr.open_group(zarr.storage.FsspecStore.from_url('https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr', read_only=True), mode='r', zarr_format=2); print(g['tokens_unit'].shape, g['dense'].shape)"
+```
+
+The bucket's README gives the layout, the int8 scaling and a cosine similarity example. The model's Hugging Face page states no license; villa's dinovol code is MIT. Credit: the Vesuvius Challenge for the scan, the dinovol authors for the model.
+
 ### Headless VC3D for agents
 
 ![Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.](docs/assets/vc3d-agent/vc3d-agent-hero.webp)
