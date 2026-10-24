@@ -284,6 +284,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **segment**: A traced piece of papyrus surface together with its rendered surface volume. Segments are named by id, for example w035 or w045 of PHerc0139.
 
+**Segment Atlas**: The table of `kit tifxyz`'s numbers for every tifxyz mesh on the open-data bucket, one row per mesh, published as the Hugging Face dataset SharpMeow/vesuvius-segment-atlas and refreshed daily (`python -m kit atlas`, [`docs/tools/atlas.md`](docs/tools/atlas.md)).
+
 **segmentation (tracing)**: Finding and tracing the rolled papyrus surface inside a CT volume.
 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.

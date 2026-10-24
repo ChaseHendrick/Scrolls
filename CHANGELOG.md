@@ -11,6 +11,7 @@ python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseH
 ## Unreleased
 
 - **Segments without VC3D:** `python -m kit tifxyz info|stretch|check|obj|preview|facing` reads one tifxyz segment (local or on the open-data bucket) and gives its area in cm2, how isometric its grid is, holes, folds and stretched cells with a picture, an OBJ for Blender, a shaded preview and which way it faces. How-to with pictures: [docs/segments-without-vc3d.md](docs/segments-without-vc3d.md).
+- **Segment Atlas:** `python -m kit atlas show SCROLL` prints the same numbers for every published segment (area, isometry, holes, folds, stretch), from the public dataset SharpMeow/vesuvius-segment-atlas, which a daily Hugging Face Job refreshes with `python -m kit atlas build`.
 - **Find, center line, cite:** `python -m kit find SCROLL` lists a scroll's volumes, segments, bucket predictions, center lines and Hugging Face matches; `python -m kit centerline get SCROLL --into FOLDER` writes its center line as `umbilicus.json` for VC3D (sha256 checked); `python -m kit cite SCROLL` prints credit lines.
 - **villa helpers:** `python -m kit prclock USER` shows days before villa's time-limit workflow closes each open PR; `python -m kit prtext BODY.md` checks a PR or issue body against villa's templates.
 - **Help:** `python -m kit --help` groups commands by task, `python -m kit help COMMAND` shows a worked example, and a mistyped command suggests the closest names.

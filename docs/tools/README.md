@@ -38,6 +38,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
+| [atlas](atlas.md) | Current | `python -m kit atlas build` | Not needed | `python -m kit atlas` measures every tifxyz mesh on the open-data bucket with [`kit tifxyz`](tifxyz.md)'s checks and publishes one table, the daily-refreshed dataset [SharpMeow/vesuvius-segment-atlas](https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas). |
 | [meshaudit](meshaudit.md) | Current | `python -m kit meshaudit transforms` | Not needed | `python -m kit meshaudit` checks the public catalog's geometry: it refits each cross-scan affine from its own landmarks, checks each surface volume's canvas against its meshes, picks a seeded set of segments, and measures where the papyrus sits in native and cross-scan renders. |
 | [overlap](overlap.md) | Current | `python -m kit overlap` | Not needed | `python -m kit overlap` measures how close two tifxyz meshes run (one sheet traced twice, or two surfaces) and how well their human labels agree there against displaced matches; `python -m kit collate` compares two traces' ink maps by gap, against a control. |
 | [planted](planted.md) | Current | `python -m kit.planted` | Not needed | One shared generator of planted defects (sheet switches, lenses, skips, mergers, holes and bridged holes) on synthetic tifxyz surfaces, each with its true winding per vertex, so stack checks, switch detectors and reference labelers test against the same known answers. |

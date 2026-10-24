@@ -129,6 +129,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
 | `tifxyz` | `info`, `stretch`, `check`, `obj`, `preview`, `facing` | `tifxyz.cmd_tifxyz` (in `kit/tifxyz.py`) | [tifxyz](tifxyz.md) | look at a tifxyz segment without VC3D: area, isometry, holes and folds, OBJ, picture, which way it faces |
+| `atlas` | `build`, `show` | `atlas.cmd_atlas` (in `kit/atlas.py`) | [atlas](atlas.md) | Segment Atlas: area, isometry, holes and folds of every published segment |
 | `stackcheck` | none | `cmd_stackcheck` | [stackcheck](stackcheck.md) | check consecutive tifxyz segments against the umbilicus: order, missing sectors, skipped windings, turn overlaps, stack ends (geometry only) |
 | `uvgate` | none | `cmd_uvgate` (in `kit/uvgate_cli.py`) | [uvgate](uvgate.md) | check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough area, optionally one counterclockwise piece (geometry only) |
 | `windconsistency` | none | `cmd_windconsistency` (in `kit/windconsistency.py`) | [windconsistency](windconsistency.md) | check that relative winding counts (a to b is k windings) can all hold at once, around every closed path |

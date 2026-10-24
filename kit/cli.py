@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,live,style,doctor,plan,cost,find,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,live,style,doctor,plan,cost,find,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -986,7 +986,7 @@ def cmd_strokenet(args):
 GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "centerline", "cite", "fetch", "volumeview", "segzoo")),
-    ("Segments and geometry", ("tifxyz", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
+    ("Segments and geometry", ("tifxyz", "atlas", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
                                "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
@@ -1258,6 +1258,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import tifxyz
     tifxyz.build_parser(p)
     p.set_defaults(func=tifxyz.cmd_tifxyz)
+
+    p = sub.add_parser("atlas", help="Segment Atlas: area, isometry, holes and folds of every published segment")
+    from . import atlas as _atlas
+    _atlas.build_parser(p)
+    p.set_defaults(func=_atlas.cmd_atlas)
 
     p = sub.add_parser("uvgate", help="check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough "
                                       "area, optionally one counterclockwise piece (geometry only)")
