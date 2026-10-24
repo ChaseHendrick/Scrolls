@@ -76,7 +76,7 @@
   "center-finder": {
    "line": 280,
    "sources": {
-    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+    "docs/tools/umbilicus.md": "73fc54d683265f4d878044eda19c66d85712da42e1b24e651adc7765c68a9c88"
    }
   },
   "cross-trace-agreement-suggests-a-label-free-triage": {
@@ -248,7 +248,7 @@
   "the-center-finder-s-held-out-lines-sit": {
    "line": 9,
    "sources": {
-    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+    "docs/tools/umbilicus.md": "73fc54d683265f4d878044eda19c66d85712da42e1b24e651adc7765c68a9c88"
    },
    "doc": "docs/FINDINGS.md"
   },
