@@ -1,0 +1,64 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "vc3d-agent-session",
+  "label": "Real data render",
+  "alt": "A replay of a recorded agent session with Headless VC3D for agents: tool calls appear one by one on the left, each with its arguments, its real duration and values from its result (status finds the VC3D tools, selftest passes 8 of 8 checks, segment w035 is fetched, its normal points outward, the audit finds all 4,776 chunks, the surface is seated, a new trace does not pass its check, a 28-layer render and its maximum, a merge of two halves, the VC3D app with the scan open), and on the right the segment's z coordinate, CT layers under it and a screenshot of the VC3D app.",
+  "caption": "Real data render: a replay of MCP tool calls an agent client made to Headless VC3D for agents on Hugging Face CPU Jobs, 24 Oct 2026, on PHerc0139 segment w035 at 9.362 um; values read from the session transcripts, waits skipped. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": "vc3d-agent",
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w035 (20260317000000-w035_2026031718)",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "vc3d-agent-session.mp4",
+      "bytes": 1599427,
+      "sha256": "8717b02315bfd80d4e0f375b77731f648e83b5df2bc332522d425164e711f18b",
+      "width": 1280,
+      "height": 800,
+      "kind": "mp4",
+      "seconds": 59.0,
+      "frames": 590,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "vc3d-agent-session.gif",
+      "bytes": 1504662,
+      "sha256": "da8b90751dff888321dc6c77d2882535aa87526c9f06c38e7a853333368d6e4c",
+      "width": 1280,
+      "height": 800,
+      "kind": "gif",
+      "seconds": 59.0,
+      "frames": 75,
+      "settings": {
+        "width": 1280,
+        "fps": 10,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "encode.py",
+      "vc3d_agent_session.py"
+    ],
+    "scripts_sha256": "1744bb9ec08d27dbb72c02ab8081f83c6c6cbea46da376140003d9709516d5e9",
+    "base_commit": "cf0fc92ca68a70298b0bf44cca19fcc4c9aee9ad"
+  },
+  "command": "python scripts/media/vc3d_agent_session.py SESSION1/transcript.json SESSION2/transcript.json SESSION4/transcript.json --out-dir PAGE && python scripts/media/capture_web.py PAGE/replay.html --out-dir FRAMES --actions PAGE/actions.json --width 1280 --height 800 && python scripts/media/encode.py FRAMES --fps 10 --gif-fps 10 --gif-width 1280 --gif docs/assets/vc3d-agent/vc3d-agent-session.gif --mp4 docs/assets/vc3d-agent/vc3d-agent-session.mp4 --meta scripts/media/captures/vc3d-agent-session.meta.json --json"
+}

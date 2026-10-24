@@ -30,6 +30,24 @@ The tools group as setup (`status`, `selftest`, `list_tools`, `tool_help`, `guid
 
 It is the server that AutoPipeline's releases carried, cut out on its own: AutoPipeline's four pipeline tools (`umbilicus`, `seeds`, `distortion`, `autopipeline`) are not in it, and `kit/vc3d_agent.py` loads them only when `kit/autopipe.py` is present.
 
+## What it looks like
+
+![Real data render: a replay of MCP tool calls an agent client made to Headless VC3D for agents on PHerc0139 segment w035, values read from the session transcripts](../assets/vc3d-agent/vc3d-agent-session.gif)
+
+Real data render: a replay of MCP tool calls an agent client made to the server on Hugging Face CPU Jobs, 24 Oct 2026, on PHerc0139 segment w035 at 9.362 um; every value is read from the session transcripts and the waits are skipped. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0. [MP4](../assets/vc3d-agent/vc3d-agent-session.mp4).
+
+The recorded sessions ran the 1.0.0 MCP server over stdio from the package folder against villa's VC3D tools built at `e0bbb8b` (6 Oct 2026), with no display, on a `cpu-upgrade` Hugging Face Job. Among the real results the clip shows: `selftest` passed 8 of 8 checks on synthetic volumes in 4.8 s; `audit` found all 4,776 chunks under w035 and its margin present after 4,793 requests in 241 s; `check_surface` found w035 seated (contrast 41.2) with no transverse self-crossings; a new 82 x 82 trace grown by `trace` in 28 s came back "unclear" (contrast 3.4, under the seated bar of 10), so the check can fail; and `render` streamed a 28 x 640 x 640 window in 12 s with 0 false 404s.
+
+![Real data render: PHerc0139 segment w035's z coordinate, the middle CT layer of a 28-layer render under it, and the maximum over those layers](../assets/vc3d-agent/vc3d-agent-render.png)
+
+Real data render: PHerc0139 segment w035 at 9.362 um, from the `preview` and `render` tools of the recorded session. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.
+
+![Real data render: the VC3D app running offscreen with the PHerc0139 scan open and w035 attached, captured over its agent bridge](../assets/vc3d-agent/vc3d-agent-app.png)
+
+Real data render: VC3D running offscreen, captured over its agent bridge (`app_start` with a project file naming the remote scan, `app_open`, then `app_screenshot`). PHerc0139 at 9.362 um, w035 in the left view. CT, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.
+
+`scripts/media/vc3d_agent_session.py` makes the clip and both stills from the session transcripts ([media tools](media.md)).
+
 ## Where the code is
 
 The package is at `submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/` on public branch `submission/progress-2026-10-vc3d-agent-1-1-0`, commit `6c157716e08ef816eac936be22c40cb85682e642`. Its Python package is `kit`, a narrowed copy of the source repository's, separate from this repository's `kit`.
@@ -68,6 +86,7 @@ Its `kit` package is a different, narrowed copy of the source repository's kit, 
 
 ## History
 
+- 2026-10-24: a GIF, an MP4 and two stills of recorded sessions on PHerc0139 w035 (Hugging Face CPU Jobs), under "What it looks like" ([#201](https://github.com/ChaseHendrick/Scrolls/pull/201)).
 - 2026-10-24: 1.1.0 at `6c157716e08ef816eac936be22c40cb85682e642`: the seven `lasagna_*` tools (villa's lasagna surface fit, headless) and the `lasagna` command; 46 tools.
 - 2026-10-24: 1.0.0, the first standalone release, at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`: the VC3D agent tools and MCP server without AutoPipeline.
 
