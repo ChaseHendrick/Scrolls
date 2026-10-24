@@ -23,6 +23,9 @@ from . import find as _find
 from .verify import VerifyError
 
 KIND_ORDER = {"person": 0, "bucket": 1, "model": 2}
+# Within a kind, a source here comes first: the coverage-polished finder line sat deeper in villa's traced sheet
+# than the line before the polish on all ten scans of its frozen test (docs/evidence/2026-10-22-umbilicus-windpolish)
+SOURCE_ORDER = {"finder-polished": 0}
 _VOL_PREFIX = re.compile(r"^(\d{14})-umbilicus")
 
 
@@ -50,8 +53,13 @@ def lines(scroll, get=_find.http_get):
         out.append({"source": "bucket-file", "kind": "bucket", "volume": m.group(1) if m else None, "points": None,
                     "url": url, "sha256": None, "credit": f"{_find.DATA_CREDIT} (representations/umbilicus)",
                     "licence": "CC BY-NC 4.0 (Vesuvius Challenge open data terms)", "from": "open-data bucket"})
-    out.sort(key=lambda l: (KIND_ORDER.get(l["kind"], 3), str(l["source"])))
-    return out
+    return order(out)
+
+
+def order(found):
+    """Best first: person-made, then bucket, then model lines; within a kind, SOURCE_ORDER, then by source name."""
+    return sorted(found, key=lambda l: (KIND_ORDER.get(l["kind"], 3), SOURCE_ORDER.get(l["source"], 1),
+                                        str(l["source"])))
 
 
 def pick(found, source=None):
