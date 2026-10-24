@@ -1070,67 +1070,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 185,
+     "end_line": 186,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 186,
-     "end_line": 214,
+     "start_line": 187,
+     "end_line": 215,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 215,
-     "end_line": 218,
+     "start_line": 216,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 219,
-     "end_line": 229,
+     "start_line": 220,
+     "end_line": 230,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 230,
-     "end_line": 243,
+     "start_line": 231,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 244,
-     "end_line": 253,
+     "start_line": 245,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 254,
-     "end_line": 257,
+     "start_line": 255,
+     "end_line": 258,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 258,
-     "end_line": 267,
+     "start_line": 259,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 268,
-     "end_line": 275,
+     "start_line": 269,
+     "end_line": 276,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 276,
-     "end_line": 287,
+     "start_line": 277,
+     "end_line": 288,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 288,
-     "end_line": 294,
+     "start_line": 289,
+     "end_line": 295,
      "applicable": true
     }
    ]
@@ -4092,6 +4092,158 @@
      "name": "Related",
      "start_line": 300,
      "end_line": 307,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "labels",
+   "name": "labels",
+   "tagline": "which published ink labels exist, and which public models saw them",
+   "summary": "`python -m kit labels SCROLL` lists every segment of a scroll that has published ink labels on the open-data bucket, with each label set's volume, date, shape and size, and what this repository's public records say about which ink models trained on it.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit labels",
+    "python -m kit.labels"
+   ],
+   "imports": [
+    "from kit import labels"
+   ],
+   "code": [
+    {
+     "path": "kit/labels.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_labels.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public data"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "ad3fddc"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`labels`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit labels`, `python -m kit.labels`, `from kit import labels`",
+    "Code": "`kit/labels.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_labels.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Reads `docs/results.json` and `docs/STANDARDS.md` from this repository for the exposure records",
+    "Runs on": "Any machine. PHerc0139 (39 segments, 8 labeled, 13 label sets, sizes included): 4.4 s; PHerc0841: 2.4 s; every scroll without sizes: 19.8 s (measured 2026-10-24, 4-core cloud container)",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only: `metadata.json`, bucket listings (16 at a time) and each label array's small metadata files; 429, 5xx and dropped connections are asked again up to 5 times",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed: it reads public data",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026)",
+    "Checked": "2026-10-24 against commit `ad3fddc`"
+   },
+   "page": "docs/tools/labels.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 76,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 85,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 101,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 120,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 124,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 145,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 155,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 161,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 165,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 175,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 183,
+     "end_line": 188,
      "applicable": true
     }
    ]
@@ -9911,7 +10063,7 @@
    "id": "tifxyz",
    "name": "tifxyz",
    "tagline": "look at a tifxyz segment without building VC3D",
-   "summary": "`python -m kit tifxyz` reads a segment's x.tif, y.tif and z.tif (local or on the open-data bucket) and reports its true area in cm2, how isometric its grid is, holes, folds and over-stretched spots, and writes an OBJ or a picture.",
+   "summary": "`python -m kit tifxyz` reads a segment's three TIFFs (local or on the open-data bucket) and reports its area in cm2, isometry, holes, folds and stretch, writes an OBJ or a picture, lists the volume chunks it touches (and fetches only those), and compares two versions.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -9925,6 +10077,8 @@
     "python -m kit tifxyz obj",
     "python -m kit tifxyz preview",
     "python -m kit tifxyz facing",
+    "python -m kit tifxyz chunks",
+    "python -m kit tifxyz diff",
     "python -m kit.tifxyz"
    ],
    "imports": [
@@ -9943,7 +10097,8 @@
     }
    ],
    "tests": [
-    "tests/test_tifxyz.py"
+    "tests/test_tifxyz.py",
+    "tests/test_tifxyz_chunks_diff.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -9959,13 +10114,13 @@
     "Status": "Current",
     "Kind": "kit command, kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit.tifxyz`, `from kit import tifxyz`",
+    "Run": "`python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit tifxyz chunks`, `python -m kit tifxyz diff`, `python -m kit.tifxyz`, `from kit import tifxyz`",
     "Code": "`kit/tifxyz.py`, `kit/cli.py` (`build_parser`)",
-    "Tests": "`tests/test_tifxyz.py`",
+    "Tests": "`tests/test_tifxyz.py`, `tests/test_tifxyz_chunks_diff.py`",
     "Needs": "Python 3.10 or newer, numpy and tifffile; scipy when installed (finds holes faster; a numpy fallback gives the same answer). No VC3D, villa or GPU",
-    "Runs on": "Any CPU. On PHerc0139 w035's 2.399 um mesh (1,132 x 1,020 nodes): `info` 1.36 s, `stretch` 1.30 s, `check` 1.05 s, `preview` 1.41 s, `facing` 0.90 s, `obj` 4.15 s (a 134 MB file); peak memory under 270 MB (measured 2026-10-23, 4-core Intel Xeon at 2.10 GHz cloud container, each a fresh process)",
-    "Network": "Only for a segment given as an `https://` or `s3://` URL: its four files from `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`, once, into `--cache`",
-    "Writes": "`--cache` (default `work/tifxyz/cache`) for bucket segments; `obj` its OUT file; `preview` its OUT file; `check --png` that file. Nothing else",
+    "Runs on": "Any CPU. On PHerc0139 w035's 2.399 um mesh (1,132 x 1,020 nodes): `info` 1.36 s, `stretch` 1.30 s, `check` 1.05 s, `preview` 1.41 s, `facing` 0.90 s, `obj` 4.15 s (a 134 MB file); peak memory under 270 MB (measured 2026-10-23, 4-core Intel Xeon at 2.10 GHz cloud container, each a fresh process). `chunks` against the 2.399 um volume on the bucket: 5.8 s at level 5, 5.4 s at level 3, 45 s at level 1 (9,335 HEAD requests), 184 s at level 0 (39,590); `--fetch` of level 5's 71 MB in 7.6 s (measured 2026-10-24, same container)",
+    "Network": "Only for a segment given as an `https://` or `s3://` URL: its four files from `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`, once, into `--cache`. `chunks` on a volume URL: its metadata files, one HEAD per touched chunk (at most `--max-requests`, 32 at a time), and with `--fetch` one GET per present chunk; 429, 5xx and dropped connections are asked again up to 5 times",
+    "Writes": "`--cache` (default `work/tifxyz/cache`) for bucket segments; `obj` its OUT file; `preview` its OUT file; `check --png` and `diff --png` that file; `chunks --fetch` the DEST folder (metadata and the touched chunks, keeping their keys). Nothing else",
     "Go-ahead": "Not needed: it reads public data and writes local files",
     "Released": "Public `main` from the change that adds it (23 Oct 2026)",
     "Checked": "2026-10-23 against commit `3376687`"
@@ -9975,91 +10130,91 @@
     {
      "name": "What it does",
      "start_line": 22,
-     "end_line": 36,
+     "end_line": 38,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 37,
-     "end_line": 52,
+     "start_line": 39,
+     "end_line": 56,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 53,
-     "end_line": 83,
+     "start_line": 57,
+     "end_line": 107,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 84,
-     "end_line": 92,
+     "start_line": 108,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 93,
-     "end_line": 195,
+     "start_line": 119,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 196,
-     "end_line": 214,
+     "start_line": 262,
+     "end_line": 288,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 215,
-     "end_line": 219,
+     "start_line": 289,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 220,
-     "end_line": 248,
+     "start_line": 294,
+     "end_line": 326,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 249,
-     "end_line": 265,
+     "start_line": 327,
+     "end_line": 354,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 266,
-     "end_line": 276,
+     "start_line": 355,
+     "end_line": 367,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 277,
-     "end_line": 280,
+     "start_line": 368,
+     "end_line": 371,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 281,
-     "end_line": 290,
+     "start_line": 372,
+     "end_line": 381,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 291,
-     "end_line": 294,
+     "start_line": 382,
+     "end_line": 385,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 295,
-     "end_line": 298,
+     "start_line": 386,
+     "end_line": 390,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 299,
-     "end_line": 305,
+     "start_line": 391,
+     "end_line": 397,
      "applicable": true
     }
    ]

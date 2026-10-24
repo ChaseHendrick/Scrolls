@@ -168,6 +168,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## L
 
+**label set**: One dated folder of a segment's published ink labels on the open-data bucket, `SCROLL/segments/SEGMENT/ink-labels/<voxel size>um-volume-<VOLUME>/<date>/`, holding `inklabels.zarr`, `supervision.zarr` and sometimes `validation.zarr`, all drawn on one volume's render. `kit labels` lists them ([`docs/tools/labels.md`](docs/tools/labels.md)).
+
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
 **landmark**: A point marked in two scans of one scroll, used to fit the cross-scan transform between them.
@@ -333,6 +335,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
 
 **tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
+
+**touched chunks**: The chunks of a zarr volume that lie within a margin of a segment's surface: the only part of the volume a render or check of that segment reads. `kit tifxyz chunks` lists them with their bytes and can copy only those ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
 
 **trace (tracer)**: A traced surface, and the program that grows it. villa's tracer grows a surface from a seed.
 

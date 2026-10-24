@@ -118,6 +118,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `plan` | none | `cmd_plan` | [plan](plan.md) | print a First Letters run plan for an eligible scroll |
 | `cost` | none | `cmd_cost` | [plan](plan.md) | estimate run cost in USD |
 | `find` | none | `find.cmd_find` (in `kit/find.py`) | [find](find.md) | everything public for one scroll: volumes, segments, predictions, center lines and Hugging Face matches |
+| `labels` | none | `labels.cmd_labels` (in `kit/labels.py`) | [labels](labels.md) | published ink labels per segment, with which public models trained on them |
 | `centerline` | `list`, `get` | `centerline.cmd_centerline` (in `kit/centerline.py`) | [centerline](centerline.md) | get a scroll's center line into your VC3D project as umbilicus.json |
 | `cite` | none | `find.cmd_cite` (in `kit/find.py`) | [find](find.md) | credit and licence lines for a scroll's volumes and center lines |
 | `fetch` | none | `cmd_fetch` | [fetch](fetch.md) | mirror a public bucket prefix over HTTPS (no AWS CLI needed) |
@@ -128,8 +129,8 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `hpscore` | none | `cmd_hpscore` | [hpscore](hpscore.md) | letter-scale score: 48 um high-passed correlation with the labels (Scheirer) |
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
-| `tifxyz` | `info`, `stretch`, `check`, `obj`, `preview`, `facing` | `tifxyz.cmd_tifxyz` (in `kit/tifxyz.py`) | [tifxyz](tifxyz.md) | look at a tifxyz segment without VC3D: area, isometry, holes and folds, OBJ, picture, which way it faces |
 | `atlas` | `build`, `show` | `atlas.cmd_atlas` (in `kit/atlas.py`) | [atlas](atlas.md) | Segment Atlas: area, isometry, holes and folds of every published segment |
+| `tifxyz` | `info`, `stretch`, `check`, `obj`, `preview`, `facing`, `chunks`, `diff` | `tifxyz.cmd_tifxyz` (in `kit/tifxyz.py`) | [tifxyz](tifxyz.md) | look at a tifxyz segment without VC3D: area, isometry, holes and folds, OBJ, picture, which way it faces, chunks it touches, diff of two versions |
 | `stackcheck` | none | `cmd_stackcheck` | [stackcheck](stackcheck.md) | check consecutive tifxyz segments against the umbilicus: order, missing sectors, skipped windings, turn overlaps, stack ends (geometry only) |
 | `uvgate` | none | `cmd_uvgate` (in `kit/uvgate_cli.py`) | [uvgate](uvgate.md) | check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough area, optionally one counterclockwise piece (geometry only) |
 | `windconsistency` | none | `cmd_windconsistency` (in `kit/windconsistency.py`) | [windconsistency](windconsistency.md) | check that relative winding counts (a to b is k windings) can all hold at once, around every closed path |

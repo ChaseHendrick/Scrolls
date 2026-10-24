@@ -184,7 +184,7 @@ usage: python scripts/media/tifxyz_stills.py [-h] --scan SCAN --segment NAME
 | `--segment NAME` | required | The segment's short name, for the sidecar |
 | `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
 | `--size SIZE` | `1200` | Longest side in pixels (one pixel per node when the grid is smaller) |
-| `--out-dir OUT_DIR` | required | Writes `tifxyz-before.png` (x.tif as an image viewer shows it), `tifxyz-after.png` (the shaded sheet) and `tifxyz-check-demo.png` (check flags on a made-up sheet with a planted hole, fold and shifted patch), each with a sidecar |
+| `--out-dir OUT_DIR` | required | Writes `tifxyz-before.png` (x.tif as an image viewer shows it), `tifxyz-after.png` (the shaded sheet) `tifxyz-check-demo.png` (check flags on a made-up sheet with a planted hole, fold and shifted patch) and `tifxyz-diff-demo.png` (diff colors on two versions of a made-up sheet), each with a sidecar |
 
 ### Environment variables
 

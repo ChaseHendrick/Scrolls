@@ -1,6 +1,6 @@
 # Segments without VC3D
 
-How to look at, measure and check a traced segment on any laptop, with no VC3D build: its true area, how evenly its grid is spaced, where it has holes or folds, a 3D file for Blender, and which way it faces. Everything here reads the segment's three TIFFs with [`kit tifxyz`](tools/tifxyz.md) (numpy and tifffile only), and the companion commands get its center line and its credit line. Geometry only: nothing here looks at the CT or judges ink.
+How to look at, measure and check a traced segment on any laptop, with no VC3D build: its true area, how evenly its grid is spaced, where it has holes or folds, a 3D file for Blender, which way it faces, the part of the scan volume it touches, and what changed between two versions. Everything here reads the segment's three TIFFs with [`kit tifxyz`](tools/tifxyz.md) (numpy and tifffile only), and the companion commands get its center line and its credit line. Geometry only: nothing here looks at the CT or judges ink.
 
 ## What a segment is on disk
 
@@ -89,6 +89,28 @@ python -m kit cite PHerc0139 --volume 20260102150214
 ```
 
 prints the credit and licence line for the volume from the bucket's `metadata.json`: for PHerc0139, "Vesuvius Challenge open data, CC BY-NC 4.0".
+
+## 8. Fetch only the part of the volume it touches
+
+```bash
+V=s3://vesuvius-challenge-open-data/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr
+python -m kit tifxyz chunks "$S" "$V" --level 3
+python -m kit tifxyz chunks "$S" "$V" --level 3 --fetch w035-volume.zarr
+```
+
+The first prints how many chunks of the scan volume lie on the sheet (add `--margin 32` to take 32 voxels on each side) and how many bytes they hold, before anything is downloaded; the second copies the volume's metadata and only those chunks into a local zarr that a zarr reader opens as the same volume, with every other chunk read as empty (checked with zarr-python 3.4.1; not tried in VC3D). On 24 October 2026, w035 touched 34 chunks (71 MB) at level 5, 576 (1.2 GB) at level 3, 9,335 (19.6 GB) at level 1 and 39,590 (83 GB) at full resolution, out of 26 million chunks in the full-resolution volume ([tifxyz](tools/tifxyz.md)).
+
+## 9. Compare two versions of it
+
+```bash
+python -m kit tifxyz diff OLD.tifxyz NEW.tifxyz --png diff.png
+```
+
+prints the change in area, how many nodes the new version added and removed, and how far the kept ones moved (node by node when the two grids have one shape, by position when they do not), and colors them on the new version: added green, removed red, moved orange. On a made-up sheet grown on one side, trimmed at a corner and nudged in the middle:
+
+![Synthetic demo: kit tifxyz diff of two versions of a made-up sheet, version b grown by 6400 nodes (green), trimmed by 2000 (red) and with 2000 nodes moved 4 voxels (orange). No scan data.](assets/tifxyz/tifxyz-diff-demo.png)
+
+*Synthetic demo: kit tifxyz diff of two versions of a made-up sheet, version b grown by 6400 nodes (green), trimmed by 2000 (red) and with 2000 nodes moved 4 voxels (orange). No scan data.*
 
 ## Times
 

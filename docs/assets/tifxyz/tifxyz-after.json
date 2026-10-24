@@ -29,14 +29,14 @@
     }
   ],
   "inputs": [],
-  "made": "2026-10-23",
+  "made": "2026-10-24",
   "tool": {
     "scripts": [
       "common.py",
       "tifxyz_stills.py"
     ],
-    "scripts_sha256": "ba568dd6f4fe1f6784b55dceef0f470eb9e88d67497e6312e318fa99e5350e78",
-    "base_commit": "3376687358eb11659eb2c19753d2367adb06b99b"
+    "scripts_sha256": "af4df396afd105fcf288bb4a2cf384e6b41433e31be921445113123423dcd0de",
+    "base_commit": "c610c7a9269dbaf3fd72a4b802c0e0cf74a984ec"
   },
   "command": "python scripts/media/tifxyz_stills.py s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz --scan PHerc0139 --segment w035 --out-dir docs/assets/tifxyz"
 }
