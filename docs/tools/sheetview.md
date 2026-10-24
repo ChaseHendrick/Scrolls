@@ -264,7 +264,7 @@ The media under `docs/assets/sheetview/` were made with `scripts/media/sheetview
 
 ## History
 
-- 2026-10-24: First version: build and serve, with the PHerc0139 w045 still and orbit GIF.
+- 2026-10-24: First version: build and serve, with the PHerc0139 w045 stills and orbit GIF (`96a5d74`).
 
 ## Related
 
