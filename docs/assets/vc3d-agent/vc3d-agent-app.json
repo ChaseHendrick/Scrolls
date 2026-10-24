@@ -1,0 +1,44 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "vc3d-agent-app",
+  "label": "Real data render",
+  "alt": "A screenshot of the VC3D app taken over its agent bridge with no display: on the left the CT along segment w035 at full resolution, on the right the scroll's cross-section from above and a vertical slice through it at low resolution, with VC3D's own markers and scale bars.",
+  "caption": "Real data render: VC3D running offscreen, captured over its agent bridge (app_screenshot). PHerc0139 at 9.362 um, w035 in the left view. CT, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": "vc3d-agent",
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w035 (20260317000000-w035_2026031718)",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "vc3d-agent-app.png",
+      "bytes": 434469,
+      "sha256": "b2cbe3d7ad1092484435256d83495b0ddfb1e22cb2fea28a86ff13fab3149d35",
+      "width": 854,
+      "height": 946,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "vc3d_agent_session.py"
+    ],
+    "scripts_sha256": "b5fc93e43599a868986490136770b2f6e1b89e43d0758a5e78bf7f8c462e2f9b",
+    "base_commit": "cf0fc92ca68a70298b0bf44cca19fcc4c9aee9ad"
+  },
+  "command": "python scripts/media/vc3d_agent_session.py SESSION1/transcript.json SESSION2/transcript.json SESSION4/transcript.json --out-dir PAGE && python scripts/media/capture_web.py PAGE/replay.html --out-dir SHOTS --actions PAGE/stills.json --width 1880 --height 1000 && python scripts/media/vc3d_agent_session.py --publish SHOTS --assets docs/assets/vc3d-agent"
+}

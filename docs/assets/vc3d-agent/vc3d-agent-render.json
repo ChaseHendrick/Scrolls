@@ -1,0 +1,44 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "vc3d-agent-render",
+  "label": "Real data render",
+  "alt": "Three panels from a recorded agent session on PHerc0139 segment w035: the segment's z coordinate as a gray ramp inside its outline; the middle layer of a 28-layer render of the CT under a 640 pixel window of the segment, a mottled texture of light fibers and dark patches; and the maximum over those 28 layers, a mesh of crossing fibers with a few bright specks.",
+  "caption": "Real data render: PHerc0139 segment w035 at 9.362 um, from the preview and render tools of a recorded session. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": "vc3d-agent",
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w035 (20260317000000-w035_2026031718)",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "vc3d-agent-render.png",
+      "bytes": 727484,
+      "sha256": "73374bc7bca389ac745c614345037cc3d556fbeb385e0c249645bb262e41247f",
+      "width": 1724,
+      "height": 671,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "vc3d_agent_session.py"
+    ],
+    "scripts_sha256": "b5fc93e43599a868986490136770b2f6e1b89e43d0758a5e78bf7f8c462e2f9b",
+    "base_commit": "cf0fc92ca68a70298b0bf44cca19fcc4c9aee9ad"
+  },
+  "command": "python scripts/media/vc3d_agent_session.py SESSION1/transcript.json SESSION2/transcript.json SESSION4/transcript.json --out-dir PAGE && python scripts/media/capture_web.py PAGE/replay.html --out-dir SHOTS --actions PAGE/stills.json --width 1880 --height 1000 && python scripts/media/vc3d_agent_session.py --publish SHOTS --assets docs/assets/vc3d-agent"
+}

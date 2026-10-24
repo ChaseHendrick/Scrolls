@@ -6426,7 +6426,8 @@
     "python scripts/media/sweep.py",
     "python scripts/media/tifxyz_stills.py",
     "python scripts/media/isometry_media.py",
-    "python scripts/media/coverage_still.py"
+    "python scripts/media/coverage_still.py",
+    "python scripts/media/vc3d_agent_session.py"
    ],
    "imports": [],
    "code": [
@@ -6453,7 +6454,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -6495,67 +6496,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 237,
-     "applicable": true
-    },
-    {
-     "name": "Python API",
-     "start_line": 238,
-     "end_line": 241,
-     "applicable": false
-    },
-    {
-     "name": "Inputs",
-     "start_line": 242,
      "end_line": 248,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Python API",
      "start_line": 249,
-     "end_line": 285,
+     "end_line": 252,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 253,
+     "end_line": 259,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 260,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 286,
-     "end_line": 336,
+     "start_line": 297,
+     "end_line": 350,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 337,
-     "end_line": 359,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 360,
+     "start_line": 351,
      "end_line": 373,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 374,
-     "end_line": 383,
+     "end_line": 389,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 390,
+     "end_line": 399,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 384,
-     "end_line": 387,
+     "start_line": 400,
+     "end_line": 403,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 388,
-     "end_line": 393,
+     "start_line": 404,
+     "end_line": 410,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 394,
-     "end_line": 399,
+     "start_line": 411,
+     "end_line": 416,
      "applicable": true
     }
    ]
@@ -12643,45 +12644,51 @@
      "applicable": true
     },
     {
-     "name": "Where the code is",
+     "name": "What it looks like",
      "start_line": 33,
-     "end_line": 41,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Where the code is",
+     "start_line": 51,
+     "end_line": 59,
      "applicable": true
     },
     {
      "name": "How to run it",
-     "start_line": 42,
-     "end_line": 54,
+     "start_line": 60,
+     "end_line": 72,
      "applicable": true
     },
     {
      "name": "Inputs and outputs",
-     "start_line": 55,
-     "end_line": 58,
+     "start_line": 73,
+     "end_line": 76,
      "applicable": true
     },
     {
      "name": "Why it is not on the default branch",
-     "start_line": 59,
-     "end_line": 62,
+     "start_line": 77,
+     "end_line": 80,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 63,
-     "end_line": 68,
+     "start_line": 81,
+     "end_line": 86,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 69,
-     "end_line": 73,
+     "start_line": 87,
+     "end_line": 92,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 74,
-     "end_line": 78,
+     "start_line": 93,
+     "end_line": 97,
      "applicable": true
     }
    ]
