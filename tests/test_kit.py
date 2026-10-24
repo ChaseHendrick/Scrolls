@@ -265,7 +265,8 @@ class SpiralChainTest(unittest.TestCase):
         self.assertIn('\\"z_begin\\": $Z0, \\"z_end\\": $Z1', text)
         self.assertIn("--um-per-px 9.362 --local --json", text)
         self.assertIn("--voxel-unit micrometer --flip-normals", text)
-        self.assertIn("not yet run end to end", text)
+        self.assertIn("# Status: experimental. Not yet run end to end", text)
+        self.assertIn("not yet shown to keep the surface", text)
         self.assertNotIn("hf download", text)
 
     def test_hf_scan_reads_the_public_dataset(self):

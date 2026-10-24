@@ -213,7 +213,8 @@ REGION_PX = 1024
 SPIRAL_HEAD = """\
 # First Letters large-surface chain for {scroll}: center line, lasagna field, spiral fit, flatten, render, Ink Lens
 # (prize snapshot {checked}, inputs read {inputs_checked}; check scrollprize.org/prizes first)
-# Status: not yet run end to end. Each command was read from the tool's code or page at the pinned commits;
+# Status: experimental. Not yet run end to end, and the fit settings are not yet shown to keep the surface
+#   on one sheet: read step 7's surface checks before you trust a render. Each command was read from the tool's code or page at the pinned commits;
 #   an upstream change can break one, and then the tool's own docs win.
 # Needs: git, uv, the AWS CLI or the hf CLI, a VC3D build (vc_render_tifxyz on PATH), this Scrolls checkout
 #   (python -m kit, spaces/ink-lens), and a CUDA GPU for the fit: villa's Triton kernels are CUDA only, and

@@ -77,7 +77,7 @@ and the cost line printed `$7.15`. It worked when the exit code is 0 and the pla
 
 ### The large-surface chain (`--spiral`)
 
-A First Letters area is 4 cm2 of one sheet, larger than many grown segments; villa's spiral fit models a whole scroll as one deformed spiral, so it can give one surface over the whole scan (Interpretation). `--spiral` prints one runnable bash chain per eligible scan from public pieces only, filled in for that scan:
+A First Letters area is 4 cm2 of one sheet, larger than many grown segments; villa's spiral fit models a whole scroll as one deformed spiral, so it can give one surface over the whole scan (Interpretation). `--spiral` prints one runnable bash chain per eligible scan from public pieces only, filled in for that scan. It is experimental: no one has run it end to end, and its fit settings are not yet shown to keep the surface on one sheet, so read the surface checks before trusting a render.
 
 ```bash
 mkdir -p work && python -m kit plan PHerc0826 --spiral > work/pherc0826-spiral.sh
