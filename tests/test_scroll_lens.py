@@ -359,6 +359,7 @@ class Release(unittest.TestCase):
         self.assertIn(f"Version: {lens.VERSION}.", entry["summary"])
 
 
+@unittest.skipIf(np is None, "needs numpy")
 class Files(unittest.TestCase):
     def result(self, size=128):
         rng = np.random.default_rng(2)
