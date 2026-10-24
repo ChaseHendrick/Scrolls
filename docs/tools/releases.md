@@ -214,7 +214,7 @@ No other top-level key is allowed.
 | `commands` | list of str | Optional. At most 12 lines, each one non-empty line of at most 300 characters with no code fence; shown as a `bash` block |
 | `details` | str | Optional. One line of at most 500 characters, such as links to the guide |
 | `image` | object | Optional. `{"src": S, "alt": A, "caption": C}`, exactly those keys: a picture shown under the title, with the caption in italics below it. `src` is a path under `docs/assets/` (resolved from the README, so it serves package entries too: the README that shows it is on `main`) or a full `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`, with no `..` part. `alt` is one line of at most 300 characters with no square brackets, asterisks or backticks. `caption` is one line of at most 500 characters, with no asterisk and no leading or trailing space, that starts with its media label, one of `LABELS`: `Concept illustration`, `Real data render`, `Model output` or `Synthetic demo` ([media labels](../assets/README.md)). Both follow the rules for every text value below; a package's caption links are full `https://` URLs |
-| `tools` | list of objects | Optional; makes a grouped entry (since 20 October 2026). 1 to 12 tools, shown after the commands as a Markdown list, one line each, in list order. The entry's `where` must be `"main"` and its `released` must be its newest tool's date; the release sentence then gives the range of the tools' dates |
+| `tools` | list of objects | Optional; makes a grouped entry (since 20 October 2026). 1 to 20 tools (12 until 24 October 2026), shown after the commands as a Markdown list, one line each, in list order. The entry's `where` must be `"main"` and its `released` must be its newest tool's date; the release sentence then gives the range of the tools' dates |
 | `where` | `"main"`, or an object | Required. `"main"` for files merged here, or `{"branch": B, "commit": C, "path": P}` for a package on its own branch |
 
 **A tool** (each item of a grouped entry's `tools`), shown as one list line: the name in bold; in brackets the version, when given, and the release date; the summary; the word Run with the command as inline code; a link named tool page to its page; then the evidence links:
@@ -312,7 +312,7 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `the list is {"schema_version": 1, "pinned": [ids, optional], "releases": [...]}` | The list is not an object, `schema_version` is not 1, or it has other top-level keys | Restore the list's shape |
 | `releases must be a list` | `releases` is not a list | Restore it |
 | `pinned must list ids of entries in the list, each once` | A pin names an id that is not listed, an id twice, or a non-string | Fix `pinned`, or use `pin` and `unpin` |
-| `ID: tools must be a list of 1 to 12 tools` | `tools` is not a list, is empty, or has more than 12 tools | Give 1 to 12 tool objects |
+| `ID: tools must be a list of 1 to 20 tools` | `tools` is not a list, is empty, or has more than 20 tools | Give 1 to 20 tool objects |
 | `ID: an entry with tools lists tools merged here; its where is "main"` | A grouped entry with a package `where` | Group only tools merged into `main` |
 | `ID: released is its newest tool's date, DATE` | A grouped entry's `released` differs from its newest tool's | Set it to DATE |
 | `ID: each tool is a JSON object` | A tool is a string or a list | Give an object |
@@ -354,7 +354,7 @@ Constants that matter, from `kit/releases.py`:
 | `INLINE_HTML`, `HTTPS_AUTOLINK` | `<` followed by optional space and a letter, `/`, `!` or `?` (refused in a title, summary or details), after removing `<https://...>` autolinks |
 | `LINK_TARGET`, `URL_SCHEME` | A link target, inline or in a reference definition, and the scheme, `//` or backslash that makes it refused unless it starts with `https://` |
 | `IMAGE_FIELDS`, `IMAGE_SRC`, `LABELS` | An image's three keys; its `src` pattern (a `docs/assets/` path or an `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`); the four media labels a caption starts with |
-| `TOOL_FIELDS`, `TOOL_REQUIRED`, `TOOL_PAGE`, `MAX_TOOLS` | A tool's eight fields and the six required ones; its page pattern (`docs/tools/NAME.md`); at most 12 tools in a grouped entry |
+| `TOOL_FIELDS`, `TOOL_REQUIRED`, `TOOL_PAGE`, `MAX_TOOLS` | A tool's eight fields and the six required ones; its page pattern (`docs/tools/NAME.md`); at most 20 tools in a grouped entry |
 | Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters; a tool's name 80, version 120, summary 800, command 300, evidence 400 |
 
 The write is not atomic across the two files: the list is written first, then the README. If the README write failed, `check` would report the mismatch and `render` would repair it.
