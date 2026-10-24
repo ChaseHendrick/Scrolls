@@ -1,0 +1,26 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/dinovol-embeddings",
+ "title": "dinovol Embeddings",
+ "checked": "2026-10-24",
+ "intro": "The features and the scan they came from read straight from these URLs, logged out, with no download step. The features are one zarr v2 group in a public Hugging Face bucket; Use it below has a tested Python snippet that opens it.",
+ "sources": [
+  {"id": "index", "title": "dinovol embeddings of PHerc0841: the store's index", "kind": "file", "format": "json",
+   "url": "https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json",
+   "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data)",
+   "note": "Model output (scrollprize/dinovol_8um_ps192_102126), not checked by eye. The group sits beside this file: arrays tokens_unit, dense and ink with their _scale arrays; .zattrs has the model, villa commit and tiling."},
+  {"id": "ct", "title": "X-ray CT the features came from, PHerc0841 9.366 um", "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr",
+   "zarr_format": 2, "example": {"level": "2", "start": [2400, 1000, 1000]},
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Read live from the open-data bucket, never copied here. Feature index i covers scan voxels [i*8, i*8+8) for tokens_unit and [i*4, i*4+4) for dense and ink, at level 0.",
+   "browse": "https://scrollprize.org/data_browser/PHerc0841"},
+  {"id": "page", "title": "This page's own files", "kind": "page-api",
+   "url": "https://sharpmeow-dinovol-embeddings.static.hf.space/",
+   "links": [{"label": "The bucket, with its README", "url": "https://huggingface.co/buckets/SharpMeow/dinovol-embeddings"},
+             {"label": "The page's slice of features for search (32 numbers per cell, int8)", "url": "https://huggingface.co/spaces/SharpMeow/dinovol-embeddings/resolve/main/assets/search.i8"},
+             {"label": "Page source and build script", "url": "https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/dinovol-embeddings"}],
+   "license": "Page code Apache 2.0; data as above",
+   "note": "The page's numbers (slice, box, accuracy of its 32-number search) are the JSON in its data script tag."}
+ ]
+}

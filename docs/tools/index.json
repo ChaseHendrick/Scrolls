@@ -1904,6 +1904,149 @@
    ]
   },
   {
+   "id": "dinovol-embeddings",
+   "name": "dinovol-embeddings",
+   "tagline": "precomputed dinovol features of the whole PHerc0841 scan, readable by URL",
+   "summary": "A public Hugging Face bucket holding the Vesuvius Challenge's self-supervised dinovol model run over the whole PHerc0841 9.366 um scan, and a guide Space with a click-to-search demo, so anyone can search, cluster or segment by feature similarity without a GPU.",
+   "status": "Current",
+   "kind": [
+    "data",
+    "app"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode=\"r\", zarr_format=2)",
+    "README.md"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/dinovol-embeddings/build.py",
+     "symbols": []
+    }
+   ],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the bucket public and the guide Space were Chase's yes (24 Oct 2026); changing the bucket needs his yes per change, the Space redeploys from merged `main` under the standing yes (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "d425839"
+   },
+   "license": "CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors",
+   "fields": {
+    "Id": "`dinovol-embeddings`",
+    "Status": "Current",
+    "Kind": "data, app",
+    "Area": "Data and downloads",
+    "Run": "[huggingface.co/spaces/SharpMeow/dinovol-embeddings](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) (the guide page and demo); `zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode=\"r\", zarr_format=2)` on the bucket URL below; the bucket's `README.md` has a worked example",
+    "Code": "`spaces/dinovol-embeddings/build.py` (builds the guide Space from the bucket); the data lives in the public bucket SharpMeow/dinovol-embeddings with its README and index file",
+    "Tests": "None here: before release one 24 x 48 x 48 token block from every slab was read back by URL, logged out (see Checks and controls)",
+    "Needs": "`zarr` 3 with `fsspec` and `aiohttp`; `numpy`",
+    "Runs on": "Any machine with a network. The quick start reads a 4 x 32 x 32 token block (about 2 MB) from a 4-core cloud container (2026-10-24; not timed)",
+    "Network": "`huggingface.co` (the bucket and Space); the build also reads the open-data CT",
+    "Writes": "Nothing when you read; `build.py OUT` writes the Space's files into OUT",
+    "Go-ahead": "Not needed to use. Making the bucket public and the guide Space were Chase's yes (24 Oct 2026); changing the bucket needs his yes per change, the Space redeploys from merged `main` under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-24 (bucket and guide Space); README \"Released tools\" entry `dinovol-embeddings`",
+    "License": "CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors",
+    "Checked": "2026-10-24 against commit `d425839`"
+   },
+   "page": "docs/tools/dinovol-embeddings.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 57,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 85,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 91,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 95,
+     "end_line": 107,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 108,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 117,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 121,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 125,
+     "end_line": 134,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 135,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 139,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 144,
+     "end_line": 146,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "doctor",
    "name": "doctor",
    "tagline": "check whether this machine can run villa's First Letters workflow",
@@ -7395,7 +7538,7 @@
    "id": "plan",
    "name": "plan",
    "tagline": "print a First Letters run plan for one eligible scroll, and price a run",
-   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.",
+   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll without running them, `--spiral` prints a large-surface chain from public inputs (center line, lasagna field, villa's spiral fit, render, Ink Lens), and `python -m kit cost` adds up a run's dollars.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -7420,6 +7563,12 @@
       "cmd_plan",
       "cmd_cost"
      ]
+    },
+    {
+     "path": "kit/data/spiral-inputs-2026-10-24.json",
+     "symbols": [
+      "--spiral"
+     ]
     }
    ],
    "tests": [
@@ -7430,8 +7579,8 @@
     "text": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-24",
+    "commit": "141b9fe"
    },
    "license": null,
    "fields": {
@@ -7440,16 +7589,16 @@
     "Kind": "kit command, kit module",
     "Area": "Planning and prizes",
     "Run": "`python -m kit plan`, `python -m kit cost`, `from kit import plan`",
-    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`)",
+    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`), `kit/data/spiral-inputs-2026-10-24.json` (the `--spiral` inputs)",
     "Tests": "`tests/test_kit.py`",
-    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`",
+    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`. `--spiral` adds git, Python 3.14 for villa's `spiral-fitting` (installed by `uv sync`), the hf CLI for scans whose lasagna field is on Hugging Face, and this checkout's `spaces/ink-lens` with its own requirements",
     "Runs on": "Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes \"on the order of an hour on a single GPU\" ([tutorial5](https://scrollprize.org/tutorial5))",
-    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data`",
-    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `volume-cache/`, `predictions/`, `work/SCROLL_SLUG/`); see Outputs",
+    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data` (`--spiral`: also `SharpMeow/vesuvius-center-lines` and the scan's `SharpMeow/*-lasagna` dataset)",
+    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; `--spiral` writes under `work/SCROLL_SLUG/` in the folder you run it from; see Outputs",
     "Go-ahead": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-24 against commit `141b9fe`"
    },
    "page": "docs/tools/plan.md",
    "sections": [
@@ -7468,79 +7617,79 @@
     {
      "name": "Quick start",
      "start_line": 55,
-     "end_line": 77,
+     "end_line": 102,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 78,
-     "end_line": 86,
+     "start_line": 103,
+     "end_line": 111,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 87,
-     "end_line": 116,
+     "start_line": 112,
+     "end_line": 142,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 117,
-     "end_line": 129,
+     "start_line": 143,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 130,
-     "end_line": 137,
+     "start_line": 160,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 138,
-     "end_line": 160,
+     "start_line": 169,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 161,
-     "end_line": 172,
+     "start_line": 194,
+     "end_line": 209,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 173,
-     "end_line": 181,
+     "start_line": 210,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 182,
-     "end_line": 185,
+     "start_line": 220,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 186,
-     "end_line": 195,
+     "start_line": 224,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 196,
-     "end_line": 203,
+     "start_line": 234,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 204,
-     "end_line": 214,
+     "start_line": 242,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 215,
-     "end_line": 225,
+     "start_line": 256,
+     "end_line": 267,
      "applicable": true
     }
    ]
