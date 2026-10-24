@@ -4542,6 +4542,145 @@
    ]
   },
   {
+   "id": "lasagna-fields",
+   "name": "lasagna-fields",
+   "tagline": "villa's lasagna field for ten whole scans, ready to download or stream",
+   "summary": "Ten public Hugging Face datasets, a public bucket and a guide Space holding villa's lasagna `predict3d` output for ten whole scans that had no lasagna field in the open data, so lasagna's fit and the spiral fit can start without a GPU run.",
+   "status": "Current",
+   "kind": [
+    "data",
+    "app"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "hf download SharpMeow/SCAN-lasagna --repo-type dataset",
+    "zarr.open_array(URL)",
+    "python load_example.py"
+   ],
+   "imports": [],
+   "code": [],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); changing their cards or files needs his yes per change, except redeploys under the standing yes (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "76beeba"
+   },
+   "license": "CC BY-NC 4.0, the same as the scans they derive from; model and code are ScrollPrize/villa's lasagna, credit to its authors",
+   "fields": {
+    "Id": "`lasagna-fields`",
+    "Status": "Current",
+    "Kind": "data, app",
+    "Area": "Data and downloads",
+    "Run": "[huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the guide page), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset",
+    "Code": "None in this repository: the data lives on Hugging Face (ten datasets SharpMeow/SCAN-lasagna, the bucket and the Space, both named SharpMeow/lasagna-fields); each dataset carries its own load_example.py, index.json and SHA256SUMS. This page is the public record",
+    "Tests": "None here: the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards)",
+    "Needs": "`huggingface_hub[cli]` for downloads; `zarr` and `numpy` to read; for streaming, `zarr` 3 with `fsspec`, `aiohttp` and `requests`. villa's lasagna tools read the manifest as is",
+    "Runs on": "Any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole scan is 32 to 82 GB to download",
+    "Network": "`huggingface.co` (datasets, bucket, Space)",
+    "Writes": "Downloads write where you point `--local-dir`; streaming writes nothing",
+    "Go-ahead": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); changing their cards or files needs his yes per change, except redeploys under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); README \"Released tools\" entry `lasagna-fields`",
+    "License": "CC BY-NC 4.0, the same as the scans they derive from; model and code are ScrollPrize/villa's lasagna, credit to its authors",
+    "Checked": "2026-10-24 against commit `76beeba`"
+   },
+   "page": "docs/tools/lasagna-fields.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 91,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 97,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 101,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 120,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 129,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 133,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 137,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 147,
+     "end_line": 150,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 151,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 155,
+     "end_line": 158,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "layers",
    "name": "layers",
    "tagline": "export a surface volume to layer TIFFs, and write the depth-shuffle control",

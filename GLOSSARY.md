@@ -176,6 +176,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
+**lasagna field**: The output of villa's lasagna model (`lasagna-preprocess predict3d`) over a whole scan: OME-Zarr channels cos (a signal that repeats once per papyrus layer), grad_mag and the surface normals nx and ny, with a `SCAN.lasagna.json` manifest. villa's lasagna surface fitting and the spiral fit read it. Fields for ten scans are in the [Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) datasets. Model output.
+
 **landmark**: A point marked in two scans of one scroll, used to fit the cross-scan transform between them.
 
 **layer**: One image in a surface volume, at a fixed depth from the traced surface. `kit layers` writes them as numbered TIFF files. In the scroll itself, "layer" also means one turn of papyrus (see winding).
