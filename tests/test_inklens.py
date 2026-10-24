@@ -733,6 +733,23 @@ class Space(unittest.TestCase):
             with self.assertRaises(app.LensError):
                 app.read_npz(txt)
 
+    def test_app_keeps_readers_off_cuda_at_startup_on_zerogpu(self):
+        # The live Space failed this way on 24 Oct 2026: a .to("cuda") in the loading thread, outside spaces.GPU
+        import app
+        seen = []
+
+        class Stub:
+            startup_s = 0.0
+
+            def __init__(self, readers=(), place_on_cuda=True, **kw):
+                seen.append(place_on_cuda)
+
+        for zero, want in ((True, False), (False, True)):
+            with mock.patch.object(app, "ON_ZERO_GPU", zero), mock.patch.object(app.engine, "Engine", Stub):
+                app._load()
+            self.assertEqual(seen[-1], want)
+            self.assertIsNone(app.ENGINE_ERROR)
+
     def test_space_card_and_files(self):
         card = (SPACE / "README.md").read_text()
         head = card.split("---")[1]

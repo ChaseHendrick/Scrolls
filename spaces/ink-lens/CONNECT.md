@@ -1,6 +1,6 @@
 # Connect your tool: Ink Lens
 
-The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server once it is deployed.
+The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server.
 
 Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
 
@@ -62,9 +62,9 @@ xyz = np.stack([get(c) for c in "xyz"], -1)  # xyz[i, j] = (x, y, z) in scan vox
 
 `https://huggingface.co/spaces/SharpMeow/ink-lens`
 
-License: Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0. Not deployed yet; these calls work once it is. Model output, not a reading.
+License: Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0. Checked live on 24 Oct 2026: /list_samples and /lens_sample answered (gradio_client, the 0841-w00 sample). Model output, not a reading.
 
-### Python /lens_sample (not deployed yet)
+### Python /lens_sample (tested 2026-10-24)
 
 ```python
 # pip install gradio_client
@@ -74,7 +74,7 @@ client = Client("SharpMeow/ink-lens")
 result = client.predict(sample_id="0841-w00", size=640, reader="d9v2", windows=3, api_name="/lens_sample")
 ```
 
-### Python /list_samples (not deployed yet)
+### Python /list_samples (tested 2026-10-24)
 
 ```python
 # pip install gradio_client
@@ -84,7 +84,7 @@ client = Client("SharpMeow/ink-lens")
 result = client.predict(api_name="/list_samples")
 ```
 
-### curl /lens_sample (not deployed yet)
+### curl /lens_sample (tested 2026-10-24)
 
 ```bash
 URL=https://sharpmeow-ink-lens.hf.space
@@ -93,7 +93,7 @@ EVENT=$(curl -s -X POST $URL/gradio_api/call/lens_sample -H 'Content-Type: appli
 curl -sN $URL/gradio_api/call/lens_sample/$EVENT
 ```
 
-### MCP (Claude, Cursor and other agents) (not deployed yet)
+### MCP (Claude, Cursor and other agents) (tested 2026-10-24)
 
 ```json
 {

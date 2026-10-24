@@ -70,6 +70,30 @@ Released 16 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
+### Lasagna Fields (villa lasagna fields for ten scans)
+
+Released 24 October 2026.
+
+[Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) shares villa's lasagna `predict3d` output for ten whole scans that had none in the open data, one dataset each: [PHerc0175A](https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna), [PHerc0175B](https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna), [PHerc0306B](https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna), [PHerc0483A](https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna), [PHerc0483B](https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna), [PHerc0490A](https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna), [PHerc0490B](https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna), [PHerc0841](https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna), [PHerc0846A](https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna), [PHerc0846B](https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna). A lasagna field is what villa's lasagna surface fitting and the spiral fit read, so having it ready saves each person a GPU run. Each dataset is in villa's own layout (a `SCAN.lasagna.json` manifest with cos, grad_mag, nx and ny OME-Zarr channels) with `SHA256SUMS`; the same fields stream by URL from the public bucket SharpMeow/lasagna-fields (each card gives the URL). Made on Hugging Face Jobs with villa's lasagna at `db3dbea2`, seams checked. Raw model output, not checked by eye. CC BY-NC 4.0, like the scans.
+
+```bash
+hf download SharpMeow/pherc0175a-lasagna --repo-type dataset --local-dir pherc0175a-lasagna
+cd pherc0175a-lasagna && sha256sum -c SHA256SUMS
+for f in parts/*.tar; do tar -xf "$f"; done
+tar -xf PHerc0175A-lasagna-pyramid-fix.tar
+python load_example.py
+```
+
+Each dataset card says how to download, stream and load it. The [Space](https://huggingface.co/spaces/SharpMeow/lasagna-fields) adds region downloads, a Neuroglancer link and the methods; the Lasagna tab of [Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400) shows a sample with the center line. For another scan, swap the scan id in the commands. Model and code credit: villa's lasagna authors.
+
+### Ink Lens (control-checked ink on your own VC3D region)
+
+Released 24 October 2026.
+
+[Ink Lens](https://huggingface.co/spaces/SharpMeow/ink-lens) checks one region of your own VC3D segment for ink in seconds. It runs an openly licensed 9 um ink model (d9v2 or `ink_9um`) on the region in three depth windows, each as stored and reversed, and keeps only ink above the region's own reversed-depth control, so a region without text comes back `none`. The result is written back as VC3D's own files: an overlay over the segment canvas, a running mosaic, `ink-detections.json` records and letter-candidate pins as a VC3D point collection. It runs on a ZeroGPU Space with your own Hugging Face token, or on your machine with `--local` (CUDA, MPS or CPU, no account), and the Space is also an API and an MCP server for agents. On the public 640 px PHerc0841 w00 sample (development data) the live Space ran 486 patches in about 1.3 s and called it `ink`, AUC 0.915 as stored against 0.595 reversed (Model output, 24 October 2026). Status: released. Version: 0.1.0. Licence: Apache 2.0 for the code; d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0. An ink map is model output, not a reading.
+
+Opens at [huggingface.co/spaces/SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens). Try it from a clone: `python3 spaces/ink-lens/inklens.py demo 0841-w00 --score --vc3d-out /tmp/inklens-demo` (Space mode needs `HF_TOKEN` and gradio_client; add `--local` to run here). Source: [`spaces/ink-lens/`](spaces/ink-lens/); page with every option, output and failure: [`docs/tools/ink-lens.md`](docs/tools/ink-lens.md).
+
 ### Scrolls kit
 
 ![Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.](docs/assets/workbench/workbench-hero.webp)
