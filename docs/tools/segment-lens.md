@@ -18,7 +18,7 @@ A Hugging Face Space that shows each published tifxyz segment of a scan on no pr
 | Go-ahead | Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8) |
 | Released | This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published |
 | License | Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas) |
-| Checked | 2026-10-24 against commit `cc03099` |
+| Checked | 2026-10-24 against commit `3228d5f`, live on the Space |
 
 ## What it does
 
@@ -76,6 +76,10 @@ top = c.predict("PHerc0139", "area_cm2", 5, True, api_name="/list_segments")
 seg = c.predict(top["segments"][0]["id"], api_name="/get_segment")
 picture, info = c.predict(seg["id"], "3d", 30, 20, api_name="/segment_picture")
 ```
+
+On the Space, the MCP server names the tools with the Space's prefix: `segment_lens_list_scrolls`, `segment_lens_list_segments`, `segment_lens_get_segment` and `segment_lens_segment_picture`; a local `app.py` uses the bare names. Over MCP, `segment_picture` returns the image and two text parts.
+
+Checked live on 2026-10-24 (Space commit `7283d22`, from `3228d5f`): `list_scrolls` gave 11 scrolls and 908 meshes, PHerc0139 listed 189 meshes with previews, both picture views and both refusals (unknown id, prize-list scroll) worked through `gradio_client`, MCP listed the four tools above and drew a picture, and the page loaded all 1538 rows with no console errors.
 
 `segment_picture` draws only meshes with a preview, so a scroll on a prize list gets a refusal, never a picture. The 3D picture is an orthographic view with the scan's z up, shaded by how each cell faces the viewer; nearest surface wins.
 

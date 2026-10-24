@@ -9717,7 +9717,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "cc03099"
+    "commit": "3228d5f"
    },
    "license": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
    "fields": {
@@ -9735,7 +9735,7 @@
     "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
     "Released": "This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published",
     "License": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
-    "Checked": "2026-10-24 against commit `cc03099`"
+    "Checked": "2026-10-24 against commit `3228d5f`, live on the Space"
    },
    "page": "docs/tools/segment-lens.md",
    "sections": [
@@ -9766,73 +9766,73 @@
     {
      "name": "Agent tools (API and MCP, since 1.1.0)",
      "start_line": 61,
-     "end_line": 81,
+     "end_line": 85,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 82,
-     "end_line": 93,
+     "start_line": 86,
+     "end_line": 97,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 94,
-     "end_line": 106,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 107,
+     "start_line": 98,
      "end_line": 110,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 111,
      "end_line": 114,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 115,
-     "end_line": 130,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 119,
+     "end_line": 134,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 131,
-     "end_line": 137,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 138,
+     "start_line": 135,
      "end_line": 141,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 142,
-     "end_line": 151,
+     "end_line": 145,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 152,
+     "name": "For agents",
+     "start_line": 146,
      "end_line": 155,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 156,
-     "end_line": 162,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 160,
+     "end_line": 166,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 163,
-     "end_line": 167,
+     "start_line": 167,
+     "end_line": 171,
      "applicable": true
     }
    ]
