@@ -7,7 +7,7 @@ sdk: static
 app_file: index.html
 pinned: false
 license: apache-2.0
-short_description: Center lines of 22 Herculaneum scrolls, in live X-ray CT
+short_description: Center lines of 33 Herculaneum scans, in live X-ray CT
 tags:
   - vesuvius-challenge
   - herculaneum
@@ -24,17 +24,24 @@ datasets:
 A carbonized Herculaneum scroll is a sheet of papyrus wound around a center. Its center line, the umbilicus,
 is where tracing tools such as VC3D and villa's lasagna start. This page draws every public center line we know
 of for the 22 scans on the [Vesuvius Challenge prize page](https://scrollprize.org/prizes) (the 21 First Letters
-volumes and PHerc1447, read 23 October 2026), over X-ray CT that your browser streams from the open data.
+volumes and PHerc1447, read 23 October 2026) and for 11 other public scans that are not on the prize page (since
+1.8.0), over X-ray CT that your browser streams from the open data.
 
-- **Array**: all 22 lines side by side, heights to scale in millimetres. Person-made lines are ice blue; the nine
-  lines from Chase Hendrick's Center Finder are amber. The slider exaggerates side-to-side drift (default 3x).
-- **X-ray**: one scan. A radiograph (or maximum intensity) render of the whole scan at about 0.3 mm per voxel,
+- **Array**: every scan's lines side by side, heights to scale in millimetres: the prize scans in the front two rows
+  (people's lines, then the Center Finder's), the other public scans in the back row. Each maker has its own color
+  (Vesuvius Challenge cyan, Alexey Drobkov pink, Abd Elilah violet, Iyan Dopico white, Chase Hendrick's Center
+  Finder amber); click a maker in the key to hide its lines, or untick one line on a scan card, and the view link
+  keeps it (`off=`). Scan names follow a traffic light from the automatic CT end check: green when both Center
+  Finder ends passed, yellow for caution (a CT recap, an end it could not judge, or a 2.4 µm scan it was never
+  tuned on), red when an end was flagged. The slider exaggerates side-to-side drift (default 3x).
+- **X-ray**: one scan. A radiograph (or maximum intensity) render of the whole scan at about 0.3 mm per voxel
+  (0.15 to 0.23 mm on a 2.4 µm scan, with fewer heights),
   the lines inside it, and an axial slice at 70 to 80 µm per pixel with every line's crossing marked. The slice
   follows its height slider live (from the 0.3 mm CT already loaded, then sharpens when the slider rests), can turn
   with the 3D view ("turn with view"), and can be hidden and brought back from the bottom right.
 - **Lasagna**: PHerc0175A with villa's lasagna field: its sheet channel (cos) at nine heights, its surface
   normals as short needles coloured by orientation, and the Center Finder's line through them.
-- **Data**: every number on the page as sortable tables (29 lines, 22 scans), with `lines.csv`, `scans.csv`,
+- **Data**: every number on the page as sortable tables (40 lines, 33 scans), with `lines.csv`, `scans.csv`,
   `points.csv` and `umbilici.json` downloads.
 - **Guide**: five tabs for every level of reader: Start here, VC3D and villa, For researchers (every statistic
   defined), Data details (frames, pyramids, encodings) and Credits.
@@ -50,20 +57,23 @@ that reopens the exact view; and the scan's points as CSV or JSON.
 | Alexey Drobkov ([herculaneum-umbilici](https://github.com/AlexeyDrobkovStrikesBack/herculaneum-umbilici)) | 10 | MIT |
 | Abd Elilah, manual curves ([umbilicus-cross-validation](https://github.com/TAUIL-Abd-Elilah/umbilicus-cross-validation)) | 6 | CC BY 4.0 |
 | Iyan Dopico (PHerc1218, as shipped in Drobkov's repository) | 1 | MIT |
-| Vesuvius Challenge open data (`representations/umbilicus`) | 3 | CC BY-NC 4.0 |
-| Chase Hendrick's Center Finder (model output) | 9 | CC BY-NC 4.0 |
+| Vesuvius Challenge open data (`representations/umbilicus`) | 7 (4 not on the prize page) | CC BY-NC 4.0 |
+| Chase Hendrick's Center Finder (model output) | 16 (7 not on the prize page) | CC BY-NC 4.0 |
 
 Every file, with its hash, upstream link and note, is in
 [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines). Abd Elilah's
 PHerc1203 curve is shown faded: its author withdrew it from recommended use (repository README, 16 Aug 2026).
 
-The nine Center Finder lines are model output, made for the 1.2 m scans that had no person's line. No person has
-checked their ends on CT. An automatic CT end check (dataset release v2.2, 23 Oct 2026) compares each end with the
-scroll center the CT shows there, estimated from the scan alone, with a 4 mm bar: 14 of the 18 ends pass and 4 are
-flagged (PHerc0175B high, PHerc0306B low, PHerc0490B low, PHerc0846A high). Five passing ends are marked CT recap:
-their last 10 mm was replaced by a straight fit to the CT, so the pass says the CT supports that end. The page shows
-PASS or FLAG per line and the grade of each end on its card. Model output: no end has been checked on CT by a
-person. Each line's card says which ends are usable.
+The 16 Center Finder lines are model output, made for the scans that had no person's line: nine 1.2 m prize
+scans, then (dataset release v2.3, 24 Oct 2026) PHerc0343, PHerc0814 and PHerc0841 at 1.2 m and PHerc1299,
+PHercMAN5, PHercMANB and PHercParis3 at 2.4 µm. No person has checked their ends on CT. An automatic CT end check
+compares each end with the scroll center the CT shows there, estimated from the scan alone, with a 4 mm bar. On the
+nine prize lines (v2.2, 23 Oct 2026) 14 of the 18 ends pass and 4 are flagged (PHerc0175B high, PHerc0306B low,
+PHerc0490B low, PHerc0846A high); five passing ends are marked CT recap: their last 10 mm was replaced by a
+straight fit to the CT, so the pass says the CT supports that end. On the seven v2.3 lines all 14 ends pass, 2 after
+a CT recap (PHerc0343 low, PHercMANB high); the check was tuned only on 1.2 m scans, so its grades on the four 2.4 µm
+scans are marked untested and no end there is called usable. The page shows the grade per line and per end on its
+card. Model output: no end has been checked on CT by a person. Each line's card says which ends are usable.
 
 ## Using the lines in VC3D and villa
 
@@ -73,7 +83,7 @@ villa's source (`main`, read 23 Oct 2026):
 - VC3D ([`volume-cartographer/core/src/Umbilicus.cpp`](https://github.com/ScrollPrize/villa/blob/main/volume-cartographer/core/src/Umbilicus.cpp))
   reads a bare array of points or an object with `points` or `control_points`, each point with x, y and z, and an
   optional `metadata` block with `voxelsize_um`, `volume` and the grid `volume_width`, `volume_height`,
-  `volume_slices` (all three or none). 22 of the 29 files carry that stamp, matching their scan's grid; Abd
+  `volume_slices` (all three or none). 33 of the 40 files carry that stamp, matching their scan's grid; Abd
   Elilah's six and Iyan Dopico's are bare points. VC3D interpolates linearly between points and holds the end
   points' x and y beyond them.
 - spiral-fitting ([`spiral-fitting/umbilicus.py`](https://github.com/ScrollPrize/villa/blob/main/spiral-fitting/umbilicus.py))
@@ -119,6 +129,7 @@ The page is driven from the console or a headless browser through `window.umbili
 | `table('lines' or 'scans')`, `csv('lines' or 'scans' or 'points')` | the Data tables as objects or CSV text |
 | `guide(tab)`, `data(tab)` | open the guide (`basics`, `vc3d`, `research`, `data`, `credits`) or the Data tables |
 | `bench(n)` | renders `n` frames and returns milliseconds per frame and the pixel ratio |
+| `show(kind, name, on)` | shows or hides lines: `kind` `'source'` with a maker (`bucket`, `drobkov`, `tauil`, `dopico`, `finder`) or `'line'` with `SCROLL:SOURCE`; `on` true or false, omitted toggles; returns `{off}`, also kept in the URL as `off=` |
 | `settings(obj)` | read or change the viewer settings: `glow` (0 to 3), `radius` (0 to 1), `quality` (`auto`, `high`, `low`), `film`, `spin`, `inset` (the slice panel shown), `turn` (the slice turns with the 3D view) |
 
 URL parameters: `?mode=scan&scan=PHerc0191&z=10400`, `?mode=lasagna&scan=PHerc0175A&z=6400`, `?ex=5`,

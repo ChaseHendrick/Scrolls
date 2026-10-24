@@ -11754,8 +11754,8 @@
   {
    "id": "umbilici",
    "name": "umbilici",
-   "tagline": "view every public center line of the 22 prize scans over live X-ray CT",
-   "summary": "A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
+   "tagline": "view every public center line of the 22 prize scans and 11 other public scans over live X-ray CT",
+   "summary": "A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
    "status": "Current",
    "kind": [
     "app",
@@ -11916,13 +11916,13 @@
     {
      "name": "History",
      "start_line": 184,
-     "end_line": 199,
+     "end_line": 200,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 200,
-     "end_line": 204,
+     "start_line": 201,
+     "end_line": 205,
      "applicable": true
     }
    ]
