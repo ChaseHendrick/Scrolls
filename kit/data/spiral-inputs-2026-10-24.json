@@ -1,0 +1,201 @@
+{
+ "checked": "2026-10-24",
+ "note": "Public inputs for villa's spiral fit on each First Letters eligible scan in the 2026-10-11 prize snapshot, read 24 Oct 2026. Catalog properties and slice counts: the open-data metadata.json. Lasagna: the bucket's representations/predictions/lasagna/ run for the eligible volume, else Chase Hendrick's public Hugging Face dataset of villa's lasagna predict3d for that volume. Every store's OME-Zarr level 2 is a 4x downsample (its own .zattrs multiscales, read 24 Oct 2026). Center lines come at run time from kit centerline get.",
+ "sources": {
+  "catalog": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json",
+  "bucket": "s3://vesuvius-challenge-open-data/"
+ },
+ "normal_zarr_group": "2",
+ "lasagna_scale": 4,
+ "scans": {
+  "PHerc0125": {
+   "volume": "20250821151825",
+   "slices": 20840,
+   "z_direction_is_top_to_bottom": null,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0125/representations/predictions/lasagna/20250821151825-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0175A": {
+   "volume": "20250521115057",
+   "slices": 12748,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0175a-lasagna"
+   }
+  },
+  "PHerc0175B": {
+   "volume": "20250521125822",
+   "slices": 15897,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0175b-lasagna"
+   }
+  },
+  "PHerc0191": {
+   "volume": "20250821151635",
+   "slices": 18977,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0191/representations/predictions/lasagna/20250821151635-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0211": {
+   "volume": "20250821151803",
+   "slices": 19416,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0211/representations/predictions/lasagna/20250821151803-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0257": {
+   "volume": "20250821151750",
+   "slices": 18872,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0257/representations/predictions/lasagna/20250821151750-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0268": {
+   "volume": "20251110183117",
+   "slices": 14833,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0268/representations/predictions/lasagna/20251110183117-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0306B": {
+   "volume": "20250521133212",
+   "slices": 15898,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0306b-lasagna"
+   }
+  },
+  "PHerc0358": {
+   "volume": "20250821151737",
+   "slices": 14744,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0358/representations/predictions/lasagna/20250821151737-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0483A": {
+   "volume": "20250521140913",
+   "slices": 15898,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0483a-lasagna"
+   }
+  },
+  "PHerc0483B": {
+   "volume": "20251124083638",
+   "slices": 11880,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0483b-lasagna"
+   }
+  },
+  "PHerc0490A": {
+   "volume": "20250521151210",
+   "slices": 11698,
+   "z_direction_is_top_to_bottom": null,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0490a-lasagna"
+   }
+  },
+  "PHerc0490B": {
+   "volume": "20250521151215",
+   "slices": 10648,
+   "z_direction_is_top_to_bottom": null,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0490b-lasagna"
+   }
+  },
+  "PHerc0800": {
+   "volume": "20250521135224",
+   "slices": 24298,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0800/representations/predictions/lasagna/20250521135224-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0813": {
+   "volume": "20250821151723",
+   "slices": 16993,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0813/representations/predictions/lasagna/20250821151723-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0826": {
+   "volume": "20250821151701",
+   "slices": 16920,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc0826/representations/predictions/lasagna/20250821151701-lasagna-20260419180421/"
+   }
+  },
+  "PHerc0846A": {
+   "volume": "20250728152254",
+   "slices": 14019,
+   "z_direction_is_top_to_bottom": null,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0846a-lasagna"
+   }
+  },
+  "PHerc0846B": {
+   "volume": "20250804142305",
+   "slices": 13926,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "dataset": "SharpMeow/pherc0846b-lasagna"
+   }
+  },
+  "PHerc1203": {
+   "volume": "20250820131727",
+   "slices": 18977,
+   "z_direction_is_top_to_bottom": null,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc1203/representations/predictions/lasagna/20250820131727-lasagna-20260419180421/"
+   }
+  },
+  "PHerc1218": {
+   "volume": "20250521120456",
+   "slices": 23247,
+   "z_direction_is_top_to_bottom": false,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc1218/representations/predictions/lasagna/20250521120456-lasagna-20260419180421/"
+   }
+  },
+  "PHerc1545": {
+   "volume": "20250821151648",
+   "slices": 20961,
+   "z_direction_is_top_to_bottom": true,
+   "left_handed_coordinates": false,
+   "lasagna": {
+    "bucket": "PHerc1545/representations/predictions/lasagna/20250821151648-lasagna-20260419180421/"
+   }
+  }
+ }
+}

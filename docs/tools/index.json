@@ -7212,7 +7212,7 @@
    "id": "plan",
    "name": "plan",
    "tagline": "print a First Letters run plan for one eligible scroll, and price a run",
-   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.",
+   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll without running them, `--spiral` prints a large-surface chain from public inputs (center line, lasagna field, villa's spiral fit, render, Ink Lens), and `python -m kit cost` adds up a run's dollars.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -7237,6 +7237,12 @@
       "cmd_plan",
       "cmd_cost"
      ]
+    },
+    {
+     "path": "kit/data/spiral-inputs-2026-10-24.json",
+     "symbols": [
+      "--spiral"
+     ]
     }
    ],
    "tests": [
@@ -7247,8 +7253,8 @@
     "text": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-24",
+    "commit": "141b9fe"
    },
    "license": null,
    "fields": {
@@ -7257,16 +7263,16 @@
     "Kind": "kit command, kit module",
     "Area": "Planning and prizes",
     "Run": "`python -m kit plan`, `python -m kit cost`, `from kit import plan`",
-    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`)",
+    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`), `kit/data/spiral-inputs-2026-10-24.json` (the `--spiral` inputs)",
     "Tests": "`tests/test_kit.py`",
-    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`",
+    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`. `--spiral` adds git, Python 3.14 for villa's `spiral-fitting` (installed by `uv sync`), the hf CLI for scans whose lasagna field is on Hugging Face, and this checkout's `spaces/ink-lens` with its own requirements",
     "Runs on": "Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes \"on the order of an hour on a single GPU\" ([tutorial5](https://scrollprize.org/tutorial5))",
-    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data`",
-    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; see Outputs",
+    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data` (`--spiral`: also `SharpMeow/vesuvius-center-lines` and the scan's `SharpMeow/*-lasagna` dataset)",
+    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; `--spiral` writes under `work/SCROLL_SLUG/` in the folder you run it from; see Outputs",
     "Go-ahead": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-24 against commit `141b9fe`"
    },
    "page": "docs/tools/plan.md",
    "sections": [
@@ -7285,79 +7291,79 @@
     {
      "name": "Quick start",
      "start_line": 55,
-     "end_line": 77,
+     "end_line": 102,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 78,
-     "end_line": 86,
+     "start_line": 103,
+     "end_line": 111,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 87,
-     "end_line": 116,
+     "start_line": 112,
+     "end_line": 142,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 117,
-     "end_line": 129,
+     "start_line": 143,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 130,
-     "end_line": 137,
+     "start_line": 160,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 138,
-     "end_line": 160,
+     "start_line": 169,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 161,
-     "end_line": 173,
+     "start_line": 194,
+     "end_line": 209,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 174,
-     "end_line": 182,
+     "start_line": 210,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 183,
-     "end_line": 186,
+     "start_line": 220,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 187,
-     "end_line": 196,
+     "start_line": 224,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 197,
-     "end_line": 204,
+     "start_line": 234,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 205,
-     "end_line": 217,
+     "start_line": 242,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 218,
-     "end_line": 228,
+     "start_line": 256,
+     "end_line": 267,
      "applicable": true
     }
    ]
