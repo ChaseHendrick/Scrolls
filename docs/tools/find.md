@@ -17,7 +17,7 @@
 | Writes | Nothing |
 | Go-ahead | Not needed |
 | Released | Public `main` from the change that adds it (23 Oct 2026) |
-| Checked | 2026-10-23 against commit `3376687` |
+| Checked | 2026-10-23 against commit `cc03099` |
 
 ## What it does
 
