@@ -200,10 +200,10 @@
         },
         {
           "id": "umbilicus-finder",
-          "name": "Scroll center (umbilicus) finder",
-          "released": "2026-10-14",
-          "version": "weights release `umbilicus-v1`; center lines for 11 scrolls, release `umbilicus-lines-v1`",
-          "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets, reading level-3 slices from the open-data bucket, and writes the published umbilicus format (`umbilicus.json` for VC3D and spiral-fitting with `--vc3d-name`). Against the 13 published center lines, each scroll held out of its own models' training, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the papyrus centroid control (Model output, 13 October 2026); each reference is one person's line, and the settings were chosen while looking at some of the same scrolls. A script folder run from a clone, not a `python -m kit` command: it needs torch and the two weight files, and its line is model output to check on CT slices.",
+          "name": "Scroll center (umbilicus) finder and coverage polish",
+          "released": "2026-10-24",
+          "version": "weights `umbilicus-v1`; lines `umbilicus-lines-v1`; polish `kit axispolish` rule 1",
+          "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets reading level-3 slices from the open-data bucket, and writes `umbilicus.json` for VC3D and the spiral fit. Against the 13 published center lines, each scroll held out, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the centroid control (Model output, 13 Oct 2026). `kit axispolish` then moves a line to where villa's traced sheet winds most: on ten fresh scans the polished lines beat villa's vc_gen_umbilicus by +0.084 wraps of coverage, 8 of 10 scans, interval +0.028 to +0.169 (Model output, 22 Oct 2026; [evidence](docs/evidence/2026-10-22-umbilicus-windpolish/README.md)).",
           "command": "python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name",
           "page": "docs/tools/umbilicus.md",
           "evidence": "[guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md), [center lines for 11 scrolls with each end's check status (Model output, no person's check)](docs/evidence/2026-10-21-umbilicus-lines/README.md)"
