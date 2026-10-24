@@ -1051,7 +1051,8 @@ def gallery(root=HERE / "gallery"):
 
 # ---------------------------------------------------------------- the Space's own files
 
-SPACE_FILES = ("README.md", "app.py", "lens.py", "viewer.js", "requirements.txt", "LICENSE", "NOTICE")
+SPACE_FILES = ("README.md", "app.py", "lens.py", "viewer.js", "requirements.txt", "LICENSE", "NOTICE", "connect.json",
+               "connect.html", "CONNECT.md")
 
 
 def space_files(root=HERE):

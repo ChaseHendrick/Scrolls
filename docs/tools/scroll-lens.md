@@ -32,6 +32,8 @@ For AI agents and scripts, seven tools are API endpoints and MCP tools (added in
 
 Everything shown is model output, not a reading. A cube is at most 0.6 mm across, smaller than one letter. Scroll Lens reads only twelve listed scans (below), none on the First Letters or Grand Prize eligible lists. On PHerc. Paris 4, whose title is an open prize, Scroll Lens itself picks only the eight points listed in the ink checkpoint's training config (`lens.PARIS4_TRAINING_POINTS`).
 
+A Connect your tool accordion gives the scans' open-data URLs and snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, gradio_client, curl and MCP ([spaceconnect](spaceconnect.md), 24 Oct 2026).
+
 ## When to use it
 
 - To see what the organizers' 3D models mark in a piece of a scan, flat or in 3D, without installing villa or dinovol.
@@ -406,6 +408,7 @@ Free to use and to run locally. On the Space, model runs (Run the models, `look`
 
 ## History
 
+- 2026-10-24: Connect your tool accordion (branch of `main` at `2ce4d50`). Chase had the Space unpaused ("ya unpause"), and it was redeployed as Space commit `51360104`, which also brought #117's merged changes live (a click moves the crosshair by default, one-line gallery names).
 - 2026-10-17: v1.1.0, on top of PR #114's agent tools: the views drawn in the browser (`viewer.js`: live sliders, drag, wheel, zoom, pan, undo, hover readout), a 3D view of the cube with the slices as moving planes (three.js, as in Unroll), and fixes from a bug test of the live v1.0.0 (receipt layers, ZeroGPU durations and refusals, cube placement, the bucket's 403, random points on sparse scans, reduced-embedding similarity, the agreement control range, shared memory, the URL proxy, upload size, strict flags in `look`); `build_gallery.py --batch` (`c921ef1`, `e14e165`, [PR #115](https://github.com/ChaseHendrick/Scrolls/pull/115)).
 - 2026-10-17: v1.1.0 agent tools and MCP (`list_scans`, `list_gallery`, `random_point`, `inspect_cube`, `search_cube`, `download_cube`), American spelling ([PR #114](https://github.com/ChaseHendrick/Scrolls/pull/114)).
 - 2026-10-17: gallery grown to 99 cubes (batches 2 to 9) on Chase's remaining quota (Space commit `f4aa1ee`).

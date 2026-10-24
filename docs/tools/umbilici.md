@@ -32,6 +32,8 @@ For every level of reader: a **Guide** with five tabs (Start here for newcomers;
 
 A center line is geometry, and the lasagna field is model output. Nothing on the page is a reading of any text.
 
+The Guide's Connect your tool tab (also the Connect button) lists the URLs of every line, scan and the lasagna field with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer and the command line; each scan card has an open in neuroglancer link ([spaceconnect](spaceconnect.md), 24 Oct 2026).
+
 ## When to use it
 
 - To see where the public center lines are, how they wander, and where two people's lines disagree (the card gives the median gap).
@@ -181,6 +183,7 @@ Free: a static Space, and CT comes from the public bucket at the visitor's end. 
 
 ## History
 
+- 2026-10-24: 1.7.0, Connect your tool tab and per-scan neuroglancer links, branched from `main` at `2ce4d50`.
 - 2026-10-23: first version, private Space preview (Space commit `45a55be`); code added here in the PR for branch `claude/project-thread-xrkbs0`.
 - 2026-10-23: 1.1.0 (Space commit `1db9a117`). Guide (five tabs), Data tables with CSV and JSON downloads, per-line statistics, VC3D and villa hooks (raw file URLs, OME-Zarr URL, x, y, z at a slice, view links), CT pyramids and frame stamps in `lines.json`; "Center Finder" written as a name (Chase, 2026-10-23). The lasagna dataset links read "(soon)" until that dataset is on the Hub; it went public at 08:09 UTC on 23 Oct and the live page links it directly.
 - 2026-10-23: 1.2.0 (Space commit `a1af38e8`). Settings (gear button): glow strength and spread, quality, film grain, spin (Chase: "can there be settings and change the glow strength"). The glow no longer flickers while the camera moves: the X-ray takes fewer ray steps during a drag instead of lowering the pixel ratio, which had resized the bloom buffers (Chase: "the glow is glitchy when moving the camera").

@@ -1,0 +1,110 @@
+# Connect your tool: Unroll
+
+The traced windings, X-ray CT and ink layers in Unroll come from the Vesuvius Challenge open data, and every one of them reads straight from these URLs in your own tool, with no account and no download step.
+
+Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
+
+## A traced winding (tifxyz), example PHerc0841 w00
+
+`https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/mesh/20260220213127-on-20250821151531-9.366um.tifxyz`
+
+License: CC BY-NC 4.0 (Vesuvius Challenge open data). Every winding Unroll shows has a folder like this under SCROLL/segments/ in the open data; Unroll keeps only a decimated copy for the browser.
+
+### Python (numpy, tifffile) (tested 2026-10-24)
+
+```python
+# pip install numpy tifffile
+import io, json, urllib.request
+import numpy as np, tifffile
+
+T = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/mesh/20260220213127-on-20250821151531-9.366um.tifxyz"
+meta = json.load(urllib.request.urlopen(T + "/meta.json"))  # scale, bbox, format
+get = lambda c: tifffile.imread(io.BytesIO(urllib.request.urlopen(f"{T}/{c}.tif").read()))
+xyz = np.stack([get(c) for c in "xyz"], -1)  # xyz[i, j] = (x, y, z) in scan voxels; -1 = no surface
+```
+
+## Every segment of a scroll, example PHerc0841
+
+`s3://vesuvius-challenge-open-data/PHerc0841/segments/`
+
+License: CC BY-NC 4.0 (Vesuvius Challenge open data). Each segment folder has mesh/ (tifxyz), surface-volumes/ (OME-Zarr layers) and, where published, ink-detection/.
+
+### Python (list the folder) (tested 2026-10-24)
+
+```python
+import re, urllib.request
+
+B = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
+xml = urllib.request.urlopen(B + "/?list-type=2&delimiter=/&prefix=PHerc0841/segments/").read().decode()
+print(re.findall(r"<Prefix>([^<]+)</Prefix>", xml))  # subfolders; <Key> gives files
+```
+
+## X-ray CT behind the CT view, PHerc0139 9.362 um
+
+`https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr`
+
+License: CC BY-NC 4.0 (Vesuvius Challenge open data). Streamed from the open-data bucket, never copied here. Unroll opens any other scan with ?ctzarr=URL&ctum=VOXEL_UM.
+
+### Python (zarr) (tested 2026-10-24)
+
+```python
+# pip install "zarr>=3" fsspec aiohttp
+import zarr
+
+root = zarr.open_group("https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr", mode="r")  # OME-Zarr, zarr v2
+a = root["2"]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[2622:2686, 828:892, 828:892]  # (z, y, x); reads only the chunks it touches
+```
+
+### villa's vesuvius package (tested 2026-10-24)
+
+```python
+# pip install "vesuvius[volume-only]"
+from vesuvius import Volume
+
+v = Volume(type="zarr", path="https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/2")  # one pyramid level
+block = v[2622:2686, 828:892, 828:892]
+```
+
+### VC3D (from villa's source)
+
+```text
+In VC3D (villa's volume-cartographer), open or create a project, then
+File > Attach Remote Zarr... and paste:
+
+https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr
+
+It accepts http, https and s3 OME-Zarr roots.
+```
+
+### neuroglancer (tested 2026-10-24)
+
+```text
+https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0139%2Fvolumes%2F20250728140407-9.362um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20behind%20the%20CT%20view%2C%20PHerc0139%209.362%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D
+```
+
+### curl (tested 2026-10-24)
+
+```bash
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/2/.zarray     # one level: shape, chunks, dtype, codec
+```
+
+## Unroll's own API, files and embed
+
+`https://sharpmeow-unroll.static.hf.space/`
+
+License: Page code Apache 2.0; derived data CC BY-NC 4.0. Every button has a data-api name and the same call on window.unroll, so a script or an agent can drive the page.
+
+### Links and embed (tested 2026-10-24)
+
+```text
+API description (window.unroll, postMessage, deep links): https://huggingface.co/spaces/SharpMeow/unroll/resolve/main/api.json
+Guide for agents: https://huggingface.co/spaces/SharpMeow/unroll/resolve/main/llms.txt
+Scroll list and per-scroll manifests: https://huggingface.co/spaces/SharpMeow/unroll/resolve/main/scrolls/index.json
+Ink Bench on the command line: https://huggingface.co/spaces/SharpMeow/unroll/resolve/main/tools/inkbench.py
+Deep link to one winding: https://sharpmeow-unroll.static.hf.space/?scroll=PHerc0139&t=0.6&layer=overlay&focus=w047&compare=0.3
+
+<iframe src="https://sharpmeow-unroll.static.hf.space/index.html?embed=1" width="100%" height="600" allow="fullscreen; clipboard-write"></iframe>
+```

@@ -121,6 +121,7 @@ Free to use. The Space is a static page on Hugging Face; the data comes from the
 ## History
 
 - 2026-10-24: 1.0.0, first version (on top of `5d217be`).
+- 2026-10-24: Connect your tool panel in the Guide ([spaceconnect](spaceconnect.md)): the Segment Atlas with huggingface_hub, datasets, pandas, hf and curl snippets, an example mesh with numpy and tifffile, all run live.
 
 ## Related
 

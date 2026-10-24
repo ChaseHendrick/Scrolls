@@ -1,0 +1,64 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/ink-lens",
+ "title": "Ink Lens",
+ "checked": "2026-10-24",
+ "intro": "The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server once it is deployed.",
+ "sources": [
+  {
+   "id": "layers",
+   "title": "Sample layers, PHerc0841 w00 (9.366 um surface volume)",
+   "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "zarr_format": 2,
+   "example": {
+    "level": "0",
+    "start": [
+     0,
+     2800,
+     2900
+    ]
+   },
+   "tools": [
+    "zarr",
+    "vesuvius",
+    "curl"
+   ],
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "browse": "https://scrollprize.org/data_browser/PHerc0841"
+  },
+  {
+   "id": "segment",
+   "title": "Its surface (tifxyz)",
+   "kind": "tifxyz",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/mesh/20260220213127-on-20250821151531-9.366um.tifxyz",
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)"
+  },
+  {
+   "id": "api",
+   "title": "Call Ink Lens from code or an agent",
+   "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/ink-lens",
+   "space": "SharpMeow/ink-lens",
+   "host": "https://sharpmeow-ink-lens.hf.space",
+   "status": "not-deployed",
+   "endpoints": [
+    {
+     "api": "/lens_sample",
+     "args": {
+      "sample_id": "0841-w00",
+      "size": 640,
+      "reader": "d9v2",
+      "windows": 3
+     }
+    },
+    {
+     "api": "/list_samples",
+     "args": {}
+    }
+   ],
+   "license": "Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0",
+   "note": "Not deployed yet; these calls work once it is. Model output, not a reading."
+  }
+ ]
+}

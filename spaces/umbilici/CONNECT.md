@@ -1,0 +1,148 @@
+# Connect your tool: Umbilici
+
+Every center line, CT scan and lasagna field on this page reads straight from these URLs, with no account and no download step. Each scan card also has its own OME-Zarr URL and an Open in neuroglancer link.
+
+Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
+
+## Center lines (all 29, every scan)
+
+`https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines`
+
+License: CC BY-NC 4.0 bundle; each file keeps its own license (MIT, CC BY 4.0 or CC BY-NC 4.0, listed in index.json). Files under lines/ are in VC3D's umbilicus JSON format, level-0 voxels (x, y, z).
+
+### Python (huggingface_hub) (tested 2026-10-24)
+
+```python
+# pip install huggingface_hub
+from huggingface_hub import hf_hub_download, snapshot_download
+
+path = hf_hub_download("SharpMeow/vesuvius-center-lines", "index.json", repo_type="dataset")  # one file, cached
+folder = snapshot_download("SharpMeow/vesuvius-center-lines", repo_type="dataset")
+```
+
+### Python (datasets) (tested 2026-10-24)
+
+```python
+# pip install datasets
+from datasets import load_dataset
+
+lines = load_dataset("SharpMeow/vesuvius-center-lines", "lines", split="train")
+points = load_dataset("SharpMeow/vesuvius-center-lines", "points", split="train")
+```
+
+### pandas (tested 2026-10-24)
+
+```python
+# pip install pandas huggingface_hub
+import pandas as pd
+
+df = pd.read_json("hf://datasets/SharpMeow/vesuvius-center-lines/tables/points.jsonl", lines=True)
+```
+
+### Command line (hf) (tested 2026-10-24)
+
+```bash
+pip install -U huggingface_hub
+hf download SharpMeow/vesuvius-center-lines index.json --repo-type dataset --local-dir vesuvius-center-lines
+```
+
+### curl (tested 2026-10-24)
+
+```bash
+curl -L -O https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines/resolve/main/index.json
+```
+
+## X-ray CT, example PHerc0125 (each scan card has its own URL)
+
+`https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr`
+
+License: CC BY-NC 4.0 (Vesuvius Challenge open data). Read live from the open-data bucket, never copied here. uint8, 128^3 chunks, no compressor, 6 levels.
+
+### Python (zarr) (tested 2026-10-24)
+
+```python
+# pip install "zarr>=3" fsspec aiohttp
+import zarr
+
+root = zarr.open_group("https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr", mode="r")  # OME-Zarr, zarr v2
+a = root["2"]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[2600:2664, 1000:1064, 1000:1064]  # (z, y, x); reads only the chunks it touches
+```
+
+### villa's vesuvius package (tested 2026-10-24)
+
+```python
+# pip install "vesuvius[volume-only]"
+from vesuvius import Volume
+
+v = Volume(type="zarr", path="https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/2")  # one pyramid level
+block = v[2600:2664, 1000:1064, 1000:1064]
+```
+
+### VC3D (from villa's source)
+
+```text
+In VC3D (villa's volume-cartographer), open or create a project, then
+File > Attach Remote Zarr... and paste:
+
+https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr
+
+It accepts http, https and s3 OME-Zarr roots.
+```
+
+### neuroglancer (tested 2026-10-24)
+
+```text
+https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0125%2Fvolumes%2F20250821151825-9.362um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%2C%20example%20PHerc0125%20%28each%20scan%20card%20has%20its%20own%20URL%29%22%7D%5D%2C%22layout%22%3A%224panel%22%7D
+```
+
+### curl (tested 2026-10-24)
+
+```bash
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/2/.zarray     # one level: shape, chunks, dtype, codec
+```
+
+## Lasagna field, PHerc0175A
+
+`https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna`
+
+License: CC BY-NC 4.0. villa lasagna predict3d output (scrollprize/lasagna); model output, not checked by eye.
+
+### Python (huggingface_hub) (tested 2026-10-24)
+
+```python
+# pip install huggingface_hub
+from huggingface_hub import hf_hub_download, snapshot_download
+
+path = hf_hub_download("SharpMeow/pherc0175a-lasagna", "README.md", repo_type="dataset")  # one file, cached
+folder = snapshot_download("SharpMeow/pherc0175a-lasagna", repo_type="dataset")  # large; allow_patterns=[...] fetches part of it
+```
+
+### Command line (hf) (tested 2026-10-24)
+
+```bash
+pip install -U huggingface_hub
+hf download SharpMeow/pherc0175a-lasagna README.md --repo-type dataset --local-dir pherc0175a-lasagna
+```
+
+### curl (tested 2026-10-24)
+
+```bash
+curl -L -O https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna/resolve/main/README.md
+```
+
+## This page's own data and API
+
+`https://sharpmeow-umbilici.static.hf.space/`
+
+License: Page code Apache 2.0; data as above. In a browser or headless Chromium, window.umbilici has scans(), lines(scroll), at(scroll, z), csv(...) and more (Guide, For researchers).
+
+### Links and embed (tested 2026-10-24)
+
+```text
+Every line, scan and CT pyramid as one JSON: https://huggingface.co/spaces/SharpMeow/umbilici/resolve/main/data/lines.json
+Open a scan in a given mode and height: https://sharpmeow-umbilici.static.hf.space/?mode=scan&scan=PHerc0191&z=10400
+Page source and build scripts: https://huggingface.co/spaces/SharpMeow/umbilici/tree/main
+```

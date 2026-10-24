@@ -161,6 +161,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `prclock` | none | `villapr.cmd_prclock` (in `kit/villapr.py`) | [villapr](villapr.md) | days left before villa's PR time limits close each of a person's open PRs |
 | `prtext` | none | `villapr.cmd_prtext` (in `kit/villapr.py`) | [villapr](villapr.md) | check a villa PR or issue body against villa's template before posting |
 | `releases` | `add`, `render`, `check`, `list`, `pin`, `unpin` | `releases.run` (in `kit/releases.py`) | [releases](releases.md) | the list of tools released from private work, and the README section made from it |
+| `spaceconnect` | `render`, `check`, `run`, `new` | `spaceconnect.run` (in `kit/spaceconnect.py`) | [spaceconnect](spaceconnect.md) | each Space's Connect your tool panel: render it from connect.json, check every Space has a current one |
 | `leaderboard` | `render`, `check` | `leaderboard.run` (in `kit/leaderboard.py`) | [leaderboard](leaderboard.md) | the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json |
 | `run` | `init`, `status`, `cost`, `record`, `check`, `list` | `cmd_run` | [run-ledger](run-ledger.md) | local experiment ledger (experiments/, gitignored) |
 | `run` | `local`, `backfill` | `cmd_run` | [run-local](run-local.md) | `local`: run a local command and log wall time, CPU time and electricity cost; `backfill`: add estimated local-run costs from a JSON list of logged durations |
