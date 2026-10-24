@@ -81,21 +81,21 @@ class TestCache(unittest.TestCase):
         return (lambda p: str(p) in d), (lambda p: d[str(p)])
 
     def test_order(self):
-        env = {"HOME": "/home/u"}
+        env = {"HOME": "/opt/u"}
         exists, read = self.files({})
-        self.assertEqual(doctor.vc3d_cache_root(env, exists, read)[0], Path("/home/u/.VC3D/remote_cache"))
+        self.assertEqual(doctor.vc3d_cache_root(env, exists, read)[0], Path("/opt/u/.VC3D/remote_cache"))
         exists, read = self.files({"/ephemeral": ""})
         self.assertEqual(doctor.vc3d_cache_root(env, exists, read)[0], Path("/ephemeral/remote_cache"))
         exists, read = self.files({"/volpkgs": "", "/ephemeral": ""})
         self.assertEqual(doctor.vc3d_cache_root(env, exists, read)[0], Path("/volpkgs/remote_cache"))
         ini = "[perf]\nremote_cache_dir=/wrong\n[viewer]\n; a comment\nremote_cache_dir = \"/data/vc cache\"\n"
-        exists, read = self.files({"/volpkgs": "", "/home/u/.VC3D/VC3D.ini": ini})
+        exists, read = self.files({"/volpkgs": "", "/opt/u/.VC3D/VC3D.ini": ini})
         root, how = doctor.vc3d_cache_root(env, exists, read)
         self.assertEqual(root, Path("/data/vc cache"))
         self.assertIn("VC3D.ini", how)
         conf = {"/cfg/cache.json": json.dumps({"version": 1, "root": "/fast/cache"}), "/cfg/VC3D.ini": ini}
         exists, read = self.files(conf)
-        self.assertEqual(doctor.vc3d_cache_root({"HOME": "/home/u", "VC3D_CONFIG_DIR": "/cfg"}, exists, read)[0],
+        self.assertEqual(doctor.vc3d_cache_root({"HOME": "/opt/u", "VC3D_CONFIG_DIR": "/cfg"}, exists, read)[0],
                          Path("/fast/cache"))
 
     def test_bad_cache_json_fails(self):

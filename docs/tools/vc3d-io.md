@@ -136,7 +136,7 @@ Module constants: `KINDS` (kind to `array` type code and bytes per sample), `LIT
 | Input | Format | Notes |
 | --- | --- | --- |
 | TIFF | Classic (magic 42) or BigTIFF (43), either byte order; one sample per pixel; bits and sample format 8, 16, 32 unsigned or signed, 32 or 64 float; strips or tiles; compression 1, 5, 8, 32946 or 32773; predictor 1, 2 or 3 (3 on floats only) | VC3D layer TIFFs (`vc_render_tifxyz`), tifxyz `x.tif`, `y.tif`, `z.tif` (float32, including the catalog's BigTIFF grids with LZW and predictor 3), villa's ink maps. The whole file is read into memory |
-| `.npy` | Format version 1 or later, C order, 2-D or 3-D | `scripts/vc3d/torchscript_infer.py` and v8in write maps this way |
+| `.npy` | Format version 1 or later, C order, 2-D or 3-D | What `numpy.save` writes for a 2-D or 3-D array |
 | zarr v2 array | A folder with `.zarray`: C order, no filters, `dimension_separator` `.` (default) or `/`, compressor none, `zlib`, `gzip`, or any numcodecs id | Local folders only |
 | zarr v3 array | A folder with `zarr.json`, `node_type` `array`: data types `uint8` to `float64`, chunk key encoding `default` (`c/` and `/`) or `v2`, codecs `bytes`, `gzip`, `zstd`, `blosc`, `lz4`, and `transpose` in C order; fill value a number, null, or `"NaN"`, `"Infinity"`, `"-Infinity"` | `sharding_indexed`, `volcomp` and other codecs are refused; `transpose` is accepted only in C order (`"C"` or 0, 1, 2), any other order is refused |
 | OME-Zarr group | A folder with `.zattrs` or `zarr.json` naming `multiscales` datasets, or digit-named level folders | Levels are listed finest first as the metadata gives them |
