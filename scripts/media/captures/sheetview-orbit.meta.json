@@ -1,0 +1,24 @@
+{
+  "label": "Real data render",
+  "release_id": null,
+  "alt": "The hosted Neuroglancer viewer, black background, with one mesh layer named sheet: a piece of papyrus sheet about 7 by 10 mm, shaded with the CT values on its surface, gray with dark patches and fine horizontal fibers. The camera swings slowly left and right and tips a little, so the sheet's gentle bends show as it turns.",
+  "caption": "Real data render: kit sheetview turns PHerc0139 segment w045 (a 150 by 200 node crop of its tifxyz mesh) into a Neuroglancer mesh with the 2.399 um CT sampled onto each vertex (mean over plus or minus 4 voxels along the normal, level 1), shown in the hosted viewer. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "2.399 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w045 (20260126000000-w045_2026012619)",
+    "volume": "20260102150214"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260126000000-w045_2026012619/mesh/20260126000000-on-20260102150214-2.399um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/"
+  ],
+  "still_caption": "Real data render: kit sheetview's mesh of PHerc0139 segment w045 in the hosted Neuroglancer, the 2.399 um CT sampled onto its vertices (mean over plus or minus 4 voxels along the normal). CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "still_alts": {
+    "face": "The hosted Neuroglancer viewer showing one mesh layer, a nearly rectangular piece of papyrus sheet seen face on, shaded with the CT values on its surface: gray with dark patches and fine horizontal fibers.",
+    "tilt": "The same sheet in Neuroglancer turned about 35 degrees and tipped, so its left edge looks longer than its right and its gentle bends show."
+  }
+}
