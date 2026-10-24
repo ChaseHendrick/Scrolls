@@ -9,12 +9,13 @@
   "PHerc1447": "w058 and w060: held out from every released reader except v8in-1447, which fine-tuned on both (training/configs/loo_w062.json at 2bf9f42). Neither is in the label lists of ink_9um, v8in, d9v2 or Reader v2, in the ink dataset behind Hecate (it has no PHerc1447 folder) or in the canonical trainer's committed list. w062's labels are not released. See docs/logs/2026-10-16-reader-exposure.md"
  },
  "held_out_by_reader": {
-  "about": "Per reader family, whether each test group was outside its training data, in one word, for python -m kit leaderboard. The reasons and sources are in held_out above; keep the two in step. A row for a family with no status here fails kit leaderboard check.",
+  "about": "Per reader family, whether each test group was outside its training data, in one word, for python -m kit leaderboard and python -m kit integrity. The reasons and sources are in held_out above and in docs/logs/2026-10-16-reader-exposure.md; keep the two in step. A row for a family with no status here fails kit leaderboard check.",
   "w045": {
    "v8in": "held out",
    "ink_9um": "not held out",
    "d9v2": "not held out",
-   "Reader v2": "not held out"
+   "Reader v2": "not held out",
+   "Hecate": "not held out"
   },
   "PHerc0841": {
    "ink_9um": "held out",
@@ -10560,6 +10561,65 @@
     "32": 6.315
    },
    "tiles_per_s_b300": 107.0
+  },
+  {
+   "date": "2026-10-22",
+   "source": "docs/strokenet.md#the-two-density-score",
+   "evidence": "Not published here: the run's report; the numbers below are copied from it",
+   "claim": "Model output on 11 public PHerc0500P2 segments with ink_9um maps, against text and blank labels made by a fixed rule from the team's 2.215 um new_canon_autoresearch_recipe ink map of each segment (model output, not human labels), read once under a preregistration frozen before any test map existed",
+   "score": "two-density: s = z(logit d48) + 0.25 z(logit d128), z within each segment over every scored 48 px label; kit/strokenet.py two_density_analyze",
+   "run": "not published",
+   "claim_wording": "ahead of ink density inside segments on PHerc0500P2 with ink_9um",
+   "verdict": "ahead (seed 42, primary): lower 95 % bound of the mean within-segment AUC difference above 0, both controls passed",
+   "segments": 11,
+   "labels": {
+    "text": 62220,
+    "blank": 6468
+   },
+   "reader_exposure": "ink_9um's label dataset lists no PHerc0500P2 segment (S7, docs/logs/2026-10-16-reader-exposure.md)",
+   "seed42_primary": {
+    "mean_within_segment_d": 0.04,
+    "d_ci95": [
+     0.028,
+     0.05
+    ],
+    "within_segment_auc_s": 0.701,
+    "within_segment_auc_density": 0.662,
+    "segments_s_above_density": "11 of 11",
+    "per_segment_gain": {
+     "min": 0.01,
+     "median": 0.029,
+     "max": 0.104
+    },
+    "controls": {
+     "reverse_depth_within_auc_s": {
+      "value": 0.574,
+      "rule": "at least 0.10 below 0.701",
+      "pass": true
+     },
+     "shifted_labels_median_of_20_within_auc_s": {
+      "value": 0.507,
+      "rule": "at least 0.10 below 0.701",
+      "pass": true
+     }
+    }
+   },
+   "seed43_descriptive": {
+    "mean_within_segment_d": 0.048,
+    "segments_s_above_density": "11 of 11",
+    "controls": {
+     "reverse_depth": {
+      "pass": false
+     }
+    }
+   },
+   "limits": [
+    "ink_9um reads this scroll weakly: density's mean within-segment AUC 0.66, below 0.5 on one segment; a gain over a weak baseline says nothing about strong readers",
+    "one scroll, one reader for the verdict, a single read",
+    "three test pairs share papyrus, so the interval is likely too narrow",
+    "the 128 px window also reads the map's footprint; untested",
+    "the weights were set on maps of other segments"
+   ]
   }
  ],
  "stackcheck_checks": [
@@ -11272,6 +11332,192 @@
    },
    "checks": "bucket runs of the note's two commands gave reports and masks identical to runs on local copies of the same files; tests/test_stackcheck.py plants each defect in a synthetic spiral",
    "limits": "one scroll; the umbilicus is a published line; the ray checks use rays that cross each segment of a pair once; neighbours along a normal are searched up to 600 um at about the same height and angle; the innermost and outermost segments get no missing-sector check"
+  }
+ ],
+ "ink_lens_checks": [
+  {
+   "date": "2026-10-20",
+   "source": "scripts/experiments/2026-10-20-ink-lens-gate/results.json",
+   "prereg": "docs/prereg/2026-10-20-ink-lens-gate.md",
+   "tool": "spaces/ink-lens (tools/check_gate.py)",
+   "claim": "Model output: d9v2 with three depth windows on the three PHerc0841 640 px crops (held out from d9v2 and ink_9um, not from Hecate); development windows chosen with the labels, not a blind test",
+   "settings": "d9v2_ft-012000.pth (sha256 50d2ad0e...a9f966), windows 0, 2, 4 of the middle 21 layers, villa 8aa507c12 flat inference, normalisation batched (engine.robust_torch), overlap 0.5, hann, CPU fp32; kit.auc inner 64",
+   "rule": "ink-lens-gate-v1",
+   "crops": {
+    "0841-w00": {
+     "status": "ink",
+     "excess": 15.4345,
+     "threshold": 0.527333,
+     "ink_kept_share": 0.53927,
+     "background_kept_share": 0.03108,
+     "auc_forward_3win": 0.9147,
+     "auc_reverse_3win": 0.5955,
+     "swapped_status": "none",
+     "swapped_excess": 0.0
+    },
+    "0841-ag896": {
+     "status": "ink",
+     "excess": 21.1552,
+     "threshold": 0.490485,
+     "ink_kept_share": 0.52252,
+     "background_kept_share": 0.07064,
+     "auc_forward_3win": 0.8299,
+     "auc_reverse_3win": 0.5606,
+     "swapped_status": "none",
+     "swapped_excess": 0.0
+    },
+    "0841-ag405": {
+     "status": "ink",
+     "excess": 17.6333,
+     "threshold": 0.552445,
+     "ink_kept_share": 0.49663,
+     "background_kept_share": 0.07073,
+     "auc_forward_3win": 0.8392,
+     "auc_reverse_3win": 0.6842,
+     "swapped_status": "none",
+     "swapped_excess": 0.0
+    }
+   },
+   "no_papyrus": "w00 rows and columns 0 to 640: refused by the engine (all zero), so the gate itself was not exercised off the papyrus",
+   "pass": {
+    "labeled_crops": true,
+    "swapped": true,
+    "no_papyrus": true,
+    "all": true
+   }
+  }
+ ],
+ "text_restoration_checks": [
+  {
+   "date": "2026-10-22",
+   "source": "docs/prereg/2026-10-22-greek-restoration.md",
+   "evidence": "docs/evidence/greek-restoration-20261022/score.json",
+   "claim": "Model output: hosted text models and an order-8 Kneser-Ney letter model restoring hidden letters in the second half of Philodemus, De Musica (First1KGreek tlg1595.tlg221, Kemke), public edited text, under a rule frozen before any request; no scroll data",
+   "claim_wording": "no hosted model beats the letter model; all three do clearly worse",
+   "verdict": "FAIL",
+   "rule": "beats KN: parsed share >= 0.90, gap letter accuracy >= KN + 0.05, one-sided letter-weighted bootstrap lower bound (20,000 resamples, seed 0, quantile 0.05/3) above 0; memorised: probe letter accuracy >= 0.50",
+   "items": {
+    "gaps": 190,
+    "gaps_per_length": 38,
+    "gap_lengths": [
+     1,
+     2,
+     3,
+     5,
+     8
+    ],
+    "probes": 40,
+    "window_symbols": 150,
+    "seed": 20261022,
+    "test_letters": 29095
+   },
+   "requests": 690,
+   "replies": 690,
+   "priced_usd": 0.066,
+   "cap_usd": 1.2,
+   "kn": {
+    "model": "order-8 interpolated modified Kneser-Ney letter model, general (16 million symbols of Perseus and First1KGreek) mixed 0.728 and 0.272 with Volumina Rhetorica (tlg1595.tlg370); beam 256, 24 symbols of right context",
+    "letter_acc": 0.331,
+    "probe_acc": 0.0814,
+    "acc_by_gap_length": {
+     "1": 0.8947,
+     "2": 0.6711,
+     "3": 0.5,
+     "5": 0.3,
+     "8": 0.1316
+    },
+    "exact_by_gap_length": {
+     "1": 0.8947,
+     "2": 0.6053,
+     "3": 0.3158,
+     "5": 0.1053,
+     "8": 0.0
+    }
+   },
+   "hosted": [
+    {
+     "model": "deepseek-ai/DeepSeek-V3-0324:deepinfra",
+     "letter_acc": 0.1814,
+     "diff_from_kn": -0.1496,
+     "diff_lower_one_sided": -0.2064,
+     "parsed_share": 1.0,
+     "probe_acc": 0.0845,
+     "acc_by_gap_length": {
+      "1": 0.4474,
+      "2": 0.2895,
+      "3": 0.2719,
+      "5": 0.1368,
+      "8": 0.1151
+     },
+     "exact_by_gap_length": {
+      "1": 0.4474,
+      "2": 0.2105,
+      "3": 0.0789,
+      "5": 0.0,
+      "8": 0.0
+     }
+    },
+    {
+     "model": "moonshotai/Kimi-K2-Instruct-0905:novita",
+     "letter_acc": 0.1814,
+     "diff_from_kn": -0.1496,
+     "diff_lower_one_sided": -0.2073,
+     "parsed_share": 0.9217,
+     "probe_acc": 0.0789,
+     "acc_by_gap_length": {
+      "1": 0.4474,
+      "2": 0.3289,
+      "3": 0.1667,
+      "5": 0.1895,
+      "8": 0.1118
+     },
+     "exact_by_gap_length": {
+      "1": 0.3947,
+      "2": 0.1579,
+      "3": 0.0263,
+      "5": 0.0,
+      "8": 0.0
+     }
+    },
+    {
+     "model": "Qwen/Qwen3-235B-A22B-Instruct-2507:deepinfra",
+     "letter_acc": 0.1177,
+     "diff_from_kn": -0.2133,
+     "diff_lower_one_sided": -0.2748,
+     "parsed_share": 1.0,
+     "probe_acc": 0.0775,
+     "acc_by_gap_length": {
+      "1": 0.3421,
+      "2": 0.1184,
+      "3": 0.1754,
+      "5": 0.1211,
+      "8": 0.0658
+     },
+     "exact_by_gap_length": {
+      "1": 0.3421,
+      "2": 0.0263,
+      "3": 0.0263,
+      "5": 0.0,
+      "8": 0.0
+     }
+    }
+   ],
+   "settings": "Hugging Face router, temperature 0, at most 48 output tokens, provider pinned in the model name, one prompt per task",
+   "pins": {
+    "manifest.json": "ed544db8e3faaf0642217589d0dba44bac5466940145a5846747a82f6f401991",
+    "key.json": "177c43b61f77734da5fe88784a75dc268f3404e43af8dbe6e64f97cb93a35405",
+    "baseline.json": "99175529f2e39545c8e321aa3c3aa03904bfa9ed0cdaa0cf0ca3d8c5c63b7e0a",
+    "corpus": "5c7c4684b7a4515ebd8840b963757b5a7680cfd2c986375a487b3d66bdb594bf"
+   },
+   "reproduced": "2026-10-22: score.json rescored byte-identical from the frozen replies; corpus and the three prep files rebuilt byte-identical from the pinned clones with kit/greekfill.py",
+   "disclosure": "the test half was scored once before (bits per symbol, 16 Oct 2026) in an earlier unpublished letter-model evaluation whose frozen KN settings are reused; the hosted models may have seen De Musica in training (probe accuracy about 0.08 for every arm)",
+   "limits": [
+    "one text, one editor's normalisation",
+    "edited text, not papyrus damage patterns, with word spaces that papyri lack",
+    "three hosted models, one prompt each, one run",
+    "letter accuracy does not reward near misses",
+    "KN always returns exactly L letters and one of its components was trained on another Philodemus text"
+   ]
   }
  ]
 }

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# One command, on an Apple Silicon Mac: do the ink models find ink on labelled surfaces?
+# One command, on an Apple Silicon Mac: do the ink models find ink on labeled surfaces?
 # PHerc0139 segment w045 has published ink labels and is not in v8in's training set (its patch
 # pack lists w033, w035, w041, w044). ink_9um trained on w045's 2.4 um render, so for ink_9um
 # it is a cross-scan check on a training surface; PHerc0841 (SEGMENT=0841-*) is held out from
 # both. Runs, on the Mac GPU:
 #   - ink_9um seeds 42 and 43 through villa PR #1865 (MPS), both depth directions;
 #   - v8in (YoussefMoNader/ink-8um-v8in), first on a crop on CPU and MPS (kit verify: same map?),
-#     then over the labelled part of the segment, both directions;
+#     then over the labeled part of the segment, both directions;
 # and scores every map with kit auc (against the labels, reverse direction as the control) and
 # kit rowscore. Paste the summary it prints. See docs/mac.md.
 #
@@ -14,13 +14,13 @@
 #   SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh   # the same test on PHerc0841, a scroll neither
 #                                              # model saw (also 0841-ag896, 0841-ag405)
 #   QUICK=1 bash scripts/mac-w045.sh           # under an hour: v8in on the 640 px crop only (densest
-#                                              # labelled text), every model scored on that same crop
+#                                              # labeled text), every model scored on that same crop
 #   MODEL=v8in-1447 SEGMENT=0841-w00 QUICK=1 bash scripts/mac-w045.sh   # Youssef's PHerc1447 fine-tune
 #   V8IN_HOURS=2 bash scripts/mac-w045.sh      # time budget for the full v8in pass (picks the stride)
 #   V8IN_STRIDE=21 bash scripts/mac-w045.sh    # or set the stride (21 is v8in's own default)
 #   V8IN_FP16=1 bash scripts/mac-w045.sh       # fp16 on MPS (about 1.4x), checked once against fp32 on the GPU
 #   QUICK_REV_STRIDE=21 ...                    # reverse control at full density (default 42: 4x fewer tiles)
-#   V8IN_REGION=full bash scripts/mac-w045.sh  # whole segment, not just the labelled box (about 1.5x the tiles)
+#   V8IN_REGION=full bash scripts/mac-w045.sh  # whole segment, not just the labeled box (about 1.5x the tiles)
 #   V8IN_BATCH=4 bash scripts/mac-w045.sh      # tiles per batch (default from memory: fp32 batch 8 needs about 10 GB)
 #
 # Needs: git, uv (brew install uv), about 6 GB free in $WORK. Shares $WORK with mac-verify.sh.
@@ -51,8 +51,8 @@ case "$MODEL" in
 esac
 MTAG="${MODEL//-/}"                   # v8in, v8in1447: map, log and result names
 V8IN="$WORK/checkpoints/${V8IN_REPO#*/}"
-# SEGMENT picks the labelled test segment. CROP: 640 px fully on the surface with the densest
-# labelled ink (y0 y1 x0 x1), found on the published labels. PHerc0841 is in neither model's
+# SEGMENT picks the labeled test segment. CROP: 640 px fully on the surface with the densest
+# labeled ink (y0 y1 x0 x1), found on the published labels. PHerc0841 is in neither model's
 # training set (Bullo27's unseen-scroll calibration), so it is the harder test.
 SEGMENT="${SEGMENT:-w045}"
 case "$SEGMENT" in

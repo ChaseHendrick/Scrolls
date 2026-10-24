@@ -1,0 +1,32 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "phantom-viewer-demo",
+  "label": "Synthetic demo",
+  "alt": "Panels from the phantom demo: a synthetic surface volume, its ink truth and the viewer's maps.",
+  "caption": "Synthetic demo: panels from the phantom demo (scripts/phantom-demo.sh) on a made-up volume; predates the 7 October tie fix, so not evidence.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [
+    "scripts/phantom-demo.sh (docs/phantom-and-viewer.md)"
+  ],
+  "outputs": [
+    {
+      "file": "phantom-viewer-demo.png",
+      "bytes": 349356,
+      "sha256": "c069a7da11d84992c9c0ba6d847b84760baddadf8a7c1bc667917eeffc95a880",
+      "width": 1304,
+      "height": 256,
+      "kind": "legacy",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-14",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "8571db5"
+  },
+  "command": "bash scripts/phantom-demo.sh, panels saved from its output (docs/logs/2026-10-07-phantom-demo.md); predates scripts/media."
+}

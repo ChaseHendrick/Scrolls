@@ -22,9 +22,9 @@
 
 ## What it does
 
-The Greek letter reader ([letterread](letterread.md)) needs numpy, a 6 MB weights file and its own code to agree before any read means anything. This command checks that, with nothing to configure and no image of your own. It draws four lines of Greek capitals, each line the 24 letters in an order fixed by a seed, 32 px tall, with the skeleton hand of the training data (the centreline strokes of `scripts/letters/letterdata.py`, copied into `kit/letterdemo.py` and held equal to it by a test), blurs them and sets them on a noisy ground that looks like a clean ink map. It also makes an image of the same kind of ground with no letters.
+Scroll Text Reader's Greek backend ([letterread](letterread.md)) needs numpy, a 6 MB weights file and its own code to agree before any read means anything. This command checks that, with nothing to configure and no image of your own. It draws four lines of Greek capitals, each line the 24 letters in an order fixed by a seed, 32 px tall, with the skeleton hand of the training data (the centerline strokes of `scripts/letters/letterdata.py`, copied into `kit/letterdemo.py` and held equal to it by a test), blurs them and sets them on a noisy ground that looks like a clean ink map. It also makes an image of the same kind of ground with no letters.
 
-It reads both images with the reader at the letter height it drew, with the reader's usual four null copies (shuffled and phase-randomised copies of the image, read the same way), and judges the two results under a fixed rule (`RULE`): the text page's control status must be `strong`, the character error of every decoded letter against the 96 drawn must be at most 0.25 (`MAX_CER`), and the noise image's status must be `none` or `too_few`. It prints DEMO PASS or DEMO FAIL with the numbers and exits 0 or 1.
+It reads both images with the reader at the letter height it drew, with the reader's usual four null copies (shuffled and phase-randomized copies of the image, read the same way), and judges the two results under a fixed rule (`RULE`): the text page's control status must be `strong`, the character error of every decoded letter against the 96 drawn must be at most 0.25 (`MAX_CER`), and the noise image's status must be `none` or `too_few`. It prints DEMO PASS or DEMO FAIL with the numbers and exits 0 or 1.
 
 A pass shows that the install reads clean letters in the hand the model was trained on, and that its controls stop noise. It says nothing about how well the reader reads a scroll: the letters are drawn by the training hand on a clean ground, with known truth. Every string the reader returns, here as anywhere, is Model output: letter hypotheses, not a reading.
 
@@ -116,9 +116,9 @@ print(out["passed"], out["numbers"]["text"]["character_error"])
 | `character_error(res, truth)` | float | Nothing of its own | Edit distance between all decoded letters (joined in reading order) and all drawn letters, over the number drawn |
 | `decoded(res)` | list of str, one per line | Nothing of its own | Every decoded letter at any confidence, lines sorted by column, then row |
 | `page_lines(seed=SEED, n_lines=N_LINES)` | list of str | Nothing | Each line is a permutation of the 24 capitals drawn from `numpy.random.default_rng(seed)` |
-| `render_page(lines, h=LETTER_PX, seed=SEED)` | `(image, truth)`: float32 2D array in 0..1, ink bright; and per line `{"text", "y", "x"}` (centre row and each letter's left edge, page pixels) | `KeyError` for a letter with no skeleton | The same lines, `h` and seed give the same image |
+| `render_page(lines, h=LETTER_PX, seed=SEED)` | `(image, truth)`: float32 2D array in 0..1, ink bright; and per line `{"text", "y", "x"}` (center row and each letter's left edge, page pixels) | `KeyError` for a letter with no skeleton | The same lines, `h` and seed give the same image |
 | `noise_page(shape, h=LETTER_PX, seed=NOISE_SEED)` | float32 2D array in 0..1 | Nothing | The ground alone: the demo's known-bad input |
-| `ground(shape, h, rng)` | float32 2D array | Nothing | Blotches, fibre streaks along the lines and grain, before clipping |
+| `ground(shape, h, rng)` | float32 2D array | Nothing | Blotches, fiber streaks along the lines and grain, before clipping |
 | `draw_segments(shape, segs, width)` | float32 2D array of ink coverage, 0 to 1 | Nothing | Round-pen strokes `width` px wide along `((x, y), (x, y))` segments, anti-aliased by distance |
 | `blur(a, sigma)` | array | Nothing | Separable Gaussian with reflected edges; returns `a` unchanged for `sigma` at most 0.05 |
 | `report(out)` | str | `KeyError` for a dict that is not `run()`'s | The printed report, ending with DEMO PASS or DEMO FAIL and the model-output note |
@@ -152,12 +152,12 @@ With `--json`, one object on stdout:
 | `numbers.noise.status`, `.letters_kept`, `.null_letters_kept`, `.ratio` | as for the text page | The noise image's controls |
 | `numbers.checks.text_status`, `.character_error`, `.noise_status` | bool | Each part of the rule |
 | `numbers.max_cer`, `numbers.rule` | float, str | 0.25, and the rule in words |
-| `truth` | list of objects | Per drawn line `text`, `y` (centre row) and `x` (each letter's left edge), page pixels |
+| `truth` | list of objects | Per drawn line `text`, `y` (center row) and `x` (each letter's left edge), page pixels |
 | `decoded` | list of str | Every decoded letter per line, any confidence, in reading order |
 | `weights` | object | `name` (the released name, or null), `file` (file name only), `sha256`, `format` (`linenet-v1`) |
 | `drawing` | object | `seed` (20261014), `noise_seed` (20261015), `letter_px` (32), `lines` (4), `pitch` (2.0), `gap` (0.3), `pen` (0.14), `shape` ([301, 1006]) and `hand` |
 
-`--out DIR` writes `DIR/demo.json` with the same fields plus `demo` (`kit.letterdemo`), `text_result` and `noise_result` (the reader's full results, as [letterread](letterread.md) describes them; no local folder is recorded), and, with Pillow, `DIR/demo-page.png` (the text page as 8-bit grey) and `DIR/demo-overlay.png` (the reader's overlay of the text page). Progress and `wrote FILE` lines go to stderr unless `--quiet`.
+`--out DIR` writes `DIR/demo.json` with the same fields plus `demo` (`kit.letterdemo`), `text_result` and `noise_result` (the reader's full results, as [letterread](letterread.md) describes them; no local folder is recorded), and, with Pillow, `DIR/demo-page.png` (the text page as 8-bit gray) and `DIR/demo-overlay.png` (the reader's overlay of the text page). Progress and `wrote FILE` lines go to stderr unless `--quiet`.
 
 | Exit code | Meaning |
 | --- | --- |
@@ -183,7 +183,7 @@ With `--json`, one object on stdout:
 ## How it works
 
 1. **The text.** `page_lines()` draws four permutations of the 24 capitals (`ALPHABET`, `ΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡϹΤΥΦΧΨΩ`, with the lunate sigma U+03F9 that the released weights write for every sigma) from `numpy.random.default_rng(SEED)`, `SEED = 20261014`.
-2. **The page.** `render_page()` places line i with its top at (1.2 + 2i) letter heights. Each letter takes one variant of its skeleton (`SKELETONS`, centrelines in letter units) chosen by `default_rng(SEED + 1)`, a baseline wobble of normal(0, 0.02) letter heights, and an advance of its width plus `PEN + GAP` = 0.44 letter heights. Strokes are drawn as a round pen `PEN = 0.14` letter heights wide, anti-aliased by distance (`draw_segments`), blurred with sigma 0.05 letter heights, and added at 0.7 to a ground of 0.12 plus 0.05 times blotches (Gaussian noise blurred by 0.3 letter heights), 0.04 times streaks along the lines and 0.05 times grain, then clipped to 0..1 (float32).
+2. **The page.** `render_page()` places line i with its top at (1.2 + 2i) letter heights. Each letter takes one variant of its skeleton (`SKELETONS`, centerlines in letter units) chosen by `default_rng(SEED + 1)`, a baseline wobble of normal(0, 0.02) letter heights, and an advance of its width plus `PEN + GAP` = 0.44 letter heights. Strokes are drawn as a round pen `PEN = 0.14` letter heights wide, anti-aliased by distance (`draw_segments`), blurred with sigma 0.05 letter heights, and added at 0.7 to a ground of 0.12 plus 0.05 times blotches (Gaussian noise blurred by 0.3 letter heights), 0.04 times streaks along the lines and 0.05 times grain, then clipped to 0..1 (float32).
 3. **The noise.** `noise_page()` is the ground alone from `default_rng(NOISE_SEED)`, `NOISE_SEED = 20261015`, the same shape as the page.
 4. **The reads.** Both images are read by `letterread.read()` at `letter_px=32` with its defaults: four nulls, seed 0, confidence floor set from the nulls, columns `auto`, deskew up to 6 degrees, and `orientation=False`.
 5. **The rule.** `judge()` takes every decoded letter at any confidence (not only those above the floor), lines in reading order (column, then row), joins them and divides the edit distance to the 96 drawn letters by 96. It passes when the text page's status is in `TEXT_PASS = ("strong",)`, that error is at most `MAX_CER = 0.25`, and the noise image's status is in `NOISE_PASS = ("none", "too_few")`. `strong` means more than `STRONG_FACTOR` (3) times the largest null and at least `MIN_LETTERS` (10) letters, from `kit/letterread.py`.

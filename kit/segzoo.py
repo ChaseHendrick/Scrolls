@@ -2,7 +2,7 @@
 
 Chase asked on 17 October 2026 for nnU-Net, NVIDIA Auto3DSeg (MONAI), MedSAM2, DINOv3, MedNeXt, Swin UNETR,
 SegFormer and SS2DNet / Mamba-based models "where needed" in the tools. This module is the one list of those
-families: licence of the code and of the weights, whether the weights are gated, which devices run them, the
+families: license of the code and of the weights, whether the weights are gated, which devices run them, the
 pinned package, the place in our tools a family could beat what is there now, and the published evidence for
 or against it. The torch code that builds and runs the models lives in scripts/segzoo/; this module stays
 standard library, so `python -m kit segzoo list` works on any machine.
@@ -16,7 +16,7 @@ standard library, so `python -m kit segzoo list` works on any machine.
 Every fact in REGISTRY carries its source and the date it was read (labels as in docs/NOVELTY.md). A family's
 `release_ok` says whether its weights may ship in a released tool: the prize terms ask for "open source under a
 permissive license" (https://scrollprize.org/prizes, read 17 Oct 2026), so weights for research use only, or under
-a custom licence, can be measured privately but not released (Interpretation).
+a custom license, can be measured privately but not released (Interpretation).
 """
 
 import hashlib
@@ -29,7 +29,7 @@ from pathlib import Path
 
 READ = "2026-10-17"
 
-# Each family: id, name, kind, dims, packages (import name -> pip pin), code and weights licences,
+# Each family: id, name, kind, dims, packages (import name -> pip pin), code and weights licenses,
 # gated, release_ok, devices, weights, fit (where it plugs in here), evidence, verdict, sources.
 REGISTRY = [
     {
@@ -102,7 +102,7 @@ REGISTRY = [
         "dims": "2D, 3D",
         "packages": {"monai": "monai==1.6.1"},
         "licence_code": "Apache-2.0",
-        "licence_weights": "self-supervised model_swinvit.pt: no licence stated",
+        "licence_weights": "self-supervised model_swinvit.pt: no license stated",
         "gated": False,
         "release_ok": True,
         "devices": "CUDA; CPU; input sides must divide by 32",
@@ -149,7 +149,7 @@ REGISTRY = [
         "devices": "CUDA; CPU; MPS",
         "weights": "nvidia/mit-b0 ... nvidia/mit-b5 (ImageNet); random init needs no weights",
         "fit": "A 2.5D ink head with depth layers as channels, the decoder of the Kaggle 2023 ink winner; "
-               "nnUNetTrainer_SZSegFormer for 2D configurations. Research only: its licence blocks a released tool",
+               "nnUNetTrainer_SZSegFormer for 2D configurations. Research only: its license blocks a released tool",
         "evidence": "Kaggle Ink Detection 2023, 1st place: 3D encoders flattened over depth, then SegFormer b3/b5 "
                     "(Community report, github.com/ainatersol/Vesuvius-InkDetection). None against ink_9um or v8in",
         "verdict": "private benchmark",
@@ -171,7 +171,7 @@ REGISTRY = [
         "fit": "Frozen features with a small head for single letters, triage windows and per-slice ink "
                "(scripts/segzoo/segzoo_probe.py). Private only, and only after Chase has DINOv3 access on Hugging Face",
         "evidence": "Kaggle Surface Detection 2026: DINOv3 and MedDINOv3 lost (Community report). Frozen dinovol "
-                    "(the organisers' 3D DINO) failed both preregistered tests here (Model output)",
+                    "(the organizers' 3D DINO) failed both preregistered tests here (Model output)",
         "verdict": "private probe",
         "sources": ["https://github.com/facebookresearch/dinov3", "https://huggingface.co/facebook"],
     },
@@ -237,14 +237,14 @@ REGISTRY = [
         "kind": "architecture",
         "dims": "2D",
         "packages": {"torch": "torch>=2.1"},
-        "licence_code": "ours (repository licence); method from VMamba (MIT)",
+        "licence_code": "ours (repository license); method from VMamba (MIT)",
         "licence_weights": "none; trained here",
         "gated": False,
         "release_ok": True,
         "devices": "CPU, MPS and CUDA in pure PyTorch; mamba-ssm's CUDA kernel when installed",
         "weights": "none",
         "fit": "A Mamba-based 2D model that runs on the Mac: nnUNetTrainer_SZSS2D for 2D configurations "
-               "(triage windows, the centre finder's slices, 2.5D ink layers)",
+               "(triage windows, the Center Finder's slices, 2.5D ink layers)",
         "evidence": "SS2DNet (arXiv:2503.01306, nnUZoo): Dice within 0.02 of nnU-Net on six datasets at 5 to 20 "
                     "times the training time (Sourced fact). U-Mamba Bot within 0.3 Dice of its no-Mamba "
                     "ablation (nnU-Net Revisited, Sourced fact)",
@@ -325,6 +325,8 @@ def _case_id(name, channel_suffix=True):
 
 def fold_of(case, folds):
     """A case's fold from the sha256 of its id: fixed, independent of file order and machine."""
+    if type(folds) is not int or folds < 2:
+        raise ValueError("folds must be an integer of at least 2")
     return int(hashlib.sha256(case.encode()).hexdigest(), 16) % folds
 
 
@@ -334,16 +336,30 @@ def build_datalist(raw, folds=5, modality=None):
     Every case in imagesTr must have its label in labelsTr and every channel the dataset.json names; extra or
     missing files raise ValueError. Cases go to folds by fold_of, so Auto3DSeg and an nnU-Net run told the same
     split train on the same cases."""
+    # Check even an empty dataset before iterating, and before write_datalist creates any output.
+    fold_of("", folds)
     raw = Path(raw)
     meta_path = raw / "dataset.json"
     if not meta_path.is_file():
         raise ValueError(f"no dataset.json in {raw}")
     meta = json.loads(meta_path.read_text())
+    if not isinstance(meta, dict):
+        raise ValueError("dataset.json must contain an object")
     channels = meta.get("channel_names") or meta.get("modality")
     if not isinstance(channels, dict) or not channels:
         raise ValueError("dataset.json has no channel_names")
     n_ch = len(channels)
+    if set(channels) != {str(i) for i in range(n_ch)}:
+        raise ValueError("dataset.json channel_names keys must be consecutive integers starting at 0")
     ending = meta.get("file_ending")
+    if ending is not None and ending not in SUFFIXES:
+        raise ValueError(f"unsupported dataset file_ending {ending!r}; supported: {', '.join(SUFFIXES)}")
+    label_map = meta.get("labels", {})
+    if not isinstance(label_map, dict):
+        raise ValueError("dataset.json labels must be an object")
+    want = meta.get("numTraining")
+    if want is not None and (type(want) is not int or want < 1):
+        raise ValueError("dataset.json numTraining must be a positive integer")
     images, labels = raw / "imagesTr", raw / "labelsTr"
     if not images.is_dir() or not labels.is_dir():
         raise ValueError(f"{raw} needs imagesTr/ and labelsTr/")
@@ -356,18 +372,26 @@ def build_datalist(raw, folds=5, modality=None):
         case, ch = _case_id(p.name)
         if ch >= n_ch:
             raise ValueError(f"{p.name}: channel {ch} but dataset.json names {n_ch}")
-        cases.setdefault(case, {})[ch] = f"imagesTr/{p.name}"
+        chans = cases.setdefault(case, {})
+        if ch in chans:
+            raise ValueError(f"duplicate image for case {case!r} channel {ch}: {chans[ch]} and {p.name}")
+        chans[ch] = f"imagesTr/{p.name}"
     label_files = {}
     for p in sorted(labels.iterdir()):
         if p.name.startswith(".") or not p.is_file():
             continue
+        if ending and not p.name.endswith(ending):
+            raise ValueError(f"{p.name} does not end with the dataset's file_ending {ending!r}")
         case, _ = _case_id(p.name, channel_suffix=False)
+        if case in label_files:
+            raise ValueError(f"duplicate label for case {case!r}: {label_files[case]} and {p.name}")
         label_files[case] = f"labelsTr/{p.name}"
     missing = sorted(c for c in cases if c not in label_files)
     orphans = sorted(c for c in label_files if c not in cases)
     if missing or orphans:
         raise ValueError(f"cases without labels: {missing[:5]}; labels without images: {orphans[:5]}")
-    want = meta.get("numTraining")
+    if not cases:
+        raise ValueError("imagesTr contains no training cases")
     if isinstance(want, int) and want != len(cases):
         raise ValueError(f"dataset.json says numTraining {want} but imagesTr holds {len(cases)} cases")
     training = []
@@ -377,7 +401,6 @@ def build_datalist(raw, folds=5, modality=None):
             raise ValueError(f"case {case}: channels {sorted(chans)}, expected 0..{n_ch - 1}")
         image = chans[0] if n_ch == 1 else [chans[i] for i in range(n_ch)]
         training.append({"image": image, "label": label_files[case], "fold": fold_of(case, folds), "case": case})
-    label_map = meta.get("labels", {})
     ignore = label_map.get("ignore")
     mod = modality or ("CT" if any(str(v).upper() in ("CT", "CT_DATA") for v in channels.values()) else "MRI")
     datalist = {"training": training, "testing": []}

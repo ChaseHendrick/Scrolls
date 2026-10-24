@@ -1,0 +1,55 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-demo-v015",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.5's monitor following scripts/demo_synthetic.py, captured frame by frame from a live run (the run part at about 4 times real speed); stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-demo-v015.mp4",
+      "bytes": 1291547,
+      "sha256": "73357d647c1c6b3e88feb4f02c3e179e4d7b6a50247cd0291fe549941e4a1c92",
+      "width": 1280,
+      "height": 960,
+      "kind": "mp4",
+      "seconds": 17.58,
+      "frames": 211,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "monitor-demo-v015.gif",
+      "bytes": 1934986,
+      "sha256": "aa529dad7de018dc6fb55700700f50fabf0be5bfcf17edc6daceb7b1e5363ce2",
+      "width": 960,
+      "height": 720,
+      "kind": "gif",
+      "seconds": 17.58,
+      "frames": 82,
+      "settings": {
+        "width": 960,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "encode.py"
+    ],
+    "scripts_sha256": "ff071841598ae9b5a39e6967a61685c0c7268fef8450b1a7710039dfef7ed045",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python scripts/media/capture_web.py about:blank --out-dir FRAMES --actions scripts/media/captures/autopipeline-monitor.json --width 1280 --height 960 (started first; then, from the AutoPipeline 0.1.5 package folder, python scripts/demo_synthetic.py --out RUN with the run held 5 s after it writes plan.json, and python -m kit autopipeline monitor RUN/run --port 8793 once RUN/run/plan.json exists) && python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 960 --dither none --mp4 docs/assets/autopipeline/monitor-demo-v015.mp4 --gif docs/assets/autopipeline/monitor-demo-v015.gif --meta scripts/media/captures/autopipeline-monitor.meta.json"
+}

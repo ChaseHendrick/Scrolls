@@ -1,0 +1,78 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "stackcheck-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of one scroll's winding as a standing spiral strip cut into segments around a copper center post; one segment misses a sector whose torn edges glow ivory, and two neighboring windings touch at a copper glow.",
+  "caption": "Concept illustration: synthetic segments around a center line, with a missing sector and a touching pair marked. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": "stackcheck",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "stackcheck-hero.webp",
+      "bytes": 82284,
+      "sha256": "edb28fb765662f2c7e38712e23630ec7a9c4372aa5c62c07f2d3eecb690655ef",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "stackcheck-card.jpg",
+      "bytes": 117405,
+      "sha256": "f4d02042fd15f0090b734fb5f71bfead3807026386ffd827ebd842d1cc57d16b",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/stackcheck.json --out-dir docs/assets/stackcheck",
+  "recipe": {
+    "name": "stackcheck-hero",
+    "release_id": "stackcheck",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of one scroll's winding as a standing spiral strip cut into segments around a copper center post; one segment misses a sector whose torn edges glow ivory, and two neighboring windings touch at a copper glow.",
+    "caption": "Concept illustration: synthetic segments around a center line, with a missing sector and a touching pair marked. No scan data.",
+    "license": "Apache-2.0",
+    "seed": 4,
+    "scene": {
+      "kind": "procedural",
+      "name": "stackcheck",
+      "params": {
+        "key_power": 3.8
+      }
+    },
+    "grade": {
+      "duotone": 0.08,
+      "key": 0.42,
+      "rim": 0.08,
+      "vignette": 0.3,
+      "fade_right": 0.04,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "Segment stack check",
+      "subtitle": "Checks consecutive traced segments against the umbilicus from geometry alone: gaps, overlaps and order.",
+      "focus": [
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

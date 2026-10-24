@@ -1,6 +1,6 @@
-# fibertensor: a retired CPU ink reader built on fibre-orientation features
+# fibertensor: a retired CPU ink reader built on fiber-orientation features
 
-`python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fibre orientation) and brightness features of one labelled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun.
+`python -m kit fibertensor` trains a tiny numpy model on structure-tensor (fiber orientation) and brightness features of one labeled surface-volume window and writes ink maps for others; it was a measured null on public data and is kept so lane D can be rerun.
 
 | Field | Value |
 | --- | --- |
@@ -11,7 +11,7 @@
 | Run | `python -m kit fibertensor train`, `python -m kit fibertensor predict`, `from kit import fibertensor` |
 | Code | `kit/fibertensor.py`, `kit/cli.py` (`cmd_fibertensor`), `kit/auc.py` (`labels_on_map`, `label_grid`, `_levels`), `kit/layers.py` (`_zarr`), `kit/verify.py` (`_numpy`, `VerifyError`) |
 | Tests | `tests/test_fibertensor.py` |
-| Needs | Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), zarr (3.x on Python 3.11 or newer) to read the volume and labels, tifffile for `predict`. Data: a 9 um surface volume zarr of a labelled public segment and its label folder |
+| Needs | Python 3.10 or newer, numpy, scipy (`scipy.ndimage`), zarr (3.x on Python 3.11 or newer) to read the volume and labels, tifffile for `predict`. Data: a 9 um surface volume zarr of a labeled public segment and its label folder |
 | Runs on | Any CPU. On a 640 px crop of 28 layers, `train` took 33 s and `predict` 11 s with one BLAS thread (measured 2026-10-16, 4-core Xeon cloud container under load, synthetic data); the lane D log gives about 8 s per pair on Chase's Mac |
 | Network | None |
 | Writes | `train`: the model at `-o` (numpy adds `.npz` when the name lacks it). `predict`: a float32 TIFF map at `-o`. Both overwrite and print JSON |
@@ -23,11 +23,11 @@
 
 ## What it does
 
-Papyrus is two layers of plant fibres laid at right angles. Lane D (one of the parallel research lanes, A to I, that agents ran on public data on 2026-10-07; [the docs index](../README.md) lists their logs) asked whether a pen stroke over those fibres, which crosses them at other angles and fills the gaps between them, leaves a texture that differs from bare papyrus where brightness does not. Raw brightness at any one depth separates ink from background at most 0.58 AUC on PHerc0841's crops ([overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md), section 2), so the idea was to add texture on top of brightness.
+Papyrus is two layers of plant fibers laid at right angles. Lane D (one of the parallel research lanes, A to I, that agents ran on public data on 2026-10-07; [the docs index](../README.md) lists their logs) asked whether a pen stroke over those fibers, which crosses them at other angles and fills the gaps between them, leaves a texture that differs from bare papyrus where brightness does not. Raw brightness at any one depth separates ink from background at most 0.58 AUC on PHerc0841's crops ([overlap and baseline log](../logs/2026-10-07-overlap-and-baseline.md), section 2), so the idea was to add texture on top of brightness.
 
-`kit fibertensor train` reads a window of a surface volume (the stack of images rendered at depths above and below a traced surface), averages its layers into 5 depth bands, and computes label-free features for every pixel: each band's brightness at two smoothings; for each band the 2D structure tensor (the smoothed products of the image gradients, whose eigenvalues say how strong and how one-directional the local texture is) at three scales, giving log energy, coherence and an "off-fibre" angle measured from the segment's own dominant fibre axis; and the brightness difference between neighbouring bands. It trains a 16-unit numpy MLP (or logistic regression) on a balanced sample of labelled pixels from that window and saves it. `kit fibertensor predict` computes the same features on another window, re-measuring the fibre axes there, and writes the model's ink probability as a map. `--kind raw` uses the brightness features only: the ablation the fibre features had to beat. `--reverse` reads the layers in reverse depth order for the control map.
+`kit fibertensor train` reads a window of a surface volume (the stack of images rendered at depths above and below a traced surface), averages its layers into 5 depth bands, and computes label-free features for every pixel: each band's brightness at two smoothings; for each band the 2D structure tensor (the smoothed products of the image gradients, whose eigenvalues say how strong and how one-directional the local texture is) at three scales, giving log energy, coherence and an "off-fiber" angle measured from the segment's own dominant fiber axis; and the brightness difference between neighboring bands. It trains a 16-unit numpy MLP (or logistic regression) on a balanced sample of labeled pixels from that window and saves it. `kit fibertensor predict` computes the same features on another window, re-measuring the fiber axes there, and writes the model's ink probability as a map. `--kind raw` uses the brightness features only: the ablation the fiber features had to beat. `--reverse` reads the layers in reverse depth order for the control map.
 
-The result was a null. On three train and test splits of public labelled crops (PHerc0139 w045 to PHerc0841 w00, w00 to w045, and a second w00 window to the w00 crop), the fibre head never beat the brightness-only head, every fibre AUC interval included chance, and it was 0.30 to 0.48 AUC behind `ink_9um` on the same crops ([lane D log](../logs/2026-10-07-grok-laneD.md)). That is why its status is Retired: the code stays so the records can be read and rerun, not for new ink maps. The null covers the tested 2D features, the 16-unit learner, the training windows and the settings; it does not show that fibre texture holds no ink information. Larger training areas, stronger depth priors and a 3D tensor were not tried (Untested idea).
+The result was a null. On three train and test splits of public labeled crops (PHerc0139 w045 to PHerc0841 w00, w00 to w045, and a second w00 window to the w00 crop), the fiber head never beat the brightness-only head, every fiber AUC interval included chance, and it was 0.30 to 0.48 AUC behind `ink_9um` on the same crops ([lane D log](../logs/2026-10-07-grok-laneD.md)). That is why its status is Retired: the code stays so the records can be read and rerun, not for new ink maps. The null covers the tested 2D features, the 16-unit learner, the training windows and the settings; it does not show that fiber texture holds no ink information. Larger training areas, stronger depth priors and a 3D tensor were not tried (Untested idea).
 
 Its maps are model output, not readings, and on real data they did not follow the labels any better than chance.
 
@@ -59,7 +59,7 @@ python -m kit auc fibre_fwd.tif --control fibre_rev.tif \
 - `Y0 Y1 X0 X1`, `H W`: the training window and the full surface shape. Lane D's: w00 `2624 3264 2688 3328` on `4220 4760`, w045 `3840 4480 2560 3200` on `5980 8240`, and the second w00 window `1792 2432 2944 3584` ([`run_mac.sh`](../../scripts/experiments/2026-10-07-grok-laneD/run_mac.sh)).
 - `TEST.zarr`, `TEST_LABELS`, `TY0 TY1 TX0 TX1`, `TH TW`: the same for the test window, which must not overlap the training window.
 
-On a synthetic pair of 10 x 256 x 256 volumes made in the style of `tests/test_fibertensor.py` (fibres at 0.3 rad in the training volume and 0.9 rad in the test volume, ink as isotropic texture in the top 4 layers only), with `--crop 32 224 32 224 --surface-shape 256 256` and no `--inner`, it printed (2026-10-16):
+On a synthetic pair of 10 x 256 x 256 volumes made in the style of `tests/test_fibertensor.py` (fibers at 0.3 rad in the training volume and 0.9 rad in the test volume, ink as isotropic texture in the top 4 layers only), with `--crop 32 224 32 224 --surface-shape 256 256` and no `--inner`, it printed (2026-10-16):
 
 ```
 {
@@ -89,15 +89,15 @@ Each check can fail, and on real data they did:
 
 Lane D's results (scored with `kit auc --inner 64 --bootstrap 300 --compare`, 640 px crops, Model output; [lane D log](../logs/2026-10-07-grok-laneD.md), raw JSON in [`results/`](../../scripts/experiments/2026-10-07-grok-laneD/results/)):
 
-| Train on, test on | fibre AUC (95 % CI) | reverse | brightness head | fibre minus brightness (95 % CI) | `ink_9um` s42 |
+| Train on, test on | fiber AUC (95 % CI) | reverse | brightness head | fiber minus brightness (95 % CI) | `ink_9um` s42 |
 | --- | --- | --- | --- | --- | --- |
 | w045 (PHerc0139), w00 (PHerc0841) | 0.4726 (0.405 to 0.555) | 0.4331 | 0.5663 | -0.094 (-0.153 to -0.006) | 0.8061 |
 | w00, w045 | 0.4223 (0.333 to 0.537) | 0.5711 | 0.5096 | -0.072 (-0.221 to +0.089) | 0.9199 |
 | w00 other window, w00 crop | 0.5018 (0.431 to 0.563) | 0.5356 | 0.4985 | +0.003 (-0.042 to +0.050) | 0.8061 |
 
-No forward AUC is 0.10 above its reverse, no fibre head is ahead of its brightness head, and the training log loss (fibre 0.33 to 0.36, brightness 0.60 to 0.63) fell while held-out AUC stayed at chance, which is consistent with learning window-specific texture. The `ink_9um` number on w045 is not a held-out score, because `ink_9um` trained on w045's 2.4 um render ([log](../logs/2026-10-08-w045-not-held-out.md)); the w00 numbers are held out for every model in the table. `scripts/experiments/2026-10-07-grok-laneD/run.sh` covers PHerc0841 pairs (w00, ag896, ag405); no results from it are recorded in this repository.
+No forward AUC is 0.10 above its reverse, no fiber head is ahead of its brightness head, and the training log loss (fiber 0.33 to 0.36, brightness 0.60 to 0.63) fell while held-out AUC stayed at chance, which is consistent with learning window-specific texture. The `ink_9um` number on w045 is not a held-out score, because `ink_9um` trained on w045's 2.4 um render ([log](../logs/2026-10-08-w045-not-held-out.md)); the w00 numbers are held out for every model in the table. `scripts/experiments/2026-10-07-grok-laneD/run.sh` covers PHerc0841 pairs (w00, ag896, ag405); no results from it are recorded in this repository.
 
-The unit test shows that the method can detect texture where it exists: on a held-out synthetic phantom whose ink differs from the fibres only in texture, with the fibres rotated, the fibre features score above 0.8 and brightness alone stays within 0.1 of 0.5.
+The unit test shows that the method can detect texture where it exists: on a held-out synthetic phantom whose ink differs from the fibers only in texture, with the fibers rotated, the fiber features score above 0.8 and brightness alone stays within 0.1 of 0.5.
 
 One more caution when scoring these maps. The probabilities crowd near the 0.001 floor, and `kit auc` rounds a float map to 65,536 levels, which ties many of them. On the synthetic Quick start maps, `kit auc` gave 0.9882 and 0.6959 for the forward and reversed maps, while the exact rank AUC is 0.9889 and 0.6465 (73 % of the reversed map's pixels were below 0.0011; measured 2026-10-16). Lane D's real-data numbers were not rechecked for this.
 
@@ -162,9 +162,9 @@ prob = ft.predict(params, ft.features(ft.load_volume("TEST.zarr", crop=[TY0, TY1
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `load_volume(path, crop=None, reverse=False, margin=0)` | float32 array `(layers, h, w)` | `VerifyError` without zarr; `FileNotFoundError` for a missing store; `KeyError` for a group with no level `0` | Reads `margin` extra pixels on every side of `crop` (`[Y0, Y1, X0, X1]`), clipped at the volume's edges; `reverse` flips the layer axis |
-| `fibre_axis(np, ndi, img)` | float, radians | Nothing of its own | Takes the numpy and `scipy.ndimage` modules. The dominant gradient orientation of a 2D image (across the dominant fibres), from the energy-weighted mean of the doubled angle over the whole image |
-| `tensor_features(np, ndi, img, axis, rhos=RHO)` | list of `3 * len(rhos)` 2D arrays | Nothing of its own | For each integration scale: `log(energy + EPS)`, coherence (0 to 1), off-fibre angle `abs(sin(2 * (theta - axis)))` (0 on either fibre axis, 1 at 45 degrees) |
-| `features(volume, kind='fibre', bands=BANDS, axis=None)` | `(float32 array (F, h, w), axes)`: F is `2 * bands` for `raw` and `12 * bands - 1` for `fibre` (59 with 5 bands); `axes` holds one fibre axis per band (empty for `raw`) | `VerifyError` for a volume that is not 3D or has fewer layers than `bands`, an unknown kind, or no scipy | Pass `axis` (one per band) to reuse fixed axes; by default each band's axis is measured on this volume |
+| `fibre_axis(np, ndi, img)` | float, radians | Nothing of its own | Takes the numpy and `scipy.ndimage` modules. The dominant gradient orientation of a 2D image (across the dominant fibers), from the energy-weighted mean of the doubled angle over the whole image |
+| `tensor_features(np, ndi, img, axis, rhos=RHO)` | list of `3 * len(rhos)` 2D arrays | Nothing of its own | For each integration scale: `log(energy + EPS)`, coherence (0 to 1), off-fiber angle `abs(sin(2 * (theta - axis)))` (0 on either fiber axis, 1 at 45 degrees) |
+| `features(volume, kind='fibre', bands=BANDS, axis=None)` | `(float32 array (F, h, w), axes)`: F is `2 * bands` for `raw` and `12 * bands - 1` for `fibre` (59 with 5 bands); `axes` holds one fiber axis per band (empty for `raw`) | `VerifyError` for a volume that is not 3D or has fewer layers than `bands`, an unknown kind, or no scipy | Pass `axis` (one per band) to reuse fixed axes; by default each band's axis is measured on this volume |
 | `fit(feats, ink, sup, model='mlp', hidden=16, samples=60000, epochs=200, lr=0.01, l2=0.0001, seed=0)` | dict of numpy arrays: `W1`, `b1` (and `W2`, `b2` for `mlp`), `mu`, `sd`, `train_loss`, `train_pixels` | `VerifyError` when `ink` holds only one class inside `sup`, or for an unknown model | `ink` and `sup` are boolean `(h, w)` on the features' grid. `hidden`, `lr` and `l2` are not on the command line |
 | `predict(params, feats, chunk=1 << 18)` | float32 `(h, w)` map, `p * 0.999 + 0.001`, so from 0.001 to 1 | `KeyError` for parameters without `mu` or `sd`; `ValueError` when the feature count does not match the weights | Standardizes with the training `mu` and `sd`; runs in chunks of 262,144 pixels. No pixel is exactly 0, so `kit auc` drops none as unpredicted |
 | `save_model(path, params, meta)` | None | `OSError` for an unwritable path | `np.savez` of the parameters plus `meta` as a JSON string array; numpy adds `.npz` to a name without it |
@@ -195,7 +195,7 @@ Constants: `BANDS = 5`, `RHO = (2.0, 4.0, 8.0)`, `GRAD_SIGMA = 1.0`, `EPS = 1e-6
 | `seed` | int | The seed used |
 | `train_volume` | str | The volume path as given |
 | `crop` | list of 4 int, or null | The training window as given |
-| `train_axes` | list of float | Fibre axis per band in radians, measured on the training window (empty for `raw`). Stored for the record; `predict` does not use them |
+| `train_axes` | list of float | Fiber axis per band in radians, measured on the training window (empty for `raw`). Stored for the record; `predict` does not use them |
 | `bands` | int | Depth bands (`BANDS`, 5) |
 | `rho` | list of float | Structure-tensor integration scales in pixels (`RHO`) |
 | `features` | int | Features per pixel: 59 for `fibre`, 10 for `raw` |
@@ -208,7 +208,7 @@ Constants: `BANDS = 5`, `RHO = (2.0, 4.0, 8.0)`, `GRAD_SIGMA = 1.0`, `EPS = 1e-6
 | --- | --- | --- |
 | `map` | str | The map's path as given |
 | `shape` | [int, int] | The map's rows and columns |
-| `axes` | list of float | Fibre axis per band measured on this window (in reversed band order with `--reverse`) |
+| `axes` | list of float | Fiber axis per band measured on this window (in reversed band order with `--reverse`) |
 | `kind` | str | The model's feature kind |
 | `reverse` | bool | Whether the layers were reversed |
 
@@ -232,10 +232,10 @@ Constants: `BANDS = 5`, `RHO = (2.0, 4.0, 8.0)`, `GRAD_SIGMA = 1.0`, `EPS = 1e-6
 | `error: cannot open LABEL_DIR/inklabels.zarr as zarr: ...` | The label folder lacks `inklabels.zarr` or `supervision.zarr`, or they are not zarr | Fetch both into one folder and pass that folder |
 | `error: PATH: no level '2'; levels: [...]` | The label stores have other level keys | The command always reads level `2`; use the published stores |
 | `error: labels (...) and mask (...) differ in shape at level 2` | Labels and mask from different segments | Use the pair from one segment |
-| `error: labels (...) and surface (...) differ in scale between axes (...); they are not the same grid` | `--surface-shape` is wrong, or the labels belong to another segment | Give the segment's full surface shape |
+| `error: labels (...) and surface (...) differ in scale between axes (SY vs SX); they are not the same grid` | `--surface-shape` is wrong, or the labels belong to another segment | Give the segment's full surface shape |
 | `error: crop [...] is outside the H x W surface` | The crop runs past `--surface-shape` | Fix the crop |
 | `error: map shape (...) does not match the window h x w` | The crop runs past the volume's edge, or without `--crop` the volume's shape differs from `--surface-shape` | Keep the crop inside the volume; check the shape |
-| `error: training labels hold only one class inside the mask` | The window has no labelled ink, or no background, inside the supervision mask | Choose a window with both, such as the crops above |
+| `error: training labels hold only one class inside the mask` | The window has no labeled ink, or no background, inside the supervision mask | Choose a window with both, such as the crops above |
 | `error: unknown feature kind 'KIND'` | `features` called with a kind other than `fibre` or `raw` (the command allows only those) | Use `fibre` or `raw` |
 | `error: unknown model 'MODEL'` | `fit` called with a model other than `mlp` or `logreg` (the command allows only those) | Use `mlp` or `logreg` |
 | `error: model expects N features, got M` | The model file's `meta` does not match the features its kind gives now, such as a file from changed code or an edited `meta` | Retrain with `train` |
@@ -249,16 +249,16 @@ Constants: `BANDS = 5`, `RHO = (2.0, 4.0, 8.0)`, `GRAD_SIGMA = 1.0`, `EPS = 1e-6
 1. **Read.** `load_volume` opens the zarr and reads all layers of the window plus `MARGIN = 32` px on each side (clipped at the volume's edges) as float32; `--reverse` flips the layers.
 2. **Bands.** The layers split into `BANDS = 5` bands with edges `round(linspace(0, layers, 6))`; each band's mean image is z-scored over the window.
 3. **Brightness features.** Each band mean smoothed with Gaussian sigma 1 and 4 px: 10 features. `--kind raw` stops here.
-4. **Fibre axis.** Per band, `fibre_axis`: Gaussian-derivative gradients at `GRAD_SIGMA = 1.0`, summed tensor components over the whole window, and the angle `0.5 * atan2(2 Jxy, Jxx - Jyy)`. This measures the segment's own fibre direction without labels, so the features do not depend on how the segment is rotated.
-5. **Structure tensor.** Per band and per scale in `RHO = (2.0, 4.0, 8.0)` px: smooth `gx * gx`, `gy * gy`, `gx * gy` at that scale; log energy `log(Jxx + Jyy + EPS)`; coherence `sqrt((Jxx - Jyy)^2 + 4 Jxy^2) / (Jxx + Jyy + EPS)`; off-fibre angle `abs(sin(2 * (theta - axis)))`, which is 0 on either fibre axis (the two fibre layers are at right angles) and 1 at 45 degrees. 45 features.
+4. **Fiber axis.** Per band, `fibre_axis`: Gaussian-derivative gradients at `GRAD_SIGMA = 1.0`, summed tensor components over the whole window, and the angle `0.5 * atan2(2 Jxy, Jxx - Jyy)`. This measures the segment's own fiber direction without labels, so the features do not depend on how the segment is rotated.
+5. **Structure tensor.** Per band and per scale in `RHO = (2.0, 4.0, 8.0)` px: smooth `gx * gx`, `gy * gy`, `gx * gy` at that scale; log energy `log(Jxx + Jyy + EPS)`; coherence `sqrt((Jxx - Jyy)^2 + 4 Jxy^2) / (Jxx + Jyy + EPS)`; off-fiber angle `abs(sin(2 * (theta - axis)))`, which is 0 on either fiber axis (the two fiber layers are at right angles) and 1 at 45 degrees. 45 features.
 6. **Depth contrast.** Each band mean minus the one above it, smoothed at sigma 2: 4 features. 59 in all.
 7. **Margin off.** The margin is cut away, leaving the features on the crop.
 8. **Labels** (`train` only). `kit.auc.labels_on_map` reads level `2` of the label stores and maps each window pixel to the nearest label pixel, refusing grids that differ in scale between axes by more than 0.5 %.
 9. **Fit.** A balanced sample of `min(samples // 2, ink, background)` pixels per class inside the mask, standardized by the sample's mean and standard deviation. Logistic regression starts at zero; the MLP (16 ReLU units) starts from normal weights scaled by `1 / sqrt(fan_in)`. Full-batch Adam for `--epochs` steps, learning rate 0.01, moments 0.9 and 0.999, L2 1e-4 on every parameter. The final log loss on the sample is `train_loss`.
 10. **Save.** `np.savez` of the parameters, `mu`, `sd`, the loss, the pixel count and `meta`.
-11. **Predict.** The same features on the new window, with the fibre axes measured there; a feature-count check; standardization with the training `mu` and `sd`; the forward pass in chunks; `p * 0.999 + 0.001`, written as a float32 TIFF.
+11. **Predict.** The same features on the new window, with the fiber axes measured there; a feature-count check; standardization with the training `mu` and `sd`; the forward pass in chunks; `p * 0.999 + 0.001`, written as a float32 TIFF.
 
-The structure tensor is a standard image-analysis tool; the lane D log notes that the organizers' pipeline uses structure tensors for surface and fibre directions ([open problems](https://scrollprize.org/2026_open_problems), checked 2026-10-07) and found no prior use as an ink feature on PHerc0841.
+The structure tensor is a standard image-analysis tool; the lane D log notes that the organizers' pipeline uses structure tensors for surface and fiber directions ([open problems](https://scrollprize.org/2026_open_problems), checked 2026-10-07) and found no prior use as an ink feature on PHerc0841.
 
 ## Cost and time
 
@@ -280,9 +280,9 @@ On a busy machine numpy's threads slow the many small matrix products of full-ba
 - **Parse:** from `train`, `features` (59 or 10), `train_loss` (must be a number) and `train_pixels`; from `predict`, `shape` and `axes`. The verdict comes from `kit auc`: `forward.auc`, `control.auc` and `bootstrap.compare.ci95`.
 - **Rerun:** Safe and deterministic for the same inputs and `--seed`; it overwrites the model and map files.
 - **Success:** Exit code 0, a finite `train_loss`, and a map of the window's shape. That only means it ran.
-- **Not a pass:** Any map from this tool as an ink result: it was a null on real data. A forward AUC without the reverse control or less than 0.10 above it; a fibre head not ahead of its `--kind raw` ablation in `--compare`; overlapping training and test windows; a low `train_loss` taken as skill.
+- **Not a pass:** Any map from this tool as an ink result: it was a null on real data. A forward AUC without the reverse control or less than 0.10 above it; a fiber head not ahead of its `--kind raw` ablation in `--compare`; overlapping training and test windows; a low `train_loss` taken as skill.
 - **Go-ahead:** Nothing; it runs locally on public data and rents nothing.
-- **Never:** Use it for new ink maps or call its output a reading; run it on target-scroll data in public work; describe the lane D null as proof that fibre texture holds no ink information.
+- **Never:** Use it for new ink maps or call its output a reading; run it on target-scroll data in public work; describe the lane D null as proof that fiber texture holds no ink information.
 
 ## Tests
 
@@ -290,7 +290,7 @@ On a busy machine numpy's threads slow the many small matrix products of full-ba
 python -m unittest tests.test_fibertensor -v
 ```
 
-Three tests: on a synthetic phantom whose ink differs only in texture, the fibre features trained on one phantom score above 0.8 AUC on another with rotated fibres while brightness alone stays within 0.1 of 0.5 (and maps stay in (0, 1]); `fibre_axis` recovers a stripe angle; a model survives `save_model` and `load_model` unchanged, and `fit` and `features` refuse one-class labels and a too-thin volume. They skip without numpy or scipy. They do not run the command line, read zarr, or touch real segment data; the command line path was checked by hand on 2026-10-16 (this page's Quick start).
+Three tests: on a synthetic phantom whose ink differs only in texture, the fiber features trained on one phantom score above 0.8 AUC on another with rotated fibers while brightness alone stays within 0.1 of 0.5 (and maps stay in (0, 1]); `fibre_axis` recovers a stripe angle; a model survives `save_model` and `load_model` unchanged, and `fit` and `features` refuse one-class labels and a too-thin volume. They skip without numpy or scipy. They do not run the command line, read zarr, or touch real segment data; the command line path was checked by hand on 2026-10-16 (this page's Quick start).
 
 ## History
 

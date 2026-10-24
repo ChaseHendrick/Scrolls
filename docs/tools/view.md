@@ -18,13 +18,13 @@
 | Go-ahead | Not needed to build a page. Posting or sending the page to anyone is an outward action that needs Chase's yes (the go-ahead rule, hard rule 8), and a page built from a target-scroll map is never shared or committed (the no-findings rule, hard rule 1) |
 | Released | Public `main` since 2026-10-07 ([PR #13](https://github.com/ChaseHendrick/Scrolls/pull/13)); since 2026-10-14 also in the `scrolls-workbench` package installed from this repository, as `scrolls-workbench view` |
 | Guide | [phantom-and-viewer.md](../phantom-and-viewer.md) (the phantoms and this viewer), [the phantom and viewer demo log](../logs/2026-10-07-phantom-demo.md) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-17 against commit `a6beee7` |
 
 ## What it does
 
 Several ink readers (models that write an ink map, such as `ink_9um`, v8in or a fine-tune) can be run on the same crop of the same segment. Their maps come on different scales: probabilities, logits, 0 to 255 images. Laying them side by side by hand hides where they agree and where they do not. `kit view` puts them on one page.
 
-Each map becomes a percentile rank: every valid pixel gets its rank among the valid pixels of that map, from 0 (lowest) to 1 (highest), with ties sharing their average rank. Ranks make readers on different scales directly comparable, and they keep the order that an AUC depends on. The page then offers one reader at a time, an overlay of the disagreement between readers (the per-pixel standard deviation of their ranks) or of one reader minus the first, the outline of the ink labels, and the supervision mask (the region where the labels are trusted). Moving the cursor reads out each reader's rank at that pixel (its disagreement readout is broken; see Outputs). The same numbers go to stdout as JSON: rank correlations between readers, the mean disagreement, and, when labels are given, each reader's AUC on the view. `--png` writes the panels side by side for a record that needs no browser.
+Each map becomes a percentile rank: every valid pixel gets its rank among the valid pixels of that map, from 0 (lowest) to 1 (highest), with ties sharing their average rank. Ranks make readers on different scales directly comparable, and they keep the order that an AUC depends on. The page then offers one reader at a time, an overlay of the disagreement between readers (the per-pixel standard deviation of their ranks) or of one reader minus the first, the outline of the ink labels, and the supervision mask (the region where the labels are trusted). Moving the cursor reads out each reader's rank and the scaled disagreement at that pixel (see Outputs). The summary goes to stdout as JSON: rank correlations between readers, the mean disagreement, and, when labels are given, each reader's AUC on the view. `--png` writes the panels side by side for a record that needs no browser.
 
 The file is one HTML document with every layer embedded as a PNG data URI and a few lines of inline JavaScript. It needs no server and contacts no host, so it can be opened from disk.
 
@@ -32,7 +32,7 @@ It does not score maps for a report. The view is subsampled to at most `--max-si
 
 ## When to use it
 
-- Looking at where two or more readers agree and disagree on one crop of a labelled public segment, for example `ink_9um` against v8in on a PHerc0841 crop.
+- Looking at where two or more readers agree and disagree on one crop of a labeled public segment, for example `ink_9um` against v8in on a PHerc0841 crop.
 - Seeing a map next to its reverse-depth control: the control should look unlike the labels.
 - Inspecting synthetic results, such as [`phantom`](phantom.md) detector maps, where the truth is known.
 - Making one PNG of several maps with the label outline for a log.
@@ -70,7 +70,7 @@ The second command writes the baseline detector's map and its depth-reversed con
 
 (JSON lines joined here for space.) `viewer.html` was 356 KB and `viewer.png` 780 x 256 px: three panels of 256 px (surface, reversed, disagreement) with 6 px gaps. It worked when the exit code is 0, the JSON is printed, and `viewer.html` opens in a browser with the reader menu, the overlay menu and the cursor readout. Here the map scores well above its reversed control (0.7377 against 0.312, the same numbers `kit phantom stress` printed for this phantom), so the label outline sits over bright ranks in the first panel and dark ones in the second.
 
-On real maps of a labelled segment:
+On real maps of a labeled segment:
 
 ```bash
 python -m kit view OUT.html A=MAP_A.tif B=MAP_B.tif A_rev=MAP_A_reverse.tif \
@@ -123,11 +123,11 @@ open("view.html", "w").write(page)
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `load_array(path)` | A 2D numpy array, singleton axes squeezed, dtype as stored | `VerifyError` when the result is not 2D, numpy or tifffile is missing, or a TIFF cannot be read; `FileNotFoundError` for a missing `.npy`; `ValueError` for a `.npy` of Python objects (pickles are not loaded) | `.npy` by suffix through `np.load`; every other suffix through tifffile (`kit.verify.load_map`) |
-| `png_bytes(img)` | `bytes` of a PNG file | `KeyError` for a channel count other than 1, 3 or 4; `ValueError` for an array that is not 2D or 3D | Encodes uint8 `[h, w]` (grey) or `[h, w, 3 \| 4]` (RGB, RGBA) with the standard library (zlib level 6, no filter). Values are cast to uint8 without scaling, so give 0 to 255 |
+| `png_bytes(img)` | `bytes` of a PNG file | `KeyError` for a channel count other than 1, 3 or 4; `ValueError` for an array that is not 2D or 3D | Encodes uint8 `[h, w]` (gray) or `[h, w, 3 \| 4]` (RGB, RGBA) with the standard library (zlib level 6, no filter). Values are cast to uint8 without scaling, so give 0 to 255 |
 | `rank01(np, a, valid)` | float64 array of `a`'s shape: each valid pixel's average rank scaled to 0..1, 0 elsewhere | Nothing of its own | Takes the numpy module as its first argument. NaN counts as valid and ranks above every number |
 | `build_layers(maps, labels=None, mask=None, max_side=MAX_SIDE)` | `(layers, stats)`: `layers["readers"]` is a list of `(name, uint8 rank image)`; `"disagreement"` (uint8, two or more maps), `"labels"` (RGBA outline), `"labels_bool"` and `"mask"` (RGBA) when given; `stats` is the JSON under Outputs | `VerifyError` for no maps or shapes that differ; `ZeroDivisionError` for `max_side=0` | `maps` is a list of `(name, 2D array)` on one grid |
 | `build_html(maps, labels=None, mask=None, title='Ink map viewer', max_side=MAX_SIDE)` | `(page, stats)`: the HTML as a str, and the stats dict | As `build_layers` | What the command writes. Reader names and the title are HTML escaped; names inside the script are JSON with `<` escaped, so a name cannot add a script element |
-| `render_png(maps, labels=None, mask=None, max_side=384)` | `(rgb, stats)`: a uint8 `[h, w, 3]` array of the panels side by side, and the stats at that scale | As `build_layers` | One grey panel per reader, then the disagreement panel; 6 px dark grey gaps; label outline green; pixels outside the valid area dimmed to a third. Encode with `png_bytes` |
+| `render_png(maps, labels=None, mask=None, max_side=384)` | `(rgb, stats)`: a uint8 `[h, w, 3]` array of the panels side by side, and the stats at that scale | As `build_layers` | One gray panel per reader, then the disagreement panel; 6 px dark gray gaps; label outline green; pixels outside the valid area dimmed to a third. Encode with `png_bytes` |
 
 ## Inputs
 
@@ -137,7 +137,7 @@ open("view.html", "w").write(page)
 | `--labels` | 2D `.npy` or TIFF, same shape as the maps | Nonzero is ink. Not resampled: it must already be on the maps' grid |
 | `--mask` | 2D `.npy` or TIFF, same shape | Nonzero is supervised |
 
-The published labels (`inklabels.zarr`, `supervision.zarr`) sit on the 2.4 um scan's grid, not the 9 um map grid. To put them on a map's grid, use the same nearest-neighbour lookup that `kit auc` uses and save the result (run on 2026-10-16 with synthetic stores):
+The published labels (`inklabels.zarr`, `supervision.zarr`) sit on the 2.4 um scan's grid, not the 9 um map grid. To put them on a map's grid, use the same nearest-neighbor lookup that `kit auc` uses and save the result (run on 2026-10-16 with synthetic stores):
 
 ```python
 import numpy as np
@@ -152,7 +152,7 @@ np.save("MASK.npy", sup)
 
 ## Outputs
 
-`OUT.html`: one HTML file. It holds a heading with the title, the warning "Model output, not a reading. Readers are percentile ranked inside the mask.", the controls (reader menu, overlay menu with `none`, `disagreement` and `NAME minus FIRST` for every reader after the first, an opacity slider, and check boxes for labels and mask), the stacked layers, the cursor readout, and the stats JSON. Colours: a reader is grey (white is its highest rank); the disagreement overlay is red, more opaque where readers disagree more; `NAME minus FIRST` is blue where that reader ranks a pixel higher than the first reader and red where lower; the label outline is green; the mask darkens pixels outside the valid area. The cursor readout gives `x` and `y` in map pixels (view pixel times `step`, counted from the map's top-left corner, not the surface's), each reader's rank from 0 to 1, and a disagreement value. That last value is not usable: the script reads the disagreement overlay's red channel, which is 255 on every pixel (the amount is in the alpha channel), so it shows 1.00 wherever the readers differ at all and 0.00 only where they agree exactly (read from the code; not checked in a browser). Read the disagreement from the overlay's colour or from `disagreement_mean` instead. The page size grows with the view: 356 KB for two 256 x 256 maps, 6.4 MB for three 5,980 x 8,240 maps at the default `--max-side` (measured 2026-10-16).
+`OUT.html`: one HTML file. It holds a heading with the title, the warning "Model output, not a reading. Readers are percentile ranked inside the mask.", the controls (reader menu, overlay menu with `none`, `disagreement` and `NAME minus FIRST` for every reader after the first, an opacity slider, and check boxes for labels and mask), the stacked layers, the cursor readout, and the stats JSON. Colors: a reader is gray (white is its highest rank); the disagreement overlay is red, more opaque where readers disagree more; `NAME minus FIRST` is blue where that reader ranks a pixel higher than the first reader and red where lower; the label outline is green; the mask darkens pixels outside the valid area. The cursor readout gives `x` and `y` in map pixels (view pixel times `step`, counted from the map's top-left corner, not the surface's), each reader's rank from 0 to 1, and a disagreement value. The disagreement readout is the overlay's alpha divided by 255: the per-pixel standard deviation scaled to the largest disagreement in this view, from 0 to 1, rounded to two decimals. It is independent of the opacity slider. It is not the unscaled `disagreement_mean`, an ink probability or an accuracy score. The page size grows with the view: 356 KB for two 256 x 256 maps, 6.4 MB for three 5,980 x 8,240 maps at the default `--max-side` (measured 2026-10-16).
 
 With `--png`, a PNG of the panels side by side: one per reader, then the disagreement (red high, blue low) when there are two or more maps.
 
@@ -181,7 +181,7 @@ Stdout: the stats as JSON.
 | `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is not installed | `python -m pip install numpy`, or run inside villa's environment |
 | `tifffile is required (it is in villa's environment)` | A map, labels or mask is not `.npy` and tifffile is missing | Install tifffile, or save the arrays as `.npy` |
 | `cannot read PATH: ...`, exit code 2 | A non-`.npy` file that is missing, is not a TIFF (a PNG or JPEG goes to tifffile too), or is a compressed TIFF without imagecodecs | Fix the path; save the map as `.npy` or TIFF; install imagecodecs |
-| `PATH: expected a 2D map, got shape (...)` | A TIFF with a layer stack or colour channels | Pass one 2D map |
+| `PATH: expected a 2D map, got shape (...)` | A TIFF with a layer stack or color channels | Pass one 2D map |
 | `PATH: expected a 2D array, got (...)` | A `.npy` that is not 2D after squeezing | Pass one 2D array |
 | `FileNotFoundError: ...` and a traceback, exit code 1 | A `.npy` path that does not exist, or an output folder that does not exist | Fix the path, or create the folder |
 | `ValueError: Object arrays cannot be loaded when allow_pickle=False` and a traceback | A `.npy` holding Python objects | Save a numeric array |
@@ -192,7 +192,7 @@ Stdout: the stats as JSON.
 | `ZeroDivisionError: integer division or modulo by zero` and a traceback, exit code 1 | `--max-side 0` | Use a positive value; the default is 1024 |
 | `inner N leaves nothing of a (...) map` | Not reachable from the viewer: it calls `score_array` with no edge left out | Nothing |
 | The page always shows one reader, whatever the menu says | Two maps with the same name | Give every map its own name |
-| The cursor readout shows `disagreement 1.00` almost everywhere | A bug in the page's script: it reads the overlay's red channel, which is always 255, not its alpha | Use the overlay's colour or `disagreement_mean`; the reader ranks in the readout are correct |
+| An older HTML page shows `disagreement 1.00` almost everywhere | Pages generated before the 17 October 2026 fix read the red channel instead of alpha | Regenerate the HTML with the fixed viewer; existing HTML files contain their original script |
 | No `auc_on_view` in the JSON | No `--labels`, or the labels hold only ink or only non-ink on the valid view pixels | Check the crop and the labels |
 
 ## How it works
@@ -201,11 +201,11 @@ Stdout: the stats as JSON.
 2. Refuse maps of different shapes, and labels or a mask of another shape.
 3. Subsample: `step = ceil(max(H, W) / max_side)` (`_step`, `MAX_SIDE = 1024`), and keep every `step`-th row and column. There is no averaging, so thin strokes can fall between kept pixels at large steps.
 4. Valid pixels: inside the mask (or all) and nonzero in every map.
-5. Rank each map over the valid pixels (`rank01`): sort, give tied values their average position, divide by the count minus 1. Invalid pixels get 0. The rank times 255, rounded, is the reader's grey image.
+5. Rank each map over the valid pixels (`rank01`): sort, give tied values their average position, divide by the count minus 1. Invalid pixels get 0. The rank times 255, rounded, is the reader's gray image.
 6. With two or more maps: the disagreement is the per-pixel standard deviation of the ranks across readers (population, ddof 0), shown scaled so its largest valid value is 255; `disagreement_mean` is the unscaled mean over valid pixels; `rank_correlation` is `np.corrcoef` of each pair's ranks over valid pixels.
-7. With labels: the outline is every label pixel with at least one of its four neighbours not labelled (computed with `np.roll`, which wraps, so a label touching one edge is compared with the opposite edge). `auc_on_view` scores each reader's rank, scaled to 1..65535, with `kit.auc.score_array` against the labels on the valid pixels.
+7. With labels: the outline is every label pixel with at least one of its four neighbors not labeled (computed with `np.roll`, which wraps, so a label touching one edge is compared with the opposite edge). `auc_on_view` scores each reader's rank, scaled to 1..65535, with `kit.auc.score_array` against the labels on the valid pixels.
 8. With a mask: an RGBA layer that darkens every pixel outside the valid area (black at alpha 170).
-9. Encode every layer as a PNG with `png_bytes` (standard library only) and embed it as a base64 data URI; fill the HTML template `PAGE`. The inline script switches layers, sets opacity, and reads a pixel's red channel back from the layer images through a canvas for the cursor readout, so a rank has 1/255 resolution (and the disagreement readout is broken, see Outputs).
+9. Encode every layer as a PNG with `png_bytes` (standard library only) and embed it as a base64 data URI; fill the HTML template `PAGE`. The inline script switches layers, sets opacity, and reads pixels back from the layer images through a canvas. Reader ranks use the red channel; disagreement uses alpha. Both have 1/255 resolution before the readout rounds to two decimals.
 10. With `--png`, `render_png` builds the same layers at a largest side of at most 384 px and joins the panels; the command writes it with `png_bytes`.
 
 ## Cost and time
@@ -235,10 +235,11 @@ Memory grows with the full maps, which are all loaded at once before subsampling
 python -m unittest tests.test_phantom -v
 ```
 
-`ViewerTest` in that file checks the PNG encoder byte for byte, the warning in the page, `auc_on_view` for a good and a noise reader, the refusal of a map of another shape, average ranks for a constant and a 2-level map (AUC equal to `kit.auc.score_array`, 0.5 for the constant, a null rank correlation, JSON without NaN), that a hostile reader name cannot add a script element, that the stage keeps its size when the first reader is hidden, and the command line writing both files. The file's `PhantomTest` covers [`phantom`](phantom.md). The tests skip without numpy. They do not open the page in a browser, so the JavaScript (switching, readout) is untested, which is how the disagreement readout bug went unseen, and they use no real segment data.
+`ViewerTest` in that file checks the PNG encoder byte for byte, the warning in the page, `auc_on_view` for a good and a noise reader, the refusal of a map of another shape, average ranks for a constant and a 2-level map (AUC equal to `kit.auc.score_array`, 0.5 for the constant, a null rank correlation, JSON without NaN), that a hostile reader name cannot add a script element, that the stage keeps its size when the first reader is hidden, and the command line writing both files. The file's `PhantomTest` covers [`phantom`](phantom.md). The tests skip without numpy. With optional Node.js, the hover regression decodes the generated PNGs and executes the generated JavaScript with a small DOM/canvas fixture: disagreement must read 0.00, 0.71, 0.14 and 1.00 at fixed synthetic pixels, independent of overlay opacity. This regression fails with the old red-channel readout. A separate Chromium check on 17 October 2026 verified the same values in a real canvas. These checks use synthetic arrays, not real segment data.
 
 ## History
 
+- 2026-10-17: disagreement hover values read the encoded alpha channel; intermediate values such as 0.71 no longer appear as 1.00. Regenerate older HTML files to pick up the fix (`a6beee7`).
 - 2026-10-14: in the installable `scrolls-workbench` package, which runs it as `scrolls-workbench view` (`2582ab7`).
 - 2026-10-07: tied values share their average rank (a constant map scored an AUC of 1 before, now 0.5), reader names in the inline script are escaped, and the stage keeps its size when the first reader is hidden; earlier viewer numbers in the demo log are marked historical (`d7f8725`).
 - 2026-10-07: first version, with `kit phantom` and the demo ([PR #13](https://github.com/ChaseHendrick/Scrolls/pull/13), `eeacf6a`).

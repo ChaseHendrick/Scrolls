@@ -1,0 +1,53 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "umbilicus-center-sweep",
+  "label": "Concept illustration",
+  "alt": "Animated cross-section of a synthetic scroll swept from cap to base in the scanner's fixed frame: the spiral of sheets turns and its winding center, a copper ring, drifts off the scanner's axes, while a side view at the same scale draws the center's track down the scroll.",
+  "caption": "Concept illustration: a synthetic scroll swept from cap to base, its winding center marked in copper. Formulas only, no scan and no model run.",
+  "license": "Apache-2.0",
+  "release_id": "umbilicus-finder",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "umbilicus-center-sweep.mp4",
+      "bytes": 247396,
+      "sha256": "ea60d754c7f2fc1a80e974e74f07f0e6fee160255da1047dfa3c397b9a16e277",
+      "width": 960,
+      "height": 540,
+      "kind": "mp4",
+      "seconds": 7.0,
+      "frames": 84,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "umbilicus-center-sweep.gif",
+      "bytes": 2247301,
+      "sha256": "12f32be7a3de035ab51ed74694bd34ac42942de1f88c2548cfd66c9549b2d3b0",
+      "width": 960,
+      "height": 540,
+      "kind": "gif",
+      "seconds": 7.0,
+      "frames": 84,
+      "settings": {
+        "width": 960,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "encode.py",
+      "sweep.py"
+    ],
+    "scripts_sha256": "20cfbdf0c790bf49956cbb49745f03c23703a4248a7472c3dc8e6a99eb5381f2",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python scripts/media/sweep.py --out-dir FRAMES --frames 84 && python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 960 --dither none --mp4 docs/assets/umbilicus/umbilicus-center-sweep.mp4 --gif docs/assets/umbilicus/umbilicus-center-sweep.gif --meta scripts/media/captures/umbilicus-sweep.meta.json"
+}

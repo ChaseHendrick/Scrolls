@@ -108,7 +108,7 @@ def _view(res):
 def view_points(res, line):
     """A line's band and baseline in the image as read (the turned image after a turned read), input pixels, as (y, x).
 
-    The band is one letter height (letter_px) centred on the line's row y, which is its row at the
+    The band is one letter height (letter_px) centered on the line's row y, which is its row at the
     column's horizontal middle; at column x the row moves by (x - middle) * tan(the column's deskew).
     Returns (band corners: top left, top right, bottom right, bottom left; baseline: left, right)."""
     col = res["columns"][line["column"]]

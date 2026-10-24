@@ -17,19 +17,21 @@ Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scr
 | Writes | In the browser only: settings in `localStorage` under `unroll.settings.v1`; the installed app's service-worker caches `unroll-shell-<tag>`, `unroll-data-<tag>` and `unroll-runtime-<tag>`; scrolls opened with Open your own in browser storage; downloads you ask for (a picture, an Ink Bench bundle). Nothing is uploaded. `inkbench.py` writes the bundle given by `-o` (else prints it) and, with `adapt`, a 16-bit PNG |
 | Go-ahead | Not needed to view it or run Ink Bench. Changing the Space, or posting its pictures or scores, needs Chase's yes (the go-ahead rule, hard rule 8), and never with private work or target-scroll data |
 | Released | Hugging Face Space `SharpMeow/unroll`, version 1.5.0 of 2026-10-16 (the Space's `version.json`); in this README's "Released tools" since 2026-10-16 (`9896827`), pinned there with AutoPipeline. The Space's changelog starts at 0.9.0 (2026-10-15); 1.0.0 is the first release |
-| License | Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT licence |
+| License | Code: Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/LICENSE), with `NOTICE`); the scan data and everything derived from it (`data/`, `og.jpg`): [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/); three.js keeps its MIT license |
 | Guide | [`docs/unroll-space.md`](../unroll-space.md) |
 | Checked | 2026-10-16 against commit `7be3185` |
 
 ## What it does
 
-A Herculaneum scroll cannot be opened, so it is scanned with X-rays (CT), and people trace its sheet turn by turn as segments: curved surfaces stored as tifxyz grids of 3D points. Unroll puts those traced surfaces back together in 3D in a web page and lets a visitor unroll them, outermost winding first, with a timeline. On PHerc0139 it shows 37 traced windings (`w023` to `w059`) from the public 9.362 um meshes, decimated to 579,450 vertices; a scroll picker opens eight more scrolls of the open data (PHerc. 814, 9B, 343P, 841, 800, 172, 1447 and 1667). Because each traced winding runs a little past one full turn, about a tenth of the unrolled strip repeats its neighbour's surface.
+A Herculaneum scroll cannot be opened, so it is scanned with X-rays (CT), and people trace its sheet turn by turn as segments: curved surfaces stored as tifxyz grids of 3D points. Unroll puts those traced surfaces back together in 3D in a web page and lets a visitor unroll them, outermost winding first, with a timeline. On PHerc0139 it shows 37 traced windings (`w023` to `w059`) from the public 9.362 um meshes, decimated to 579,450 vertices; a scroll picker opens eight more scrolls of the open data (PHerc. 814, 9B, 343P, 841, 800, 172, 1447 and 1667). Because each traced winding runs a little past one full turn, about a tenth of the unrolled strip repeats its neighbor's surface.
 
 Each surface can show an X-ray layer (CT intensity on the surface), the Vesuvius Challenge's published ink detection where the open data has it, and on PHerc0139 an `ink_9um` (9 um) layer: the public `scrollprize/ink_9um` model (seed 42, step 75,000), run by Chase on the 9.362 um scan over all 37 windings, on Hugging Face ZeroGPU and Modal. A close-up view per winding has pan, zoom, a scale bar and a swipe between two layers. The CT tools (1.2.0 to 1.5.0) add window and level for the X-ray layer, a CT volume view (a maximum intensity projection of a cube of raw scan around a picked point, with the traced segments that pass through it), and streaming from the open-data bucket. Open your own (the **+** button) reads your own meshes and layers in the browser. Destroy mode tears, crushes, burns or soaks the papyrus; it is a toy, not a model of real damage.
 
 Ink Bench scores an ink map of one PHerc0139 winding against the published 2.4 um ink detection: it aligns the map automatically, then reports Pearson r, IoU, Dice and average precision (AP), with the X-ray intensity and uniform noise as floors a real ink model should beat. It runs in the page, and `tools/inkbench.py` gives the same numbers on the command line and writes the same bundle (schema `unroll-inkbench/1`).
 
 What it does not do: every ink layer is model output, not a reading. Letters visible in a layer are candidates for expert reading, never a reading by themselves. Ink Bench scores agreement with another model's output (the published ink detection), not ground truth, and on PHerc0139 that is not held-out ground for `ink_9um` (w045, for one, is not held out from it). Unroll does not trace, render or run ink detection itself; the layers are precomputed.
+
+Since 1.6.0 (24 Oct 2026) the Embed sheet (the </> button, linked from About) also has Connect your tool: the open-data URLs behind every layer with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer and curl, and links to the page's own API ([spaceconnect](spaceconnect.md)).
 
 ## When to use it
 
@@ -102,7 +104,7 @@ From the Space's `llms.txt` and `docs/AGENT_API_UI.md`; query string or hash.
 | `panel` | none | `about`, `help`, `open`, `why`, or `settings` |
 | `destroy=1`, `tool` | off | Destroy mode, and its tool: `tear`, `crush`, `burn`, `water` |
 | `sandbox=1` | off | Destroy sandbox |
-| `cam` | the fitted start view | Camera as `px,py,pz,tx,ty,tz` (scene units are millimetres) |
+| `cam` | the fitted start view | Camera as `px,py,pz,tx,ty,tz` (scene units are millimeters) |
 | `pos`, `play=1` | Not recorded | Position, and start playing |
 | Any setting below, such as `?quality=low&speed=2&hud=0` | the setting's default | Applies for one visit, not saved |
 
@@ -134,7 +136,7 @@ Every call returns a Promise of `{ ok: true, ... }` or `{ ok: false, error, code
 | `setUnroll(T)`, `play(B)`, `rollUp(B)` | | Unroll to T (0 to 1), animate, roll back up |
 | `setLayer(L)` | | `xray`, `ink` or `overlay` |
 | `focus(ID, { view })`, `focus(null)`, `compare(B, X)`, `closeup({...})` | | Close-up of a winding, the swipe, and zoom and pan in it |
-| `camera.get()`, `camera.orbit()`, `camera.zoom()`, `camera.pan()`, `camera.set()`, `camera.reset()` | | The camera, in millimetres |
+| `camera.get()`, `camera.orbit()`, `camera.zoom()`, `camera.pan()`, `camera.set()`, `camera.reset()` | | The camera, in millimeters |
 | `listScrolls()`, `openScroll(ID)`, `prizeOnly(B)` | | Other scrolls (the page reloads) |
 | `bench.open('compare')`, `bench.compare({ segment, layer, thresholds })`, `bench.metrics()`, `bench.close()` | | Ink Bench in the page |
 | `open.fromURL(URL)`, `open.fromFiles([...])`, `open.example()`, `open.validate(M)` | | Open your own |
@@ -201,7 +203,7 @@ usage: inkbench adapt [-h] -o OUT [--reduce {mean,max}] [--page PAGE]
 
 | Input | Format | Notes |
 | --- | --- | --- |
-| Ink Bench map | PNG (8 or 16 bit; 16 bit only greyscale; not interlaced) or TIFF (unsigned or float; 16 and 32 bit with one channel); colour is turned to grey | Integer images are divided by their maximum value unless they hold only 0 and 1; float images are scaled min to max. On the winding's reference grid or any scale near it: alignment searches scales 0.6 to 1.6 and shifts up to a quarter of a side; maps over twice the grid are mean-pooled first |
+| Ink Bench map | PNG (8 or 16 bit; 16 bit only grayscale; not interlaced) or TIFF (unsigned or float; 16 and 32 bit with one channel); color is turned to gray | Integer images are divided by their maximum value unless they hold only 0 and 1; float images are scaled min to max. On the winding's reference grid or any scale near it: alignment searches scales 0.6 to 1.6 and shifts up to a quarter of a side; maps over twice the grid are mean-pooled first |
 | Winding ids | `w023` to `w059` of PHerc0139 | w046's grid is 640 x 463 px (`segments`) |
 | Open your own | A zip, a folder or a manifest with OBJ or PLY meshes (with UVs) and PNG, JPG or TIFF layers, or a URL of one | Read in the browser; the Space's `docs/ADDING_A_SCROLL.md` gives the manifest format and limits |
 
@@ -275,6 +277,7 @@ No tests in this repository, and none run for this page. The Space's `tests/` fo
 
 ## History
 
+- 2026-10-24: 1.6.0 on the Space (from Space commit `e31bb23`): Connect your tool in the Embed sheet, `connect.json` and `CONNECT.md`; spec in this repository's `spaces/connect/unroll/`.
 - 2026-10-16: release entry and guide updated to version 1.5.0, its other scrolls and the CT tools (`b0913b4`).
 - 2026-10-16: Install app link, offline app since 1.1.0 (`cf72eb1`, PR #98).
 - 2026-10-16: ink-layer wording: "candidates for expert reading" (`628f14f`, PR #97).

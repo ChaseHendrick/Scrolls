@@ -1,6 +1,6 @@
 """Build any segmentation network of the model zoo by name, and frozen 2D feature extractors (DINOv2, DINOv3).
 
-The family list, licences and the evidence for each are in kit/segzoo.py (`python -m kit segzoo list`). This
+The family list, licenses and the evidence for each are in kit/segzoo.py (`python -m kit segzoo list`). This
 file only builds networks, so that nnU-Net trainers (segzoo_nnunet.py), probes (segzoo_probe.py) and one-off
 scripts all get the same network for the same name:
 
@@ -15,13 +15,13 @@ scripts all get the same network for the same name:
       ss2dunet                                     our pure-PyTorch SS2D (Mamba) U-Net, 2D (segzoo_ss2d.py)
   names()                                    every name build accepts
   FrozenFeatures(model_id, device)           a frozen Hugging Face DINOv2 or DINOv3 backbone: images (b, H, W)
-                                             or (b, 3, H, W) in [0, 1] become ImageNet-normalised 3-channel input
+                                             or (b, 3, H, W) in [0, 1] become ImageNet-normalized 3-channel input
                                              at `size` px, and features() returns the class token concatenated
                                              with the mean patch token (2 x hidden size)
 
 Pretrained weights are never fetched by build(). FrozenFeatures downloads its model from Hugging Face on first
-use; DINOv3 repositories are gated, so they need an approved account (`huggingface-cli login`). Licences:
-MONAI Apache-2.0; SegFormer code and weights NVIDIA non-commercial; DINOv3 its own licence; DINOv2 Apache-2.0.
+use; DINOv3 repositories are gated, so they need an approved account (`huggingface-cli login`). Licenses:
+MONAI Apache-2.0; SegFormer code and weights NVIDIA non-commercial; DINOv3 its own license; DINOv2 Apache-2.0.
 """
 
 import torch
@@ -129,7 +129,7 @@ class FrozenFeatures:
         self.dim = 2 * int(self.model.config.hidden_size)
 
     def prepare(self, images):
-        """(b, H, W) or (b, 1|3, H, W) float in [0, 1] -> normalised (b, 3, size, size)."""
+        """(b, H, W) or (b, 1|3, H, W) float in [0, 1] -> normalized (b, 3, size, size)."""
         x = torch.as_tensor(images, dtype=torch.float32)
         if x.dim() == 3:
             x = x[:, None]

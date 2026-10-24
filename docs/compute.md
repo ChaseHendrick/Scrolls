@@ -28,7 +28,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 - Inference on a full segment takes "on the order of an hour on a single GPU" ([tutorial](https://scrollprize.org/tutorial5)).
 - Data is streamed from the public bucket, so you do not need to download whole scrolls. The bucket is part of AWS Open Data ([ScrollPrize/open-data](https://github.com/ScrollPrize/open-data)) and reads anonymously with `--no-sign-request`.
 - `python -m kit cost --gpu-hours H --rate R` and `python -m kit run cost` keep your own tally.
-- Modal rates, limits, budgets and per-job cost estimates (checked 2026-10-07): [`compute/modal-pricing.md`](compute/modal-pricing.md), with a calculator in `kit/cloudcost.py`.
+- Paid compute runs on Hugging Face since 23 Oct 2026 (AGENTS.md hard rule 11); launch rules are in Scrolls-private. Modal rates, limits, budgets and per-job cost estimates for past runs (checked 2026-10-07): [`compute/modal-pricing.md`](compute/modal-pricing.md), with a calculator in `kit/cloudcost.py`.
 
 ## Where extra GPU hours help
 
@@ -47,7 +47,7 @@ You need the first to run anything. The second makes you faster. Neither replace
 Lessons from the published, agent-assisted runs:
 
 - **Preregister.** Write what counts as ink before looking (bnleft's `prereg/readout.md`; `python -m kit run init` here). Agents and humans both see letters in noise.
-- **Run the control first** (PHerc0139 w035) and keep it in every report. It checks the pipeline, not generalization: the letters it shows are memorized training labels ([log](logs/2026-10-07-w035-cpu.md)). For a generalization check use a held-out labelled segment such as PHerc0841. Bullo27 reports clear rows on PHerc0139 w045, but `ink_9um` trained on that surface's 2.4 um render ([log](logs/2026-10-08-w045-not-held-out.md)).
+- **Run the control first** (PHerc0139 w035) and keep it in every report. It checks the pipeline, not generalization: the letters it shows are memorized training labels ([log](logs/2026-10-07-w035-cpu.md)). For a generalization check use a held-out labeled segment such as PHerc0841. Bullo27 reports clear rows on PHerc0139 w045, but `ink_9um` trained on that surface's 2.4 um render ([log](logs/2026-10-08-w045-not-held-out.md)).
 - **Compare forward and reverse depth.** Ink should appear in one direction, not both.
 - **`set -o pipefail`.** bnleft lost a run when `cmd | tee log` hid a failed render.
 - **Build tools from current villa main.** The published VC3D container was months stale and lacked flags the recipe needs ([villa #1588](https://github.com/ScrollPrize/villa/issues/1588)).
@@ -64,7 +64,7 @@ python -m kit run local SLUG --device apple-silicon-gpu -- COMMAND   # MPS-heavy
 python -m kit run local SLUG --watts 45 -- COMMAND                   # override the average draw
 ```
 
-It records start and end (UTC), wall time, CPU time from the child-process resource counter when available, the device class and its average watts, estimated kWh (watts times hours) and USD (kWh times the rate). Normal child exit codes are passed through and stored. A signalled child returns the shell convention, 128 plus the signal number, and records the original negative return code. Failed command launches are recorded with exit 127 (missing executable) or 126 (other launch error). Wall power is not measured: macOS `powermetrics` needs sudo, so the energy is an estimate from a device-class average (`kit/localcost.py`, `DEVICE_WATTS`).
+It records start and end (UTC), wall time, CPU time from the child-process resource counter when available, the device class and its average watts, estimated kWh (watts times hours) and USD (kWh times the rate). Normal child exit codes are passed through and stored. A signaled child returns the shell convention, 128 plus the signal number, and records the original negative return code. Failed command launches are recorded with exit 127 (missing executable) or 126 (other launch error). Wall power is not measured: macOS `powermetrics` needs sudo, so the energy is an estimate from a device-class average (`kit/localcost.py`, `DEVICE_WATTS`).
 
 The rate is the local electricity rate (set in your local config), never in git: env var `SCROLLS_ELECTRICITY_USD_PER_KWH`, or `electricity_usd_per_kwh` in `~/.config/scrolls/local.json` (or a gitignored `scrolls.local.json`). The same file may set `device` and `device_watts`. The run fails before starting if no rate is set. The ledger stores the rate, device assumptions, command arguments, time and estimated energy/cost, without copying the config file. Values must be finite and nonnegative. An explicitly selected config file must exist and contain a JSON object. Default watts are illustrative assumptions, not measured device power.
 

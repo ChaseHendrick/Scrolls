@@ -1,0 +1,34 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "isometry-demo",
+  "label": "Synthetic demo",
+  "alt": "A made-up curved sheet drawn as its grid, in gray. In one round patch the grid nodes slide along the sheet and back: the sheet keeps its shape, but the edges on one side of the patch turn yellow, orange and red as they stretch and on the other side as they squash, while the numbers beside it (edges within 10 %, median log ratio, stretched nodes, flatboi's L2 and Linf) move away from a perfect grid's and back.",
+  "caption": "Synthetic demo: kit tifxyz isometry on a made-up sheet whose grid nodes slide along it, as a tracer's grid can. At the largest slide, 88.5 % of the edges stay within 10 % and 61 nodes are flagged; the surface itself never changes. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "isometry-demo.gif",
+      "bytes": 1078784,
+      "sha256": "cc19534838ccc20da26e727f8798465c596bae671b64fd3f4b9d3ac6e0a1666e",
+      "width": 960,
+      "height": 540,
+      "kind": "gif",
+      "format": "gif",
+      "seconds": 7.6
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "isometry_media.py"
+    ],
+    "scripts_sha256": "1a9e2941d9da6c15b6630aed8428b21925240da2c9b0a6aa41a4144f8e60c70a",
+    "base_commit": "6bf6839b07b239e85d16884956766dadafe7de9d"
+  },
+  "command": "python scripts/media/isometry_media.py s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz --scan PHerc0139 --segment w035 --out-dir docs/assets/tifxyz"
+}

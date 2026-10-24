@@ -1,6 +1,6 @@
 # cli: the kit command line (python -m kit) and its list of commands
 
-`python -m kit` is the one command line of the workbench: `kit/cli.py` builds a parser of 30 commands (32 actions under eight of them), hands each to its handler, and gives the installed package its four console scripts.
+`python -m kit` is the one command line of the workbench: `kit/cli.py` builds the command parser, hands each to its handler, and gives the installed package its console scripts.
 
 | Field | Value |
 | --- | --- |
@@ -8,17 +8,18 @@
 | Status | Current |
 | Kind | kit module |
 | Area | Releases and repository |
-| Run | `python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` (the installed package's console scripts), `from kit import cli` |
-| Code | `kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py` |
+| Run | `python -m kit`, `python -m kit help`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start` (the installed package's console scripts), `from kit import cli` |
+| Code | `kit/cli.py` (`build_parser`, `KitParser`, `GROUPS`, `cmd_help`, `_quick_start`, `_unknown`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py` |
 | Tests | `tests/test_cli_parser_cache.py`, `tests/test_packaging.py`, `tests/test_localcost_regressions.py`, `tests/test_repo.py`, `tests/test_letterdemo.py`, `tests/test_letter_scripts.py` |
 | Needs | Python 3.10 or newer (`requires-python` in `pyproject.toml`). The entry point and every module it imports at start are standard library only; a command that needs numpy, tifffile, zarr, Pillow or scipy imports them when it runs (see its page) |
 | Runs on | Any machine. `python -m kit prizes --json` took 0.19 s wall (measured 2026-10-16, cloud container, Python 3.13.16); building the parser once and reusing it brought a repeated `main()` from 13 ms to 2 ms per call (commit `88fbee4`'s message; machine not recorded) |
 | Network | None of its own. Some commands contact hosts (such as `fetch` and `run all --refresh`); each command's page says which |
 | Writes | Nothing of its own. Each command's writes are on its page |
 | Go-ahead | Not needed to run the entry point. A command that posts, uploads or rents compute needs Chase's yes first (the go-ahead rule, hard rule 8); its page says so |
-| Released | Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`) |
+| Released | Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`). Since 2026-10-20 the README's "Released tools" lists the command-line tools as one entry, Scrolls kit (`scrolls-kit` in `docs/releases.json`), with one line per tool |
+| Release id | `scrolls-kit` |
 | Guide | [CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it) |
-| Checked | 2026-10-16 against commit `63ee638` |
+| Checked | 2026-10-23 against commit `3376687` |
 
 ## What it does
 
@@ -34,7 +35,7 @@ The entry point makes no claim of its own. Nothing it prints is a result about i
 
 - To find which commands exist and what each does: `python -m kit --help`, or the table below.
 - To run any workbench command from a clone of the repository (`python -m kit COMMAND`), or from an installed package (`scrolls-workbench COMMAND`).
-- To call a command from Python with its exact command-line behaviour: `cli.main([...])`.
+- To call a command from Python with its exact command-line behavior: `cli.main([...])`.
 
 Do not use it:
 
@@ -52,14 +53,19 @@ python -m kit prizes --json
 
 - `SCROLLS`: the root of a clone of the repository. `python -m kit` finds the package only from there (or when the package is installed).
 
-Run on 2026-10-16 in the checkout, `--help` printed the usage line and one line per command, starting:
+Run on 2026-10-23 in the checkout, `--help` printed the usage line and the commands grouped by task, starting:
 
 ```
-usage: python -m kit [-h]
-                     {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,run} ...
+usage: python -m kit [-h] COMMAND ...
+
+The Scrolls workbench: one command line for the Vesuvius Challenge tools in this repository.
+
+Start and set up:
+  start            open Scrolls Starter: setup, practice and guided next steps
+  doctor           check GPU, disk, tools and villa paths
 ```
 
-and `prizes --json` printed the dated prize snapshot, starting `{ "checked": "2026-10-11", "source": "https://scrollprize.org/prizes", ...`, with exit code 0. It worked when the exit code is 0. An unknown command prints `python -m kit: error: argument command: invalid choice: ...` and exits with 2.
+and `prizes --json` printed the dated prize snapshot, starting `{ "checked": "2026-10-11", "source": "https://scrollprize.org/prizes", ...`, with exit code 0. It worked when the exit code is 0. An unknown command prints `python -m kit: error: no command '...'. Did you mean: ...?` and exits with 2. `python -m kit help tifxyz` prints one command's options and the worked example from its page.
 
 ## Checks and controls
 
@@ -77,16 +83,25 @@ Claim label: None; the entry point makes no claim, and each command's page label
 ### `python -m kit`
 
 ```
-usage: python -m kit [-h]
-                     {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,run} ...
+usage: python -m kit [-h] COMMAND ...
 ```
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `command` | required | One of the 30 commands below. Everything after it goes to that command's parser |
-| `-h`, `--help` | off | Print the usage, the module docstring and one line per command, then exit 0 |
+| `command` | required | One of the commands below. Everything after it goes to that command's parser. A word that is not a command prints the closest names (`no command 'tifxzy'. Did you mean: tifxyz?`) and exits 2 |
+| `-h`, `--help` | off | Print the usage, the module docstring and the commands grouped by task (start and set up; find and fetch public data; segments and geometry; ink maps; letters; records and repository), with worked examples, then exit 0 |
 
 `scrolls-workbench` takes the same arguments and shows `scrolls-workbench` in its usage and errors (`main(argv, prog="scrolls-workbench")`).
+
+### `python -m kit help`
+
+```
+usage: python -m kit help [-h] [topic]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `topic` | none | A command, such as `tifxyz`: print its `--help` and the Quick start of its tool page. Without it, print the grouped command list (the same as `--help`) |
 
 ### Every command and its page
 
@@ -94,19 +109,34 @@ Each command's `--help` line, its actions, its handler and the page that documen
 
 | Command | Actions | Handler | Page | What it does (`--help`) |
 | --- | --- | --- | --- | --- |
+| `help` | none | `cmd_help` | [cli](cli.md) | list the commands by task, or show one command's options and worked example |
+| `start` | none | `starter.run` (in `kit/starter.py`) | [starter](starter.md) | open Scrolls Starter: setup, practice and guided next steps |
 | `prizes` | none | `cmd_prizes` | [prizes](prizes.md) | open prizes from the dated snapshot |
+| `live` | none | `termview.main` (in `kit/termview.py`) | [termstyle](termstyle.md) | run a command (after --) or page piped output in a full-screen, mouse-driven view in the Scrolls look |
+| `style` | none | `termstyle.main` (in `kit/termstyle.py`) | [termstyle](termstyle.md) | the Scrolls terminal look: hook install, remove or status (style every script in a checkout), demo, pipe |
 | `doctor` | none | `cmd_doctor` | [doctor](doctor.md) | check GPU, disk, tools and villa paths |
 | `plan` | none | `cmd_plan` | [plan](plan.md) | print a First Letters run plan for an eligible scroll |
 | `cost` | none | `cmd_cost` | [plan](plan.md) | estimate run cost in USD |
+| `find` | none | `find.cmd_find` (in `kit/find.py`) | [find](find.md) | everything public for one scroll: volumes, segments, predictions, center lines and Hugging Face matches |
+| `labels` | none | `labels.cmd_labels` (in `kit/labels.py`) | [labels](labels.md) | published ink labels per segment, with which public models trained on them |
+| `centerline` | `list`, `get` | `centerline.cmd_centerline` (in `kit/centerline.py`) | [centerline](centerline.md) | get a scroll's center line into your VC3D project as umbilicus.json |
+| `cite` | none | `find.cmd_cite` (in `kit/find.py`) | [find](find.md) | credit and licence lines for a scroll's volumes and center lines |
 | `fetch` | none | `cmd_fetch` | [fetch](fetch.md) | mirror a public bucket prefix over HTTPS (no AWS CLI needed) |
+| `s3relay` | none | `vc3dfix.cmd_s3relay` (in `kit/vc3dfix.py`) | [vc3dfix](vc3dfix.md) | run VC3D through a local relay that keeps S3's false 404s from blanking chunks |
+| `vc3dcache` | none | `vc3dfix.cmd_vc3dcache` (in `kit/vc3dfix.py`) | [vc3dfix](vc3dfix.md) | find and delete false empty-chunk markers in VC3D's remote chunk cache |
 | `verify` | none | `cmd_verify` | [verify](verify.md) | compare two ink maps (e.g. CPU vs MPS) with a control |
 | `rowscore` | none | `cmd_rowscore` | [rowscore](rowscore.md) | text-row periodicity triage score for ink maps (Bullo27's method) |
 | `auc` | none | `cmd_auc` | [auc](auc.md) | pixel AUC of an ink map against a segment's published labels |
-| `fibertensor` | `train`, `predict` | `cmd_fibertensor` | [fibertensor](fibertensor.md) | fibre-orientation (structure tensor) features and a tiny CPU ink reader |
+| `fibertensor` | `train`, `predict` | `cmd_fibertensor` | [fibertensor](fibertensor.md) | fiber-orientation (structure tensor) features and a tiny CPU ink reader |
 | `hpscore` | none | `cmd_hpscore` | [hpscore](hpscore.md) | letter-scale score: 48 um high-passed correlation with the labels (Scheirer) |
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
+| `atlas` | `build`, `show` | `atlas.cmd_atlas` (in `kit/atlas.py`) | [atlas](atlas.md) | Segment Atlas: area, isometry, holes and folds of every published segment |
+| `coverage` | none | `coverage.cmd_coverage` (in `kit/coverage.py`) | [coverage](coverage.md) | Winding coverage: which turns and heights a scroll's segments trace, and the gaps |
+| `tifxyz` | `info`, `stretch`, `check`, `obj`, `preview`, `facing`, `chunks`, `diff` | `tifxyz.cmd_tifxyz` (in `kit/tifxyz.py`) | [tifxyz](tifxyz.md) | look at a tifxyz segment without VC3D: area, isometry, holes and folds, OBJ, picture, which way it faces, chunks it touches, diff of two versions |
 | `stackcheck` | none | `cmd_stackcheck` | [stackcheck](stackcheck.md) | check consecutive tifxyz segments against the umbilicus: order, missing sectors, skipped windings, turn overlaps, stack ends (geometry only) |
+| `uvgate` | none | `cmd_uvgate` (in `kit/uvgate_cli.py`) | [uvgate](uvgate.md) | check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough area, optionally one counterclockwise piece (geometry only) |
+| `windconsistency` | none | `cmd_windconsistency` (in `kit/windconsistency.py`) | [windconsistency](windconsistency.md) | check that relative winding counts (a to b is k windings) can all hold at once, around every closed path |
 | `meshaudit` | `transforms`, `canvas`, `plan`, `depth` | `cmd_meshaudit` | [meshaudit](meshaudit.md) | audit published meshes, cross-scan transforms and render depth offsets |
 | `surfacefix` | `prepare`, `apply` | `cmd_surfacefix` | [surfacefix](surfacefix.md) | experimental region flags and bounded, controlled surface corrections |
 | `provenance` | `write`, `check` | `cmd_provenance` | [provenance](provenance.md) | who ran what, when, from which inputs: a record and one digest |
@@ -118,11 +148,21 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `phantom` | none | `cmd_phantom` | [phantom](phantom.md) | synthetic carbon-ink phantoms with known truth: make, stress-test a detector, calibrate AUC noise |
 | `view` | none | `cmd_view` | [view](view.md) | one static HTML page overlaying several ink maps, their disagreement and the labels |
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
-| `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | learned Greek letter reader for a 2D image, with null, control-map and orientation controls |
+| `volumeview` | none | `cmd_volumeview` | [volumeview](volumeview.md) | build a local viewer link from explicit public volume metadata |
+| `segzoo` | none | `cmd_segzoo` | [segzoo](segzoo.md) | model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists |
+| `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls |
 | `letterlines` | `build`, `score` | `cmd_letterlines` | [letterlines](letterlines.md) | training lines for the letter reader from your own transcribed lines, and scores on lines kept apart |
 | `letterdemo` | none | `cmd_letterdemo` | [letterdemo](letterdemo.md) | offline check of the letter reader: synthetic Greek capitals and a noise image, DEMO PASS or DEMO FAIL |
 | `greeklm` | `build`, `score` | `cmd_greeklm` | [greeklm](greeklm.md) | letter n-gram language model for Greek in scriptio continua |
+| `routines` | `list`, `due`, `status`, `run`, `check` | `routines.run` (in `kit/routines.py`) | [routines](routines.md) | recurring repository checks any agent runs at session start (kit/routines.py, docs/routines.json) |
+| `stale` | none | `stale.run` (in `kit/stale.py`) | [stale](stale.md) | what live pages and registries still say that is no longer true: old handoff rows, gone branches, retired names, dead links, MAP rows (kit/stale.py; read-only) |
+| `integrity` | none | `integrity.run` (in `kit/integrity.py`) | [integrity](integrity.md) | research integrity checks for Vesuvius claims: ink scores with their controls and held-out status, overclaim wording, preregistration order, citations; each plants faults first (kit/integrity.py; read-only) |
+| `submitcheck` | none | `submitcheck.cmd_submitcheck` (in `kit/submitcheck.py`) | [submitcheck](submitcheck.md) | preflight a prize submission folder against the prize page's file rules, quoting each rule |
+| `prclock` | none | `villapr.cmd_prclock` (in `kit/villapr.py`) | [villapr](villapr.md) | days left before villa's PR time limits close each of a person's open PRs |
+| `prtext` | none | `villapr.cmd_prtext` (in `kit/villapr.py`) | [villapr](villapr.md) | check a villa PR or issue body against villa's template before posting |
 | `releases` | `add`, `render`, `check`, `list`, `pin`, `unpin` | `releases.run` (in `kit/releases.py`) | [releases](releases.md) | the list of tools released from private work, and the README section made from it |
+| `spaceconnect` | `render`, `check`, `run`, `new` | `spaceconnect.run` (in `kit/spaceconnect.py`) | [spaceconnect](spaceconnect.md) | each Space's Connect your tool panel: render it from connect.json, check every Space has a current one |
+| `leaderboard` | `render`, `check` | `leaderboard.run` (in `kit/leaderboard.py`) | [leaderboard](leaderboard.md) | the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json |
 | `run` | `init`, `status`, `cost`, `record`, `check`, `list` | `cmd_run` | [run-ledger](run-ledger.md) | local experiment ledger (experiments/, gitignored) |
 | `run` | `local`, `backfill` | `cmd_run` | [run-local](run-local.md) | `local`: run a local command and log wall time, CPU time and electricity cost; `backfill`: add estimated local-run costs from a JSON list of logged durations |
 | `run` | `modal-row` | `cmd_run` | [modal-row](modal-row.md) | append one Modal job's row to a Modal ledger CSV, once per key (kit/modalledger.py) |
@@ -140,6 +180,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `scrolls-letterread` | `kit.cli:letterread_main` | `python -m kit letterread` alone |
 | `scrolls-letterlines` | `kit.cli:letterlines_main` | `python -m kit letterlines` alone (its actions `build` and `score`) |
 | `scrolls-letterdemo` | `kit.cli:letterdemo_main` | `python -m kit letterdemo` alone |
+| `scrolls-start` | `kit.cli:start_main` | `python -m kit start`, the local beginner app ([starter](starter.md)) |
 
 A one-command script takes that command's own arguments, with no command word: `scrolls-letterdemo --quiet`, not `scrolls-letterdemo letterdemo --quiet`. Its usage and errors show the script's name (`usage: scrolls-letterlines [-h] {build,score} ...`).
 
@@ -157,7 +198,7 @@ code = cli.main(["prizes", "--json"])      # the same as python -m kit prizes --
 | Function | Returns | Raises | Notes |
 | --- | --- | --- | --- |
 | `main(argv=None, prog="python -m kit", sub_progs=None)` | The handler's return value: the exit code (an int, or `None`, which `sys.exit` treats as 0) | `SystemExit(2)` on a usage error and `SystemExit(0)` after `--help`, from argparse; whatever the handler raises | `argv` defaults to `sys.argv[1:]`. Uses the cached parser. For `run ... -- COMMAND`, parses the part before `--` and, when the action is `local`, appends everything after `--` to the child command unchanged |
-| `build_parser(prog="python -m kit", sub_progs=None)` | A new `argparse.ArgumentParser` with every command | Nothing of its own | `sub_progs` maps a command to the program name its usage and errors show; `letterread`, `letterlines` and `letterdemo` honour it. [tooldocs](tooldocs.md) reads this parser to check every page |
+| `build_parser(prog="python -m kit", sub_progs=None)` | A new `argparse.ArgumentParser` with every command | Nothing of its own | `sub_progs` maps a command to the program name its usage and errors show; `letterread`, `letterlines` and `letterdemo` honor it. [tooldocs](tooldocs.md) reads this parser to check every page |
 | `_parser(prog="python -m kit", sub_progs=None)` | The parser for `(prog, sub_progs)`, built once per process and kept in `_PARSERS` | Nothing of its own | The parser is over a thousand `add_argument` calls; pipelines and tests call `main()` many times in one process |
 | `_parse(parser, argv)` | A deep copy of `parser.parse_args(argv)` | `SystemExit` from argparse | The copy keeps a handler that changes a list default from leaking it into the next call |
 | `_console(script, argv=None)` | The handler's return value | `KeyError` for a script not in `CONSOLE_SCRIPTS`; `SystemExit` from argparse | Runs the one command of a console script, with a fresh parser whose usage shows the script's name |
@@ -168,6 +209,13 @@ code = cli.main(["prizes", "--json"])      # the same as python -m kit prizes --
 | `CONSOLE_SCRIPTS` | dict | | Console script name to command: `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo` |
 | `READER_INSTALL` | str | | `python -m pip install "scrolls-workbench[reader]" (numpy, pillow, tifffile and imagecodecs)` |
 | `kit.__version__` | str | | The package version, `"0.2.0"` at this commit; `pyproject.toml` reads it (`[tool.setuptools.dynamic]`) |
+
+| `start_main(argv=None)` | As `main` | As `main` | Runs Scrolls Starter through `_console` |
+| `KitParser` | An `argparse.ArgumentParser` whose `format_help` lists the commands under `GROUPS`' task headings, wrapped to the terminal width, with worked examples | Nothing of its own | Only the top level uses it; each command's own parser is a plain `ArgumentParser` (`parser_class` in `build_parser`) |
+| `GROUPS` | tuple of (heading, commands) | | The task groups `--help` shows; a command in no group is listed under "Other" |
+| `cmd_help(args)` | 0, or 2 for an unknown topic (with `_unknown`'s message) | Nothing | `python -m kit help` prints the grouped list; `help COMMAND` prints that command's `--help` and the Quick start of its tool page (`_quick_start`) |
+| `_quick_start(command)` | str or None | Nothing | The Quick start section of the `docs/tools/` page whose Run field names `python -m kit COMMAND` |
+| `_unknown(word, choices, prog)` | 2 | Nothing | Prints `PROG: error: no command 'WORD'. Did you mean: ...? The list: PROG --help` |
 
 ## Inputs
 
@@ -189,7 +237,7 @@ The entry point prints nothing of its own except argparse's usage, help and erro
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `python -m kit: error: the following arguments are required: command`, exit code 2 | No command given | Add a command; `python -m kit --help` lists them |
-| `python -m kit: error: argument command: invalid choice: 'NAME' (choose from 'prizes', 'doctor', ...)`, exit code 2 | A misspelt command, or one that exists only on another branch or in Scrolls-private | Pick a command from the list; check the name in the table above |
+| `python -m kit: error: no command 'NAME'. Did you mean: A, B? The list: python -m kit --help`, exit code 2 (also from `help NAME`) | A misspelled command, or one that exists only on another branch or in Scrolls-private | Use a suggested name, or pick one from `python -m kit --help` |
 | `python -m kit run: error: the following arguments are required: action` (and the same for the other commands with actions), exit code 2 | A command with actions given without one | Add the action, such as `run init` or `provenance check` |
 | `scrolls-workbench: error: ...`, `scrolls-letterread: error: ...` and the like, exit code 2 | The same usage errors under an installed script's name | As above |
 | `/usr/bin/python3: No module named kit`, exit code 1 | `python -m kit` run outside the clone's root, with the package not installed | `cd` to the repository root, or install the package as [CHANGELOG.md](../../CHANGELOG.md) shows and use `scrolls-workbench` |
@@ -232,6 +280,8 @@ python -m unittest tests.test_cli_parser_cache tests.test_packaging tests.test_l
 
 ## History
 
+- 2026-10-23: `--help` groups the commands by task with worked examples, `help [COMMAND]` shows a command's options and its page's Quick start, and an unknown command suggests the closest names; new commands `find`, `centerline`, `cite`, `prclock`, `prtext` and `tifxyz` (`3376687`).
+- 2026-10-21: the usage block and the command table list `start`, `volumeview`, `segzoo`, `routines`, `stale` and `leaderboard`, which they had left out; the checker now compares both (`bbecb37`).
 - 2026-10-17: a command whose output pipe closes early (`python -m kit prizes | head -1`) ends with exit code 1 and no traceback; before, it printed a `BrokenPipeError` traceback (`f3b1ac8`).
 - 2026-10-17: the module docstring's command list names `meshaudit` and `strokenet`, which it had left out (`e7dce03`).
 - 2026-10-16: package version 0.2.0 in `kit/__init__.py`, with `CHANGELOG.md` (`00b0097`).

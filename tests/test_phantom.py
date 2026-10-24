@@ -1,3 +1,6 @@
+import os
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -57,6 +60,83 @@ class ViewerTest(unittest.TestCase):
         with self.assertRaises(Exception):
             viewer.build_html([("a", a), ("b", b[:10])])
 
+    @unittest.skipUnless(shutil.which("node"), "hover JavaScript regression uses optional Node.js")
+    def test_hover_reports_disagreement_from_embedded_overlay(self):
+        import base64
+        from html.parser import HTMLParser
+        import json
+        import re
+        import struct
+        import subprocess
+        import zlib
+        import numpy as np
+        from kit import viewer
+
+        first = np.arange(1, 65, dtype=float).reshape(8, 8)
+        second = np.flipud(first).copy()
+        second[:, ::2] = first[:, ::2]
+        page, _ = viewer.build_html([("first", first), ("second", second)])
+        images = {}
+
+        class Images(HTMLParser):
+            def handle_starttag(self, tag, attrs):
+                if tag != "img":
+                    return
+                attrs = dict(attrs)
+                png = base64.b64decode(attrs["src"].split(",", 1)[1])
+                width, height, _, colour, _, _, _ = struct.unpack(">IIBBBBB", png[16:29])
+                channels = {0: 1, 6: 4}[colour]
+                raw = zlib.decompress(png[png.index(b"IDAT") + 4:png.index(b"IEND") - 8])
+                pixels = []
+                for y in range(height):
+                    offset = y * (1 + width * channels)
+                    self_filter = raw[offset]
+                    if self_filter != 0:
+                        raise AssertionError("test decoder requires the viewer's unfiltered PNG rows")
+                    row = []
+                    for x in range(width):
+                        start = offset + 1 + x * channels
+                        pixel = list(raw[start:start + channels])
+                        if channels == 1:
+                            pixel = pixel * 3 + [255]
+                        # Canvas drops RGB when a pixel is fully transparent.
+                        row.append(pixel if pixel[3] else [0, 0, 0, 0])
+                    pixels.append(row)
+                images[attrs["id"]] = {"pixels": pixels, "style": {}}
+
+        Images().feed(page)
+        script = re.search(r"<script>(.*?)</script>", page, re.S).group(1)
+        harness = r"""
+const fs = require('fs'), vm = require('vm'), data = JSON.parse(fs.readFileSync(0, 'utf8'));
+const elements = {...data.images, stage: {getBoundingClientRect:()=>({left:10,top:20})},
+  reader: {value:'first'}, over: {value:'none'}, op: {value:'60'},
+  lab: {checked:true}, msk: {checked:true}, read: {textContent:''}};
+let current;
+const context = {clearRect(){}, drawImage(image){current=image},
+  getImageData(x,y){return {data:current.pixels[y][x]}}};
+const document = {getElementById(id){return elements[id]},
+  createElement(){return {getContext(){return context}}}};
+vm.runInNewContext(data.script, {document});
+const results=[];
+for(const opacity of ['0','100']) {
+  elements.over.value='disagreement';elements.op.value=opacity;elements.op.oninput();
+  for(const [x,y] of data.samples) {
+    elements.stage.onmousemove({clientX:10+x+.5,clientY:20+y+.5});
+    results.push(elements.read.textContent);
+  }
+}
+console.log(JSON.stringify(results));
+"""
+        result = subprocess.run([shutil.which("node"), "-e", harness], text=True, capture_output=True,
+                                input=json.dumps({"script": script, "images": images,
+                                                  "samples": [[0, 1], [1, 1], [1, 3], [1, 0]]}),
+                                check=True, timeout=10)
+        values = json.loads(result.stdout)
+        for value, expected in zip(values, ["0.00", "0.71", "0.14", "1.00"] * 2):
+            self.assertTrue(value.endswith("disagreement " + expected), value)
+        self.assertIn("first rank 0.14  second rank 0.78", values[1])
+        self.assertEqual(values[:4], values[4:])
+
     def test_constant_and_quantized_maps_preserve_auc_ties(self):
         import json
         import numpy as np
@@ -113,6 +193,62 @@ class ViewerTest(unittest.TestCase):
             self.assertEqual(cli.main(["view", str(out), f"m={d}/m.npy", "--png", f"{d}/v.png"]), 0)
             self.assertTrue(out.read_text().startswith("<!doctype html>"))
             self.assertTrue((Path(d) / "v.png").read_bytes().startswith(b"\x89PNG"))
+
+
+STUB_PY = r"""#!/bin/bash
+# Stands in for python3 in scripts/phantom-demo.sh: logs each call and fails the step named by $STUB_FAIL
+# (make, stress, calibrate, inline or view).
+echo "$*" >> "$STUB_CALLS"
+if [ "$1" = - ]; then
+  cat > /dev/null
+  step=inline
+elif [ "$3" = phantom ]; then
+  step=$4
+else
+  step=$3
+fi
+if [ "$step" = "$STUB_FAIL" ]; then
+  echo "stub failure: $step" >&2
+  exit 3
+fi
+echo "ok: $step"
+exit 0
+"""
+
+
+@unittest.skipIf(shutil.which("bash") is None, "needs bash")
+class PhantomDemoScriptTest(unittest.TestCase):
+    """scripts/phantom-demo.sh pipes every step through tee; a failing step must still fail the demo."""
+
+    STEPS = ("make", "stress", "calibrate", "inline", "view")
+
+    def run_demo(self, fail):
+        with tempfile.TemporaryDirectory() as tmp:
+            t = Path(tmp)
+            (t / "bin").mkdir()
+            (t / "bin" / "python3").write_text(STUB_PY)
+            (t / "bin" / "python3").chmod(0o755)
+            calls = t / "calls"
+            env = dict(os.environ, PATH=f"{t / 'bin'}{os.pathsep}{os.environ.get('PATH', '')}",
+                       OUT=str(t / "out"), STUB_FAIL=fail, STUB_CALLS=str(calls))
+            script = Path(__file__).resolve().parent.parent / "scripts" / "phantom-demo.sh"
+            out = subprocess.run(["bash", str(script)], env=env, capture_output=True, text=True, timeout=60)
+            log = (t / "out" / "commands.log").read_text() if (t / "out" / "commands.log").exists() else ""
+            return out.returncode, calls.read_text().splitlines() if calls.exists() else [], log
+
+    def test_every_step_runs_when_all_pass(self):
+        code, calls, log = self.run_demo("none")
+        self.assertEqual(code, 0)
+        self.assertEqual(len(calls), len(self.STEPS))
+        for step in ("make", "stress", "calibrate", "view"):
+            self.assertIn(f"ok: {step}", log)
+
+    def test_a_failing_step_stops_the_demo_with_a_nonzero_exit(self):
+        for n, step in enumerate(self.STEPS, 1):
+            with self.subTest(step=step):
+                code, calls, _ = self.run_demo(step)
+                self.assertNotEqual(code, 0)
+                self.assertEqual(len(calls), n, calls)
 
 
 if __name__ == "__main__":

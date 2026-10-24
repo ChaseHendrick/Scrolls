@@ -1,0 +1,202 @@
+{
+ "prereg": "docs/prereg/2026-10-20-ink-lens-gate.md",
+ "rule": "ink-lens-gate-v1",
+ "reader": "d9v2",
+ "windows": 3,
+ "engine": {
+  "engine": "ink-lens 0.1.0",
+  "readers": {
+   "d9v2": {
+    "name": "d9v2",
+    "sha256": "50d2ad0ef7690a6a422640804d38f01409da8bc96cfc1ab72f45324a4a18f966",
+    "url": "https://github.com/TAUIL-Abd-Elilah/pherc0826-first-letters-search/releases/download/v1.0/d9v2_ft-012000.pth",
+    "license": "MIT",
+    "preprocessing": "tifxyz_robust",
+    "amp_on_cuda": "float16",
+    "villa": {
+     "source": "git archive of ScrollPrize/villa at 8aa507c1215f1fa8758f13d0538f7af9710e02d7 (VILLA_SRC, so the commit reads as unknown in the run)",
+     "pinned": "8aa507c1215f1fa8758f13d0538f7af9710e02d7"
+    },
+    "loader": "weights_only=True"
+   }
+  },
+  "patch": 128,
+  "stride": 64,
+  "depth": 17,
+  "stack": 21,
+  "blend": "hann (villa, floored)",
+  "batch": 64,
+  "torch": "2.13.0+cpu"
+ },
+ "crops": {
+  "0841-w00": {
+   "box": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "gate": {
+    "rule": "ink-lens-gate-v1",
+    "papyrus_px": 387710,
+    "region_px": 409600,
+    "threshold": 0.527333,
+    "excess": 15.4345,
+    "forward_above": 0.154345,
+    "control_above": 0.010002,
+    "status": "ink",
+    "status_text": "ink above the control: at least 3 times as many pixels pass the control's 99th percentile as the control",
+    "note": "Model output, not a reading."
+   },
+   "label_shares": {
+    "ink_px": 84484,
+    "background_px": 177660,
+    "ink_kept_share": 0.53927,
+    "background_kept_share": 0.03108,
+    "ink_share_larger": true,
+    "inner": 64
+   },
+   "auc_forward": 0.9147,
+   "auc_reverse": 0.5955,
+   "patches": 486,
+   "seconds": 142.272,
+   "device": "cpu",
+   "pass": true
+  },
+  "0841-ag896": {
+   "box": [
+    2496,
+    3136,
+    1600,
+    2240
+   ],
+   "gate": {
+    "rule": "ink-lens-gate-v1",
+    "papyrus_px": 387276,
+    "region_px": 409600,
+    "threshold": 0.490485,
+    "excess": 21.1552,
+    "forward_above": 0.211552,
+    "control_above": 0.010001,
+    "status": "ink",
+    "status_text": "ink above the control: at least 3 times as many pixels pass the control's 99th percentile as the control",
+    "note": "Model output, not a reading."
+   },
+   "label_shares": {
+    "ink_px": 83154,
+    "background_px": 150746,
+    "ink_kept_share": 0.52252,
+    "background_kept_share": 0.07064,
+    "ink_share_larger": true,
+    "inner": 64
+   },
+   "auc_forward": 0.8299,
+   "auc_reverse": 0.5606,
+   "patches": 486,
+   "seconds": 148.23,
+   "device": "cpu",
+   "pass": true
+  },
+  "0841-ag405": {
+   "box": [
+    1024,
+    1664,
+    2496,
+    3136
+   ],
+   "gate": {
+    "rule": "ink-lens-gate-v1",
+    "papyrus_px": 388583,
+    "region_px": 409600,
+    "threshold": 0.552445,
+    "excess": 17.6333,
+    "forward_above": 0.176333,
+    "control_above": 0.01,
+    "status": "ink",
+    "status_text": "ink above the control: at least 3 times as many pixels pass the control's 99th percentile as the control",
+    "note": "Model output, not a reading."
+   },
+   "label_shares": {
+    "ink_px": 67060,
+    "background_px": 184412,
+    "ink_kept_share": 0.49663,
+    "background_kept_share": 0.07073,
+    "ink_share_larger": true,
+    "inner": 64
+   },
+   "auc_forward": 0.8392,
+   "auc_reverse": 0.6842,
+   "patches": 486,
+   "seconds": 111.865,
+   "device": "cpu",
+   "pass": true
+  }
+ },
+ "swapped": {
+  "0841-w00": {
+   "gate": {
+    "rule": "ink-lens-gate-v1",
+    "papyrus_px": 387710,
+    "region_px": 409600,
+    "threshold": 0.754559,
+    "excess": 0.0,
+    "forward_above": 0.0,
+    "control_above": 0.010002,
+    "status": "none",
+    "status_text": "no ink above the control: the stored order passes the control's 99th percentile no more than 1.5 times as often as the control itself",
+    "note": "Model output, not a reading."
+   },
+   "pass": true
+  },
+  "0841-ag896": {
+   "gate": {
+    "rule": "ink-lens-gate-v1",
+    "papyrus_px": 387276,
+    "region_px": 409600,
+    "threshold": 0.762226,
+    "excess": 0.0,
+    "forward_above": 0.0,
+    "control_above": 0.010001,
+    "status": "none",
+    "status_text": "no ink above the control: the stored order passes the control's 99th percentile no more than 1.5 times as often as the control itself",
+    "note": "Model output, not a reading."
+   },
+   "pass": true
+  },
+  "0841-ag405": {
+   "gate": {
+    "rule": "ink-lens-gate-v1",
+    "papyrus_px": 388583,
+    "region_px": 409600,
+    "threshold": 0.782669,
+    "excess": 0.0,
+    "forward_above": 0.0,
+    "control_above": 0.01,
+    "status": "none",
+    "status_text": "no ink above the control: the stored order passes the control's 99th percentile no more than 1.5 times as often as the control itself",
+    "note": "Model output, not a reading."
+   },
+   "pass": true
+  }
+ },
+ "no_papyrus": {
+  "box": [
+   0,
+   640,
+   0,
+   640
+  ],
+  "gate": null,
+  "refused": "the region is all zero (off the segment, or a hole in it)",
+  "pass": true
+ },
+ "note": "Development numbers on windows chosen with the labels, not a blind test. Model output, not a reading.",
+ "pass": {
+  "labeled_crops": true,
+  "swapped": true,
+  "no_papyrus": true,
+  "all": true
+ },
+ "wall_seconds": 434.2,
+ "machine": "Claude cloud container, 4 CPU cores, torch 2.13.0+cpu, fp32, batch 64, 2026-10-20"
+}

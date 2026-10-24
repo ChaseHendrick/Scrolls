@@ -8,7 +8,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **absorption contrast**: Image contrast that comes from how strongly different materials absorb X-rays.
 
-**affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalogue publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
+**affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
 **AppImage**: A single-file Linux application package. villa releases VC3D as one; `kit vc3d` can run VC3D through it.
 
@@ -16,15 +16,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **At a glance table**: The two-column table at the top of every tool page in `docs/tools/` (Id, Status, Kind, Area, Run, Code, Tests, Needs, Runs on, Network, Writes, Go-ahead, Released, Checked). An agent reads it first. See [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md).
 
-**AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labelled ink pixels above labelled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
+**AUC (pixel AUC)**: Area under the ROC curve. Here it measures how well an ink map ranks labeled ink pixels above labeled non-ink pixels, inside a segment's supervision mask (`kit auc`). 0.5 is chance and 1.0 is perfect. An AUC is reported beside the same reader's reverse-depth map as the control.
 
-**Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyses a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
+**Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyzes a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
 
-**AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix4` (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
+**AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix5`, version 0.1.5 (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
 
 ## B
 
-**B300**: An NVIDIA data-centre GPU. It is the default GPU for Modal jobs in this repository, falling back to B200, H200 and H100 when none is free.
+**B300**: An NVIDIA data-center GPU. It was the default GPU for Modal jobs in this repository until 23 Oct 2026, falling back to B200, H200 and H100 when none was free. Hugging Face Jobs, where paid work runs now, do not offer it.
 
 **benchmark**: A fixed test with a fixed scoring rule, used to compare readers or tools. The numbers live in [`docs/results.json`](docs/results.json).
 
@@ -42,21 +42,29 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **carbonized**: Turned to carbon-rich material by heat. The Herculaneum scrolls were carbonized in the eruption of Vesuvius in 79 CE.
 
-**catalogue (catalog)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
+**catalog (catalogue)**: The challenge's machine-readable list of samples, scans, volumes, segments and models. `kit/vc3d_catalog.py` resolves plans through it.
+
+**Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
 
 **checkpoint**: The saved weights of a trained model.
+
+**Connect your tool (panel)**: The section every one of Chase's Hugging Face Spaces carries (24 Oct 2026): the URLs of the data the page shows, with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, curl, gradio_client and MCP. Written from each Space's `connect.json` by `python -m kit spaceconnect`; page [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
+
+**claims ledger (`docs/claims/sources.json`)**: The list, per block of the README's Novel findings, of the results units and files its numbers come from, each pinned to its sha256, and a reason (setting, count, derived, external or context) for any number no source holds. `python -m kit.claimcheck check` fails when a number has neither. See [`docs/tools/claimcheck.md`](docs/tools/claimcheck.md).
 
 **chunk**: One stored block of a zarr array. Readers fetch only the chunks they need.
 
 **control**: A deliberately wrong or scrambled input run through the same check, so that the check is shown able to fail. Examples here are the reverse-depth map, the depth-shuffled volume, a displaced map and a rotated or IAAFT copy.
 
+**control-set threshold**: Ink Lens's threshold for one region: the 99th percentile of the region's own reverse-depth ink map over its papyrus. Only stored-order ink above it is kept, and the region's status compares the share above it with the control's 1 % ([`docs/prereg/2026-10-20-ink-lens-gate.md`](docs/prereg/2026-10-20-ink-lens-gate.md)).
+
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 
-**crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labelled ink, with a 64 pixel inner edge left out (`--inner 64`).
+**crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labeled ink, with a 64 pixel inner edge left out (`--inner 64`).
 
 **CT (computed tomography)**: Building a 3D image of an object from many X-ray projections taken at different angles.
 
-**CTC**: Connectionist temporal classification, a way to train a network to output a sequence (here, letters along a line) without marking where each letter sits. The Greek letter reader uses a CTC line network.
+**CTC**: Connectionist temporal classification, a way to train a network to output a sequence (here, letters along a line) without marking where each letter sits. Scroll Text Reader's Greek LineNet uses a CTC line network.
 
 **CUDA**: NVIDIA's GPU programming platform. Most villa training and inference assume an NVIDIA GPU with CUDA.
 
@@ -74,15 +82,17 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## E
 
+**empty-chunk marker**: A `.empty` file VC3D writes in its remote chunk cache when the server answers 404 for a chunk; VC3D then reads that chunk as zeros for good. A marker for a chunk the bucket holds is a false one ([vc3d-cache](docs/tools/vc3d-cache.md)).
+
 **ESRF**: The European Synchrotron Radiation Facility in Grenoble, where scrolls have been scanned since 2025.
 
 **evidence archive**: A frozen folder under `docs/evidence/` with the inputs, rules, scripts, results and SHA-256 hashes of one study. These folders are not edited.
 
 ## F
 
-**false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds. VC3D then caches the chunk as empty. `kit/s3retry.py` and `kit/s3relay.py` work around it.
+**false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds, with the error code `NoSuchBucket` instead of `NoSuchKey`. VC3D then caches the chunk as empty (an empty-chunk marker) and reads it as zeros. `kit/s3retry.py` asks again; `python -m kit s3relay` keeps it away from VC3D and `python -m kit vc3dcache` deletes the false markers ([how-to](docs/vc3d-false-404.md)).
 
-**fibre (fiber)**: A strand of the papyrus plant, visible in CT. Fibres run horizontally on the recto.
+**fiber (fibre)**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
 
 **fine-tune**: A model made by further training an existing model on new data.
 
@@ -98,9 +108,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## G
 
+**gap letter accuracy**: In the Greek gap restoration benchmark (`python -m kit.greekfill`, [page](docs/tools/greekfill.md)), the share of hidden letters a model puts back in the right place, counted position by position, so a reply of the wrong length loses the letters it misplaces.
+
 **Gate A**: The repository's rule for ranking two released ink readers (`python -m kit gate`, rule in `kit/gate.py`): a lead of at least 0.02 mean AUC over three PHerc0841 crops, with forward minus reverse AUC at least 0.10 on every crop.
 
-**generalization**: How well a model does on data it was not trained on. Claims of generalization need a held-out labelled segment.
+**generalization**: How well a model does on data it was not trained on. Claims of generalization need a held-out labeled segment.
 
 **GPU**: A graphics processor, used here for fast model training and inference.
 
@@ -110,11 +122,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## H
 
-**held-out**: Data a model never saw in training. A test on held-out data is the only kind that supports a claim about how well a model generalizes. For example, w045 is held out from v8in but not from `ink_9um`, which trained on its 2.4 µm render. Which released reader trained on which labelled segment is tabulated in [`docs/logs/2026-10-16-reader-exposure.md`](docs/logs/2026-10-16-reader-exposure.md).
+**Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
+
+**held-out**: Data a model never saw in training. A test on held-out data is the only kind that supports a claim about how well a model generalizes. For example, w045 is held out from v8in but not from `ink_9um`, which trained on its 2.4 µm render. Which released reader trained on which labeled segment is tabulated in [`docs/logs/2026-10-16-reader-exposure.md`](docs/logs/2026-10-16-reader-exposure.md).
 
 **Hecate**: An ink model by Giorgio Angelotti, used in the PHerc. 343 First Letters result. Its base model is `scrollprize/ink_canonical_2um`, whose committed trainer lists all three PHerc0841 segments, so PHerc0841 is not held out from Hecate, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md)).
 
 **Herculaneum papyri (Herculaneum scrolls)**: Papyrus rolls from a Roman villa at Herculaneum, carbonized by Vesuvius in 79 CE.
+
+**hero (hero image)**: The wide picture at the top of a README or release entry. Here every released tool has one: 1920 x 640 pixels, WebP, at most 300 KB, in the charcoal, ivory and copper style of the root README's, with its media label in the caption. Made by `scripts/media/hero.py`; listed in [`docs/assets/README.md`](docs/assets/README.md).
 
 **Hugging Face**: A site that hosts models, datasets and small web apps called Spaces. Several released weights and the Unroll viewer live there.
 
@@ -124,7 +140,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **inference**: Running a trained model on new data to get predictions.
 
+**Ink Bench**: The ink map scoring in the Unroll Space. It aligns an ink map of one PHerc0139 winding with the published 2.4 um ink detection and reports Pearson r, IoU, Dice and average precision, with the X-ray intensity and uniform noise as floors; `tools/inkbench.py` in the Space gives the same numbers on the command line. It scores agreement with another model's output, not ground truth ([`docs/tools/unroll.md`](docs/tools/unroll.md)).
+
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
+
+**Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
 
 **ink label (inklabels)**: A human-drawn mask of where ink is on a segment (`inklabels.zarr`), used for training and scoring.
 
@@ -134,15 +154,25 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **intercolumn**: The blank space between two columns of text.
 
+**integrity check (`kit integrity`)**: This repository's checker for Vesuvius claims: an ink score needs its reverse-depth control and a held-out status from that reader, wording must not call model output a reading, a preregistration must precede its result, citations must match arXiv. It plants faults it must catch before it reports anything. The `vesuvius-integrity` Claude skill states the same rules as instructions ([guide](docs/integrity.md)).
+
+**isometry (of a segment grid)**: How closely a tifxyz grid keeps the spacing its `meta.json` promises: every edge's 3D length over the promised step, each cell's area over the promised area, and the angle between the grid's two directions (1.0, 1.0 and 90 degrees when exact). `kit tifxyz stretch` reports them; a grid far from isometric distorts a flattened render ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
+
 ## K
 
 **Kaggle**: A data-science competition platform that has hosted Vesuvius Challenge competitions.
+
+**keep-open**: The label on a ScrollPrize/villa pull request that exempts it from villa's daily time-limit workflow, which otherwise closes a PR after 14 days without activity or 28 days open; `kit prclock` shows each PR's clock ([`docs/tools/villapr.md`](docs/tools/villapr.md)).
 
 **keV (kiloelectronvolt)**: The unit of X-ray photon energy. Scan names in the bucket give it, for example `113keV`.
 
 **kit**: The repository's Python package (`python -m kit`). It plans and records runs of the official pipeline, scores ink maps, checks results and keeps the experiment ledger. Every subcommand is in `kit/cli.py`; the full list is in [`docs/MAP.md`](docs/MAP.md).
 
+**Kneser-Ney (KN) letter model**: A letter n-gram language model that predicts each letter from the few before it, with modified Kneser-Ney smoothing (Chen and Goodman 1999). Here it is the baseline of the Greek gap restoration benchmark (`kit/greekkn.py`, order 8) and, separately, Scroll Text Reader's optional order-5 prior (`kit/greeklm.py`).
+
 ## L
+
+**label set**: One dated folder of a segment's published ink labels on the open-data bucket, `SCROLL/segments/SEGMENT/ink-labels/<voxel size>um-volume-<VOLUME>/<date>/`, holding `inklabels.zarr`, `supervision.zarr` and sometimes `validation.zarr`, all drawn on one volume's render. `kit labels` lists them ([`docs/tools/labels.md`](docs/tools/labels.md)).
 
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
@@ -158,7 +188,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
 
-**mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labelled ink or trusted labels.
+**memorisation probe**: In the Greek gap restoration benchmark, an item that shows the start of a passage and asks for the next letters exactly; high accuracy would mean a model recalls the text rather than restores it.
+
+**mask**: An image that marks which pixels or voxels belong to a region, such as papyrus, labeled ink or trusted labels.
+
+**media label**: What a picture shows, written first in its caption and in its sidecar JSON: Concept illustration, Real data render, Model output or Synthetic demo ([`docs/assets/README.md`](docs/assets/README.md)). Public Scrolls holds concept illustrations, synthetic demos and real data renders allowed by the public media rule; model output pictures and real data renders of prize-eligible scrolls stay in Scrolls-private.
 
 **MedNeXt**: A U-Net built from ConvNeXt blocks (large depthwise kernels), in sizes S, B, M and L. In the nnU-Net Revisited comparison it is the one family that scored above nnU-Net's ResEnc L on every dataset, at about twice the training time.
 
@@ -166,11 +200,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
 
-**micro-CT**: CT at micrometre resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
+**micro-CT**: CT at micrometer resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
 
-**micrometre (µm, um)**: One thousandth of a millimetre. Written "um" in file names and some docs.
+**micrometer (µm, um)**: One thousandth of a millimeter. Written "um" in file names and some docs.
 
-**Modal**: A cloud computing service that runs jobs on rented GPUs and CPUs, billed by use. In this repository any job that needs a GPU, or more than about an hour of CPU, runs on Modal. Specs are in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and prices in [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md).
+**Modal**: A cloud computing service that runs jobs on rented GPUs and CPUs, billed by use. Until 23 Oct 2026 any job here that needed a GPU, or more than about an hour of CPU, ran on Modal; paid work now runs on Hugging Face (AGENTS.md hard rule 11). Past specs are in [`docs/compute/modal-specs/`](docs/compute/modal-specs/README.md) and prices in [`docs/compute/modal-pricing.md`](docs/compute/modal-pricing.md).
 
 **model card**: A short document that describes a released model: its training data, intended use, results and limits.
 
@@ -178,7 +212,9 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## N
 
-**nnU-Net**: A self-configuring U-Net framework: given a labelled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
+**Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
+
+**nnU-Net**: A self-configuring U-Net framework: given a labeled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
 
 **normal**: A direction perpendicular to a surface. A normal grid is a published 3D field of such directions that tracing uses.
 
@@ -187,6 +223,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **NumPy**: The standard Python library for numerical arrays. Several released tools need only NumPy to run.
 
 ## O
+
+**OCR (optical character recognition)**: A model proposing text from an image. Its output still needs independent checks and is not a verified reading.
 
 **OME-Zarr**: A zarr layout for large microscopy-style images, with several resolution levels and metadata. The challenge stores its CT volumes this way.
 
@@ -204,6 +242,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **pixel AUC**: See AUC.
 
+**planted defect (`kit.planted`)**: A sheet switch, lens, skip, merger, hole or bridged hole put on purpose into a synthetic tifxyz surface whose every vertex records the winding it truly sits on, so a detector, stack check or labeler can be tested against a known answer. Synthetic data only ([`docs/tools/planted.md`](docs/tools/planted.md)).
+
 **preregistration**: Writing down the readout rule, data and pass bar before any result is seen (`python -m kit run init`, or a committed file in `docs/prereg/`). It stops a rule from being tuned to fit the answer.
 
 **prize eligible**: A scroll that one of the open prizes accepts results on. `python -m kit prizes` lists them from a dated snapshot; [scrollprize.org/prizes](https://scrollprize.org/prizes) wins where they differ. Results on a prize-eligible scroll stay private until the official announcement.
@@ -212,21 +252,27 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **provenance**: The record of who ran what, when, on which machine and from which inputs (`kit/provenance.py`).
 
-**pseudo-label**: A provisional label created from model output and human review. Pseudo-labelling trains a model, keeps its confident predictions as new labels and trains again.
+**pseudo-label**: A provisional label created from model output and human review. Pseudo-labeling trains a model, keeps its confident predictions as new labels and trains again.
+
+**public media rule**: What pictures and clips public Scrolls' Git may hold (18 October 2026, set by the agents on Chase's delegation): concept illustrations, synthetic demos, and real data renders of public scans that are not prize eligible and show no held-out labels, each at most 1920 px wide and 4 MB with a sidecar; never model output of any scroll ([`docs/media/README.md`](docs/media/README.md)).
 
 ## R
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
-**recto**: The written inner side of a roll, where the fibres run horizontally.
+**recto**: The written inner side of a roll, where the fibers run horizontally.
+
+**remote chunk cache (VC3D)**: The folder where VC3D keeps every chunk it streams from a remote volume, so later runs read them from disk; `kit doctor --remote` shows where it is and how much space it has ([`docs/tools/doctor.md`](docs/tools/doctor.md)).
 
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
 
-**resolution (voxel size)**: The edge length of one voxel, given in micrometres, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
+**resolution (voxel size)**: The edge length of one voxel, given in micrometers, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
 **ROC curve**: A plot of true positive rate against false positive rate over all thresholds. AUC is the area under it.
+
+**ROCm**: AMD's GPU computing stack, the counterpart of NVIDIA's CUDA. PyTorch has ROCm builds that run CUDA code through `torch.cuda`; `kit doctor` reports a ROCm card as a warning, because villa's spiral fitting asks for an NVIDIA GPU.
 
 **routine (`kit routines`)**: A recurring, read-only repository check listed in `docs/routines.json`, daily or weekly, that any agent runs at session start with `python3 -m kit routines run --due`, so it does not depend on one account's scheduler. Its results stay in the ignored `work/routines/`.
 
@@ -238,17 +284,25 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
+**Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the Center Finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
+
+**Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
+
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
-**SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial licence.
+**SegFormer**: A 2D segmentation network with a hierarchical transformer encoder (Mix Transformer, sizes B0 to B5) and a light MLP decoder. Its code and weights are under NVIDIA's non-commercial license.
 
 **segment**: A traced piece of papyrus surface together with its rendered surface volume. Segments are named by id, for example w035 or w045 of PHerc0139.
+
+**Segment Atlas**: The table of `kit tifxyz`'s numbers for every tifxyz mesh on the open-data bucket, one row per mesh, published as the Hugging Face dataset SharpMeow/vesuvius-segment-atlas and refreshed daily (`python -m kit atlas`, [`docs/tools/atlas.md`](docs/tools/atlas.md)).
 
 **segmentation (tracing)**: Finding and tracing the rolled papyrus surface inside a CT volume.
 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.
 
 **sheet switch**: A tracing error in which a mesh jumps from one turn of papyrus to another.
+
+**sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).
 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
 
@@ -257,6 +311,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
+
+**submitcheck**: `kit submitcheck`, a preflight of a prize submission folder against the prize page's file rules (tifxyz meshes, image names, Grand Prize `column_NN` names), quoting each rule ([`docs/tools/submitcheck.md`](docs/tools/submitcheck.md)).
 
 **supervision mask (supervision.zarr)**: The region of a segment where its ink labels are trusted. Scores are computed only inside it.
 
@@ -272,6 +328,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## T
 
+**termstyle**: The terminal look of every Scrolls command (`kit/termstyle.py`): colour, wrapping and a title and closing line on a terminal, plain text everywhere else; `kit live` is its mouse viewer ([page](docs/tools/termstyle.md)).
+
+**Tesseract**: An open-source local OCR engine with separate language packs. The reader can explicitly select an installed pack and records its hash; printed-text accuracy does not establish accuracy on scroll ink maps.
+
 **threshold**: A cut-off value that turns a probability map into a yes or no mask.
 
 **tifxyz**: A surface format of three float32 TIFF images giving the x, y and z position of each grid cell, with -1 for missing cells.
@@ -280,17 +340,23 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
 
+**touched chunks**: The chunks of a zarr volume that lie within a margin of a segment's surface: the only part of the volume a render or check of that segment reads. `kit tifxyz chunks` lists them with their bytes and can copy only those ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
+
 **trace (tracer)**: A traced surface, and the program that grows it. villa's tracer grows a surface from a seed.
 
 **training labels**: The labels a model learned from. Scoring a model on its own training labels shows only that the pipeline runs, not that the model generalizes.
 
+**two-density score**: A simple ink score with no network (`kit strokenet --two-density`): for each 48 px label window (about 2.2 mm) of a pooled ink map, z(logit of its ink density) plus 0.25 times z(logit of the ink density of the 128 px window around it), z taken within one map, so it ranks windows of one map and never compares maps. Its one test was on PHerc0500P2 with ink_9um ([model card](docs/strokenet.md#the-two-density-score)). Model output, not a reading.
+
 ## U
 
-**U-Net**: A common neural network shape for image segmentation. The scroll centre finder uses two small U-Nets.
+**U-Net**: A common neural network shape for image segmentation. The Center Finder uses two small U-Nets.
 
-**uint8**: An 8-bit unsigned whole number (0 to 255), the data type of the catalogue volumes.
+**uint8**: An 8-bit unsigned whole number (0 to 255), the data type of the catalog volumes.
 
-**umbilicus**: The central axis of a roll. In the data it is a fitted centre line with one control point per height.
+**umbilicus**: The central axis of a roll. In the data it is a fitted center line with one control point per height.
+
+**umbilicus.json**: The umbilicus file name VC3D searches for first, beside its project file and its segment folders (then `estimated_umbilicus.json`), and the one a spiral-fitting dataset folder must hold. Its `metadata` may state `volume_width`, `volume_height` and `volume_slices`, the voxel grid its points are in (all three or none; VC3D refuses a partial set), which VC3D uses to place the points on the volume it has open. `scripts/umbilicus/predict.py --vc3d-name` writes one with the scan's level-0 grid when available ([page](docs/tools/umbilicus.md#use-it-in-vc3d-and-spiral-fitting)).
 
 **Unroll**: A browser viewer on Hugging Face Spaces that rebuilds traced windings of PHerc. 139 ([`docs/unroll-space.md`](docs/unroll-space.md)).
 
@@ -302,7 +368,9 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **VC3D (Volume Cartographer 3D)**: The main application for viewing CT volumes and tracing, rendering and flattening surfaces. It is part of villa.
 
-**verso**: The outer back side of a roll, where the fibres run vertically.
+**VC3D plugin**: A JSON manifest that adds one external tool to VC3D's Plugins menu: the program, its arguments with placeholders for what VC3D has open, and how VC3D loads what it writes. Proposed on villa branch `vc3d-plugins`; this repository's manifests are in [`plugins/`](plugins/README.md).
+
+**verso**: The outer back side of a roll, where the fibers run vertically.
 
 **Vesuvius Challenge**: The public competition, with prizes, to read the Herculaneum scrolls from X-ray scans ([scrollprize.org](https://scrollprize.org/)).
 
@@ -312,13 +380,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **volume**: A reconstructed 3D CT image of a scroll or fragment.
 
-**voxel**: A volume element, the 3D version of a pixel. Voxel size is its edge length in micrometres.
+**voxel**: A volume element, the 3D version of a pixel. Voxel size is its edge length in micrometers.
 
 ## W
 
 **weights**: The learned numbers inside a trained model. Weights are never stored in git here; released weights are downloaded and checked by SHA-256.
 
-**winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the centre.
+**winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
+
+**wrap pitch**: The radial distance from one wrap of a scroll to the next. `kit coverage` measures it on the published meshes: along a mesh row that goes more than a full turn around the center line, the radius one turn further on less the radius here ([`docs/tools/coverage.md`](docs/tools/coverage.md)).
 
 ## X
 

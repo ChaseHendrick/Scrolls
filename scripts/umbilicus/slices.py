@@ -3,7 +3,7 @@
 Standard library plus numpy and requests (scipy for smooth_z; numcodecs only for Arr and extract, the whole-chunk
 reader the 13 October training runs used, which `slices.py extract` and predict.py replace with extract_ranged).
 """
-import functools, json, os, re, threading, time
+import functools, json, os, re, sys, threading, time
 import numpy as np
 from concurrent.futures import ThreadPoolExecutor
 
@@ -17,7 +17,7 @@ BUCKET_UMB = {"PHerc0125": "PHerc0125/representations/umbilicus/20250821151825-u
 DROBKOV_SCROLLS = ["PHerc0191", "PHerc0257", "PHerc0268", "PHerc0358", "PHerc0800", "PHerc0813", "PHerc1203",
                    "PHerc1218", "PHerc1447", "PHerc1545"]
 LABELLED = list(BUCKET_UMB) + DROBKOV_SCROLLS
-# Optional: scrolls with no published centre line that training runs also predict (empty by default; see README.md)
+# Optional: scrolls with no published center line that training runs also predict (empty by default; see README.md)
 UNLABELLED = []
 
 _S = None
@@ -98,6 +98,18 @@ class PlaneReader:
             sy, ey = max(gy, ya), min(gy + C, yb); sx, ex_ = max(gx, xa), min(gx + C, xb)
             out[sy - y0:ey - y0, sx - x0:ex_ - x0] = t[sy - gy:ey - gy, sx - gx:ex_ - gx]
         return out
+
+def level0_shape(vol):
+    """[z, y, x] of level 0 of a bucket scan, from its `.zarray` (one small request); None when the bucket has no
+    level-0 `.zarray` at that path. ValueError when its shape is not three positive integers."""
+    raw = get(B + f"{vol.rstrip('/')}/0/.zarray")
+    if raw is None:
+        return None
+    shape = json.loads(raw).get("shape")
+    if not (isinstance(shape, list) and len(shape) == 3
+            and all(isinstance(v, int) and not isinstance(v, bool) and v > 0 for v in shape)):
+        raise ValueError(f"{vol}/0/.zarray: shape {shape!r} is not three positive integers")
+    return shape
 
 def ls(prefix):
     t = get(B + "?list-type=2&delimiter=/&prefix=" + prefix).decode()   # retries and a status check
@@ -182,14 +194,26 @@ def extract(s, out, level=3, every=8):
             for i in sel:
                 ct[i] = blk[zs[i] - L]
     um = float(vol.split("/")[-1].split("-")[1].replace("um", ""))
-    np.savez_compressed(out, ct=ct, z_l0=zs * 2 ** level, vol=vol, um=um, level=level)
+    np.savez_compressed(out, ct=ct, z_l0=zs * 2 ** level, vol=vol, um=um, level=level, **_shape_l0(vol))
     return out
+
+def _shape_l0(vol):
+    """{"shape_l0": [z, y, x]} of the scan's level 0 for a slice file, or {} when the bucket has none: the
+    volume dimensions an umbilicus file is stamped with (pipeline.volume_dims)."""
+    try:
+        shape = level0_shape(vol)
+    except (RuntimeError, ValueError, OSError) as e:
+        print(f"{vol}: no shape_l0 stored: level-0 metadata could not be read ({e}); CT slices are kept",
+              file=sys.stderr)
+        return {}
+    return {} if shape is None else {"shape_l0": np.asarray(shape, np.int64)}
 
 def extract_ranged(s, out, level=3, every=8, vol=None, threads=16):
     """extract's output (every `every`-th plane of level `level`, z in level-0 voxels) read plane by plane with
     range requests (PlaneReader): about 1 MB per level-3 plane, instead of whole 128-plane chunks. The file also holds
-    `missing` (chunk reads the bucket answered with NoSuchKey, read as 0) and `chunks` (all chunk reads). Nothing is
-    written when every chunk read was absent: the scan is not at that path (or not at that level)."""
+    `missing` (chunk reads the bucket answered with NoSuchKey, read as 0), `chunks` (all chunk reads) and, when the
+    bucket has a level-0 `.zarray`, `shape_l0` (level 0's [z, y, x]). Nothing is written when every chunk read was
+    absent: the scan is not at that path (or not at that level)."""
     vol = (vol or volume(s)).rstrip("/")
     r = PlaneReader(vol, level); Z = r.shape[0]
     zs = np.arange(every // 2, Z, every)
@@ -199,12 +223,13 @@ def extract_ranged(s, out, level=3, every=8, vol=None, threads=16):
     if r.missing >= chunks:
         raise RuntimeError(f"{vol}/{level}: all {chunks} chunk reads were absent (NoSuchKey); no slice file written")
     um = float(vol.split("/")[-1].split("-")[1].replace("um", ""))
-    np.savez_compressed(out, ct=ct, z_l0=zs * 2 ** level, vol=vol, um=um, level=level, missing=r.missing, chunks=chunks)
+    np.savez_compressed(out, ct=ct, z_l0=zs * 2 ** level, vol=vol, um=um, level=level, missing=r.missing, chunks=chunks,
+                        **_shape_l0(vol))
     return out
 
 if __name__ == "__main__":
     import argparse
-    ap = argparse.ArgumentParser(description="Slice files for the centre finder: every 8th level-3 plane of a scan.")
+    ap = argparse.ArgumentParser(description="Slice files for the Center Finder: every 8th level-3 plane of a scan.")
     ap.add_argument("cmd", choices=["extract"]); ap.add_argument("scrolls", nargs="*", help="default: the 13 published scrolls")
     ap.add_argument("--out", required=True)
     a = ap.parse_args()

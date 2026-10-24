@@ -1,0 +1,88 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "unroll-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.",
+  "caption": "Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": "unroll",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "unroll-hero.webp",
+      "bytes": 172136,
+      "sha256": "812f82ab67c1bbd8a7b06bdcd3883f46a69da3b600dc3b6f3fa6af2b818341ab",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "unroll-card.jpg",
+      "bytes": 106478,
+      "sha256": "258a56e009a7355f76a9d7972d24deca6d9c8ac9c2c3b51687151f4e0898c22c",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/unroll.json --out-dir docs/assets/unroll",
+  "recipe": {
+    "name": "unroll-hero",
+    "release_id": "unroll",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.",
+    "caption": "Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.",
+    "license": "Apache-2.0",
+    "seed": 11,
+    "scene": {
+      "kind": "procedural",
+      "name": "unroll",
+      "params": {
+        "eye": [
+          -4.3,
+          2.0,
+          7.6
+        ],
+        "target": [
+          0.6,
+          0.4,
+          -0.4
+        ],
+        "key_power": 3.6
+      }
+    },
+    "grade": {
+      "duotone": 0.08,
+      "key": 0.42,
+      "rim": 0.08,
+      "vignette": 0.3,
+      "fade_right": 0.04,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "Unroll",
+      "subtitle": "An interactive 3D viewer that virtually unrolls Herculaneum scroll scans, with ink layers and CT tools.",
+      "focus": [
+        0.24,
+        0.5
+      ]
+    }
+  }
+}

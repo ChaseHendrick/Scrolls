@@ -1,0 +1,47 @@
+{
+ "about": "Draft VC3D plugin manifest for Ink Lens. VC3D has no plugin system on villa main 8aa507c12, and the vc3d-plugins branch did not exist when this was written (20 Oct 2026), so this follows no published schema yet: it states the command-line contract a plugin entry would call, and is kept for this action list. The vc3d-plugin/1 manifest for the Plugins menu on villa branch vc3d-plugins is plugins/ink-lens.json (21 Oct 2026). The same command also runs from a terminal or through the agent bridge (inklens.py run --from-vc3d --bridge).",
+ "manifest_version": "draft-1",
+ "id": "ink-lens",
+ "name": "Ink Lens",
+ "version": "0.1.0",
+ "license": "Apache-2.0",
+ "homepage": "https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/ink-lens",
+ "summary": "A control-checked ink map of the region around the cursor, with letter-candidate pins. Model output, not a reading.",
+ "requires": {
+  "python": ">=3.10",
+  "packages": ["numpy", "tifffile"],
+  "packages_space_mode": ["gradio_client", "huggingface_hub"],
+  "packages_local_mode": ["torch"],
+  "binaries": ["vc_render_tifxyz"],
+  "vc3d": ["agent bridge (--agent-bridge)"]
+ },
+ "actions": [
+  {
+   "id": "lens-cursor",
+   "title": "Ink Lens: region at cursor",
+   "context": "segment",
+   "command": ["python3", "${PLUGIN_DIR}/inklens.py", "run", "--from-vc3d", "--bridge", "${VC3D_BRIDGE}",
+               "--volume", "${VOLUME_PATH}", "--size", "${size}", "--reader", "${reader}", "--windows", "${windows}",
+               "--json"],
+   "inputs": {
+    "size": {"type": "integer", "default": 1024, "min": 128, "max": 2048, "label": "Region side at 9.6 um (px)"},
+    "reader": {"type": "enum", "values": ["d9v2", "ink_9um", "both"], "default": "d9v2"},
+    "windows": {"type": "enum", "values": [3, 1], "default": 3}
+   },
+   "stdout": "json",
+   "exit_codes": {"0": "ink or weak: overlay and pins written", "3": "none or too_small: overlay written, empty",
+                  "2": "refused: nothing written, message on stderr"},
+   "writes": ["SEGDIR/inklens/<run>.png", "SEGDIR/inklens/mosaic.png", "SEGDIR/ink-detections.json (merged)",
+              "SEGDIR/inklens/<run>.pins.json", "SEGDIR/inklens/<run>.json", "SEGDIR/inklens/<run>.letters.json"],
+   "after": ["reload the segment's ink detections (VC3D has no bridge method for it yet)",
+             "the pins are already merged into the current point collections through the bridge"]
+  },
+  {
+   "id": "lens-estimate",
+   "title": "Ink Lens: GPU estimate",
+   "command": ["python3", "${PLUGIN_DIR}/inklens.py", "estimate", "${size}", "${size}", "--windows", "${windows}",
+               "--json"],
+   "stdout": "json"
+  }
+ ]
+}

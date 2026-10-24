@@ -1,3 +1,5 @@
+<a id="ch-spiral"></a>
+
 # The Spiral Fit {#ch-spiral}
 
 > **Chapter summary.** The spiral fit is the main whole-scroll method in 2026. It models the scroll as an ideal Archimedean spiral deformed by a smooth, invertible map (a diffeomorphism), and fits that map to all available evidence: verified patches, fibers, winding annotations, predicted normals and the umbilicus. Its output is one tifxyz mesh per winding; its inverse map is the virtual unrolling. It was introduced by Paul Henderson in 2024, published at WACV 2026, and used in the October 2026 PHerc. 343 first-letters result.
@@ -6,7 +8,7 @@
 
 "We know the scroll was originally one long rectangular sheet, rolled up into a neat spiral. The eruption of Vesuvius deformed that spiral into the crushed shape we see in the CT scan. Instead of reconstructing the surface piece by piece, we search for the combination of ideal scroll shape and smooth deformation that best explains everything we observe. Once we have those, virtual unrolling comes almost for free" [VC-SpiralTutorial]. A fit of PHerc. Paris 4 produced 130 windings [VC-SpiralTutorial].
 
-The method first appeared in Paul Henderson's FASP submission ([Chapter 11](#ch-2024)) [VC-FASP], and is described in "Virtually Unrolling the Herculaneum Papyri by Diffeomorphic Spiral Fitting" (WACV 2026, arXiv 2512.04927) [Henderson2026]. In 2026 Paul Henderson and Sean Johnson extended it to conform to patches, skeletons and points [VC-HardParts].
+The method first appeared in Paul Henderson's FASP submission ([Chapter 11](11-2024.md#ch-2024)) [VC-FASP], and is described in "Virtually Unrolling the Herculaneum Papyri by Diffeomorphic Spiral Fitting" (WACV 2026, arXiv 2512.04927) [Henderson2026]. In 2026 Paul Henderson and Sean Johnson extended it to conform to patches, skeletons and points [VC-HardParts].
 
 ## The mathematics
 
@@ -16,7 +18,7 @@ r(θ) = (ω / 2π) θ,
 
 so each turn moves outward by one sheet spacing ω.
 
-**Deformation.** The damage is modelled as a diffeomorphism, "a smooth, differentiable, invertible map of 3D space". This guarantees that the sheet cannot tear, pass through itself or collapse, and that "any point in the scan maps back to a point on the ideal (i.e. flattened) scroll. That inverse map is the virtual unrolling" [VC-SpiralTutorial]. It is composed of [VC-SpiralTutorial]:
+**Deformation.** The damage is modeled as a diffeomorphism, "a smooth, differentiable, invertible map of 3D space". This guarantees that the sheet cannot tear, pass through itself or collapse, and that "any point in the scan maps back to a point on the ideal (i.e. flattened) scroll. That inverse map is the virtual unrolling" [VC-SpiralTutorial]. It is composed of [VC-SpiralTutorial]:
 
 1. a coarse global scale and shear;
 2. the integral of a **stationary velocity field** u, the most important part: points follow dφt(x)/dt = u(φt(x)) with φ0(x) = x, and the transform is φ1 (integrated with a few Runge-Kutta steps);
@@ -67,7 +69,7 @@ The code is in villa/spiral-fitting; the entry point is *fit_spiral.py*. It need
 The tutorial's advice [VC-SpiralTutorial]:
 
 - Think of the scroll "as a set of local shapes glued together", a C here, a J there, "or god forbid a Z". The **complexity of the local shape**, not the number of windings or curvature alone, is "the primary multiplier of annotation density".
-- Once a constraint describes a neighbourhood, adding more has little benefit.
+- Once a constraint describes a neighborhood, adding more has little benefit.
 - **Shears**, where the papyrus has broken and shifted, are hard for a smooth field; annotate heavily on both sides.
 - Regular spacing and smooth curvature, long runs of wide gaps, and areas of low curvature "even highly compressed ones" are easier.
 

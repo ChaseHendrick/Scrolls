@@ -1,3 +1,5 @@
+<a id="ch-founding"></a>
+
 # Founding the Vesuvius Challenge {#ch-founding}
 
 > **Chapter summary.** The Vesuvius Challenge was launched on 15 March 2023 by Nat Friedman, Daniel Gross and Brent Seales, with CT data from EduceLab, a Kaggle ink-detection competition and a grand prize for reading text inside a closed scroll. A week after launch the prize pool reached one million dollars. The challenge is run by Scroll Prize, Inc., a 501(c)(3) non-profit. This chapter describes its origins, organization, data agreement, prize philosophy and the teams behind it.
@@ -31,13 +33,13 @@ The Kaggle ink-detection prizes were raised to $100,000 the next day: $25,000, $
 
 ## The data agreement
 
-Access to the scan data originally required agreeing to a data licence. The FAQ summarizes its central publication rule: researchers may generally publish results, provided that "you won't publish any revelation of hidden text (or associated code) without the written approval of Vesuvius Challenge" [VC-FAQ]. Prize rules add that winners must not make a discovery public until the prize is officially announced [VC-Prizes]. Scan volumes now carry the CC BY-NC 4.0 licence or the EduceLab Data License ([Chapter 8](#ch-scans)). [Chapter 28](#ch-ethics) discusses what these terms mean for contributors and for this book.
+Access to the scan data originally required agreeing to a data license. The FAQ summarizes its central publication rule: researchers may generally publish results, provided that "you won't publish any revelation of hidden text (or associated code) without the written approval of Vesuvius Challenge" [VC-FAQ]. Prize rules add that winners must not make a discovery public until the prize is officially announced [VC-Prizes]. Scan volumes now carry the CC BY-NC 4.0 license or the EduceLab Data License ([Chapter 8](08-scans.md#ch-scans)). [Chapter 28](28-ethics.md#ch-ethics) discusses what these terms mean for contributors and for this book.
 
 ## Prize philosophy
 
 The organizers stated from the start that they are "big believers in open source and incremental progress" [VC-KaggleIncrease]. Three principles recur in the prize design:
 
-1. **Open sourcing as a condition of winning.** Milestone prizes require code and results to be released under a permissive licence on acceptance [VC-Prizes].
+1. **Open sourcing as a condition of winning.** Milestone prizes require code and results to be released under a permissive license on acceptance [VC-Prizes].
 2. **Many small prizes alongside a few large ones.** Monthly progress prizes (from $250 to $20,000) reward tools that "actually get used", early release and documentation [VC-Prizes].
 3. **Independent review.** A technical team reproduces methods; an independent papyrology team judges readings, often blind and with multiple reviewers [VC-GrandPrize] [VC-Prizes].
 
@@ -53,4 +55,4 @@ The master plan (as updated in July 2025) describes the work in stages [VC-Maste
 | Three | once unwrapping is automated and ink identification generalizes, systematize and staff scanning, segmenting and reading; "all the remaining 300 scrolls" in 2 to 3 years | $4 to 8 million with an efficient beamline protocol, otherwise $15 million or more |
 | Four | inspire continued excavation of the Villa dei Papiri: "It is a near-certainty that there are more scrolls waiting for us in the dirt" | "largely a political effort" |
 
-The plan states that "full scrolls are 10cm-20cm wide and up to 15 meters long", that "with current techniques, it could cost $1-5 million to unwrap an entire scroll", which for 300 scrolls is "clearly impractical", and that "we believe it's possible to bring the cost of unwrapping an entire scroll to $5000 or below. It might even be possible to fully automate it" [VC-MasterPlan]. [Chapter 25](#ch-compute) returns to these numbers.
+The plan states that "full scrolls are 10cm-20cm wide and up to 15 meters long", that "with current techniques, it could cost $1-5 million to unwrap an entire scroll", which for 300 scrolls is "clearly impractical", and that "we believe it's possible to bring the cost of unwrapping an entire scroll to $5000 or below. It might even be possible to fully automate it" [VC-MasterPlan]. [Chapter 25](25-compute.md#ch-compute) returns to these numbers.

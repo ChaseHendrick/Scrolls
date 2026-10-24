@@ -1,6 +1,8 @@
+<a id="ch-ledger"></a>
+
 # The Prize Ledger {#ch-ledger}
 
-> **Chapter summary.** The public winners list records 233 individual awards totalling **$1,958,500** in 34 rounds from April 2023 to October 2026. The 2023 Grand Prize ($850,000 including runners-up) accounts for 43 percent of the money; 202 progress and open-source awards account for $578,500. This chapter tabulates the rounds, years, categories and award sizes, and explains how the ledger was compiled. The full award-by-award ledger is in Appendix B.
+> **Chapter summary.** The public winners list records 233 individual awards totaling **$1,958,500** in 34 rounds from April 2023 to October 2026. The 2023 Grand Prize ($850,000 including runners-up) accounts for 43 percent of the money; 202 progress and open-source awards account for $578,500. This chapter tabulates the rounds, years, categories and award sizes, and explains how the ledger was compiled. The full award-by-award ledger is in Appendix B.
 
 ## How the ledger was compiled
 

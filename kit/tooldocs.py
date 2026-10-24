@@ -93,7 +93,7 @@ MD_LINK = re.compile(r"\]\(\s*<?([^)\s>]+)>?(?:\s+\"[^\"]*\")?\s*\)")
 AGENT_LINE = re.compile(r"^- \*\*([^*]+?):\*\*")
 CLAIM_LINE = re.compile(r"^(?:- )?Claim label: (.+)$", re.M)
 DASHES = (chr(0x2014), chr(0x2013))
-MIN_MESSAGE = 12
+MIN_MESSAGE = 9
 
 INTRO = """# Tool pages
 
@@ -267,6 +267,23 @@ def _table_rows(lines):
     return rows
 
 
+def _tables(lines):
+    """[(header cells, [row cells])] of each table in these lines, separator rows left out."""
+    tables, current = [], None
+    for line in lines:
+        s = line.strip()
+        if not s.startswith("|"):
+            current = None
+            continue
+        cells = _cells(s)
+        if current is None:
+            current = (cells, [])
+            tables.append(current)
+        elif not all(re.fullmatch(r":?-{3,}:?", c) for c in cells):
+            current[1].append(cells)
+    return tables
+
+
 def _has_header(lines, header):
     want = _cells(header)
     return any(_cells(line) == want for line in lines if line.strip().startswith("|"))
@@ -284,6 +301,7 @@ class Commands:
     """kit's parser: canonical command -> {None: parser, action: parser}, and alias -> canonical name."""
 
     def __init__(self, parser):
+        self.top = parser
         subs = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
         self.parsers, self.aliases, seen = {}, {}, {}
         for name, sub in subs.choices.items():
@@ -421,6 +439,38 @@ def _literal_fragment(node):
     return max((p.strip() for p in parts), key=len, default="")
 
 
+def _literal_parts(node):
+    """The literal stretches of a str constant or an f-string, in order, with a placeholder between each two; []
+    for anything else."""
+    if isinstance(node, ast.Constant) and isinstance(node.value, str):
+        return [node.value]
+    if not isinstance(node, ast.JoinedStr):
+        return []
+    parts, cur = [], ""
+    for v in node.values:
+        if isinstance(v, ast.Constant) and isinstance(v.value, str):
+            cur += v.value
+        else:
+            parts.append(cur)
+            cur = ""
+    parts.append(cur)
+    return parts
+
+
+def message_in(parts, text):
+    """True when a message's literal stretches (whitespace collapsed) appear in text in order, anything (an option
+    value, a path, NAME) between them: how a page writes a message with placeholders."""
+    pos = 0
+    for word in (_collapse(p) for p in parts):
+        if not word:
+            continue
+        at = text.find(word, pos)
+        if at < 0:
+            return False
+        pos = at + len(word)
+    return True
+
+
 def _is_stderr_print(node):
     return (isinstance(node, ast.Call) and getattr(node.func, "id", "") == "print" and node.args
             and any(k.arg == "file" and isinstance(k.value, ast.Attribute) and k.value.attr == "stderr"
@@ -439,15 +489,20 @@ def _ends_badly(stmt):
     return False
 
 
-def error_messages(trees):
+def error_messages(trees, parts=False):
     """Literal fragments of the messages a failure shows: raise X("..."), sys.exit("..."), parser.error("..."),
-    and print(..., file=sys.stderr) inside an except block or right before a nonzero return, an exit or a raise."""
+    and print(..., file=sys.stderr) inside an except block or right before a nonzero return, an exit or a raise.
+    A message counts when its literal text adds up to MIN_MESSAGE characters. With parts=True, each message is the
+    list of its literal stretches (for message_in) instead of its longest stretch."""
     found = []
 
     def add(arg):
-        frag = _literal_fragment(arg)
-        if len(frag) >= MIN_MESSAGE and frag not in found:
-            found.append(frag)
+        stretches = _literal_parts(arg)
+        if len("".join(stretches).strip()) < MIN_MESSAGE:
+            return
+        item = stretches if parts else _literal_fragment(arg)
+        if item not in found:
+            found.append(item)
 
     for tree in trees:
         for n in ast.walk(tree):
@@ -520,6 +575,112 @@ def env_names_sh(text):
     return names
 
 
+def _sh_parts(arg):
+    """The literal stretches of shell words, in order, split where a $VAR, ${...} or $(...) expansion stands."""
+    parts, cur, i, quote = [], "", 0, None
+    while i < len(arg):
+        c = arg[i]
+        if quote != "'" and c == "\\" and i + 1 < len(arg):
+            cur += arg[i + 1]
+            i += 2
+            continue
+        if c in "\"'" and quote in (None, c):
+            quote = None if quote == c else c
+            i += 1
+            continue
+        if c == "$" and quote != "'" and i + 1 < len(arg):
+            nxt = arg[i + 1]
+            if nxt in "{(":
+                close, depth, j = "}" if nxt == "{" else ")", 0, i + 1
+                while j < len(arg):
+                    if arg[j] == nxt:
+                        depth += 1
+                    elif arg[j] == close:
+                        depth -= 1
+                        if depth == 0:
+                            break
+                    j += 1
+                i = j + 1
+            else:
+                m = re.match(r"[A-Za-z_][A-Za-z0-9_]*|[0-9#?@*!$-]", arg[i + 1:])
+                i += 1 + (len(m.group(0)) if m else 0)
+            parts.append(cur)
+            cur = ""
+            continue
+        cur += c
+        i += 1
+    parts.append(cur)
+    return parts
+
+
+SH_COMMAND = re.compile(r"(?:^|[;{&|()]\s*|\b(?:then|else|do)\s+)(echo|printf)\s+(?:-[ne]+\s+)?")
+SH_EXIT = re.compile(r"(?:^|[;{&|]\s*|\bthen\s+)exit\s+([1-9][0-9]*)\b")
+
+
+def _sh_stderr_echoes(line):
+    """(arguments, end, is printf) of each echo or printf in a shell line whose output goes to stderr (`>&2`)."""
+    out = []
+    for m in SH_COMMAND.finditer(line):
+        i, quote = m.end(), None
+        while i < len(line):
+            c = line[i]
+            if quote:
+                if c == "\\" and quote == '"':
+                    i += 2
+                    continue
+                if c == quote:
+                    quote = None
+            elif c in "\"'":
+                quote = c
+            elif c == "\\":
+                i += 2
+                continue
+            elif line.startswith(">&2", i) or line.startswith("1>&2", i):
+                out.append((line[m.end():i], i + (3 if line[i] == ">" else 4), m.group(1) == "printf"))
+                break
+            elif c in ";|&}\n" or line.startswith(">", i):
+                break
+            i += 1
+    return out
+
+
+def sh_error_messages(text, parts=False):
+    """Literal fragments of the messages a shell script prints on stderr just before it exits nonzero: an
+    `echo ... >&2` (or printf) with `exit N` later on the same line, or followed only by more stderr lines and
+    then a line that starts with `exit N`. With parts=True, each is the list of its literal stretches."""
+    lines = [l.strip() for l in text.splitlines()]
+    found = []
+    for i, line in enumerate(lines):
+        if line.startswith("#"):
+            continue
+        for args, stop, printf in _sh_stderr_echoes(line):
+            after = line[stop:]
+            ends = bool(SH_EXIT.search(after))
+            j = i + 1
+            while not ends and j < len(lines):
+                nxt = lines[j]
+                if not nxt or nxt.startswith("#"):
+                    j += 1
+                    continue
+                if SH_EXIT.match(nxt):
+                    ends = True
+                elif ">&2" in nxt and not SH_EXIT.search(nxt):
+                    j += 1           # more of the same message, such as a second line or a log's tail
+                    continue
+                break
+            if ends:
+                stretches = _sh_parts(args)
+                if printf:           # a format string: %s and the like stand for values, \n ends a line
+                    stretches = [s for part in stretches
+                                 for s in re.split(r"%[-+ #0]*[0-9]*(?:\.[0-9]+)?[a-zA-Z]|\\[nt]", part)]
+                if len("".join(stretches).strip()) < MIN_MESSAGE:
+                    continue
+                item = stretches if parts else max((s.strip() for s in stretches), key=len, default="")
+                if item not in found:
+                    found.append(item)
+    return found
+
+
 def script_options(tree):
     """Long options a script's argparse code defines (add_argument("--x", ...)), hidden ones left out."""
     out = []
@@ -533,6 +694,495 @@ def script_options(tree):
                         and a.value not in out:
                     out.append(a.value)
     return out
+
+
+# ---------------------------------------------------------------- argparse read statically (scripts, entry points)
+
+
+UNREAD = object()      # a value the checker cannot read without running the code
+
+
+class StaticArg:
+    """One add_argument call as written: option strings or a positional, and what the code says of it."""
+
+    def __init__(self, strings, kw):
+        self.strings = tuple(strings)
+        self.positional = bool(strings) and not strings[0].startswith("-")
+        self.kw = kw
+        dest = kw.get("dest")
+        if not isinstance(dest, str):
+            dest = strings[0] if self.positional else \
+                next((s for s in strings if s.startswith("--")), strings[0] if strings else "").lstrip("-")
+            dest = dest.replace("-", "_") if not self.positional else dest
+        self.dest = dest
+        self.suppressed = kw.get("help") is argparse.SUPPRESS
+
+    @property
+    def options(self):
+        return () if self.positional else self.strings
+
+    @property
+    def shown(self):
+        """The names usage shows for a positional: its metavar (or each of a tuple of them), else its dest."""
+        mv = self.kw.get("metavar")
+        if isinstance(mv, str):
+            return (mv,)
+        if isinstance(mv, tuple) and all(isinstance(m, str) for m in mv):
+            return mv
+        return (self.dest,)
+
+    def usage_names(self):
+        """What usage shows for a positional: {a,b} for literal choices without a metavar, else shown; () when the
+        checker cannot tell."""
+        choices = self.kw.get("choices")
+        if self.kw.get("metavar") is None and choices is not None:
+            if isinstance(choices, (list, tuple)):
+                return ("{" + ",".join(str(c) for c in choices) + "}",)
+            return ()
+        return self.shown
+
+    @property
+    def name(self):
+        if self.positional:
+            return self.shown[0]
+        return next((s for s in self.strings if s.startswith("--")), self.strings[0] if self.strings else "")
+
+    def default(self):
+        """The default as code: UNREAD when the checker cannot tell; for a flag, False or True."""
+        action = self.kw.get("action")
+        if action in ("store_true", "store_false") and "default" not in self.kw:
+            return action == "store_false"
+        return self.kw.get("default")
+
+
+class StaticParser:
+    """One parser found in a file: its program name, its subcommand path and its arguments in order."""
+
+    def __init__(self, prog, path=(), add_help=True):
+        self.prog = prog
+        self.path = tuple(path)
+        self.args = []
+        self.subcommands = []
+        self.add_help = add_help
+
+    @property
+    def label(self):
+        return " ".join([self.prog or "?", *self.path])
+
+
+def _literal_value(node, consts):
+    if node is None:
+        return None
+    if isinstance(node, ast.Attribute) and node.attr == "SUPPRESS":
+        return argparse.SUPPRESS
+    if isinstance(node, ast.Name) and node.id in consts:
+        return consts[node.id]
+    try:
+        return ast.literal_eval(node)
+    except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
+        return UNREAD
+
+
+def _literal_constants(tree):
+    """Module-level names bound once to a literal (str, number, tuple, list, bool, None)."""
+    out, seen = {}, set()
+    for n in tree.body:
+        if isinstance(n, ast.Assign) and len(n.targets) == 1 and isinstance(n.targets[0], ast.Name):
+            name = n.targets[0].id
+            if name in seen:
+                out.pop(name, None)
+                continue
+            seen.add(name)
+            try:
+                out[name] = ast.literal_eval(n.value)
+            except (ValueError, TypeError, SyntaxError, MemoryError, RecursionError):
+                pass
+    return out
+
+
+def argparse_parsers(tree):
+    """The argparse parsers a module builds, read without running it: ([StaticParser], complete). Parsers made with
+    ArgumentParser() and add_subparsers().add_parser(), arguments added through groups and through local helper
+    functions that receive a parser, and loops over a literal tuple are followed. complete is False when some
+    add_argument call could not be tied to a parser, so a usage comparison would be unsafe."""
+    consts = _literal_constants(tree)
+    parsers = []
+    state = {"complete": True}
+    module_funcs = {n.name: n for n in tree.body if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+    done = {}
+
+    def new_parser(call, parent=None, name=None):
+        kw = {k.arg: k.value for k in call.keywords if k.arg}
+        if parent is None:
+            p_prog = _literal_value(kw.get("prog"), consts)
+            p = StaticParser(p_prog if isinstance(p_prog, str) else None,
+                             add_help=_literal_value(kw.get("add_help"), consts) is not False)
+        else:
+            p = StaticParser(parent.prog, parent.path + (name,),
+                             add_help=_literal_value(kw.get("add_help"), consts) is not False)
+            parent.subcommands.append(name)
+        if "parents" in kw and isinstance(kw["parents"], (ast.List, ast.Tuple)):
+            state["complete"] = False          # inherited arguments are not followed
+        parsers.append(p)
+        return ("parser", p)
+
+    def evaluate(node, env, funcs, depth):
+        if not isinstance(node, ast.Call):
+            return None
+        f = node.func
+        if isinstance(f, ast.Attribute):
+            if f.attr == "ArgumentParser" and getattr(f.value, "id", "") == "argparse":
+                return new_parser(node)
+            if isinstance(f.value, ast.Call):
+                handle = evaluate(f.value, env, funcs, depth)
+            else:
+                handle = env.get(f.value.id) if isinstance(f.value, ast.Name) else None
+            if handle == "param":          # a helper's parameter: followed when a caller passes a parser
+                return "param" if f.attr in ("add_argument_group", "add_mutually_exclusive_group", "add_subparsers",
+                                             "add_parser") else None
+            if handle is None:
+                if f.attr == "add_argument":
+                    state["complete"] = False
+                return None
+            kind, p = handle
+            if kind == "parser" and f.attr == "add_subparsers":
+                return ("subs", p)
+            if kind == "subs" and f.attr == "add_parser" and node.args:
+                name = _literal_value(node.args[0], consts)
+                if not isinstance(name, str):
+                    state["complete"] = False
+                    return None
+                return new_parser(node, p, name)
+            if kind in ("parser", "group") and f.attr in ("add_argument_group", "add_mutually_exclusive_group"):
+                return ("group", p)
+            if kind in ("parser", "group") and f.attr == "add_argument":
+                strings = [_literal_value(a, consts) for a in node.args]
+                if not strings or not all(isinstance(s, str) for s in strings):
+                    state["complete"] = False
+                    return None
+                kw = {k.arg: _literal_value(k.value, consts) for k in node.keywords if k.arg}
+                p.args.append(StaticArg(strings, kw))
+            return None
+        if isinstance(f, ast.Name):
+            if f.id == "ArgumentParser":
+                return new_parser(node)
+            fn = funcs.get(f.id)
+            handles = [env.get(a.id) if isinstance(a, ast.Name) else None for a in node.args]
+            if fn is None or depth >= 6:
+                return None
+            if any(isinstance(h, tuple) for h in handles):
+                params = [a.arg for a in fn.args.args]
+                inner = dict(env)
+                for pname, h in zip(params, handles):
+                    inner[pname] = h if isinstance(h, tuple) else None
+                return run(fn.body, inner, dict(funcs), depth + 1)
+            return once(fn, env if fn not in module_funcs.values() else {}, funcs, depth + 1)
+        return None
+
+    def once(fn, env, funcs, depth):
+        """A function called without a parser argument runs once; later calls get the parser it returned."""
+        if id(fn) not in done:
+            done[id(fn)] = None
+            inner = dict(env)
+            inner.update({a.arg: "param" for a in fn.args.args})
+            done[id(fn)] = run(fn.body, inner, dict(funcs), depth)
+        return done[id(fn)]
+
+    def run(stmts, env, funcs, depth):
+        returned = None
+        for st in stmts:
+            if isinstance(st, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                funcs[st.name] = st
+            elif isinstance(st, ast.ClassDef):
+                continue
+            elif isinstance(st, ast.Assign):
+                h = evaluate(st.value, env, funcs, depth)
+                for t in st.targets:
+                    if isinstance(t, ast.Name):
+                        env[t.id] = h
+            elif isinstance(st, (ast.AnnAssign, ast.AugAssign)) and isinstance(st.target, ast.Name):
+                env[st.target.id] = evaluate(st.value, env, funcs, depth) if st.value is not None else None
+            elif isinstance(st, ast.Expr):
+                evaluate(st.value, env, funcs, depth)
+            elif isinstance(st, ast.Return):
+                h = evaluate(st.value, env, funcs, depth) if isinstance(st.value, ast.Call) else \
+                    (env.get(st.value.id) if isinstance(st.value, ast.Name) else None)
+                returned = returned or (h if isinstance(h, tuple) else None)
+            elif isinstance(st, ast.For):
+                items = st.iter.elts if isinstance(st.iter, (ast.Tuple, ast.List)) else None
+                if isinstance(st.target, ast.Name) and items is not None:
+                    for item in items:
+                        env[st.target.id] = env.get(item.id) if isinstance(item, ast.Name) else None
+                        returned = run(st.body, env, funcs, depth) or returned
+                else:
+                    returned = run(st.body, env, funcs, depth) or returned
+                returned = run(st.orelse, env, funcs, depth) or returned
+            elif isinstance(st, (ast.If, ast.While)):
+                returned = run(st.body, env, funcs, depth) or returned
+                returned = run(st.orelse, env, funcs, depth) or returned
+            elif isinstance(st, (ast.With, ast.AsyncWith)):
+                returned = run(st.body, env, funcs, depth) or returned
+            elif isinstance(st, ast.Try):
+                for block in (st.body, *[h.body for h in st.handlers], st.orelse, st.finalbody):
+                    returned = run(block, env, funcs, depth) or returned
+        return returned
+
+    run(tree.body, {}, dict(module_funcs), 0)
+    for fn in module_funcs.values():
+        once(fn, {}, dict(module_funcs), 0)
+    return parsers, state["complete"]
+
+
+def _progs(rel, prog):
+    """How a usage line may spell the program of a file: its prog when the code sets one, else the names argparse
+    and the pages use for a script (foo.py, scripts/foo.py, python scripts/foo.py) or an entry point."""
+    if prog:
+        return [prog.split()]
+    out = [[Path(rel).name], [rel], ["python", rel], ["python3", rel]]
+    if rel.startswith("kit/"):
+        mod = "kit." + Path(rel).stem if Path(rel).name != "__main__.py" else "kit." + Path(rel).parent.name
+        out += [["python", "-m", mod], ["python3", "-m", mod]]
+    return out
+
+
+def usage_blocks(lines):
+    """Every usage block pasted in fenced code in these lines: 'usage: ...' and its indented continuation lines."""
+    blocks, cur, fence = [], None, None
+    for line in lines:
+        m = re.match(r"^\s*(`{3,}|~{3,})", line)
+        if m:
+            fence = None if fence else m.group(1)[0]
+            if cur:
+                blocks.append(" ".join(cur))
+                cur = None
+            continue
+        if not fence:
+            continue
+        s = line.strip()
+        if s.startswith("usage:"):
+            if cur:
+                blocks.append(" ".join(cur))
+            cur = [s[len("usage:"):].strip()]
+        elif cur is not None and s and line[:1] in (" ", "\t"):
+            cur.append(s)
+        elif cur is not None:
+            blocks.append(" ".join(cur))
+            cur = None
+    if cur:
+        blocks.append(" ".join(cur))
+    return blocks
+
+
+def _usage_parser(block, candidates):
+    """The (parser, spelled program) a usage block belongs to: the longest program spelling it starts with."""
+    tokens = block.split()
+    best = None
+    for p, spellings in candidates:
+        for sp in spellings:
+            full = sp + list(p.path)
+            if tokens[:len(full)] == full and (best is None or len(full) > best[2]):
+                best = (p, " ".join(full), len(full))
+    return best[:2] if best else None
+
+
+def _word_in(word, text):
+    return re.search(r"(?<![\w-])" + re.escape(word) + r"(?![\w-])", text) is not None
+
+
+def compare_usage(block, parser, spelled):
+    """Problems with one pasted usage block against the parser it names: options it lacks or names wrongly,
+    positionals it lacks, and a list of subcommands that differs."""
+    problems = []
+    body = block.split(None, len(spelled.split()))[-1] if len(block.split()) > len(spelled.split()) else ""
+    shown = set(re.findall(r"(?<![\w-])(--?[A-Za-z][\w-]*)", body))
+    known = {s for a in parser.args for s in a.options}
+    if parser.add_help:
+        known |= {"-h", "--help"}
+    for opt in sorted(shown - known):
+        problems.append(f"the usage block for `{spelled}` names `{opt}`, which it does not define")
+    for a in parser.args:
+        if a.suppressed:
+            continue
+        if a.options and not set(a.options) & shown:
+            problems.append(f"the usage block for `{spelled}` lacks `{a.name}`; paste `{spelled} --help`'s usage")
+        elif a.positional and not all(_word_in(n, body) or n in body for n in a.usage_names()):
+            problems.append(f"the usage block for `{spelled}` lacks the positional `{a.shown[0]}`")
+    m = re.search(r"\{([\w.,-]+)\}", body)
+    if parser.subcommands and m:
+        listed = m.group(1).split(",")
+        if sorted(listed) != sorted(parser.subcommands):
+            problems.append(f"the usage block for `{spelled}` lists the subcommands {{{m.group(1)}}}; the code has "
+                            f"{{{','.join(parser.subcommands)}}}")
+    return problems
+
+
+def _default_text(value):
+    if isinstance(value, (list, tuple)):
+        return [str(v) for v in value]
+    return [str(value)]
+
+
+def _number(token):
+    try:
+        return float(token)
+    except ValueError:
+        return None
+
+
+def static_default_ok(cell, value):
+    """True when a Default cell shows a literal default from the code: the value as a code span or a word, a number
+    equal to it, every item of a list, off for a flag that defaults to False and on for one that defaults to True."""
+    plain = cell.replace("`", " ")
+    if value is False:
+        return not cell.lower().startswith("on")
+    if value is True:
+        return cell.lower().startswith("on") or "on" in plain.lower().split()
+    numbers = [n for n in (_number(t.strip(",;()")) for t in plain.split()) if n is not None]
+    for item in _default_text(value):
+        if _word_in(item, plain) or item in SPAN.findall(cell):
+            continue
+        n = _number(item)
+        if n is not None and any(abs(n - x) <= 1e-12 * max(1.0, abs(n)) for x in numbers):
+            continue
+        return False
+    return True
+
+
+def _positional_row(rows, arg):
+    """The row whose first cell names the positional (its metavar or dest, any case) as a word of a code span, not
+    inside an option such as `--name`."""
+    names = {n.lower() for n in arg.shown} | {arg.dest.lower()}
+    for row in rows:
+        for span in SPAN.findall(row[0] if row else ""):
+            words = {w.strip("[](){}<>,.|:").lower() for w in span.split() if not w.lstrip("[").startswith("-")}
+            if names & words:
+                return row
+    return None
+
+
+def _option_row(rows, arg):
+    for row in rows:
+        for span in SPAN.findall(row[0] if row else ""):
+            if any(re.search(r"(?<![\w-])" + re.escape(s) + r"(?![\w-])", span) for s in arg.options):
+                return row
+    return None
+
+
+FILE_WORD = re.compile(r"[\w./-]+\.(?:py|sh)")
+
+
+def _file_names(rel):
+    """The ways a page names this file: its path, its file name and, for kit/, its module."""
+    names = [rel, Path(rel).name]
+    if rel.startswith("kit/"):
+        names.append("kit." + (Path(rel).stem if Path(rel).name != "__main__.py" else Path(rel).parent.name))
+    return names
+
+
+def _named_files(text):
+    """The script files (`*.py`, `*.sh`) the code spans of a heading or table cell name, in order, by file name."""
+    out = []
+    for span in SPAN.findall(text):
+        for word in span.split():
+            word = word.strip("[](){}<>,.|:")
+            if FILE_WORD.fullmatch(word) and Path(word).name not in out:
+                out.append(Path(word).name)
+    return out
+
+
+def _owned_rows(heading, rows, rel):
+    """The rows under one heading that may hold a positional of this file. A row whose first cell names a script
+    file belongs to that file. A row that names no file belongs to the first file the heading names, or to any
+    file when the heading names none; so when one heading names several files, the positional of any file but
+    the first needs a row that names its file."""
+    me = Path(rel).name
+    listed = _named_files(heading)
+    out = []
+    for row in rows:
+        named = _named_files(row[0]) if row else []
+        if me in named or (not named and (not listed or listed[0] == me)):
+            out.append(row)
+    return out
+
+
+def _all_owned_rows(page, rel):
+    """Every row under '## Commands and options' that may hold a positional of this file, heading by heading."""
+    body = page.bodies.get("Commands and options", [])
+    top = []
+    for line in body:
+        if line.startswith("### "):
+            break
+        top.append(line)
+    rows = _owned_rows("", _table_rows(top), rel)
+    for h, b in page.subsections("Commands and options"):
+        rows += _owned_rows(h, _table_rows(b), rel)
+    return rows
+
+
+def _rows_for(page, rel, path, positional=False):
+    """The table rows under the '### ...' headings that name this file (and its subcommand, when the headings say),
+    and True; or every row under '## Commands and options' and False when no heading names it. With positional,
+    only the rows that may hold this file's positionals (see _owned_rows)."""
+    names = _file_names(rel)
+    mine = [(h, b) for h, b in page.subsections("Commands and options")
+            if any(re.search(r"(?<![\w./-])" + re.escape(n) + r"(?![\w/-])", h) for n in names)]
+    if path:
+        narrowed = [(h, b) for h, b in mine if all(_word_in(x, h) for x in path)]
+        mine = narrowed or mine
+    if mine:
+        if positional:
+            return [r for h, b in mine for r in _owned_rows(h, _table_rows(b), rel)], True
+        return _table_rows([line for _, b in mine for line in b]), True
+    if positional:
+        return _all_owned_rows(page, rel), False
+    return _table_rows(page.bodies.get("Commands and options", [])), False
+
+
+def _check_static_parsers(page, rel, label, tree):
+    """Positional rows, literal defaults and pasted usage blocks of a script's or entry point's argparse code."""
+    problems = []
+    parsers, complete = argparse_parsers(tree)
+    if not parsers:
+        return problems
+    every = _table_rows(page.bodies.get("Commands and options", []))
+    every_owned = _all_owned_rows(page, rel)
+    for p in parsers:
+        rows, scoped = _rows_for(page, rel, p.path)
+        owned, _ = _rows_for(page, rel, p.path, positional=True)
+        for a in p.args:
+            if a.suppressed:
+                continue
+            row = _positional_row(owned, a) if a.positional else _option_row(rows, a)
+            if row is None and scoped:
+                row = _positional_row(every_owned, a) if a.positional else None
+                scoped = scoped if row is None else False
+            elif not scoped and not a.positional and sum(_option_row([r], a) is not None for r in every) > 1:
+                continue          # the option has rows for several tools and no heading says which is this one
+            if a.positional and row is None:
+                where = f"{label} {' '.join(p.path)}".strip()
+                problems.append(f"positional `{a.shown[0]}` of {where} has no row in a table under "
+                                "'## Commands and options'")
+                continue
+            if row is None or len(row) < 2:
+                continue
+            value = a.default()
+            if value is UNREAD or value is None or value is argparse.SUPPRESS or value == "" or \
+                    (a.positional and a.kw.get("nargs") not in ("?", "*")):
+                continue
+            if a.kw.get("action") in ("store_true", "store_false") and "default" in a.kw:
+                continue
+            if not static_default_ok(row[1], value):
+                shown = ("on" if value else "off") if isinstance(value, bool) else " ".join(_default_text(value))
+                where = f"{label} {' '.join(p.path)}".strip()
+                problems.append(f"default of `{a.name}` in {where} is `{shown}` in the code; the page says "
+                                f"{row[1][:40]!r}")
+    if complete:
+        candidates = [(p, _progs(rel, p.prog)) for p in parsers]
+        for block in usage_blocks(page.bodies.get("Commands and options", [])):
+            found = _usage_parser(block, candidates)
+            if found:
+                problems += compare_usage(block, *found)
+    return problems
 
 
 # ---------------------------------------------------------------- git
@@ -789,7 +1439,7 @@ def _check_code(page, ctx, detail=True):
     root = ctx.root
     code = page.code_text()
     collapsed = _collapse(page.text.replace("\\|", "|"))
-    failures = _collapse(page.body("Failure modes").replace("\\|", "|"))
+    seen_cells = [_collapse(row[0]) for row in _table_rows(page.bodies.get("Failure modes", [])) if row]
     api = "\n".join(SPAN.findall(page.body("Python API")) + [m.group(0) for m in FENCE.finditer(page.body("Python API"))])
     for name in ("Tests",):
         for span in page.spans(name):
@@ -814,6 +1464,8 @@ def _check_code(page, ctx, detail=True):
                 for env in env_names_sh(text):
                     if not re.search(r"(?<![A-Z0-9_])" + env + r"(?![A-Z0-9_])", code):
                         problems.append(f"environment variable `{env}`, read by {f}, is not on the page in code")
+                for frag in sh_error_messages(text, parts=True):
+                    problems += _message_problem(frag, f, seen_cells, collapsed)
                 continue
             if not f.endswith(".py"):
                 continue
@@ -830,19 +1482,18 @@ def _check_code(page, ctx, detail=True):
                 for name in public_api(tree):
                     if not re.search(r"(?<![\w.])" + re.escape(name) + r"\b", api):
                         problems.append(f"public `{name}` of {f} is not in '## Python API' in code")
-            for frag in error_messages(scope):
-                if _collapse(frag) not in failures and _collapse(frag) not in collapsed:
-                    problems.append(f"error message {frag[:60]!r} from {f} is not in '## Failure modes'")
-                elif _collapse(frag) not in failures:
-                    problems.append(f"error message {frag[:60]!r} from {f} is on the page but not in '## Failure modes'")
+            for frag in error_messages(scope, parts=True):
+                problems += _message_problem(frag, f, seen_cells, collapsed)
             for env in [e for t in scope for e in env_names_py(t, _constants(tree))]:
                 if not re.search(r"(?<![A-Z0-9_])" + env + r"(?![A-Z0-9_])", code):
                     problems.append(f"environment variable `{env}`, read by {f}, is not on the page in code")
-            if f.startswith("scripts/") or (rel != f):
+            if not f.startswith("kit/") or (rel != f):
                 rows = [c for row in _table_rows(page.bodies.get("Commands and options", [])) for c in row[:1]]
                 for opt in script_options(tree):
                     if not any(re.search(r"(?<![\w-])" + re.escape(opt) + r"(?![\w-])", c) for c in rows):
                         problems.append(f"option `{opt}` of {f} has no row in a table under '## Commands and options'")
+                problems += _check_static_parsers(page, f, f, tree)
+    seen_entries = set()
     for span in page.runs() if detail else []:
         m = ENTRY_RUN.match(span)
         if m:
@@ -856,7 +1507,22 @@ def _check_code(page, ctx, detail=True):
             for opt in script_options(tree):
                 if not any(re.search(r"(?<![\w-])" + re.escape(opt) + r"(?![\w-])", c) for c in rows):
                     problems.append(f"option `{opt}` of `{m.group(0)}` has no row in a table under '## Commands and options'")
-    return problems
+            if m.group(0) not in seen_entries:
+                seen_entries.add(m.group(0))
+                problems += _check_static_parsers(page, rel, f"`{m.group(0)}`", tree)
+    return list(dict.fromkeys(problems))
+
+
+def _message_problem(parts, f, seen, collapsed):
+    """A problem when a message (its literal stretches) is not in the What you see column of '## Failure modes'.
+    seen holds that column's cells, collapsed the whole page."""
+    shown = "...".join(_collapse(p) for p in parts if _collapse(p))
+    if any(message_in(parts, cell) for cell in seen):
+        return []
+    if message_in(parts, collapsed):
+        return [f"error message {shown[:60]!r} from {f} is on the page but not in the What you see column of "
+                "'## Failure modes'"]
+    return [f"error message {shown[:60]!r} from {f} is not in '## Failure modes'"]
 
 
 def _exists(root, rel):
@@ -874,11 +1540,58 @@ def _heading_matches(heading, want, actions):
     return tokens[:n] == want and (len(tokens) == n or tokens[n] not in actions)
 
 
+HELP_COLUMN = "What it does (`--help`)"
+
+
+def _check_top(page, cmds, subsections):
+    """A page whose Run names bare `python -m kit` documents the top-level parser: its usage block, matching
+    --help, and a row for every command (the command's name first in a row under '## Commands and options').
+    A column headed 'What it does (`--help`)' holds each command's help from the parser, word for word, in the
+    command's first row; later rows of the same command describe some of its actions and are not compared."""
+    problems = []
+    actions = set(cmds.aliases)
+    matches = [body for head, body in subsections if _heading_matches(head, ["python", "-m", "kit"], actions)]
+    if not matches:
+        return ["no '### `python -m kit`' heading under '## Commands and options'"]
+    fences = [_collapse(m.group(0)) for m in FENCE.finditer("\n".join(line for b in matches for line in b))]
+    usage = _collapse(cmds.top.format_usage())
+    if not any(usage in f for f in fences):
+        problems.append(f"the usage block under '### `python -m kit`' differs from --help; paste `python -m kit "
+                        f"--help`'s usage line: {usage[:80]}...")
+    firsts = set()
+    for row in _table_rows(page.bodies.get("Commands and options", [])):
+        spans = SPAN.findall(row[0]) if row else []
+        if spans:
+            firsts.add(spans[0].split()[0])
+    for name in cmds.parsers:
+        if name not in firsts and not any(a in firsts for a, c in cmds.aliases.items() if c == name):
+            problems.append(f"command `{name}` of `python -m kit` has no row (its name first) under "
+                            "'## Commands and options'")
+    subs = next(a for a in cmds.top._actions if isinstance(a, argparse._SubParsersAction))
+    helps = {cmds.aliases.get(c.dest, c.dest): c.help for c in subs._choices_actions if c.help}
+    for header, rows in _tables(page.bodies.get("Commands and options", [])):
+        if HELP_COLUMN not in header:
+            continue
+        col, done = header.index(HELP_COLUMN), set()
+        for row in rows:
+            spans = SPAN.findall(row[0]) if row else []
+            name = cmds.aliases.get(spans[0].split()[0]) if spans else None
+            if name in done:
+                continue
+            done.add(name)
+            if name in helps and _collapse(row[col] if col < len(row) else "") != _collapse(helps[name]):
+                problems.append(f"the {HELP_COLUMN} cell of `{name}` differs from its parser's help; paste "
+                                f"it: {helps[name][:80]}")
+    return problems
+
+
 def _check_runs(page, ctx):
     problems = []
     cmds = ctx.commands
     subsections = page.subsections("Commands and options")
     done = set()
+    if any(re.fullmatch(r"python3? -m kit", s.strip()) for s in page.runs()):
+        problems += _check_top(page, cmds, subsections)
     for span in page.runs():
         if not KIT_RUN.match(span):
             continue
@@ -1138,10 +1851,13 @@ def render_index(pages, current=None):
 
 
 def releases_ids(root):
+    """Ids in docs/releases.json that need a tool page: every entry's, and every tool's in a grouped entry's tools
+    (the Scrolls kit entry, 20 October 2026), so a tool that joined a group keeps its page."""
     path = Path(root) / "docs" / "releases.json"
     try:
-        return [r["id"] for r in json.loads(path.read_text(encoding="utf-8")).get("releases", [])]
-    except (OSError, ValueError, KeyError, TypeError):
+        entries = json.loads(path.read_text(encoding="utf-8")).get("releases", [])
+        return [r["id"] for r in entries] + [t["id"] for r in entries for t in r.get("tools", [])]
+    except (OSError, ValueError, KeyError, TypeError, AttributeError):
         return []
 
 
@@ -1319,12 +2035,21 @@ def failures_block(root, items, runnable):
     seen = []
     for rel, symbols in items:
         for f in _code_files(root, [rel]):
-            if not f.endswith(".py"):
+            if f.endswith(".sh"):
+                messages = sh_error_messages((root / f).read_text(encoding="utf-8", errors="replace"), parts=True)
+            elif f.endswith(".py"):
+                tree = _module_tree(root, f)
+                if tree is None:
+                    continue
+                messages = error_messages(_scoped(tree, symbols), parts=True)
+            else:
                 continue
-            tree = _module_tree(root, f)
-            if tree is None:
-                continue
-            for frag in error_messages(_scoped(tree, symbols)):
+            for parts in messages:
+                frag = "...".join(w for w in (_collapse(p) for p in parts) if w)
+                if parts and not _collapse(parts[0]):
+                    frag = "..." + frag
+                if len(parts) > 1 and not _collapse(parts[-1]):
+                    frag += "..."
                 if frag in seen:
                     continue
                 seen.append(frag)

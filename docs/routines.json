@@ -35,6 +35,14 @@
       "why": "the ink reader leaderboard page and docs/results.json stay in step (runs once kit leaderboard lands)"
     },
     {
+      "name": "stale",
+      "cadence": "daily",
+      "timeout_s": 120,
+      "ci": true,
+      "command": ["{python}", "-m", "kit", "stale"],
+      "why": "docs/HANDOFF.md, row Rules relaxed and decisions file (18 Oct 2026): a staleness check at session start. Live pages and registries that no longer hold: handoff rows unchanged for a week, gone or quietly merged branches, retired names (docs/renames.json), dead links, docs/MAP.md rows, waiting routines (kit/stale.py). In the workflow's depth-1 checkout the branch check skips and every line dates to the tip commit, so an age finding appears there only after that many days without a commit"
+    },
+    {
       "name": "autopipeline-watch",
       "cadence": "daily",
       "timeout_s": 300,

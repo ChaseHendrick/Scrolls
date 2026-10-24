@@ -1,3 +1,5 @@
+<a id="ch-greek"></a>
+
 # Greek and Papyrology Basics {#ch-greek}
 
 > **Chapter summary.** The Herculaneum papyri are mostly written in Greek capitals in narrow columns, without word division. This chapter gives the minimum that a technical contributor needs to recognize what an ink model is showing: the alphabet and its letterforms on papyrus, the layout of a roll, numerals, the conventions of end titles and line counts (stichometry), and the editorial signs used in published transcriptions. It is an orientation, not a substitute for a papyrologist; under the Vesuvius Challenge rules, readings are made and published by the papyrological team.
@@ -48,13 +50,13 @@ Letters on papyrus differ from modern printed capitals in ways that matter when 
 - **No word division.** Text is written *scriptio continua*: no spaces between words, and few accents or punctuation marks. A line may end in the middle of a word.
 - **Majuscule book hands.** The broad term "uncial" is used for majuscule book scripts of the fourth to eighth centuries CE written on parchment [WP-Uncial]. Herculaneum hands are earlier (first century BCE and first century CE) and are classified by papyrologists into script groups; Guglielmo Cavallo distinguished 17 principal groups plus isolated hands, 34 anonymous scribes in all [Cavallo1983].
 
-The bullet points on epsilon, omega and out-of-line letters are general palaeographic observations made by the editors; they are offered as practical guidance, not as a description of any particular hand.
+The bullet points on epsilon, omega and out-of-line letters are general paleographic observations made by the editors; they are offered as practical guidance, not as a description of any particular hand.
 
-> **Photograph (not stored in git; see the caption for source and licence):** Columns of Greek majuscule text from Codex Sinaiticus, a fourth-century parchment codex, showing a regular book hand in narrow columns.
+> **Photograph (not stored in git; see the caption for source and license):** Columns of Greek majuscule text from Codex Sinaiticus, a fourth-century parchment codex, showing a regular book hand in narrow columns.
 *Figure 6.1. A later Greek majuscule book hand: Codex Sinaiticus, Matthew 6:4 to 32 (fourth century CE, parchment), British Library. Shown for letterforms and column layout; it is not a Herculaneum papyrus. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Codex_Sinaiticus_Matthew_6,4-32.JPG>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Papyrus fragment of Menander's Polemon from Oxyrhynchus, with Greek capitals on light brown papyrus.
-*Figure 6.2. P.Oxy. 2653, Menander, Polemon: an uncarbonized Greek literary papyrus from Egypt, showing how ink and fibres look on papyrus that did not burn. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Papyrus_Oxyrhynchus_2653_-_Menander,_Polemon.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** Papyrus fragment of Menander's Polemon from Oxyrhynchus, with Greek capitals on light brown papyrus.
+*Figure 6.2. P.Oxy. 2653, Menander, Polemon: an uncarbonized Greek literary papyrus from Egypt, showing how ink and fibers look on papyrus that did not burn. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Papyrus_Oxyrhynchus_2653_-_Menander,_Polemon.jpg>*
 
 ## Numerals
 
@@ -67,14 +69,14 @@ Book numbers in Herculaneum titles are written as overlined alphabetic numerals;
 
 ## The layout of a roll
 
-A literary roll is written in columns (Greek *selides*) parallel to the short side of the roll, on the recto, across the horizontal fibres ([Chapter 4](#ch-papyrus)). The reader holds the roll horizontally, unrolls with the right hand and rolls up with the left, so the text advances column by column from left to right. Terms in common use:
+A literary roll is written in columns (Greek *selides*) parallel to the short side of the roll, on the recto, across the horizontal fibers ([Chapter 4](04-papyrus.md#ch-papyrus)). The reader holds the roll horizontally, unrolls with the right hand and rolls up with the left, so the text advances column by column from left to right. Terms in common use:
 
 | Term | Meaning |
 |---|---|
 | column (selis) | one block of text lines |
 | intercolumn | the blank space between columns |
 | upper and lower margin | blank space above and below the columns |
-| kollema, kollesis | sheet and sheet join ([Chapter 4](#ch-papyrus)) |
+| kollema, kollesis | sheet and sheet join ([Chapter 4](04-papyrus.md#ch-papyrus)) |
 | agraphon | unwritten stretch at the start or end of a roll [Romano2023] |
 | initial title | a title at the start of a roll |
 | end title, subscription (subscriptio) | the title block written at the end of the text |
@@ -82,7 +84,9 @@ A literary roll is written in columns (Greek *selides*) parallel to the short si
 | paragraphos | a short horizontal stroke under the start of a line, marking a change of section |
 | stichometry | counting lines ([below](#stichometry)) |
 
-Herculaneum columns are narrow, often 5 to 6 cm, with 20 to 45 lines of 16 to 40 letters ([Chapter 4](#ch-papyrus)). Columns often slant to the left (Maas's law) [Romano2023].
+Herculaneum columns are narrow, often 5 to 6 cm, with 20 to 45 lines of 16 to 40 letters ([Chapter 4](04-papyrus.md#ch-papyrus)). Columns often slant to the left (Maas's law) [Romano2023].
+
+<a id="end-titles"></a>
 
 ## End titles {#end-titles}
 
@@ -97,24 +101,26 @@ Many Herculaneum rolls end with a title block. The Vesuvius Challenge's public d
 
 When the PHerc. 172 title was announced in 2025, the Vesuvius Challenge noted that "typically, the author's name, the title, and the number are each center justified on new lines", and that PHerc. 172 was the first of its titles to put the book number on the same line as the title [VC-FirstTitle].
 
-Because a roll was normally stored rewound to its beginning, the end of the text, and with it the end title, lies at the centre of a closed roll, in its innermost, tightest windings [Capasso-Titoli]. Those are also the windings most damaged by crushing and most often destroyed when rolls were opened by hand.
+Because a roll was normally stored rewound to its beginning, the end of the text, and with it the end title, lies at the center of a closed roll, in its innermost, tightest windings [Capasso-Titoli]. Those are also the windings most damaged by crushing and most often destroyed when rolls were opened by hand.
 
-> **Photograph (not stored in git; see the caption for source and licence):** An Oxford engraved transcription of the final subscription of Philodemus' On Rhetoric from a Herculaneum papyrus: the author's name, the title and a line count.
+> **Photograph (not stored in git; see the caption for source and license):** An Oxford engraved transcription of the final subscription of Philodemus' On Rhetoric from a Herculaneum papyrus: the author's name, the title and a line count.
 *Figure 6.3. The end title (subscription) of a book of Philodemus, On Rhetoric, from a Herculaneum papyrus, in an engraved Oxford transcription (Whittock, Herculanensium Voluminum, Oxford, 1824), digitally enhanced. The Commons description reads the lines as "of Philodemus", "On Rhetoric" and a count of 4,200 lines; dots mark illegible letters. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Philedemus_Herculaneum_subscription_enhance.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Fragment of a Sappho papyrus from Oxyrhynchus showing the end of the first book of her poems, with the closing lines and the book title below.
+> **Photograph (not stored in git; see the caption for source and license):** Fragment of a Sappho papyrus from Oxyrhynchus showing the end of the first book of her poems, with the closing lines and the book title below.
 *Figure 6.4. P.Oxy. X 1231 fr. 56, a second-century CE Sappho papyrus showing the end of the first book of her collected poems, from Grenfell and Hunt, The Oxyrhynchus Papyri, Part X (1914). An example of an end title from Egypt, not Herculaneum. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:P.Oxy._X_1231_fr._56.jpg>*
 
-Specialist catalogues of Herculaneum titles exist. Del Mastro (2014) catalogues titles and bibliological annotations of 118 Greek papyri from Herculaneum, including initial, intermediate and final titles, stichometry and kollema counts [DelMastro2014]. Capasso has published a series of studies of titles in Herculaneum papyri [Capasso-Titoli]. For non-Herculaneum rolls, Schironi (2010) studied book-ends and layout in papyri of hexameter poetry and reports that end titles are normally written larger than the text [Schironi2010].
+Specialist catalogs of Herculaneum titles exist. Del Mastro (2014) catalogs titles and bibliological annotations of 118 Greek papyri from Herculaneum, including initial, intermediate and final titles, stichometry and kollema counts [DelMastro2014]. Capasso has published a series of studies of titles in Herculaneum papyri [Capasso-Titoli]. For non-Herculaneum rolls, Schironi (2010) studied book-ends and layout in papyri of hexameter poetry and reports that end titles are normally written larger than the text [Schironi2010].
+
+<a id="stichometry"></a>
 
 ## Stichometry {#stichometry}
 
-Ancient Greeks and Romans measured books in lines, as modern books are measured in pages [WP-Stichometry]. The standard line was as long as an epic hexameter, about 15 to 16 syllables or about 35 Greek letters. Line counts served several purposes: scribes were paid by the line, book buyers checked that a copy was complete, library catalogues listed totals, and authors cited passages by approximate line number [WP-Stichometry]. There are two kinds:
+Ancient Greeks and Romans measured books in lines, as modern books are measured in pages [WP-Stichometry]. The standard line was as long as an epic hexameter, about 15 to 16 syllables or about 35 Greek letters. Line counts served several purposes: scribes were paid by the line, book buyers checked that a copy was complete, library catalogs listed totals, and authors cited passages by approximate line number [WP-Stichometry]. There are two kinds:
 
 - **total stichometry**, the total number of lines in a work, often given in the subscription;
 - **partial stichometry**, numerals in the margin, usually marking every hundredth line.
 
-The standard study is Kurt Ohly, *Stichometrische Untersuchungen* (1928) [WP-Stichometry]. Diogenes Laertius, probably drawing on the catalogue of the Library of Alexandria, reports totals such as 445,270 lines for Aristotle and 232,808 for Theophrastus [WP-Stichometry].
+The standard study is Kurt Ohly, *Stichometrische Untersuchungen* (1928) [WP-Stichometry]. Diogenes Laertius, probably drawing on the catalog of the Library of Alexandria, reports totals such as 445,270 lines for Aristotle and 232,808 for Theophrastus [WP-Stichometry].
 
 ## Reading conventions in published transcriptions
 
@@ -134,8 +140,8 @@ These are general papyrological conventions supplied by the editors; consult a p
 
 ## What contributors should and should not do
 
-The Vesuvius Challenge's papyrological team, led in recent years by Federica Nicolardi, reads and publishes the texts [VC-FirstTitle]. Technical contributors produce images; the data agreement requires approval before anyone publishes hidden text from the scrolls ([Chapter 28](#ch-ethics)). Some practical guidance follows from the material in this chapter:
+The Vesuvius Challenge's papyrological team, led in recent years by Federica Nicolardi, reads and publishes the texts [VC-FirstTitle]. Technical contributors produce images; the data agreement requires approval before anyone publishes hidden text from the scrolls ([Chapter 28](28-ethics.md#ch-ethics)). Some practical guidance follows from the material in this chapter:
 
-1. **Do not read letters into noise.** Ink predictions are probabilistic; fibre crossings, cracks and sheet boundaries can look like strokes. The prize rules warn that large model windows can "hallucinate" letterforms and limit window sizes accordingly ([Chapter 21](#ch-ink)).
+1. **Do not read letters into noise.** Ink predictions are probabilistic; fiber crossings, cracks and sheet boundaries can look like strokes. The prize rules warn that large model windows can "hallucinate" letterforms and limit window sizes accordingly ([Chapter 21](21-ink.md#ch-ink)).
 2. **Report geometry and provenance, not readings.** A useful submission states the scroll, scan, segment, coordinates, model and settings, so that experts can check the image.
 3. **Expect lunate sigma, scriptio continua and leaning columns.** An image that shows them is more likely to be real text than one that shows printed-looking capitals in tidy words.

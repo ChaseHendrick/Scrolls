@@ -1,15 +1,17 @@
-"""Scroll centre (umbilicus) line for any scroll from trained weights: no training, no labels needed.
+"""Scroll center (umbilicus) line for any scroll from trained weights: no training, no labels needed.
 
     python predict.py SCROLL [SCROLL ...] --first W.pt [W.pt ...] [--zoom Z.pt ...] --data DIR --out DIR
-                      [--volume PATH] [--device cpu] [--no-end-rule]
+                      [--volume PATH] [--device cpu] [--no-end-rule] [--vc3d-name]
 
 For each scroll: the slices the models were trained on (every 8th level-3 plane of the scan, read from the
 open-data bucket with range requests into DIR/<scroll>.npz unless that file exists; an existing file is used only
-when it holds the scan asked for, --volume or by default slices.volume(), and holds some CT), the first-stage centre of each
---first model (median over models), then each --zoom model moves that guess onto the centre (median over models),
+when it holds the scan asked for, --volume or by default slices.volume(), and holds some CT), the first-stage center of each
+--first model (median over models), then each --zoom model moves that guess onto the center (median over models),
 then the line is smoothed along z and the ends are trimmed (mount and caps by pipeline.keep_band, then the
 end-point rule unless --no-end-rule). Writes OUT/<scroll>_umbilicus.json in the format of the published umbilicus
-files (control points x, y, z in level-0 voxels) and OUT/<scroll>_predict.json with per-slice details.
+files (control points x, y, z in level-0 voxels), or with --vc3d-name OUT/<scroll>/umbilicus.json, the name VC3D and
+spiral-fitting look for, and OUT/<scroll>_predict.json with per-slice details. The umbilicus file's metadata holds the
+scan's level-0 volume_width, volume_height and volume_slices (pipeline.volume_dims), which VC3D uses to place it.
 The same steps as pipeline.collect and refine.chain_collect, without the training. Takes 8 to 10 um scans only
 (UM_RANGE): the 1.2 m scans, like the 8.64 and 9.362 um scans the models trained on. Model output, not a
 measurement: check the line on CT before using it.
@@ -45,7 +47,7 @@ def load_net(path, device):
 
 
 def first_stage(npz, weights, device):
-    """Each model's centre per slice in level-0 voxels: (models, slices, 2), and the slices with any papyrus."""
+    """Each model's center per slice in level-0 voxels: (models, slices, 2), and the slices with any papyrus."""
     import centrenet
     imgs, fr = centrenet.frame(npz, FRAME, device=device)
     Y = []
@@ -56,7 +58,7 @@ def first_stage(npz, weights, device):
 
 
 def zoom_stage(ct, guess_l0, present, weights, device, level=3):
-    """Each zoom model's refined centre (level-0 voxels) from the same guess; NaN on slices without papyrus."""
+    """Each zoom model's refined center (level-0 voxels) from the same guess; NaN on slices without papyrus."""
     import refine
     f = 2 ** level; idx = np.nonzero(present)[0]; Y = []
     for w in weights:
@@ -66,7 +68,7 @@ def zoom_stage(ct, guess_l0, present, weights, device, level=3):
     return np.array(Y)
 
 
-def predict(s, first, zoom, data, out, device="cpu", end_rule=True, vol=None):
+def predict(s, first, zoom, data, out, device="cpu", end_rule=True, vol=None, vc3d_name=False):
     os.makedirs(data, exist_ok=True); os.makedirs(out, exist_ok=True)
     npz = os.path.join(data, f"{s}.npz")
     if vol:                       # before any download
@@ -99,11 +101,13 @@ def predict(s, first, zoom, data, out, device="cpu", end_rule=True, vol=None):
     if end_rule:
         keep, support, thr = pipeline.end_trimmed_keep(ct, sm, z, um, keep, level=level)
     stages = f"median of {len(first)} first-stage models" + (f", refined by the median of {len(zoom)} zoom models" if zoom else "")
+    dims = pipeline.volume_dims(want, d["shape_l0"] if "shape_l0" in d.files else None, ct.shape[1:], level)
     j = pipeline.umbilicus_json(s, z, sm, keep, um, str(d["vol"]), spread,
-                                f"automatic: {stages}, smoothed along z (scripts/umbilicus/predict.py); {pipeline._trim_note(end_rule)}")
-    with open(os.path.join(out, f"{s}_umbilicus.json"), "w") as fh:
-        json.dump(j, fh, indent=1)
-    detail = dict(scroll=s, volume=str(d["vol"]), voxelsize_um=um, z=z.tolist(), yx=_json_list(sm, 2),
+                                f"automatic: {stages}, smoothed along z (scripts/umbilicus/predict.py); {pipeline._trim_note(end_rule)}",
+                                dims)
+    path = pipeline.write_umbilicus(j, out, s, vc3d_name)
+    detail = dict(scroll=s, volume=str(d["vol"]), voxelsize_um=um, volume_dims=dims or None, umbilicus=path,
+                  z=z.tolist(), yx=_json_list(sm, 2),
                   present=present.tolist(), keep_band=band.tolist(), kept=keep.tolist(), papyrus_level=thr,
                   support=None if support is None else np.round(support, 3).tolist(),
                   spread_mm=None if spread is None else _json_list(spread, 3),
@@ -112,7 +116,8 @@ def predict(s, first, zoom, data, out, device="cpu", end_rule=True, vol=None):
                       min_support=pipeline.END_SUPPORT, run_mm=pipeline.END_RUN_MM, rays=pipeline.END_RAYS))
     with open(os.path.join(out, f"{s}_predict.json"), "w") as fh:
         json.dump(detail, fh)
-    return dict(points=j["metadata"]["total_points"], keep_band=int(band.sum()), spread_mm_median=j["metadata"]["spread_mm_median"])
+    return dict(points=j["metadata"]["total_points"], keep_band=int(band.sum()), spread_mm_median=j["metadata"]["spread_mm_median"],
+                file=path)
 
 
 if __name__ == "__main__":
@@ -125,8 +130,12 @@ if __name__ == "__main__":
     ap.add_argument("--volume", help="bucket path of the scan to use (one scroll only, 8 to 10 um); default slices.volume()")
     ap.add_argument("--device", default="cpu")
     ap.add_argument("--no-end-rule", action="store_true")
+    ap.add_argument("--vc3d-name", action="store_true",
+                    help="write OUT/SCROLL/umbilicus.json, the name VC3D and spiral-fitting look for, instead of "
+                         "OUT/SCROLL_umbilicus.json")
     a = ap.parse_args()
     if a.volume and len(a.scrolls) > 1:
         raise SystemExit("--volume needs exactly one scroll")
     for s in a.scrolls:
-        print(s, json.dumps(predict(s, a.first, a.zoom, a.data, a.out, a.device, not a.no_end_rule, a.volume)), flush=True)
+        print(s, json.dumps(predict(s, a.first, a.zoom, a.data, a.out, a.device, not a.no_end_rule, a.volume, a.vc3d_name)),
+              flush=True)

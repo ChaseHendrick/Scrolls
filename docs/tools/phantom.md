@@ -22,11 +22,11 @@
 
 ## What it does
 
-On a real segment, the ink labels are hand drawn and cover about 1 cm2, and only a few segments have them. That makes it hard to tell whether a new detector really reads ink by its depth, or whether the 95 % interval that `kit auc --bootstrap` reports on one segment is as wide as the real spread between sheets. A phantom is a test object with a known answer. Here it is a small surface volume, an array of shape (depth, height, width) like the rendered stacks ink models read, built to look to a detector like a flattened papyrus sheet: a recto fibre layer and a verso fibre layer at right angles, a smooth brightness field across the sheet, per-voxel noise, and carbon-ink strokes (random lines and arcs in rows of letter-sized cells) on the top surface. Carbon ink is close to papyrus in density, so by default the ink adds only a small density step and a small thickness bump, both below the noise. The stroke mask that made the ink is the label, so the truth of every pixel is known.
+On a real segment, the ink labels are hand drawn and cover about 1 cm2, and only a few segments have them. That makes it hard to tell whether a new detector really reads ink by its depth, or whether the 95 % interval that `kit auc --bootstrap` reports on one segment is as wide as the real spread between sheets. A phantom is a test object with a known answer. Here it is a small surface volume, an array of shape (depth, height, width) like the rendered stacks ink models read, built to look to a detector like a flattened papyrus sheet: a recto fiber layer and a verso fiber layer at right angles, a smooth brightness field across the sheet, per-voxel noise, and carbon-ink strokes (random lines and arcs in rows of letter-sized cells) on the top surface. Carbon ink is close to papyrus in density, so by default the ink adds only a small density step and a small thickness bump, both below the noise. The stroke mask that made the ink is the label, so the truth of every pixel is known.
 
 The command has three actions. `make` writes one phantom: the volume, the ink mask, the scoring mask and a metadata file. `stress` builds N phantoms and runs `surface_detector`, a transparent baseline detector (the density just above the sheet's top surface minus the sheet's interior), on each phantom as stored and with its depth reversed, and scores both maps with `kit auc`'s scorer. `calibrate` draws N stroke layouts, scores a simulated reader of one fixed quality (the blurred truth plus spatially correlated noise) on each, and compares the spread of AUC between phantoms with the mean half width of the block bootstrap (resampling square blocks of pixels, as `kit auc --bootstrap` does) on one phantom.
 
-The strokes are random lines and arcs, not letters of any script. A score on a phantom says nothing about any scroll, and nothing here is a reading. The physics is a sketch: densities are in units of the fibre texture's standard deviation, not calibrated to CT values. `calibrate` does not build a volume at all; it uses only the stroke masks and the simulated reader. The phantoms have been run only at small sizes; whether the calibration carries over to real segments is an untested idea ([log](../logs/2026-10-07-phantom-demo.md)).
+The strokes are random lines and arcs, not letters of any script. A score on a phantom says nothing about any scroll, and nothing here is a reading. The physics is a sketch: densities are in units of the fiber texture's standard deviation, not calibrated to CT values. `calibrate` does not build a volume at all; it uses only the stroke masks and the simulated reader. The phantoms have been run only at small sizes; whether the calibration carries over to real segments is an untested idea ([log](../logs/2026-10-07-phantom-demo.md)).
 
 ## When to use it
 
@@ -36,7 +36,7 @@ The strokes are random lines and arcs, not letters of any script. A score on a p
 
 Do not use it:
 
-- To rank real ink models: score their maps with [`auc`](auc.md) on labelled segments held out from all of them (PHerc0841).
+- To rank real ink models: score their maps with [`auc`](auc.md) on labeled segments held out from all of them (PHerc0841).
 - To say anything about a scroll, a real model's quality, or letters: phantom strokes are not letters.
 - As training data for a real reader: nothing here shows that phantoms look like real CT ink; train on the published labels.
 - To look at maps side by side: use [`view`](view.md); the demo shows how.
@@ -109,7 +109,7 @@ usage: python -m kit phantom [-h] [--shape H W] [--depth DEPTH] [--seed SEED]
 | `--seed SEED` | `0` | `make`: the phantom's seed. `stress`: the first seed; phantoms use `SEED` to `SEED+N-1`. `calibrate`: phantom `i` draws its strokes with seed `SEED*1000+i` and its reader with `SEED*1000+i+500`; the bootstrap draws use seed `i` whatever `SEED` is |
 | `--n N` | `8` | `stress`, `calibrate`: number of phantoms |
 | `--letter-px LETTER_PX` | `64` | Side of a letter cell in pixels (64 px is 599.4 um at `VOXEL_UM` 9.366). The stroke width is `max(2, LETTER_PX // 8)` and the scoring mask leaves out an edge of `LETTER_PX // 4`. The Python functions default to 96 |
-| `--ink-contrast INK_CONTRAST` | `0.25` | Density added under ink near the top surface, in units of the fibre texture's standard deviation. `make`, `stress` |
+| `--ink-contrast INK_CONTRAST` | `0.25` | Density added under ink near the top surface, in units of the fiber texture's standard deviation. `make`, `stress` |
 | `--ink-bump INK_BUMP` | `0.6` | How far the sheet's top surface rises under ink, in layers (carbon ink's thickness). `make`, `stress` |
 | `--noise NOISE` | `1.0` | Standard deviation of the per-voxel Gaussian noise, same units. `make`, `stress` |
 | `--quality QUALITY` | `1.0` | `calibrate` only: the simulated reader's signal-to-noise ratio (blurred truth against unit-variance correlated noise) |
@@ -159,7 +159,7 @@ print(auc.score_array(fwd, p["ink"], p["mask"])["auc"], auc.score_array(rev, p["
 
 ## Inputs
 
-None from disk: every phantom is generated from its arguments and a seed. Units: sizes and widths are pixels (one pixel is `VOXEL_UM`, 9.366 um, as on the 9 um surface grid); depth is in layers; `--ink-contrast` and `--noise` are in units of the fibre texture's standard deviation, which is 1 by construction; `--ink-bump` is in layers. To test your own detector, load `volume.npy` from `make` (axis 0 is depth, with the top surface near layer `0.35 * depth`), write a 2D map of shape (h, w), and score it against `ink.npy` and `mask.npy`.
+None from disk: every phantom is generated from its arguments and a seed. Units: sizes and widths are pixels (one pixel is `VOXEL_UM`, 9.366 um, as on the 9 um surface grid); depth is in layers; `--ink-contrast` and `--noise` are in units of the fiber texture's standard deviation, which is 1 by construction; `--ink-bump` is in layers. To test your own detector, load `volume.npy` from `make` (axis 0 is depth, with the top surface near layer `0.35 * depth`), write a 2D map of shape (h, w), and score it against `ink.npy` and `mask.npy`.
 
 ## Outputs
 
@@ -218,7 +218,7 @@ A float can be `NaN` (blocks too large, or `--n 1`); the JSON then holds the bar
 | `1` | An error the command does not catch, with a Python traceback: `make` without `OUT`, or numpy missing |
 | `2` | Bad settings, with the message on stderr (see Failure modes), or a usage error from the argument parser |
 
-The demo script always exits 0, even when a step fails (see Failure modes).
+The demo stops at the first failing step and exits with that step's exit code (set -euo pipefail, since 2026-10-21); before that it always exited 0, because tee hid the failure.
 
 ## Failure modes
 
@@ -235,16 +235,17 @@ The demo script always exits 0, even when a step fails (see Failure modes).
 | `TypeError: argument should be a str or an os.PathLike object ... not 'NoneType'` and a traceback, exit code 1 | `make` without `OUT` | Give the output folder |
 | `ModuleNotFoundError: No module named 'numpy'` and a traceback, exit code 1 | numpy is not installed (the command imports it first) | `python -m pip install numpy` |
 | `numpy is required. Run inside villa's environment: uv run --project "$VILLA/vesuvius" --extra models python -m kit verify ...` | numpy is missing when calling `kit.phantom` from Python | Install numpy |
-| `No module named kit` for each step of the demo, and exit code 0 | `scripts/phantom-demo.sh` run outside the repository root; its `run` helper pipes every step through `tee`, so a failing step does not stop it | Run it from the repository root, and check that `$OUT/viewer.html` exists rather than trusting the exit code |
+| `No module named kit`, and the demo stops with a nonzero exit code | `scripts/phantom-demo.sh` run outside the repository root, so the first step fails; the script stops at the first failing step (`set -euo pipefail`; before 2026-10-21 its `tee` hid the failure and it ran on to exit code 0) | Run it from the repository root |
+| The demo stops partway with a nonzero exit code and the step's own error above it | One step failed; `$OUT/commands.log` ends with that step's command | Fix what that step's error names (a row above), then rerun the demo |
 
 ## How it works
 
 `make_phantom`:
 
-1. **Strokes.** Letter cells of side `letter_px` are laid in rows, `int(letter_px * (1 + row_gap))` apart (1.5 letters with `row_gap` 0.5) and `int(letter_px * 0.9)` apart across, with a margin of `letter_px // 2`. Each cell gets strokes with probability `fill` (0.7), then 2 to 4 of them: 60 % straight segments between two random points of the cell, the rest arcs of radius 0.25 to 0.5 letters around the cell's centre, spanning 0.6 to 1.6 times pi. A pixel is ink within `stroke_px / 2` of a stroke. The mask is softened by a Gaussian of `stroke_px / 4`.
-2. **Papyrus.** Recto fibres are noise blurred by 0.8 px along rows and 12 px along columns, verso fibres the other way round, each scaled to mean 0 and standard deviation 1. A brightness field is noise blurred by a sixth of the shorter side, scaled to `drift` (0.8).
+1. **Strokes.** Letter cells of side `letter_px` are laid in rows, `int(letter_px * (1 + row_gap))` apart (1.5 letters with `row_gap` 0.5) and `int(letter_px * 0.9)` apart across, with a margin of `letter_px // 2`. Each cell gets strokes with probability `fill` (0.7), then 2 to 4 of them: 60 % straight segments between two random points of the cell, the rest arcs of radius 0.25 to 0.5 letters around the cell's center, spanning 0.6 to 1.6 times pi. A pixel is ink within `stroke_px / 2` of a stroke. The mask is softened by a Gaussian of `stroke_px / 4`.
+2. **Papyrus.** Recto fibers are noise blurred by 0.8 px along rows and 12 px along columns, verso fibers the other way round, each scaled to mean 0 and standard deviation 1. A brightness field is noise blurred by a sixth of the shorter side, scaled to `drift` (0.8).
 3. **Sheet.** Along depth, the sheet fills from its top surface at `0.35 * depth` (raised by `ink_bump` times the softened ink) to its bottom at `0.65 * depth`, with logistic edges of steepness 3. Above the middle (`0.5 * depth`) it carries the recto texture, below it the verso. Density is occupancy times `2.0 + texture + field`.
-4. **Ink.** `ink_contrast` times the softened ink is added in a Gaussian of 1 layer centred one layer inside the top surface.
+4. **Ink.** `ink_contrast` times the softened ink is added in a Gaussian of 1 layer centered one layer inside the top surface.
 5. **Noise.** Gaussian noise of standard deviation `noise` is added to every voxel; the scoring mask leaves out an edge of `letter_px // 4`.
 
 `surface_detector` takes the mean density per layer, picks the layer after which it rises most steeply (entering the sheet), and returns the mean of that layer and the next `band` (2) minus the mean of the 4 layers starting `band + 2` below it, blurred by 2 px and rescaled from its 0.5 and 99.5 percentiles to [0.001, 0.999]. On the reversed volume it finds the other face, where there is no ink. `simulated_reader` adds `quality` times the standardized truth, blurred by 4 px, to standardized noise blurred by 6 px, rescaled the same way. `calibrate` scores each simulated map with `kit.auc.score_array` and resamples it with `kit.auc.block_bootstrap` ([auc](auc.md) explains both), then compares the spreads as listed under Outputs.
@@ -275,7 +276,7 @@ Memory grows with depth times height times width (several float64 copies of the 
 - **Parse:** `stress`: `rows[].auc` and `rows[].auc_reversed`. `calibrate --json`: `ratio_bootstrap_to_empirical`, `intervals_covering_mean`, `auc_mean`, `bootstrap_half_width_mean`. `make`: the four files and `ink_fraction` in `meta.json`.
 - **Rerun:** Safe and deterministic for the same arguments and numpy version. `make` replaces its four files; `stress --save-maps` replaces the maps of the same seeds.
 - **Success:** Exit code 0; `auc` above `auc_reversed` in every `stress` row; no NaN in `calibrate`'s numbers.
-- **Not a pass:** A `nan` ratio; a ratio from a few phantoms read as precise; a detector that beats its reversed control on phantoms but has not been scored on real held-out labels; `calibrate` numbers expected to move with `--depth`, `--noise`, `--ink-contrast` or `--ink-bump`, which it ignores; the demo's exit code 0 without its output files.
+- **Not a pass:** A `nan` ratio; a ratio from a few phantoms read as precise; a detector that beats its reversed control on phantoms but has not been scored on real held-out labels; `calibrate` numbers expected to move with `--depth`, `--noise`, `--ink-contrast` or `--ink-bump`, which it ignores; an exit code 0 from a copy of the demo older than 2026-10-21, which did not show that every step ran.
 - **Go-ahead:** Nothing.
 - **Never:** Call a phantom stroke a letter or a phantom score a reading; cite a phantom AUC as evidence about a scroll or about a real model; put phantom numbers in `results.json` as segment results.
 
@@ -285,10 +286,11 @@ Memory grows with depth times height times width (several float64 copies of the 
 python -m unittest tests.test_phantom -v
 ```
 
-`PhantomTest` builds a 12 x 192 x 192 phantom and checks its shape and ink fraction, that the baseline detector scores above 0.55 forward and at least 0.05 lower reversed, that a near-perfect simulated reader scores above 0.95, and that the blur keeps the shape and the mean. The same file's `ViewerTest` covers [`view`](view.md), not this tool. They skip without numpy. They do not cover the command line, `calibrate`, `--save-maps`, the error messages or `scripts/phantom-demo.sh`.
+`PhantomTest` builds a 12 x 192 x 192 phantom and checks its shape and ink fraction, that the baseline detector scores above 0.55 forward and at least 0.05 lower reversed, that a near-perfect simulated reader scores above 0.95, and that the blur keeps the shape and the mean. The same file's `ViewerTest` covers [`view`](view.md), not this tool. They skip without numpy. `PhantomDemoScriptTest` runs `scripts/phantom-demo.sh` with a stub `python3` first on `PATH` (no numpy needed): with every step passing it exits 0 after all five steps, and when any one step fails (`make`, `stress`, `calibrate`, the inline map step or `view`) it stops at that step with a nonzero exit code. The tests do not cover the command line, `calibrate`'s numbers, `--save-maps` or the error messages.
 
 ## History
 
+- 2026-10-21: the demo runs with `set -euo pipefail`, so a failing step stops it with a nonzero exit code instead of exit 0 behind `tee`; `PhantomDemoScriptTest` checks it (`bbecb37`).
 - 2026-10-07: the demo log and panels; the demo's `calibrate` step uses quality 0.3 and 32 px blocks, since 107 px blocks gave `nan` on 256 px phantoms (`afe8d3c`).
 - 2026-10-16: the demo writes to a fresh `mktemp -d` folder by default instead of `/tmp/phantom-demo` (`da68987`).
 - 2026-10-07: first version: `make`, `stress`, `calibrate`, and `scripts/phantom-demo.sh` (`eeacf6a`).

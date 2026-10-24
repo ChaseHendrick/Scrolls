@@ -909,7 +909,7 @@ class ControlStatusTest(unittest.TestCase):
         self.assertIn("control map: ", R.text_summary(res))
 
     def test_constant_control_map_is_refused(self):
-        # A constant map normalises to zeros and keeps no letters, so as a control it could never fail.
+        # A constant map normalizes to zeros and keeps no letters, so as a control it could never fail.
         img = lined_image()
         with tempfile.TemporaryDirectory() as d:
             net = R.LineNet(random_weights(Path(d) / "w.npz"))
@@ -1121,8 +1121,8 @@ class TurnsAndPhotosTest(unittest.TestCase):
         self.assertEqual((off["deskew_deg"], off["deskew_max_deg"], off["columns"][0]["deskew_at_limit"]), (0.0, 0, False))
 
     def test_given_lines_are_rows_at_the_middle_and_follow_the_deskew(self):
-        a = R.normalize(lined_image(n_lines=4, pitch=30))                 # 150 x 400, lines centred on rows 30 to 120
-        tilted = R.shear(a, -3.0)                    # a line centred on row c now lies at row c + (x - 200) tan 3 deg
+        a = R.normalize(lined_image(n_lines=4, pitch=30))                 # 150 x 400, lines centered on rows 30 to 120
+        tilted = R.shear(a, -3.0)                    # a line centered on row c now lies at row c + (x - 200) tan 3 deg
         ys = [30, 60, 90, 120]                       # the rows of the lines at the middle column, x = 200
         net = self.net()
         kw = dict(letter_px=16, lines=ys, nulls=1, normalized=True, p_min=0.5)
@@ -1158,7 +1158,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
 
     def test_polarity_trial_reads_both_ways_and_keeps_the_larger_margin(self):
         net = self.net()
-        a = R.normalize(1.0 - lined_image())             # a photo normalised as bright ink: the wrong way round
+        a = R.normalize(1.0 - lined_image())             # a photo normalized as bright ink: the wrong way round
         fake, calls = self.fake_trial_reads()
         with mock.patch.object(R, "_analyze_at", side_effect=fake):
             t = R.polarity_trial(a, net, "bright", letter_px=32, seed=5)
@@ -1170,7 +1170,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
         self.assertEqual(first.shape, (75, 200))                           # at the working scale, 16 / 32
         self.assertTrue(np.allclose(second, 1.0 - first))                  # the other polarity: the same image inverted
         self.assertEqual((h1, kw1["nulls"], kw1["seed"], kw1["max_lines"], kw1["fill"]), (16.0, 2, 6, 8, 0.0))
-        self.assertAlmostEqual(kw2["fill"], float(np.median(second)))       # dark ink: the ground's grey
+        self.assertAlmostEqual(kw2["fill"], float(np.median(second)))       # dark ink: the ground's gray
         fake, calls = self.fake_trial_reads(right=4, wrong=4)
         with mock.patch.object(R, "_analyze_at", side_effect=fake):
             self.assertEqual(R.polarity_trial(a, net, "bright", letter_px=32)["choice"], "bright")   # a tie: bright
@@ -1211,7 +1211,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
         self.assertIn("polarity auto: dark ink (quick read at 16 px", R.text_summary(auto))
 
     def test_normalized_auto_inverts_the_control_map_with_the_image(self):
-        """A normalised image that auto inverts to dark ink takes its control map with it, so the map stays a control."""
+        """A normalized image that auto inverts to dark ink takes its control map with it, so the map stays a control."""
         net = self.net()
         photo = 1.0 - lined_image()                                       # dark ink on a light ground
         trial = {"rule": R.AUTO_RULE, "letter_px": 16.0, "choice": "dark",
@@ -1291,7 +1291,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
             self.assertTrue(np.array_equal(out, R.normalize(img, used)))
         self.assertLess(R.normalize_info(ink_map)[1]["background"], 0.2)
         self.assertGreater(R.normalize_info(photo)[1]["background"], 0.8)
-        # papyrus on a white ground: the median is the papyrus, low in the range, so grey levels say bright
+        # papyrus on a white ground: the median is the papyrus, low in the range, so gray levels say bright
         page = np.full((200, 300), 250.0)
         page[20:170, 30:270] = 110.0 + 5 * np.random.default_rng(0).standard_normal((150, 240))   # 60% papyrus
         page[60:64, 60:240] = 30.0                                        # a dark stroke
@@ -1375,7 +1375,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
                                                                                        [0, 400, 0, 150]))
             boxes = [l["box"] for L in res["lines"] for l in L["letters"]]
             self.assertTrue(boxes)
-            for y0, y1, x0, x1 in boxes:          # centred on the image as stored (a box may reach past its edge)
+            for y0, y1, x0, x1 in boxes:          # centered on the image as stored (a box may reach past its edge)
                 self.assertTrue(0 < (y0 + y1) / 2 < 400 and 0 < (x0 + x1) / 2 < 150, (y0, y1, x0, x1))
             for _, _, x0, x1 in boxes:                       # each letter's height runs across the stored image
                 self.assertAlmostEqual(x1 - x0, 16.0, places=6)
@@ -1423,7 +1423,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
             self.assertEqual(R.exif_orientation(plain), 1)
             self.assertTrue(np.array_equal(R.load_image(plain), a.astype(np.float32)))
             self.assertEqual(R.exif_orientation(Path(d) / "x.npy"), 1)
-            # the colour image for the overlay: turned the same way, cropped and averaged like the read image
+            # the color image for the overlay: turned the same way, cropped and averaged like the read image
             rgb = np.zeros((40, 64, 3), np.uint8)
             rgb[..., 0] = 200
             rgb[:10, :, 1] = 250
@@ -1431,7 +1431,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
             self.assertTrue(np.array_equal(R.display_image(p), np.rot90(rgb, -1)))
             self.assertEqual(R.display_image(p, crop=(0, 63, 0, 40), k=2).shape, (31, 20, 3))
             self.assertEqual(R.load_reduced(p, crop=(0, 63, 0, 40), letter_px=64, max_pixels=100)[0].shape, (31, 20))
-            self.assertIsNone(R.display_image(plain))                                  # grey: drawn from the read image
+            self.assertIsNone(R.display_image(plain))                                  # gray: drawn from the read image
             self.assertIsNone(R.display_image(Path(d) / "x.npy"))
 
     def test_overlay_draws_the_image_in_its_own_polarity(self):
@@ -1485,7 +1485,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
             px = np.asarray(Image.open(png).convert("RGB")).astype(int)
             self.assertEqual(list(px.shape[:2]), res["overlay"]["size"])
             body = px[res["overlay"]["banner_rows"]:, :400]
-            self.assertGreater(np.median(body[..., 0]) - np.median(body[..., 2]), 40)   # drawn in colour, light ground
+            self.assertGreater(np.median(body[..., 0]) - np.median(body[..., 2]), 40)   # drawn in color, light ground
 
     def test_summary_names_turns_warnings_and_the_best_turn(self):
         c = R.control_report(0, [0])
@@ -1531,7 +1531,7 @@ class TurnsAndPhotosTest(unittest.TestCase):
         self.assertEqual(set(res["blank_map_pages"][0]), {"auto", "bright"})
         img = eval_photos.photo_page(np.random.default_rng(0), 20.0, 3, 3.0)[0]
         self.assertEqual(img.dtype, np.float32)
-        self.assertTrue(np.array_equal(img, np.round(img)) and img.max() <= 255)   # 8-bit grey levels
+        self.assertTrue(np.array_equal(img, np.round(img)) and img.max() <= 255)   # 8-bit gray levels
         mounted = eval_photos.on_mount(img, frac=0.6)
         self.assertAlmostEqual(img.size / mounted.size, 0.4, delta=0.02)
 
@@ -1569,8 +1569,10 @@ class WeightsTest(unittest.TestCase):
         self.assertEqual(R.released_name(m["sha256"]), "letters-v2-ccby")
         self.assertEqual(cli.build_parser().parse_args(["letterdemo"]).weights, R.DEFAULT_WEIGHTS)
         self.assertEqual(inspect.signature(D.run).parameters["weights"].default, R.DEFAULT_WEIGHTS)
-        with self.assertRaises(SystemExit), contextlib.redirect_stderr(io.StringIO()):
-            cli.build_parser().parse_args(["letterread", "x.png"])        # the reader itself names no default
+        # The CLI now chooses a task profile; the permissive offline demo keeps its original default.
+        args = cli.build_parser().parse_args(["letterread", "x.png"])
+        self.assertIsNone(args.weights)
+        self.assertIsNone(args.weight_profile)
 
     def test_released_name_is_checked_offline(self):
         """letters-v2-ccby by name, with no network: a missing file is not fetched, a wrong one is refused."""
@@ -1820,7 +1822,7 @@ class ApiTest(unittest.TestCase):
         self.assertEqual(self.letters(self.read(rgba)), self.letters(self.read(grey)))
         u8 = (np.clip(self.img, 0, 1) * 255).astype(np.uint8)
         self.assertIs(R.as_image(u8), u8)                             # a 2D array is not copied
-        with tempfile.TemporaryDirectory() as d:                      # as load_image greys a colour .npy
+        with tempfile.TemporaryDirectory() as d:                      # as load_image grays a color .npy
             np.save(Path(d) / "c.npy", (rgb * 100).astype(np.uint16))
             self.assertTrue(np.array_equal(R.load_image(Path(d) / "c.npy"),
                                            R.as_image((rgb * 100).astype(np.uint16))))
@@ -2137,7 +2139,7 @@ class OverlayTest(unittest.TestCase):
             green = (px[..., 1] > 150) & (px[..., 0] < 100)
             self.assertGreaterEqual(int(green[b + 35:b + 46, 135].sum()), 2)      # top edge of the kept box
             grey = (np.abs(px[..., 0] - 120) < 10) & (np.abs(px[..., 1] - 120) < 10)
-            self.assertGreaterEqual(int(grey[b + 35:b + 46, 220].sum()), 2)       # and of the grey one
+            self.assertGreaterEqual(int(grey[b + 35:b + 46, 220].sum()), 2)       # and of the gray one
             self.assertTrue((px[:b, :, 0] < 100).any())                           # banner text
             # a reduced read: the block-averaged image is drawn and boxes come in through input_scale
             reduced = dict(res, input_scale=2, reduced_shape=[50, 150])

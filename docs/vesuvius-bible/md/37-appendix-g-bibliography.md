@@ -1,12 +1,14 @@
+<a id="app-bibliography"></a>
+
 # Appendix G. Bibliography {#app-bibliography}
 
 Sources are cited in the text by keys in square brackets. Web pages were accessed on 15 October 2026 unless noted. Entries marked as consulted through summaries or reviews were not read in full.
 
 ## Vesuvius Challenge pages
 
-- <span id="bib-VC-Catalog"></span>**[VC-Catalog]** Vesuvius Challenge open data catalogue, metadata.json in the open data bucket. scrollprize.org, accessed 15 Oct 2026. <https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json>
+- <span id="bib-VC-Catalog"></span>**[VC-Catalog]** Vesuvius Challenge open data catalog, metadata.json in the open data bucket. scrollprize.org, accessed 15 Oct 2026. <https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json>
 - <span id="bib-VC-CommunityProjects"></span>**[VC-CommunityProjects]** Vesuvius Challenge, "Awesome Scroll Tools" (community projects). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/community_projects>
-- <span id="bib-VC-Data"></span>**[VC-Data]** Vesuvius Challenge, "Data Formats" (data page: licences, how to cite, repositories). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data>
+- <span id="bib-VC-Data"></span>**[VC-Data]** Vesuvius Challenge, "Data Formats" (data page: licenses, how to cite, repositories). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data>
 - <span id="bib-VC-Datasets"></span>**[VC-Datasets]** Vesuvius Challenge, "Curated Datasets". scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data_datasets>
 - <span id="bib-VC-FAQ"></span>**[VC-FAQ]** Vesuvius Challenge, "FAQ". scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/faq>
 - <span id="bib-VC-FirstLetters"></span>**[VC-FirstLetters]** Vesuvius Challenge, "First word discovered in unopened Herculaneum scroll by 21yo computer science student". scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/firstletters>

@@ -1,3 +1,5 @@
+<a id="ch-formats"></a>
+
 # Data Formats {#ch-formats}
 
 > **Chapter summary.** Volumes are distributed as chunked, multiresolution OME-Zarr; surfaces as tifxyz quad meshes (three float32 TIFFs of x, y and z plus metadata) or OBJ; surface volumes as Zarr or TIFF stacks; labels as binary images; metadata as JSON. The bucket is organized by sample, then volumes, segments and representations. Scan identifiers encode date, voxel size, propagation distance and energy.
@@ -19,16 +21,16 @@ Source: [VC-Data].
 OME-Zarr "stores large multidimensional arrays in chunks and often at multiple resolutions, letting software read only the region it needs rather than loading an entire scroll" [VC-OpenProblems2026]. It is "the primary distribution format because it is cloud-optimized (chunked, multi-resolution) and supports streaming / partial reads" [VC-Data]. The specification is OME-NGFF [Moore2021]. Practical notes:
 
 - Volumes are pyramids: level 0 is full resolution and each higher level is downsampled (the ink tutorial's native 3D configuration trains "at pyramid level 2 instead of full resolution") [VC-InkTutorial].
-- Volumes are stored as OME-Zarr v2; a community catalogue tool includes "working openers for the bucket's OME-Zarr v2 stores under zarr-python 3" [VC-CommunityProjects], and a 2026 progress prize fixed Zarr 3 reading [VC-Winners].
+- Volumes are stored as OME-Zarr v2; a community catalog tool includes "working openers for the bucket's OME-Zarr v2 stores under zarr-python 3" [VC-CommunityProjects], and a 2026 progress prize fixed Zarr 3 reading [VC-Winners].
 - Volume names include a mask suffix when masked, for example `20250728140407-9.362um-1.2m-113keV-masked.zarr` [VC-InkTutorial].
 
 ### Volume identifiers
 
-A catalogue long identifier has the form `YYYYMMDDHHMMSS-<voxel>um-<distance>m-<energy>keV`, for example `20250509053741-8.640um-1.2m-116keV` (PHerc. 9B) [VC-Catalog]. The leading timestamp is the scan or volume identifier used in prize rules (for example the Grand Prize volume `20250521151220` for PHerc. 1447) [VC-Prizes].
+A catalog long identifier has the form `YYYYMMDDHHMMSS-<voxel>um-<distance>m-<energy>keV`, for example `20250509053741-8.640um-1.2m-116keV` (PHerc. 9B) [VC-Catalog]. The leading timestamp is the scan or volume identifier used in prize rules (for example the Grand Prize volume `20250521151220` for PHerc. 1447) [VC-Prizes].
 
 ### Sizes
 
-Uncompressed size is voxels times bytes per voxel. The catalogue's largest volume, PHerc. Paris 3 at 2.4 µm, has shape 68,417 x 42,403 x 42,403, about 1.23 x 10^14 voxels, roughly 123 TB at one byte per voxel ([Chapter 8](#ch-scans)) [VC-Catalog]. This is why tools stream chunks instead of downloading.
+Uncompressed size is voxels times bytes per voxel. The catalog's largest volume, PHerc. Paris 3 at 2.4 µm, has shape 68,417 x 42,403 x 42,403, about 1.23 x 10^14 voxels, roughly 123 TB at one byte per voxel ([Chapter 8](08-scans.md#ch-scans)) [VC-Catalog]. This is why tools stream chunks instead of downloading.
 
 ## tifxyz
 
@@ -62,7 +64,7 @@ Source: [VC-Data]. A segment path from the ink tutorial: `PHerc0139/segments/202
 
 ## metadata.json
 
-The catalogue is a JSON document with `samples` and `models`. Each sample lists photographs, scans with parameters (voxel size, energy, detector distance, location, beamline), volumes with shapes, segments and affine **volume_transforms** between volumes of the same sample (for example from the 2023 Diamond volume of PHerc. Paris 4 to its 2026 ESRF volumes) [VC-Catalog]. This book's data/catalog_*.csv files were extracted from it.
+The catalog is a JSON document with `samples` and `models`. Each sample lists photographs, scans with parameters (voxel size, energy, detector distance, location, beamline), volumes with shapes, segments and affine **volume_transforms** between volumes of the same sample (for example from the 2023 Diamond volume of PHerc. Paris 4 to its 2026 ESRF volumes) [VC-Catalog]. This book's data/catalog_*.csv files were extracted from it.
 
 ## Labels and masks
 

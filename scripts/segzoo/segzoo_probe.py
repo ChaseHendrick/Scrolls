@@ -9,7 +9,7 @@ thing learned is a linear head, and it runs on a CPU.
             [0, 1]; `labels` (n,) and `groups` (n,) are copied through when present. --model is a Hugging Face
             id: facebook/dinov2-small (Apache-2.0, open) or facebook/dinov3-vits16-pretrain-lvd1689m (DINOv3
             License, gated: needs an approved, logged-in account)
-  fit       TRAIN.npz TEST.npz -> RESULT.json: a multinomial logistic head on standardised training features
+  fit       TRAIN.npz TEST.npz -> RESULT.json: a multinomial logistic head on standardized training features
             (L2 penalty chosen by grouped cross-validation on the training set only), then one pass over the
             test set: accuracy with a 95% bootstrap interval, per-class accuracy, a label-permutation control,
             and with --against HITS.json the paired difference against another method's per-item hits

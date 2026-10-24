@@ -38,7 +38,7 @@ def load_array(path):
 
 
 def png_bytes(img):
-    """Encode uint8 [h,w] (grey) or [h,w,3|4] (RGB, RGBA) as PNG with the standard library."""
+    """Encode uint8 [h,w] (gray) or [h,w,3|4] (RGB, RGBA) as PNG with the standard library."""
     np = _numpy()
     img = np.ascontiguousarray(img, dtype=np.uint8)
     if img.ndim == 2:
@@ -157,7 +157,7 @@ for(const id of['reader','over','op','lab','msk'])document.getElementById(id).on
 st.onmousemove=e=>{{const b=st.getBoundingClientRect(),x=Math.floor(e.clientX-b.left),y=Math.floor(e.clientY-b.top);
  if(x<0||y<0||x>=W||y>=H)return;let t='x '+x*S+', y '+y*S+' (map px): ';
  for(const n of R)t+=n+' rank '+(px('r_'+n,x,y)[0]/255).toFixed(2)+'  ';
- if(O.includes('disagreement'))t+='disagreement '+(px('o_disagreement',x,y)[0]/255).toFixed(2);
+ if(O.includes('disagreement'))t+='disagreement '+(px('o_disagreement',x,y)[3]/255).toFixed(2);
  document.getElementById('read').textContent=t}};show();
 </script></body></html>"""
 

@@ -1,8 +1,10 @@
+<a id="app-images"></a>
+
 # Appendix F. Image Credits {#app-images}
 
-Every photograph in the book, with author, source and licence as recorded on its Wikimedia Commons file page. Charts and diagrams are the editors' own (CC BY 4.0, data in data/). No CT scan data or renders from the challenge are reproduced.
+Every photograph in the book, with author, source and license as recorded on its Wikimedia Commons file page. Charts and diagrams are the editors' own (CC BY 4.0, data in data/). No CT scan data or renders from the challenge are reproduced.
 
-| File | Description | Author | Licence | Source |
+| File | Description | Author | License | Source |
 |---|---|---|---|---|
 | 01 | View of the Vesuvius from the Autostrada A56 in Naples, 2010 | DimiTalen | CC0 | <https://commons.wikimedia.org/wiki/File:View_of_the_Vesuvius_from_the_Autostrada_A56_in_Naples,_2010.jpg> |
 | 02 | Map of region surrounding Vesuvius, described by William Hamilton as Plate VI. in a letter from Naples dated Oct. 16, 1770. The letter was c | Unknown author | Public domain | <https://commons.wikimedia.org/wiki/File:Map_around_Vesuvius_1770_plate6_from_William_Hamilton.jpg> |
@@ -38,4 +40,4 @@ Every photograph in the book, with author, source and licence as recorded on its
 | 33 | The Younger Pliny Reproved, colorized copperplate print by Thomas Burke (1749-1815) after Angelica Kauffmann; c. 39 x 45 cm | see description | Public domain | <https://commons.wikimedia.org/wiki/File:The_Younger_Pliny_Reproved.jpg> |
 | 34 | Pliny the Elder (born Gaius Plinius Secundus, AD 23 - 79) was a Roman author, naturalist and natural philosopher, a naval and army commander | Dimitris Kamaras from Athens, Greece | CC BY 2.0 | <https://commons.wikimedia.org/wiki/File:Pliny_the_Elder,_Loggia_del_Consiglio,_Piazza_dei_Signori,_Verona_(37520060770)_(cropped).jpg> |
 
-Licence summary: CC BY 2.0: 1; CC BY 4.0: 2; CC BY-SA 3.0: 2; CC BY-SA 3.0 de: 1; CC BY-SA 4.0: 8; CC0: 1; Public domain: 18. Total: 33 photographs.
+License summary: CC BY 2.0: 1; CC BY 4.0: 2; CC BY-SA 3.0: 2; CC BY-SA 3.0 de: 1; CC BY-SA 4.0: 8; CC0: 1; Public domain: 18. Total: 33 photographs.

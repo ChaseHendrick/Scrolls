@@ -2,7 +2,7 @@
 (docs/letter-reader.md, Reproduce the benchmarks).
 
 Training lines are the crops of p1667_align.py (each published line of a training column, cut from the map
-along its fitted row at the reader's working scale), labelled with the published line.
+along its fitted row at the reader's working scale), labeled with the published line.
 A published '?' (a restored or illegible letter) is a wildcard that may be read as any letter or as nothing,
 so the loss never asks the reader to invent a letter in a hole nor punishes it for seeing one there.
 Every batch mixes map lines with synthetic and real-letterform lines from gen_dataset.py shards, so the

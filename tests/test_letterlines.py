@@ -20,7 +20,7 @@ try:
 except ImportError:  # the core kit is standard library only
     np = LL = R = None
 
-# lined_image(): 150 x 400, four lines of 16 px letters centred on rows 30, 60, 90 and 120
+# lined_image(): 150 x 400, four lines of 16 px letters centered on rows 30, 60, 90 and 120
 ROWS = (30, 60, 90, 120)
 
 
@@ -220,7 +220,7 @@ class CutTest(unittest.TestCase):
     def test_crop_and_block_averaged_loads(self):
         img = np.kron(lined_image(), np.ones((4, 4), np.float32))            # 600 x 1600, letters 64 px
         np.save(self.d / "big.npy", img)
-        # a crop: y is relative to it, and the image is normalised over the crop, as a read of the crop is
+        # a crop: y is relative to it, and the image is normalized over the crop, as a read of the crop is
         crop = [100, 500, 200, 1400]
         imgs, _, _ = self.cut([{"image": "big.npy", "text": "ΑΒΓ", "y": 4 * ROWS[1] - 100, "letter_px": 64,
                                 "crop": crop}])

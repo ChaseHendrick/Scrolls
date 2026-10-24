@@ -1,8 +1,8 @@
-"""Command line: python -m kit {prizes,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
-scrolls-letterlines and scrolls-letterdemo (one command each; CONSOLE_SCRIPTS).
+scrolls-letterlines, scrolls-letterdemo and scrolls-start (one command each; CONSOLE_SCRIPTS).
 """
 
 import argparse
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard
+from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard, spaceconnect
 
 
 def cmd_prizes(args):
@@ -26,8 +26,53 @@ def cmd_prizes(args):
     return 0
 
 
+def cmd_help(args):
+    """python -m kit help [COMMAND]: the grouped list, or a command's usage and its page's Quick start."""
+    parser = _parser()
+    if not args.topic:
+        print(parser.format_help(), end="")
+        return 0
+    sub = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    if args.topic not in sub.choices:
+        return _unknown(args.topic, sub.choices)
+    print(sub.choices[args.topic].format_help(), end="")
+    example = _quick_start(args.topic)
+    if example:
+        print("\nWorked example (from the command's page, Quick start):\n")
+        print(example)
+    return 0
+
+
+def _quick_start(command):
+    """The Quick start section of the tool page whose Run names `python -m kit COMMAND`, or None."""
+    import re
+    pages = Path(__file__).resolve().parent.parent / "docs" / "tools"
+    if not pages.is_dir():
+        return None
+    want = re.compile(r"`python3? -m kit " + re.escape(command) + r"[` ]")
+    for page in sorted(pages.glob("*.md")):
+        text = page.read_text(encoding="utf-8")
+        run = next((l for l in text.splitlines() if l.startswith("| Run |")), "")
+        if not want.search(run):
+            continue
+        m = re.search(r"^## Quick start\n(.*?)(?=^## )", text, re.S | re.M)
+        if m:
+            return m.group(1).strip() + f"\n\nFull page: docs/tools/{page.name}"
+    return None
+
+
+def _unknown(word, choices, prog="python -m kit"):
+    import difflib
+    near = difflib.get_close_matches(word, list(choices), n=3, cutoff=0.6)
+    near += [c for c in choices if c.startswith(word[:3]) and c not in near][:3 - len(near)] if len(word) >= 3 else []
+    hint = f" Did you mean: {', '.join(near)}?" if near else ""
+    print(f"{prog}: error: no command '{word}'.{hint} The list: {prog} --help", file=sys.stderr)
+    return 2
+
+
 def cmd_doctor(args):
-    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk))
+    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk, speed=not args.no_speed,
+                                                           remote=args.remote))
     print(report)
     return 1 if worst == doctor.FAIL else 0
 
@@ -50,7 +95,18 @@ def cmd_cost(args):
 def cmd_fetch(args):
     prefix = fetch.ALIASES.get(args.prefix, args.prefix)
     try:
-        objects, fetched, total = fetch.fetch_prefix(prefix, args.dest, workers=args.workers)
+        pl = fetch.plan(prefix, args.dest)
+        line = (f"{pl['objects']} objects, {fetch.human(pl['total_bytes'])} in all, {fetch.human(pl['missing_bytes'])} "
+                f"still to download, {fetch.human(pl['free_bytes'])} free at {args.dest}")
+        if args.dry_run:
+            print(line + ("" if pl["fits"] else " (does not fit: leave 1 GB spare)"))
+            return 0
+        if not pl["fits"] and not args.force:
+            print(f"{line}: not enough space (kit fetch keeps 1 GB spare). Free some space, pick another DEST, or "
+                  "pass --force", file=sys.stderr)
+            return 2
+        objects, fetched, total = fetch.fetch_prefix(pl["prefix"], args.dest, workers=args.workers,
+                                                     entries=pl["entries"])
     except (fetch.FetchError, OSError) as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -182,11 +238,11 @@ def cmd_meshaudit(args):
     try:
         cat = meshaudit.load_catalogue(args.catalogue)
     except (OSError, ValueError) as exc:
-        print(f"meshaudit: cannot read the catalogue: {exc}. Give a metadata.json path or URL with --catalogue.",
+        print(f"meshaudit: cannot read the catalog: {exc}. Give a metadata.json path or URL with --catalogue.",
               file=sys.stderr)
         return 2
     if not isinstance(cat, dict) or not isinstance(cat.get("samples"), dict):
-        print("meshaudit: the catalogue has no samples object; give the bucket's metadata.json with --catalogue.",
+        print("meshaudit: the catalog has no samples object; give the bucket's metadata.json with --catalogue.",
               file=sys.stderr)
         return 2
     if args.action == "transforms":
@@ -214,12 +270,12 @@ def cmd_meshaudit(args):
     else:  # depth
         s = cat["samples"].get(args.sample)
         if not isinstance(s, dict):
-            print(f"meshaudit: the catalogue has no sample {args.sample!r}; samples: {', '.join(sorted(cat['samples']))}",
+            print(f"meshaudit: the catalog has no sample {args.sample!r}; samples: {', '.join(sorted(cat['samples']))}",
                   file=sys.stderr)
             return 2
         seg = (s.get("segments") or {}).get(args.segment)
         if not isinstance(seg, dict):
-            print(f"meshaudit: sample {args.sample} has no segment {args.segment!r} in the catalogue; "
+            print(f"meshaudit: sample {args.sample} has no segment {args.segment!r} in the catalog; "
                   f"check the id against samples.{args.sample}.segments in metadata.json", file=sys.stderr)
             return 2
         out = meshaudit.depth_segment(args.base, args.sample, seg, cross_ids=args.cross or None,
@@ -571,8 +627,19 @@ def cmd_letterread(args):
     say = (lambda msg: None) if args.quiet else (lambda msg: print(msg, file=sys.stderr, flush=True))
     letter_px = net = None
     try:
-        from . import letterread
+        from . import letterread, reader_backends, letterweights
         letterread.utf8_console()       # Greek letters print in a pipe and on a Windows console too
+        reader_backends.validate_route(args.backend, args.language)
+        if args.backend == "tesseract":
+            return reader_backends.run_cli(args)
+        if args.tessdata is not None or args.ocr_psm != 3 or args.ocr_timeout != 60 or args.ocr_min_confidence != 50:
+            raise ValueError("--tessdata and --ocr-* options require --backend tesseract")
+        profile = None if args.weights is not None else letterweights.profile_info(
+            args.weight_profile, lines_given=args.lines is not None)
+        weights = profile["weights"] if profile is not None else letterweights.select_weights(
+            args.weights, args.weight_profile, lines_given=args.lines is not None)
+        if profile is not None:
+            say(f"weight profile {profile['name']}: {profile['weights']} ({profile['license']})")
         if args.letter_px is not None and (args.letter_mm is not None or args.um_per_px is not None):
             raise ValueError("give the letter height once: --letter-px, or --letter-mm with --um-per-px")
         letter_px = args.letter_px
@@ -581,7 +648,7 @@ def cmd_letterread(args):
             if letter_px < letterread.MIN_LETTER_PX:
                 raise ValueError(f"--letter-mm {args.letter_mm:g} at --um-per-px {args.um_per_px:g} is a letter "
                                  f"{letter_px:.3g} px tall, under the {letterread.MIN_LETTER_PX} px the reader can read; "
-                                 "check the units (the letter height in millimetres, the pixel size in micrometres)")
+                                 "check the units (the letter height in millimeters, the pixel size in micrometers)")
         elif letter_px is not None and not letter_px >= letterread.MIN_LETTER_PX:
             raise ValueError(f"--letter-px {letter_px}: give the letter height in image pixels, at least "
                              f"{letterread.MIN_LETTER_PX} (the network reads letters 16 px tall, so smaller letters "
@@ -616,7 +683,8 @@ def cmd_letterread(args):
         if args.letter_mm is not None:
             say(f"letter height {args.letter_mm:g} mm at {args.um_per_px:g} um per pixel: {letter_px:.2f} px")
         # the weights before the image, so a failed download costs no load
-        net = letterread.load_weights(args.weights)
+        net = letterread.load_weights(weights)
+        reader_backends.validate_linenet(net)
         lm = None
         if args.lm:
             from . import greeklm
@@ -663,6 +731,9 @@ def cmd_letterread(args):
                               min_letters=args.min_letters, columns=columns)
         del c0
         # file names only, never a folder, so a result can be shared without a local path
+        res["backend"] = {"id": "linenet", "languages": ["grc"], "scripts": ["Greek"]}
+        if profile is not None:
+            res["weight_profile"] = profile
         res["source"] = {"file": Path(args.image).name, "key": args.key}
         res["options"]["max_mpx"] = args.max_mpx
         if args.control:
@@ -717,7 +788,7 @@ def cmd_letterread(args):
                     failed.append(exc)
     if args.overlay:
         try:
-            # a colour photograph is drawn in colour; other images from the read image in their own polarity
+            # a color photograph is drawn in color; other images from the read image in their own polarity
             base = letterread.display_image(args.image, args.crop, k)
             letterread.overlay(a0, res, args.overlay, max_side=args.overlay_max_side, normalized=True,
                                base=base if base is not None and base.shape[:2] == a0.shape else None)
@@ -726,6 +797,9 @@ def cmd_letterread(args):
             failed.append(exc)
     for out in wrote:
         say(f"wrote {out}")
+    if not args.json and res.get("weight_profile"):
+        selected = res["weight_profile"]
+        print(f"weight profile {selected['name']}: {selected['weights']} ({selected['license']})")
     print(json.dumps(res, ensure_ascii=False, indent=1) if args.json else letterread.text_summary(res))
     for exc in failed:
         print(exc, file=sys.stderr)
@@ -818,6 +892,11 @@ def cmd_letterdemo(args):
     return letterdemo.run_cli(args)
 
 
+def cmd_volumeview(args):
+    from . import volumeview
+    return volumeview.run(args)
+
+
 def cmd_segzoo(args):
     from . import segzoo   # standard library; the torch code is in scripts/segzoo/
     return segzoo.cmd_segzoo(args)
@@ -825,10 +904,50 @@ def cmd_segzoo(args):
 
 # Console scripts that run one command (pyproject.toml's [project.scripts]): script name -> command.
 CONSOLE_SCRIPTS = {"scrolls-letterread": "letterread", "scrolls-letterlines": "letterlines",
-                   "scrolls-letterdemo": "letterdemo"}
+                   "scrolls-letterdemo": "letterdemo", "scrolls-start": "start"}
+
+
+def cmd_strokenet_two_density(args):
+    """kit strokenet --two-density: the two-density score of every label window (no network, no download)."""
+    import numpy as np
+    from . import strokenet
+    strokenet.check_pixel_mm(args.pixel_mm)
+    for name in ("weights", "crop", "png"):
+        if getattr(args, name):
+            raise ValueError(f"--{name} does not apply to --two-density")
+    with strokenet.open_map(args.map, args.key) as img:
+        ink = np.asarray(img, np.float32)                               # the tested maps were read as float32
+    mask = None
+    if args.mask:
+        with strokenet.open_map(args.mask) as m:
+            mask = np.asarray(m)
+    res, grid = strokenet.two_density_analyze(ink, args.pixel_mm, stride=args.label_stride, mask=mask,
+                                              with_grid=bool(args.grid))
+    if args.grid:
+        gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
+        np.save(gpath, grid)
+        res["grid_file"] = gpath
+    if args.out:
+        Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
+    return res
 
 
 def cmd_strokenet(args):
+    if args.two_density:
+        try:
+            res = cmd_strokenet_two_density(args)
+        except ImportError as exc:
+            print(import_advice(exc), file=sys.stderr)
+            return 2
+        except (OSError, KeyError, ValueError) as exc:
+            print(exc, file=sys.stderr)
+            return 2
+        if args.json:
+            print(json.dumps(res, indent=1))
+        else:
+            from . import strokenet
+            print(strokenet.two_density_summary(res))
+        return 0
     try:
         import numpy as np
         from . import strokenet
@@ -841,36 +960,113 @@ def cmd_strokenet(args):
                 y0, y1, x0, x1 = used
                 img = img[y0:y1, x0:x1]
                 crop = {"requested": list(args.crop), "used": used, "origin_moved_to_lattice": moved}
-            res, grid = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
-                                          seed=args.seed, with_grid=True)
+            res, grid, work = strokenet.analyze(img, args.pixel_mm, net, stride_px=args.stride, sample=args.sample,
+                                                seed=args.seed, with_grid=True, with_working=True)
         if crop:
             res["crop"] = crop
+        if args.png:
+            res["png_file"] = strokenet.heatmap(work, grid, res["window_y_px"], res["window_x_px"], args.png)
         if args.grid:
             gpath = args.grid if args.grid.endswith(".npy") else args.grid + ".npy"   # np.save adds .npy
             np.save(gpath, grid)
             res["grid_file"] = gpath
         if args.out:
             Path(args.out).write_text(json.dumps(res, indent=1) + "\n", encoding="utf-8")
-    except (ImportError, OSError, KeyError, ValueError) as exc:
+    except ImportError as exc:
+        print(import_advice(exc), file=sys.stderr)
+        return 2
+    except (OSError, KeyError, ValueError) as exc:
         print(exc, file=sys.stderr)
         return 2
     print(json.dumps(res, indent=1) if args.json else strokenet.text_summary(res))
     return 0
 
 
+# `python -m kit --help` lists the commands under these headings, in this order; a command missing here is listed
+# under "Other" (tests/test_cli_help.py fails on one).
+GROUPS = (
+    ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
+    ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
+                                    "volumeview", "segzoo")),
+    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
+                               "surfacefix", "layers")),
+    ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
+                                           "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
+    ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
+    ("Runs and records", ("run", "provenance", "compute", "routines")),
+    ("villa pull requests and issues", ("prclock", "prtext")),
+    ("This repository", ("releases", "spaceconnect", "stale", "integrity")),
+)
+
+
+class KitParser(argparse.ArgumentParser):
+    """The top-level parser: its --help lists the commands by task instead of one long list."""
+
+    def format_help(self):
+        sub = next((a for a in self._actions if isinstance(a, argparse._SubParsersAction)), None)
+        if sub is None:
+            return super().format_help()
+        helps = {c.dest: c.help for c in sub._choices_actions}
+        width = max(len(n) for n in helps) + 2
+        out = [self.format_usage().rstrip(), "", "The Scrolls workbench: one command line for the Vesuvius Challenge "
+               "tools in this repository.", ""]
+        seen = set()
+        for title, names in GROUPS + (("Other", tuple(n for n in helps if not any(n in g for _, g in GROUPS))),):
+            names = [n for n in names if n in helps]
+            if not names:
+                continue
+            out.append(f"{title}:")
+            import shutil
+            import textwrap
+            cols = max(60, min(120, shutil.get_terminal_size((100, 24)).columns)) - 2
+            for n in names:
+                seen.add(n)
+                out += textwrap.wrap(helps[n], cols, initial_indent=f"  {n:<{width}}",
+                                     subsequent_indent=" " * (width + 2))
+            out.append("")
+        out += ["Examples:", "  python -m kit help tifxyz          a command's options and a worked example",
+                "  python -m kit find PHerc0139       what the open data has for one scroll",
+                "  python -m kit doctor               can this machine run the villa workflow?", "",
+                "Every command has a page: docs/tools/README.md, or python -m kit.tooldocs show ID."]
+        return "\n".join(out) + "\n"
+
+
 def build_parser(prog="python -m kit", sub_progs=None):
     """The parser of every command; sub_progs maps a command to the program name its usage and errors show."""
     sub_progs = sub_progs or {}
-    parser = argparse.ArgumentParser(prog=prog, description=__doc__)
-    sub = parser.add_subparsers(dest="command", required=True)
+    parser = KitParser(prog=prog, description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND",
+                                parser_class=argparse.ArgumentParser)
+
+    p = sub.add_parser("help", help="list the commands by task, or show one command's options and worked example")
+    p.add_argument("topic", nargs="?", help="a command, such as tifxyz")
+    p.set_defaults(func=cmd_help)
+
+    p = sub.add_parser("start", prog=sub_progs.get("start"), help="open Scrolls Starter: setup, practice and guided next steps")
+    from . import starter
+    starter.add_arguments(p)
+    p.set_defaults(func=starter.run)
 
     p = sub.add_parser("prizes", help="open prizes from the dated snapshot")
     p.add_argument("--json", action="store_true")
     p.add_argument("--today", help="override today's date (YYYY-MM-DD)")
     p.set_defaults(func=cmd_prizes)
 
+    p = sub.add_parser("live", help="run a command (after --) or page piped output in a full-screen, mouse-driven "
+                                    "view in the Scrolls look")
+    p.add_argument("cmd", nargs=argparse.REMAINDER, help="the command to run, after --")
+    p.set_defaults(func=lambda a: __import__("kit.termview", fromlist=["x"]).main(a.cmd))
+
+    p = sub.add_parser("style", help="the Scrolls terminal look: hook install, remove or status (style every "
+                                     "script in a checkout), demo, pipe")
+    p.add_argument("cmd", nargs=argparse.REMAINDER)
+    p.set_defaults(func=lambda a: __import__("kit.termstyle", fromlist=["x"]).main(a.cmd))
+
     p = sub.add_parser("doctor", help="check GPU, disk, tools and villa paths")
-    p.add_argument("--disk", default=".", help="path whose free space to check")
+    p.add_argument("--disk", default=".", help="path whose free space (and speed) to check")
+    p.add_argument("--no-speed", action="store_true", help="skip the 64 MB disk speed test")
+    p.add_argument("--remote", action="store_true", help="on a rented or cloud machine: also check where VC3D will "
+                   "cache streamed chunks, its free space and speed, and on RunPod whether it survives a stop")
     p.set_defaults(func=cmd_doctor)
 
     p = sub.add_parser("plan", help="print a First Letters run plan for an eligible scroll")
@@ -887,17 +1083,64 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
     p.set_defaults(func=cmd_cost)
 
+    p = sub.add_parser("submitcheck", help="preflight a prize submission folder against the prize page's file "
+                                           "rules, quoting each rule")
+    from . import submitcheck as _sc
+    _sc.build_parser(p)
+    p.set_defaults(func=_sc.cmd_submitcheck)
+
+    p = sub.add_parser("find", help="everything public for one scroll: volumes, segments, predictions, center "
+                                    "lines and Hugging Face matches")
+    from . import find as _find
+    _find.build_parser(p, "find")
+    p.set_defaults(func=_find.cmd_find)
+
+    p = sub.add_parser("centerline", help="get a scroll's center line into your VC3D project as umbilicus.json")
+    from . import centerline as _cl
+    _cl.build_parser(p)
+    p.set_defaults(func=_cl.cmd_centerline)
+
+    p = sub.add_parser("labels", help="published ink labels per segment, with which public models trained on them")
+    from . import labels as _labels
+    _labels.build_parser(p)
+    p.set_defaults(func=_labels.cmd_labels)
+
+    p = sub.add_parser("cite", help="credit and licence lines for a scroll's volumes and center lines")
+    _find.build_parser(p, "cite")
+    p.set_defaults(func=_find.cmd_cite)
+
+    from . import villapr
+    p = sub.add_parser("prclock", help="days left before villa's PR time limits close each of a person's open PRs")
+    villapr.build_parser(p, "prclock")
+    p.set_defaults(func=villapr.cmd_prclock)
+
+    p = sub.add_parser("prtext", help="check a villa PR or issue body against villa's template before posting")
+    villapr.build_parser(p, "prtext")
+    p.set_defaults(func=villapr.cmd_prtext)
+
+    from . import vc3dfix
+    p = sub.add_parser("s3relay", help="run VC3D through a local relay that keeps S3's false 404s from blanking "
+                                       "chunks")
+    vc3dfix.build_parser(p, "s3relay")
+    p.set_defaults(func=vc3dfix.cmd_s3relay)
+
+    p = sub.add_parser("vc3dcache", help="find and delete false empty-chunk markers in VC3D's remote chunk cache")
+    vc3dfix.build_parser(p, "vc3dcache")
+    p.set_defaults(func=vc3dfix.cmd_vc3dcache)
+
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
     p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 surface volumes (w035: an ink_9um training segment; w045: unseen by v8in, but ink_9um trained on its 2.4 um render)")
     p.add_argument("dest", help="local directory")
     p.add_argument("--workers", type=int, default=16)
+    p.add_argument("--dry-run", action="store_true", help="list only: size, what is still missing, and free disk")
+    p.add_argument("--force", action="store_true", help="download even when it would leave under 1 GB free")
     p.set_defaults(func=cmd_fetch)
 
     p = sub.add_parser("verify", help="compare two ink maps (e.g. CPU vs MPS) with a control")
     p.add_argument("reference", help="reference map, e.g. the CPU run")
     p.add_argument("candidate", help="map to check, e.g. the MPS run")
     p.add_argument("--control", help="a map that must NOT agree, e.g. the reverse-direction output")
-    p.add_argument("--tolerance", type=float, default=verify.DEFAULT_TOLERANCE, help="grey levels (0-255)")
+    p.add_argument("--tolerance", type=float, default=verify.DEFAULT_TOLERANCE, help="gray levels (0-255)")
     p.add_argument("--max-fraction", type=float, default=verify.DEFAULT_MAX_FRACTION,
                    help="largest fraction of pixels allowed beyond the tolerance")
     p.add_argument("--json", action="store_true")
@@ -911,7 +1154,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
                    help="use sparse area resize (scipy); float32 rounding and near-tied FFT peaks can differ")
     p.add_argument("forward", nargs="+", help="forward-direction map(s); several are averaged, e.g. two checkpoints")
     p.add_argument("--reverse", nargs="+", default=[], help="reverse-direction map(s), averaged the same way")
-    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.362")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometers, e.g. 9.362")
     p.add_argument("--json", action="store_true")
     p.add_argument("--slug", help="attach the result to this experiment")
     p.add_argument("--name", default="rowscore")
@@ -921,7 +1164,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("auc", help="pixel AUC of an ink map against a segment's published labels")
     p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
     p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
-    p.add_argument("--mask", required=True, help="supervision.zarr: where ink and non-ink were both labelled")
+    p.add_argument("--mask", required=True, help="supervision.zarr: where ink and non-ink were both labeled")
     p.add_argument("--control", help="reverse-direction map of the same surface")
     p.add_argument("--level", default=auc.DEFAULT_LEVEL, help="label pyramid level matching the 9 um grid")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
@@ -941,9 +1184,9 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--root", default=str(ledger.DEFAULT_ROOT))
     p.set_defaults(func=cmd_auc)
 
-    p = sub.add_parser("fibertensor", help="fibre-orientation (structure tensor) features and a tiny CPU ink reader")
+    p = sub.add_parser("fibertensor", help="fiber-orientation (structure tensor) features and a tiny CPU ink reader")
     actions = p.add_subparsers(dest="action", required=True)
-    a = actions.add_parser("train", help="fit on one labelled segment window")
+    a = actions.add_parser("train", help="fit on one labeled segment window")
     a.add_argument("volume", help="surface volume zarr (9 um)")
     a.add_argument("labels", help="label folder with inklabels.zarr and supervision.zarr")
     a.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
@@ -967,7 +1210,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("prediction", help="ink map (.tif or .npy) on the 9 um surface grid")
     p.add_argument("--labels", required=True, help="inklabels.zarr of the segment")
     p.add_argument("--mask", required=True, help="supervision.zarr")
-    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometres, e.g. 9.366")
+    p.add_argument("--voxel-um", type=float, required=True, help="map pixel size in micrometers, e.g. 9.366")
     p.add_argument("--control", help="reverse-direction map of the same surface")
     p.add_argument("--level", default=auc.DEFAULT_LEVEL)
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"))
@@ -1022,12 +1265,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--plane-z", type=float, nargs=3, metavar=("START", "STOP", "STEP"),
                    help="explicit plane heights, instead of --planes")
     p.add_argument("--ray-step-deg", type=float, help="degrees between rays, at most 10 (default 1)")
-    p.add_argument("--max-normal-um", type=float, help="farthest neighbour along a normal (default 600)")
+    p.add_argument("--max-normal-um", type=float, help="farthest neighbor along a normal (default 600)")
     p.add_argument("--coincide-um", type=float, help="two segments this close cannot be told apart (default 20)")
     p.add_argument("--skip-frac", type=float, help="skipped winding: closer than this share of the pitch (default 0.5)")
     p.add_argument("--min-count", type=int, help="rays or vertices for a flag, at least 1 (default 10)")
     p.add_argument("--min-share", type=float, help="share of rays or vertices for a flag (default 0.01)")
-    p.add_argument("--upsample", type=int, help="neighbour grids made this much denser for the normal search (default 2)")
+    p.add_argument("--upsample", type=int, help="neighbor grids made this much denser for the normal search (default 2)")
     p.add_argument("--cache", default="work/stackcheck/cache", help="where bucket segments are kept")
     p.add_argument("--out", help="write the JSON report here (work/ is git-ignored)")
     p.add_argument("--flags", help="write per-vertex flag masks (.npz, added if missing) on each segment's input grid")
@@ -1035,9 +1278,37 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--verbose", action="store_true", help="progress to stderr")
     p.set_defaults(func=cmd_stackcheck)
 
+    p = sub.add_parser("tifxyz", help="look at a tifxyz segment without VC3D: area, isometry, holes and folds, "
+                                      "OBJ, picture, which way it faces, chunks it touches, diff of two versions")
+    from . import tifxyz
+    tifxyz.build_parser(p)
+    p.set_defaults(func=tifxyz.cmd_tifxyz)
+
+    p = sub.add_parser("atlas", help="Segment Atlas: area, isometry, holes and folds of every published segment")
+    from . import atlas as _atlas
+    _atlas.build_parser(p)
+    p.set_defaults(func=_atlas.cmd_atlas)
+
+    p = sub.add_parser("coverage", help="Winding coverage: which turns and heights a scroll's segments trace, and the gaps")
+    from . import coverage as _coverage
+    _coverage.build_parser(p)
+    p.set_defaults(func=_coverage.cmd_coverage)
+
+    p = sub.add_parser("uvgate", help="check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough "
+                                      "area, optionally one counterclockwise piece (geometry only)")
+    from . import uvgate_cli
+    uvgate_cli.build_parser(p)
+    p.set_defaults(func=uvgate_cli.cmd_uvgate)
+
+    p = sub.add_parser("windconsistency", help="check that relative winding counts (a to b is k windings) can all "
+                                               "hold at once, around every closed path")
+    from . import windconsistency
+    windconsistency.build_parser(p)
+    p.set_defaults(func=windconsistency.cmd_windconsistency)
+
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
     actions = p.add_subparsers(dest="action", required=True)
-    a = actions.add_parser("transforms", help="refit catalogue affines from their landmarks: residual, leave-one-out, round trip")
+    a = actions.add_parser("transforms", help="refit catalog affines from their landmarks: residual, leave-one-out, round trip")
     a = actions.add_parser("canvas", help="does a published mesh variant reproduce each surface volume's canvas size?")
     a.add_argument("--sample", action="append", help="limit to this sample (repeatable)")
     a.add_argument("--workers", type=int, default=16)
@@ -1046,7 +1317,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("--seed", type=int, default=meshaudit.SEED)
     a = actions.add_parser("depth", help="papyrus depth offset between a segment's native and cross-scan renders")
     a.add_argument("--sample", required=True)
-    a.add_argument("--segment", required=True, help="catalogue segment id")
+    a.add_argument("--segment", required=True, help="catalog segment id")
     a.add_argument("--cross", action="append", help="limit to this cross volume id (repeatable)")
     a.add_argument("--tiles", type=int, default=32)
     a.add_argument("--seed", type=int, default=meshaudit.SEED)
@@ -1167,7 +1438,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.set_defaults(func=cmd_view)
 
     p = sub.add_parser("strokenet", help="learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls")
-    p.add_argument("map", help=".npy, .npz, .tif or .png ink map on the organisers' 0 to 255 scale (ink bright)")
+    p.add_argument("map", help=".npy, .npz, .tif or .png ink map on the organizers' 0 to 255 scale (ink bright)")
     p.add_argument("--pixel-mm", type=float, required=True,
                    help="map pixel size in mm (0.0024 for a 2.4 um map; an integer map at a whole fraction of "
                         "0.048 mm is pooled exactly as the training windows)")
@@ -1188,20 +1459,53 @@ def build_parser(prog="python -m kit", sub_progs=None):
                                   "row and column starts are window_y_px and window_x_px in the result, every stride "
                                   "except the last, which ends at the map's edge")
     p.add_argument("--out", help="also write the result as JSON")
+    p.add_argument("--png", help="also write a picture: the map with each window's score painted over it "
+                                 "(blue low, red high; needs Pillow)")
+    p.add_argument("--two-density", action="store_true",
+                   help="score 48 px label windows with the two-density score instead of the network (no weights, "
+                        "numpy only): s = z(logit label density) + 0.25 z(logit 128 px window density), z within the map")
+    p.add_argument("--mask", help="--two-density: papyrus mask at the map's resolution (nonzero is papyrus); labels "
+                                  "under half papyrus are skipped. Without it every whole label is scored")
+    p.add_argument("--label-stride", type=int, default=6,
+                   help="--two-density: label step in pooled pixels (default 6, the tested stride)")
     p.add_argument("--json", action="store_true")
     p.set_defaults(func=cmd_strokenet)
 
+    p = sub.add_parser("volumeview", help="build a local viewer link from explicit public volume metadata")
+    from . import volumeview
+    volumeview.add_arguments(p)
+    p.set_defaults(func=cmd_volumeview)
+
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
-                                      "MedSAM2 and Mamba families, their licences and fit; Auto3DSeg datalists")
+                                      "MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists")
     from . import segzoo as _segzoo
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
 
-    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"), help="learned Greek letter reader for a 2D image, with null, control-map and orientation controls")
+    p = sub.add_parser("letterread", prog=sub_progs.get("letterread"),
+                       help="Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls",
+                       description="Scroll Text Reader (formerly Greek Letter Reader). Greek LineNet proposes letters; "
+                                   "optional local Tesseract proposes words using explicitly installed language packs. "
+                                   "Outputs are unverified hypotheses with controls, not readings.")
     p.add_argument("image", help=".npy, .npz, .tif, .png, .jpg or zarr (ink bright by default)")
-    p.add_argument("--weights", required=True,
+    p.add_argument("--backend", choices=["linenet", "tesseract"], default="linenet",
+                   help="linenet: Greek letter reader (default); tesseract: installed local OCR language packs")
+    p.add_argument("--language", default="grc", help="language code (default grc); tesseract also accepts lat, heb, "
+                   "or other installed codes joined by +; no automatic language detection")
+    weights_group = p.add_mutually_exclusive_group()
+    weights_group.add_argument("--weights",
                    help="a released model name such as letters-v2-ccby (downloaded once, SHA-256 checked; a name is "
                         "looked up before any file of that name), or a linenet-v1 .npz path")
+    weights_group.add_argument("--weight-profile", choices=["ink-lines", "permissive"],
+                   help="linenet weight profile: by default ink-lines with --lines, permissive otherwise; "
+                        "explicit --weights always selects that model")
+    p.add_argument("--tessdata", help="tesseract: local directory of .traineddata language packs; never downloaded")
+    p.add_argument("--ocr-psm", type=int, choices=[3, 6, 7, 11, 13], default=3,
+                   help="tesseract page segmentation: 3 auto (default), 6 block, 7 line, 11 sparse, 13 raw line")
+    p.add_argument("--ocr-timeout", type=float, default=60,
+                   help="tesseract timeout per invocation, including each control (default 60 seconds, maximum 600)")
+    p.add_argument("--ocr-min-confidence", type=float, default=50,
+                   help="tesseract word confidence floor, 0 to 100 (default 50); not a calibrated probability")
     p.add_argument("--key", help=".npz: array name (default: the first); zarr: array path or OME-Zarr level (default: "
                                  "level 0, full resolution); pixel values are then in that level's pixels")
     p.add_argument("--crop", type=int, nargs=4, metavar=("Y0", "Y1", "X0", "X1"),
@@ -1209,8 +1513,8 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--letter-px", type=float,
                    help="letter height in image pixels, at least 4 (default: estimated from the line pitch, with a "
                         "scale search; the read stops when the image shows no line pitch)")
-    p.add_argument("--letter-mm", type=float, help="letter height in millimetres; needs --um-per-px")
-    p.add_argument("--um-per-px", type=float, help="pixel size in micrometres (with --letter-mm)")
+    p.add_argument("--letter-mm", type=float, help="letter height in millimeters; needs --um-per-px")
+    p.add_argument("--um-per-px", type=float, help="pixel size in micrometers (with --letter-mm)")
     p.add_argument("--max-mpx", type=float, default=64,   # letterread.MAX_PIXELS / 1e6; letterread needs numpy
                    help="pixel budget in millions of pixels: a bigger image is block-averaged while it loads "
                         "(default %(default)g)")
@@ -1225,11 +1529,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--deskew", type=float, default=6.0, metavar="MAX_DEG",   # letterread.DESKEW_DEG
                    help="largest line tilt searched, degrees either way (default %(default)g; 0 turns deskew off)")
     p.add_argument("--lines", type=float, nargs="+",
-                   help="centre rows of the lines in image pixels (in the turned image with --rotate or --mirror), "
+                   help="center rows of the lines in image pixels (in the turned image with --rotate or --mirror), "
                         "each its row at the image's horizontal middle, which the deskew turns about (give --deskew 0 "
                         "for level bands); default: found")
     p.add_argument("--columns", default="auto", help="auto (split at empty vertical gutters, default), off, or a number of columns")
-    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomised controls (default 4, at most 64)")
+    p.add_argument("--nulls", type=int, default=4, help="tile-shuffle and phase-randomized controls (default 4, at most 64)")
     p.add_argument("--control", metavar="MAP_REVERSE",
                    help="a second map of the same surface on the same grid, such as its reverse-depth ink map: read on "
                         "the image's lines at the same letter size and confidence floor; the status needs the image "
@@ -1310,9 +1614,26 @@ def build_parser(prog="python -m kit", sub_progs=None):
     routines.add_arguments(p)
     p.set_defaults(func=routines.run)
 
+    p = sub.add_parser("stale", help="what live pages and registries still say that is no longer true: old handoff "
+                                     "rows, gone branches, retired names, dead links, MAP rows (kit/stale.py; read-only)")
+    from . import stale
+    stale.add_arguments(p)
+    p.set_defaults(func=stale.run)
+
+    p = sub.add_parser("integrity", help="research integrity checks for Vesuvius claims: ink scores with their "
+                                         "controls and held-out status, overclaim wording, preregistration order, "
+                                         "citations; each plants faults first (kit/integrity.py; read-only)")
+    from . import integrity
+    integrity.add_arguments(p)
+    p.set_defaults(func=integrity.run)
+
     p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
     releases.add_arguments(p)
     p.set_defaults(func=releases.run)
+    p = sub.add_parser("spaceconnect", help="each Space's Connect your tool panel: render it from connect.json, check "
+                       "every Space has a current one")
+    spaceconnect.add_arguments(p)
+    p.set_defaults(func=spaceconnect.run)
     p = sub.add_parser("leaderboard", help="the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json")
     leaderboard.add_arguments(p)
     p.set_defaults(func=leaderboard.run)
@@ -1401,8 +1722,21 @@ def _parse(parser, argv):
 
 
 def main(argv=None, prog="python -m kit", sub_progs=None):
+    if argv is None and sys.stdout.isatty():
+        # The Scrolls terminal look, on a terminal only (kit/termstyle.py). Never loaded for pipes, logs or
+        # containers.
+        from . import termstyle
+        termstyle.auto()
     argv = list(sys.argv[1:] if argv is None else argv)
+    if argv[:1] == ["live"]:
+        return __import__("kit.termview", fromlist=["x"]).main(argv[1:])
+    if argv[:1] == ["style"]:
+        return __import__("kit.termstyle", fromlist=["x"]).main(argv[1:])
     parser = _parser(prog, sub_progs)
+    if argv and not argv[0].startswith("-"):
+        sub = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+        if argv[0] not in sub.choices:
+            return _unknown(argv[0], sub.choices, prog)
     # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
     # Parse the wrapper separately, leaving every child flag and literal intact.
     if argv[:1] == ["run"] and "--" in argv:
@@ -1412,6 +1746,10 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
             args.cmd.extend(argv[split + 1:])
         else:
             args = _parse(parser, argv)
+    elif argv[:1] == ["s3relay"] and "--" in argv:
+        split = argv.index("--")
+        args = _parse(parser, argv[:split])
+        args.cmd.extend(argv[split + 1:])
     else:
         args = _parse(parser, argv)
     return _run(args, f"{prog} {args.command}", args.command)
@@ -1463,3 +1801,8 @@ def letterlines_main(argv=None):
 def letterdemo_main(argv=None):
     """Console script scrolls-letterdemo: python -m kit letterdemo."""
     return _console("scrolls-letterdemo", argv)
+
+
+def start_main(argv=None):
+    """Console script scrolls-start: python -m kit start."""
+    return _console("scrolls-start", argv)

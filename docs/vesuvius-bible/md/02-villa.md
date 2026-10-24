@@ -1,17 +1,19 @@
+<a id="ch-villa"></a>
+
 # The Villa of the Papyri and its Library {#ch-villa}
 
-> **Chapter summary.** The Villa of the Papyri, on the coast just outside Herculaneum, held the only library from the Graeco-Roman world that survives as a physical collection. Tunnellers working for the Bourbon kings of Naples found its carbonized rolls between 1752 and 1754. The library is dominated by Epicurean philosophy, above all by the works of Philodemus of Gadara. This chapter covers the villa, its probable owner, the discovery of the papyri, the inventory numbers and what the library contains.
+> **Chapter summary.** The Villa of the Papyri, on the coast just outside Herculaneum, held the only library from the Graeco-Roman world that survives as a physical collection. Tunnelers working for the Bourbon kings of Naples found its carbonized rolls between 1752 and 1754. The library is dominated by Epicurean philosophy, above all by the works of Philodemus of Gadara. This chapter covers the villa, its probable owner, the discovery of the papyri, the inventory numbers and what the library contains.
 
 ## The building
 
 The villa (Italian *Villa dei Papiri*, also called *Villa dei Pisoni*, and *Villa Suburbana* in early excavation records) was one of the most luxurious houses of Herculaneum and of the Roman world. Before 79 CE it stretched for more than 250 m along the shore of the Bay of Naples, with four terraced levels below the main floor, which stood about 16 m above ancient sea level [WP-Villa]. Its plan follows an expanded Campanian *villa suburbana*: an entrance, an atrium, a first peristyle with ten columns on each side, and a large second peristyle with a long pool, gardens and walkways. At least 80 sculptures of high quality were recovered there, including the bronze Seated Hermes found in 1758, a bronze herm after the Doryphoros of Polykleitos and five bronze "dancers" in Doric peplos. It is the largest collection of Greek and Roman sculpture ever found in a single context [WP-Villa].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Ethel Ross Barker's 1908 reconstruction drawing of the Villa of the Papyri, showing colonnades around a long garden pool.
+> **Photograph (not stored in git; see the caption for source and license):** Ethel Ross Barker's 1908 reconstruction drawing of the Villa of the Papyri, showing colonnades around a long garden pool.
 *Figure 2.1. The Villa of the Papyri "restored", from Ethel Ross Barker, Buried Herculaneum (1908). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Villa-of-the-Papyri-restored-1.jpg>*
 
 The volcanic fill over the villa is up to 30 m thick [WP-Villa]. Most of the building remains underground. Karl Weber's plan, drawn while the villa was explored room by room through tunnels and holes punched through frescoed walls, is still the basis of what is known of its layout [WP-Weber]. That plan was the model for the Getty Villa museum in Malibu, California, which is a reproduction of the villa [WP-Villa].
 
-> **Photograph (not stored in git; see the caption for source and licence):** The outer peristyle garden of the Getty Villa in California, a modern reconstruction based on the plan of the Villa of the Papyri.
+> **Photograph (not stored in git; see the caption for source and license):** The outer peristyle garden of the Getty Villa in California, a modern reconstruction based on the plan of the Villa of the Papyri.
 *Figure 2.2. The outer peristyle garden of the Getty Villa, Pacific Palisades, Los Angeles: a modern reconstruction based on Weber's plan of the Villa of the Papyri. Photo: Dale Cruse, via Wikimedia Commons. License: CC BY 4.0. <https://commons.wikimedia.org/wiki/File:Getty_Villa_-_Outer_Peristyle_Garden_-_Pacific_Palisades.jpg>*
 
 ## The owner
@@ -33,9 +35,9 @@ The library room had wooden shelving around the walls and a central free-standin
 
 At first the rolls looked like lumps of charcoal or burnt branches, and some were thrown away or burned. Only when traces of letters were noticed on a blackened mass did the excavators realize what they had [WP-HercPapyri]. On the advice of the minister Bernardo Tanucci, the king set up a commission to study them [WP-Villa].
 
-Work in the villa tunnels was carried out first by Roque Joaquin de Alcubierre and then by Karl Jakob Weber (1712 to 1764), a Swiss military engineer who joined the excavations in late 1749. Weber worked room by room with an interest in context that has made him a forerunner of scientific archaeology [WP-Weber]. Tunnelling stopped in 1765 after complaints from residents above, and the exact position of the villa was lost for two centuries. It was relocated in the 1980s from eighteenth-century records, reached through an ancient well in 1986, and partly exposed in open excavation in the 1990s, when two previously unknown lower floors with frescoes in place were found [WP-Villa]. As of 2012 about 2,800 m2 of the villa remained to be excavated, and Italian authorities have favoured conservation over further digging [WP-Villa].
+Work in the villa tunnels was carried out first by Roque Joaquin de Alcubierre and then by Karl Jakob Weber (1712 to 1764), a Swiss military engineer who joined the excavations in late 1749. Weber worked room by room with an interest in context that has made him a forerunner of scientific archaeology [WP-Weber]. Tunneling stopped in 1765 after complaints from residents above, and the exact position of the villa was lost for two centuries. It was relocated in the 1980s from eighteenth-century records, reached through an ancient well in 1986, and partly exposed in open excavation in the 1990s, when two previously unknown lower floors with frescoes in place were found [WP-Villa]. As of 2012 about 2,800 m2 of the villa remained to be excavated, and Italian authorities have favored conservation over further digging [WP-Villa].
 
-> **Photograph (not stored in git; see the caption for source and licence):** The excavated portion of the Villa of the Papyri, photographed in May 2000.
+> **Photograph (not stored in git; see the caption for source and license):** The excavated portion of the Villa of the Papyri, photographed in May 2000.
 *Figure 2.3. Ruins of the Villa of the Papyri at the archaeological site of Herculaneum, May 2000. Photo: Erik Anderson, via Wikimedia Commons. License: CC BY-SA 3.0. <https://commons.wikimedia.org/wiki/File:Villaofthepapyri.jpg>*
 
 ## How many papyri?
@@ -45,10 +47,10 @@ Counts depend on what is counted, because one roll can be broken into several in
 | Count | What it measures | Source |
 |---|---|---|
 | more than 1,800 | carbonized papyri in general accounts | [WP-Villa] [Bukreeva2016] |
-| 1,756 | manuscripts catalogued up to 1855 | Barker, via [WP-HercPapyri] |
+| 1,756 | manuscripts cataloged up to 1855 | Barker, via [WP-HercPapyri] |
 | 1,806 | total after later finds (Barker, 1908), of which 341 almost entire, 500 charred fragments and 965 intermediate | via [WP-HercPapyri] |
 | 1,814 | the "official list" of rolls and fragments | [WP-HercPapyri] |
-| 1,826 | inventory reported in the 1990s; also Cavallo's catalogue base | [WP-HercPapyri] [Cavallo1983] |
+| 1,826 | inventory reported in the 1990s; also Cavallo's catalog base | [WP-HercPapyri] [Cavallo1983] |
 | more than 800 | inventoried items still rolled (2026) | [Angelotti2026b] |
 
 Most of the collection is kept in the *Officina dei Papiri Ercolanesi* of the National Library in Naples [WP-HercPapyri] [WP-Philodemus]. Smaller groups left Naples as diplomatic gifts: in 1802 King Ferdinand IV offered six rolls to Napoleon Bonaparte, and they went to the Institut de France in Paris; in 1810 eighteen unrolled papyri went to the Prince of Wales (later George IV), who gave four to the Bodleian Library in Oxford; most of the rest are in the British Library [WP-HercPapyri]. The rolls in Paris carry the inventory label "PHerc. Paris" with a number. Scroll 1 of the Vesuvius Challenge is PHerc. Paris 4, one of these [Parsons2023].
@@ -59,9 +61,9 @@ The library is philosophical, mostly Greek, and mostly Epicurean. Philodemus is 
 
 Because the scrolls were written and collected before 79 CE, they preserve texts that were never copied in the medieval manuscript tradition. None of Philodemus's prose was known before the Herculaneum finds [WP-Villa]. That is the reason for the effort described in this book: every newly read roll is likely to contain text that has not been seen for nearly two thousand years.
 
-The Vesuvius Challenge has itself added to this list. Its published results include passages from PHerc. Paris 4 on pleasure (the 2023 Grand Prize), the title *Philodemus, On Vices* from PHerc. 172, with the book number read as "Book 1(?)" (May 2025), a complete reading of PHerc. 1667 as a Stoic ethical text naming the philosopher Aristocreon (June 2026), and the title *Philodemus, On Gods, Book 8* from PHerc. 139 (June 2026) [VC-FirstScroll] [VC-FirstTitle]. These are reported in [Chapter 10](#ch-2023) to [Chapter 13](#ch-2026).
+The Vesuvius Challenge has itself added to this list. Its published results include passages from PHerc. Paris 4 on pleasure (the 2023 Grand Prize), the title *Philodemus, On Vices* from PHerc. 172, with the book number read as "Book 1(?)" (May 2025), a complete reading of PHerc. 1667 as a Stoic ethical text naming the philosopher Aristocreon (June 2026), and the title *Philodemus, On Gods, Book 8* from PHerc. 139 (June 2026) [VC-FirstScroll] [VC-FirstTitle]. These are reported in [Chapter 10](10-2023.md#ch-2023) to [Chapter 13](13-2026.md#ch-2026).
 
-> **Photograph (not stored in git; see the caption for source and licence):** Herm-style portrait head of Epicurus, a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome.
+> **Photograph (not stored in git; see the caption for source and license):** Herm-style portrait head of Epicurus, a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome.
 *Figure 2.4. Portrait of Epicurus (born 342 or 341 BCE), a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome (inv. 197306). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Epicurus_Massimo_Inv197306.jpg>*
 
 ## Epicureanism in brief
@@ -91,7 +93,7 @@ A recurring question is whether more papyri lie in the unexcavated lower levels 
 | Probable owner | L. Calpurnius Piso Caesoninus (not certain) | [WP-Villa] |
 | Papyri found | 1752 to 1754, in four find spots | [WP-HercPapyri] |
 | Excavator | Karl Jakob Weber, under Alcubierre, 1749 to 1764 | [WP-Weber] |
-| Tunnelling ended | 1765 | [WP-Villa] |
+| Tunneling ended | 1765 | [WP-Villa] |
 | Rediscovered | 1980s; reached in 1986 | [WP-Villa] |
 | Main holding | Officina dei Papiri, National Library, Naples | [WP-HercPapyri] |
 | Other holdings | Institut de France (Paris), Bodleian Library (Oxford), British Library (London) | [WP-HercPapyri] |

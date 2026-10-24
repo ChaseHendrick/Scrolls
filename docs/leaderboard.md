@@ -2,7 +2,7 @@
 
 <!-- generated from docs/results.json by python -m kit leaderboard render; edit results.json, not this file -->
 
-Every released ink reader on the labelled test segments, with its controls beside it. Model output, not readings.
+Every released ink reader on the labeled test segments, with its controls beside it. Model output, not readings.
 Numbers come only from [`results.json`](results.json); this page is written from it, and
 `python -m kit leaderboard check` (run by the tests) fails when the two disagree.
 
@@ -141,7 +141,7 @@ Window: crop, inner 64
 | --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- |
 | ink_9um seed42 | **NOT held out** | 0.9199 |  |  |  | bare-crop and full (identical) | cpu | [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md) | 2026-10-07 |
 
-Not scored here yet: `Reader v2`.
+Not scored here yet: `Reader v2`, `Hecate`.
 
 ## Reported by others (Community report)
 

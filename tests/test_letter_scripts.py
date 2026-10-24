@@ -158,13 +158,16 @@ class GuideCommandsTest(unittest.TestCase):
         self.assertIn("PEP 668", part)
 
     def test_no_trailing_comments_in_the_readme_entry(self):
-        entry = next(e for e in json.loads((ROOT / "docs" / "releases.json").read_text(encoding="utf-8"))["releases"]
-                     if e["id"] == "letter-reader")
-        self.assertTrue(entry["commands"])
-        self.assertEqual([c for c in entry["commands"] if trailing_comment(c) or unsafe_comment(c)], [])
-        self.assertIn("python3 -m venv .venv", entry["commands"])
-        self.assertIn("scrolls-letterdemo", entry["commands"])
-        self.assertIn("38 um grid", entry["details"])
+        # Since 20 October 2026 the reader is a line (tool) of the Scrolls kit entry; its old id still finds it.
+        from kit import releases
+        registry = json.loads((ROOT / "docs" / "releases.json").read_text(encoding="utf-8"))
+        entry, tool = releases.find(registry, "letter-reader")
+        commands = entry.get("commands", []) + ([tool["command"]] if tool else [])
+        self.assertTrue(commands)
+        self.assertEqual([c for c in commands if trailing_comment(c) or unsafe_comment(c)], [])
+        self.assertIn("python3 -m venv .venv", commands)
+        self.assertIn("scrolls-letterdemo", commands)
+        self.assertIn("38 um grid", tool["summary"] if tool else entry["details"])
 
     def test_scripts_and_options_in_the_guide_exist(self):
         text = GUIDE.read_text(encoding="utf-8")
@@ -216,7 +219,7 @@ class BenchmarkScriptsTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.d = Path(self.tmp.name)
         self.weights = random_weights(self.d / "w.npz")
-        img = lined_image()          # four lines of 16 px letters, centred on rows 30, 60, 90 and 120
+        img = lined_image()          # four lines of 16 px letters, centered on rows 30, 60, 90 and 120
         g = self.d / "groups"
         (g / "npy").mkdir(parents=True)
         (g / "map-npy").mkdir()

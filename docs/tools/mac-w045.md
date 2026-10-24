@@ -1,6 +1,6 @@
-# mac-w045: run ink_9um and v8in on a labelled segment on the Mac GPU and score them with controls
+# mac-w045: run ink_9um and v8in on a labeled segment on the Mac GPU and score them with controls
 
-`scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labelled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record.
+`scripts/mac-w045.sh` runs `ink_9um` (two seeds) and v8in or v8in-1447 on the Mac GPU over a labeled segment (PHerc0139 w045 or a PHerc0841 segment), checks v8in on MPS against the CPU, scores every map with reverse-depth controls, and writes a summary and a provenance record.
 
 | Field | Value |
 | --- | --- |
@@ -22,11 +22,11 @@
 
 ## What it does
 
-A device check (such as [mac-verify](mac-verify.md)) shows that the Mac GPU gives the CPU's map, not that a model finds ink. This script asks the second question on segments with published ink labels: does each model's map rank labelled ink pixels above labelled background, and does the map made with the surface volume's layers in reverse order (the control) fail to do so?
+A device check (such as [mac-verify](mac-verify.md)) shows that the Mac GPU gives the CPU's map, not that a model finds ink. This script asks the second question on segments with published ink labels: does each model's map rank labeled ink pixels above labeled background, and does the map made with the surface volume's layers in reverse order (the control) fail to do so?
 
 It runs two released models on the Mac GPU (MPS, through PyTorch's Metal backend). `ink_9um` is the team's 9 um ink model (seeds 42 and 43, step 75,000), run through villa's `vesuvius.ink_detection` inference with [villa PR #1865](https://github.com/ScrollPrize/villa/pull/1865), in both depth directions. v8in is Youssef Nader's ResNet3D-50 ink model (`YoussefMoNader/ink-8um-v8in`); `MODEL=v8in-1447` picks its PHerc1447 fine-tune instead. v8in runs through `scripts/v8in_run.py` on layer TIFFs that `kit layers` exports. Before the long v8in pass the script runs v8in on a 640 px crop on the CPU and on MPS and stops unless [`verify`](verify.md) passes with the reverse map as the control. It then scores every map with [`auc`](auc.md) (forward against reverse) and [`rowscore`](rowscore.md), prints a summary to paste, and writes a [provenance](provenance.md) record and digest.
 
-The segments differ in what they can show. PHerc0139 w045 is not in v8in's training set (its patch pack lists w033, w035, w041 and w044), but it is not held out from `ink_9um`, which trained on its 2.4 um render, so for `ink_9um` it is a cross-scan check on a training surface ([log](../logs/2026-10-08-w045-not-held-out.md)). PHerc0841 (`SEGMENT=0841-w00`, `0841-ag896` or `0841-ag405`) is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's, so it is the fairer test. `QUICK=1` scores every model on the same 640 px crop of densest labelled ink, less a 64 px edge, which is what [mac-phase0](mac-phase0.md) queues and [gate](gate.md) ranks.
+The segments differ in what they can show. PHerc0139 w045 is not in v8in's training set (its patch pack lists w033, w035, w041 and w044), but it is not held out from `ink_9um`, which trained on its 2.4 um render, so for `ink_9um` it is a cross-scan check on a training surface ([log](../logs/2026-10-08-w045-not-held-out.md)). PHerc0841 (`SEGMENT=0841-w00`, `0841-ag896` or `0841-ag405`) is in the training data of none of `ink_9um`, v8in, d9v2 and Reader v2, but possibly in Hecate's, so it is the fairer test. `QUICK=1` scores every model on the same 640 px crop of densest labeled ink, less a 64 px edge, which is what [mac-phase0](mac-phase0.md) queues and [gate](gate.md) ranks.
 
 It does not decide anything: it prints AUCs and row scores. The maps and scores are model output, not a reading, and w045's maps are not a First Letters candidate (it is a training scroll with published labels). It does not run on Modal, and it does not commit or upload results.
 
@@ -82,7 +82,7 @@ It worked when the exit code is 0, the summary's `v8in cpu vs mps (crop):` line 
 - **Device check for v8in (step 5).** v8in on a crop at stride 64, CPU against MPS, with the MPS reverse map as the control, through `kit verify`. On MPS the script stops before the long pass unless the verdict is `pass`. Recorded on the M1 Pro: `pass`, max |diff| 1, Pearson 0.99999998 (`device_checks` in [`results.json`](../results.json)). Other segments and v8in-1447 reuse w045's pass (same code); `DEVICE_CHECK=1` reruns it.
 - **fp16 check.** With `V8IN_FP16=1` the first run compares fp16 with fp32 on the GPU on a crop, the fp16 reverse map as the control, and stops if they differ; fp32 must first have passed against the CPU on w045. If fp16 is slower per tile than fp32, the remaining passes run fp32.
 - **No silent CPU fallback.** The script unsets `PYTORCH_ENABLE_MPS_FALLBACK`, and on MPS it requires `Using MPS device` in each `ink_9um` log.
-- **Cross-device consistency.** On w045 the MPS `ink_9um` crop scores equalled the CPU reference to four decimals on both seeds ([community scan log](../logs/2026-10-07-community-scan.md)).
+- **Cross-device consistency.** On w045 the MPS `ink_9um` crop scores equaled the CPU reference to four decimals on both seeds ([community scan log](../logs/2026-10-07-community-scan.md)).
 - **Training overlap.** A high `ink_9um` score on w045 is on a surface it trained on (at 2.4 um); it cannot show that `ink_9um` beats v8in on unseen papyrus ([log](../logs/2026-10-08-w045-not-held-out.md)). Use PHerc0841 for that.
 
 Claim label: Model output, for each AUC and row score; any comparison between models drawn from them is an Interpretation.
@@ -128,7 +128,7 @@ Not applicable: a shell script with no importable functions; see Commands and op
 | `0841-ag896` | `PHerc0841/segments/20260220214732-auto_grown_20260220144552896` | same | 2496 3136 1600 2240 | 4640 x 4720 | 9.366 |
 | `0841-ag405` | `PHerc0841/segments/20260221022814-auto_grown_20260220174252405` | same | 1024 1664 2496 3136 | 3760 x 4900 | 9.366 |
 
-PHerc0841 surface volumes are `SEGMENT/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr`. Labels are `inklabels.zarr` and `supervision.zarr`, scored at `--level 2`. Crops are 640 px windows fully on the surface with the densest labelled ink, in rows and columns of the surface grid; they match `segments` in [`results.json`](../results.json). Checkpoints: `scrollprize/ink_9um` files `hybrid_3d2d-seedN/step-075000.pth`; the v8in snapshot without `training/*`. Downloads are skipped when already present (`kit fetch` skips files at the listed size).
+PHerc0841 surface volumes are `SEGMENT/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr`. Labels are `inklabels.zarr` and `supervision.zarr`, scored at `--level 2`. Crops are 640 px windows fully on the surface with the densest labeled ink, in rows and columns of the surface grid; they match `segments` in [`results.json`](../results.json). Checkpoints: `scrollprize/ink_9um` files `hybrid_3d2d-seedN/step-075000.pth`; the v8in snapshot without `training/*`. Downloads are skipped when already present (`kit fetch` skips files at the listed size).
 
 ## Outputs
 
@@ -184,9 +184,10 @@ Logs: `WORK/logs/NAME_INK_s42.log`, `NAME_INK_s43.log`, and `NAME_PASS.log` for 
 | `uv is missing: brew install uv`, exit code 2 | No uv | `brew install uv` |
 | `Another run is using the GPU (pid PID: COMMAND).` then `Wait for it, or stop it: kill PID`, exit code 3 | A live process holds `WORK/.gpu-job.lock` (two v8in runs at once do not fit in 16 GB and swap: 56 s per tile instead of 1.3, seen 2026-10-07) | Wait, or stop that run |
 | `Taking over a stale lock left by pid PID.` | The lock's process is gone | Nothing; the run continues |
+| `ink_9um seed SEED: PATH has sha256 GOT, expected WANT; move it aside and rerun`, exit code 1 | The `ink_9um` checkpoint at `WORK/checkpoints/ink_9um/hybrid_3d2d-seedSEED/step-075000.pth` is not the file of the pinned revision (a partial download, or another file at that path); the script refuses it before villa unpickles it | Move the file aside and rerun; the script downloads it again at the pinned revision |
 | `ink_9um seed SEED failed, see LOG` then the log's last 20 lines, exit code 1 | villa's inference failed | Read the log |
 | `seed SEED did not run on MPS; see LOG`, exit code 1 | The PR #1865 run did not log `Using MPS device` | Check `mps available: True` in the output and PR #1865's current code |
-| `v8in NAME failed, see LOG` then the log's last 20 lines, exit code 1 | `scripts/v8in_run.py` failed (out of memory, an MPS op, missing layers) | Read the log; lower `V8IN_BATCH`; see [v8in-run](v8in-run.md#failure-modes) |
+| `v8in NAME failed, see WORK/logs/SEGMENT_NAME.log` then the log's last 20 lines, exit code 1 (SEGMENT ends in `-smoke` with `SMOKE=1`) | `scripts/v8in_run.py` failed (out of memory, an MPS op, missing layers) | Read the log; lower `V8IN_BATCH`; see [v8in-run](v8in-run.md#failure-modes) |
 | `v8in on MPS does not match the CPU; stopping before the full run`, exit code 1 (with ` (fp16 on: try again without V8IN_FP16)` before the semicolon when `V8IN_FP16` is set) | The device check verdict was not `pass` on MPS | Read `results/v8in_device.json`; do not trust MPS maps; rerun without fp16 |
 | `Run once without V8IN_FP16 first: fp16 is checked against fp32, which must first match the CPU.`, exit code 2 | `V8IN_FP16=1` but `WORK/w045/results/v8in_device.json` has no `pass` | Run w045 once in fp32 first |
 | `v8in fp16 does not match fp32 on DEVICE; run without V8IN_FP16`, exit code 1 | The fp16 check failed | Run without `V8IN_FP16` |
@@ -244,6 +245,7 @@ python -m unittest tests.test_repo -v
 
 ## History
 
+- 2026-10-21: Failure modes has the `ink_9um` checkpoint SHA-256 refusal, and the v8in failure shows its log path (`bbecb37`).
 - 2026-10-08: comments corrected: w045 is not held out from `ink_9um`, which trained on its 2.4 um render (`d841e06`).
 - 2026-10-07: Phase 0 support: `MODEL=v8in-1447`, per-model summary and provenance names (`bec6fb9`).
 - 2026-10-07: fp16 is dropped when it is slower than fp32 (`ebd4ae3`).

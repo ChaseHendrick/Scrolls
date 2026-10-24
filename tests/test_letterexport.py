@@ -180,7 +180,7 @@ class ExportTest(unittest.TestCase):
         two = self.read(two_column_image(), columns=2)
         self.check_page(E.page_xml(two), two, H=two["input_shape"][0], W=two["input_shape"][1])
         img = R.normalize(lined_image())
-        turned = self.read(np.rot90(img, 1), normalized=True, rotate=90)          # stored a quarter turn anticlockwise
+        turned = self.read(np.rot90(img, 1), normalized=True, rotate=90)          # stored a quarter turn counterclockwise
         root = self.check_page(E.page_xml(turned), turned, H=400, W=150)
         for tl in root.iter("{%s}TextLine" % NS["pc"]):
             (xa, ya), (xb, yb) = points(tl.find("pc:Baseline", NS))

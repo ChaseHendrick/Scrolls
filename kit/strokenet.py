@@ -2,17 +2,17 @@
 
 A small CNN (scripts/strokenet/train.py) looks at 6.1 mm windows of an ink map (128 x 128 pixels
 at 0.048 mm) and gives a logit for "looks like lines of body text of PHerc. Paris 4, as the
-organisers' 2026 ink model draws it", against blank papyrus and copies of text windows with
+organizers' 2026 ink model draws it", against blank papyrus and copies of text windows with
 their arrangement or orientation destroyed. It was trained and tested on one scroll's maps from
 one ink model, with text and blank labels made by a rule from the maps themselves
 (docs/strokenet.md gives the measured numbers and their limits). A high score is model output:
 it is never a reading, and never evidence by itself that text exists where none is known.
 
 Input, as in training:
-- the map is resampled to 0.048 mm (to_working). An integer map (the organisers' uint8
+- the map is resampled to 0.048 mm (to_working). An integer map (the organizers' uint8
   predictions) at a whole fraction of 0.048 mm, such as 2.4 um, is pooled exactly as the training
   windows were (block sums, rounded half to even); other inputs are area-averaged, then rounded
-  when the map is integer. Values are on the organisers' 0 to 255 scale. Float or rescaled maps
+  when the map is integer. Values are on the organizers' 0 to 255 scale. Float or rescaled maps
   are outside the training distribution.
 - only windows with at least 99 % core papyrus are scored, the rule the training windows met.
   Usable means a value above 3, opened three times with a cross and with holes filled
@@ -140,7 +140,7 @@ def _plane(z):
     a = np.squeeze(np.asarray(z))
     if a.ndim == 3 and a.shape[-1] in (3, 4):
         c = a[..., :3]
-        # a grey map saved as colour keeps its integer values; a real colour image is averaged
+        # a gray map saved as color keeps its integer values; a real color image is averaged
         a = c[..., 0] if (c == c[..., :1]).all() else c.mean(axis=-1, dtype=np.float64).astype(np.float32)
     if a.ndim != 2:
         raise ValueError(f"expected a 2D map, got shape {a.shape}")
@@ -218,7 +218,7 @@ def _source(ink):
 
 
 def _finite(blk):
-    """NaN and infinite values read as 0 (below the usable threshold, as the organisers' maps mark
+    """NaN and infinite values read as 0 (below the usable threshold, as the organizers' maps mark
     no data), so they count as unusable and never spread through the pooling sums."""
     if np.issubdtype(blk.dtype, np.floating) and not np.isfinite(blk).all():
         return np.where(np.isfinite(blk), blk, 0).astype(blk.dtype)
@@ -402,7 +402,7 @@ def snap_crop(crop, pixel_mm, shape=None):
     """A crop (y0, y1, x0, x1) in source pixels with its origin moved down to the training lattice.
 
     The training windows start every 32 px (1.536 mm) from the segment's origin, and the
-    organisers' ink maps carry a faint tile pattern (overlapping 256 px tiles at stride 128 on the
+    organizers' ink maps carry a faint tile pattern (overlapping 256 px tiles at stride 128 on the
     2.4 um grid) that repeats every 32 px at 0.048 mm, so every training window saw it at the same
     phase. When pixel_mm is a whole fraction of 0.048 mm, y0 and x0 are moved down to multiples of
     32 x k source pixels (k = 0.048 / pixel_mm), so the crop's windows keep that lattice, phase and
@@ -575,7 +575,7 @@ class StrokeNet:
         self.val_ref = self.meta.get("val_ref")               # validation values of the two controls
 
     def logits(self, windows, batch=16):
-        """(N, 128, 128) windows -> (N,) float32 logits; each batch is normalised on its own, so
+        """(N, 128, 128) windows -> (N,) float32 logits; each batch is normalized on its own, so
         memory stays bounded for any N."""
         out = []
         for i in range(0, len(windows), batch):
@@ -663,9 +663,34 @@ def _control(v, copy, ref, name):
     return out
 
 
-def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters=IAAFT_ITERS, with_grid=False):
+def unit_scale(a, dtype):
+    """(map, source range): a map on another common scale is put on the organizers' 0 to 255 scale
+    StrokeNet was trained on, and the second value names the range it came from. A float map whose
+    values all lie in 0 to 1 (as many ink models write) is multiplied by 255 ("0-1"); a 16-bit
+    integer map, or a float map, whose values lie in 0 to 65535 and reach above 255 (a 16-bit TIFF
+    such as kit ensemble writes) is multiplied by 255 / 65535 ("0-65535"). Any other map is returned
+    as it is, with None."""
+    dtype = np.dtype(dtype)
+    if not a.size:
+        return a, None
+    lo, hi = float(np.min(a)), float(np.max(a))
+    if lo < 0.0:
+        return a, None
+    if np.issubdtype(dtype, np.floating) and 0.0 < hi <= 1.0:
+        return a * np.float32(255.0), "0-1"
+    sixteen = np.issubdtype(dtype, np.integer) and dtype.itemsize == 2
+    if (sixteen or np.issubdtype(dtype, np.floating)) and 255.0 < hi <= 65535.0:
+        return a * np.float32(255.0 / 65535.0), "0-65535"
+    return a, None
+
+
+def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters=IAAFT_ITERS, with_grid=False,
+            with_working=False):
     """Score a map and run both controls. Returns a JSON-ready dict, or (dict, logit grid) with
-    with_grid=True (grid as score_map: NaN where a window was skipped).
+    with_grid=True (grid as score_map: NaN where a window was skipped), and the 0.048 mm working map
+    after them with with_working=True. A float map in 0 to 1, or a 16-bit or float map in 0 to 65535, is
+    scaled to 0 to 255 first (unit_scale; "scaled_from" names the range, "scaled_from_0_1" is kept for
+    earlier callers).
 
     map: summary of the kept windows (windows under 99 % core pixels are skipped and counted).
     rotated_90: the same windows, each turned by 90 degrees (orientation_hint compares the two).
@@ -678,7 +703,7 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     stride_px, except the last row and column, which end at the map's edge.
     orientation_hint compares the share above the blank threshold as given and turned, or the mean
     logit when the shares are equal or missing (orientation_hint_from names which)."""
-    a = to_working(ink, pixel_mm)
+    a, scaled = unit_scale(to_working(ink, pixel_mm), _source(ink)[2])
     ys, xs, keep = layout(a, stride_px)
     pos = np.argwhere(keep)
     v = net._kept_logits(a, ys, xs, pos)
@@ -691,7 +716,7 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     idx = np.sort(rng.choice(len(pos), k, replace=False)) if k else np.zeros(0, int)
     sv = net.logits(iaaft(_windows(a, ys, xs, pos[idx]), rng, iaaft_iters)) if k else np.zeros(0, np.float32)
     res = {"note": NOTE, "weights": Path(net.path).name, "pixel_mm": float(pixel_mm), "stride_px": int(stride_px),
-           "working_shape": list(a.shape), "grid_shape": list(keep.shape),
+           "scaled_from": scaled, "scaled_from_0_1": scaled == "0-1", "working_shape": list(a.shape), "grid_shape": list(keep.shape),
            "map": net.summarise(v, skipped), "rotated_90": net.summarise(vt, skipped),
            "controls": {"windows": k, "seed": int(seed),
                         "rot90": _control(v[idx], vt[idx], net.val_ref, "rot90"),
@@ -713,7 +738,41 @@ def analyze(ink, pixel_mm, net, stride_px=32, sample=SAMPLE, seed=0, iaaft_iters
     res["window_y_px"], res["window_x_px"] = [int(y) for y in ys], [int(x) for x in xs]   # grid rows and columns
     top = np.argsort(-v, kind="stable")[:10]
     res["top_windows"] = [{"y_px": int(ys[pos[i][0]]), "x_px": int(xs[pos[i][1]]), "logit": float(v[i])} for i in top]
-    return (res, grid) if with_grid else res
+    out = (res,) + ((grid,) if with_grid else ()) + ((a,) if with_working else ())
+    return out if len(out) > 1 else res
+
+
+def heatmap(working, grid, ys, xs, path, max_side=2000):
+    """Write a PNG of the 0.048 mm working map with each scored window's logit painted over its centre
+    block (blue low, red high, no colour where a window was skipped), so a person can see where the
+    score is high. Needs Pillow. A picture of model output, not a reading."""
+    from PIL import Image
+    w = np.clip(np.asarray(working, np.float32), 0, 255)
+    base = np.repeat(w[..., None], 3, axis=2)
+    over = np.zeros_like(base)
+    alpha = np.zeros(w.shape, np.float32)
+    g = np.asarray(grid, np.float32)
+    ok = np.isfinite(g)
+    if ok.any():
+        lo, hi = np.percentile(g[ok], [2, 98]) if ok.sum() > 1 else (g[ok][0] - 1, g[ok][0] + 1)
+        t = np.clip((g - lo) / max(hi - lo, 1e-6), 0, 1)
+        step = max(1, (ys[1] - ys[0]) if len(ys) > 1 else (xs[1] - xs[0]) if len(xs) > 1 else CROP)
+        h = step // 2
+        for i, y in enumerate(ys):
+            for j, x in enumerate(xs):
+                if not ok[i, j]:
+                    continue
+                cy, cx = y + CROP // 2, x + CROP // 2
+                sl = (slice(max(0, cy - h), cy + h), slice(max(0, cx - h), cx + h))
+                over[sl] = (255.0 * t[i, j], 60.0, 255.0 * (1 - t[i, j]))
+                alpha[sl] = 0.45
+    img = base * (1 - alpha[..., None]) + over * alpha[..., None]
+    im = Image.fromarray(np.round(img).astype(np.uint8))
+    if max(im.size) > max_side:
+        f = max_side / float(max(im.size))
+        im = im.resize((max(1, int(im.size[0] * f)), max(1, int(im.size[1] * f))))
+    im.save(str(path))
+    return str(path)
 
 
 def _f(x, fmt=".2f"):
@@ -724,9 +783,12 @@ def text_summary(res):
     m, r, c = res["map"], res["rotated_90"], res["controls"]
     lines = [f"StrokeNet ({res['weights']}), {m['learned_n']} windows of 6.1 mm scored at stride {res['stride_px']} px "
              f"(0.048 mm), {m['learned_n_skipped']} skipped (under 99 % core papyrus)"]
+    if res.get("scaled_from"):
+        lines.append(f"  the map's values lie in {res['scaled_from'].replace('-', ' to ')}, so they were scaled to the 0 to 255 "
+                     "scale StrokeNet expects")
     if not m["learned_n"]:
         lines.append(f"  no window has 99 % of its pixels above {USABLE_MIN} and {CORE_MM} mm inside the papyrus; "
-                     "StrokeNet expects maps on the organisers' 0 to 255 scale")
+                     "StrokeNet expects maps on the organizers' 0 to 255 scale")
     if m["learned_frac_above_val_blank_q99"] is not None:
         lines.append(f"  windows above the blank-papyrus threshold: {m['learned_frac_above_val_blank_q99']:.3f} as given, "
                      f"{r['learned_frac_above_val_blank_q99']:.3f} turned 90 degrees")
@@ -741,5 +803,188 @@ def text_summary(res):
             refs = [f"{kind} {_f(v['frac_above_copy'])}" for kind, v in sorted(x.get("val_ref", {}).items())]
             lines.append(line + (f"; validation: {', '.join(refs)}" if refs else ""))
     lines.append(f"  {res['orientation_hint']}")
+    lines.append(res["note"])
+    return "\n".join(lines)
+
+
+# ------------------------------------------------------------------ the two-density score (no network)
+# StrokeNet's simple score (docs/strokenet.md, "The two-density score"): for each 48 px label window of a pooled ink map,
+# s = 1.0 z(logit d48) + 0.25 z(logit d128), where d48 is the label's mean ink, d128 the mean ink of the 128 px window
+# centred on it (the map padded by 40 px read as no ink), and z is taken within the map over every scored label. The map
+# preparation is the one the score was tested with. It needs numpy only and no weights. Every score is model output.
+TD_WIN = 128                    # the wider window, pooled pixels (about 6 mm)
+TD_LABEL = 48                   # the label window at its centre, pooled pixels (about 2.2 mm)
+TD_PAD = (TD_WIN - TD_LABEL) // 2   # the pooled map is padded by this much, so every label has its window
+TD_PAD_VALUE = 4                # the empty map's value after density_stretch (it adds 4)
+TD_STRIDE = 6                   # label stride of the test (48 // 8)
+TD_POOL_UM = 48.0               # maps are block-averaged by the whole number nearest 48 um / pixel size
+TD_PAPYRUS_MIN = 0.5            # with a papyrus mask, labels with less papyrus are skipped (the test's rule)
+TD_WEIGHTS = (1.0, 0.25)        # the frozen weights of z(logit d48) and z(logit d128)
+DENSITY_CLIP = (1e-3, 1 - 1e-3)
+NOTE_TD = ("Model output: an ink density score for each label window of one map, ranked within that map. "
+           "Not a reading; it never shows by itself that text is present.")
+
+
+def logit01(d):
+    """logit of a mean on 0..1, clipped to DENSITY_CLIP."""
+    d = np.clip(np.asarray(d, np.float64), *DENSITY_CLIP)
+    return np.log(d / (1 - d))
+
+
+def density_stretch(ink):
+    """(uint8 map, info): the map on the tested 0 to 255 scale. The map is read as float32 and mapped linearly from its
+    lowest finite value to its 99.9th percentile onto 0 to 255, clipped (an integer map is stretched too); NaN becomes 0;
+    then times 251 / 255, rounded, plus 4, so the emptiest pixel is 4 (TD_PAD_VALUE). info: floor and top of the
+    stretch, None when no value is finite."""
+    a = np.asarray(ink, np.float32)
+    if a.ndim != 2:
+        raise ValueError(f"expected a 2D map, got shape {a.shape}")
+    v = a.astype(np.float64).ravel()
+    v = v[np.isfinite(v)]
+    info = {"floor": None, "top": None}
+    if v.size:
+        lo, top = float(v.min()), float(v.max())
+        hi = float(np.percentile(v, 99.9))
+        if hi <= lo:
+            hi = top if top > lo else lo + 1.0
+        a = (np.clip((a - lo) / (hi - lo), 0, 1) * 255.0).astype(np.float32)
+        info = {"floor": lo, "top": hi}
+    del v
+    return np.clip(np.rint(np.nan_to_num(a) * (251.0 / 255.0)) + 4, 0, 255).astype(np.uint8), info
+
+
+def density_pool_k(pixel_mm):
+    """The block side a map is pooled by: the whole number nearest 48 um / pixel size, at least 1 (5 for a 9.362 um
+    map, so its pooled pixel is 46.8 um, not exactly 48)."""
+    check_pixel_mm(pixel_mm)
+    return max(1, int(round(TD_POOL_UM / (float(pixel_mm) * 1000.0))))
+
+
+def _block_mean(a, k, rows=4096):
+    """k x k block means of a 2D array in float64, rows and columns past the last whole block dropped."""
+    H, W = (a.shape[0] // k) * k, (a.shape[1] // k) * k
+    out = np.empty((H // k, W // k), np.float64)
+    step = max(k, rows // k * k)
+    for y in range(0, H, step):
+        y1 = min(H, y + step)
+        out[y // k:y1 // k] = a[y:y1, :W].reshape((y1 - y) // k, k, W // k, k).astype(np.float64).mean(axis=(1, 3))
+    return out
+
+
+def density_working(ink, pixel_mm):
+    """(pooled uint8 map, info): density_stretch, then k x k block means rounded half to even (k = density_pool_k).
+    info adds k and the pooled pixel size in mm."""
+    k = density_pool_k(pixel_mm)
+    a, info = density_stretch(ink)
+    pooled = np.round(_block_mean(a, k)).astype(np.uint8)
+    return pooled, dict(info, k=k, pixel_mm=float(pixel_mm) * k)
+
+
+def density_papyrus(mask, pixel_mm):
+    """The papyrus share of each pooled pixel from a mask at the map's resolution (nonzero is papyrus)."""
+    return _block_mean(np.asarray(mask) != 0, density_pool_k(pixel_mm)).astype(np.float32)
+
+
+def _sat(a):
+    """Summed-area table with a zero first row and column."""
+    s = np.zeros((a.shape[0] + 1, a.shape[1] + 1), np.float64)
+    s[1:, 1:] = np.cumsum(np.cumsum(np.asarray(a, np.float64), axis=0), axis=1)
+    return s
+
+
+def _win_sum(s, y, x, n):
+    return s[y + n, x + n] - s[y, x + n] - s[y + n, x] + s[y, x]
+
+
+def label_positions(shape, stride=TD_STRIDE, papyrus=None, min_share=TD_PAPYRUS_MIN):
+    """Top-left corners (y, x) of the 48 px label windows on the pooled grid, every `stride` pixels from the origin
+    (none past the last whole label), as an (N, 2) int64 array. With a papyrus share map (density_papyrus) only labels
+    with at least min_share papyrus are kept."""
+    if int(stride) < 1:
+        raise ValueError("the label stride must be at least 1")
+    H, W = shape
+    if H < TD_LABEL or W < TD_LABEL:
+        return np.zeros((0, 2), np.int64)
+    ys, xs = np.arange(0, H - TD_LABEL + 1, int(stride)), np.arange(0, W - TD_LABEL + 1, int(stride))
+    pos = np.stack(np.meshgrid(ys, xs, indexing="ij"), -1).reshape(-1, 2).astype(np.int64)
+    if papyrus is not None:
+        p = np.asarray(papyrus, np.float64)
+        if p.shape != tuple(shape):
+            raise ValueError(f"papyrus shares {p.shape} and the pooled map {tuple(shape)} differ")
+        share = _win_sum(_sat(p), pos[:, 0], pos[:, 1], TD_LABEL) / (TD_LABEL * TD_LABEL)
+        pos = pos[share >= min_share]
+    return pos
+
+
+def window_densities(pooled, pos):
+    """(d48, d128) on 0..1 for each label at pos: the mean of the 48 px label, and of the 128 px window centred on it
+    in the pooled map padded by TD_PAD pixels of TD_PAD_VALUE (padding reads as no ink)."""
+    pos = np.asarray(pos, np.int64).reshape(-1, 2)
+    a = np.asarray(pooled, np.float64)
+    d48 = _win_sum(_sat(a), pos[:, 0], pos[:, 1], TD_LABEL) / (TD_LABEL * TD_LABEL * 255.0)
+    p = np.pad(a, TD_PAD, mode="constant", constant_values=TD_PAD_VALUE)
+    d128 = _win_sum(_sat(p), pos[:, 0], pos[:, 1], TD_WIN) / (TD_WIN * TD_WIN * 255.0)
+    return d48, d128
+
+
+def zscore(v):
+    """(v - mean) / sd over every value given (population sd); all zeros when the values do not vary."""
+    v = np.asarray(v, np.float64)
+    if not len(v):
+        return v
+    sd = v.std()
+    return (v - v.mean()) / sd if sd > 0 else np.zeros_like(v)
+
+
+def two_density(d48, d128, weights=TD_WEIGHTS):
+    """s for each label: weights[0] z(logit d48) + weights[1] z(logit d128), z over all the labels given (one map or
+    segment; z over labeled windows only, or across maps, is a different score)."""
+    return weights[0] * zscore(logit01(d48)) + weights[1] * zscore(logit01(d128))
+
+
+def two_density_analyze(ink, pixel_mm, stride=TD_STRIDE, mask=None, with_grid=False):
+    """Score every label window of a map: (result dict, grid or None). The grid is s on the label lattice (rows and
+    columns of label positions), NaN where a label was skipped for papyrus. mask: papyrus at the map's resolution
+    (nonzero is papyrus); without it every whole label is scored."""
+    pooled, info = density_working(ink, pixel_mm)
+    pap = None
+    if mask is not None:
+        m = np.asarray(mask)
+        if m.shape != np.asarray(ink).shape:
+            raise ValueError(f"the mask {m.shape} and the map {np.asarray(ink).shape} differ in shape")
+        pap = density_papyrus(m, pixel_mm)
+    every = label_positions(pooled.shape, stride)
+    pos = label_positions(pooled.shape, stride, papyrus=pap)
+    d48, d128 = window_densities(pooled, pos)
+    s = two_density(d48, d128)
+    k = info["k"]
+    q = (lambda v: [float(x) for x in np.percentile(v, [10, 50, 90])]) if len(s) else (lambda v: None)
+    res = {"score": "two-density", "weights": list(TD_WEIGHTS), "pixel_mm": float(pixel_mm), "pooled_k": k,
+           "pooled_pixel_mm": info["pixel_mm"], "label_px": TD_LABEL, "window_px": TD_WIN, "stride_px": int(stride),
+           "stretch": {"floor": info["floor"], "top": info["top"]}, "mask": mask is not None,
+           "labels_scored": int(len(pos)), "labels_skipped": int(len(every) - len(pos)),
+           "label_mm": TD_LABEL * info["pixel_mm"], "density_q10_q50_q90": q(d48), "s_q10_q50_q90": q(s),
+           "label_y_px": [int(y) * k for y in pos[:, 0]], "label_x_px": [int(x) * k for x in pos[:, 1]],
+           "s": [float(v) for v in s], "d48": [float(v) for v in d48], "d128": [float(v) for v in d128],
+           "note": NOTE_TD}
+    grid = None
+    if with_grid:
+        H, W = pooled.shape
+        ny = (H - TD_LABEL) // int(stride) + 1 if H >= TD_LABEL else 0
+        nx = (W - TD_LABEL) // int(stride) + 1 if W >= TD_LABEL else 0
+        grid = np.full((ny, nx), np.nan, np.float32)
+        if len(pos):
+            grid[pos[:, 0] // int(stride), pos[:, 1] // int(stride)] = s
+    return res, grid
+
+
+def two_density_summary(res):
+    lines = [f"StrokeNet two-density score: {res['labels_scored']} label windows of {res['label_mm']:.2f} mm scored at "
+             f"a stride of {res['stride_px']} pooled px of {res['pooled_pixel_mm']:.4f} mm, {res['labels_skipped']} skipped "
+             f"(under {TD_PAPYRUS_MIN:.0%} papyrus)" + ("" if res["mask"] else "; no papyrus mask given")]
+    if res["s_q10_q50_q90"]:
+        a, b, c = res["s_q10_q50_q90"]
+        lines.append(f"  s at the 10th, 50th and 90th percentiles: {a:.2f}, {b:.2f}, {c:.2f} (z units within this map)")
+    lines.append("  s ranks windows within this map only; compare positions, not maps.")
     lines.append(res["note"])
     return "\n".join(lines)

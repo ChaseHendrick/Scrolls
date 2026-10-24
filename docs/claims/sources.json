@@ -1,0 +1,297 @@
+{
+ "schema": "claimcheck/1",
+ "readme": "README.md",
+ "documents": [
+  "docs/FINDINGS.md"
+ ],
+ "blocks": {
+  "a-threshold-taken-from-a-training-segment-misses": {
+   "line": 291,
+   "sources": {
+    "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59"
+   },
+   "reasons": {
+    "96%": "derived: at most 3.7 % of labeled ink reaches the cut-off, so about 96 % misses it"
+   }
+  },
+  "a-threshold-taken-from-a-training-segment-misses-2": {
+   "line": 24,
+   "sources": {
+    "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59"
+   },
+   "doc": "docs/FINDINGS.md",
+   "reasons": {
+    "96%": "derived: at most 3.7 % of labeled ink reaches the cut-off, so about 96 % misses it"
+   }
+  },
+  "a-traced-surface-s-render-comes-out-turned": {
+   "line": 278,
+   "sources": {
+    "docs/logs/2026-10-14-upright-before-ink.md": "c018dc14037ad502a8bbb058167d7cb63527868546be0f21b4089538418ff8de"
+   },
+   "reasons": {
+    "49": "derived: the source's 49.3 degrees, rounded"
+   }
+  },
+  "a-traced-surface-s-render-comes-out-turned-2": {
+   "line": 18,
+   "sources": {
+    "docs/logs/2026-10-14-upright-before-ink.md": "c018dc14037ad502a8bbb058167d7cb63527868546be0f21b4089538418ff8de"
+   },
+   "doc": "docs/FINDINGS.md",
+   "reasons": {
+    "49": "derived: the source's 49.3 degrees, rounded"
+   }
+  },
+  "a-transient-404-from-s3-becomes-a-permanent": {
+   "line": 282,
+   "sources": {
+    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
+   },
+   "reasons": {
+    "70": "external: villa issue #2058 and pull request #2060 state that the new tests fail 70 checks on unchanged code"
+   }
+  },
+  "a-transient-s3-404-becomes-a-permanent-hole": {
+   "line": 287,
+   "sources": {
+    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
+   }
+  },
+  "averaging-depth-windows-matches-the-best-window-chosen": {
+   "line": 292,
+   "sources": {
+    "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59",
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   }
+  },
+  "averaging-depth-windows-matches-the-best-window-chosen-2": {
+   "line": 25,
+   "sources": {
+    "docs/logs/2026-10-07-novel-checks.md": "70f187a1369af27628991282748b347b4960ec8a10f4ecc243b6082f71e07f59",
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "center-finder": {
+   "line": 280,
+   "sources": {
+    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+   }
+  },
+  "cross-trace-agreement-suggests-a-label-free-triage": {
+   "line": 297,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   }
+  },
+  "cross-trace-agreement-suggests-a-label-free-triage-2": {
+   "line": 30,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "every-published-surface-volume-now-matches-a-published": {
+   "line": 298,
+   "sources": {
+    "docs/logs/2026-10-07-mesh-hypothesis.md": "d49f2c468e588c32f187e78122e329a32399daddf956bbba6e6281887c7b951c",
+    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
+   },
+   "reasons": {
+    "216": "derived: the largest CT offset in the second source, 215.9 um, rounded"
+   }
+  },
+  "further-cpu-scaling-checks-make-full-map-row": {
+   "line": 309,
+   "sources": {
+    "docs/logs/2026-10-07-production-scaling.md": "bbd9350716d177616ee8b3e86788a27cb91df8688b9abbd8bd68ccfc48a1f73b"
+   }
+  },
+  "ink-map-agreement-decreases-with-sampled-point-distance": {
+   "line": 295,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   }
+  },
+  "inkfilter-s-face-mix": {
+   "line": 282,
+   "sources": {
+    "docs/tools/inkfilter.md": "58feb85065f69386bd2cf7fd31a0a16039f0a70b44d77fa68948080f2ab23772"
+   }
+  },
+  "inkfilter-s-fixed-face-mix-filter-scored-above": {
+   "line": 11,
+   "sources": {
+    "docs/tools/inkfilter.md": "58feb85065f69386bd2cf7fd31a0a16039f0a70b44d77fa68948080f2ab23772"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "measured-cpu-optimizations-make-the-complete-surface-correction": {
+   "line": 307,
+   "sources": {
+    "docs/logs/2026-10-07-production-speed.md": "512bbdd0f0129b81502bc236a190cd30e9b2b4903d44437efdf4b5ac675b0102"
+   }
+  },
+  "on-pherc0139-w045-which-v8in-never-saw-but": {
+   "line": 289,
+   "sources": {
+    "r:results/7": "aa7fbc416c089a6f912c6aea243ddbf5995851c8de0ff95bc692700ae566dd25",
+    "r:results/8": "e2c4db97a9d7dfa48f853ce79c927f26beaaba95cd7d43bdd8f6b98f65184dd9",
+    "r:results/3": "3f48361fb2b15ae982f21b19b5294cc1cd813d341a8bd01e60931544126f9abb",
+    "docs/logs/2026-10-08-w045-not-held-out.md": "c89c8cc963eaa8bea9045faa4b7f332daaf927971d33d09951c6ecabc0e2ce3a"
+   }
+  },
+  "partial-results-the-pherc1447-fine-tune-on-w00": {
+   "line": 303,
+   "sources": {
+    "r:community/8": "f58f26a775aa61a826291cb6cb2a73bb8dcecf0fa5846744021ccfe0f581e746",
+    "r:community/9": "4d15b1fc94c8635c861ba679a866f0850ca6e4ace745dff793364c4e1e9ba2f0",
+    "r:community/10": "15e582a4407fdc766b21e7c2a027e85cc26a622df7ee3c06f30eba1729e1a573"
+   }
+  },
+  "pherc0841-has-3-4-cm-of-supervision-so": {
+   "line": 300,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   }
+  },
+  "pherc0841-has-limited-supervision-and-reported-aucs-need": {
+   "line": 296,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   },
+   "reasons": {
+    "0.008": "derived: half the source's 95 % interval 0.962 to 0.979 on w00",
+    "0.038": "derived: half the source's 95 % interval 0.829 to 0.905 on ag405"
+   }
+  },
+  "pherc1667-s-1-129-um-renders-appear-misplaced": {
+   "line": 303,
+   "sources": {
+    "docs/logs/2026-10-07-mesh-hypothesis.md": "d49f2c468e588c32f187e78122e329a32399daddf956bbba6e6281887c7b951c"
+   }
+  },
+  "pherc1667-s-published-1-129-um-renders-appear": {
+   "line": 299,
+   "sources": {
+    "docs/logs/2026-10-07-mesh-hypothesis.md": "d49f2c468e588c32f187e78122e329a32399daddf956bbba6e6281887c7b951c"
+   },
+   "reasons": {
+    "216": "count: nine control segments of 24 tiles each (H5 in the source)"
+   }
+  },
+  "raw-ct-brightness-alone-carries-almost-no-ink": {
+   "line": 294,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   }
+  },
+  "raw-ct-brightness-alone-carries-almost-no-ink-2": {
+   "line": 27,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "scoring-a-crop-needs-an-edge-margin": {
+   "line": 294,
+   "sources": {
+    "r:results/17": "64ac48e4b3922c7949f57c6f8d27f337af43e6589513e0ce98f143650fbc2a4d",
+    "r:results/20": "28b65202be97bd0c8fed11ee9e6df61ec04356077266e276cb7325eca6dae1c4",
+    "r:results/9": "f6fe128229d885f25c6e17256054260bad76f3976b6b854427fe39c148408851",
+    "r:results/26": "510df9ad8e32d8b380ba9b545d80f5d210da9746cb8610420ebe0ad93e831e3a"
+   }
+  },
+  "scoring-a-crop-needs-an-edge-margin-2": {
+   "line": 23,
+   "sources": {
+    "r:results/17": "64ac48e4b3922c7949f57c6f8d27f337af43e6589513e0ce98f143650fbc2a4d",
+    "r:results/20": "28b65202be97bd0c8fed11ee9e6df61ec04356077266e276cb7325eca6dae1c4",
+    "r:results/9": "f6fe128229d885f25c6e17256054260bad76f3976b6b854427fe39c148408851",
+    "r:results/26": "510df9ad8e32d8b380ba9b545d80f5d210da9746cb8610420ebe0ad93e831e3a"
+   },
+   "doc": "docs/FINDINGS.md",
+   "reasons": {
+    "640": "setting: the crop is a 640 px window (the glossary's Crop)",
+    "0.03": "derived: 0.821 minus 0.793 is 0.028, rounded"
+   }
+  },
+  "strokenet-s-two-density-score-which-needs-no": {
+   "line": 12,
+   "sources": {
+    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81",
+    "r:strokenet_checks/2": "c90c7e31ff047146b3b082e8390158fe42d0c42d68d48624ebfbf7bc1a3d4f30"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "strokenet-s-two-density-score-with-no-network": {
+   "line": 283,
+   "sources": {
+    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81",
+    "r:strokenet_checks/2": "c90c7e31ff047146b3b082e8390158fe42d0c42d68d48624ebfbf7bc1a3d4f30"
+   }
+  },
+  "strokenet-tells-text-from-the-same-text-turned": {
+   "line": 284,
+   "sources": {
+    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
+   }
+  },
+  "strokenet-told-text-from-the-same-text-turned": {
+   "line": 10,
+   "sources": {
+    "docs/strokenet.md": "a976c280205ae6d40b2b625faf95b404749c9092e97aee68e067c0a74532fa81"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "the-center-finder-s-held-out-lines-sit": {
+   "line": 9,
+   "sources": {
+    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "three-hosted-text-models-restored-hidden-greek-letters": {
+   "line": 285,
+   "sources": {
+    "r:text_restoration_checks/0": "f030bf477aa0ff96c846459374e1e2be222ea20bdbf975a55c5bc6a70e9497df",
+    "docs/prereg/2026-10-22-greek-restoration.md": "b4d7e24f5e10699fec2894126f3afd161ea913da771fff2c48a495e75dfd47a3"
+   }
+  },
+  "three-hosted-text-models-restored-hidden-greek-letters-2": {
+   "line": 13,
+   "sources": {
+    "docs/prereg/2026-10-22-greek-restoration.md": "b4d7e24f5e10699fec2894126f3afd161ea913da771fff2c48a495e75dfd47a3",
+    "r:text_restoration_checks/0": "f030bf477aa0ff96c846459374e1e2be222ea20bdbf975a55c5bc6a70e9497df"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
+  "two-of-pherc0841-s-three-labeled-segments-are": {
+   "line": 293,
+   "sources": {
+    "docs/logs/2026-10-07-overlap-and-baseline.md": "4c4e5150fcabef2e452c8e6a0b9c0badaabb87c0179a4baee1e62af2e4866dae"
+   },
+   "reasons": {
+    "39": "derived: the source's 38.7 vox (w00 to ag405), rounded"
+   }
+  },
+  "villa-s-tracer-does-not-hold-an-explicit": {
+   "line": 283,
+   "sources": {
+    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
+   }
+  },
+  "villa-s-tracer-does-not-hold-an-explicit-2": {
+   "line": 17,
+   "sources": {
+    "docs/logs/2026-10-12-upstream-reports.md": "57f81a96d5871d496ef9d88b97192cc53d5a99f383f5bf97e4e7e69f0bebe5f2"
+   },
+   "doc": "docs/FINDINGS.md"
+  }
+ },
+ "results_baseline": [
+  "3d71ef216559",
+  "96510425af9e"
+ ]
+}

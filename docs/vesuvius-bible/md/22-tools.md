@@ -1,6 +1,8 @@
+<a id="ch-tools"></a>
+
 # Tools and Repositories {#ch-tools}
 
-> **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, catalogued in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
+> **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, cataloged in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
 
 ## Where things are
 
@@ -19,14 +21,14 @@
 
 | Component | Path or name | Purpose | Chapter |
 |---|---|---|---|
-| VC3D | volume-cartographer/ | viewer and semi-automated unwrapping (GrowPatch, Copy Out/In, Neural Tracer panel, line annotation, rendering) | [18](#ch-tracing) |
-| Command-line tools | vc_render_tifxyz, vc_gen_normalgrids, vc_grow_seg_from_seed, vc_tifxyz2obj, vc_obj2tifxyz, flatboi | rendering, normals, growth, conversion, flattening | [18](#ch-tracing), [20](#ch-flatten) |
-| vesuvius | vesuvius/ | Python data access; `vesuvius.ink_detection` training and inference; tifxyz reader | [21](#ch-ink), [23](#ch-formats) |
-| Spiral fitting | spiral-fitting/ (fit_spiral.py, render_ink.py, get_ink_metrics.py) | global whole-scroll fit | [19](#ch-spiral) |
-| Lasagna | lasagna/ (atlas.py) | multi-sheet optimization, fiber tracing | [18](#ch-tracing) |
-| Neural tracing | neural_tracing/ (trace_service.py, autoreg_mesh) | learned displacement and mesh autoregression | [18](#ch-tracing) |
-| dinovol | dinovol/ | 3D DINO self-supervised features | [17](#ch-surface) |
-| Ink inference | ink-detection/optimized_inference | fast inference for the 2.4 µm model | [21](#ch-ink) |
+| VC3D | volume-cartographer/ | viewer and semi-automated unwrapping (GrowPatch, Copy Out/In, Neural Tracer panel, line annotation, rendering) | [18](18-tracing.md#ch-tracing) |
+| Command-line tools | vc_render_tifxyz, vc_gen_normalgrids, vc_grow_seg_from_seed, vc_tifxyz2obj, vc_obj2tifxyz, flatboi | rendering, normals, growth, conversion, flattening | [18](18-tracing.md#ch-tracing), [20](20-flatten.md#ch-flatten) |
+| vesuvius | vesuvius/ | Python data access; `vesuvius.ink_detection` training and inference; tifxyz reader | [21](21-ink.md#ch-ink), [23](23-formats.md#ch-formats) |
+| Spiral fitting | spiral-fitting/ (fit_spiral.py, render_ink.py, get_ink_metrics.py) | global whole-scroll fit | [19](19-spiral.md#ch-spiral) |
+| Lasagna | lasagna/ (atlas.py) | multi-sheet optimization, fiber tracing | [18](18-tracing.md#ch-tracing) |
+| Neural tracing | neural_tracing/ (trace_service.py, autoreg_mesh) | learned displacement and mesh autoregression | [18](18-tracing.md#ch-tracing) |
+| dinovol | dinovol/ | 3D DINO self-supervised features | [17](17-surface.md#ch-surface) |
+| Ink inference | ink-detection/optimized_inference | fast inference for the 2.4 µm model | [21](21-ink.md#ch-ink) |
 
 Sources: [VC-OpenProblems2026] [VC-SpiralTutorial] [VC-InkTutorial] [VC-VC3DTutorial]. VC3D releases for macOS, Windows and Docker (ghcr.io/scrollprize/villa/volume-cartographer:stable) are published on the villa releases page; Linux users build from source with build_from_src_debian.sh [VC-VC3DTutorial].
 
@@ -51,10 +53,10 @@ The challenge maintains an "Awesome Scroll Tools" list of "awarded open source c
 | Segment Browser | Johannes Rudolph | web tool to browse layers and ink results of all released segments |
 | vesuvius-gui | Johannes Rudolph | single-binary GUI rendering volumes and segments on the fly |
 | vesuvius-phalanx | Marcel Roth | Python library and CLI for volume and fragment data |
-| vesuvius-c | Forrest McDonald | C library (now deprecated in favour of `vesuvius` and VC3D) |
-| scroll-data-audit | Matteo Bulloni | reconciles metadata.json against actual Zarr arrays; reported a PHerc. 172 catalogue shape error |
+| vesuvius-c | Forrest McDonald | C library (now deprecated in favor of `vesuvius` and VC3D) |
+| scroll-data-audit | Matteo Bulloni | reconciles metadata.json against actual Zarr arrays; reported a PHerc. 172 catalog shape error |
 | vesuvius-repro | TAUIL Abd Elilah | reproducibility spot checks of surface-prediction artifacts across 36 scrolls (Dice 0.9983 to 1.0000) |
-| vesuvius-catalog | (listed) | scriptable catalogue CLI for the bucket |
+| vesuvius-catalog | (listed) | scriptable catalog CLI for the bucket |
 | volcomp | Forrest McDonald | chunked compressor for CT and predictions, supported in VC3D |
 
 ### Segmentation

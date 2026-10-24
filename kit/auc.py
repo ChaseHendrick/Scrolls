@@ -1,17 +1,17 @@
 """Pixel AUC of an ink map against a segment's published ink labels.
 
-On a labelled segment no model was trained on (PHerc0841 for `ink_9um`, v8in, d9v2 and Reader
+On a labeled segment no model was trained on (PHerc0841 for `ink_9um`, v8in, d9v2 and Reader
 v2, but not for Hecate, whose base model's trainer lists all three PHerc0841 segments;
 PHerc0139 w045 for v8in only, since ink_9um trained on its 2.4 um render), this is the generalization
-number: the chance that a labelled ink pixel scores above a
-labelled non-ink pixel. Only pixels inside the supervision mask count, because the
-labellers marked ink and non-ink there and nowhere else. Reference values (Community
+number: the chance that a labeled ink pixel scores above a
+labeled non-ink pixel. Only pixels inside the supervision mask count, because the
+labelers marked ink and non-ink there and nowhere else. Reference values (Community
 reports, not checked here): `ink_9um` on PHerc0841 team surfaces, 0.74 to 0.81 (Bullo27);
 on the PHerc0139 title, 0.81 to 0.95 depending on the checkpoint (Nieuwlaar).
 
 The labels sit on the 2.4 um scan's grid. Its pyramid level 2 is the 9 um surface grid up
 to a uniform scale (w045: 5,820 x 8,020 labels for 5,980 x 8,240 surface pixels), so labels
-are mapped onto the map by nearest neighbour, and a scale that differs between the axes is
+are mapped onto the map by nearest neighbor, and a scale that differs between the axes is
 refused. A map that covers only a window of the surface gives that window with `crop` and
 the full surface shape with `surface_shape`.
 
@@ -23,7 +23,7 @@ Pixels where the map is exactly 0 are left out by default: villa and v8in write 
 they made no prediction (outside the surface). The count is reported.
 
 Sampling noise: a segment's labels cover about 1 cm2 (PHerc0841: 0.9 to 1.4 cm2 each), and
-neighbouring pixels are not independent, so an AUC carries more noise than its pixel count
+neighboring pixels are not independent, so an AUC carries more noise than its pixel count
 suggests. `bootstrap` resamples square blocks (default 107 px, 1 mm at 9.366 um) with
 replacement and reports a 95 % interval; `compare` scores a second map on the same pixels
 with the same draws and reports the difference, its interval, and the share of draws in
@@ -119,7 +119,7 @@ def auc_scores(ink_scores, background_scores):
 
 
 def label_grid(labels_shape, surface_shape, crop, map_shape):
-    """Row and column indices into the labels for every map pixel (nearest neighbour)."""
+    """Row and column indices into the labels for every map pixel (nearest neighbor)."""
     np = _numpy()
     sy = labels_shape[0] / surface_shape[0]
     sx = labels_shape[1] / surface_shape[1]

@@ -26,7 +26,7 @@ GPU work here runs on Modal, a cloud GPU service, under the Modal rule (hard rul
 
 The caller gives a JSON file with a key, the row, and a `generic` mark. The key is a stable name for the launch (for example a launch token); it is stored at the end of the row's notes as `autoledger KEY`, and the tool writes nothing when the ledger already holds that key. In a ledger that has an `app_id` column, a row whose app id is already there is also skipped, so a hand-written row of the same Modal app is never doubled. The columns come from the ledger's own header, so one writer serves ledgers with different columns.
 
-The public ledger, `docs/compute/modal-ledger.csv`, is recognised by having no `lane_branch` column. Because it is public, it takes a row only behind two gates: the explicit `--public-generic` flag, and `"generic": true` in the file. A row whose purpose or notes name title, target, preregistered, held-out, experiment or candidate work is refused, and the private-only columns `lane_branch` and `app_id` are dropped. A ledger with a `lane_branch` column is treated as private; that ledger lives in the private repository and is not described here.
+The public ledger, `docs/compute/modal-ledger.csv`, is recognized by having no `lane_branch` column. Because it is public, it takes a row only behind two gates: the explicit `--public-generic` flag, and `"generic": true` in the file. A row whose purpose or notes name title, target, preregistered, held-out, experiment or candidate work is refused, and the private-only columns `lane_branch` and `app_id` are dropped. A ledger with a `lane_branch` column is treated as private; that ledger lives in the private repository and is not described here.
 
 It records numbers; it does not compute them. It does not ask Modal for prices or usage, does not fill `cumulative_usd`, and does not check that a cost is right. Estimates come from [cloudcost](cloudcost.md); `actual_cost_usd_if_known` comes from Modal's per-app usage report when that is available.
 
@@ -76,7 +76,7 @@ It worked when the exit code is 0 and the message says `row added`, or `already 
 
 - **The public gates can refuse.** On the same scratch ledger, leaving out `--public-generic` gave `... is the public ledger: pass the explicit public flag (--public-generic) for a generic run, or write the private ledger` with exit code 2, and a purpose reading `target scroll pass` gave `...: the row names target work, which the public ledger never carries` with exit code 2. The tests check every refusal (title, target, held out, prereg, experiment, and a row not marked generic).
 - **One row per key.** A second write with the same key prints `already holds this row; nothing written`. The key must match a notes part exactly: `job:1` does not block `job:10` (tested).
-- **What it cannot catch.** The word check matches substrings of the purpose and notes only, in lower case. It refuses harmless words that contain a blocked one (such as `experiments` or `subtitle`) and cannot recognise private work described in other words, or private detail in other columns. Read the row before committing it to public Scrolls.
+- **What it cannot catch.** The word check matches substrings of the purpose and notes only, in lower case. It refuses harmless words that contain a blocked one (such as `experiments` or `subtitle`) and cannot recognize private work described in other words, or private detail in other columns. Read the row before committing it to public Scrolls.
 
 Claim label: None. The tool copies the caller's numbers; the estimated cost is an estimate and the actual cost comes from Modal's report.
 
@@ -192,7 +192,7 @@ Not measured. It reads and rewrites one small CSV. It contacts no service and re
 - **Rerun:** Safe with the same key: the second run writes nothing. A new key for the same launch would add a second row in the public ledger, which has no `app_id` column to catch it.
 - **Success:** Exit code 0 with either message.
 - **Not a pass:** A row whose `est_cost_usd` was never checked against Modal's report; a `cumulative_usd` you did not recompute; a public row that passed the word check but still describes private work in other words.
-- **Go-ahead:** Nothing to write the row. Launching the Modal job it records needs the user's budget decision first, and Claude cloud sessions cannot reach Modal at all.
+- **Go-ahead:** Nothing to write the row. Launching the Modal job it records needs the user's budget decision first, and a Claude cloud session runs Modal only with `modal[api-proxy-support]`, Chase's sign-in and an allow rule.
 - **Never:** Put a target-scroll, title, preregistered, held-out or other private run in the public ledger; use `--public-generic` to push through a row that is not generic; invent a key per rerun to force a second row.
 
 ## Tests

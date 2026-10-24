@@ -24,7 +24,7 @@ python -m kit run init p0826-a --scroll PHerc0826 \
 
 Check what others already published on the scroll ([`state-of-play.md`](state-of-play.md)). A repeat of a published null is worth less than a variation that tests one new thing (hand-refined surface, different depth window, resampling, all 14 checkpoints, a fine-tuned model).
 
-A good readout rule names the threshold source (for example the median prediction on the control's labelled ink), a minimum size, the forward vs reverse comparison, and the row structure you expect. See [bnleft's preregistration](https://github.com/bnleft/first-light-pherc0211) for a worked example.
+A good readout rule names the threshold source (for example the median prediction on the control's labeled ink), a minimum size, the forward vs reverse comparison, and the row structure you expect. See [bnleft's preregistration](https://github.com/bnleft/first-light-pherc0211) for a worked example.
 
 ## 2. Run
 

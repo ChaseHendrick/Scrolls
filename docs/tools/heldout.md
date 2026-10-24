@@ -22,7 +22,7 @@
 
 ## What it does
 
-A score on a labelled segment tests an ink reader only when the reader's training data left that segment out. For Hecate, the team's released ink reader (model card [scrollprize/hecate](https://huggingface.co/scrollprize/hecate)), no training list was published: its trainer builds the split itself from the label masks of the ink dataset the card cites, `hf://buckets/scrollprize/datasets/ink`, and the manifest it wrote for the released run is not public.
+A score on a labeled segment tests an ink reader only when the reader's training data left that segment out. For Hecate, the team's released ink reader (model card [scrollprize/hecate](https://huggingface.co/scrollprize/hecate)), no training list was published: its trainer builds the split itself from the label masks of the ink dataset the card cites, `hf://buckets/scrollprize/datasets/ink`, and the manifest it wrote for the released run is not public.
 
 This script ports that split rule, numpy only, from the trainer the team published on villa branch `distilled_3d_ink`, commit `5ff00ca0`, file `vesuvius/src/vesuvius/ink_detection/data/multiteacher.py` ([source](https://github.com/ScrollPrize/villa/blob/5ff00ca0/vesuvius/src/vesuvius/ink_detection/data/multiteacher.py)). Given one segment's supervision mask (the pixels a label set covers), its validation mask when the dataset has one, and its ink labels, it says which 256 px patches the rule would make training patches, which it would make validation patches, whether the segment is validation only (no training patch at all), and how many supervised and supervised-ink pixels lie under training patches. The folder holds this one script, `hecate_split.py`.
 
@@ -32,7 +32,7 @@ It does not say what the released run did: that the archived manifest used this 
 
 ## When to use it
 
-- To check how the published Hecate rule splits a labelled segment before using that segment as a test of Hecate, or of a reader started from Hecate's weights.
+- To check how the published Hecate rule splits a labeled segment before using that segment as a test of Hecate, or of a reader started from Hecate's weights.
 - To redo or extend measurement M1 of the exposure log, for example on a newly published label set, another label version (`--suffix`) or another seed (`--seed`) for a segment without a validation mask.
 
 Do not use it:

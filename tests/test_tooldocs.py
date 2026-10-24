@@ -388,7 +388,10 @@ class PageShape(unittest.TestCase):
                       self.found(GOOD.replace("| `the demo input is empty` | No input | Give one |\n", "")))
         moved = GOOD.replace("| `the demo input is empty` | No input | Give one |\n", "").replace(
             "It demonstrates.", "It says `the demo input is empty` sometimes.")
-        self.assertIn("on the page but not in '## Failure modes'", self.found(moved))
+        self.assertIn("on the page but not in the What you see column of '## Failure modes'", self.found(moved))
+        why_only = GOOD.replace("| `the demo input is empty` | No input | Give one |",
+                                "| `a different message` | When the demo input is empty | Give one |")
+        self.assertIn("not in the What you see column", self.found(why_only))
         self.assertIn("`DEMO_HOME`", self.found(GOOD.replace("`DEMO_HOME` is read", "DEMO_HOME is read")))
         self.assertIn("Tests names 'tests/test_gone.py'", self.found(GOOD.replace("`tests/test_demo.py` |", "`tests/test_gone.py` |")))
         dotted = GOOD.replace("`kit/cli.py` (`cmd_demo`)", "`kit/cli.py` (`cmd_demo`), `kit.demo`")
@@ -411,6 +414,221 @@ class PageShape(unittest.TestCase):
                             "| --- | --- | --- |\n| `--window N` | `3` | Window |")
         text = text.replace("| Give one |", "| Give one |\n| `the window must be at least 1` | Too small | Use 3 |")
         self.assertEqual(self.found(text), "")
+
+
+SPACE_SCRIPT = '''import argparse
+import sys
+
+DEFAULT_SIZE = 256
+
+
+def common(p):
+    g = p.add_mutually_exclusive_group()
+    g.add_argument("--local", action="store_true")
+    g.add_argument("--space", default="me/space")
+    p.add_argument("--windows", type=int, default=3, choices=(1, 3))
+
+
+def parser():
+    ap = argparse.ArgumentParser(prog="lens")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    e = sub.add_parser("estimate")
+    e.add_argument("height", type=int)
+    e.add_argument("width", type=int)
+    f = sub.add_parser("fetch")
+    f.add_argument("reader", choices=["a", "b"])
+    r = sub.add_parser("run")
+    r.add_argument("--size", type=int, default=DEFAULT_SIZE)
+    r.add_argument("--box", type=int, nargs=4, metavar=("X", "Y", "W", "H"))
+    for p in (e, r):
+        p.add_argument("--json", action="store_true")
+    common(r)
+    return ap
+
+
+def main(argv=None):
+    a = parser().parse_args(argv)
+    if a.cmd == "run" and a.size < 128:
+        raise SystemExit(f"size {a.size}: use 128 to {DEFAULT_SIZE} px")
+    if a.cmd == "fetch":
+        raise ValueError("not a PNG")
+    try:
+        return 0
+    except OSError as exc:
+        print(f"lens: {exc}", file=sys.stderr)
+        return 2
+'''
+
+ENGINE_SCRIPT = '''import argparse
+
+
+def parser():
+    ap = argparse.ArgumentParser(prog="engine")
+    sub = ap.add_subparsers(dest="cmd", required=True)
+    e = sub.add_parser("estimate")
+    e.add_argument("height", type=int)
+    e.add_argument("width", type=int)
+    return ap
+'''
+
+SHELL_SCRIPT = '''#!/bin/bash
+case "$MODE" in
+  a|b) ;;
+  *) echo "MODE must be a or b, not $MODE" >&2; exit 2 ;;
+esac
+if busy; then
+  echo "Another run holds the lock (pid $pid)." >&2
+  echo "Wait for it, or stop it" >&2
+  exit 3
+fi
+echo "progress: still working on it" >&2
+echo "file $f has sha256 $got, expected $want; move it aside" >&2; exit 1
+printf 'cannot write %s here\\n' "$out" >&2
+exit 4
+'''
+
+
+def lens_section(parser_obj):
+    """Commands and options for SPACE_SCRIPT, with usage blocks pasted from the real parser."""
+    subs = next(a for a in parser_obj._actions if isinstance(a, argparse._SubParsersAction)).choices
+    return (f"### `spaces/lens/lens.py`\n\n```\n{parser_obj.format_usage().strip()}\n```\n\n"
+            f"### `spaces/lens/lens.py estimate`\n\n```\n{subs['estimate'].format_usage().strip()}\n```\n\n"
+            "| Option | Default | Meaning |\n| --- | --- | --- |\n| `HEIGHT` | required | Rows |\n| `WIDTH` | required | Columns |\n"
+            "| `--json` | off | JSON |\n\n"
+            f"### `spaces/lens/lens.py fetch`\n\n```\n{subs['fetch'].format_usage().strip()}\n```\n\n"
+            "| Option | Default | Meaning |\n| --- | --- | --- |\n| `READER` | required | a or b |\n\n"
+            f"### `spaces/lens/lens.py run`\n\n```\n{subs['run'].format_usage().strip()}\n```\n\n"
+            "| Option | Default | Meaning |\n| --- | --- | --- |\n| `--size` | `256` | Side |\n| `--box X Y W H` | none | Box |\n"
+            "| `--json` | off | JSON |\n| `--local` | off | Here |\n| `--space` | `me/space` | Space |\n| `--windows` | `3` | Windows |\n\n")
+
+
+class CheckerExtensions(unittest.TestCase):
+    """The checks added on 2026-10-21: bare kit usage, shell messages, static argparse reading, whole messages."""
+
+    def setUp(self):
+        self.repo = Repo()
+        self.repo.write("spaces/lens/lens.py", SPACE_SCRIPT)
+        self.repo.write("scripts/run.sh", SHELL_SCRIPT)
+        ns = {}
+        exec(compile(SPACE_SCRIPT, "lens.py", "exec"), ns)
+        self.section = lens_section(ns["parser"]())
+
+    def tearDown(self):
+        self.repo.tmp.cleanup()
+
+    def found(self, text):
+        return " ".join(self.repo.problems(text))
+
+    def lens_page(self):
+        text = GOOD.replace(", `kit/cli.py` (`cmd_demo`)", ", `kit/cli.py` (`cmd_demo`), `spaces/lens/lens.py`")
+        text = text.replace("`DEMO_HOME` is read from the environment.", self.section + "`DEMO_HOME` is read from the environment.")
+        return text.replace("| Give one |", "| Give one |\n| `size N: use 128 to MAX px` | Too small | Use 128 or more |\n"
+                                              "| `not a PNG` | Not a PNG | Give a PNG |")
+
+    def test_bare_kit_usage_and_a_row_for_every_command(self):
+        usage = COMMANDS.top.format_usage().strip()
+        text = GOOD.replace(f"| Run | `{KIT} demo`,", f"| Run | `{KIT}`, `{KIT} demo`,")
+        section = (f"### `{KIT}`\n\n```\n{usage}\n```\n\n| Command | Page |\n| --- | --- |\n| `demo` | here |\n"
+                   "| `other` | there |\n\n")
+        text = text.replace(f"### `{KIT} demo`\n", section + f"### `{KIT} demo`\n")
+        self.assertEqual(self.found(text), "")
+        self.assertIn(f"command `other` of `{KIT}` has no row", self.found(text.replace("| `other` | there |\n", "")))
+        self.assertIn(f"the usage block under '### `{KIT}`' differs from --help",
+                      self.found(text.replace(usage, usage.replace("[-h]", "[--help]"))))
+        self.assertIn(f"no '### `{KIT}`' heading", self.found(text.replace(f"### `{KIT}`\n", "### Commands\n")))
+
+    def test_the_help_column_holds_each_commands_parser_help(self):
+        usage = COMMANDS.top.format_usage().strip()
+        text = GOOD.replace(f"| Run | `{KIT} demo`,", f"| Run | `{KIT}`, `{KIT} demo`,")
+        section = (f"### `{KIT}`\n\n```\n{usage}\n```\n\n| Command | What it does (`--help`) |\n| --- | --- |\n"
+                   "| `demo` | demo |\n| `demo` | its actions, described in a later row |\n| `other` | other |\n\n")
+        text = text.replace(f"### `{KIT} demo`\n", section + f"### `{KIT} demo`\n")
+        self.assertEqual(self.found(text), "")
+        self.assertIn("the What it does (`--help`) cell of `other` differs from its parser's help",
+                      self.found(text.replace("| `other` | other |", "| `other` | an older help |")))
+        self.assertIn("cell of `demo` differs", self.found(text.replace("| `demo` | demo |", "| `dm` | old |")))
+
+    def test_shell_messages_before_a_failing_exit(self):
+        self.assertEqual(tooldocs.sh_error_messages(SHELL_SCRIPT),
+                         ["MODE must be a or b, not", "Another run holds the lock (pid", "Wait for it, or stop it",
+                          "; move it aside", "cannot write"])
+        parts = tooldocs.sh_error_messages(SHELL_SCRIPT, parts=True)
+        self.assertIn(["cannot write ", " here", " ", " "], parts)
+        self.assertTrue(tooldocs.message_in(parts[3], "file PATH has sha256 GOT, expected WANT; move it aside"))
+        text = GOOD.replace(", `kit/cli.py` (`cmd_demo`)", ", `kit/cli.py` (`cmd_demo`), `scripts/run.sh`")
+        found = self.found(text)
+        self.assertIn("error message 'MODE must be a or b, not' from scripts/run.sh is not in", found)
+        self.assertNotIn("progress", found)
+        rows = ("| `MODE must be a or b, not M`, exit code 2 | Wrong mode | Use a or b |\n"
+                "| `Another run holds the lock (pid P).` then `Wait for it, or stop it`, exit code 3 | Busy | Wait |\n"
+                "| `file PATH has sha256 GOT, expected WANT; move it aside`, exit code 1 | Changed | Move it |\n"
+                "| `cannot write OUT here`, exit code 4 | Read-only | Pick another folder |\n")
+        self.assertEqual(self.found(text.replace("| Give one |\n", "| Give one |\n" + rows)), "")
+
+    def test_argparse_read_without_running(self):
+        import ast
+        parsers, complete = tooldocs.argparse_parsers(ast.parse(SPACE_SCRIPT))
+        self.assertTrue(complete)
+        self.assertEqual([p.label for p in parsers], ["lens", "lens estimate", "lens fetch", "lens run"])
+        run = parsers[3]
+        self.assertEqual([a.name for a in run.args], ["--size", "--box", "--json", "--local", "--space", "--windows"])
+        self.assertEqual(run.args[0].default(), 256)
+        self.assertEqual(run.args[2].default(), False)
+        self.assertEqual(parsers[0].subcommands, ["estimate", "fetch", "run"])
+        self.assertEqual(parsers[2].args[0].usage_names(), ("{a,b}",))
+        partial = tooldocs.argparse_parsers(ast.parse("ap = make()\nap.add_argument('--a')\n"))
+        self.assertEqual(partial, ([], False))
+
+    def test_positionals_defaults_and_usage_of_scripts_and_spaces(self):
+        good = self.lens_page()
+        self.assertEqual(self.found(good), "")
+        self.assertIn("positional `height` of spaces/lens/lens.py estimate has no row",
+                      self.found(good.replace("| `HEIGHT` | required | Rows |\n", "")))
+        self.assertIn("default of `--size` in spaces/lens/lens.py run is `256` in the code",
+                      self.found(good.replace("| `--size` | `256` |", "| `--size` | `512` |")))
+        self.assertIn("option `--windows` of spaces/lens/lens.py has no row",
+                      self.found(good.replace("| `--windows` | `3` | Windows |\n", "")))
+        self.assertIn("the usage block for `lens run` lacks `--json`", self.found(good.replace("[--json]", "", 2)))
+        self.assertIn("the usage block for `lens run` names `--gone`",
+                      self.found(good.replace("usage: lens run [-h]", "usage: lens run [-h] [--gone]")))
+        self.assertIn("lists the subcommands {estimate,run}",
+                      self.found(good.replace("{estimate,fetch,run}", "{estimate,run}")))
+        self.assertIn("lacks the positional `height`",
+                      self.found(good.replace("usage: lens estimate [-h] [--json] height width",
+                                              "usage: lens estimate [-h] [--json] width")))
+
+    def test_a_heading_with_several_files_keeps_each_files_positional_rows_apart(self):
+        # One heading names lens.py estimate and engine.py: an unnamed row belongs to the first file the heading
+        # names, and a row that names engine.py belongs to engine.py alone, so neither stands in for the other.
+        self.repo.write("spaces/lens/engine.py", ENGINE_SCRIPT)
+        good = self.lens_page().replace("`spaces/lens/lens.py`\n", "`spaces/lens/lens.py`, `spaces/lens/engine.py`\n", 1)
+        good = good.replace("`spaces/lens/lens.py` |", "`spaces/lens/lens.py`, `spaces/lens/engine.py` |", 1)
+        good = good.replace("### `spaces/lens/lens.py estimate`", "### `spaces/lens/lens.py estimate`, `spaces/lens/engine.py`")
+        good = good.replace("| `WIDTH` | required | Columns |\n",
+                            "| `WIDTH` | required | Columns |\n| `engine.py estimate HEIGHT WIDTH` | required | The same |\n")
+        self.assertEqual(self.found(good), "")
+        mine = self.found(good.replace("| `HEIGHT` | required | Rows |", "| `H` | required | Rows |"))
+        self.assertIn("positional `height` of spaces/lens/lens.py estimate has no row", mine)
+        self.assertNotIn("engine.py estimate has no row", mine)
+        theirs = self.found(good.replace("`engine.py estimate HEIGHT WIDTH`", "`engine.py estimate H W`"))
+        self.assertIn("positional `height` of spaces/lens/engine.py estimate has no row", theirs)
+        self.assertIn("positional `width` of spaces/lens/engine.py estimate has no row", theirs)
+        self.assertNotIn("lens.py estimate has no row", theirs)
+
+    def test_whole_messages_with_placeholders(self):
+        import ast
+        tree = ast.parse(SPACE_SCRIPT)
+        self.assertEqual(tooldocs.error_messages([tree], parts=True), [["size ", ": use 128 to ", " px"], ["not a PNG"]])
+        self.assertEqual(tooldocs.error_messages([tree]), [": use 128 to", "not a PNG"])   # "lens: " is too short
+        self.assertTrue(tooldocs.message_in(["size ", ": use 128 to ", " px"], "`size N: use 128 to MAX px`"))
+        self.assertFalse(tooldocs.message_in(["size ", ": use 128 to ", " px"], "`: use 128 to`"))
+        self.assertFalse(tooldocs.message_in(["size ", ": use 128 to ", " px"], "`px` then `size N: use 128 to`"))
+        good = self.lens_page()
+        fragment = good.replace("| `size N: use 128 to MAX px` |", "| `: use 128 to` |")
+        self.assertIn("error message 'size...: use 128 to...px' from spaces/lens/lens.py is not in", self.found(fragment))
+        self.assertIn("error message 'not a PNG'", self.found(good.replace("| `not a PNG` | Not a PNG | Give a PNG |", "")))
+        block = tooldocs.failures_block(self.repo.root, [("spaces/lens/lens.py", [])], False)
+        self.assertIn("| `size...: use 128 to...px` |", block)
 
 
 class CommandChecks(unittest.TestCase):
@@ -486,6 +704,19 @@ class Coverage(unittest.TestCase):
         self.assertNotIn("entry 'demo'", self.found([], releases=["demo"]))
         tagged = tooldocs.Page(Path("demo.md"), GOOD.replace("| Released |", "| Release id | `demo-tool` |\n| Released |"))
         self.assertNotIn("entry 'demo-tool'", self.found([], [tagged], releases=["demo-tool"]))
+
+    def test_tools_in_a_grouped_release_need_pages_too(self):
+        repo = Repo()
+        self.addCleanup(repo.tmp.cleanup)
+        repo.write("docs/releases.json", json.dumps({"schema_version": 1, "releases": [
+            {"id": "solo"}, {"id": "demo-kit", "tools": [{"id": "demo"}, {"id": "lone-cmd"}]}]}))
+        ids = tooldocs.releases_ids(repo.root)
+        self.assertEqual(ids, ["solo", "demo-kit", "demo", "lone-cmd"])
+        found = self.found([], releases=ids)
+        self.assertIn("entry 'lone-cmd'", found)
+        self.assertNotIn("entry 'demo'", found)
+        repo.write("docs/releases.json", "not json")
+        self.assertEqual(tooldocs.releases_ids(repo.root), [])
 
     def test_pending_suppresses_until_the_page_exists_and_then_must_shrink(self):
         pending = {"newtool": {"covers": ["kit/newtool.py", f"{KIT} other go", f"{KIT} other stop"]}}

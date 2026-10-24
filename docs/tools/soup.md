@@ -31,7 +31,7 @@ The output is a checkpoint in the same layout as the first input: villa's `ink_9
 ## When to use it
 
 - Making `soup42_last4` again, or a soup of the last few checkpoints of another single run, such as a fine-tune that saved several steps.
-- Testing whether a soup helps on a held-out labelled segment, scored with [`auc`](auc.md) against the reverse-depth control.
+- Testing whether a soup helps on a held-out labeled segment, scored with [`auc`](auc.md) against the reverse-depth control.
 
 Do not use it:
 

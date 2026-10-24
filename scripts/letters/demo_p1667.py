@@ -33,7 +33,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from kit import letterread as R  # noqa: E402
 from p1667_fetch import BUCKET, download, keys, segment_prefix  # noqa: E402
 
-LETTER_PX = 86.0   # PHerc. 1667 letter height on the 38 um grid (median of the six labelled segments)
+LETTER_PX = 86.0   # PHerc. 1667 letter height on the 38 um grid (median of the six labeled segments)
 
 
 def small_map(seg, cache):

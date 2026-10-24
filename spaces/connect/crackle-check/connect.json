@@ -1,0 +1,67 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/crackle-check",
+ "title": "Crackle Check",
+ "checked": "2026-10-24",
+ "intro": "Crackle Check runs from your own code and agents as well as this page, and the segments it reads are open data you can load yourself, with no account needed for either.",
+ "sources": [
+  {
+   "id": "api",
+   "title": "Call Crackle Check from code or an agent",
+   "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/crackle-check",
+   "space": "SharpMeow/crackle-check",
+   "host": "https://sharpmeow-crackle-check.hf.space",
+   "status": "running",
+   "endpoints": [
+    {
+     "api": "/check_example",
+     "args": {
+      "sample_id": "0841-w00",
+      "reader": "readerv3"
+     }
+    },
+    {
+     "api": "/check_segment",
+     "args": {
+      "segment": "PHerc0841/segments/20260220213127-w00",
+      "volume": "",
+      "x": 3008,
+      "y": 2944,
+      "size": 384,
+      "reader": "readerv3"
+     }
+    },
+    {
+     "api": "/list_readers",
+     "args": {}
+    }
+   ],
+   "license": "Code Apache 2.0; readers MIT; scans CC BY-NC 4.0",
+   "note": "Examples are precomputed; a new region uses ZeroGPU time, so pass Client(..., token=...) to use your own. Model output, not a reading."
+  },
+  {
+   "id": "layers",
+   "title": "The layers it reads, example PHerc0841 w00 (9.366 um surface volume)",
+   "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "zarr_format": 2,
+   "example": {
+    "level": "0",
+    "start": [
+     0,
+     2800,
+     2900
+    ]
+   },
+   "tools": [
+    "zarr",
+    "vesuvius",
+    "curl"
+   ],
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Shape (layers, height, width). Read live from the open data when someone runs a check; nothing is bundled.",
+   "browse": "https://scrollprize.org/data_browser/PHerc0841"
+  }
+ ]
+}

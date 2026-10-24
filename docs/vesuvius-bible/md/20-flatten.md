@@ -1,6 +1,8 @@
+<a id="ch-flatten"></a>
+
 # Flattening and Rendering {#ch-flatten}
 
-> **Chapter summary.** Flattening assigns each mesh point a 2D coordinate with as little distortion as possible; VC3D's production tool, flatboi, uses SLIM to minimize the symmetric Dirichlet energy. Rendering then samples the CT volume along the mesh and its normals to produce a **surface volume**, a stack of flat images centred on the papyrus surface, which is what most ink models read.
+> **Chapter summary.** Flattening assigns each mesh point a 2D coordinate with as little distortion as possible; VC3D's production tool, flatboi, uses SLIM to minimize the symmetric Dirichlet energy. Rendering then samples the CT volume along the mesh and its normals to produce a **surface volume**, a stack of flat images centered on the papyrus surface, which is what most ink models read.
 
 ## Flattening
 
@@ -38,4 +40,4 @@ Surface volumes are sensitive to where the surface sits in depth. The ink tutori
 
 ## Beyond surface volumes
 
-Native 3D ink models skip rendering: "for every training patch it uses the .tifxyz coordinates to find where the segment passes through the original scroll volume, samples a 3D crop there on the fly, and projects the 2D labels into the crop around the surface" [VC-InkTutorial]. [Chapter 21](#ch-ink) describes them.
+Native 3D ink models skip rendering: "for every training patch it uses the .tifxyz coordinates to find where the segment passes through the original scroll volume, samples a 3D crop there on the fly, and projects the 2D labels into the crop around the surface" [VC-InkTutorial]. [Chapter 21](21-ink.md#ch-ink) describes them.

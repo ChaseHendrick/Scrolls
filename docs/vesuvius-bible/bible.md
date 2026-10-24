@@ -1,8 +1,10 @@
 <!-- The Vesuvius Challenge Bible. Edition of 15 October 2026. One file per chapter is in md/. -->
 
+<a id="ch-preface"></a>
+
 # About This Book {#ch-preface}
 
-*The Vesuvius Challenge Bible* is a reference for anyone working on reading the Herculaneum scrolls: the history of the rolls, the physics of imaging them, the record of the Vesuvius Challenge from 2023 to October 2026, every scroll and fragment in the public catalogue, the full virtual unwrapping pipeline, the tools and formats, and the open problems. It is written for two kinds of reader: people, who will mostly read it as a PDF, and AI agents, which can read the same text as Markdown with machine-readable data alongside.
+*The Vesuvius Challenge Bible* is a reference for anyone working on reading the Herculaneum scrolls: the history of the rolls, the physics of imaging them, the record of the Vesuvius Challenge from 2023 to October 2026, every scroll and fragment in the public catalog, the full virtual unwrapping pipeline, the tools and formats, and the open problems. It is written for two kinds of reader: people, who will mostly read it as a PDF, and AI agents, which can read the same text as Markdown with machine-readable data alongside.
 
 Edition date: 15 October 2026.
 
@@ -16,7 +18,7 @@ Edition date: 15 October 2026.
 
 ## Images
 
-Photographs come from Wikimedia Commons and other sources whose licences allow reuse; each caption gives the source and licence, and Appendix F lists them all. **The book reproduces no CT scan data, renders or ink predictions** from the Vesuvius Challenge or EduceLab datasets, out of respect for the data terms ([Chapter 28](#ch-ethics)). Scans are described with numbers and with charts and diagrams drawn by the editors.
+Photographs come from Wikimedia Commons and other sources whose licenses allow reuse; each caption gives the source and license, and Appendix F lists them all. **The book reproduces no CT scan data, renders or ink predictions** from the Vesuvius Challenge or EduceLab datasets, out of respect for the data terms ([Chapter 28](#ch-ethics)). Scans are described with numbers and with charts and diagrams drawn by the editors.
 
 ## How to read it
 
@@ -39,33 +41,35 @@ The Markdown edition has one file per chapter in `md/`, the whole book in one fi
 This is an independent compilation. It is not published or endorsed by the Vesuvius Challenge, Scroll Prize, Inc., EduceLab, or any library or facility named in it. Corrections are welcome; the sources cited are authoritative where they differ from this book.
 
 
+<a id="ch-eruption"></a>
+
 # The Eruption of 79 CE {#ch-eruption}
 
-> **Chapter summary.** Mount Vesuvius buried the towns around the Bay of Naples in a two-phase eruption in 79 CE. Herculaneum, upwind of the first ash fall, was overwhelmed by pyroclastic surges that carbonized organic material, including a library of papyrus rolls, and sealed it under roughly 20 metres of volcanic deposit. This chapter summarizes what is known about the eruption, its date, and why Herculaneum preserved organic objects that Pompeii did not.
+> **Chapter summary.** Mount Vesuvius buried the towns around the Bay of Naples in a two-phase eruption in 79 CE. Herculaneum, upwind of the first ash fall, was overwhelmed by pyroclastic surges that carbonized organic material, including a library of papyrus rolls, and sealed it under roughly 20 meters of volcanic deposit. This chapter summarizes what is known about the eruption, its date, and why Herculaneum preserved organic objects that Pompeii did not.
 
 ## The volcano and the bay
 
-Vesuvius is a stratovolcano on the eastern shore of the Bay of Naples in Campania, southern Italy. In antiquity the bay was ringed by towns and luxury villas: Neapolis (Naples), Herculaneum, Pompeii, Stabiae, Oplontis and the naval base of Misenum at the northern tip of the bay [WP-Eruption79]. The Roman elite treated the coast as a resort, and Herculaneum in particular was a wealthy seaside town of roughly 5,000 inhabitants, smaller and richer than Pompeii, with a high density of houses clad in coloured marble [WP-Herculaneum].
+Vesuvius is a stratovolcano on the eastern shore of the Bay of Naples in Campania, southern Italy. In antiquity the bay was ringed by towns and luxury villas: Neapolis (Naples), Herculaneum, Pompeii, Stabiae, Oplontis and the naval base of Misenum at the northern tip of the bay [WP-Eruption79]. The Roman elite treated the coast as a resort, and Herculaneum in particular was a wealthy seaside town of roughly 5,000 inhabitants, smaller and richer than Pompeii, with a high density of houses clad in colored marble [WP-Herculaneum].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Mount Vesuvius seen from the A56 motorway in Naples, 2010. The volcano rises above the modern city that now covers much of the ancient bay shore.
+> **Photograph (not stored in git; see the caption for source and license):** Mount Vesuvius seen from the A56 motorway in Naples, 2010. The volcano rises above the modern city that now covers much of the ancient bay shore.
 *Figure 1.1. Vesuvius from the A56 motorway, Naples, 2010. Photo: DimiTalen, via Wikimedia Commons. License: CC0 (public domain dedication). <https://commons.wikimedia.org/wiki/File:View_of_the_Vesuvius_from_the_Autostrada_A56_in_Naples,_2010.jpg>*
 
 The region was seismically active long before the eruption. A major earthquake damaged Pompeii and other towns on 5 February 62 CE, and some of that damage had still not been repaired seventeen years later. A smaller earthquake in 64 CE is recorded by Suetonius and Tacitus. Minor tremors in the days before the eruption went unheeded; Pliny the Younger remarked that tremors "were not particularly alarming because they are frequent in Campania" [WP-Eruption79].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Engraved map of the region around Vesuvius, published as Plate VI in a 1770 letter by William Hamilton, showing the volcano, the bay and the surrounding towns.
+> **Photograph (not stored in git; see the caption for source and license):** Engraved map of the region around Vesuvius, published as Plate VI in a 1770 letter by William Hamilton, showing the volcano, the bay and the surrounding towns.
 *Figure 1.2. Map of the region surrounding Vesuvius, Plate VI from a letter by William Hamilton (1770). Unknown engraver. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Map_around_Vesuvius_1770_plate6_from_William_Hamilton.jpg>*
 
 ## The course of the eruption
 
 Modern reconstructions differ in detail but agree on the overall shape [WP-Eruption79]:
 
-1. **Plinian phase (first day).** Around midday or early afternoon, Vesuvius sent a column of pumice, ash and gas to a height usually given as 15 to 33 km. Pliny the Younger compared its spreading top to an umbrella pine. Prevailing winds carried the fall to the south and southeast, burying Pompeii under about 2.8 m of pumice and ash and collapsing roofs. Herculaneum, to the west, received only a few centimetres of ash at this stage, which nevertheless prompted many inhabitants to flee [WP-Herculaneum].
+1. **Plinian phase (first day).** Around midday or early afternoon, Vesuvius sent a column of pumice, ash and gas to a height usually given as 15 to 33 km. Pliny the Younger compared its spreading top to an umbrella pine. Prevailing winds carried the fall to the south and southeast, burying Pompeii under about 2.8 m of pumice and ash and collapsing roofs. Herculaneum, to the west, received only a few centimeters of ash at this stage, which nevertheless prompted many inhabitants to flee [WP-Herculaneum].
 2. **Pelean phase (night and second morning).** When the eruption column collapsed, pyroclastic density currents (surges and flows of hot gas and debris) raced down the flanks. The first surge reached Herculaneum around 1 am on the second day, moving at an estimated 160 km/h. A succession of six flows and surges buried the town to a depth of about 20 m [WP-Herculaneum]. Later surges destroyed Pompeii.
 3. **Waning phase.** By the evening of the second day the eruption had ceased to affect Misenum, leaving only haze [WP-Eruption79].
 
 The stratigraphic study by Sigurdsson, Cashdollar and Sparks (1982) identified alternating Vesuvian (Plinian) and Pelean phases, and a later study by Zanella and colleagues (2006) estimated deposit temperatures from the magnetism of lithic, tile and plaster fragments: 180 to 260 C for surges at Pompeii, with higher values outside the town [WP-Eruption79]. Research on victims has concluded that intense heat, not suffocation, killed people within about 10 km, with exposures of at least 250 C [WP-Herculaneum].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Karl Bryullov's painting The Last Day of Pompeii (1830 to 1833), a Romantic depiction of the eruption.
+> **Photograph (not stored in git; see the caption for source and license):** Karl Bryullov's painting The Last Day of Pompeii (1830 to 1833), a Romantic depiction of the eruption.
 *Figure 1.3. Karl Bryullov, The Last Day of Pompeii (1830 to 1833). A nineteenth-century imaginative depiction, not a historical record. Via Wikimedia Commons (Google Art Project). License: public domain. <https://commons.wikimedia.org/wiki/File:Karl_Brullov_-_The_Last_Day_of_Pompeii_-_Google_Art_Project.jpg>*
 
 ## The eyewitness: Pliny the Younger
@@ -74,11 +78,11 @@ The only surviving eyewitness account is a pair of letters written by Pliny the 
 
 Pliny the Elder matters to this book twice over. Besides dying in the eruption, he left the most detailed ancient description of how papyrus was made and graded (*Natural History* 13.68 to 89), which is discussed in [Chapter 4](#ch-papyrus).
 
-> **Photograph (not stored in git; see the caption for source and licence):** Statue of Pliny the Elder on the Loggia del Consiglio, Verona.
+> **Photograph (not stored in git; see the caption for source and license):** Statue of Pliny the Elder on the Loggia del Consiglio, Verona.
 *Figure 1.4. Statue of Pliny the Elder, Loggia del Consiglio, Piazza dei Signori, Verona. Photo: Dimitris Kamaras, via Wikimedia Commons. License: CC BY 2.0. <https://commons.wikimedia.org/wiki/File:Pliny_the_Elder,_Loggia_del_Consiglio,_Piazza_dei_Signori,_Verona_(37520060770)_(cropped).jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** The Younger Pliny Reproved, an eighteenth-century print showing Pliny and his mother at Misenum during the eruption.
-*Figure 1.5. The Younger Pliny Reproved, colour print by Thomas Burke after Angelica Kauffmann (eighteenth century). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:The_Younger_Pliny_Reproved.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** The Younger Pliny Reproved, an eighteenth-century print showing Pliny and his mother at Misenum during the eruption.
+*Figure 1.5. The Younger Pliny Reproved, color print by Thomas Burke after Angelica Kauffmann (eighteenth century). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:The_Younger_Pliny_Reproved.jpg>*
 
 ## When did it happen? The date controversy
 
@@ -97,42 +101,44 @@ None of these is conclusive on its own. The graffito has no year, and charcoal i
 
 Pompeii was buried mainly by falling pumice and ash, about 4 m deep; Herculaneum was buried by about 20 m of pyroclastic surge and flow deposits that later consolidated into tuff [WP-Herculaneum]. The hot, oxygen-poor surges did not burn organic material so much as carbonize it: wooden roofs, beds, doors, food and papyrus survive at Herculaneum in charred form. Papyrus rolls exposed to the surges were converted almost instantly into compact, fragile, blackened cylinders and then sealed against air and water for nearly 1,700 years [WP-HercPapyri].
 
-The temperature the rolls experienced is itself a research question. Estimates of the deposit temperature at Herculaneum range from about 240 to 370 C in one study and average values near 270 and 350 C in others; laboratory and modelling work on papyrus suggests that a short exposure of the order of 320 C is enough to produce the observed carbonization (see [Chapter 4](#ch-papyrus) and [Caricchi2014] [Giordano2018]). The short duration of heating matters: it left the layered structure of the roll intact enough to be imaged, which is the physical precondition for everything else in this book.
+The temperature the rolls experienced is itself a research question. Estimates of the deposit temperature at Herculaneum range from about 240 to 370 C in one study and average values near 270 and 350 C in others; laboratory and modeling work on papyrus suggests that a short exposure of the order of 320 C is enough to produce the observed carbonization (see [Chapter 4](#ch-papyrus) and [Caricchi2014] [Giordano2018]). The short duration of heating matters: it left the layered structure of the roll intact enough to be imaged, which is the physical precondition for everything else in this book.
 
 ## Herculaneum after the eruption
 
-The town lay hidden until the early eighteenth century. According to the traditional account, it was rediscovered by chance in 1709 when a well was dug; the Prince d'Elbeuf tunnelled from the well bottom into what later proved to be the theatre, and removed sculptures [WP-Herculaneum]. Systematic but destructive excavation by tunnel began in 1738 under Charles of Bourbon, King of Naples (later Charles III of Spain), with the military engineers Roque Joaquin de Alcubierre and, from 1749, Karl Jakob Weber. Pompeii, buried under a much thinner layer, was found in 1748, identified in 1763, and soon drew attention away from Herculaneum [WP-Herculaneum]. Open-air excavation at Herculaneum resumed in 1828, continued intermittently through the nineteenth century, and was greatly extended by Amedeo Maiuri between 1927 and 1942. In 1980 and 1981 excavations at the ancient shoreline found the skeletons of hundreds of people who had sheltered in the vaulted "boat houses" [WP-Herculaneum]. More than 75 percent of the town remains buried under modern Ercolano and Portici.
+The town lay hidden until the early eighteenth century. According to the traditional account, it was rediscovered by chance in 1709 when a well was dug; the Prince d'Elbeuf tunneled from the well bottom into what later proved to be the theater, and removed sculptures [WP-Herculaneum]. Systematic but destructive excavation by tunnel began in 1738 under Charles of Bourbon, King of Naples (later Charles III of Spain), with the military engineers Roque Joaquin de Alcubierre and, from 1749, Karl Jakob Weber. Pompeii, buried under a much thinner layer, was found in 1748, identified in 1763, and soon drew attention away from Herculaneum [WP-Herculaneum]. Open-air excavation at Herculaneum resumed in 1828, continued intermittently through the nineteenth century, and was greatly extended by Amedeo Maiuri between 1927 and 1942. In 1980 and 1981 excavations at the ancient shoreline found the skeletons of hundreds of people who had sheltered in the vaulted "boat houses" [WP-Herculaneum]. More than 75 percent of the town remains buried under modern Ercolano and Portici.
 
-> **Photograph (not stored in git; see the caption for source and licence):** The excavated area of ancient Herculaneum below the modern town of Ercolano, 2001.
+> **Photograph (not stored in git; see the caption for source and license):** The excavated area of ancient Herculaneum below the modern town of Ercolano, 2001.
 *Figure 1.6. The excavations at Herculaneum (Ercolano), March 2001. The modern town sits on top of about 20 m of volcanic deposit. Photo: Lalupa, via Wikimedia Commons. License: CC BY-SA 3.0. <https://commons.wikimedia.org/wiki/File:010319_25_Ercolano_scavi.JPG>*
 
 ## Key facts
 
 | Item | Value | Source |
 |---|---|---|
-| Year | 79 CE (day disputed; 24 August traditional, autumn favoured by much recent work) | [WP-Eruption79] |
+| Year | 79 CE (day disputed; 24 August traditional, autumn favored by much recent work) | [WP-Eruption79] |
 | Column height | 15 to 33 km (estimates vary) | [WP-Eruption79] [WP-Herculaneum] |
 | Burial depth at Herculaneum | about 20 m (up to 30 m at the Villa of the Papyri) | [WP-Herculaneum] [WP-Villa] |
 | Burial depth at Pompeii | about 4 m | [WP-Herculaneum] |
 | First surge speed at Herculaneum | about 160 km/h | [WP-Herculaneum] |
 | Eyewitness | Pliny the Younger, two letters to Tacitus (Epistulae 6.16 and 6.20) | [WP-PlinyYounger] |
-| Herculaneum rediscovered | 1709 (well dig), systematic tunnelling from 1738 | [WP-Herculaneum] |
+| Herculaneum rediscovered | 1709 (well dig), systematic tunneling from 1738 | [WP-Herculaneum] |
 
+
+<a id="ch-villa"></a>
 
 # The Villa of the Papyri and its Library {#ch-villa}
 
-> **Chapter summary.** The Villa of the Papyri, on the coast just outside Herculaneum, held the only library from the Graeco-Roman world that survives as a physical collection. Tunnellers working for the Bourbon kings of Naples found its carbonized rolls between 1752 and 1754. The library is dominated by Epicurean philosophy, above all by the works of Philodemus of Gadara. This chapter covers the villa, its probable owner, the discovery of the papyri, the inventory numbers and what the library contains.
+> **Chapter summary.** The Villa of the Papyri, on the coast just outside Herculaneum, held the only library from the Graeco-Roman world that survives as a physical collection. Tunnelers working for the Bourbon kings of Naples found its carbonized rolls between 1752 and 1754. The library is dominated by Epicurean philosophy, above all by the works of Philodemus of Gadara. This chapter covers the villa, its probable owner, the discovery of the papyri, the inventory numbers and what the library contains.
 
 ## The building
 
 The villa (Italian *Villa dei Papiri*, also called *Villa dei Pisoni*, and *Villa Suburbana* in early excavation records) was one of the most luxurious houses of Herculaneum and of the Roman world. Before 79 CE it stretched for more than 250 m along the shore of the Bay of Naples, with four terraced levels below the main floor, which stood about 16 m above ancient sea level [WP-Villa]. Its plan follows an expanded Campanian *villa suburbana*: an entrance, an atrium, a first peristyle with ten columns on each side, and a large second peristyle with a long pool, gardens and walkways. At least 80 sculptures of high quality were recovered there, including the bronze Seated Hermes found in 1758, a bronze herm after the Doryphoros of Polykleitos and five bronze "dancers" in Doric peplos. It is the largest collection of Greek and Roman sculpture ever found in a single context [WP-Villa].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Ethel Ross Barker's 1908 reconstruction drawing of the Villa of the Papyri, showing colonnades around a long garden pool.
+> **Photograph (not stored in git; see the caption for source and license):** Ethel Ross Barker's 1908 reconstruction drawing of the Villa of the Papyri, showing colonnades around a long garden pool.
 *Figure 2.1. The Villa of the Papyri "restored", from Ethel Ross Barker, Buried Herculaneum (1908). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Villa-of-the-Papyri-restored-1.jpg>*
 
 The volcanic fill over the villa is up to 30 m thick [WP-Villa]. Most of the building remains underground. Karl Weber's plan, drawn while the villa was explored room by room through tunnels and holes punched through frescoed walls, is still the basis of what is known of its layout [WP-Weber]. That plan was the model for the Getty Villa museum in Malibu, California, which is a reproduction of the villa [WP-Villa].
 
-> **Photograph (not stored in git; see the caption for source and licence):** The outer peristyle garden of the Getty Villa in California, a modern reconstruction based on the plan of the Villa of the Papyri.
+> **Photograph (not stored in git; see the caption for source and license):** The outer peristyle garden of the Getty Villa in California, a modern reconstruction based on the plan of the Villa of the Papyri.
 *Figure 2.2. The outer peristyle garden of the Getty Villa, Pacific Palisades, Los Angeles: a modern reconstruction based on Weber's plan of the Villa of the Papyri. Photo: Dale Cruse, via Wikimedia Commons. License: CC BY 4.0. <https://commons.wikimedia.org/wiki/File:Getty_Villa_-_Outer_Peristyle_Garden_-_Pacific_Palisades.jpg>*
 
 ## The owner
@@ -154,9 +160,9 @@ The library room had wooden shelving around the walls and a central free-standin
 
 At first the rolls looked like lumps of charcoal or burnt branches, and some were thrown away or burned. Only when traces of letters were noticed on a blackened mass did the excavators realize what they had [WP-HercPapyri]. On the advice of the minister Bernardo Tanucci, the king set up a commission to study them [WP-Villa].
 
-Work in the villa tunnels was carried out first by Roque Joaquin de Alcubierre and then by Karl Jakob Weber (1712 to 1764), a Swiss military engineer who joined the excavations in late 1749. Weber worked room by room with an interest in context that has made him a forerunner of scientific archaeology [WP-Weber]. Tunnelling stopped in 1765 after complaints from residents above, and the exact position of the villa was lost for two centuries. It was relocated in the 1980s from eighteenth-century records, reached through an ancient well in 1986, and partly exposed in open excavation in the 1990s, when two previously unknown lower floors with frescoes in place were found [WP-Villa]. As of 2012 about 2,800 m2 of the villa remained to be excavated, and Italian authorities have favoured conservation over further digging [WP-Villa].
+Work in the villa tunnels was carried out first by Roque Joaquin de Alcubierre and then by Karl Jakob Weber (1712 to 1764), a Swiss military engineer who joined the excavations in late 1749. Weber worked room by room with an interest in context that has made him a forerunner of scientific archaeology [WP-Weber]. Tunneling stopped in 1765 after complaints from residents above, and the exact position of the villa was lost for two centuries. It was relocated in the 1980s from eighteenth-century records, reached through an ancient well in 1986, and partly exposed in open excavation in the 1990s, when two previously unknown lower floors with frescoes in place were found [WP-Villa]. As of 2012 about 2,800 m2 of the villa remained to be excavated, and Italian authorities have favored conservation over further digging [WP-Villa].
 
-> **Photograph (not stored in git; see the caption for source and licence):** The excavated portion of the Villa of the Papyri, photographed in May 2000.
+> **Photograph (not stored in git; see the caption for source and license):** The excavated portion of the Villa of the Papyri, photographed in May 2000.
 *Figure 2.3. Ruins of the Villa of the Papyri at the archaeological site of Herculaneum, May 2000. Photo: Erik Anderson, via Wikimedia Commons. License: CC BY-SA 3.0. <https://commons.wikimedia.org/wiki/File:Villaofthepapyri.jpg>*
 
 ## How many papyri?
@@ -166,10 +172,10 @@ Counts depend on what is counted, because one roll can be broken into several in
 | Count | What it measures | Source |
 |---|---|---|
 | more than 1,800 | carbonized papyri in general accounts | [WP-Villa] [Bukreeva2016] |
-| 1,756 | manuscripts catalogued up to 1855 | Barker, via [WP-HercPapyri] |
+| 1,756 | manuscripts cataloged up to 1855 | Barker, via [WP-HercPapyri] |
 | 1,806 | total after later finds (Barker, 1908), of which 341 almost entire, 500 charred fragments and 965 intermediate | via [WP-HercPapyri] |
 | 1,814 | the "official list" of rolls and fragments | [WP-HercPapyri] |
-| 1,826 | inventory reported in the 1990s; also Cavallo's catalogue base | [WP-HercPapyri] [Cavallo1983] |
+| 1,826 | inventory reported in the 1990s; also Cavallo's catalog base | [WP-HercPapyri] [Cavallo1983] |
 | more than 800 | inventoried items still rolled (2026) | [Angelotti2026b] |
 
 Most of the collection is kept in the *Officina dei Papiri Ercolanesi* of the National Library in Naples [WP-HercPapyri] [WP-Philodemus]. Smaller groups left Naples as diplomatic gifts: in 1802 King Ferdinand IV offered six rolls to Napoleon Bonaparte, and they went to the Institut de France in Paris; in 1810 eighteen unrolled papyri went to the Prince of Wales (later George IV), who gave four to the Bodleian Library in Oxford; most of the rest are in the British Library [WP-HercPapyri]. The rolls in Paris carry the inventory label "PHerc. Paris" with a number. Scroll 1 of the Vesuvius Challenge is PHerc. Paris 4, one of these [Parsons2023].
@@ -182,7 +188,7 @@ Because the scrolls were written and collected before 79 CE, they preserve texts
 
 The Vesuvius Challenge has itself added to this list. Its published results include passages from PHerc. Paris 4 on pleasure (the 2023 Grand Prize), the title *Philodemus, On Vices* from PHerc. 172, with the book number read as "Book 1(?)" (May 2025), a complete reading of PHerc. 1667 as a Stoic ethical text naming the philosopher Aristocreon (June 2026), and the title *Philodemus, On Gods, Book 8* from PHerc. 139 (June 2026) [VC-FirstScroll] [VC-FirstTitle]. These are reported in [Chapter 10](#ch-2023) to [Chapter 13](#ch-2026).
 
-> **Photograph (not stored in git; see the caption for source and licence):** Herm-style portrait head of Epicurus, a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome.
+> **Photograph (not stored in git; see the caption for source and license):** Herm-style portrait head of Epicurus, a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome.
 *Figure 2.4. Portrait of Epicurus (born 342 or 341 BCE), a Roman copy of a Greek original, Palazzo Massimo alle Terme, Rome (inv. 197306). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Epicurus_Massimo_Inv197306.jpg>*
 
 ## Epicureanism in brief
@@ -212,48 +218,50 @@ A recurring question is whether more papyri lie in the unexcavated lower levels 
 | Probable owner | L. Calpurnius Piso Caesoninus (not certain) | [WP-Villa] |
 | Papyri found | 1752 to 1754, in four find spots | [WP-HercPapyri] |
 | Excavator | Karl Jakob Weber, under Alcubierre, 1749 to 1764 | [WP-Weber] |
-| Tunnelling ended | 1765 | [WP-Villa] |
+| Tunneling ended | 1765 | [WP-Villa] |
 | Rediscovered | 1980s; reached in 1986 | [WP-Villa] |
 | Main holding | Officina dei Papiri, National Library, Naples | [WP-HercPapyri] |
 | Other holdings | Institut de France (Paris), Bodleian Library (Oxford), British Library (London) | [WP-HercPapyri] |
 
 
+<a id="ch-unrolling"></a>
+
 # Two and a Half Centuries of Unrolling {#ch-unrolling}
 
-> **Chapter summary.** From 1752 to the end of the twentieth century every attempt to read a Herculaneum roll involved opening it physically, and every method destroyed part of what it revealed. Slicing, Antonio Piaggio's thread machine (1756), chemical treatments, the Oslo peeling method and multispectral photography each recovered texts at a cost. From the 2000s, X-ray tomography offered a non-destructive route, culminating in the research programme of Brent Seales and the EduceLab team that the Vesuvius Challenge built on in 2023.
+> **Chapter summary.** From 1752 to the end of the twentieth century every attempt to read a Herculaneum roll involved opening it physically, and every method destroyed part of what it revealed. Slicing, Antonio Piaggio's thread machine (1756), chemical treatments, the Oslo peeling method and multispectral photography each recovered texts at a cost. From the 2000s, X-ray tomography offered a non-destructive route, culminating in the research program of Brent Seales and the EduceLab team that the Vesuvius Challenge built on in 2023.
 
 ## Slicing and scraping (1750s)
 
-The first attempts to read the rolls were destructive in the most direct way. Camillo Paderni, keeper of the royal museum at Portici, cut rolls in half lengthwise and copied what was legible on each exposed layer before scraping it away to reach the next. Hundreds of rolls were treated this way and destroyed in the process [WP-HercPapyri]. Other experiments, according to accounts collected by Antonio de Simone and Richard Janko, included rose water, mercury, "vegetable gas", sulphur compounds, papyrus juice, and a mixture of ethanol, glycerin and warm water [WP-HercPapyri].
+The first attempts to read the rolls were destructive in the most direct way. Camillo Paderni, keeper of the royal museum at Portici, cut rolls in half lengthwise and copied what was legible on each exposed layer before scraping it away to reach the next. Hundreds of rolls were treated this way and destroyed in the process [WP-HercPapyri]. Other experiments, according to accounts collected by Antonio de Simone and Richard Janko, included rose water, mercury, "vegetable gas", sulfur compounds, papyrus juice, and a mixture of ethanol, glycerin and warm water [WP-HercPapyri].
 
 The opened outer layers of a roll are called *scorze* (shells). The habit of removing and discarding the innermost turns when a scorza was cut open is one reason why the ends of many opened rolls do not survive [Capasso-Titoli].
 
 ## Piaggio's machine (1756)
 
-Antonio Piaggio (1713 to about 1796), a priest and curator of manuscripts at the Vatican Library, was brought to Naples and in 1756 built a machine that unrolled carbonized papyrus by attaching silk threads to the edge of the outermost layer and drawing it slowly upward on a frame while the roll turned below [WP-Piaggio]. The first roll took about four years, advancing millimetres per day [WP-HercPapyri]. The method damaged the beginning of every roll it opened, and as text was exposed it often faded, so draughtsmen copied each column as it appeared. Those copies, the *disegni*, are now primary witnesses for texts whose originals have since decayed [WP-HercPapyri].
+Antonio Piaggio (1713 to about 1796), a priest and curator of manuscripts at the Vatican Library, was brought to Naples and in 1756 built a machine that unrolled carbonized papyrus by attaching silk threads to the edge of the outermost layer and drawing it slowly upward on a frame while the roll turned below [WP-Piaggio]. The first roll took about four years, advancing millimeters per day [WP-HercPapyri]. The method damaged the beginning of every roll it opened, and as text was exposed it often faded, so draftsmen copied each column as it appeared. Those copies, the *disegni*, are now primary witnesses for texts whose originals have since decayed [WP-HercPapyri].
 
 Piaggio later spent 1779 to 1795 keeping a diary of the activity of Vesuvius for the British envoy Sir William Hamilton; the diaries are in the archives of the Royal Society [WP-Piaggio].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Engraving of Abbot Piaggio's machine for unrolling papyri (1756), showing the frame, threads and roll.
+> **Photograph (not stored in git; see the caption for source and license):** Engraving of Abbot Piaggio's machine for unrolling papyri (1756), showing the frame, threads and roll.
 *Figure 3.1. Abbot Antonio Piaggio's device for unrolling papyri (1756), engraving by Giacomo Castrucci. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Abbot_Piaggios_machine_Device-to-unroll-papyri_1756_Vatican.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** A plate from Ethel Ross Barker's Buried Herculaneum (1908) showing Piaggio's unrolling machines in use.
+> **Photograph (not stored in git; see the caption for source and license):** A plate from Ethel Ross Barker's Buried Herculaneum (1908) showing Piaggio's unrolling machines in use.
 *Figure 3.2. Abbot Piaggio's machine to unfold Herculaneum papyri, plate from Ethel Ross Barker, Buried Herculaneum (1908). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Abbot-Piaggio-machine-Herculaneum-papyri.jpg>*
 
 ## The Officina dei Papiri
 
 The unrolling and copying workshop in Naples, the *Officina dei Papiri Ercolanesi*, continued Piaggio's method for more than a century. In 1858 the Naples press of Fibreno published *Tesoro letterario di Ercolano, ossia la reale officina dei papiri ercolanesi*, an illustrated description of the workshop with engravings by Giacomo Castrucci [WP-HercPapyri]. Several of its plates are reproduced here because they show how the rolls, the machines and the published facsimiles looked in the nineteenth century.
 
-> **Photograph (not stored in git; see the caption for source and licence):** Frontispiece emblem from Tesoro letterario di Ercolano (1858), showing a papyrus roll in an unrolling frame inside a laurel wreath with the motto "In primum Herculanensium voluminum".
+> **Photograph (not stored in git; see the caption for source and license):** Frontispiece emblem from Tesoro letterario di Ercolano (1858), showing a papyrus roll in an unrolling frame inside a laurel wreath with the motto "In primum Herculanensium voluminum".
 *Figure 3.3. Emblem from Tesoro letterario di Ercolano, ossia la reale officina dei papiri ercolanesi (Naples, 1858), engraving by Giacomo Castrucci. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Tesoro_letterario_di_Ercolano_p05.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Engraved bust of Epicurus from Tesoro letterario di Ercolano (1858).
+> **Photograph (not stored in git; see the caption for source and license):** Engraved bust of Epicurus from Tesoro letterario di Ercolano (1858).
 *Figure 3.4. Bust of Epicurus, plate from Tesoro letterario di Ercolano (1858), Giacomo Castrucci. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Tesoro_letterario_di_Ercolano_p37.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Engraved facsimile of a column of Greek text from a Herculaneum papyrus, from Tesoro letterario di Ercolano (1858).
+> **Photograph (not stored in git; see the caption for source and license):** Engraved facsimile of a column of Greek text from a Herculaneum papyrus, from Tesoro letterario di Ercolano (1858).
 *Figure 3.5. Engraved facsimile of a column of Greek text, from Tesoro letterario di Ercolano (1858), Giacomo Castrucci. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Tesoro_letterario_di_Ercolano_p60a.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Engraved plan from Tesoro letterario di Ercolano (1858).
+> **Photograph (not stored in git; see the caption for source and license):** Engraved plan from Tesoro letterario di Ercolano (1858).
 *Figure 3.6. Engraved plan, from Tesoro letterario di Ercolano (1858), Giacomo Castrucci. Via Wikimedia Commons. License: public domain. The Commons description does not identify the subject of this plate; it is reproduced as an example of the volume's illustrations. <https://commons.wikimedia.org/wiki/File:Tesoro_letterario_di_Ercolano_p91.jpg>*
 
 ## Hayter, the Oxford facsimiles and Davy (1800 to 1820)
@@ -262,13 +270,13 @@ In 1802 King Ferdinand IV appointed the Reverend John Hayter to assist. Between 
 
 By the middle of the twentieth century only 585 rolls or fragments had been completely unrolled and 209 partly unrolled. Of the unrolled papyri, about 200 had been deciphered and published and about 150 deciphered only [WP-HercPapyri].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Pencil drawing of a column of Philodemus, On Poems 5, from PHerc. 1425, drawn by Giuseppe Casanova around 1807.
+> **Photograph (not stored in git; see the caption for source and license):** Pencil drawing of a column of Philodemus, On Poems 5, from PHerc. 1425, drawn by Giuseppe Casanova around 1807.
 *Figure 3.7. Disegno (copy drawing) of PHerc. 1425, Philodemus, On Poems 5, column 24, drawn by Giuseppe Casanova around 1807. Drawings like this are often the only record of text that later decayed. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Herculaneum_papyrus_1425.png>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Lithographed copy of Herculaneum papyrus columns 157 to 152 published by Walter Scott.
-*Figure 3.8. Printed copy of a Herculaneum papyrus (labelled "Papyrus 157 to 152"), from the Oxford facsimile tradition as published by Walter Scott (1855 to 1925). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Herculanean_Rolls_-_Papyrus_157-152.png>*
+> **Photograph (not stored in git; see the caption for source and license):** Lithographed copy of Herculaneum papyrus columns 157 to 152 published by Walter Scott.
+*Figure 3.8. Printed copy of a Herculaneum papyrus (labeled "Papyrus 157 to 152"), from the Oxford facsimile tradition as published by Walter Scott (1855 to 1925). Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Herculanean_Rolls_-_Papyrus_157-152.png>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** A framed, opened Herculaneum papyrus fragment, PHerc. 1521, in the British Library: a dark sheet with faint columns of Greek text.
+> **Photograph (not stored in git; see the caption for source and license):** A framed, opened Herculaneum papyrus fragment, PHerc. 1521, in the British Library: a dark sheet with faint columns of Greek text.
 *Figure 3.9. Herculaneum Papyrus 1521, British Library, one of the opened papyri that left Naples in the early nineteenth century. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Heruclaneum_Papyrus_1521_f001r,_British_Library_01.jpg>*
 
 ## The Oslo method and CISPE (1969 onward)
@@ -281,18 +289,18 @@ Carbon ink on carbonized papyrus is black on black to the eye, but in the near i
 
 ## The turn to X-ray tomography (2007 to 2022)
 
-The modern programme rests on one idea: scan the closed roll, reconstruct it in three dimensions, and unwrap it in software. Its key steps, as summarized in the published literature [WP-HercPapyri] [Parsons2023]:
+The modern program rests on one idea: scan the closed roll, reconstruct it in three dimensions, and unwrap it in software. Its key steps, as summarized in the published literature [WP-HercPapyri] [Parsons2023]:
 
 - **2007 onward.** A team from the University of Kentucky led by computer scientist W. Brent Seales, working with the Institut de Papyrologie in Paris, studied Herculaneum material with X-ray and other methods [WP-HercPapyri].
 - **2009.** The Institut de France and the French CNRS imaged two intact rolls (including PHerc. Paris 4, the future Scroll 1) by laboratory micro-CT. The internal structure was visible but the carbon ink was not, and the windings were too compact for the automatic methods of the time. The roll lengths were estimated at 11 to 15 m [WP-HercPapyri]. The 2009 laboratory volume of PHerc. Paris 4 has a voxel size of 23.94 µm [Parsons2023].
 - **2015.** Mocella and colleagues reported letters in a rolled Herculaneum papyrus using X-ray phase-contrast tomography at a synchrotron, interpreting the ink as a relief on the surface [Mocella2015].
 - **2015 to 2016.** Seales's group virtually unwrapped the En-Gedi scroll, a charred Hebrew parchment from Israel, and recovered its Hebrew text; the reading was published in September 2016 [WP-HercPapyri] [VC-Tutorial]. En-Gedi's ink contains metal and shows clearly in CT, which made it an ideal first case.
 - **2016.** Bukreeva and colleagues applied phase-contrast tomography at 47 µm pixels to further rolls [Bukreeva2016]. Brun and colleagues and Tack and colleagues found lead in the ink of some Herculaneum papyri, overturning the assumption that all Herculaneum ink is pure carbon [Brun2016] [Tack2016].
-- **2019.** Parker, Parsons and colleagues (Seales's group) showed with machine learning on fragments and a phantom that carbon ink could be recovered from X-ray data even when invisible to the eye, and estimated that a voxel size of a few micrometres was needed [Parker2019]. PHerc. Paris 4 was scanned at the Diamond Light Source synchrotron near Oxford at 7.91 µm and 54 keV [Parsons2023].
+- **2019.** Parker, Parsons and colleagues (Seales's group) showed with machine learning on fragments and a phantom that carbon ink could be recovered from X-ray data even when invisible to the eye, and estimated that a voxel size of a few micrometers was needed [Parker2019]. PHerc. Paris 4 was scanned at the Diamond Light Source synchrotron near Oxford at 7.91 µm and 54 keV [Parsons2023].
 - **2021.** Stabile and colleagues described a virtual unfolding pipeline (segmentation, meshing, flattening) for opened fragments PHerc. 110 and 1103 [Stabile2021].
 - **2023.** Parsons and colleagues published *EduceLab-Scrolls*, an open dataset of scroll and fragment CT with aligned infrared photographs and ink labels, and reported fragment ink detection with a Dice score of 0.48 [Parsons2023]. That dataset became the starting data of the Vesuvius Challenge.
 
-> **Photograph (not stored in git; see the caption for source and licence):** Photographs of Herculaneum papyrus fragments PHerc. 1103 and PHerc. 110, one shown mounted in a sample holder, from Stabile et al. (2021).
+> **Photograph (not stored in git; see the caption for source and license):** Photographs of Herculaneum papyrus fragments PHerc. 1103 and PHerc. 110, one shown mounted in a sample holder, from Stabile et al. (2021).
 *Figure 3.10. Photographs of fragments PHerc. 1103 (a) and PHerc. 110 (b, c), contrast enhanced, from Stabile, Palermo, Bukreeva et al., "A computational platform for the virtual unfolding of Herculaneum Papyri", Scientific Reports 11 (2021). These are visible-light photographs, not CT data. Via Wikimedia Commons. License: CC BY 4.0. <https://commons.wikimedia.org/wiki/File:Herculaneum_papyri.jpg>*
 
 ## Why the problem stayed unsolved
@@ -325,17 +333,19 @@ The Vesuvius Challenge, founded in March 2023, attacked all three with prizes, o
 | 2023 | EduceLab-Scrolls dataset; Vesuvius Challenge launched | [Parsons2023] [VC-Launch] |
 
 
+<a id="ch-papyrus"></a>
+
 # Papyrus: from Plant to Roll {#ch-papyrus}
 
-> **Chapter summary.** Papyrus is made from the pith of the sedge *Cyperus papyrus*, cut into strips, laid in two layers at right angles, pressed and dried. Sheets were glued edge to edge into rolls. Carbonization at Herculaneum shrank each sheet to about 0.15 mm, and the fibre structure that survives is the main thing that CT sees. This chapter collects the measured facts about the plant, its manufacture and the physical structure of a carbonized roll, with the voxel arithmetic that links them to scanning.
+> **Chapter summary.** Papyrus is made from the pith of the sedge *Cyperus papyrus*, cut into strips, laid in two layers at right angles, pressed and dried. Sheets were glued edge to edge into rolls. Carbonization at Herculaneum shrank each sheet to about 0.15 mm, and the fiber structure that survives is the main thing that CT sees. This chapter collects the measured facts about the plant, its manufacture and the physical structure of a carbonized roll, with the voxel arithmetic that links them to scanning.
 
-Throughout this chapter, numbers are labelled with their condition: **fresh** (living plant), **replica** (modern experimental papyrus), **ancient** (surviving ancient papyri) or **carbonized** (Herculaneum material). They should not be mixed without care.
+Throughout this chapter, numbers are labeled with their condition: **fresh** (living plant), **replica** (modern experimental papyrus), **ancient** (surviving ancient papyri) or **carbonized** (Herculaneum material). They should not be mixed without care.
 
 ## The plant
 
 *Cyperus papyrus* L. is a sedge (family Cyperaceae), native to central and tropical Africa including Madagascar. It was cultivated in Egypt from ancient times and is sometimes naturalized around the Mediterranean; it has almost disappeared from the lower Nile [Vaughan2011]. It grows from sea level to about 2,500 m and uses C4 photosynthesis [Vaughan2011]. Pliny the Elder places it in the marshes of Egypt or in still Nile water no deeper than two cubits [Pliny-NH13, 13.71]. The best-known European stands are in Sicily, where modern papyrus making at Siracusa underlies a widely used replica method; whether the Sicilian plants are native or introduced is **unverified** in the sources consulted [Waly2001].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Cyperus papyrus plants with tall green stems and umbrella-like flower heads.
+> **Photograph (not stored in git; see the caption for source and license):** Cyperus papyrus plants with tall green stems and umbrella-like flower heads.
 *Figure 4.1. Cyperus papyrus. Photo: Krzysztof Ziarnek (Kenraiz), via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Cyperus_papyrus_kz07.jpg>*
 
 | Quantity | Value | Condition | Source |
@@ -344,8 +354,8 @@ Throughout this chapter, numbers are labelled with their condition: **fresh** (l
 | Culm cross-section | three-sided (trigonous) | fresh | [Vaughan2011] [Pliny-NH13] |
 | Stem length according to Pliny | at most 10 cubits | ancient text | [Pliny-NH13] |
 | Rhizome thickness | 2 to 6 cm | fresh | [Vaughan2011] |
-| Fibre cell length | 1.8 mm (range 1 to 4) | fresh | [Vaughan2011] |
-| Fibre cell width | 12 µm (range 8 to 25) | fresh | [Vaughan2011] |
+| Fiber cell length | 1.8 mm (range 1 to 4) | fresh | [Vaughan2011] |
+| Fiber cell width | 12 µm (range 8 to 25) | fresh | [Vaughan2011] |
 | Vascular bundle spacing | 1.2 mm mean (0.6 to 2.0) | fresh | [Scora1991] |
 
 ### The pith
@@ -369,7 +379,7 @@ Bausch and colleagues found that ancient papyri dated from 200 BCE to 800 CE con
 
 Pliny's *Natural History* 13.68 to 89 is the only detailed ancient description of papyrus manufacture [Pliny-NH13]. The key steps, paraphrased from the Latin:
 
-1. **Splitting (13.74).** The stem is split with a point into very thin but as wide as possible strips (*philyrae*); the best come from the centre.
+1. **Splitting (13.74).** The stem is split with a point into very thin but as wide as possible strips (*philyrae*); the best come from the center.
 2. **Weaving (13.77).** All papyrus is "woven" on a board wetted with Nile water. A lengthwise layer is laid first and trimmed, then a cross layer on top.
 3. **Pressing and drying (13.77).** The sheets are pressed and dried in the sun, then joined into a roll, in descending order of quality, never more than twenty to a *scapus*.
 4. **Grading (13.78).** Quality is judged by thinness, density, whiteness and smoothness.
@@ -388,9 +398,9 @@ Pliny's *Natural History* 13.68 to 89 is the only detailed ancient description o
 | Claudia (after reform) | 1 foot | about 29.6 cm |
 | macrocollum | 1 cubit | not converted |
 
-Source: [Pliny-NH13], conversion using the standard Roman digit [WP-RomanUnits]. **Caution:** whether these widths refer to the strip, the finished sheet or the roll height, and what exactly a *scapus* is, are long-standing debates in the specialist literature (Lewis 1974; Hendriks 1980), which were not consulted directly for this book. The converted centimetres are arithmetic, not measurements.
+Source: [Pliny-NH13], conversion using the standard Roman digit [WP-RomanUnits]. **Caution:** whether these widths refer to the strip, the finished sheet or the roll height, and what exactly a *scapus* is, are long-standing debates in the specialist literature (Lewis 1974; Hendriks 1980), which were not consulted directly for this book. The converted centimeters are arithmetic, not measurements.
 
-> **Photograph (not stored in git; see the caption for source and licence):** A modern demonstration of papyrus making: strips laid in two layers on a board.
+> **Photograph (not stored in git; see the caption for source and license):** A modern demonstration of papyrus making: strips laid in two layers on a board.
 *Figure 4.2. Making papyrus: strips laid in crossed layers before pressing (modern demonstration). Photo: FrogUnderALilyPad, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Making_papyrus.jpg>*
 
 ## Modern reconstructions
@@ -416,16 +426,16 @@ This disagreement is unresolved. For CT the question matters because a paste lay
 
 ## Recto, verso and the roll
 
-A sheet consists of two layers of strips at right angles [Bonnerot-CSMC] [Scora1991] [Parsons2023]. The side with fibres running horizontally (parallel to the length of the roll) is the **recto**. It was written first and rolled inward; the **verso** shows vertical fibres [VC-OpenProblems2026] [Bonnerot-CSMC]. Text runs in columns along the horizontal fibres [Bukreeva2016].
+A sheet consists of two layers of strips at right angles [Bonnerot-CSMC] [Scora1991] [Parsons2023]. The side with fibers running horizontally (parallel to the length of the roll) is the **recto**. It was written first and rolled inward; the **verso** shows vertical fibers [VC-OpenProblems2026] [Bonnerot-CSMC]. Text runs in columns along the horizontal fibers [Bukreeva2016].
 
 Sheets were joined into a roll by overlapping and gluing their edges:
 
 - a **kollema** (plural kollemata) is one sheet within a roll; the **kollesis** is the glued join;
-- the **protokollon** is the first sheet, often turned so its fibres run vertically on the inside, protecting the start of the roll;
+- the **protokollon** is the first sheet, often turned so its fibers run vertically on the inside, protecting the start of the roll;
 - the **eschatokollion** is the last sheet;
 - an **agraphon** is an unwritten stretch, used for the blank spaces at the start and end of a roll [Romano2023].
 
-Overlaps at a kollesis are 1 to 2 cm. Joins run in the same direction through a roll, and a standard commercial roll had 20 sheets [UCL-Rolls] [Pliny-NH13]. Fibres are often disturbed at a join, and a vertical crack 1 to 1.5 cm before it is often mistaken for the join itself [Janko-HowTo].
+Overlaps at a kollesis are 1 to 2 cm. Joins run in the same direction through a roll, and a standard commercial roll had 20 sheets [UCL-Rolls] [Pliny-NH13]. Fibers are often disturbed at a join, and a vertical crack 1 to 1.5 cm before it is often mistaken for the join itself [Janko-HowTo].
 
 | Roll (Egypt) | Kollema widths | Roll height | Source |
 |---|---|---|---|
@@ -463,22 +473,22 @@ Romano and colleagues found lead-drawn ruling lines by macro X-ray fluorescence 
 | Single unrolled sheet, PHerc. 164 | about 0.15 mm | carbonized | [Romano2023] |
 | Fragments studied by thermography | about 0.15 mm | carbonized | [Ceccarelli2025] |
 | Paris fragments "made of different sheets" | about 0.3 mm average | carbonized | [Tack2016] |
-| Thickness assumed for ink-detection neighbourhoods | 150 µm ("varies considerably") | carbonized | [Parsons2023] |
+| Thickness assumed for ink-detection neighborhoods | 150 µm ("varies considerably") | carbonized | [Parsons2023] |
 | Replica sheets (Siracusa method) | up to 0.50 mm | replica | [Waly2001] |
 | Pith slices before pressing | 2 to 4 mm; about 2 mm | replica | [Bausch2022] [Scora1991] |
 | Bulk density of a whole carbonized roll (5 cm diameter, 20 cm, 141 g) | 0.36 g/cm3 | carbonized | [Tack2016] |
-| Fibre ridge width on sheet surface (SEM) | 50 to 200 µm | replica | [Parker2019] |
+| Fiber ridge width on sheet surface (SEM) | 50 to 200 µm | replica | [Parker2019] |
 | Rounded cells between ridges | about 50 to 100 µm | replica | [Parker2019] |
 
-Two to four millimetres of wet pith become a sheet a few tenths of a millimetre thick, consistent with the more than sixfold increase in bundle density on pressing [Scora1991]. A carbonized sheet of about 0.15 mm is thinner than replica sheets of up to 0.5 mm; no source consulted separates shrinkage due to carbonization from original thinness. Carbonization also makes sheets bubble and delaminate, so they can appear to have more layers than they do [Parsons2023], and rolls are crushed, with layers hardest to separate in the innermost windings [Mocella2015].
+Two to four millimeters of wet pith become a sheet a few tenths of a millimeter thick, consistent with the more than sixfold increase in bundle density on pressing [Scora1991]. A carbonized sheet of about 0.15 mm is thinner than replica sheets of up to 0.5 mm; no source consulted separates shrinkage due to carbonization from original thinness. Carbonization also makes sheets bubble and delaminate, so they can appear to have more layers than they do [Parsons2023], and rolls are crushed, with layers hardest to separate in the innermost windings [Mocella2015].
 
 The 0.36 g/cm3 figure is a whole-roll bulk density that includes the gaps between wraps [Tack2016]. Ink and carbonized papyrus have "almost the same density" [VC-Tutorial5], so absorption contrast between them is very low and phase effects dominate [Angelotti2026a].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Scanning electron micrograph of the surface of a papyrus sheet at 100 times magnification, showing crossing fibre bundles.
-*Figure 4.3. Scanning electron image of the surface of a (modern) papyrus sheet, 100x. The ridged fibre structure is what CT resolves as the papyrus grid in carbonized rolls. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_100x.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** Scanning electron micrograph of the surface of a papyrus sheet at 100 times magnification, showing crossing fiber bundles.
+*Figure 4.3. Scanning electron image of the surface of a (modern) papyrus sheet, 100x. The ridged fiber structure is what CT resolves as the papyrus grid in carbonized rolls. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_100x.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Scanning electron micrograph of a papyrus sheet surface at 1,000 times magnification, showing individual fibre cells.
-*Figure 4.4. The same kind of surface at 1,000x, showing individual fibre cells. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_1,000x.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** Scanning electron micrograph of a papyrus sheet surface at 1,000 times magnification, showing individual fiber cells.
+*Figure 4.4. The same kind of surface at 1,000x, showing individual fiber cells. Image: Ckazilek, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Scanning_electron_image_of_surface_of_a_papyrus_sheet_-_1,000x.jpg>*
 
 ## Carbonization
 
@@ -493,7 +503,7 @@ Estimates of the thermal history of the papyri differ by method:
 
 Giordano and colleagues also report that the deposits stayed out of thermal equilibrium for more than 24 hours [Giordano2018]. The "few seconds" figure and a deposit that stayed hot for a day do not fit easily together; one reading is that rolls inside rooms or cases saw less heat than open deposits, so local histories varied. No source measures the temperature history of any particular roll.
 
-Bukreeva and colleagues distinguish the amorphous carbon of ink from the ordered carbon fibres of the substrate [Bukreeva2016]. That structural difference, rather than density, is a plausible physical basis for texture contrast between ink and papyrus. Very high resolution scans (0.55 µm) of carbonized fragments show fibres as cell walls around hollow lumens; these graphite-like structures act as tiny refractive lenses and degrade phase contrast, a phenomenon the Vesuvius Challenge calls "compressed-region haze" [VC-OpenProblems2026] [Angelotti2026a] (see [Chapter 7](#ch-xray)).
+Bukreeva and colleagues distinguish the amorphous carbon of ink from the ordered carbon fibers of the substrate [Bukreeva2016]. That structural difference, rather than density, is a plausible physical basis for texture contrast between ink and papyrus. Very high resolution scans (0.55 µm) of carbonized fragments show fibers as cell walls around hollow lumens; these graphite-like structures act as tiny refractive lenses and degrade phase contrast, a phenomenon the Vesuvius Challenge calls "compressed-region haze" [VC-OpenProblems2026] [Angelotti2026a] (see [Chapter 7](#ch-xray)).
 
 ## Voxel arithmetic
 
@@ -503,20 +513,22 @@ The table below converts physical sizes into voxels for the two voxel sizes most
 |---|---|---|---|---|
 | Ink layer on a phantom | 3 to 5 µm | 1.25 to 2.1 voxels | 0.38 to 0.63 voxels | [Parker2019] |
 | Apparent ink deposits (Scroll 1 at 2.4 µm) | 10 to 20 µm | 4.2 to 8.3 voxels | 1.3 to 2.5 voxels | [Angelotti2026a] |
-| Fibre cell width | 8 to 25 µm | 3.3 to 10.4 voxels | 1.0 to 3.2 voxels | [Vaughan2011] |
-| Fibre ridge | 50 to 200 µm | 21 to 83 voxels | 6.3 to 25 voxels | [Parker2019] |
+| Fiber cell width | 8 to 25 µm | 3.3 to 10.4 voxels | 1.0 to 3.2 voxels | [Vaughan2011] |
+| Fiber ridge | 50 to 200 µm | 21 to 83 voxels | 6.3 to 25 voxels | [Parker2019] |
 | Carbonized sheet | 150 µm | 62.5 voxels | 19 voxels | [Romano2023] |
 | Letter height | 3 to 4 mm | 1,250 to 1,667 voxels | 379 to 506 voxels | [Ceccarelli2025] |
 
-![Bar chart on a logarithmic scale comparing feature sizes from ink layers to letters with the 2.4 and 7.91 micrometre voxel sizes.](figures/charts/feature_scales.svg)
+![Bar chart on a logarithmic scale comparing feature sizes from ink layers to letters with the 2.4 and 7.91 micrometer voxel sizes.](figures/charts/feature_scales.svg)
 *Figure 4.5. Physical feature sizes of papyrus and ink compared with common voxel sizes (log scale). Chart by the editors from the sources in the table above. Data: data/feature_scales.csv. License: CC BY 4.0 (this book).*
 
-The practical lesson: at 7.91 µm a single fibre cell is one to three voxels and the thinnest ink layers are below one voxel, so ink detection at that resolution relies on texture and context rather than resolving the ink itself. At 2.4 µm fibres and apparent ink deposits span several voxels. Chapter 7 returns to the trade-off between resolution, field of view and data volume.
+The practical lesson: at 7.91 µm a single fiber cell is one to three voxels and the thinnest ink layers are below one voxel, so ink detection at that resolution relies on texture and context rather than resolving the ink itself. At 2.4 µm fibers and apparent ink deposits span several voxels. Chapter 7 returns to the trade-off between resolution, field of view and data volume.
 
+
+<a id="ch-inks"></a>
 
 # Inks and Writing {#ch-inks}
 
-> **Chapter summary.** Herculaneum scribes wrote with a reed pen in a carbon-based ink that is chemically almost identical to carbonized papyrus, which is why the ink is so hard to see in X-ray CT. Some Herculaneum ink contains lead, at tens of micrograms per square centimetre. Published estimates of ink thickness range from a few micrometres to more than 100 µm. This chapter sets out what is measured, what is disputed and why it matters for ink detection.
+> **Chapter summary.** Herculaneum scribes wrote with a reed pen in a carbon-based ink that is chemically almost identical to carbonized papyrus, which is why the ink is so hard to see in X-ray CT. Some Herculaneum ink contains lead, at tens of micrograms per square centimeter. Published estimates of ink thickness range from a few micrometers to more than 100 µm. This chapter sets out what is measured, what is disputed and why it matters for ink detection.
 
 ## Composition
 
@@ -531,7 +543,7 @@ Iron gall ink, made from oak galls and iron salts, became widespread in late ant
 In 2016 two studies reported lead in the writing of Herculaneum fragments held in Paris:
 
 - **Brun and colleagues** found lead in the ink of fragments and argued it was present in the ink rather than being contamination [Brun2016].
-- **Tack and colleagues** quantified it at 16 ± 5 µg/cm2 in a smaller fragment and 84 ± 5 µg/cm2 in a larger one [Tack2016]. Lead, phosphorus and chlorine were distributed together at the microscale; aluminium matched at the macroscale but not the microscale; copper did not match, which argues against a bronze inkpot as the source. The lead L3-edge spectrum resembled lead(II) acetate. They put forward two hypotheses: a pigment, or a drier such as litharge (lead oxide); lead acetate could also form later from lead oxide reacting with acetic acid given off by wooden cabinets [Tack2016].
+- **Tack and colleagues** quantified it at 16 ± 5 µg/cm2 in a smaller fragment and 84 ± 5 µg/cm2 in a larger one [Tack2016]. Lead, phosphorus and chlorine were distributed together at the microscale; aluminum matched at the macroscale but not the microscale; copper did not match, which argues against a bronze inkpot as the source. The lead L3-edge spectrum resembled lead(II) acetate. They put forward two hypotheses: a pigment, or a drier such as litharge (lead oxide); lead acetate could also form later from lead oxide reacting with acetic acid given off by wooden cabinets [Tack2016].
 
 An Egyptian comparison: Christiansen and colleagues found lead in most red inks and some black inks from the Tebtunis temple library, as phosphates, sulfates, chlorides and carboxylates, with no typical lead pigments; they propose a drier [Christiansen2020]. Earlier XRF of 38 Herculaneum fragments found phosphorus correlated with ink in 5, iron in 3, copper in 3 and lead in 2 [Parsons2023]. Seales and Delattre found calcium in ink and trace lead and strontium by PIXE [Parsons2023].
 
@@ -539,7 +551,7 @@ An Egyptian comparison: Christiansen and colleagues found lead in most red inks 
 
 The K absorption edge of lead lies at 88.0045 keV. Just below the edge the mass attenuation coefficient is 1.910 cm2/g; just above it, 7.683 cm2/g [NIST-Pb]. Scanning just above and just below the edge, a technique known as K-edge subtraction, could in principle map lead. This book has found no published K-edge study of a closed Herculaneum roll.
 
-> **Photograph (not stored in git; see the caption for source and licence):** A reed pen (calamus) cut from a dried reed, shown on a white background.
+> **Photograph (not stored in git; see the caption for source and license):** A reed pen (calamus) cut from a dried reed, shown on a white background.
 *Figure 5.1. A reed pen (calamus), the writing tool of Greek and Roman scribes. Modern example. Photo: Enrique Íñiguez Rodríguez (Qoan), via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Reed_pen_DSC_8590.jpg>*
 
 ## How thick is the ink?
@@ -548,7 +560,7 @@ Published estimates disagree by more than an order of magnitude:
 
 | Claim | Value | Basis | Source |
 |---|---|---|---|
-| Letters rise above the fibres | "at least one hundred microns" | phase-contrast tomography of rolled papyri | [Mocella2015] |
+| Letters rise above the fibers | "at least one hundred microns" | phase-contrast tomography of rolled papyri | [Mocella2015] |
 | Ink layer assumed for a calculation | 50 µm, "may be thinner" | assumption | [Tack2016] |
 | Ink layer on a fresh papyrus phantom | 3 to 5 µm, plus 4 to 12 µm of absorption into the substrate (3 to 17 µm total) | SEM cross-sections | [Parker2019] |
 | Herculaneum ink thickness "on the order of" | 5 to 10 µm | summary | [Parsons2023] |
@@ -556,17 +568,17 @@ Published estimates disagree by more than an order of magnitude:
 
 **Interpretation.** The 100 µm figure is an outlier against direct SEM of a phantom and against 2.4 µm CT. Apparent thickness in CT includes blur from the point spread function and phase retrieval; the calculated resolution of the 2.4 µm configuration is 2.72 µm [Angelotti2026a], so an apparent 10 to 20 µm deposit may contain a thinner physical layer. No direct measurement of physical ink thickness on a carbonized Herculaneum roll has been published.
 
-![Bar chart comparing published estimates of Herculaneum ink thickness, from 3 micrometres to over 100 micrometres.](figures/charts/ink_thickness.svg)
+![Bar chart comparing published estimates of Herculaneum ink thickness, from 3 micrometers to over 100 micrometers.](figures/charts/ink_thickness.svg)
 *Figure 5.2. Published estimates of ink thickness (ranges shown as bars; log scale). Chart by the editors. Data: data/ink_thickness.csv, sources as in the table above. License: CC BY 4.0 (this book).*
 
 ## Relief, texture and "crackle"
 
 Ink is detectable in CT less because of its density than because of its shape and texture:
 
-- **Morphological contrast.** Parker and colleagues showed that ink changes the shape of the surface: on inked papyrus the rounded cells between fibre ridges are hidden and the ridges stay visible but muted. In a 300 µm region "a dozen or more morphological features" distinguish inked from uninked surface [Parker2019].
+- **Morphological contrast.** Parker and colleagues showed that ink changes the shape of the surface: on inked papyrus the rounded cells between fiber ridges are hidden and the ridges stay visible but muted. In a 300 µm region "a dozen or more morphological features" distinguish inked from uninked surface [Parker2019].
 - **Topography.** Angelotti and colleagues measured fragment surfaces by confocal profilometry and found that the topographic ink signal is surface roughness plus deformation from pen pressure; inked regions are smoother. The height map is dominated by inclination, curvature and the "lattice of fibers" [Angelotti2026b].
 - **Crackle.** In 2023, contestants saw a texture "like cracked mud, raised slightly above" the papyrus surface in segmented regions of Scroll 1. This "crackle" was the first ink signal identified directly in scroll CT, and it guided the first hand labels ([Chapter 10](#ch-2023)) [VC-Tutorial5] [VC-FirstLetters].
-- **Penetration.** On the phantom, carbon ink soaked 4 to 12 µm into the substrate [Parker2019]; Mocella and colleagues report that ink sat on top of the fibres [Mocella2015]. Pliny notes that polished sheets absorb less [Pliny-NH13, 13.81]. A polished, less absorbent surface would keep ink as a surface film, consistent with crackle and with surface-associated deposits at 2.4 µm.
+- **Penetration.** On the phantom, carbon ink soaked 4 to 12 µm into the substrate [Parker2019]; Mocella and colleagues report that ink sat on top of the fibers [Mocella2015]. Pliny notes that polished sheets absorb less [Pliny-NH13, 13.81]. A polished, less absorbent surface would keep ink as a surface film, consistent with crackle and with surface-associated deposits at 2.4 µm.
 
 ### Resolution and topography
 
@@ -578,7 +590,7 @@ Angelotti and colleagues trained ink detectors on fragment topography at a serie
 
 Only 1.02 µm or finer exceeds Dice 0.70; at about 2 µm and coarser the results cannot be told apart. A model trained at 0.34 µm and applied to degraded data falls to about zero by 3.40 µm [Angelotti2026b]. Topography alone therefore stops being informative at the voxel sizes of most scroll scans, and Angelotti and colleagues describe ink detection in Scroll 1 at 2.4 µm as a "mixed-signal regime rather than reading topography alone" [Angelotti2026a].
 
-![Line chart of median Dice score for topography-based ink detection versus resolution, falling from 0.89 at 0.34 micrometres to about 0.47 at 10.88 micrometres.](figures/charts/topography_dice.svg)
+![Line chart of median Dice score for topography-based ink detection versus resolution, falling from 0.89 at 0.34 micrometers to about 0.47 at 10.88 micrometers.](figures/charts/topography_dice.svg)
 *Figure 5.3. Ink detection from surface topography: median Dice versus resolution (log scale). Chart by the editors from Angelotti, Nicolardi, Henderson and Seales (2026). Data: data/topography_dice.csv. License: CC BY 4.0 (this book).*
 
 ## Why carbon ink is hard to see
@@ -586,8 +598,8 @@ Only 1.02 µm or finer exceeds Dice 0.70; at about 2 µm and coarser the results
 Bringing these facts together [VC-Tutorial5] [Angelotti2026a] [Mocella2015] [Tack2016]:
 
 1. Carbon ink and carbonized papyrus have almost the same density, so absorption contrast is very low.
-2. Most contrast comes from phase effects at edges and surfaces, but the papyrus fibres themselves produce a strong phase signal that hides parts of letters.
-3. Fibres crossing the text in both directions interfere with reading.
+2. Most contrast comes from phase effects at edges and surfaces, but the papyrus fibers themselves produce a strong phase signal that hides parts of letters.
+3. Fibers crossing the text in both directions interfere with reading.
 4. The ink layer is thin, often only a few voxels at 2.4 µm and below one voxel at 7.91 µm.
 5. Ink properties vary between scrolls: some contain lead, some show crackle, and some show neither. The Vesuvius Challenge's 2025 plan notes that ink-detection models trained on the two most readable scrolls "do not appear to generalize to the entire collection", and that the signal in those scrolls appears to correspond either to large morphological cracks or to brighter spots indicating metals [VC-MasterPlan].
 
@@ -595,7 +607,7 @@ Bringing these facts together [VC-Tutorial5] [Angelotti2026a] [Mocella2015] [Tac
 
 Greek and Roman scribes wrote on papyrus with a reed pen (Greek *kalamos*, Latin *calamus*). Pliny writes "Chartisque serviunt calami" (reeds serve for paper), and Martial names reeds from Memphis [Thompson1906]. Egyptian scribes used rush brushes [Scora1991].
 
-Text runs in columns along the horizontal fibres of the recto [Bukreeva2016]. Lines read left to right. Columns often lean left deliberately, by up to about 5 degrees (Maas's law) [Romano2023] [Ceccarelli2025]. Body letters are about 3 to 4 mm high [Mocella2015] [Ceccarelli2025]. The letters are Greek capitals, written without word division and with few accents or punctuation marks ([Chapter 6](#ch-greek)).
+Text runs in columns along the horizontal fibers of the recto [Bukreeva2016]. Lines read left to right. Columns often lean left deliberately, by up to about 5 degrees (Maas's law) [Romano2023] [Ceccarelli2025]. Body letters are about 3 to 4 mm high [Mocella2015] [Ceccarelli2025]. The letters are Greek capitals, written without word division and with few accents or punctuation marks ([Chapter 6](#ch-greek)).
 
 ## Key facts
 
@@ -609,6 +621,8 @@ Text runs in columns along the horizontal fibres of the recto [Bukreeva2016]. Li
 | Topography Dice at 2.72 µm | 0.478 | [Angelotti2026b] |
 | Fragment benchmark (EduceLab) | Dice 0.48; character recall 0.42 | [Parsons2023] |
 
+
+<a id="ch-greek"></a>
 
 # Greek and Papyrology Basics {#ch-greek}
 
@@ -660,13 +674,13 @@ Letters on papyrus differ from modern printed capitals in ways that matter when 
 - **No word division.** Text is written *scriptio continua*: no spaces between words, and few accents or punctuation marks. A line may end in the middle of a word.
 - **Majuscule book hands.** The broad term "uncial" is used for majuscule book scripts of the fourth to eighth centuries CE written on parchment [WP-Uncial]. Herculaneum hands are earlier (first century BCE and first century CE) and are classified by papyrologists into script groups; Guglielmo Cavallo distinguished 17 principal groups plus isolated hands, 34 anonymous scribes in all [Cavallo1983].
 
-The bullet points on epsilon, omega and out-of-line letters are general palaeographic observations made by the editors; they are offered as practical guidance, not as a description of any particular hand.
+The bullet points on epsilon, omega and out-of-line letters are general paleographic observations made by the editors; they are offered as practical guidance, not as a description of any particular hand.
 
-> **Photograph (not stored in git; see the caption for source and licence):** Columns of Greek majuscule text from Codex Sinaiticus, a fourth-century parchment codex, showing a regular book hand in narrow columns.
+> **Photograph (not stored in git; see the caption for source and license):** Columns of Greek majuscule text from Codex Sinaiticus, a fourth-century parchment codex, showing a regular book hand in narrow columns.
 *Figure 6.1. A later Greek majuscule book hand: Codex Sinaiticus, Matthew 6:4 to 32 (fourth century CE, parchment), British Library. Shown for letterforms and column layout; it is not a Herculaneum papyrus. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Codex_Sinaiticus_Matthew_6,4-32.JPG>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Papyrus fragment of Menander's Polemon from Oxyrhynchus, with Greek capitals on light brown papyrus.
-*Figure 6.2. P.Oxy. 2653, Menander, Polemon: an uncarbonized Greek literary papyrus from Egypt, showing how ink and fibres look on papyrus that did not burn. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Papyrus_Oxyrhynchus_2653_-_Menander,_Polemon.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** Papyrus fragment of Menander's Polemon from Oxyrhynchus, with Greek capitals on light brown papyrus.
+*Figure 6.2. P.Oxy. 2653, Menander, Polemon: an uncarbonized Greek literary papyrus from Egypt, showing how ink and fibers look on papyrus that did not burn. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Papyrus_Oxyrhynchus_2653_-_Menander,_Polemon.jpg>*
 
 ## Numerals
 
@@ -679,7 +693,7 @@ Book numbers in Herculaneum titles are written as overlined alphabetic numerals;
 
 ## The layout of a roll
 
-A literary roll is written in columns (Greek *selides*) parallel to the short side of the roll, on the recto, across the horizontal fibres ([Chapter 4](#ch-papyrus)). The reader holds the roll horizontally, unrolls with the right hand and rolls up with the left, so the text advances column by column from left to right. Terms in common use:
+A literary roll is written in columns (Greek *selides*) parallel to the short side of the roll, on the recto, across the horizontal fibers ([Chapter 4](#ch-papyrus)). The reader holds the roll horizontally, unrolls with the right hand and rolls up with the left, so the text advances column by column from left to right. Terms in common use:
 
 | Term | Meaning |
 |---|---|
@@ -696,6 +710,8 @@ A literary roll is written in columns (Greek *selides*) parallel to the short si
 
 Herculaneum columns are narrow, often 5 to 6 cm, with 20 to 45 lines of 16 to 40 letters ([Chapter 4](#ch-papyrus)). Columns often slant to the left (Maas's law) [Romano2023].
 
+<a id="end-titles"></a>
+
 ## End titles {#end-titles}
 
 Many Herculaneum rolls end with a title block. The Vesuvius Challenge's public description of the convention, based on opened rolls, is [VC-TitlePrize2024]:
@@ -709,24 +725,26 @@ Many Herculaneum rolls end with a title block. The Vesuvius Challenge's public d
 
 When the PHerc. 172 title was announced in 2025, the Vesuvius Challenge noted that "typically, the author's name, the title, and the number are each center justified on new lines", and that PHerc. 172 was the first of its titles to put the book number on the same line as the title [VC-FirstTitle].
 
-Because a roll was normally stored rewound to its beginning, the end of the text, and with it the end title, lies at the centre of a closed roll, in its innermost, tightest windings [Capasso-Titoli]. Those are also the windings most damaged by crushing and most often destroyed when rolls were opened by hand.
+Because a roll was normally stored rewound to its beginning, the end of the text, and with it the end title, lies at the center of a closed roll, in its innermost, tightest windings [Capasso-Titoli]. Those are also the windings most damaged by crushing and most often destroyed when rolls were opened by hand.
 
-> **Photograph (not stored in git; see the caption for source and licence):** An Oxford engraved transcription of the final subscription of Philodemus' On Rhetoric from a Herculaneum papyrus: the author's name, the title and a line count.
+> **Photograph (not stored in git; see the caption for source and license):** An Oxford engraved transcription of the final subscription of Philodemus' On Rhetoric from a Herculaneum papyrus: the author's name, the title and a line count.
 *Figure 6.3. The end title (subscription) of a book of Philodemus, On Rhetoric, from a Herculaneum papyrus, in an engraved Oxford transcription (Whittock, Herculanensium Voluminum, Oxford, 1824), digitally enhanced. The Commons description reads the lines as "of Philodemus", "On Rhetoric" and a count of 4,200 lines; dots mark illegible letters. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:Philedemus_Herculaneum_subscription_enhance.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Fragment of a Sappho papyrus from Oxyrhynchus showing the end of the first book of her poems, with the closing lines and the book title below.
+> **Photograph (not stored in git; see the caption for source and license):** Fragment of a Sappho papyrus from Oxyrhynchus showing the end of the first book of her poems, with the closing lines and the book title below.
 *Figure 6.4. P.Oxy. X 1231 fr. 56, a second-century CE Sappho papyrus showing the end of the first book of her collected poems, from Grenfell and Hunt, The Oxyrhynchus Papyri, Part X (1914). An example of an end title from Egypt, not Herculaneum. Via Wikimedia Commons. License: public domain. <https://commons.wikimedia.org/wiki/File:P.Oxy._X_1231_fr._56.jpg>*
 
-Specialist catalogues of Herculaneum titles exist. Del Mastro (2014) catalogues titles and bibliological annotations of 118 Greek papyri from Herculaneum, including initial, intermediate and final titles, stichometry and kollema counts [DelMastro2014]. Capasso has published a series of studies of titles in Herculaneum papyri [Capasso-Titoli]. For non-Herculaneum rolls, Schironi (2010) studied book-ends and layout in papyri of hexameter poetry and reports that end titles are normally written larger than the text [Schironi2010].
+Specialist catalogs of Herculaneum titles exist. Del Mastro (2014) catalogs titles and bibliological annotations of 118 Greek papyri from Herculaneum, including initial, intermediate and final titles, stichometry and kollema counts [DelMastro2014]. Capasso has published a series of studies of titles in Herculaneum papyri [Capasso-Titoli]. For non-Herculaneum rolls, Schironi (2010) studied book-ends and layout in papyri of hexameter poetry and reports that end titles are normally written larger than the text [Schironi2010].
+
+<a id="stichometry"></a>
 
 ## Stichometry {#stichometry}
 
-Ancient Greeks and Romans measured books in lines, as modern books are measured in pages [WP-Stichometry]. The standard line was as long as an epic hexameter, about 15 to 16 syllables or about 35 Greek letters. Line counts served several purposes: scribes were paid by the line, book buyers checked that a copy was complete, library catalogues listed totals, and authors cited passages by approximate line number [WP-Stichometry]. There are two kinds:
+Ancient Greeks and Romans measured books in lines, as modern books are measured in pages [WP-Stichometry]. The standard line was as long as an epic hexameter, about 15 to 16 syllables or about 35 Greek letters. Line counts served several purposes: scribes were paid by the line, book buyers checked that a copy was complete, library catalogs listed totals, and authors cited passages by approximate line number [WP-Stichometry]. There are two kinds:
 
 - **total stichometry**, the total number of lines in a work, often given in the subscription;
 - **partial stichometry**, numerals in the margin, usually marking every hundredth line.
 
-The standard study is Kurt Ohly, *Stichometrische Untersuchungen* (1928) [WP-Stichometry]. Diogenes Laertius, probably drawing on the catalogue of the Library of Alexandria, reports totals such as 445,270 lines for Aristotle and 232,808 for Theophrastus [WP-Stichometry].
+The standard study is Kurt Ohly, *Stichometrische Untersuchungen* (1928) [WP-Stichometry]. Diogenes Laertius, probably drawing on the catalog of the Library of Alexandria, reports totals such as 445,270 lines for Aristotle and 232,808 for Theophrastus [WP-Stichometry].
 
 ## Reading conventions in published transcriptions
 
@@ -748,10 +766,12 @@ These are general papyrological conventions supplied by the editors; consult a p
 
 The Vesuvius Challenge's papyrological team, led in recent years by Federica Nicolardi, reads and publishes the texts [VC-FirstTitle]. Technical contributors produce images; the data agreement requires approval before anyone publishes hidden text from the scrolls ([Chapter 28](#ch-ethics)). Some practical guidance follows from the material in this chapter:
 
-1. **Do not read letters into noise.** Ink predictions are probabilistic; fibre crossings, cracks and sheet boundaries can look like strokes. The prize rules warn that large model windows can "hallucinate" letterforms and limit window sizes accordingly ([Chapter 21](#ch-ink)).
+1. **Do not read letters into noise.** Ink predictions are probabilistic; fiber crossings, cracks and sheet boundaries can look like strokes. The prize rules warn that large model windows can "hallucinate" letterforms and limit window sizes accordingly ([Chapter 21](#ch-ink)).
 2. **Report geometry and provenance, not readings.** A useful submission states the scroll, scan, segment, coordinates, model and settings, so that experts can check the image.
 3. **Expect lunate sigma, scriptio continua and leaning columns.** An image that shows them is more likely to be real text than one that shows printed-looking capitals in tidy words.
 
+
+<a id="ch-xray"></a>
 
 # X-ray Tomography for Carbonized Papyrus {#ch-xray}
 
@@ -761,10 +781,10 @@ The Vesuvius Challenge's papyrological team, led in recent years by Federica Nic
 
 X-ray computed tomography (CT) records hundreds to thousands of X-ray projection images of an object from different angles, usually by rotating the object through 360 degrees between a fixed source and a fixed detector, and then combines them with a reconstruction algorithm into a three-dimensional volume [VC-Tutorial] [WP-MicroCT]. The volume is a grid of **voxels** (volume pixels). The voxel size is the physical edge length of each cube; the value stored is the local intensity of the reconstruction (often loosely called "radiodensity") [VC-Tutorial].
 
-> **Photograph (not stored in git; see the caption for source and licence):** Schematic of tomography: an object containing several shapes is projected from different directions onto detector planes, and the projections are combined to reconstruct the object.
+> **Photograph (not stored in git; see the caption for source and license):** Schematic of tomography: an object containing several shapes is projected from different directions onto detector planes, and the projections are combined to reconstruct the object.
 *Figure 7.1. The basic principle of tomography: projections of an object from different directions (S1, S2) are combined to reconstruct its interior. Illustration: Dtrx, via Wikimedia Commons. License: CC BY-SA 3.0 DE. <https://commons.wikimedia.org/wiki/File:TomographyPrinciple_Illustration.png>*
 
-When the voxel size is in the micrometre range the technique is called **micro-CT**. The first X-ray microtomography system was built by James C. Elliott in the early 1980s; its first published images had pixels of about 50 µm [WP-MicroCT]. Scroll scans in this book range from 45.5 µm (overview scans) to 0.55 µm (a small region of interest) ([Chapter 8](#ch-scans)).
+When the voxel size is in the micrometer range the technique is called **micro-CT**. The first X-ray microtomography system was built by James C. Elliott in the early 1980s; its first published images had pixels of about 50 µm [WP-MicroCT]. Scroll scans in this book range from 45.5 µm (overview scans) to 0.55 µm (a small region of interest) ([Chapter 8](#ch-scans)).
 
 A scan is often delivered as a **TIFF stack**: one image per horizontal slice, typically from the bottom of the scroll upward. At 10 µm voxel size, 100 slices cover 1 mm of the object [VC-Tutorial]. Modern distributions use chunked, multiresolution **OME-Zarr** instead ([Chapter 23](#ch-formats)).
 
@@ -792,7 +812,7 @@ The 2026 open-problems overview identifies three parameters that matter most [VC
 | Parameter | Meaning | Why it matters |
 |---|---|---|
 | Voxel size | physical size represented by each voxel | smaller voxels preserve finer structure but increase scan time, reconstruction difficulty and data size |
-| X-ray energy | energy of the incident photons | affects penetration, contrast and phase behaviour |
+| X-ray energy | energy of the incident photons | affects penetration, contrast and phase behavior |
 | Sample to detector distance | propagation distance after the sample | controls how phase fringes develop before detection |
 
 More phase contrast is not always better. Pushing the propagation distance too far blurs the volume. The balance, in the words of the overview, is "enough phase contribution to reveal useful structure; not so much that the scan becomes dominated by haze ...; enough X-ray energy to penetrate the object and separate layers; not so much that useful absorption contrast disappears; and voxels small enough to resolve the structures that matter, without shrinking so far that scanning a full scroll stops being practical" [VC-OpenProblems2026].
@@ -805,19 +825,19 @@ More phase contrast is not always better. Pushing the propagation distance too f
 | Earlier "optimal" low-resolution regime | about 9 µm | 1.2 m | about 110 keV | widely used in 2025 | [VC-OpenProblems2026] |
 | Best small-pixel result for a fragment ROI (ESRF ID11) | 0.55 µm | 7 cm | 65 keV | region of interest only | [VC-CompressedRegions] |
 | Best 2.4 µm fragment result | 2.4 µm | 22 cm | 77 keV | | [VC-CompressedRegions] |
-| Original Diamond scans of Scrolls 1 and 2 | 7.91 µm | not recorded in catalogue | 53 to 54 keV | 2023 Grand Prize data | [Parsons2023] [VC-Catalog] |
+| Original Diamond scans of Scrolls 1 and 2 | 7.91 µm | not recorded in catalog | 53 to 54 keV | 2023 Grand Prize data | [Parsons2023] [VC-Catalog] |
 
 Angelotti and colleagues give rough guides: about 0.5 m at 4.6 µm and 2 m at 8 µm are acceptable distances, with a "sweet spot" near 8 µm at 100 to 120 keV and about 3 m [Angelotti2026a]. The August 2025 recipe was: pixel size as small as feasible; distance short enough to enhance phase contrast without letting scattering dominate (generally under 1 m and less than half the near-field limit); energy as low as possible to boost absorption, within the constraints of the other two [VC-CompressedRegions].
 
-**On energy, sources differ.** Parsons and colleagues report anecdotal evidence that lower energy works better for carbon ink [Parsons2023]; Angelotti and colleagues favour higher energy and shorter distance to fight decoherence [Angelotti2026a]. These need not conflict: the first concerns absorption contrast, the second phase decoherence.
+**On energy, sources differ.** Parsons and colleagues report anecdotal evidence that lower energy works better for carbon ink [Parsons2023]; Angelotti and colleagues favor higher energy and shorter distance to fight decoherence [Angelotti2026a]. These need not conflict: the first concerns absorption contrast, the second phase decoherence.
 
 ## Compressed regions and haze
 
 For years, some regions of scroll scans looked worse than their nominal resolution: blurred, "foggy" or "mushy", with adjacent sheets hard to separate. Scans of a fragment region at 0.55 µm on ESRF beamline ID11 in July 2025 gave an explanation [VC-CompressedRegions] [VC-OpenProblems2026]:
 
-- Carbonized papyrus fibres contain small internal cavities: each fibre is surrounded by a thick wall of cells with hollow lumens.
-- Carbonized fibres are probably close to graphite, a strong decoherer that scrambles the X-ray wavefront.
-- Where many fibres are densely packed, as in closely spaced sheets, these periodic micro-structures scatter the beam slightly, and the longer the beam travels through them before reaching the detector, the stronger the effect.
+- Carbonized papyrus fibers contain small internal cavities: each fiber is surrounded by a thick wall of cells with hollow lumens.
+- Carbonized fibers are probably close to graphite, a strong decoherer that scrambles the X-ray wavefront.
+- Where many fibers are densely packed, as in closely spaced sheets, these periodic micro-structures scatter the beam slightly, and the longer the beam travels through them before reaching the detector, the stronger the effect.
 - The result is a local haze that degrades exactly the most compressed parts of a scroll.
 
 The practical remedies are smaller voxels (ideally below the periodicity, under 1 µm, which is impractical for whole scrolls), shorter propagation distances, and an energy balanced between penetration and absorption [VC-CompressedRegions]. Scan quality is therefore **local**: "A scan can hold excellent regions and nearly-impossible-to-unwrap ones in the very same volume" [VC-OpenProblems2026].
@@ -826,8 +846,8 @@ The practical remedies are smaller voxels (ideally below the periodicity, under 
 
 Halving the voxel size multiplies the number of voxels for the same physical volume by eight. Going from 8 µm to 2 µm multiplies it by 64; from 8 µm to 0.55 µm by about 4,096 [VC-OpenProblems2026] [VC-CompressedRegions]. Small regions can be scanned at very high resolution; "full scrolls cannot yet be scanned everywhere at sub-micron resolution in a practical production workflow" [VC-OpenProblems2026].
 
-![Line chart on log-log axes showing how the number of voxels per cubic centimetre grows as voxel size decreases from 45 micrometres to 0.55 micrometres, with the scan sizes used for Herculaneum scrolls marked.](figures/charts/voxel_scaling.svg)
-*Figure 7.3. Voxels per cubic centimetre (and bytes at 8 bits per voxel) as a function of voxel size, with the voxel sizes of Herculaneum scans marked. Chart by the editors; the scaling law is from [VC-OpenProblems2026]. Data: data/voxel_scaling.csv. License: CC BY 4.0 (this book).*
+![Line chart on log-log axes showing how the number of voxels per cubic centimeter grows as voxel size decreases from 45 micrometers to 0.55 micrometers, with the scan sizes used for Herculaneum scrolls marked.](figures/charts/voxel_scaling.svg)
+*Figure 7.3. Voxels per cubic centimeter (and bytes at 8 bits per voxel) as a function of voxel size, with the voxel sizes of Herculaneum scans marked. Chart by the editors; the scaling law is from [VC-OpenProblems2026]. Data: data/voxel_scaling.csv. License: CC BY 4.0 (this book).*
 
 | Voxel size (µm) | Voxels per cm3 | Relative to 7.91 µm | Bytes per cm3 at 8 bits |
 |---|---|---|---|
@@ -860,9 +880,11 @@ Resolution is not the whole story. The open-problems overview stresses that a fa
 | Structured-light 3D scanning (Artec Space Spider) | surface shape of PHerc. 118, 2018 | surface | [WP-HercPapyri] |
 
 
+<a id="ch-scans"></a>
+
 # Synchrotrons and Scan Campaigns {#ch-scans}
 
-> **Chapter summary.** The Herculaneum scrolls have been scanned at two synchrotrons: the Diamond Light Source in Oxfordshire (beamline I12, from 2019 to 2025) and the European Synchrotron (ESRF) in Grenoble (beamlines BM18 and ID11, from 2025). The public open-data catalogue lists 67 scans of 45 samples. This chapter describes the facilities, the logistics of a scan session, and every campaign represented in the public data, with voxel sizes, energies and distances.
+> **Chapter summary.** The Herculaneum scrolls have been scanned at two synchrotrons: the Diamond Light Source in Oxfordshire (beamline I12, from 2019 to 2025) and the European Synchrotron (ESRF) in Grenoble (beamlines BM18 and ID11, from 2025). The public open-data catalog lists 67 scans of 45 samples. This chapter describes the facilities, the logistics of a scan session, and every campaign represented in the public data, with voxel sizes, energies and distances.
 
 ## What a synchrotron is
 
@@ -872,18 +894,18 @@ A synchrotron is a particle accelerator that keeps electrons circulating at near
 
 Diamond is the United Kingdom's national synchrotron, at the Harwell Science and Innovation Campus in Oxfordshire. It is a 3 GeV medium-energy machine with 32 beamlines; it produced its first user beam in January 2007 and was formally opened in October 2007. Construction cost £260 million, covering the synchrotron building, accelerators, the first seven beamlines and the adjacent office block, Diamond House [WP-Diamond]. Herculaneum scans there were made on beamline **I12**, whose optical modules 2 and 3 give pixel sizes of 7.91 µm and 3.24 µm [VC-NewScans2023].
 
-> **Photograph (not stored in git; see the caption for source and licence):** A panoramic view inside the Diamond synchrotron building, showing the curved experimental hall and beamline hutches.
+> **Photograph (not stored in git; see the caption for source and license):** A panoramic view inside the Diamond synchrotron building, showing the curved experimental hall and beamline hutches.
 *Figure 8.1. Inside the Diamond Light Source synchrotron building (2018). Photo: Prosthetic Head, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Diamond_Inside_Panorama.jpg>*
 
-> **Photograph (not stored in git; see the caption for source and licence):** Diamond House, a modern office building with glass and grey panels at the Diamond Light Source site.
+> **Photograph (not stored in git; see the caption for source and license):** Diamond House, a modern office building with glass and gray panels at the Diamond Light Source site.
 *Figure 8.2. Diamond House, the office building of the Diamond Light Source synchrotron. Photo: Sintakso, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Diamond-House.jpg>*
 
 ## The European Synchrotron (ESRF)
 
 The ESRF in Grenoble, France, is a joint facility supported by 19 countries. Inaugurated in 1994 as the world's first third-generation synchrotron, it has an 844 m storage ring operating at 6 GeV and 46 beamlines. Its Extremely Brilliant Source (EBS) upgrade, built from 2018 to 2020, made it the first fourth-generation high-energy synchrotron, with X-ray intensity improved by a factor of 100; it reopened to users on 25 August 2020 [WP-ESRF]. **BM18** is a beamline "specifically designed to harness the coherence of a 4th generation synchrotron for phase-contrast X-ray tomography" of large objects [VC-SummerHaze]. **ID11** was used for the 0.55 µm region-of-interest scan of a fragment in July 2025 [VC-CompressedRegions].
 
-> **Photograph (not stored in git; see the caption for source and licence):** The Grenoble valley seen from the Moucherotte, with the ESRF ring at the confluence of the rivers in the centre and the Chartreuse massif behind.
-*Figure 8.3. The Grenoble valley with the European Synchrotron in the centre and the Massif de la Chartreuse in the background (December 2020). Photo: Marco Cammarata, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Esrf_chartreuse_01.jpg>*
+> **Photograph (not stored in git; see the caption for source and license):** The Grenoble valley seen from the Moucherotte, with the ESRF ring at the confluence of the rivers in the center and the Chartreuse massif behind.
+*Figure 8.3. The Grenoble valley with the European Synchrotron in the center and the Massif de la Chartreuse in the background (December 2020). Photo: Marco Cammarata, via Wikimedia Commons. License: CC BY-SA 4.0. <https://commons.wikimedia.org/wiki/File:Esrf_chartreuse_01.jpg>*
 
 ## Preparing a scroll for the beam
 
@@ -893,32 +915,32 @@ Scanning a Herculaneum scroll is a logistics project. The steps described by the
 2. **Case design.** From the model, a form-fitting case is designed and 3D printed (in 2023, Nylon 12 by HP Multi Jet Fusion). The scroll is wrapped in PTFE (Teflon) relic wrap inside it and stays in the case for transport and scanning.
 3. **Transport.** Cases travel in foam-lined hard cases. In September 2023 storms grounded commercial flights from Naples; Nat Friedman chartered a private plane so the scrolls reached Diamond in time for the scan slot [VC-NewScans2023].
 4. **Mounting and settling.** At the facility the case is mounted vertically and allowed to settle before imaging, because shifting during a multi-hour scan would blur the data.
-5. **Grid scanning.** Large scrolls exceed the field of view, so they are scanned in overlapping grids ("double-double" scans): centred, rotated 180 degrees, offset, lowered and rotated again, with the parts stitched into full projections. Scrolls taller than the stage travel are scanned in parts using a manual lab jack [VC-ScanningAtScale]. Scrolls 1 and 2 were each scanned in two overlapping halves for this reason [VC-NewData2024].
+5. **Grid scanning.** Large scrolls exceed the field of view, so they are scanned in overlapping grids ("double-double" scans): centered, rotated 180 degrees, offset, lowered and rotated again, with the parts stitched into full projections. Scrolls taller than the stage travel are scanned in parts using a manual lab jack [VC-ScanningAtScale]. Scrolls 1 and 2 were each scanned in two overlapping halves for this reason [VC-NewData2024].
 6. **Reconstruction.** Projections are reconstructed into slices by filtered back-projection. In 2023 a reproducible reconstruction pipeline, run right after each scan, replaced the 2019 workflow in which the team waited days or weeks to see the first slices [VC-NewScans2023].
 
 ## Campaigns
 
-The table summarizes the campaigns visible in the public record. Facility and beamline for scans in the open-data catalogue are taken from the catalogue metadata; counts are numbers of catalogue scans, not physical scrolls.
+The table summarizes the campaigns visible in the public record. Facility and beamline for scans in the open-data catalog are taken from the catalog metadata; counts are numbers of catalog scans, not physical scrolls.
 
 | Period | Facility, beamline | Samples | Voxel sizes | Energies | Notes | Source |
 |---|---|---|---|---|---|---|
 | 2009 | laboratory micro-CT (Paris) | PHerc. Paris 4 and another roll | 23.94 µm (Paris 4) | 70 kV | no ink visible | [Parsons2023] [WP-HercPapyri] |
-| 2019 | Diamond, I12 | Scrolls 1 and 2 (PHerc. Paris 4, Paris 3), fragments | 7.91 µm (scrolls); 3.24 µm (fragments) | 54 keV (and 88 keV for fragments) | data of the 2023 challenge; catalogue timestamps for these volumes are dated February 2023 | [Parsons2023] [VC-NewScans2023] [VC-Catalog] |
+| 2019 | Diamond, I12 | Scrolls 1 and 2 (PHerc. Paris 4, Paris 3), fragments | 7.91 µm (scrolls); 3.24 µm (fragments) | 54 keV (and 88 keV for fragments) | data of the 2023 challenge; catalog timestamps for these volumes are dated February 2023 | [Parsons2023] [VC-NewScans2023] [VC-Catalog] |
 | Sept to Oct 2023 | Diamond, I12 | PHerc. 332, PHerc. 1667, two fragments, carbon phantom | 7.91 and 3.24 µm | 53, 70, 88, 105 keV | eight volumes per main sample | [VC-NewScans2023] |
 | Oct 2024 | Diamond | PHerc. 172 (Scroll 5, Bodleian) | 7.91 µm | 53 keV | visible ink; First Title | [VC-Catalog] |
 | Apr 2025 | Diamond | 20 scrolls in one session | not stated in post | | test of "productionized" scanning | [VC-ScanningAtScale] |
-| May 2025 | ESRF, BM18 | 18 catalogue scans (scrolls and fragments PHerc. 9B, 343P, 500P2) | 8.64 µm; 2.215 µm; 4.317 µm | 111 to 116 keV | first BM18 batch | [VC-SummerHaze] [VC-Catalog] |
-| Jul 2025 | ESRF, BM18 | 21 catalogue scans | 9.362 µm; 2.403 µm | 113 keV; 77 keV | 9 µm survey and 2.4 µm scans | [VC-Catalog] |
+| May 2025 | ESRF, BM18 | 18 catalog scans (scrolls and fragments PHerc. 9B, 343P, 500P2) | 8.64 µm; 2.215 µm; 4.317 µm | 111 to 116 keV | first BM18 batch | [VC-SummerHaze] [VC-Catalog] |
+| Jul 2025 | ESRF, BM18 | 21 catalog scans | 9.362 µm; 2.403 µm | 113 keV; 77 keV | 9 µm survey and 2.4 µm scans | [VC-Catalog] |
 | Jul 2025 | ESRF, ID11 | PHerc. 500P2 region | 0.55 µm | 65 keV | explains compressed-region haze | [VC-CompressedRegions] [VC-Catalog] |
-| Dec 2025 | ESRF, BM18 | 13 catalogue scans | 2.399 µm; 1.129 µm | 78 keV; 59 keV | includes PHerc. 1667, 139, 814 | [VC-Catalog] |
+| Dec 2025 | ESRF, BM18 | 13 catalog scans | 2.399 µm; 1.129 µm | 78 keV; 59 keV | includes PHerc. 1667, 139, 814 | [VC-Catalog] |
 | Mar 2026 | ESRF, BM18 | PHerc. Paris 3 and Paris 4 | 2.4 µm; 1.129 µm; 45.532 µm overview | 78, 137 keV; 74, 110 keV | the Scroll 1 rescan | [VC-Catalog] [Angelotti2026a] |
 
-**Unverified.** The April 2025 Diamond session is reported in the Vesuvius Challenge newsletter but its scans do not appear, under that date, in the open-data catalogue consulted on 15 October 2026. Whether they were released under different dates or are still being processed is not known to the editors.
+**Unverified.** The April 2025 Diamond session is reported in the Vesuvius Challenge newsletter but its scans do not appear, under that date, in the open-data catalog consulted on 15 October 2026. Whether they were released under different dates or are still being processed is not known to the editors.
 
-![Scatter plot of public scans: voxel size on a log axis against scan date, coloured by facility, with marker size showing X-ray energy.](figures/charts/scans_timeline.svg)
-*Figure 8.4. Every scan in the public open-data catalogue by date and voxel size, coloured by facility. Chart by the editors. Data: data/catalog_scans.csv (from the Vesuvius Challenge open-data catalogue, metadata.json, retrieved 15 October 2026). License: CC BY 4.0 (this book).*
+![Scatter plot of public scans: voxel size on a log axis against scan date, colored by facility, with marker size showing X-ray energy.](figures/charts/scans_timeline.svg)
+*Figure 8.4. Every scan in the public open-data catalog by date and voxel size, colored by facility. Chart by the editors. Data: data/catalog_scans.csv (from the Vesuvius Challenge open-data catalog, metadata.json, retrieved 15 October 2026). License: CC BY 4.0 (this book).*
 
-![Scatter plot of X-ray energy against voxel size for all public scans, showing clusters at 7.91 micrometres and 53 keV (Diamond), 8.6 to 9.4 micrometres at 111 to 116 keV, and 2.4 micrometres at 77 to 78 keV (ESRF).](figures/charts/scans_energy_voxel.svg)
+![Scatter plot of X-ray energy against voxel size for all public scans, showing clusters at 7.91 micrometers and 53 keV (Diamond), 8.6 to 9.4 micrometers at 111 to 116 keV, and 2.4 micrometers at 77 to 78 keV (ESRF).](figures/charts/scans_energy_voxel.svg)
 *Figure 8.5. Energy versus voxel size for every public scan. The clusters correspond to the regimes in Chapter 7. Chart by the editors. Data: data/catalog_scans.csv. License: CC BY 4.0 (this book).*
 
 ## Throughput
@@ -927,7 +949,7 @@ The 2025 plan reported that by "pioneering cutting-edge X-ray scanning technique
 
 ## Sizes of the largest volumes
 
-The open-data catalogue records the array shape of each volume. The largest public volumes are the 2026 BM18 scans at 2.4 µm. Their bounding arrays, at one byte per voxel, are on the order of 10 to 120 TB before compression and masking:
+The open-data catalog records the array shape of each volume. The largest public volumes are the 2026 BM18 scans at 2.4 µm. Their bounding arrays, at one byte per voxel, are on the order of 10 to 120 TB before compression and masking:
 
 | Sample | Volume | Voxel | Array shape (z, y, x) | Uncompressed size at 8 bits |
 |---|---|---|---|---|
@@ -940,10 +962,12 @@ The open-data catalogue records the array shape of each volume. The largest publ
 
 Source: [VC-Catalog] (shape field); sizes are the product of the shape, not the stored size. Volumes are distributed as masked, compressed OME-Zarr, so the stored size is much smaller; the bounding box also includes empty space around the scroll. See [Chapter 25](#ch-compute) for storage and compute.
 
-## Licences of the scan data
+## Licenses of the scan data
 
-Scan volumes in the open-data catalogue carry one of two licences: **CC BY-NC 4.0** (67 volumes, including all ESRF data) or the **EduceLab Data License** (7 volumes, the older Diamond data) [VC-Catalog]. Publication of hidden text derived from the data is additionally governed by the Vesuvius Challenge data agreement ([Chapter 28](#ch-ethics)). This book reproduces no images derived from the scan data.
+Scan volumes in the open-data catalog carry one of two licenses: **CC BY-NC 4.0** (67 volumes, including all ESRF data) or the **EduceLab Data License** (7 volumes, the older Diamond data) [VC-Catalog]. Publication of hidden text derived from the data is additionally governed by the Vesuvius Challenge data agreement ([Chapter 28](#ch-ethics)). This book reproduces no images derived from the scan data.
 
+
+<a id="ch-founding"></a>
 
 # Founding the Vesuvius Challenge {#ch-founding}
 
@@ -978,13 +1002,13 @@ The Kaggle ink-detection prizes were raised to $100,000 the next day: $25,000, $
 
 ## The data agreement
 
-Access to the scan data originally required agreeing to a data licence. The FAQ summarizes its central publication rule: researchers may generally publish results, provided that "you won't publish any revelation of hidden text (or associated code) without the written approval of Vesuvius Challenge" [VC-FAQ]. Prize rules add that winners must not make a discovery public until the prize is officially announced [VC-Prizes]. Scan volumes now carry the CC BY-NC 4.0 licence or the EduceLab Data License ([Chapter 8](#ch-scans)). [Chapter 28](#ch-ethics) discusses what these terms mean for contributors and for this book.
+Access to the scan data originally required agreeing to a data license. The FAQ summarizes its central publication rule: researchers may generally publish results, provided that "you won't publish any revelation of hidden text (or associated code) without the written approval of Vesuvius Challenge" [VC-FAQ]. Prize rules add that winners must not make a discovery public until the prize is officially announced [VC-Prizes]. Scan volumes now carry the CC BY-NC 4.0 license or the EduceLab Data License ([Chapter 8](#ch-scans)). [Chapter 28](#ch-ethics) discusses what these terms mean for contributors and for this book.
 
 ## Prize philosophy
 
 The organizers stated from the start that they are "big believers in open source and incremental progress" [VC-KaggleIncrease]. Three principles recur in the prize design:
 
-1. **Open sourcing as a condition of winning.** Milestone prizes require code and results to be released under a permissive licence on acceptance [VC-Prizes].
+1. **Open sourcing as a condition of winning.** Milestone prizes require code and results to be released under a permissive license on acceptance [VC-Prizes].
 2. **Many small prizes alongside a few large ones.** Monthly progress prizes (from $250 to $20,000) reward tools that "actually get used", early release and documentation [VC-Prizes].
 3. **Independent review.** A technical team reproduces methods; an independent papyrology team judges readings, often blind and with multiple reviewers [VC-GrandPrize] [VC-Prizes].
 
@@ -1003,6 +1027,8 @@ The master plan (as updated in July 2025) describes the work in stages [VC-Maste
 The plan states that "full scrolls are 10cm-20cm wide and up to 15 meters long", that "with current techniques, it could cost $1-5 million to unwrap an entire scroll", which for 300 scrolls is "clearly impractical", and that "we believe it's possible to bring the cost of unwrapping an entire scroll to $5000 or below. It might even be possible to fully automate it" [VC-MasterPlan]. [Chapter 25](#ch-compute) returns to these numbers.
 
 
+<a id="ch-2023"></a>
+
 # The 2023 Season: First Letters and the Grand Prize {#ch-2023}
 
 > **Chapter summary.** In 2023 the community built segmentation tools, won a $100,000 Kaggle ink-detection competition on fragments, discovered the "crackle" texture of ink in the scrolls, read the first word (ΠΟΡΦΥΡΑϹ, "purple") in October, and in December produced more than 15 columns of Epicurean philosophy from Scroll 1. The $700,000 Grand Prize went to Youssef Nader, Luke Farritor and Julian Schilliger.
@@ -1013,7 +1039,7 @@ The first open-source prizes, awarded on 14 April 2023, went to four contributor
 
 On 21 April the challenge announced $35,000 of **Segmentation Tools Prizes**, later raised to $45,000, to make segmentation "super fast" [VC-SegTools2023]. Segments of Scroll 2 were published, and the challenge hired contractors to segment [VC-PublicSegments2023]. The first Segmentation Tooling round (June 2023, $45,000) paid Julian Schilliger (optical-flow segmentation) and Chuck (Khartes) $10,000 each, and $5,000 each to James (masked data), Yao Hsiao (Volume Viewer), Moshe Levy (VolumeAnnotate), Luke Farritor (Scroll Viewer) and Santiago Pelufo (vesuvius-build and vesuvius-blender) [VC-Winners]. The **segmentation team** traced papyrus surfaces by hand in Volume Cartographer; by mid-May almost 200 cm2 had been segmented [VC-SignsOfProgress], by July "hundreds of cm2" [VC-FirstLetters], and by early October more than 1,000 cm2 [VC-SegTooling2Winners].
 
-On 5 May the **First Letters Prize** was announced: $40,000 for the first team to find 10 letters within a single 4 cm2 area of Scroll 1 or 2, and $10,000 for the second [VC-FirstLettersPrize]. Later in May the papyrology team held a public Q&A. Richard Janko observed that many Herculaneum rolls were rolled on themselves without a central stick (umbilicus), "in fact, this was more frequent than them having a stick in the middle", and that Scroll 1 might have had a short length folded back to make a firmer centre [VC-PapyrologyQA].
+On 5 May the **First Letters Prize** was announced: $40,000 for the first team to find 10 letters within a single 4 cm2 area of Scroll 1 or 2, and $10,000 for the second [VC-FirstLettersPrize]. Later in May the papyrology team held a public Q&A. Richard Janko observed that many Herculaneum rolls were rolled on themselves without a central stick (umbilicus), "in fact, this was more frequent than them having a stick in the middle", and that Scroll 1 might have had a short length folded back to make a firmer center [VC-PapyrologyQA].
 
 ## Summer: Kaggle and crackle
 
@@ -1038,7 +1064,7 @@ In early August **Casey Handmer** reported a "crackle pattern" in segmented regi
 
 ## October: the first word
 
-**Luke Farritor**, then a college student and summer intern, trained a model on Handmer's crackle, labelled the new crackle it found, and retrained in a loop until letters emerged. His First Letters submission showed the word ΠΟΡΦΥΡΑϹ (*porphyras*, "purple"). Papyrologists independently and unanimously annotated 13 letters. **Youssef Nader**, a graduate student in Berlin, independently found the same word in the same area using a different method: unsupervised pretraining on scroll data, then fine-tuning of Kaggle-winning models using crackle labels, which produced even clearer images [VC-FirstLetters].
+**Luke Farritor**, then a college student and summer intern, trained a model on Handmer's crackle, labeled the new crackle it found, and retrained in a loop until letters emerged. His First Letters submission showed the word ΠΟΡΦΥΡΑϹ (*porphyras*, "purple"). Papyrologists independently and unanimously annotated 13 letters. **Youssef Nader**, a graduate student in Berlin, independently found the same word in the same area using a different method: unsupervised pretraining on scroll data, then fine-tuning of Kaggle-winning models using crackle labels, which produced even clearer images [VC-FirstLetters].
 
 The prize was announced on 12 October 2023: $40,000 to Farritor, $10,000 to Nader for second place, and a $10,000 **First Ink** prize to Handmer [VC-FirstLetters] [VC-Winners]. A papyrologist noted the possible readings πορφύρας (noun, purple dye or purple cloth) or πορφυρᾶς (adjective) and that "due to the lack of context it is not possible to exclude" alternatives [VC-FirstLetters].
 
@@ -1077,7 +1103,7 @@ A certain Xenophantus is mentioned, perhaps the musician known from Philodemus's
 
 ### Why the images were trusted
 
-The organizers gave three reasons for confidence that the text was not a machine-learning artefact [VC-GrandPrize]:
+The organizers gave three reasons for confidence that the text was not a machine-learning artifact [VC-GrandPrize]:
 
 1. **Technical reproduction.** The review team reproduced the winning submissions independently.
 2. **Convergence.** Different teams, using different models and labels on the same released segments, produced "extremely similar results".
@@ -1097,11 +1123,13 @@ These principles became permanent features of the prize rules ([Chapter 21](#ch-
 | Fraction of Scroll 1 read | about 5 percent | [VC-GrandPrize] |
 
 
+<a id="ch-2024"></a>
+
 # 2024: From Five Percent to Autosegmentation {#ch-2024}
 
 > **Chapter summary.** In 2024 the challenge set a goal of reading 90 percent of four scrolls, launched more than $500,000 in prizes including monthly progress prizes, released the second halves of Scrolls 1 and 2 and a new scroll (PHerc. 172), and pushed segmentation from manual tracing toward automation. The Grand Prize and the first-letters prizes for Scrolls 2 to 4 went unclaimed; two automated segmentation submissions shared $60,000; and PHerc. 172 showed ink visible directly in the CT.
 
-## The 2024 prize programme
+## The 2024 prize program
 
 On 27 February 2024 the challenge announced "over $500,000 in new prizes" and the community goal "to go from 5% of one scroll to 90% of four scrolls" [VC-NewPrizes2024]:
 
@@ -1137,7 +1165,7 @@ The largest 2024 progress awards in the winners list [VC-Winners] were:
 | May 2024 | Philip Allgaier | Volume Cartographer improvements (memory-mapped slices, Zarr support) | $10,000 |
 | May 2024 | Chuck | Khartes improvements | $10,000 |
 | Aug 2024 | Johannes Rudolph | Segment Browser | $10,000 |
-| Aug 2024 | James Darby | volumetric instance labelling | $10,000 |
+| Aug 2024 | James Darby | volumetric instance labeling | $10,000 |
 | Aug 2024 | Chuck | Khartes3D | $10,000 |
 | Sep 2024 | Sean Johnson | fiber following | $20,000 |
 | Sep 2024 | Youssef Nader | Inkalyzer | $10,000 |
@@ -1158,7 +1186,7 @@ While preparing the release, the segmentation team saw ink "directly in the data
 
 The year's central technical story was segmentation. In June 2024 the segmentation team reported that it was again "running into a wall with what can be manually segmented" [VC-StateOfSeg2024]. Three directions emerged:
 
-1. **Volumetric surface prediction.** Machine-learning models that label papyrus surfaces in 3D, trained on hand-labelled cubes (James Darby, Tim Skinner and others) [VC-JuneProgress2024] [VC-Winners].
+1. **Volumetric surface prediction.** Machine-learning models that label papyrus surfaces in 3D, trained on hand-labeled cubes (James Darby, Tim Skinner and others) [VC-JuneProgress2024] [VC-Winners].
 2. **Fiber following.** Sean Johnson proposed tracking papyrus fibers to form sheets [VC-Acceleration2024].
 3. **Patch-based tracing.** Hendrik Schilling's segment patch generation [VC-Winners].
 
@@ -1175,6 +1203,8 @@ These two approaches, bottom-up tracing and top-down spiral fitting, define the 
 
 "Despite multiple legitimate submissions for the First Letters and First Title prizes, we still have not been able to conclusively recover text from Scrolls 2, 3, or 4 - those prizes went unclaimed in 2024", and "the 2024 Grand Prize also went unclaimed" [VC-FASP]. Prize rounds dated 2024 in the winners list total $340,500, with the FASP awards dated December 2024 although announced in January 2025 ([Chapter 14](#ch-ledger)).
 
+
+<a id="ch-2025"></a>
 
 # 2025: Titles, Scanning at Scale and Better Scans {#ch-2025}
 
@@ -1200,9 +1230,9 @@ The finding was made independently by Sean Johnson of the research team and by c
 
 ## Scanning at scale
 
-Before April 2025 five intact scrolls had been scanned and released; in one week of April 2025 the challenge and its partners scanned twenty at Diamond, testing the "productionization" of scanning, with the stated mission "to scan all 300 known scrolls" [VC-ScanningAtScale]. Preparation is described in [Chapter 8](#ch-scans): photogrammetry, a 3D-printed form-fitting case, PTFE wrap, and transport in foam-lined cases. That session is not separately listed in the open-data catalogue used for this book (see [Chapter 8](#ch-scans)).
+Before April 2025 five intact scrolls had been scanned and released; in one week of April 2025 the challenge and its partners scanned twenty at Diamond, testing the "productionization" of scanning, with the stated mission "to scan all 300 known scrolls" [VC-ScanningAtScale]. Preparation is described in [Chapter 8](#ch-scans): photogrammetry, a 3D-printed form-fitting case, PTFE wrap, and transport in foam-lined cases. That session is not separately listed in the open-data catalog used for this book (see [Chapter 8](#ch-scans)).
 
-From May 2025 the challenge scanned at the ESRF's **BM18** beamline, "specifically designed to harness the coherence of a 4th generation synchrotron for phase-contrast X-ray tomography" [VC-SummerHaze]. The catalogue lists 18 BM18 scans in May 2025, 21 in July and 13 in December ([Chapter 8](#ch-scans)).
+From May 2025 the challenge scanned at the ESRF's **BM18** beamline, "specifically designed to harness the coherence of a 4th generation synchrotron for phase-contrast X-ray tomography" [VC-SummerHaze]. The catalog lists 18 BM18 scans in May 2025, 21 in July and 13 in December ([Chapter 8](#ch-scans)).
 
 ## Fragments as a laboratory
 
@@ -1210,11 +1240,11 @@ The July 2025 post framed the central question: "why can we read ink on Scroll 1
 
 ## The compressed-region haze
 
-In July 2025 a small region of PHerc. 500P2 was scanned on ESRF beamline **ID11** at 0.55 µm. The resulting images showed every fiber surrounded by a wall of cells with an internal cavity (lumen). The challenge hypothesized that these periodic micrometre-scale structures scatter X-rays and cause the "fog" that had made compressed regions so hard to segment, and concluded that "ideally, one should scan with a pixel size lower than the wavelength of the periodicity (< 1 µm)"; since that is impractical for whole scrolls, a recipe balancing the parameters was developed instead [VC-CompressedRegions]. [Chapter 7](#ch-xray) gives the physics.
+In July 2025 a small region of PHerc. 500P2 was scanned on ESRF beamline **ID11** at 0.55 µm. The resulting images showed every fiber surrounded by a wall of cells with an internal cavity (lumen). The challenge hypothesized that these periodic micrometer-scale structures scatter X-rays and cause the "fog" that had made compressed regions so hard to segment, and concluded that "ideally, one should scan with a pixel size lower than the wavelength of the periodicity (< 1 µm)"; since that is impractical for whole scrolls, a recipe balancing the parameters was developed instead [VC-CompressedRegions]. [Chapter 7](#ch-xray) gives the physics.
 
 ## A column of PHerc. 172
 
-In September 2025 the VC3D pipeline was applied end to end to PHerc. 172 to recover a coherent paragraph: the upper part of the final column before the end title. The papyrologists found κουρεῖον (barbershop) and μυροπώλιον (perfume shop), first identified by Maria Chiara Robustelli; μεθύϲκεϲθαι (to get drunk), read by Daniel Delattre; and Federica Nicolardi identified a quotation from Theophrastus's *Characters*, the end of the sketch of the βδέλυροϲ, the "repulsive man" (XI). The passage concerns rumour-mongering and the meddling of those who stir up legal disputes, against which Epicurean ethics recommends *lathe biosas*, "living quietly" [VC-Column172].
+In September 2025 the VC3D pipeline was applied end to end to PHerc. 172 to recover a coherent paragraph: the upper part of the final column before the end title. The papyrologists found κουρεῖον (barbershop) and μυροπώλιον (perfume shop), first identified by Maria Chiara Robustelli; μεθύϲκεϲθαι (to get drunk), read by Daniel Delattre; and Federica Nicolardi identified a quotation from Theophrastus's *Characters*, the end of the sketch of the βδέλυροϲ, the "repulsive man" (XI). The passage concerns rumor-mongering and the meddling of those who stir up legal disputes, against which Epicurean ethics recommends *lathe biosas*, "living quietly" [VC-Column172].
 
 ## A generalist ink model
 
@@ -1224,7 +1254,7 @@ In October 2025 the team reported a generalist ink-detection model, an "ink houn
 2. infer on hidden fragment layers and label iteratively;
 3. generalize to closed scrolls.
 
-The models worked "on all tested fragments (including hidden layers in PHerc. 9B)" and generalized to the 2 µm scans of closed scrolls. Faint letterforms appeared in **PHerc. 814**, some Greek letters in **PHerc. 841**, and stronger signal in **PHerc. 139**, where quick iterative labelling improved predictions [VC-MultipleScrolls].
+The models worked "on all tested fragments (including hidden layers in PHerc. 9B)" and generalized to the 2 µm scans of closed scrolls. Faint letterforms appeared in **PHerc. 814**, some Greek letters in **PHerc. 841**, and stronger signal in **PHerc. 139**, where quick iterative labeling improved predictions [VC-MultipleScrolls].
 
 ## Kaggle surface detection
 
@@ -1239,11 +1269,13 @@ PHerc. 1667 (Scroll 4) had shown "zero evidence of letters" after almost two yea
 | Item | Value | Source |
 |---|---|---|
 | Scrolls scanned in one April 2025 week | 20 | [VC-ScanningAtScale] |
-| BM18 scans in the catalogue, 2025 | 52 | [VC-Catalog] |
+| BM18 scans in the catalog, 2025 | 52 | [VC-Catalog] |
 | Smallest pixel size | 0.55 µm (ID11, PHerc. 500P2 region) | [VC-CompressedRegions] |
 | Scroll 4 rescan | 2.4 µm, 78 keV, 22 cm | [VC-Scroll4Letters] |
 | Prize rounds dated 2025 in the winners list | $88,000 | [VC-Winners] |
 
+
+<a id="ch-2026"></a>
 
 # 2026: A Scroll Read in Full {#ch-2026}
 
@@ -1251,7 +1283,7 @@ PHerc. 1667 (Scroll 4) had shown "zero evidence of letters" after almost two yea
 
 ## January: 70 percent of PHerc. 172
 
-On 13 January 2026 the team reported that the lower roughly 70 percent of PHerc. 172 had been digitally unwrapped, "focusing on the ink-bearing region". The surface extracted was about 7 metres long and 14 cm high, semi-continuous toward the outside where the papyrus is broken; the upper 30 percent was "too mangled" for current methods. The VC3D pipeline extracted surfaces "more than 10x faster" than the fully manual workflow of 2023; the main remaining manual work was fixing sheet switches. Legibility was uneven: fragments of columns in the outer wraps, mostly margins and faint rows deeper inside. The post identified the 7.9 µm scan resolution as a likely ceiling [VC-PHerc172Seventy].
+On 13 January 2026 the team reported that the lower roughly 70 percent of PHerc. 172 had been digitally unwrapped, "focusing on the ink-bearing region". The surface extracted was about 7 meters long and 14 cm high, semi-continuous toward the outside where the papyrus is broken; the upper 30 percent was "too mangled" for current methods. The VC3D pipeline extracted surfaces "more than 10x faster" than the fully manual workflow of 2023; the main remaining manual work was fixing sheet switches. Legibility was uneven: fragments of columns in the outer wraps, mostly margins and faint rows deeper inside. The post identified the 7.9 µm scan resolution as a likely ceiling [VC-PHerc172Seventy].
 
 ## March: agents, foundation models and Kaggle
 
@@ -1287,12 +1319,12 @@ In June the team reported being "close to saturating the performance of models t
 
 At the National Library of Naples the team announced "the first end-to-end complete virtual unwrapping and reading of a carbonized scroll from Herculaneum" [VC-GP2027] [VC-FirstScroll]:
 
-- **PHerc. 1667 (Scroll 4).** About 1.4 metres of papyrus and around 22 columns. Earlier attempts at manual opening "in the nineteenth century, and again in 1969 and the 1980s" left only the inner core, "about 8 cm of an original height of 19-24 cm". The text is "a philosophical treatise on ethics", and "the evidence points to a Stoic work": its final preserved column names **Aristocreon**, nephew and disciple of Chrysippus, which "places it in a Stoic context and dates it to the 2nd century BC" [VC-FirstScroll]. One translated passage reads: "...we will inquire into something, but we will not grasp it, if in some way we depart from ourselves and from our own nature..." [VC-FirstScroll].
+- **PHerc. 1667 (Scroll 4).** About 1.4 meters of papyrus and around 22 columns. Earlier attempts at manual opening "in the nineteenth century, and again in 1969 and the 1980s" left only the inner core, "about 8 cm of an original height of 19-24 cm". The text is "a philosophical treatise on ethics", and "the evidence points to a Stoic work": its final preserved column names **Aristocreon**, nephew and disciple of Chrysippus, which "places it in a Stoic context and dates it to the 2nd century BC" [VC-FirstScroll]. One translated passage reads: "...we will inquire into something, but we will not grasp it, if in some way we depart from ourselves and from our own nature..." [VC-FirstScroll].
 - **PHerc. Paris 4 (Scroll 1).** In the 2.4 µm BM18 rescan ink is "directly visible inside the scroll itself, in the three-dimensional X-ray data, for the first time"; segmented in 3D and projected onto the unwrapped page, it matches the 2023 Grand Prize reading "one-to-one" [VC-FirstScroll]. The night before the event the team unwrapped "approximately 140 columns of text" from the rescan [VC-GP2027].
 - **PHerc. 139.** Its title and author attribution identify it as **Philodemus, *On Gods*, Book 8** [VC-FirstScroll].
 - **PHerc. 172.** A banner of the bottom 70 percent was shown [VC-GP2027].
 
-The work is described in the preprint *Complete virtual unwrapping and reading of a rolled Herculaneum papyrus* (arXiv 2606.29085) [Angelotti2026a]. Data were released under a Creative Commons licence and archived at the ESRF, with code on GitHub [VC-FirstScroll].
+The work is described in the preprint *Complete virtual unwrapping and reading of a rolled Herculaneum papyrus* (arXiv 2606.29085) [Angelotti2026a]. Data were released under a Creative Commons license and archived at the ESRF, with code on GitHub [VC-FirstScroll].
 
 ## The 2027 Grand Prize
 
@@ -1347,9 +1379,11 @@ Nieuwlaar describes starting "small by fixing bugs", which led to his first prog
 Activity in the week before publication included a September progress prize post (12 October), commits to the `villa` repository on photogrammetry, fiber neural tracing in VC3D, spiral-fitting tutorials and tifxyz fixes, and a new alphaXiv listing for the June preprint [Recent-2026-10-15].
 
 
+<a id="ch-ledger"></a>
+
 # The Prize Ledger {#ch-ledger}
 
-> **Chapter summary.** The public winners list records 233 individual awards totalling **$1,958,500** in 34 rounds from April 2023 to October 2026. The 2023 Grand Prize ($850,000 including runners-up) accounts for 43 percent of the money; 202 progress and open-source awards account for $578,500. This chapter tabulates the rounds, years, categories and award sizes, and explains how the ledger was compiled. The full award-by-award ledger is in Appendix B.
+> **Chapter summary.** The public winners list records 233 individual awards totaling **$1,958,500** in 34 rounds from April 2023 to October 2026. The 2023 Grand Prize ($850,000 including runners-up) accounts for 43 percent of the money; 202 progress and open-source awards account for $578,500. This chapter tabulates the rounds, years, categories and award sizes, and explains how the ledger was compiled. The full award-by-award ledger is in Appendix B.
 
 ## How the ledger was compiled
 
@@ -1495,16 +1529,18 @@ Read from the tables above:
 4. **Open prize money outstanding.** The open pool at 15 October 2026 is $2,140,000 [VC-Prizes], more than everything awarded to date.
 
 
+<a id="ch-inventory"></a>
+
 # Inventory of Scrolls and Fragments {#ch-inventory}
 
-> **Chapter summary.** The open-data catalogue (retrieved 15 October 2026) lists 45 samples: 35 scrolls and 10 fragments. This chapter tabulates every sample with data, its aliases, scans, voxel sizes, energies and facilities, then gives a short profile of each sample that has a documented history or result. Counts of segments are those published in the catalogue, not totals of all segments ever made.
+> **Chapter summary.** The open-data catalog (retrieved 15 October 2026) lists 45 samples: 35 scrolls and 10 fragments. This chapter tabulates every sample with data, its aliases, scans, voxel sizes, energies and facilities, then gives a short profile of each sample that has a documented history or result. Counts of segments are those published in the catalog, not totals of all segments ever made.
 
 ## How to read the names
 
-- **PHerc.** numbers are inventory numbers of the Naples collection (Officina dei Papiri Ercolanesi, Biblioteca Nazionale di Napoli) [WP-HercPapyri]. Letters after the number (A, B) distinguish separately catalogued pieces of one roll; **P** marks a fragment piece scanned separately (for example PHerc. 343P beside the rolled PHerc. 343) [VC-Catalog].
-- **PHerc. Paris 1 to 4** are rolls held by the Institut de France; **PHerc. MAN** items are in the Museo Archeologico Nazionale di Napoli (photographs in the catalogue come from a "museum-photos" folder) [VC-Catalog]. *This expansion of MAN is the conventional one and is not stated in the catalogue itself (unverified against a primary source).*
+- **PHerc.** numbers are inventory numbers of the Naples collection (Officina dei Papiri Ercolanesi, Biblioteca Nazionale di Napoli) [WP-HercPapyri]. Letters after the number (A, B) distinguish separately cataloged pieces of one roll; **P** marks a fragment piece scanned separately (for example PHerc. 343P beside the rolled PHerc. 343) [VC-Catalog].
+- **PHerc. Paris 1 to 4** are rolls held by the Institut de France; **PHerc. MAN** items are in the Museo Archeologico Nazionale di Napoli (photographs in the catalog come from a "museum-photos" folder) [VC-Catalog]. *This expansion of MAN is the conventional one and is not stated in the catalog itself (unverified against a primary source).*
 - **Cr** (cornice, frame) and **Fr** (fragment) identify mounted fragments, for example PHerc. 1667 Cr 1 Fr 3 [VC-Catalog].
-- **Scroll 1 to 5** and **Fragment 1 to 6** are the challenge's older numbering. The mapping, from the catalogue's legacy data paths, is [VC-Catalog]:
+- **Scroll 1 to 5** and **Fragment 1 to 6** are the challenge's older numbering. The mapping, from the catalog's legacy data paths, is [VC-Catalog]:
 
 | Alias | Sample | Holding institution |
 |---|---|---|
@@ -1520,7 +1556,7 @@ Read from the tables above:
 | Fragment 5 | PHerc. 1667 Cr 1 Fr 3 | Biblioteca Nazionale di Napoli |
 | Fragment 6 | PHerc. 51 Cr 4 Fr 8 | Biblioteca Nazionale di Napoli |
 
-The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris" names and is not stated in their catalogue entries.
+The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris" names and is not stated in their catalog entries.
 
 ## Scrolls
 
@@ -1562,7 +1598,7 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 | PHerc. . Paris 3 | Scroll 2 | scroll | 1 | 1 | 0 | 2.4 | 78 | 2026-03 | ESRF BM18 |
 | PHerc. . Paris 4 | Scroll 1 | scroll | 7 | 7 | 81 | 1.129, 2.4, 7.91, 45.532 | 54, 74, 78, 110, 137 | 2023-02, 2026-03 | DLS, ESRF BM18 |
 
-*Table 15.1. Every scroll in the open-data catalogue. Source: [VC-Catalog]; data file data/scroll_inventory.csv. "Facility" DLS is Diamond Light Source; BM18 and ID11 are ESRF beamlines.*
+*Table 15.1. Every scroll in the open-data catalog. Source: [VC-Catalog]; data file data/scroll_inventory.csv. "Facility" DLS is Diamond Light Source; BM18 and ID11 are ESRF beamlines.*
 
 ## Fragments
 
@@ -1579,25 +1615,25 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 | PHerc. . Paris 2 Fr 143 | Fragment 2 | fragment | 0 | 0 | 0 | legacy only |  |  |  |
 | PHerc. . Paris 2 Fr 47 | Fragment 1 | fragment | 0 | 0 | 0 | legacy only |  |  |  |
 
-*Table 15.2. Every fragment in the open-data catalogue. "Legacy only" means the catalogue entry has photographs and a legacy data path on the older data server but no scans in the new catalogue. Source: [VC-Catalog].*
+*Table 15.2. Every fragment in the open-data catalog. "Legacy only" means the catalog entry has photographs and a legacy data path on the older data server but no scans in the new catalog. Source: [VC-Catalog].*
 
-![Bar chart of scrolls and fragments by number of catalogued scans and segments](figures/charts/inventory.svg)
-*Figure 15.1. Scans and published segments per sample in the open-data catalogue. Chart by the editors from [VC-Catalog] (data/scroll_inventory.csv). License: CC BY 4.0 (this book).*
+![Bar chart of scrolls and fragments by number of cataloged scans and segments](figures/charts/inventory.svg)
+*Figure 15.1. Scans and published segments per sample in the open-data catalog. Chart by the editors from [VC-Catalog] (data/scroll_inventory.csv). License: CC BY 4.0 (this book).*
 
 ## Profiles
 
 ### PHerc. Paris 4 (Scroll 1)
 
 - **Holder:** Institut de France [VC-Catalog].
-- **Scans:** Diamond at 7.91 µm (catalogue date February 2023, in two halves 1A and 1B) [VC-NewData2024]; a 45.532 µm overview; ESRF BM18 at 2.4 µm and 1.129 µm in March 2026 [VC-Catalog]. Parsons et al. date the original Diamond scan to 2019 [Parsons2023]; the catalogue's date may be a processing date.
+- **Scans:** Diamond at 7.91 µm (catalog date February 2023, in two halves 1A and 1B) [VC-NewData2024]; a 45.532 µm overview; ESRF BM18 at 2.4 µm and 1.129 µm in March 2026 [VC-Catalog]. Parsons et al. date the original Diamond scan to 2019 [Parsons2023]; the catalog's date may be a processing date.
 - **Results:** first word (ΠΟΡΦΥΡΑϹ, October 2023) [VC-FirstLetters]; 2023 Grand Prize, about 5 percent of the scroll, Epicurean text on pleasure [VC-GrandPrize]; ink directly visible in the 2.4 µm data and matching the 2023 reading "one-to-one" [VC-FirstScroll]; about 140 columns unwrapped in June 2026 [VC-GP2027].
 - **Open:** its title; a $50,000 prize is open [VC-Prizes]. The prizes page notes that "the expected title region has shown no detectable ink so far" and that "the top rows are physically missing" [VC-Prizes].
-- **Segments in catalogue:** 81, the most of any sample.
+- **Segments in catalog:** 81, the most of any sample.
 
 ### PHerc. Paris 3 (Scroll 2)
 
 - **Holder:** Institut de France.
-- **Scans:** Diamond 7.91 µm in two halves (2A and 2B) [VC-NewData2024]; ESRF BM18 2.4 µm (March 2026) [VC-Catalog]. The original Diamond scan does not appear in the new catalogue.
+- **Scans:** Diamond 7.91 µm in two halves (2A and 2B) [VC-NewData2024]; ESRF BM18 2.4 µm (March 2026) [VC-Catalog]. The original Diamond scan does not appear in the new catalog.
 - **Results:** no letters reported in the sources consulted; first-letters prizes for Scroll 2 went unclaimed in 2024 [VC-FASP].
 
 ### PHerc. 332 (Scroll 3)
@@ -1617,7 +1653,7 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 ### PHerc. 172 (Scroll 5)
 
 - **Holder:** Bodleian Libraries, Oxford; "similar in size to PHerc. Paris 4" [VC-Catalog]. Given in 1802 or 1803 by Ferdinand IV to the future George IV [VC-Scroll5].
-- **Scans:** Diamond 7.91 µm, 53 keV, in two halves merged into one volume (catalogue date October 2024) [VC-Scroll5] [VC-Catalog].
+- **Scans:** Diamond 7.91 µm, 53 keV, in two halves merged into one volume (catalog date October 2024) [VC-Scroll5] [VC-Catalog].
 - **Results:** dense ink visible directly in the CT [VC-Scroll5]; title *Philodemus, On Vices, Book 1(?)* [VC-FirstTitle]; a final column quoting Theophrastus [VC-Column172]; about 70 percent unwrapped (7 m by 14 cm) [VC-PHerc172Seventy].
 
 ### PHerc. 139
@@ -1632,7 +1668,7 @@ The Institut de France holding of Fragments 1 to 4 is inferred from their "Paris
 
 ### PHerc. 500P2 and PHerc. 9B
 
-Fragments with exposed ink used as ground truth for the generalist ink model [VC-SummerHaze] [VC-MultipleScrolls]. PHerc. 500P2 carries the highest-resolution scan in the catalogue (0.55 µm, ID11), which revealed fiber lumens [VC-CompressedRegions]. Hidden layers in PHerc. 9B were detected by the model [VC-MultipleScrolls].
+Fragments with exposed ink used as ground truth for the generalist ink model [VC-SummerHaze] [VC-MultipleScrolls]. PHerc. 500P2 carries the highest-resolution scan in the catalog (0.55 µm, ID11), which revealed fiber lumens [VC-CompressedRegions]. Hidden layers in PHerc. 9B were detected by the model [VC-MultipleScrolls].
 
 ### PHerc. 814, 841, 1447 and 826
 
@@ -1654,6 +1690,8 @@ Source: [VC-Prizes], which lists each with a specific volume identifier.
 
 The master plan speaks of "all the remaining 300 scrolls in the collection" for Stage Three [VC-MasterPlan], and the April 2025 scanning post speaks of "all 300 known scrolls" [VC-ScanningAtScale]. [Chapter 2](#ch-villa) explains why the numbers of papyri in the collection (around 1,800 inventory numbers) and of intact rolls differ.
 
+
+<a id="ch-pipeline"></a>
 
 # The Pipeline at a Glance {#ch-pipeline}
 
@@ -1689,7 +1727,7 @@ The open-problems document lists the errors that decide "whether a flattened ren
 
 - **mergers**, where two nearby sheets are joined by mistake;
 - **holes**, where the predicted surface disappears;
-- **sheet switches**, where a mesh jumps from the intended sheet to a neighbouring wrap;
+- **sheet switches**, where a mesh jumps from the intended sheet to a neighboring wrap;
 - **compressed regions**, where the image gives weak or ambiguous evidence;
 - **damaged regions**, where the papyrus is torn, folded or missing.
 
@@ -1702,7 +1740,7 @@ The same document gives a bottleneck table [VC-OpenProblems2026]:
 | Approximate surface labels | train 3D surface models from approximate annotations | label snapping, active learning, self-supervised methods |
 | Sheet switches | VC3D inspection and manual correction | tracing algorithms that avoid them |
 | Ink depth ambiguity | surface-conditioned 3D input with 2D output | direct 3D ink segmentation |
-| Cross-scroll generalization | fragment training plus scroll-specific pseudo-labelling | multi-scroll training, better labels, diagnostics |
+| Cross-scroll generalization | fragment training plus scroll-specific pseudo-labeling | multi-scroll training, better labels, diagnostics |
 | Data scale | OME-Zarr, chunked processing, cloud storage | reproducible streaming pipelines, cheaper compute |
 
 ## How the pipeline changed, 2023 to 2026
@@ -1712,10 +1750,12 @@ The same document gives a bottleneck table [VC-OpenProblems2026]:
 | 2023 | manual tracing in Volume Cartographer slice by slice; ThaumatoAnakalyptor autosegmentation at the end | Kaggle fragment models, crackle-trained models, TimeSformer | "hundreds of hours" for the Grand Prize region [VC-FASP] |
 | 2024 | volumetric surface prediction; patch growing and stitching; first spiral fit | same lineage, 3D ink experiments | four hours for the FASP region (Schilling and Johnson) [VC-FASP] |
 | 2025 | VC3D semi-automated tracing; Kaggle surface competition launched | generalist fragment-trained model; 2.4 µm scans | VC3D "more than 10x faster" than manual work by January 2026 [VC-PHerc172Seventy] |
-| 2026 | nnU-Net surfaces; Lasagna; Neural Tracer; spiral fit as main whole-scroll method; ScrollFiesta | iterative pseudo-labelling; ink_9um cross-scroll models; reader-v2; direct 3D ink in PHerc. Paris 4 | Grand Prize rule: at most 8 documented hours [VC-Prizes] |
+| 2026 | nnU-Net surfaces; Lasagna; Neural Tracer; spiral fit as main whole-scroll method; ScrollFiesta | iterative pseudo-labeling; ink_9um cross-scroll models; reader-v2; direct 3D ink in PHerc. Paris 4 | Grand Prize rule: at most 8 documented hours [VC-Prizes] |
 
 The August 2026 workflow post recommends a route for newcomers: "choose an eligible scroll, inspect it in VC3D, recover a papyrus surface, flatten and render a surface volume, run ink detection, inspect, iterate, and search", while noting that "it is not the only way to win" [VC-Workflow2026].
 
+
+<a id="ch-surface"></a>
 
 # Surface Prediction {#ch-surface}
 
@@ -1769,6 +1809,8 @@ Its conclusion: "a smaller set of precise labels in hard regions may be more use
 Sean Johnson adapted Meta's DINO [Caron2021] to full volumes ("DINO 3D") [VC-WeAreCooking]. The implementation, *dinovol*, has released checkpoints, and a version fine-tuned with supervised contrastive learning on three classes (air, fiber, ignore) on the PHerc. Paris 4 2.4 µm scan guides a background and fiber segmentation model, *fiber_dinoguided_2class* [VC-OpenProblems2026]. "The future likely lies in training self-supervised methods to extract relevant features without (or with minimal) annotation" [VC-HardParts].
 
 
+<a id="ch-tracing"></a>
+
 # Meshing and Surface Tracing {#ch-tracing}
 
 > **Chapter summary.** Meshing turns surface predictions into explicit surfaces with connectivity. The lineage runs from manual slice-by-slice tracing in Volume Cartographer (2023), through Khartes, ThaumatoAnakalyptor and patch stitching (2023 to 2024), to the 2026 toolset in VC3D: GrowPatch, Copy Out/In, the Neural Tracer, the Lasagna optimizer and fiber tracing, plus community pipelines such as ScrollFiesta and William Stevens's patch-based unwrapping. All are still described as semi-automated.
@@ -1806,7 +1848,7 @@ A first segment in VC3D takes a few steps [VC-VC3DTutorial]:
 
 ## Copy Out/In and the Neural Tracer
 
-"Once one wrap has been traced well, nearby wraps further in or out may have similar local curvature." Copy Out/In uses an existing mesh as a reference to trace a neighbouring wrap; it is "useful as an acceleration tool, not as an unchecked replacement for validation" because errors propagate [VC-OpenProblems2026]. A learned version predicts the displacement to the next wrap; its checkpoint *copy_displacement_latest* was "trained on 2.4 µm data downscaled once" to 4.8 µm and runs in VC3D's Neural Tracer panel [VC-OpenProblems2026]. In March 2026 the Neural Tracer "still does not perform on par with the state of the art", but its training "scales well with the size of the dataset" [VC-WeAreCooking]. In June it was reported to drift and to be slow [VC-HardParts]. Two other neural approaches, an extrapolation mode and neural mesh autoregression on frozen DINO features, are "on hold" because of slow inference and "rollout drift" [VC-OpenProblems2026].
+"Once one wrap has been traced well, nearby wraps further in or out may have similar local curvature." Copy Out/In uses an existing mesh as a reference to trace a neighboring wrap; it is "useful as an acceleration tool, not as an unchecked replacement for validation" because errors propagate [VC-OpenProblems2026]. A learned version predicts the displacement to the next wrap; its checkpoint *copy_displacement_latest* was "trained on 2.4 µm data downscaled once" to 4.8 µm and runs in VC3D's Neural Tracer panel [VC-OpenProblems2026]. In March 2026 the Neural Tracer "still does not perform on par with the state of the art", but its training "scales well with the size of the dataset" [VC-WeAreCooking]. In June it was reported to drift and to be slow [VC-HardParts]. Two other neural approaches, an extrapolation mode and neural mesh autoregression on frozen DINO features, are "on hold" because of slow inference and "rollout drift" [VC-OpenProblems2026].
 
 ## Lasagna
 
@@ -1842,6 +1884,8 @@ Will Stevens's earlier ball-and-spring method grows a mesh by inserting candidat
 The January 2026 report put the VC3D pipeline at "more than 10x faster than a fully manual workflow in the original Volume Cartographer", with sheet-switch fixing as the main remaining manual work [VC-PHerc172Seventy]. Unwrapping PHerc. 172's lower 70 percent produced about 7 m by 14 cm of surface [VC-PHerc172Seventy].
 
 
+<a id="ch-spiral"></a>
+
 # The Spiral Fit {#ch-spiral}
 
 > **Chapter summary.** The spiral fit is the main whole-scroll method in 2026. It models the scroll as an ideal Archimedean spiral deformed by a smooth, invertible map (a diffeomorphism), and fits that map to all available evidence: verified patches, fibers, winding annotations, predicted normals and the umbilicus. Its output is one tifxyz mesh per winding; its inverse map is the virtual unrolling. It was introduced by Paul Henderson in 2024, published at WACV 2026, and used in the October 2026 PHerc. 343 first-letters result.
@@ -1860,7 +1904,7 @@ r(θ) = (ω / 2π) θ,
 
 so each turn moves outward by one sheet spacing ω.
 
-**Deformation.** The damage is modelled as a diffeomorphism, "a smooth, differentiable, invertible map of 3D space". This guarantees that the sheet cannot tear, pass through itself or collapse, and that "any point in the scan maps back to a point on the ideal (i.e. flattened) scroll. That inverse map is the virtual unrolling" [VC-SpiralTutorial]. It is composed of [VC-SpiralTutorial]:
+**Deformation.** The damage is modeled as a diffeomorphism, "a smooth, differentiable, invertible map of 3D space". This guarantees that the sheet cannot tear, pass through itself or collapse, and that "any point in the scan maps back to a point on the ideal (i.e. flattened) scroll. That inverse map is the virtual unrolling" [VC-SpiralTutorial]. It is composed of [VC-SpiralTutorial]:
 
 1. a coarse global scale and shear;
 2. the integral of a **stationary velocity field** u, the most important part: points follow dφt(x)/dt = u(φt(x)) with φ0(x) = x, and the transform is φ1 (integrated with a few Runge-Kutta steps);
@@ -1911,7 +1955,7 @@ The code is in villa/spiral-fitting; the entry point is *fit_spiral.py*. It need
 The tutorial's advice [VC-SpiralTutorial]:
 
 - Think of the scroll "as a set of local shapes glued together", a C here, a J there, "or god forbid a Z". The **complexity of the local shape**, not the number of windings or curvature alone, is "the primary multiplier of annotation density".
-- Once a constraint describes a neighbourhood, adding more has little benefit.
+- Once a constraint describes a neighborhood, adding more has little benefit.
 - **Shears**, where the papyrus has broken and shifted, are hard for a smooth field; annotate heavily on both sides.
 - Regular spacing and smooth curvature, long runs of wide gaps, and areas of low curvature "even highly compressed ones" are easier.
 
@@ -1924,9 +1968,11 @@ The tutorial's advice [VC-SpiralTutorial]:
 Erwin Nieuwlaar's prize-winning surface came from the open-source spiral fitter "adapted to run on the 8.64 µm scan of PHerc. 343, with his own estimate of the scroll axis (umbilicus)", plus a new method "to snap the segments more accurately to the papyrus surface". The letters lay on windings w047 and w048, joined across θ = 0 [VC-PHerc343].
 
 
+<a id="ch-flatten"></a>
+
 # Flattening and Rendering {#ch-flatten}
 
-> **Chapter summary.** Flattening assigns each mesh point a 2D coordinate with as little distortion as possible; VC3D's production tool, flatboi, uses SLIM to minimize the symmetric Dirichlet energy. Rendering then samples the CT volume along the mesh and its normals to produce a **surface volume**, a stack of flat images centred on the papyrus surface, which is what most ink models read.
+> **Chapter summary.** Flattening assigns each mesh point a 2D coordinate with as little distortion as possible; VC3D's production tool, flatboi, uses SLIM to minimize the symmetric Dirichlet energy. Rendering then samples the CT volume along the mesh and its normals to produce a **surface volume**, a stack of flat images centered on the papyrus surface, which is what most ink models read.
 
 ## Flattening
 
@@ -1967,13 +2013,15 @@ Surface volumes are sensitive to where the surface sits in depth. The ink tutori
 Native 3D ink models skip rendering: "for every training patch it uses the .tifxyz coordinates to find where the segment passes through the original scroll volume, samples a 3D crop there on the fly, and projects the 2D labels into the crop around the surface" [VC-InkTutorial]. [Chapter 21](#ch-ink) describes them.
 
 
+<a id="ch-ink"></a>
+
 # Ink Detection {#ch-ink}
 
-> **Chapter summary.** Ink detection is "signal recovery, not reading": a model looks at a small patch of a surface volume and predicts, per pixel, the probability of ink. Labels began with fragments photographed in infrared, grew through crackle annotation and the 2023 TimeSformer models, and now come from conservative iterative pseudo-labelling. In 2026 the main families are scroll-specific 2.4 µm models, cross-scroll hybrid 3D to 2D models at about 9 µm (ink_9um), community models such as reader-v2 and Hecate, and native 3D ink segmentation. Small windows, held-out validation and papyrological review are the safeguards against hallucination.
+> **Chapter summary.** Ink detection is "signal recovery, not reading": a model looks at a small patch of a surface volume and predicts, per pixel, the probability of ink. Labels began with fragments photographed in infrared, grew through crackle annotation and the 2023 TimeSformer models, and now come from conservative iterative pseudo-labeling. In 2026 the main families are scroll-specific 2.4 µm models, cross-scroll hybrid 3D to 2D models at about 9 µm (ink_9um), community models such as reader-v2 and Hecate, and native 3D ink segmentation. Small windows, held-out validation and papyrological review are the safeguards against hallucination.
 
 ## The problem
 
-"The carbon ink and the carbonized papyrus have almost the same density, so in an X-ray scan the ink is nearly invisible to the naked eye." On a detached fragment, letters are faint in colour photographs, "crisp and legible" at 1000 nm infrared, and nearly gone in CT [VC-InkTutorial]. The remaining signal varies: in PHerc. Paris 4 ink "often shows up as a crackle, a texture like cracked mud, raised slightly above the papyrus"; elsewhere "the signal is more subtle and heterogeneous" [VC-InkTutorial]. The master plan noted in 2025 that the signal amplified in the first two readable scrolls "corresponds either to large morphological cracks or to brighter spots under X-ray, indicating a higher concentration of metals", and that models trained on those cues did not perform well on other scrolls [VC-MasterPlan]. [Chapter 5](#ch-inks) covers the physics and chemistry.
+"The carbon ink and the carbonized papyrus have almost the same density, so in an X-ray scan the ink is nearly invisible to the naked eye." On a detached fragment, letters are faint in color photographs, "crisp and legible" at 1000 nm infrared, and nearly gone in CT [VC-InkTutorial]. The remaining signal varies: in PHerc. Paris 4 ink "often shows up as a crackle, a texture like cracked mud, raised slightly above the papyrus"; elsewhere "the signal is more subtle and heterogeneous" [VC-InkTutorial]. The master plan noted in 2025 that the signal amplified in the first two readable scrolls "corresponds either to large morphological cracks or to brighter spots under X-ray, indicating a higher concentration of metals", and that models trained on those cues did not perform well on other scrolls [VC-MasterPlan]. [Chapter 5](#ch-inks) covers the physics and chemistry.
 
 Two tasks are distinguished [VC-OpenProblems2026]:
 
@@ -2000,7 +2048,7 @@ The tutorial's 2.5D configuration uses `mode: "flat"`, a `vesuvius_unet` with ma
 |---|---|---|---|
 | 2019 to 2023 | EduceLab ink-id | ML on fragment CT with infrared labels (Stephen Parsons) | [VC-FirstLetters] [Parsons2023] |
 | 2023 | Kaggle ink-detection winners | ten open solutions on fragments; resolution gap to scrolls noted | [VC-Winners] [VC-InkFollowupWinners] |
-| 2023 | crackle-trained models | Casey Handmer's crackle; Luke Farritor's iterative labelling | [VC-FirstLetters] |
+| 2023 | crackle-trained models | Casey Handmer's crackle; Luke Farritor's iterative labeling | [VC-FirstLetters] |
 | 2023 | domain transfer | Youssef Nader: unsupervised pretraining on scroll data, fine-tuning Kaggle models | [VC-FirstLetters] |
 | 2023 to 2024 | Grand Prize ensemble | three architectures, strongest images from a **TimeSformer** model (64 x 64 window) | [VC-GrandPrize] |
 | 2024 | 3D ink detection | Ryan Chesler, $20,000 progress prize | [VC-Winners] |
@@ -2022,7 +2070,7 @@ The tutorial's 2.5D configuration uses `mode: "flat"`, a `vesuvius_unet` with ma
 
 Fragments exist because early unrolling attempts broke scrolls ([Chapter 3](#ch-unrolling)); their exposed ink can be photographed in infrared and CT-scanned, which gives a training pair: "input: CT data around the papyrus surface; label: visible ink from the photograph" [VC-OpenProblems2026]. The limitation is that "fragment labels are 2D: the photograph tells us where ink appears on the exposed surface, but not exactly where the ink signal sits in depth" [VC-OpenProblems2026]. The 2025 generalist model trained on PHerc. 500P2, 343P and 9B, registered with infrared images [VC-MultipleScrolls] [VC-Scroll4Letters].
 
-## Iterative pseudo-labelling
+## Iterative pseudo-labeling
 
 The loop [VC-OpenProblems2026] [VC-InkTutorial]:
 
@@ -2069,9 +2117,11 @@ The safeguards, as stated by the challenge:
 When a model finds nothing, "the right conclusion here is neither 'the scan failed' nor 'the model failed'." Possible causes: the scan may not capture the signal; the surface may be misplaced; labels may not match the true ink location; the architecture may miss the right features; ink may differ across scrolls; or the signal may be "below the current pipeline's ability to use it". Hence "better diagnostics matter just as much as better models" [VC-OpenProblems2026].
 
 
+<a id="ch-tools"></a>
+
 # Tools and Repositories {#ch-tools}
 
-> **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, catalogued in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
+> **Chapter summary.** Most current code lives in the ScrollPrize/villa monorepository on GitHub: VC3D (Volume Cartographer 3D), the `vesuvius` Python package with the ink-detection pipeline, spiral fitting, Lasagna, neural tracing and dinovol. Data are in an AWS open-data bucket, curated datasets and model checkpoints on Hugging Face. A large set of community tools, cataloged in the challenge's "Awesome Scroll Tools" list, covers viewing, segmentation, ink detection and auditing. This chapter is a map, with links, of what exists in October 2026.
 
 ## Where things are
 
@@ -2122,10 +2172,10 @@ The challenge maintains an "Awesome Scroll Tools" list of "awarded open source c
 | Segment Browser | Johannes Rudolph | web tool to browse layers and ink results of all released segments |
 | vesuvius-gui | Johannes Rudolph | single-binary GUI rendering volumes and segments on the fly |
 | vesuvius-phalanx | Marcel Roth | Python library and CLI for volume and fragment data |
-| vesuvius-c | Forrest McDonald | C library (now deprecated in favour of `vesuvius` and VC3D) |
-| scroll-data-audit | Matteo Bulloni | reconciles metadata.json against actual Zarr arrays; reported a PHerc. 172 catalogue shape error |
+| vesuvius-c | Forrest McDonald | C library (now deprecated in favor of `vesuvius` and VC3D) |
+| scroll-data-audit | Matteo Bulloni | reconciles metadata.json against actual Zarr arrays; reported a PHerc. 172 catalog shape error |
 | vesuvius-repro | TAUIL Abd Elilah | reproducibility spot checks of surface-prediction artifacts across 36 scrolls (Dice 0.9983 to 1.0000) |
-| vesuvius-catalog | (listed) | scriptable catalogue CLI for the bucket |
+| vesuvius-catalog | (listed) | scriptable catalog CLI for the bucket |
 | volcomp | Forrest McDonald | chunked compressor for CT and predictions, supported in VC3D |
 
 ### Segmentation
@@ -2165,6 +2215,8 @@ All rows: [VC-CommunityProjects], with prize details in [VC-Winners].
 The tutorials use **uv** throughout: `uv sync --extra models` in villa/vesuvius for ink detection [VC-InkTutorial], `uv sync` in villa/spiral-fitting [VC-SpiralTutorial], and `uvx --from huggingface_hub hf buckets sync ...` to fetch datasets resumably [VC-InkTutorial]. The ink tutorial assumes Linux (Windows users are advised to use WSL2) and an NVIDIA GPU with CUDA [VC-InkTutorial].
 
 
+<a id="ch-formats"></a>
+
 # Data Formats {#ch-formats}
 
 > **Chapter summary.** Volumes are distributed as chunked, multiresolution OME-Zarr; surfaces as tifxyz quad meshes (three float32 TIFFs of x, y and z plus metadata) or OBJ; surface volumes as Zarr or TIFF stacks; labels as binary images; metadata as JSON. The bucket is organized by sample, then volumes, segments and representations. Scan identifiers encode date, voxel size, propagation distance and energy.
@@ -2186,16 +2238,16 @@ Source: [VC-Data].
 OME-Zarr "stores large multidimensional arrays in chunks and often at multiple resolutions, letting software read only the region it needs rather than loading an entire scroll" [VC-OpenProblems2026]. It is "the primary distribution format because it is cloud-optimized (chunked, multi-resolution) and supports streaming / partial reads" [VC-Data]. The specification is OME-NGFF [Moore2021]. Practical notes:
 
 - Volumes are pyramids: level 0 is full resolution and each higher level is downsampled (the ink tutorial's native 3D configuration trains "at pyramid level 2 instead of full resolution") [VC-InkTutorial].
-- Volumes are stored as OME-Zarr v2; a community catalogue tool includes "working openers for the bucket's OME-Zarr v2 stores under zarr-python 3" [VC-CommunityProjects], and a 2026 progress prize fixed Zarr 3 reading [VC-Winners].
+- Volumes are stored as OME-Zarr v2; a community catalog tool includes "working openers for the bucket's OME-Zarr v2 stores under zarr-python 3" [VC-CommunityProjects], and a 2026 progress prize fixed Zarr 3 reading [VC-Winners].
 - Volume names include a mask suffix when masked, for example `20250728140407-9.362um-1.2m-113keV-masked.zarr` [VC-InkTutorial].
 
 ### Volume identifiers
 
-A catalogue long identifier has the form `YYYYMMDDHHMMSS-<voxel>um-<distance>m-<energy>keV`, for example `20250509053741-8.640um-1.2m-116keV` (PHerc. 9B) [VC-Catalog]. The leading timestamp is the scan or volume identifier used in prize rules (for example the Grand Prize volume `20250521151220` for PHerc. 1447) [VC-Prizes].
+A catalog long identifier has the form `YYYYMMDDHHMMSS-<voxel>um-<distance>m-<energy>keV`, for example `20250509053741-8.640um-1.2m-116keV` (PHerc. 9B) [VC-Catalog]. The leading timestamp is the scan or volume identifier used in prize rules (for example the Grand Prize volume `20250521151220` for PHerc. 1447) [VC-Prizes].
 
 ### Sizes
 
-Uncompressed size is voxels times bytes per voxel. The catalogue's largest volume, PHerc. Paris 3 at 2.4 µm, has shape 68,417 x 42,403 x 42,403, about 1.23 x 10^14 voxels, roughly 123 TB at one byte per voxel ([Chapter 8](#ch-scans)) [VC-Catalog]. This is why tools stream chunks instead of downloading.
+Uncompressed size is voxels times bytes per voxel. The catalog's largest volume, PHerc. Paris 3 at 2.4 µm, has shape 68,417 x 42,403 x 42,403, about 1.23 x 10^14 voxels, roughly 123 TB at one byte per voxel ([Chapter 8](#ch-scans)) [VC-Catalog]. This is why tools stream chunks instead of downloading.
 
 ## tifxyz
 
@@ -2229,7 +2281,7 @@ Source: [VC-Data]. A segment path from the ink tutorial: `PHerc0139/segments/202
 
 ## metadata.json
 
-The catalogue is a JSON document with `samples` and `models`. Each sample lists photographs, scans with parameters (voxel size, energy, detector distance, location, beamline), volumes with shapes, segments and affine **volume_transforms** between volumes of the same sample (for example from the 2023 Diamond volume of PHerc. Paris 4 to its 2026 ESRF volumes) [VC-Catalog]. This book's data/catalog_*.csv files were extracted from it.
+The catalog is a JSON document with `samples` and `models`. Each sample lists photographs, scans with parameters (voxel size, energy, detector distance, location, beamline), volumes with shapes, segments and affine **volume_transforms** between volumes of the same sample (for example from the 2023 Diamond volume of PHerc. Paris 4 to its 2026 ESRF volumes) [VC-Catalog]. This book's data/catalog_*.csv files were extracted from it.
 
 ## Labels and masks
 
@@ -2249,6 +2301,8 @@ The *spiral-input* dataset (July 2026) is organized by scroll and contains verif
 
 New scans: "Vesuvius Challenge - CT Scans of Herculaneum Papyri", with the author list given on the data page. Scrolls 1 to 4 and Fragments 1 to 6 scanned at Diamond before 2025: cite EduceLab-Scrolls (Parsons et al. 2023) and state that data "were obtained from the EduceLab-Scrolls dataset" [VC-Data] [Parsons2023].
 
+
+<a id="ch-community"></a>
 
 # Community and People {#ch-community}
 
@@ -2274,7 +2328,7 @@ After the 2023 Grand Prize, the organizers listed what they believed was importa
 1. **"An inspiring goal and a clear target."** The unusual goal "drew more press and donations early on" and "attracted an intrinsically motivated community".
 2. **"A solid starting point."** Brent Seales's team "spent two decades making the first scroll scans, building Volume Cartographer, demonstrating the first success in virtual unwrapping, and proving that Herculaneum ink can be detected in CT".
 3. **"Blending competition and cooperation."** A grand prize alone "would suffer from information 'hoarding'". Progress prizes "often in the $1,000-10,000 range" every two months, conditional on open-sourcing, "leveled up" the community, let winners reinvest in equipment or time, and helped people form teams.
-4. **"Hiring an in-house segmentation team."** The "(then somewhat controversial)" decision to pay labellers, because segment quality was hard to judge before ink detection worked, labelling is tedious with "a long learning curve", and prize feedback loops are slow. "We were not dogmatically attached to just being referees; we were willing to run out onto the field and kick the ball a little."
+4. **"Hiring an in-house segmentation team."** The "(then somewhat controversial)" decision to pay labelers, because segment quality was hard to judge before ink detection worked, labeling is tedious with "a long learning curve", and prize feedback loops are slow. "We were not dogmatically attached to just being referees; we were willing to run out onto the field and kick the ball a little."
 5. **"Maximizing surface area for breakthroughs."** "Even ideas and discoveries landing outside the critical path were still important, because a massive search space had to be exhausted."
 
 At the start, "most of us estimated that we had a less than 30% probability of success within the year" [VC-GrandPrize].
@@ -2294,7 +2348,7 @@ Systematic membership counts are not published in the sources consulted. Indicat
 | Progress-prize submissions | 58, of which 13 awarded | July 2026 | [VC-July2026] |
 | Award entries in the winners list | 54, 92, 16, 71 | 2023, 2024, 2025, 2026 | [VC-Winners] |
 
-![Two-panel chart: left, segmented area of Scroll 1 data in 2023 rising from about 200 to over 1,000 square centimetres; right, number of prize awards per year 2023 to 2026.](figures/charts/community_growth.svg)
+![Two-panel chart: left, segmented area of Scroll 1 data in 2023 rising from about 200 to over 1,000 square centimeters; right, number of prize awards per year 2023 to 2026.](figures/charts/community_growth.svg)
 *Figure 24.1. Two public indicators of community activity: segmented area reported during 2023 (left) and number of awards per year in the winners list (right). Chart by the editors. Data: data/community_indicators.csv from [VC-SignsOfProgress], [VC-4thFragment], [VC-SegTooling2Winners] and [VC-Winners]. License: CC BY 4.0 (this book).*
 
 ## People named in public sources
@@ -2329,8 +2383,8 @@ Grand Prize 2023: Youssef Nader, Luke Farritor, Julian Schilliger. First Ink: Ca
 
 The norms below are stated in prize rules and tutorials:
 
-- **Open source to win.** Code must be released under a permissive licence to accept a prize [VC-Prizes].
-- **Release early.** Progress prizes favour work "released or open-sourced early", that "actually get used", improves results "on real data", fixes bugs in tools people use, reveals "insightful, actionable" information, and is "well documented" [VC-Prizes].
+- **Open source to win.** Code must be released under a permissive license to accept a prize [VC-Prizes].
+- **Release early.** Progress prizes favor work "released or open-sourced early", that "actually get used", improves results "on real data", fixes bugs in tools people use, reveals "insightful, actionable" information, and is "well documented" [VC-Prizes].
 - **Use community formats.** OME-Zarr or Zarr arrays, tifxyz quadmeshes, triangular meshes [VC-Prizes].
 - **Bundle small fixes.** Several small PRs in a month go in one submission [VC-Prizes].
 - **Embargo discoveries.** "Do not make your discovery public until the prize is officially announced" [VC-Prizes]; hidden text is not to be published without written approval [VC-FAQ].
@@ -2343,9 +2397,11 @@ Machine learning is central to the pipeline ([Chapters 17](#ch-surface) and [21]
 A broader comparison by the editors' research notes: undeciphered scripts such as Linear A lack a bilingual anchor, so statistical or AI methods "cannot confirm a reading"; the Herculaneum texts are in known languages, so the machine task is recovering ink and letters, not meaning. DeepMind's Ithaca (Greek inscriptions) and Aeneas (Latin inscriptions, *Nature* 2025) propose restorations and parallels that experts then judge [AIChallenges2026]. *These comparisons rest on secondary search summaries and are marked unverified.*
 
 
+<a id="ch-compute"></a>
+
 # Compute, Storage and Costs {#ch-compute}
 
-> **Chapter summary.** The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put a whole scroll at $1 to 5 million with current techniques and set a target of $5,000 or less. The public catalogue's volumes total about 811 TB uncompressed. Training the tutorial ink model takes about an hour and a half on one H100. This chapter collects the published numbers and the arithmetic that follows from them.
+> **Chapter summary.** The economics of reading a scroll are dominated by human time for unwrapping, then by data volume. In 2023 manual segmentation cost "more than $100 per square centimeter"; in 2025 the master plan put a whole scroll at $1 to 5 million with current techniques and set a target of $5,000 or less. The public catalog's volumes total about 811 TB uncompressed. Training the tutorial ink model takes about an hour and a half on one H100. This chapter collects the published numbers and the arithmetic that follows from them.
 
 ## The cost of unwrapping
 
@@ -2362,8 +2418,8 @@ A broader comparison by the editors' research notes: undeciphered scripts such a
 
 **Arithmetic.** Scrolls are "10cm-20cm wide and up to 15 meters long" [VC-MasterPlan]. A roll 15 m by 20 cm has 30,000 cm2 of surface; at $100 per cm2 manual tracing that is $3 million, consistent with the master plan's $1 to 5 million range. The $5,000 target is about $0.17 per cm2 for the same roll, a reduction of roughly 600 times. *These two figures are the editors' arithmetic from the quoted numbers, not published estimates.*
 
-![Bar chart on a logarithmic scale of published cost figures: manual tracing per square centimetre, cost per scroll today, target per scroll, stage budgets and prize totals.](figures/charts/compute_costs.svg)
-*Figure 25.1. Published cost figures for unwrapping and for the programme (log scale). Chart by the editors. Data: data/compute_costs.csv from [VC-GrandPrize], [VC-MasterPlan], [VC-RaceIsOn], [VC-Winners] and [VC-Prizes]. License: CC BY 4.0 (this book).*
+![Bar chart on a logarithmic scale of published cost figures: manual tracing per square centimeter, cost per scroll today, target per scroll, stage budgets and prize totals.](figures/charts/compute_costs.svg)
+*Figure 25.1. Published cost figures for unwrapping and for the program (log scale). Chart by the editors. Data: data/compute_costs.csv from [VC-GrandPrize], [VC-MasterPlan], [VC-RaceIsOn], [VC-Winners] and [VC-Prizes]. License: CC BY 4.0 (this book).*
 
 ## Human time limits in prize rules
 
@@ -2374,7 +2430,7 @@ A broader comparison by the editors' research notes: undeciphered scripts such a
 
 ## Data volume
 
-Volumes are 8-bit (uint8) in the catalogue, so uncompressed bytes equal voxels [VC-Catalog]. The 70 catalogue volumes with listed shapes total about **811 TB** uncompressed. By voxel size:
+Volumes are 8-bit (uint8) in the catalog, so uncompressed bytes equal voxels [VC-Catalog]. The 70 catalog volumes with listed shapes total about **811 TB** uncompressed. By voxel size:
 
 | Voxel size (µm, rounded) | Uncompressed total (TB) |
 |---|---|
@@ -2389,8 +2445,8 @@ Volumes are 8-bit (uint8) in the catalogue, so uncompressed bytes equal voxels [
 
 Largest samples: PHerc. 139 (180 TB across its volumes), PHerc. Paris 4 (153 TB), PHerc. Paris 3 (123 TB), PHerc. 814 (64 TB) [VC-Catalog]. Stored volumes are compressed and chunked, so on-disk sizes are smaller; *compressed sizes were not measured for this book*.
 
-![Bar chart of uncompressed catalogue volume size in terabytes by voxel size, dominated by 2.4 micrometre volumes at about 615 terabytes.](figures/charts/storage_by_voxel.svg)
-*Figure 25.2. Uncompressed size of catalogue volumes by voxel size. Chart by the editors. Data: data/catalog_volumes.csv from [VC-Catalog]. License: CC BY 4.0 (this book).*
+![Bar chart of uncompressed catalog volume size in terabytes by voxel size, dominated by 2.4 micrometer volumes at about 615 terabytes.](figures/charts/storage_by_voxel.svg)
+*Figure 25.2. Uncompressed size of catalog volumes by voxel size. Chart by the editors. Data: data/catalog_volumes.csv from [VC-Catalog]. License: CC BY 4.0 (this book).*
 
 The voxel-scaling rule ([Chapter 7](#ch-xray)) explains the concentration: halving the voxel size multiplies voxels by eight. The August 2025 post on the compressed regions noted that the reconstructed high-resolution volume "for the same region is about 64 times larger than a scan captured at a 2 µm pixel size, and 4,096 times larger than one captured at 8 µm" [VC-CompressedRegions]. The ratios imply a voxel size near 0.5 µm (editors' arithmetic).
 
@@ -2434,6 +2490,8 @@ Drawn from the tutorials:
 3. "If you run out of GPU memory, reduce `batch_size` to 1, or reduce the `patch_size` to `[64, 128, 128]`" [VC-InkTutorial].
 4. The tutorial's first-letters workflow uses the ~9 µm `ink_9um` models [VC-InkTutorial]. Data at 9.4 µm is smaller than 2.4 µm data by about (2.4/9.4)^3, roughly 1/60 (editors' arithmetic).
 
+
+<a id="ch-open-problems"></a>
 
 # Open Problems {#ch-open-problems}
 
@@ -2508,7 +2566,7 @@ The document's six callouts, paraphrased closely [VC-OpenProblems2026]:
 
 Two neural tracing approaches were put "on-hold" [VC-OpenProblems2026]:
 
-- **Neural tracer, extrapolation mode:** predicts how a surface displaces as it grows beyond its edge, without a neighbouring wrap.
+- **Neural tracer, extrapolation mode:** predicts how a surface displaces as it grows beyond its edge, without a neighboring wrap.
 - **Neural mesh autoregression:** predicts a continuation of a tifxyz lattice one vertex at a time from frozen 3D DINO features; "a first MVP", not wired into GrowPatch.
 
 Both share two "severe limitations": inference is "slow" at 2.4 µm, and multi-step rollouts "drift" because "small errors compound across steps instead of staying bounded." "Neither problem is solved yet."
@@ -2533,6 +2591,8 @@ These are drawn from tutorials and rules, not from a single list:
 | How to extend first-letters searches to every newly scanned scroll | [VC-Prizes] [VC-PHerc343] |
 | How to scan and read "all the remaining 300 scrolls" in the planned "2-3 years" | [VC-MasterPlan] |
 
+
+<a id="ch-howto"></a>
 
 # How-Tos {#ch-howto}
 
@@ -2599,7 +2659,7 @@ vc_render_tifxyz \
 
 ## Recipe 5. Train an ink model on one segment
 
-1. Download one labelled segment (about 25 GB):
+1. Download one labeled segment (about 25 GB):
 
 ```
 uvx --from huggingface_hub hf buckets sync \
@@ -2678,7 +2738,7 @@ Notes from the tutorial [VC-SpiralTutorial]:
 
 From the prize rules [VC-Prizes]:
 
-1. Open-source the work under a permissive licence, with documentation.
+1. Open-source the work under a permissive license, with documentation.
 2. Prefer community formats (OME-Zarr, tifxyz, meshes).
 3. Bundle a month's small fixes into one submission.
 4. Submissions "are evaluated monthly" through the submission form on the prizes page; the deadline current at the time of writing was "11:59pm Pacific, October 31st, 2026".
@@ -2696,11 +2756,13 @@ From the prize rules [VC-Prizes]:
 | Validation accuracy stalls while loss drops | overfitting to labels | more segments, held-out validation regions [VC-InkTutorial] |
 
 
-# Data, Licences and Responsible Practice {#ch-ethics}
+<a id="ch-ethics"></a>
+
+# Data, Licenses and Responsible Practice {#ch-ethics}
 
 > **Chapter summary.** Challenge data is released under CC BY-NC 4.0 unless noted, and the legacy EduceLab-Scrolls scans are copyrighted by EduceLab and the University of Kentucky. Users agree to cite the dataset and not to publish "any revelation of hidden text" without written approval. Prize rules add open-source, open-data and reproducibility requirements and an embargo on discoveries. This chapter sets out those terms, the safeguards against machine "hallucination" of letters, and how this book handles images and data.
 
-## Licences of the data
+## Licenses of the data
 
 From the data page [VC-Data]:
 
@@ -2739,7 +2801,7 @@ From the 2027 prize rules [VC-Prizes]:
 
 A model with a large field of view can learn what letters look like and draw them where there is no ink. The rules say: "The larger your model's window size, the easier it is for it to invent plausible letterforms instead of recovering real ink. Large windows are fine, but you must demonstrate that the text is" supported by the data, and submissions must explain "False-positive mitigation" [VC-Prizes]. In 2024 the challenge discouraged windows larger than 0.5 x 0.5 mm ([Chapter 21](#ch-ink)) [VC-Prizes2024].
 
-The ink tutorial's safeguards for pseudo-labelling [VC-InkTutorial]:
+The ink tutorial's safeguards for pseudo-labeling [VC-InkTutorial]:
 
 - "The model only sees small local patches, smaller than a full letter, so it cannot learn to 'draw' plausible letterforms."
 - "Labeling is conservative: only regions where strokes are clearly and repeatably visible get labeled."
@@ -2755,17 +2817,19 @@ The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris ro
 ## How this book handles images and data
 
 - **No scan renders.** The book reproduces no CT slices, surface renders or ink predictions from challenge data. Scrolls are described with numbers and with charts the editors drew from those numbers.
-- **Photographs** are from Wikimedia Commons or other sources with a reuse licence, each captioned with source and licence (Appendix F).
+- **Photographs** are from Wikimedia Commons or other sources with a reuse license, each captioned with source and license (Appendix F).
 - **Charts and diagrams** are the editors' own, drawn from the CSV files in `data/`, and licensed CC BY 4.0 as part of this book.
-- **Quotations** from scrollprize.org and the Substack are short and attributed. *The book's own licence for text is the editors' choice and should be confirmed before redistribution.*
-- **Unverified statements** are written in italics and labelled.
+- **Quotations** from scrollprize.org and the Substack are short and attributed. *The book's own license for text is the editors' choice and should be confirmed before redistribution.*
+- **Unverified statements** are written in italics and labeled.
 
+
+<a id="ch-timeline"></a>
 
 # Timeline {#ch-timeline}
 
 > **Chapter summary.** A single chronology from the eruption to the 2027 prize deadline, compiled from the chapters of this book. Each row cites its source; the machine-readable version is data/timeline.csv. Dates of Substack-announced events are the dates of the announcing post unless the chapter gives another date.
 
-![Timeline chart of challenge-era events from March 2023 to June 2027, colour coded by category: challenge milestones, data releases and scans.](figures/charts/timeline.svg)
+![Timeline chart of challenge-era events from March 2023 to June 2027, color coded by category: challenge milestones, data releases and scans.](figures/charts/timeline.svg)
 *Figure 29.1. Challenge-era milestones, 2023 to 2027. Chart by the editors. Data: data/timeline.csv. License: CC BY 4.0 (this book).*
 
 
@@ -2781,7 +2845,7 @@ The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris ro
 | Date | Event | Source |
 |---|---|---|
 | 1709 | Herculaneum rediscovered by a well dig | [WP-Herculaneum] |
-| 1738 | Systematic tunnelling begins under Charles of Bourbon | [WP-Herculaneum] |
+| 1738 | Systematic tunneling begins under Charles of Bourbon | [WP-Herculaneum] |
 | 1750 | Villa of the Papyri found | [WP-Villa] |
 | 1752 to 1754 | Papyri recovered from four find spots in the Villa | [WP-HercPapyri] |
 | 1756 | Piaggio's unrolling machine | [WP-Piaggio] |
@@ -2845,6 +2909,8 @@ The scrolls are held by the Biblioteca Nazionale di Napoli and, for the Paris ro
 *Dates before the challenge are as given in the cited secondary sources; Chapters 1 to 3 discuss disagreements, such as the day of the eruption.*
 
 
+<a id="ch-faq"></a>
+
 # Frequently Asked Questions {#ch-faq}
 
 > **Chapter summary.** Short answers to common questions, each pointing to the chapter that gives the evidence. Answers repeat facts sourced elsewhere in the book; follow the chapter link for citations.
@@ -2869,7 +2935,7 @@ Herculaneum ink is mainly carbon on a carbonized papyrus, so the two have simila
 An open competition launched on 15 March 2023 by Nat Friedman, Daniel Gross and Brent Seales to read the scrolls, run by Scroll Prize, Inc. ([Chapter 9](#ch-founding)).
 
 **How much prize money has been awarded?**
-This book's ledger counts 233 awards totalling $1,958,500 to 15 October 2026 ([Chapter 14](#ch-ledger)).
+This book's ledger counts 233 awards totaling $1,958,500 to 15 October 2026 ([Chapter 14](#ch-ledger)).
 
 **Who won the 2023 Grand Prize?**
 Youssef Nader, Luke Farritor and Julian Schilliger shared $700,000 for more than 15 columns of Scroll 1 (PHerc. Paris 4) ([Chapter 10](#ch-2023)).
@@ -2884,7 +2950,7 @@ A pool of $2,140,000 including the $1 million 2027 Grand Prize, First Letters pr
 Yes. Most contributions are software: segmentation, tracing, spiral fitting, ink detection, tooling and infrastructure. Papyrologists review readings ([Chapter 24](#ch-community), [Chapter 26](#ch-open-problems)).
 
 **Do I have to open-source my work?**
-To accept a prize, yes, under a permissive licence; training datasets must be public under CC BY-NC 4.0 ([Chapter 28](#ch-ethics)).
+To accept a prize, yes, under a permissive license; training datasets must be public under CC BY-NC 4.0 ([Chapter 28](#ch-ethics)).
 
 ## About the data
 
@@ -2892,7 +2958,7 @@ To accept a prize, yes, under a permissive licence; training datasets must be pu
 In the public S3 bucket `s3://vesuvius-challenge-open-data/`, readable anonymously; curated datasets and models are on Hugging Face ([Chapter 23](#ch-formats)).
 
 **How big is it?**
-The catalogue volumes total about 811 TB uncompressed; one 2.4 µm volume of a large scroll is about 40 to 125 TB uncompressed ([Chapter 25](#ch-compute), [Chapter 8](#ch-scans)).
+The catalog volumes total about 811 TB uncompressed; one 2.4 µm volume of a large scroll is about 40 to 125 TB uncompressed ([Chapter 25](#ch-compute), [Chapter 8](#ch-scans)).
 
 **What format is it in?**
 Volumes are OME-Zarr; traced surfaces are tifxyz (three float32 TIFFs plus metadata) or meshes ([Chapter 23](#ch-formats)).
@@ -2938,6 +3004,8 @@ No. It is an independent compilation and is not endorsed by the Vesuvius Challen
 Read `llms.txt` for the map, `bible.md` for the full text, and `data/` for machine-readable tables. Citation keys in square brackets resolve in Appendix G.
 
 
+<a id="app-glossary"></a>
+
 # Appendix A. Glossary {#app-glossary}
 
 Terms are defined as used in this book. The chapter in brackets gives the fuller treatment.
@@ -2955,12 +3023,12 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | book number | The number of a book in a multi-book work, written in an end title ([6](#ch-greek)). |
 | capitals (bookhand) | The upright Greek letters, without word division, in which literary papyri were written ([6](#ch-greek)). |
 | carbonization | Conversion of papyrus to carbon-rich material by heat in the eruption ([1](#ch-eruption), [4](#ch-papyrus)). |
-| catalogue | The challenge's machine-readable listing of samples, scans, volumes and models ([8](#ch-scans), [23](#ch-formats)). |
+| catalog | The challenge's machine-readable listing of samples, scans, volumes and models ([8](#ch-scans), [23](#ch-formats)). |
 | Ceres | An open-source C++ library for non-linear least-squares problems, used by GrowPatch [Ceres] ([18](#ch-tracing)). |
 | checkpoint | Saved weights of a trained model ([21](#ch-ink)). |
 | column | A block of text on a roll; Herculaneum columns are often 5 to 6 cm wide ([4](#ch-papyrus)). |
 | compressed region | Part of a scroll where wraps are pressed so tightly that scans lose layer separation ([8](#ch-scans), [26](#ch-open-problems)). |
-| Copy Out/In | A VC3D tracing method that predicts a neighbouring wrap's surface from a traced one ([18](#ch-tracing)). |
+| Copy Out/In | A VC3D tracing method that predicts a neighboring wrap's surface from a traced one ([18](#ch-tracing)). |
 | crackle | A fine cracked texture of ink seen in scroll CT, the first ink signal found directly in a closed scroll ([10](#ch-2023)). |
 | CT | Computed tomography: reconstruction of a 3D volume from many X-ray projections ([7](#ch-xray)). |
 | data agreement | The terms users accept for challenge data, including citation and no publication of hidden text without approval ([28](#ch-ethics)). |
@@ -2972,7 +3040,7 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | end title (subscriptio) | The title block at the end of a roll's text: author, title, book number, sometimes a line count ([6](#ch-greek)). |
 | Epicureanism | The philosophy of Epicurus, which most Herculaneum texts discuss ([2](#ch-villa)). |
 | ESRF | European Synchrotron Radiation Facility, Grenoble ([8](#ch-scans)). |
-| fibre (fiber) | A strand of the papyrus plant visible in CT; fibres run horizontally on the recto ([4](#ch-papyrus), [18](#ch-tracing)). |
+| fiber (fibre) | A strand of the papyrus plant visible in CT; fibers run horizontally on the recto ([4](#ch-papyrus), [18](#ch-tracing)). |
 | First Letters prize | A prize for the first letters found in a given scroll ([13](#ch-2026)). |
 | flattening | Mapping a traced 3D surface onto a plane with low distortion ([20](#ch-flatten)). |
 | flatboi | A community flattening tool based on SLIM ([20](#ch-flatten)). |
@@ -3006,8 +3074,8 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | Piaggio machine | The 18th-century unrolling device of Antonio Piaggio ([3](#ch-unrolling)). |
 | progress prize | Monthly prize for open-source contributions ([14](#ch-ledger)). |
 | propagation distance | Distance from sample to detector; controls phase contrast ([7](#ch-xray)). |
-| pseudo-labelling | Training on labels produced by a model's own confident predictions, iteratively ([21](#ch-ink)). |
-| recto | The written inner side of a roll, with horizontal fibres ([4](#ch-papyrus)). |
+| pseudo-labeling | Training on labels produced by a model's own confident predictions, iteratively ([21](#ch-ink)). |
+| recto | The written inner side of a roll, with horizontal fibers ([4](#ch-papyrus)). |
 | rendering | Sampling the volume along a traced surface into a stack of layers ([20](#ch-flatten)). |
 | ResNet3D | A 3D residual network [Hara2018], used in early ink models ([21](#ch-ink)). |
 | scorza | The hard outer shell of a carbonized roll, removed in early opening ([3](#ch-unrolling)). |
@@ -3025,17 +3093,19 @@ Terms are defined as used in this book. The chapter in brackets gives the fuller
 | tifxyz | A surface format of three float32 TIFFs giving x, y, z for each grid cell, with -1 for missing cells ([23](#ch-formats)). |
 | TimeSformer | A video transformer [Bertasius2021], used in the 2023 Grand Prize ink model ([21](#ch-ink)). |
 | topology-aware metric | A score that penalizes holes, mergers and sheet switches ([17](#ch-surface)). |
-| umbilicus | The central axis of a roll; in the data, the fitted centre line ([19](#ch-spiral)). |
-| uint8 | 8-bit unsigned integer; the data type of catalogue volumes ([23](#ch-formats)). |
+| umbilicus | The central axis of a roll; in the data, the fitted center line ([19](#ch-spiral)). |
+| uint8 | 8-bit unsigned integer; the data type of catalog volumes ([23](#ch-formats)). |
 | VC3D | Volume Cartographer 3D, the main viewing and tracing application ([18](#ch-tracing), [22](#ch-tools)). |
-| verso | The outer back side of a roll, with vertical fibres ([4](#ch-papyrus)). |
+| verso | The outer back side of a roll, with vertical fibers ([4](#ch-papyrus)). |
 | villa (repository) | The ScrollPrize monorepository containing VC3D, vesuvius and other tools ([22](#ch-tools)). |
 | Villa of the Papyri | The Herculaneum villa where the rolls were found ([2](#ch-villa)). |
 | virtual unwrapping | Recovering a rolled surface's content from 3D imaging without opening it ([3](#ch-unrolling)). |
 | volume | A reconstructed 3D CT image ([8](#ch-scans)). |
-| voxel | A volume element; the voxel size is its edge length in micrometres ([7](#ch-xray)). |
-| winding number | The count of turns from the centre of a spiral; relative winding annotations constrain spiral fits ([19](#ch-spiral)). |
+| voxel | A volume element; the voxel size is its edge length in micrometers ([7](#ch-xray)). |
+| winding number | The count of turns from the center of a spiral; relative winding annotations constrain spiral fits ([19](#ch-spiral)). |
 
+
+<a id="app-ledger"></a>
 
 # Appendix B. Prize Ledger {#app-ledger}
 
@@ -3397,7 +3467,7 @@ All 233 awards compiled from the winners page [VC-Winners], retrieved 15 October
 | $1,000 | Lasagna & VC3D improvements: Santiago Pelufo |
 | $1,000 | First Letters on PHerc. 0826: Lutfiya Miller and Chris Müller |
 | $1,000 | nnInteractive label refinement: Benjamin Hamm |
-| $1,000 | Ink checkpoint benchmarking: Domenico Russo. Benchmarks all 14 released 9 µm ink checkpoints, and retrains from dense teacher labels instead of the sparse hand-labelled strips. |
+| $1,000 | Ink checkpoint benchmarking: Domenico Russo. Benchmarks all 14 released 9 µm ink checkpoints, and retrains from dense teacher labels instead of the sparse hand-labeled strips. |
 | $1,000 | Seeded sheet growing: Mihajlo Nestorović. A trained 3D model that grows a single papyrus sheet from a seed, along with a pipeline for generating harder sheet-level training data. |
 | $500 | Dense pseudo-labels & checkpoint repair: Erwin Nieuwlaar |
 | $500 | Assorted villa fixes: Oleksandr Kozlenko |
@@ -3448,9 +3518,11 @@ All 233 awards compiled from the winners page [VC-Winners], retrieved 15 October
 **Total: $1,958,500 in 233 awards.**
 
 
+<a id="app-scans"></a>
+
 # Appendix C. Scans and Volumes {#app-scans}
 
-Every scan (67) and reconstructed volume (74) listed in the open data catalogue [VC-Catalog] on 15 October 2026. Legacy EduceLab-Scrolls scans of Fragments 1 to 6 are not in this catalogue ([Chapter 15](#ch-inventory)). Sizes are uncompressed at 8 bits, computed by the editors from the array shapes. Data: data/catalog_scans.csv and data/catalog_volumes.csv.
+Every scan (67) and reconstructed volume (74) listed in the open data catalog [VC-Catalog] on 15 October 2026. Legacy EduceLab-Scrolls scans of Fragments 1 to 6 are not in this catalog ([Chapter 15](#ch-inventory)). Sizes are uncompressed at 8 bits, computed by the editors from the array shapes. Data: data/catalog_scans.csv and data/catalog_volumes.csv.
 
 ## Scans
 
@@ -3604,9 +3676,11 @@ Every scan (67) and reconstructed volume (74) listed in the open data catalogue 
 | PHercParis4 | 20260608103018 | 1.129 | 78.0 | 59969 x 36006 x 32354 | 69,860 |
 
 
-# Appendix D. Models in the Catalogue {#app-models}
+<a id="app-models"></a>
 
-The 13 models listed in the open data catalogue [VC-Catalog] on 15 October 2026. Models published only on Hugging Face (for example ink_9um and ink_canonical_2um) are described in [Chapter 21](#ch-ink). Data: data/catalog_models.csv.
+# Appendix D. Models in the Catalog {#app-models}
+
+The 13 models listed in the open data catalog [VC-Catalog] on 15 October 2026. Models published only on Hugging Face (for example ink_9um and ink_canonical_2um) are described in [Chapter 21](#ch-ink). Data: data/catalog_models.csv.
 
 | ID | Name | Date | Architecture | Task | Resolution (µm) | Training dataset | Compatible |
 |---|---|---|---|---|---|---|---|
@@ -3624,6 +3698,8 @@ The 13 models listed in the open data catalogue [VC-Catalog] on 15 October 2026.
 | 20260801084232 | 20260801084232-lasagna | 2026-08-01 | fiber3d/unet | lasagna |  |  |  |
 | 20260915212757 | 20260915212757-lasagna | 2026-09-15 | fiber3d/unet | lasagna |  | scrollprize/lasagna-fiber |  |
 
+
+<a id="app-substack"></a>
 
 # Appendix E. Newsletter Index {#app-substack}
 
@@ -3701,11 +3777,13 @@ All 68 posts of the Vesuvius Challenge newsletter on Substack that were collecte
 | 2026-10-08 | [$50K First Letters Prize awarded for PHerc. 343](https://scrollprize.substack.com/p/50k-first-letters-prize-awarded-for) | VC-PHerc343 |
 
 
+<a id="app-images"></a>
+
 # Appendix F. Image Credits {#app-images}
 
-Every photograph in the book, with author, source and licence as recorded on its Wikimedia Commons file page. Charts and diagrams are the editors' own (CC BY 4.0, data in data/). No CT scan data or renders from the challenge are reproduced.
+Every photograph in the book, with author, source and license as recorded on its Wikimedia Commons file page. Charts and diagrams are the editors' own (CC BY 4.0, data in data/). No CT scan data or renders from the challenge are reproduced.
 
-| File | Description | Author | Licence | Source |
+| File | Description | Author | License | Source |
 |---|---|---|---|---|
 | 01 | View of the Vesuvius from the Autostrada A56 in Naples, 2010 | DimiTalen | CC0 | <https://commons.wikimedia.org/wiki/File:View_of_the_Vesuvius_from_the_Autostrada_A56_in_Naples,_2010.jpg> |
 | 02 | Map of region surrounding Vesuvius, described by William Hamilton as Plate VI. in a letter from Naples dated Oct. 16, 1770. The letter was c | Unknown author | Public domain | <https://commons.wikimedia.org/wiki/File:Map_around_Vesuvius_1770_plate6_from_William_Hamilton.jpg> |
@@ -3741,8 +3819,10 @@ Every photograph in the book, with author, source and licence as recorded on its
 | 33 | The Younger Pliny Reproved, colorized copperplate print by Thomas Burke (1749-1815) after Angelica Kauffmann; c. 39 x 45 cm | see description | Public domain | <https://commons.wikimedia.org/wiki/File:The_Younger_Pliny_Reproved.jpg> |
 | 34 | Pliny the Elder (born Gaius Plinius Secundus, AD 23 - 79) was a Roman author, naturalist and natural philosopher, a naval and army commander | Dimitris Kamaras from Athens, Greece | CC BY 2.0 | <https://commons.wikimedia.org/wiki/File:Pliny_the_Elder,_Loggia_del_Consiglio,_Piazza_dei_Signori,_Verona_(37520060770)_(cropped).jpg> |
 
-Licence summary: CC BY 2.0: 1; CC BY 4.0: 2; CC BY-SA 3.0: 2; CC BY-SA 3.0 de: 1; CC BY-SA 4.0: 8; CC0: 1; Public domain: 18. Total: 33 photographs.
+License summary: CC BY 2.0: 1; CC BY 4.0: 2; CC BY-SA 3.0: 2; CC BY-SA 3.0 de: 1; CC BY-SA 4.0: 8; CC0: 1; Public domain: 18. Total: 33 photographs.
 
+
+<a id="app-bibliography"></a>
 
 # Appendix G. Bibliography {#app-bibliography}
 
@@ -3750,9 +3830,9 @@ Sources are cited in the text by keys in square brackets. Web pages were accesse
 
 ## Vesuvius Challenge pages
 
-- <span id="bib-VC-Catalog"></span>**[VC-Catalog]** Vesuvius Challenge open data catalogue, metadata.json in the open data bucket. scrollprize.org, accessed 15 Oct 2026. <https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json>
+- <span id="bib-VC-Catalog"></span>**[VC-Catalog]** Vesuvius Challenge open data catalog, metadata.json in the open data bucket. scrollprize.org, accessed 15 Oct 2026. <https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/metadata.json>
 - <span id="bib-VC-CommunityProjects"></span>**[VC-CommunityProjects]** Vesuvius Challenge, "Awesome Scroll Tools" (community projects). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/community_projects>
-- <span id="bib-VC-Data"></span>**[VC-Data]** Vesuvius Challenge, "Data Formats" (data page: licences, how to cite, repositories). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data>
+- <span id="bib-VC-Data"></span>**[VC-Data]** Vesuvius Challenge, "Data Formats" (data page: licenses, how to cite, repositories). scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data>
 - <span id="bib-VC-Datasets"></span>**[VC-Datasets]** Vesuvius Challenge, "Curated Datasets". scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/data_datasets>
 - <span id="bib-VC-FAQ"></span>**[VC-FAQ]** Vesuvius Challenge, "FAQ". scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/faq>
 - <span id="bib-VC-FirstLetters"></span>**[VC-FirstLetters]** Vesuvius Challenge, "First word discovered in unopened Herculaneum scroll by 21yo computer science student". scrollprize.org, accessed 15 Oct 2026. <https://scrollprize.org/firstletters>
@@ -3901,6 +3981,8 @@ Sources are cited in the text by keys in square brackets. Web pages were accesse
 - <span id="bib-WP-Weber"></span>**[WP-Weber]** Wikipedia, "Karl Jakob Weber", accessed October 2026. <https://en.wikipedia.org/wiki/Karl_Jakob_Weber>
 
 
+<a id="app-index"></a>
+
 # Index {#app-index}
 
 Terms, people, places and samples, with the chapters and appendices where they appear. Page numbers in the PDF are those of the start of each chapter.
@@ -3915,13 +3997,13 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **autoresearch**: [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Compute, Storage and Costs](#ch-compute), [Timeline](#ch-timeline), [Appendix A](#app-glossary)
 - **AWS**: [Founding the Vesuvius Challenge](#ch-founding), [2026: A Scroll Read in Full](#ch-2026), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Compute, Storage and Costs](#ch-compute), [Timeline](#ch-timeline)
 - **BM18**: [Papyrus: from Plant to Roll](#ch-papyrus), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [Compute, Storage and Costs](#ch-compute), [Timeline](#ch-timeline), [Appendix A](#app-glossary)
-- **Bodleian**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [2024: From Five Percent to Autosegmentation](#ch-2024), [Inventory of Scrolls and Fragments](#ch-inventory), [Community and People](#ch-community), [Data, Licences and Responsible Practice](#ch-ethics)
+- **Bodleian**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [2024: From Five Percent to Autosegmentation](#ch-2024), [Inventory of Scrolls and Fragments](#ch-inventory), [Community and People](#ch-community), [Data, Licenses and Responsible Practice](#ch-ethics)
 - **book number**: [The Villa of the Papyri and its Library](#ch-villa), [Greek and Papyrology Basics](#ch-greek), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Appendix A](#app-glossary)
 - **British Library**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Greek and Papyrology Basics](#ch-greek), [Appendix F](#app-images)
 - **capitals**: [Inks and Writing](#ch-inks), [Greek and Papyrology Basics](#ch-greek), [Appendix A](#app-glossary)
 - **carbon**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Ink Detection](#ch-ink), [Frequently Asked Questions](#ch-faq)
 - **carbonization**: [The Eruption of 79 CE](#ch-eruption), [Papyrus: from Plant to Roll](#ch-papyrus), [Appendix A](#app-glossary)
-- **catalogue**: [About This Book](#ch-preface), [The Villa of the Papyri and its Library](#ch-villa), [Greek and Papyrology Basics](#ch-greek), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory), [Tools and Repositories](#ch-tools), [Data Formats](#ch-formats), [Compute, Storage and Costs](#ch-compute), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix C](#app-scans), [Appendix D](#app-models)
+- **catalog**: [About This Book](#ch-preface), [The Villa of the Papyri and its Library](#ch-villa), [Greek and Papyrology Basics](#ch-greek), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory), [Tools and Repositories](#ch-tools), [Data Formats](#ch-formats), [Compute, Storage and Costs](#ch-compute), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix C](#app-scans), [Appendix D](#app-models)
 - **Ceres**: [Meshing and Surface Tracing](#ch-tracing), [Appendix A](#app-glossary)
 - **checkpoint**: [Surface Prediction](#ch-surface), [Meshing and Surface Tracing](#ch-tracing), [The Spiral Fit](#ch-spiral), [Ink Detection](#ch-ink), [How-Tos](#ch-howto), [Appendix A](#app-glossary), [Appendix B](#app-ledger)
 - **column**: [The Eruption of 79 CE](#ch-eruption), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Greek and Papyrology Basics](#ch-greek), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [Meshing and Surface Tracing](#ch-tracing), [Data Formats](#ch-formats), [Timeline](#ch-timeline), [Appendix A](#app-glossary), [Appendix E](#app-substack), [Appendix F](#app-images)
@@ -3929,20 +4011,20 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **Copy Out/In**: [The Pipeline at a Glance](#ch-pipeline), [Meshing and Surface Tracing](#ch-tracing), [The Spiral Fit](#ch-spiral), [Tools and Repositories](#ch-tools), [Appendix A](#app-glossary)
 - **crackle**: [Inks and Writing](#ch-inks), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix B](#app-ledger), [Appendix E](#app-substack)
 - **CT**: [About This Book](#ch-preface), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [The Pipeline at a Glance](#ch-pipeline), [Surface Prediction](#ch-surface), [Meshing and Surface Tracing](#ch-tracing)
-- **data agreement**: [Greek and Papyrology Basics](#ch-greek), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [How-Tos](#ch-howto), [Data, Licences and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary)
+- **data agreement**: [Greek and Papyrology Basics](#ch-greek), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [How-Tos](#ch-howto), [Data, Licenses and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary)
 - **Davy**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Timeline](#ch-timeline)
 - **Diamond**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory), [Data Formats](#ch-formats), [Community and People](#ch-community), [Compute, Storage and Costs](#ch-compute), [Timeline](#ch-timeline), [Appendix A](#app-glossary)
 - **Dice score**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Inks and Writing](#ch-inks), [2026: A Scroll Read in Full](#ch-2026), [Appendix A](#app-glossary)
 - **DINO**: [2026: A Scroll Read in Full](#ch-2026), [Surface Prediction](#ch-surface), [Meshing and Surface Tracing](#ch-tracing), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools), [Open Problems](#ch-open-problems), [Appendix A](#app-glossary), [Appendix B](#app-ledger)
 - **Discord**: [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Tools and Repositories](#ch-tools), [Community and People](#ch-community)
-- **EduceLab**: [About This Book](#ch-preface), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Inks and Writing](#ch-inks), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Meshing and Surface Tracing](#ch-tracing), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Data, Licences and Responsible Practice](#ch-ethics), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary)
-- **EduceLab-Scrolls**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Data Formats](#ch-formats), [Community and People](#ch-community), [Data, Licences and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary), [Appendix C](#app-scans)
+- **EduceLab**: [About This Book](#ch-preface), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Inks and Writing](#ch-inks), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Meshing and Surface Tracing](#ch-tracing), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Data, Licenses and Responsible Practice](#ch-ethics), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary)
+- **EduceLab-Scrolls**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Data Formats](#ch-formats), [Community and People](#ch-community), [Data, Licenses and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary), [Appendix C](#app-scans)
 - **end title**: [Greek and Papyrology Basics](#ch-greek), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Appendix A](#app-glossary)
 - **Epicureanism**: [The Villa of the Papyri and its Library](#ch-villa), [Appendix A](#app-glossary)
 - **Epicurus**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Appendix A](#app-glossary), [Appendix F](#app-images)
 - **ESRF**: [Papyrus: from Plant to Roll](#ch-papyrus), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [Meshing and Surface Tracing](#ch-tracing), [Data Formats](#ch-formats), [Community and People](#ch-community), [Appendix A](#app-glossary), [Appendix C](#app-scans)
 - **Farritor**: [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [The Prize Ledger](#ch-ledger), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Frequently Asked Questions](#ch-faq), [Appendix B](#app-ledger)
-- **fibre**: [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [Greek and Papyrology Basics](#ch-greek), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Appendix A](#app-glossary)
+- **fiber**: [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [Greek and Papyrology Basics](#ch-greek), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Appendix A](#app-glossary)
 - **First Letters prize**: [Timeline](#ch-timeline), [Appendix A](#app-glossary)
 - **flatboi**: [The Pipeline at a Glance](#ch-pipeline), [Flattening and Rendering](#ch-flatten), [Tools and Repositories](#ch-tools), [Appendix A](#app-glossary)
 - **flattening**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [2024: From Five Percent to Autosegmentation](#ch-2024), [The Pipeline at a Glance](#ch-pipeline), [Flattening and Rendering](#ch-flatten), [Tools and Repositories](#ch-tools), [Data Formats](#ch-formats), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix B](#app-ledger)
@@ -3953,7 +4035,7 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **Grenoble**: [Synchrotrons and Scan Campaigns](#ch-scans), [Appendix A](#app-glossary), [Appendix C](#app-scans), [Appendix F](#app-images)
 - **Gross**: [Founding the Vesuvius Challenge](#ch-founding), [Community and People](#ch-community), [Frequently Asked Questions](#ch-faq)
 - **GrowPatch**: [The Pipeline at a Glance](#ch-pipeline), [Meshing and Surface Tracing](#ch-tracing), [The Spiral Fit](#ch-spiral), [Tools and Repositories](#ch-tools), [Open Problems](#ch-open-problems), [How-Tos](#ch-howto), [Appendix A](#app-glossary)
-- **hallucination**: [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [Ink Detection](#ch-ink), [Data, Licences and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary)
+- **hallucination**: [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [Ink Detection](#ch-ink), [Data, Licenses and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary)
 - **Handmer**: [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Ink Detection](#ch-ink), [Community and People](#ch-community), [Appendix B](#app-ledger)
 - **Hayter**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Timeline](#ch-timeline), [Frequently Asked Questions](#ch-faq)
 - **haze**: [The Eruption of 79 CE](#ch-eruption), [Papyrus: from Plant to Roll](#ch-papyrus), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Open Problems](#ch-open-problems), [Timeline](#ch-timeline), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix E](#app-substack)
@@ -3965,7 +4047,7 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **ID11**: [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory), [Appendix A](#app-glossary)
 - **ink detection**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [The Prize Ledger](#ch-ledger), [The Pipeline at a Glance](#ch-pipeline), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools)
 - **ink_9um**: [2026: A Scroll Read in Full](#ch-2026), [The Pipeline at a Glance](#ch-pipeline), [Ink Detection](#ch-ink), [Tools and Repositories](#ch-tools), [Compute, Storage and Costs](#ch-compute), [How-Tos](#ch-howto), [Appendix A](#app-glossary), [Appendix D](#app-models)
-- **Institut de France**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Founding the Vesuvius Challenge](#ch-founding), [Inventory of Scrolls and Fragments](#ch-inventory), [Community and People](#ch-community), [Data, Licences and Responsible Practice](#ch-ethics), [Timeline](#ch-timeline)
+- **Institut de France**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Founding the Vesuvius Challenge](#ch-founding), [Inventory of Scrolls and Fragments](#ch-inventory), [Community and People](#ch-community), [Data, Licenses and Responsible Practice](#ch-ethics), [Timeline](#ch-timeline)
 - **Janko**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Community and People](#ch-community)
 - **Kaggle**: [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [The Prize Ledger](#ch-ledger), [The Pipeline at a Glance](#ch-pipeline), [Surface Prediction](#ch-surface), [Ink Detection](#ch-ink), [Community and People](#ch-community), [Timeline](#ch-timeline), [Appendix A](#app-glossary), [Appendix B](#app-ledger), [Appendix E](#app-substack)
 - **keV**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Inks and Writing](#ch-inks), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory), [Data Formats](#ch-formats), [Open Problems](#ch-open-problems), [Appendix A](#app-glossary), [Appendix C](#app-scans)
@@ -3988,7 +4070,7 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **Officina dei Papiri**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Founding the Vesuvius Challenge](#ch-founding), [Inventory of Scrolls and Fragments](#ch-inventory), [Appendix A](#app-glossary)
 - **OME-Zarr**: [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [The Pipeline at a Glance](#ch-pipeline), [Flattening and Rendering](#ch-flatten), [Data Formats](#ch-formats), [Community and People](#ch-community), [Open Problems](#ch-open-problems), [How-Tos](#ch-howto), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary)
 - **On Vices**: [The Villa of the Papyri and its Library](#ch-villa), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory)
-- **Oxford**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Greek and Papyrology Basics](#ch-greek), [Founding the Vesuvius Challenge](#ch-founding), [2024: From Five Percent to Autosegmentation](#ch-2024), [Inventory of Scrolls and Fragments](#ch-inventory), [Data, Licences and Responsible Practice](#ch-ethics)
+- **Oxford**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Greek and Papyrology Basics](#ch-greek), [Founding the Vesuvius Challenge](#ch-founding), [2024: From Five Percent to Autosegmentation](#ch-2024), [Inventory of Scrolls and Fragments](#ch-inventory), [Data, Licenses and Responsible Practice](#ch-ethics)
 - **Paris**: [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [The Pipeline at a Glance](#ch-pipeline), [Surface Prediction](#ch-surface), [The Spiral Fit](#ch-spiral), [Ink Detection](#ch-ink), [Data Formats](#ch-formats)
 - **Parker**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Inks and Writing](#ch-inks), [Founding the Vesuvius Challenge](#ch-founding), [Meshing and Surface Tracing](#ch-tracing), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Timeline](#ch-timeline), [Appendix B](#app-ledger)
 - **Parsons**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Inventory of Scrolls and Fragments](#ch-inventory), [Ink Detection](#ch-ink), [Data Formats](#ch-formats), [Community and People](#ch-community)
@@ -4013,7 +4095,7 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **porphyras**: [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [Timeline](#ch-timeline)
 - **progress prize**: [Founding the Vesuvius Challenge](#ch-founding), [2026: A Scroll Read in Full](#ch-2026), [Inventory of Scrolls and Fragments](#ch-inventory), [Surface Prediction](#ch-surface), [Flattening and Rendering](#ch-flatten), [Ink Detection](#ch-ink), [Data Formats](#ch-formats), [How-Tos](#ch-howto), [Appendix A](#app-glossary)
 - **propagation distance**: [X-ray Tomography for Carbonized Papyrus](#ch-xray), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [The Pipeline at a Glance](#ch-pipeline), [Data Formats](#ch-formats), [Open Problems](#ch-open-problems), [Appendix A](#app-glossary)
-- **pseudo-labelling**: [The Pipeline at a Glance](#ch-pipeline), [Ink Detection](#ch-ink), [Data, Licences and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary)
+- **pseudo-labeling**: [The Pipeline at a Glance](#ch-pipeline), [Ink Detection](#ch-ink), [Data, Licenses and Responsible Practice](#ch-ethics), [Appendix A](#app-glossary)
 - **recto**: [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [Greek and Papyrology Basics](#ch-greek), [2026: A Scroll Read in Full](#ch-2026), [Surface Prediction](#ch-surface), [Open Problems](#ch-open-problems), [How-Tos](#ch-howto), [Appendix A](#app-glossary)
 - **rendering**: [2024: From Five Percent to Autosegmentation](#ch-2024), [The Pipeline at a Glance](#ch-pipeline), [Flattening and Rendering](#ch-flatten), [Tools and Repositories](#ch-tools), [How-Tos](#ch-howto), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix B](#app-ledger), [Appendix E](#app-substack)
 - **ResNet3D**: [Ink Detection](#ch-ink), [Appendix A](#app-glossary)
@@ -4044,7 +4126,7 @@ Terms, people, places and samples, with the chapters and appendices where they a
 - **verso**: [Papyrus: from Plant to Roll](#ch-papyrus), [Surface Prediction](#ch-surface), [Appendix A](#app-glossary)
 - **villa**: [The Eruption of 79 CE](#ch-eruption), [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2026: A Scroll Read in Full](#ch-2026), [Meshing and Surface Tracing](#ch-tracing), [The Spiral Fit](#ch-spiral), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [How-Tos](#ch-howto), [Timeline](#ch-timeline), [Frequently Asked Questions](#ch-faq)
 - **Villa of the Papyri**: [The Eruption of 79 CE](#ch-eruption), [The Villa of the Papyri and its Library](#ch-villa), [Two and a Half Centuries of Unrolling](#ch-unrolling), [Timeline](#ch-timeline), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary), [Appendix F](#app-images)
-- **virtual unwrapping**: [About This Book](#ch-preface), [Founding the Vesuvius Challenge](#ch-founding), [2026: A Scroll Read in Full](#ch-2026), [The Pipeline at a Glance](#ch-pipeline), [Meshing and Surface Tracing](#ch-tracing), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Data, Licences and Responsible Practice](#ch-ethics), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary)
+- **virtual unwrapping**: [About This Book](#ch-preface), [Founding the Vesuvius Challenge](#ch-founding), [2026: A Scroll Read in Full](#ch-2026), [The Pipeline at a Glance](#ch-pipeline), [Meshing and Surface Tracing](#ch-tracing), [Tools and Repositories](#ch-tools), [Community and People](#ch-community), [Data, Licenses and Responsible Practice](#ch-ethics), [Frequently Asked Questions](#ch-faq), [Appendix A](#app-glossary)
 - **volume**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [Founding the Vesuvius Challenge](#ch-founding), [The 2023 Season: First Letters and the Grand Prize](#ch-2023), [2024: From Five Percent to Autosegmentation](#ch-2024), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [2026: A Scroll Read in Full](#ch-2026), [The Prize Ledger](#ch-ledger), [Inventory of Scrolls and Fragments](#ch-inventory), [The Pipeline at a Glance](#ch-pipeline), [Surface Prediction](#ch-surface), [Meshing and Surface Tracing](#ch-tracing)
 - **voxel**: [Two and a Half Centuries of Unrolling](#ch-unrolling), [Papyrus: from Plant to Roll](#ch-papyrus), [Inks and Writing](#ch-inks), [X-ray Tomography for Carbonized Papyrus](#ch-xray), [Synchrotrons and Scan Campaigns](#ch-scans), [2025: Titles, Scanning at Scale and Better Scans](#ch-2025), [Inventory of Scrolls and Fragments](#ch-inventory), [The Pipeline at a Glance](#ch-pipeline), [Surface Prediction](#ch-surface), [Meshing and Surface Tracing](#ch-tracing), [Flattening and Rendering](#ch-flatten), [Data Formats](#ch-formats), [Compute, Storage and Costs](#ch-compute), [Open Problems](#ch-open-problems)
 - **winding number**: [The Spiral Fit](#ch-spiral), [Appendix A](#app-glossary)

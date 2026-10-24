@@ -3,8 +3,8 @@
 Read [`README.md`](README.md) first; section 18 is the machine-readable part. The repository's root
 [`AGENTS.md`](../../AGENTS.md) applies above this file.
 
-1. The code lives on branch `submission/progress-2026-10-fix4`, folder
-   `submissions/progress-2026-10-fix4/autopipeline`. Read it before describing behaviour; never invent flags or
+1. The code lives on branch `submission/progress-2026-10-fix5` (AutoPipeline 0.1.5), folder
+   `submissions/progress-2026-10-fix5/autopipeline`. Read it before describing behavior; never invent flags or
    settings.
 2. Use `scrolls-kit autopipeline ...` in documents on `main`; `autopipeline` is not a command of `main`'s `kit`.
 3. Never edit `plan.json` or `state.json`; a changed rule is a new plan in a new folder.

@@ -1,8 +1,10 @@
+<a id="ch-timeline"></a>
+
 # Timeline {#ch-timeline}
 
 > **Chapter summary.** A single chronology from the eruption to the 2027 prize deadline, compiled from the chapters of this book. Each row cites its source; the machine-readable version is data/timeline.csv. Dates of Substack-announced events are the dates of the announcing post unless the chapter gives another date.
 
-![Timeline chart of challenge-era events from March 2023 to June 2027, colour coded by category: challenge milestones, data releases and scans.](../figures/charts/timeline.svg)
+![Timeline chart of challenge-era events from March 2023 to June 2027, color coded by category: challenge milestones, data releases and scans.](../figures/charts/timeline.svg)
 *Figure 29.1. Challenge-era milestones, 2023 to 2027. Chart by the editors. Data: data/timeline.csv. License: CC BY 4.0 (this book).*
 
 
@@ -18,7 +20,7 @@
 | Date | Event | Source |
 |---|---|---|
 | 1709 | Herculaneum rediscovered by a well dig | [WP-Herculaneum] |
-| 1738 | Systematic tunnelling begins under Charles of Bourbon | [WP-Herculaneum] |
+| 1738 | Systematic tunneling begins under Charles of Bourbon | [WP-Herculaneum] |
 | 1750 | Villa of the Papyri found | [WP-Villa] |
 | 1752 to 1754 | Papyri recovered from four find spots in the Villa | [WP-HercPapyri] |
 | 1756 | Piaggio's unrolling machine | [WP-Piaggio] |

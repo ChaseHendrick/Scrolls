@@ -1,0 +1,35 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "greek-restoration-by-gap-length",
+  "label": "Chart",
+  "claim_label": "Model output: scores of three hosted text models and a Kneser-Ney letter model on public edited Greek text (Philodemus, De Musica); no scan, no scroll data, no ink map",
+  "alt": "Bar chart of gap letter accuracy by number of hidden letters (1, 2, 3, 5, 8) for four arms. The Kneser-Ney letter model is highest at every length: 0.895, 0.671, 0.500, 0.300 and 0.132. DeepSeek-V3-0324 scores 0.447, 0.290, 0.272, 0.137, 0.115; Kimi-K2-Instruct-0905 0.447, 0.329, 0.167, 0.190, 0.112; Qwen3-235B-A22B-Instruct-2507 0.342, 0.118, 0.175, 0.121, 0.066.",
+  "caption": "Gap letter accuracy by gap length, Greek gap restoration on Philodemus, De Musica, 38 gaps per length, one run on 22 October 2026. Model output. No intervals are drawn: score.json has a bootstrap bound for each model's overall difference from the letter model, not per length.",
+  "license": "Apache-2.0",
+  "release_id": "greekfill",
+  "data": {
+    "source": "docs/evidence/greek-restoration-20261022/score.json",
+    "source_sha256": "6a50f13a53af097a5e92e247b5d10faa64e25253126c26c2dffce19e321680a2",
+    "credit": "Numbers from this repository's frozen score.json; the test text is Philodemus, De Musica, ed. Johannes Kemke, First1KGreek, CC BY-SA 4.0 (no text appears in the chart)"
+  },
+  "outputs": [
+    {
+      "file": "greek-restoration-by-gap-length.svg",
+      "bytes": 6338,
+      "sha256": "bb51a6f88e6fcf9e802d96e4456b15f5f47790a86a561e60e6ce08eb842abcb4",
+      "width": 760,
+      "height": 460,
+      "kind": "svg"
+    }
+  ],
+  "made": "2026-10-22",
+  "command": "python -m kit.greekfill chart docs/evidence/greek-restoration-20261022/score.json docs/media/greek-restoration-by-gap-length.svg",
+  "tool": {
+    "scripts": [
+      "kit/greekfill.py"
+    ],
+    "scripts_sha256": "f4a2307915b91cab7c1be24e3aef48aaf71bf9ca893a24e0613fbfbc377c4294",
+    "base_commit": "0fbc49a9ba882c42a2bc4a77ad639d99d627514e"
+  },
+  "colors": "categorical slots 1 to 4 of a palette validated for color-vision deficiency on light and dark surfaces; dark-mode colors through prefers-color-scheme"
+}

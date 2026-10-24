@@ -1,0 +1,14 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "scrolls.letterread",
+  "name": "Scroll Text Reader on selected ink map",
+  "description": "Chase Hendrick's Scroll Text Reader (python -m kit letterread, CC BY weights) on the ink detection selected in VC3D; writes JSON, CSV, PAGE XML and an overlay PNG. Without a reverse-depth control the status is no_control, which is not a pass.",
+  "menu": "Scrolls",
+  "program": "python3",
+  "args": ["{plugin_dir}/run_kit.py", "letterread", "{ink_overlay}", "--weights", "letters-v2-ccby", "--quiet",
+           "--out", "{output}/letters.json", "--csv", "{output}/letters.csv",
+           "--page-xml", "{output}/letters.xml", "--overlay", "{output}/letters.png"],
+  "result": {"kind": "file", "path": "{output}/letters.png"},
+  "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/letterread.md",
+  "license": "Code Apache-2.0; weights letters-v2-ccby CC BY 4.0"
+}

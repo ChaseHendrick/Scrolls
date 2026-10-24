@@ -1,0 +1,21 @@
+[
+  {"wait": 500},
+  {"eval": "window.scrollTo(0, document.getElementById('practice').getBoundingClientRect().top + window.scrollY + 6)"},
+  {"wait": 300},
+  {"set": ["#threshold", 22]},
+  {"cursor": "show"},
+  {"frame": 1},
+  {"hold": 5},
+  {"glide": {"selector": "#threshold", "from": 22, "to": 62, "n": 28}},
+  {"hold": 12},
+  {"point": {"selector": "#truth", "n": 8}},
+  {"tap": {"selector": "#truth", "n": 5}},
+  {"hold": 14},
+  {"point": {"selector": "#contaminated", "n": 8}},
+  {"tap": {"selector": "#contaminated", "n": 5}},
+  {"hold": 20},
+  {"tap": {"selector": "#contaminated", "n": 5}},
+  {"cursor": "hide"},
+  {"frame": 1},
+  {"hold": 30}
+]

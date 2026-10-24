@@ -1,0 +1,87 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "inkfilter-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a stack of thin papyrus layers pierced by a copper sampling column, linked to an upright panel with a banded copper response and, behind it, a dimmer panel for the reversed-depth control.",
+  "caption": "Concept illustration: a surface volume's layers, a fixed filter down through them, its response and the reversed-depth control. Synthetic fields only, no ink.",
+  "license": "Apache-2.0",
+  "release_id": "inkfilter",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "inkfilter-hero.webp",
+      "bytes": 38418,
+      "sha256": "1ff91b1bc8823948c0e1ab5e31255631a74f9fe3deff0fb1e1818d36b6b3572b",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "inkfilter-card.jpg",
+      "bytes": 88383,
+      "sha256": "1eecba61e601bcd120c49713bfad9cdb3093b9d2f6a67187a90646bb511cbd8d",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/inkfilter.json --out-dir docs/assets/inkfilter",
+  "recipe": {
+    "name": "inkfilter-hero",
+    "release_id": "inkfilter",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of a stack of thin papyrus layers pierced by a copper sampling column, linked to an upright panel with a banded copper response and, behind it, a dimmer panel for the reversed-depth control.",
+    "caption": "Concept illustration: a surface volume's layers, a fixed filter down through them, its response and the reversed-depth control. Synthetic fields only, no ink.",
+    "license": "Apache-2.0",
+    "seed": 6,
+    "scene": {
+      "kind": "procedural",
+      "name": "inkfilter",
+      "params": {
+        "eye": [
+          -4.3,
+          2.8,
+          8.2
+        ],
+        "target": [
+          0.6,
+          0.85,
+          -0.9
+        ]
+      }
+    },
+    "grade": {
+      "duotone": 0.08,
+      "key": 0.42,
+      "rim": 0.08,
+      "vignette": 0.3,
+      "fade_right": 0.04,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "Inkfilter",
+      "subtitle": "Model-free maps from a surface-volume window, each written with its reversed-depth control.",
+      "focus": [
+        0.36,
+        0.5
+      ]
+    }
+  }
+}

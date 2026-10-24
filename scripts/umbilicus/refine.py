@@ -1,17 +1,17 @@
-"""Second stage: move a coarse centre onto the winding centre, looking at native level-3 crops.
+"""Second stage: move a coarse center onto the winding center, looking at native level-3 crops.
 
 The first stage (centrenet) sees the whole scroll squeezed into 256 pixels, about 0.3 mm each, too coarse for the
 innermost windings. This network sees a 176-pixel window of the level-3 slices (about 70 um per pixel, a 12 to 13 mm
-window) around a coarse guess and puts a heatmap peak on the centre. Trained on published umbilici, with the coarse
-guess replaced by the published centre plus a random offset; scored only on scrolls it did not train on.
+window) around a coarse guess and puts a heatmap peak on the center. Trained on published umbilici, with the coarse
+guess replaced by the published center plus a random offset; scored only on scrolls it did not train on.
 
     python refine.py cv --data DIR --out DIR [--folds 0 1 2 3 --epochs 12 --width 16 --device cpu]
     python refine.py chain fold<k>|all --data DIR --base FIRST_STAGE_RUN --out DIR [--epochs 30 --width 32 --time-s 300]
-    python refine.py chain-collect --data DIR --out DIR
+    python refine.py chain-collect --data DIR --out DIR [--vc3d-name]
 
 cv trains one model per fold of pipeline.FOLDS (saved as refine_cv_fold<k>.pt, apart from chain's refine_fold<k>.pt)
 and scores each held-out scroll from coarse guesses that are the
-published centre plus a smooth random offset along z (median 1.2 mm, like the first stage's held-out error), before
+published center plus a smooth random offset along z (median 1.2 mm, like the first stage's held-out error), before
 and after refining. A smooth offset is a stand-in for the first stage's real error, which is also smooth along z
 but follows the CT's confusing structures; the real test chains the two stages.
 """
@@ -38,14 +38,14 @@ def crop(ct, i, cy, cx, side):
     return out, (y0, x0)
 
 def truth_l3(s, z):
-    """Published centre at each z in level-3 pixels, NaN outside the annotated range."""
+    """Published center at each z in level-3 pixels, NaN outside the annotated range."""
     _, T = slices.truth(s)
     t = np.stack([np.interp(z, T[:, 0], T[:, 1]), np.interp(z, T[:, 0], T[:, 2])], 1) / F3
     t[(z < T[0, 0]) | (z > T[-1, 0])] = np.nan
     return t
 
 def bands(ct, t):
-    """Training bands: for each slice with a centre, the 3-slice window of side S + 2R centred on it."""
+    """Training bands: for each slice with a center, the 3-slice window of side S + 2R centered on it."""
     B = S + 2 * R; keep = np.nonzero(np.isfinite(t[:, 0]))[0]
     out = np.zeros((len(keep), 3, B, B), np.uint8); org = np.zeros((len(keep), 2))
     for k, i in enumerate(keep):
@@ -53,7 +53,7 @@ def bands(ct, t):
     return out, org, t[keep]
 
 def train_offsets(rng, b, um):
-    """Training offsets in level-3 pixels: half from a 2-D normal with 1 mm sigma, half uniform over the disc of
+    """Training offsets in level-3 pixels: half from a 2-D normal with 1 mm sigma, half uniform over the disk of
     radius R, so the network sees both the usual small error and the far tail."""
     o = rng.normal(0, 1000 / (um * F3), (b, 2))
     r = R * np.sqrt(rng.random(b)); a = 2 * np.pi * rng.random(b)
@@ -85,7 +85,7 @@ def dihedral(x, t, rng):
     return torch.stack(out) * g + o, tt
 
 def train(data, epochs, seed, width=16, batch=16, lr=2e-3, time_s=None, device="cpu", log=print):
-    """data: {scroll: (bands uint8, band origins, centres in level-3 px, um)}."""
+    """data: {scroll: (bands uint8, band origins, centers in level-3 px, um)}."""
     torch.manual_seed(seed); rng = np.random.default_rng(seed)
     items = [(s, k) for s, v in data.items() for k in range(len(v[0]))]
     net = centrenet.Net(width).to(device)
@@ -128,7 +128,7 @@ def train(data, epochs, seed, width=16, batch=16, lr=2e-3, time_s=None, device="
     return net, dict(steps=st, planned_steps=steps, stopped=stopped, seconds=round(time.time() - t0, 1), items=len(items))
 
 def refine(net, ct, idx, guess, rounds=2, device="cpu"):
-    """Move guesses (level-3 px, one per slice index in idx) onto the centre; each round re-crops at the last answer."""
+    """Move guesses (level-3 px, one per slice index in idx) onto the center; each round re-crops at the last answer."""
     g = np.array(guess, float); peak = None
     for _ in range(rounds):
         crops = [crop(ct, i, *g[k], S) for k, i in enumerate(idx)]
@@ -220,10 +220,11 @@ def chain_job(name, data_dir, base, out, epochs=30, width=32, time_s=300, device
     log(f"done {info}")
     return rec
 
-def chain_collect(data_dir, out):
+def chain_collect(data_dir, out, vc3d_name=False):
     """Held-out scores of the first stage alone and chained with the refine stage, both smoothed along z the same
     way; and, for each scroll in slices.UNLABELLED, if any, one umbilicus JSON from the median of the refine models
-    (both end trims applied) in OUT/umbilicus/."""
+    (both end trims applied, the scan's level-0 dimensions stamped) in OUT/umbilicus/, as SCROLL_umbilicus.json or with
+    vc3d_name SCROLL/umbilicus.json (pipeline.write_umbilicus)."""
     import pipeline
     recs = [pipeline.read_json(os.path.join(out, f)) for f in sorted(os.listdir(out)) if f.startswith("refine_") and f.endswith(".json")]
     res = dict(held_out={}, jobs=[{k: r[k] for k in ("job", "train_info", "test", "base")} | {"gpu": r.get("gpu")} for r in recs])
@@ -254,16 +255,18 @@ def chain_collect(data_dir, out):
         Y = np.array([r["preds"][s]["yx"] for r in rs], float); yx = np.nanmedian(Y, 0)
         spread = np.nanmedian(np.hypot(*(Y - yx[None]).transpose(2, 0, 1)), 0) * um / 1000 if len(rs) > 1 else None
         sm = centrenet.smooth_z(np.where(present[:, None], yx, np.nan))
-        d = np.load(os.path.join(data_dir, f"{s}.npz"))
-        keep = present & pipeline.keep_band(pipeline.papyrus_area(d["ct"]), z, um)
-        keep, _, _ = pipeline.end_trimmed_keep(d["ct"], sm, z, um, keep, level=int(d["level"]) if "level" in d.files else 3)
+        d = np.load(os.path.join(data_dir, f"{s}.npz")); ct = d["ct"]; level = int(d["level"]) if "level" in d.files else 3
+        pipeline.slice_volume(d, p0["vol"], s)
+        keep = present & pipeline.keep_band(pipeline.papyrus_area(ct), z, um)
+        keep, _, _ = pipeline.end_trimmed_keep(ct, sm, z, um, keep, level=level)
+        dims = pipeline.volume_dims(p0["vol"], d["shape_l0"] if "shape_l0" in d.files else None, ct.shape[1:], level)
         j = pipeline.umbilicus_json(s, z, sm, keep, um, p0["vol"], spread,
                                     f"automatic: first-stage median refined by {len(rs)} zoomed models, smoothed along z "
-                                    f"(scripts/umbilicus); {pipeline._trim_note()}")
-        pipeline.write_json(j, os.path.join(out, "umbilicus", f"{s}_umbilicus.json"), indent=1)
+                                    f"(scripts/umbilicus); {pipeline._trim_note()}", dims)
+        f = pipeline.write_umbilicus(j, os.path.join(out, "umbilicus"), s, vc3d_name)
         moved = np.hypot(*(sm - centrenet.smooth_z(np.where(present[:, None], np.array(p0["base_yx"], float), np.nan))).T) * um / 1000
         res["unlabelled"][s] = dict(points=j["metadata"]["total_points"], models=len(rs), spread_mm_median=j["metadata"]["spread_mm_median"],
-                                 moved_from_first_stage_mm_median=round(float(np.median(moved[keep])), 3) if keep.any() else None)
+                                 file=f, moved_from_first_stage_mm_median=round(float(np.median(moved[keep])), 3) if keep.any() else None)
     pipeline.write_json(res, os.path.join(out, "result.json"), indent=1)
     return res
 
@@ -278,6 +281,9 @@ if __name__ == "__main__":
     ap.add_argument("--device", default="cpu"); ap.add_argument("--every", type=int, default=1)
     ap.add_argument("--side", type=int, default=S); ap.add_argument("--reach", type=int, default=R)
     ap.add_argument("--offsets", type=float, nargs="+", default=[0.0, 1.2, 2.5])
+    ap.add_argument("--vc3d-name", action="store_true",
+                    help="chain-collect: write umbilicus/SCROLL/umbilicus.json, the name VC3D and spiral-fitting look for, "
+                         "instead of umbilicus/SCROLL_umbilicus.json")
     a = ap.parse_args()
     S, R = a.side, a.reach
     if a.cmd == "cv":
@@ -286,4 +292,4 @@ if __name__ == "__main__":
     elif a.cmd == "chain":
         chain_job(a.name, a.data, a.base, a.out, a.epochs, a.width, a.time_s, a.device, rounds=a.rounds)
     else:
-        print(json.dumps(chain_collect(a.data, a.out), indent=1))
+        print(json.dumps(chain_collect(a.data, a.out, vc3d_name=a.vc3d_name), indent=1))

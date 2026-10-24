@@ -1,5 +1,7 @@
 # Modal pricing and a cost calculator for scroll compute
 
+**Historical since 23 Oct 2026.** Paid compute now runs on Hugging Face (AGENTS.md hard rule 11): no new paid Modal launches. The rates and defaults below describe past runs and jobs already running.
+
 Checked 2026-10-07. Every figure below was read on that date from the linked page. Prices change: re-check [modal.com/pricing](https://modal.com/pricing) before spending. Labels follow [`../NOVELTY.md`](../NOVELTY.md): **Sourced fact** (a published figure), **Community report**, **Interpretation** (our arithmetic or reading of sources), **Assumption** (not verified; used only to size estimates).
 
 Files: run ledger template [`modal-ledger.csv`](modal-ledger.csv); rates and limits with source URLs in [`kit/data/modal-rates.json`](../../kit/data/modal-rates.json); job assumptions in [`modal-jobs.json`](modal-jobs.json); calculator [`kit/cloudcost.py`](../../kit/cloudcost.py) (standard library, no network). Nothing in this document was run on Modal; all job costs are estimates.
@@ -139,7 +141,7 @@ Inference profiles (Assumption, each anchored as stated):
 | Profile | GPU | Reference GPU seconds per cm2 per pass (low / typical / high) | Anchor |
 | --- | --- | --- | --- |
 | `2p5d_9um`: 2.5D reader at about 9 um (public `ink_9um`, Hecate 9.6 um) | A10 | 1 / 3 / 10 at 9.4 um | M1 Pro measured about 8 s per cm2 |
-| `2p5d_2um`: 2.5D reader at 2.4 um (organiser 2 um canonical model, PHerc. 1667 iteration models, Hecate 2.4 um) | L40S | 20 / 40 / 120 at 2.4 um | tutorial: about 1 GPU hour per full segment; tutorial segment canvas 51,960 x 31,960 px = 95.6 cm2 at 2.4 um (header of its public prediction TIFF) |
+| `2p5d_2um`: 2.5D reader at 2.4 um (organizer 2 um canonical model, PHerc. 1667 iteration models, Hecate 2.4 um) | L40S | 20 / 40 / 120 at 2.4 um | tutorial: about 1 GPU hour per full segment; tutorial segment canvas 51,960 x 31,960 px = 95.6 cm2 at 2.4 um (header of its public prediction TIFF) |
 | `3d_l2`: native 3D reader at level 2 (9.6 um) | H100 | 60 / 95 / 200 at 9.6 um | tutorial: 2.5 h on an H100 over the 95.6 cm2 canvas |
 | `3d_2um`: native 3D reader at 2.4 um (mesh-free readers such as `ink_3d_dino_guided` assumed similar or heavier) | H100 | 300 / 760 / 1500 at 2.4 um | tutorial patch counts: 3x to 16x level 2; not measured |
 

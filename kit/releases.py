@@ -1,7 +1,7 @@
-"""The list of tools released from private work, and the README section made from it.
+"""The list of released tools, and the README section made from it.
 
-docs/releases.json lists the tools and packages released from the private repository into this one since the list
-began on 14 October 2026, and README.md's "Released tools" section, between the two marker lines below, is written
+docs/releases.json lists this project's released tools and packages, including curated private-to-public releases,
+since the list began on 14 October 2026, and README.md's "Released tools" section, between the two marker lines below, is written
 from it, newest first:
 
   python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
@@ -13,14 +13,34 @@ An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2
            "summary": "One paragraph: what it does, the measured result with its claim label, the main limit.",
            "commands": ["python -m pip install numpy", "..."],          (optional; shown as a bash block)
            "details": "One line of links, such as the guide.",           (optional)
+           "image": {"src": "docs/assets/letter-reader/reader-hero.webp",  (optional; shown under the title)
+                     "alt": "What the picture shows, for screen readers.",
+                     "caption": "Synthetic demo. What it is and where it came from."},
            "where": "main"}
 "where" is "main" for files merged here, or {"branch": B, "commit": C, "path": P} for a reviewed package that lives on
 its own branch (the Progress Prize exporter's submission/<submission_id> branches), which the section links at that
 commit.
 
+A grouped entry adds "tools": one line each for command-line tools that share one entry (Chase's decision of
+20 October 2026), the "Scrolls kit" entry. Each tool keeps its own id, date, version and links:
+  "tools": [{"id": "strokenet", "name": "StrokeNet text-likeness score", "released": "2026-10-14",
+             "version": "weights `strokenet-paris4-v1`",                     (optional)
+             "summary": "One or two sentences: what it does, its result with its claim label, its main limit.",
+             "command": "python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json",
+             "page": "docs/tools/strokenet.md",
+             "evidence": "[model card](docs/strokenet.md)"}]                 (optional)
+A grouped entry is on main, its "released" is its newest tool's date, and a tool's id is unique across entries and
+tools, so the id of an entry that became a tool still names it: find() resolves either kind, and add, pin and unpin
+refuse a tool's id with the entry to edit instead. check() fails when a tool's page is missing.
+
 The list's optional "pinned" holds entry ids shown first, in that order, above the newest (Chase, 14 October 2026:
-keep AutoPipeline on top "so people see it"). A pin belongs to the list, not the entry, so a new version that replaces
+keep AutoPipeline on top, where people see it). A pin belongs to the list, not the entry, so a new version that replaces
 a pinned entry stays pinned.
+
+An entry's optional "image" is shown under its title, with its caption in italics below. The caption starts with one of
+the media labels in LABELS (Chase, 18 October 2026: every released tool gets a hero image, and each picture says what it
+is). Its src is a path under docs/assets/ on main, which also serves package entries, since the README that shows the
+picture is on main, or a full https:// URL. check() fails when a docs/assets/ picture is missing.
 
 The private repository's submission exporter carries an identical copy of this module and writes the entry of each
 package it releases with it, so keep the two copies the same. Standard library only.
@@ -40,8 +60,8 @@ REPO_URL = "https://github.com/ChaseHendrick/Scrolls"
 START = ("<!-- releases:start (generated from docs/releases.json by python -m kit releases render; "
          "edit that list, not this section) -->")
 END = "<!-- releases:end -->"
-INTRO = "Tools released from private work, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
-FIELDS = {"id", "title", "released", "summary", "commands", "details", "where"}
+INTRO = "Released tools, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
+FIELDS = {"id", "title", "released", "summary", "commands", "details", "image", "tools", "where"}
 REQUIRED = ("id", "title", "released", "summary", "where")
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
@@ -59,6 +79,18 @@ INLINE_HTML = re.compile(r"<\s*[A-Za-z/!?]")
 HTTPS_AUTOLINK = re.compile(r"<https://[^\s<>]*>")
 LINK_TARGET = re.compile(r"\]\(\s*<?([^)\s>]*)|^\s{0,3}\[[^\]]*\]:\s*<?(\S*)")
 URL_SCHEME = re.compile(r"[A-Za-z][A-Za-z0-9+.-]*:|//|\\")
+# A picture: a file under docs/assets/ on main, or a full https:// URL, ending in a format GitHub shows inline.
+IMAGE_FIELDS = {"src", "alt", "caption"}
+IMAGE_SRC = re.compile(r"(?:docs/assets/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*|https://[A-Za-z0-9.-]+/[A-Za-z0-9_.~%/+-]+)"
+                       r"\.(?:webp|png|jpg|jpeg|gif)")
+# Every picture says what it is (docs/assets/README.md); a caption starts with one of these.
+LABELS = ("Concept illustration", "Real data render", "Model output", "Synthetic demo")
+# A grouped entry's tools: one line each in the section.
+TOOL_FIELDS = {"id", "name", "released", "version", "summary", "command", "page", "evidence"}
+TOOL_REQUIRED = ("id", "name", "released", "summary", "command", "page")
+TOOL_PAGE = re.compile(r"docs/tools/[a-z0-9][a-z0-9-]*\.md")
+ID = re.compile(r"[a-z0-9][a-z0-9-]{0,62}")
+MAX_TOOLS = 12
 
 
 class ReleaseListError(ValueError):
@@ -95,6 +127,80 @@ def _plain(entry, key, value):
             raise ReleaseListError(f"{entry.get('id', '?')}: {key} links must be https:// or relative, not {target[:40]!r}")
 
 
+def _image(entry):
+    image = entry["image"]
+    name = entry.get("id", "?")
+    if not isinstance(image, dict) or set(image) != IMAGE_FIELDS:
+        raise ReleaseListError(f"{name}: image is {{src, alt, caption}}")
+    src = image["src"]
+    if not isinstance(src, str) or not IMAGE_SRC.fullmatch(src) or ".." in src.split("/"):
+        raise ReleaseListError(f"{name}: image.src is a docs/assets/ path or an https:// URL ending in .webp, .png, "
+                               ".jpg, .jpeg or .gif")
+    for key, limit in (("alt", 300), ("caption", 500)):
+        value = image[key]
+        if not isinstance(value, str) or not value.strip() or len(value) > limit or "\n" in value or "\r" in value:
+            raise ReleaseListError(f"{name}: image.{key} must be one line of at most {limit} characters")
+        _plain(entry, f"image.{key}", value)
+    if any(ch in image["alt"] for ch in "[]*`"):
+        raise ReleaseListError(f"{name}: image.alt is plain text, without square brackets, asterisks or backticks")
+    if "*" in image["caption"] or image["caption"] != image["caption"].strip():
+        raise ReleaseListError(f"{name}: image.caption has no asterisks and no leading or trailing space")
+    if not image["caption"].startswith(LABELS):
+        raise ReleaseListError(f"{name}: image.caption starts with its label, one of {', '.join(LABELS)}")
+    if entry.get("where", "main") != "main" and RELATIVE_LINK.search(image["caption"]):
+        raise ReleaseListError(f"{name}: a package's links are full https:// URLs at its commit")
+
+
+def _date(name, key, value):
+    try:
+        if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
+            raise ValueError
+        date.fromisoformat(value)
+    except ValueError:
+        raise ReleaseListError(f"{name}: {key} must be a date, YYYY-MM-DD") from None
+
+
+def _tools(entry):
+    """Check a grouped entry's tools list."""
+    name = entry["id"]
+    tools = entry["tools"]
+    if not isinstance(tools, list) or not 1 <= len(tools) <= MAX_TOOLS:
+        raise ReleaseListError(f"{name}: tools must be a list of 1 to {MAX_TOOLS} tools")
+    if entry["where"] != "main":
+        raise ReleaseListError(f"{name}: an entry with tools lists tools merged here; its where is \"main\"")
+    seen = set()
+    for tool in tools:
+        if not isinstance(tool, dict):
+            raise ReleaseListError(f"{name}: each tool is a JSON object")
+        unknown = set(tool) - TOOL_FIELDS
+        if unknown:
+            raise ReleaseListError(f"{name}: tool {tool.get('id', '?')}: unknown fields {sorted(unknown)}")
+        missing = [k for k in TOOL_REQUIRED if k not in tool]
+        if missing:
+            raise ReleaseListError(f"{name}: tool {tool.get('id', '?')}: missing {missing}")
+        tid = tool["id"]
+        if not isinstance(tid, str) or not ID.fullmatch(tid):
+            raise ReleaseListError(f"{name}: tool id {tid!r} must be lowercase letters, digits and hyphens")
+        if tid == name or tid in seen:
+            raise ReleaseListError(f"{name}: tool {tid}: listed twice")
+        seen.add(tid)
+        label = {"id": f"{name}: tool {tid}"}
+        for key, limit in (("name", 80), ("version", 120), ("summary", 800), ("command", 300), ("evidence", 400)):
+            value = _text(dict(tool, **label), key, limit, required=key in TOOL_REQUIRED)
+            if value is not None and value != value.strip():
+                raise ReleaseListError(f"{name}: tool {tid}: {key} has a leading or trailing space")
+        if "*" in tool["name"]:
+            raise ReleaseListError(f"{name}: tool {tid}: name has no asterisks (it is shown in bold)")
+        if "`" in tool["command"]:
+            raise ReleaseListError(f"{name}: tool {tid}: command has no backticks (it is shown as inline code)")
+        _date(f"{name}: tool {tid}", "released", tool["released"])
+        if not isinstance(tool["page"], str) or not TOOL_PAGE.fullmatch(tool["page"]):
+            raise ReleaseListError(f"{name}: tool {tid}: page is a tool page, docs/tools/NAME.md")
+    newest = max(t["released"] for t in tools)
+    if entry["released"] != newest:
+        raise ReleaseListError(f"{name}: released is its newest tool's date, {newest}")
+
+
 def validate(entry):
     """Return the entry if it is well formed, else raise ReleaseListError naming the field."""
     if not isinstance(entry, dict):
@@ -105,20 +211,16 @@ def validate(entry):
     missing = [k for k in REQUIRED if k not in entry]
     if missing:
         raise ReleaseListError(f"{entry.get('id', '?')}: missing {missing}")
-    if not isinstance(entry["id"], str) or not re.fullmatch(r"[a-z0-9][a-z0-9-]{0,62}", entry["id"]):
+    if not isinstance(entry["id"], str) or not ID.fullmatch(entry["id"]):
         raise ReleaseListError(f"id {entry['id']!r} must be lowercase letters, digits and hyphens")
     _text(entry, "title", 80)
     for key, limit in (("summary", 1500), ("details", 500)):
         value = _text(entry, key, limit, required=key == "summary")
         if value is not None and BLOCK_OPENER.match(value):
             raise ReleaseListError(f"{entry['id']}: {key} may not start with a space, a code fence or an HTML tag")
-    released = entry["released"]
-    try:
-        if not isinstance(released, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", released):
-            raise ValueError
-        date.fromisoformat(released)
-    except ValueError:
-        raise ReleaseListError(f"{entry['id']}: released must be a date, YYYY-MM-DD") from None
+    _date(entry["id"], "released", entry["released"])
+    if "image" in entry:
+        _image(entry)
     commands = entry.get("commands", [])
     if not isinstance(commands, list) or len(commands) > 12:
         raise ReleaseListError(f"{entry['id']}: commands must be a list of at most 12 lines")
@@ -146,6 +248,8 @@ def validate(entry):
                                    "\"python -m kit\", which the README checks against this repository's kit")
         if any(RELATIVE_LINK.search(text) for text in (entry["summary"], entry.get("details") or "")):
             raise ReleaseListError(f"{entry['id']}: a package's links are full https:// URLs at its commit")
+    if "tools" in entry:
+        _tools(entry)
     return entry
 
 
@@ -156,12 +260,16 @@ def validate_list(registry):
     entries = registry["releases"]
     if not isinstance(entries, list):
         raise ReleaseListError("releases must be a list")
-    seen = set()
+    seen, tool_ids = set(), set()
     for entry in entries:
         validate(entry)
-        if entry["id"] in seen:
+        if entry["id"] in seen or entry["id"] in tool_ids:
             raise ReleaseListError(f"{entry['id']}: listed twice")
         seen.add(entry["id"])
+        for tool in entry.get("tools", []):
+            if tool["id"] in seen or tool["id"] in tool_ids:
+                raise ReleaseListError(f"{tool['id']}: listed twice")
+            tool_ids.add(tool["id"])
     pinned = registry.get("pinned", [])
     if not isinstance(pinned, list) or not all(isinstance(i, str) and i in seen for i in pinned) \
             or len(set(pinned)) != len(pinned):
@@ -183,21 +291,41 @@ def _with(registry, entries):
     return {"schema_version": 1, **({"pinned": pinned} if pinned else {}), "releases": entries}
 
 
+def find(registry, some_id):
+    """(entry, tool) for an id: (the entry, None) for an entry's id, (its grouped entry, the tool) for a tool's id, such
+    as an entry that became a line of the Scrolls kit entry. Raises ReleaseListError for an unknown id."""
+    for entry in validate_list(registry)["releases"]:
+        if entry["id"] == some_id:
+            return entry, None
+        for tool in entry.get("tools", []):
+            if tool["id"] == some_id:
+                return entry, tool
+    raise ReleaseListError(f"{some_id}: no entry or tool with that id")
+
+
+def _not_a_tool(registry, some_id, what):
+    for entry in registry["releases"]:
+        if any(t["id"] == some_id for t in entry.get("tools", [])):
+            raise ReleaseListError(f"{some_id}: a tool in the {entry['id']} entry, not an entry of its own; {what}")
+
+
 def upsert(registry, entry):
     """A new list with entry added at the end, or in place of the entry with its id (keeping its pin); and "added" or
     "replaced"."""
     validate(entry)
     entries = [dict(e) for e in validate_list(registry)["releases"]]
+    _not_a_tool(registry, entry["id"], "change its line in that entry's tools and add the whole entry")
     for i, old in enumerate(entries):
         if old["id"] == entry["id"]:
             entries[i] = dict(entry)
-            return _with(registry, entries), "replaced"
-    return _with(registry, entries + [dict(entry)]), "added"
+            return validate_list(_with(registry, entries)), "replaced"
+    return validate_list(_with(registry, entries + [dict(entry)])), "added"
 
 
 def pin(registry, entry_id, on=True):
     """A new list with entry_id pinned after any earlier pins, or unpinned."""
     registry = validate_list(registry)
+    _not_a_tool(registry, entry_id, "pin or unpin that entry")
     if entry_id not in {e["id"] for e in registry["releases"]}:
         raise ReleaseListError(f"{entry_id}: no entry with that id")
     pinned = [i for i in registry.get("pinned", []) if i != entry_id] + ([entry_id] if on else [])
@@ -209,19 +337,39 @@ def _day(iso):
     return f"{d.day} {MONTHS[d.month - 1]} {d.year}"
 
 
+def render_tool(tool):
+    """One tool of a grouped entry, as one markdown list line."""
+    label = f"released {_day(tool['released'])}"
+    if tool.get("version"):
+        label = f"{tool['version']}, {label}"
+    line = (f"- **{tool['name']}** ({label}). {tool['summary']} Run `{tool['command']}`; "
+            f"[tool page]({tool['page']})")
+    return line + (f", {tool['evidence']}." if tool.get("evidence") else ".")
+
+
 def render_entry(entry):
     """One entry's part of the section, as markdown lines."""
     validate(entry)
     where = entry["where"]
-    if where == "main":
+    first = min((t["released"] for t in entry.get("tools", [])), default=entry["released"])
+    if entry.get("tools") and first != entry["released"]:
+        when = (f"Its tools were released from {_day(first)} to {_day(entry['released'])}; each line gives its tool's "
+                "date.")
+    elif where == "main":
         when = f"Released {_day(entry['released'])}."
     else:
         url = f"{REPO_URL}/tree/{where['commit']}/{where['path']}"
         when = (f"Released {_day(entry['released'])} as a reviewed package on branch `{where['branch']}`: "
                 f"[`{where['path']}/` at commit `{where['commit'][:7]}`]({url}).")
-    lines = [f"### {entry['title']}", "", when, "", entry["summary"]]
+    lines = [f"### {entry['title']}", ""]
+    if entry.get("image"):
+        image = entry["image"]
+        lines += [f"![{image['alt']}]({image['src']})", "", f"*{image['caption']}*", ""]
+    lines += [when, "", entry["summary"]]
     if entry.get("commands"):
         lines += ["", "```bash", *entry["commands"], "```"]
+    if entry.get("tools"):
+        lines += [""] + [render_tool(t) for t in entry["tools"]]
     if entry.get("details"):
         lines += ["", entry["details"]]
     return lines
@@ -285,6 +433,15 @@ def check(registry_path=REGISTRY, readme_path=README):
                     "run python -m kit releases render"]
         if Path(registry_path).read_text(encoding="utf-8") != dumps(registry):
             return [f"{registry_path} is not in its written form; run python -m kit releases render"]
+        missing = [e["image"]["src"] for e in registry["releases"] if e.get("image")
+                   and not e["image"]["src"].startswith("https://")
+                   and not (Path(readme_path).parent / e["image"]["src"]).is_file()]
+        if missing:
+            return [f"{registry_path} shows pictures that are not in the tree: {', '.join(missing)}"]
+        pages = [t["page"] for e in registry["releases"] for t in e.get("tools", [])
+                 if not (Path(readme_path).parent / t["page"]).is_file()]
+        if pages:
+            return [f"{registry_path} links tool pages that are not in the tree: {', '.join(pages)}"]
     except (OSError, ValueError) as exc:
         return [str(exc)]
     return []
@@ -329,6 +486,8 @@ def run(args):
             pinned = validate_list(registry).get("pinned", [])
             for e in ordered(registry["releases"], pinned):
                 print(f"{e['released']}  {e['id']:<24} {e['title']}" + ("  (pinned)" if e["id"] in pinned else ""))
+                for t in e.get("tools", []):
+                    print(f"{t['released']}    {t['id']:<22} {t['name']}  (in {e['id']})")
             return 0
         if args.action in ("pin", "unpin"):
             registry = pin(registry, args.id, on=args.action == "pin")

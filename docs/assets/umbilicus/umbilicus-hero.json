@@ -1,0 +1,99 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "umbilicus-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.",
+  "caption": "Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": "umbilicus-finder",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "umbilicus-hero.webp",
+      "bytes": 45400,
+      "sha256": "0c7af59224f690bf2bf38548a54fcadd2196ac6b4dd6ff77e2bae2e1071cb6ae",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "umbilicus-card.jpg",
+      "bytes": 77745,
+      "sha256": "f4d7a44c4d87fec5064cf0ea39aa50cfc270bd28d51285c5498968f9a6489486",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-18",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "b7d08516616365193a6964cb2c2304e483b03f9105afe02d4ce28601417cbf45",
+    "base_commit": "c33e1599ad436b5f0b52208ac98ff4a634b31331"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/umbilicus.json --out-dir docs/assets/umbilicus",
+  "recipe": {
+    "name": "umbilicus-hero",
+    "release_id": "umbilicus-finder",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of a row of synthetic scroll cross-sections, each a spiral wound around a center that sits off the middle of its disc, with a copper thread bending through every winding center.",
+    "caption": "Concept illustration: synthetic scroll cross-sections, cap to base, with a copper thread through each winding center. No scan data.",
+    "license": "Apache-2.0",
+    "seed": 7,
+    "scene": {
+      "kind": "procedural",
+      "name": "umbilicus",
+      "params": {
+        "start": [
+          -3.0,
+          1.1,
+          0.9
+        ],
+        "end": [
+          5.2,
+          1.1,
+          -5.0
+        ],
+        "eye": [
+          0.4,
+          1.5,
+          6.0
+        ],
+        "target": [
+          1.4,
+          1.0,
+          -2.0
+        ],
+        "fov": 22,
+        "turns": 6.0
+      }
+    },
+    "grade": {
+      "duotone": 0.1,
+      "key": 0.36,
+      "rim": 0.08,
+      "vignette": 0.3,
+      "fade_right": 0.04,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "Scroll center finder",
+      "subtitle": "Finds the winding center of a scroll in X-ray CT, one control point per height.",
+      "focus": [
+        0.3,
+        0.5
+      ]
+    }
+  }
+}

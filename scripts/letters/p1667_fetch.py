@@ -1,7 +1,7 @@
 """Fetch the public PHerc. 1667 data the letter benchmarks read, from the open-data bucket (anonymous HTTPS).
 
 Writes OUT/maps/<wNNN>.tif (the 19 segments' 2.4 um ink-detection maps, about 1.9 GB in all) and
-OUT/labels/<wNNN>/z/1/ (level 1 of the six labelled segments' official inklabels.zarr, under 1 MB).
+OUT/labels/<wNNN>/z/1/ (level 1 of the six labeled segments' official inklabels.zarr, under 1 MB).
 Resumable: files already there at their listed size are kept; a cut-off download is refused.
 Standard library only.
 

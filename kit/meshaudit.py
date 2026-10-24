@@ -2,8 +2,8 @@
 
 Three checks on published data, all derived numbers only:
 
-* ``transforms``: refit each catalogue affine from its stored landmarks; fit residual,
-  leave-one-out error, inverse consistency and scale, in micrometres.
+* ``transforms``: refit each catalog affine from its stored landmarks; fit residual,
+  leave-one-out error, inverse consistency and scale, in micrometers.
 * ``canvas``: does a published mesh variant reproduce each surface volume's canvas size?
 * ``depth``: where does the papyrus band sit along the normal in a segment's native render
   versus its cross-scan renders? Brightness peaks, never ink.
@@ -76,7 +76,7 @@ def _absent(exc):
     return isinstance(exc, FileNotFoundError) or (isinstance(exc, urllib.error.HTTPError) and exc.code == 404)
 
 
-# ---------------------------------------------------------------- HTTP and catalogue
+# ---------------------------------------------------------------- HTTP and catalog
 
 def _get(url, byte_range=None, timeout=60):
     headers = {"Accept-Encoding": "identity"}
@@ -190,7 +190,7 @@ def tier(loo_rms_um):
 
 
 def audit_transform(matrix, src, dst, px_from_um, px_to_um, reverse=None):
-    """Numbers for one stored transform. Units: micrometres unless named otherwise."""
+    """Numbers for one stored transform. Units: micrometers unless named otherwise."""
     import numpy as np
     m = np.asarray(matrix, float)
     rec = {"n_landmarks": len(src) if src else 0, "px_from_um": px_from_um, "px_to_um": px_to_um}
@@ -271,7 +271,7 @@ def _volume_id_in(name):
 
 
 def segment_entries(seg):
-    """Surface-volume and mesh paths from a catalogue segment record."""
+    """Surface-volume and mesh paths from a catalog segment record."""
     sv, meshes = [], []
     for x in seg.get("data", []):
         for o in x.get("origins", []):
@@ -358,8 +358,8 @@ def layer_positions_um(n_layers, dz_um):
 
 
 def sheet_peak_um(profile, dz_um, sigma_um=8.0, window_um=60.0):
-    """Highest local maximum of the smoothed profile within +-window_um of the centre layer,
-    refined with a parabola. Returns micrometres from the centre layer, or None."""
+    """Highest local maximum of the smoothed profile within +-window_um of the center layer,
+    refined with a parabola. Returns micrometers from the center layer, or None."""
     import numpy as np
     p = np.asarray(profile, float)
     if p.size < 3 or not np.isfinite(p).all():
@@ -380,7 +380,7 @@ def sheet_peak_um(profile, dz_um, sigma_um=8.0, window_um=60.0):
 
 
 def shape_corr(p_native, dz_native, p_cross, dz_cross, flip=False, half_um=60.0, step_um=1.0):
-    """Pearson correlation of two profiles on a common micrometre grid within +-half_um."""
+    """Pearson correlation of two profiles on a common micrometer grid within +-half_um."""
     import numpy as np
     zn = layer_positions_um(len(p_native), dz_native)
     zc = layer_positions_um(len(p_cross), dz_cross)
@@ -403,7 +403,7 @@ def shape_corr(p_native, dz_native, p_cross, dz_cross, flip=False, half_um=60.0,
 def compare_profiles(native, cross, dz_native, dz_cross):
     """Per-tile offsets and the location control for one segment pair.
 
-    native, cross: lists of profiles (or None) for the same tile centres."""
+    native, cross: lists of profiles (or None) for the same tile centers."""
     import numpy as np
     pairs = [(a, b) for a, b in zip(native, cross) if a is not None and b is not None]
     out = {"tiles_with_profiles": len(pairs)}
@@ -527,7 +527,7 @@ class SurfaceVolume:
         return out
 
     def profile(self, u, v, target_um=20.0, window_mm=1.5):
-        """Mean intensity per layer over nonzero pixels of a square window centred at
+        """Mean intensity per layer over nonzero pixels of a square window centered at
         normalized canvas coordinates (u along columns, v along rows). None if invalid."""
         import numpy as np
         k = self.level_near(target_um)
@@ -555,7 +555,7 @@ def tile_centres(n, seed=SEED):
 
 def depth_segment(base, sample_id, seg, cross_ids=None, n_tiles=32, seed=SEED, workers=8, reference=None):
     """Compare the native render (or `reference` volume's render) with each other render of one
-    catalogue segment."""
+    catalog segment."""
     sv, _ = segment_entries(seg)
     by_vol = {}
     for p in sv:  # first surface volume per volume id
@@ -644,7 +644,7 @@ def grid_normals(xyz):
 def affine_residuals(ref_xyz, cross_xyz, matrix, px_cross_um, search=4, max_points=20000, seed=SEED):
     """Send reference-mesh vertices through `matrix` and measure, against the nearest published
     cross-mesh vertex near the proportionally scaled grid position, the normal and tangential
-    distances in micrometres of the cross volume."""
+    distances in micrometers of the cross volume."""
     import numpy as np
     H, W, _ = ref_xyz.shape
     Hc, Wc, _ = cross_xyz.shape
@@ -707,7 +707,7 @@ def read_tifxyz(base_path, fetch=None):
 
 
 def sample_matrix(cat, sample_id, a, b):
-    """The catalogue's sample-level matrix from volume a to volume b, or None."""
+    """The catalog's sample-level matrix from volume a to volume b, or None."""
     props = (cat["samples"][sample_id].get("sample") or {}).get("properties") or {}
     for e in props.get("volume_transforms") or []:
         if e.get("from_volume_id") == a:
@@ -765,7 +765,7 @@ def phase_shift(a, b, exclude=5):
 
 
 def centre_patch(sv, u, v, size_mm=3.0, out_um=10.0):
-    """Centre layer of a surface volume over a size_mm square at normalized (u, v), area-averaged
+    """Center layer of a surface volume over a size_mm square at normalized (u, v), area-averaged
     to out_um pixels. None where under half the window is valid."""
     import numpy as np
     k = min((i for i in range(len(sv.levels)) if sv.levels[i]["scale_um"][1] <= out_um),
@@ -775,7 +775,7 @@ def centre_patch(sv, u, v, size_mm=3.0, out_um=10.0):
     px = lv["scale_um"][1]
     n = int(round(size_mm * 1000.0 / out_um))
     half_um = n * out_um / 2.0
-    # centre from the full-resolution canvas: coarser levels round their sizes up
+    # center from the full-resolution canvas: coarser levels round their sizes up
     _, H0, W0 = sv.levels[0]["zarray"]["shape"]
     px0 = sv.levels[0]["scale_um"][1]
     rc, cc = v * H0 * px0, u * W0 * px0

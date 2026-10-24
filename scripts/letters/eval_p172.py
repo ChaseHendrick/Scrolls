@@ -1,4 +1,4 @@
-"""Real-letter check on PHerc. 172: read the hand-drawn ink labels and compare with the labeller's transcription.
+"""Real-letter check on PHerc. 172: read the hand-drawn ink labels and compare with the labeler's transcription.
 
 Data: N.A. Bodill, Herculaneum-Scroll-Labels (https://github.com/Bodillium/Herculaneum-Scroll-Labels,
 CC BY-NC-SA 4.0): binary ink-label PNGs for PHerc. 172 segments and "Preliminary Transcriptions of
@@ -8,7 +8,7 @@ Nothing from that repository is copied here; pass a local clone.
 What it measures: whether the reader names the letters a person drew, scored as character error
 rate (edit distance over reference letters) on lines matched in order to the transcription
 (letters the transcription marks unknown are skipped). It is not an ink-map test: the masks are
-clean drawings of what the labeller read. A model trained on synthetic lines meets real
+clean drawings of what the labeler read. A model trained on synthetic lines meets real
 Herculaneum letterforms here for the first time, so this is a domain-transfer check.
 
 Every string is model output. Keep --out files in ignored work/ folders.
@@ -67,7 +67,7 @@ def parse_transcription(text):
 
 
 def match_lines(read, ref):
-    """Order-preserving pairing of read lines with reference lines, minimising total edit cost.
+    """Order-preserving pairing of read lines with reference lines, minimizing total edit cost.
 
     Unpaired lines cost their length, so a stray read line or a missed reference line is charged."""
     n, m = len(read), len(ref)
