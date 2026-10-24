@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: it only reads public objects |
 | Released | Public `main` from the change that adds it (24 Oct 2026). Earlier copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds two small fixes (an opener imported only when used, fewer than one try taken as one) |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) |
-| Checked | 2026-10-24 against commit `4b592b6` |
+| Checked | 2026-10-24 against commit `77aea1f` |
 
 ## What it does
 
@@ -163,7 +163,7 @@ python3 -m unittest tests.test_s3retry tests.test_cutoff_reads -v
 
 ## History
 
-- 2026-10-24: on public `main`, with `kit fetch` now asking again after a false 404 (`4b592b6`).
+- 2026-10-24: on public `main`, with `kit fetch` now asking again after a false 404 (`77aea1f`).
 - 2026-10-15: the copy in AutoPipeline 0.1.4 (`603fe14`, branch `submission/progress-2026-10-fix4`). Made before it was public: the first version of 8 October (a 404 is missing only on `NoSuchKey`, false 404s asked again up to 10 times, `key_state`, `refuse_remote`; [log](../logs/2026-10-12-upstream-reports.md)); the give-up reason `S3 answered 404 CODE N times; not taken as a missing key` (8 October); a transfer cut off mid-body is `unknown` in `key_state` instead of a crash (9 October).
 
 ## Related

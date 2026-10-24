@@ -233,3 +233,4 @@ Free: it reads public data. PHerc0139's 38 meshes on volume 20260102150214 took 
 - [centerline](centerline.md): find and fetch the center line this tool needs.
 - [tifxyz](tifxyz.md): check one mesh's grid.
 - [windconsistency](windconsistency.md): checks winding numbers on traced points.
+- `kit stackcheck` (the usage section of [`logs/2026-10-14-pherc0139-segment-defects.md`](../logs/2026-10-14-pherc0139-segment-defects.md)): checks a list of consecutive segments in a given order (order, coincident pairs, skipped windings, missing sectors); `kit coverage` takes every mesh on a volume in no order and maps what is traced and what is not.

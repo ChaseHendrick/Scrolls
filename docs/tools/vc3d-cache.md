@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: it reads a public bucket and changes only VC3D's cache on this machine |
 | Released | Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14, `submission/progress-2026-10-fix4`), without the 17 October deletion-timestamp correction below |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) |
-| Checked | 2026-10-24 against commit `4b592b6` |
+| Checked | 2026-10-24 against commit `77aea1f` |
 
 ## What it does
 
@@ -200,7 +200,7 @@ python -m unittest tests.test_vc3d_cache tests.test_vc3dfix -v
 
 ## History
 
-- 2026-10-24: on public `main`, with `python -m kit vc3dcache` and `kit s3relay`'s guard; deletion times keep full precision, so one repair is never counted in two runs' windows (a correction of 17 October, not in the AutoPipeline release copies); the cache root follows villa main's `cache.json` before `VC3D.ini` (`4b592b6`).
+- 2026-10-24: on public `main`, with `python -m kit vc3dcache` and `kit s3relay`'s guard; deletion times keep full precision, so one repair is never counted in two runs' windows (a correction of 17 October, not in the AutoPipeline release copies); the cache root follows villa main's `cache.json` before `VC3D.ini` (`77aea1f`).
 - 2026-10-15: the copy in AutoPipeline 0.1.4 (`603fe14`, branch `submission/progress-2026-10-fix4`), first released inside the AutoPipeline package on `submission/progress-2026-10` on 14 October. Made before it was public: the first version of 8 October; the folder is named by the URL VC3D was given (`cache_url`, the relay's URL), while chunks are checked at the bucket URL (8 October).
 
 ## Related

@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: it reads public or local data |
 | Released | Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds opt-in volcomp decoding |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) |
-| Checked | 2026-10-24 against commit `4b592b6` |
+| Checked | 2026-10-24 against commit `77aea1f` |
 
 ## What it does
 
@@ -226,7 +226,7 @@ python -m unittest tests.test_vc3d_audit -v
 
 ## History
 
-- 2026-10-24: on public `main` as a library, for the false-404 tools, with opt-in volcomp decoding (`4b592b6`).
+- 2026-10-24: on public `main` as a library, for the false-404 tools, with opt-in volcomp decoding (`77aea1f`).
 - 2026-10-15: the copy in AutoPipeline 0.1.4 (`603fe14`, branch `submission/progress-2026-10-fix4`), first released inside the AutoPipeline package on `submission/progress-2026-10` on 14 October. The first version, of 8 October, read headers, levels, decoding, the footprint under a surface and render zeros.
 
 ## Related
