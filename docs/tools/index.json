@@ -5961,6 +5961,7 @@
     "python scripts/media/hero.py",
     "python scripts/media/encode.py",
     "python scripts/media/capture_web.py",
+    "python scripts/media/record_ap_monitor.py",
     "python scripts/media/sweep.py",
     "python scripts/media/tifxyz_stills.py",
     "python scripts/media/isometry_media.py",
@@ -5991,7 +5992,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -6033,67 +6034,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 217,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 218,
-     "end_line": 221,
+     "start_line": 238,
+     "end_line": 241,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 222,
-     "end_line": 228,
+     "start_line": 242,
+     "end_line": 248,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 229,
-     "end_line": 265,
+     "start_line": 249,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 266,
-     "end_line": 315,
+     "start_line": 286,
+     "end_line": 336,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 316,
-     "end_line": 338,
+     "start_line": 337,
+     "end_line": 359,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 339,
-     "end_line": 352,
+     "start_line": 360,
+     "end_line": 373,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 353,
-     "end_line": 362,
+     "start_line": 374,
+     "end_line": 383,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 363,
-     "end_line": 366,
+     "start_line": 384,
+     "end_line": 387,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 367,
-     "end_line": 372,
+     "start_line": 388,
+     "end_line": 393,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 373,
-     "end_line": 378,
+     "start_line": 394,
+     "end_line": 399,
      "applicable": true
     }
    ]
