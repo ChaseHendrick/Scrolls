@@ -157,7 +157,7 @@ Free to use. The Space is a static page on Hugging Face; the data comes from the
 
 - 2026-10-24: 1.0.0, first version (on top of `5d217be`).
 - 2026-10-24: Connect your tool panel in the Guide ([spaceconnect](spaceconnect.md)): the Segment Atlas with huggingface_hub, datasets, pandas, hf and curl snippets, an example mesh with numpy and tifffile, all run live.
-- 2026-10-24: 1.1.0, opens a little more zoomed out (camera 4.0 from the segment instead of 3.2), and the same atlas becomes an API and MCP server for agents at `/agents/` (`list_scrolls`, `list_segments`, `get_segment`, `segment_picture`), as Chase asked (PR_LINK).
+- 2026-10-24: 1.1.0, opens a little more zoomed out (camera 4.0 from the segment instead of 3.2), and the same atlas becomes an API and MCP server for agents at `/agents/` (`list_scrolls`, `list_segments`, `get_segment`, `segment_picture`), as Chase asked ([#187](https://github.com/ChaseHendrick/Scrolls/pull/187)).
 
 ## Related
 
