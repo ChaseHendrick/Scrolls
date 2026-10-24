@@ -9,6 +9,9 @@ or a folder on the open-data bucket (https:// or s3://), which is fetched once i
            voxel size, and meta.json's own area_vx2 beside ours as a check
   stretch  how close the grid is to isometric: every grid edge's 3D length over the step meta.json's scale promises
            (1.0 is exact), cell area over the promised area, and the angle between the two grid directions
+  isometry the block proposed for meta.json in villa issue #2279: edges within 10 and 25 % of the step, median
+           |log(edge / step)|, triangle area over the promised area, grid angle p5 p50 p95, stretched nodes, and
+           flatboi's L2 and Linf with the grid as the flattening
   check    holes inside the sheet, folds (neighboring cells whose normals turn by more than --fold-deg) and
            over-stretched nodes (an edge more than --max-stretch times too long or too short), each with a count, a
            share and a verdict line; --png writes a picture with each problem in its own color
@@ -195,6 +198,92 @@ def stretch(seg):
             "within_25pct": None if not both.size else round(float(((both > 1 / 1.25) & (both < 1.25)).mean()), 4),
             "median_abs_log": None if not logs.size else round(float(np.median(logs)), 4)}
 
+
+ISOMETRY_VERSION = 1
+
+
+def _tri_stretch(q1, q2, q3, uv1, uv2, uv3):
+    """flatboi's triangle_stretch over arrays of triangles: (L2, Linf, area 3D, area 2D), Sander et al.'s
+    stretch of the map from the 2D coordinates to the 3D points (1 and 1 for an isometric triangle)."""
+    np = _np()
+    (s1, t1), (s2, t2), (s3, t3) = uv1, uv2, uv3
+    A = ((s2 - s1) * (t3 - t1) - (s3 - s1) * (t2 - t1)) / 2.0
+    Ss = (q1 * (t2 - t3) + q2 * (t3 - t1) + q3 * (t1 - t2)) / (2.0 * A)
+    St = (q1 * (s3 - s2) + q2 * (s1 - s3) + q3 * (s2 - s1)) / (2.0 * A)
+    a, b, c = (Ss * Ss).sum(-1), (Ss * St).sum(-1), (St * St).sum(-1)
+    G = np.sqrt(((a + c) + np.sqrt((a - c) ** 2 + 4.0 * b * b)) / 2.0)
+    L2 = np.sqrt((a + c) / 2.0)
+    ab, bc, ca = (np.linalg.norm(q2 - q1, axis=-1), np.linalg.norm(q3 - q2, axis=-1),
+                  np.linalg.norm(q1 - q3, axis=-1))
+    s = (ab + bc + ca) / 2.0
+    a3 = np.sqrt(np.maximum(0.0, s * (s - ab) * (s - bc) * (s - ca)))
+    return L2, G, a3, np.full_like(a3, abs(A))
+
+
+def _weighted_median(data, weights):
+    np = _np()
+    o = np.argsort(data, kind="stable")
+    acc = np.cumsum(weights[o])
+    return float(data[o][min(int(np.searchsorted(acc, 0.5 * acc[-1])), len(o) - 1)])
+
+
+def isometry(seg, max_stretch=MAX_STRETCH):
+    """The isometry block proposed for meta.json (villa issue #2279), version 1: edges against the promised step,
+    triangle area against the promised cell area, grid angle, stretched nodes, and flatboi's stretch metrics with the
+    grid itself as the 2D coordinates (column x step, row x step), so a perfect grid gives L2 = Linf = 1."""
+    np = seg._np
+    su, sv = seg.step
+    ec, er = _edges(seg)
+    both = np.concatenate([ec[np.isfinite(ec)], er[np.isfinite(er)]])
+    c, area, _ = _cells(seg)
+    P = seg.xyz
+    with np.errstate(invalid="ignore"):
+        u = P[:-1, 1:] - P[:-1, :-1]
+        w = P[1:, :-1] - P[:-1, :-1]
+        cos = (u * w).sum(-1) / (np.linalg.norm(u, axis=-1) * np.linalg.norm(w, axis=-1))
+        ang = np.degrees(np.arccos(np.clip(cos, -1, 1)))[c]
+    _, masks = check(seg, max_stretch)
+    k = int(masks["stretched"].sum())
+    out = {"version": ISOMETRY_VERSION, "step_vx": [round(su, 4), round(sv, 4)], "edges": int(both.size),
+           "within_10pct": None, "within_25pct": None, "median_abs_log_ratio": None, "area_ratio": None,
+           "angle_deg": None, "stretched_nodes": k, "stretched_area_vx2": round(k * su * sv, 1),
+           "l2_mean": None, "l2_median": None, "linf": None, "area_error": None}
+    if both.size:
+        out["within_10pct"] = round(float(((both > 1 / 1.1) & (both < 1.1)).mean()), 4)
+        out["within_25pct"] = round(float(((both > 1 / 1.25) & (both < 1.25)).mean()), 4)
+        with np.errstate(divide="ignore"):
+            out["median_abs_log_ratio"] = round(float(np.median(np.abs(np.log(both)))), 4)
+    if c.any():
+        out["area_ratio"] = round(float(area[c].sum() / (c.sum() * su * sv)), 4)
+        out["angle_deg"] = [round(float(v), 1) for v in np.percentile(ang, (5, 50, 95))]
+        p00, p01, p10, p11 = P[:-1, :-1][c], P[:-1, 1:][c], P[1:, :-1][c], P[1:, 1:][c]
+        o, x, y, xy = (0.0, 0.0), (su, 0.0), (0.0, sv), (su, sv)
+        r1, r2 = _tri_stretch(p00, p01, p11, o, x, xy), _tri_stretch(p00, p11, p10, o, xy, y)
+        L2, G, a3, a2 = (np.concatenate([a, b]) for a, b in zip(r1, r2))
+        l2sq = L2 * L2
+        out["l2_mean"] = round(float(np.sqrt((l2sq * a3).sum() / a3.sum())), 4)
+        out["l2_median"] = round(_weighted_median(l2sq, a3), 4)
+        out["linf"] = round(float(G.max()), 4)
+        al, be = a3 / a3.sum(), a2 / a2.sum()
+        out["area_error"] = round(float(np.where(al > be, 1 - be / (al + 1e-30), 1 - al / (be + 1e-30)).mean()), 4)
+    return out
+
+
+def node_ratio(seg):
+    """(H, W) worst edge-over-step ratio at each node, as the ratio farthest from 1 in log terms; NaN for holes."""
+    np = seg._np
+    ec, er = _edges(seg)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        lc, lr = np.log(ec), np.log(er)
+    H, W = seg.shape
+    worst = np.full((H, W), np.nan)
+    for arr, sl in ((lc, (slice(None), slice(None, -1))), (lc, (slice(None), slice(1, None))),
+                    (lr, (slice(None, -1), slice(None))), (lr, (slice(1, None), slice(None)))):
+        cur = worst[sl]
+        take = np.isfinite(arr) & ~(np.abs(cur) >= np.abs(arr))
+        cur[take] = arr[take]
+    worst[~seg.valid] = np.nan
+    return np.exp(worst)
 
 def _holes(valid):
     """Grid nodes that are holes inside the sheet: missing, and not joined to the grid's border through missing ones."""
@@ -757,6 +846,14 @@ def format_stretch(r):
     return "\n".join(lines)
 
 
+def format_isometry(r, source=""):
+    lines = [source, f"  isometry block, version {r['version']} (step {r['step_vx'][0]:g} x {r['step_vx'][1]:g} voxels)"]
+    for k, v in r.items():
+        if k not in ("version", "step_vx"):
+            lines.append(f"  {k:<22} {'none' if v is None else v}")
+    return "\n".join(lines)
+
+
 def format_check(r):
     lines = [r["source"]]
     for name, what in (("holes", "missing nodes inside the sheet"),
@@ -854,6 +951,10 @@ def build_parser(p):
 
     common(actions.add_parser("info", help="area in cm2 and mm2, grid size, filled share, bounds"))
     common(actions.add_parser("stretch", help="how isometric the grid is: edge length, cell area, grid angle"))
+    a = actions.add_parser("isometry", help="the isometry block proposed for meta.json (villa #2279)")
+    common(a)
+    a.add_argument("--max-stretch", type=float, default=MAX_STRETCH, help="a stretched node has an edge this many "
+                                                                         "times too long or short")
     a = actions.add_parser("check", help="holes, folds and over-stretched nodes, with an optional picture")
     common(a)
     a.add_argument("--max-stretch", type=float, default=MAX_STRETCH, help="flag an edge this many times too long or short")
@@ -899,6 +1000,9 @@ def run(args):
     elif args.action == "stretch":
         r = stretch(seg)
         text = format_stretch(r)
+    elif args.action == "isometry":
+        r = isometry(seg, args.max_stretch)
+        text = format_isometry(r, seg.source)
     elif args.action == "check":
         r, masks = check(seg, args.max_stretch, args.fold_deg)
         if args.png:

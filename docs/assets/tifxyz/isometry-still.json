@@ -1,0 +1,65 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "isometry-still",
+  "label": "Real data render",
+  "alt": "PHerc0139 segment w035 shaded gray, almost free of marks: a few yellow and orange dots where a node's worst grid edge is 10 to 50 % off the promised step, and red rings around the small clusters off by more than 1.5x; beside it a histogram of every edge's length over the step, packed at 1, and the isometry block kit tifxyz isometry computes for the segment.",
+  "caption": "Real data render: kit tifxyz isometry on PHerc0139 w035, the isometry block proposed for meta.json. Mesh geometry only, no CT, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "2.399 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w035",
+    "volume": "20260102150214"
+  },
+  "sources": [
+    "s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz"
+  ],
+  "outputs": [
+    {
+      "file": "isometry-still.png",
+      "bytes": 477576,
+      "sha256": "b347900301cae3fc5e8411a35a4aebe857b39765f246701edd521b8f95ba2940",
+      "width": 1600,
+      "height": 900,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "isometry_media.py"
+    ],
+    "scripts_sha256": "1a9e2941d9da6c15b6630aed8428b21925240da2c9b0a6aa41a4144f8e60c70a",
+    "base_commit": "6bf6839b07b239e85d16884956766dadafe7de9d"
+  },
+  "command": "python scripts/media/isometry_media.py s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz --scan PHerc0139 --segment w035 --out-dir docs/assets/tifxyz",
+  "isometry": {
+    "version": 1,
+    "step_vx": [
+      20.0,
+      20.0
+    ],
+    "edges": 1926584,
+    "within_10pct": 0.9984,
+    "within_25pct": 0.9999,
+    "median_abs_log_ratio": 0.0055,
+    "area_ratio": 0.9963,
+    "angle_deg": [
+      88.4,
+      89.9,
+      91.2
+    ],
+    "stretched_nodes": 43,
+    "stretched_area_vx2": 17200.0,
+    "l2_mean": 0.9985,
+    "l2_median": 0.9992,
+    "linf": 1.2094,
+    "area_error": 0.0132
+  }
+}
