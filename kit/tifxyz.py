@@ -17,6 +17,10 @@ or a folder on the open-data bucket (https:// or s3://), which is fetched once i
   facing   with the scroll's center line: the share of the grid normals (x-step cross y-step, as in kit stackcheck)
            that point away from the center, and the share of grid columns along which the angle about the center
            grows, so you can tell which side of the sheet a render's layers go toward
+  chunks   which chunks of a zarr volume the sheet touches (within --margin voxels), their count and stored bytes
+           (one HEAD each on a bucket), and with --fetch a local copy holding the metadata and only those chunks
+  diff     two versions of a segment: area change, nodes added and removed, and how far the kept ones moved (node
+           by node when the grids match, by position when they do not), with an optional picture
 
 Geometry only: no CT, no ink. Nothing here is an official villa or prize check; the numbers describe the grid.
 Standard library plus numpy and tifffile; scipy, when installed, finds holes faster.
@@ -363,7 +367,11 @@ def shade(seg, masks=None, size=None):
     for name in ("holes", "stretched", "folds"):
         if masks and name in masks:
             img[masks[name]] = COLORS[name]
-    img = img.astype(np.uint8)
+    return _resize(img.astype(np.uint8), size)
+
+
+def _resize(img, size):
+    """img with its longest side brought to about size pixels: every kth node, or each node repeated."""
     if size:
         H, W = img.shape[:2]
         k = max(1, int(math.ceil(max(H, W) / size)))
@@ -373,6 +381,344 @@ def shade(seg, masks=None, size=None):
             r = max(1, size // max(H, W))
             img = img.repeat(r, 0).repeat(r, 1)
     return img
+
+
+# ---------------------------------------------------------------- chunks: the zarr chunks a mesh touches
+
+CHUNK_WORKERS = 32
+TRIES = 5                 # attempts per key on 429, 5xx or a dropped connection
+MAX_REQUESTS = 20000
+SPARE_BYTES = 1 << 30     # --fetch keeps 1 GiB free, as kit fetch does
+_ROOT_META = (".zattrs", ".zgroup", ".zmetadata", "zarr.json")
+
+
+class ZarrSource:
+    """A zarr folder on disk or behind a URL (https://, or s3:// on the open-data bucket), read key by key."""
+
+    def __init__(self, root, opener=None):
+        from . import stackcheck
+        self.root = str(root).rstrip("/")
+        self.remote = stackcheck._is_url(self.root)
+        self.base = stackcheck._https(self.root) if self.remote else None
+        if opener is None:
+            import urllib.request
+            opener = urllib.request.urlopen
+        self.opener = opener
+
+    def _request(self, key, method="GET", tries=TRIES, sleep=None):
+        import time
+        import urllib.error
+        import urllib.request
+        sleep = sleep or time.sleep
+        for attempt in range(tries):
+            req = urllib.request.Request(f"{self.base}/{key}", method=method, headers={"User-Agent": "kit-tifxyz"})
+            try:
+                with self.opener(req, timeout=60) as resp:
+                    return resp.read() if method == "GET" else int(resp.headers.get("Content-Length") or 0)
+            except urllib.error.HTTPError as exc:
+                if exc.code in (403, 404):     # S3 answers 403 for a missing key in a bucket it will not list
+                    return None
+                if not (exc.code == 429 or exc.code >= 500) or attempt == tries - 1:
+                    raise
+            except (urllib.error.URLError, TimeoutError, ConnectionError):
+                if attempt == tries - 1:
+                    raise
+            sleep(min(8.0, 0.5 * 2 ** attempt))   # 429, 5xx and dropped connections are asked again
+
+    def read(self, key):
+        """The bytes of one key, or None when it is not there."""
+        if self.remote:
+            return self._request(key)
+        p = Path(self.root) / key
+        return p.read_bytes() if p.is_file() else None
+
+    def size(self, key):
+        """The size in bytes of one key, or None when it is not there (zarr reads a missing chunk as its fill value)."""
+        if self.remote:
+            return self._request(key, "HEAD")
+        p = Path(self.root) / key
+        return p.stat().st_size if p.is_file() else None
+
+    def json(self, key):
+        raw = self.read(key)
+        if raw is None:
+            return None
+        try:
+            return json.loads(raw)
+        except ValueError as exc:
+            raise VerifyError(f"{self.root}/{key} is not JSON: {exc}") from None
+
+
+def _multiscales(attrs):
+    ms = (attrs or {}).get("multiscales") or ((attrs or {}).get("ome") or {}).get("multiscales")
+    return ms[0] if ms else None
+
+
+def _scale_of(dataset):
+    for t in dataset.get("coordinateTransformations") or []:
+        if t.get("type") == "scale" and t.get("scale"):
+            return [float(v) for v in t["scale"]]
+    return None
+
+
+def zarr_level(src, level=0):
+    """One array of a zarr or OME-Zarr volume, as a dict: path, shape, chunks (the stored unit: the shard for a sharded
+    v3 array), key scheme, the metadata keys to copy, and its scale against level 0 along z, y, x."""
+    root2, root3 = src.json(".zattrs"), src.json("zarr.json")
+    if root3 is not None and root3.get("node_type") == "array" or src.json(".zarray") is not None:
+        paths, factor = [""], [1.0, 1.0, 1.0]       # a plain array, not a pyramid: --level does not apply
+        if level:
+            raise VerifyError(f"{src.root} is one array, not a multiscale pyramid: leave out --level")
+    else:
+        ms = _multiscales((root3 or {}).get("attributes") if root3 is not None else root2)
+        if not ms:
+            raise VerifyError(f"{src.root}: no .zattrs, zarr.json or multiscales found: is this a zarr volume?")
+        ds = ms.get("datasets") or []
+        if not 0 <= level < len(ds):
+            raise VerifyError(f"{src.root} has levels 0 to {len(ds) - 1}; --level {level} is not one of them")
+        paths = [d["path"] for d in ds]
+        s0, sl = _scale_of(ds[0]), _scale_of(ds[level])
+        factor = [b / a for a, b in zip(s0[-3:], sl[-3:])] if s0 and sl else [2.0 ** level] * 3
+    path = paths[level] if paths != [""] else ""
+    pre = f"{path}/" if path else ""
+    m2, m3 = src.json(pre + ".zarray"), src.json(pre + "zarr.json")
+    if m2 is not None:
+        sep = m2.get("dimension_separator") or "."
+        out = {"format": 2, "shape": m2["shape"], "chunks": m2["chunks"], "dtype": m2.get("dtype"),
+               "prefix": pre, "sep": sep, "meta_key": pre + ".zarray"}
+    elif m3 is not None and m3.get("node_type") == "array":
+        enc = m3.get("chunk_key_encoding") or {"name": "default"}
+        conf = enc.get("configuration") or {}
+        sep = conf.get("separator") or ("/" if enc.get("name") == "default" else ".")
+        out = {"format": 3, "shape": m3["shape"], "chunks": m3["chunk_grid"]["configuration"]["chunk_shape"],
+               "dtype": m3.get("data_type"), "prefix": pre + ("c/" if enc.get("name") == "default" else ""),
+               "sep": sep, "meta_key": pre + "zarr.json"}
+        if any(c.get("name") == "sharding_indexed" for c in m3.get("codecs") or []):
+            out["sharded"] = True
+    else:
+        raise VerifyError(f"{src.root}: no array metadata at level {level} ({pre or 'the root'})")
+    if len(out["shape"]) != 3:
+        raise VerifyError(f"{src.root}: level {level} has {len(out['shape'])} axes; a scan volume has 3 (z, y, x)")
+    out.update(level=level, path=path, factor=factor, levels=paths)
+    return out
+
+
+def chunk_key(arr, idx):
+    return arr["prefix"] + arr["sep"].join(str(int(i)) for i in idx)
+
+
+def touched_chunks(seg, arr, margin=0.0):
+    """(sorted (N, 3) int array of z, y, x chunk indices whose box comes within margin voxels of the sheet, number of
+    nodes outside the array). The sheet between nodes is covered by adding half a grid cell's diagonal."""
+    np = seg._np
+    if margin < 0:
+        raise VerifyError(f"--margin must be 0 or more voxels (got {margin})")
+    pts = seg.xyz[seg.valid][:, ::-1]                     # x, y, z -> z, y, x
+    f = np.asarray(arr["factor"], float)
+    c = np.asarray(arr["chunks"], float)
+    n = np.ceil(np.asarray(arr["shape"], float) / c).astype(np.int64)
+    r = (margin + 0.5 * math.hypot(*seg.step)) / f
+    q = pts / f
+    inside = ((q + r >= 0) & (q - r < np.asarray(arr["shape"], float))).all(1)
+    q = q[inside]
+    lo = np.clip(np.floor((q - r) / c), 0, n - 1).astype(np.int64)
+    hi = np.clip(np.floor((q + r) / c), 0, n - 1).astype(np.int64)
+    span = int((hi - lo).max()) if len(lo) else 0
+    found = []
+    rng = range(span + 1)
+    for dz in rng:
+        for dy in rng:
+            for dx in rng:
+                o = np.array([dz, dy, dx])
+                idx = lo + o
+                keep = (idx <= hi).all(1)
+                found.append(idx[keep])
+    if not found or not sum(len(a) for a in found):
+        return np.zeros((0, 3), np.int64), int((~inside).sum())
+    return np.unique(np.concatenate(found), axis=0), int((~inside).sum())
+
+
+def _sizes(src, keys, workers=CHUNK_WORKERS):
+    import concurrent.futures
+    if not src.remote or len(keys) < 2:
+        return [src.size(k) for k in keys]
+    with concurrent.futures.ThreadPoolExecutor(workers) as ex:
+        return list(ex.map(src.size, keys))
+
+
+def chunks(seg, volume, level=0, margin=0.0, max_requests=MAX_REQUESTS, src=None):
+    """The chunks of `volume` that the segment touches, with their stored sizes: a dict."""
+    src = src or ZarrSource(volume)
+    arr = zarr_level(src, level)
+    idx, outside = touched_chunks(seg, arr, margin)
+    keys = [chunk_key(arr, i) for i in idx]
+    asked = keys[:max(0, max_requests)]
+    sizes = _sizes(src, asked)
+    present = [s for s in sizes if s is not None]
+    grid = [int(math.ceil(s / c)) for s, c in zip(arr["shape"], arr["chunks"])]
+    rep = {"segment": seg.source, "volume": src.root, "level": level, "level_path": arr["path"],
+           "level_factor_zyx": [round(v, 4) for v in arr["factor"]], "shape_zyx": arr["shape"],
+           "chunk_zyx": arr["chunks"], "sharded": bool(arr.get("sharded")), "margin_vox": margin,
+           "chunks": len(keys), "chunks_in_volume": math.prod(grid),
+           "sized": len(asked), "present": len(present), "absent": len(asked) - len(present),
+           "bytes": int(sum(present)), "nodes_outside_volume": outside}
+    if len(asked) < len(keys):
+        rep["note"] = (f"sizes asked for the first {len(asked)} of {len(keys)} chunks (--max-requests); bytes covers "
+                       "those only")
+    if seg.volume and seg.volume not in src.root:
+        rep["warning"] = (f"the segment is on volume {seg.volume}, which the volume URL does not name: the mesh's "
+                          "voxels must be this volume's")
+    return rep, keys, sizes
+
+
+def fetch_chunks(src, arr_levels, keys, sizes, dest, workers=CHUNK_WORKERS):
+    """Copy the volume's metadata (root and every level) and the given chunks into dest, keeping the key layout, so
+    a zarr reader opens dest as the same volume with only those chunks filled. Returns (written, skipped, bytes)."""
+    import concurrent.futures
+    import shutil
+    dest = Path(dest)
+    need = sum(s for k, s in zip(keys, sizes) if s is not None and not (dest / k).is_file())
+    dest.mkdir(parents=True, exist_ok=True)
+    free = shutil.disk_usage(dest).free
+    if need + SPARE_BYTES > free:
+        raise VerifyError(f"--fetch needs {need / 1e9:.2f} GB plus 1 GB spare in {dest}; {free / 1e9:.2f} GB free")
+    meta = list(_ROOT_META)
+    for path in arr_levels:
+        pre = f"{path}/" if path else ""
+        meta += [pre + ".zarray", pre + ".zattrs", pre + "zarr.json"]
+    for k in dict.fromkeys(meta):
+        raw = src.read(k)
+        if raw is not None:
+            (dest / k).parent.mkdir(parents=True, exist_ok=True)
+            (dest / k).write_bytes(raw)
+
+    def one(pair):
+        k, s = pair
+        out = dest / k
+        if s is None:
+            return 0, 0
+        if out.is_file() and out.stat().st_size == s:
+            return 0, 1
+        raw = src.read(k)
+        if raw is None:
+            return 0, 0
+        out.parent.mkdir(parents=True, exist_ok=True)
+        tmp = out.with_name(out.name + ".part")
+        tmp.write_bytes(raw)
+        tmp.replace(out)
+        return len(raw), 0
+
+    with concurrent.futures.ThreadPoolExecutor(workers if src.remote else 1) as ex:
+        done = list(ex.map(one, zip(keys, sizes)))
+    written = sum(1 for b, _ in done if b)
+    return written, sum(s for _, s in done), sum(b for b, _ in done)
+
+
+# ---------------------------------------------------------------- diff: two versions of one segment
+
+DIFF_TOL = 1.0
+DIFF_SAMPLE = 2000
+
+
+def _near(a_pts, b_pts, d):
+    """For each row of b_pts: True when some row of a_pts lies in the same or a neighboring cube of side d (so a
+    False row is more than d voxels from every point of a_pts; a True one is within 2 sqrt(3) d)."""
+    np = _np()
+    if not len(a_pts):
+        return np.zeros(len(b_pts), bool)
+    ka = np.floor(a_pts / d).astype(np.int64)
+    lo = ka.min(0) - 1
+    span = ka.max(0) - lo + 2
+    lin = lambda k: ((k[:, 0] - lo[0]) * span[1] + (k[:, 1] - lo[1])) * span[2] + (k[:, 2] - lo[2])  # noqa: E731
+    have = np.unique(lin(ka))
+    kb = np.floor(b_pts / d).astype(np.int64)
+    out = np.zeros(len(b_pts), bool)
+    for dz in (-1, 0, 1):
+        for dy in (-1, 0, 1):
+            for dx in (-1, 0, 1):
+                k = kb + np.array([dz, dy, dx])
+                ok = ((k >= lo) & (k < lo + span)).all(1)
+                key = lin(k[ok])
+                pos = np.searchsorted(have, key)
+                hit = np.zeros(len(key), bool)
+                inb = pos < len(have)
+                hit[inb] = have[pos[inb]] == key[inb]
+                out[np.flatnonzero(ok)[hit]] = True
+    return out
+
+
+def _nearest(a_pts, q, block=4):
+    """Distance from each row of q to the nearest row of a_pts, by brute force in float32 blocks."""
+    np = _np()
+    a = a_pts.astype(np.float32)
+    out = np.empty(len(q))
+    for i in range(0, len(q), block):
+        d = ((a[None, :, :] - q[i:i + block, None, :].astype(np.float32)) ** 2).sum(-1)
+        out[i:i + block] = np.sqrt(d.min(1))
+    return out
+
+
+def diff(a, b, tol=DIFF_TOL, sample=DIFF_SAMPLE, seed=0):
+    """Compare two versions of one segment: (report dict, {name: (H, W) bool mask on b's grid} for a picture).
+
+    Same grid shape: node by node (added, removed, moved more than tol voxels, and the displacement percentiles).
+    Different shapes: by position, node to node: b's nodes with no node of a within a cube neighborhood of side
+    tol x the grid step count as added, a's with none of b's as removed, and the nearest-node distance of a sample."""
+    np = a._np
+    if not tol > 0:
+        raise VerifyError(f"--tol must be above 0 voxels (got {tol})")
+    ia, ib = info(a), info(b)
+    rep = {"a": a.source, "b": b.source, "grid_a": list(a.shape), "grid_b": list(b.shape),
+           "area_a_vox2": ia["area_vox2"], "area_b_vox2": ib["area_vox2"],
+           "area_change_vox2": round(ib["area_vox2"] - ia["area_vox2"], 1), "tol_vox": tol}
+    if ia.get("area_mm2") is not None and ib.get("area_mm2") is not None:
+        rep.update(area_a_mm2=ia["area_mm2"], area_b_mm2=ib["area_mm2"],
+                   area_change_mm2=round(ib["area_mm2"] - ia["area_mm2"], 1))
+    if a.volume and b.volume and a.volume != b.volume:
+        rep["warning"] = f"a is on volume {a.volume} and b on {b.volume}: positions are not comparable"
+    masks = {}
+    if a.shape == b.shape:
+        both = a.valid & b.valid
+        added, removed = b.valid & ~a.valid, a.valid & ~b.valid
+        disp = np.linalg.norm(b.xyz - a.xyz, axis=-1)
+        moved = both & (disp > tol)
+        rep.update(method="same grid: node by node", nodes_a=int(a.valid.sum()), nodes_b=int(b.valid.sum()),
+                   added=int(added.sum()), removed=int(removed.sum()), moved=int(moved.sum()),
+                   unchanged=int((both & ~moved).sum()), displacement_vox=_pct(disp[both], (50, 90, 99, 100), 2))
+        masks = {"added": added, "removed": removed, "moved": moved}
+    else:
+        step = max(min(a.step + b.step), 1e-9)
+        d = tol * step
+        pa, pb = a.xyz[a.valid], b.xyz[b.valid]
+        near_b, near_a = _near(pa, pb, d), _near(pb, pa, d)
+        rng = np.random.default_rng(seed)
+        q = pb[rng.choice(len(pb), min(sample, len(pb)), replace=False)] if len(pb) else pb
+        dist = _nearest(pa, q) if len(pa) and len(q) else np.zeros(0)
+        added_grid = np.zeros(b.shape, bool)
+        added_grid[b.valid] = ~near_b
+        rep.update(method=f"different grids: by position (a cube neighborhood of {d:g} voxels, {tol:g} grid steps)",
+                   nodes_a=int(len(pa)), nodes_b=int(len(pb)), added=int((~near_b).sum()),
+                   removed=int((~near_a).sum()), sampled=int(len(q)),
+                   nearest_node_vox=_pct(dist, (50, 90, 99, 100), 2))
+        masks = {"added": added_grid}
+    for k in ("added", "removed"):
+        cell_um2 = None if b.voxel_um is None else (b.step[0] * b.step[1] * b.voxel_um ** 2)
+        if cell_um2 is not None:
+            rep[f"{k}_mm2"] = round(rep[k] * cell_um2 * 1e-6, 2)
+    rep["same"] = rep["added"] == 0 and rep["removed"] == 0 and rep.get("moved", 0) == 0
+    return rep, masks
+
+
+DIFF_COLORS = {"added": (60, 180, 90), "removed": (220, 60, 60), "moved": (240, 160, 40)}
+
+
+def diff_picture(b, masks, size=1200):
+    """b shaded, with added nodes green, removed red (at their grid places) and moved orange."""
+    img = shade(b, None, None)
+    for name in ("moved", "removed", "added"):
+        if name in masks:
+            img[masks[name]] = DIFF_COLORS[name]
+    return b._np.ascontiguousarray(_resize(img, size))
 
 
 # ---------------------------------------------------------------- text
@@ -439,6 +785,62 @@ def format_facing(r):
     return "\n".join(lines)
 
 
+def _human(n):
+    for unit in ("B", "KB", "MB", "GB", "TB"):
+        if n < 1000 or unit == "TB":
+            return f"{n:.0f} {unit}" if unit == "B" else f"{n:.1f} {unit}"
+        n /= 1000.0
+
+
+def format_chunks(r):
+    f = r["level_factor_zyx"]
+    res = "full resolution" if f[0] == 1 else f"1/{f[0]:g} of level 0"
+    lines = [f"{r['segment']}", f"  volume     {r['volume']}, level {r['level']} ({res}), "
+             f"chunks {' x '.join(str(c) for c in r['chunk_zyx'])} (z, y, x){', sharded' if r['sharded'] else ''}",
+             f"  touched    {r['chunks']} of {r['chunks_in_volume']} chunks within {r['margin_vox']:g} voxels of "
+             "the sheet",
+             f"  stored     {r['present']} present, {_human(r['bytes'])}; {r['absent']} absent (read as the fill "
+             "value)"]
+    if r.get("note"):
+        lines.append(f"  note       {r['note']}")
+    if r["nodes_outside_volume"]:
+        lines.append(f"  outside    {r['nodes_outside_volume']} nodes lie outside the volume's shape")
+    if r.get("warning"):
+        lines.append(f"  warning    {r['warning']}")
+    if r.get("fetched"):
+        x = r["fetched"]
+        lines.append(f"  fetched    {x['written']} chunks ({_human(x['bytes'])}) into {x['dest']}, {x['skipped']} "
+                     "already there; every other chunk reads as the fill value")
+    return "\n".join(lines)
+
+
+def format_diff(r):
+    mm = lambda k: f" ({r[k + '_mm2']} mm2)" if k + "_mm2" in r else ""  # noqa: E731
+    lines = [f"a  {r['a']}", f"b  {r['b']}", f"  method     {r['method']}"]
+    if "area_change_mm2" in r:
+        lines.append(f"  area       {r['area_a_mm2']:.0f} -> {r['area_b_mm2']:.0f} mm2 "
+                     f"({r['area_change_mm2']:+.0f} mm2)")
+    else:
+        lines.append(f"  area       {r['area_a_vox2']:.0f} -> {r['area_b_vox2']:.0f} voxels^2")
+    lines.append(f"  nodes      {r['nodes_a']} -> {r['nodes_b']}: {r['added']} added{mm('added')}, "
+                 f"{r['removed']} removed{mm('removed')}")
+    if "moved" in r:
+        d = r["displacement_vox"]
+        lines.append(f"  moved      {r['moved']} nodes by more than {r['tol_vox']:g} voxels; {r['unchanged']} "
+                     "unchanged")
+        if d:
+            lines.append(f"  shift      median {d['p50']:g}, 90 % {d['p90']:g}, 99 % {d['p99']:g}, "
+                         f"max {d['p100']:g} voxels")
+    elif r.get("nearest_node_vox"):
+        d = r["nearest_node_vox"]
+        lines.append(f"  distance   from {r['sampled']} of b's nodes to a's nearest node: median {d['p50']:g}, 90 % "
+                     f"{d['p90']:g}, 99 % {d['p99']:g}, max {d['p100']:g} voxels")
+    if r.get("warning"):
+        lines.append(f"  warning    {r['warning']}")
+    lines.append("  same" if r["same"] else "  changed")
+    return "\n".join(lines)
+
+
 # ---------------------------------------------------------------- command line
 
 def build_parser(p):
@@ -468,6 +870,24 @@ def build_parser(p):
     a = actions.add_parser("facing", help="do the grid normals point toward or away from the center line?")
     common(a)
     a.add_argument("--umbilicus", required=True, help="center line JSON (path or URL) in the segment's volume")
+    a = actions.add_parser("chunks", help="the zarr chunks of a volume the segment touches: count and bytes, "
+                                          "and --fetch to download only those")
+    common(a)
+    a.add_argument("volume", help="the volume's zarr folder or URL (the one the mesh's voxels are in)")
+    a.add_argument("--level", type=int, default=0, help="pyramid level (0 is full resolution)")
+    a.add_argument("--margin", type=float, default=0.0, help="also take chunks this many voxels (of level 0) "
+                                                             "from the sheet")
+    a.add_argument("--max-requests", type=int, default=MAX_REQUESTS, help="size at most this many chunks")
+    a.add_argument("--fetch", metavar="DEST", help="copy the metadata and the touched chunks into this folder")
+    a = actions.add_parser("diff", help="compare two versions of a segment on one volume")
+    a.add_argument("segment", help="version a: tifxyz folder or bucket URL")
+    a.add_argument("other", help="version b: tifxyz folder or bucket URL")
+    a.add_argument("--voxel-um", type=float, help="voxel size (default: the folder name's -N.NNNum.tifxyz)")
+    a.add_argument("--cache", default=DEFAULT_CACHE, help="where bucket segments are kept")
+    a.add_argument("--tol", type=float, default=DIFF_TOL, help="a node moved or new beyond this (voxels on one "
+                                                               "grid, grid steps across grids)")
+    a.add_argument("--png", help="write a picture of b with the changes colored")
+    a.add_argument("--json", action="store_true")
     return p
 
 
@@ -491,6 +911,23 @@ def run(args):
         img = shade(seg, None, args.size or None)
         r = {"path": write_png(args.out, img), "size": [int(img.shape[1]), int(img.shape[0])]}
         text = f"wrote {r['path']} ({r['size'][0]} x {r['size'][1]} px)"
+    elif args.action == "chunks":
+        src = ZarrSource(args.volume)
+        r, keys, sizes = chunks(seg, args.volume, args.level, args.margin, args.max_requests, src)
+        if args.fetch:
+            if len(sizes) < len(keys):
+                raise VerifyError(f"--fetch needs every chunk sized: {len(keys)} chunks, --max-requests "
+                                  f"{args.max_requests}; raise it to {len(keys)} or more")
+            arr = zarr_level(src, args.level)
+            w, sk, b = fetch_chunks(src, arr["levels"], keys, sizes, args.fetch)
+            r["fetched"] = {"dest": str(args.fetch), "written": w, "skipped": sk, "bytes": b}
+        text = format_chunks(r)
+    elif args.action == "diff":
+        other = load(args.other, args.cache, args.voxel_um)
+        r, masks = diff(seg, other, args.tol)
+        if args.png:
+            r["png"] = write_png(args.png, diff_picture(other, masks))
+        text = format_diff(r) + (f"\n  picture    {r['png']}" if args.png else "")
     else:
         from . import stackcheck
         r = facing(seg, stackcheck.load_umbilicus(args.umbilicus))

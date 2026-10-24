@@ -3,6 +3,7 @@
   before   x.tif of a public segment as an image viewer shows it: one gray value per grid node (its x position)
   after    the same segment shaded by kit tifxyz preview: the sheet's 3D shape, holes dark
   check    kit tifxyz check's picture on a synthetic sheet with a planted hole, fold and stretched strip
+  diff     kit tifxyz diff's picture of two versions of a synthetic sheet: one grown, trimmed and nudged
 
 The segment must be from a public scan that is not prize-eligible (the public media rule, docs/media/README.md);
 write_guard() refuses anything else under docs/assets/. Each picture gets a sidecar JSON. Needs numpy and tifffile.
@@ -51,6 +52,22 @@ def planted():
     xyz[20:50, 160:200, 0] += 2.2 * step                    # a patch pulled 2.2 grid steps sideways
     valid = (xyz > -0.5).all(-1)
     return tifxyz.Segment(xyz, valid, {"scale": [1 / step, 1 / step]}, "planted-demo", 2.0)
+
+
+def versions():
+    """Two versions of one synthetic sheet on one grid: b grows 40 columns a lacked, loses a corner a had, and moves
+    a patch 4 voxels along its normal (z)."""
+    import numpy as np
+    h, w, step = 160, 220, 20.0
+    r, c = np.mgrid[0:h, 0:w].astype(float)
+    a = np.stack([1000 + c * step, 2000 + r * step, 500 + 300 * np.sin(c / 35.0)], -1)
+    b = a.copy()
+    a[:, 180:] = -1                                         # b grew these columns
+    b[:40, :50] = -1                                        # b dropped this corner
+    b[90:130, 70:120, 2] += 4.0                             # b moved this patch 4 voxels
+    meta = {"scale": [1 / step, 1 / step]}
+    mk = lambda xyz, name: tifxyz.Segment(xyz, (xyz > -0.5).all(-1), meta, name, 2.0)  # noqa: E731
+    return mk(a, "version-a"), mk(b, "version-b")
 
 
 def save(path, img, meta, command, inputs=()):
@@ -105,6 +122,16 @@ def main(argv=None):
         "caption": f"Synthetic demo: kit tifxyz check on a made-up sheet with a planted hole ({rep['holes']['nodes']} "
                    f"nodes, blue), fold ({rep['folds']['nodes']} nodes, red) and shifted patch whose border edges "
                    f"stretch ({rep['stretched']['nodes']} nodes, orange). No scan data."}, cmd))
+    va, vb = versions()
+    rep, masks = tifxyz.diff(va, vb)
+    made.append(save(out / "tifxyz-diff-demo.png", tifxyz.diff_picture(vb, masks, a.size), {
+        "label": "Synthetic demo", "license": "Apache-2.0", "data": None, "sources": [],
+        "alt": "A made-up wavy sheet shaded gray, the newer of two versions, with kit tifxyz diff's colors: a green "
+               "band on the right where the newer version grew, a red block at the top left where it lost nodes, and "
+               "an orange patch in the middle that moved.",
+        "caption": f"Synthetic demo: kit tifxyz diff of two versions of a made-up sheet, version b grown by "
+                   f"{rep['added']} nodes (green), trimmed by {rep['removed']} (red) and with {rep['moved']} nodes "
+                   f"moved {rep['displacement_vox']['p100']:g} voxels (orange). No scan data."}, cmd))
     for m in made:
         print(m)
     return 0

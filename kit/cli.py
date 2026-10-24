@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -986,7 +986,7 @@ def cmd_strokenet(args):
 # under "Other" (tests/test_cli_help.py fails on one).
 GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
-    ("Find and fetch public data", ("find", "centerline", "cite", "fetch", "volumeview", "segzoo")),
+    ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "volumeview", "segzoo")),
     ("Segments and geometry", ("tifxyz", "atlas", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
                                "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
@@ -1098,6 +1098,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import centerline as _cl
     _cl.build_parser(p)
     p.set_defaults(func=_cl.cmd_centerline)
+
+    p = sub.add_parser("labels", help="published ink labels per segment, with which public models trained on them")
+    from . import labels as _labels
+    _labels.build_parser(p)
+    p.set_defaults(func=_labels.cmd_labels)
 
     p = sub.add_parser("cite", help="credit and licence lines for a scroll's volumes and center lines")
     _find.build_parser(p, "cite")
@@ -1263,7 +1268,7 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.set_defaults(func=cmd_stackcheck)
 
     p = sub.add_parser("tifxyz", help="look at a tifxyz segment without VC3D: area, isometry, holes and folds, "
-                                      "OBJ, picture, which way it faces")
+                                      "OBJ, picture, which way it faces, chunks it touches, diff of two versions")
     from . import tifxyz
     tifxyz.build_parser(p)
     p.set_defaults(func=tifxyz.cmd_tifxyz)
