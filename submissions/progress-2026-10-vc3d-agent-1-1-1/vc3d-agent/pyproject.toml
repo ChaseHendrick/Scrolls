@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vc3d-agent"
+version = "1.1.1"
+description = "Headless VC3D for AI agents: villa's VC3D tools, the open-data catalog and ink models, and villa's lasagna fit, as 46 checked tools over MCP or a shell"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.11"   # tested on 3.11 and 3.13; zarr 3 for the maps extra needs 3.11
+authors = [{ name = "Chase Hendrick" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Topic :: Scientific/Engineering :: Image Processing",
+]
+# The MCP server, the shell route and most tools use only the standard library (checked 24 Oct 2026 in a venv with no
+# packages: initialize, tools/list and status). Maps, scoring and the layer tools need the `maps` extra; ink models
+# and the detectability probe run in the Python named by KIT_INK_PYTHON, which needs numpy and torch.
+dependencies = []
+
+[project.optional-dependencies]
+maps = [
+    "numpy>=1.25",
+    "tifffile>=2023.7.10",
+    "zarr>=3.0",
+    "scipy>=1.11",
+]
+
+[project.urls]
+# Where this release is placed: branch submission/progress-2026-10-vc3d-agent-1-1-1 of public Scrolls.
+Source = "https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent"
+villa = "https://github.com/ScrollPrize/villa"
+
+[project.scripts]
+vc3d-agent = "kit.cli:main"
+
+[tool.setuptools]
+packages = ["kit"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+kit = ["data/*.json"]
