@@ -5322,6 +5322,189 @@
    ]
   },
   {
+   "id": "letterclass",
+   "name": "letterclass",
+   "tagline": "name Greek letters and read lines on papyrus photographs, for people and agents",
+   "summary": "Our single-letter classifier (trained on Hell-Char only), a Greek prose language model with no Homer for reading lines of given letter boxes, and an agent interface (JSON command line and MCP server) over both and over the CTC line reader.",
+   "status": "Experimental",
+   "kind": [
+    "script",
+    "agent tool"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python scripts/letters/reader_api.py letter",
+    "python scripts/letters/reader_api.py line",
+    "python scripts/letters/reader_api.py line-free",
+    "python scripts/letters/reader_api.py mcp",
+    "python scripts/letters/icdar_train.py train",
+    "python scripts/letters/icdar_train.py devpost",
+    "python scripts/letters/icdar_train.py smoke",
+    "python scripts/letters/greek_lm.py build",
+    "python scripts/letters/greek_lm.py ppl",
+    "python scripts/letters/icdar_h2h.py build",
+    "python scripts/letters/icdar_read.py post",
+    "python scripts/letters/icdar_read.py score",
+    "bash scripts/letters/icdar_job/train_job.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/letters/reader_api.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/letterclass-weights.json",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/ctc_letter.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_train.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/greek_lm.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_h2h.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_read.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_job/train_job.sh",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_icdar_letters.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for reads, `fetch` and CPU runs on public data. Training rents a GPU (an HF Job; Cost and time); posting weights, numbers or reads follows the go-ahead rule of AGENTS.md"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "7752c98"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`letterclass`",
+    "Status": "Experimental",
+    "Kind": "script,agent tool",
+    "Area": "Letters and titles",
+    "Run": "`python scripts/letters/reader_api.py letter`, `python scripts/letters/reader_api.py line`, `python scripts/letters/reader_api.py line-free`, `python scripts/letters/reader_api.py mcp`, `python scripts/letters/icdar_train.py train`, `python scripts/letters/icdar_train.py devpost`, `python scripts/letters/icdar_train.py smoke`, `python scripts/letters/greek_lm.py build`, `python scripts/letters/greek_lm.py ppl`, `python scripts/letters/icdar_h2h.py build`, `python scripts/letters/icdar_read.py post`, `python scripts/letters/icdar_read.py score`, `bash scripts/letters/icdar_job/train_job.sh` (inside an HF Job)",
+    "Code": "`scripts/letters/reader_api.py`, `scripts/letters/letterclass-weights.json`, `scripts/letters/ctc_letter.py`, `scripts/letters/icdar_train.py`, `scripts/letters/greek_lm.py`, `scripts/letters/icdar_h2h.py`, `scripts/letters/icdar_read.py`, `scripts/letters/icdar_job/train_job.sh`",
+    "Tests": "`tests/test_icdar_letters.py`",
+    "Needs": "Python 3.10 or newer, numpy and Pillow; torch, timm 1.0.30 and opencv-python-headless for `letter`, `line`, training and posteriors; kit's `kit/letterread.py` and letters-v2-ccby weights for `line-free`. Data you fetch: the Hell-Char clone (aeef8466), the ICDAR 2023 zip (Zenodo 13825619), Perseus TEI texts at commit `0189b9c8`",
+    "Runs on": "Any CPU for reads: with the released three runs, one `letter` call took 11 s and one 11-letter `line` call 11 s including model loading (25 s for the first call on a cold disk; measured 2026-10-24, 4-core cloud container). Training runs on an HF Job GPU: one 40-epoch run at 128 px took 3.4 to 3.9 min on an RTX Pro 6000 (convnext_small 205 s and 208 s, convnext_base 236 s; `train.json` of each run)",
+    "Network": "None for `reader_api.py`. `greek_lm.py build`: `raw.githubusercontent.com` (Perseus) unless the cache folder holds the texts. `train_job.sh`: PyPI and the HF bucket named in `RESULTS`",
+    "Writes": "`reader_api.py`: nothing (prints JSON). `icdar_train.py train`: `OUT/model.pt`, `config.json`, `train.json`. `greek_lm.py build`: the model file. `icdar_h2h.py build`: `WORK/{test,dev}/letters.json`, `lines.json`, `crops/`, `crops.sha256`, `WORK/build.json`. `icdar_read.py`: `WORK/PART/post-ARM.npz`, `lines-O2free.json` and the score file",
+    "Go-ahead": "Not needed for reads, `fetch` and CPU runs on public data. Training rents a GPU (an HF Job; Cost and time); posting weights, numbers or reads follows the go-ahead rule of AGENTS.md",
+    "Released": "Public `main` since 2026-10-24; weights as the GitHub release `letterclass-v1` of this repository (`scripts/letters/letterclass-weights.json`): runs CC BY 4.0, language model CC BY-SA 4.0",
+    "Checked": "2026-10-24 against commit `7752c98`"
+   },
+   "page": "docs/tools/letterclass.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 58,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 64,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 174,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 184,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 188,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 198,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 220,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 224,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 228,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 238,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 242,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 247,
+     "end_line": 252,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "letterdemo",
    "name": "letterdemo",
    "tagline": "check a letter reader install on synthetic Greek capitals and noise",
