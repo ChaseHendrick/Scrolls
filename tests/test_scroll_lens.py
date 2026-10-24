@@ -351,6 +351,15 @@ class Embeddings(unittest.TestCase):
 
 
 @unittest.skipIf(np is None, "needs numpy")
+class Release(unittest.TestCase):
+    def test_release_entry_names_the_version_in_lens_py(self):
+        # lens.VERSION is the one version; an unrelated PR once set the entry to 1.3.0 while the Space ran 1.1.0
+        entry = next(e for e in json.loads((ROOT / "docs" / "releases.json").read_text())["releases"]
+                     if e["id"] == "scroll-lens")
+        self.assertIn(f"Version: {lens.VERSION}.", entry["summary"])
+
+
+@unittest.skipIf(np is None, "needs numpy")
 class Files(unittest.TestCase):
     def result(self, size=128):
         rng = np.random.default_rng(2)
