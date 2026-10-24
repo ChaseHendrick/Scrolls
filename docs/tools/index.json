@@ -336,7 +336,7 @@
    "id": "autopipeline",
    "name": "autopipeline",
    "tagline": "run villa's pipeline from a released scan to a scored ink map, unattended",
-   "summary": "AutoPipeline (AP) 0.1.6 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix6`, not on `main`.",
+   "summary": "AutoPipeline (AP) 0.1.7 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix7`, not on `main`.",
    "status": "Branch only",
    "kind": [
     "package"
@@ -353,7 +353,7 @@
    "imports": [],
    "code": [
     {
-     "path": "submissions/progress-2026-10-fix6/autopipeline/",
+     "path": "submissions/progress-2026-10-fix7/autopipeline/",
      "symbols": []
     },
     {
@@ -405,12 +405,12 @@
      "symbols": []
     },
     {
-     "path": "submissions/progress-2026-10-fix6/release.json",
+     "path": "submissions/progress-2026-10-fix7/release.json",
      "symbols": []
     }
    ],
    "tests": [
-    "submissions/progress-2026-10-fix6/autopipeline/tests/",
+    "submissions/progress-2026-10-fix7/autopipeline/tests/",
     "test_*.py",
     "test_autopipe.py",
     "test_autopipe_monitor.py",
@@ -425,27 +425,27 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "8096b46"
+    "commit": "24572e6"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/24572e6203bafa67de1611bcd31b9edebe2c078e/submissions/progress-2026-10-fix7/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`autopipeline`",
     "Status": "Branch only",
     "Kind": "package",
     "Area": "Pipeline and agents",
     "Run": "`scrolls-kit autopipeline` after `pip install -e .` in the package folder; inside that folder the branch's own `kit` module runs the same program (alias `autopipe`); `python scripts/demo_synthetic.py`; `scrolls-kit vc3d mcp` serves it as an MCP tool",
-    "Code": "`submissions/progress-2026-10-fix6/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/apconsole.py` (the console), `kit/qareasons.py`, `kit/apbackends.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix6/release.json`",
-    "Tests": "`submissions/progress-2026-10-fix6/autopipeline/tests/` on its branch: 46 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
+    "Code": "`submissions/progress-2026-10-fix7/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/apconsole.py` (the console), `kit/qareasons.py`, `kit/apbackends.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix7/release.json`",
+    "Tests": "`submissions/progress-2026-10-fix7/autopipeline/tests/` on its branch: 46 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
     "Needs": "Python 3.11 or newer (zarr 3 needs it); numpy, tifffile, zarr 3 and scipy (`pyproject.toml`, tested 2026-10-12 with numpy 2.4.6, tifffile 2026.3.3, zarr 3.1.6, scipy 1.17.1). For real runs: villa's VC3D tools (`vc_gen_umbilicus`, `vc_grow_seg_from_seed`, `vc_tifxyz_selfcross`, `vc_flatten`, `vc_render_tifxyz`), from villa's Linux x86_64 AppImage or `VC3D.app` on a Mac; for ink, villa's `vesuvius` package and torch in their own environment (`KIT_INK_PYTHON`). Optional, for the browser tests only: the `playwright` Python package and a system `chromium` or `chromium-browser`; without them those tests skip and download nothing",
-    "Runs on": "The synthetic demo: 5.5 s as it reports itself in a cloud container, Python 3.13, from the 0.1.6 package's release check (2026-10-24); the package's 1241 tests took 590 s there (27 skipped). With 0.1.5 it reported 4.7 s on a shared 4-core container (2026-10-18). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
+    "Runs on": "The synthetic demo: 13.1 s as it reports itself in a cloud container, Python 3.13, from the 0.1.7 package's release check (2026-10-24; it now draws a CT with planted strokes); the package's 1249 tests took 506 s there (35 skipped, 8 of them the Chromium page tests, which passed in a second run with Chromium on the path). With 0.1.6 the demo reported 5.5 s. With 0.1.5 it reported 4.7 s on a shared 4-core container (2026-10-18). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink runs on Hugging Face (hard rule 11)",
     "Network": "The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network",
     "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
     "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
-    "Released": "Public branch `submission/progress-2026-10-fix6` at `8096b46` (committed 2026-10-24, a commit with no parent; README entry dated 2026-10-24 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). Tagged `autopipeline-v0.1.6`, with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.6) not marked Latest (2026-10-24); 0.1.5 is on `submission/progress-2026-10-fix5` at `9e50d61`. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+    "Released": "Public branch `submission/progress-2026-10-fix7` at `24572e6` (committed 2026-10-24, a commit with no parent; README entry dated 2026-10-24 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). Tagged `autopipeline-v0.1.7`, with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.7) not marked Latest (2026-10-24); 0.1.6 is on `submission/progress-2026-10-fix6` at `8096b46`, tagged `autopipeline-v0.1.6` with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.6) not marked Latest (2026-10-24); 0.1.5 is on `submission/progress-2026-10-fix5` at `9e50d61`. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/24572e6203bafa67de1611bcd31b9edebe2c078e/submissions/progress-2026-10-fix7/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
     "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
-    "Branch": "`submission/progress-2026-10-fix6` at `8096b46`",
-    "Checked": "2026-10-24 against commit `8096b46`"
+    "Branch": "`submission/progress-2026-10-fix7` at `24572e6`",
+    "Checked": "2026-10-24 against commit `24572e6`"
    },
    "page": "docs/tools/autopipeline.md",
    "sections": [
@@ -488,13 +488,13 @@
     {
      "name": "History",
      "start_line": 177,
-     "end_line": 185,
+     "end_line": 186,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 186,
-     "end_line": 193,
+     "start_line": 187,
+     "end_line": 194,
      "applicable": true
     }
    ]
@@ -5460,6 +5460,189 @@
      "name": "Related",
      "start_line": 249,
      "end_line": 260,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "letterclass",
+   "name": "letterclass",
+   "tagline": "name Greek letters and read lines on papyrus photographs, for people and agents",
+   "summary": "Our single-letter classifier (trained on Hell-Char only), a Greek prose language model with no Homer for reading lines of given letter boxes, and an agent interface (JSON command line and MCP server) over both and over the CTC line reader.",
+   "status": "Experimental",
+   "kind": [
+    "script",
+    "agent tool"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python scripts/letters/reader_api.py letter",
+    "python scripts/letters/reader_api.py line",
+    "python scripts/letters/reader_api.py line-free",
+    "python scripts/letters/reader_api.py mcp",
+    "python scripts/letters/icdar_train.py train",
+    "python scripts/letters/icdar_train.py devpost",
+    "python scripts/letters/icdar_train.py smoke",
+    "python scripts/letters/greek_lm.py build",
+    "python scripts/letters/greek_lm.py ppl",
+    "python scripts/letters/icdar_h2h.py build",
+    "python scripts/letters/icdar_read.py post",
+    "python scripts/letters/icdar_read.py score",
+    "bash scripts/letters/icdar_job/train_job.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/letters/reader_api.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/letterclass-weights.json",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/ctc_letter.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_train.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/greek_lm.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_h2h.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_read.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_job/train_job.sh",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_icdar_letters.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for reads, `fetch` and CPU runs on public data. Training rents a GPU (an HF Job; Cost and time); posting weights, numbers or reads follows the go-ahead rule of AGENTS.md"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "7752c98"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`letterclass`",
+    "Status": "Experimental",
+    "Kind": "script,agent tool",
+    "Area": "Letters and titles",
+    "Run": "`python scripts/letters/reader_api.py letter`, `python scripts/letters/reader_api.py line`, `python scripts/letters/reader_api.py line-free`, `python scripts/letters/reader_api.py mcp`, `python scripts/letters/icdar_train.py train`, `python scripts/letters/icdar_train.py devpost`, `python scripts/letters/icdar_train.py smoke`, `python scripts/letters/greek_lm.py build`, `python scripts/letters/greek_lm.py ppl`, `python scripts/letters/icdar_h2h.py build`, `python scripts/letters/icdar_read.py post`, `python scripts/letters/icdar_read.py score`, `bash scripts/letters/icdar_job/train_job.sh` (inside an HF Job)",
+    "Code": "`scripts/letters/reader_api.py`, `scripts/letters/letterclass-weights.json`, `scripts/letters/ctc_letter.py`, `scripts/letters/icdar_train.py`, `scripts/letters/greek_lm.py`, `scripts/letters/icdar_h2h.py`, `scripts/letters/icdar_read.py`, `scripts/letters/icdar_job/train_job.sh`",
+    "Tests": "`tests/test_icdar_letters.py`",
+    "Needs": "Python 3.10 or newer, numpy and Pillow; torch, timm 1.0.30 and opencv-python-headless for `letter`, `line`, training and posteriors; kit's `kit/letterread.py` and letters-v2-ccby weights for `line-free`. Data you fetch: the Hell-Char clone (aeef8466), the ICDAR 2023 zip (Zenodo 13825619), Perseus TEI texts at commit `0189b9c8`",
+    "Runs on": "Any CPU for reads: with the released three runs, one `letter` call took 11 s and one 11-letter `line` call 11 s including model loading (25 s for the first call on a cold disk; measured 2026-10-24, 4-core cloud container). Training runs on an HF Job GPU: one 40-epoch run at 128 px took 3.4 to 3.9 min on an RTX Pro 6000 (convnext_small 205 s and 208 s, convnext_base 236 s; `train.json` of each run)",
+    "Network": "None for `reader_api.py`. `greek_lm.py build`: `raw.githubusercontent.com` (Perseus) unless the cache folder holds the texts. `train_job.sh`: PyPI and the HF bucket named in `RESULTS`",
+    "Writes": "`reader_api.py`: nothing (prints JSON). `icdar_train.py train`: `OUT/model.pt`, `config.json`, `train.json`. `greek_lm.py build`: the model file. `icdar_h2h.py build`: `WORK/{test,dev}/letters.json`, `lines.json`, `crops/`, `crops.sha256`, `WORK/build.json`. `icdar_read.py`: `WORK/PART/post-ARM.npz`, `lines-O2free.json` and the score file",
+    "Go-ahead": "Not needed for reads, `fetch` and CPU runs on public data. Training rents a GPU (an HF Job; Cost and time); posting weights, numbers or reads follows the go-ahead rule of AGENTS.md",
+    "Released": "Public `main` since 2026-10-24; weights as the GitHub release `letterclass-v1` of this repository (`scripts/letters/letterclass-weights.json`): runs CC BY 4.0, language model CC BY-SA 4.0",
+    "Checked": "2026-10-24 against commit `7752c98`"
+   },
+   "page": "docs/tools/letterclass.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 58,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 64,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 174,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 184,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 188,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 198,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 220,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 224,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 228,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 238,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 242,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 247,
+     "end_line": 252,
      "applicable": true
     }
    ]
