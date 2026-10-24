@@ -408,7 +408,7 @@ Free to use and to run locally. On the Space, model runs (Run the models, `look`
 
 ## History
 
-- 2026-10-24: Connect your tool accordion (branch of `main` at `2ce4d50`). Chase had the Space unpaused ("ya unpause"), and it was redeployed as Space commit `51360104`, which also brought #117's merged changes live (a click moves the crosshair by default, one-line gallery names).
+- 2026-10-24: Connect your tool accordion (branch of `main` at `2ce4d50`). Chase had the Space unpaused, and it was redeployed as Space commit `51360104`, which also brought #117's merged changes live (a click moves the crosshair by default, one-line gallery names).
 - 2026-10-17: v1.1.0, on top of PR #114's agent tools: the views drawn in the browser (`viewer.js`: live sliders, drag, wheel, zoom, pan, undo, hover readout), a 3D view of the cube with the slices as moving planes (three.js, as in Unroll), and fixes from a bug test of the live v1.0.0 (receipt layers, ZeroGPU durations and refusals, cube placement, the bucket's 403, random points on sparse scans, reduced-embedding similarity, the agreement control range, shared memory, the URL proxy, upload size, strict flags in `look`); `build_gallery.py --batch` (`c921ef1`, `e14e165`, [PR #115](https://github.com/ChaseHendrick/Scrolls/pull/115)).
 - 2026-10-17: v1.1.0 agent tools and MCP (`list_scans`, `list_gallery`, `random_point`, `inspect_cube`, `search_cube`, `download_cube`), American spelling ([PR #114](https://github.com/ChaseHendrick/Scrolls/pull/114)).
 - 2026-10-17: gallery grown to 99 cubes (batches 2 to 9) on Chase's remaining quota (Space commit `f4aa1ee`).

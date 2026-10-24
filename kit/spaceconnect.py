@@ -1,7 +1,7 @@
 """Connect your tool: one panel per Hugging Face Space that says where its data lives and how other tools read it.
 
-Chase, 24 October 2026: "allow easy connections to the data to villa and villa's tools and people's tools", then
-"ya add that feature to all my spaces and future ones. gotta make it easy for everyone".
+Chase asked on 24 October 2026 for every Space of his, now and future, to connect its data easily to villa, villa's
+tools and other people's tools.
 
 Every Space keeps a short connect.json (schema space-connect/1) with the data sources the page shows. This module
 turns it into two files that ship with the Space:
