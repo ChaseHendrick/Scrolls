@@ -17,6 +17,8 @@ brew install uv awscli
 xattr -dr com.apple.quarantine /Applications/VC3D.app
 export VC_BIN=/Applications/VC3D.app/Contents/MacOS   # vc_render_tifxyz and friends ship here
 export PATH="$VC_BIN:$PATH"
+#    The render commands below pass the bucket URL as --volume, which current builds stream
+#    (villa e2254eb); an older build needs --volume DIR --remote-url URL instead.
 git clone https://github.com/ScrollPrize/villa.git
 cd villa/vesuvius && uv sync --extra models
 #    Not yet tried on macOS by this repo. If the volume-cartographer Python package fails to
@@ -44,8 +46,7 @@ aws s3 sync --no-sign-request \\
   s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/ \\
   ink-dataset/pherc0139/w035/w035.tifxyz
 vc_render_tifxyz \\
-  --volume volume-cache/20250728140407.zarr \\
-  --remote-url s3://vesuvius-challenge-open-data/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/ \\
+  --volume s3://vesuvius-challenge-open-data/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/ \\
   --segmentation ink-dataset/pherc0139/w035/w035.tifxyz \\
   --zarr-output ink-dataset/pherc0139/w035/w035_9um.zarr \\
   --scale 1 --group-idx 0 --num-slices 28 --cache-gb 16 \\
@@ -68,6 +69,8 @@ uvx --from huggingface_hub hf download scrollprize/ink_9um \\
   hybrid_3d2d-seed43/step-075000.pth --local-dir checkpoints/ink_9um
 # Build vc_render_tifxyz from current villa main. The published VC3D container was
 # reported stale (villa issue #1588) and lacked --flip-normals.
+# Current vc_render_tifxyz streams a remote OME-Zarr given as --volume URL (villa e2254eb);
+# it refuses a local --volume DIR next to a different --remote-url URL. Older builds need that pair.
 """
 
 HELD_OUT = """\
@@ -112,8 +115,7 @@ TARGET = """\
 #    https://scrollprize.org/tutorial_VC3D
 #    Then render it the same way as the control:
 vc_render_tifxyz \\
-  --volume volume-cache/{volume}.zarr \\
-  --remote-url s3://vesuvius-challenge-open-data/{scroll}/volumes/{zarr}/ \\
+  --volume s3://vesuvius-challenge-open-data/{scroll}/volumes/{zarr}/ \\
   --segmentation work/{slug}/surface.tifxyz \\
   --zarr-output work/{slug}/surface_9um.zarr \\
   --scale 1 --group-idx 0 --num-slices 28 --cache-gb 16 \\
