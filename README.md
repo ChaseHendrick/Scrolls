@@ -31,9 +31,9 @@ This repository contains public tools, public-data benchmarks and releasable rep
 
 ## Released tools
 
-![AutoPipeline 0.1.6's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map beside its reversed control, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes](docs/assets/autopipeline/monitor-walkthrough-v016.gif)
+![AutoPipeline's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map in a dark-to-pale copper scale beside its reversed control on the same scale, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes](docs/assets/autopipeline/monitor-walkthrough.gif)
 
-*Synthetic demo: AutoPipeline 0.1.6's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console, with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](docs/assets/autopipeline/monitor-walkthrough-v016.mp4) (45 s); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
+*Synthetic demo: AutoPipeline's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console. Stroke shapes were planted in the synthetic CT and a stand-in ink model scores them, so its maps are not ink; the reversed control shows only the synthetic papyrus. [MP4](docs/assets/autopipeline/monitor-walkthrough.mp4) (45 s); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
