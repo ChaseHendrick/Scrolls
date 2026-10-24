@@ -44,19 +44,19 @@ Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and
 
 *Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
 
-Released 24 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix6`: [`submissions/progress-2026-10-fix6/` at commit `8096b46`](https://github.com/ChaseHendrick/Scrolls/tree/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6).
+Released 24 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix7`: [`submissions/progress-2026-10-fix7/` at commit `24572e6`](https://github.com/ChaseHendrick/Scrolls/tree/24572e6203bafa67de1611bcd31b9edebe2c078e/submissions/progress-2026-10-fix7).
 
-AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.6 puts the run monitor on one screen and adds a console for notes and for running AutoPipeline, kit and VC3D agent commands, on loopback only and off with --read-only. A rejected trace's qa record now lists each failed check with its measured value and threshold. New steps, each off unless a plan names it, add the Crackle Check gate at report, the published center lines as the scroll axis, a region crop that keeps the clean parts of a rejected trace, edge extension, trace budgets with partial results, and z-scored ink ensembles. Commands to list, swap and trace each stage's backend are new. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
+AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.7 draws ink maps in color, from dark umber for a low model score to pale papyrus for a high one, on one scale with the reversed control, cropped to the surface and enlarged smoothly, in the run monitor and the ink Space. The synthetic demo now plants pen strokes in its CT, so the forward map shows them and the reversed control does not. The pinned center lines move to dataset v2.4, which takes the Center Finder's coverage-polished line before the original. 0.1.6 put the monitor on one screen with a console and added opt-in steps (Crackle Check gate, published center lines, region crop, edge extension, trace budgets, z-scored ink ensembles). These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
 
 ```bash
-git clone --branch submission/progress-2026-10-fix6 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix6/autopipeline
+git clone --branch submission/progress-2026-10-fix7 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix7/autopipeline
 python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
 python -m pip install -e .
 python scripts/demo_synthetic.py
 ```
 
-Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/autopipeline/README.md). [Changes since 0.1.5](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/CHANGES.md). Plans that name no new setting run as before, except that qa.repair without a method now gets the barrier repair.
+Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix7/submissions/progress-2026-10-fix7/autopipeline/README.md). [Changes since 0.1.6](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix7/submissions/progress-2026-10-fix7/CHANGES.md). A plan made by 0.1.6 that names umbilicus.centerlines pins the old dataset revision and is refused: make it again.
 
 ### Unroll (interactive 3D scroll viewer)
 
