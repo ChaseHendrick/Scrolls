@@ -50,7 +50,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "c610c7a"
+    "commit": "cc03099"
    },
    "license": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
    "fields": {
@@ -68,7 +68,7 @@
     "License": "Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0)",
     "Go-ahead": "Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026)",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
-    "Checked": "2026-10-24 against commit `c610c7a` plus this change"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/atlas.md",
    "sections": [
@@ -692,7 +692,7 @@
    },
    "checked": {
     "date": "2026-10-23",
-    "commit": "3376687"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -709,7 +709,7 @@
     "Writes": "`FOLDER/umbilicus.json` (with `--into`), or `--out` (default `SCROLL_umbilicus.json`); written to a `.part` file and renamed",
     "Go-ahead": "Not needed",
     "Released": "Public `main` from the change that adds it (23 Oct 2026)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-23 against commit `cc03099`"
    },
    "page": "docs/tools/centerline.md",
    "sections": [
@@ -1020,7 +1020,7 @@
    },
    "checked": {
     "date": "2026-10-23",
-    "commit": "3376687"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -1039,7 +1039,7 @@
     "Released": "Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`). Since 2026-10-20 the README's \"Released tools\" lists the command-line tools as one entry, Scrolls kit (`scrolls-kit` in `docs/releases.json`), with one line per tool",
     "Release id": "`scrolls-kit`",
     "Guide": "[CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-23 against commit `cc03099`"
    },
    "page": "docs/tools/cli.md",
    "sections": [
@@ -1475,7 +1475,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "f901840"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -1492,7 +1492,7 @@
     "Writes": "Nothing by default (prints only); `--png` writes the picture, `--out` the report JSON. Each mesh is fetched into a temporary folder and deleted after it is measured",
     "Go-ahead": "Not needed: it reads public data and writes local files",
     "Released": "This repository from the change that adds it (24 Oct 2026)",
-    "Checked": "2026-10-24 against commit `f901840` plus this change"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/coverage.md",
    "sections": [
@@ -1780,7 +1780,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "0da03d1"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -1798,7 +1798,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources)",
-    "Checked": "2026-10-24 against commit `0da03d1`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/doctor.md",
    "sections": [
@@ -2396,7 +2396,7 @@
    },
    "checked": {
     "date": "2026-10-23",
-    "commit": "3376687"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -2414,7 +2414,7 @@
     "Go-ahead": "Not needed: anonymous downloads of public data; nothing is posted or rented",
     "Released": "Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package",
     "Guide": "[mac.md](../mac.md) (the w035 download in the Mac runbook)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-23 against commit `cc03099`"
    },
    "page": "docs/tools/fetch.md",
    "sections": [
@@ -2725,7 +2725,7 @@
    },
    "checked": {
     "date": "2026-10-23",
-    "commit": "3376687"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -2742,7 +2742,7 @@
     "Writes": "Nothing",
     "Go-ahead": "Not needed",
     "Released": "Public `main` from the change that adds it (23 Oct 2026)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-23 against commit `cc03099`"
    },
    "page": "docs/tools/find.md",
    "sections": [
@@ -4281,7 +4281,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -4299,7 +4299,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). Identical to the copy inside the AutoPipeline release since 0.1.3, 2026-10-15 (branches `submission/progress-2026-10-fix3` and `-fix4`)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/keepalive.md",
    "sections": [
@@ -4428,7 +4428,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "ad3fddc"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -4445,7 +4445,7 @@
     "Writes": "Nothing (prints only)",
     "Go-ahead": "Not needed: it reads public data",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
-    "Checked": "2026-10-24 against commit `ad3fddc`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/labels.md",
    "sections": [
@@ -8632,7 +8632,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -8650,7 +8650,7 @@
     "Go-ahead": "Not needed: it reads public objects anonymously and serves only the local machine",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one also passes headers whose names a proxy changed in case (`etag` for `ETag`)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/s3relay.md",
    "sections": [
@@ -8770,7 +8770,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -8788,7 +8788,7 @@
     "Go-ahead": "Not needed: it only reads public objects",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). Earlier copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds two small fixes (an opener imported only when used, fewer than one try taken as one)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/s3retry.md",
    "sections": [
@@ -9244,7 +9244,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "5d217be"
+    "commit": "cc03099"
    },
    "license": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
    "fields": {
@@ -9262,7 +9262,7 @@
     "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
     "Released": "This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published",
     "License": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
-    "Checked": "2026-10-24 against commit `5d217be` plus this change"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/segment-lens.md",
    "sections": [
@@ -10355,7 +10355,7 @@
    },
    "checked": {
     "date": "2026-10-22",
-    "commit": "044a9ef"
+    "commit": "3990326"
    },
    "license": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
    "fields": {
@@ -10374,7 +10374,7 @@
     "Released": "Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's \"Released tools\" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry; `--two-density` added 2026-10-22",
     "Guide": "[StrokeNet model card](../strokenet.md) (data, training, held-out results and limits; [the two-density score](../strokenet.md#the-two-density-score))",
     "License": "Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release))",
-    "Checked": "2026-10-22 against commit `044a9ef` (the two-density score, `--two-density`, `--mask` and `--label-stride`)"
+    "Checked": "2026-10-22 against commit `3990326` (the two-density score, `--two-density`, `--mask` and `--label-stride`)"
    },
    "page": "docs/tools/strokenet.md",
    "sections": [
@@ -10514,7 +10514,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "0da03d1"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -10531,7 +10531,7 @@
     "Writes": "Nothing",
     "Go-ahead": "Not needed: it reads a local folder. Submitting stays the entrant's own act",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
-    "Checked": "2026-10-24 against commit `0da03d1`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/submitcheck.md",
    "sections": [
@@ -10997,7 +10997,7 @@
    },
    "checked": {
     "date": "2026-10-23",
-    "commit": "3376687"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -11014,7 +11014,7 @@
     "Writes": "`--cache` (default `work/tifxyz/cache`) for bucket segments; `obj` its OUT file; `preview` its OUT file; `check --png` and `diff --png` that file; `chunks --fetch` the DEST folder (metadata and the touched chunks, keeping their keys). Nothing else",
     "Go-ahead": "Not needed: it reads public data and writes local files",
     "Released": "Public `main` from the change that adds it (23 Oct 2026)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-23 against commit `cc03099`"
    },
    "page": "docs/tools/tifxyz.md",
    "sections": [
@@ -12081,7 +12081,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -12099,7 +12099,7 @@
     "Go-ahead": "Not needed: it reads public or local data",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds opt-in volcomp decoding",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/vc3d-audit.md",
    "sections": [
@@ -12221,7 +12221,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -12239,7 +12239,7 @@
     "Go-ahead": "Not needed: it reads a public bucket and changes only VC3D's cache on this machine",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14, `submission/progress-2026-10-fix4`), without the 17 October deletion-timestamp correction below",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/vc3d-cache.md",
    "sections": [
@@ -12365,7 +12365,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -12383,7 +12383,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). Older copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` to `-fix4`); see below",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/vc3d-io.md",
    "sections": [
@@ -12655,7 +12655,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "77aea1f"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -12673,7 +12673,7 @@
     "Go-ahead": "Not needed: it reads public objects anonymously and changes only the local VC3D cache",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `77aea1f`"
+    "Checked": "2026-10-24 against commit `cc03099`"
    },
    "page": "docs/tools/vc3dfix.md",
    "sections": [
@@ -13135,7 +13135,7 @@
    },
    "checked": {
     "date": "2026-10-23",
-    "commit": "3376687"
+    "commit": "cc03099"
    },
    "license": null,
    "fields": {
@@ -13152,7 +13152,7 @@
     "Writes": "Nothing",
     "Go-ahead": "Not needed: both only read. Posting the checked text to villa still needs its author's own go-ahead",
     "Released": "Public `main` from the change that adds it (23 Oct 2026)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-23 against commit `cc03099`"
    },
    "page": "docs/tools/villapr.md",
    "sections": [

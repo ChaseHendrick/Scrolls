@@ -17,7 +17,7 @@
 | Writes | Nothing |
 | Go-ahead | Not needed: it reads a local folder. Submitting stays the entrant's own act |
 | Released | Public `main` from the change that adds it (24 Oct 2026) |
-| Checked | 2026-10-24 against commit `0da03d1` |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 
