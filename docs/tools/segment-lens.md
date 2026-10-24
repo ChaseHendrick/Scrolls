@@ -18,7 +18,7 @@ A static Hugging Face Space that shows each published tifxyz segment of a scan o
 | Go-ahead | Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8) |
 | Released | This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published |
 | License | Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas) |
-| Checked | 2026-10-24 against commit `5d217be` plus this change |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 

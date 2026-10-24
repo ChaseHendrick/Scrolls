@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` from the change that adds it (24 Oct 2026). Older copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` to `-fix4`); see below |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it) |
-| Checked | 2026-10-24 against commit `77aea1f` |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 

@@ -19,7 +19,7 @@
 | Released | Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`). Since 2026-10-20 the README's "Released tools" lists the command-line tools as one entry, Scrolls kit (`scrolls-kit` in `docs/releases.json`), with one line per tool |
 | Release id | `scrolls-kit` |
 | Guide | [CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it) |
-| Checked | 2026-10-23 against commit `3376687` |
+| Checked | 2026-10-23 against commit `cc03099` |
 
 ## What it does
 

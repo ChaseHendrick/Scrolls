@@ -18,7 +18,7 @@
 | License | Code Apache-2.0; the dataset's numbers and preview grids CC BY-NC 4.0, as the meshes they come from (Vesuvius Challenge open data, CC BY-NC 4.0) |
 | Go-ahead | Not needed for `build` and `show` (public data, local files). The dataset is public, published after the leak check (AGENTS.md rule 8; Chase asked for it on 24 Oct 2026) |
 | Released | Public `main` from the change that adds it (24 Oct 2026) |
-| Checked | 2026-10-24 against commit `c610c7a` plus this change |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 

@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: it only reads public objects |
 | Released | Public `main` from the change that adds it (24 Oct 2026). Earlier copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds two small fixes (an opener imported only when used, fewer than one try taken as one) |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) |
-| Checked | 2026-10-24 against commit `77aea1f` |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 

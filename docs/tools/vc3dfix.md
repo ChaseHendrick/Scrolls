@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: it reads public objects anonymously and changes only the local VC3D cache |
 | Released | Public `main` from the change that adds it (24 Oct 2026) |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) |
-| Checked | 2026-10-24 against commit `77aea1f` |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 
