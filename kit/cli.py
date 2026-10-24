@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -988,8 +988,8 @@ GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
                                     "volumeview", "segzoo")),
-    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "axispolish", "windlabel-box",
-                               "overlap", "meshaudit", "surfacefix", "layers")),
+    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "axispolish",
+                               "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
@@ -1099,6 +1099,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import centerline as _cl
     _cl.build_parser(p)
     p.set_defaults(func=_cl.cmd_centerline)
+
+    p = sub.add_parser("hopbench", help="planted-hop benchmark: does a surface prediction keep touching sheets "
+                                        "apart on PHerc0139's hand-traced windings")
+    from . import hopbench as _hb
+    _hb.build_parser(p)
+    p.set_defaults(func=_hb.cmd_hopbench)
 
     p = sub.add_parser("labels", help="published ink labels per segment, with which public models trained on them")
     from . import labels as _labels
