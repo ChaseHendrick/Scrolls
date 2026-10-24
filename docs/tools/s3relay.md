@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: it reads public objects anonymously and serves only the local machine |
 | Released | Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one also passes headers whose names a proxy changed in case (`etag` for `ETag`) |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) |
-| Checked | 2026-10-24 against commit `HASH1` |
+| Checked | 2026-10-24 against commit `4b592b6` |
 
 ## What it does
 
@@ -181,7 +181,7 @@ python3 -m unittest tests.test_s3relay tests.test_cutoff_reads -v
 
 ## History
 
-- 2026-10-24: on public `main`, with `python -m kit s3relay`; header names matched without regard to case (`HASH1`).
+- 2026-10-24: on public `main`, with `python -m kit s3relay`; header names matched without regard to case (`4b592b6`).
 - 2026-10-15: the copy in AutoPipeline 0.1.4 (`603fe14`, branch `submission/progress-2026-10-fix4`). Made before it was public: the first version of 8 October; `preferred_ports` and `candidate_urls`, so cache folders made through a relay can be found (8 October); a transfer or an error body cut off mid-read is a network failure, asked again, then 502, instead of a crash or a missing key (9 October).
 
 ## Related

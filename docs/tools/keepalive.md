@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` from the change that adds it (24 Oct 2026). Identical to the copy inside the AutoPipeline release since 0.1.3, 2026-10-15 (branches `submission/progress-2026-10-fix3` and `-fix4`) |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it) |
-| Checked | 2026-10-24 against commit `HASH1` |
+| Checked | 2026-10-24 against commit `4b592b6` |
 
 ## What it does
 
@@ -151,7 +151,7 @@ python -m unittest tests.test_keepalive -v
 
 ## History
 
-- 2026-10-24: on public `main`, with the false-404 tools (`HASH1`).
+- 2026-10-24: on public `main`, with the false-404 tools (`4b592b6`).
 - 2026-10-15: the copy in AutoPipeline 0.1.4 (`603fe14`, branch `submission/progress-2026-10-fix4`). Made before it was public, the same day: the first version (the idea comes from SuperOptimizer/ufsm's pooled curl handles); a request on a stale kept connection is sent again on a new connection and the origin's other kept connections are dropped; review fixes for AutoPipeline 0.1.3.
 
 ## Related

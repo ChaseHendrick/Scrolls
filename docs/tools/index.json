@@ -4279,7 +4279,10 @@
     "needed": false,
     "text": "Not needed"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`keepalive`",
@@ -4296,7 +4299,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). Identical to the copy inside the AutoPipeline release since 0.1.3, 2026-10-15 (branches `submission/progress-2026-10-fix3` and `-fix4`)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/keepalive.md",
    "sections": [
@@ -8626,7 +8629,10 @@
     "needed": false,
     "text": "Not needed: it reads public objects anonymously and serves only the local machine"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`s3relay`",
@@ -8643,7 +8649,7 @@
     "Go-ahead": "Not needed: it reads public objects anonymously and serves only the local machine",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one also passes headers whose names a proxy changed in case (`etag` for `ETag`)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/s3relay.md",
    "sections": [
@@ -8761,7 +8767,10 @@
     "needed": false,
     "text": "Not needed: it only reads public objects"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`s3retry`",
@@ -8778,7 +8787,7 @@
     "Go-ahead": "Not needed: it only reads public objects",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). Earlier copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds two small fixes (an opener imported only when used, fewer than one try taken as one)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/s3retry.md",
    "sections": [
@@ -11917,7 +11926,10 @@
     "needed": false,
     "text": "Not needed: it reads public or local data"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`vc3d-audit`",
@@ -11934,7 +11946,7 @@
     "Go-ahead": "Not needed: it reads public or local data",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds opt-in volcomp decoding",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/vc3d-audit.md",
    "sections": [
@@ -12054,7 +12066,10 @@
     "needed": false,
     "text": "Not needed: it reads a public bucket and changes only VC3D's cache on this machine"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`vc3d-cache`",
@@ -12071,7 +12086,7 @@
     "Go-ahead": "Not needed: it reads a public bucket and changes only VC3D's cache on this machine",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14, `submission/progress-2026-10-fix4`), without the 17 October deletion-timestamp correction below",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/vc3d-cache.md",
    "sections": [
@@ -12195,7 +12210,10 @@
     "needed": false,
     "text": "Not needed"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`vc3d-io`",
@@ -12212,7 +12230,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` from the change that adds it (24 Oct 2026). Older copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` to `-fix4`); see below",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/vc3d-io.md",
    "sections": [
@@ -12482,7 +12500,10 @@
     "needed": false,
     "text": "Not needed: it reads public objects anonymously and changes only the local VC3D cache"
    },
-   "checked": null,
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "4b592b6"
+   },
    "license": null,
    "fields": {
     "Id": "`vc3dfix`",
@@ -12499,7 +12520,7 @@
     "Go-ahead": "Not needed: it reads public objects anonymously and changes only the local VC3D cache",
     "Released": "Public `main` from the change that adds it (24 Oct 2026)",
     "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
-    "Checked": "2026-10-24 against commit `HASH1`"
+    "Checked": "2026-10-24 against commit `4b592b6`"
    },
    "page": "docs/tools/vc3dfix.md",
    "sections": [

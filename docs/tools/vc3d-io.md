@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` from the change that adds it (24 Oct 2026). Older copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` to `-fix4`); see below |
 | Guide | [VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it) |
-| Checked | 2026-10-24 against commit `HASH1` |
+| Checked | 2026-10-24 against commit `4b592b6` |
 
 ## What it does
 
@@ -255,7 +255,7 @@ python -m unittest tests.test_vc3d_io tests.test_vc3d_volcomp -v
 
 ## History
 
-- 2026-10-24: on public `main`, for the false-404 tools; adds, since the release copies, the `transpose` refusal, NaN and infinite fill values, `downsample` with a factor wider than the image (16 October) and opt-in volcomp decoding through `KIT_VOLCOMP_LIB` (17 October) (`HASH1`).
+- 2026-10-24: on public `main`, for the false-404 tools; adds, since the release copies, the `transpose` refusal, NaN and infinite fill values, `downsample` with a factor wider than the image (16 October) and opt-in volcomp decoding through `KIT_VOLCOMP_LIB` (17 October) (`4b592b6`).
 - 2026-10-15: the copy in AutoPipeline 0.1.4 (`603fe14`, branch `submission/progress-2026-10-fix4`); the first version was of 8 October.
 
 ## Related
