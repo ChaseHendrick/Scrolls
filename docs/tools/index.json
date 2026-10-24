@@ -12532,7 +12532,7 @@
    "id": "vc3d-agent",
    "name": "vc3d-agent",
    "tagline": "villa's VC3D tools as checked MCP tools for AI agents, with no display",
-   "summary": "Headless VC3D for agents 1.0.0 serves 39 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces and run ink models with controls; its code is on public branch `submission/progress-2026-10-vc3d-agent`, not on `main`.",
+   "summary": "Headless VC3D for agents 1.1.0 serves 46 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces, run ink models with controls and fit lasagna surfaces; its code is on public branch `submission/progress-2026-10-vc3d-agent-1-1-0`, not on `main`.",
    "status": "Branch only",
    "kind": [
     "package"
@@ -12542,12 +12542,14 @@
     "vc3d-agent vc3d mcp",
     "vc3d-agent vc3d tools",
     "vc3d-agent vc3d call TOOL '{...}'",
+    "vc3d-agent lasagna COMMAND",
+    "--key value",
     "pip install -e ."
    ],
    "imports": [],
    "code": [
     {
-     "path": "submissions/progress-2026-10-vc3d-agent/vc3d-agent/",
+     "path": "submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/",
      "symbols": []
     },
     {
@@ -12575,7 +12577,17 @@
      "symbols": []
     },
     {
+     "path": "kit/lasagna.py",
+     "symbols": [
+      "kit/vc3d_ext_lasagna.py"
+     ]
+    },
+    {
      "path": "kit/cli.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/lasagna/fit_cpu_shim.py",
      "symbols": []
     },
     {
@@ -12588,7 +12600,7 @@
     }
    ],
    "tests": [
-    "submissions/progress-2026-10-vc3d-agent/vc3d-agent/tests/",
+    "submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/tests/",
     "test_*.py",
     "test_vc3d_mcp.py",
     "test_vc3d_agent.py",
@@ -12600,27 +12612,27 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c"
+    "commit": "6c157716e08ef816eac936be22c40cb85682e642"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`vc3d-agent`",
     "Status": "Branch only",
     "Kind": "package",
     "Area": "Pipeline and agents",
-    "Run": "`vc3d-agent vc3d mcp` (the MCP server), `vc3d-agent vc3d tools`, `vc3d-agent vc3d call TOOL '{...}'` after `pip install -e .` in the package folder",
-    "Code": "`submissions/progress-2026-10-vc3d-agent/vc3d-agent/` on its branch: mainly `kit/vc3d_mcp.py` (the server), `kit/vc3d_agent.py` (the tools), `kit/vc3d.py`, `kit/vc3d_catalog.py`, `kit/vc3d_audit.py`, `kit/vc3d_bridge.py`, `kit/cli.py`, `scripts/vc3d/ink.py`, `scripts/get_vc3d.py`",
-    "Tests": "`submissions/progress-2026-10-vc3d-agent/vc3d-agent/tests/` on its branch: 16 `test_*.py` files, among them `test_vc3d_mcp.py` (the protocol, and the official MCP Python SDK's client when it is installed) and `test_vc3d_agent.py` (every tool against stand-in VC3D tools from `vc3d_fakes.py`)",
-    "Needs": "Python 3.11 or newer; the server and most tools use only the standard library. Scoring and the layer tools need the `maps` extra (numpy, tifffile, zarr 3, scipy). Real runs need villa's VC3D tools (`VC_APPIMAGE`, `VC_BIN` or `PATH`); ink models and the detectability probe need a Python with numpy and torch named by `KIT_INK_PYTHON`",
-    "Runs on": "Linux or macOS, any CPU for the server. The package's 355 tests took 126 s with Python 3.11 and the `maps` extra in a 4-core cloud container (24 Oct 2026); the server answered initialize, tools/list and status in a venv with no packages at all",
+    "Run": "`vc3d-agent vc3d mcp` (the MCP server), `vc3d-agent vc3d tools`, `vc3d-agent vc3d call TOOL '{...}'`, `vc3d-agent lasagna COMMAND` (the lasagna tools with `--key value` flags) after `pip install -e .` in the package folder",
+    "Code": "`submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/` on its branch: mainly `kit/vc3d_mcp.py` (the server), `kit/vc3d_agent.py` (the tools), `kit/vc3d.py`, `kit/vc3d_catalog.py`, `kit/vc3d_audit.py`, `kit/vc3d_bridge.py`, `kit/lasagna.py` (the lasagna tools, loaded through `kit/vc3d_ext_lasagna.py`), `kit/cli.py`, `scripts/lasagna/fit_cpu_shim.py`, `scripts/vc3d/ink.py`, `scripts/get_vc3d.py`",
+    "Tests": "`submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/tests/` on its branch: 17 `test_*.py` files, among them `test_vc3d_mcp.py` (the protocol, and the official MCP Python SDK's client when it is installed) and `test_vc3d_agent.py` (every tool against stand-in VC3D tools from `vc3d_fakes.py`)",
+    "Needs": "Python 3.11 or newer; the server and most tools use only the standard library. Scoring and the layer tools need the `maps` extra (numpy, tifffile, zarr 3, scipy). Real runs need villa's VC3D tools (`VC_APPIMAGE`, `VC_BIN` or `PATH`); ink models and the detectability probe need a Python with numpy and torch named by `KIT_INK_PYTHON`. The lasagna tools need a villa checkout (`VILLA_DIR` or `LASAGNA_DIR`) and a Python with torch, numpy, zarr, tifffile and tensorstore (`LASAGNA_PYTHON`); CPU torch is enough for the self-test and small fits, real-size fits need CUDA",
+    "Runs on": "Linux or macOS, any CPU for the server. Version 1.1.0's 438 tests took 149 s with Python 3.13 in a 4-core cloud container (24 Oct 2026; 1.0.0's 355 took 126 s with Python 3.11 and the `maps` extra); the lasagna self-test took 9 s on CPU there with villa main `6f202456`; the server answered initialize, tools/list and status in a venv with no packages at all",
     "Network": "None for the server itself (stdio). The tools download anonymously from the Vesuvius Challenge open-data bucket (`vesuvius-challenge-open-data`), Hugging Face and GitHub releases (`fetch_model`), and `api.github.com` and GitHub's release host for `scripts/get_vc3d.py`",
     "Writes": "Under the kit home (the package folder, or `KIT_HOME`): `work/vc3d/` (outputs, jobs, caches, the model list; `KIT_VC3D_HOME` moves it), `experiments/` (the ledger and target ink) and `checkpoints/` (downloaded models), all kept out of git by the package's `.gitignore`",
     "Go-ahead": "Not needed to serve or for local runs. Needed: the `modal` tool, which rents compute, refuses unless the user starts the server with `KIT_ALLOW_MODAL=1`, and its runner is not in the package; publishing any target-scroll map or verdict (the no-disclosure rule, hard rule 1)",
-    "Released": "Public branch `submission/progress-2026-10-vc3d-agent` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c` (a commit with no parent), with its README entry in [`releases.json`](../releases.json). The same server shipped earlier inside each AutoPipeline release",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
-    "Guide": "[Package README](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/README.md), [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/AGENTS.md) and the agent guide [docs/vc3d-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/docs/vc3d-agents.md)",
-    "Branch": "`submission/progress-2026-10-vc3d-agent` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`",
-    "Checked": "2026-10-24 against commit `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`"
+    "Released": "Public branch `submission/progress-2026-10-vc3d-agent-1-1-0` at `6c157716e08ef816eac936be22c40cb85682e642` (a commit with no parent), tag `vc3d-agent-v1.1.0`, with its README entry in [`releases.json`](../releases.json); 1.0.0 is tag `vc3d-agent-v1.0.0` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`. The same server shipped earlier inside each AutoPipeline release",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
+    "Guide": "[Package README](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/README.md), [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/AGENTS.md) and the agent guide [docs/vc3d-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/docs/vc3d-agents.md)",
+    "Branch": "`submission/progress-2026-10-vc3d-agent-1-1-0` at `6c157716e08ef816eac936be22c40cb85682e642`",
+    "Checked": "2026-10-24 against commit `6c157716e08ef816eac936be22c40cb85682e642`"
    },
    "page": "docs/tools/vc3d-agent.md",
    "sections": [
@@ -12663,13 +12675,13 @@
     {
      "name": "History",
      "start_line": 69,
-     "end_line": 72,
+     "end_line": 73,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 73,
-     "end_line": 77,
+     "start_line": 74,
+     "end_line": 78,
      "applicable": true
     }
    ]
