@@ -23,7 +23,7 @@
 
 ## What it does
 
-Chase asked on 18 October 2026 for a hero image on every released tool, "the quality of and the dimensions like that of the one on the scrolls public readme", and for images, GIFs and videos because "people like those". These scripts make them reproducibly, and make each one say what it is.
+Chase asked on 18 October 2026 for a hero image on every released tool, at the quality and size of the one on the public README, and for images, GIFs and videos, which people like. These scripts make them reproducibly, and make each one say what it is.
 
 `hero.py` reads a JSON recipe and writes a graded 1920 x 640 WebP (quality 83, at most 300 KB), a 1200 x 630 social card with the title in Inter, and a sidecar JSON. A recipe's scene is either procedural (a builder in `scenes.py`, drawn by the small NumPy renderer in `scene.py`) or an existing picture. The procedural scenes are generated from formulas and a seed only, so they contain no scan pixel, no model output, no lettering and no ink: synthetic cross-sections wound as spirals with a copper thread bending through their centers for the umbilicus finder, a roll unrolling flat with its layers peeling up for Unroll, a cube cut by three slices for Scroll Lens, a sheet under a reading lens for Scroll Text Reader, and so on. The `panels` scene floats real screenshots of a tool's interface over the floor, and is always a Synthetic demo.
 

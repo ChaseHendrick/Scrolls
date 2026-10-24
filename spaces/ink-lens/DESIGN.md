@@ -3,9 +3,9 @@
 Status: design, 20 October 2026. Nothing here is built, deployed or measured yet. Labels follow
 [`docs/NOVELTY.md`](../../docs/NOVELTY.md): Sourced fact, Community report, Measurement, Interpretation, Untested idea.
 
-Chase asked on 20 October 2026, at about 19:25 UTC: "use my 5 mins of zerogpu usage to make something never before
-seen before and groundbreaking and useful by the team and actual text finders. make it useful with VC3D". Also that
-day: "make all my stuff compatible with the organizers/community's".
+Chase asked on 20 October 2026 for something new and useful to the team and to people looking for text, built on his
+daily ZeroGPU minutes and working with VC3D, and that day also asked that all his tools work with the organizers' and
+the community's.
 
 ## What it is, in one paragraph
 

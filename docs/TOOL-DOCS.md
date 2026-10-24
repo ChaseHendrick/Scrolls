@@ -1,6 +1,6 @@
 # Tool docs: the standard every tool page follows
 
-Chase asked on 16 October 2026 (09:58 UTC) for "all current, past, and future tool docs" to be "extremely detailed and readable by both human and agent". This page says how. Every tool in this repository has one page in [`tools/`](tools/README.md), written to this standard, and `python -m kit.tooldocs check`, which the tests run, fails when a tool has no page or a page breaks the rules below. The tool-pages rule in [`AGENTS.md`](../AGENTS.md) points here.
+Chase asked on 16 October 2026 for every tool's docs, current, past and future, to be very detailed and readable by both people and agents. This page says how. Every tool in this repository has one page in [`tools/`](tools/README.md), written to this standard, and `python -m kit.tooldocs check`, which the tests run, fails when a tool has no page or a page breaks the rules below. The tool-pages rule in [`AGENTS.md`](../AGENTS.md) points here.
 
 Two readers use every page. A person reads it top to bottom to learn what the tool is for and whether to trust its output. An agent jumps to one section by its fixed name, copies a command, and needs every option, default, output field, exit code and error message written out exactly. The rules below serve both: the same fields and sections in the same order on every page, plain sentences, and exact text, checked against the code, wherever something will be pasted or parsed.
 

@@ -3862,7 +3862,7 @@
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing",
     "Writes": "Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR",
     "Go-ahead": "Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests",
-    "Released": "Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase, 20 Oct 2026, about 21:28 UTC: \"can we not deploy to a HF space rn and wait until i ever get PRO to get more spaces\"); local mode works now",
+    "Released": "Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase's decision, 20 Oct 2026); local mode works now",
     "License": "Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0",
     "Checked": "2026-10-20 against commit `3c2445e`"
    },
@@ -9239,7 +9239,7 @@
    ],
    "go_ahead": {
     "needed": true,
-    "text": "Needed to create the Space: Chase asked for it on 24 Oct 2026 (\"do these\", Segment Lens among them). Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)"
+    "text": "Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)"
    },
    "checked": {
     "date": "2026-10-24",
@@ -9258,7 +9258,7 @@
     "Runs on": "The visitor's browser. Each preview is one file of about 150 to 250 KB; the table reads `atlas.jsonl` once. In headless, software-rendered Chromium on a 4-core cloud container, a local atlas of 8 PHerc0139 meshes loaded and drew its first preview within 4 s (2026-10-24)",
     "Network": "The visitor's browser: `huggingface.co` (the dataset SharpMeow/vesuvius-segment-atlas: `atlas.jsonl`, `summary.json`, `lens/*.slg.gz`), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com`",
     "Writes": "Nothing: the URL hash holds the selected scroll and mesh",
-    "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026 (\"do these\", Segment Lens among them). Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
+    "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
     "Released": "This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published",
     "License": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
     "Checked": "2026-10-24 against commit `5d217be` plus this change"
@@ -11328,7 +11328,7 @@
    ],
    "go_ahead": {
     "needed": true,
-    "text": "Needed to make the Space public: Chase's yes, given 2026-10-23 (\"yes, make Umbilici public\"). Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds"
+    "text": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds"
    },
    "checked": {
     "date": "2026-10-23",
@@ -11347,8 +11347,8 @@
     "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
     "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
     "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
-    "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23 (\"yes, make Umbilici public\"). Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.6.1 (Space commit `c72b2cb0`), public since 2026-10-23 07:38 UTC (Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.6.1 (Space commit `c72b2cb0`), public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
     "Checked": "2026-10-23 against commit `9edd7a8`"
    },

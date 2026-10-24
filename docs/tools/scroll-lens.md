@@ -408,13 +408,13 @@ Free to use and to run locally. On the Space, model runs (Run the models, `look`
 
 ## History
 
-- 2026-10-24: Connect your tool accordion (branch of `main` at `2ce4d50`). Chase had the Space unpaused ("ya unpause"), and it was redeployed as Space commit `51360104`, which also brought #117's merged changes live (a click moves the crosshair by default, one-line gallery names).
+- 2026-10-24: Connect your tool accordion (branch of `main` at `2ce4d50`). Chase had the Space unpaused, and it was redeployed as Space commit `51360104`, which also brought #117's merged changes live (a click moves the crosshair by default, one-line gallery names).
 - 2026-10-17: v1.1.0, on top of PR #114's agent tools: the views drawn in the browser (`viewer.js`: live sliders, drag, wheel, zoom, pan, undo, hover readout), a 3D view of the cube with the slices as moving planes (three.js, as in Unroll), and fixes from a bug test of the live v1.0.0 (receipt layers, ZeroGPU durations and refusals, cube placement, the bucket's 403, random points on sparse scans, reduced-embedding similarity, the agreement control range, shared memory, the URL proxy, upload size, strict flags in `look`); `build_gallery.py --batch` (`c921ef1`, `e14e165`, [PR #115](https://github.com/ChaseHendrick/Scrolls/pull/115)).
 - 2026-10-17: v1.1.0 agent tools and MCP (`list_scans`, `list_gallery`, `random_point`, `inspect_cube`, `search_cube`, `download_cube`), American spelling ([PR #114](https://github.com/ChaseHendrick/Scrolls/pull/114)).
 - 2026-10-17: gallery grown to 99 cubes (batches 2 to 9) on Chase's remaining quota (Space commit `f4aa1ee`).
 - 2026-10-17: v1.0.0 live on Hugging Face with the 19-cube gallery. Gallery agreement (Model output): most cubes AUC 0.67 to 0.91 with controls 0.42 to 0.59; PHerc. 500P2 0.30 (control 0.45), 343P 0.40 (0.63) and 332 0.62 (0.59) disagree ([PR #113](https://github.com/ChaseHendrick/Scrolls/pull/113)).
 - 2026-10-17: tool page, docs index, map, glossary and handoff rows (`60da647`).
-- 2026-10-16: built in thread "Use my 5 minutes of ZeroGPU" (Chase: "something cool and visionary and useful by both newcomers and the elite researchers, like I did and we did for Unroll") (`378bd42`, [PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110)).
+- 2026-10-16: built for newcomers and experienced researchers alike, in the spirit of Unroll (`378bd42`, [PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110)).
 
 ## Related
 

@@ -1,10 +1,7 @@
 """One terminal look for every Scrolls command: colour, spacing, wrapping, a title line and a closing line.
 
-Chase, 23 Oct 2026: "apply that fancy ascii terminal that one thing had to all our current and future terminals. i
-want them looking fancy and nice with that good spacing and mouse ability".
-
-Chase, 23 Oct 2026, 01:30 UTC: "the terminal isnt pretty, didnt i tell you to make all future terminals pretty". So
-the look needs no install step and works on any branch:
+Chase asked on 23 Oct 2026 for one styled look, with good spacing and mouse support, on every current and future
+terminal, so the look needs no install step and works on any branch:
 
 * Automatic. `python -m kit ...` styles itself (`auto()`, called from `kit/cli.py`'s `main()` on a terminal), and a
   script styles itself with `script()` at the top of its `main()`. Either one also writes the startup hook into that

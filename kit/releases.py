@@ -21,9 +21,8 @@ An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2
 its own branch (the Progress Prize exporter's submission/<submission_id> branches), which the section links at that
 commit.
 
-A grouped entry adds "tools": one line each for command-line tools that share one entry (Chase, 20 October 2026:
-"consolidate some releases like some of the released stuff on our scrolls readme seems more like kit tools"), the
-"Scrolls kit" entry. Each tool keeps its own id, date, version and links:
+A grouped entry adds "tools": one line each for command-line tools that share one entry (Chase's decision of
+20 October 2026), the "Scrolls kit" entry. Each tool keeps its own id, date, version and links:
   "tools": [{"id": "strokenet", "name": "StrokeNet text-likeness score", "released": "2026-10-14",
              "version": "weights `strokenet-paris4-v1`",                     (optional)
              "summary": "One or two sentences: what it does, its result with its claim label, its main limit.",
@@ -35,7 +34,7 @@ tools, so the id of an entry that became a tool still names it: find() resolves 
 refuse a tool's id with the entry to edit instead. check() fails when a tool's page is missing.
 
 The list's optional "pinned" holds entry ids shown first, in that order, above the newest (Chase, 14 October 2026:
-keep AutoPipeline on top "so people see it"). A pin belongs to the list, not the entry, so a new version that replaces
+keep AutoPipeline on top, where people see it). A pin belongs to the list, not the entry, so a new version that replaces
 a pinned entry stays pinned.
 
 An entry's optional "image" is shown under its title, with its caption in italics below. The caption starts with one of
