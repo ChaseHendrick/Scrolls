@@ -410,7 +410,7 @@ path is redacted.
 
 The clip in [the quickstart](#4-quickstart) shows the monitor and console in ten captioned steps, with the ink maps in copper colors ([MP4](../assets/autopipeline/monitor-walkthrough.mp4), captured 24 October 2026 with [`scripts/media/record_ap_monitor.py`](../tools/media.md)). 0.1.6's clip, with the earlier gray maps, stays in [`monitor-walkthrough-v016.mp4`](../assets/autopipeline/monitor-walkthrough-v016.mp4), and 0.1.5's shorter clip of its controls in [`monitor-demo-v015.mp4`](../assets/autopipeline/monitor-demo-v015.mp4).
 
-The pictures below are the monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 24 October 2026 with the next patch's ink colors: each map is cropped to the surface, enlarged smoothly and drawn from dark umber (low score) to pale papyrus (high), with the reversed control on the forward map's scale. The demo's CT has stroke shapes planted in it, and its VC3D tools and ink model are stand-ins, so its maps are not ink.
+The pictures below are the monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 24 October 2026 with AutoPipeline 0.1.7's ink colors: each map is cropped to the surface, enlarged smoothly and drawn from dark umber (low score) to pale papyrus (high), with the reversed control on the forward map's scale. The demo's CT has stroke shapes planted in it, and its VC3D tools and ink model are stand-ins, so its maps are not ink.
 
 The top of the page once the run has finished (dark theme):
 

@@ -5,6 +5,6 @@
   "caption": "Synthetic demo: AutoPipeline's monitor following scripts/demo_synthetic.py, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console. Stroke shapes were planted in the synthetic CT and a stand-in ink model scores them, so its maps are not ink; the reversed control shows only the synthetic papyrus.",
   "license": "Apache-2.0",
   "sources": [
-    "scripts/demo_synthetic.py of the next AutoPipeline patch (synthetic CT with planted strokes)"
+    "scripts/demo_synthetic.py of AutoPipeline 0.1.7 (synthetic CT with planted strokes)"
   ]
 }

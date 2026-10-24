@@ -8,7 +8,7 @@
   "release_id": "autopipeline",
   "data": null,
   "sources": [
-    "scripts/demo_synthetic.py of the next AutoPipeline patch (synthetic CT with planted strokes)"
+    "scripts/demo_synthetic.py of AutoPipeline 0.1.7 (synthetic CT with planted strokes)"
   ],
   "outputs": [
     {

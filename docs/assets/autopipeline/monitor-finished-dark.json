@@ -8,7 +8,7 @@
   "release_id": "autopipeline",
   "data": null,
   "sources": [
-    "scripts/demo_synthetic.py of the next AutoPipeline patch (synthetic CT with planted strokes)"
+    "scripts/demo_synthetic.py of AutoPipeline 0.1.7 (synthetic CT with planted strokes)"
   ],
   "outputs": [
     {
@@ -28,5 +28,5 @@
     "scripts_sha256": null,
     "base_commit": "912b8e0"
   },
-  "command": "Screenshot with Playwright and Chromium of AutoPipeline's monitor (python -m kit autopipeline monitor, thumbnails on) on the run folder of scripts/media/record_ap_monitor.py's synthetic demo, built from the next patch's monitor and demo; 1440 x 900 viewport."
+  "command": "Screenshot with Playwright and Chromium of AutoPipeline's monitor (python -m kit autopipeline monitor, thumbnails on) on the run folder of scripts/media/record_ap_monitor.py's synthetic demo, built from AutoPipeline 0.1.7's monitor and demo; 1440 x 900 viewport."
 }
