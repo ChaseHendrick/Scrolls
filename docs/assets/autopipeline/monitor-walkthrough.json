@@ -1,0 +1,54 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-walkthrough",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map in a dark-to-pale copper scale beside its reversed control on the same scale, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes.",
+  "caption": "Synthetic demo: AutoPipeline's monitor following scripts/demo_synthetic.py, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console. Stroke shapes were planted in the synthetic CT and a stand-in ink model scores them, so its maps are not ink; the reversed control shows only the synthetic papyrus.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "scripts/demo_synthetic.py of the next AutoPipeline patch (synthetic CT with planted strokes)"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-walkthrough.mp4",
+      "bytes": 1182721,
+      "sha256": "1dd55b05f7fe22418ad166801d7aabcf655b41ae2f2df72143910e5befce6124",
+      "width": 1512,
+      "height": 904,
+      "kind": "mp4",
+      "seconds": 45.25,
+      "frames": 543,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "monitor-walkthrough.gif",
+      "bytes": 671667,
+      "sha256": "a0843ec9b75f6c8cfc5be04345fc645c209bd82130cd1fabfd8f9547f007cfcf",
+      "width": 1512,
+      "height": 904,
+      "kind": "gif",
+      "seconds": 45.25,
+      "frames": 194,
+      "settings": {
+        "width": 1512,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "encode.py"
+    ],
+    "scripts_sha256": "39a68120fe546ef92d011c58d922b1631fc4cd67a0f6b71318980bb38d6ec4d9",
+    "base_commit": "a4b860223e3d39c5dc8b4a09b54295ba3f599675"
+  },
+  "command": "python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 1512 --dither none --mp4 docs/assets/autopipeline/monitor-walkthrough.mp4 --gif docs/assets/autopipeline/monitor-walkthrough.gif --meta scripts/media/captures/autopipeline-walkthrough.meta.json"
+}

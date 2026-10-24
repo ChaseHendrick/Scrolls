@@ -2,19 +2,19 @@
   "schema": "scrolls-media/1",
   "name": "monitor-phone-dark",
   "label": "Synthetic demo",
-  "alt": "AutoPipeline's monitor at phone width, dark theme, during a synthetic run.",
-  "caption": "Synthetic demo: AutoPipeline 0.1.4's monitor at phone width, dark theme (made-up data).",
+  "alt": "AutoPipeline's monitor at phone width, dark theme: the ink panel with the stand-in map beside its reversed control and the color key.",
+  "caption": "Synthetic demo: AutoPipeline's monitor at phone width, dark theme; stroke shapes planted in the synthetic CT and a stand-in ink model, so its maps are not ink.",
   "license": "Apache-2.0",
   "release_id": "autopipeline",
   "data": null,
   "sources": [
-    "AutoPipeline 0.1.4 package, synthetic demo (docs/autopipeline/README.md)"
+    "scripts/demo_synthetic.py of the next AutoPipeline patch (synthetic CT with planted strokes)"
   ],
   "outputs": [
     {
       "file": "monitor-phone-dark.png",
-      "bytes": 151055,
-      "sha256": "65f0a430e46c565fcb74ca75c6f4c11b017d5b4dcb932a5cc34cecd7ebe9c773",
+      "bytes": 262678,
+      "sha256": "972e215dba254adaa69ccbe2348b9228a5eb23a4ddec6a04104a4a068876ce4a",
       "width": 780,
       "height": 1688,
       "kind": "legacy",
@@ -22,11 +22,11 @@
     }
   ],
   "inputs": [],
-  "made": "2026-10-16",
+  "made": "2026-10-24",
   "tool": {
     "scripts": [],
     "scripts_sha256": null,
-    "base_commit": "8cae2ed"
+    "base_commit": "912b8e0"
   },
-  "command": "Screenshot of AutoPipeline 0.1.4's monitor at phone width (commit 8cae2ed, 16 October 2026); predates scripts/media."
+  "command": "Screenshot with Playwright and Chromium of AutoPipeline's monitor (python -m kit autopipeline monitor, thumbnails on) on the run folder of scripts/media/record_ap_monitor.py's synthetic demo, built from the next patch's monitor and demo; 390 x 844 viewport at device scale 2, scrolled to panel 03."
 }

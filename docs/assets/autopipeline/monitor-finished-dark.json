@@ -2,19 +2,19 @@
   "schema": "scrolls-media/1",
   "name": "monitor-finished-dark",
   "label": "Synthetic demo",
-  "alt": "AutoPipeline's optional monitor showing a finished synthetic run and its stage timeline, dark theme.",
-  "caption": "Synthetic demo: AutoPipeline 0.1.4's monitor after a finished synthetic demo run, dark theme (made-up data).",
+  "alt": "AutoPipeline's monitor after a finished synthetic demo run, dark theme: the stage timeline, the traced surface's wireframe, and its stand-in ink map beside the reversed control in a dark-to-pale copper scale.",
+  "caption": "Synthetic demo: AutoPipeline's monitor after a finished synthetic demo run, dark theme; stroke shapes planted in the synthetic CT and a stand-in ink model, so its maps are not ink.",
   "license": "Apache-2.0",
   "release_id": "autopipeline",
   "data": null,
   "sources": [
-    "AutoPipeline 0.1.4 package, synthetic demo (docs/autopipeline/README.md)"
+    "scripts/demo_synthetic.py of the next AutoPipeline patch (synthetic CT with planted strokes)"
   ],
   "outputs": [
     {
       "file": "monitor-finished-dark.png",
-      "bytes": 192590,
-      "sha256": "6c03c2bbe81b1698b62c503b0bf64a7512e057ca0df70f8427bc6c135657fbf1",
+      "bytes": 267955,
+      "sha256": "af6e4e7a6e73b2dbb1d334b8de1b190a7dd39a0dea313491475d2bccb0f846c6",
       "width": 1440,
       "height": 900,
       "kind": "legacy",
@@ -22,11 +22,11 @@
     }
   ],
   "inputs": [],
-  "made": "2026-10-16",
+  "made": "2026-10-24",
   "tool": {
     "scripts": [],
     "scripts_sha256": null,
-    "base_commit": "8cae2ed"
+    "base_commit": "912b8e0"
   },
-  "command": "Screenshot of AutoPipeline 0.1.4's monitor after its synthetic demo run (commit 8cae2ed, 16 October 2026); predates scripts/media."
+  "command": "Screenshot with Playwright and Chromium of AutoPipeline's monitor (python -m kit autopipeline monitor, thumbnails on) on the run folder of scripts/media/record_ap_monitor.py's synthetic demo, built from the next patch's monitor and demo; 1440 x 900 viewport."
 }
