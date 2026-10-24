@@ -1,0 +1,35 @@
+Sat Oct 24 08:41:15 UTC 2026
+f1108c7fa15547c3245435119b8181eeaff56003
+work/letters/icdar-h2h/build/test/post-R1plain.npz (8479, 24)
+work/letters/icdar-h2h/build/test/post-R1plain-decoy.npz (8479, 24)
+work/letters/icdar-h2h/build/test/post-O2.npz (8479, 24)
+work/letters/icdar-h2h/build/test/lines-O2free.json 516
+Sat Oct 24 08:46:35 UTC 2026
+work/letters/icdar-h2h/build/test/post-O5.npz (8479, 24)
+Sat Oct 24 09:01:57 UTC 2026
+work/letters/icdar-h2h/build/test/post-O5-decoy.npz (8479, 24)
+Sat Oct 24 09:17:27 UTC 2026
+letters O5 {'error': 0.2907, 'ci95': [0.26033491445181045, 0.32750726443093564]}
+letters R1 {'error': 0.3399, 'ci95': [0.3135448219488114, 0.3704917976419557]}
+letters R1p {'error': 0.3399, 'ci95': [0.3135448219488114, 0.3704917976419557]}
+letters O2 {'error': 0.4485, 'ci95': [0.411743378961533, 0.48904675196359787]}
+lines L5 {'cer': 0.2407, 'ci95': [0.21226911325821995, 0.2772471020493675]}
+lines L-R1 {'cer': 0.3202, 'ci95': [0.2954359531906511, 0.3485544094758619]}
+lines L-R1lm {'cer': 0.2521, 'ci95': [0.2290673511795624, 0.28147398495239634]}
+lines L-O2free {'cer': 0.5466, 'ci95': [0.5052305739981349, 0.587666516229622]}
+lines C7 lm alone {'cer': 0.8689, 'ci95': [0.8606041853568229, 0.8803641301472164]}
+comparisons H1 {'d': -0.0492, 'ci95': [-0.06116458918607907, -0.03504004320658781], 'verdict': 'ahead'}
+comparisons H1b {'d': -0.0492, 'ci95': [-0.06116458918607907, -0.03504004320658781], 'verdict': 'ahead'}
+comparisons H2 {'d': -0.0795, 'ci95': [-0.09604730607049125, -0.06110478391211877], 'verdict': 'ahead'}
+comparisons H2b {'d': -0.0114, 'ci95': [-0.024612384406125138, 0.003287797825825951], 'verdict': 'level'}
+controls C1 O5 {'accuracy': 0.7093, 'p': 0.0005, 'pass': True}
+controls C1 R1 {'accuracy': 0.6601, 'p': 0.0005, 'pass': True}
+controls C1 R1p {'accuracy': 0.6601, 'p': 0.0005, 'pass': True}
+controls C1 O2 {'accuracy': 0.5515, 'p': 0.0005, 'pass': True}
+controls C2 O5 {'d': 0.5712, 'ci95': [0.5338177893829184, 0.6008374866295315], 'pass': True}
+controls C2 R1 {'d': 0.5262, 'ci95': [0.497263483136896, 0.5506922838832558], 'pass': True}
+controls C6 prior alone {'d': 0.6056, 'ci95': [0.5669122828921147, 0.6374511661307203], 'pass': True}
+controls C7 lm alone {'d': 0.6282, 'ci95': [0.5936559235074627, 0.6557520484162972], 'pass': True}
+713ee5e4f55cd61696dbc9ed917f55ec519f99178532ee846493ea9e1e53c3f1  work/letters/icdar-h2h/score-test.json
+Sat Oct 24 09:17:42 UTC 2026
+TESTRUN DONE

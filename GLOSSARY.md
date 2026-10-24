@@ -46,7 +46,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
 
+**chain rule (windlabel)**: The fixed test `kit windlabel-box` applies to each step of a chain of sheet crossings: the next sheet is thin, at a spacing in line with the chain's earlier steps, and the sheet's normal turns little. Version 1 has digest `0e53e0ae5016`. See [`docs/tools/windlabel-box.md`](docs/tools/windlabel-box.md).
+
 **checkpoint**: The saved weights of a trained model.
+
+**Connect your tool (panel)**: The section every one of Chase's Hugging Face Spaces carries (24 Oct 2026): the URLs of the data the page shows, with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, curl, gradio_client and MCP. Written from each Space's `connect.json` by `python -m kit spaceconnect`; page [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
 
 **claims ledger (`docs/claims/sources.json`)**: The list, per block of the README's Novel findings, of the results units and files its numbers come from, each pinned to its sha256, and a reason (setting, count, derived, external or context) for any number no source holds. `python -m kit.claimcheck check` fails when a number has neither. See [`docs/tools/claimcheck.md`](docs/tools/claimcheck.md).
 
@@ -80,13 +84,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## E
 
+**empty-chunk marker**: A `.empty` file VC3D writes in its remote chunk cache when the server answers 404 for a chunk; VC3D then reads that chunk as zeros for good. A marker for a chunk the bucket holds is a false one ([vc3d-cache](docs/tools/vc3d-cache.md)).
+
 **ESRF**: The European Synchrotron Radiation Facility in Grenoble, where scrolls have been scanned since 2025.
 
 **evidence archive**: A frozen folder under `docs/evidence/` with the inputs, rules, scripts, results and SHA-256 hashes of one study. These folders are not edited.
 
 ## F
 
-**false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds. VC3D then caches the chunk as empty. `kit/s3retry.py` and `kit/s3relay.py` work around it.
+**false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds, with the error code `NoSuchBucket` instead of `NoSuchKey`. VC3D then caches the chunk as empty (an empty-chunk marker) and reads it as zeros. `kit/s3retry.py` asks again; `python -m kit s3relay` keeps it away from VC3D and `python -m kit vc3dcache` deletes the false markers ([how-to](docs/vc3d-false-404.md)).
 
 **fiber (fibre)**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
 
@@ -111,6 +117,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **generalization**: How well a model does on data it was not trained on. Claims of generalization need a held-out labeled segment.
 
 **GPU**: A graphics processor, used here for fast model training and inference.
+
+**grad_mag**: A sheet-density channel published with lasagna's model outputs: high where papyrus sheets are, so its integral along a short line counts roughly how many sheets the line crosses. `kit windlabel-box` uses it to find steps that cross more than one sheet.
 
 **Grand Prize**: The largest Vesuvius Challenge prize of a challenge year.
 
@@ -140,7 +148,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
 
-**Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
+**Ink Lens**: A tool and ZeroGPU Space ([SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens), live since 24 Oct 2026) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
 
 **ink label (inklabels)**: A human-drawn mask of where ink is on a segment (`inklabels.zarr`), used for training and scoring.
 
@@ -150,9 +158,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **intercolumn**: The blank space between two columns of text.
 
+**integrity check (`kit integrity`)**: This repository's checker for Vesuvius claims: an ink score needs its reverse-depth control and a held-out status from that reader, wording must not call model output a reading, a preregistration must precede its result, citations must match arXiv. It plants faults it must catch before it reports anything. The `vesuvius-integrity` Claude skill states the same rules as instructions ([guide](docs/integrity.md)).
+
+**isometry (of a segment grid)**: How closely a tifxyz grid keeps the spacing its `meta.json` promises: every edge's 3D length over the promised step, each cell's area over the promised area, and the angle between the grid's two directions (1.0, 1.0 and 90 degrees when exact). `kit tifxyz stretch` reports them; a grid far from isometric distorts a flattened render ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
+
 ## K
 
 **Kaggle**: A data-science competition platform that has hosted Vesuvius Challenge competitions.
+
+**keep-open**: The label on a ScrollPrize/villa pull request that exempts it from villa's daily time-limit workflow, which otherwise closes a PR after 14 days without activity or 28 days open; `kit prclock` shows each PR's clock ([`docs/tools/villapr.md`](docs/tools/villapr.md)).
 
 **keV (kiloelectronvolt)**: The unit of X-ray photon energy. Scan names in the bucket give it, for example `113keV`.
 
@@ -162,9 +176,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## L
 
+**label set**: One dated folder of a segment's published ink labels on the open-data bucket, `SCROLL/segments/SEGMENT/ink-labels/<voxel size>um-volume-<VOLUME>/<date>/`, holding `inklabels.zarr`, `supervision.zarr` and sometimes `validation.zarr`, all drawn on one volume's render. `kit labels` lists them ([`docs/tools/labels.md`](docs/tools/labels.md)).
+
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
+**lasagna field**: The output of villa's lasagna model (`lasagna-preprocess predict3d`) over a whole scan: OME-Zarr channels cos (a signal that repeats once per papyrus layer), grad_mag and the surface normals nx and ny, with a `SCAN.lasagna.json` manifest. villa's lasagna surface fitting and the spiral fit read it. Fields for ten scans are in the [Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) datasets. Model output.
+
 **landmark**: A point marked in two scans of one scroll, used to fit the cross-scan transform between them.
+
+**lasagna**: villa's lasagna surface fitter and the model outputs it reads, such as grad_mag; outputs are published for open-data volumes, for example PHerc0139's `20260102150214-lasagna-20260419180421-L2`.
 
 **layer**: One image in a surface volume, at a fixed depth from the traced surface. `kit layers` writes them as numbered TIFF files. In the scroll itself, "layer" also means one turn of papyrus (see winding).
 
@@ -173,6 +193,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **level (resolution level)**: One copy of a volume at a given downsampling in a multi-resolution zarr. Level 0 is full resolution; higher levels are smaller, downsampled copies.
 
 ## M
+
+**m7**: The organizers' binary surface prediction model for the open data: a voxel map of where papyrus sheet surfaces are. Several kit tools read its published outputs; it can merge sheets that touch.
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
 
@@ -187,6 +209,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **MedSAM2**: SAM 2 fine-tuned on 3D medical images and video. Its weights are licensed for research and education only, so nothing trained from it is released here.
 
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
+
+**m7**: The organizers' public surface prediction for PHerc0139 scan 20250728140407 (`...-surface-m7-L0-th0.2.zarr` under `PHerc0139/representations/predictions/surfaces/`), stored as 0 or 255. `kit hopbench` uses it as its default prediction and baseline.
 
 **micro-CT**: CT at micrometer resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
 
@@ -212,6 +236,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## O
 
+**one-sheet check (`kit.sheetgap`)**: A check that a traced surface stays on one sheet where sheets touch. At each mesh point it reads a surface prediction along the normal and passes only an isolated run no thicker than one sheet, with empty voxels on both sides; neighbors link only when their runs line up. Its blind spot is a prediction that draws two pressed sheets as one thin run ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
+
 **OCR (optical character recognition)**: A model proposing text from an image. Its output still needs independent checks and is not a verified reading.
 
 **OME-Zarr**: A zarr layout for large microscopy-style images, with several resolution levels and metadata. The challenge stores its CT volumes this way.
@@ -229,6 +255,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **PHerc.**: Short for Papyrus Herculanensis, followed by an inventory number, for example PHerc. 0139 or PHerc0139. PHerc. Paris 4 is also called Scroll 1.
 
 **pixel AUC**: See AUC.
+
+**planted hop (`kit hopbench`)**: A copy of a patch of one hand-traced winding moved partly onto its touching neighbor at a real contact, so that the patch switches sheets on purpose. Band plants step across only inside the contact zone; ramp plants slide across over 16 voxels. Used to measure how often a one-sheet check misses a switch ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
 
 **planted defect (`kit.planted`)**: A sheet switch, lens, skip, merger, hole or bridged hole put on purpose into a synthetic tifxyz surface whose every vertex records the winding it truly sits on, so a detector, stack check or labeler can be tested against a known answer. Synthetic data only ([`docs/tools/planted.md`](docs/tools/planted.md)).
 
@@ -250,6 +278,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
 
+**relative windings**: Points along a line from a scroll's core, each labeled with how many windings it lies outward of the first, without saying which absolute winding that is. villa's spiral fit reads them as a `relative_windings.json` point collection; `kit windlabel-box` makes them and `kit windconsistency` checks them.
+
+**remote chunk cache (VC3D)**: The folder where VC3D keeps every chunk it streams from a remote volume, so later runs read them from disk; `kit doctor --remote` shows where it is and how much space it has ([`docs/tools/doctor.md`](docs/tools/doctor.md)).
+
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
 
 **resolution (voxel size)**: The edge length of one voxel, given in micrometers, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
@@ -257,6 +289,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
 **ROC curve**: A plot of true positive rate against false positive rate over all thresholds. AUC is the area under it.
+
+**ROCm**: AMD's GPU computing stack, the counterpart of NVIDIA's CUDA. PyTorch has ROCm builds that run CUDA code through `torch.cuda`; `kit doctor` reports a ROCm card as a warning, because villa's spiral fitting asks for an NVIDIA GPU.
 
 **routine (`kit routines`)**: A recurring, read-only repository check listed in `docs/routines.json`, daily or weekly, that any agent runs at session start with `python3 -m kit routines run --due`, so it does not depend on one account's scheduler. Its results stay in the ignored `work/routines/`.
 
@@ -278,6 +312,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **segment**: A traced piece of papyrus surface together with its rendered surface volume. Segments are named by id, for example w035 or w045 of PHerc0139.
 
+**Segment Atlas**: The table of `kit tifxyz`'s numbers for every tifxyz mesh on the open-data bucket, one row per mesh, published as the Hugging Face dataset SharpMeow/vesuvius-segment-atlas and refreshed daily (`python -m kit atlas`, [`docs/tools/atlas.md`](docs/tools/atlas.md)).
+
 **segmentation (tracing)**: Finding and tracing the rolled papyrus surface inside a CT volume.
 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.
@@ -290,9 +326,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
 
+**split rule (windlabel)**: The fixed rule `kit windlabel-box` uses to cut a chain: every step whose grad_mag integral, scaled by 0.765 so one sheet reads about 1, is above 0.95 is cut, so each piece claims only counts the grad_mag agrees with. Digest `c6d2eecbebc2`.
+
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
+
+**submitcheck**: `kit submitcheck`, a preflight of a prize submission folder against the prize page's file rules (tifxyz meshes, image names, Grand Prize `column_NN` names), quoting each rule ([`docs/tools/submitcheck.md`](docs/tools/submitcheck.md)).
 
 **supervision mask (supervision.zarr)**: The region of a segment where its ink labels are trusted. Scores are computed only inside it.
 
@@ -319,6 +359,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **tile**: One fixed-size square piece of a map or surface volume, processed on its own and then put back together. Inference wrappers log how many tiles they ran; StrokeNet's tile grid pilot scores a map tile by tile.
 
 **tool page**: The reference page of one tool in [`docs/tools/`](docs/tools/README.md): what it does, a quick start, its checks and controls, every option with its default, inputs, outputs, failure modes, cost, rules for agents, tests and history, written to [`docs/TOOL-DOCS.md`](docs/TOOL-DOCS.md) and checked against the code by `python -m kit.tooldocs check`. Pages still to be written are listed in `docs/tools/pending.json`.
+
+**touched chunks**: The chunks of a zarr volume that lie within a margin of a segment's surface: the only part of the volume a render or check of that segment reads. `kit tifxyz chunks` lists them with their bytes and can copy only those ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
 
 **trace (tracer)**: A traced surface, and the program that grows it. villa's tracer grows a surface from a seed.
 
@@ -365,6 +407,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **weights**: The learned numbers inside a trained model. Weights are never stored in git here; released weights are downloaded and checked by SHA-256.
 
 **winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
+
+**winding coverage**: How many times a slice's traced sheet winds around a point: the summed angle its segments subtend there, divided by a full turn, in wraps. Deep inside the roll it is high; off center it drops. `kit windcheck` computes it from villa's normal grids, and `kit axispolish` moves a center line to where it is highest (the coverage polish) ([page](docs/tools/windcheck.md)). A measurement on model-predicted sheets, not a distance to the true axis.
+
+**wrap pitch**: The radial distance from one wrap of a scroll to the next. `kit coverage` measures it on the published meshes: along a mesh row that goes more than a full turn around the center line, the radius one turn further on less the radius here ([`docs/tools/coverage.md`](docs/tools/coverage.md)).
 
 ## X
 

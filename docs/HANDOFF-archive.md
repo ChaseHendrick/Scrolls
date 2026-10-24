@@ -4,17 +4,80 @@ Sections moved out of [HANDOFF.md](HANDOFF.md) unchanged, newest first, so the h
 
 When HANDOFF.md grows long, move its oldest dated sections, unchanged, to the top of this file (below this paragraph).
 
+## Open items added 16 October 2026 (checked 01:10 ET)
+
+Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
+
+```yaml
+handoff:
+  written: 2026-10-16T01:10-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  merged_since_last_handoff:
+    - {number: 91, branch: grok/glossary, merge: ad2c4f8, topic: GLOSSARY.md, an A to Z of technical terms}
+    - {number: 92, branch: grok/perf-cli-parser, merge: dc6713b, topic: kit cli reuses one argparse parser per process}
+    - {number: 93, branch: grok/autopipeline-every-scan, merge: 0a22f72, topic: AutoPipeline on every scan}
+  open_prs:
+    - none
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, open_data_bucket_only]
+```
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Unroll v1.0 (viewer Space, [unroll-space.md](unroll-space.md)) | Released. Control panel redesign (grouped Layers, Ink Bench, View, Destroy, Scrolls), Settings saved in localStorage and settable by URL, plain language glossary, agent API (`unrollView.actions/settings/state/glossary`), Ink Bench button, CPU pick fallback for Destroy on GPUs without float targets. The overlay layer is labeled `ink_9um (9 µm)`, credited to the Vesuvius Challenge. README entries updated | Fix the audit findings below |
+| Unroll security and UX audit | Findings, highest first: HIGH stored HTML injection through the Ink Bench annotation id (the note field is escaped, the id is not); MED NaN or Infinity thresholds accepted and carried into share links; MED out-of-range alignment offsets accepted; MED malformed `?bench=` links fail silently or show raw errors; MED HUD collisions at 800x500 and 1100x700, and the readout has no backdrop. LOW: no minimum image size, wrong advice for non-image uploads, a double-escaped name, raw `atob` errors, "9.362 um" instead of µm, mixed UK and US spelling. Passed: bad uploads, zip bomb, path traversal, XSS in names and credits, resize and key spam | Escape the annotation id, reject non-finite thresholds and offsets, show share-link errors, then re-test |
+| Glossary | Merged, PR #91 (`ad2c4f8`) | None |
+| CLI speedup | Merged, PR #92 (`dc6713b`): one parser per process (about 119 ms to 13 ms per call) | None |
+| AutoPipeline on every scan | Merged, PR #93 (`0a22f72`): catalog of every scan volume in the `vesuvius-challenge-open-data` bucket (75 volumes when checked), per-scan config, priced dry-run batch (`kit run all`) and watcher (`kit run watch`). Launches nothing; volumes not in the bucket are marked blocked | Paid batch runs each need the owner's approval |
+| Unroll in the README release list | Merged, PR #94 (`590636c`): adds Unroll v1.0 to `docs/releases.json` and the README Released tools section | None |
+| Stale branches | **Done** 18 Oct: Chase turned on automatic deletion of merged head branches, and every merged branch this row listed is gone from GitHub (`git ls-remote`, 18 Oct; the list is in this file's history). Still on GitHub and kept: `release-readme/progress-2026-10-fix1`, `-fix2` and `-fix3`, and the `submission/progress-2026-10*` snapshots | Nothing open. Agents may delete a merged branch (never `submission/*`, `release-readme/*` or unmerged branches); a Claude cloud session cannot delete remote branches |
+| GPU inference speed probes (C reader) | `torch.compile` gives about 1.85x over eager fp16 per tile; max-autotune about 1.9x; TensorRT fp16, int8 and fp8 builds did not complete (missing ONNX file and `onnx_graphsurgeon`) | Fix the ONNX export before any further probe; no launch without approval |
+
+## Umbilici Space row as of 24 October 2026 (moved here when 1.8.0 shipped)
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Umbilici Space (23 Oct) | `spaces/umbilici/` and [its page](tools/umbilici.md) on branch `claude/project-thread-xrkbs0`; Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.6.1 deployed (Space commit `c72b2cb0`; center lines v2.2 per-end CT grades, colored per end): guide for every level, VC3D and villa notes cited to villa source, Data tables with CSV and JSON, per-line statistics. CT streams from the open-data bucket in the visitor's browser; nothing is rehosted. Releases entry `umbilici` added | Public since 23 Oct (Chase switched it; live recheck passed: 22 scans, PHerc0846A CT 110 of 110 heights). SharpMeow/pherc0175a-lasagna public since 08:09 UTC; live recheck at 08:15 UTC: all three lasagna dataset links resolve, none fall back to "(soon)". PR #162 merged 23 Oct 08:30 UTC; 1.5.0 and 1.6.0 merged in #163; 1.6.1 (grade coloring) in the follow-up PR. Waiting on Chase: whether lag and black flashes are gone on his Mac |
+
+## Open items added 15 October 2026 (checked 23:20 ET)
+
+Public work only. Every PR and SHA below was checked on GitHub when written; anything not checked says **unverified**.
+
+```yaml
+handoff:
+  written: 2026-10-15T23:30-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  main_head_at_writing: 303c33f
+  open_prs:
+    - {number: 85, branch: grok/vesuvius-bible, head: 9229ff8522, topic: Vesuvius Challenge reference book, state: open}
+    - {number: 87, branch: grok/unroll-link, head: 5b963dab59, topic: link to the Unroll viewer Space, state: open}
+    - {number: 88, branch: grok/autopipe-readme, head: 9983e6f3df, topic: AutoPipeline reference README and agent rules, state: open}
+  in_progress_not_pushed:
+    - vesuvius_bible_layout_redesign
+    - autopipeline_electricity_cli_and_modal_ledger_rows
+    - unroll_destroy_mode_agent_api_ink_bench
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, scan_images_not_in_this_repo]
+```
+
+| Item | State | Next step | Waits on | Where |
+| --- | --- | --- | --- | --- |
+| Vesuvius Challenge reference book | **Merged** 16 Oct in [PR #85](https://github.com/ChaseHendrick/Scrolls/pull/85) (merge `fafc316`), files under `docs/vesuvius-bible`, with the redrawn charts (`95ea240`); its branch `grok/vesuvius-bible` (#85) is deleted | Further layout work (the rebuilt PDF, if unfinished) starts on a new branch from `main` | Chase | PR #85 |
+| AutoPipeline reference README | PR #88 open, head `9983e6f3df` (`docs/autopipeline/README.md`, `docs/autopipeline/AGENTS.md`, `docs/README.md`). Its commit is authored as Grok Bot, not Chase, against the identity rule below; fix by a new commit only if Chase wants it rewritten (no force-push) | Review and merge | Chase | PR #88 |
+| AutoPipeline local-run and ledger tooling | In progress, not pushed: `kit run local` (wall time, CPU time and an electricity estimate, rate read from local config, never git), `kit run backfill`, and automatic one-row-per-app cloud ledger rows. `tests/test_letterlines.py` passes on `main` (13 tests); the pending letterlines change is **unverified** | Review, open a PR | agent | not yet in git |
+| Unroll viewer link | PR #87 open, head `5b963dab59` (`README.md`, `docs/unroll-space.md`). The Space ([huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll)) serves commit `f6dcaa7`: multi-scroll registry (`scrolls/index.json` with one manifest per scroll) and Open your own (load your own meshes and ink maps in the browser). In progress, not deployed: Destroy mode (tear, crush, burn, water at any unroll amount), a `window.unroll` agent API, and an Ink Bench whose scores are agreement with the published ink layer, not ground truth | Merge the three working copies, test, deploy; then update `docs/unroll-space.md` | Chase | PR #87 |
+
 ## Open items (checked 14 October 2026, 22:45 UTC)
 
 | Item | State | Next step | Waits on | Where |
 | --- | --- | --- | --- | --- |
-| Stranger account in the contributors | **Done** 14 October: public `main` was rewritten and force-pushed at 13:39 UTC with Chase's approval (cards at 13:10 and 13:19 UTC), so the two exporter commits that GitHub credited to github.com/noreply (`5462ebf`, `301e12d`, now `1544c0f`, `7404735`) are authored by Chase; files and messages unchanged, 14 commits from that day got new IDs. Grok-Bot and codex stay listed for their older commits by his choice. Release branches and the `umbilicus-v1` and `letters-v2-real` tags were not moved, so `umbilicus-v1` points at a commit no longer on `main` (its download still works) | Any agent committing here follows the AGENTS.md identity rules (standing decisions, 14 October) | None | This row |
-| Segment stack check and the PHerc0139 segment note | Released 14 October 2026 in PR #80 after Chase approved its 11-file list (22:00 UTC): `kit stackcheck` (`kit/stackcheck.py`, `tests/test_stackcheck.py`, CLI) checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone and writes per-vertex masks; the note gives the PHerc0139 w033 to w037 measurements, example vertices and a by-eye CT look at 12 places; `stackcheck` entry in `releases.json`, `stackcheck_checks` in `results.json` | Run it on other published stacks when a spiral fit or winding count needs them | anyone | [`logs/2026-10-14-pherc0139-segment-defects.md`](logs/2026-10-14-pherc0139-segment-defects.md) |
+| Stranger account in the contributors | **Done** 14 October: public `main` was rewritten and force-pushed with Chase's approval, so the two exporter commits that GitHub credited to github.com/noreply (`5462ebf`, `301e12d`, now `1544c0f`, `7404735`) are authored by Chase; files and messages unchanged, 14 commits from that day got new IDs. Grok-Bot and codex stay listed for their older commits by his choice. Release branches and the `umbilicus-v1` and `letters-v2-real` tags were not moved, so `umbilicus-v1` points at a commit no longer on `main` (its download still works) | Any agent committing here follows the AGENTS.md identity rules (standing decisions, 14 October) | None | This row |
+| Segment stack check and the PHerc0139 segment note | Released 14 October 2026 in PR #80 after Chase approved its 11-file list: `kit stackcheck` (`kit/stackcheck.py`, `tests/test_stackcheck.py`, CLI) checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone and writes per-vertex masks; the note gives the PHerc0139 w033 to w037 measurements, example vertices and a by-eye CT look at 12 places; `stackcheck` entry in `releases.json`, `stackcheck_checks` in `results.json` | Run it on other published stacks when a spiral fit or winding count needs them | anyone | [`logs/2026-10-14-pherc0139-segment-defects.md`](logs/2026-10-14-pherc0139-segment-defects.md) |
 | Reports to villa | Issues [#2058](https://github.com/ScrollPrize/villa/issues/2058) and [#2059](https://github.com/ScrollPrize/villa/issues/2059), draft fix [#2060](https://github.com/ScrollPrize/villa/pull/2060) and seed-anchor PR [#2063](https://github.com/ScrollPrize/villa/pull/2063) are open upstream. Issue [#2104](https://github.com/ScrollPrize/villa/issues/2104) (posted by Chase on 14 October): a `vc_grow_seg_from_seed` trace with x/y/z limits stops once a cell skipped at a limit lies inside `used_area`; its fix PR is drafted, not posted | Answer maintainers' reviews; any further post needs the owner's word | villa maintainers, then the owner | [`logs/2026-10-12-upstream-reports.md`](logs/2026-10-12-upstream-reports.md) |
 | AutoPipeline public release | Released 14 October with Chase's approval of the exact file list: branch [`submission/progress-2026-10`](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10), commit `faada83` | Fixes go out as new file lists, each approved by Chase first | Chase | Branch `submission/progress-2026-10`; Scrolls-private |
-| Scroll Text Reader release | **Done** 14 October. Released with Chase's approval in [PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57): `kit letterread`, `kit greeklm`, training and benchmark scripts in `scripts/letters/`. [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58), merged by Chase at 21:59 UTC (merge `25914fb`), makes it installable, reads whole maps, adds controls and exports, and makes the CC BY 4.0 weights `letters-v2-ccby` the default. The letter reader thread installed the guide's pip line from `main` in a fresh venv afterward: it installs, fetches `letters-v2-ccby` and the demo passes. The weights are not in git. `letters-v2-ccby` is the release asset on tag [`letters-v2-ccby`](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-ccby) (sha256 `b14988852fc7...`, CC BY 4.0, published 14 October). `letters-v2-real-step030000.npz` stays on tag [`letters-v2-real`](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real) (sha256 `44946dad...587477`, CC BY-NC 4.0), pinned in `kit/data/letter-weights.json`. Do not re-tag or delete either, because `--weights` downloads from them | Nothing open. Any new weights get a new tag and registry entry | Nobody | [`letter-reader.md`](letter-reader.md), [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) |
-| Released tools in the README | **Done** 14 October: [PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60) merged (`d1a34ff`) after Chase approved it (01:51 UTC). The README's "Released tools" section is generated from `docs/releases.json` | Nothing left open. Every later release from private work adds its entry with `python -m kit releases add` (AGENTS.md rule 15); Progress Prize releases arrive as a `release-readme/<submission_id>` branch from the private exporter, for a PR into `main` | None | [`releases.json`](releases.json), [PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60) |
-| PHerc0841 Hecate caveat and README finding 1 like for like | **Done** 14 October: [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37) merged after Chase left the call to Claude (02:22 UTC). PHerc0841 is now called held out for every reader except possibly Hecate, and finding 1 compares v8in 0.738 with `ink_9um` 0.907 on the same bare crop. Its own 2026-10-09 prize snapshot was dropped, since the 2026-10-11 snapshot already records the PHerc. 343 award | Nothing left open | None | [`logs/2026-10-09-pherc0841-hecate.md`](logs/2026-10-09-pherc0841-hecate.md) |
+| Scroll Text Reader release | **Done** 14 October. Released with Chase's approval in [PR #57](https://github.com/ChaseHendrick/Scrolls/pull/57): `kit letterread`, `kit greeklm`, training and benchmark scripts in `scripts/letters/`. [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58), merged by Chase (merge `25914fb`), makes it installable, reads whole maps, adds controls and exports, and makes the CC BY 4.0 weights `letters-v2-ccby` the default. The letter reader thread installed the guide's pip line from `main` in a fresh venv afterward: it installs, fetches `letters-v2-ccby` and the demo passes. The weights are not in git. `letters-v2-ccby` is the release asset on tag [`letters-v2-ccby`](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-ccby) (sha256 `b14988852fc7...`, CC BY 4.0, published 14 October). `letters-v2-real-step030000.npz` stays on tag [`letters-v2-real`](https://github.com/ChaseHendrick/Scrolls/releases/tag/letters-v2-real) (sha256 `44946dad...587477`, CC BY-NC 4.0), pinned in `kit/data/letter-weights.json`. Do not re-tag or delete either, because `--weights` downloads from them | Nothing open. Any new weights get a new tag and registry entry | Nobody | [`letter-reader.md`](letter-reader.md), [`logs/2026-10-14-letter-reader.md`](logs/2026-10-14-letter-reader.md) |
+| Released tools in the README | **Done** 14 October: [PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60) merged (`d1a34ff`) after Chase approved it. The README's "Released tools" section is generated from `docs/releases.json` | Nothing left open. Every later release from private work adds its entry with `python -m kit releases add` (AGENTS.md rule 15); Progress Prize releases arrive as a `release-readme/<submission_id>` branch from the private exporter, for a PR into `main` | None | [`releases.json`](releases.json), [PR #60](https://github.com/ChaseHendrick/Scrolls/pull/60) |
+| PHerc0841 Hecate caveat and README finding 1 like for like | **Done** 14 October: [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37) merged after Chase left the call to Claude. PHerc0841 is now called held out for every reader except possibly Hecate, and finding 1 compares v8in 0.738 with `ink_9um` 0.907 on the same bare crop. Its own 2026-10-09 prize snapshot was dropped, since the 2026-10-11 snapshot already records the PHerc. 343 award | Nothing left open | None | [`logs/2026-10-09-pherc0841-hecate.md`](logs/2026-10-09-pherc0841-hecate.md) |
 
 ## 12 October 2026: findings reported upstream
 

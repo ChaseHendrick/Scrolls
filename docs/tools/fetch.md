@@ -10,7 +10,7 @@
 | Area | Data and downloads |
 | Run | `python -m kit fetch`, `from kit import fetch` |
 | Code | `kit/fetch.py`, `kit/cli.py` (`cmd_fetch`) |
-| Tests | `tests/test_kit.py` |
+| Tests | `tests/test_kit.py`, `tests/test_qol_tools.py` |
 | Needs | Python 3.10 or newer, standard library only (urllib, concurrent.futures); outbound HTTPS to the bucket. Reading what it fetched needs zarr (the map tools) |
 | Runs on | Any machine with network access. 33 objects (14.7 MB) took 3.9 s and 13 objects (0.12 MB) 6.8 s; a rerun with nothing to download 3.5 s (measured 2026-10-16, 4-core Xeon cloud container behind an HTTPS proxy). A whole surface volume (1.0 to 1.7 GB): Not measured |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honors `HTTPS_PROXY` |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: anonymous downloads of public data; nothing is posted or rented |
 | Released | Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package |
 | Guide | [mac.md](../mac.md) (the w035 download in the Mac runbook) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-23 against commit `cc03099` |
 
 ## What it does
 
@@ -87,7 +87,8 @@ Claim label: None: it copies the organizers' public files and makes no claim. Th
 ### `python -m kit fetch`
 
 ```
-usage: python -m kit fetch [-h] [--workers WORKERS] prefix dest
+usage: python -m kit fetch [-h] [--workers WORKERS] [--dry-run] [--force]
+                           prefix dest
 ```
 
 | Option | Default | Meaning |
@@ -95,6 +96,8 @@ usage: python -m kit fetch [-h] [--workers WORKERS] prefix dest
 | `prefix` | required | A bucket prefix that is a folder, written without `s3://` or the bucket name, such as `PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr`. Leading and trailing slashes are dropped and one `/` is added, so only keys under `PREFIX/` are fetched. Or a short name: `w035` (`W035_9UM`, an `ink_9um` training segment) or `w045` (`W045_9UM`, unseen by v8in, but `ink_9um` trained on its 2.4 um render) |
 | `dest` | required | The local folder. Created with its parents when missing; each object lands at `DEST/` plus its key minus `PREFIX/`, so a zarr store's root metadata sits directly in `DEST` |
 | `--workers WORKERS` | `16` | Download threads. Each thread holds one whole object in memory while it downloads. 0 or less fails after the listing with a traceback (`ValueError`). The scripts here pass 8 for label stores |
+| `--dry-run` | off | List only: print the object count, total size, what is still missing at `DEST` and the free space there, then exit 0 without downloading |
+| `--force` | off | Download even when the missing bytes would leave under 1 GB free at `DEST` |
 
 ## Python API
 
@@ -109,7 +112,9 @@ objects, fetched, total = fetch.fetch_prefix(fetch.ALIASES["w045"], "data/w045_9
 | `parse_listing(xml)` | `([(key, size), ...], token)`: the keys and byte sizes of one ListObjectsV2 XML page, and its `NextContinuationToken` or `None` | Nothing of its own | Reads `<Key>` and `<Size>` inside each `<Contents>` with a regular expression. XML escapes such as `&amp;` in a key are not decoded |
 | `list_prefix(prefix, opener=urllib.request.urlopen, base=BUCKET_URL)` | `(prefix, entries)`: the prefix with one trailing `/`, and every `(key, size)` under it, over all pages | `FetchError` for a repeated continuation token; whatever `opener` raises, such as `urllib.error.URLError`, `HTTPError` or `TimeoutError` (all `OSError`) | 1,000 keys per page, 60 s timeout per page. `opener(url, timeout=...)` must return an object with `.read()`; tests pass a fake |
 | `local_path(dest, prefix, key)` | `Path(dest) / rest`, where `rest` is `key` minus `prefix` | `FetchError` (`refusing unsafe key ...`) when `rest` is empty, starts with `/`, or has a `..` part | `prefix` must end with `/`, as `list_prefix` returns it |
-| `fetch_prefix(prefix, dest, workers=16, opener=urllib.request.urlopen, base=BUCKET_URL)` | `(objects, fetched, total)`: the number of objects listed, the bytes downloaded in this call, and the bytes of all listed objects | `FetchError` for an empty listing, an unsafe key, a repeated token, or an object that failed four tries; `OSError` from the listing or from creating folders; `ValueError` for `workers` below 1 | What the command runs, after mapping a short name through `ALIASES` (the command does that, not this function) |
+| `plan(prefix, dest, opener=urllib.request.urlopen, base=BUCKET_URL)` | dict: `prefix`, `objects`, `total_bytes`, `missing_bytes` (not yet at `DEST` at their size), `free_bytes` (on the file system of `DEST` or its nearest existing parent), `fits` (missing plus `MARGIN_BYTES`, 1 GiB, fit in free), `entries` | `FetchError` for an empty listing or an unsafe key; as `list_prefix` | What the command runs first; the listing is reused for the download |
+| `human(n)` | str, such as `1.5 GB` (powers of 1,000) | Nothing | |
+| `fetch_prefix(prefix, dest, workers=16, opener=urllib.request.urlopen, base=BUCKET_URL, entries=None)` | `(objects, fetched, total)`: the number of objects listed, the bytes downloaded in this call, and the bytes of all listed objects | `FetchError` for an empty listing, an unsafe key, a repeated token, or an object that failed four tries; `OSError` from the listing or from creating folders; `ValueError` for `workers` below 1 | What the command runs, after mapping a short name through `ALIASES` (the command does that, not this function). `entries` from `plan` skips a second listing |
 
 ## Inputs
 
@@ -123,7 +128,13 @@ What came down in the Quick start: `inklabels.zarr` of PHerc0841 w00, a zarr 3 g
 
 ## Outputs
 
-On success it prints one line to stdout:
+With `--dry-run` it prints one line and downloads nothing:
+
+```
+N objects, T in all, M still to download, F free at DEST
+```
+
+(with ` (does not fit: leave 1 GB spare)` added when it would not fit). On success it prints one line to stdout:
 
 ```
 N objects, T MB total, F MB downloaded -> DEST
@@ -155,6 +166,7 @@ Files: one per object under `DEST`, at the key's path relative to the prefix. A 
 | `KEY: KEY: got N bytes, expected M`, exit code 2 | The object came back shorter (or longer) than listed on all four tries; truncated reads happen (villa issue #1666, named in the code) | Run the same command again: it resumes |
 | `KEY: HTTP Error 403: Forbidden`, `KEY: timed out` or another `KEY: ...`, exit code 2 | Downloading that object failed four times (an HTTP error, a 120 s timeout, a write error) | Check the network and the proxy, then rerun |
 | `<urlopen error [Errno -2] Name or service not known>`, `HTTP Error 403: Forbidden` or `timed out` without a key, exit code 2 | The listing request failed: no network, DNS, a proxy refusal, or a 60 s timeout | Check the network and `HTTPS_PROXY`, then rerun |
+| `N objects, T in all, M still to download, F free at DEST: not enough space (kit fetch keeps 1 GB spare). Free some space, pick another DEST, or pass --force`, exit code 2 | What is still missing, plus 1 GB, is more than the free space at `DEST`; nothing was downloaded | Free space, point `DEST` at a bigger disk, or pass `--force` |
 | `[Errno 13] Permission denied: 'DEST/...'`, exit code 2 | `DEST` or a folder under it cannot be created | Pick a writable `DEST` |
 | `ValueError: max_workers must be greater than 0` and a traceback, exit code 1 | `--workers` 0 or less (the listing has already run) | Use `--workers 1` or more |
 
@@ -195,13 +207,14 @@ A whole surface volume (about 1.0 to 1.7 GB): Not measured; the time depends on 
 ## Tests
 
 ```bash
-python -m unittest tests.test_kit.FetchTest tests.test_kit.PlanTest.test_fetch_aliases_point_at_9um_surface_volumes -v
+python -m unittest tests.test_kit.FetchTest tests.test_kit.PlanTest.test_fetch_aliases_point_at_9um_surface_volumes tests.test_qol_tools.TestFetchPlan -v
 ```
 
-They use a fake bucket (an `opener` that returns canned XML and bodies) and cover: a listing over two pages whose token holds `/`, the download, a rerun that downloads nothing, a short read that fails, an unsafe key refused, and the `w035` and `w045` short names pointing at the 9 um surface volumes. They do not touch the network, and do not cover HTTP errors, timeouts, the four tries, an empty prefix, a repeated token, or what happens to other downloads when one fails. `FetchTest` sits below the `unittest.main()` line of `tests/test_kit.py`, so it runs under `python -m unittest` but not with `python tests/test_kit.py`.
+`TestFetchPlan` checks that `plan` counts only the bytes not already at `DEST`, reports `fits` false when free space is short, and `human`'s units. They use a fake bucket (an `opener` that returns canned XML and bodies) and cover: a listing over two pages whose token holds `/`, the download, a rerun that downloads nothing, a short read that fails, an unsafe key refused, and the `w035` and `w045` short names pointing at the 9 um surface volumes. They do not touch the network, and do not cover HTTP errors, timeouts, the four tries, an empty prefix, a repeated token, or what happens to other downloads when one fails. `FetchTest` sits below the `unittest.main()` line of `tests/test_kit.py`, so it runs under `python -m unittest` but not with `python tests/test_kit.py`.
 
 ## History
 
+- 2026-10-23: checks free space before downloading and refuses when the fetch would leave under 1 GB (`--force` overrides); `--dry-run` prints the size, what is missing and the free space (`3376687`).
 - 2026-10-08: the `w045` comment says w045 is not held out from `ink_9um`, which trained on its 2.4 um render (`d841e06`, [log](../logs/2026-10-08-w045-not-held-out.md)).
 - 2026-10-07: the `w045` short name (`b533efa`).
 - 2026-10-07: first version: paged listing with fully encoded tokens, resume by size, short reads rejected, unsafe keys refused, the `w035` short name; checked against the real w035 surface volume, 2,223 objects over three listing pages (`912135c`).

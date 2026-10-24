@@ -1,0 +1,493 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>dinovol Embeddings</title>
+<meta name="description" content="Features from the Vesuvius Challenge's dinovol model for the whole PHerc0841 scroll scan, free to stream by URL. Click a point and see everything that looks like it. Made by Chase Hendrick.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f5f6fa;--bg2:#eceef5;--card:#fff;--ink:#151722;--ink2:#4a5068;--ink3:#7d839a;--line:#dfe2ec;
+  --accent:#6a46e8;--accent2:#d83c86;--teal:#0f9c99;--code:#12131c;--codeink:#e6e8f2;--sel:#6a46e81f;
+  --shadow:0 1px 2px #14182a0d,0 10px 30px #14182a14;--glow:#6a46e833;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0b0c12;--bg2:#12141d;--card:#161925;--ink:#eef0f8;--ink2:#b4b9cc;--ink3:#80869c;--line:#262a3a;
+  --accent:#9b82ff;--accent2:#ff6fb0;--teal:#3fd0c8;--code:#07080d;--codeink:#e6e8f2;--sel:#9b82ff26;
+  --shadow:0 1px 2px #0008,0 10px 30px #0007;--glow:#9b82ff40;}}
+:root[data-theme="dark"]{
+  --bg:#0b0c12;--bg2:#12141d;--card:#161925;--ink:#eef0f8;--ink2:#b4b9cc;--ink3:#80869c;--line:#262a3a;
+  --accent:#9b82ff;--accent2:#ff6fb0;--teal:#3fd0c8;--code:#07080d;--codeink:#e6e8f2;--sel:#9b82ff26;
+  --shadow:0 1px 2px #0008,0 10px 30px #0007;--glow:#9b82ff40;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3{font-family:"Space Grotesk",Inter,sans-serif;font-weight:700;letter-spacing:-.015em;line-height:1.12;margin:0}
+h2{font-size:clamp(26px,3.2vw,38px);margin-bottom:10px}
+h3{font-size:19px;font-weight:600;margin-bottom:6px}
+p{margin:0 0 12px}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13.5px}
+:not(pre)>code{overflow-wrap:anywhere;background:var(--bg2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.88em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:56px}
+.brand{font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:18px;color:var(--ink);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.brand:hover{text-decoration:none}
+.cube{width:20px;height:20px;border-radius:5px;background:conic-gradient(from 210deg,#7b5cff,#ff5fa2,#ffcc4d,#36d1c4,#7b5cff)}
+.navlinks{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;flex:1}
+.navlinks a{color:var(--ink2);font-size:14px;white-space:nowrap}
+.tbtn{margin-left:auto;border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+header.hero:before{content:"";position:absolute;inset:-30% -10% auto auto;width:70%;height:140%;background:radial-gradient(closest-side,var(--glow),transparent);pointer-events:none}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr);gap:48px;align-items:center;padding-top:64px;padding-bottom:64px;position:relative}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--accent)}
+.hero h1{font-size:clamp(36px,5.4vw,62px);margin:12px 0 18px}
+.hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.lede{font-size:19px;max-width:620px}
+.by{margin-top:16px;color:var(--ink2);font-size:15px}.by b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:34px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:"Space Grotesk",sans-serif;font-size:26px;line-height:1.1}
+.stat span{font-size:13px;color:var(--ink3)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;font-family:inherit}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:hover{text-decoration:none;filter:brightness(1.06)}
+.heroart{position:relative;justify-self:center;width:100%;max-width:380px}
+.heroart .frame{position:relative;border-radius:22px;overflow:hidden;background:#000;box-shadow:0 30px 80px -20px var(--glow),var(--shadow);aspect-ratio:864/1416}
+.heroart img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .9s}
+.heroart .tag{position:absolute;left:12px;bottom:12px;font-size:12px;color:#eef0f8;background:#0009;padding:3px 9px;border-radius:7px;backdrop-filter:blur(4px)}
+section{padding:72px 0;border-bottom:1px solid var(--line)}
+.sub{color:var(--ink2);max-width:740px;margin-bottom:28px}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:var(--shadow);min-width:0}
+.card .k{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:600;margin-bottom:6px}
+.card p:last-child{margin-bottom:0}
+.explain{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:28px;align-items:center;margin-top:30px}
+.cmp{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:864/1416;max-height:78vh;justify-self:center;width:100%;max-width:440px;box-shadow:var(--shadow);user-select:none;touch-action:pan-y}
+.cmp img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cmp .top{clip-path:inset(0 0 0 50%)}
+.cmp .bar{position:absolute;top:0;bottom:0;left:50%;width:2px;background:#fff;box-shadow:0 0 0 1px #0004;pointer-events:none}
+.cmp .bar:after{content:"";position:absolute;top:50%;left:50%;width:30px;height:30px;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:0 2px 8px #0006}
+.cmp input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:ew-resize;margin:0}
+.cmp .l,.cmp .r{position:absolute;top:10px;font-size:12px;color:#eef0f8;background:#0009;padding:2px 8px;border-radius:6px;pointer-events:none}
+.cmp .l{left:10px}.cmp .r{right:10px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--card)}
+.seg button{border:0;background:transparent;color:var(--ink2);padding:6px 12px;cursor:pointer;font:inherit;font-size:13.5px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.legend{display:grid;gap:12px}
+.legend .row{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;align-items:start}
+.legend .ic{width:44px;height:44px;border-radius:11px;display:grid;place-items:center;font-family:"Space Grotesk",sans-serif;font-weight:700;color:#fff;font-size:15px}
+.demo{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:26px;align-items:start}
+.stage{position:relative;border-radius:16px;overflow:hidden;background:#000;aspect-ratio:864/1416;max-height:82vh;width:100%;max-width:470px;justify-self:center;box-shadow:var(--shadow);cursor:crosshair;touch-action:pan-y}
+.stage img,.stage canvas,.stage svg{position:absolute;inset:0;width:100%;height:100%}
+.stage canvas{image-rendering:auto}
+.stage .msg{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:#eef0f8;background:#000b;padding:8px 14px;border-radius:10px;font-size:14px;text-align:center;pointer-events:none}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px;min-width:0}
+.ctrl{display:flex;gap:14px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.ctrl label{font-size:13.5px;color:var(--ink2);display:flex;align-items:center;gap:10px;flex:1;min-width:220px}
+.ctrl input[type=range]{flex:1;accent-color:var(--accent)}
+.readout{font-size:15px;margin:6px 0 4px}
+.ramp{height:10px;border-radius:99px;background:linear-gradient(90deg,#5a28c8,#e63c8c,#ffdc50);margin:8px 0 2px}
+.rampl{display:flex;justify-content:space-between;font-size:12px;color:var(--ink3)}
+.codebox{position:relative;margin-top:12px}
+pre{max-height:380px;background:var(--code);color:var(--codeink);border-radius:10px;padding:34px 16px 14px;overflow:auto;margin:0;line-height:1.55}
+pre .c{color:#8a90a8}
+.copy{position:absolute;top:8px;right:8px;border:1px solid #ffffff22;background:#ffffff14;color:#e6e8f2;border-radius:7px;padding:3px 9px;font-size:12px;cursor:pointer}
+.copy:hover{background:#ffffff26}
+.small{font-size:13.5px;color:var(--ink3)}
+.steps{counter-reset:s;display:grid;gap:12px}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-family:"Space Grotesk",sans-serif;font-weight:700;font-size:18px}
+.step>div{min-width:0}.step p:last-child{margin-bottom:0}
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--bg2);font-weight:600;font-size:13px;color:var(--ink2)}
+tr:last-child td{border-bottom:0}
+.tablewrap{overflow-x:auto}
+.note{border-left:3px solid var(--accent2);background:var(--card);padding:12px 16px;border-radius:0 10px 10px 0;margin:16px 0;color:var(--ink2);font-size:15px}
+#connect-wrap .scc{--scc-accent:var(--accent);max-width:none}
+#connect-wrap .scc pre{color:inherit;padding:.7em .8em;max-height:none}
+#connect-wrap .scc h2{font-size:clamp(26px,3.2vw,38px);margin-bottom:10px}
+footer{padding:40px 0 60px;color:var(--ink3);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.sizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.dlgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.dlgrid .card pre{max-height:300px}
+.browse{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:center}
+.browse>*,.dlgrid>*,.sizes>*{min-width:0}
+.browse .shot{border-radius:16px;overflow:hidden;background:#000;box-shadow:var(--shadow);aspect-ratio:432/708;max-width:360px;width:100%;justify-self:center}
+.browse .shot img{width:100%;height:100%;object-fit:cover;display:block}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:9px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media (max-width:900px){
+  .hero .wrap,.explain,.demo{grid-template-columns:1fr}
+  .heroart{max-width:300px}
+  .cards3,.dlgrid,.browse{grid-template-columns:1fr}
+  .sizes{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  section{padding:52px 0}
+  .navlinks{display:none}
+  .stage,.cmp{max-height:none}
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="cube" aria-hidden="true"></span>dinovol Embeddings</a>
+  <div class="navlinks">
+    <a href="#what">What it is</a><a href="#try">Try it</a><a href="#browse">Whole scan</a><a href="#connect">Connect your tool</a><a href="#use">Use it</a><a href="#download">Download</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
+  </div>
+  <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
+</div></nav>
+
+<header class="hero" id="top"><div class="wrap">
+  <div>
+    <div class="eyebrow">Vesuvius Challenge open data, made usable</div>
+    <h1>A whole scroll, <em>already embedded</em></h1>
+    <p class="lede">The Vesuvius Challenge's dinovol model, run over every voxel of the PHerc0841 scan. Each small cube of the scroll now has a list of numbers that describes what it looks like. Stream them by URL and search, cluster or segment on a laptop, with no GPU.</p>
+    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. Model and code by the dinovol authors in ScrollPrize/villa.</p>
+    <div class="stats">
+      <div class="stat"><b>539 GB</b><span>of features</span></div>
+      <div class="stat"><b>19,400</b><span>CT slices covered</span></div>
+      <div class="stat"><b>3</b><span>feature sets</span></div>
+      <div class="stat"><b>0</b><span>GPUs needed to use</span></div>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="#try">Click a point, find its twins</a>
+      <a class="btn" href="#what">What are embeddings?</a>
+      <a class="btn" href="#browse">Scroll the whole scan</a>
+      <a class="btn" href="#download">Download</a>
+    </div>
+  </div>
+  <div class="heroart" aria-hidden="true">
+    <div class="frame"><img id="h0" src="assets/dense.webp" alt=""><img id="h1" src="assets/ct.webp" alt="" style="opacity:0"><span class="tag" id="htag">dense features, one slice</span></div>
+  </div>
+</div></header>
+
+<section id="what"><div class="wrap">
+  <h2>What these are, in plain words</h2>
+  <p class="sub">An X-ray CT scan tells you how dense each tiny point of a scroll is. That is a lot of gray, and it is hard to ask a question of it like "where else does it look like this?". A model can turn the gray into something easier to compare.</p>
+  <div class="cards3">
+    <div class="card"><div class="k">The model</div><h3>dinovol learned what scrolls look like</h3><p>dinovol is a 3D model from the Vesuvius Challenge team, trained the DINO way: self-supervised, with no labels. Its main features come from learning which parts of a scan look alike, not from being told what papyrus is.</p></div>
+    <div class="card"><div class="k">The output</div><h3>Every small cube gets a list of numbers</h3><p>For each 8 &times; 8 &times; 8 voxel cube (about 75 &micro;m across) the model writes 480 numbers, and for each 4 &times; 4 &times; 4 cube it writes 64 more. Those lists are the embeddings, or features. Here they cover the whole scan.</p></div>
+    <div class="card"><div class="k">Why it helps</div><h3>Look-alike cubes get look-alike numbers</h3><p>Each list has length one, so the dot product of two lists says how alike two cubes look: 1 is the same, 0 is unrelated. Click one point and you can find every place that looks like it, or train a small classifier from a few clicks.</p></div>
+  </div>
+  <div class="explain">
+    <div class="cmp" id="cmp">
+      <img src="assets/ct.webp" alt="CT slice of PHerc0841 at z 9,600">
+      <img class="top" id="cmptop" src="assets/tokens.webp" alt="The same slice, features shown as color">
+      <div class="bar" id="cmpbar"></div>
+      <span class="l">CT</span><span class="r" id="cmpr">features as color</span>
+      <input type="range" id="cmpr-in" min="0" max="100" value="50" aria-label="Slide between CT and features">
+    </div>
+    <div>
+      <h3>Drag the slider across the scroll</h3>
+      <p>Left is the CT slice at height z 9,600. Right is the same slice with each cube's numbers turned into a color: the three directions in which the numbers vary most become red, green and blue. Cubes with similar colors have similar numbers.</p>
+      <p>In this slice the colors form bands that follow the rolled layers you can see in the CT. That is how the numbers vary here; it is not a check of the model.</p>
+      <div class="seg" role="group" aria-label="Feature set shown">
+        <button type="button" data-feat="tokens" aria-pressed="true">tokens_unit, every 8 voxels</button><button type="button" data-feat="dense" aria-pressed="false">dense, every 4</button>
+      </div>
+      <div class="legend" style="margin-top:22px">
+        <div class="row"><div class="ic" style="background:linear-gradient(135deg,#6a46e8,#9b82ff)">480</div><div><b>tokens_unit</b>: the model's main features, 480 numbers per 8-voxel cube. The best start for search.</div></div>
+        <div class="row"><div class="ic" style="background:linear-gradient(135deg,#d83c86,#ff6fb0)">64</div><div><b>dense</b>: 64 numbers per 4-voxel cube, finer and smaller.</div></div>
+        <div class="row"><div class="ic" style="background:linear-gradient(135deg,#0f9c99,#3fd0c8)">32</div><div><b>ink</b>: 32 numbers per 4-voxel cube from the model's ink head. Features, not an ink map.</div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<section id="try"><div class="wrap">
+  <h2>Click anywhere on the scroll</h2>
+  <p class="sub">Pick a point and the page lights up every cube in this slice whose numbers are most like it. Drag to move the point. It all runs in your browser, on a small copy of the slice's features that loads when you get here.</p>
+  <div class="demo">
+    <div class="stage" id="stage">
+      <img id="sbg" src="assets/ct.webp" alt="CT slice of PHerc0841 at z 9,600; click to search">
+      <canvas id="cv"></canvas>
+      <svg id="mark" viewBox="0 0 432 708" preserveAspectRatio="none"></svg>
+      <div class="msg" id="smsg">Loading features&hellip;</div>
+    </div>
+    <div class="panel">
+      <div class="ctrl">
+        <div class="seg" role="group" aria-label="Background">
+          <button type="button" data-bg="ct" aria-pressed="true">CT</button><button type="button" data-bg="tokens" aria-pressed="false">Feature colors</button>
+        </div>
+        <label>Show the top <input type="range" id="pct" min="0.5" max="30" step="0.5" value="5"><span class="mono" id="pctv">5%</span></label>
+      </div>
+      <div class="readout" id="rd">Click a point inside the scroll.</div>
+      <div class="ramp"></div><div class="rampl"><span>less alike</span><span>most alike</span></div>
+      <p class="small" style="margin-top:12px" id="acc"></p>
+      <h3 style="margin-top:18px">The same search on the full data</h3>
+      <p class="small">This reads the 480 numbers at your point straight from the bucket and compares them with every cube in a box about 10 mm across, centered on it. It runs anywhere Python does, logged out.</p>
+      <div class="codebox"><pre id="pcode"></pre><button class="copy" data-copy="pcode" type="button">Copy</button></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="browse"><div class="wrap">
+  <h2>Scroll through the whole scan in color</h2>
+  <div class="browse">
+    <div>
+      <p class="sub" style="margin-bottom:16px">The same coloring as the slider above, for every slice of PHerc0841: each cube's 480 numbers become one color, from the three directions in which they vary most across the whole scan. It is a 3D color volume in OME-Zarr with four zoom levels, so neuroglancer streams it in a web browser and you can move through all 2,448 layers of cubes.</p>
+      <div class="cta" style="margin-top:0"><a class="btn primary" id="nglink" target="_blank" rel="noopener" href="#">Open in neuroglancer</a></div>
+      <div class="codebox"><pre id="rgburl"></pre><button class="copy" data-copy="rgburl" type="button">Copy</button></div>
+      <p class="small" style="margin-top:10px">Array <code>0</code> is full detail, one color per 8-voxel cube, shape (3, 2448, 963, 963) as channel, z, y, x; arrays <code>1</code> to <code>3</code> are each half the size of the one before. 0 means outside the scroll. The colors show how the numbers vary; they are not labels.</p>
+    </div>
+    <div class="shot"><img src="assets/rgb.webp" alt="One layer of the color volume at z 9,680, read from the bucket"></div>
+  </div>
+</div></section>
+
+<section id="connect-wrap"><div class="wrap">
+<!-- space-connect:start -->
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>The features and the scan they came from read straight from these URLs, logged out, with no download step. The features are one zarr v2 group in a public Hugging Face bucket; Use it below has a tested Python snippet that opens it.</p>
+<div class="scc-src" id="connect-index"><h3>dinovol embeddings of PHerc0841: the store&#x27;s index</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · Model output (scrollprize/dinovol_8um_ps192_102126), not checked by eye. The group sits beside this file: arrays tokens_unit, dense and ink with their _scale arrays; .zattrs has the model, villa commit and tiling.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json</code></pre></div>
+<details><summary>Python<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>import json, urllib.request
+
+data = json.load(urllib.request.urlopen(&quot;https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json&quot;))</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-rgb"><h3>Color volume of the features: OME-Zarr metadata</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · tokens_unit as one color per cube, a multiscale OME-Zarr (zarr v2, uint8, axes c, z, y, x, levels 0 to 3; 0 = outside the scroll). Open the folder this file sits in with zarr.open_group(URL, mode=&#x27;r&#x27;, zarr_format=2); the page&#x27;s Open in neuroglancer button shows it with an RGB shader.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs</code></pre></div>
+<details><summary>Python<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>import json, urllib.request
+
+data = json.load(urllib.request.urlopen(&quot;https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs&quot;))</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-ct"><h3>X-ray CT the features came from, PHerc0841 9.366 um</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · Read live from the open-data bucket, never copied here. Feature index i covers scan voxels [i*8, i*8+8) for tokens_unit and [i*4, i*4+4) for dense and ink, at level 0. · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;2&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[2400:2464, 1000:1064, 1000:1064]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/2&quot;)  # one pyramid level
+block = v[2400:2464, 1000:1064, 1000:1064]</code></pre></div></details>
+<details><summary>VC3D<span class="scc-b src">from villa&#x27;s source</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>In VC3D (villa&#x27;s volume-cartographer), open or create a project, then
+File &gt; Attach Remote Zarr... and paste:
+
+https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr
+
+It accepts http, https and s3 OME-Zarr roots.</code></pre></div></details>
+<details><summary>neuroglancer<span class="scc-b ok">tested 2026-10-24</span></summary>
+<a class="scc-go" href="https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0841%2Fvolumes%2F20250821151531-9.366um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20the%20features%20came%20from%2C%20PHerc0841%209.366%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D" target="_blank" rel="noopener">Open in neuroglancer</a>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0841%2Fvolumes%2F20250821151531-9.366um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20the%20features%20came%20from%2C%20PHerc0841%209.366%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr/2/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-page"><h3>This page&#x27;s own files</h3>
+<p class="scc-meta">Page code Apache 2.0; data as above · The page&#x27;s numbers (slice, box, accuracy of its 32-number search) are the JSON in its data script tag.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-dinovol-embeddings.static.hf.space/</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>The bucket, with its README: https://huggingface.co/buckets/SharpMeow/dinovol-embeddings
+The page&#x27;s slice of features for search (32 numbers per cell, int8): https://huggingface.co/spaces/SharpMeow/dinovol-embeddings/resolve/main/assets/search.i8
+Page source and build script: https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/dinovol-embeddings</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/dinovol-embeddings/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/dinovol-embeddings/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-24. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
+<!-- space-connect:end -->
+</div></section>
+
+<section id="use"><div class="wrap">
+  <h2>Who it is for, and how to use it</h2>
+  <p class="sub">Running dinovol over this scan took about 48 hours of GPU time. Now it is done once, and everyone can start from the result.</p>
+  <div class="cards3">
+    <div class="card"><div class="k">Concept search</div><h3>Find everything like this</h3><p>Pick a point, take its vector, and compute dot products over a region or the whole scan. High values mark cubes the model sees as alike.</p></div>
+    <div class="card"><div class="k">Few-click segmentation</div><h3>Train on frozen features</h3><p>Label a handful of points as "this" and "not this", fit a logistic regression or a small MLP on their vectors, and apply it everywhere. No backbone to train.</p></div>
+    <div class="card"><div class="k">Exploring</div><h3>Cluster and map</h3><p>Cluster a region, reduce it with PCA or UMAP, or compare scans of other scrolls you embed yourself with the same model and settings.</p></div>
+  </div>
+  <h3 style="margin-top:34px">From nothing to your first numbers</h3>
+  <div class="steps" style="margin-top:12px">
+    <div class="step"><div><b>Install three packages.</b><div class="codebox"><pre id="u1">pip install "zarr&gt;=3" fsspec aiohttp numpy</pre><button class="copy" data-copy="u1" type="button">Copy</button></div></div></div>
+    <div class="step"><div><b>Open the store by URL.</b> Nothing downloads until you slice an array, and then only the chunks you touch.<div class="codebox"><pre id="u2"></pre><button class="copy" data-copy="u2" type="button">Copy</button></div><p class="small" style="margin-top:8px">It worked when it prints <code>(2448, 963, 963, 480) (4896, 1926, 1926, 64)</code>.</p></div></div>
+    <div class="step"><div><b>Turn stored numbers into vectors.</b> Each vector is kept as int8 with one float16 scale: multiply them. Cubes outside the scroll are all zero.<div class="codebox"><pre id="u3">v = g["tokens_unit"][i, j, k].astype("float32") * g["tokens_unit_scale"][i, j, k]
+<span class="c"># i, j, k = z // 8, y // 8, x // 8 for tokens_unit; // 4 for dense and ink</span></pre><button class="copy" data-copy="u3" type="button">Copy</button></div></div></div>
+    <div class="step"><div><b>Compare.</b> A dot product of two vectors is their cosine similarity. The search box in <a href="#try">Try it</a> writes a complete example for the point you click.</div></div>
+  </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <h2>Download it</h2>
+  <p class="sub">Everything streams, so most people never need a copy. When you want files on disk, the free <code>hf</code> command copies any folder of the store, logged out. A downloaded copy opens with the same zarr code, with the folder's path in place of the URL.</p>
+  <div class="sizes">
+    <div class="stat"><b>539 GB</b><span>everything, about 940,000 files</span></div>
+    <div class="stat"><b>179 GB</b><span>tokens_unit with its scales</span></div>
+    <div class="stat"><b>238 GB</b><span>dense with its scales</span></div>
+    <div class="stat"><b>122 GB</b><span>ink with its scales</span></div>
+    <div class="stat"><b>__RGBGB__</b><span>the color volume, all levels</span></div>
+  </div>
+  <div class="dlgrid">
+    <div class="card"><div class="k">A region</div><h3>Only the chunks you need</h3><p>Chunk folders follow the scan: <code>ARRAY/Z/Y/X</code> with Z = z &divide; 192 and Y, X = y, x &divide; 96, in scan voxels, for every array. This strip at z 9,600 is 40 MB and took 7 s logged out.</p><div class="codebox"><pre id="dl1"></pre><button class="copy" data-copy="dl1" type="button">Copy</button></div></div>
+    <div class="card"><div class="k">One feature set</div><h3>tokens_unit, 179 GB</h3><p>Swap in <code>dense</code> or <code>ink</code> for the others. The vectors and their scales are separate arrays; take both.</p><div class="codebox"><pre id="dl2"></pre><button class="copy" data-copy="dl2" type="button">Copy</button></div></div>
+    <div class="card"><div class="k">Everything</div><h3>All 539 GB</h3><p>Log in first with a free Hugging Face account: listing the whole store logged out gets rate limited.</p><div class="codebox"><pre id="dl3"></pre><button class="copy" data-copy="dl3" type="button">Copy</button></div></div>
+  </div>
+  <p class="small" style="margin-top:14px">Needs <code>pip install -U huggingface_hub</code>, which provides the <code>hf</code> command. Then read it locally: <code>zarr.open_group("pherc0841-dinovol.zarr", mode="r", zarr_format=2)</code>.</p>
+</div></section>
+
+<section id="method"><div class="wrap">
+  <h2>How it was made</h2>
+  <p class="sub">Every step ran from scripts on Hugging Face Jobs, with a record for each part. Nothing was edited by hand.</p>
+  <div class="steps">
+    <div class="step"><div><h3>The organizers' model, pinned</h3><p>Weights <a href="https://huggingface.co/scrollprize/dinovol_8um_ps192_102126">scrollprize/dinovol_8um_ps192_102126</a>, <code>teacher_step_640000.pt</code> (sha256 <code>2354c493&hellip;</code>), run with villa's <code>dinovol/dinovol_2/eval/embed_volume.py</code> at commit <code>4ea26d9c</code> on the dinovol-refactor branch.</p></div></div>
+    <div class="step"><div><h3>One normalization for the whole scan</h3><p>The input is the masked level-0 scan, 9.366 &micro;m voxels. Its intensity statistics were measured once over 1,216 sampled chunks and used for every slab, so a vector means the same thing everywhere.</p></div></div>
+    <div class="step"><div><h3>102 slabs on L4 GPUs</h3><p>The scan was cut into slabs of 192 slices. Each ran on its own, 192-voxel tiles on a 96-voxel grid, each tile reading 32 voxels past the slab's edges. 22 Jobs on NVIDIA L4 GPUs took about 48 GPU hours. Tiles with no scroll in them were skipped.</p></div></div>
+    <div class="step"><div><h3>One store, no rewriting</h3><p>Each slab's chunk files were renamed into one scan-wide zarr (slab k is z chunk k), so the stored bytes are exactly what the model wrote, stored as int8 with a scale per vector.</p></div></div>
+    <div class="step"><div><h3>Checked by URL, logged out</h3><p>One 24 &times; 48 &times; 48 block from each of the 102 slabs was read back over HTTPS with no account: 5.6 million cells. No vector was off unit length by more than 1 percent, and the cells with features matched the cells with scan data exactly. This check could have failed; it shows the files are complete and line up with the scan. It says nothing about how good the features are.</p></div></div>
+  </div>
+</div></section>
+
+<section id="format"><div class="wrap">
+  <h2>Format</h2>
+  <p class="sub">One zarr v2 group. Index <code>i</code> covers scan voxels <code>[i &times; step, (i + 1) &times; step)</code> on every axis, from voxel 0.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Array</th><th>Shape (z, y, x, numbers)</th><th>One vector per</th><th>Stored as</th></tr></thead>
+    <tbody>
+      <tr><td><code>tokens_unit</code></td><td>2448 &times; 963 &times; 963 &times; 480</td><td>8 &times; 8 &times; 8 voxels</td><td>int8, chunks 24 &times; 12 &times; 12 &times; 480, zstd</td></tr>
+      <tr><td><code>dense</code></td><td>4896 &times; 1926 &times; 1926 &times; 64</td><td>4 &times; 4 &times; 4 voxels</td><td>int8, chunks 48 &times; 24 &times; 24 &times; 64, zstd</td></tr>
+      <tr><td><code>ink</code></td><td>4896 &times; 1926 &times; 1926 &times; 32</td><td>4 &times; 4 &times; 4 voxels</td><td>int8, zstd</td></tr>
+      <tr><td><code>*_scale</code></td><td colspan="3">float16, one per vector: vector = int8 values &times; scale; after that each vector has length one</td></tr>
+      <tr><td><code>.zattrs</code></td><td colspan="3">The model, its sha256, villa's commit, the tiling, the normalization statistics and the slabs present</td></tr>
+      <tr><td><code>index.json</code></td><td colspan="3">Chunk file counts (156,480 per array) and the z range</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Limits.</b> These are raw model output, and nobody has checked them by eye. They are features, not a reading of any text, and the <code>ink</code> head's numbers are not an ink map. Each 192-slice slab was embedded on its own, so values can step slightly at multiples of z 192. Only PHerc0841 is here; for another scan, run villa's <code>embed_volume.py</code> with the same model.</div>
+</div></section>
+
+<section id="credit"><div class="wrap">
+  <h2>Credit and terms</h2>
+  <p class="sub">The scan is <a href="https://scrollprize.org">Vesuvius Challenge</a> open data under CC BY-NC 4.0, and these features are shared under the same terms. The model is <a href="https://huggingface.co/scrollprize/dinovol_8um_ps192_102126">scrollprize/dinovol_8um_ps192_102126</a> and the code is dinovol in <a href="https://github.com/ScrollPrize/villa">ScrollPrize/villa</a> (MIT); credit to their authors. The features were computed and shared by Chase Hendrick.</p>
+  <h3>Cite</h3>
+  <div class="codebox"><pre id="cite">Chase Hendrick (2026). dinovol embeddings of the PHerc0841 scan.
+Hugging Face. https://huggingface.co/buckets/SharpMeow/dinovol-embeddings
+Computed with ScrollPrize/villa dinovol (4ea26d9c) and scrollprize/dinovol_8um_ps192_102126
+(teacher_step_640000.pt) on Vesuvius Challenge open data (CC BY-NC 4.0).</pre><button class="copy" data-copy="cite" type="button">Copy</button></div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>dinovol Embeddings, by Chase Hendrick &middot; <a href="https://huggingface.co/SharpMeow">huggingface.co/SharpMeow</a> &middot; <a href="https://github.com/ChaseHendrick/Scrolls">github.com/ChaseHendrick/Scrolls</a></span>
+  <span>Also: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields">Lasagna Fields</a> (PHerc0841 included) &middot; <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">center lines</a></span>
+</div></footer>
+<div class="toast" id="toast">Copied</div>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const H=D.shape[0],W=D.shape[1],Y0=D.box[0],X0=D.box[2];
+
+/* theme */
+(function(){let t=null;try{t=localStorage.getItem('dv-theme')}catch(e){}
+ if(t)document.documentElement.dataset.theme=t;
+ $('theme').onclick=()=>{const cur=document.documentElement.dataset.theme;const dark=cur?cur==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  const n=dark?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('dv-theme',n)}catch(e){}};})();
+
+/* hero: fade between features and CT */
+(function(){let on=0;const tags=['dense features, one slice','the CT it came from'];
+ if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ setInterval(()=>{on^=1;$('h1').style.opacity=on;$('htag').textContent=tags[on]},4200);})();
+
+/* copy buttons */
+document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;
+ navigator.clipboard&&navigator.clipboard.writeText($(b.dataset.copy).innerText).then(()=>{const t=$('toast');t.classList.add('on');setTimeout(()=>t.classList.remove('on'),1100)})});
+
+/* compare slider */
+(function(){const inp=$('cmpr-in'),set=v=>{$('cmptop').style.clipPath='inset(0 0 0 '+v+'%)';$('cmpbar').style.left=v+'%'};
+ inp.oninput=()=>set(inp.value);set(50);
+ document.querySelectorAll('[data-feat]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-feat]').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  $('cmptop').src='assets/'+b.dataset.feat+'.webp';$('cmpr').textContent=b.dataset.feat==='dense'?'dense as color':'features as color'})})();
+
+/* store snippet */
+const URL_=D.bucket;
+$('u2').innerHTML='import zarr\nfrom zarr.storage import FsspecStore\n\nURL = "'+URL_+'"\ng = zarr.open_group(FsspecStore.from_url(URL, read_only=True), mode="r", zarr_format=2)\nprint(g["tokens_unit"].shape, g["dense"].shape)';
+
+/* whole scan in color */
+(function(){const um=7.4928e-5,u=D.rgb;$('rgburl').textContent=u;
+ const st={dimensions:{x:[um,'m'],y:[um,'m'],z:[um,'m']},position:[540.5,480.5,1210.5],crossSectionScale:2,layout:'4panel',
+  layers:[{type:'image',name:'PHerc0841 dinovol color',source:{url:'zarr2://'+u,transform:{outputDimensions:{'c^':[1,''],z:[um,'m'],y:[um,'m'],x:[um,'m']}}},
+   shader:'void main(){emitRGB(vec3(toNormalized(getDataValue(0)),toNormalized(getDataValue(1)),toNormalized(getDataValue(2))));}'}]};
+ $('nglink').href='https://neuroglancer-demo.appspot.com/#!'+encodeURIComponent(JSON.stringify(st));})();
+
+/* download commands */
+(function(){const B='hf://buckets/SharpMeow/dinovol-embeddings/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr',d='pherc0841-dinovol.zarr';
+ $('dl1').innerHTML='B='+B+'\nU='+URL_+'\nD='+d+'\nmkdir -p $D/tokens_unit $D/tokens_unit_scale\nfor f in .zgroup .zattrs tokens_unit/.zarray tokens_unit_scale/.zarray; do\n  curl -sL $U/$f -o $D/$f\ndone\n<span class="c"># z 9,600 to 9,791, y 3,840 to 3,935, every x</span>\nhf buckets sync $B/tokens_unit/50/40 $D/tokens_unit/50/40\nhf buckets sync $B/tokens_unit_scale/50/40 $D/tokens_unit_scale/50/40';
+ $('dl2').innerHTML='B='+B+'\nU='+URL_+'\nD='+d+'\nmkdir -p $D && curl -sL $U/.zgroup -o $D/.zgroup && curl -sL $U/.zattrs -o $D/.zattrs\nhf buckets sync $B/tokens_unit $D/tokens_unit\nhf buckets sync $B/tokens_unit_scale $D/tokens_unit_scale';
+ $('dl3').innerHTML='hf auth login\nhf buckets sync '+B+' '+d;})();
+
+/* click-to-search */
+let V=null,IDX=null,POS=null,sims=null,sorted=null,cell=null,bg='ct';
+const cv=$('cv');cv.width=W;cv.height=H;const ctx=cv.getContext('2d');const img=ctx.createImageData(W,H);
+const stops=[[0,[90,40,200]],[.5,[230,60,140]],[1,[255,220,80]]];
+function ramp(t){for(let i=1;i<stops.length;i++){if(t<=stops[i][0]){const[a,ca]=stops[i-1],[b,cb]=stops[i],u=(t-a)/(b-a);return ca.map((c,k)=>c+(cb[k]-c)*u)}}return stops[stops.length-1][1]}
+async function load(){if(V)return;
+ const [a,b]=await Promise.all([fetch('assets/search.i8').then(r=>r.arrayBuffer()),fetch('assets/mask.u8').then(r=>r.arrayBuffer())]);
+ V=new Int8Array(a);const bits=new Uint8Array(b);IDX=new Int32Array(D.n);POS=new Int32Array(H*W).fill(-1);let n=0;
+ for(let p=0;p<H*W;p++){if(bits[p>>3]&(128>>(p&7))){IDX[n]=p;POS[p]=n;n++}}
+ sims=new Float32Array(D.n);$('smsg').style.display='none';
+ let p=POS[(H>>1)*W+(W>>1)]>=0?(H>>1)*W+(W>>1):IDX[D.n>>1];pick(Math.floor(p/W),p%W);}
+function pick(iy,ix){const p=iy*W+ix,q=POS[p];
+ if(q<0){$('rd').innerHTML='That point is outside the scroll. Pick one on the papyrus.';return}
+ cell=[iy,ix];const K=D.k,o=q*K,n=D.n;
+ for(let i=0;i<n;i++){let s=0;const b=i*K;for(let k=0;k<K;k++)s+=V[o+k]*V[b+k];sims[i]=s/16129}
+ sorted=Float32Array.from(sims).sort();draw();code();}
+function draw(){if(!cell)return;const pct=+$('pct').value,n=D.n;$('pctv').textContent=pct+'%';
+ const thr=sorted[Math.max(0,Math.floor(n*(1-pct/100)))],mx=sorted[n-2]||1;const d=img.data;d.fill(0);
+ for(let i=0;i<n;i++){const p=IDX[i]*4;if(sims[i]>=thr){const c=ramp(Math.min(1,(sims[i]-thr)/Math.max(1e-6,mx-thr)));d[p]=c[0];d[p+1]=c[1];d[p+2]=c[2];d[p+3]=235}else{d[p+3]=110}}
+ ctx.putImageData(img,0,0);
+ const[iy,ix]=cell;$('mark').innerHTML='<circle cx="'+(ix+.5)+'" cy="'+(iy+.5)+'" r="9" fill="none" stroke="#fff" stroke-width="2.5" vector-effect="non-scaling-stroke"/><circle cx="'+(ix+.5)+'" cy="'+(iy+.5)+'" r="2" fill="#fff"/>';
+ const y=(Y0/8+iy)*8,x=(X0/8+ix)*8;
+ $('rd').innerHTML='Point <b>z '+fmt(D.z)+', y '+fmt(y)+', x '+fmt(x)+'</b> (scan voxels). Lit: the top '+pct+'%, '+fmt(n*pct/100)+' cubes, similarity above '+thr.toFixed(2)+'.';}
+function code(){const[iy,ix]=cell,y=(Y0/8+iy)*8,x=(X0/8+ix)*8;
+ $('pcode').innerHTML='import numpy as np\nimport zarr\nfrom zarr.storage import FsspecStore\n\nURL = "'+URL_+'"\ng = zarr.open_group(FsspecStore.from_url(URL, read_only=True), mode="r", zarr_format=2)\ntok, sc = g["tokens_unit"], g["tokens_unit_scale"]\n\nz, y, x = '+D.z+', '+y+', '+x+'   <span class="c"># the point you clicked, in scan voxels</span>\ni, j, k = z // 8, y // 8, x // 8\nq = tok[i, j, k].astype(np.float32) * sc[i, j, k]\n\nr = 64   <span class="c"># cells each side: 128 x 128 cells, about 10 mm square</span>\nbox = tok[i, j - r:j + r, k - r:k + r].astype(np.float32) * sc[i, j - r:j + r, k - r:k + r][..., None]\nsim = box @ q   <span class="c"># cosine similarity of every cell to your point</span>\nprint(sim.shape, round(float(sim.max()), 3), round(float(np.percentile(sim, 95)), 3))';}
+const stage=$('stage');let down=false,raf=0;
+function at(e){const r=stage.getBoundingClientRect();return[Math.min(H-1,Math.max(0,Math.floor((e.clientY-r.top)/r.height*H))),Math.min(W-1,Math.max(0,Math.floor((e.clientX-r.left)/r.width*W)))]}
+stage.addEventListener('pointerdown',e=>{if(!V)return;down=true;stage.setPointerCapture(e.pointerId);pick(...at(e))});
+stage.addEventListener('pointermove',e=>{if(!down||!V||raf)return;raf=requestAnimationFrame(()=>{raf=0;pick(...at(e))})});
+stage.addEventListener('pointerup',()=>{down=false});
+$('pct').oninput=draw;
+document.querySelectorAll('[data-bg]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-bg]').forEach(x=>x.setAttribute('aria-pressed',x===b));$('sbg').src='assets/'+b.dataset.bg+'.webp'});
+$('acc').textContent='The page compares '+D.k+' numbers per cube instead of 480: the slice\'s '+D.k+' main directions. On '+D.queries+' random points its similarity tracked the full 480-number similarity with a median correlation of '+D.r_median+' (lowest '+D.r_min+'), and its top 5% shared a median '+Math.round(D.top5_median*100)+'% of cubes with the full top 5%. The Python below uses all 480.';
+new IntersectionObserver((es,o)=>{if(es.some(e=>e.isIntersecting)){o.disconnect();load().catch(()=>{$('smsg').textContent='Could not load the features.'})}},{rootMargin:'400px'}).observe(stage);
+</script>
+</body>
+</html>

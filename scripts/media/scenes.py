@@ -795,3 +795,69 @@ def build_panels(p, W, H, seed):
         cam.focus = float(np.linalg.norm(np.asarray(p["focus"]) - cam.eye))
     return Scene(cam, surfaces, bounds=((-6, 0, -5), (6, 3, 3)), dof=p.get("dof", 0.25), bloom=0.25, fog=0.01,
                  spot=tuple(p.get("spot", [[-1.0, 1.0, 0.5], 6.0])), key_power=2.2, cavity=0.0)
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Headless VC3D for agents: a scan cube, and a traced surface leaving it as a copper mesh on a papyrus sheet.
+
+
+@scene
+def build_vc3dagent(p, W, H, seed):
+    """A floating scan cube cut by slices of curved papyrus layers, and from inside it a sheet running out along the
+    diagonal: papyrus underneath, a copper surface grid traced over it that fades toward the far end, and a row of
+    small copper beads riding a thin line above it, as calls and results pass between an agent and the tools.
+    Synthetic fields only: no scan, no ink, no letters."""
+    surfaces = []
+    center = p.get("center", [-1.7, 1.25, 0.7])
+    main = oriented(center, yaw=p.get("yaw", 32), pitch=6, scale=1.0)
+    surfaces += cube_part(main, seed, size=0.95, detail=1.4, edge_glow=0.3, slices=("sheets", "sheets", "speckle"))
+    x0, x1, width = -0.4, p.get("run", 6.6), p.get("width", 1.6)
+    tilt = math.radians(p.get("tilt", 8.0))
+    place = placer(p.get("rot", -20.0), (center[0], 0.0, center[2]))
+
+    def sheet_y(x, z, h=0.0):
+        rise = 1.15 * np.exp(-((x - x0) / 2.2) ** 2)        # leaves the cube's middle, settles toward the floor
+        return 0.08 + rise + 0.07 * np.sin(x * 1.3 + 0.6) + h - z * math.tan(tilt)
+
+    def spos(u, v, h=0.0):
+        x = x0 + u * (x1 - x0)
+        z = (v - 0.5) * width
+        return place(np.stack([x, sheet_y(x, z, h), z], axis=1).astype(np.float32))
+
+    def pmat(u, v, P, N):
+        alb, height = papyrus(u * (x1 - x0), v * width, seed, scale=0.45, tone=1.4, char=0.35)
+        k = len(u)
+        keep = ragged(u, v, amount=0.012, seed=seed + 2, freq=24.0)
+        return {"albedo": alb, "keep": keep, "metal": np.zeros(k, np.float32), "shine": np.full(k, 14.0, np.float32),
+                "spec": np.full(k, 0.12, np.float32), "rim": np.full(k, 1.0, np.float32)}
+
+    surfaces.append(Surface(spos, pmat, tiles=(260, 30), density=0.7))
+
+    def gmat(u, v, P, N):
+        lines = grid_lines(u * (x1 - x0), v * width, 1 / 0.18, 1 / 0.18, 0.04)
+        fade = smoothstep(1.0, 0.45, u) * smoothstep(0.0, 0.06, u)
+        keep = lines & (fbm(u * 9, v * 9, 2, seed + 3) < 0.25 + 0.75 * fade)
+        k = len(u)
+        return {"albedo": np.broadcast_to(L_COPPER * 1.1, (k, 3)), "keep": keep, "metal": np.ones(k, np.float32),
+                "shine": np.full(k, 50.0, np.float32), "spec": np.full(k, 0.9, np.float32),
+                "emit": (L_COPPER * 0.9)[None, :] * fade[:, None], "rim": np.full(k, 1.5, np.float32)}
+
+    surfaces.append(Surface(lambda u, v: spos(u, v, 0.012), gmat, tiles=(260, 30), density=0.6, cast=False,
+                            shadow=False))
+    lift = p.get("line_lift", 0.62)
+    line = lambda t: spos(np.asarray(t, np.float32) * 0.92 + 0.05, np.full_like(np.asarray(t, np.float32), 0.5), lift)
+    surfaces.append(tube(line, 0.008, copper_metal(glow=1.1), shadow=False))
+    for i in range(p.get("beads", 7)):
+        c = line(np.array([0.06 + i * 0.13], np.float32))[0]
+
+        def bpos(u, v, c=c, r=0.05 + 0.012 * (i % 3)):
+            th, ph = u * 2 * np.pi, v * np.pi
+            return (c[None, :] + r * np.stack([np.sin(ph) * np.cos(th), np.cos(ph), np.sin(ph) * np.sin(th)],
+                                              axis=1)).astype(np.float32)
+
+        surfaces.append(Surface(bpos, copper_metal(glow=1.6 if i % 2 else 0.9), tiles=(18, 12), density=0.7,
+                                shadow=False, cast=False))
+    cam = Camera(p.get("eye", [-4.2, 2.3, 8.2]), p.get("target", [1.4, 0.8, -0.9]), p.get("fov", 21), W, H)
+    cam.focus = float(np.linalg.norm(np.array(center) - cam.eye))
+    return Scene(cam, surfaces, bounds=((-5, 0, -6), (8, 3, 3)), dof=p.get("dof", 0.09), bloom=0.4, fog=0.012,
+                 spot=((-1.2, 1.2, 0.6), 6.5), key_power=p.get("key_power", 3.4))

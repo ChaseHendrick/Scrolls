@@ -31,6 +31,8 @@ Ink Bench scores an ink map of one PHerc0139 winding against the published 2.4 u
 
 What it does not do: every ink layer is model output, not a reading. Letters visible in a layer are candidates for expert reading, never a reading by themselves. Ink Bench scores agreement with another model's output (the published ink detection), not ground truth, and on PHerc0139 that is not held-out ground for `ink_9um` (w045, for one, is not held out from it). Unroll does not trace, render or run ink detection itself; the layers are precomputed.
 
+Since 1.6.0 (24 Oct 2026) the Embed sheet (the </> button, linked from About) also has Connect your tool: the open-data URLs behind every layer with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer and curl, and links to the page's own API ([spaceconnect](spaceconnect.md)).
+
 ## When to use it
 
 - To see a scroll's traced windings, how they nest and how they unroll, without installing anything.
@@ -275,6 +277,7 @@ No tests in this repository, and none run for this page. The Space's `tests/` fo
 
 ## History
 
+- 2026-10-24: 1.6.0 on the Space (from Space commit `e31bb23`): Connect your tool in the Embed sheet, `connect.json` and `CONNECT.md`; spec in this repository's `spaces/connect/unroll/`.
 - 2026-10-16: release entry and guide updated to version 1.5.0, its other scrolls and the CT tools (`b0913b4`).
 - 2026-10-16: Install app link, offline app since 1.1.0 (`cf72eb1`, PR #98).
 - 2026-10-16: ink-layer wording: "candidates for expert reading" (`628f14f`, PR #97).

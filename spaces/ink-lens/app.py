@@ -61,7 +61,9 @@ def log(message):
 def _load():
     global ENGINE, ENGINE_ERROR
     try:
-        ENGINE = engine.Engine(readers=tuple(engine.READERS))
+        # On ZeroGPU the readers stay on the CPU here: this thread is outside every spaces.GPU call, so moving them to
+        # "cuda" reaches torch's low-level CUDA init, which ZeroGPU refuses. run() moves them inside the GPU call.
+        ENGINE = engine.Engine(readers=tuple(engine.READERS), place_on_cuda=not ON_ZERO_GPU)
         log(f"readers ready in {ENGINE.startup_s} s")
     except Exception as exc:  # noqa: BLE001
         ENGINE_ERROR = f"{type(exc).__name__}: {exc}"
@@ -334,6 +336,9 @@ def build_demo():
                 windows = gr.Radio([3, 1], value=3, label="Depth windows")
                 with gr.Accordion("For agents and scripts", open=False):
                     gr.Markdown(AGENTS)
+                with gr.Accordion("Connect your tool", open=False):
+                    # The data's URLs and ready snippets, made by python -m kit spaceconnect render from connect.json
+                    gr.HTML((HERE / "connect.html").read_text() if (HERE / "connect.html").exists() else "")
             with gr.Column(scale=3, min_width=320):
                 img = gr.Image(label="Middle CT layer, kept ink in amber", type="numpy", format="png")
                 md = gr.Markdown("Choose a sample or upload a region, then run.")

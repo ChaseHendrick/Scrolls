@@ -76,7 +76,7 @@
   "center-finder": {
    "line": 280,
    "sources": {
-    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+    "docs/tools/umbilicus.md": "73fc54d683265f4d878044eda19c66d85712da42e1b24e651adc7765c68a9c88"
    }
   },
   "cross-trace-agreement-suggests-a-label-free-triage": {
@@ -141,6 +141,19 @@
     "r:results/3": "3f48361fb2b15ae982f21b19b5294cc1cd813d341a8bd01e60931544126f9abb",
     "docs/logs/2026-10-08-w045-not-held-out.md": "c89c8cc963eaa8bea9045faa4b7f332daaf927971d33d09951c6ecabc0e2ce3a"
    }
+  },
+  "our-letter-classifier-trained-on-hell-char-only": {
+   "line": 348,
+   "sources": {
+    "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md": "1ec13488674df4cc5b987ed1dc9f81b9c1d2f7347bb61b6790eedb769bc4a4c3"
+   }
+  },
+  "our-letter-classifier-trained-on-hell-char-only-2": {
+   "line": 14,
+   "sources": {
+    "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md": "1ec13488674df4cc5b987ed1dc9f81b9c1d2f7347bb61b6790eedb769bc4a4c3"
+   },
+   "doc": "docs/FINDINGS.md"
   },
   "partial-results-the-pherc1447-fine-tune-on-w00": {
    "line": 303,
@@ -248,7 +261,7 @@
   "the-center-finder-s-held-out-lines-sit": {
    "line": 9,
    "sources": {
-    "docs/tools/umbilicus.md": "57638cd397a68d65a67033b471414ccb4ac9fd9c1652a319101e47f5081db2fe"
+    "docs/tools/umbilicus.md": "73fc54d683265f4d878044eda19c66d85712da42e1b24e651adc7765c68a9c88"
    },
    "doc": "docs/FINDINGS.md"
   },

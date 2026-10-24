@@ -12,7 +12,6 @@ import base64
 import collections
 import functools
 import gzip
-import itertools
 import json
 import os
 import sys
@@ -134,21 +133,22 @@ def _is_gpu_refusal(exc):
             or "No GPU was available" in str(exc))
 
 
-def cpu_run(eng, cube, layers):
+def cpu_run(eng, cube, layers, focus=None):
     if not CPU_SLOT.acquire(blocking=False):
         raise LensError("the Space's CPU is busy with another fallback run; try again in a minute, or sign in to "
                         "Hugging Face for more ZeroGPU time")
     try:
         import torch
         torch.set_num_threads(max(1, (os.cpu_count() or 2) - 1))     # leave a core for the page
-        return eng.run(_center(cube, CPU_SIZE), layers, device="cpu", tta=False)
+        return eng.run(_window(cube, CPU_SIZE, focus), layers, device="cpu", tta=False)
     finally:
         CPU_SLOT.release()
 
 
-def run_models(cube, layers, tta, allow_cpu=True):
-    """Run on the GPU when there is one; on ZeroGPU fall back to the CPU when the GPU is refused. Returns the result
-    and a note for the visitor (empty when it ran as asked)."""
+def run_models(cube, layers, tta, allow_cpu=True, focus=None):
+    """Run on the GPU when there is one; on ZeroGPU fall back to the CPU when the GPU is refused, on the CPU_SIZE
+    window around `focus` (the point, in cube voxels; see window_offset). Returns the result and a note for the
+    visitor (empty when it ran as asked)."""
     eng = engine()
     import torch
     if ON_ZERO_GPU:
@@ -162,16 +162,16 @@ def run_models(cube, layers, tta, allow_cpu=True):
                 raise
             if not allow_cpu:
                 raise LensError(f"ZeroGPU refused this call: {_gpu_text(exc)[:300]} Pass allow_cpu=True to run "
-                                f"the middle {CPU_SIZE}³ on the CPU instead.") from None
+                                f"the {CPU_SIZE}³ around the point on the CPU instead.") from None
             log(f"GPU refused ({exc}); running on the CPU")
             note = (f"ZeroGPU refused the run ({_gpu_text(exc).rstrip('. ')[:200]}), so the models ran on the "
-                    f"Space's CPU, on the middle {CPU_SIZE}³ voxels. ZeroGPU time comes back each day; signing in "
-                    "to Hugging Face gives more.")
-            return cpu_run(eng, cube, layers), note
+                    f"Space's CPU, on the {CPU_SIZE}³ voxels around your point. ZeroGPU time comes back each day; "
+                    "signing in to Hugging Face gives more.")
+            return cpu_run(eng, cube, layers, focus), note
     device = "cuda" if torch.cuda.is_available() else "cpu"
     if device == "cpu" and cube.shape[0] > CPU_SIZE:
-        return (cpu_run(eng, cube, layers),
-                f"No GPU here, so the models ran on the CPU on the middle {CPU_SIZE}³ voxels.")
+        return (cpu_run(eng, cube, layers, focus),
+                f"No GPU here, so the models ran on the CPU on the {CPU_SIZE}³ voxels around your point.")
     return eng.run(cube, layers, device=device, tta=tta), ""
 
 
@@ -212,11 +212,24 @@ class one_run:
         return False
 
 
-def _center(cube, size):
-    if cube.shape[0] <= size:
-        return cube
-    o = (cube.shape[0] - size) // 2
-    return cube[o:o + size, o:o + size, o:o + size]
+def window_offset(size, n, focus=None):
+    """Where the CPU fallback's n³ window sits in a size³ cube: around `focus` (the point, in cube voxels), on the
+    8-voxel patch grid and inside the cube, so the point is always in it (near a scan's edge the cube is not centered
+    on the point); the middle when no point is given."""
+    if n >= size:
+        return (0, 0, 0)
+    if focus is None:
+        return ((size - n) // 2,) * 3
+    return tuple(int(min(max((int(f) - n // 2) // lens.PATCH * lens.PATCH, 0), size - n)) for f in focus)
+
+
+def _window(cube, n, focus=None):
+    o = window_offset(cube.shape[0], n, focus)
+    return cube[o[0]:o[0] + n, o[1]:o[1] + n, o[2]:o[2] + n]
+
+
+def _local(point, origin):
+    return tuple(int(p) - int(o) for p, o in zip(point, origin))
 
 
 # ---------------------------------------------------------------- cubes in memory
@@ -410,18 +423,30 @@ def new_view(cube, point, source, note="", title=None, request_size=None, cube_i
 
 
 def empty_state():
-    return {"view": None, "pos": [], "neg": [], "rev": 0}
+    return {"view": None, "pos": [], "neg": [], "acked": [], "keys": [], "view_ticket": 0, "rev": 0}
 
 
-REVS = itertools.count(1)           # one increasing revision for every answer, so the viewer keeps only the newest
+_REV_LOCK = threading.Lock()
+_LAST_REV = [0]
 
 
 def next_rev():
-    return next(REVS)
+    """A number larger than every one before, also across restarts of the Space (microseconds since 1970, below
+    2**53 so the browser reads it exactly). Every answer to the viewer carries one, and the viewer shows only the
+    newest; opens take one as their ticket (show_view)."""
+    with _REV_LOCK:
+        _LAST_REV[0] = max(_LAST_REV[0] + 1, time.time_ns() // 1000)
+        return _LAST_REV[0]
 
 
 def cube_key(view):
     return f"{view['volume']}:{','.join(map(str, view['origin']))}:{view['size']}"
+
+
+def place_of(cube):
+    """cube_key for a cube in CUBES (its scan, origin and size), for clicks on a cube no longer on screen."""
+    origin = [int(v) for v in cube.meta["cube_origin_zyx"]]
+    return f"{cube.meta['volume']}:{','.join(map(str, origin))}:{cube.size}"
 
 
 def click_concept(state):
@@ -481,6 +506,134 @@ def ack_only(key, clicks):
     """A viewer answer that only acknowledges click ids, for clicks the server cannot use (viewer.js onValue)."""
     return json.dumps({"key": key, "rev": next_rev(), "ack_only": True,
                        "clicks": {"acked": [str(c.get("id")) for c in clicks]}})
+
+
+# ---------------------------------------------------------------- a visitor's page state, changed in place
+#
+# Gradio hands every event of one visitor the same state dict, and keeps whatever the event returns. An event that
+# rebuilt the dict from what it read when it started would put that old copy back when it finished late: clicks made
+# during a 20-second model run would be lost, and a click answered after the visitor opened another cube would bring
+# the old cube back. So the page events change that one dict in place, under STATE_LOCK, only once their slow part
+# (reading a cube, the models) is done, and the viewer orders their answers by revision.
+
+STATE_LOCK = threading.RLock()
+KEEP_KEYS = 16                      # the cubes a page has shown that its clicks may still name
+KEEP_ACKS = 256
+
+
+def snapshot(state, rev=True):
+    """A copy of the visitor's state to draw from (viewer_value, numbers, save_files), with a new revision."""
+    with STATE_LOCK:
+        if rev:
+            state["rev"] = next_rev()
+        return dict(state, pos=list(state["pos"]), neg=list(state["neg"]), acked=list(state.get("acked", [])),
+                    keys=list(state.get("keys", [])))
+
+
+def show_view(state, view, ticket, force=False):
+    """Put `view` on screen unless the visitor has since opened another cube (a later ticket, from next_rev when
+    the open began). A finished model run always shows (`force`): it spent the visitor's GPU time. Returns whether
+    `view` is on screen now."""
+    with STATE_LOCK:
+        if not force and ticket < state.get("view_ticket", 0):
+            return False
+        state["view"] = view
+        state["view_ticket"] = max(ticket, state.get("view_ticket", 0))
+        state["keys"] = ([k for k in state.get("keys", []) if k != view["cache"]] + [view["cache"]])[-KEEP_KEYS:]
+        return True
+
+
+def _ack(state, ids):
+    acked = list(state.get("acked", []))
+    seen = set(acked)
+    acked += [i for i in dict.fromkeys(str(i) for i in ids) if i not in seen]
+    state["acked"] = acked[-KEEP_ACKS:]                 # in arrival order: the newest ids stay
+
+
+def take_clicks(state, key, clicks):
+    """Add the viewer's clicks on the cube `key` (a CUBES key) to the visitor's concept. The viewer resends every
+    click until it is acknowledged, so the ids stop a click counting twice; a click on a cube this page has moved on
+    from still counts (a concept spans cubes) but never brings that cube back. Returns (taken, problem): whether the
+    clicks could be used, and why some were refused."""
+    with STATE_LOCK:
+        view = state["view"]
+        known = key in state.get("keys", []) or (view is not None and key == view["cache"])
+    if not known:
+        with STATE_LOCK:
+            _ack(state, [c.get("id") for c in clicks])
+        return False, "This cube is no longer in this page's session; open it again to search it."
+    try:
+        cube = CUBES.get(key)               # a gallery cube reloads from disk; a run cube may have dropped out
+    except LensError as exc:
+        with STATE_LOCK:
+            _ack(state, [c.get("id") for c in clicks])
+        return False, str(exc)
+    place, problem = place_of(cube), None
+    with STATE_LOCK:
+        seen = set(state.get("acked", []))
+        for click in clicks:
+            cid = str(click.get("id"))
+            if cid in seen:
+                continue
+            seen.add(cid)
+            _ack(state, [cid])              # acknowledged even when refused, so the viewer does not resend it
+            if len(state["pos"]) + len(state["neg"]) >= MAX_CLICKS:
+                problem = f"a page keeps at most {MAX_CLICKS} clicks; clear some to add more"
+                continue
+            try:
+                vox = [int(v) for v in click.get("index")]
+                if len(vox) != 3 or not all(0 <= v < cube.size for v in vox):
+                    raise LensError("that click is outside the cube")
+                vec = cube.vector(vox)
+            except (TypeError, ValueError, LensError) as exc:
+                problem = str(exc) if isinstance(exc, LensError) else "a click needs a voxel z, y, x"
+                continue
+            kind = "neg" if click.get("value") == "neg" else "pos"
+            origin = [int(v) for v in cube.meta["cube_origin_zyx"]]
+            state["tick"] = state.get("tick", 0) + 1
+            state[kind] = state[kind] + [{"id": cid, "volume": cube.meta["volume"], "cube": place, "voxel": vox,
+                                          "t": state["tick"], "voxel_zyx": [v + o for v, o in zip(vox, origin)],
+                                          "vec": vec}]
+    return True, problem
+
+
+def undo_click(state, cid=None):
+    """Forget the click with id `cid` (one still on its way is dropped when it arrives), or else the most recent
+    click (More like this or Not this) on any cube."""
+    with STATE_LOCK:
+        if cid:
+            cid = str(cid)
+            for kind in ("pos", "neg"):
+                if any(c.get("id") == cid for c in state[kind]):
+                    state[kind] = [c for c in state[kind] if c.get("id") != cid]
+                    return
+            _ack(state, [cid])
+            return
+        clicks = [(c.get("t", 0), kind, i) for kind in ("pos", "neg") for i, c in enumerate(state[kind])
+                  if c["cube"] != "file"]
+        if not clicks:
+            raise LensError("no click to undo")
+        _, kind, i = max(clicks)
+        state[kind] = state[kind][:i] + state[kind][i + 1:]
+
+
+def clear_clicks(state, ids=()):
+    """Forget every click and loaded concept; `ids` are clicks the viewer sent but has no answer for yet, dropped
+    when they arrive."""
+    with STATE_LOCK:
+        state["pos"], state["neg"] = [], []
+        _ack(state, list(ids)[:KEEP_ACKS])
+
+
+def set_concept(state, pos, neg):
+    """Replace the visitor's clicks with a loaded concept.npy (and concept_not.npy), or with `pos` and `neg` None
+    drop the loaded files and keep the clicks."""
+    with STATE_LOCK:
+        if pos is None:
+            state["pos"] = [c for c in state["pos"] if c["cube"] != "file"]
+            state["neg"] = [c for c in state["neg"] if c["cube"] != "file"]
+        else:
+            state["pos"], state["neg"] = list(pos), list(neg)
 
 
 # ---------------------------------------------------------------- drawing on the server (the agent tools)
@@ -640,11 +793,12 @@ def run_cube(vid, z, y, x, size, layers, tta, allow_cpu=True):
     origin = lens.cube_origin(vid, point, size)
     ct = lens.read_cube(vid, origin, size)
     fg = lens.check_cube(ct)
-    result, note = run_models(ct, layers, bool(tta), allow_cpu=allow_cpu)
+    focus = _local(point, origin)
+    result, note = run_models(ct, layers, bool(tta), allow_cpu=allow_cpu, focus=focus)
     n = ran_size(result)
-    if n != size:                                  # the CPU fallback ran the middle of the cube
-        origin = tuple(int(o + (size - n) // 2) for o in origin)
-        fg = lens.foreground(_center(ct, n))
+    if n != size:                                  # the CPU fallback ran the window around the point
+        origin = tuple(int(o + d) for o, d in zip(origin, window_offset(size, n, focus)))
+        fg = lens.foreground(_window(ct, n, focus))
     src = "gpu" if str(result.get("device", "")).startswith("cuda") else "cpu"
     meta = lens.receipt(vid, origin, n, point, result, eng.describe(),
                         {"source": src, "note_run": note, "foreground": round(fg, 4), "requested_size": size})
@@ -789,9 +943,9 @@ def tool_new_view(vid, origin, size, point, cube, result, source, note=""):
     """Everything the agent tools need about one cube: the scan cube and all arrays (kept in VIEW_CACHE, three at a
     time). The page keeps its cubes in CUBES instead."""
     import numpy as np
-    if cube.shape[0] != size:                      # the CPU fallback ran a smaller cube at the center
-        o = (size - cube.shape[0]) // 2
-        origin = tuple(int(v + o) for v in origin)
+    if cube.shape[0] != size:                      # the CPU fallback ran a smaller cube around the point
+        off = window_offset(size, cube.shape[0], _local(point, origin))
+        origin = tuple(int(v + d) for v, d in zip(origin, off))
         size = int(cube.shape[0])
     nz = cube[cube > 0]
     lo, hi = (np.percentile(nz, (0.5, 99.5)) if nz.size else (0, 255))
@@ -829,9 +983,9 @@ def tool_load_point(vid, z, y, x, size, layers, tta):
     origin = lens.cube_origin(vid, point, size)
     cube = lens.read_cube(vid, origin, size)
     lens.check_cube(cube)
-    result, note = run_models(cube, layers, tta)
+    result, note = run_models(cube, layers, tta, focus=_local(point, origin))
     src = "gpu" if result.get("device", "").startswith("cuda") else "cpu"
-    ran = _center(cube, ran_size(result))      # the CPU fallback runs the middle of the cube
+    ran = _window(cube, ran_size(result), _local(point, origin))      # the CPU fallback runs around the point
     return tool_new_view(vid, origin, size, point, np.ascontiguousarray(ran), result, src, note)
 
 
@@ -889,7 +1043,7 @@ def look(vid: str, z: int, y: int, x: int, size: int = 256, layers: str = "dino,
         layers: comma-separated models to run: dino, ink, surface.
         tta: average the eight mirrorings for ink and surface (8 times their GPU time).
         compact: keep 128 components of each embedding and 16 levels of each probability (about a quarter the size).
-        allow_cpu: when ZeroGPU refuses, run the middle 128 cube on the Space's CPU instead of failing.
+        allow_cpu: when ZeroGPU refuses, run the 128 cube around the point on the Space's CPU instead of failing.
 
     Returns:
         The .npz file.
@@ -903,10 +1057,11 @@ def look(vid: str, z: int, y: int, x: int, size: int = 256, layers: str = "dino,
     origin = lens.cube_origin(vid, point, size)
     cube = lens.read_cube(vid, origin, size)
     lens.check_cube(cube)
-    result, note = run_models(cube, layers, tta, allow_cpu=allow_cpu)
+    focus = _local(point, origin)
+    result, note = run_models(cube, layers, tta, allow_cpu=allow_cpu, focus=focus)
     n = ran_size(result)
-    if n != size:
-        origin = tuple(int(o + (size - n) // 2) for o in origin)
+    if n != size:                                  # the CPU fallback ran the window around the point
+        origin = tuple(int(o + d) for o, d in zip(origin, window_offset(size, n, focus)))
     meta = lens.receipt(vid, origin, n, point, result, ENGINE.describe(), {"source": "api", "note_run": note,
                                                                           "foreground": lens.foreground(cube)})
     if "grid" in result and "ink" in result:
@@ -1252,6 +1407,8 @@ Model output, not a reading. Scroll Lens reads only the twelve listed scans, non
 Grand Prize.
 """
 
+CONNECT_HTML = Path(__file__).with_name("connect.html")
+
 CSS = """
 #sl-gpick input { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #sl-gpick [role=option] { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -1285,7 +1442,9 @@ footer.sl-credit { text-align:center; color: var(--body-text-color-subdued); fon
 #sl-viewer-html .slv-view input[type=range] { width:100%; }
 #sl-viewer-html .slv-more { display:flex; flex-direction:column; gap:6px; }
 #sl-viewer-html .slv-more > summary { cursor:pointer; color: var(--body-text-color-subdued); font-size:.84rem; }
-@media (min-width: 601px) { #sl-viewer-html .slv-more > summary { display:none !important; } }
+/* Wide screens hide the summary only while the controls are open: a page opened narrow (closed) and then widened
+   keeps its way back to them. */
+@media (min-width: 601px) { #sl-viewer-html .slv-more[open] > summary { display:none !important; } }
 #sl-viewer-html .slv-views[hidden], #sl-viewer-html .slv-3d[hidden] { display:none !important; }
 #sl-viewer-html .slv-3d { display:flex; flex-direction:column; gap:6px; }
 #sl-viewer-html .slv-3d-canvas { display:block; width:100%; border-radius:6px; background:#0b0f14; touch-action:none; cursor:grab; }
@@ -1373,25 +1532,30 @@ def build_demo():
             return wrapped
         return deco
 
-    def shown(state):
-        return [state, viewer_value(state), numbers(state)]
+    def shown(state):                 # the visitor's own state dict, and what the viewer and the text show of it
+        snap = snapshot(state)
+        return [state, viewer_value(snap), numbers(snap)]
 
     def fresh():                      # a new cube: clear the old saved files and receipt
         return [None, None]
 
     @soft(5)
     def on_run(vid, z, y, x, size, layers, tta, state, request: gr.Request):
+        ticket = next_rev()
         with one_run(request):
             view = load_point(vid, z, y, x, size, layers, tta)
-        state = dict(state, view=view, rev=next_rev())
+        show_view(state, view, ticket, force=True)
         return shown(state) + fresh()
 
     def open_gallery(cube_id, state):
         if not cube_id:
             raise LensError("pick a gallery cube")
-        state = dict(state, view=load_gallery(cube_id), rev=next_rev())
-        p = state["view"]["point"]
-        return shown(state) + fresh() + [state["view"]["volume"], p[0], p[1], p[2], state["view"]["size"], cube_id]
+        ticket = next_rev()
+        view = load_gallery(cube_id)
+        if not show_view(state, view, ticket):
+            return [gr.skip()] * 11           # the visitor opened another cube meanwhile, and that one stays
+        p = view["point"]
+        return shown(state) + fresh() + [view["volume"], p[0], p[1], p[2], view["size"], cube_id]
 
     @soft(11)
     def on_gallery(cube_id, state):
@@ -1418,74 +1582,34 @@ def build_demo():
     def on_viewer_select(state, evt: gr.EventData):
         """Clicks from the viewer: {"key": cube, "clicks": [{"id", "index": [z, y, x], "value": "pos" or "neg"}]}.
         The viewer sends every click the server has not yet acknowledged, so none is lost when two arrive while one
-        is being handled; the ids keep a resent click from counting twice."""
+        is being handled (take_clicks)."""
         data = getattr(evt, "_data", None) or {}
         key = str(data.get("key") or "")
-        clicks = (data.get("clicks") or [])[:64]
-        view = state["view"]
-        if (view is None or key != view["cache"]) and key.startswith("gallery:"):
-            try:                            # the session expired, or another tab moved on: the browser shows this cube
-                view = load_gallery(key.split(":", 1)[1])
-                state = dict(state, view=view, pos=[], neg=[], acked=[])
-            except LensError:
-                view = None
-        if view is None or key != view["cache"]:
-            gr.Warning("This cube is no longer in this page's session; open it again to search it.")
-            return [state, ack_only(key, clicks), gr.skip()]
-        state = dict(state, pos=list(state["pos"]), neg=list(state["neg"]))
-        acked = list(state.get("acked", []))
-        seen = set(acked)
-        problem = None
-        try:
-            cube = cube_of(view)
-        except LensError as exc:            # a run cube the Space no longer holds: say so once, take no clicks
-            cube, problem = None, str(exc)
-        for click in clicks:
-            cid = str(click.get("id"))
-            if cid in seen:
-                continue
-            seen.add(cid)                   # acknowledged even when refused, so the viewer does not resend it
-            acked.append(cid)
-            if cube is None:
-                continue
-            if len(state["pos"]) + len(state["neg"]) >= MAX_CLICKS:
-                problem = f"a page keeps at most {MAX_CLICKS} clicks; clear some to add more"
-                continue
+        clicks = [c for c in (data.get("clicks") or [])[:64] if isinstance(c, dict)]
+        if state["view"] is None and key.startswith("gallery:"):
+            ticket = next_rev()             # the session expired while the browser kept showing this gallery cube
             try:
-                vox = [int(v) for v in click.get("index")]
-                if len(vox) != 3 or not all(0 <= v < view["size"] for v in vox):
-                    raise LensError("that click is outside the cube")
-                vec = cube.vector(vox)
-            except (TypeError, ValueError, LensError) as exc:
-                problem = str(exc) if isinstance(exc, LensError) else "a click needs a voxel z, y, x"
-                continue
-            kind = "neg" if click.get("value") == "neg" else "pos"
-            state["tick"] = state.get("tick", 0) + 1
-            state[kind].append({"volume": view["volume"], "cube": cube_key(view), "voxel": vox, "t": state["tick"],
-                                "voxel_zyx": [int(v + o) for v, o in zip(vox, view["origin"])], "vec": vec})
-        state["acked"] = acked[-256:]       # in arrival order: the newest ids stay
-        state["rev"] = next_rev()
+                show_view(state, load_gallery(key.split(":", 1)[1]), ticket)
+            except LensError:
+                pass
+        taken, problem = take_clicks(state, key, clicks)
         if problem:
             gr.Warning(problem)
-        if cube is None:
+        if not taken:
             return [state, ack_only(key, clicks), gr.skip()]
         return shown(state)
 
     @soft(3)
-    def on_undo(state):
-        """Forget the most recent click (More like this or Not this) on any cube."""
-        clicks = [(c.get("t", 0), kind, i) for kind in ("pos", "neg") for i, c in enumerate(state[kind])
-                  if c["cube"] != "file"]
-        if not clicks:
-            raise LensError("no click to undo")
-        _, kind, i = max(clicks)
-        state = dict(state, rev=next_rev())
-        state[kind] = state[kind][:i] + state[kind][i + 1:]
+    def on_undo(state, evt: gr.EventData):
+        """Forget a click: the one the viewer names (it may still be on its way), else the most recent on any cube."""
+        data = getattr(evt, "_data", None) or {}
+        undo_click(state, data.get("id"))
         return shown(state)
 
     @soft(3)
-    def on_clear(state):
-        state = dict(state, pos=[], neg=[], rev=next_rev())
+    def on_clear(state, evt: gr.EventData):
+        data = getattr(evt, "_data", None) or {}
+        clear_clicks(state, [str(i) for i in (data.get("ids") or []) if isinstance(i, (str, int))])
         return shown(state)
 
     @soft(5)
@@ -1501,8 +1625,7 @@ def build_demo():
         """Load concept.npy, and concept_not.npy with it if you have one: they replace your clicks."""
         paths = [p for p in (paths if isinstance(paths, list) else [paths]) if p]
         if not paths:                         # the file was removed: drop the loaded concept, keep the clicks
-            state = dict(state, pos=[c for c in state["pos"] if c["cube"] != "file"],
-                         neg=[c for c in state["neg"] if c["cube"] != "file"], rev=next_rev())
+            set_concept(state, None, None)
             return shown(state)
         pos, neg = [], []
         for p in paths[:2]:
@@ -1510,12 +1633,13 @@ def build_demo():
             (neg if "_not" in Path(p).name.lower() else pos).append(item)
         if not pos:
             raise LensError("load concept.npy too: concept_not.npy alone has nothing to look for")
-        state = dict(state, pos=pos, neg=neg, rev=next_rev())
+        set_concept(state, pos, neg)
         return shown(state)
 
     @soft(2)
     def on_save(state):
-        return save_files(state), (state["view"] or {}).get("receipt")
+        snap = snapshot(state, rev=False)
+        return save_files(snap), (snap["view"] or {}).get("receipt")
 
     def on_load(state, request: gr.Request):
         """Open the page from its link: ?cube=ID opens a gallery cube; ?v=SCAN&z=&y=&x=&size= fills Your own point
@@ -1546,17 +1670,20 @@ def build_demo():
             gr.Warning(f"This link could not be followed in full: {'; '.join(problems)}.")
         if not cube_id:
             return shown(state) + fields + [size, gr.skip(), tab]
+        ticket = next_rev()
         try:
-            state = dict(state, view=load_gallery(cube_id), rev=next_rev())
+            view = load_gallery(cube_id)
         except (LensError, OSError) as exc:
             log(f"link not loaded: {exc}")
             gr.Warning(f"The gallery cube could not be opened: {exc}")
             return shown(state) + fields + [size, gr.skip(), tab]
+        if not show_view(state, view, ticket):       # the visitor already opened another cube
+            return [gr.skip()] * 3 + fields + [size, gr.skip(), tab]
         if not q.get("v"):
-            p = state["view"]["point"]
-            fields = [state["view"]["volume"], p[0], p[1], p[2]]
+            p = view["point"]
+            fields = [view["volume"], p[0], p[1], p[2]]
         if not q.get("size"):
-            size = gr.update(value=state["view"]["size"])
+            size = gr.update(value=view["size"])
         return shown(state) + fields + [size, cube_id, tab]
 
     with gr.Blocks(title="Scroll Lens", delete_cache=(1800, 3600)) as demo:
@@ -1600,6 +1727,9 @@ def build_demo():
                 with gr.Accordion("For agents and scripts", open=False, elem_id="sl-agents"):
                     gr.Markdown(AGENTS_TEXT.format(url=page_url().rstrip("/") if page_url() != "/" else
                                                    "https://sharpmeow-scroll-lens.hf.space"))
+                with gr.Accordion("Connect your tool", open=False, elem_id="sl-connect"):
+                    # The data's URLs and ready snippets, made by python -m kit spaceconnect render from connect.json
+                    gr.HTML(CONNECT_HTML.read_text() if CONNECT_HTML.exists() else "")
             with gr.Column(scale=3, min_width=320, elem_id="sl-viewer"):
                 viewer = gr.HTML("", html_template='<div class="slv-mount"></div>', js_on_load=viewer_js(),
                                  apply_default_css=False, elem_id="sl-viewer-html")

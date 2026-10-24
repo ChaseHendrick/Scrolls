@@ -12,13 +12,13 @@ Runs an openly licensed 9 um ink model on one region of a VC3D segment in both d
 | Code | `spaces/ink-lens/inklens.py` (the client), `spaces/ink-lens/engine.py` (model, windows, both orders), `spaces/ink-lens/gate.py` (the control-set threshold), `spaces/ink-lens/vc3dout.py` (VC3D's files), `spaces/ink-lens/volio.py` (reading regions), `spaces/ink-lens/bridge.py` (VC3D agent bridge), `spaces/ink-lens/app.py` (the Space), `spaces/ink-lens/tools/deploy.py`, `spaces/ink-lens/tools/check_gate.py`, `spaces/ink-lens/samples.json`, `spaces/ink-lens/vc3d-plugin.json` (draft action list), `plugins/ink-lens.json` (the Plugins menu manifest, [vc3d-plugins](vc3d-plugins.md)), `spaces/ink-lens/README.md` (the Space card) |
 | Tests | `tests/test_inklens.py`, 43 tests (5 need torch, tifffile or `VILLA_SRC` and skip without them) |
 | Needs | Python 3.10 or newer, numpy. Space mode: gradio_client and huggingface_hub, and the user's own Hugging Face token. Local mode and the Space: torch 2.13.0 and the pins in `spaces/ink-lens/requirements.txt`; villa's `vesuvius/src` at `8aa507c12` and the checkpoint are downloaded once (or `VILLA_SRC`, `INKLENS_D9V2`, `INKLENS_INK_9UM`). Pins: tifffile, and this repository's `kit/` (the Scroll Text Reader). Rendering a region: `vc_render_tifxyz` from a VC3D build. Label scoring: zarr |
-| Runs on | ZeroGPU (Space mode, estimate only until deployed: 6 to 10 s for a 1024 px region, 1,350 patches). CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured |
+| Runs on | ZeroGPU (Space mode): the 640 px 0841-w00 sample with three windows (486 patches) in 1.2 to 1.3 s of model time on the Space's RTX PRO 6000 MIG slice, 10 GPU seconds requested (measured live 2026-10-24); a 1024 px region (1,350 patches) is estimated at 6 to 10 s. CPU, 4 cores of a Claude cloud container: 0.14 to 0.30 s per patch, a 640 px crop with three windows (486 patches) in 112 to 148 s (measured 2026-10-20). CUDA or Apple MPS in local mode: not measured |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (samples, labels and tifxyz meshes), `github.com` and `codeload.github.com` (villa at a pinned commit; d9v2 and the letter weights from release assets), `huggingface.co` (`ink_9um`; the Space in Space mode). Space mode sends the region (an `.npz`) to the Space; local mode sends nothing |
 | Writes | Into the segment folder: `inklens/RUN.png`, `inklens/mosaic.png`, `inklens/RUN.pins.json`, `inklens/RUN.json`, `inklens/RUN.letters.json`, and `ink-detections.json` (merged, existing records kept). Downloads under `$INKLENS_CACHE` (default `TMPDIR/ink-lens`, about 0.6 GB for both readers and villa). The Space writes result `.npz` files under `TMPDIR/ink-lens-out` and keeps no upload. `demo --vc3d-out DIR` writes a copy of the sample's tifxyz mesh into DIR |
 | Go-ahead | Needed to deploy the Space (`tools/deploy.py`, a new Space under rule 8) and to spend Chase's ZeroGPU quota. Not needed for local mode or the tests |
-| Released | Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space is not deployed and waits until Chase has Hugging Face PRO for more ZeroGPU Spaces (Chase, 20 Oct 2026, about 21:28 UTC: "can we not deploy to a HF space rn and wait until i ever get PRO to get more spaces"); local mode works now |
+| Released | Code on `main` since 2026-10-20 ([#138](https://github.com/ChaseHendrick/Scrolls/pull/138)). The Space [SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens) is live on ZeroGPU since 2026-10-24 (Chase's yes in the project thread); local mode works too |
 | License | Apache 2.0 for the code ([`spaces/ink-lens/LICENSE`](../../spaces/ink-lens/LICENSE), [`NOTICE`](../../spaces/ink-lens/NOTICE)); d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0 |
-| Checked | 2026-10-20 against commit `3c2445e` |
+| Checked | 2026-10-24 against commit `7e51e4f` |
 
 ## What it does
 
@@ -47,6 +47,8 @@ engine with a page, an API and MCP tools, following [Scroll Lens](scroll-lens.md
 
 Everything Ink Lens shows is model output, not a reading. The letter strings stay in a sidecar file as hypotheses for a
 person.
+
+A Connect your tool accordion gives the sample segments' open-data URLs and snippets for Python, villa's `vesuvius` package, gradio_client, curl and MCP ([spaceconnect](spaceconnect.md), 24 Oct 2026).
 
 ## When to use it
 
@@ -424,7 +426,9 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-24: Connect your tool accordion, branched from `main` at `2ce4d50`.
 - 2026-10-21: rows for the positional arguments of `estimate`, `engine.py estimate` and `deploy.py`, and every refusal written whole, including `not a PNG`, `cannot read URL: ERROR` and the `demo --size` refusal (`bbecb37`).
+- 2026-10-24: the Space deployed as `SharpMeow/ink-lens` (ZeroGPU, public) from `7e51e4f` plus the fix below. The first start failed: the loading thread moved the readers to `cuda` outside a `spaces.GPU` call, which ZeroGPU refuses; `app.py` now keeps them on the CPU there and `run()` moves them inside the call (test `test_app_keeps_readers_off_cuda_at_startup_on_zerogpu`). Live demo on `0841-w00` (development data): gate `ink`, AUC 0.9147 as stored, 0.5954 reversed.
 - 2026-10-20: merged in [#138](https://github.com/ChaseHendrick/Scrolls/pull/138) (`aee666a`); deployment held until Chase has Hugging Face PRO (his words in Released above).
 - 2026-10-20: design, preregistration and the gate (`3c2445e`); the engine, client, Space, tests and this page on
   branch `claude/ink-lens`.

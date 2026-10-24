@@ -141,7 +141,7 @@ Window: crop, inner 64
 | --- | --- | ---: | ---: | ---: | ---: | --- | --- | --- | --- |
 | ink_9um seed42 | **NOT held out** | 0.9199 |  |  |  | bare-crop and full (identical) | cpu | [`logs/2026-10-07-community-scan.md`](logs/2026-10-07-community-scan.md) | 2026-10-07 |
 
-Not scored here yet: `Reader v2`.
+Not scored here yet: `Reader v2`, `Hecate`.
 
 ## Reported by others (Community report)
 

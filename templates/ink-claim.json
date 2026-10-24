@@ -1,0 +1,11 @@
+{
+ "reader": "d9v2",
+ "segment": "0841-w00",
+ "auc": "0.8994",
+ "control_auc": "0.5855",
+ "mask": "supervision",
+ "window": "crop",
+ "claims_held_out": true,
+ "source": {"file": "docs/results.json", "field": "results.27.auc_as_stored"},
+ "beats": {"reader": "ink_9um seed42", "auc": "0.8061", "window": "crop"}
+}

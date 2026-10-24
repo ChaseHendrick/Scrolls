@@ -1,0 +1,24 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/autopipeline-ink",
+ "title": "AutoPipeline ink",
+ "checked": "2026-10-24",
+ "intro": "The segments this page analyzes and the model it runs are public, and both read straight from these URLs in your own tool.",
+ "sources": [
+  {"id": "api", "title": "Call the analysis from code", "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/autopipeline-ink", "space": "SharpMeow/autopipeline-ink",
+   "host": "https://sharpmeow-autopipeline-ink.hf.space", "status": "running", "tools": ["python", "curl"],
+   "endpoints": [{"api": "/on_sample", "args": {"title": "PHerc0841 w00 (development segment)"}}],
+   "license": "Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0",
+   "note": "The Space has no MCP server; use gradio_client or curl. Each call spends the caller's ZeroGPU quota, which is small when logged out: pass hf_token= to Client (or an Authorization header to curl) for your own."},
+  {"id": "layers", "title": "The layers it reads, example PHerc0841 w00 (9.366 um surface volume)", "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "zarr_format": 2, "example": {"level": "0", "start": [0, 2800, 2900]}, "tools": ["zarr", "vesuvius", "curl"],
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "browse": "https://scrollprize.org/data_browser/PHerc0841"},
+  {"id": "model", "title": "The model: Reader v2 (Domenico Russo)", "kind": "file",
+   "url": "https://huggingface.co/domenicor046/reader-v2/resolve/main/reader-v2-step040000.pth", "format": "bytes",
+   "tools": ["curl"], "license": "MIT",
+   "note": "sha256 654ec5acec2b6c4788d9cb326e2f0b8c2c730584949a934ef775db7f6ab5d3a6; a drop-in ink_9um checkpoint for villa's ink detection."}
+ ]
+}

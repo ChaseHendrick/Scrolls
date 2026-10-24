@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -23,11 +23,11 @@
 
 ## What it does
 
-Chase asked on 18 October 2026 for a hero image on every released tool, "the quality of and the dimensions like that of the one on the scrolls public readme", and for images, GIFs and videos because "people like those". These scripts make them reproducibly, and make each one say what it is.
+Chase asked on 18 October 2026 for a hero image on every released tool, at the quality and size of the one on the public README, and for images, GIFs and videos, which people like. These scripts make them reproducibly, and make each one say what it is.
 
 `hero.py` reads a JSON recipe and writes a graded 1920 x 640 WebP (quality 83, at most 300 KB), a 1200 x 630 social card with the title in Inter, and a sidecar JSON. A recipe's scene is either procedural (a builder in `scenes.py`, drawn by the small NumPy renderer in `scene.py`) or an existing picture. The procedural scenes are generated from formulas and a seed only, so they contain no scan pixel, no model output, no lettering and no ink: synthetic cross-sections wound as spirals with a copper thread bending through their centers for the umbilicus finder, a roll unrolling flat with its layers peeling up for Unroll, a cube cut by three slices for Scroll Lens, a sheet under a reading lens for Scroll Text Reader, and so on. The `panels` scene floats real screenshots of a tool's interface over the floor, and is always a Synthetic demo.
 
-`encode.py` turns PNG frames (or a video) into a web MP4 and a two-pass palette GIF under size limits, and records the whole chain that made the frames in the sidecar. `capture_web.py` drives headless Chromium through a list of steps and takes frames, stepping sliders, scrolling and time instead of recording the screen, so a clip is smooth whatever the machine's speed; a page that runs in real time is sampled on the wall clock, and a drawn pointer with a copper click ring shows where each interaction happens. `sweep.py` makes the frames of a synthetic scroll swept from cap to base, its winding center drifting in the scanner's fixed frame.
+`encode.py` turns PNG frames (or a video) into a web MP4 and a two-pass palette GIF under size limits, and records the whole chain that made the frames in the sidecar. `capture_web.py` drives headless Chromium through a list of steps and takes frames, stepping sliders, scrolling and time instead of recording the screen, so a clip is smooth whatever the machine's speed; a page that runs in real time is sampled on the wall clock, and a drawn pointer with a copper click ring shows where each interaction happens. `record_ap_monitor.py` films AutoPipeline's monitor on a release's synthetic demo: it holds each stage a moment so the run can be watched, serves the monitor with its console on, and has `capture_web.py` walk every panel with a caption bar (`captures/autopipeline-walkthrough.json`); the run and the console's kit home stay in a scratch folder. `sweep.py` makes the frames of a synthetic scroll swept from cap to base, its winding center drifting in the scanner's fixed frame.
 
 Every output carries one of four media labels, in its caption and its sidecar: Concept illustration, Real data render, Model output or Synthetic demo. Under any `docs/assets/` folder the public media rule applies ([`docs/media/README.md`](../media/README.md), set on Chase's delegation, 18 October 2026): Concept illustrations and Synthetic demos always, a Real data render only of a public scan that is not prize-eligible and shows no held-out labels, model output never, and every file at most 1920 px wide and 4 MB with a sidecar. Model output of any scroll and real-data pictures of prize-eligible scrolls belong in Scrolls-private's `docs/media/`. A label is only a claim, so the scripts also guard where pixels come from: `hero.py` builds an illustration or a demo for `docs/assets/` only from files already under `docs/images/` or `docs/assets/`, `encode.py` refuses an unlabeled clip there, and `capture_web.py` refuses to write its raw frames there. A picture made here is an illustration or a demo, never evidence: no hero shows lettering, fabricated ink, score badges, letter boxes or a suggested reading.
 
@@ -153,6 +153,25 @@ usage: python scripts/media/capture_web.py [-h] --out-dir OUT_DIR [--actions ACT
 
 The steps, run in order (`STEP_KEYS`): `{"goto": URL}` (retries for up to 60 s while a server starts), `{"wait": MS}`, `{"wait_for": SELECTOR}` (up to 30 s), `{"click": SELECTOR}`, `{"fill": [SELECTOR, TEXT]}`, `{"press": KEY}`, `{"eval": JS}`, `{"set": [SELECTOR, VALUE]}` (sets an input's value and fires its input and change events), `{"scroll": [X, Y]}`, `{"clip": SELECTOR or null}`, `{"shot": NAME}`, `{"frame": N}`, `{"hold": N}` (repeats the last frame), `{"frames": N, "every": MS}` (real time on the wall clock: screenshots as fast as the machine allows, then each frame is the last one taken by its time, `pick_timed`), `{"tween": {"selector": S, "from": A, "to": B, "n": N}}`, `{"step": {"js": "seek({t})", "n": N}}` (frame-stepped time, `{t}` from 0 to 1), `{"cursor": "show" or "hide"}` (a pointer drawn in the palette, `CURSOR_JS`; headless Chromium draws none), `{"point": {"selector": S, "n": N}}` (move it to S, eased), `{"tap": {"selector": S, "n": N}}` (click S and draw a copper ring growing from the pointer), `{"glide": {"selector": S, "from": A, "to": B, "n": N}}` (a tween whose pointer follows the slider's thumb) and `{"scrollto": {"selector": S, "offset": PX, "n": N}}` (scroll smoothly until S's top is PX below the window's top).
 
+### `python scripts/media/record_ap_monitor.py`
+
+```text
+usage: python scripts/media/record_ap_monitor.py [-h] --package PACKAGE --frames FRAMES [--actions ACTIONS]
+                                                 [--pace PACE] [--port PORT] [--width WIDTH] [--height HEIGHT]
+                                                 [--work WORK]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--package PACKAGE` | required | An AutoPipeline release folder (it holds `kit/`, `tests/` and `scripts/demo_synthetic.py`); its demo and its monitor are what the clip shows |
+| `--frames FRAMES` | required | Scratch folder for the frames (never under `docs/assets/`) |
+| `--actions ACTIONS` | `scripts/media/captures/autopipeline-walkthrough.json` | The `capture_web.py` steps: the live run, then the captioned walk through each panel |
+| `--pace PACE` | `1.2` | Seconds each stage waits before it starts; the demo alone runs in a few seconds |
+| `--port PORT` | `8793` | Port of the monitor on 127.0.0.1; the steps open this port |
+| `--width WIDTH` | `1512` | Viewport width |
+| `--height HEIGHT` | `904` | Viewport height: a 14 inch MacBook's 860 plus the 44 px caption bar |
+| `--work WORK` | a new temporary folder | Scratch folder for the run and the console's kit home; its path shows in the monitor's header, so give a short neutral one, such as `/tmp/apdemo` |
+
 ### `python scripts/media/sweep.py`
 
 ```text
@@ -168,11 +187,64 @@ usage: python scripts/media/sweep.py [-h] --out-dir OUT_DIR [--frames FRAMES] [-
 | `--height HEIGHT` | `540` | Frame height in pixels |
 | `--seed SEED` | `7` | Noise seed |
 
+### `python scripts/media/tifxyz_stills.py`
+
+```text
+usage: python scripts/media/tifxyz_stills.py [-h] --scan SCAN --segment NAME
+                                             [--cache CACHE] [--size SIZE]
+                                             --out-dir OUT_DIR
+                                             segment
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `segment` | required | tifxyz folder or bucket URL, as [`kit tifxyz`](tifxyz.md) takes it; a public scan off the prize lists |
+| `--scan SCAN` | required | The scroll, for the sidecar and the public media rule's check |
+| `--segment NAME` | required | The segment's short name, for the sidecar |
+| `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
+| `--size SIZE` | `1200` | Longest side in pixels (one pixel per node when the grid is smaller) |
+| `--out-dir OUT_DIR` | required | Writes `tifxyz-before.png` (x.tif as an image viewer shows it), `tifxyz-after.png` (the shaded sheet) `tifxyz-check-demo.png` (check flags on a made-up sheet with a planted hole, fold and shifted patch) and `tifxyz-diff-demo.png` (diff colors on two versions of a made-up sheet), each with a sidecar |
+
+### `python scripts/media/isometry_media.py`
+
+The still and GIF for the isometry block proposed for `meta.json` (villa issue #2279): a public segment shaded with every node off the promised step by more than 10 % marked, a histogram of every edge over the step and the block [`kit tifxyz isometry`](tifxyz.md) computes; and a made-up curved sheet whose grid nodes slide along it, so the edges stretch and squash while the surface keeps its shape (needs matplotlib and Pillow).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `segment` | required | tifxyz folder or bucket URL; a public scan off the prize lists |
+| `--scan SCAN` | required | The scroll, for the sidecar and the public media rule's check |
+| `--segment NAME` | required | The segment's short name, for the sidecar |
+| `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
+| `--out-dir OUT_DIR` | required | Writes `isometry-still.png` (Real data render) and `isometry-demo.gif` (Synthetic demo), each with a sidecar |
+
+### `python scripts/media/coverage_still.py`
+
+The still on the [coverage](coverage.md) page: `kit coverage`'s picture of one scan with a title, axis labels and a key added (needs Pillow).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `scroll` | required | The scroll; it must be on no prize list |
+| `--volume` | required | The volume whose meshes and center line are used |
+| `--out-dir` | required | Writes `NAME.png` and its sidecar |
+| `--name` | `coverage-pherc0139` | The file name without `.png` |
+
+### `python scripts/media/vc3d_agent_session.py`
+
+The GIF, MP4 and two stills on the [vc3d-agent](vc3d-agent.md) page: a captioned replay page built from recorded MCP sessions of Headless VC3D for agents (each tool call's arguments, real duration and structured result, and the images it returned), for `capture_web.py` and `encode.py`. Every value on the page is read from the transcripts; pictures are CT and mesh geometry only, so a trace grown on a surface prediction and any ink map stay numbers. Standard library only.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `sessions` | required unless `--publish` | Session transcripts (`transcript.json`, images under `images/` beside it), the main session first; scenes name a step and a transcript by position |
+| `--out-dir PAGE` | required unless `--publish` | Writes `replay.html` (pictures inlined), `actions.json` (the clip: a title, then each call typed in 8 frames and held 34) and `stills.json` (the two stills, each clipped to its panel) |
+| `--publish SHOTS` | unset | Copy `vc3d-agent-render.png` and `vc3d-agent-app.png` from SHOTS into `--assets` with their sidecars, through `common.write_guard` and `common.size_guard` |
+| `--assets DIR` | required with `--publish` | The `docs/assets/` folder for the stills |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `CHROMIUM_PATH` | unset | `capture_web.py`: the Chromium to start when `--browser` is not given |
+| `KIT_HOME` | set by the script | `record_ap_monitor.py` points it at its scratch folder, so the console's jobs and notes never touch your own kit home |
 
 ## Python API
 
@@ -227,14 +299,19 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `SCROLL is on a prize list (...): no picture` | `coverage_still.py` on a prize-list scroll (the public media rule) | Use a scan on no prize list |
 | `actions must be a JSON list of steps` | `--actions` holds an object or a string | Wrap the steps in a list |
 | `no such page:` | The local HTML file is not there | Fix the path, or give a URL |
 | `capture_web: MESSAGE` on stderr, exit code 2 | The prefix of every `capture_web.py` refusal (a `CaptureError`, `OSError` or `ValueError`); MESSAGE is one of the rows here | Read MESSAGE and find its row |
 | `capture_web: ERRORTYPE: FIRST LINE` on stderr, exit code 1 | Playwright itself failed: a selector that never appears, a page that will not load, or a timeout (`--timeout`) | Check the selector and the page in a browser; raise `--timeout` for a slow page |
 | `step N: unknown or empty step STEP` | A step with a key outside `STEP_KEYS`, or `{}` | Use the steps listed under Commands and options |
 | `step N: every goes with frames` | `every` without `frames` | Add `"frames": N` to the step |
+| `the synthetic demo failed (exit...); the run is in` | `record_ap_monitor.py`: the package's demo did not end with every stage as expected | Run `python scripts/demo_synthetic.py` in the package and read its `DEMO FAIL` line; install the package's dependencies |
 | `clip element 'SELECTOR' has no box` | The `clip` selector matched nothing visible | Fix the selector, or clip to `null` |
 | `hold needs an earlier frame` | `hold` before any `frame` | Take a frame first |
+| `vc3d_agent_session: no scene found in the transcripts` on stderr, exit code 2 | `vc3d_agent_session.py`: none of its scenes' steps is in the transcripts, or every one failed | Give the main session's `transcript.json` first, then the others in the order the scenes name them |
+| `give session transcripts and --out-dir, or --publish SHOTS --assets DIR` | `vc3d_agent_session.py` with neither a page to build nor stills to publish | Give one of the two |
+| `--publish needs --assets` | `vc3d_agent_session.py --publish` without a target folder | Add `--assets docs/assets/vc3d-agent` |
 | `the playwright package is missing: pip install playwright (with PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 where a Chromium is installed)` | No `playwright` module | Install it as the message says; never run `playwright install` where a browser exists |
 | `no Chromium could start (give --browser PATH):` | Playwright's own Chromium is a different version and no system Chromium was found | Give `--browser` or set `CHROMIUM_PATH` |
 | `URL did not answer within 60 s: ERROR` | A `goto` URL refused connections for 60 s | Start the server, or check its port |
@@ -292,7 +369,7 @@ for r in umbilicus unroll lens reader stackcheck inkfilter starter workbench; do
 done
 ```
 
-`FOLDER` is each recipe's folder in `docs/assets/` (its sidecar records the command). The AutoPipeline monitor clip starts the capture first (`capture_web.py about:blank --out-dir FRAMES --actions scripts/media/captures/autopipeline-monitor.json --width 1280 --height 960`), then, from the 0.1.5 package folder with the package's Python, `scripts/demo_synthetic.py --out RUN` with its run held 5 s after it writes `plan.json` (so the clip opens on the first stage), then the package's own monitor (`kit autopipeline monitor RUN/run --port 8793`) once `RUN/run/plan.json` exists. The steps sample the run for 16 s on the wall clock, wait for the Finished banner, then the pointer opens the Ink stage, filters the log and prepares the status command, and the clip ends on the banner; `encode.py` runs at `--fps 12 --gif-fps 12 --dither none` (its sidecar records the chain). The Starter clip is the portable Starter with `scripts/media/captures/starter-practice.json` at 12 fps, and the umbilicus clip is `python scripts/media/sweep.py --out-dir FRAMES --frames 84`, encoded at 12 fps with `--dither none`.
+`FOLDER` is each recipe's folder in `docs/assets/` (its sidecar records the command). The AutoPipeline monitor clip starts the capture first (`capture_web.py about:blank --out-dir FRAMES --actions scripts/media/captures/autopipeline-monitor.json --width 1280 --height 960`), then, from the 0.1.5 package folder with the package's Python, `scripts/demo_synthetic.py --out RUN` with its run held 5 s after it writes `plan.json` (so the clip opens on the first stage), then the package's own monitor (`kit autopipeline monitor RUN/run --port 8793`) once `RUN/run/plan.json` exists. The steps sample the run for 16 s on the wall clock, wait for the Finished banner, then the pointer opens the Ink stage, filters the log and prepares the status command, and the clip ends on the banner; `encode.py` runs at `--fps 12 --gif-fps 12 --dither none` (its sidecar records the chain). The Headless VC3D for agents clip and stills come from the session transcripts of three Hugging Face CPU Jobs of 24 October 2026: `vc3d_agent_session.py SESSION1 SESSION2 SESSION4 --out-dir PAGE`, then `capture_web.py PAGE/replay.html` with `PAGE/actions.json` at 1280 x 800 and `PAGE/stills.json` at 1880 x 1000, `vc3d_agent_session.py --publish SHOTS --assets docs/assets/vc3d-agent`, and `encode.py --fps 10 --gif-fps 10 --gif-width 1280` with `scripts/media/captures/vc3d-agent-session.meta.json` (the sidecars record each chain). The Starter clip is the portable Starter with `scripts/media/captures/starter-practice.json` at 12 fps, and the umbilicus clip is `python scripts/media/sweep.py --out-dir FRAMES --frames 84`, encoded at 12 fps with `--dither none`.
 
 ## Cost and time
 
@@ -305,6 +382,8 @@ Measured 2026-10-18 in a 4-core Xeon cloud container shared with about ten other
 | `hero.py --preview 0.35` | 9 to 90 s | Previews during this work |
 | `capture_web.py`, AutoPipeline monitor, 211 frames | About 90 s, of which the demo run is 17 s | The capture run |
 | `encode.py`, 211 frames to MP4 and GIF | Under 60 s | The capture run |
+| `capture_web.py`, the VC3D agent replay page, 564 frames at 1280 x 800 | 17 s | Measured 2026-10-24 in a cloud container |
+| `encode.py`, 590 frames to MP4 and a 960 px GIF | 30 s | Measured 2026-10-24 in a cloud container |
 
 Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier lens recipe, 143.7 s, measured 2026-10-18). The Quick start rerun of the umbilicus recipe wrote a WebP byte-identical to the committed one, so a rerun reproduces a hero exactly. Nothing here needs a GPU or Modal, and nothing is rented.
 
@@ -327,6 +406,7 @@ Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier len
 - 2026-10-18: added `hero.py`, `scene.py`, `scenes.py`, `encode.py`, `capture_web.py`, `sweep.py` and `common.py`, with heroes and clips for every released tool and the `image` field of `kit/releases.py` (branch `claude/release-media`, `4a970bd` is the base commit).
 - 2026-10-18: after review of `c33e159`, the guards check sources and clips, not only labels (`common.input_guard`, `--meta` required under `docs/assets/`, no raw frames there, panels always a Synthetic demo), and `tests/test_repo.py` allows only Concept illustration and Synthetic demo there and requires a sidecar for every file. The heroes were remade with the reference's warm key light, low cameras and diagonal subjects, fibrous papyrus, spiral cross-sections and cards with a solid text band; the Scroll Text Reader hero no longer draws letters, boxes or bars, and StrokeNet's hero is withdrawn until its rework. The AutoPipeline clip was recaptured at 12 fps from the first stage with a pointer (`cursor`, `point`, `tap`, `glide`, `scrollto`, wall-clock `frames`), the umbilicus sweep redrawn in the scanner's fixed frame, and `encode.py` gained `--dither` and `--made-with`.
 - 2026-10-18: the public media rule ([`docs/media/README.md`](../media/README.md), set on Chase's delegation) replaced "only Concept illustrations and Synthetic demos": `common.write_guard` now also allows a Real data render of a public scan that is not prize-eligible and shows no held-out labels (`real_data_problems`, `prize_scrolls`, `eligible_prizes`), `common.size_guard` and `encode.py` hold every file there to 1920 px and 4 MB, `common.public_problems` checks every committed sidecar, `common.media_size` reads MP4 sizes too, the credit became "Vesuvius Challenge open data, CC BY-NC 4.0", `data.labels` is required and `data.segment` optional, and `hero.py` checks the rule before importing Pillow. The audit found every existing file conforming.
+- 2026-10-24: added `vc3d_agent_session.py`: a captioned replay of recorded Headless VC3D for agents sessions on PHerc0139 w035, and its two stills (`docs/assets/vc3d-agent/`, [#201](https://github.com/ChaseHendrick/Scrolls/pull/201)).
 
 ## Related
 

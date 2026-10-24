@@ -32,7 +32,8 @@ const st = {
   lo: 0, hi: 255, autoLo: 0, autoHi: 255, bright: 0, contrast: 0,
   slices: [0, 0, 0], on: {}, mode: 'move', opacity: 0.7, top: 8,
   refThr: 0, refTop: 1, clkThr: 0, clkTop: 1,
-  marks: {pos: [], neg: []}, pending: [], inflight: null, clickSeq: 0, loading: 0, linkSlices: null,
+  marks: {pos: [], neg: []}, pending: [], inflight: null, sent: [], clickSeq: 0, loading: 0, linkSlices: null,
+  maxRev: 0, abort: null,
 };
 const PAGE_ID = Math.random().toString(36).slice(2, 8);
 const MODE_NAME = `slv-mode-${PAGE_ID}`;                 // one radio group for the three click modes
@@ -241,7 +242,7 @@ function paint(a) {
   // the clicks made in this cube whose patch lies in this slice
   const tok = st.slices[a] >> 3;
   for (const kind of ['pos', 'neg']) {
-    const list = st.marks[kind].concat(st.pending.filter(m => m.kind === kind).map(m => m.voxel));
+    const list = st.marks[kind].concat(st.pending.filter(m => m.kind === kind && m.key === st.key).map(m => m.voxel));
     for (const vox of list) {
       if ((vox[a] >> 3) !== tok) continue;
       const x = ox + (vox[c] + 0.5) * sc, y = oy + (vox[r] + 0.5) * sc, h = 6 * dpr + 2;
@@ -298,15 +299,16 @@ function chunkRange(o, size) {
   return out;
 }
 
-async function fetchRetry(url, tries = 3) {
+async function fetchRetry(url, signal, tries = 3) {
   let last;
   for (let t = 0; t < tries; t++) {
     try {
-      const resp = await fetch(url);
+      const resp = await fetch(url, {signal});
       if (resp.status === 404) return null;      // no chunk stored there: all outside the scroll (403 is a refusal)
       if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
       return await resp.arrayBuffer();
     } catch (e) {
+      if (signal && signal.aborted) throw e;     // another cube was picked: stop, do not retry
       last = e;
       await new Promise(res => setTimeout(res, 800 * (t + 1)));
     }
@@ -314,7 +316,7 @@ async function fetchRetry(url, tries = 3) {
   throw last;
 }
 
-async function loadCT(m, token) {
+async function loadCT(m, token, signal) {
   const S = m.size, [oz, oy, ox] = m.origin;
   const ckey = `${m.volume}:${m.origin.join(',')}:${S}`;
   if (ctCache.has(ckey)) { const ct = ctCache.get(ckey); ctCache.delete(ckey); ctCache.set(ckey, ct); return ct; }
@@ -323,7 +325,7 @@ async function loadCT(m, token) {
   for (const cz of chunkRange(oz, S)) for (const cy of chunkRange(oy, S)) for (const cx of chunkRange(ox, S)) keys.push([cz, cy, cx]);
   let done = 0;
   const one = async key => {
-    const buf = await fetchRetry(`${m.ct.base}/${key.join('/')}`);
+    const buf = await fetchRetry(`${m.ct.base}/${key.join('/')}`, signal);
     if (token !== st.loading) return;
     done += 1;
     setStatus(`Reading the scan from the open-data bucket: ${done} of ${keys.length} chunks`, done / keys.length);
@@ -364,9 +366,9 @@ function autoWindow(ct) {
   return [lo, Math.max(hi, lo + 1)];
 }
 
-async function loadLayers(m) {
+async function loadLayers(m, signal) {
   if (!m.data) return {};
-  const resp = await fetch(m.data);
+  const resp = await fetch(m.data, {signal});
   if (!resp.ok) throw new Error(`model layers: HTTP ${resp.status}`);
   let buf = await resp.arrayBuffer();
   const head = new Uint8Array(buf, 0, 2);
@@ -411,26 +413,40 @@ function linkSlicesOnce() {
 }
 st.linkSlices = linkSlicesOnce();
 
+// Every answer from Python carries a revision (app.next_rev), and answers can arrive out of order: a click answered
+// after another cube was opened, say. Each answer's acknowledgements count, but only the newest answer is shown, so
+// a late one never brings back a cube the visitor has left.
 async function onValue(raw) {
   let m = null;
   try { m = raw ? JSON.parse(raw) : null; } catch (e) { m = null; }
   if (!m || !m.key) return;
-  if (m.ack_only) {                                        // clicks the server could not use: stop resending them
-    if (m.key === st.key) {
-      const acked = new Set((m.clicks && m.clicks.acked) || []);
-      st.pending = st.pending.filter(p => !acked.has(p.id));
-      if (st.inflight) { clearTimeout(st.inflight); st.inflight = null; }
-      st.flushTries = 0;
-      redraw([0, 1, 2], true);
-    }
+  const acked = takeAcks(m);
+  if (m.ack_only || !(m.rev > st.maxRev)) {
+    if (acked) redraw([0, 1, 2], true);
+    flushClicks();
     return;
   }
+  st.maxRev = m.rev;
   if (m.key !== st.key || st.failed) {
     await newCube(m);
-  } else if (m.rev > st.rev) {
+  } else {
     applyClicks(m);
     redraw();
   }
+}
+
+function takeAcks(m) {
+  const acked = new Set((m.clicks && m.clicks.acked) || []);
+  if (!acked.size) return false;
+  const before = st.pending.length;
+  st.pending = st.pending.filter(p => !acked.has(p.id));
+  if (st.inflight && st.sent.some(id => acked.has(id))) {  // the request in flight was answered: send the next
+    clearTimeout(st.inflight);
+    st.inflight = null;
+    st.sent = [];
+    st.flushTries = 0;
+  }
+  return st.pending.length !== before;
 }
 
 function applyClicks(m) {
@@ -438,31 +454,35 @@ function applyClicks(m) {
   st.rev = m.rev;
   st.clk = decodeSim(m.clicks && m.clicks.sim);
   st.marks = {pos: (m.clicks && m.clicks.pos) || [], neg: (m.clicks && m.clicks.neg) || []};
-  const acked = new Set((m.clicks && m.clicks.acked) || []);
-  st.pending = st.pending.filter(p => !acked.has(p.id));
-  st.flushTries = 0;
-  if (st.inflight) { clearTimeout(st.inflight); st.inflight = null; }
   updateThresholds();
   flushClicks();
 }
 
-// Clicks go to Python one request at a time, each carrying every click not yet acknowledged, so a click made while
-// another is being handled is sent next instead of being dropped; the ids stop a resent click counting twice.
+// Clicks go to Python one request at a time, each carrying every click on one cube not yet acknowledged, so a click
+// made while another is being handled is sent next instead of being dropped; the ids stop a resent click counting
+// twice. Each click keeps the cube it was made on, so one made just before another cube opens still counts there.
 function flushClicks() {
-  if (st.inflight || !st.pending.length || !st.key) return;
+  if (st.inflight || !st.pending.length) return;
   if ((st.flushTries = (st.flushTries || 0) + 1) > 3) {
     st.pending = [];
+    st.sent = [];
     st.flushTries = 0;
     setStatus('The Space did not answer these clicks; try again in a moment.', null);
     redraw([0, 1, 2], true);
     return;
   }
+  const key = st.pending[0].key;
+  const batch = st.pending.filter(p => p.key === key);
+  for (const p of batch) p.sent = true;
+  st.sent = batch.map(p => p.id);
   st.inflight = setTimeout(() => { st.inflight = null; flushClicks(); }, 15000);
-  trigger('select', {key: st.key, clicks: st.pending.map(p => ({id: p.id, index: p.voxel, value: p.kind}))});
+  trigger('select', {key, clicks: batch.map(p => ({id: p.id, index: p.voxel, value: p.kind}))});
 }
 
 async function newCube(m) {
   const token = ++st.loading;
+  if (st.abort) st.abort.abort();                          // stop the downloads for the cube before
+  const abort = st.abort = new AbortController();
   const S = m.size;
   const same = st.size === S;
   st.key = m.key;
@@ -470,8 +490,6 @@ async function newCube(m) {
   st.n = S / PATCH;
   st.ct = st.ink = st.surface = st.pca = st.ref = null;
   st.failed = false;
-  st.pending = [];
-  st.rev = -1;
   applyClicks(m);
   const local = m.point.map((p, i) => Math.min(S - 1, Math.max(0, p - m.origin[i])));
   const link = st.linkSlices;
@@ -488,7 +506,7 @@ async function newCube(m) {
   redraw();                                                // black views, not the previous cube, while this one loads
   setStatus(`Loading ${m.title || m.volume}...`, 0);
   try {
-    const [ct, layers] = await Promise.all([loadCT(m, token), loadLayers(m)]);
+    const [ct, layers] = await Promise.all([loadCT(m, token, abort.signal), loadLayers(m, abort.signal)]);
     if (token !== st.loading || !ct) return;
     st.ct = ct;
     Object.assign(st, {ink: layers.ink || null, surface: layers.surface || null, pca: layers.pca || null,
@@ -548,11 +566,14 @@ element.querySelectorAll('button[data-act]').forEach(btn => btn.addEventListener
   } else if (act === 'auto') {
     setSlider('bright', 0); setSlider('contrast', 0); windowLevel(); redraw();
   } else if (act === 'undo') {
-    if (st.pending.length) { st.pending.pop(); redraw([0, 1, 2], true); }
-    else trigger('undo', {key: st.key});
+    const last = st.pending.pop();                         // the newest click, on any cube
+    if (last && last.sent) trigger('undo', {key: st.key, id: last.id});   // Python may have it already
+    else if (!last) trigger('undo', {key: st.key});
+    redraw([0, 1, 2], true);
   } else if (act === 'clear') {
+    const sent = st.pending.filter(p => p.sent).map(p => p.id);
     st.pending = [];
-    trigger('clear', {key: st.key});
+    trigger('clear', {key: st.key, ids: sent});
   } else if (act === 'use' && m) {
     trigger('apply', {volume: m.volume, point: st.slices.map((s, i) => s + m.origin[i])});
     flash(btn, 'Copied to Your own point');
@@ -655,7 +676,7 @@ function sendClick(kind, vox) {
     setStatus('This cube has no 3D DINO embeddings, so it cannot be searched. Run it with the 3D DINO model.', null);
     return;
   }
-  st.pending.push({id: `${PAGE_ID}-${++st.clickSeq}`, kind, voxel: vox});
+  st.pending.push({id: `${PAGE_ID}-${++st.clickSeq}`, kind, voxel: vox, key: st.key});
   if (kind === 'pos' && !st.on.clicks) {
     st.on.clicks = true;
     element.querySelector('input[data-layer="clicks"]').checked = true;

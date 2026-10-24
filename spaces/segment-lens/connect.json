@@ -1,0 +1,25 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/segment-lens",
+ "title": "Segment Lens",
+ "checked": "2026-10-24",
+ "intro": "Every number and preview on this page comes from the Segment Atlas dataset, and every mesh it measures is a tifxyz folder on the open-data bucket. Both read straight from these URLs, with no account.",
+ "sources": [
+  {"id": "atlas", "title": "Segment Atlas (one row per published mesh)", "kind": "hf-dataset",
+   "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas",
+   "repo": "SharpMeow/vesuvius-segment-atlas", "file": "atlas.jsonl", "configs": ["default"], "table": "atlas.jsonl",
+   "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data)",
+   "note": "Each row has the mesh's open-data url, its grid size, area, filled share, edge statistics and the holes, folds and stretched area that kit tifxyz check reports. lens/ holds the decimated 3D previews."},
+  {"id": "mesh", "title": "A measured mesh (tifxyz), example PHerc0009B 20250510172639", "kind": "tifxyz",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0009B/segments/20250510172639/mesh/20250510172639-on-20250521125136-8.64um.tifxyz",
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Every row of the atlas names its mesh folder in url; the table's mesh folder link opens it. Read live from the open-data bucket, never copied here."},
+  {"id": "page", "title": "This page's code and data", "kind": "page-api",
+   "url": "https://sharpmeow-segment-lens.hf.space/",
+   "links": [{"label": "The whole atlas as one CSV", "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas/resolve/main/atlas.csv"},
+             {"label": "API and MCP for agents (list_scrolls, list_segments, get_segment, segment_picture)", "url": "https://sharpmeow-segment-lens.hf.space/agents/"},
+             {"label": "Page source", "url": "https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/segment-lens"}],
+   "license": "Page code Apache 2.0; data as above",
+   "note": "python -m kit atlas show SCROLL and python -m kit tifxyz check MESH_URL reproduce the numbers from a clone of ChaseHendrick/Scrolls."}
+ ]
+}

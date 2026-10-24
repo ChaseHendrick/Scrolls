@@ -149,7 +149,7 @@ class RepoTest(unittest.TestCase):
         seen = {}
         for f in tracked():
             if f.suffix in (".md", ".sh", ".txt", ".py") and f.exists():
-                for m in re.finditer(r"python3? -m kit ([a-z]+)", f.read_text(encoding="utf-8", errors="replace")):
+                for m in re.finditer(r"python3? -m kit ([a-z][a-z0-9]*(?:-[a-z0-9]+)*)", f.read_text(encoding="utf-8", errors="replace")):
                     seen.setdefault(m.group(1), str(f.relative_to(ROOT)))
         missing = {c: where for c, where in seen.items() if c not in commands}
         self.assertEqual(missing, {}, f"documented but not in kit: {missing}")

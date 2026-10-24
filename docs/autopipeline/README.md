@@ -119,9 +119,9 @@ Runs and caches go to `work/` in the package folder, or under `KIT_HOME` when se
 
 The demo runs every stage on a synthetic scroll with stand-in VC3D tools, with no download and no GPU:
 
-![AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner](../assets/autopipeline/monitor-demo-v015.gif)
+![AutoPipeline's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map in a dark-to-pale copper scale beside its reversed control on the same scale, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes](../assets/autopipeline/monitor-walkthrough.gif)
 
-*Synthetic demo: AutoPipeline 0.1.5's monitor following `scripts/demo_synthetic.py`, captured frame by frame from a live run (the run part at about 4 times real speed), with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](../assets/autopipeline/monitor-demo-v015.mp4) (17.6 s).*
+*Synthetic demo: AutoPipeline's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console. Stroke shapes were planted in the synthetic CT and a stand-in ink model scores them, so its maps are not ink; the reversed control shows only the synthetic papyrus. [MP4](../assets/autopipeline/monitor-walkthrough.mp4) (45 s).*
 
 ```bash
 python scripts/demo_synthetic.py                 # prints DEMO PASS
@@ -408,17 +408,17 @@ their schema.
 A snapshot keeps stage inspection and the log filters but turns off refresh and command preparation, because its run
 path is redacted.
 
-The clip in [the quickstart](#4-quickstart) shows 0.1.5's controls: it opens the Ink stage, filters the log and prepares the status command ([MP4](../assets/autopipeline/monitor-demo-v015.mp4), captured 18 October 2026 with [`scripts/media/`](../tools/media.md)).
+The clip in [the quickstart](#4-quickstart) shows the monitor and console in ten captioned steps, with the ink maps in copper colors ([MP4](../assets/autopipeline/monitor-walkthrough.mp4), captured 24 October 2026 with [`scripts/media/record_ap_monitor.py`](../tools/media.md)). 0.1.6's clip, with the earlier gray maps, stays in [`monitor-walkthrough-v016.mp4`](../assets/autopipeline/monitor-walkthrough-v016.mp4), and 0.1.5's shorter clip of its controls in [`monitor-demo-v015.mp4`](../assets/autopipeline/monitor-demo-v015.mp4).
 
-The pictures below are AutoPipeline 0.1.4's monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 16 October 2026, before 0.1.5 added the controls above. The demo's scroll, VC3D tools and ink model are stand-ins, so its ink maps are stripes, not ink.
+The pictures below are the monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 24 October 2026 with AutoPipeline 0.1.7's ink colors: each map is cropped to the surface, enlarged smoothly and drawn from dark umber (low score) to pale papyrus (high), with the reversed control on the forward map's scale. The demo's CT has stroke shapes planted in it, and its VC3D tools and ink model are stand-ins, so its maps are not ink.
 
 The top of the page once the run has finished (dark theme):
 
-![Monitor header, the Finished banner, four counters and the stage timeline](../assets/autopipeline/monitor-finished-dark.png)
+![Monitor header, the Finished banner, four counters, the stage timeline, and the ink panel with the forward map beside its reversed control](../assets/autopipeline/monitor-finished-dark.png)
 
-Each surface's checks, its traced mesh (drag to turn it) and its ink maps beside the reversed control (light theme):
+A surface's checks, its traced mesh (drag to turn it) and its ink map beside the reversed control (light theme):
 
-![Two surface cards with trace, flatten and render checks, a 3D wireframe of each trace, and forward and reversed ink maps](../assets/autopipeline/monitor-surfaces-light.png)
+![A surface's trace, flatten and render checks, a 3D wireframe of the trace, and its forward ink map beside the reversed control in copper colors](../assets/autopipeline/monitor-surfaces-light.png)
 
 On a phone:
 

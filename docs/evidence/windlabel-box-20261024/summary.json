@@ -1,0 +1,169 @@
+{
+ "what": "kit windlabel-box (the code of the VC3D plugin) on 18 fresh PHerc0139 boxes of 512 voxels, 1,000 seeds each; Model output scored against PHerc0139's published hand windings w023 to w040",
+ "date": "2026-10-24",
+ "rules": {
+  "chain_rule": "v1 0e53e0ae5016",
+  "split_rule": "c6d2eecbebc2",
+  "truth_manifest": "49f76ec1d1e2694e33adc1e4fe3576dc620528835130526a5c3b61382b74132d"
+ },
+ "readout": "fixed before any chain was grown: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+ "pooled": {
+  "v1": {
+   "steps": 19613,
+   "step_accuracy": 0.9223,
+   "blocks": 40,
+   "lower_bound_95": 0.908
+  },
+  "split": {
+   "steps": 13969,
+   "step_accuracy": 0.9758,
+   "blocks": 40,
+   "lower_bound_95": 0.9683,
+   "kept_share": 0.7122,
+   "skip_control": 0.0218,
+   "shift_control": 0.0645
+  },
+  "random_control": {
+   "draws": 1000,
+   "seed": 0,
+   "median": 0.9229,
+   "p97_5": 0.9253
+  },
+  "bootstrap": {
+   "blocks": "box x 30 degree sector of the chain's seed",
+   "resamples": 10000,
+   "seed": 0,
+   "one_sided": 0.95
+  },
+  "void_reasons": [],
+  "verdict": "PASS"
+ },
+ "boxes": {
+  "1": {
+   "split_steps": 568,
+   "split_step_accuracy": 0.9877,
+   "v1_steps": 779,
+   "v1_step_accuracy": 0.9679,
+   "kept_share": 0.7291
+  },
+  "2": {
+   "split_steps": 574,
+   "split_step_accuracy": 0.939,
+   "v1_steps": 753,
+   "v1_step_accuracy": 0.9031,
+   "kept_share": 0.7623
+  },
+  "3": {
+   "split_steps": 248,
+   "split_step_accuracy": 0.9919,
+   "v1_steps": 599,
+   "v1_step_accuracy": 0.9382,
+   "kept_share": 0.414
+  },
+  "4": {
+   "split_steps": 1048,
+   "split_step_accuracy": 0.9952,
+   "v1_steps": 1666,
+   "v1_step_accuracy": 0.9412,
+   "kept_share": 0.6291
+  },
+  "5": {
+   "split_steps": 2342,
+   "split_step_accuracy": 0.9932,
+   "v1_steps": 2926,
+   "v1_step_accuracy": 0.9525,
+   "kept_share": 0.8004
+  },
+  "6": {
+   "split_steps": 1339,
+   "split_step_accuracy": 0.9552,
+   "v1_steps": 2018,
+   "v1_step_accuracy": 0.8731,
+   "kept_share": 0.6635
+  },
+  "7": {
+   "split_steps": 754,
+   "split_step_accuracy": 0.9854,
+   "v1_steps": 1620,
+   "v1_step_accuracy": 0.9019,
+   "kept_share": 0.4654
+  },
+  "8": {
+   "split_steps": 68,
+   "split_step_accuracy": 1.0,
+   "v1_steps": 97,
+   "v1_step_accuracy": 0.8969,
+   "kept_share": 0.701
+  },
+  "9": {
+   "split_steps": 257,
+   "split_step_accuracy": 0.9883,
+   "v1_steps": 529,
+   "v1_step_accuracy": 0.9565,
+   "kept_share": 0.4858
+  },
+  "10": {
+   "split_steps": 886,
+   "split_step_accuracy": 0.9684,
+   "v1_steps": 1027,
+   "v1_step_accuracy": 0.9231,
+   "kept_share": 0.8627
+  },
+  "11": {
+   "split_steps": 1196,
+   "split_step_accuracy": 0.9699,
+   "v1_steps": 1432,
+   "v1_step_accuracy": 0.9078,
+   "kept_share": 0.8352
+  },
+  "12": {
+   "split_steps": 233,
+   "split_step_accuracy": 0.9914,
+   "v1_steps": 353,
+   "v1_step_accuracy": 0.9688,
+   "kept_share": 0.6601
+  },
+  "13": {
+   "split_steps": 1332,
+   "split_step_accuracy": 0.9842,
+   "v1_steps": 1569,
+   "v1_step_accuracy": 0.9662,
+   "kept_share": 0.8489
+  },
+  "14": {
+   "split_steps": 1550,
+   "split_step_accuracy": 0.9503,
+   "v1_steps": 1867,
+   "v1_step_accuracy": 0.8972,
+   "kept_share": 0.8302
+  },
+  "15": {
+   "split_steps": 149,
+   "split_step_accuracy": 1.0,
+   "v1_steps": 199,
+   "v1_step_accuracy": 0.9849,
+   "kept_share": 0.7487
+  },
+  "16": {
+   "split_steps": 790,
+   "split_step_accuracy": 0.9785,
+   "v1_steps": 1039,
+   "v1_step_accuracy": 0.9346,
+   "kept_share": 0.7603
+  },
+  "17": {
+   "split_steps": 46,
+   "split_step_accuracy": 0.9783,
+   "v1_steps": 187,
+   "v1_step_accuracy": 0.7326,
+   "kept_share": 0.246
+  },
+  "18": {
+   "split_steps": 589,
+   "split_step_accuracy": 0.9711,
+   "v1_steps": 953,
+   "v1_step_accuracy": 0.8783,
+   "kept_share": 0.618
+  }
+ }
+}
