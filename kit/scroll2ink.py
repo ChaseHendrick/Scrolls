@@ -44,6 +44,7 @@ INSTALL = ("install Headless VC3D: git clone --branch submission/progress-2026-1
            "(python scripts/get_vc3d.py in that folder) or VC_BIN; or pass --agent 'CMD'")
 DEFAULTS = {"generations": 200, "trace_minutes": 60, "extend_rounds": 4, "extend_cells": 10, "check_windows": 5,
             "model": "reader-v2"}
+TRACE_GRACE_S = 300      # seconds past --trace-minutes before a tracer that ignores its time limit is stopped
 # where and how fast, not what: these may differ between the parts of a split run (CPU for VC3D, a GPU for ink)
 RUNTIME = ("device", "threads")
 
@@ -211,21 +212,25 @@ def stage_trace(run, agent, log, inp):
     s = run.settings
     args = {"volume": inp["prediction"], "mode": "seed", "seed": s["seed"], "ct": inp["ct"],
             "generations": s["generations"], "out": str(run.dir / "trace"), "name": "trace",
-            "time_limit_s": s["trace_minutes"] * 60, "snapshot_interval": 10}
+            "time_limit_s": s["trace_minutes"] * 60, "snapshot_interval": 10,
+            # a tracer without villa's time limit is stopped here instead, keeping its last snapshot
+            "timeout": s["trace_minutes"] * 60 + TRACE_GRACE_S}
     if s.get("snap_seed"):
         args["snap_seed"] = True
     if inp.get("normal_grids"):
         args["normal_grids"] = inp["normal_grids"]
     if inp.get("voxel_um"):
         args["voxel_um"] = inp["voxel_um"]
-    if s.get("threads"):
-        args["threads"] = s["threads"]
+    # no threads: the tracer does not scale past a few, so the tool's own default (min(4, CPUs)) stays
     rc, res = call(agent, "trace", args, log)
     path, area = _surface(res)
     if rc != 0 or not path:
         raise Scroll2InkError(f"trace: {res.get('error') or res.get('note') or 'no surface'} (log {res.get('log')})")
-    return {"surface": path, "area_cm2": area, "stop": (res.get("stop") or {}).get("reason"),
-            "data_term": res.get("data_term"), "note": res.get("note")}
+    stop = res.get("stop") or {}
+    return {"surface": path, "area_cm2": area, "stop": stop.get("kind") or stop.get("reason"),
+            "partial": stop.get("partial"), "generations_done": stop.get("generations_done"),
+            "time_limit": res.get("time_limit"), "data_term": res.get("data_term"), "note": res.get("note"),
+            "seconds_tool": res.get("seconds")}
 
 
 def check(agent, log, surface, inp, windows, out):
