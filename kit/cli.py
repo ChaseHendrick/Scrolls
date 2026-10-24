@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,live,style,doctor,plan,cost,find,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -71,7 +71,8 @@ def _unknown(word, choices, prog="python -m kit"):
 
 
 def cmd_doctor(args):
-    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk, speed=not args.no_speed))
+    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk, speed=not args.no_speed,
+                                                           remote=args.remote))
     print(report)
     return 1 if worst == doctor.FAIL else 0
 
@@ -984,7 +985,7 @@ def cmd_strokenet(args):
 # `python -m kit --help` lists the commands under these headings, in this order; a command missing here is listed
 # under "Other" (tests/test_cli_help.py fails on one).
 GROUPS = (
-    ("Start and set up", ("start", "doctor", "prizes", "plan", "cost", "help", "live", "style")),
+    ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "centerline", "cite", "fetch", "volumeview", "segzoo")),
     ("Segments and geometry", ("tifxyz", "atlas", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
                                "surfacefix", "layers")),
@@ -1063,6 +1064,8 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("doctor", help="check GPU, disk, tools and villa paths")
     p.add_argument("--disk", default=".", help="path whose free space (and speed) to check")
     p.add_argument("--no-speed", action="store_true", help="skip the 64 MB disk speed test")
+    p.add_argument("--remote", action="store_true", help="on a rented or cloud machine: also check where VC3D will "
+                   "cache streamed chunks, its free space and speed, and on RunPod whether it survives a stop")
     p.set_defaults(func=cmd_doctor)
 
     p = sub.add_parser("plan", help="print a First Letters run plan for an eligible scroll")
@@ -1078,6 +1081,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--cpu-rate", type=float, default=0.0)
     p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
     p.set_defaults(func=cmd_cost)
+
+    p = sub.add_parser("submitcheck", help="preflight a prize submission folder against the prize page's file "
+                                           "rules, quoting each rule")
+    from . import submitcheck as _sc
+    _sc.build_parser(p)
+    p.set_defaults(func=_sc.cmd_submitcheck)
 
     p = sub.add_parser("find", help="everything public for one scroll: volumes, segments, predictions, center "
                                     "lines and Hugging Face matches")
