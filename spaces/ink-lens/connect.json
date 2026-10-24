@@ -3,7 +3,7 @@
  "space": "SharpMeow/ink-lens",
  "title": "Ink Lens",
  "checked": "2026-10-24",
- "intro": "The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server once it is deployed.",
+ "intro": "The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server.",
  "sources": [
   {
    "id": "layers",
@@ -41,7 +41,7 @@
    "url": "https://huggingface.co/spaces/SharpMeow/ink-lens",
    "space": "SharpMeow/ink-lens",
    "host": "https://sharpmeow-ink-lens.hf.space",
-   "status": "not-deployed",
+   "status": "running",
    "endpoints": [
     {
      "api": "/lens_sample",
@@ -58,7 +58,7 @@
     }
    ],
    "license": "Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0",
-   "note": "Not deployed yet; these calls work once it is. Model output, not a reading."
+   "note": "Checked live on 24 Oct 2026: /list_samples and /lens_sample answered (gradio_client, the 0841-w00 sample). Model output, not a reading."
   }
  ]
 }

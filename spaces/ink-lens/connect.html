@@ -16,7 +16,7 @@
 .scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
 .scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
 <h2>Connect your tool</h2>
-<p>The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server once it is deployed.</p>
+<p>The sample segments Ink Lens reads are open data, and each one reads straight from its URL in your own tool. The page is also an API and an MCP server.</p>
 <div class="scc-src" id="connect-layers"><h3>Sample layers, PHerc0841 w00 (9.366 um surface volume)</h3>
 <p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr</code></pre></div>
@@ -52,26 +52,26 @@ get = lambda c: tifffile.imread(io.BytesIO(urllib.request.urlopen(f&quot;{T}/{c}
 xyz = np.stack([get(c) for c in &quot;xyz&quot;], -1)  # xyz[i, j] = (x, y, z) in scan voxels; -1 = no surface</code></pre></div></details>
 </div>
 <div class="scc-src" id="connect-api"><h3>Call Ink Lens from code or an agent</h3>
-<p class="scc-meta">Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0 · Not deployed yet; these calls work once it is. Model output, not a reading.</p>
+<p class="scc-meta">Code Apache 2.0; d9v2 MIT; scans CC BY-NC 4.0 · Checked live on 24 Oct 2026: /list_samples and /lens_sample answered (gradio_client, the 0841-w00 sample). Model output, not a reading.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/ink-lens</code></pre></div>
-<details><summary>Python /lens_sample<span class="scc-b warn">not deployed yet</span></summary>
+<details><summary>Python /lens_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 from gradio_client import Client
 
 client = Client(&quot;SharpMeow/ink-lens&quot;)
 result = client.predict(sample_id=&quot;0841-w00&quot;, size=640, reader=&quot;d9v2&quot;, windows=3, api_name=&quot;/lens_sample&quot;)</code></pre></div></details>
-<details><summary>Python /list_samples<span class="scc-b warn">not deployed yet</span></summary>
+<details><summary>Python /list_samples<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 from gradio_client import Client
 
 client = Client(&quot;SharpMeow/ink-lens&quot;)
 result = client.predict(api_name=&quot;/list_samples&quot;)</code></pre></div></details>
-<details><summary>curl /lens_sample<span class="scc-b warn">not deployed yet</span></summary>
+<details><summary>curl /lens_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-ink-lens.hf.space
 EVENT=$(curl -s -X POST $URL/gradio_api/call/lens_sample -H &#x27;Content-Type: application/json&#x27; \
   -d &#x27;{&quot;data&quot;: [&quot;0841-w00&quot;, 640, &quot;d9v2&quot;, 3]}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)
 curl -sN $URL/gradio_api/call/lens_sample/$EVENT</code></pre></div></details>
-<details><summary>MCP (Claude, Cursor and other agents)<span class="scc-b warn">not deployed yet</span></summary>
+<details><summary>MCP (Claude, Cursor and other agents)<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>{
   &quot;mcpServers&quot;: {
     &quot;ink-lens&quot;: {
