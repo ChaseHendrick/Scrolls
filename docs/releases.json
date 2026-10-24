@@ -97,7 +97,7 @@
       "id": "scrolls-kit",
       "title": "Scrolls kit",
       "released": "2026-10-24",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: eleven `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: twelve `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -252,6 +252,15 @@
           "command": "python -m kit integrity text DRAFT.md",
           "page": "docs/tools/integrity.md",
           "evidence": "[guide](docs/integrity.md), [tests](tests/test_integrity.py)"
+        },
+        {
+          "id": "sheetcheck",
+          "name": "Ink map self-check (neighbor-sheet test)",
+          "released": "2026-10-24",
+          "summary": "Checks without labels whether an ink map reads the traced sheet: it compares the map on the sheet with the same model read one and two sheet pitches away along the mesh normals (a map that still looks the same there is smeared across sheets or follows something every sheet shares), and flags ink that follows the mask edge or lights up empty space in the CT. Takes 2D maps read at each shift, or projects a 3D prediction volume on a tifxyz mesh itself. A pass is necessary, not sufficient: a map with no ink signal passes too, so it does not replace a labeled score with its control.",
+          "command": "python -m kit sheetcheck demo --png sheetcheck-demo.png",
+          "page": "docs/tools/sheetcheck.md",
+          "evidence": "[synthetic demo](docs/assets/sheetcheck/sheetcheck-demo.png), [tests](tests/test_sheetcheck.py)"
         }
       ],
       "where": "main"

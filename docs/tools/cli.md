@@ -129,6 +129,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `rowscore` | none | `cmd_rowscore` | [rowscore](rowscore.md) | text-row periodicity triage score for ink maps (Bullo27's method) |
 | `auc` | none | `cmd_auc` | [auc](auc.md) | pixel AUC of an ink map against a segment's published labels |
 | `fibertensor` | `train`, `predict` | `cmd_fibertensor` | [fibertensor](fibertensor.md) | fiber-orientation (structure tensor) features and a tiny CPU ink reader |
+| `sheetcheck` | `maps`, `volume`, `demo`, `summary` | `cmd_sheetcheck` | [sheetcheck](sheetcheck.md) | label-free self-check of an ink map: on the traced sheet, or smeared across sheets, along the mask edge or in empty space |
 | `hpscore` | none | `cmd_hpscore` | [hpscore](hpscore.md) | letter-scale score: 48 um high-passed correlation with the labels (Scheirer) |
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
