@@ -8,6 +8,7 @@ It reads one z slice of the public bucket by URL, logged out, and writes the pag
   assets/search.i8       tokens_unit of every cell inside the scroll, cut to the slice's 32 main directions, unit
                          length, int8 (x 127); the page's click-to-search takes dot products of these
   assets/mask.u8         which cells are inside the scroll, one bit each, row major
+  assets/rgb.webp        one layer (z 9,680) of the color volume (scripts in Scrolls-private made it), read back by URL
   index.html             this folder's index.html with the numbers below filled in
 
 The pictures are model output of a public scan that is not prize-eligible (PHerc0841); they live only on the Space,
@@ -24,10 +25,13 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 BUCKET = ("https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/"
           "PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr")
+RGB = ("https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/"
+       "PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr")
 CT = ("https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/"
       "PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr")
 Z = 9600                              # scan voxels; token cell 1200, dense cell 2400
 BOX = (1152, 6816, 2592, 6048)        # y0, y1, x0, x1 in scan voxels, every 8: the scroll at this z, with a margin
+RGB_GB = "1.6 GB"                      # the color volume's size, from its upload receipt
 K = 32                                # directions kept for search
 QUERIES = 60                          # random cells for the search accuracy check
 
@@ -95,8 +99,12 @@ def build(out):
     data = {"z": Z, "box": BOX, "shape": list(m.shape), "k": K, "n": int(m.sum()), "queries": QUERIES,
             "r_median": round(float(np.median(r)), 3), "r_min": round(min(r), 3),
             "top5_median": round(float(np.median(ov)), 2), "top5_min": round(min(ov), 2),
-            "bucket": BUCKET, "ct": CT}
-    page = (HERE / "index.html").read_text().replace("__DATA__", json.dumps(data))
+            "bucket": BUCKET, "ct": CT, "rgb": RGB}
+    rgb = zarr.open_array(FsspecStore.from_url(RGB + "/0", read_only=True), mode="r", zarr_format=2)
+    layer = np.asarray(rgb[:, (Z + 80) // 8, y0 // 8:y1 // 8, x0 // 8:x1 // 8]).transpose(1, 2, 0)
+    Image.fromarray(layer).save(out / "assets" / "rgb.webp", lossless=True)
+    data["rgb_gb"] = RGB_GB
+    page = (HERE / "index.html").read_text().replace("__DATA__", json.dumps(data)).replace("__RGBGB__", RGB_GB)
     (out / "index.html").write_text(page)
     for f in ("README.md", "NOTICE", "connect.json", "CONNECT.md"):
         shutil.copy(HERE / f, out / f)

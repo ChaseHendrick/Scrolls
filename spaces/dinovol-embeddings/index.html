@@ -115,12 +115,20 @@ tr:last-child td{border-bottom:0}
 #connect-wrap .scc h2{font-size:clamp(26px,3.2vw,38px);margin-bottom:10px}
 footer{padding:40px 0 60px;color:var(--ink3);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.sizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:12px;margin-bottom:22px}
+.dlgrid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.dlgrid .card pre{max-height:300px}
+.browse{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:28px;align-items:center}
+.browse>*,.dlgrid>*,.sizes>*{min-width:0}
+.browse .shot{border-radius:16px;overflow:hidden;background:#000;box-shadow:var(--shadow);aspect-ratio:432/708;max-width:360px;width:100%;justify-self:center}
+.browse .shot img{width:100%;height:100%;object-fit:cover;display:block}
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:9px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
 .toast.on{opacity:1;transform:translateX(-50%)}
 @media (max-width:900px){
   .hero .wrap,.explain,.demo{grid-template-columns:1fr}
   .heroart{max-width:300px}
-  .cards3{grid-template-columns:1fr}
+  .cards3,.dlgrid,.browse{grid-template-columns:1fr}
+  .sizes{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:560px){
@@ -135,7 +143,7 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 <nav><div class="wrap">
   <a class="brand" href="#top"><span class="cube" aria-hidden="true"></span>dinovol Embeddings</a>
   <div class="navlinks">
-    <a href="#what">What it is</a><a href="#try">Try it</a><a href="#connect">Connect your tool</a><a href="#use">Use it</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
+    <a href="#what">What it is</a><a href="#try">Try it</a><a href="#browse">Whole scan</a><a href="#connect">Connect your tool</a><a href="#use">Use it</a><a href="#download">Download</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
   </div>
   <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
 </div></nav>
@@ -155,7 +163,8 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
     <div class="cta">
       <a class="btn primary" href="#try">Click a point, find its twins</a>
       <a class="btn" href="#what">What are embeddings?</a>
-      <a class="btn" href="#use">Read it in Python</a>
+      <a class="btn" href="#browse">Scroll the whole scan</a>
+      <a class="btn" href="#download">Download</a>
     </div>
   </div>
   <div class="heroart" aria-hidden="true">
@@ -222,6 +231,19 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
   </div>
 </div></section>
 
+<section id="browse"><div class="wrap">
+  <h2>Scroll through the whole scan in color</h2>
+  <div class="browse">
+    <div>
+      <p class="sub" style="margin-bottom:16px">The same coloring as the slider above, for every slice of PHerc0841: each cube's 480 numbers become one color, from the three directions in which they vary most across the whole scan. It is a 3D color volume in OME-Zarr with four zoom levels, so neuroglancer streams it in a web browser and you can move through all 2,448 layers of cubes.</p>
+      <div class="cta" style="margin-top:0"><a class="btn primary" id="nglink" target="_blank" rel="noopener" href="#">Open in neuroglancer</a></div>
+      <div class="codebox"><pre id="rgburl"></pre><button class="copy" data-copy="rgburl" type="button">Copy</button></div>
+      <p class="small" style="margin-top:10px">Array <code>0</code> is full detail, one color per 8-voxel cube, shape (3, 2448, 963, 963) as channel, z, y, x; arrays <code>1</code> to <code>3</code> are each half the size of the one before. 0 means outside the scroll. The colors show how the numbers vary; they are not labels.</p>
+    </div>
+    <div class="shot"><img src="assets/rgb.webp" alt="One layer of the color volume at z 9,680, read from the bucket"></div>
+  </div>
+</div></section>
+
 <section id="connect-wrap"><div class="wrap">
 <!-- space-connect:start -->
 <section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
@@ -252,6 +274,16 @@ footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 data = json.load(urllib.request.urlopen(&quot;https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json&quot;))</code></pre></div></details>
 <details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-rgb"><h3>Color volume of the features: OME-Zarr metadata</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · tokens_unit as one color per cube, a multiscale OME-Zarr (zarr v2, uint8, axes c, z, y, x, levels 0 to 3; 0 = outside the scroll). Open the folder this file sits in with zarr.open_group(URL, mode=&#x27;r&#x27;, zarr_format=2); the page&#x27;s Open in neuroglancer button shows it with an RGB shader.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs</code></pre></div>
+<details><summary>Python<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>import json, urllib.request
+
+data = json.load(urllib.request.urlopen(&quot;https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs&quot;))</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs</code></pre></div></details>
 </div>
 <div class="scc-src" id="connect-ct"><h3>X-ray CT the features came from, PHerc0841 9.366 um</h3>
 <p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · Read live from the open-data bucket, never copied here. Feature index i covers scan voxels [i*8, i*8+8) for tokens_unit and [i*4, i*4+4) for dense and ink, at level 0. · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
@@ -312,6 +344,24 @@ Page source and build script: https://github.com/ChaseHendrick/Scrolls/tree/main
 <span class="c"># i, j, k = z // 8, y // 8, x // 8 for tokens_unit; // 4 for dense and ink</span></pre><button class="copy" data-copy="u3" type="button">Copy</button></div></div></div>
     <div class="step"><div><b>Compare.</b> A dot product of two vectors is their cosine similarity. The search box in <a href="#try">Try it</a> writes a complete example for the point you click.</div></div>
   </div>
+</div></section>
+
+<section id="download"><div class="wrap">
+  <h2>Download it</h2>
+  <p class="sub">Everything streams, so most people never need a copy. When you want files on disk, the free <code>hf</code> command copies any folder of the store, logged out. A downloaded copy opens with the same zarr code, with the folder's path in place of the URL.</p>
+  <div class="sizes">
+    <div class="stat"><b>539 GB</b><span>everything, about 940,000 files</span></div>
+    <div class="stat"><b>179 GB</b><span>tokens_unit with its scales</span></div>
+    <div class="stat"><b>238 GB</b><span>dense with its scales</span></div>
+    <div class="stat"><b>122 GB</b><span>ink with its scales</span></div>
+    <div class="stat"><b>__RGBGB__</b><span>the color volume, all levels</span></div>
+  </div>
+  <div class="dlgrid">
+    <div class="card"><div class="k">A region</div><h3>Only the chunks you need</h3><p>Chunk folders follow the scan: <code>ARRAY/Z/Y/X</code> with Z = z &divide; 192 and Y, X = y, x &divide; 96, in scan voxels, for every array. This strip at z 9,600 is 40 MB and took 7 s logged out.</p><div class="codebox"><pre id="dl1"></pre><button class="copy" data-copy="dl1" type="button">Copy</button></div></div>
+    <div class="card"><div class="k">One feature set</div><h3>tokens_unit, 179 GB</h3><p>Swap in <code>dense</code> or <code>ink</code> for the others. The vectors and their scales are separate arrays; take both.</p><div class="codebox"><pre id="dl2"></pre><button class="copy" data-copy="dl2" type="button">Copy</button></div></div>
+    <div class="card"><div class="k">Everything</div><h3>All 539 GB</h3><p>Log in first with a free Hugging Face account: listing the whole store logged out gets rate limited.</p><div class="codebox"><pre id="dl3"></pre><button class="copy" data-copy="dl3" type="button">Copy</button></div></div>
+  </div>
+  <p class="small" style="margin-top:14px">Needs <code>pip install -U huggingface_hub</code>, which provides the <code>hf</code> command. Then read it locally: <code>zarr.open_group("pherc0841-dinovol.zarr", mode="r", zarr_format=2)</code>.</p>
 </div></section>
 
 <section id="method"><div class="wrap">
@@ -390,6 +440,19 @@ document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)re
 /* store snippet */
 const URL_=D.bucket;
 $('u2').innerHTML='import zarr\nfrom zarr.storage import FsspecStore\n\nURL = "'+URL_+'"\ng = zarr.open_group(FsspecStore.from_url(URL, read_only=True), mode="r", zarr_format=2)\nprint(g["tokens_unit"].shape, g["dense"].shape)';
+
+/* whole scan in color */
+(function(){const um=7.4928e-5,u=D.rgb;$('rgburl').textContent=u;
+ const st={dimensions:{x:[um,'m'],y:[um,'m'],z:[um,'m']},position:[540.5,480.5,1210.5],crossSectionScale:2,layout:'4panel',
+  layers:[{type:'image',name:'PHerc0841 dinovol color',source:{url:'zarr2://'+u,transform:{outputDimensions:{'c^':[1,''],z:[um,'m'],y:[um,'m'],x:[um,'m']}}},
+   shader:'void main(){emitRGB(vec3(toNormalized(getDataValue(0)),toNormalized(getDataValue(1)),toNormalized(getDataValue(2))));}'}]};
+ $('nglink').href='https://neuroglancer-demo.appspot.com/#!'+encodeURIComponent(JSON.stringify(st));})();
+
+/* download commands */
+(function(){const B='hf://buckets/SharpMeow/dinovol-embeddings/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr',d='pherc0841-dinovol.zarr';
+ $('dl1').innerHTML='B='+B+'\nU='+URL_+'\nD='+d+'\nmkdir -p $D/tokens_unit $D/tokens_unit_scale\nfor f in .zgroup .zattrs tokens_unit/.zarray tokens_unit_scale/.zarray; do\n  curl -sL $U/$f -o $D/$f\ndone\n<span class="c"># z 9,600 to 9,791, y 3,840 to 3,935, every x</span>\nhf buckets sync $B/tokens_unit/50/40 $D/tokens_unit/50/40\nhf buckets sync $B/tokens_unit_scale/50/40 $D/tokens_unit_scale/50/40';
+ $('dl2').innerHTML='B='+B+'\nU='+URL_+'\nD='+d+'\nmkdir -p $D && curl -sL $U/.zgroup -o $D/.zgroup && curl -sL $U/.zattrs -o $D/.zattrs\nhf buckets sync $B/tokens_unit $D/tokens_unit\nhf buckets sync $B/tokens_unit_scale $D/tokens_unit_scale';
+ $('dl3').innerHTML='hf auth login\nhf buckets sync '+B+' '+d;})();
 
 /* click-to-search */
 let V=null,IDX=null,POS=null,sims=null,sorted=null,cell=null,bg='ct';

@@ -24,6 +24,26 @@ data = json.load(urllib.request.urlopen("https://huggingface.co/buckets/SharpMeo
 curl -L -O https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/index.json
 ```
 
+## Color volume of the features: OME-Zarr metadata
+
+`https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs`
+
+License: CC BY-NC 4.0 (derived from Vesuvius Challenge open data). tokens_unit as one color per cube, a multiscale OME-Zarr (zarr v2, uint8, axes c, z, y, x, levels 0 to 3; 0 = outside the scroll). Open the folder this file sits in with zarr.open_group(URL, mode='r', zarr_format=2); the page's Open in neuroglancer button shows it with an RGB shader.
+
+### Python (tested 2026-10-24)
+
+```python
+import json, urllib.request
+
+data = json.load(urllib.request.urlopen("https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs"))
+```
+
+### curl (tested 2026-10-24)
+
+```bash
+curl -L -O https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr/.zattrs
+```
+
 ## X-ray CT the features came from, PHerc0841 9.366 um
 
 `https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/volumes/20250821151531-9.366um-1.2m-113keV-masked.zarr`
