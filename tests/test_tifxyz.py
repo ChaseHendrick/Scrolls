@@ -106,6 +106,49 @@ class TestGeometry(unittest.TestCase):
         self.assertTrue(m["stretched"][:, 14:16].all())
         self.assertGreater(tx.stretch(seg(xyz))["edge_columns"]["p99"], 2.5)
 
+    def test_isometry_block_exact_stretched_and_invalid(self):
+        r = tx.isometry(seg(plane()))
+        self.assertEqual(r["version"], 1)
+        self.assertEqual((r["within_10pct"], r["within_25pct"], r["median_abs_log_ratio"]), (1.0, 1.0, 0.0))
+        self.assertEqual((r["area_ratio"], r["angle_deg"], r["stretched_nodes"]), (1.0, [90.0, 90.0, 90.0], 0))
+        self.assertEqual((r["l2_mean"], r["l2_median"], r["linf"], r["area_error"]), (1.0, 1.0, 1.0, 0.0))
+        # 1.3 times along the columns: those edges fail 10 % and 25 % but stay under the 1.5x flag
+        xyz = plane()
+        xyz[..., 0] = 1000 + (xyz[..., 0] - 1000) * 1.3
+        r = tx.isometry(seg(xyz))
+        cols, rows = 40 * 29, 39 * 30
+        self.assertEqual(r["edges"], cols + rows)
+        self.assertEqual(r["within_10pct"], round(rows / (cols + rows), 4))
+        self.assertEqual(r["stretched_nodes"], 0)
+        self.assertAlmostEqual(r["area_ratio"], 1.3, places=4)
+        self.assertAlmostEqual(r["linf"], 1.3, places=4)
+        self.assertAlmostEqual(r["l2_mean"], math.sqrt((1.3 ** 2 + 1) / 2), places=4)
+        self.assertEqual(r["area_error"], 0.0)  # uniform stretch: every triangle keeps its share of the area
+        # an invalid node drops its four edges and four cells instead of counting as a stretch
+        xyz = plane()
+        xyz[20, 15] = -1
+        r = tx.isometry(seg(xyz))
+        self.assertEqual(r["edges"], 40 * 29 + 39 * 30 - 4)
+        self.assertEqual((r["within_10pct"], r["stretched_nodes"], r["l2_mean"]), (1.0, 0, 1.0))
+        # a planted 2-step jump is flagged, and squashed edges count as much as stretched ones
+        xyz = plane()
+        xyz[:, 15:, 0] += 2 * STEP
+        r = tx.isometry(seg(xyz))
+        self.assertEqual(r["stretched_nodes"], 2 * 40)
+        self.assertEqual(r["stretched_area_vx2"], 2 * 40 * STEP * STEP)
+        xyz = plane()
+        xyz[:, 15:, 0] -= 0.5 * STEP
+        self.assertEqual(tx.isometry(seg(xyz))["stretched_nodes"], 2 * 40)
+
+    def test_node_ratio_keeps_the_worst_edge(self):
+        xyz = plane()
+        xyz[:, 15:, 0] += 2 * STEP
+        nr = tx.node_ratio(seg(xyz))
+        self.assertAlmostEqual(nr[5, 14], 3.0)
+        self.assertAlmostEqual(nr[5, 3], 1.0)
+        xyz[3, 3] = -1
+        self.assertTrue(math.isnan(tx.node_ratio(seg(xyz))[3, 3]))
+
     def test_holes_without_scipy_match(self):
         valid = np.ones((20, 20), bool)
         valid[5:8, 5:9] = False

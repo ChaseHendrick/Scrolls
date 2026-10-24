@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | kit command, kit module |
 | Area | Surfaces and tracing |
-| Run | `python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit tifxyz chunks`, `python -m kit tifxyz diff`, `python -m kit.tifxyz`, `from kit import tifxyz` |
+| Run | `python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz isometry`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit tifxyz chunks`, `python -m kit tifxyz diff`, `python -m kit.tifxyz`, `from kit import tifxyz` |
 | Code | `kit/tifxyz.py`, `kit/cli.py` (`build_parser`) |
 | Tests | `tests/test_tifxyz.py`, `tests/test_tifxyz_chunks_diff.py` |
 | Needs | Python 3.10 or newer, numpy and tifffile; scipy when installed (finds holes faster; a numpy fallback gives the same answer). No VC3D, villa or GPU |
@@ -27,6 +27,7 @@ A tifxyz segment is how villa and VC3D store a traced papyrus surface: a folder 
 
 - `info`: the surface's real 3D area (cm2, mm2 and voxels squared), grid size, filled share, bounds and voxel size, with `meta.json`'s own `area_vx2` beside ours as a check.
 - `stretch`: every grid edge's 3D length over the step `meta.json` promises (1.0 is exact), cell area over the promised area, and the angle between the two grid directions, as percentiles.
+- `isometry`: the block proposed for `meta.json` in villa issue [#2279](https://github.com/ScrollPrize/villa/issues/2279), version 1: edges within 10 % and 25 % of the step, the median |log(edge / step)|, triangle area over the promised area, grid angle p5, p50 and p95, nodes flagged at 1.5x, and flatboi's stretch metrics (L2 mean and median, Linf, area error) with the grid itself as the flattening, so a perfect grid gives 1, 1, 1 and 0.
 - `check`: holes inside the sheet, folds (neighboring cells whose normals turn by more than 90 degrees) and over-stretched nodes (an edge 1.5 times too long or too short), each counted and in mm2, with an optional picture.
 - `obj`: a Wavefront OBJ with UVs for Blender or MeshLab.
 - `preview`: a shaded PNG of the sheet, holes dark.
@@ -148,6 +149,23 @@ usage: python -m kit tifxyz stretch [-h] [--voxel-um VOXEL_UM] [--cache CACHE]
 | `--cache CACHE` | `work/tifxyz/cache` | where bucket segments are kept |
 | `--json` | off | print the report as JSON |
 
+### `python -m kit tifxyz isometry`
+
+```
+usage: python -m kit tifxyz isometry [-h] [--voxel-um VOXEL_UM]
+                                     [--cache CACHE] [--json]
+                                     [--max-stretch MAX_STRETCH]
+                                     segment
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `segment` | required | tifxyz folder, or its https:// or s3:// URL on the open-data bucket |
+| `--voxel-um VOXEL_UM` | none | voxel size (default: the folder name's -N.NNNum.tifxyz) |
+| `--cache CACHE` | `work/tifxyz/cache` | where bucket segments are kept |
+| `--json` | off | print the block as JSON |
+| `--max-stretch MAX_STRETCH` | `1.5` | a stretched node has an edge this many times too long or short |
+
 ### `python -m kit tifxyz check`
 
 ```
@@ -267,6 +285,8 @@ usage: python -m kit tifxyz diff [-h] [--voxel-um VOXEL_UM] [--cache CACHE]
 | `load(src, cache=DEFAULT_CACHE, voxel_um=None)` | a Segment | `VerifyError` | A local folder or a bucket URL (fetched once into cache); holes are -1, NaN or all-zero nodes |
 | `info(seg)` | dict (Outputs) | nothing | Area, grid, bounds, `meta.json` ratio |
 | `stretch(seg)` | dict | nothing | Percentiles 1, 5, 50, 95, 99 of edge ratio, cell area ratio and grid angle |
+| `isometry(seg, max_stretch=MAX_STRETCH)` | dict (Outputs) | `VerifyError` on a bad `max_stretch` | The block proposed for `meta.json`, `ISOMETRY_VERSION` 1 |
+| `node_ratio(seg)` | (H, W) float | nothing | Each node's worst edge over the step, farthest from 1 in log terms; NaN at holes |
 | `check(seg, max_stretch=MAX_STRETCH, fold_deg=FOLD_DEG)` | (dict, {"holes", "folds", "stretched": (H, W) bool}) | `VerifyError` on bad settings | Node masks on the input grid |
 | `facing(seg, umb)` | dict | `VerifyError` when no normal can be compared | `umb` is a `kit.stackcheck` Umbilicus (or anything with `at(z)`, `z`, `source`, `volume`) |
 | `write_obj(seg, path, stride=1)` | dict: path, vertices, triangles, stride | `VerifyError` on stride below 1 | Units: voxels; UVs from the grid position, 0 to 1 |
@@ -280,8 +300,8 @@ usage: python -m kit tifxyz diff [-h] [--voxel-um VOXEL_UM] [--cache CACHE]
 | `fetch_chunks(src, arr_levels, keys, sizes, dest, workers=CHUNK_WORKERS)` | (written, skipped, bytes) | `VerifyError` when the disk is short, `OSError` | Keeps 1 GiB free; skips files already there at the same size |
 | `diff(a, b, tol=DIFF_TOL, sample=DIFF_SAMPLE, seed=0)` | (dict, {"added", "removed", "moved": (H, W) bool on b's grid}) | `VerifyError` on a tolerance of 0 or less | Node by node on one grid shape; by position otherwise (masks then hold `added` only) |
 | `diff_picture(b, masks, size=1200)` | (H, W, 3) uint8 | nothing | b shaded; added green, removed red, moved orange |
-| `format_info(r)`, `format_stretch(r)`, `format_check(r)`, `format_facing(r)`, `format_chunks(r)`, `format_diff(r)` | the text the command prints | nothing | |
-| `build_parser(p)` | the parser with the eight actions | nothing | Used by `kit/cli.py` |
+| `format_info(r)`, `format_stretch(r)`, `format_isometry(r, source='')`, `format_check(r)`, `format_facing(r)`, `format_chunks(r)`, `format_diff(r)` | the text the command prints | nothing | |
+| `build_parser(p)` | the parser with the nine actions | nothing | Used by `kit/cli.py` |
 | `run(args)` | exit code | `VerifyError`, `OSError` | One action |
 | `cmd_tifxyz(args)` | exit code | nothing | `run` with errors turned into exit 2 |
 | `main(argv=None)` | exit code | nothing | `python -m kit.tifxyz` |
@@ -307,6 +327,8 @@ usage: python -m kit tifxyz diff [-h] [--voxel-um VOXEL_UM] [--cache CACHE]
 | `meta_area_vox2`, `meta_area_ratio` | float | `meta.json`'s `area_vx2` and ours over it, when present |
 
 `stretch`: `edge_columns`, `edge_rows`, `cell_area` (ratios, 1.0 exact) and `grid_angle_deg`, each `{p1, p5, p50, p95, p99}`; `within_10pct`, `within_25pct` (share of edges); `median_abs_log`.
+
+`isometry`: `version`, `step_vx`, `edges`, `within_10pct`, `within_25pct`, `median_abs_log_ratio`, `area_ratio` (triangle area over complete cells times the step squared), `angle_deg` (p5, p50, p95), `stretched_nodes`, `stretched_area_vx2` (one cell per flagged node), `l2_mean`, `l2_median` (the area-weighted median of L2 squared, as flatboi returns it), `linf`, `area_error`. On PHerc0139 w035: 0.9984 within 10 %, area ratio 0.9963, 43 stretched nodes, L2 mean 0.9985, Linf 1.2094 (run 2026-10-24).
 
 `check`: `holes`, `folds`, `stretched`, each `{nodes, share, area_mm2}` (holes' share is of the filled nodes plus the holes); `clean`; `png` when written.
 
@@ -381,12 +403,13 @@ Seconds on a laptop CPU for any published mesh (times in the At a glance table, 
 
 ## Tests
 
-`python -m unittest tests.test_tifxyz tests.test_tifxyz_chunks_diff -v`: area and isometry of a flat sheet, `meta.json` ratio, each planted defect (hole, fold, stretch) caught by its own check while the others stay quiet, holes found the same without scipy, facing on a cylinder and its mirror, the volume warning, bad settings, the command line round trip (info, check with PNG, obj line counts, preview size), the PNG bytes read back, and exit codes 1 and 2. For `chunks`: the touched layer of a planted sheet and no other, the margin, level scaling, absent chunks, the three key layouts, `--fetch` copying only metadata and touched chunks (and skipping them the second time), bad levels, margins and paths, and the `--fetch` refusal when sizing was cut short. For `diff`: a copy, each planted change counted, the tolerance, area change, an extension and a far copy across grids, and the position test against brute force. They do not download a real segment; the w035 numbers above were run by hand.
+`python -m unittest tests.test_tifxyz tests.test_tifxyz_chunks_diff -v`: area and isometry of a flat sheet, `meta.json` ratio, each planted defect (hole, fold, stretch) caught by its own check while the others stay quiet, holes found the same without scipy, facing on a cylinder and its mirror, the volume warning, bad settings, the command line round trip (info, check with PNG, obj line counts, preview size), the PNG bytes read back, and exit codes 1 and 2. For `chunks`: the touched layer of a planted sheet and no other, the margin, level scaling, absent chunks, the three key layouts, `--fetch` copying only metadata and touched chunks (and skipping them the second time), bad levels, margins and paths, and the `--fetch` refusal when sizing was cut short. For `isometry`: an exact grid gives 1, 1, 0, 1, angles 90 and flatboi's 1, 1, 0; a grid 1.3 times too long along its columns keeps only the row edges within 10 %, flags nothing and gives Linf 1.3 and L2 mean sqrt((1.3^2 + 1) / 2); one invalid node drops its four edges; a 2-step jump and a half-step squash each flag two columns of nodes. For `diff`: a copy, each planted change counted, the tolerance, area change, an extension and a far copy across grids, and the position test against brute force. They do not download a real segment; the w035 numbers above were run by hand.
 
 ## History
 
 - 2026-10-23: added `info`, `stretch`, `check`, `obj`, `preview` and `facing` (`3376687`).
 - 2026-10-24: added `chunks` and `diff` (`ad3fddc`).
+- 2026-10-24: added `isometry`, the reference for the block proposed in villa issue #2279, with its still and GIF from `scripts/media/isometry_media.py`.
 
 ## Related
 

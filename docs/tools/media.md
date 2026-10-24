@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/coverage_still.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -185,6 +185,18 @@ usage: python scripts/media/tifxyz_stills.py [-h] --scan SCAN --segment NAME
 | `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
 | `--size SIZE` | `1200` | Longest side in pixels (one pixel per node when the grid is smaller) |
 | `--out-dir OUT_DIR` | required | Writes `tifxyz-before.png` (x.tif as an image viewer shows it), `tifxyz-after.png` (the shaded sheet) `tifxyz-check-demo.png` (check flags on a made-up sheet with a planted hole, fold and shifted patch) and `tifxyz-diff-demo.png` (diff colors on two versions of a made-up sheet), each with a sidecar |
+
+### `python scripts/media/isometry_media.py`
+
+The still and GIF for the isometry block proposed for `meta.json` (villa issue #2279): a public segment shaded with every node off the promised step by more than 10 % marked, a histogram of every edge over the step and the block [`kit tifxyz isometry`](tifxyz.md) computes; and a made-up curved sheet whose grid nodes slide along it, so the edges stretch and squash while the surface keeps its shape (needs matplotlib and Pillow).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `segment` | required | tifxyz folder or bucket URL; a public scan off the prize lists |
+| `--scan SCAN` | required | The scroll, for the sidecar and the public media rule's check |
+| `--segment NAME` | required | The segment's short name, for the sidecar |
+| `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
+| `--out-dir OUT_DIR` | required | Writes `isometry-still.png` (Real data render) and `isometry-demo.gif` (Synthetic demo), each with a sidecar |
 
 ### `python scripts/media/coverage_still.py`
 
