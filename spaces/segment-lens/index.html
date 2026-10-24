@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Segment Lens · every published Herculaneum segment, measured</title>
+<meta name="description" content="Traced segments from the Vesuvius Challenge open data as 3D surfaces, with holes, folds and over-stretched grid edges painted on, beside the Segment Atlas numbers.">
+<meta name="theme-color" content="#05080b">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2305080b'/%3E%3Cpath d='M5 22c5-9 9 3 14-6s6-6 8-4' fill='none' stroke='%23d8e4ea' stroke-width='2'/%3E%3Ccircle cx='12' cy='17' r='2.4' fill='%23ff5c5c'/%3E%3Ccircle cx='22' cy='13' r='2.4' fill='%23ffa733'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1">
+<script type="importmap">
+{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+} }
+</script>
+</head>
+<body>
+<canvas id="gl" aria-label="3D view of the selected segment"></canvas>
+
+<header class="hud tl">
+  <div class="kicker mono dim">VESUVIUS CHALLENGE<span class="sep">/</span>OPEN DATA<span class="sep">/</span><span id="k-count">…</span> MESHES</div>
+  <h1>Segment <em>Lens</em></h1>
+  <p class="lede">Traced segments as surfaces, with the grid's problems painted on: <span class="c-hole">holes</span>, <span class="c-fold">folds</span> and <span class="c-str">over-stretched</span> edges. Numbers from the <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas" target="_blank" rel="noopener">Segment Atlas</a>.</p>
+</header>
+
+<nav class="hud tr" aria-label="View">
+  <div class="seg" role="tablist">
+    <button class="chip on" data-mode="lens" role="tab">3D</button>
+    <button class="chip" data-mode="table" role="tab">Table</button>
+  </div>
+  <button class="tbtn" id="b-about">Guide</button>
+</nav>
+
+<aside class="hud bl panel" id="picker" aria-label="Pick a segment">
+  <label class="mono small dim" for="sel-scroll">SCROLL</label>
+  <select id="sel-scroll"></select>
+  <label class="row mono small"><input type="checkbox" id="only-top" checked> top-level meshes only</label>
+  <input id="filter" class="mono small" type="search" placeholder="filter segments" aria-label="Filter segments">
+  <ol id="list" class="list mono small"></ol>
+</aside>
+
+<aside class="hud br panel" id="card" aria-live="polite">
+  <div class="mono small dim" id="c-kicker">SELECT A SEGMENT</div>
+  <h2 id="c-title">…</h2>
+  <dl id="c-nums" class="nums mono small"></dl>
+  <div class="legend mono small">
+    <label><input type="checkbox" id="t-hole" checked> <span class="sw hole"></span>holes</label>
+    <label><input type="checkbox" id="t-fold" checked> <span class="sw fold"></span>folds</label>
+    <label><input type="checkbox" id="t-str" checked> <span class="sw str"></span>stretched</label>
+    <label><input type="checkbox" id="t-wire"> grid</label>
+  </div>
+  <div class="actions mono small">
+    <button id="b-copy" class="lk">copy kit command</button>
+    <a id="a-bucket" class="lk" target="_blank" rel="noopener">mesh folder</a>
+  </div>
+  <p class="mono tiny dim" id="c-note"></p>
+</aside>
+
+<section id="table-view" class="sheet" hidden>
+  <div class="sheet-head">
+    <h2>Every mesh in the atlas</h2>
+    <p class="mono small dim" id="t-meta"></p>
+    <input id="t-filter" class="mono small" type="search" placeholder="filter by scroll or segment" aria-label="Filter the table">
+  </div>
+  <div class="tablewrap">
+    <table class="mono small" id="tbl">
+      <thead><tr>
+        <th data-k="scroll">scroll</th><th data-k="segment">segment</th><th data-k="voxel_um" class="n">voxel µm</th>
+        <th data-k="area_cm2" class="n">area cm²</th><th data-k="filled_share" class="n">filled</th>
+        <th data-k="within_10pct" class="n">edges ±10%</th><th data-k="holes_mm2" class="n">holes mm²</th>
+        <th data-k="folds_mm2" class="n">folds mm²</th><th data-k="stretched_mm2" class="n">stretched mm²</th>
+        <th data-k="lens">3D</th>
+      </tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+</section>
+
+<dialog id="about" class="sheet-dialog">
+  <form method="dialog"><button class="x" aria-label="Close">&times;</button></form>
+  <h2>Guide</h2>
+  <p>A <b>segment</b> is a piece of the rolled papyrus surface that someone (or a program) traced through the X-ray CT of a scroll. It is stored as a <b>tifxyz</b> mesh: three images, x.tif, y.tif and z.tif, that together hold a grid of 3D points in the scan's voxels. The open data maps each segment onto several scan volumes, so one segment can have several meshes.</p>
+  <p>The colors mark what <code>kit tifxyz check</code> flags on the full grid:</p>
+  <ul>
+    <li><span class="c-hole">Holes</span>: missing grid nodes inside the sheet (not joined to its border). The preview draws the rim around them.</li>
+    <li><span class="c-fold">Folds</span>: neighboring cells whose surface normals turn by more than 90 degrees, where the surface doubles back.</li>
+    <li><span class="c-str">Stretched</span>: grid edges more than 1.5 times longer or shorter than the spacing the mesh's meta.json promises.</li>
+  </ul>
+  <p>"Edges ±10%" is the share of grid edges within 10 percent of that spacing: how close the grid is to isometric, which matters for flattened renders. A clean mesh can still jump from one wrap of papyrus to the next; nothing here looks at the CT or judges ink, and none of it is an official villa or prize check.</p>
+  <p>3D previews are shown only for scans on none of the prize lists (Grand Prize, First Letters, and the title prize's PHerc. Paris 4, from kit's dated snapshot); scrolls on a list appear in the table with numbers only. Previews keep every k-th node, at most 256 per side, with each flag pooled over the block it stands for.</p>
+  <h3>On your own machine</h3>
+  <pre class="mono small">git clone https://github.com/ChaseHendrick/Scrolls &amp;&amp; cd Scrolls
+python -m pip install numpy tifffile imagecodecs
+python -m kit atlas show PHerc0139 --top 10
+python -m kit tifxyz check MESH_URL --png check.png</pre>
+  <h3>Credits</h3>
+  <ul class="small">
+    <li>Meshes: Vesuvius Challenge open data, CC BY-NC 4.0. The atlas numbers and previews carry the same license.</li>
+    <li>This page: Apache 2.0, by Chase Hendrick (<a href="https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/segment-lens" target="_blank" rel="noopener">source</a>). three.js is MIT.</li>
+  </ul>
+</dialog>
+
+<div id="toast" class="toast mono small" role="status" hidden></div>
+<script type="module" src="app.js?v=1"></script>
+</body>
+</html>

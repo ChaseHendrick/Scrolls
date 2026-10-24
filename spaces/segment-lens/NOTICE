@@ -1,0 +1,16 @@
+Segment Lens
+Copyright 2026 Chase Hendrick
+
+The page's code (index.html, app.js and style.css) is licensed under the Apache License, Version 2.0
+(LICENSE).
+
+Third-party software
+- three.js 0.160.0 (https://threejs.org), loaded from jsDelivr at run time and not redistributed
+  here, is Copyright 2010-2023 three.js authors, MIT License
+  (https://github.com/mrdoob/three.js/blob/r160/LICENSE).
+
+Data
+- The page reads atlas.jsonl and lens/*.slg.gz from the Hugging Face dataset
+  SharpMeow/vesuvius-segment-atlas at run time; nothing is stored here. Those files are derived from
+  the Vesuvius Challenge open data (CC BY-NC 4.0) and carry the same license. Credit: Vesuvius
+  Challenge open data, CC BY-NC 4.0.

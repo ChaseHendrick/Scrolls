@@ -63,7 +63,7 @@ On 24 Oct 2026 a local `build --scroll PHerc0139 --limit 8 --lens` measured 6 of
 - **Previews only where allowed.** A test builds a fake bucket with one scroll on no prize list and one on a list: only the first gets a Lens file. Another reads kit's snapshot and requires PHerc1447 and PHerc. Paris 4 to be on a list and PHerc0139 not.
 - **Refresh measures only what changed.** A test rebuilds with nothing changed (nothing measured), with one ETag changed (that mesh only), and with a preview file deleted (that mesh only).
 
-Claim label: Model output does not apply (no model); the numbers are measurements of public meshes. Interpretation for any reading of them.
+Claim label: Sourced fact, for the measurements of public meshes; Interpretation, for any reading of them.
 
 ## Commands and options
 

@@ -8620,6 +8620,172 @@
    ]
   },
   {
+   "id": "segment-lens",
+   "name": "segment-lens",
+   "tagline": "turn published segments in 3D with their holes, folds and stretched edges painted on",
+   "summary": "A static Hugging Face Space that shows each published tifxyz segment of a scan on no prize list as a 3D surface colored by `kit tifxyz check`'s flags, beside the Segment Atlas numbers, with a sortable table of every mesh.",
+   "status": "Current",
+   "kind": [
+    "app",
+    "agent tool"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python3 -m http.server",
+    "spaces/segment-lens/",
+    "?data=URL/"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/segment-lens/app.js",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/index.html",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/style.css",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/README.md",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/NOTICE",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/LICENSE",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_segment_lens.py"
+   ],
+   "go_ahead": {
+    "needed": true,
+    "text": "Needed to create the Space: Chase asked for it on 24 Oct 2026 (\"do these\", Segment Lens among them). Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "5d217be"
+   },
+   "license": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
+   "fields": {
+    "Id": "`segment-lens`",
+    "Status": "Current",
+    "Kind": "app, agent tool",
+    "Area": "Viewers and apps",
+    "Run": "[huggingface.co/spaces/SharpMeow/segment-lens](https://huggingface.co/spaces/SharpMeow/segment-lens) (the page), `python3 -m http.server` in `spaces/segment-lens/` (the page locally; add `?data=URL/` to read a local atlas build)",
+    "Code": "`spaces/segment-lens/app.js` (the page), `spaces/segment-lens/index.html`, `spaces/segment-lens/style.css`, `spaces/segment-lens/README.md` (the Space card), `spaces/segment-lens/NOTICE`, `spaces/segment-lens/LICENSE`",
+    "Tests": "`tests/test_segment_lens.py`",
+    "Needs": "In the browser: WebGL, ES modules and import maps, `DecompressionStream` (gzip), three.js 0.160.0 from cdn.jsdelivr.net",
+    "Runs on": "The visitor's browser. Each preview is one file of about 150 to 250 KB; the table reads `atlas.jsonl` once. In headless, software-rendered Chromium on a 4-core cloud container, a local atlas of 8 PHerc0139 meshes loaded and drew its first preview within 4 s (2026-10-24)",
+    "Network": "The visitor's browser: `huggingface.co` (the dataset SharpMeow/vesuvius-segment-atlas: `atlas.jsonl`, `summary.json`, `lens/*.slg.gz`), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com`",
+    "Writes": "Nothing: the URL hash holds the selected scroll and mesh",
+    "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026 (\"do these\", Segment Lens among them). Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
+    "Released": "This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published",
+    "License": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
+    "Checked": "2026-10-24 against commit `5d217be` plus this change"
+   },
+   "page": "docs/tools/segment-lens.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 28,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 29,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 39,
+     "end_line": 52,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 53,
+     "end_line": 60,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 61,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 65,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 78,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 82,
+     "end_line": 85,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 86,
+     "end_line": 95,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 96,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 103,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 107,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 117,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 121,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 125,
+     "end_line": 129,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "segzoo",
    "name": "segzoo",
    "tagline": "modern segmentation models next to nnU-Net, with licenses, trainers and controls",
