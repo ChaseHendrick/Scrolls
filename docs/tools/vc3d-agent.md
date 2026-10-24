@@ -1,6 +1,6 @@
 # vc3d-agent: villa's VC3D tools as checked MCP tools for AI agents, with no display
 
-Headless VC3D for agents 1.0.0 serves 39 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces and run ink models with controls; its code is on public branch `submission/progress-2026-10-vc3d-agent`, not on `main`.
+Headless VC3D for agents 1.1.0 serves 46 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces, run ink models with controls and fit lasagna surfaces; its code is on public branch `submission/progress-2026-10-vc3d-agent-1-1-0`, not on `main`.
 
 | Field | Value |
 | --- | --- |
@@ -8,35 +8,35 @@ Headless VC3D for agents 1.0.0 serves 39 tools over MCP (stdio) and a shell comm
 | Status | Branch only |
 | Kind | package |
 | Area | Pipeline and agents |
-| Run | `vc3d-agent vc3d mcp` (the MCP server), `vc3d-agent vc3d tools`, `vc3d-agent vc3d call TOOL '{...}'` after `pip install -e .` in the package folder |
-| Code | `submissions/progress-2026-10-vc3d-agent/vc3d-agent/` on its branch: mainly `kit/vc3d_mcp.py` (the server), `kit/vc3d_agent.py` (the tools), `kit/vc3d.py`, `kit/vc3d_catalog.py`, `kit/vc3d_audit.py`, `kit/vc3d_bridge.py`, `kit/cli.py`, `scripts/vc3d/ink.py`, `scripts/get_vc3d.py` |
-| Tests | `submissions/progress-2026-10-vc3d-agent/vc3d-agent/tests/` on its branch: 16 `test_*.py` files, among them `test_vc3d_mcp.py` (the protocol, and the official MCP Python SDK's client when it is installed) and `test_vc3d_agent.py` (every tool against stand-in VC3D tools from `vc3d_fakes.py`) |
-| Needs | Python 3.11 or newer; the server and most tools use only the standard library. Scoring and the layer tools need the `maps` extra (numpy, tifffile, zarr 3, scipy). Real runs need villa's VC3D tools (`VC_APPIMAGE`, `VC_BIN` or `PATH`); ink models and the detectability probe need a Python with numpy and torch named by `KIT_INK_PYTHON` |
-| Runs on | Linux or macOS, any CPU for the server. The package's 355 tests took 126 s with Python 3.11 and the `maps` extra in a 4-core cloud container (24 Oct 2026); the server answered initialize, tools/list and status in a venv with no packages at all |
+| Run | `vc3d-agent vc3d mcp` (the MCP server), `vc3d-agent vc3d tools`, `vc3d-agent vc3d call TOOL '{...}'`, `vc3d-agent lasagna COMMAND` (the lasagna tools with `--key value` flags) after `pip install -e .` in the package folder |
+| Code | `submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/` on its branch: mainly `kit/vc3d_mcp.py` (the server), `kit/vc3d_agent.py` (the tools), `kit/vc3d.py`, `kit/vc3d_catalog.py`, `kit/vc3d_audit.py`, `kit/vc3d_bridge.py`, `kit/lasagna.py` (the lasagna tools, loaded through `kit/vc3d_ext_lasagna.py`), `kit/cli.py`, `scripts/lasagna/fit_cpu_shim.py`, `scripts/vc3d/ink.py`, `scripts/get_vc3d.py` |
+| Tests | `submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/tests/` on its branch: 17 `test_*.py` files, among them `test_vc3d_mcp.py` (the protocol, and the official MCP Python SDK's client when it is installed) and `test_vc3d_agent.py` (every tool against stand-in VC3D tools from `vc3d_fakes.py`) |
+| Needs | Python 3.11 or newer; the server and most tools use only the standard library. Scoring and the layer tools need the `maps` extra (numpy, tifffile, zarr 3, scipy). Real runs need villa's VC3D tools (`VC_APPIMAGE`, `VC_BIN` or `PATH`); ink models and the detectability probe need a Python with numpy and torch named by `KIT_INK_PYTHON`. The lasagna tools need a villa checkout (`VILLA_DIR` or `LASAGNA_DIR`) and a Python with torch, numpy, zarr, tifffile and tensorstore (`LASAGNA_PYTHON`); CPU torch is enough for the self-test and small fits, real-size fits need CUDA |
+| Runs on | Linux or macOS, any CPU for the server. Version 1.1.0's 438 tests took 149 s with Python 3.13 in a 4-core cloud container (24 Oct 2026; 1.0.0's 355 took 126 s with Python 3.11 and the `maps` extra); the lasagna self-test took 9 s on CPU there with villa main `6f202456`; the server answered initialize, tools/list and status in a venv with no packages at all |
 | Network | None for the server itself (stdio). The tools download anonymously from the Vesuvius Challenge open-data bucket (`vesuvius-challenge-open-data`), Hugging Face and GitHub releases (`fetch_model`), and `api.github.com` and GitHub's release host for `scripts/get_vc3d.py` |
 | Writes | Under the kit home (the package folder, or `KIT_HOME`): `work/vc3d/` (outputs, jobs, caches, the model list; `KIT_VC3D_HOME` moves it), `experiments/` (the ledger and target ink) and `checkpoints/` (downloaded models), all kept out of git by the package's `.gitignore` |
 | Go-ahead | Not needed to serve or for local runs. Needed: the `modal` tool, which rents compute, refuses unless the user starts the server with `KIT_ALLOW_MODAL=1`, and its runner is not in the package; publishing any target-scroll map or verdict (the no-disclosure rule, hard rule 1) |
-| Released | Public branch `submission/progress-2026-10-vc3d-agent` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c` (a commit with no parent), with its README entry in [`releases.json`](../releases.json). The same server shipped earlier inside each AutoPipeline release |
-| License | Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included |
-| Guide | [Package README](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/README.md), [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/AGENTS.md) and the agent guide [docs/vc3d-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/docs/vc3d-agents.md) |
-| Branch | `submission/progress-2026-10-vc3d-agent` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c` |
-| Checked | 2026-10-24 against commit `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c` |
+| Released | Public branch `submission/progress-2026-10-vc3d-agent-1-1-0` at `6c157716e08ef816eac936be22c40cb85682e642` (a commit with no parent), tag `vc3d-agent-v1.1.0`, with its README entry in [`releases.json`](../releases.json); 1.0.0 is tag `vc3d-agent-v1.0.0` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`. The same server shipped earlier inside each AutoPipeline release |
+| License | Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included |
+| Guide | [Package README](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/README.md), [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/AGENTS.md) and the agent guide [docs/vc3d-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/6c157716e08ef816eac936be22c40cb85682e642/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/docs/vc3d-agents.md) |
+| Branch | `submission/progress-2026-10-vc3d-agent-1-1-0` at `6c157716e08ef816eac936be22c40cb85682e642` |
+| Checked | 2026-10-24 against commit `6c157716e08ef816eac936be22c40cb85682e642` |
 
 ## What it does
 
-VC3D is villa's surface tracing and rendering software for the Herculaneum scroll scans. Its command line tools need no display, but an agent driving them by hand trips over conventions that fail silently: which way the rendered layers stack, which scan's frame a segment is in, and whether a blank render means a missing chunk. This package wraps the tools as 39 typed tools with those checks built in, and serves them to MCP clients (Claude Code, Claude Desktop, the official MCP Python SDK, others) as newline-delimited JSON-RPC 2.0 on stdio, protocol versions 2024-11-05 to 2025-11-25, with progress, cancellation, preview images and the guides as resources. A shell route (`vc3d-agent vc3d call`) runs the same tools with JSON in and out.
+VC3D is villa's surface tracing and rendering software for the Herculaneum scroll scans. Its command line tools need no display, but an agent driving them by hand trips over conventions that fail silently: which way the rendered layers stack, which scan's frame a segment is in, and whether a blank render means a missing chunk. This package wraps the tools as typed tools with those checks built in, and serves them to MCP clients (Claude Code, Claude Desktop, the official MCP Python SDK, others) as newline-delimited JSON-RPC 2.0 on stdio, protocol versions 2024-11-05 to 2025-11-25, with progress, cancellation, preview images and the guides as resources. A shell route (`vc3d-agent vc3d call`) runs the same tools with JSON in and out.
 
-The tools group as setup (`status`, `selftest`, `list_tools`, `tool_help`, `guide`), open data (`catalog`, `fetch_segment`, `landmarks`, `models`, `fetch_model`), VC3D runs (`run`, `trace`, `extend`, `render`, `flatten`, `trim`, `merge_patch`, `merge_surfaces`, `volume_meta`), checks (`inspect`, `check_surface`, `orientation`, `frame`, `audit`, `cache_check`, `seed_check`, `phantoms`), ink (`ink`, which always makes the reverse-depth control, and `detectability`), `preview`, the VC3D app through its agent bridge (`app_start`, `app_open`, `app_methods`, `app_call`, `app_screenshot`, `app_stop`), and `jobs`, `kit` and `modal`. The tools refuse output paths git would track, refuse target-scroll ink without a preregistered ledger experiment, and say that an ink map is model output, not a reading.
+The tools group as setup (`status`, `selftest`, `list_tools`, `tool_help`, `guide`), open data (`catalog`, `fetch_segment`, `landmarks`, `models`, `fetch_model`), VC3D runs (`run`, `trace`, `extend`, `render`, `flatten`, `trim`, `merge_patch`, `merge_surfaces`, `volume_meta`), checks (`inspect`, `check_surface`, `orientation`, `frame`, `audit`, `cache_check`, `seed_check`, `phantoms`), ink (`ink`, which always makes the reverse-depth control, and `detectability`), `preview`, the VC3D app through its agent bridge (`app_start`, `app_open`, `app_methods`, `app_call`, `app_screenshot`, `app_stop`), `jobs`, `kit` and `modal`, and since 1.1.0 lasagna (`lasagna_status`, `lasagna_configs`, `lasagna_manifest`, `lasagna_fit`, `lasagna_export`, `lasagna_selftest`, `lasagna_service`): villa's lasagna surface fitter run headless, from a published lasagna run (or a mirrored box of it) to a fitted, exported tifxyz, with a self-test whose check can fail and a client for villa's fit service; the package's `docs/lasagna-agents.md` is its guide. The tools refuse output paths git would track, refuse target-scroll ink without a preregistered ledger experiment, and say that an ink map is model output, not a reading.
 
 It is the server that AutoPipeline's releases carried, cut out on its own: AutoPipeline's four pipeline tools (`umbilicus`, `seeds`, `distortion`, `autopipeline`) are not in it, and `kit/vc3d_agent.py` loads them only when `kit/autopipe.py` is present.
 
 ## Where the code is
 
-The package is at `submissions/progress-2026-10-vc3d-agent/vc3d-agent/` on public branch `submission/progress-2026-10-vc3d-agent`, commit `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`. Its Python package is `kit`, a narrowed copy of the source repository's, separate from this repository's `kit`.
+The package is at `submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/` on public branch `submission/progress-2026-10-vc3d-agent-1-1-0`, commit `6c157716e08ef816eac936be22c40cb85682e642`. Its Python package is `kit`, a narrowed copy of the source repository's, separate from this repository's `kit`.
 
 ```bash
-git clone --branch submission/progress-2026-10-vc3d-agent --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent
-cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent
+git clone --branch submission/progress-2026-10-vc3d-agent-1-1-0 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent
+cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent
 ```
 
 ## How to run it
@@ -68,6 +68,7 @@ Its `kit` package is a different, narrowed copy of the source repository's kit, 
 
 ## History
 
+- 2026-10-24: 1.1.0 at `6c157716e08ef816eac936be22c40cb85682e642`: the seven `lasagna_*` tools (villa's lasagna surface fit, headless) and the `lasagna` command; 46 tools.
 - 2026-10-24: 1.0.0, the first standalone release, at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`: the VC3D agent tools and MCP server without AutoPipeline.
 
 ## Related
