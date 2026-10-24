@@ -19,7 +19,7 @@
 | Released | Public `main` since 2026-10-14 (`8d9ad54`); the weights `strokenet-paris4-v1` are a GitHub release of this repository from the same day; in the README's "Released tools" as `strokenet`, since 2026-10-20 a line of the Scrolls kit entry; `--two-density` added 2026-10-22 |
 | Guide | [StrokeNet model card](../strokenet.md) (data, training, held-out results and limits; [the two-density score](../strokenet.md#the-two-density-score)) |
 | License | Code: Apache 2.0 ([LICENSE](../../LICENSE)). Weights: CC BY-NC 4.0, the license of the organizers' scan data ([model card](../strokenet.md#license-and-release)) |
-| Checked | 2026-10-22 against commit `044a9ef` (the two-density score, `--two-density`, `--mask` and `--label-stride`) |
+| Checked | 2026-10-22 against commit `3990326` (the two-density score, `--two-density`, `--mask` and `--label-stride`) |
 
 ## What it does
 
