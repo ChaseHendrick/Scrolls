@@ -1442,7 +1442,9 @@ footer.sl-credit { text-align:center; color: var(--body-text-color-subdued); fon
 #sl-viewer-html .slv-view input[type=range] { width:100%; }
 #sl-viewer-html .slv-more { display:flex; flex-direction:column; gap:6px; }
 #sl-viewer-html .slv-more > summary { cursor:pointer; color: var(--body-text-color-subdued); font-size:.84rem; }
-@media (min-width: 601px) { #sl-viewer-html .slv-more > summary { display:none !important; } }
+/* Wide screens hide the summary only while the controls are open: a page opened narrow (closed) and then widened
+   keeps its way back to them. */
+@media (min-width: 601px) { #sl-viewer-html .slv-more[open] > summary { display:none !important; } }
 #sl-viewer-html .slv-views[hidden], #sl-viewer-html .slv-3d[hidden] { display:none !important; }
 #sl-viewer-html .slv-3d { display:flex; flex-direction:column; gap:6px; }
 #sl-viewer-html .slv-3d-canvas { display:block; width:100%; border-radius:6px; background:#0b0f14; touch-action:none; cursor:grab; }

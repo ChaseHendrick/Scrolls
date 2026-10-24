@@ -820,6 +820,11 @@ class Page(unittest.TestCase):
               "new Function('element', 'trigger', 'props', 'server', 'upload', 'watch', src);")
         subprocess.run([node, "-e", js, str(SPACE / "viewer.js")], check=True, capture_output=True, timeout=60)
 
+    def test_closed_controls_keep_their_summary_on_wide_screens(self):
+        # A page opened narrow closes More controls; widened, its summary must stay so the controls can be opened
+        self.assertIn(".slv-more[open] > summary { display:none", self.app.CSS)
+        self.assertNotIn(".slv-more > summary { display:none", self.app.CSS)
+
 
 if __name__ == "__main__":
     unittest.main()
