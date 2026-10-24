@@ -8,6 +8,23 @@ To install a fixed version, name its tag:
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.4.1"
 ```
 
+## Unreleased
+
+- **VC3D and S3's false 404s:** `python -m kit s3relay URL -- COMMAND` runs a VC3D command through a local relay that asks S3 again when it answers 404 for a chunk it holds, checks VC3D's empty-chunk markers before and after, and exits 4 when the run may have read zeros; `python -m kit vc3dcache URL` deletes false markers left by runs made without it, finding VC3D's cache as VC3D does (`cache.json`, then `VC3D.ini`). `kit fetch` now asks again after a false 404 too. Adds the modules `s3retry`, `s3relay`, `vc3d_cache`, `vc3d_audit`, `vc3d_io` and `keepalive` ([how-to](docs/vc3d-false-404.md)).
+- **Segments without VC3D:** `python -m kit tifxyz info|stretch|check|obj|preview|facing` reads one tifxyz segment (local or on the open-data bucket) and gives its area in cm2, how isometric its grid is, holes, folds and stretched cells with a picture, an OBJ for Blender, a shaded preview and which way it faces. How-to with pictures: [docs/segments-without-vc3d.md](docs/segments-without-vc3d.md).
+- **Segment Atlas:** `python -m kit atlas show SCROLL` prints the same numbers for every published segment (area, isometry, holes, folds, stretch), from the public dataset SharpMeow/vesuvius-segment-atlas, which a daily Hugging Face Job refreshes with `python -m kit atlas build`.
+- **Segment Lens:** a Hugging Face Space (`spaces/segment-lens/`) that shows published segments of scans on no prize list in 3D, with holes, folds and stretched edges painted on, beside their atlas numbers.
+- **Winding coverage:** `python -m kit coverage SCROLL` places a volume's published meshes around its center line and reports the heights and angles traced, the turns each mesh spans, the wrap pitch measured on the meshes, and about how many wraps lie untraced between neighboring meshes (or none, for copies).
+- **Chunks and diff:** `python -m kit tifxyz chunks SEGMENT VOLUME` lists the zarr chunks a segment touches with their bytes, and `--fetch DEST` copies only those; `python -m kit tifxyz diff A B` compares two versions of a segment (added, removed and moved nodes, area change, a picture).
+- **Ink labels:** `python -m kit labels [SCROLL]` lists every published ink label set per segment on the open-data bucket, with the training exposure this repository's records give each segment (unknown when there is none).
+- **Find, center line, cite:** `python -m kit find SCROLL` lists a scroll's volumes, segments, bucket predictions, center lines and Hugging Face matches; `python -m kit centerline get SCROLL --into FOLDER` writes its center line as `umbilicus.json` for VC3D (sha256 checked); `python -m kit cite SCROLL` prints credit lines.
+- **villa helpers:** `python -m kit prclock USER` shows days before villa's time-limit workflow closes each open PR; `python -m kit prtext BODY.md` checks a PR or issue body against villa's templates.
+- **Help:** `python -m kit --help` groups commands by task, `python -m kit help COMMAND` shows a worked example, and a mistyped command suggests the closest names.
+- **doctor and fetch:** `doctor` checks for an Intel Python under Rosetta on Apple Silicon, a container CPU quota smaller than the thread counts, and slow disks; `fetch` checks free space first and has `--dry-run`.
+- **doctor for AMD, Intel and rented machines:** `doctor` names AMD (ROCm) and Intel GPUs instead of failing with "No NVIDIA GPU found", and `doctor --remote` shows where VC3D will cache streamed chunks, the space and speed there, and on RunPod whether that folder survives a stop.
+- **Submission preflight:** `python -m kit submitcheck FOLDER --prize first-letters|grand|title` checks a prize folder against the prize page's file rules and quotes each one.
+- **Docs:** [docs/tracing-tools.md](docs/tracing-tools.md), which tool to trace, check or view a segment with; [docs/prizes.md](docs/prizes.md) answers common prize questions with quotes from the prize page only.
+
 ## 0.4.1 (18 October 2026)
 
 - **Offline ink-map viewer:** hovering now reports the scaled disagreement encoded in the overlay, including intermediate values such as 0.71. It previously read the red color channel and displayed 1.00 wherever disagreement was nonzero. Regenerate existing HTML pages to use the fix.

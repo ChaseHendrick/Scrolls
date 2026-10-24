@@ -8,7 +8,7 @@ Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [Chas
 
 `https://huggingface.co/spaces/SharpMeow/autopipeline-ink`
 
-License: Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0. The Space has no MCP server; use gradio_client or curl.
+License: Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0. The Space has no MCP server; use gradio_client or curl. Each call spends the caller's ZeroGPU quota, which is small when logged out: pass hf_token= to Client (or an Authorization header to curl) for your own.
 
 ### Python /on_sample (tested 2026-10-24)
 

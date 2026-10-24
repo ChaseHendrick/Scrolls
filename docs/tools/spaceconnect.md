@@ -49,7 +49,7 @@ On 2026-10-24 this printed:
 
 ```
 spaces/umbilici: up to date
-6 Spaces, 0 problems
+7 Spaces, 0 problems
 ```
 
 It worked when `check` exits 0. After editing a `connect.json`, `render` names the files it rewrote.
@@ -190,6 +190,7 @@ Free. `render` and `check` run in a fraction of a second; `run` took a few minut
 ## History
 
 - 2026-10-24: first version, branched from public `main` at `2ce4d50`: the panel on Umbilici, Unroll, Crackle Check, Scroll Lens, Ink Lens and AutoPipeline ink.
+- 2026-10-24: Segment Lens, which merged into `main` while this was open, gets its panel in its Guide; `check` caught it ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
 
 ## Related
 

@@ -1,0 +1,33 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "tifxyz-diff-demo",
+  "label": "Synthetic demo",
+  "alt": "A made-up wavy sheet shaded gray, the newer of two versions, with kit tifxyz diff's colors: a green band on the right where the newer version grew, a red block at the top left where it lost nodes, and an orange patch in the middle that moved.",
+  "caption": "Synthetic demo: kit tifxyz diff of two versions of a made-up sheet, version b grown by 6400 nodes (green), trimmed by 2000 (red) and with 2000 nodes moved 4 voxels (orange). No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "tifxyz-diff-demo.png",
+      "bytes": 15832,
+      "sha256": "39ba59ea820dc45b28a3898fabadf878b35a65a3c9e91de242c9708454f0da7a",
+      "width": 1100,
+      "height": 800,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "tifxyz_stills.py"
+    ],
+    "scripts_sha256": "af4df396afd105fcf288bb4a2cf384e6b41433e31be921445113123423dcd0de",
+    "base_commit": "c610c7a9269dbaf3fd72a4b802c0e0cf74a984ec"
+  },
+  "command": "python scripts/media/tifxyz_stills.py s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz --scan PHerc0139 --segment w035 --out-dir docs/assets/tifxyz"
+}

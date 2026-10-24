@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -26,8 +26,53 @@ def cmd_prizes(args):
     return 0
 
 
+def cmd_help(args):
+    """python -m kit help [COMMAND]: the grouped list, or a command's usage and its page's Quick start."""
+    parser = _parser()
+    if not args.topic:
+        print(parser.format_help(), end="")
+        return 0
+    sub = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+    if args.topic not in sub.choices:
+        return _unknown(args.topic, sub.choices)
+    print(sub.choices[args.topic].format_help(), end="")
+    example = _quick_start(args.topic)
+    if example:
+        print("\nWorked example (from the command's page, Quick start):\n")
+        print(example)
+    return 0
+
+
+def _quick_start(command):
+    """The Quick start section of the tool page whose Run names `python -m kit COMMAND`, or None."""
+    import re
+    pages = Path(__file__).resolve().parent.parent / "docs" / "tools"
+    if not pages.is_dir():
+        return None
+    want = re.compile(r"`python3? -m kit " + re.escape(command) + r"[` ]")
+    for page in sorted(pages.glob("*.md")):
+        text = page.read_text(encoding="utf-8")
+        run = next((l for l in text.splitlines() if l.startswith("| Run |")), "")
+        if not want.search(run):
+            continue
+        m = re.search(r"^## Quick start\n(.*?)(?=^## )", text, re.S | re.M)
+        if m:
+            return m.group(1).strip() + f"\n\nFull page: docs/tools/{page.name}"
+    return None
+
+
+def _unknown(word, choices, prog="python -m kit"):
+    import difflib
+    near = difflib.get_close_matches(word, list(choices), n=3, cutoff=0.6)
+    near += [c for c in choices if c.startswith(word[:3]) and c not in near][:3 - len(near)] if len(word) >= 3 else []
+    hint = f" Did you mean: {', '.join(near)}?" if near else ""
+    print(f"{prog}: error: no command '{word}'.{hint} The list: {prog} --help", file=sys.stderr)
+    return 2
+
+
 def cmd_doctor(args):
-    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk))
+    report, worst = doctor.format_report(doctor.run_checks(disk_path=args.disk, speed=not args.no_speed,
+                                                           remote=args.remote))
     print(report)
     return 1 if worst == doctor.FAIL else 0
 
@@ -50,7 +95,18 @@ def cmd_cost(args):
 def cmd_fetch(args):
     prefix = fetch.ALIASES.get(args.prefix, args.prefix)
     try:
-        objects, fetched, total = fetch.fetch_prefix(prefix, args.dest, workers=args.workers)
+        pl = fetch.plan(prefix, args.dest)
+        line = (f"{pl['objects']} objects, {fetch.human(pl['total_bytes'])} in all, {fetch.human(pl['missing_bytes'])} "
+                f"still to download, {fetch.human(pl['free_bytes'])} free at {args.dest}")
+        if args.dry_run:
+            print(line + ("" if pl["fits"] else " (does not fit: leave 1 GB spare)"))
+            return 0
+        if not pl["fits"] and not args.force:
+            print(f"{line}: not enough space (kit fetch keeps 1 GB spare). Free some space, pick another DEST, or "
+                  "pass --force", file=sys.stderr)
+            return 2
+        objects, fetched, total = fetch.fetch_prefix(pl["prefix"], args.dest, workers=args.workers,
+                                                     entries=pl["entries"])
     except (fetch.FetchError, OSError) as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -926,11 +982,65 @@ def cmd_strokenet(args):
     return 0
 
 
+# `python -m kit --help` lists the commands under these headings, in this order; a command missing here is listed
+# under "Other" (tests/test_cli_help.py fails on one).
+GROUPS = (
+    ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
+    ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
+                                    "volumeview", "segzoo")),
+    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
+                               "surfacefix", "layers")),
+    ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
+                                           "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
+    ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
+    ("Runs and records", ("run", "provenance", "compute", "routines")),
+    ("villa pull requests and issues", ("prclock", "prtext")),
+    ("This repository", ("releases", "spaceconnect", "stale", "integrity")),
+)
+
+
+class KitParser(argparse.ArgumentParser):
+    """The top-level parser: its --help lists the commands by task instead of one long list."""
+
+    def format_help(self):
+        sub = next((a for a in self._actions if isinstance(a, argparse._SubParsersAction)), None)
+        if sub is None:
+            return super().format_help()
+        helps = {c.dest: c.help for c in sub._choices_actions}
+        width = max(len(n) for n in helps) + 2
+        out = [self.format_usage().rstrip(), "", "The Scrolls workbench: one command line for the Vesuvius Challenge "
+               "tools in this repository.", ""]
+        seen = set()
+        for title, names in GROUPS + (("Other", tuple(n for n in helps if not any(n in g for _, g in GROUPS))),):
+            names = [n for n in names if n in helps]
+            if not names:
+                continue
+            out.append(f"{title}:")
+            import shutil
+            import textwrap
+            cols = max(60, min(120, shutil.get_terminal_size((100, 24)).columns)) - 2
+            for n in names:
+                seen.add(n)
+                out += textwrap.wrap(helps[n], cols, initial_indent=f"  {n:<{width}}",
+                                     subsequent_indent=" " * (width + 2))
+            out.append("")
+        out += ["Examples:", "  python -m kit help tifxyz          a command's options and a worked example",
+                "  python -m kit find PHerc0139       what the open data has for one scroll",
+                "  python -m kit doctor               can this machine run the villa workflow?", "",
+                "Every command has a page: docs/tools/README.md, or python -m kit.tooldocs show ID."]
+        return "\n".join(out) + "\n"
+
+
 def build_parser(prog="python -m kit", sub_progs=None):
     """The parser of every command; sub_progs maps a command to the program name its usage and errors show."""
     sub_progs = sub_progs or {}
-    parser = argparse.ArgumentParser(prog=prog, description=__doc__)
-    sub = parser.add_subparsers(dest="command", required=True)
+    parser = KitParser(prog=prog, description=__doc__)
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND",
+                                parser_class=argparse.ArgumentParser)
+
+    p = sub.add_parser("help", help="list the commands by task, or show one command's options and worked example")
+    p.add_argument("topic", nargs="?", help="a command, such as tifxyz")
+    p.set_defaults(func=cmd_help)
 
     p = sub.add_parser("start", prog=sub_progs.get("start"), help="open Scrolls Starter: setup, practice and guided next steps")
     from . import starter
@@ -953,7 +1063,10 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.set_defaults(func=lambda a: __import__("kit.termstyle", fromlist=["x"]).main(a.cmd))
 
     p = sub.add_parser("doctor", help="check GPU, disk, tools and villa paths")
-    p.add_argument("--disk", default=".", help="path whose free space to check")
+    p.add_argument("--disk", default=".", help="path whose free space (and speed) to check")
+    p.add_argument("--no-speed", action="store_true", help="skip the 64 MB disk speed test")
+    p.add_argument("--remote", action="store_true", help="on a rented or cloud machine: also check where VC3D will "
+                   "cache streamed chunks, its free space and speed, and on RunPod whether it survives a stop")
     p.set_defaults(func=cmd_doctor)
 
     p = sub.add_parser("plan", help="print a First Letters run plan for an eligible scroll")
@@ -970,10 +1083,57 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--storage", type=float, default=0.0, help="flat storage or egress USD")
     p.set_defaults(func=cmd_cost)
 
+    p = sub.add_parser("submitcheck", help="preflight a prize submission folder against the prize page's file "
+                                           "rules, quoting each rule")
+    from . import submitcheck as _sc
+    _sc.build_parser(p)
+    p.set_defaults(func=_sc.cmd_submitcheck)
+
+    p = sub.add_parser("find", help="everything public for one scroll: volumes, segments, predictions, center "
+                                    "lines and Hugging Face matches")
+    from . import find as _find
+    _find.build_parser(p, "find")
+    p.set_defaults(func=_find.cmd_find)
+
+    p = sub.add_parser("centerline", help="get a scroll's center line into your VC3D project as umbilicus.json")
+    from . import centerline as _cl
+    _cl.build_parser(p)
+    p.set_defaults(func=_cl.cmd_centerline)
+
+    p = sub.add_parser("labels", help="published ink labels per segment, with which public models trained on them")
+    from . import labels as _labels
+    _labels.build_parser(p)
+    p.set_defaults(func=_labels.cmd_labels)
+
+    p = sub.add_parser("cite", help="credit and licence lines for a scroll's volumes and center lines")
+    _find.build_parser(p, "cite")
+    p.set_defaults(func=_find.cmd_cite)
+
+    from . import villapr
+    p = sub.add_parser("prclock", help="days left before villa's PR time limits close each of a person's open PRs")
+    villapr.build_parser(p, "prclock")
+    p.set_defaults(func=villapr.cmd_prclock)
+
+    p = sub.add_parser("prtext", help="check a villa PR or issue body against villa's template before posting")
+    villapr.build_parser(p, "prtext")
+    p.set_defaults(func=villapr.cmd_prtext)
+
+    from . import vc3dfix
+    p = sub.add_parser("s3relay", help="run VC3D through a local relay that keeps S3's false 404s from blanking "
+                                       "chunks")
+    vc3dfix.build_parser(p, "s3relay")
+    p.set_defaults(func=vc3dfix.cmd_s3relay)
+
+    p = sub.add_parser("vc3dcache", help="find and delete false empty-chunk markers in VC3D's remote chunk cache")
+    vc3dfix.build_parser(p, "vc3dcache")
+    p.set_defaults(func=vc3dfix.cmd_vc3dcache)
+
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
     p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 surface volumes (w035: an ink_9um training segment; w045: unseen by v8in, but ink_9um trained on its 2.4 um render)")
     p.add_argument("dest", help="local directory")
     p.add_argument("--workers", type=int, default=16)
+    p.add_argument("--dry-run", action="store_true", help="list only: size, what is still missing, and free disk")
+    p.add_argument("--force", action="store_true", help="download even when it would leave under 1 GB free")
     p.set_defaults(func=cmd_fetch)
 
     p = sub.add_parser("verify", help="compare two ink maps (e.g. CPU vs MPS) with a control")
@@ -1117,6 +1277,22 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("--json", action="store_true")
     p.add_argument("--verbose", action="store_true", help="progress to stderr")
     p.set_defaults(func=cmd_stackcheck)
+
+    p = sub.add_parser("tifxyz", help="look at a tifxyz segment without VC3D: area, isometry, holes and folds, "
+                                      "OBJ, picture, which way it faces, chunks it touches, diff of two versions")
+    from . import tifxyz
+    tifxyz.build_parser(p)
+    p.set_defaults(func=tifxyz.cmd_tifxyz)
+
+    p = sub.add_parser("atlas", help="Segment Atlas: area, isometry, holes and folds of every published segment")
+    from . import atlas as _atlas
+    _atlas.build_parser(p)
+    p.set_defaults(func=_atlas.cmd_atlas)
+
+    p = sub.add_parser("coverage", help="Winding coverage: which turns and heights a scroll's segments trace, and the gaps")
+    from . import coverage as _coverage
+    _coverage.build_parser(p)
+    p.set_defaults(func=_coverage.cmd_coverage)
 
     p = sub.add_parser("uvgate", help="check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough "
                                       "area, optionally one counterclockwise piece (geometry only)")
@@ -1557,6 +1733,10 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
     if argv[:1] == ["style"]:
         return __import__("kit.termstyle", fromlist=["x"]).main(argv[1:])
     parser = _parser(prog, sub_progs)
+    if argv and not argv[0].startswith("-"):
+        sub = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
+        if argv[0] not in sub.choices:
+            return _unknown(argv[0], sub.choices, prog)
     # Python 3.10 argparse mishandles a trailing nargs="*" after wrapper options.
     # Parse the wrapper separately, leaving every child flag and literal intact.
     if argv[:1] == ["run"] and "--" in argv:
@@ -1566,6 +1746,10 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
             args.cmd.extend(argv[split + 1:])
         else:
             args = _parse(parser, argv)
+    elif argv[:1] == ["s3relay"] and "--" in argv:
+        split = argv.index("--")
+        args = _parse(parser, argv[:split])
+        args.cmd.extend(argv[split + 1:])
     else:
         args = _parse(parser, argv)
     return _run(args, f"{prog} {args.command}", args.command)
