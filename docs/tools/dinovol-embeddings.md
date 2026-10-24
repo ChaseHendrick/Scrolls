@@ -1,22 +1,22 @@
 # dinovol-embeddings: precomputed dinovol features of the whole PHerc0841 scan, readable by URL
 
-A public Hugging Face bucket holding the Vesuvius Challenge's self-supervised dinovol model run over the whole PHerc0841 9.366 um scan, so anyone can search, cluster or segment by feature similarity without a GPU.
+A public Hugging Face bucket holding the Vesuvius Challenge's self-supervised dinovol model run over the whole PHerc0841 9.366 um scan, and a guide Space with a click-to-search demo, so anyone can search, cluster or segment by feature similarity without a GPU.
 
 | Field | Value |
 | --- | --- |
 | Id | `dinovol-embeddings` |
 | Status | Current |
-| Kind | data |
+| Kind | data, app |
 | Area | Data and downloads |
-| Run | `zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode="r", zarr_format=2)` on the bucket URL below; the bucket's `README.md` has a worked example |
-| Code | None in this repository: the data lives in the public bucket SharpMeow/dinovol-embeddings with its README and index file. This page is the public record |
+| Run | [huggingface.co/spaces/SharpMeow/dinovol-embeddings](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) (the guide page and demo); `zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode="r", zarr_format=2)` on the bucket URL below; the bucket's `README.md` has a worked example |
+| Code | `spaces/dinovol-embeddings/build.py` (builds the guide Space from the bucket); the data lives in the public bucket SharpMeow/dinovol-embeddings with its README and index file |
 | Tests | None here: before release one 24 x 48 x 48 token block from every slab was read back by URL, logged out (see Checks and controls) |
 | Needs | `zarr` 3 with `fsspec` and `aiohttp`; `numpy` |
 | Runs on | Any machine with a network. The quick start reads a 4 x 32 x 32 token block (about 2 MB) from a 4-core cloud container (2026-10-24; not timed) |
-| Network | `huggingface.co` (the bucket) |
-| Writes | Nothing; reads stream from the bucket |
-| Go-ahead | Not needed to use. Making the bucket public was Chase's yes (24 Oct 2026); changing its files needs his yes per change (rule 8) |
-| Released | Public on Hugging Face since 2026-10-24 (bucket); README "Released tools" entry `dinovol-embeddings` |
+| Network | `huggingface.co` (the bucket and Space); the build also reads the open-data CT |
+| Writes | Nothing when you read; `build.py OUT` writes the Space's files into OUT |
+| Go-ahead | Not needed to use. Making the bucket public and the guide Space were Chase's yes (24 Oct 2026); changing the bucket needs his yes per change, the Space redeploys from merged `main` under the standing yes (rule 8) |
+| Released | Public on Hugging Face since 2026-10-24 (bucket and guide Space); README "Released tools" entry `dinovol-embeddings` |
 | License | CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors |
 | Checked | 2026-10-24 against commit `d425839` |
 
@@ -61,6 +61,22 @@ Before release, read back by URL with no token: one 24 x 48 x 48 token block fro
 Claim label: Model output (the features); Measurement (the read-back checks).
 
 ## Commands and options
+
+### `spaces/dinovol-embeddings/build.py`
+
+```
+usage: build.py [-h] out
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `out` | required | Folder to write the Space into (uploaded as is) |
+
+Reads one slice (z 9,600) of the bucket and the CT by URL, logged out, and writes `index.html` (this folder's page with its numbers filled in), `assets/ct.webp`, `assets/tokens.webp`, `assets/dense.webp`, `assets/search.i8` (32 numbers per cell, the slice's main directions, int8) and `assets/mask.u8`, plus the README, NOTICE, LICENSE and connect files. Needs `zarr` 3, `fsspec`, `aiohttp`, `numpy` and `pillow`; about a minute on a cloud container. The pictures are model output of PHerc0841 and live only on the Space, never in git.
+
+### The guide Space
+
+[huggingface.co/spaces/SharpMeow/dinovol-embeddings](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings): what the features are, a slider between the CT and the features as color, a click-to-search demo on that slice (it compares 32 numbers per cell, not 480; on 60 random points its similarity tracked the full one with median correlation 0.989, lowest 0.88), a Connect your tool panel, the format and credit.
 
 ### Read
 
@@ -123,6 +139,7 @@ None in this repository. The read-back check above ran on 2026-10-24 before and 
 ## History
 
 - 2026-10-24: bucket public with the whole PHerc0841 scan; README "Released tools" entry added ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
+- 2026-10-24: guide Space `SharpMeow/dinovol-embeddings` with a click-to-search demo; bucket README gains a plain-words intro and links it ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
 
 ## Related
 
