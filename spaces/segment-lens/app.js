@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-const VERSION = '1.0.0';
+const VERSION = '1.1.0';
 // ?data=URL/ reads another copy of the atlas (a local build, for testing); the default is the published dataset
 const DATA = new URLSearchParams(location.search).get('data') || 'https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas/resolve/main/';
 const S3 = 'https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/';
@@ -27,7 +27,7 @@ renderer.setPixelRatio(Math.min(2, window.devicePixelRatio || 1));
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x05080b);
 const camera = new THREE.PerspectiveCamera(40, 1, 0.01, 100);
-camera.position.set(0, 0, 3.2);
+camera.position.set(0, 0, 4.0);   // opens a little zoomed out, so the whole segment and some margin show
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 scene.add(new THREE.HemisphereLight(0xe8f4ff, 0x1a2228, 0.9));
