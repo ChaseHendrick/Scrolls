@@ -1,0 +1,51 @@
+{
+ "about": "Weights of the letter classifier (scripts/letters/icdar_train.py) and the Greek prose language model (scripts/letters/greek_lm.py) that reader_api.py reads. `reader_api.py fetch` downloads them once and refuses a file whose SHA-256 differs. Every read is model output, not a reading.",
+ "release": "letterclass-v1",
+ "base_url": "https://github.com/ChaseHendrick/Scrolls/releases/download/letterclass-v1/",
+ "runs": {
+  "cb128": {
+   "model": {
+    "file": "letterclass-v1-cb128-model.pt",
+    "sha256": "6f30048298e21dd86306e7d2f59c73870e87f7fc215229dcc5cc68d5f5e62150",
+    "bytes": 350474643
+   },
+   "config": {
+    "file": "letterclass-v1-cb128-config.json",
+    "sha256": "6d01e2dae944a957a2d60c1f7e0d493d9b41e37f45eb390bdb4ab5d29e8d3ace",
+    "bytes": 607
+   }
+  },
+  "cs128s0": {
+   "model": {
+    "file": "letterclass-v1-cs128s0-model.pt",
+    "sha256": "0b81ce1ed27205de5e869f44a945f2bc7ffbdc4279110beb6b11bc35c2ff134a",
+    "bytes": 198002899
+   },
+   "config": {
+    "file": "letterclass-v1-cs128s0-config.json",
+    "sha256": "4b53a47acca43cabbbcc93ff0439a39cd5d7ca08c55c75a2452d1bfc41731254",
+    "bytes": 608
+   }
+  },
+  "cs128s1": {
+   "model": {
+    "file": "letterclass-v1-cs128s1-model.pt",
+    "sha256": "804670af8355bf4c9991c1a7976fb22aa02cb2c7ea0a2405e08d25d6f04f4647",
+    "bytes": 198002899
+   },
+   "config": {
+    "file": "letterclass-v1-cs128s1-config.json",
+    "sha256": "fca2e364ff36e49c7964f3cb7f6a27e111023b46f8b8a394eca26c8143d5372b",
+    "bytes": 608
+   }
+  }
+ },
+ "runs_license": "CC BY 4.0: trained on Hell-Char letter crops (CC BY 4.0, github.com/ipavlopoulos/diachronic-greek-letterforms at aeef8466) from timm's ConvNeXt ImageNet weights (Apache-2.0); no ICDAR 2023 image and no scroll data in training",
+ "lm": {
+  "file": "letterclass-v1-greek-prose-lm5.json.gz",
+  "sha256": "a8fa01f3b023ff5ba3fbe56dcabb0f15b6bee91321efa5576539ec6f9ff72c74",
+  "bytes": 912711,
+  "license": "CC BY-SA 4.0: letter counts of 22 Perseus prose texts (PerseusDL/canonical-greekLit at 0189b9c8, CC BY-SA 4.0)"
+ },
+ "lm_weight": 0.5
+}

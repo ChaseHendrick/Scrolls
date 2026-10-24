@@ -142,6 +142,19 @@
     "docs/logs/2026-10-08-w045-not-held-out.md": "c89c8cc963eaa8bea9045faa4b7f332daaf927971d33d09951c6ecabc0e2ce3a"
    }
   },
+  "our-letter-classifier-trained-on-hell-char-only": {
+   "line": 348,
+   "sources": {
+    "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md": "1ec13488674df4cc5b987ed1dc9f81b9c1d2f7347bb61b6790eedb769bc4a4c3"
+   }
+  },
+  "our-letter-classifier-trained-on-hell-char-only-2": {
+   "line": 14,
+   "sources": {
+    "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md": "1ec13488674df4cc5b987ed1dc9f81b9c1d2f7347bb61b6790eedb769bc4a4c3"
+   },
+   "doc": "docs/FINDINGS.md"
+  },
   "partial-results-the-pherc1447-fine-tune-on-w00": {
    "line": 303,
    "sources": {
