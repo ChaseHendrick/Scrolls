@@ -473,7 +473,7 @@ def add_arguments(p):
     c = a.add_parser("check", help="every Space: valid spec, outputs current, page wired")
     c.add_argument("--live", action="store_true", help="also fetch every URL (needs the network)")
     x = a.add_parser("run", help="run every Python and shell snippet against the live data (network)")
-    x.add_argument("--python", default=sys.executable, help="the Python for the snippets (default: this one)")
+    x.add_argument("--python", help="the Python for the snippets (default: the one running kit)")
     x.add_argument("--vesuvius-python", help="a Python with vesuvius[volume-only] for villa's snippets "
                    "(vesuvius needs zarr 2, the others zarr 3)")
     n = a.add_parser("new", help="write a starter connect.json")
@@ -500,7 +500,7 @@ def run(args) -> int:
         print(f"wrote {f}; fill it in, then python -m kit spaceconnect render {args.dir}")
         return 0
     if args.action == "run":
-        res = run_snippets(args.python, args.vesuvius_python)
+        res = run_snippets(args.python or sys.executable, args.vesuvius_python)
         for space, sid, tid, ok, secs, last in res:
             print(f"{'ok  ' if ok else 'FAIL'} {space} {sid} {tid} {secs} s" + ("" if ok else f": {last}"))
         bad = sum(not r[3] for r in res)

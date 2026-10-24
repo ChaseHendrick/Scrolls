@@ -91,7 +91,7 @@ usage: python -m kit spaceconnect run [-h] [--python PYTHON]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--python PYTHON` | `/usr/bin/python3` | the Python for the snippets (default: this one) |
+| `--python PYTHON` | none | the Python for the snippets (default: the one running kit) |
 | `--vesuvius-python VESUVIUS_PYTHON` | none | a Python with vesuvius[volume-only] for villa's snippets (vesuvius needs zarr 2, the others zarr 3) |
 
 ### `python -m kit spaceconnect new`
