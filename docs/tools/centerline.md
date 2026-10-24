@@ -17,7 +17,7 @@
 | Writes | `FOLDER/umbilicus.json` (with `--into`), or `--out` (default `SCROLL_umbilicus.json`); written to a `.part` file and renamed |
 | Go-ahead | Not needed |
 | Released | Public `main` from the change that adds it (23 Oct 2026) |
-| Checked | 2026-10-23 against commit `3376687` |
+| Checked | 2026-10-23 against commit `cc03099` |
 
 ## What it does
 

@@ -18,7 +18,7 @@
 | Go-ahead | Not needed: anonymous downloads of public data; nothing is posted or rented |
 | Released | Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package |
 | Guide | [mac.md](../mac.md) (the w035 download in the Mac runbook) |
-| Checked | 2026-10-23 against commit `3376687` |
+| Checked | 2026-10-23 against commit `cc03099` |
 
 ## What it does
 

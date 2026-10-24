@@ -17,7 +17,7 @@
 | Writes | Nothing by default (prints only); `--png` writes the picture, `--out` the report JSON. Each mesh is fetched into a temporary folder and deleted after it is measured |
 | Go-ahead | Not needed: it reads public data and writes local files |
 | Released | This repository from the change that adds it (24 Oct 2026) |
-| Checked | 2026-10-24 against commit `f901840` plus this change |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 
