@@ -225,6 +225,14 @@ class PlanTest(unittest.TestCase):
         # bnleft/first-light-pherc0211: about 6.5 GPU hours on an A10 at $1.10/h, "about $7".
         self.assertEqual(plan.cost(6.5, 1.10), 7.15)
 
+    def test_render_commands_pass_the_bucket_url_as_volume(self):
+        # villa e2254eb's vc_render_tifxyz exits with an error for a local --volume next to a different --remote-url.
+        for text in (plan.first_letters("PHerc0826"), plan.first_letters("PHerc0826", mac=True)):
+            self.assertNotIn("--remote-url s3", text)
+            self.assertNotIn("--volume volume-cache/", text)
+        self.assertIn("--volume s3://vesuvius-challenge-open-data/PHerc0826/volumes/"
+                      "20250821151701-9.362um-1.2m-113keV-masked.zarr/", plan.first_letters("PHerc0826"))
+
 
 class LedgerTest(unittest.TestCase):
     def setUp(self):

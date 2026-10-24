@@ -14,7 +14,7 @@
 | Needs | Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac` |
 | Runs on | Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes "on the order of an hour on a single GPU" ([tutorial5](https://scrollprize.org/tutorial5)) |
 | Network | None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data` |
-| Writes | Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `volume-cache/`, `predictions/`, `work/SCROLL_SLUG/`); see Outputs |
+| Writes | Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; see Outputs |
 | Go-ahead | Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11) |
 | Released | Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`) |
 | Guide | [WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs) |
@@ -142,9 +142,9 @@ usd = plan.cost(6.5, 1.10)                           # 7.15
 | Step | Files the printed commands write |
 | --- | --- |
 | 0. Setup | `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth` and the seed-43 file |
-| 1. Control (w035) | `ink-dataset/pherc0139/w035/w035.tifxyz`, VC3D's cache `volume-cache/20250728140407.zarr`, `ink-dataset/pherc0139/w035/w035_9um.zarr`, `predictions/w035_9um.tif` |
+| 1. Control (w035) | `ink-dataset/pherc0139/w035/w035.tifxyz`, `ink-dataset/pherc0139/w035/w035_9um.zarr`, `predictions/w035_9um.tif` |
 | 1b. w045 | `ink-dataset/pherc0139/w045/w045_9um.zarr`, `predictions/w045_seed42.tif` and its reverse map; rowscore reads `predictions/w045_seed42_reverse.tif`, the name `scripts/mac-w045.sh` also expects villa's `--direction both` to write |
-| 2. Target | `work/SLUG/surface.tifxyz` (you make it in VC3D), `volume-cache/VOLUME.zarr`, `work/SLUG/surface_9um.zarr`, `work/SLUG/ink_seed42.tif` and its reverse map |
+| 2. Target | `work/SLUG/surface.tifxyz` (you make it in VC3D), `work/SLUG/surface_9um.zarr`, `work/SLUG/ink_seed42.tif` and its reverse map |
 | v8in block | `checkpoints/ink-8um-v8in/`, `work/SLUG/layers/` (you export it; [layers](layers.md) does this), `work/SLUG/v8in_forward.tif`, `work/SLUG/v8in_reverse.tif` |
 | 3. Rules | `experiments/SLUG/run.json` through `kit run init` |
 
@@ -168,6 +168,7 @@ Two things the printed script leaves to you: the target step prints the seed-42 
 | `... awarded on an unrecorded date (no source recorded) ...` | A snapshot's `awarded` entry has no `date` or `sources` | Fill them in the snapshot |
 | `KeyError: 'first-letters-2027'` and a traceback | `first_letters` was given a snapshot without the First Letters prize | Pass a full snapshot, or none |
 | `$-2.00`, `$nan` or `$inf` from `cost`, exit code 0 | `cost` does not check its numbers | Give non-negative, finite hours and rates |
+| `Error: --volume (...) and --remote-url (...) name different sources` from `vc_render_tifxyz` | A plan printed before 24 Oct 2026 passed a local cache as `--volume` and the bucket as `--remote-url`; current villa refuses that | Print the plan again: it now passes the bucket URL as `--volume` |
 | A printed command fails when you run it (an unknown flag, a missing path) | villa changed after commit `e0bbb8b`, or VC3D's tools are not on `PATH` | Follow the tutorial's current text, run [doctor](doctor.md), and record the villa commit you used |
 
 ## How it works
@@ -186,7 +187,7 @@ Printing is cheap: measured 2026-10-16 in a 4-core Xeon cloud container, `plan` 
 ## For agents
 
 - **Command:** `python -m kit plan SCROLL > work/SLUG-plan.sh` (add `--mac` on Apple Silicon); `python -m kit cost --gpu-hours H --rate R [--cpu-hours C --cpu-rate CR --storage S]`. There is no JSON form.
-- **Parse:** the plan is shell text: the line `# 2. Target: SCROLL, eligible volume VOLUME (VOXEL um voxels)` and the `--remote-url s3://vesuvius-challenge-open-data/SCROLL/volumes/ZARR/` line give the resolved volume. `cost` prints one line `$X.XX`.
+- **Parse:** the plan is shell text: the line `# 2. Target: SCROLL, eligible volume VOLUME (VOXEL um voxels)` and the `--volume s3://vesuvius-challenge-open-data/SCROLL/volumes/ZARR/` line give the resolved volume. `cost` prints one line `$X.XX`.
 - **Rerun:** Safe; both only print. Redirecting the plan to a file overwrites that file.
 - **Success:** Exit code 0 and a plan whose first line is `# First Letters plan for SCROLL (prize snapshot DATE; ...)`; for `cost`, exit code 0 and a line starting with `$`.
 - **Not a pass:** Letters on w035 (step 1): they show only that the pipeline runs, since w035 is a training segment; a w045 score for `ink_9um` or its fine-tunes as a generalization result; a target map with no reverse-depth comparison; a `kit cost` figure that leaves out CPU time, storage or idle time.
@@ -202,6 +203,8 @@ python -m unittest tests.test_kit.PlanTest tests.test_kit.CliTest -v
 `PlanTest` (10 tests) checks the control, the resolved target path, `--batch-size`, `--direction both` and the privacy line; the resampling note for an 8.64 um scan (PHerc0800); the Mac setup; the w045 check before the target, the surface checks, v8in and `--flip-normals`; the Hecate caveat; the `kit fetch` short names; the refusal of PHerc1667 and PHerc0343, with the award sentence only for the awarded scroll and a clean refusal when an award entry lacks its date and sources; and `cost(6.5, 1.10) == 7.15`. `CliTest` checks that `plan PHerc1667` exits with code 2. They do not run any printed command, check the commands against villa's current tutorial, or test `--batch` values or `cost`'s command line.
 
 ## History
+
+- 2026-10-24: the renders pass the bucket URL as `--volume`, since villa `e2254eb` refuses a local `--volume` beside a different `--remote-url` (PRLINK).
 
 - 2026-10-14: a refused scroll whose First Letters prize was awarded gets the award's date and source in the message, read from the 11 October snapshot, and survives an award entry without them; step 1b names v8in-1447 among the readers PHerc0841 is held out from (`19a1f4d`, `4053d23`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37)).
 - 2026-10-09: step 1b says PHerc0841 is possibly not held out from Hecate (`3ba683f`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37), [log](../logs/2026-10-09-pherc0841-hecate.md)).
