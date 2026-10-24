@@ -197,7 +197,7 @@ VILLA_SPIRAL = "e2254ebe0168a232e5ba7b94997c749b4e6a4544"   # villa main, 23 Oct
 SPIRAL_INPUTS = Path(__file__).with_name("data") / "spiral-inputs-2026-10-24.json"
 BUCKET_S3 = "s3://vesuvius-challenge-open-data"
 # villa fit_spiral.py settings for a fit from the lasagna field and a center line alone: grad_mag spacing, every
-# other input off, room for 300 windings, no outer shell. The same settings as the whole-scan PHerc0841 pilot.
+# other input off, room for 300 windings, no outer shell. Not yet shown to put the surface on the sheets.
 SPIRAL_OVERRIDES = {
     "optimizer_num_training_steps": 30000, "optimizer_random_seed": 1,
     "dense_spacing_mode": "grad_mag", "dense_grad_mag_factor": 0.14,
@@ -276,8 +276,9 @@ SPIRAL_QA = """\
 # 7. Check the surface before any ink model sees it (both read the tifxyz only):
 #      tifxyz-doctor (github.com/aviad12g/tifxyz-doctor): file, metadata and topology checks
 #      windcheck check "$W/surface.tifxyz" (github.com/joe-carr-data/windcheck): self-intersections
-#    A spiral fit is a model of the whole scroll; where it sits between sheets it carries no ink. Measure
-#    how much of it lies on papyrus in your area before you trust a map of it.
+#    Nothing yet shows that a fit from the lasagna field and center line alone sits on the sheets: it can
+#    follow their direction and spacing yet lie between them, where there is no ink. Measure how much of it
+#    lies on papyrus in your area (for example against a traced segment) before you trust a map of it.
 """
 
 SPIRAL_RULES = """\
