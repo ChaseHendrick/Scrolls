@@ -205,7 +205,7 @@ def build_parser(p, action):
                                                 "repeated runs reuse one VC3D cache folder)")
         p.add_argument("--for", dest="seconds", type=float, help="without a command: stop after this many seconds")
         p.add_argument("--ledger", default=DEFAULT_LEDGER, help="with a command: folder of the cache check's records")
-        p.add_argument("command", nargs="*", metavar="COMMAND",
+        p.add_argument("cmd", nargs="*", metavar="COMMAND",
                        help="a command to run through the relay, after --; the URL in it is swapped for the relay's")
     else:
         p.add_argument("url", nargs="?", help="the remote volume's URL as VC3D was given it (not the relay's)")
@@ -228,8 +228,8 @@ def cmd_s3relay(args):
         return 2
     say = (lambda s: print(s, file=sys.stderr)) if args.json else print
     try:
-        if args.command:
-            r = run_through(args.url, args.command, args.port, args.ledger, say=say)
+        if args.cmd:
+            r = run_through(args.url, args.cmd, args.port, args.ledger, say=say)
         else:
             r = serve(args.url, args.port, args.seconds, say=say)
     except (s3relay.RelayError, vc3d_cache.CacheError) as exc:
@@ -237,13 +237,13 @@ def cmd_s3relay(args):
         return 2
     if args.json:
         print(json.dumps(r, indent=1))
-    elif args.command:
+    elif args.cmd:
         print(format_run(r))
     else:
         s = r["stats"]
         print(f"relay stopped: {s['requests']} requests, {s['false_404']} false 404s asked again, {s['gave_up']} "
               "given up")
-    if not args.command:
+    if not args.cmd:
         return 0
     if r["returncode"] == 0 and r["affected"]:
         return AFFECTED_EXIT

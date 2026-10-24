@@ -1742,6 +1742,10 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
             args.cmd.extend(argv[split + 1:])
         else:
             args = _parse(parser, argv)
+    elif argv[:1] == ["s3relay"] and "--" in argv:
+        split = argv.index("--")
+        args = _parse(parser, argv[:split])
+        args.cmd.extend(argv[split + 1:])
     else:
         args = _parse(parser, argv)
     return _run(args, f"{prog} {args.command}", args.command)
