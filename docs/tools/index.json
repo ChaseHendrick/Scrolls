@@ -1070,67 +1070,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 187,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 188,
-     "end_line": 216,
+     "start_line": 190,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 217,
-     "end_line": 220,
+     "start_line": 219,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 221,
-     "end_line": 231,
+     "start_line": 223,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 232,
-     "end_line": 245,
+     "start_line": 234,
+     "end_line": 247,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 246,
-     "end_line": 255,
+     "start_line": 248,
+     "end_line": 257,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 256,
-     "end_line": 259,
+     "start_line": 258,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 260,
-     "end_line": 269,
+     "start_line": 262,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 270,
-     "end_line": 277,
+     "start_line": 272,
+     "end_line": 279,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 278,
-     "end_line": 289,
+     "start_line": 280,
+     "end_line": 291,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 290,
-     "end_line": 296,
+     "start_line": 292,
+     "end_line": 298,
      "applicable": true
     }
    ]
@@ -4246,6 +4246,142 @@
      "name": "Related",
      "start_line": 300,
      "end_line": 307,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "keepalive",
+   "name": "keepalive",
+   "tagline": "reuse HTTP connections for kit's remote zarr reads",
+   "summary": "`kit/keepalive.py` is a drop-in for `urllib.request.urlopen` that keeps finished HTTP and HTTPS connections in a small pool per server and reuses them, so kit's remote zarr readers stop paying a new connection and TLS handshake for every chunk.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "KIT_HTTP_REUSE=0"
+   ],
+   "imports": [
+    "from kit import keepalive"
+   ],
+   "code": [
+    {
+     "path": "kit/keepalive.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_keepalive.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`keepalive`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`from kit import keepalive` (a library; on by default for every remote zarr store kit opens, off with `KIT_HTTP_REUSE=0`)",
+    "Code": "`kit/keepalive.py`",
+    "Tests": "`tests/test_keepalive.py`",
+    "Needs": "Python 3, standard library only",
+    "Runs on": "Any machine. On a Mac laptop over a direct connection, kept connections halved two remote box reads of public PHerc0139 volumes (4.35 s to 2.17 s and 1.89 s to 0.84 s, 15 October 2026); through the proxy of Claude's cloud sessions they save nothing, because that proxy closes every connection after one answer (measured 2026-10-16)",
+    "Network": "Whatever host the caller asks for, such as `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`; through `HTTPS_PROXY` when one is set (an HTTP CONNECT tunnel), and never anywhere on its own",
+    "Writes": "Nothing",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026). Identical to the copy inside the AutoPipeline release since 0.1.3, 2026-10-15 (branches `submission/progress-2026-10-fix3` and `-fix4`)",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/keepalive.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 70,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 71,
+     "end_line": 79,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 80,
+     "end_line": 97,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 98,
+     "end_line": 101,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 102,
+     "end_line": 105,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 106,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 119,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 130,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 134,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 144,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 152,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 157,
+     "end_line": 161,
      "applicable": true
     }
    ]
@@ -8461,6 +8597,278 @@
    ]
   },
   {
+   "id": "s3relay",
+   "name": "s3relay",
+   "tagline": "a local relay that keeps S3's false 404s away from VC3D",
+   "summary": "`kit/s3relay.py` runs a small HTTP server on 127.0.0.1 that forwards VC3D's chunk requests to S3, asks again after a false 404, and passes a 404 on only when S3 says `NoSuchKey`, so VC3D never caches a chunk that exists as empty.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "kit s3relay"
+   ],
+   "imports": [
+    "from kit import s3relay"
+   ],
+   "code": [
+    {
+     "path": "kit/s3relay.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_s3relay.py",
+    "tests/test_cutoff_reads.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public objects anonymously and serves only the local machine"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`s3relay`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`from kit import s3relay` (its command line, `kit s3relay`, is on the [vc3dfix](vc3dfix.md) page)",
+    "Code": "`kit/s3relay.py`",
+    "Tests": "`tests/test_s3relay.py`, `tests/test_cutoff_reads.py`",
+    "Needs": "Python 3 standard library only (run here on Python 3.13). A free local TCP port. VC3D (villa) as its client",
+    "Runs on": "Any machine, in a thread of the process that starts it. Through it, a 256 x 256 crop render of w035 at 2.399 um with an empty cache took 24 s against about 17 s direct (8 October 2026, one cloud container)",
+    "Network": "Listens on `127.0.0.1` (the `host` argument) on one port between 20000 and 40014, or any free port. Connects to the one upstream origin it was made for, such as `https://vesuvius-challenge-open-data.s3.amazonaws.com` for an `s3://vesuvius-challenge-open-data/...` URL, through the default opener's proxy settings (`HTTPS_PROXY`, `NO_PROXY`)",
+    "Writes": "Nothing on disk. VC3D, its client, writes its own chunk cache, in a folder named by the relay URL it was given",
+    "Go-ahead": "Not needed: it reads public objects anonymously and serves only the local machine",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one also passes headers whose names a proxy changed in case (`etag` for `ETag`)",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/s3relay.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 46,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 47,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 84,
+     "end_line": 101,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 102,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 109,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 138,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 150,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 160,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 164,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 174,
+     "end_line": 181,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 182,
+     "end_line": 186,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 187,
+     "end_line": 193,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "s3retry",
+   "name": "s3retry",
+   "tagline": "tell S3's false 404s from missing keys, and retry them",
+   "summary": "`kit/s3retry.py` counts an S3 HTTP 404 as a missing key only when its error body says `NoSuchKey` (or names no S3 code), asks again after any other 404, and refuses remote zarr paths in tools that would read them with silent holes.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [],
+   "imports": [
+    "from kit import s3retry"
+   ],
+   "code": [
+    {
+     "path": "kit/s3retry.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_s3retry.py",
+    "tests/test_cutoff_reads.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it only reads public objects"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`s3retry`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "None (a library): `from kit import s3retry`",
+    "Code": "`kit/s3retry.py`",
+    "Tests": "`tests/test_s3retry.py`, `tests/test_cutoff_reads.py`",
+    "Needs": "Python 3 standard library only (run here on Python 3.13)",
+    "Runs on": "Any machine. One `key_state` check on the open-data bucket took about 0.6 s from a cloud container (59 keys in 37.9 s, measured 2026-10-16, 4-core Intel Xeon 2.80 GHz cloud container); a key that answers false 404s every time costs 10 requests and 11.1 s of backoff",
+    "Network": "The host in each URL it is given, over HTTP or HTTPS, through the default opener's proxy settings (`HTTPS_PROXY`, `NO_PROXY`). In kit: the open-data bucket (`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` and `vesuvius-challenge-open-data.s3.amazonaws.com`). Anonymous; it sends no credentials",
+    "Writes": "Nothing. It returns answers and raises errors; the callers write files",
+    "Go-ahead": "Not needed: it only reads public objects",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026). Earlier copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds two small fixes (an opener imported only when used, fewer than one try taken as one)",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/s3retry.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 36,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 37,
+     "end_line": 49,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 50,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 87,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 99,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 109,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 121,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 133,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 142,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 146,
+     "end_line": 155,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 156,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 164,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 169,
+     "end_line": 177,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "scroll-lens",
    "name": "scroll-lens",
    "tagline": "look inside a scan cube with the organizers' 3D DINO, ink and surface models",
@@ -11480,6 +11888,421 @@
    ]
   },
   {
+   "id": "vc3d-audit",
+   "name": "vc3d-audit",
+   "tagline": "check that the chunks a render needs exist and decode, before a blank map is trusted",
+   "summary": "`kit/vc3d_audit.py` reads a zarr volume's headers and pyramid levels, decodes a few chunks, and checks every chunk a render along a tifxyz surface would read (local or anonymous HTTP and S3), so a hole that reads as zeros is found before a blank map is trusted.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [],
+   "imports": [
+    "from kit import vc3d_audit"
+   ],
+   "code": [
+    {
+     "path": "kit/vc3d_audit.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_vc3d_audit.py",
+    "tests/test_s3retry.py",
+    "tests/test_cutoff_reads.py",
+    "tests/test_keepalive.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public or local data"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`vc3d-audit`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`from kit import vc3d_audit`",
+    "Code": "`kit/vc3d_audit.py`",
+    "Tests": "`tests/test_vc3d_audit.py`, `tests/test_s3retry.py`, `tests/test_cutoff_reads.py`, `tests/test_keepalive.py`",
+    "Needs": "Python 3 standard library only; numcodecs for blosc, zstd or lz4 chunks (without it those chunks are reported as not decoded). A `libvolcomp.so` named by `KIT_VOLCOMP_LIB` only for volcomp chunks ([vc3d-io](vc3d-io.md))",
+    "Runs on": "Any CPU. Local synthetic audit of a 250,000-vertex surface on a 512 cubed volume: 4.2 s, 75 MB peak (measured 2026-10-16, 4-core Intel Xeon cloud container, synthetic data). Remote: the whole w035 footprint on the 9.362 um PHerc0139 scan took 4,793 requests in 135 s (2026-10-08)",
+    "Network": "For a URL only: the store's own host (for the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` or `vesuvius-challenge-open-data.s3.amazonaws.com`), anonymous, paced to 20 requests per second over 8 threads, at most 4,000 requests per audit by default. Through `HTTPS_PROXY` when set",
+    "Writes": "Nothing",
+    "Go-ahead": "Not needed: it reads public or local data",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14 to `submission/progress-2026-10-fix4`); this one adds opt-in volcomp decoding",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/vc3d-audit.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 81,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 91,
+     "end_line": 122,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 123,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 133,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 153,
+     "end_line": 180,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 181,
+     "end_line": 194,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 195,
+     "end_line": 208,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 209,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 219,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 227,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 232,
+     "end_line": 239,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "vc3d-cache",
+   "name": "vc3d-cache",
+   "tagline": "find VC3D's remote chunk cache and delete its false empty-chunk markers",
+   "summary": "`kit/vc3d_cache.py` and `python -m kit vc3dcache` find the folder where VC3D caches a remote volume, check every chunk VC3D marked as empty against the bucket, and delete the markers for chunks that exist, so a later render or trace fetches them instead of reading zeros.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "kit vc3dcache"
+   ],
+   "imports": [
+    "from kit import vc3d_cache"
+   ],
+   "code": [
+    {
+     "path": "kit/vc3d_cache.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_vc3d_cache.py",
+    "tests/test_vc3dfix.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads a public bucket and changes only VC3D's cache on this machine"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`vc3d-cache`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`from kit import vc3d_cache` (its command line, `kit vc3dcache`, is on the [vc3dfix](vc3dfix.md) page)",
+    "Code": "`kit/vc3d_cache.py`",
+    "Tests": "`tests/test_vc3d_cache.py`, `tests/test_vc3dfix.py`",
+    "Needs": "Python 3.10 or newer; standard library only (it uses the stores of `kit/vc3d_audit.py` and the states of `kit/s3retry.py`). `fcntl` for the ledger lock where the system has it (Linux, macOS); without it the ledger is written unlocked. VC3D itself is not needed to check a cache",
+    "Runs on": "Any CPU. A synthetic cache of 6 markers against a local S3-like server: 16 requests in 1.1 s (measured 2026-10-16, 4-core Intel Xeon cloud container). Real caches: Not measured for time; on 2026-10-08 a crop render's 8 false markers were found and deleted ([log](../logs/2026-10-12-upstream-reports.md))",
+    "Network": "The remote volume's own host only (for the open-data bucket `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` or `vesuvius-challenge-open-data.s3.amazonaws.com`): the volume's headers, then a HEAD per marked chunk (a 404 confirmed with a one-byte GET) or one shard-index read per shard, anonymous, at most 4,000 per check, paced at 20 per second. Nothing when no marker needs checking",
+    "Writes": "Deletes false `.empty` marker files in VC3D's cache folder for the volume (not with `delete` false). Writes the ledger `LEDGER_DIR/FOLDER.json` and its lock file `LEDGER_DIR/FOLDER.lock` (`kit vc3dcache` and `kit s3relay` use `work/vc3d-empty/`)",
+    "Go-ahead": "Not needed: it reads a public bucket and changes only VC3D's cache on this machine",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026). An earlier copy ships inside the AutoPipeline release branches (`submission/progress-2026-10` from 2026-10-14, `submission/progress-2026-10-fix4`), without the 17 October deletion-timestamp correction below",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/vc3d-cache.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 78,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 88,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 100,
+     "end_line": 117,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 118,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 127,
+     "end_line": 149,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 150,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 165,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 174,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 183,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 193,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 201,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 206,
+     "end_line": 213,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "vc3d-io",
+   "name": "vc3d-io",
+   "tagline": "standard-library readers for TIFF, zarr, npy and PNG",
+   "summary": "`kit/vc3d_io.py` reads and writes the images and volumes VC3D's tools write or read (TIFF and BigTIFF layers and tifxyz grids, local zarr arrays and OME-Zarr groups, `.npy` maps, PNG previews) with the Python standard library alone, plus pixel statistics and contrast stretching.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [],
+   "imports": [
+    "from kit import vc3d_io"
+   ],
+   "code": [
+    {
+     "path": "kit/vc3d_io.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_vc3d_io.py",
+    "tests/test_vc3d_volcomp.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`vc3d-io`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`from kit import vc3d_io`",
+    "Code": "`kit/vc3d_io.py`",
+    "Tests": "`tests/test_vc3d_io.py`, `tests/test_vc3d_volcomp.py` (volcomp decoding)",
+    "Needs": "Python 3 standard library only. numcodecs only for zarr chunks compressed with blosc, zstd or lz4; numpy only for `raster_from_numpy`; a `libvolcomp.so` named by `KIT_VOLCOMP_LIB` only for `volcomp_lib` and `volcomp_decode` (built from villa's `volume-cartographer/libs/volcomp`, see What it does)",
+    "Runs on": "Any CPU, one thread. Pure-Python decoding is slow: a 2,000 x 2,000 8-bit LZW TIFF took 8.1 s and a float32 LZW TIFF with the floating-point predictor 30.6 s, against 0.03 s uncompressed; an 8 MB zarr box read 0.25 to 0.38 s (measured 2026-10-16, 4-core Intel Xeon 2.80 GHz cloud container, synthetic data)",
+    "Network": "None. It reads local files only; `volcomp_source` recognizes a URL by its text and never opens it, and `volcomp_decode` decodes bytes it is handed",
+    "Writes": "Only `write_tiff(path, raster)` writes, to the path it is given (replacing any file there). Every other function reads files or bytes and returns values",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026). Older copies ship inside the AutoPipeline release branches (`submission/progress-2026-10` to `-fix4`); see below",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md) (the tools that read through it)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/vc3d-io.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 38,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 39,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 55,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 88,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 97,
+     "end_line": 133,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 134,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 147,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 166,
+     "end_line": 211,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 212,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 222,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 238,
+     "end_line": 247,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 248,
+     "end_line": 255,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 256,
+     "end_line": 260,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 261,
+     "end_line": 266,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "vc3d-plugins",
    "name": "vc3d-plugins",
    "tagline": "run Scrolls and community tools from VC3D's Plugins menu",
@@ -11621,6 +12444,153 @@
      "name": "Related",
      "start_line": 171,
      "end_line": 175,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "vc3dfix",
+   "name": "vc3dfix",
+   "tagline": "run VC3D through a false-404 relay, and repair its cache of empty chunks",
+   "summary": "`python -m kit s3relay` runs VC3D (or any command) through a local relay that keeps S3's false 404s out, checking VC3D's empty-chunk markers around the run; `python -m kit vc3dcache` checks and repairs those markers after a run made without it.",
+   "status": "Current",
+   "kind": [
+    "kit command"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit s3relay",
+    "python -m kit vc3dcache"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/vc3dfix.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_vc3dfix.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public objects anonymously and changes only the local VC3D cache"
+   },
+   "checked": null,
+   "license": null,
+   "fields": {
+    "Id": "`vc3dfix`",
+    "Status": "Current",
+    "Kind": "kit command",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit s3relay`, `python -m kit vc3dcache`",
+    "Code": "`kit/vc3dfix.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_vc3dfix.py`",
+    "Needs": "Python 3 standard library only. VC3D (villa's `vc_*` tools or the app) for the runs it guards; any command works in its place. numcodecs only to decode compressed chunks when a marker is checked by reading ([vc3d-cache](vc3d-cache.md))",
+    "Runs on": "Any CPU. The relay runs in a thread of the command; the cache check reads one object per marker, paced at 20 requests a second, at most 4,000 per check ([vc3d-cache](vc3d-cache.md))",
+    "Network": "`s3relay`: listens on `127.0.0.1` on a port from 20000 to 40014 (or `--port`), and connects to the volume URL's origin only, anonymously, through `HTTPS_PROXY` when set ([s3relay](s3relay.md)). Both commands ask the volume's origin about each empty-chunk marker. Nothing else",
+    "Writes": "`vc3dcache` deletes false `.empty` markers in VC3D's cache folder for the volume (not with `--no-delete`) and writes the record `LEDGER/FOLDER.json` and its lock file (default `work/vc3d-empty/`). `s3relay` with a command does the same before and after the command; the command writes what it writes. `s3relay` alone writes nothing",
+    "Go-ahead": "Not needed: it reads public objects anonymously and changes only the local VC3D cache",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026)",
+    "Guide": "[VC3D and S3's false 404s](../vc3d-false-404.md)",
+    "Checked": "2026-10-24 against commit `HASH1`"
+   },
+   "page": "docs/tools/vc3dfix.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 74,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 129,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 152,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 160,
+     "end_line": 174,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 175,
+     "end_line": 188,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 189,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 196,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 200,
+     "end_line": 209,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 210,
+     "end_line": 217,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 218,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 222,
+     "end_line": 228,
      "applicable": true
     }
    ]

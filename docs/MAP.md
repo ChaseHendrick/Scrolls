@@ -13,6 +13,13 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/plan.py` | Prints the official First Letters commands for one scroll (never runs them) |
 | `kit/cli.py`, `kit/__main__.py` | The `python -m kit` entry point: every subcommand and its help text |
 | `kit/fetch.py` | Resumable anonymous download of a bucket prefix; aliases `w035`, `w045`; checks free space first (`--dry-run`, `--force`) ([page](tools/fetch.md)) |
+| `kit/vc3dfix.py` | `kit s3relay URL [-- COMMAND]`: VC3D through a local relay that keeps S3's false 404s out, its empty-chunk markers checked around the run (exit 4 when it may have read zeros); `kit vc3dcache URL\|--all`: check and delete false markers in VC3D's cache ([page](tools/vc3dfix.md), [how-to](vc3d-false-404.md)) |
+| `kit/s3relay.py` | The relay behind `kit s3relay`: forwards chunk requests to S3, asks again after a false 404, passes a 404 on only for `NoSuchKey` ([page](tools/s3relay.md)) |
+| `kit/s3retry.py` | The false-404 rule: a 404 is missing only with `NoSuchKey`; `open_url`, `key_state`, `refuse_remote`; used by `kit fetch` ([page](tools/s3retry.md)) |
+| `kit/vc3d_cache.py` | VC3D's remote cache: the root as VC3D finds it (`cache.json`, `VC3D.ini`, mounts), folder names, empty-chunk markers, the check and `Guard` ([page](tools/vc3d-cache.md)) |
+| `kit/vc3d_audit.py` | Chunk stores (local, HTTP, S3) and an audit that the chunks a render needs exist and decode; a library here ([page](tools/vc3d-audit.md)) |
+| `kit/vc3d_io.py` | Standard-library readers for TIFF, zarr, `.npy` and PNG, and opt-in volcomp decoding ([page](tools/vc3d-io.md)) |
+| `kit/keepalive.py` | Kept HTTPS connections for the remote chunk stores (`KIT_HTTP_REUSE`) ([page](tools/keepalive.md)) |
 | `kit/find.py` | `kit find SCROLL`: a scroll's volumes, segments per volume, bucket predictions and umbilicus files, center lines and public Hugging Face matches; `kit cite SCROLL`: credit and licence lines from `metadata.json` ([page](tools/find.md)) |
 | `kit/labels.py` | `kit labels [SCROLL]`: every published ink label set per segment on the open-data bucket (volume, date, shape, bytes), with the training exposure this repository's public records give each segment ([page](tools/labels.md)) |
 | `kit/villapr.py` | `kit prclock USER`: days before villa's PR time-limit workflow closes each open PR; `kit prtext BODY.md`: a PR or issue body against villa's templates and CONTRIBUTING ([page](tools/villapr.md)) |

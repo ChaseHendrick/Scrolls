@@ -122,6 +122,8 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `centerline` | `list`, `get` | `centerline.cmd_centerline` (in `kit/centerline.py`) | [centerline](centerline.md) | get a scroll's center line into your VC3D project as umbilicus.json |
 | `cite` | none | `find.cmd_cite` (in `kit/find.py`) | [find](find.md) | credit and licence lines for a scroll's volumes and center lines |
 | `fetch` | none | `cmd_fetch` | [fetch](fetch.md) | mirror a public bucket prefix over HTTPS (no AWS CLI needed) |
+| `s3relay` | none | `vc3dfix.cmd_s3relay` (in `kit/vc3dfix.py`) | [vc3dfix](vc3dfix.md) | run VC3D through a local relay that keeps S3's false 404s from blanking chunks |
+| `vc3dcache` | none | `vc3dfix.cmd_vc3dcache` (in `kit/vc3dfix.py`) | [vc3dfix](vc3dfix.md) | find and delete false empty-chunk markers in VC3D's remote chunk cache |
 | `verify` | none | `cmd_verify` | [verify](verify.md) | compare two ink maps (e.g. CPU vs MPS) with a control |
 | `rowscore` | none | `cmd_rowscore` | [rowscore](rowscore.md) | text-row periodicity triage score for ink maps (Bullo27's method) |
 | `auc` | none | `cmd_auc` | [auc](auc.md) | pixel AUC of an ink map against a segment's published labels |

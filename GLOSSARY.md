@@ -80,13 +80,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## E
 
+**empty-chunk marker**: A `.empty` file VC3D writes in its remote chunk cache when the server answers 404 for a chunk; VC3D then reads that chunk as zeros for good. A marker for a chunk the bucket holds is a false one ([vc3d-cache](docs/tools/vc3d-cache.md)).
+
 **ESRF**: The European Synchrotron Radiation Facility in Grenoble, where scrolls have been scanned since 2025.
 
 **evidence archive**: A frozen folder under `docs/evidence/` with the inputs, rules, scripts, results and SHA-256 hashes of one study. These folders are not edited.
 
 ## F
 
-**false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds. VC3D then caches the chunk as empty. `kit/s3retry.py` and `kit/s3relay.py` work around it.
+**false 404**: A case where S3 answers "not found" (HTTP 404) for a chunk it actually holds, with the error code `NoSuchBucket` instead of `NoSuchKey`. VC3D then caches the chunk as empty (an empty-chunk marker) and reads it as zeros. `kit/s3retry.py` asks again; `python -m kit s3relay` keeps it away from VC3D and `python -m kit vc3dcache` deletes the false markers ([how-to](docs/vc3d-false-404.md)).
 
 **fiber (fibre)**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
 

@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -986,7 +986,8 @@ def cmd_strokenet(args):
 # under "Other" (tests/test_cli_help.py fails on one).
 GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
-    ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "volumeview", "segzoo")),
+    ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
+                                    "volumeview", "segzoo")),
     ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "overlap", "meshaudit",
                                "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
@@ -1116,6 +1117,16 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("prtext", help="check a villa PR or issue body against villa's template before posting")
     villapr.build_parser(p, "prtext")
     p.set_defaults(func=villapr.cmd_prtext)
+
+    from . import vc3dfix
+    p = sub.add_parser("s3relay", help="run VC3D through a local relay that keeps S3's false 404s from blanking "
+                                       "chunks")
+    vc3dfix.build_parser(p, "s3relay")
+    p.set_defaults(func=vc3dfix.cmd_s3relay)
+
+    p = sub.add_parser("vc3dcache", help="find and delete false empty-chunk markers in VC3D's remote chunk cache")
+    vc3dfix.build_parser(p, "vc3dcache")
+    p.set_defaults(func=vc3dfix.cmd_vc3dcache)
 
     p = sub.add_parser("fetch", help="mirror a public bucket prefix over HTTPS (no AWS CLI needed)")
     p.add_argument("prefix", help="bucket prefix, e.g. PHerc0139/segments/..., or 'w035' / 'w045' for the PHerc0139 surface volumes (w035: an ink_9um training segment; w045: unseen by v8in, but ink_9um trained on its 2.4 um render)")

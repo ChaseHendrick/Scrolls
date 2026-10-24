@@ -12,6 +12,8 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
+from . import s3retry
+
 BUCKET_URL = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 W035_9UM = ("PHerc0139/segments/20260317000000-w035_2026031718/surface-volumes/"
             "9.362um-1.2m-113keV-volume-20250728140407.zarr")
@@ -45,7 +47,7 @@ def list_prefix(prefix, opener=urllib.request.urlopen, base=BUCKET_URL):
         url = f"{base}/?list-type=2&max-keys=1000&prefix={urllib.parse.quote(prefix)}"
         if token:
             url += "&continuation-token=" + urllib.parse.quote(token, safe="")
-        page, token = parse_listing(opener(url, timeout=60).read().decode())
+        page, token = parse_listing(s3retry.open_url(url, opener, 60).read().decode())
         entries += page
         if not token:
             return prefix, entries
@@ -107,7 +109,8 @@ def fetch_prefix(prefix, dest, workers=16, opener=urllib.request.urlopen, base=B
         last = None
         for _ in range(4):
             try:
-                data = opener(f"{base}/{urllib.parse.quote(key)}", timeout=120).read()
+                # a false 404 (S3's NoSuchBucket for a key it just listed) is asked again on a new connection
+                data = s3retry.open_url(f"{base}/{urllib.parse.quote(key)}", opener, 120).read()
                 if len(data) != size:
                     raise FetchError(f"{key}: got {len(data)} bytes, expected {size}")
                 tmp = out.with_name(out.name + ".part")
