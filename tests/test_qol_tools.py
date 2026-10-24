@@ -113,6 +113,14 @@ class TestCenterline(unittest.TestCase):
             with self.assertRaises(VerifyError):            # VC3D refuses two files: so do we, even with force
                 centerline.get_line("PHerc0001", folder=d, get=fake_get, force=True)
 
+    def test_polished_finder_line_comes_before_the_original(self):
+        found = [{"source": s, "kind": k} for s, k in
+                 (("finder", "model"), ("finder-polished", "model"), ("bucket-file", "bucket"), ("tauil", "person"))]
+        self.assertEqual([l["source"] for l in centerline.order(found)],
+                         ["tauil", "bucket-file", "finder-polished", "finder"])
+        self.assertEqual(centerline.pick(centerline.order(found))["source"], "tauil")
+        self.assertEqual(centerline.pick(centerline.order(found[:2]))["source"], "finder-polished")
+
     def test_hash_mismatch_refused(self):
         def bad(url, timeout=60):
             return LINE_BYTES + b" " if url.endswith("a_umbilicus.json") else fake_get(url)
