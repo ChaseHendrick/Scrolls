@@ -120,6 +120,10 @@ class TestCenterline(unittest.TestCase):
                          ["tauil", "bucket-file", "finder-polished", "finder"])
         self.assertEqual(centerline.pick(centerline.order(found))["source"], "tauil")
         self.assertEqual(centerline.pick(centerline.order(found[:2]))["source"], "finder-polished")
+        # a line the dataset marks superseded_by a newer version comes after it, whatever the source names
+        later = [{"source": "finder-polished", "kind": "model", "superseded_by": "lines/x_finder-polished-2.json"},
+                 {"source": "finder-polished-2", "kind": "model"}]
+        self.assertEqual(centerline.pick(centerline.order(later))["source"], "finder-polished-2")
 
     def test_hash_mismatch_refused(self):
         def bad(url, timeout=60):

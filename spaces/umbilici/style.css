@@ -112,6 +112,7 @@ body.focus .kicker::after { content: ""; }
 .src.s-tauil { border-color: rgba(182,156,255,.6); color: #b69cff; }
 .src.s-dopico { border-color: rgba(242,245,247,.55); color: #f2f5f7; }
 .src.s-finder { border-color: rgba(255,179,71,.7); color: var(--amber); }
+.src.s-finder-polished { border-color: rgba(198,243,107,.7); color: #c6f36b; }
 .grade.lt-good { color: var(--pass); } .grade.lt-caution { color: var(--caution); } .grade.lt-bad { color: var(--flag); }
 
 .ln.off { opacity: .45; }
@@ -245,6 +246,9 @@ table.tbl tbody tr { cursor: pointer; }
 table.tbl tbody tr:hover { background: rgba(137,240,255,.07); }
 table.tbl tr.cf td:first-child { color: var(--amber); }
 table.tbl tr.wd { opacity: .55; }
+.ver { margin-left: 8px; font-size: 10px; letter-spacing: .08em; padding: 1px 5px; border: 1px solid; border-radius: 3px; }
+.ver.new { color: #c6f36b; border-color: rgba(198,243,107,.6); }
+.ver.old { color: #9aa7b0; border-color: rgba(154,167,176,.5); }
 @media (max-width: 860px) {
   .tbtn { height: 31px; padding: 0 9px; font-size: 10px; }
   .hint { position: fixed; z-index: 8; left: var(--gut); margin: 0; top: calc(var(--gut) + 128px); bottom: auto; width: calc(100vw - 2 * var(--gut)); justify-content: space-between; }

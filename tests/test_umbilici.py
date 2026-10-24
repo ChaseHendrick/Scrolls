@@ -108,7 +108,16 @@ class BuildLines(unittest.TestCase):
         self.assertEqual(a["lines"][0]["stamp"], {"voxelsize_um": 9.362, "volume": "20250101000000-9.362um-1.2m-113keV-masked.zarr",
                                                   "volume_width": 64, "volume_height": 64, "volume_slices": 400})
         self.assertEqual(a["lines"][1]["stamp"], {})
-        self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder"})
+        self.assertIsNone(b["lines"][0]["superseded_by"])  # copied from index.json; none in this copy
+        self.assertEqual(set(t["sources"]), {"bucket", "drobkov", "tauil", "dopico", "finder", "finder-polished"})
+
+    def test_every_source_has_a_color_and_a_chip_style(self):
+        app = (SPACE / "app.js").read_text()
+        css = (SPACE / "style.css").read_text()
+        hexes = app[app.index("const SRC_HEX"):].split("\n", 1)[0]
+        for k in build_lines.SOURCES:
+            self.assertIn(f"{k}: '#" if "-" not in k else f"'{k}': '#", hexes, k)
+            self.assertIn(f".src.s-{k} ", css, k)
 
 
     def test_per_end_ct_grades(self):

@@ -1,6 +1,6 @@
 # umbilici: view every public center line of the 22 prize scans and 11 other public scans over live X-ray CT
 
-A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.
+A static Hugging Face Space that draws every public center line (umbilicus), newest version bright, for the 22 prize-eligible scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.
 
 | Field | Value |
 | --- | --- |
@@ -16,9 +16,9 @@ A static Hugging Face Space that draws every public center line (umbilicus) for 
 | Network | The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy) |
 | Writes | The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json` |
 | Go-ahead | Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds |
-| Released | Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.8.0 (Space commit `01ea09fd`, deployed 2026-10-24 from `main` at `912b8e04` with lines from dataset revision `73979441`), public since 2026-10-23 (Chase switched it public); README "Released tools" entry `umbilici` |
+| Released | Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.9.0 (deployed 2026-10-24 from `main` with lines from dataset revision `1b866db0`, v2.5, on Chase's yes; 1.8.0 was Space commit `01ea09fd`), public since 2026-10-23 (Chase switched it public); README "Released tools" entry `umbilici` |
 | License | Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0 |
-| Checked | 2026-10-23 against commit `9edd7a8` |
+| Checked | 2026-10-24 against commit `44f547c` |
 
 ## What it does
 
@@ -67,7 +67,7 @@ python3 -m http.server 8765    # then open http://localhost:8765/?mode=scan&scan
 - **Lasagna chunks have one owner.** A chunk is taken only from the part whose crop holds its origin, so overlapping parts cannot overwrite each other (`inside()`, tested). The shipped `needles.bin`, `cos_6400.webp` and `ori_6400.webp` were rebuilt byte for byte by `tools/build_lasagna.py`'s writer from the same reduction (2026-10-23).
 - **No control for the picture itself.** The page shows lines and CT; it does not test whether a line is at the true center. The end-check grades come from the dataset, and their meaning is on the page.
 
-Claim label: Sourced fact, for the lines and their sources (copied from the dataset); Model output, for the 16 Center Finder lines and the lasagna layers. Interpretation, for the statistics' meaning (each is defined on the page).
+Claim label: Sourced fact, for the lines and their sources (copied from the dataset); Model output, for the 16 Center Finder lines, their 12 polished versions and the lasagna layers. Interpretation, for the statistics' meaning (each is defined on the page).
 
 ## Commands and options
 
@@ -183,6 +183,7 @@ Free: a static Space, and CT comes from the public bucket at the visitor's end. 
 
 ## History
 
+- 2026-10-24: 1.9.0, on top of `44f547c`: lines from SharpMeow/vesuvius-center-lines v2.5 (33 scans, 52 lines): the 12 coverage-polished Center Finder lines drawn in lime as the newest version of each line (NEWEST on the card), the originals kept, faded and marked SUPERSEDED from the dataset's `superseded_by` (on Chase's ask, 24 Oct 2026, since later polishes will follow); a `superseded` column in the Data table; `finder-polished` as a maker in `show()`. Checked in headless Chromium with the live CT: no page errors (only the masked scan's absent chunks answer 404, as on 1.8.0).
 - 2026-10-24: 1.8.0 (`4a1c032`, [PR #185](https://github.com/ChaseHendrick/Scrolls/pull/185)), deployed as Space commit `01ea09fd` from `912b8e04`: lines from SharpMeow/vesuvius-center-lines v2.3 (33 scans, 40 lines; the 11 scans not on the prize page listed last and drawn in a back row); one color per maker and a show or hide control per maker and per line (`show(kind, name, on)`, `off=` in the URL), and green, yellow and red grades on the scan names, the list and the cards (Chase, 24 Oct 2026); 2.4 µm scans read at level 5 for the slice and thinned to at most 640 px across, with fewer heights, for the 3D view; `untested` grades marked; the card kicker names the prize lists a scan is on (PHerc1447 no longer reads FIRST LETTERS). Checked in headless Chromium on PHerc0191, PHerc0139, PHerc1447, PHercParis4 and PHercParis3 (PHercParis3: level 5 every third pixel, 230 µm voxels, 24 heights).
 - 2026-10-24: 1.7.0, Connect your tool tab and per-scan neuroglancer links, branched from `main` at `2ce4d50`. Deployed as Space commit `5658a903` from `8e76106` ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
 - 2026-10-24: the Connect your tool tab links the Lasagna Fields Space, which gives the ten public lasagna fields with their own tested snippets ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170) follow-up).
