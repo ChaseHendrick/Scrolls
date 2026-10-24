@@ -86,7 +86,7 @@ Its `kit` package is a different, narrowed copy of the source repository's kit, 
 
 ## History
 
-- 2026-10-24: a GIF, an MP4 and two stills of recorded sessions on PHerc0139 w035 (Hugging Face CPU Jobs), under "What it looks like".
+- 2026-10-24: a GIF, an MP4 and two stills of recorded sessions on PHerc0139 w035 (Hugging Face CPU Jobs), under "What it looks like" ([#201](https://github.com/ChaseHendrick/Scrolls/pull/201)).
 - 2026-10-24: 1.1.0 at `6c157716e08ef816eac936be22c40cb85682e642`: the seven `lasagna_*` tools (villa's lasagna surface fit, headless) and the `lasagna` command; 46 tools.
 - 2026-10-24: 1.0.0, the first standalone release, at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`: the VC3D agent tools and MCP server without AutoPipeline.
 
