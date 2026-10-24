@@ -4,6 +4,12 @@ Sections moved out of [HANDOFF.md](HANDOFF.md) unchanged, newest first, so the h
 
 When HANDOFF.md grows long, move its oldest dated sections, unchanged, to the top of this file (below this paragraph).
 
+## Umbilici Space row as of 24 October 2026 (moved here when 1.8.0 shipped)
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Umbilici Space (23 Oct) | `spaces/umbilici/` and [its page](tools/umbilici.md) on branch `claude/project-thread-xrkbs0`; Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.6.1 deployed (Space commit `c72b2cb0`; center lines v2.2 per-end CT grades, colored per end): guide for every level, VC3D and villa notes cited to villa source, Data tables with CSV and JSON, per-line statistics. CT streams from the open-data bucket in the visitor's browser; nothing is rehosted. Releases entry `umbilici` added | Public since 23 Oct (Chase switched it; live recheck passed: 22 scans, PHerc0846A CT 110 of 110 heights). SharpMeow/pherc0175a-lasagna public since 08:09 UTC; live recheck at 08:15 UTC: all three lasagna dataset links resolve, none fall back to "(soon)". PR #162 merged 23 Oct 08:30 UTC; 1.5.0 and 1.6.0 merged in #163; 1.6.1 (grade coloring) in the follow-up PR. Waiting on Chase: whether lag and black flashes are gone on his Mac |
+
 ## Open items added 15 October 2026 (checked 23:20 ET)
 
 Public work only. Every PR and SHA below was checked on GitHub when written; anything not checked says **unverified**.
