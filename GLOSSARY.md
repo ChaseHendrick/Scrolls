@@ -202,6 +202,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
 
+**m7**: The organizers' public surface prediction for PHerc0139 scan 20250728140407 (`...-surface-m7-L0-th0.2.zarr` under `PHerc0139/representations/predictions/surfaces/`), stored as 0 or 255. `kit hopbench` uses it as its default prediction and baseline.
+
 **micro-CT**: CT at micrometer resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
 
 **micrometer (µm, um)**: One thousandth of a millimeter. Written "um" in file names and some docs.
@@ -226,6 +228,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## O
 
+**one-sheet check (`kit.sheetgap`)**: A check that a traced surface stays on one sheet where sheets touch. At each mesh point it reads a surface prediction along the normal and passes only an isolated run no thicker than one sheet, with empty voxels on both sides; neighbors link only when their runs line up. Its blind spot is a prediction that draws two pressed sheets as one thin run ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
+
 **OCR (optical character recognition)**: A model proposing text from an image. Its output still needs independent checks and is not a verified reading.
 
 **OME-Zarr**: A zarr layout for large microscopy-style images, with several resolution levels and metadata. The challenge stores its CT volumes this way.
@@ -243,6 +247,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **PHerc.**: Short for Papyrus Herculanensis, followed by an inventory number, for example PHerc. 0139 or PHerc0139. PHerc. Paris 4 is also called Scroll 1.
 
 **pixel AUC**: See AUC.
+
+**planted hop (`kit hopbench`)**: A copy of a patch of one hand-traced winding moved partly onto its touching neighbor at a real contact, so that the patch switches sheets on purpose. Band plants step across only inside the contact zone; ramp plants slide across over 16 voxels. Used to measure how often a one-sheet check misses a switch ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
 
 **planted defect (`kit.planted`)**: A sheet switch, lens, skip, merger, hole or bridged hole put on purpose into a synthetic tifxyz surface whose every vertex records the winding it truly sits on, so a detector, stack check or labeler can be tested against a known answer. Synthetic data only ([`docs/tools/planted.md`](docs/tools/planted.md)).
 

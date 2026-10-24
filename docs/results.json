@@ -11519,5 +11519,129 @@
     "KN always returns exactly L letters and one of its components was trained on another Philodemus text"
    ]
   }
+ ],
+ "hopbench_checks": [
+  {
+   "date": "2026-10-24",
+   "tool": "kit hopbench",
+   "command": "python -m kit hopbench run --pred m7",
+   "claim": "Model output: the one-sheet check (kit.sheetgap) reading an organizers' public surface prediction, on planted sheet hops at real contacts between PHerc0139 hand-traced windings w023 to w040 (scan 20250728140407, 9.362 um); geometry only, never a reading",
+   "prediction": "PHerc0139/representations/predictions/surfaces/20250728140407-surface-20260413222639-surface-m7-L0-th0.2.zarr",
+   "manifest_digest": "e1fc4cac80a05995b8cb55d14534fac3580cfaf7f88b580b023b33738a332645",
+   "rule_digest": "4f5abd102a26",
+   "settings": {
+    "seed": 20261016,
+    "clean_mm": 20.0,
+    "windows_per_winding": 1,
+    "plant_mm": 6.0,
+    "sites_per_pair": 4,
+    "contact_vox": 4.0,
+    "copy_vox": 8.0,
+    "far_vox": 6.0,
+    "min_side_vox2": 1600.0,
+    "thick_quantile": 0.95,
+    "thick_cap": 10
+   },
+   "max_thick_vox": 4,
+   "plants": {
+    "planted": 136,
+    "counted": 64,
+    "band": 10,
+    "ramp": 54,
+    "gap_joined": 11,
+    "gap_share": 0.1719,
+    "gap_wilson95": [
+     0.0988,
+     0.2821
+    ],
+    "gap_joined_band": 2,
+    "gap_joined_ramp": 9,
+    "seated_joined": 26,
+    "seated_share": 0.4062
+   },
+   "clean": {
+    "gap": {
+     "median_square_mm": 3.505,
+     "max_square_mm": 5.3,
+     "windows_ge_12.5mm": 0
+    },
+    "seated": {
+     "median_square_mm": 5.015,
+     "max_square_mm": 7.97,
+     "windows_ge_12.5mm": 0
+    },
+    "truth": {
+     "median_square_mm": 5.865,
+     "max_square_mm": 13.83,
+     "windows_ge_12.5mm": 1
+    }
+   },
+   "clean_windows": 18,
+   "missing_chunks": 0,
+   "seconds": 2206,
+   "machine": "4-core Intel Xeon 2.80 GHz cloud container, CPU only; the two runs partly overlapped",
+   "source": "docs/tools/hopbench.md"
+  },
+  {
+   "date": "2026-10-24",
+   "tool": "kit hopbench",
+   "command": "python -m kit hopbench run --pred recto090",
+   "claim": "Model output: the one-sheet check (kit.sheetgap) reading an organizers' public surface prediction, on planted sheet hops at real contacts between PHerc0139 hand-traced windings w023 to w040 (scan 20250728140407, 9.362 um); geometry only, never a reading",
+   "prediction": "PHerc0139/representations/predictions/surfaces/20250728140407-surface-20250701154204-surface-recto-090.zarr",
+   "manifest_digest": "e1fc4cac80a05995b8cb55d14534fac3580cfaf7f88b580b023b33738a332645",
+   "rule_digest": "93ff3b6dafda",
+   "settings": {
+    "seed": 20261016,
+    "clean_mm": 20.0,
+    "windows_per_winding": 1,
+    "plant_mm": 6.0,
+    "sites_per_pair": 4,
+    "contact_vox": 4.0,
+    "copy_vox": 8.0,
+    "far_vox": 6.0,
+    "min_side_vox2": 1600.0,
+    "thick_quantile": 0.95,
+    "thick_cap": 10
+   },
+   "max_thick_vox": 8,
+   "plants": {
+    "planted": 136,
+    "counted": 64,
+    "band": 10,
+    "ramp": 54,
+    "gap_joined": 13,
+    "gap_share": 0.2031,
+    "gap_wilson95": [
+     0.1227,
+     0.3171
+    ],
+    "gap_joined_band": 2,
+    "gap_joined_ramp": 11,
+    "seated_joined": 43,
+    "seated_share": 0.6719
+   },
+   "clean": {
+    "gap": {
+     "median_square_mm": 3.905,
+     "max_square_mm": 6.85,
+     "windows_ge_12.5mm": 0
+    },
+    "seated": {
+     "median_square_mm": 6.355,
+     "max_square_mm": 11.13,
+     "windows_ge_12.5mm": 0
+    },
+    "truth": {
+     "median_square_mm": 5.865,
+     "max_square_mm": 13.83,
+     "windows_ge_12.5mm": 1
+    }
+   },
+   "clean_windows": 18,
+   "missing_chunks": 0,
+   "seconds": 2389,
+   "machine": "4-core Intel Xeon 2.80 GHz cloud container, CPU only; the two runs partly overlapped",
+   "source": "docs/tools/hopbench.md"
+  }
  ]
 }
