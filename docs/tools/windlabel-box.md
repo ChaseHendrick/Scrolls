@@ -240,7 +240,7 @@ python -m unittest tests.test_windlabel_box tests.test_plugins -v
 
 ## History
 
-- 2026-10-24: first public version, after a PASS on 18 fresh PHerc0139 boxes (#PR).
+- 2026-10-24: first public version, after a PASS on 18 fresh PHerc0139 boxes ([#190](https://github.com/ChaseHendrick/Scrolls/pull/190)).
 
 ## Related
 
