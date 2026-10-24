@@ -46,6 +46,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
 
+**chain rule (windlabel)**: The fixed test `kit windlabel-box` applies to each step of a chain of sheet crossings: the next sheet is thin, at a spacing in line with the chain's earlier steps, and the sheet's normal turns little. Version 1 has digest `0e53e0ae5016`. See [`docs/tools/windlabel-box.md`](docs/tools/windlabel-box.md).
+
 **checkpoint**: The saved weights of a trained model.
 
 **Connect your tool (panel)**: The section every one of Chase's Hugging Face Spaces carries (24 Oct 2026): the URLs of the data the page shows, with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, curl, gradio_client and MCP. Written from each Space's `connect.json` by `python -m kit spaceconnect`; page [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
@@ -116,6 +118,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **GPU**: A graphics processor, used here for fast model training and inference.
 
+**grad_mag**: A sheet-density channel published with lasagna's model outputs: high where papyrus sheets are, so its integral along a short line counts roughly how many sheets the line crosses. `kit windlabel-box` uses it to find steps that cross more than one sheet.
+
 **Grand Prize**: The largest Vesuvius Challenge prize of a challenge year.
 
 **GrowPatch**: A VC3D tracer that grows a surface mesh outward step by step by optimization.
@@ -180,6 +184,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **landmark**: A point marked in two scans of one scroll, used to fit the cross-scan transform between them.
 
+**lasagna**: villa's lasagna surface fitter and the model outputs it reads, such as grad_mag; outputs are published for open-data volumes, for example PHerc0139's `20260102150214-lasagna-20260419180421-L2`.
+
 **layer**: One image in a surface volume, at a fixed depth from the traced surface. `kit layers` writes them as numbered TIFF files. In the scroll itself, "layer" also means one turn of papyrus (see winding).
 
 **ledger (experiment ledger)**: The local record of each run in `experiments/<slug>/run.json`, with its readout-rule hash, status, wall time and cost. Modal launches have their own ledger in `docs/compute/modal-ledger.csv`.
@@ -187,6 +193,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **level (resolution level)**: One copy of a volume at a given downsampling in a multi-resolution zarr. Level 0 is full resolution; higher levels are smaller, downsampled copies.
 
 ## M
+
+**m7**: The organizers' binary surface prediction model for the open data: a voxel map of where papyrus sheet surfaces are. Several kit tools read its published outputs; it can merge sheets that touch.
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
 
@@ -264,6 +272,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
 
+**relative windings**: Points along a line from a scroll's core, each labeled with how many windings it lies outward of the first, without saying which absolute winding that is. villa's spiral fit reads them as a `relative_windings.json` point collection; `kit windlabel-box` makes them and `kit windconsistency` checks them.
+
 **remote chunk cache (VC3D)**: The folder where VC3D keeps every chunk it streams from a remote volume, so later runs read them from disk; `kit doctor --remote` shows where it is and how much space it has ([`docs/tools/doctor.md`](docs/tools/doctor.md)).
 
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
@@ -309,6 +319,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
+
+**split rule (windlabel)**: The fixed rule `kit windlabel-box` uses to cut a chain: every step whose grad_mag integral, scaled by 0.765 so one sheet reads about 1, is above 0.95 is cut, so each piece claims only counts the grad_mag agrees with. Digest `c6d2eecbebc2`.
 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 

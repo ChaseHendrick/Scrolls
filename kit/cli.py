@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,axispolish,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -988,8 +988,8 @@ GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
                                     "volumeview", "segzoo")),
-    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "axispolish", "overlap", "meshaudit",
-                               "surfacefix", "layers")),
+    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "axispolish", "windlabel-box",
+                               "overlap", "meshaudit", "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
@@ -1311,6 +1311,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import axispolish
     axispolish.build_parser(p)
     p.set_defaults(func=axispolish.cmd_axispolish)
+    p = sub.add_parser("windlabel-box", help="relative windings in a box around a point, from a published surface "
+                                             "prediction and lasagna grad_mag (model output)")
+    from . import windlabel_box
+    windlabel_box.build_parser(p)
+    p.set_defaults(func=windlabel_box.cmd_windlabel_box)
 
     p = sub.add_parser("meshaudit", help="audit published meshes, cross-scan transforms and render depth offsets")
     actions = p.add_subparsers(dest="action", required=True)

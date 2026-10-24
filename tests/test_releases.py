@@ -239,7 +239,7 @@ class GroupTest(unittest.TestCase):
     def test_bad_groups_fail(self):
         bad = [group(released="2026-10-15"), group(tool(), tool()), group(tool(id="demo-kit")),
                group(where=PACKAGE), entry(tools=[]), entry(tools="demo-cmd"), entry(tools=["demo-cmd"]),
-               entry(tools=[tool()] * 13), group(tool(page="docs/demo.md")), group(tool(page="docs/tools/../x.md")),
+               entry(tools=[tool()] * 17), group(tool(page="docs/demo.md")), group(tool(page="docs/tools/../x.md")),
                group(tool(command="run `x`")), group(tool(name="**Bold**")), group(tool(extra=1)),
                group(tool(summary=None)), group(tool(command=None)), group(tool(page=None)), group(tool(id="Demo")),
                group(tool(released="2026-02-30"), tool(id="other-cmd", released="2026-10-16")), group(tool(summary="a\nb")), group(tool(summary=" lead")),

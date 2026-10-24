@@ -90,7 +90,7 @@ TOOL_FIELDS = {"id", "name", "released", "version", "summary", "command", "page"
 TOOL_REQUIRED = ("id", "name", "released", "summary", "command", "page")
 TOOL_PAGE = re.compile(r"docs/tools/[a-z0-9][a-z0-9-]*\.md")
 ID = re.compile(r"[a-z0-9][a-z0-9-]{0,62}")
-MAX_TOOLS = 12
+MAX_TOOLS = 16
 
 
 class ReleaseListError(ValueError):

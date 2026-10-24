@@ -1,0 +1,20 @@
+{
+  "schema": "vc3d-plugin/1",
+  "id": "scrolls.windlabel-box",
+  "name": "Relative windings in a box",
+  "description": "Chase Hendrick's kit windlabel-box around the focus point: chains of sheet crossings grown on the volume's published surface prediction, outward from the attached umbilicus, cut at every step where the published lasagna grad_mag says the step holds more than one sheet, and written as villa's relative_windings.json (winding_is_absolute false) with a flags.json of places to check. It needs an attached umbilicus and refuses without a surface prediction and a grad_mag source; it never computes either. Model output from predictions, not a reading.",
+  "menu": "Windings",
+  "program": "python3",
+  "args": ["{plugin_dir}/run_kit.py", "windlabel-box", "--prediction", "{input:prediction}",
+           "--grad-mag", "{input:grad_mag}", "--base-affine", "{input:base_affine}", "--point", "{point}",
+           "--box", "{input:box}", "--seeds", "{input:seeds}", "--umbilicus", "{umbilicus}",
+           "--out", "{output}", "--json"],
+  "inputs": [{"name": "prediction", "label": "Surface prediction of the open volume (binary, level 0): zarr folder or https URL", "default": ""},
+             {"name": "grad_mag", "label": "Lasagna grad_mag: a manifest (.json or *.lasagna.json URL) or a grad_mag OME-Zarr", "default": ""},
+             {"name": "base_affine", "label": "Prediction voxels to the lasagna base grid: identity, or a JSON 3 x 4 matrix file", "default": "identity"},
+             {"name": "box", "label": "Box edge in voxels, centered on the focus point", "default": "512"},
+             {"name": "seeds", "label": "Seed count", "default": "200"}],
+  "result": {"kind": "points", "path": "{output}/relative_windings.json"},
+  "homepage": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/windlabel-box.md",
+  "license": "Apache-2.0"
+}

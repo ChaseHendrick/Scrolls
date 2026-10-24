@@ -11519,5 +11519,55 @@
     "KN always returns exactly L letters and one of its components was trained on another Philodemus text"
    ]
   }
+ ],
+ "windlabel_box_checks": [
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings on 18 fresh PHerc0139 boxes of 512 voxels from the open-data m7 and lasagna grad_mag, scored against PHerc0139's published hand windings w023 to w040 under a readout fixed before any chain was grown",
+   "claim_wording": "split chains 0.9758 step accuracy on 13,969 judged steps, above the 0.95 bar; one scroll, held out in position only",
+   "verdict": "PASS",
+   "rule": "fixed before any chain was grown: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "c6d2eecbebc2",
+   "pooled": {
+    "v1": {
+     "steps": 19613,
+     "step_accuracy": 0.9223,
+     "blocks": 40,
+     "lower_bound_95": 0.908
+    },
+    "split": {
+     "steps": 13969,
+     "step_accuracy": 0.9758,
+     "blocks": 40,
+     "lower_bound_95": 0.9683,
+     "kept_share": 0.7122,
+     "skip_control": 0.0218,
+     "shift_control": 0.0645
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9229,
+     "p97_5": 0.9253
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   },
+   "dev_boxes": {
+    "boxes": 6,
+    "split_step_accuracy": 0.9415,
+    "without_umbilicus": 0.8819,
+    "note": "earlier development boxes, under the bar; the shortfall sits near z 7000 where predictions and hand windings disagree"
+   }
+  }
  ]
 }
