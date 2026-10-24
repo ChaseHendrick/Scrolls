@@ -23,8 +23,10 @@ from . import find as _find
 from .verify import VerifyError
 
 KIND_ORDER = {"person": 0, "bucket": 1, "model": 2}
-# Within a kind, a source here comes first: the coverage-polished finder line sat deeper in villa's traced sheet
-# than the line before the polish on all ten scans of its frozen test (docs/evidence/2026-10-22-umbilicus-windpolish)
+# Within a kind, a line the dataset marks superseded_by a newer version comes after the lines that are not (since
+# v2.5: each original finder line, superseded by its coverage polish, which sat deeper in villa's traced sheet on all
+# ten scans of its frozen test, docs/evidence/2026-10-22-umbilicus-windpolish); then a source here comes first, for
+# copies of the dataset older than v2.5
 SOURCE_ORDER = {"finder-polished": 0}
 _VOL_PREFIX = re.compile(r"^(\d{14})-umbilicus")
 
@@ -38,7 +40,7 @@ def lines(scroll, get=_find.http_get):
                     "volume": str(f.get("volume") or f.get("scan") or "")[:14] or None, "points": f.get("points"),
                     "url": f"{_find.HUB}/datasets/{_find.CENTERLINES}/resolve/main/{f['file']}",
                     "sha256": f.get("sha256"), "credit": f.get("credit"), "licence": f.get("licence"),
-                    "usable_ends": None, "from": _find.CENTERLINES})
+                    "usable_ends": None, "superseded_by": f.get("superseded_by"), "from": _find.CENTERLINES})
     try:
         _, keys = _find.list_prefix(f"{scroll}/representations/umbilicus/", get)
     except OSError:
@@ -57,8 +59,10 @@ def lines(scroll, get=_find.http_get):
 
 
 def order(found):
-    """Best first: person-made, then bucket, then model lines; within a kind, SOURCE_ORDER, then by source name."""
-    return sorted(found, key=lambda l: (KIND_ORDER.get(l["kind"], 3), SOURCE_ORDER.get(l["source"], 1),
+    """Best first: person-made, then bucket, then model lines; within a kind, the newest version of a line (no
+    superseded_by) first, then SOURCE_ORDER, then by source name."""
+    return sorted(found, key=lambda l: (KIND_ORDER.get(l["kind"], 3), bool(l.get("superseded_by")),
+                                        SOURCE_ORDER.get(l["source"], 1),
                                         str(l["source"])))
 
 

@@ -7,13 +7,13 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.8.0';
+const VERSION = '1.9.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
 const AMBER = new THREE.Color('#ffb347');
 // one color per maker, so two people's lines on one scan never share a color (Chase, 24 Oct 2026)
-const SRC_HEX = { bucket: '#89f0ff', drobkov: '#ff7eb6', tauil: '#b69cff', dopico: '#f2f5f7', finder: '#ffb347' };
+const SRC_HEX = { bucket: '#89f0ff', drobkov: '#ff7eb6', tauil: '#b69cff', dopico: '#f2f5f7', finder: '#ffb347', 'finder-polished': '#c6f36b' };
 const SRC_COL = Object.fromEntries(Object.entries(SRC_HEX).map(([k, v]) => [k, new THREE.Color(v)]));
 const colOf = (l) => SRC_COL[l.source] || ICE;
 const hexOf = (l) => SRC_HEX[l.source] || '#89f0ff';
@@ -98,6 +98,9 @@ function lineAt(l, z) {
 function lineMean(l) { const p = linePts(l); let x = 0, y = 0; for (const q of p) { x += q[0]; y += q[1]; } return [x / p.length, y / p.length]; }
 function drift(s, l) { const [mx, my] = lineMean(l); let d = 0; for (const q of linePts(l)) d = Math.max(d, Math.hypot(q[0] - mx, q[1] - my)); return mm(s, d); }
 const isFinder = (l) => l.source === 'finder';
+// an older version (superseded_by names the newer line's file) or a withdrawn line is drawn faded
+const isOld = (l) => !!l.superseded_by || l.note.includes('withdrawn');
+const isNewest = (s, l) => s.lines.some((o) => o.superseded_by === l.file);
 // lines the visitor switched off: a whole maker (legend) or one line (scan card); kept in the URL as off=
 const OFF = { src: new Set(), line: new Set() };
 const lineKey = (s, l) => `${s.scroll}:${l.source}`;
@@ -181,7 +184,7 @@ function lineRows() {
     const t = statsOf(s, l);
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
-      kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'),
+      kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'), superseded: !!l.superseded_by,
       ...t, licence: l.licence, sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
   }));
@@ -259,7 +262,7 @@ function buildArray() {
       for (const l of s.lines) {
         if (!shown(s, l)) continue;
         const pts = linePts(l).map(([x, y, z]) => [mm(s, x - cx) * S.ex, mm(s, z), mm(s, y - cy) * S.ex]);
-        g.add(tube(pts, colOf(l), 0.9, l.note.includes('withdrawn') ? 0.45 : 1));
+        g.add(tube(pts, colOf(l), 0.9, isOld(l) ? 0.45 : 1));
       }
       const tint = hasFinder(s) ? AMBER : ICE;
       g.add(ring(26, 0, tint, 0.28)); g.add(ring(26, H, tint, 0.12));
@@ -442,7 +445,7 @@ function toWorld(s, x, y, z) { const [ox, oy] = scanOrigin(s); return [mm(s, x -
 const scanLines = new THREE.Group();
 function buildScanLines(s) {
   scanLines.clear();
-  for (const l of s.lines) if (shown(s, l)) scanLines.add(tube(linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), colOf(l), 0.55, l.note.includes('withdrawn') ? 0.5 : 1));
+  for (const l of s.lines) if (shown(s, l)) scanLines.add(tube(linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), colOf(l), 0.55, isOld(l) ? 0.5 : 1));
   S.dirty = true;
 }
 function buildScan(s) {
@@ -611,7 +614,7 @@ sc.addEventListener('wheel', (e) => { if (!S.sel) return; e.preventDefault(); co
 // ---------- showing and hiding lines ----------
 function buildLegend() {
   const used = Object.keys(S.data.sources).filter((k) => S.data.scrolls.some((s) => s.lines.some((l) => l.source === k)));
-  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : S.data.sources[k].label}</button>`).join('');
+  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : k === 'finder-polished' ? 'Center Finder, polished (model output)' : S.data.sources[k].label}</button>`).join('');
 }
 function linesChanged() {
   buildLegend(); buildArray(); if (S.sel) { buildScanLines(S.sel); buildCard(S.sel); drawSlice(); }
@@ -656,12 +659,14 @@ function buildCard(s) {
     const up = /^https?:/.test(l.upstream) ? `<a href="${l.upstream}" target="_blank" rel="noopener">upstream</a>` : '';
     const grade = l.grade ? `<span class="grade ${l.grade} lt-${lightOf(l)}" title="${GRADE_TEXT[l.grade]}; ${LIGHT_WORD[lightOf(l)]}">END CHECK ${l.grade}${lightOf(l) === 'caution' ? ' · CAUTION' : ''}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
     const ends = endsText(l);
+    const ver = l.superseded_by ? '<span class="ver old" title="a newer version of this line exists; it is kept for comparison">SUPERSEDED</span>' : (isNewest(s, l) ? '<span class="ver new" title="the newest version of this line; kit takes it by default">NEWEST</span>' : '');
+    const was = l.superseded_by ? '<div class="note">Superseded: the newer version of this line is on this card, marked NEWEST. This one is kept for comparison and drawn faded.</div>' : '';
     const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : (GRADE_TEXT[l.grade] || '')}.${l.untested ? ` Untested: ${UNTESTED}.` : ''} Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}.</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
     const k = lineKey(s, l);
-    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b>${grade}</div>
-      <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${l.licence}</div>${note}
+    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b>${ver}${grade}</div>
+      <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${l.licence}</div>${was}${note}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
         ${row('credit', l.credit)}${row('kind', l.kind)}${row('points', t.points)}
@@ -689,7 +694,7 @@ function drawHere() {
   const s = S.sel; if (!s || S.z == null) return;
   const z = Math.round(S.z); const rows = hereRows(s, z);
   $('c-here').innerHTML = `<div class="mono small dim">AT z ${z} (${fmt(mm(s, z), 2)} mm), LEVEL-0 VOXELS</div>` + (rows.length
-    ? rows.map((r) => `<div class="hr"><span class="${r.source === 'finder' ? 'amber' : 'ice'}">${S.data.sources[r.source].short}</span> <code>${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}</code><button class="lk" data-copy="${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}" data-what="x, y, z copied">copy</button></div>`).join('')
+    ? rows.map((r) => `<div class="hr"><span class="${r.source.startsWith('finder') ? 'amber' : 'ice'}">${S.data.sources[r.source].short}</span> <code>${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}</code><button class="lk" data-copy="${fmt(r.x, 1)}, ${fmt(r.y, 1)}, ${z}" data-what="x, y, z copied">copy</button></div>`).join('')
     : '<div class="dim small">no line reaches this height</div>');
 }
 function setMode(m) {
@@ -790,7 +795,7 @@ $('about').querySelector('.tabs').addEventListener('click', (e) => { const b = e
 const COLS = {
   lines: [['scroll', 'scroll'], ['maker', 'maker'], ['grade', 'grade'], ['ct_end_low', 'low end'], ['ct_end_high', 'high end'], ['points', 'pts'], ['z_start', 'z start'], ['z_end', 'z end'], ['height_mm', 'height mm'],
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
-    ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['licence', 'licence'], ['sha256', 'sha256']],
+    ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['superseded', 'superseded'], ['licence', 'licence'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],
     ['levels', 'levels'], ['grand_prize', 'GP'], ['first_letters', 'FL'], ['lines', 'lines'], ['sources', 'sources'], ['grade', 'grade'], ['pair_median_mm', 'pair gap mm'], ['pair_max_mm', 'pair max mm']],
 };
@@ -810,7 +815,7 @@ function renderSheet() {
   const rows = SHEET.tab === 'lines' ? lineRows() : scanRows(); const cols = COLS[SHEET.tab];
   if (SHEET.key) rows.sort((a, b) => { const u = a[SHEET.key], v = b[SHEET.key]; return (u > v ? 1 : u < v ? -1 : 0) * SHEET.dir; });
   $('tbl').innerHTML = `<thead><tr>${cols.map(([k, h]) => `<th data-k="${k}" class="${SHEET.key === k ? (SHEET.dir > 0 ? 'up' : 'dn') : ''}">${h}</th>`).join('')}</tr></thead>
-    <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source === 'finder' ? 'cf' : ''}${r.withdrawn ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source.startsWith('finder') ? 'cf' : ''}${r.withdrawn || r.superseded ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
   $('sheet-note').textContent = `${rows.length} ${SHEET.tab}. Click a column to sort, a row to open its scan. Definitions: Guide, For researchers. Downloads hold every column and the full notes.`;
 }
 function openSheet(tab = 'lines') { SHEET.tab = tab; tabs($('sheet'), tab); renderSheet(); if (!$('sheet').open) $('sheet').showModal(); }
@@ -968,7 +973,7 @@ function tick(now = performance.now()) {
   $('a-sources').innerHTML = Object.entries(S.data.sources).map(([k, v]) => {
     const l = S.data.scrolls.flatMap((s) => s.lines).find((q) => q.source === k); const n = S.data.scrolls.filter((s) => s.lines.some((q) => q.source === k)).length;
     const names = S.data.scrolls.filter((s) => s.lines.some((q) => q.source === k)).map((s) => s.scroll).join(', ');
-    return `<li><b class="${k === 'finder' ? 'amber' : 'ice'}">${v.label}</b> (${v.short}): ${n} scan${n === 1 ? '' : 's'}, ${l ? l.licence : ''}. <span class="dim">Credit as given: ${l ? l.credit : ''}. ${names}.</span></li>`;
+    return `<li><b class="${k.startsWith('finder') ? 'amber' : 'ice'}">${v.label}</b> (${v.short}): ${n} scan${n === 1 ? '' : 's'}, ${l ? l.licence : ''}. <span class="dim">Credit as given: ${l ? l.credit : ''}. ${names}.</span></li>`;
   }).join('');
   const all = S.data.scrolls.flatMap((s) => s.lines.map((l) => [s, l]));
   const bare = all.filter(([s, l]) => !statsOf(s, l).stamped);
