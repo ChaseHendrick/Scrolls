@@ -1237,12 +1237,24 @@ def tracked(root=ROOT):
 class Context:
     """What a page check needs besides the page: the repository and the code."""
 
-    def __init__(self, root=ROOT, commands=None, pending=(), kind=None, git=False):
+    def __init__(self, root=ROOT, commands=None, pending=(), kind=None, git=False, owned=None):
         self.root = Path(root)
         self.commands = commands
         self.pending = set(pending)
         self.kind = kind
         self.git = git
+        self.owned = dict(owned or {})     # file -> id of the page whose Code names that file itself
+
+
+def owned_files(pages):
+    """{file: page id} for every file a page's Code field names on its own (not as a folder), so a folder page
+    leaves that file's options and errors to the page that documents it."""
+    out = {}
+    for page in pages:
+        for rel, _ in page.code_items():
+            if not rel.endswith("/") and not any(c in rel for c in "*?["):
+                out.setdefault(rel, page.id)
+    return out
 
 
 def check_page(page, ctx):
@@ -1459,6 +1471,8 @@ def _check_code(page, ctx, detail=True):
             sorted(p.relative_to(root).as_posix() for p in (root / rel).rglob("*")
                    if p.suffix in (".py", ".sh") and "__pycache__" not in p.parts)
         for f in targets:
+            if f != rel and ctx.owned.get(f, page.id) != page.id:
+                continue                  # another page documents this file of the folder
             if f.endswith(".sh"):
                 text = (root / f).read_text(encoding="utf-8", errors="replace")
                 for env in env_names_sh(text):
@@ -1875,7 +1889,7 @@ def check_all(root=ROOT, page_ids=None, commands=None):
         pending = load_pending(root)
     except ValueError as exc:
         return [f"docs/tools/pending.json does not parse: {exc}"]
-    ctx = Context(root, commands, pending, repo_kind(root), git_usable(root))
+    ctx = Context(root, commands, pending, repo_kind(root), git_usable(root), owned_files(pages))
     chosen = pages
     if page_ids:
         chosen = [p for p in pages if p.id in page_ids]

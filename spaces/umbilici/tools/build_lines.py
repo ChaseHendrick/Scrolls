@@ -2,8 +2,8 @@
 
 Usage: python3 tools/build_lines.py DATASET_DIR OUT.json
 DATASET_DIR is a copy of SharpMeow/vesuvius-center-lines (index.json plus lines/). Only the control points, the
-public fields of index.json (with each Center Finder line's per-end CT end check, ct_ends, and ct_untested_scan
-as untested), each file's frame
+public fields of index.json (with each Center Finder line's per-end CT end check, ct_ends, ct_untested_scan
+as untested, and superseded_by, the newer version of a line), each file's frame
 stamp (voxel size, volume name and grid) and its usable_ends are copied; the rest of each file's metadata is not. Scan shapes are read from the
 Vesuvius Challenge open-data bucket.
 """
@@ -19,6 +19,7 @@ SOURCES = {
     "drobkov": {"label": "Alexey Drobkov", "short": "AD"},
     "tauil": {"label": "Abd Elilah (manual)", "short": "AE"},
     "dopico": {"label": "Iyan Dopico", "short": "ID"},
+    "finder-polished": {"label": "Chase Hendrick's Center Finder, polished", "short": "CP"},
     "finder": {"label": "Chase Hendrick's Center Finder", "short": "CF"},
 }
 
@@ -81,6 +82,8 @@ def main(src, out):
                 "note": f.get("note", ""), "grade": grade, "ends": ends, "untested": bool(f.get("ct_untested_scan")),
                 "usable": [k for k in ("low", "high") if use.get(k)] if isinstance(use, dict) else None,
                 "stamp": stamp, "points": flat,
+                # v2.5 and later: the file of the newer version of this line, if there is one (the page fades it)
+                "superseded_by": f.get("superseded_by"),
             })
         lines.sort(key=lambda l: list(SOURCES).index(l["source"]))
         scrolls.append({

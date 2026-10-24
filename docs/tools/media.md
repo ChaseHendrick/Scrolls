@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -228,6 +228,17 @@ The still on the [coverage](coverage.md) page: `kit coverage`'s picture of one s
 | `--out-dir` | required | Writes `NAME.png` and its sidecar |
 | `--name` | `coverage-pherc0139` | The file name without `.png` |
 
+### `python scripts/media/vc3d_agent_session.py`
+
+The GIF, MP4 and two stills on the [vc3d-agent](vc3d-agent.md) page: a captioned replay page built from recorded MCP sessions of Headless VC3D for agents (each tool call's arguments, real duration and structured result, and the images it returned), for `capture_web.py` and `encode.py`. Every value on the page is read from the transcripts; pictures are CT and mesh geometry only, so a trace grown on a surface prediction and any ink map stay numbers. Standard library only.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `sessions` | required unless `--publish` | Session transcripts (`transcript.json`, images under `images/` beside it), the main session first; scenes name a step and a transcript by position |
+| `--out-dir PAGE` | required unless `--publish` | Writes `replay.html` (pictures inlined), `actions.json` (the clip: a title, then each call typed in 8 frames and held 34) and `stills.json` (the two stills, each clipped to its panel) |
+| `--publish SHOTS` | unset | Copy `vc3d-agent-render.png` and `vc3d-agent-app.png` from SHOTS into `--assets` with their sidecars, through `common.write_guard` and `common.size_guard` |
+| `--assets DIR` | required with `--publish` | The `docs/assets/` folder for the stills |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -298,6 +309,9 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | `the synthetic demo failed (exit...); the run is in` | `record_ap_monitor.py`: the package's demo did not end with every stage as expected | Run `python scripts/demo_synthetic.py` in the package and read its `DEMO FAIL` line; install the package's dependencies |
 | `clip element 'SELECTOR' has no box` | The `clip` selector matched nothing visible | Fix the selector, or clip to `null` |
 | `hold needs an earlier frame` | `hold` before any `frame` | Take a frame first |
+| `vc3d_agent_session: no scene found in the transcripts` on stderr, exit code 2 | `vc3d_agent_session.py`: none of its scenes' steps is in the transcripts, or every one failed | Give the main session's `transcript.json` first, then the others in the order the scenes name them |
+| `give session transcripts and --out-dir, or --publish SHOTS --assets DIR` | `vc3d_agent_session.py` with neither a page to build nor stills to publish | Give one of the two |
+| `--publish needs --assets` | `vc3d_agent_session.py --publish` without a target folder | Add `--assets docs/assets/vc3d-agent` |
 | `the playwright package is missing: pip install playwright (with PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 where a Chromium is installed)` | No `playwright` module | Install it as the message says; never run `playwright install` where a browser exists |
 | `no Chromium could start (give --browser PATH):` | Playwright's own Chromium is a different version and no system Chromium was found | Give `--browser` or set `CHROMIUM_PATH` |
 | `URL did not answer within 60 s: ERROR` | A `goto` URL refused connections for 60 s | Start the server, or check its port |
@@ -355,7 +369,7 @@ for r in umbilicus unroll lens reader stackcheck inkfilter starter workbench; do
 done
 ```
 
-`FOLDER` is each recipe's folder in `docs/assets/` (its sidecar records the command). The AutoPipeline monitor clip starts the capture first (`capture_web.py about:blank --out-dir FRAMES --actions scripts/media/captures/autopipeline-monitor.json --width 1280 --height 960`), then, from the 0.1.5 package folder with the package's Python, `scripts/demo_synthetic.py --out RUN` with its run held 5 s after it writes `plan.json` (so the clip opens on the first stage), then the package's own monitor (`kit autopipeline monitor RUN/run --port 8793`) once `RUN/run/plan.json` exists. The steps sample the run for 16 s on the wall clock, wait for the Finished banner, then the pointer opens the Ink stage, filters the log and prepares the status command, and the clip ends on the banner; `encode.py` runs at `--fps 12 --gif-fps 12 --dither none` (its sidecar records the chain). The Starter clip is the portable Starter with `scripts/media/captures/starter-practice.json` at 12 fps, and the umbilicus clip is `python scripts/media/sweep.py --out-dir FRAMES --frames 84`, encoded at 12 fps with `--dither none`.
+`FOLDER` is each recipe's folder in `docs/assets/` (its sidecar records the command). The AutoPipeline monitor clip starts the capture first (`capture_web.py about:blank --out-dir FRAMES --actions scripts/media/captures/autopipeline-monitor.json --width 1280 --height 960`), then, from the 0.1.5 package folder with the package's Python, `scripts/demo_synthetic.py --out RUN` with its run held 5 s after it writes `plan.json` (so the clip opens on the first stage), then the package's own monitor (`kit autopipeline monitor RUN/run --port 8793`) once `RUN/run/plan.json` exists. The steps sample the run for 16 s on the wall clock, wait for the Finished banner, then the pointer opens the Ink stage, filters the log and prepares the status command, and the clip ends on the banner; `encode.py` runs at `--fps 12 --gif-fps 12 --dither none` (its sidecar records the chain). The Headless VC3D for agents clip and stills come from the session transcripts of three Hugging Face CPU Jobs of 24 October 2026: `vc3d_agent_session.py SESSION1 SESSION2 SESSION4 --out-dir PAGE`, then `capture_web.py PAGE/replay.html` with `PAGE/actions.json` at 1280 x 800 and `PAGE/stills.json` at 1880 x 1000, `vc3d_agent_session.py --publish SHOTS --assets docs/assets/vc3d-agent`, and `encode.py --fps 10 --gif-fps 10 --gif-width 1280` with `scripts/media/captures/vc3d-agent-session.meta.json` (the sidecars record each chain). The Starter clip is the portable Starter with `scripts/media/captures/starter-practice.json` at 12 fps, and the umbilicus clip is `python scripts/media/sweep.py --out-dir FRAMES --frames 84`, encoded at 12 fps with `--dither none`.
 
 ## Cost and time
 
@@ -368,6 +382,8 @@ Measured 2026-10-18 in a 4-core Xeon cloud container shared with about ten other
 | `hero.py --preview 0.35` | 9 to 90 s | Previews during this work |
 | `capture_web.py`, AutoPipeline monitor, 211 frames | About 90 s, of which the demo run is 17 s | The capture run |
 | `encode.py`, 211 frames to MP4 and GIF | Under 60 s | The capture run |
+| `capture_web.py`, the VC3D agent replay page, 564 frames at 1280 x 800 | 17 s | Measured 2026-10-24 in a cloud container |
+| `encode.py`, 590 frames to MP4 and a 960 px GIF | 30 s | Measured 2026-10-24 in a cloud container |
 
 Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier lens recipe, 143.7 s, measured 2026-10-18). The Quick start rerun of the umbilicus recipe wrote a WebP byte-identical to the committed one, so a rerun reproduces a hero exactly. Nothing here needs a GPU or Modal, and nothing is rented.
 
@@ -390,6 +406,7 @@ Peak memory of a hero render was 1,687 MB (maximum resident set, the earlier len
 - 2026-10-18: added `hero.py`, `scene.py`, `scenes.py`, `encode.py`, `capture_web.py`, `sweep.py` and `common.py`, with heroes and clips for every released tool and the `image` field of `kit/releases.py` (branch `claude/release-media`, `4a970bd` is the base commit).
 - 2026-10-18: after review of `c33e159`, the guards check sources and clips, not only labels (`common.input_guard`, `--meta` required under `docs/assets/`, no raw frames there, panels always a Synthetic demo), and `tests/test_repo.py` allows only Concept illustration and Synthetic demo there and requires a sidecar for every file. The heroes were remade with the reference's warm key light, low cameras and diagonal subjects, fibrous papyrus, spiral cross-sections and cards with a solid text band; the Scroll Text Reader hero no longer draws letters, boxes or bars, and StrokeNet's hero is withdrawn until its rework. The AutoPipeline clip was recaptured at 12 fps from the first stage with a pointer (`cursor`, `point`, `tap`, `glide`, `scrollto`, wall-clock `frames`), the umbilicus sweep redrawn in the scanner's fixed frame, and `encode.py` gained `--dither` and `--made-with`.
 - 2026-10-18: the public media rule ([`docs/media/README.md`](../media/README.md), set on Chase's delegation) replaced "only Concept illustrations and Synthetic demos": `common.write_guard` now also allows a Real data render of a public scan that is not prize-eligible and shows no held-out labels (`real_data_problems`, `prize_scrolls`, `eligible_prizes`), `common.size_guard` and `encode.py` hold every file there to 1920 px and 4 MB, `common.public_problems` checks every committed sidecar, `common.media_size` reads MP4 sizes too, the credit became "Vesuvius Challenge open data, CC BY-NC 4.0", `data.labels` is required and `data.segment` optional, and `hero.py` checks the rule before importing Pillow. The audit found every existing file conforming.
+- 2026-10-24: added `vc3d_agent_session.py`: a captioned replay of recorded Headless VC3D for agents sessions on PHerc0139 w035, and its two stills (`docs/assets/vc3d-agent/`, [#201](https://github.com/ChaseHendrick/Scrolls/pull/201)).
 
 ## Related
 

@@ -403,7 +403,9 @@ def build_app():
 
     fix_mcp_multiple_outputs()
     app = FastAPI()
-    app = gr.mount_gradio_app(app, build_demo(), path="/agents", mcp_server=True, footer_links=["api"])
+    # ssr_mode=False: on Spaces (GRADIO_SSR_MODE and GRADIO_SERVER_PORT set) server-side rendering starts a
+    # Node server on port 7860, so uvicorn could not bind there and the Space stopped at startup
+    app = gr.mount_gradio_app(app, build_demo(), path="/agents", mcp_server=True, footer_links=["api"], ssr_mode=False)
 
     @app.get("/")
     def index():

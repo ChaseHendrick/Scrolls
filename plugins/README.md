@@ -20,6 +20,7 @@ VC3D also reads `~/.vc3d/plugins/`, so you can copy single manifests there inste
 | File | Menu | Runs | VC3D loads | Needs in VC3D |
 | --- | --- | --- | --- | --- |
 | `scrolls-umbilicus.json` | Scrolls | [Center Finder](../docs/tools/umbilicus.md), `scripts/umbilicus/predict.py --vc3d-name` | the `umbilicus.json` it writes, as the project's umbilicus | a project; asks for the scroll id |
+| `scrolls-windlabel-box.json` | Windings | [windlabel-box](../docs/tools/windlabel-box.md), `python -m kit windlabel-box` | `relative_windings.json`, as point collections (with `flags.json` beside it) | the focus point and an attached umbilicus; asks for the surface prediction, grad_mag and box size |
 | `scrolls-strokenet.json` | Scrolls | [StrokeNet](../docs/tools/strokenet.md), `python -m kit strokenet` | the result JSON, to open | a selected ink detection; asks for its pixel size |
 | `scrolls-letterread.json` | Scrolls | [Scroll Text Reader](../docs/tools/letterread.md), `python -m kit letterread` with `letters-v2-ccby` | the overlay PNG, to open (JSON, CSV and PAGE XML beside it) | a selected ink detection |
 | `villa-gen-umbilicus.json` | Volume Cartographer | villa's `vc_gen_umbilicus` on a normal grid folder | the `umbilicus.json` it writes | a volume; asks for the normal grid folder |

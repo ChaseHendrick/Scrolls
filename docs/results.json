@@ -10193,6 +10193,57 @@
    },
    "w013_regression_letters_v2_real": "letters, boxes, confidences and control counts with letters-v2-real identical to the read before this change (122 kept against 43, 33, 27, 28)",
    "reproduce": "KIT_LETTER_WEIGHTS=letters-v2-ccby-step026000.npz python -m kit letterdemo; python -m kit letterread w013-b16.tif --weights letters-v2-ccby --letter-px 86 [--control w013-b16.tif]; python scripts/letters/demo_p1667.py --segment w013"
+  },
+  {
+   "date": "2026-10-24",
+   "source": "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md (Outcome)",
+   "prereg": "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md",
+   "evidence": "docs/evidence/2026-10-24-letter-icdar-h2h/score.json",
+   "evidence_sha256": "713ee5e4f55cd61696dbc9ed917f55ec519f99178532ee846493ea9e1e53c3f1",
+   "fill_commit": "e39253010c6f48e243954ce7fc6dc1fe3ed29a30 (owner's workbench; see the note at the top of the public preregistration)",
+   "claim": "Model output: Greek letters named on public papyrus photographs (ICDAR 2023 test answers, Zenodo 13825619), expert boxes given. Not a reading of any scroll.",
+   "check": "preregistered head-to-head; 8,479 boxes, 516 lines, 28 texts; controls C1 chance, C2 tile-shuffled decoys, C6 prior alone, C7 language model alone; bootstrap over texts, 20,000 resamples",
+   "letters": {
+    "O5": 0.2907,
+    "R1": 0.3399,
+    "O2": 0.4485
+   },
+   "lines_cer": {
+    "L5": 0.2407,
+    "L-R1": 0.3202,
+    "L-R1lm": 0.2521,
+    "L-O2free": 0.5466,
+    "C7": 0.8689
+   },
+   "comparisons": {
+    "H1": {
+     "d": -0.0492,
+     "ci95": [
+      -0.0612,
+      -0.035
+     ],
+     "verdict": "ahead"
+    },
+    "H2": {
+     "d": -0.0795,
+     "ci95": [
+      -0.096,
+      -0.0611
+     ],
+     "verdict": "ahead"
+    },
+    "H2b": {
+     "d": -0.0114,
+     "ci95": [
+      -0.0246,
+      0.0033
+     ],
+     "verdict": "level"
+    }
+   },
+   "controls_pass": true,
+   "cost_usd": 3.9,
+   "weights": "docs/tools/letterclass.md (GitHub release letterclass-v1, scripts/letters/letterclass-weights.json)"
   }
  ],
  "orientation_checks": [
@@ -11642,6 +11693,140 @@
    "seconds": 2389,
    "machine": "4-core Intel Xeon 2.80 GHz cloud container, CPU only; the two runs partly overlapped",
    "source": "docs/tools/hopbench.md"
+  }
+ ],
+ "windlabel_box_checks": [
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings on 18 fresh PHerc0139 boxes of 512 voxels from the open-data m7 and lasagna grad_mag, scored against PHerc0139's published hand windings w023 to w040 under a readout fixed before any chain was grown",
+   "claim_wording": "split chains 0.9758 step accuracy on 13,969 judged steps, above the 0.95 bar; one scroll, held out in position only",
+   "verdict": "PASS",
+   "rule": "fixed before any chain was grown: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "c6d2eecbebc2",
+   "pooled": {
+    "v1": {
+     "steps": 19613,
+     "step_accuracy": 0.9223,
+     "blocks": 40,
+     "lower_bound_95": 0.908
+    },
+    "split": {
+     "steps": 13969,
+     "step_accuracy": 0.9758,
+     "blocks": 40,
+     "lower_bound_95": 0.9683,
+     "kept_share": 0.7122,
+     "skip_control": 0.0218,
+     "shift_control": 0.0645
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9229,
+     "p97_5": 0.9253
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   },
+   "dev_boxes": {
+    "boxes": 6,
+    "split_step_accuracy": 0.9415,
+    "without_umbilicus": 0.8819,
+    "note": "earlier development boxes, under the bar; the shortfall sits near z 7000 where predictions and hand windings disagree"
+   }
+  },
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-1667-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v1, on 18 PHerc1667 boxes of 512 voxels (scan 20231117161658) from m7 run with the published model and the published lasagna grad_mag, scored against PHerc1667's published hand windings w028 to w041 under a readout fixed before any box had a prediction",
+   "claim_wording": "split chains 0.9693 step accuracy on 4,362 judged steps but 68.3 % kept, under the 70 % floor",
+   "verdict": "FAIL",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v1 c6d2eecbebc2",
+   "pooled": {
+    "v1": {
+     "steps": 6389,
+     "step_accuracy": 0.956,
+     "blocks": 28,
+     "lower_bound_95": 0.9314
+    },
+    "split": {
+     "steps": 4362,
+     "step_accuracy": 0.9693,
+     "blocks": 27,
+     "lower_bound_95": 0.9508,
+     "kept_share": 0.6827,
+     "skip_control": 0.0435,
+     "shift_control": 0.0416
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9537,
+     "p97_5": 0.9564
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "FAIL"
+   }
+  },
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-1667-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v2, on 20 fresh PHerc1667 boxes of 512 voxels (scan 20231117161658) from m7 run with the published model and the published lasagna grad_mag, scored against PHerc1667's published hand windings w028 to w041 under a readout fixed before any box had a prediction",
+   "claim_wording": "split chains 0.9786 step accuracy on 5,938 judged steps, lower bound 0.9671, 75.9 % kept; the 1.0 cut was chosen after the v1 result, on spent boxes",
+   "verdict": "PASS",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v2 cd273aed7673",
+   "pooled": {
+    "v1": {
+     "steps": 7826,
+     "step_accuracy": 0.9486,
+     "blocks": 35,
+     "lower_bound_95": 0.9288
+    },
+    "split": {
+     "steps": 5938,
+     "step_accuracy": 0.9786,
+     "blocks": 35,
+     "lower_bound_95": 0.9671,
+     "kept_share": 0.7588,
+     "skip_control": 0.0165,
+     "shift_control": 0.0772
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9499,
+     "p97_5": 0.9527
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   }
   }
  ]
 }

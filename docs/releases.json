@@ -8,15 +8,15 @@
     {
       "id": "autopipeline",
       "title": "AutoPipeline",
-      "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.6 puts the run monitor on one screen and adds a console for notes and for running AutoPipeline, kit and VC3D agent commands, on loopback only and off with --read-only. A rejected trace's qa record now lists each failed check with its measured value and threshold. New steps, each off unless a plan names it, add the Crackle Check gate at report, the published center lines as the scroll axis, a region crop that keeps the clean parts of a rejected trace, edge extension, trace budgets with partial results, and z-scored ink ensembles. Commands to list, swap and trace each stage's backend are new. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
+      "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.7 draws ink maps in color, from dark umber for a low model score to pale papyrus for a high one, on one scale with the reversed control, cropped to the surface and enlarged smoothly, in the run monitor and the ink Space. The synthetic demo now plants pen strokes in its CT, so the forward map shows them and the reversed control does not. The pinned center lines move to dataset v2.4, which takes the Center Finder's coverage-polished line before the original. 0.1.6 put the monitor on one screen with a console and added opt-in steps (Crackle Check gate, published center lines, region crop, edge extension, trace budgets, z-scored ink ensembles). These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
       "commands": [
-        "git clone --branch submission/progress-2026-10-fix6 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
-        "cd scrolls-autopipeline/submissions/progress-2026-10-fix6/autopipeline",
+        "git clone --branch submission/progress-2026-10-fix7 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
+        "cd scrolls-autopipeline/submissions/progress-2026-10-fix7/autopipeline",
         "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
         "python -m pip install -e .",
         "python scripts/demo_synthetic.py"
       ],
-      "details": "Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/autopipeline/README.md). [Changes since 0.1.5](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/CHANGES.md). Plans that name no new setting run as before, except that qa.repair without a method now gets the barrier repair.",
+      "details": "Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix7/submissions/progress-2026-10-fix7/autopipeline/README.md). [Changes since 0.1.6](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix7/submissions/progress-2026-10-fix7/CHANGES.md). A plan made by 0.1.6 that names umbilicus.centerlines pins the old dataset revision and is refused: make it again.",
       "image": {
         "src": "docs/assets/autopipeline-readme-hero.webp",
         "alt": "Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.",
@@ -24,9 +24,9 @@
       },
       "released": "2026-10-24",
       "where": {
-        "branch": "submission/progress-2026-10-fix6",
-        "commit": "8096b464007af732d9835ac9fae4be49ce2354d0",
-        "path": "submissions/progress-2026-10-fix6"
+        "branch": "submission/progress-2026-10-fix7",
+        "commit": "24572e6203bafa67de1611bcd31b9edebe2c078e",
+        "path": "submissions/progress-2026-10-fix7"
       }
     },
     {
@@ -97,7 +97,7 @@
       "id": "scrolls-kit",
       "title": "Scrolls kit",
       "released": "2026-10-24",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: ten `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the Center Finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: eleven `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -170,6 +170,15 @@
           "evidence": "[guide](docs/windconsistency.md)"
         },
         {
+          "id": "windlabel-box",
+          "name": "Relative windings in a box",
+          "released": "2026-10-24",
+          "summary": "Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it scored 0.9758 step accuracy on 13,969 judged steps of 18 fresh PHerc0139 boxes and, with its split rule v2, 0.9786 on 5,938 judged steps of 20 fresh PHerc1667 boxes, against the published hand windings (Model output, 24 October 2026); split rule v1 missed the PHerc1667 keep floor. It ran inside a VC3D build from the plugin branch, where a fix to keep the windings relative on load is pending.",
+          "command": "python -m kit windlabel-box --prediction PRED --grad-mag GM --umbilicus UMB.json --point X,Y,Z --out RUN",
+          "page": "docs/tools/windlabel-box.md",
+          "evidence": "[PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md)"
+        },
+        {
           "id": "hopbench",
           "name": "Touching-sheets benchmark",
           "released": "2026-10-24",
@@ -187,6 +196,16 @@
           "command": "scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png",
           "page": "docs/tools/letterread.md",
           "evidence": "[install, profiles and benchmarks](docs/letter-reader.md), [local OCR and session switching](docs/tools/reader-backends.md)"
+        },
+        {
+          "id": "letterclass",
+          "name": "Greek letter classifier and line reader for agents",
+          "released": "2026-10-24",
+          "version": "weights `letterclass-v1`",
+          "summary": "Names Greek capital letters in given boxes on papyrus photographs and reads lines of boxes with a Greek prose letter model that holds no Homer or verse, giving each letter's confidence and ranked alternatives, as a JSON command line and an MCP server for agents; the classifier is three ConvNeXt runs trained on Hell-Char only. In a preregistered head-to-head on the ICDAR 2023 test answers (8,479 letters, boxes given) its letter error was 0.291 against 0.340 for Hell-Char ConvNeXt-V2, every control passed, and as lines it was level with Hell-Char given the same letter model (Model output; photographs, not ink maps). Runs CC BY 4.0, letter model CC BY-SA 4.0, fetched once and sha256 checked.",
+          "command": "python scripts/letters/reader_api.py fetch",
+          "page": "docs/tools/letterclass.md",
+          "evidence": "[preregistration and result](docs/prereg/2026-10-24-letter-reader-icdar-h2h.md), [frozen score and log](docs/evidence/2026-10-24-letter-icdar-h2h/README.md)"
         },
         {
           "id": "strokenet",
@@ -241,7 +260,7 @@
       "id": "umbilici",
       "title": "Umbilici (center lines of 33 Herculaneum scans)",
       "released": "2026-10-24",
-      "summary": "[Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) shows every public center line (umbilicus) we know of for the 22 scans on the prize page and 11 other public scans, 40 lines from five sources, in 3D over X-ray CT that the browser streams from the Vesuvius Challenge open data, plus villa's lasagna field for PHerc0175A. Status: released. Version: 1.8.0. Each maker has its own color and any maker or single line can be hidden; 16 of the lines are model output from Chase Hendrick's Center Finder, each scan named in a traffic light from its automatic CT end check (green pass, yellow caution or untested, red flag); the others were made by people and are credited to them. A guide covers the basics, how VC3D and villa's spiral fit read these files (cited to villa's source), every statistic and the data's frames and encodings; a Data view has sortable tables with CSV and JSON downloads, and each scan card copies file URLs, the OME-Zarr URL and a line's x, y, z at any slice. Licence: Apache 2.0 for the code; each line keeps its own licence, and the scans and lasagna field are CC BY-NC 4.0. A center line is geometry, not a reading.",
+      "summary": "[Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) shows every public center line (umbilicus) we know of for the 22 scans on the prize page and 11 other public scans, 52 lines from six sources, in 3D over X-ray CT that the browser streams from the Vesuvius Challenge open data, plus villa's lasagna field for PHerc0175A. Status: released. Version: 1.9.0. Each maker has its own color and any maker or single line can be hidden; 16 of the lines are model output from Chase Hendrick's Center Finder and 12 more are their coverage-polished versions, drawn as the newest with the originals faded as superseded, each scan named in a traffic light from its automatic CT end check (green pass, yellow caution or untested, red flag); the others were made by people and are credited to them. A guide covers the basics, how VC3D and villa's spiral fit read these files (cited to villa's source), every statistic and the data's frames and encodings; a Data view has sortable tables with CSV and JSON downloads, and each scan card copies file URLs, the OME-Zarr URL and a line's x, y, z at any slice. Licence: Apache 2.0 for the code; each line keeps its own licence, and the scans and lasagna field are CC BY-NC 4.0. A center line is geometry, not a reading.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici). Source: [`spaces/umbilici/`](spaces/umbilici/); page: [`docs/tools/umbilici.md`](docs/tools/umbilici.md). Lines: [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines).",
       "where": "main"
     },
@@ -271,17 +290,17 @@
     {
       "id": "vc3d-agent",
       "title": "Headless VC3D for agents",
-      "summary": "An MCP server and shell command that let an AI agent run villa's VC3D tools with no display: find open data, trace, check, render and flatten surfaces, run ink models with their reverse-depth control, and see each result as a PNG. Version 1.0.0 serves 39 tools with JSON schemas, progress, cancellation and images over stdio, MCP protocol versions 2024-11-05 to 2025-11-25. The checks are built in: render votes on the surface normal before trusting the layer order, audit finds chunks a render would read as zeros, and target-scroll ink refuses to run without a preregistered readout rule. It is the server that shipped inside AutoPipeline, released on its own without AutoPipeline's pipeline tools. Its tests use stand-in VC3D tools; this is software, not an ink-accuracy or scroll-reading result.",
+      "summary": "An MCP server and shell command that let an AI agent run villa's VC3D tools with no display: find open data, trace, check, render and flatten surfaces, run ink models with their reverse-depth control, drive the VC3D app, and see each result as a PNG. Version 1.1.1 serves 46 tools with JSON schemas, progress, cancellation and images over stdio, MCP protocol versions 2024-11-05 to 2025-11-25, including seven lasagna tools that drive villa's lasagna surface fit headless. The checks are built in: render votes on the surface normal before trusting the layer order, audit finds chunks a render would read as zeros, check_surface says whether a surface sits on a sheet, and target-scroll ink refuses to run without a preregistered readout rule. New in 1.1.1, docs only: the README shows every tool with a real call and its result from sessions recorded on public PHerc0139 data, a captioned replay GIF and stills, setup for Claude Code, Codex and the MCP Python SDK, and the failure modes met. It is the server that shipped inside AutoPipeline, released on its own without AutoPipeline's pipeline tools. Its tests use stand-in VC3D tools; this is software, not an ink-accuracy or scroll-reading result.",
       "commands": [
-        "git clone --branch submission/progress-2026-10-vc3d-agent --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent",
-        "cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent",
+        "git clone --branch submission/progress-2026-10-vc3d-agent-1-1-1 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent",
+        "cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent",
         "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
         "python -m pip install -e \".[maps]\"",
         "python -m unittest discover -s tests",
         "vc3d-agent vc3d tools",
         "claude mcp add vc3d-agent -e VC_APPIMAGE=/path/to/VC3D.AppImage -- \"$PWD/.venv/bin/vc3d-agent\" vc3d mcp"
       ],
-      "details": "Install, MCP client setup, the 39 tools, built-in rules and limits: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent/README.md). Agent rules: [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent/AGENTS.md).",
+      "details": "Every tool with a recorded call and result, client setup and failure modes: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/README.md). The lasagna tools: [docs/lasagna-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/docs/lasagna-agents.md).",
       "image": {
         "src": "docs/assets/vc3d-agent/vc3d-agent-hero.webp",
         "alt": "Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.",
@@ -289,10 +308,22 @@
       },
       "released": "2026-10-24",
       "where": {
-        "branch": "submission/progress-2026-10-vc3d-agent",
-        "commit": "9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c",
-        "path": "submissions/progress-2026-10-vc3d-agent"
+        "branch": "submission/progress-2026-10-vc3d-agent-1-1-1",
+        "commit": "9edcbf13c6b06f34cc94c0976320863378f5f18f",
+        "path": "submissions/progress-2026-10-vc3d-agent-1-1-1"
       }
+    },
+    {
+      "id": "dinovol-embeddings",
+      "title": "dinovol embeddings of PHerc0841",
+      "released": "2026-10-24",
+      "summary": "Precomputed embeddings of the whole PHerc0841 9.366 um scan from the Vesuvius Challenge's self-supervised dinovol model (`scrollprize/dinovol_8um_ps192_102126`, step 640,000), so anyone can search, cluster or segment by feature similarity without a GPU. One zarr in the public bucket [SharpMeow/dinovol-embeddings](https://huggingface.co/buckets/SharpMeow/dinovol-embeddings) holds `tokens_unit` (480 numbers per 8 voxel cube), `dense` (64 per 4 voxel cube) and `ink` (32 per 4 voxel cube), int8 with a scale per vector, 539 GB; read any region by URL. Made on Hugging Face Jobs with villa's `embed_volume.py` at `4ea26d9c`; every slab read back by URL with unit-length vectors that cover exactly the scan's nonzero voxels. Raw model output, not checked by eye. CC BY-NC 4.0, like the scan. Guide and click-to-search demo: [huggingface.co/spaces/SharpMeow/dinovol-embeddings](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings).",
+      "commands": [
+        "pip install \"zarr>=3\" fsspec aiohttp",
+        "python3 -c \"import zarr; g = zarr.open_group(zarr.storage.FsspecStore.from_url('https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr', read_only=True), mode='r', zarr_format=2); print(g['tokens_unit'].shape, g['dense'].shape)\""
+      ],
+      "details": "The [guide Space](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) explains the features in plain words, lets you click a point of one slice and see every cube like it, and has tested snippets; its source is `spaces/dinovol-embeddings/`. The bucket's README gives the layout, the int8 scaling and a cosine similarity example. The model's Hugging Face page states no license; villa's dinovol code is MIT. Credit: the Vesuvius Challenge for the scan, the dinovol authors for the model.",
+      "where": "main"
     }
   ]
 }

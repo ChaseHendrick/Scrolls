@@ -1,0 +1,10 @@
+dinovol Embeddings
+Copyright 2026 Chase Hendrick
+
+The page's code (index.html and build.py) is licensed under the Apache License, Version 2.0 (the LICENSE file at
+the root of ChaseHendrick/Scrolls, copied beside this file on the Space).
+
+Data
+- The features in the bucket SharpMeow/dinovol-embeddings and the pictures and search file under assets/ are model
+  output derived from the Vesuvius Challenge open data (PHerc0841, CC BY-NC 4.0) and are shared under CC BY-NC 4.0.
+- Model: scrollprize/dinovol_8um_ps192_102126 (teacher_step_640000.pt); code: dinovol in ScrollPrize/villa (MIT).

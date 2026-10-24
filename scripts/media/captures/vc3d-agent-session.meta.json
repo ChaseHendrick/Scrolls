@@ -1,0 +1,19 @@
+{
+  "label": "Real data render",
+  "release_id": "vc3d-agent",
+  "alt": "A replay of a recorded agent session with Headless VC3D for agents: tool calls appear one by one on the left, each with its arguments, its real duration and values from its result (status finds the VC3D tools, selftest passes 8 of 8 checks, segment w035 is fetched, its normal points outward, the audit finds all 4,776 chunks, the surface is seated, a new trace does not pass its check, a 28-layer render and its maximum, a merge of two halves, the VC3D app with the scan open), and on the right the segment's z coordinate, CT layers under it and a screenshot of the VC3D app.",
+  "caption": "Real data render: a replay of MCP tool calls an agent client made to Headless VC3D for agents on Hugging Face CPU Jobs, 24 Oct 2026, on PHerc0139 segment w035 at 9.362 um; values read from the session transcripts, waits skipped. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w035 (20260317000000-w035_2026031718)",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20250728140407-9.362um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ]
+}

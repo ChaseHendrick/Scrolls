@@ -336,7 +336,7 @@
    "id": "autopipeline",
    "name": "autopipeline",
    "tagline": "run villa's pipeline from a released scan to a scored ink map, unattended",
-   "summary": "AutoPipeline (AP) 0.1.6 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix6`, not on `main`.",
+   "summary": "AutoPipeline (AP) 0.1.7 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix7`, not on `main`.",
    "status": "Branch only",
    "kind": [
     "package"
@@ -353,7 +353,7 @@
    "imports": [],
    "code": [
     {
-     "path": "submissions/progress-2026-10-fix6/autopipeline/",
+     "path": "submissions/progress-2026-10-fix7/autopipeline/",
      "symbols": []
     },
     {
@@ -405,12 +405,12 @@
      "symbols": []
     },
     {
-     "path": "submissions/progress-2026-10-fix6/release.json",
+     "path": "submissions/progress-2026-10-fix7/release.json",
      "symbols": []
     }
    ],
    "tests": [
-    "submissions/progress-2026-10-fix6/autopipeline/tests/",
+    "submissions/progress-2026-10-fix7/autopipeline/tests/",
     "test_*.py",
     "test_autopipe.py",
     "test_autopipe_monitor.py",
@@ -425,27 +425,27 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "8096b46"
+    "commit": "24572e6"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/24572e6203bafa67de1611bcd31b9edebe2c078e/submissions/progress-2026-10-fix7/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`autopipeline`",
     "Status": "Branch only",
     "Kind": "package",
     "Area": "Pipeline and agents",
     "Run": "`scrolls-kit autopipeline` after `pip install -e .` in the package folder; inside that folder the branch's own `kit` module runs the same program (alias `autopipe`); `python scripts/demo_synthetic.py`; `scrolls-kit vc3d mcp` serves it as an MCP tool",
-    "Code": "`submissions/progress-2026-10-fix6/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/apconsole.py` (the console), `kit/qareasons.py`, `kit/apbackends.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix6/release.json`",
-    "Tests": "`submissions/progress-2026-10-fix6/autopipeline/tests/` on its branch: 46 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
+    "Code": "`submissions/progress-2026-10-fix7/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/apconsole.py` (the console), `kit/qareasons.py`, `kit/apbackends.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix7/release.json`",
+    "Tests": "`submissions/progress-2026-10-fix7/autopipeline/tests/` on its branch: 46 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
     "Needs": "Python 3.11 or newer (zarr 3 needs it); numpy, tifffile, zarr 3 and scipy (`pyproject.toml`, tested 2026-10-12 with numpy 2.4.6, tifffile 2026.3.3, zarr 3.1.6, scipy 1.17.1). For real runs: villa's VC3D tools (`vc_gen_umbilicus`, `vc_grow_seg_from_seed`, `vc_tifxyz_selfcross`, `vc_flatten`, `vc_render_tifxyz`), from villa's Linux x86_64 AppImage or `VC3D.app` on a Mac; for ink, villa's `vesuvius` package and torch in their own environment (`KIT_INK_PYTHON`). Optional, for the browser tests only: the `playwright` Python package and a system `chromium` or `chromium-browser`; without them those tests skip and download nothing",
-    "Runs on": "The synthetic demo: 5.5 s as it reports itself in a cloud container, Python 3.13, from the 0.1.6 package's release check (2026-10-24); the package's 1241 tests took 590 s there (27 skipped). With 0.1.5 it reported 4.7 s on a shared 4-core container (2026-10-18). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
+    "Runs on": "The synthetic demo: 13.1 s as it reports itself in a cloud container, Python 3.13, from the 0.1.7 package's release check (2026-10-24; it now draws a CT with planted strokes); the package's 1249 tests took 506 s there (35 skipped, 8 of them the Chromium page tests, which passed in a second run with Chromium on the path). With 0.1.6 the demo reported 5.5 s. With 0.1.5 it reported 4.7 s on a shared 4-core container (2026-10-18). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink runs on Hugging Face (hard rule 11)",
     "Network": "The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network",
     "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
     "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
-    "Released": "Public branch `submission/progress-2026-10-fix6` at `8096b46` (committed 2026-10-24, a commit with no parent; README entry dated 2026-10-24 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). Tagged `autopipeline-v0.1.6`, with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.6) not marked Latest (2026-10-24); 0.1.5 is on `submission/progress-2026-10-fix5` at `9e50d61`. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+    "Released": "Public branch `submission/progress-2026-10-fix7` at `24572e6` (committed 2026-10-24, a commit with no parent; README entry dated 2026-10-24 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). Tagged `autopipeline-v0.1.7`, with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.7) not marked Latest (2026-10-24); 0.1.6 is on `submission/progress-2026-10-fix6` at `8096b46`, tagged `autopipeline-v0.1.6` with a [GitHub release](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.6) not marked Latest (2026-10-24); 0.1.5 is on `submission/progress-2026-10-fix5` at `9e50d61`. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/24572e6203bafa67de1611bcd31b9edebe2c078e/submissions/progress-2026-10-fix7/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
     "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
-    "Branch": "`submission/progress-2026-10-fix6` at `8096b46`",
-    "Checked": "2026-10-24 against commit `8096b46`"
+    "Branch": "`submission/progress-2026-10-fix7` at `24572e6`",
+    "Checked": "2026-10-24 against commit `24572e6`"
    },
    "page": "docs/tools/autopipeline.md",
    "sections": [
@@ -488,13 +488,13 @@
     {
      "name": "History",
      "start_line": 177,
-     "end_line": 185,
+     "end_line": 186,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 186,
-     "end_line": 193,
+     "start_line": 187,
+     "end_line": 194,
      "applicable": true
     }
    ]
@@ -909,61 +909,61 @@
     {
      "name": "Python API",
      "start_line": 103,
-     "end_line": 115,
+     "end_line": 116,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 116,
-     "end_line": 119,
+     "start_line": 117,
+     "end_line": 120,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 120,
-     "end_line": 130,
+     "start_line": 121,
+     "end_line": 131,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 131,
-     "end_line": 148,
+     "start_line": 132,
+     "end_line": 149,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 149,
-     "end_line": 154,
+     "start_line": 150,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 155,
-     "end_line": 158,
+     "start_line": 156,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 159,
-     "end_line": 168,
+     "start_line": 160,
+     "end_line": 169,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 169,
-     "end_line": 172,
+     "start_line": 170,
+     "end_line": 173,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 173,
-     "end_line": 176,
+     "start_line": 174,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 177,
-     "end_line": 181,
+     "start_line": 178,
+     "end_line": 182,
      "applicable": true
     }
    ]
@@ -1233,67 +1233,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 192,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 193,
-     "end_line": 221,
+     "start_line": 194,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 222,
-     "end_line": 225,
+     "start_line": 223,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 226,
-     "end_line": 236,
+     "start_line": 227,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 237,
-     "end_line": 250,
+     "start_line": 238,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 251,
-     "end_line": 260,
+     "start_line": 252,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 261,
-     "end_line": 264,
+     "start_line": 262,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 265,
-     "end_line": 274,
+     "start_line": 266,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 275,
-     "end_line": 282,
+     "start_line": 276,
+     "end_line": 283,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 283,
-     "end_line": 294,
+     "start_line": 284,
+     "end_line": 295,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 295,
-     "end_line": 301,
+     "start_line": 296,
+     "end_line": 302,
      "applicable": true
     }
    ]
@@ -1899,6 +1899,149 @@
      "name": "Related",
      "start_line": 204,
      "end_line": 210,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "dinovol-embeddings",
+   "name": "dinovol-embeddings",
+   "tagline": "precomputed dinovol features of the whole PHerc0841 scan, readable by URL",
+   "summary": "A public Hugging Face bucket holding the Vesuvius Challenge's self-supervised dinovol model run over the whole PHerc0841 9.366 um scan, and a guide Space with a click-to-search demo, so anyone can search, cluster or segment by feature similarity without a GPU.",
+   "status": "Current",
+   "kind": [
+    "data",
+    "app"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode=\"r\", zarr_format=2)",
+    "README.md"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/dinovol-embeddings/build.py",
+     "symbols": []
+    }
+   ],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the bucket public and the guide Space were Chase's yes (24 Oct 2026); changing the bucket needs his yes per change, the Space redeploys from merged `main` under the standing yes (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "d425839"
+   },
+   "license": "CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors",
+   "fields": {
+    "Id": "`dinovol-embeddings`",
+    "Status": "Current",
+    "Kind": "data, app",
+    "Area": "Data and downloads",
+    "Run": "[huggingface.co/spaces/SharpMeow/dinovol-embeddings](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) (the guide page and demo); `zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode=\"r\", zarr_format=2)` on the bucket URL below; the bucket's `README.md` has a worked example",
+    "Code": "`spaces/dinovol-embeddings/build.py` (builds the guide Space from the bucket); the data lives in the public bucket SharpMeow/dinovol-embeddings with its README and index file",
+    "Tests": "None here: before release one 24 x 48 x 48 token block from every slab was read back by URL, logged out (see Checks and controls)",
+    "Needs": "`zarr` 3 with `fsspec` and `aiohttp`; `numpy`",
+    "Runs on": "Any machine with a network. The quick start reads a 4 x 32 x 32 token block (about 2 MB) from a 4-core cloud container (2026-10-24; not timed)",
+    "Network": "`huggingface.co` (the bucket and Space); the build also reads the open-data CT",
+    "Writes": "Nothing when you read; `build.py OUT` writes the Space's files into OUT",
+    "Go-ahead": "Not needed to use. Making the bucket public and the guide Space were Chase's yes (24 Oct 2026); changing the bucket needs his yes per change, the Space redeploys from merged `main` under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-24 (bucket and guide Space); README \"Released tools\" entry `dinovol-embeddings`",
+    "License": "CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors",
+    "Checked": "2026-10-24 against commit `d425839`"
+   },
+   "page": "docs/tools/dinovol-embeddings.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 57,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 84,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 85,
+     "end_line": 90,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 91,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 95,
+     "end_line": 107,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 108,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 117,
+     "end_line": 120,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 121,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 125,
+     "end_line": 134,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 135,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 139,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 144,
+     "end_line": 146,
      "applicable": true
     }
    ]
@@ -5322,6 +5465,189 @@
    ]
   },
   {
+   "id": "letterclass",
+   "name": "letterclass",
+   "tagline": "name Greek letters and read lines on papyrus photographs, for people and agents",
+   "summary": "Our single-letter classifier (trained on Hell-Char only), a Greek prose language model with no Homer for reading lines of given letter boxes, and an agent interface (JSON command line and MCP server) over both and over the CTC line reader.",
+   "status": "Experimental",
+   "kind": [
+    "script",
+    "agent tool"
+   ],
+   "area": "Letters and titles",
+   "commands": [
+    "python scripts/letters/reader_api.py letter",
+    "python scripts/letters/reader_api.py line",
+    "python scripts/letters/reader_api.py line-free",
+    "python scripts/letters/reader_api.py mcp",
+    "python scripts/letters/icdar_train.py train",
+    "python scripts/letters/icdar_train.py devpost",
+    "python scripts/letters/icdar_train.py smoke",
+    "python scripts/letters/greek_lm.py build",
+    "python scripts/letters/greek_lm.py ppl",
+    "python scripts/letters/icdar_h2h.py build",
+    "python scripts/letters/icdar_read.py post",
+    "python scripts/letters/icdar_read.py score",
+    "bash scripts/letters/icdar_job/train_job.sh"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/letters/reader_api.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/letterclass-weights.json",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/ctc_letter.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_train.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/greek_lm.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_h2h.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_read.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/letters/icdar_job/train_job.sh",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_icdar_letters.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for reads, `fetch` and CPU runs on public data. Training rents a GPU (an HF Job; Cost and time); posting weights, numbers or reads follows the go-ahead rule of AGENTS.md"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "7752c98"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`letterclass`",
+    "Status": "Experimental",
+    "Kind": "script,agent tool",
+    "Area": "Letters and titles",
+    "Run": "`python scripts/letters/reader_api.py letter`, `python scripts/letters/reader_api.py line`, `python scripts/letters/reader_api.py line-free`, `python scripts/letters/reader_api.py mcp`, `python scripts/letters/icdar_train.py train`, `python scripts/letters/icdar_train.py devpost`, `python scripts/letters/icdar_train.py smoke`, `python scripts/letters/greek_lm.py build`, `python scripts/letters/greek_lm.py ppl`, `python scripts/letters/icdar_h2h.py build`, `python scripts/letters/icdar_read.py post`, `python scripts/letters/icdar_read.py score`, `bash scripts/letters/icdar_job/train_job.sh` (inside an HF Job)",
+    "Code": "`scripts/letters/reader_api.py`, `scripts/letters/letterclass-weights.json`, `scripts/letters/ctc_letter.py`, `scripts/letters/icdar_train.py`, `scripts/letters/greek_lm.py`, `scripts/letters/icdar_h2h.py`, `scripts/letters/icdar_read.py`, `scripts/letters/icdar_job/train_job.sh`",
+    "Tests": "`tests/test_icdar_letters.py`",
+    "Needs": "Python 3.10 or newer, numpy and Pillow; torch, timm 1.0.30 and opencv-python-headless for `letter`, `line`, training and posteriors; kit's `kit/letterread.py` and letters-v2-ccby weights for `line-free`. Data you fetch: the Hell-Char clone (aeef8466), the ICDAR 2023 zip (Zenodo 13825619), Perseus TEI texts at commit `0189b9c8`",
+    "Runs on": "Any CPU for reads: with the released three runs, one `letter` call took 11 s and one 11-letter `line` call 11 s including model loading (25 s for the first call on a cold disk; measured 2026-10-24, 4-core cloud container). Training runs on an HF Job GPU: one 40-epoch run at 128 px took 3.4 to 3.9 min on an RTX Pro 6000 (convnext_small 205 s and 208 s, convnext_base 236 s; `train.json` of each run)",
+    "Network": "None for `reader_api.py`. `greek_lm.py build`: `raw.githubusercontent.com` (Perseus) unless the cache folder holds the texts. `train_job.sh`: PyPI and the HF bucket named in `RESULTS`",
+    "Writes": "`reader_api.py`: nothing (prints JSON). `icdar_train.py train`: `OUT/model.pt`, `config.json`, `train.json`. `greek_lm.py build`: the model file. `icdar_h2h.py build`: `WORK/{test,dev}/letters.json`, `lines.json`, `crops/`, `crops.sha256`, `WORK/build.json`. `icdar_read.py`: `WORK/PART/post-ARM.npz`, `lines-O2free.json` and the score file",
+    "Go-ahead": "Not needed for reads, `fetch` and CPU runs on public data. Training rents a GPU (an HF Job; Cost and time); posting weights, numbers or reads follows the go-ahead rule of AGENTS.md",
+    "Released": "Public `main` since 2026-10-24; weights as the GitHub release `letterclass-v1` of this repository (`scripts/letters/letterclass-weights.json`): runs CC BY 4.0, language model CC BY-SA 4.0",
+    "Checked": "2026-10-24 against commit `7752c98`"
+   },
+   "page": "docs/tools/letterclass.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 58,
+     "end_line": 63,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 64,
+     "end_line": 173,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 174,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 184,
+     "end_line": 187,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 188,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 198,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 220,
+     "end_line": 223,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 224,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 228,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 238,
+     "end_line": 241,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 242,
+     "end_line": 246,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 247,
+     "end_line": 252,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "letterdemo",
    "name": "letterdemo",
    "tagline": "check a letter reader install on synthetic Greek capitals and noise",
@@ -6426,7 +6752,8 @@
     "python scripts/media/sweep.py",
     "python scripts/media/tifxyz_stills.py",
     "python scripts/media/isometry_media.py",
-    "python scripts/media/coverage_still.py"
+    "python scripts/media/coverage_still.py",
+    "python scripts/media/vc3d_agent_session.py"
    ],
    "imports": [],
    "code": [
@@ -6453,7 +6780,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -6495,67 +6822,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 237,
-     "applicable": true
-    },
-    {
-     "name": "Python API",
-     "start_line": 238,
-     "end_line": 241,
-     "applicable": false
-    },
-    {
-     "name": "Inputs",
-     "start_line": 242,
      "end_line": 248,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Python API",
      "start_line": 249,
-     "end_line": 285,
+     "end_line": 252,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 253,
+     "end_line": 259,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 260,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 286,
-     "end_line": 336,
+     "start_line": 297,
+     "end_line": 350,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 337,
-     "end_line": 359,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 360,
+     "start_line": 351,
      "end_line": 373,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 374,
-     "end_line": 383,
+     "end_line": 389,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 390,
+     "end_line": 399,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 384,
-     "end_line": 387,
+     "start_line": 400,
+     "end_line": 403,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 388,
-     "end_line": 393,
+     "start_line": 404,
+     "end_line": 410,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 394,
-     "end_line": 399,
+     "start_line": 411,
+     "end_line": 416,
      "applicable": true
     }
    ]
@@ -7211,7 +7538,7 @@
    "id": "plan",
    "name": "plan",
    "tagline": "print a First Letters run plan for one eligible scroll, and price a run",
-   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars.",
+   "summary": "`python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll without running them, `--spiral` prints a large-surface chain from public inputs (center line, lasagna field, villa's spiral fit, render, Ink Lens), and `python -m kit cost` adds up a run's dollars.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -7236,6 +7563,12 @@
       "cmd_plan",
       "cmd_cost"
      ]
+    },
+    {
+     "path": "kit/data/spiral-inputs-2026-10-24.json",
+     "symbols": [
+      "--spiral"
+     ]
     }
    ],
    "tests": [
@@ -7246,8 +7579,8 @@
     "text": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-24",
+    "commit": "141b9fe"
    },
    "license": null,
    "fields": {
@@ -7256,16 +7589,16 @@
     "Kind": "kit command, kit module",
     "Area": "Planning and prizes",
     "Run": "`python -m kit plan`, `python -m kit cost`, `from kit import plan`",
-    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`)",
+    "Code": "`kit/plan.py`, `kit/cli.py` (`cmd_plan`, `cmd_cost`), `kit/data/spiral-inputs-2026-10-24.json` (the `--spiral` inputs)",
     "Tests": "`tests/test_kit.py`",
-    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`",
+    "Needs": "Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`. `--spiral` adds git, Python 3.14 for villa's `spiral-fitting` (installed by `uv sync`), the hf CLI for scans whose lasagna field is on Hugging Face, and this checkout's `spaces/ink-lens` with its own requirements",
     "Runs on": "Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes \"on the order of an hour on a single GPU\" ([tutorial5](https://scrollprize.org/tutorial5))",
-    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data`",
-    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `volume-cache/`, `predictions/`, `work/SCROLL_SLUG/`); see Outputs",
+    "Network": "None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data` (`--spiral`: also `SharpMeow/vesuvius-center-lines` and the scan's `SharpMeow/*-lasagna` dataset)",
+    "Writes": "Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; `--spiral` writes under `work/SCROLL_SLUG/` in the folder you run it from; see Outputs",
     "Go-ahead": "Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11)",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-24 against commit `141b9fe`"
    },
    "page": "docs/tools/plan.md",
    "sections": [
@@ -7284,79 +7617,79 @@
     {
      "name": "Quick start",
      "start_line": 55,
-     "end_line": 77,
+     "end_line": 102,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 78,
-     "end_line": 86,
+     "start_line": 103,
+     "end_line": 111,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 87,
-     "end_line": 116,
+     "start_line": 112,
+     "end_line": 142,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 117,
-     "end_line": 129,
+     "start_line": 143,
+     "end_line": 159,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 130,
-     "end_line": 137,
+     "start_line": 160,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 138,
-     "end_line": 160,
+     "start_line": 169,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 161,
-     "end_line": 172,
+     "start_line": 194,
+     "end_line": 209,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 173,
-     "end_line": 181,
+     "start_line": 210,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 182,
-     "end_line": 185,
+     "start_line": 220,
+     "end_line": 223,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 186,
-     "end_line": 195,
+     "start_line": 224,
+     "end_line": 233,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 196,
-     "end_line": 203,
+     "start_line": 234,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 204,
-     "end_line": 214,
+     "start_line": 242,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 215,
-     "end_line": 225,
+     "start_line": 256,
+     "end_line": 267,
      "applicable": true
     }
    ]
@@ -9717,7 +10050,7 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "cc03099"
+    "commit": "3228d5f"
    },
    "license": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
    "fields": {
@@ -9735,7 +10068,7 @@
     "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
     "Released": "This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published",
     "License": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
-    "Checked": "2026-10-24 against commit `cc03099`"
+    "Checked": "2026-10-24 against commit `3228d5f`, live on the Space"
    },
    "page": "docs/tools/segment-lens.md",
    "sections": [
@@ -9766,73 +10099,73 @@
     {
      "name": "Agent tools (API and MCP, since 1.1.0)",
      "start_line": 61,
-     "end_line": 81,
+     "end_line": 85,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 82,
-     "end_line": 93,
+     "start_line": 86,
+     "end_line": 97,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 94,
-     "end_line": 106,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 107,
+     "start_line": 98,
      "end_line": 110,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Inputs",
      "start_line": 111,
      "end_line": 114,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Outputs",
      "start_line": 115,
-     "end_line": 130,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 119,
+     "end_line": 134,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 131,
-     "end_line": 137,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 138,
+     "start_line": 135,
      "end_line": 141,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Cost and time",
      "start_line": 142,
-     "end_line": 151,
+     "end_line": 145,
      "applicable": true
     },
     {
-     "name": "Tests",
-     "start_line": 152,
+     "name": "For agents",
+     "start_line": 146,
      "end_line": 155,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Tests",
      "start_line": 156,
-     "end_line": 161,
+     "end_line": 159,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 160,
+     "end_line": 166,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 162,
-     "end_line": 166,
+     "start_line": 167,
+     "end_line": 171,
      "applicable": true
     }
    ]
@@ -11755,7 +12088,7 @@
    "id": "umbilici",
    "name": "umbilici",
    "tagline": "view every public center line of the 22 prize scans and 11 other public scans over live X-ray CT",
-   "summary": "A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
+   "summary": "A static Hugging Face Space that draws every public center line (umbilicus), newest version bright, for the 22 prize-eligible scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
    "status": "Current",
    "kind": [
     "app",
@@ -11812,8 +12145,8 @@
     "text": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds"
    },
    "checked": {
-    "date": "2026-10-23",
-    "commit": "9edd7a8"
+    "date": "2026-10-24",
+    "commit": "44f547c"
    },
    "license": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
    "fields": {
@@ -11829,9 +12162,9 @@
     "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
     "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
     "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.8.0 (Space commit `01ea09fd`, deployed 2026-10-24 from `main` at `912b8e04` with lines from dataset revision `73979441`), public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.9.0 (Space commit `97e602a7`, deployed 2026-10-24 from `main` at `2b5c820` with lines from dataset revision `1b866db0`, v2.5, on Chase's yes; 1.8.0 was Space commit `01ea09fd`), public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
-    "Checked": "2026-10-23 against commit `9edd7a8`"
+    "Checked": "2026-10-24 against commit `44f547c`"
    },
    "page": "docs/tools/umbilici.md",
    "sections": [
@@ -11916,13 +12249,13 @@
     {
      "name": "History",
      "start_line": 184,
-     "end_line": 200,
+     "end_line": 201,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 201,
-     "end_line": 205,
+     "start_line": 202,
+     "end_line": 206,
      "applicable": true
     }
    ]
@@ -12532,7 +12865,7 @@
    "id": "vc3d-agent",
    "name": "vc3d-agent",
    "tagline": "villa's VC3D tools as checked MCP tools for AI agents, with no display",
-   "summary": "Headless VC3D for agents 1.0.0 serves 39 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces and run ink models with controls; its code is on public branch `submission/progress-2026-10-vc3d-agent`, not on `main`.",
+   "summary": "Headless VC3D for agents 1.1.1 serves 46 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces, run ink models with controls and fit lasagna surfaces; its code is on public branch `submission/progress-2026-10-vc3d-agent-1-1-1`, not on `main`.",
    "status": "Branch only",
    "kind": [
     "package"
@@ -12542,12 +12875,14 @@
     "vc3d-agent vc3d mcp",
     "vc3d-agent vc3d tools",
     "vc3d-agent vc3d call TOOL '{...}'",
+    "vc3d-agent lasagna COMMAND",
+    "--key value",
     "pip install -e ."
    ],
    "imports": [],
    "code": [
     {
-     "path": "submissions/progress-2026-10-vc3d-agent/vc3d-agent/",
+     "path": "submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/",
      "symbols": []
     },
     {
@@ -12575,7 +12910,17 @@
      "symbols": []
     },
     {
+     "path": "kit/lasagna.py",
+     "symbols": [
+      "kit/vc3d_ext_lasagna.py"
+     ]
+    },
+    {
      "path": "kit/cli.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/lasagna/fit_cpu_shim.py",
      "symbols": []
     },
     {
@@ -12588,7 +12933,7 @@
     }
    ],
    "tests": [
-    "submissions/progress-2026-10-vc3d-agent/vc3d-agent/tests/",
+    "submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/tests/",
     "test_*.py",
     "test_vc3d_mcp.py",
     "test_vc3d_agent.py",
@@ -12600,27 +12945,27 @@
    },
    "checked": {
     "date": "2026-10-24",
-    "commit": "9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c"
+    "commit": "9edcbf13c6b06f34cc94c0976320863378f5f18f"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9edcbf13c6b06f34cc94c0976320863378f5f18f/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`vc3d-agent`",
     "Status": "Branch only",
     "Kind": "package",
     "Area": "Pipeline and agents",
-    "Run": "`vc3d-agent vc3d mcp` (the MCP server), `vc3d-agent vc3d tools`, `vc3d-agent vc3d call TOOL '{...}'` after `pip install -e .` in the package folder",
-    "Code": "`submissions/progress-2026-10-vc3d-agent/vc3d-agent/` on its branch: mainly `kit/vc3d_mcp.py` (the server), `kit/vc3d_agent.py` (the tools), `kit/vc3d.py`, `kit/vc3d_catalog.py`, `kit/vc3d_audit.py`, `kit/vc3d_bridge.py`, `kit/cli.py`, `scripts/vc3d/ink.py`, `scripts/get_vc3d.py`",
-    "Tests": "`submissions/progress-2026-10-vc3d-agent/vc3d-agent/tests/` on its branch: 16 `test_*.py` files, among them `test_vc3d_mcp.py` (the protocol, and the official MCP Python SDK's client when it is installed) and `test_vc3d_agent.py` (every tool against stand-in VC3D tools from `vc3d_fakes.py`)",
-    "Needs": "Python 3.11 or newer; the server and most tools use only the standard library. Scoring and the layer tools need the `maps` extra (numpy, tifffile, zarr 3, scipy). Real runs need villa's VC3D tools (`VC_APPIMAGE`, `VC_BIN` or `PATH`); ink models and the detectability probe need a Python with numpy and torch named by `KIT_INK_PYTHON`",
-    "Runs on": "Linux or macOS, any CPU for the server. The package's 355 tests took 126 s with Python 3.11 and the `maps` extra in a 4-core cloud container (24 Oct 2026); the server answered initialize, tools/list and status in a venv with no packages at all",
+    "Run": "`vc3d-agent vc3d mcp` (the MCP server), `vc3d-agent vc3d tools`, `vc3d-agent vc3d call TOOL '{...}'`, `vc3d-agent lasagna COMMAND` (the lasagna tools with `--key value` flags) after `pip install -e .` in the package folder",
+    "Code": "`submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/` on its branch: mainly `kit/vc3d_mcp.py` (the server), `kit/vc3d_agent.py` (the tools), `kit/vc3d.py`, `kit/vc3d_catalog.py`, `kit/vc3d_audit.py`, `kit/vc3d_bridge.py`, `kit/lasagna.py` (the lasagna tools, loaded through `kit/vc3d_ext_lasagna.py`), `kit/cli.py`, `scripts/lasagna/fit_cpu_shim.py`, `scripts/vc3d/ink.py`, `scripts/get_vc3d.py`",
+    "Tests": "`submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/tests/` on its branch: 17 `test_*.py` files, among them `test_vc3d_mcp.py` (the protocol, and the official MCP Python SDK's client when it is installed) and `test_vc3d_agent.py` (every tool against stand-in VC3D tools from `vc3d_fakes.py`)",
+    "Needs": "Python 3.11 or newer; the server and most tools use only the standard library. Scoring and the layer tools need the `maps` extra (numpy, tifffile, zarr 3, scipy). Real runs need villa's VC3D tools (`VC_APPIMAGE`, `VC_BIN` or `PATH`); ink models and the detectability probe need a Python with numpy and torch named by `KIT_INK_PYTHON`. The lasagna tools need a villa checkout (`VILLA_DIR` or `LASAGNA_DIR`) and a Python with torch, numpy, zarr, tifffile and tensorstore (`LASAGNA_PYTHON`); CPU torch is enough for the self-test and small fits, real-size fits need CUDA",
+    "Runs on": "Linux or macOS, any CPU for the server. Version 1.1.0's 438 tests (the same in 1.1.1, whose code is 1.1.0's) took 149 s with Python 3.13 in a 4-core cloud container (24 Oct 2026; 1.0.0's 355 took 126 s with Python 3.11 and the `maps` extra); the lasagna self-test took 9 s on CPU there with villa main `6f202456`; the server answered initialize, tools/list and status in a venv with no packages at all",
     "Network": "None for the server itself (stdio). The tools download anonymously from the Vesuvius Challenge open-data bucket (`vesuvius-challenge-open-data`), Hugging Face and GitHub releases (`fetch_model`), and `api.github.com` and GitHub's release host for `scripts/get_vc3d.py`",
     "Writes": "Under the kit home (the package folder, or `KIT_HOME`): `work/vc3d/` (outputs, jobs, caches, the model list; `KIT_VC3D_HOME` moves it), `experiments/` (the ledger and target ink) and `checkpoints/` (downloaded models), all kept out of git by the package's `.gitignore`",
     "Go-ahead": "Not needed to serve or for local runs. Needed: the `modal` tool, which rents compute, refuses unless the user starts the server with `KIT_ALLOW_MODAL=1`, and its runner is not in the package; publishing any target-scroll map or verdict (the no-disclosure rule, hard rule 1)",
-    "Released": "Public branch `submission/progress-2026-10-vc3d-agent` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c` (a commit with no parent), with its README entry in [`releases.json`](../releases.json). The same server shipped earlier inside each AutoPipeline release",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
-    "Guide": "[Package README](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/README.md), [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/AGENTS.md) and the agent guide [docs/vc3d-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent/vc3d-agent/docs/vc3d-agents.md)",
-    "Branch": "`submission/progress-2026-10-vc3d-agent` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`",
-    "Checked": "2026-10-24 against commit `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`"
+    "Released": "Public branch `submission/progress-2026-10-vc3d-agent-1-1-1` at `9edcbf13c6b06f34cc94c0976320863378f5f18f` (a commit with no parent), tag `vc3d-agent-v1.1.1`, with its README entry in [`releases.json`](../releases.json); 1.1.0 is tag `vc3d-agent-v1.1.0` at `6c157716e08ef816eac936be22c40cb85682e642` and 1.0.0 is tag `vc3d-agent-v1.0.0` at `9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c`. The same server shipped earlier inside each AutoPipeline release",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9edcbf13c6b06f34cc94c0976320863378f5f18f/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/LICENSE)); data and model weights keep their own licenses and are not included",
+    "Guide": "[Package README](https://github.com/ChaseHendrick/Scrolls/blob/9edcbf13c6b06f34cc94c0976320863378f5f18f/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/README.md), [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/9edcbf13c6b06f34cc94c0976320863378f5f18f/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/AGENTS.md) and the agent guide [docs/vc3d-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/9edcbf13c6b06f34cc94c0976320863378f5f18f/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/docs/vc3d-agents.md)",
+    "Branch": "`submission/progress-2026-10-vc3d-agent-1-1-1` at `9edcbf13c6b06f34cc94c0976320863378f5f18f`",
+    "Checked": "2026-10-24 against commit `9edcbf13c6b06f34cc94c0976320863378f5f18f`"
    },
    "page": "docs/tools/vc3d-agent.md",
    "sections": [
@@ -12631,45 +12976,51 @@
      "applicable": true
     },
     {
-     "name": "Where the code is",
+     "name": "What it looks like",
      "start_line": 33,
-     "end_line": 41,
+     "end_line": 50,
+     "applicable": true
+    },
+    {
+     "name": "Where the code is",
+     "start_line": 51,
+     "end_line": 59,
      "applicable": true
     },
     {
      "name": "How to run it",
-     "start_line": 42,
-     "end_line": 54,
-     "applicable": true
-    },
-    {
-     "name": "Inputs and outputs",
-     "start_line": 55,
-     "end_line": 58,
-     "applicable": true
-    },
-    {
-     "name": "Why it is not on the default branch",
-     "start_line": 59,
-     "end_line": 62,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 63,
-     "end_line": 68,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 69,
+     "start_line": 60,
      "end_line": 72,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Inputs and outputs",
      "start_line": 73,
-     "end_line": 77,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Why it is not on the default branch",
+     "start_line": 77,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 81,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 87,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 94,
+     "end_line": 98,
      "applicable": true
     }
    ]
@@ -14321,6 +14672,158 @@
      "name": "Related",
      "start_line": 187,
      "end_line": 190,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "windlabel-box",
+   "name": "windlabel-box",
+   "tagline": "relative windings in a box, from published predictions",
+   "summary": "`python -m kit windlabel-box` grows chains of sheet crossings around a point on a published surface prediction, cuts them where lasagna's grad_mag sees more than one sheet, and writes villa's `relative_windings.json` for a spiral fit; a VC3D plugin runs it at the focus point.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit windlabel-box",
+    "python3 plugins/run_kit.py windlabel-box",
+    "plugins/scrolls-windlabel-box.json"
+   ],
+   "imports": [
+    "from kit import windlabel_box"
+   ],
+   "code": [
+    {
+     "path": "kit/windlabel_box",
+     "symbols": []
+    },
+    {
+     "path": "kit/windlabel_box/__init__.py",
+     "symbols": [
+      "cmd_windlabel_box"
+     ]
+    },
+    {
+     "path": "plugins/scrolls-windlabel-box.json",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_windlabel_box.py",
+    "tests/test_plugins.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it: it reads published predictions and writes local files. Output from prize-eligible scrolls stays private until the prize announcement"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "81e5ead"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`windlabel-box`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit windlabel-box`, `python3 plugins/run_kit.py windlabel-box` (the VC3D plugin `plugins/scrolls-windlabel-box.json`), `from kit import windlabel_box`",
+    "Code": "`kit/windlabel_box`, `kit/windlabel_box/__init__.py` (`cmd_windlabel_box`), `plugins/scrolls-windlabel-box.json`",
+    "Tests": "`tests/test_windlabel_box.py`, `tests/test_plugins.py` (the manifest)",
+    "Needs": "Python 3.10 or newer, numpy and scipy; numcodecs for blosc-compressed zarrs such as the open-data m7; a published binary surface prediction at level 0 (such as the organizers' m7) and the same scroll's published lasagna grad_mag; the scroll's umbilicus in the prediction's level-0 voxels. The plugin needs VC3D with the Plugins menu (villa branch `vc3d-plugins`, not yet in villa main) and an attached umbilicus",
+    "Runs on": "Any CPU. Synthetic spiral (240 x 240 x 48 voxels, 30 seeds): about 1 s. PHerc0139 over HTTPS from the open-data bucket: 13 s for a 512 voxel box with 200 seeds, about 25 s with 1,000 seeds (18 boxes in 7 min 34 s; measured 2026-10-24, 4-core cloud container)",
+    "Network": "Reads the prediction, the grad_mag and a `*.lasagna.json` manifest over HTTPS when given URLs, such as `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (anonymous); nothing with local zarrs",
+    "Writes": "In `--out` (created): `chains.json`, `features.json`, `split.json`, `relative_windings.json`, `flags.json`, `export.json`. VC3D runs it in `~/.vc3d/plugin-runs/scrolls.windlabel-box/TIME/` and adds the windings as point collections",
+    "Go-ahead": "Not needed to run it: it reads published predictions and writes local files. Output from prize-eligible scrolls stays private until the prize announcement",
+    "Released": "Public `main` from the merge of its pull request (prepared 24 Oct 2026); a line of the Scrolls kit entry in the README's \"Released tools\", id `windlabel-box`",
+    "Checked": "2026-10-24 against commit `81e5ead`"
+   },
+   "page": "docs/tools/windlabel-box.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 78,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 112,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 120,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 154,
+     "end_line": 211,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 212,
+     "end_line": 222,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 223,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 227,
+     "end_line": 236,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 237,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 245,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 249,
+     "end_line": 254,
      "applicable": true
     }
    ]
