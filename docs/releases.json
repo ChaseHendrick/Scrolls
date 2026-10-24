@@ -271,17 +271,17 @@
     {
       "id": "vc3d-agent",
       "title": "Headless VC3D for agents",
-      "summary": "An MCP server and shell command that let an AI agent run villa's VC3D tools with no display: find open data, trace, check, render and flatten surfaces, run ink models with their reverse-depth control, and see each result as a PNG. Version 1.1.0 serves 46 tools with JSON schemas, progress, cancellation and images over stdio, MCP protocol versions 2024-11-05 to 2025-11-25. The checks are built in: render votes on the surface normal before trusting the layer order, audit finds chunks a render would read as zeros, and target-scroll ink refuses to run without a preregistered readout rule. New in 1.1.0: seven lasagna tools drive villa's lasagna surface fit headless, from a published lasagna run to a fitted, exported tifxyz, with a self-test whose check can fail. It is the server that shipped inside AutoPipeline, released on its own without AutoPipeline's pipeline tools. Its tests use stand-in VC3D tools; this is software, not an ink-accuracy or scroll-reading result.",
+      "summary": "An MCP server and shell command that let an AI agent run villa's VC3D tools with no display: find open data, trace, check, render and flatten surfaces, run ink models with their reverse-depth control, drive the VC3D app, and see each result as a PNG. Version 1.1.1 serves 46 tools with JSON schemas, progress, cancellation and images over stdio, MCP protocol versions 2024-11-05 to 2025-11-25, including seven lasagna tools that drive villa's lasagna surface fit headless. The checks are built in: render votes on the surface normal before trusting the layer order, audit finds chunks a render would read as zeros, check_surface says whether a surface sits on a sheet, and target-scroll ink refuses to run without a preregistered readout rule. New in 1.1.1, docs only: the README shows every tool with a real call and its result from sessions recorded on public PHerc0139 data, a captioned replay GIF and stills, setup for Claude Code, Codex and the MCP Python SDK, and the failure modes met. It is the server that shipped inside AutoPipeline, released on its own without AutoPipeline's pipeline tools. Its tests use stand-in VC3D tools; this is software, not an ink-accuracy or scroll-reading result.",
       "commands": [
-        "git clone --branch submission/progress-2026-10-vc3d-agent-1-1-0 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent",
-        "cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent",
+        "git clone --branch submission/progress-2026-10-vc3d-agent-1-1-1 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent",
+        "cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent",
         "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
         "python -m pip install -e \".[maps]\"",
         "python -m unittest discover -s tests",
         "vc3d-agent vc3d tools",
         "claude mcp add vc3d-agent -e VC_APPIMAGE=/path/to/VC3D.AppImage -- \"$PWD/.venv/bin/vc3d-agent\" vc3d mcp"
       ],
-      "details": "Install, MCP client setup, the 46 tools, rules and limits: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-0/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/README.md). The lasagna tools: [docs/lasagna-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-0/submissions/progress-2026-10-vc3d-agent-1-1-0/vc3d-agent/docs/lasagna-agents.md).",
+      "details": "Every tool with a recorded call and result, client setup and failure modes: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/README.md). The lasagna tools: [docs/lasagna-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/docs/lasagna-agents.md).",
       "image": {
         "src": "docs/assets/vc3d-agent/vc3d-agent-hero.webp",
         "alt": "Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.",
@@ -289,9 +289,9 @@
       },
       "released": "2026-10-24",
       "where": {
-        "branch": "submission/progress-2026-10-vc3d-agent-1-1-0",
-        "commit": "6c157716e08ef816eac936be22c40cb85682e642",
-        "path": "submissions/progress-2026-10-vc3d-agent-1-1-0"
+        "branch": "submission/progress-2026-10-vc3d-agent-1-1-1",
+        "commit": "9edcbf13c6b06f34cc94c0976320863378f5f18f",
+        "path": "submissions/progress-2026-10-vc3d-agent-1-1-1"
       }
     }
   ]
