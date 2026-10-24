@@ -82,6 +82,14 @@ Reads one slice (z 9,600) of the bucket and the CT by URL, logged out, and write
 
 `zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode="r", zarr_format=2)`, where URL is `https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr`. Arrays: `tokens_unit`, `tokens_unit_scale`, `dense`, `dense_scale`, `ink`, `ink_scale`. A vector is `array[z, y, x].astype(float32) * scale[z, y, x]`.
 
+### Download
+
+`hf buckets sync hf://buckets/SharpMeow/dinovol-embeddings/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr/ARRAY/Z/Y DIR/ARRAY/Z/Y` copies one strip of chunk files, logged out (the `hf` command comes with `pip install -U huggingface_hub`). Chunk folders follow the scan for every array: Z = z // 192, Y = y // 96, X = x // 96 in scan voxels. Take the matching `_scale` folder too, and fetch `.zgroup`, `.zattrs` and each array's `.zarray` with curl; the copy then opens with `zarr.open_group(DIR, mode="r", zarr_format=2)`. Sizes: `tokens_unit` with its scales 179 GB, `dense` 238 GB, `ink` 122 GB, everything 539 GB in about 940,000 files. For everything, log in first (`hf auth login`): listing the whole store logged out was rate limited (HTTP 429) on 2026-10-24. The guide Space's Download section has the commands; the strip at z 9,600, y 3,840 (40 MB) took 7 s logged out and read back as unit vectors.
+
+### Color volume
+
+`https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126-rgb.ome.zarr`: every `tokens_unit` cube as one color (the scan-wide three main directions, 1st to 99th percentile to 1..255; 0 outside the scroll), a multiscale OME-Zarr (zarr v2, uint8, axes c, z, y, x, four levels). The guide Space's Open in neuroglancer button streams it with an RGB shader. Made from the bucket by Scrolls-private's `colorvol.py` on six CPU Jobs.
+
 ## Python API
 
 | Function | Returns | Raises | Notes |
@@ -102,6 +110,7 @@ Nothing: the features are ready made, from the masked level-0 PHerc0841 scan in 
 | `dense_scale` | 4896 x 1926 x 1926 | float16 | |
 | `ink` | 4896 x 1926 x 1926 x 32 | int8 | 4 x 4 x 4 voxels |
 | `ink_scale` | 4896 x 1926 x 1926 | float16 | |
+| `..-rgb.ome.zarr/L` (color volume) | 3 x (2448, 963, 963 halved L times) | uint8 | one color per (8 x 2^L)^3 voxels |
 
 Index `i` covers scan voxels `[i * step, (i + 1) * step)`. Cells outside the scroll are zero and their chunks are not stored. `index.json` counts the chunk files (156,480 per array); the group's `.zattrs` records the model, its sha256, villa's commit, the lattice and the normalization. The total is 539 GB.
 
@@ -120,7 +129,7 @@ The scan was cut into 102 slabs of 192 slices. Each slab ran villa's `dinovol/di
 
 ## Cost and time
 
-Free to use: users rent nothing, and a region reads only the chunks it touches. Making it took 22 L4 Jobs, about 48 GPU hours.
+Free to use: users rent nothing, and a region reads only the chunks it touches. Making it took 22 L4 Jobs, about 48 GPU hours. The color volume took 7 CPU Jobs, 2.5 CPU hours.
 
 ## For agents
 
@@ -139,6 +148,7 @@ None in this repository. The read-back check above ran on 2026-10-24 before and 
 ## History
 
 - 2026-10-24: bucket public with the whole PHerc0841 scan; README "Released tools" entry added ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
+- 2026-10-24: color volume (`-rgb.ome.zarr`) public beside the embeddings, opened in neuroglancer from the Space; Download section with tested commands and sizes ([PR #211](https://github.com/ChaseHendrick/Scrolls/pull/211)).
 - 2026-10-24: guide Space `SharpMeow/dinovol-embeddings` with a click-to-search demo; bucket README gains a plain-words intro and links it ([PR #206](https://github.com/ChaseHendrick/Scrolls/pull/206)).
 
 ## Related

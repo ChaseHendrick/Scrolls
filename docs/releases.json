@@ -322,7 +322,7 @@
         "pip install \"zarr>=3\" fsspec aiohttp",
         "python3 -c \"import zarr; g = zarr.open_group(zarr.storage.FsspecStore.from_url('https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr', read_only=True), mode='r', zarr_format=2); print(g['tokens_unit'].shape, g['dense'].shape)\""
       ],
-      "details": "The [guide Space](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) explains the features in plain words, lets you click a point of one slice and see every cube like it, and has tested snippets; its source is `spaces/dinovol-embeddings/`. The bucket's README gives the layout, the int8 scaling and a cosine similarity example. The model's Hugging Face page states no license; villa's dinovol code is MIT. Credit: the Vesuvius Challenge for the scan, the dinovol authors for the model.",
+      "details": "The [guide Space](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) (source `spaces/dinovol-embeddings/`) explains the features, has a click-to-search demo, tested download commands with sizes, and opens a whole-scan color volume (`-rgb.ome.zarr` beside the embeddings, 1.6 GB) in neuroglancer. The model's page states no license; villa's dinovol code is MIT. Credit: the Vesuvius Challenge for the scan, the dinovol authors for the model.",
       "where": "main"
     }
   ]
