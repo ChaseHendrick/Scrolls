@@ -302,7 +302,7 @@ No paid compute. The m7 cache is reused by later runs; a second m7 run reads no 
 
 ## History
 
-- 2026-10-24: first public release, branched from public `main` at `7e51e4f`, with `python -m kit hopbench` in `kit/cli.py`: the planted-hop test, the one-sheet check (`kit/sheetgap.py`, the version fixed on 16 October 2026 before its first run) and the reference builder (`kit/sheetrefs.py`), restricted to windings w023 to w040.
+- 2026-10-24: first public release ([#189](https://github.com/ChaseHendrick/Scrolls/pull/189)), branched from public `main` at `7e51e4f`, with `python -m kit hopbench` in `kit/cli.py`: the planted-hop test, the one-sheet check (`kit/sheetgap.py`, the version fixed on 16 October 2026 before its first run) and the reference builder (`kit/sheetrefs.py`), restricted to windings w023 to w040.
 
 ## Related
 
