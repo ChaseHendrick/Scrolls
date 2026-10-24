@@ -72,6 +72,7 @@ One line per decision still in force. The dated record, with Chase's exact words
 - Public media: concept, synthetic and interface pictures; real-data stills, GIFs and short videos only from public scans that are not prize-eligible and show no held-out labels, at most 1920 px and 4 MB, with a credit sidecar; never model output, prize-eligible scrolls, volumes, segments or weights; hard rule 6 unchanged (2026-10-18, [rule](docs/media/README.md), [record](docs/DECISIONS.md)).
 - Merged branches are deleted automatically; start new work from `main` (2026-10-18).
 - Every terminal in one styled look (`kit.termstyle`), plain for pipes and `--json`, `kit live` for mouse; every command posted for Chase renders in it (2026-10-23, rule 17).
+- Every Space, now and future, gets a Connect your tool panel (`kit spaceconnect`, a `connect.json` per Space, listed in `spaces/connect/spaces.json`): data URLs and tested snippets for villa, VC3D, neuroglancer, Python and others' tools; data linked, never rehosted (2026-10-24).
 
 ## Repository map
 

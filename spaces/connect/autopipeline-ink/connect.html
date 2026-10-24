@@ -1,0 +1,62 @@
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>The segments this page analyzes and the model it runs are public, and both read straight from these URLs in your own tool.</p>
+<div class="scc-src" id="connect-api"><h3>Call the analysis from code</h3>
+<p class="scc-meta">Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0 · The Space is paused, so these calls wait until it runs again.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/autopipeline-ink</code></pre></div>
+<details><summary>Python /on_sample<span class="scc-b warn">Space paused</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/autopipeline-ink&quot;)
+result = client.predict(title=&quot;PHerc0841 w00 (development segment)&quot;, api_name=&quot;/on_sample&quot;)</code></pre></div></details>
+<details><summary>curl /on_sample<span class="scc-b warn">Space paused</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-autopipeline-ink.hf.space
+EVENT=$(curl -s -X POST $URL/gradio_api/call/on_sample -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{&quot;data&quot;: [&quot;PHerc0841 w00 (development segment)&quot;]}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)
+curl -sN $URL/gradio_api/call/on_sample/$EVENT</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-layers"><h3>The layers it reads, example PHerc0841 w00 (9.366 um surface volume)</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · <a href="https://scrollprize.org/data_browser/PHerc0841" target="_blank" rel="noopener">browse</a></p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;0&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[0:64, 2800:2864, 2900:2964]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr/0&quot;)  # one pyramid level
+block = v[0:64, 2800:2864, 2900:2964]</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr/0/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-model"><h3>The model: Reader v2 (Domenico Russo)</h3>
+<p class="scc-meta">MIT · sha256 654ec5acec2b6c4788d9cb326e2f0b8c2c730584949a934ef775db7f6ab5d3a6; a drop-in ink_9um checkpoint for villa&#x27;s ink detection.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/domenicor046/reader-v2/resolve/main/reader-v2-step040000.pth</code></pre></div>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/domenicor046/reader-v2/resolve/main/reader-v2-step040000.pth</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/autopipeline-ink/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/autopipeline-ink/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-24. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>

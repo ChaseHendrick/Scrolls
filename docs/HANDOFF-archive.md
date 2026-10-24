@@ -4,6 +4,34 @@ Sections moved out of [HANDOFF.md](HANDOFF.md) unchanged, newest first, so the h
 
 When HANDOFF.md grows long, move its oldest dated sections, unchanged, to the top of this file (below this paragraph).
 
+## Open items added 15 October 2026 (checked 23:20 ET)
+
+Public work only. Every PR and SHA below was checked on GitHub when written; anything not checked says **unverified**.
+
+```yaml
+handoff:
+  written: 2026-10-15T23:30-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  main_head_at_writing: 303c33f
+  open_prs:
+    - {number: 85, branch: grok/vesuvius-bible, head: 9229ff8522, topic: Vesuvius Challenge reference book, state: open}
+    - {number: 87, branch: grok/unroll-link, head: 5b963dab59, topic: link to the Unroll viewer Space, state: open}
+    - {number: 88, branch: grok/autopipe-readme, head: 9983e6f3df, topic: AutoPipeline reference README and agent rules, state: open}
+  in_progress_not_pushed:
+    - vesuvius_bible_layout_redesign
+    - autopipeline_electricity_cli_and_modal_ledger_rows
+    - unroll_destroy_mode_agent_api_ink_bench
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, scan_images_not_in_this_repo]
+```
+
+| Item | State | Next step | Waits on | Where |
+| --- | --- | --- | --- | --- |
+| Vesuvius Challenge reference book | **Merged** 16 Oct in [PR #85](https://github.com/ChaseHendrick/Scrolls/pull/85) (merge `fafc316`), files under `docs/vesuvius-bible`, with the redrawn charts (`95ea240`); its branch `grok/vesuvius-bible` (#85) is deleted | Further layout work (the rebuilt PDF, if unfinished) starts on a new branch from `main` | Chase | PR #85 |
+| AutoPipeline reference README | PR #88 open, head `9983e6f3df` (`docs/autopipeline/README.md`, `docs/autopipeline/AGENTS.md`, `docs/README.md`). Its commit is authored as Grok Bot, not Chase, against the identity rule below; fix by a new commit only if Chase wants it rewritten (no force-push) | Review and merge | Chase | PR #88 |
+| AutoPipeline local-run and ledger tooling | In progress, not pushed: `kit run local` (wall time, CPU time and an electricity estimate, rate read from local config, never git), `kit run backfill`, and automatic one-row-per-app cloud ledger rows. `tests/test_letterlines.py` passes on `main` (13 tests); the pending letterlines change is **unverified** | Review, open a PR | agent | not yet in git |
+| Unroll viewer link | PR #87 open, head `5b963dab59` (`README.md`, `docs/unroll-space.md`). The Space ([huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll)) serves commit `f6dcaa7`: multi-scroll registry (`scrolls/index.json` with one manifest per scroll) and Open your own (load your own meshes and ink maps in the browser). In progress, not deployed: Destroy mode (tear, crush, burn, water at any unroll amount), a `window.unroll` agent API, and an Ink Bench whose scores are agreement with the published ink layer, not ground truth | Merge the three working copies, test, deploy; then update `docs/unroll-space.md` | Chase | PR #87 |
+
 ## Open items (checked 14 October 2026, 22:45 UTC)
 
 | Item | State | Next step | Waits on | Where |

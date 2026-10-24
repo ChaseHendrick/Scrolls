@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard
+from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard, spaceconnect
 
 
 def cmd_prizes(args):
@@ -1454,6 +1454,10 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p = sub.add_parser("releases", help="the list of tools released from private work, and the README section made from it")
     releases.add_arguments(p)
     p.set_defaults(func=releases.run)
+    p = sub.add_parser("spaceconnect", help="each Space's Connect your tool panel: render it from connect.json, check "
+                       "every Space has a current one")
+    spaceconnect.add_arguments(p)
+    p.set_defaults(func=spaceconnect.run)
     p = sub.add_parser("leaderboard", help="the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json")
     leaderboard.add_arguments(p)
     p.set_defaults(func=leaderboard.run)

@@ -1252,6 +1252,8 @@ Model output, not a reading. Scroll Lens reads only the twelve listed scans, non
 Grand Prize.
 """
 
+CONNECT_HTML = Path(__file__).with_name("connect.html")
+
 CSS = """
 #sl-gpick input { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 #sl-gpick [role=option] { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -1600,6 +1602,9 @@ def build_demo():
                 with gr.Accordion("For agents and scripts", open=False, elem_id="sl-agents"):
                     gr.Markdown(AGENTS_TEXT.format(url=page_url().rstrip("/") if page_url() != "/" else
                                                    "https://sharpmeow-scroll-lens.hf.space"))
+                with gr.Accordion("Connect your tool", open=False, elem_id="sl-connect"):
+                    # The data's URLs and ready snippets, made by python -m kit spaceconnect render from connect.json
+                    gr.HTML(CONNECT_HTML.read_text() if CONNECT_HTML.exists() else "")
             with gr.Column(scale=3, min_width=320, elem_id="sl-viewer"):
                 viewer = gr.HTML("", html_template='<div class="slv-mount"></div>', js_on_load=viewer_js(),
                                  apply_default_css=False, elem_id="sl-viewer-html")

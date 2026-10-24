@@ -27,6 +27,7 @@ Updated 18 October 2026.
 | Unroll, the released interactive 3D viewer (Hugging Face Space, v1.0.0, Apache 2.0 for all code, CC BY-NC 4.0 scan data) | [`unroll-space.md`](unroll-space.md), live at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll) | README "Released tools" |
 | Ink Lens, a control-checked ink map of your own region of a VC3D segment written back as VC3D files (ZeroGPU Space and client, not yet deployed, 20 October) | [`tools/ink-lens.md`](tools/ink-lens.md), code in [`../spaces/ink-lens/`](../spaces/ink-lens/), rule in [`prereg/2026-10-20-ink-lens-gate.md`](prereg/2026-10-20-ink-lens-gate.md) | [`tools/scroll-lens.md`](tools/scroll-lens.md) |
 | Scroll Lens, a ZeroGPU Space that shows the organizers' 3D DINO, ink and surface models on a cube of a public scan, with click search (v1.0.0, 17 October) | [`tools/scroll-lens.md`](tools/scroll-lens.md), live at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens), code in [`../spaces/scroll-lens/`](../spaces/scroll-lens/) | [`unroll-space.md`](unroll-space.md) |
+| Reading a Space's data from your own tool (villa, VC3D, neuroglancer, Python, gradio_client, MCP): the Connect your tool panel on every Space, and how to add it to a new one (24 Oct 2026) | [`tools/spaceconnect.md`](tools/spaceconnect.md), specs in [`../spaces/connect/spaces.json`](../spaces/connect/spaces.json) | AGENTS.md standing decision of 24 Oct 2026 |
 
 ## Rules and standards
 

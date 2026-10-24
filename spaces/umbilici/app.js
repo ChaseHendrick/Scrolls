@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.6.1';
+const VERSION = '1.7.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -642,6 +642,7 @@ function select(name, mode = 'scan') {
 document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => setMode(c.dataset.mode)));
 $('c-close').addEventListener('click', () => setMode('array'));
 $('b-about').addEventListener('click', () => { markSeen(); openGuide(); });
+$('b-connect').addEventListener('click', () => { markSeen(); openGuide('connect'); });
 let exQueued = false;
 $('ex').addEventListener('input', (e) => { S.ex = +e.target.value; $('ex-v').textContent = S.ex; if (!exQueued) { exQueued = true; requestAnimationFrame(() => { exQueued = false; buildArray(); }); } syncURLSoon(); });
 $('t-ct').addEventListener('change', (e) => { S.ct = e.target.checked; applyVolUniforms(); });
@@ -653,6 +654,8 @@ $('t-needle').addEventListener('change', (e) => { S.needles = e.target.checked; 
 $('t-ori').addEventListener('change', (e) => { S.ori = e.target.checked; drawSlice(); });
 $('blend').addEventListener('input', (e) => { S.blend = +e.target.value; clearTimeout(zTimer); zTimer = setTimeout(drawSlice, 120); });
 addEventListener('keydown', (e) => { if (e.key === 'Escape' && S.mode !== 'array' && !document.querySelector('dialog[open]')) setMode('array'); });
+// neuroglancer link for an OME-Zarr URL, as kit/spaceconnect.py makes them
+const ngLink = (url, name) => 'https://neuroglancer-demo.appspot.com/#!' + encodeURIComponent(JSON.stringify({ layers: [{ type: 'image', source: `zarr://${url.replace(/\/+$/, '')}/`, name }], layout: '4panel' }));
 // copy buttons anywhere, card actions
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-copy]'); if (b) { e.preventDefault(); copy(b.dataset.copy, b.dataset.what); } });
 $('c-acts').addEventListener('click', (e) => {
@@ -660,6 +663,7 @@ $('c-acts').addEventListener('click', (e) => {
   const act = b.dataset.act;
   if (act === 'view') copy(location.href, 'view link copied');
   else if (act === 'zarr') copy(s.zarr, 'OME-Zarr URL copied');
+  else if (act === 'ng') open(ngLink(s.zarr, `${s.scroll} CT`), '_blank', 'noopener');
   else if (act === 'csv') download(`${s.scroll}_center_lines.csv`, toCSV(pointRows(s)));
   else if (act === 'json') download(`${s.scroll}_umbilici.json`, JSON.stringify(scanJSON(s), null, 1), 'application/json');
   else if (act === 'use') openGuide('vc3d');

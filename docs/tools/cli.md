@@ -79,7 +79,7 @@ Claim label: None; the entry point makes no claim, and each command's page label
 
 ```
 usage: python -m kit [-h]
-                     {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,volumeview,segzoo,letterread,letterlines,letterdemo,greeklm,routines,stale,integrity,releases,leaderboard,run} ...
+                     {start,prizes,live,style,doctor,plan,cost,fetch,verify,rowscore,auc,fibertensor,hpscore,overlap,collate,stackcheck,uvgate,windconsistency,meshaudit,surfacefix,provenance,compute,ensemble,gate,layers,shuffle,phantom,view,strokenet,volumeview,segzoo,letterread,letterlines,letterdemo,greeklm,routines,stale,integrity,releases,spaceconnect,leaderboard,run} ...
 ```
 
 | Option | Default | Meaning |
@@ -134,6 +134,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `stale` | none | `stale.run` (in `kit/stale.py`) | [stale](stale.md) | what live pages and registries still say that is no longer true: old handoff rows, gone branches, retired names, dead links, MAP rows (kit/stale.py; read-only) |
 | `integrity` | none | `integrity.run` (in `kit/integrity.py`) | [integrity](integrity.md) | research integrity checks for Vesuvius claims: ink scores with their controls and held-out status, overclaim wording, preregistration order, citations; each plants faults first (kit/integrity.py; read-only) |
 | `releases` | `add`, `render`, `check`, `list`, `pin`, `unpin` | `releases.run` (in `kit/releases.py`) | [releases](releases.md) | the list of tools released from private work, and the README section made from it |
+| `spaceconnect` | `render`, `check`, `run`, `new` | `spaceconnect.run` (in `kit/spaceconnect.py`) | [spaceconnect](spaceconnect.md) | each Space's Connect your tool panel: render it from connect.json, check every Space has a current one |
 | `leaderboard` | `render`, `check` | `leaderboard.run` (in `kit/leaderboard.py`) | [leaderboard](leaderboard.md) | the ink reader leaderboard, docs/leaderboard.md, written from docs/results.json |
 | `run` | `init`, `status`, `cost`, `record`, `check`, `list` | `cmd_run` | [run-ledger](run-ledger.md) | local experiment ledger (experiments/, gitignored) |
 | `run` | `local`, `backfill` | `cmd_run` | [run-local](run-local.md) | `local`: run a local command and log wall time, CPU time and electricity cost; `backfill`: add estimated local-run costs from a JSON list of logged durations |

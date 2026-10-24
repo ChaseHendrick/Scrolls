@@ -334,6 +334,9 @@ def build_demo():
                 windows = gr.Radio([3, 1], value=3, label="Depth windows")
                 with gr.Accordion("For agents and scripts", open=False):
                     gr.Markdown(AGENTS)
+                with gr.Accordion("Connect your tool", open=False):
+                    # The data's URLs and ready snippets, made by python -m kit spaceconnect render from connect.json
+                    gr.HTML((HERE / "connect.html").read_text() if (HERE / "connect.html").exists() else "")
             with gr.Column(scale=3, min_width=320):
                 img = gr.Image(label="Middle CT layer, kept ink in amber", type="numpy", format="png")
                 md = gr.Markdown("Choose a sample or upload a region, then run.")

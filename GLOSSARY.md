@@ -48,6 +48,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **checkpoint**: The saved weights of a trained model.
 
+**Connect your tool (panel)**: The section every one of Chase's Hugging Face Spaces carries (24 Oct 2026): the URLs of the data the page shows, with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, curl, gradio_client and MCP. Written from each Space's `connect.json` by `python -m kit spaceconnect`; page [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
+
 **claims ledger (`docs/claims/sources.json`)**: The list, per block of the README's Novel findings, of the results units and files its numbers come from, each pinned to its sha256, and a reason (setting, count, derived, external or context) for any number no source holds. `python -m kit.claimcheck check` fails when a number has neither. See [`docs/tools/claimcheck.md`](docs/tools/claimcheck.md).
 
 **chunk**: One stored block of a zarr array. Readers fetch only the chunks they need.

@@ -1,0 +1,11 @@
+{
+ "note": "Every Hugging Face Space of Chase's, now and future, gets a Connect your tool panel (Chase, 24 Oct 2026). One row per Space: dir holds its connect.json and the rendered connect.html and CONNECT.md; source says where the page code lives (here, the Space's own repository, or Scrolls-private, which vendors the rendered files). python -m kit spaceconnect check runs in the tests.",
+ "spaces": [
+  {"space": "SharpMeow/umbilici", "dir": "spaces/umbilici", "sdk": "static", "source": "here"},
+  {"space": "SharpMeow/scroll-lens", "dir": "spaces/scroll-lens", "sdk": "gradio", "source": "here"},
+  {"space": "SharpMeow/ink-lens", "dir": "spaces/ink-lens", "sdk": "gradio", "source": "here", "deployed": false},
+  {"space": "SharpMeow/unroll", "dir": "spaces/connect/unroll", "sdk": "static", "source": "space"},
+  {"space": "SharpMeow/autopipeline-ink", "dir": "spaces/connect/autopipeline-ink", "sdk": "gradio", "source": "space"},
+  {"space": "SharpMeow/crackle-check", "dir": "spaces/connect/crackle-check", "sdk": "gradio", "source": "Scrolls-private"}
+ ]
+}

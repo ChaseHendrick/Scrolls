@@ -50,6 +50,7 @@
   </div>
   <button class="tbtn" id="b-sheet" title="Every number on this page, as tables you can download">Data</button>
   <button class="tbtn" id="b-about" title="Guide: basics, VC3D and villa, research notes, data details, credits">Guide</button>
+  <button class="tbtn" id="b-connect" title="Read this page's data from your own tool: Python, villa, VC3D, neuroglancer, the command line">Connect</button>
   <button class="icon" id="b-set" title="Settings: glow, quality, film" aria-label="Settings">&#9881;&#xFE0E;</button>
 </nav>
 <section class="settings mono small" id="settings" hidden>
@@ -86,6 +87,7 @@
   <div class="acts mono small" id="c-acts">
     <button data-act="view" title="Copy a link that reopens this exact view">copy view link</button>
     <button data-act="zarr" title="Copy the scan's OME-Zarr URL, for VC3D, zarr-python or any OME-Zarr reader">copy OME-Zarr URL</button>
+    <button data-act="ng" title="Open this scan's CT in neuroglancer, streamed from the open data">open in neuroglancer</button>
     <button data-act="csv" title="Every control point of this scan's lines, one row each">points CSV</button>
     <button data-act="json" title="This scan, its CT pyramid and its lines with every statistic">scan JSON</button>
     <button data-act="use" title="How to load these lines in VC3D and villa">use in VC3D / villa</button>
@@ -150,6 +152,7 @@
     <button data-tab="vc3d" role="tab">VC3D and villa</button>
     <button data-tab="research" role="tab">For researchers</button>
     <button data-tab="data" role="tab">Data details</button>
+    <button data-tab="connect" role="tab">Connect your tool</button>
     <button data-tab="credits" role="tab">Credits</button>
   </div>
 
@@ -241,6 +244,111 @@
       <li>This page's derivative (<code>data/lasagna/</code>, by <code>tools/build_lasagna.py</code>): <span id="g-las"></span></li>
       <li>Raw model output; nobody has checked it by eye.</li>
     </ul>
+  </section>
+
+  <section data-pane="connect" hidden>
+<!-- space-connect:start -->
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>Every center line, CT scan and lasagna field on this page reads straight from these URLs, with no account and no download step. Each scan card also has its own OME-Zarr URL and an Open in neuroglancer link.</p>
+<div class="scc-src" id="connect-lines"><h3>Center lines (all 29, every scan)</h3>
+<p class="scc-meta">CC BY-NC 4.0 bundle; each file keeps its own license (MIT, CC BY 4.0 or CC BY-NC 4.0, listed in index.json) · Files under lines/ are in VC3D&#x27;s umbilicus JSON format, level-0 voxels (x, y, z).</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines</code></pre></div>
+<details><summary>Python (huggingface_hub)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install huggingface_hub
+from huggingface_hub import hf_hub_download, snapshot_download
+
+path = hf_hub_download(&quot;SharpMeow/vesuvius-center-lines&quot;, &quot;index.json&quot;, repo_type=&quot;dataset&quot;)  # one file, cached
+folder = snapshot_download(&quot;SharpMeow/vesuvius-center-lines&quot;, repo_type=&quot;dataset&quot;)</code></pre></div></details>
+<details><summary>Python (datasets)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install datasets
+from datasets import load_dataset
+
+lines = load_dataset(&quot;SharpMeow/vesuvius-center-lines&quot;, &quot;lines&quot;, split=&quot;train&quot;)
+points = load_dataset(&quot;SharpMeow/vesuvius-center-lines&quot;, &quot;points&quot;, split=&quot;train&quot;)</code></pre></div></details>
+<details><summary>pandas<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install pandas huggingface_hub
+import pandas as pd
+
+df = pd.read_json(&quot;hf://datasets/SharpMeow/vesuvius-center-lines/tables/points.jsonl&quot;, lines=True)</code></pre></div></details>
+<details><summary>Command line (hf)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>pip install -U huggingface_hub
+hf download SharpMeow/vesuvius-center-lines index.json --repo-type dataset --local-dir vesuvius-center-lines</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines/resolve/main/index.json</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-ct"><h3>X-ray CT, example PHerc0125 (each scan card has its own URL)</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · Read live from the open-data bucket, never copied here. uint8, 128^3 chunks, no compressor, 6 levels. · <a href="https://scrollprize.org/data_browser/PHerc0125" target="_blank" rel="noopener">browse</a></p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;2&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[2600:2664, 1000:1064, 1000:1064]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/2&quot;)  # one pyramid level
+block = v[2600:2664, 1000:1064, 1000:1064]</code></pre></div></details>
+<details><summary>VC3D<span class="scc-b src">from villa&#x27;s source</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>In VC3D (villa&#x27;s volume-cartographer), open or create a project, then
+File &gt; Attach Remote Zarr... and paste:
+
+https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr
+
+It accepts http, https and s3 OME-Zarr roots.</code></pre></div></details>
+<details><summary>neuroglancer<span class="scc-b ok">tested 2026-10-24</span></summary>
+<a class="scc-go" href="https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0125%2Fvolumes%2F20250821151825-9.362um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%2C%20example%20PHerc0125%20%28each%20scan%20card%20has%20its%20own%20URL%29%22%7D%5D%2C%22layout%22%3A%224panel%22%7D" target="_blank" rel="noopener">Open in neuroglancer</a>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0125%2Fvolumes%2F20250821151825-9.362um-1.2m-113keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%2C%20example%20PHerc0125%20%28each%20scan%20card%20has%20its%20own%20URL%29%22%7D%5D%2C%22layout%22%3A%224panel%22%7D</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0125/volumes/20250821151825-9.362um-1.2m-113keV-masked.zarr/2/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-lasagna"><h3>Lasagna field, PHerc0175A</h3>
+<p class="scc-meta">CC BY-NC 4.0 · villa lasagna predict3d output (scrollprize/lasagna); model output, not checked by eye.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna</code></pre></div>
+<details><summary>Python (huggingface_hub)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install huggingface_hub
+from huggingface_hub import hf_hub_download, snapshot_download
+
+path = hf_hub_download(&quot;SharpMeow/pherc0175a-lasagna&quot;, &quot;README.md&quot;, repo_type=&quot;dataset&quot;)  # one file, cached
+folder = snapshot_download(&quot;SharpMeow/pherc0175a-lasagna&quot;, repo_type=&quot;dataset&quot;)  # large; allow_patterns=[...] fetches part of it</code></pre></div></details>
+<details><summary>Command line (hf)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>pip install -U huggingface_hub
+hf download SharpMeow/pherc0175a-lasagna README.md --repo-type dataset --local-dir pherc0175a-lasagna</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna/resolve/main/README.md</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-page"><h3>This page&#x27;s own data and API</h3>
+<p class="scc-meta">Page code Apache 2.0; data as above · In a browser or headless Chromium, window.umbilici has scans(), lines(scroll), at(scroll, z), csv(...) and more (Guide, For researchers).</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-umbilici.static.hf.space/</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>Every line, scan and CT pyramid as one JSON: https://huggingface.co/spaces/SharpMeow/umbilici/resolve/main/data/lines.json
+Open a scan in a given mode and height: https://sharpmeow-umbilici.static.hf.space/?mode=scan&amp;scan=PHerc0191&amp;z=10400
+Page source and build scripts: https://huggingface.co/spaces/SharpMeow/umbilici/tree/main</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/umbilici/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/umbilici/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-24. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>
+<!-- space-connect:end -->
   </section>
 
   <section data-pane="credits" hidden>

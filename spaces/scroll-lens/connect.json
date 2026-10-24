@@ -1,0 +1,55 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/scroll-lens",
+ "title": "Scroll Lens",
+ "checked": "2026-10-24",
+ "intro": "The twelve scans Scroll Lens reads are open data, and each one reads straight from its URL in your own tool. The page itself is also an API and an MCP server.",
+ "sources": [
+  {
+   "id": "ct",
+   "title": "A scan it reads, example PHerc0139 2.399 um",
+   "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr",
+   "zarr_format": 2,
+   "example": {
+    "level": "3",
+    "start": [
+     4810,
+     1657,
+     1657
+    ]
+   },
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "The other eleven are listed by list_scans; all are read live, never copied here. Scroll Lens reads level 0.",
+   "browse": "https://scrollprize.org/data_browser/PHerc0139"
+  },
+  {
+   "id": "api",
+   "title": "Call Scroll Lens from code or an agent",
+   "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/scroll-lens",
+   "space": "SharpMeow/scroll-lens",
+   "host": "https://sharpmeow-scroll-lens.hf.space",
+   "status": "paused",
+   "endpoints": [
+    {
+     "api": "/list_gallery",
+     "args": {}
+    },
+    {
+     "api": "/list_scans",
+     "args": {}
+    },
+    {
+     "api": "/random_point",
+     "args": {
+      "scan": "PHerc0139",
+      "seed": 0
+     }
+    }
+   ],
+   "license": "Code Apache 2.0; models as listed by list_scans; scans CC BY-NC 4.0",
+   "note": "The Space is paused, so these calls wait until it runs again. A new point uses the caller's ZeroGPU minutes. Model output, not a reading."
+  }
+ ]
+}
