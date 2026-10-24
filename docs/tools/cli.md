@@ -130,6 +130,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
 | `atlas` | `build`, `show` | `atlas.cmd_atlas` (in `kit/atlas.py`) | [atlas](atlas.md) | Segment Atlas: area, isometry, holes and folds of every published segment |
+| `coverage` | none | `coverage.cmd_coverage` (in `kit/coverage.py`) | [coverage](coverage.md) | Winding coverage: which turns and heights a scroll's segments trace, and the gaps |
 | `tifxyz` | `info`, `stretch`, `check`, `obj`, `preview`, `facing`, `chunks`, `diff` | `tifxyz.cmd_tifxyz` (in `kit/tifxyz.py`) | [tifxyz](tifxyz.md) | look at a tifxyz segment without VC3D: area, isometry, holes and folds, OBJ, picture, which way it faces, chunks it touches, diff of two versions |
 | `stackcheck` | none | `cmd_stackcheck` | [stackcheck](stackcheck.md) | check consecutive tifxyz segments against the umbilicus: order, missing sectors, skipped windings, turn overlaps, stack ends (geometry only) |
 | `uvgate` | none | `cmd_uvgate` (in `kit/uvgate_cli.py`) | [uvgate](uvgate.md) | check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough area, optionally one counterclockwise piece (geometry only) |

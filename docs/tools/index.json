@@ -1070,67 +1070,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 186,
+     "end_line": 187,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 187,
-     "end_line": 215,
+     "start_line": 188,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 216,
-     "end_line": 219,
+     "start_line": 217,
+     "end_line": 220,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 220,
-     "end_line": 230,
+     "start_line": 221,
+     "end_line": 231,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 231,
-     "end_line": 244,
+     "start_line": 232,
+     "end_line": 245,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 245,
-     "end_line": 254,
+     "start_line": 246,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 255,
-     "end_line": 258,
+     "start_line": 256,
+     "end_line": 259,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 259,
-     "end_line": 268,
+     "start_line": 260,
+     "end_line": 269,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 269,
-     "end_line": 276,
+     "start_line": 270,
+     "end_line": 277,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 277,
-     "end_line": 288,
+     "start_line": 278,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 289,
-     "end_line": 295,
+     "start_line": 290,
+     "end_line": 296,
      "applicable": true
     }
    ]
@@ -1430,6 +1430,160 @@
      "name": "Related",
      "start_line": 184,
      "end_line": 190,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "coverage",
+   "name": "coverage",
+   "tagline": "see which wraps and heights of a scroll the published segments trace, and where the gaps are",
+   "summary": "`kit coverage` places every published mesh of one scan volume around its center line and reports the heights and angles traced, how many turns each mesh spans, and, for each pair of meshes, about how many wraps lie untraced between them.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "script"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit coverage"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/coverage.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/media/coverage_still.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "main"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_coverage.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public data and writes local files"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "f901840"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`coverage`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, script",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit coverage`",
+    "Code": "`kit/coverage.py`, `scripts/media/coverage_still.py`, `kit/cli.py` (`main`)",
+    "Tests": "`tests/test_coverage.py`",
+    "Needs": "Python 3.9 or newer, numpy, tifffile (imagecodecs for LZW-compressed meshes); Pillow only for `scripts/media/coverage_still.py`. A public center line for the volume, or your own with `--line`",
+    "Runs on": "CPU. PHerc0139's 38 meshes on volume 20260102150214: 37 s and 2.8 GB peak memory with 8 workers (measured 2026-10-24, 4-core cloud container)",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (the bucket listing, `metadata.json`, the meshes and the bucket's center lines) and `huggingface.co` (the center lines dataset `SharpMeow/vesuvius-center-lines`); none with `--line FILE` and local `--mesh` folders, except `metadata.json` for the voxel size and slice count",
+    "Writes": "Nothing by default (prints only); `--png` writes the picture, `--out` the report JSON. Each mesh is fetched into a temporary folder and deleted after it is measured",
+    "Go-ahead": "Not needed: it reads public data and writes local files",
+    "Released": "This repository from the change that adds it (24 Oct 2026)",
+    "Checked": "2026-10-24 against commit `f901840` plus this change"
+   },
+   "page": "docs/tools/coverage.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 75,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 84,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 131,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 152,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 158,
+     "end_line": 183,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 184,
+     "end_line": 198,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 199,
+     "end_line": 207,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 208,
+     "end_line": 211,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 212,
+     "end_line": 221,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 222,
+     "end_line": 225,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 226,
+     "end_line": 229,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 230,
+     "end_line": 235,
      "applicable": true
     }
    ]
@@ -5669,7 +5823,8 @@
     "python scripts/media/encode.py",
     "python scripts/media/capture_web.py",
     "python scripts/media/sweep.py",
-    "python scripts/media/tifxyz_stills.py"
+    "python scripts/media/tifxyz_stills.py",
+    "python scripts/media/coverage_still.py"
    ],
    "imports": [],
    "code": [
@@ -5696,7 +5851,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/coverage_still.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -5738,67 +5893,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 194,
-     "applicable": true
-    },
-    {
-     "name": "Python API",
-     "start_line": 195,
-     "end_line": 198,
-     "applicable": false
-    },
-    {
-     "name": "Inputs",
-     "start_line": 199,
      "end_line": 205,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Python API",
      "start_line": 206,
-     "end_line": 242,
+     "end_line": 209,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 210,
+     "end_line": 216,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 217,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 243,
-     "end_line": 291,
+     "start_line": 254,
+     "end_line": 303,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 292,
-     "end_line": 314,
+     "start_line": 304,
+     "end_line": 326,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 315,
-     "end_line": 328,
+     "start_line": 327,
+     "end_line": 340,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 329,
-     "end_line": 338,
+     "start_line": 341,
+     "end_line": 350,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 339,
-     "end_line": 342,
+     "start_line": 351,
+     "end_line": 354,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 343,
-     "end_line": 348,
+     "start_line": 355,
+     "end_line": 360,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 349,
-     "end_line": 354,
+     "start_line": 361,
+     "end_line": 366,
      "applicable": true
     }
    ]

@@ -384,6 +384,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
 
+**wrap pitch**: The radial distance from one wrap of a scroll to the next. `kit coverage` measures it on the published meshes: along a mesh row that goes more than a full turn around the center line, the radius one turn further on less the radius here ([`docs/tools/coverage.md`](docs/tools/coverage.md)).
+
 ## X
 
 **X-ray CT**: See CT.
