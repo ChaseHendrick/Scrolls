@@ -144,7 +144,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
 
-**Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
+**Ink Lens**: A tool and ZeroGPU Space ([SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens), live since 24 Oct 2026) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
 
 **ink label (inklabels)**: A human-drawn mask of where ink is on a segment (`inklabels.zarr`), used for training and scoring.
 

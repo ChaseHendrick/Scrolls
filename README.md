@@ -70,6 +70,14 @@ Released 16 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
+### Ink Lens (control-checked ink on your own VC3D region)
+
+Released 24 October 2026.
+
+[Ink Lens](https://huggingface.co/spaces/SharpMeow/ink-lens) checks one region of your own VC3D segment for ink in seconds. It runs an openly licensed 9 um ink model (d9v2 or `ink_9um`) on the region in three depth windows, each as stored and reversed, and keeps only ink above the region's own reversed-depth control, so a region without text comes back `none`. The result is written back as VC3D's own files: an overlay over the segment canvas, a running mosaic, `ink-detections.json` records and letter-candidate pins as a VC3D point collection. It runs on a ZeroGPU Space with your own Hugging Face token, or on your machine with `--local` (CUDA, MPS or CPU, no account), and the Space is also an API and an MCP server for agents. On the public 640 px PHerc0841 w00 sample (development data) the live Space ran 486 patches in about 1.3 s and called it `ink`, AUC 0.915 as stored against 0.595 reversed (Model output, 24 October 2026). Status: released. Version: 0.1.0. Licence: Apache 2.0 for the code; d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0. An ink map is model output, not a reading.
+
+Opens at [huggingface.co/spaces/SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens). Try it from a clone: `python3 spaces/ink-lens/inklens.py demo 0841-w00 --score --vc3d-out /tmp/inklens-demo` (Space mode needs `HF_TOKEN` and gradio_client; add `--local` to run here). Source: [`spaces/ink-lens/`](spaces/ink-lens/); page with every option, output and failure: [`docs/tools/ink-lens.md`](docs/tools/ink-lens.md).
+
 ### Scrolls kit
 
 ![Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.](docs/assets/workbench/workbench-hero.webp)
