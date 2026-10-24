@@ -1,0 +1,6 @@
+# Segment Lens on a free CPU Space (Gradio 6.28.0 and Python 3.12 come from the README card). numpy reads the
+# preview grids; mcp is gradio's MCP server extra (mount_gradio_app(mcp_server=True)) at the version gradio 6.28.0
+# resolves with, and pydantic in the range that extra asks for. Pillow and uvicorn come with gradio.
+numpy==2.5.2
+mcp==1.30.0
+pydantic>=2.11.10,<=2.12.5

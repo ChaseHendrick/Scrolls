@@ -9499,7 +9499,7 @@
    "id": "segment-lens",
    "name": "segment-lens",
    "tagline": "turn published segments in 3D with their holes, folds and stretched edges painted on",
-   "summary": "A static Hugging Face Space that shows each published tifxyz segment of a scan on no prize list as a 3D surface colored by `kit tifxyz check`'s flags, beside the Segment Atlas numbers, with a sortable table of every mesh.",
+   "summary": "A Hugging Face Space that shows each published tifxyz segment of a scan on no prize list as a 3D surface colored by `kit tifxyz check`'s flags, beside the Segment Atlas numbers, with a sortable table of every mesh, and the same atlas as an API and MCP server for agents.",
    "status": "Current",
    "kind": [
     "app",
@@ -9507,6 +9507,9 @@
    ],
    "area": "Viewers and apps",
    "commands": [
+    "https://sharpmeow-segment-lens.hf.space/agents/",
+    "/agents/gradio_api/mcp/",
+    "python3 spaces/segment-lens/app.py",
     "python3 -m http.server",
     "spaces/segment-lens/",
     "?data=URL/"
@@ -9515,6 +9518,14 @@
    "code": [
     {
      "path": "spaces/segment-lens/app.js",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/segment-lens/requirements.txt",
      "symbols": []
     },
     {
@@ -9555,13 +9566,13 @@
     "Status": "Current",
     "Kind": "app, agent tool",
     "Area": "Viewers and apps",
-    "Run": "[huggingface.co/spaces/SharpMeow/segment-lens](https://huggingface.co/spaces/SharpMeow/segment-lens) (the page), `python3 -m http.server` in `spaces/segment-lens/` (the page locally; add `?data=URL/` to read a local atlas build)",
-    "Code": "`spaces/segment-lens/app.js` (the page), `spaces/segment-lens/index.html`, `spaces/segment-lens/style.css`, `spaces/segment-lens/README.md` (the Space card), `spaces/segment-lens/NOTICE`, `spaces/segment-lens/LICENSE`",
+    "Run": "[huggingface.co/spaces/SharpMeow/segment-lens](https://huggingface.co/spaces/SharpMeow/segment-lens) (the page), `https://sharpmeow-segment-lens.hf.space/agents/` (API) and `/agents/gradio_api/mcp/` (MCP), `python3 spaces/segment-lens/app.py` (both locally, port 7860), `python3 -m http.server` in `spaces/segment-lens/` (the page locally; add `?data=URL/` to read a local atlas build)",
+    "Code": "`spaces/segment-lens/app.js` (the page), `spaces/segment-lens/app.py` (the server: the page, the API and MCP), `spaces/segment-lens/requirements.txt`, `spaces/segment-lens/index.html`, `spaces/segment-lens/style.css`, `spaces/segment-lens/README.md` (the Space card), `spaces/segment-lens/NOTICE`, `spaces/segment-lens/LICENSE`",
     "Tests": "`tests/test_segment_lens.py`",
-    "Needs": "In the browser: WebGL, ES modules and import maps, `DecompressionStream` (gzip), three.js 0.160.0 from cdn.jsdelivr.net",
-    "Runs on": "The visitor's browser. Each preview is one file of about 150 to 250 KB; the table reads `atlas.jsonl` once. In headless, software-rendered Chromium on a 4-core cloud container, a local atlas of 8 PHerc0139 meshes loaded and drew its first preview within 4 s (2026-10-24)",
-    "Network": "The visitor's browser: `huggingface.co` (the dataset SharpMeow/vesuvius-segment-atlas: `atlas.jsonl`, `summary.json`, `lens/*.slg.gz`), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com`",
-    "Writes": "Nothing: the URL hash holds the selected scroll and mesh",
+    "Needs": "The server: Python 3.12, gradio 6.28.0, numpy, mcp (`requirements.txt`). In the browser: WebGL, ES modules and import maps, `DecompressionStream` (gzip), three.js 0.160.0 from cdn.jsdelivr.net",
+    "Runs on": "A free CPU Space for the server; the 3D page runs in the visitor's browser. A `segment_picture` call takes under 1 s once its preview is fetched (cloud container, 2026-10-24). Each preview is one file of about 150 to 250 KB; the table reads `atlas.jsonl` once. In headless, software-rendered Chromium on a 4-core cloud container, a local atlas of 8 PHerc0139 meshes loaded and drew its first preview within 4 s (2026-10-24)",
+    "Network": "The server: `huggingface.co` (the same dataset files, `atlas.jsonl` cached for an hour, the last 32 previews kept in memory). The visitor's browser: `huggingface.co` (the dataset SharpMeow/vesuvius-segment-atlas: `atlas.jsonl`, `summary.json`, `lens/*.slg.gz`), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com`",
+    "Writes": "Nothing: the URL hash holds the selected scroll and mesh; the API's pictures are temporary files Gradio serves",
     "Go-ahead": "Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8)",
     "Released": "This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published",
     "License": "Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas)",
@@ -9594,69 +9605,75 @@
      "applicable": true
     },
     {
-     "name": "Commands and options",
+     "name": "Agent tools (API and MCP, since 1.1.0)",
      "start_line": 61,
-     "end_line": 64,
-     "applicable": true
-    },
-    {
-     "name": "Python API",
-     "start_line": 65,
-     "end_line": 77,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 78,
      "end_line": 81,
      "applicable": true
     },
     {
-     "name": "Outputs",
+     "name": "Commands and options",
      "start_line": 82,
-     "end_line": 85,
+     "end_line": 93,
      "applicable": true
     },
     {
-     "name": "Failure modes",
-     "start_line": 86,
-     "end_line": 95,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 96,
-     "end_line": 102,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 103,
+     "name": "Python API",
+     "start_line": 94,
      "end_line": 106,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "Inputs",
      "start_line": 107,
-     "end_line": 116,
+     "end_line": 110,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 111,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 115,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 131,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 138,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 142,
+     "end_line": 151,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 117,
-     "end_line": 120,
+     "start_line": 152,
+     "end_line": 155,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 121,
-     "end_line": 125,
+     "start_line": 156,
+     "end_line": 161,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 126,
-     "end_line": 130,
+     "start_line": 162,
+     "end_line": 166,
      "applicable": true
     }
    ]

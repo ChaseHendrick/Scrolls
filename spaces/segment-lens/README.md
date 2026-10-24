@@ -3,8 +3,10 @@ title: Segment Lens
 emoji: 🧭
 colorFrom: gray
 colorTo: blue
-sdk: static
-app_file: index.html
+sdk: gradio
+sdk_version: 6.28.0
+python_version: "3.12"
+app_file: app.py
 pinned: false
 license: apache-2.0
 short_description: Every published Herculaneum segment, measured, in 3D
@@ -36,6 +38,20 @@ how close the grid is to isometric, and the area of each problem in mm2.
 What it shows is geometry only: no CT, no ink, and nothing here judges whether a segment stays on one sheet of
 papyrus. The previews keep every k-th grid node (at most 256 per side), so a small flag can look larger than it is;
 the numbers come from the full grid.
+
+## For agents and scripts
+
+The same atlas is an API and an MCP server at [/agents/](https://sharpmeow-segment-lens.hf.space/agents/):
+`list_scrolls`, `list_segments`, `get_segment` and `segment_picture` (a picture of one mesh with its flags painted
+on). MCP: add `https://sharpmeow-segment-lens.hf.space/agents/gradio_api/mcp/`. Python:
+
+```python
+from gradio_client import Client
+c = Client("https://sharpmeow-segment-lens.hf.space/agents/")
+top = c.predict("PHerc0139", "area_cm2", 5, True, api_name="/list_segments")
+seg = c.predict(top["segments"][0]["id"], api_name="/get_segment")
+picture, info = c.predict(seg["id"], "3d", 30, 20, api_name="/segment_picture")
+```
 
 Data: Vesuvius Challenge open data, CC BY-NC 4.0, via the Segment Atlas (same license). Code: Apache 2.0,
 by Chase Hendrick. three.js is MIT.
