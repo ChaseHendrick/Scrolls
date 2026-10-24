@@ -411,7 +411,7 @@ Free to use and to run locally. On the Space, model runs (Run the models, `look`
 - 2026-10-17: gallery grown to 99 cubes (batches 2 to 9) on Chase's remaining quota (Space commit `f4aa1ee`).
 - 2026-10-17: v1.0.0 live on Hugging Face with the 19-cube gallery. Gallery agreement (Model output): most cubes AUC 0.67 to 0.91 with controls 0.42 to 0.59; PHerc. 500P2 0.30 (control 0.45), 343P 0.40 (0.63) and 332 0.62 (0.59) disagree ([PR #113](https://github.com/ChaseHendrick/Scrolls/pull/113)).
 - 2026-10-17: tool page, docs index, map, glossary and handoff rows (`60da647`).
-- 2026-10-16: built in thread "Use my 5 minutes of ZeroGPU" (Chase: "something cool and visionary and useful by both newcomers and the elite researchers, like I did and we did for Unroll") (`378bd42`, [PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110)).
+- 2026-10-16: built for newcomers and experienced researchers alike, in the spirit of Unroll (`378bd42`, [PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110)).
 
 ## Related
 

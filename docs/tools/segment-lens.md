@@ -15,7 +15,7 @@ A static Hugging Face Space that shows each published tifxyz segment of a scan o
 | Runs on | The visitor's browser. Each preview is one file of about 150 to 250 KB; the table reads `atlas.jsonl` once. In headless, software-rendered Chromium on a 4-core cloud container, a local atlas of 8 PHerc0139 meshes loaded and drew its first preview within 4 s (2026-10-24) |
 | Network | The visitor's browser: `huggingface.co` (the dataset SharpMeow/vesuvius-segment-atlas: `atlas.jsonl`, `summary.json`, `lens/*.slg.gz`), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` |
 | Writes | Nothing: the URL hash holds the selected scroll and mesh |
-| Go-ahead | Needed to create the Space: Chase asked for it on 24 Oct 2026 ("do these", Segment Lens among them). Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8) |
+| Go-ahead | Needed to create the Space: Chase asked for it on 24 Oct 2026. Later redeploys from merged `main` with public data fall under the standing yes (AGENTS.md rule 8) |
 | Released | This repository from the change that adds it (24 Oct 2026); the Space is created after the atlas dataset is published |
 | License | Apache 2.0 for the page ([`LICENSE`](../../spaces/segment-lens/LICENSE), [`NOTICE`](../../spaces/segment-lens/NOTICE)); the data it reads is CC BY-NC 4.0 (Vesuvius Challenge open data, via the Segment Atlas) |
 | Checked | 2026-10-24 against commit `5d217be` plus this change |
