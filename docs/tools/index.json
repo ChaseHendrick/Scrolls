@@ -336,7 +336,7 @@
    "id": "autopipeline",
    "name": "autopipeline",
    "tagline": "run villa's pipeline from a released scan to a scored ink map, unattended",
-   "summary": "AutoPipeline (AP) 0.1.5 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix5`, not on `main`.",
+   "summary": "AutoPipeline (AP) 0.1.6 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix6`, not on `main`.",
    "status": "Branch only",
    "kind": [
     "package"
@@ -353,7 +353,7 @@
    "imports": [],
    "code": [
     {
-     "path": "submissions/progress-2026-10-fix5/autopipeline/",
+     "path": "submissions/progress-2026-10-fix6/autopipeline/",
      "symbols": []
     },
     {
@@ -366,6 +366,18 @@
     },
     {
      "path": "kit/autopipe_monitor.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/apconsole.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/qareasons.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/apbackends.py",
      "symbols": []
     },
     {
@@ -393,12 +405,12 @@
      "symbols": []
     },
     {
-     "path": "submissions/progress-2026-10-fix5/release.json",
+     "path": "submissions/progress-2026-10-fix6/release.json",
      "symbols": []
     }
    ],
    "tests": [
-    "submissions/progress-2026-10-fix5/autopipeline/tests/",
+    "submissions/progress-2026-10-fix6/autopipeline/tests/",
     "test_*.py",
     "test_autopipe.py",
     "test_autopipe_monitor.py",
@@ -412,28 +424,28 @@
     "text": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run"
    },
    "checked": {
-    "date": "2026-10-18",
-    "commit": "9e50d61"
+    "date": "2026-10-24",
+    "commit": "8096b46"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`autopipeline`",
     "Status": "Branch only",
     "Kind": "package",
     "Area": "Pipeline and agents",
     "Run": "`scrolls-kit autopipeline` after `pip install -e .` in the package folder; inside that folder the branch's own `kit` module runs the same program (alias `autopipe`); `python scripts/demo_synthetic.py`; `scrolls-kit vc3d mcp` serves it as an MCP tool",
-    "Code": "`submissions/progress-2026-10-fix5/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix5/release.json`",
-    "Tests": "`submissions/progress-2026-10-fix5/autopipeline/tests/` on its branch: 36 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
+    "Code": "`submissions/progress-2026-10-fix6/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/apconsole.py` (the console), `kit/qareasons.py`, `kit/apbackends.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix6/release.json`",
+    "Tests": "`submissions/progress-2026-10-fix6/autopipeline/tests/` on its branch: 46 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
     "Needs": "Python 3.11 or newer (zarr 3 needs it); numpy, tifffile, zarr 3 and scipy (`pyproject.toml`, tested 2026-10-12 with numpy 2.4.6, tifffile 2026.3.3, zarr 3.1.6, scipy 1.17.1). For real runs: villa's VC3D tools (`vc_gen_umbilicus`, `vc_grow_seg_from_seed`, `vc_tifxyz_selfcross`, `vc_flatten`, `vc_render_tifxyz`), from villa's Linux x86_64 AppImage or `VC3D.app` on a Mac; for ink, villa's `vesuvius` package and torch in their own environment (`KIT_INK_PYTHON`). Optional, for the browser tests only: the `playwright` Python package and a system `chromium` or `chromium-browser`; without them those tests skip and download nothing",
-    "Runs on": "The synthetic demo: 4.7 s as it reports itself on a shared 4-core cloud container, Python 3.12, installed from the 0.1.5 wheel; 9.8 s wall (8.2 s reported) while the package's test suite ran on the same cores (measured 2026-10-18 for this page). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
+    "Runs on": "The synthetic demo: 5.5 s as it reports itself in a cloud container, Python 3.13, from the 0.1.6 package's release check (2026-10-24); the package's 1241 tests took 590 s there (27 skipped). With 0.1.5 it reported 4.7 s on a shared 4-core container (2026-10-18). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
     "Network": "The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network",
     "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
     "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
-    "Released": "Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). The tag `autopipeline-v0.1.5` and its GitHub release with the wheel are not made yet. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+    "Released": "Public branch `submission/progress-2026-10-fix6` at `8096b46` (committed 2026-10-24, a commit with no parent; README entry dated 2026-10-24 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). The tag `autopipeline-v0.1.6` and its GitHub release are not made yet; 0.1.5 is on `submission/progress-2026-10-fix5` at `9e50d61`. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
     "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
-    "Branch": "`submission/progress-2026-10-fix5` at `9e50d61`",
-    "Checked": "2026-10-18 against commit `9e50d61`"
+    "Branch": "`submission/progress-2026-10-fix6` at `8096b46`",
+    "Checked": "2026-10-24 against commit `8096b46`"
    },
    "page": "docs/tools/autopipeline.md",
    "sections": [
@@ -476,13 +488,164 @@
     {
      "name": "History",
      "start_line": 177,
-     "end_line": 184,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 185,
-     "end_line": 192,
+     "start_line": 186,
+     "end_line": 193,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "axispolish",
+   "name": "axispolish",
+   "tagline": "polish a center line to the deepest point of the traced sheet",
+   "summary": "`python -m kit axispolish` moves a scroll's center line (umbilicus), slice by slice, to the point of highest winding coverage nearby on the scan's published normal grids, and writes it back in the published format for VC3D and the spiral fit.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit axispolish"
+   ],
+   "imports": [
+    "from kit import axispolish"
+   ],
+   "code": [
+    {
+     "path": "kit/axispolish.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_axispolish.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: local arithmetic on public grids"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "81e5ead"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`axispolish`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit axispolish`, `from kit import axispolish`",
+    "Code": "`kit/axispolish.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_axispolish.py`",
+    "Needs": "Python 3.10 or newer and numpy; numba optional (the same sums compiled, about 8 times faster); the scan's level-0 normal grids, found on the open-data bucket or given with `--grids`",
+    "Runs on": "CPU. About 1.4 s per slice with numba on 4 cloud cores (PHerc0175A, 91 slices in 127 s with grids cached, 24 Oct 2026); about 6 s per slice with numpy alone (the frozen test's development runs, 22 Oct 2026); a whole line is about 100 slices, see Cost and time",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`: one bucket listing to find the grids, then one `xy/NNNNNN.grid` file per polished slice. None with a local `--grids` folder",
+    "Writes": "The polished line at `--out` (parent folders created); with `--cache DIR`, the downloaded grid files under `DIR/xy/`",
+    "Go-ahead": "Not needed: local arithmetic on public grids",
+    "Released": "Public `main` since 2026-10-24; a line of the Scrolls kit entry in the README's \"Released tools\"",
+    "Checked": "2026-10-24 against commit `81e5ead`"
+   },
+   "page": "docs/tools/axispolish.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 62,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 70,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 94,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 112,
+     "end_line": 115,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 116,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 137,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 153,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 157,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 161,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 171,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 183,
+     "end_line": 188,
      "applicable": true
     }
    ]
@@ -1070,67 +1233,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 191,
+     "end_line": 192,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 192,
-     "end_line": 220,
+     "start_line": 193,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 221,
-     "end_line": 224,
+     "start_line": 222,
+     "end_line": 225,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 225,
-     "end_line": 235,
+     "start_line": 226,
+     "end_line": 236,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 236,
-     "end_line": 249,
+     "start_line": 237,
+     "end_line": 250,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 250,
-     "end_line": 259,
+     "start_line": 251,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 260,
-     "end_line": 263,
+     "start_line": 261,
+     "end_line": 264,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 264,
-     "end_line": 273,
+     "start_line": 265,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 274,
-     "end_line": 281,
+     "start_line": 275,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 282,
-     "end_line": 293,
+     "start_line": 283,
+     "end_line": 294,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 294,
-     "end_line": 300,
+     "start_line": 295,
+     "end_line": 301,
      "applicable": true
     }
    ]
@@ -11892,7 +12055,7 @@
     {
      "name": "Related",
      "start_line": 395,
-     "end_line": 402,
+     "end_line": 403,
      "applicable": true
     }
    ]
@@ -13700,6 +13863,149 @@
      "name": "Related",
      "start_line": 208,
      "end_line": 213,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "windcheck",
+   "name": "windcheck",
+   "tagline": "measure winding coverage around a candidate axis point",
+   "summary": "Measure how much a slice's predicted sheet traces wrap around a point, with displacement and synthetic controls.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [],
+   "imports": [
+    "from kit import windcheck"
+   ],
+   "code": [
+    {
+     "path": "kit/windcheck.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_axispolish.py",
+    "tests/test_windcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "81e5ead"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`windcheck`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`from kit import windcheck`",
+    "Code": "`kit/windcheck.py`",
+    "Tests": "`tests/test_axispolish.py`, `tests/test_windcheck.py`",
+    "Needs": "Python 3.10 or newer, numpy and level-0 `(x, y)` polylines",
+    "Runs on": "CPU; through [axispolish](axispolish.md) about 0.75 s per slice with numba and about 6 s with numpy alone on 4 cloud cores (22 Oct 2026, the frozen test's development runs)",
+    "Network": "None",
+    "Writes": "Nothing; returns arrays and dictionaries",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-24, with [axispolish](axispolish.md); a line of the Scrolls kit entry in the README's \"Released tools\"",
+    "Checked": "2026-10-24 against commit `81e5ead`"
+   },
+   "page": "docs/tools/windcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 27,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 28,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 32,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 62,
+     "end_line": 65,
+     "applicable": false
+    },
+    {
+     "name": "Python API",
+     "start_line": 66,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 77,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 81,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 94,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 105,
+     "end_line": 110,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 111,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 115,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 125,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 133,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 137,
+     "end_line": 141,
      "applicable": true
     }
    ]

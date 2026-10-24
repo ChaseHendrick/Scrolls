@@ -8,25 +8,25 @@
     {
       "id": "autopipeline",
       "title": "AutoPipeline",
-      "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.5 makes its read-only run monitor interactive: inspect a stage and its recorded failure, filter the loaded log tail, pause or refresh the viewer, find run records, and prepare commands for review and copying. Copying never executes a command; stale views cannot retain a resume command. The synthetic install demo now fails if its fake model fails or required maps are missing. It also corrects rounded cache-repair timestamps that could cause an unnecessary render. These are software usability and correctness changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
+      "summary": "AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.6 puts the run monitor on one screen and adds a console for notes and for running AutoPipeline, kit and VC3D agent commands, on loopback only and off with --read-only. A rejected trace's qa record now lists each failed check with its measured value and threshold. New steps, each off unless a plan names it, add the Crackle Check gate at report, the published center lines as the scroll axis, a region crop that keeps the clean parts of a rejected trace, edge extension, trace budgets with partial results, and z-scored ink ensembles. Commands to list, swap and trace each stage's backend are new. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.",
       "commands": [
-        "git clone --branch submission/progress-2026-10-fix5 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
-        "cd scrolls-autopipeline/submissions/progress-2026-10-fix5/autopipeline",
+        "git clone --branch submission/progress-2026-10-fix6 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline",
+        "cd scrolls-autopipeline/submissions/progress-2026-10-fix6/autopipeline",
         "python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer",
         "python -m pip install -e .",
         "python scripts/demo_synthetic.py"
       ],
-      "details": "Install, monitor controls, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). [Changes since 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md). The scientific settings and models are unchanged; a narrow cache-repair correction avoids counting the same repair twice.",
-      "released": "2026-10-18",
+      "details": "Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/autopipeline/README.md). [Changes since 0.1.5](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/CHANGES.md). Plans that name no new setting run as before, except that qa.repair without a method now gets the barrier repair.",
       "image": {
         "src": "docs/assets/autopipeline-readme-hero.webp",
         "alt": "Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.",
         "caption": "Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data."
       },
+      "released": "2026-10-24",
       "where": {
-        "branch": "submission/progress-2026-10-fix5",
-        "commit": "9e50d61b778a7ae4c36a12acbe32117feecfa847",
-        "path": "submissions/progress-2026-10-fix5"
+        "branch": "submission/progress-2026-10-fix6",
+        "commit": "8096b464007af732d9835ac9fae4be49ce2354d0",
+        "path": "submissions/progress-2026-10-fix6"
       }
     },
     {
@@ -209,10 +209,10 @@
         },
         {
           "id": "umbilicus-finder",
-          "name": "Scroll center (umbilicus) finder",
-          "released": "2026-10-14",
-          "version": "weights release `umbilicus-v1`; center lines for 11 scrolls, release `umbilicus-lines-v1`",
-          "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets, reading level-3 slices from the open-data bucket, and writes the published umbilicus format (`umbilicus.json` for VC3D and spiral-fitting with `--vc3d-name`). Against the 13 published center lines, each scroll held out of its own models' training, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the papyrus centroid control (Model output, 13 October 2026); each reference is one person's line, and the settings were chosen while looking at some of the same scrolls. A script folder run from a clone, not a `python -m kit` command: it needs torch and the two weight files, and its line is model output to check on CT slices.",
+          "name": "Scroll center (umbilicus) finder and coverage polish",
+          "released": "2026-10-24",
+          "version": "weights `umbilicus-v1`; lines `umbilicus-lines-v1`; polish `kit axispolish` rule 1",
+          "summary": "Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets reading level-3 slices from the open-data bucket, and writes `umbilicus.json` for VC3D and the spiral fit. Against the 13 published center lines, each scroll held out, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the centroid control (Model output, 13 Oct 2026). `kit axispolish` then moves a line to where villa's traced sheet winds most: on ten fresh scans the polished lines beat villa's vc_gen_umbilicus by +0.084 wraps of coverage, 8 of 10 scans, interval +0.028 to +0.169 (Model output, 22 Oct 2026; [evidence](docs/evidence/2026-10-22-umbilicus-windpolish/README.md)).",
           "command": "python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name",
           "page": "docs/tools/umbilicus.md",
           "evidence": "[guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md), [center lines for 11 scrolls with each end's check status (Model output, no person's check)](docs/evidence/2026-10-21-umbilicus-lines/README.md)"

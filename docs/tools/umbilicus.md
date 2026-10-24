@@ -398,5 +398,6 @@ They cover the first stage's coordinate frame and augmentation, the zoom crops a
 - [Evidence folder](../evidence/2026-10-14-umbilicus/README.md): `heldout-endrule.json` and `calibrate.json`.
 - [Center lines for 11 scrolls](../evidence/2026-10-21-umbilicus-lines/README.md): release `umbilicus-lines-v1`, with each end's check status. Model output; no person has checked them on CT.
 - [`results.json`](../results.json): `umbilicus_checks`, the held-out scores and the centroid control.
+- [`axispolish`](axispolish.md): moves a finder line to where villa's traced sheet winds most; on ten fresh scans the polished lines beat villa's `vc_gen_umbilicus` by winding coverage ([evidence](../evidence/2026-10-22-umbilicus-windpolish/README.md)).
 - [`stackcheck`](stackcheck.md): checks a stack of segments against an umbilicus file.
 - [`autopipeline`](autopipeline.md): its umbilicus stage accepts a file in the published format.
