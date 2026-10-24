@@ -8947,13 +8947,13 @@
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) (the page; MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`), `python3 spaces/scroll-lens/app.py` (the page locally), `python3 spaces/scroll-lens/lens.py look VOLUME Z Y X` (one cube, no page), `python3 spaces/scroll-lens/tools/deploy.py OWNER/NAME`, `python3 spaces/scroll-lens/tools/build_gallery.py OWNER/NAME`",
     "Code": "`spaces/scroll-lens/app.py` (the page and the agent tools), `spaces/scroll-lens/viewer.js` (the slice viewer and 3D view, run in the browser), `spaces/scroll-lens/lens.py` (everything else), `spaces/scroll-lens/tools/deploy.py`, `spaces/scroll-lens/tools/build_gallery.py`, `spaces/scroll-lens/requirements.txt`, `spaces/scroll-lens/README.md` (the Space card)",
-    "Tests": "`tests/test_scroll_lens.py`, 50 tests, numpy only (2 more need gradio or node and skip without them)",
+    "Tests": "`tests/test_scroll_lens.py`, 57 tests, numpy only (2 more need gradio or node and skip without them)",
     "Needs": "Python 3.12 (3.10 or newer works), the pins in `spaces/scroll-lens/requirements.txt` (torch 2.13.0, timm 1.0.30, numpy 2.5.2, zarr 3.4.1, mcp 1.30.0, huggingface_hub 1.33.0; gradio 6.28.0 for the page, from the card); downloads dinovol at commit `a72fda2` and villa's `vesuvius/src` at `b29f310` itself. In the browser: `DecompressionStream` (Chrome 80, Safari 16.4, Firefox 113 or newer) for the viewer, WebGL and three.js 0.160.0 (from cdn.jsdelivr.net, loaded on first use) for the 3D view. `tools/deploy.py` needs huggingface_hub; `tools/build_gallery.py` needs numpy, gradio_client and huggingface_hub",
     "Runs on": "ZeroGPU (an NVIDIA RTX PRO 6000 Blackwell MIG 2g.48gb slice): a 256³ cube with all three models in 3.2 to 8.0 s of model time (median 3.5 s over 61 gallery cubes), 7 to 12 s per call, about 4.5 s of quota; a 128³ cube in about 0.3 s of model time and 0.5 s of quota (38 cubes; 2026-10-17). The Space's CPU fallback: a 128³ cube in about 9 s (live, 2026-10-17). A gallery cube opens in 1.2 s the first time (0.1 s for 128³) and then from memory (M1 Pro, 2026-10-17)",
     "Network": "The page's server: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (scan chunks and listings), `huggingface.co` (weights at pinned revisions; `tools/` also the Space itself), `github.com` or `codeload.github.com` (model code at pinned commits). The visitor's browser: the same bucket (scan chunks; it allows any origin), the Space, and `cdn.jsdelivr.net` (three.js, for the 3D view)",
     "Writes": "Model weights and code under `$LENS_CACHE` (default `TMPDIR/scroll-lens`, about 3.7 GB); the viewer's layer files under `TMPDIR/scroll-lens-view` (one per cube shown, a few MB each, cleared at start-up); saved files, `look` and `download_cube` outputs and `search_cube` concepts under `TMPDIR/scroll-lens-out` (pruned after 15 minutes by the page's saves; Gradio serves its own copies); `lens.py look` writes `VOLUME-Z-Y-X-SIZE.npz` and `.json` to `--out`; `tools/build_gallery.py` writes `--out` (default `spaces/scroll-lens/gallery/`, gitignored)",
     "Go-ahead": "Needed for `tools/deploy.py` (creates or pushes the Space) and `tools/build_gallery.py` (spends Chase's ZeroGPU minutes and uploads `gallery/`), and for calling the live Space's model runs with Chase's token; both scripts ask y/N. Not needed to use the page or the gallery tools, or to run locally",
-    "Released": "Space [`SharpMeow/scroll-lens`](https://huggingface.co/spaces/SharpMeow/scroll-lens) since 2026-10-17 (v1.0.0; v1.1.0 adds the agent tools and MCP, the browser viewer and the 3D view); 99 gallery cubes since 2026-10-17; code on public `main` since 2026-10-16 ([PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110))",
+    "Released": "Space [`SharpMeow/scroll-lens`](https://huggingface.co/spaces/SharpMeow/scroll-lens) since 2026-10-17 (v1.0.0; v1.1.0 adds the agent tools and MCP, the browser viewer and the 3D view; v1.1.1 keeps a visitor's events in order and runs the CPU fallback around the point); 99 gallery cubes since 2026-10-17; code on public `main` since 2026-10-16 ([PR #110](https://github.com/ChaseHendrick/Scrolls/pull/110))",
     "License": "Apache 2.0 for the Space's code ([`spaces/scroll-lens/LICENSE`](../../spaces/scroll-lens/LICENSE), [`NOTICE`](../../spaces/scroll-lens/NOTICE)); the models (MIT) and the scans and gallery cubes (CC BY-NC 4.0) keep their own licenses",
     "Checked": "2026-10-17 against commit `e14e165`"
    },
@@ -9040,13 +9040,13 @@
     {
      "name": "History",
      "start_line": 409,
-     "end_line": 418,
+     "end_line": 419,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 419,
-     "end_line": 424,
+     "start_line": 420,
+     "end_line": 425,
      "applicable": true
     }
    ]

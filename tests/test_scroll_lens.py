@@ -477,9 +477,9 @@ class Page(unittest.TestCase):
     def tearDown(self):
         self.tmp.cleanup()
 
-    def cube(self, size=128, compact=False, key="run:t"):
+    def cube(self, size=128, compact=False, key="run:t", origin=(1024, 1024, 1024)):
         res = Files().result(size)
-        meta = lens.receipt("PHerc0139", (1024, 1024, 1024), size, (1030, 1040, 1050), res,
+        meta = lens.receipt("PHerc0139", origin, size, (1030, 1040, 1050), res,
                             extra={"source": "gpu", "foreground": 0.9})
         if compact:
             res = dict(res)
@@ -583,6 +583,101 @@ class Page(unittest.TestCase):
             self.cube(key=f"gallery:g{i}")
         self.assertIs(app.CUBES.get("run:kept"), run)
 
+    # A visitor's events share one state dict (gradio passes the same object to each); these replay the races the
+    # page saw when each event rebuilt the dict from what it read at its start.
+
+    def two_cubes(self):
+        app = self.app
+        a, b = self.cube(key="gallery:a"), self.cube(key="gallery:b", origin=(1024, 1024, 1152))
+        state = app.empty_state()
+        app.show_view(state, app.new_view(a, (1030, 1040, 1050), "gallery"), app.next_rev())
+        return a, b, state
+
+    def test_a_late_click_never_brings_back_the_old_cube(self):
+        app = self.app
+        a, b, state = self.two_cubes()
+        app.show_view(state, app.new_view(b, (1030, 1040, 1050), "gallery"), app.next_rev())
+        taken, problem = app.take_clicks(state, a.key, [{"id": "p-1", "index": [10, 20, 30], "value": "pos"}])
+        self.assertTrue(taken)
+        self.assertIsNone(problem)
+        self.assertEqual(state["view"]["cache"], b.key)                       # still the cube the visitor opened
+        self.assertEqual([c["id"] for c in state["pos"]], ["p-1"])           # the click counts, on cube a
+        v = json.loads(app.viewer_value(app.snapshot(state)))
+        self.assertEqual(v["key"], b.key)
+        self.assertIn("p-1", v["clicks"]["acked"])
+        self.assertEqual(v["clicks"]["pos"], [])                             # but is not drawn on cube b
+        self.assertIsNotNone(v["clicks"]["sim"])
+        taken, problem = app.take_clicks(state, "gallery:never-shown", [{"id": "p-2", "index": [1, 2, 3]}])
+        self.assertFalse(taken)
+        self.assertIn("no longer in this page's session", problem)
+        self.assertIn("p-2", state["acked"])
+        self.assertEqual(len(state["pos"]), 1)
+
+    def test_clicks_made_during_a_run_are_kept(self):
+        app = self.app
+        a, b, state = self.two_cubes()
+        ticket = app.next_rev()                                  # Run pressed
+        app.take_clicks(state, a.key, [{"id": "p-1", "index": [10, 20, 30]}, {"id": "p-2", "index": [1, 2, 3],
+                                                                             "value": "neg"}])
+        app.show_view(state, app.new_view(b, (1030, 1040, 1050), "gpu"), ticket, force=True)    # the run ends
+        self.assertEqual(state["view"]["cache"], b.key)
+        self.assertEqual(([c["id"] for c in state["pos"]], [c["id"] for c in state["neg"]]), (["p-1"], ["p-2"]))
+        self.assertIn("1 positive and 1 negative clicks from 1 cube(s)", app.numbers(app.snapshot(state)))
+
+    def test_an_older_open_never_replaces_a_newer_one(self):
+        app = self.app
+        a, b, state = self.two_cubes()
+        older, newer = app.next_rev(), app.next_rev()
+        self.assertTrue(app.show_view(state, app.new_view(b, (1030, 1040, 1050), "gallery"), newer))
+        self.assertFalse(app.show_view(state, app.new_view(a, (1030, 1040, 1050), "gallery"), older))
+        self.assertEqual(state["view"]["cache"], b.key)
+        self.assertTrue(app.show_view(state, app.new_view(a, (1030, 1040, 1050), "gpu"), older, force=True))
+        self.assertEqual(state["view"]["cache"], a.key)          # a finished run always shows
+
+    def test_undo_and_clear_reach_clicks_still_on_their_way(self):
+        app = self.app
+        a, _, state = self.two_cubes()
+        app.undo_click(state, "p-1")                             # undone before it arrived
+        app.clear_clicks(state, ["p-2"])                         # cleared before it arrived
+        app.take_clicks(state, a.key, [{"id": i, "index": [10, 20, 30]} for i in ("p-1", "p-2", "p-3", "p-4")])
+        self.assertEqual([c["id"] for c in state["pos"]], ["p-3", "p-4"])
+        app.undo_click(state, "p-3")
+        self.assertEqual([c["id"] for c in state["pos"]], ["p-4"])
+        app.take_clicks(state, a.key, [{"id": "p-5", "index": [11, 20, 30], "value": "neg"}])
+        app.undo_click(state)                                    # no id: the newest click on any cube
+        self.assertEqual(([c["id"] for c in state["pos"]], state["neg"]), (["p-4"], []))
+        app.clear_clicks(state)
+        with self.assertRaises(lens.LensError):
+            app.undo_click(state)
+
+    def test_concurrent_clicks_count_once(self):
+        import threading
+        app = self.app
+        a, b, state = self.two_cubes()
+        app.show_view(state, app.new_view(b, (1030, 1040, 1050), "gallery"), app.next_rev())
+        ids = [f"p-{i}" for i in range(60)]
+
+        def send(key, start):           # the viewer resends unacknowledged clicks, so the same ids arrive twice
+            for i in range(start, len(ids), 3):
+                app.take_clicks(state, key, [{"id": ids[j], "index": [j % 128, 20, 30]} for j in range(i, i + 3)
+                                             if j < len(ids)])
+        threads = [threading.Thread(target=send, args=(k, s)) for k in (a.key, b.key) for s in (0, 1, 2)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+        self.assertEqual(sorted(c["id"] for c in state["pos"]), sorted(ids))
+
+    def test_revisions_only_grow(self):
+        import time
+        app = self.app
+        revs = [app.next_rev() for _ in range(1000)]
+        self.assertEqual(revs, sorted(set(revs)))
+        self.assertGreaterEqual(revs[0], time.time_ns() // 1000 - 60_000_000)    # time-based: a restart keeps order
+        self.assertLess(revs[-1], 2 ** 53)                                       # exact as a JavaScript number
+        again = load("scroll_lens_app_restarted", SPACE / "app.py")
+        self.assertGreater(again.next_rev(), revs[-1])
+
     def test_url_fetching_is_closed(self):
         try:
             import gradio.processing_utils as pu
@@ -606,14 +701,35 @@ class Page(unittest.TestCase):
                 return {}
         from unittest import mock
         app.engine = lambda wait_s=5.0: Eng()
-        app.run_models = lambda ct, layers, tta, allow_cpu=True: (dict(res, device="cpu"), "ran on the CPU")
+        seen = {}
+
+        def run_models(ct, layers, tta, allow_cpu=True, focus=None):
+            seen["focus"] = focus
+            return dict(res, device="cpu"), "ran on the CPU"
+        app.run_models = run_models
         with mock.patch.object(app.lens, "read_cube", lambda vid, origin, size: np.ones((size,) * 3, np.uint8)):
             cube, note = app.run_cube("PHerc0139", 1100, 1100, 1100, 256, ["dino", "ink", "surface"], False)
-        self.assertEqual(note, "ran on the CPU")
-        self.assertEqual(cube.meta["cube_origin_zyx"], [1088, 1088, 1088])
-        self.assertEqual(cube.size, 128)
-        self.assertEqual(cube.meta["requested_size"], 256)
-        self.assertEqual(app.ran_size(res), 128)
+            self.assertEqual(note, "ran on the CPU")
+            self.assertEqual(seen["focus"], (76, 76, 76))                # the point, in the 256 cube at 1024
+            self.assertEqual(cube.meta["cube_origin_zyx"], [1032, 1032, 1032])   # the 128 around it, on the patch grid
+            self.assertEqual(cube.size, 128)
+            self.assertEqual(cube.meta["requested_size"], 256)
+            self.assertEqual(app.ran_size(res), 128)
+            # at the scan's far edge the 256 cube is not centered on the point; the window still holds it
+            edge = tuple(int(s) - 5 for s in lens.volume("PHerc0139")["shape"])
+            cube, _ = app.run_cube("PHerc0139", *edge, 256, ["dino", "ink", "surface"], False)
+            for p, o in zip(edge, cube.meta["cube_origin_zyx"]):
+                self.assertTrue(o <= p < o + 128, (p, o))
+
+    def test_cpu_window_holds_the_point(self):
+        app = self.app
+        self.assertEqual(app.window_offset(256, 128), (64, 64, 64))
+        self.assertEqual(app.window_offset(256, 128, (128, 128, 128)), (64, 64, 64))
+        self.assertEqual(app.window_offset(256, 128, (3, 130, 255)), (0, 64, 128))
+        self.assertEqual(app.window_offset(128, 128, (3, 4, 5)), (0, 0, 0))
+        for f in range(256):
+            o = app.window_offset(256, 128, (f, f, f))[0]
+            self.assertTrue(o <= f < o + 128 and o % lens.PATCH == 0, (f, o))
 
     def test_point_must_be_whole_numbers(self):
         with self.assertRaises(lens.LensError):
@@ -703,6 +819,11 @@ class Page(unittest.TestCase):
         js = ("const src = require('fs').readFileSync(process.argv[1], 'utf8');"
               "new Function('element', 'trigger', 'props', 'server', 'upload', 'watch', src);")
         subprocess.run([node, "-e", js, str(SPACE / "viewer.js")], check=True, capture_output=True, timeout=60)
+
+    def test_closed_controls_keep_their_summary_on_wide_screens(self):
+        # A page opened narrow closes More controls; widened, its summary must stay so the controls can be opened
+        self.assertIn(".slv-more[open] > summary { display:none", self.app.CSS)
+        self.assertNotIn(".slv-more > summary { display:none", self.app.CSS)
 
 
 if __name__ == "__main__":
