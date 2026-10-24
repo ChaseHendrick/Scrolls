@@ -19,6 +19,12 @@ PARAMS = {
 }
 
 
+PARAMS_V2 = dict(PARAMS, version="split-v2", abs_own=1.0)
+
+
+SPLIT_RULES = {"v1": PARAMS, "v2": PARAMS_V2}
+
+
 CHAIN_RULE_V1 = "0e53e0ae5016"          # the chain rule the split was frozen on (kit windlabel rule --version 1)
 
 

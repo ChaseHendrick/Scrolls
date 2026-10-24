@@ -84,6 +84,7 @@ usage: python -m kit windlabel-box [-h] [--prediction PREDICTION]
                                    [--gm-scaledown GM_SCALEDOWN]
                                    [--gm-decode GM_DECODE] --point POINT
                                    [--box BOX] [--seeds SEEDS] [--rng RNG]
+                                   [--split-rule {v1,v2}]
                                    [--umbilicus UMBILICUS] [--estimate-axis]
                                    [--workers WORKERS] --out OUT [--json]
 ```
@@ -99,6 +100,7 @@ usage: python -m kit windlabel-box [-h] [--prediction PREDICTION]
 | `--box BOX` | `512` | box edge in voxels (default 512) |
 | `--seeds SEEDS` | `200` | seed count (default 200) |
 | `--rng RNG` | `0` | seed RNG (default 0) |
+| `--split-rule {v1,v2}` | `v1` | split rule: v1 cuts at gm_x above 0.95, v2 at 1.0 (default v1) |
 | `--umbilicus UMBILICUS` | none | villa umbilicus JSON in the prediction's level-0 voxels (VC3D's {umbilicus}); it sets which way is outward |
 | `--estimate-axis` | off | without an umbilicus, estimate the axis from the seed normals (unreliable in small boxes) |
 | `--workers WORKERS` | `2` | threads for grad_mag reads (default 2) |

@@ -171,7 +171,8 @@ def run(a):
     except ws.SplitError as exc:
         raise Refused(str(exc)) from exc
     (out / "features.json").write_text(json.dumps(fd))
-    summ = ws.export_split(d, fd["steps"], out, chains_file=chains_path, features_file=out / "features.json",
+    summ = ws.export_split(d, fd["steps"], out, params=dict(ws.SPLIT_RULES[a.split_rule]), chains_file=chains_path,
+                           features_file=out / "features.json",
                            extra={"grad_mag": fd["grad_mag"], "features_seconds": fd["seconds"]})
     files = dict(summ["files"], **{"chains.json": str(chains_path), "features.json": str(out / "features.json")})
     summ["files"] = files
@@ -205,6 +206,8 @@ def build_parser(p):
     p.add_argument("--box", default="512", help="box edge in voxels (default 512)")
     p.add_argument("--seeds", default="200", help="seed count (default 200)")
     p.add_argument("--rng", type=int, default=0, help="seed RNG (default 0)")
+    p.add_argument("--split-rule", default="v1", choices=("v1", "v2"),
+                   help="split rule: v1 cuts at gm_x above 0.95, v2 at 1.0 (default v1)")
     p.add_argument("--umbilicus", help="villa umbilicus JSON in the prediction's level-0 voxels (VC3D's "
                                        "{umbilicus}); it sets which way is outward")
     p.add_argument("--estimate-axis", action="store_true",

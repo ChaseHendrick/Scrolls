@@ -130,6 +130,28 @@ class TestWindlabelBox(unittest.TestCase):
             self.assertTrue(split_pts)
             self.assertGreater(min(p[0] for p in split_pts), PLANT_X - 2 * PITCH)
 
+    def test_split_rule_v2_cuts_at_one(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            write_inputs(d)
+            res = {}
+            for rule in ("v1", "v2"):
+                rc, out, err = run(["--prediction", str(d / "pred.zarr"), "--grad-mag",
+                                    str(d / "las/run.lasagna.json"), "--point", "120,120,24", "--box", "140",
+                                    "--seeds", "30", "--umbilicus", str(d / "umbilicus.json"), "--split-rule", rule,
+                                    "--out", str(d / rule), "--json"])
+                self.assertEqual(rc, 0, err[-1500:])
+                res[rule] = json.loads(out)
+            ex = json.loads((d / "v2/export.json").read_text())
+            self.assertEqual(ex["split_rule"]["params_digest"], "cd273aed7673")
+            # the same chains; v2 cuts a subset of v1's steps
+            self.assertEqual(json.loads((d / "v1/chains.json").read_text())["chains"],
+                             json.loads((d / "v2/chains.json").read_text())["chains"])
+            self.assertLessEqual(res["v2"]["split_steps"], res["v1"]["split_steps"])
+            from kit.windlabel_box import _split
+            self.assertEqual({k for k in _split.PARAMS if _split.PARAMS[k] != _split.PARAMS_V2[k]},
+                             {"version", "abs_own"})
+
     def test_refuses_before_any_work(self):
         with tempfile.TemporaryDirectory() as d:
             d = Path(d)
