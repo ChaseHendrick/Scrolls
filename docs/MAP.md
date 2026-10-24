@@ -6,7 +6,8 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | --- | --- |
 | `kit/` | Standard-library Python package, `python -m kit` (numpy, tifffile, zarr only for map tools) |
 | `kit/prizes.py`, `kit/data/prizes-*.json` | Dated prize snapshot: amounts, deadlines, eligible volumes with S3 names and voxel sizes |
-| `kit/doctor.py` | Machine check: GPU (CUDA or Apple Silicon), memory, disk, tools; Rosetta (an Intel Python on Apple Silicon), container CPU quota against thread counts, disk read speed ([page](tools/doctor.md)) |
+| `kit/doctor.py` | Machine check: GPU (CUDA, Apple Silicon, AMD ROCm or Intel XPU), memory, disk, tools; Rosetta (an Intel Python on Apple Silicon), container CPU quota against thread counts, disk read speed; `--remote`: VC3D's chunk cache folder, its space and speed, and on RunPod whether it survives a stop ([page](tools/doctor.md)) |
+| `kit/submitcheck.py` | `kit submitcheck FOLDER --prize first-letters\|grand\|title`: a prize submission folder against the prize page's file rules (tifxyz meshes, image names, Grand Prize `column_NN` names), quoting each rule, with grid numbers from `kit tifxyz` and the rest listed for the person ([page](tools/submitcheck.md)) |
 | `kit/scancatalog.py` | Catalog of every scan volume in the vesuvius-challenge-open-data S3 bucket, with per-scan config |
 | `kit/autobatch.py` | Priced dry-run batch over the catalog (`kit run all`) and the new-scan watcher (`kit run watch`); launches nothing |
 | `kit/plan.py` | Prints the official First Letters commands for one scroll (never runs them) |

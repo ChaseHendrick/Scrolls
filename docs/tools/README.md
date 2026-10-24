@@ -119,10 +119,11 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 
 | Tool | Status | Run | Go-ahead | What it does |
 | --- | --- | --- | --- | --- |
-| [doctor](doctor.md) | Current | `python -m kit doctor` | Not needed | `python -m kit doctor` checks this machine for what villa's First Letters workflow needs (an NVIDIA GPU with 12 GB, 16 GB of memory, 25 GB of free disk, git, uv and docker, a villa checkout and VC3D's tools) and prints pass, warn or fail for each. |
+| [doctor](doctor.md) | Current | `python -m kit doctor` | Not needed | `python -m kit doctor` checks this machine for what villa's First Letters workflow needs (a 12 GB GPU, 16 GB of memory, 25 GB of disk, git, uv and docker, villa and VC3D's tools), names AMD and Intel GPUs, and prints pass, warn or fail for each. |
 | [plan](plan.md) | Current | `python -m kit plan` | Not needed | `python -m kit plan SCROLL` prints the official First Letters commands for one eligible scroll (setup, the w035 control, the w045 labeled check, surface checks, target render and inference, rules before looking) without running them; `python -m kit cost` adds up a run's dollars. |
 | [prizes](prizes.md) | Current | `python -m kit prizes` | Not needed | `python -m kit prizes` prints each open Vesuvius Challenge prize with its money, deadline, days left and eligible scrolls, from a dated copy of scrollprize.org/prizes kept in `kit/data/`; `--json` prints the copy itself. The live page wins where they differ. |
 | [prizewatch](prizewatch.md) | Current | `python -m kit.prizewatch` | Not needed | `python -m kit.prizewatch` fetches https://scrollprize.org/prizes once and checks that every deadline, amount and eligible volume in kit's dated prize snapshot is on it and no unlisted volume is, so an agent knows when to add a new snapshot. |
+| [submitcheck](submitcheck.md) | Current | `python -m kit submitcheck` | Not needed | `python -m kit submitcheck FOLDER` checks a folder you plan to submit for a Vesuvius Challenge milestone prize against the file rules on the prize page, quotes the rule behind every flag, and lists the rest of the page's requirements for you to check. |
 
 ### Releases and repository
 

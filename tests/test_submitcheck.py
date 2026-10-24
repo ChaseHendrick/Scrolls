@@ -110,7 +110,7 @@ class TestSubmitcheck(unittest.TestCase):
         for prize in sc.PRIZES:
             for rule, by in sc.RULES.items():
                 for q in by.values():
-                    self.assertNotIn("—", q)
+                    self.assertNotIn("\u2014", q)
         mesh(self.root / "x.tifxyz")
         rep = sc.submitcheck(self.root, "first-letters", grids=False)
         for f in rep["flags"]:

@@ -1590,7 +1590,7 @@
    "id": "doctor",
    "name": "doctor",
    "tagline": "check whether this machine can run villa's First Letters workflow",
-   "summary": "`python -m kit doctor` checks this machine for what villa's First Letters workflow needs (an NVIDIA GPU with 12 GB, 16 GB of memory, 25 GB of free disk, git, uv and docker, a villa checkout and VC3D's tools) and prints pass, warn or fail for each.",
+   "summary": "`python -m kit doctor` checks this machine for what villa's First Letters workflow needs (a 12 GB GPU, 16 GB of memory, 25 GB of disk, git, uv and docker, villa and VC3D's tools), names AMD and Intel GPUs, and prints pass, warn or fail for each.",
    "status": "Current",
    "kind": [
     "kit command",
@@ -1617,15 +1617,16 @@
    ],
    "tests": [
     "tests/test_kit.py",
-    "tests/test_qol_tools.py"
+    "tests/test_qol_tools.py",
+    "tests/test_doctor_gpus.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-23",
-    "commit": "3376687"
+    "date": "2026-10-24",
+    "commit": "0da03d1"
    },
    "license": null,
    "fields": {
@@ -1635,106 +1636,106 @@
     "Area": "Planning and prizes",
     "Run": "`python -m kit doctor`, `from kit import doctor`",
     "Code": "`kit/doctor.py`, `kit/cli.py` (`cmd_doctor`)",
-    "Tests": "`tests/test_kit.py`, `tests/test_qol_tools.py`",
-    "Needs": "Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) when it is on `PATH`, and reads the environment variables `VILLA` and `VC_BIN`",
+    "Tests": "`tests/test_kit.py`, `tests/test_qol_tools.py`, `tests/test_doctor_gpus.py`",
+    "Needs": "Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) or `rocm-smi` (from ROCm) when it is on `PATH`, imports torch when it is installed and no NVIDIA GPU was found (not on Apple Silicon), and reads the environment variables `VILLA`, `VC_BIN`, `HOME`, `VC3D_CONFIG_DIR`, `RUNPOD_POD_ID` and `RUNPOD_VOLUME_ID`",
     "Runs on": "Any machine. 0.34 to 0.43 s per call with no `nvidia-smi` installed (5 runs, measured 2026-10-16, 4-core Xeon cloud container). With `nvidia-smi`, add its run time, at most 20 s (the timeout)",
     "Network": "None",
-    "Writes": "Nothing (prints only). It runs `nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits` when that program is on `PATH`",
+    "Writes": "A 64 MB test file under `--disk` (and with `--remote`, under the cache folder's nearest existing parent), deleted after the speed test; `--no-speed` writes nothing. It runs `nvidia-smi --query-gpu=name,memory.total --format=csv,noheader,nounits` and `rocm-smi --showproductname --showmeminfo vram --json` when those programs are on `PATH`",
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources)",
-    "Checked": "2026-10-23 against commit `3376687`"
+    "Checked": "2026-10-24 against commit `0da03d1`"
    },
    "page": "docs/tools/doctor.md",
    "sections": [
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 34,
+     "end_line": 38,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 35,
-     "end_line": 48,
+     "start_line": 39,
+     "end_line": 52,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 49,
-     "end_line": 83,
+     "start_line": 53,
+     "end_line": 96,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 84,
-     "end_line": 92,
+     "start_line": 97,
+     "end_line": 106,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 93,
-     "end_line": 113,
+     "start_line": 107,
+     "end_line": 130,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 114,
-     "end_line": 143,
+     "start_line": 131,
+     "end_line": 166,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 144,
-     "end_line": 154,
+     "start_line": 167,
+     "end_line": 179,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 155,
-     "end_line": 178,
+     "start_line": 180,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 179,
-     "end_line": 204,
+     "start_line": 206,
+     "end_line": 238,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 205,
-     "end_line": 215,
+     "start_line": 239,
+     "end_line": 249,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 216,
-     "end_line": 219,
+     "start_line": 250,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 220,
-     "end_line": 229,
+     "start_line": 254,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 230,
-     "end_line": 237,
+     "start_line": 264,
+     "end_line": 274,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 238,
-     "end_line": 244,
+     "start_line": 275,
+     "end_line": 282,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 245,
-     "end_line": 253,
+     "start_line": 283,
+     "end_line": 292,
      "applicable": true
     }
    ]
@@ -9429,6 +9430,157 @@
      "name": "Related",
      "start_line": 523,
      "end_line": 532,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "submitcheck",
+   "name": "submitcheck",
+   "tagline": "preflight a prize submission folder against the prize page's file rules",
+   "summary": "`python -m kit submitcheck FOLDER` checks a folder you plan to submit for a Vesuvius Challenge milestone prize against the file rules on the prize page, quotes the rule behind every flag, and lists the rest of the page's requirements for you to check.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Planning and prizes",
+   "commands": [
+    "python -m kit submitcheck"
+   ],
+   "imports": [
+    "from kit import submitcheck"
+   ],
+   "code": [
+    {
+     "path": "kit/submitcheck.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_submitcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads a local folder. Submitting stays the entrant's own act"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "0da03d1"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`submitcheck`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Planning and prizes",
+    "Run": "`python -m kit submitcheck`, `from kit import submitcheck`",
+    "Code": "`kit/submitcheck.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_submitcheck.py`",
+    "Needs": "Python 3.10 or newer. numpy and tifffile for the grid numbers (they come from [`kit tifxyz`](tifxyz.md)); without them, or with `--no-grids`, the file checks still run",
+    "Runs on": "Any machine. 0.23 to 0.36 s on a 200 x 150 node made-up mesh (3 runs), 2.4 s on PHerc0139 w035 at 2.399 um (1,132 x 1,020 nodes), measured 24 Oct 2026 in a 4-core cloud container",
+    "Network": "None: the rules are quoted in the code, read from the page on the date below",
+    "Writes": "Nothing",
+    "Go-ahead": "Not needed: it reads a local folder. Submitting stays the entrant's own act",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026)",
+    "Checked": "2026-10-24 against commit `0da03d1`"
+   },
+   "page": "docs/tools/submitcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 34,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 35,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 73,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 74,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 92,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 103,
+     "end_line": 106,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 107,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 117,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 137,
+     "end_line": 144,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 145,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 149,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 159,
+     "end_line": 162,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 163,
+     "end_line": 166,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 167,
+     "end_line": 171,
      "applicable": true
     }
    ]

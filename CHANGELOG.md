@@ -16,6 +16,9 @@ python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseH
 - **villa helpers:** `python -m kit prclock USER` shows days before villa's time-limit workflow closes each open PR; `python -m kit prtext BODY.md` checks a PR or issue body against villa's templates.
 - **Help:** `python -m kit --help` groups commands by task, `python -m kit help COMMAND` shows a worked example, and a mistyped command suggests the closest names.
 - **doctor and fetch:** `doctor` checks for an Intel Python under Rosetta on Apple Silicon, a container CPU quota smaller than the thread counts, and slow disks; `fetch` checks free space first and has `--dry-run`.
+- **doctor for AMD, Intel and rented machines:** `doctor` names AMD (ROCm) and Intel GPUs instead of failing with "No NVIDIA GPU found", and `doctor --remote` shows where VC3D will cache streamed chunks, the space and speed there, and on RunPod whether that folder survives a stop.
+- **Submission preflight:** `python -m kit submitcheck FOLDER --prize first-letters|grand|title` checks a prize folder against the prize page's file rules and quotes each one.
+- **Docs:** [docs/tracing-tools.md](docs/tracing-tools.md), which tool to trace, check or view a segment with; [docs/prizes.md](docs/prizes.md) answers common prize questions with quotes from the prize page only.
 
 ## 0.4.1 (18 October 2026)
 

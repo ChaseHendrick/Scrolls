@@ -256,6 +256,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
 
+**remote chunk cache (VC3D)**: The folder where VC3D keeps every chunk it streams from a remote volume, so later runs read them from disk; `kit doctor --remote` shows where it is and how much space it has ([`docs/tools/doctor.md`](docs/tools/doctor.md)).
+
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
 
 **resolution (voxel size)**: The edge length of one voxel, given in micrometers, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
@@ -263,6 +265,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
 **ROC curve**: A plot of true positive rate against false positive rate over all thresholds. AUC is the area under it.
+
+**ROCm**: AMD's GPU computing stack, the counterpart of NVIDIA's CUDA. PyTorch has ROCm builds that run CUDA code through `torch.cuda`; `kit doctor` reports a ROCm card as a warning, because villa's spiral fitting asks for an NVIDIA GPU.
 
 **routine (`kit routines`)**: A recurring, read-only repository check listed in `docs/routines.json`, daily or weekly, that any agent runs at session start with `python3 -m kit routines run --due`, so it does not depend on one account's scheduler. Its results stay in the ignored `work/routines/`.
 
@@ -301,6 +305,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
 **StrokeNet**: A small learned score in this repository for how much a window of an ink map looks like lines of text (`kit strokenet`), with rotation and IAAFT controls ([model card](docs/strokenet.md)).
+
+**submitcheck**: `kit submitcheck`, a preflight of a prize submission folder against the prize page's file rules (tifxyz meshes, image names, Grand Prize `column_NN` names), quoting each rule ([`docs/tools/submitcheck.md`](docs/tools/submitcheck.md)).
 
 **supervision mask (supervision.zarr)**: The region of a segment where its ink labels are trusted. Scores are computed only inside it.
 
