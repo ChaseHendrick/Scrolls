@@ -79,7 +79,10 @@ def cmd_doctor(args):
 
 def cmd_plan(args):
     try:
-        print(plan.first_letters(args.scroll, batch=args.batch, mac=args.mac))
+        if args.spiral:
+            print(plan.spiral_chain(args.scroll))
+        else:
+            print(plan.first_letters(args.scroll, batch=args.batch, mac=args.mac))
     except ValueError as exc:
         print(exc, file=sys.stderr)
         return 2
@@ -1073,6 +1076,9 @@ def build_parser(prog="python -m kit", sub_progs=None):
     p.add_argument("scroll", help="e.g. PHerc0826")
     p.add_argument("--batch", type=int, help="inference batch size (default 4, or 1 with --mac)")
     p.add_argument("--mac", action="store_true", help="Apple Silicon setup: VC3D.app tools, CPU or MPS inference")
+    p.add_argument("--spiral", action="store_true",
+                   help="the large-surface chain instead: public center line and lasagna field, villa's spiral fit "
+                        "and flattening, a region render and an Ink Lens check")
     p.set_defaults(func=cmd_plan)
 
     p = sub.add_parser("cost", help="estimate run cost in USD")
