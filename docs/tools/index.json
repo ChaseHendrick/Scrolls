@@ -488,6 +488,157 @@
    ]
   },
   {
+   "id": "axispolish",
+   "name": "axispolish",
+   "tagline": "polish a center line to the deepest point of the traced sheet",
+   "summary": "`python -m kit axispolish` moves a scroll's center line (umbilicus), slice by slice, to the point of highest winding coverage nearby on the scan's published normal grids, and writes it back in the published format for VC3D and the spiral fit.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit axispolish"
+   ],
+   "imports": [
+    "from kit import axispolish"
+   ],
+   "code": [
+    {
+     "path": "kit/axispolish.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_axispolish.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: local arithmetic on public grids"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "81e5ead"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`axispolish`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit axispolish`, `from kit import axispolish`",
+    "Code": "`kit/axispolish.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_axispolish.py`",
+    "Needs": "Python 3.10 or newer and numpy; numba optional (the same sums compiled, about 8 times faster); the scan's level-0 normal grids, found on the open-data bucket or given with `--grids`",
+    "Runs on": "CPU. About 1.4 s per slice with numba on 4 cloud cores (PHerc0175A, 91 slices in 127 s with grids cached, 24 Oct 2026); about 6 s per slice with numpy alone (the frozen test's development runs, 22 Oct 2026); a whole line is about 100 slices, see Cost and time",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`: one bucket listing to find the grids, then one `xy/NNNNNN.grid` file per polished slice. None with a local `--grids` folder",
+    "Writes": "The polished line at `--out` (parent folders created); with `--cache DIR`, the downloaded grid files under `DIR/xy/`",
+    "Go-ahead": "Not needed: local arithmetic on public grids",
+    "Released": "Public `main` since 2026-10-24; a line of the Scrolls kit entry in the README's \"Released tools\"",
+    "Checked": "2026-10-24 against commit `81e5ead`"
+   },
+   "page": "docs/tools/axispolish.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 62,
+     "end_line": 69,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 70,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 94,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 112,
+     "end_line": 115,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 116,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 137,
+     "end_line": 152,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 153,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 157,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 161,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 171,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 183,
+     "end_line": 188,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "batch",
    "name": "batch",
    "tagline": "plan, price and queue AutoPipeline over every scan in the open-data bucket",
@@ -1070,67 +1221,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 190,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 191,
-     "end_line": 219,
+     "start_line": 192,
+     "end_line": 220,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 220,
-     "end_line": 223,
+     "start_line": 221,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 224,
-     "end_line": 234,
+     "start_line": 225,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 235,
-     "end_line": 248,
+     "start_line": 236,
+     "end_line": 249,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 249,
-     "end_line": 258,
+     "start_line": 250,
+     "end_line": 259,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 259,
-     "end_line": 262,
+     "start_line": 260,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 263,
-     "end_line": 272,
+     "start_line": 264,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 273,
-     "end_line": 280,
+     "start_line": 274,
+     "end_line": 281,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 281,
-     "end_line": 292,
+     "start_line": 282,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 293,
-     "end_line": 299,
+     "start_line": 294,
+     "end_line": 300,
      "applicable": true
     }
    ]
@@ -11750,7 +11901,7 @@
     {
      "name": "Related",
      "start_line": 395,
-     "end_line": 402,
+     "end_line": 403,
      "applicable": true
     }
    ]
@@ -13558,6 +13709,149 @@
      "name": "Related",
      "start_line": 208,
      "end_line": 213,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "windcheck",
+   "name": "windcheck",
+   "tagline": "measure winding coverage around a candidate axis point",
+   "summary": "Measure how much a slice's predicted sheet traces wrap around a point, with displacement and synthetic controls.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [],
+   "imports": [
+    "from kit import windcheck"
+   ],
+   "code": [
+    {
+     "path": "kit/windcheck.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_axispolish.py",
+    "tests/test_windcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "81e5ead"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`windcheck`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`from kit import windcheck`",
+    "Code": "`kit/windcheck.py`",
+    "Tests": "`tests/test_axispolish.py`, `tests/test_windcheck.py`",
+    "Needs": "Python 3.10 or newer, numpy and level-0 `(x, y)` polylines",
+    "Runs on": "CPU; through [axispolish](axispolish.md) about 0.75 s per slice with numba and about 6 s with numpy alone on 4 cloud cores (22 Oct 2026, the frozen test's development runs)",
+    "Network": "None",
+    "Writes": "Nothing; returns arrays and dictionaries",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` since 2026-10-24, with [axispolish](axispolish.md); a line of the Scrolls kit entry in the README's \"Released tools\"",
+    "Checked": "2026-10-24 against commit `81e5ead`"
+   },
+   "page": "docs/tools/windcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 27,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 28,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 32,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 54,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 62,
+     "end_line": 65,
+     "applicable": false
+    },
+    {
+     "name": "Python API",
+     "start_line": 66,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 77,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 81,
+     "end_line": 93,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 94,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 105,
+     "end_line": 110,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 111,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 115,
+     "end_line": 124,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 125,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 133,
+     "end_line": 136,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 137,
+     "end_line": 141,
      "applicable": true
     }
    ]
