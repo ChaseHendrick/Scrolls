@@ -1,0 +1,342 @@
+[
+ {
+  "goto": "http://127.0.0.1:8793/"
+ },
+ {
+  "wait_for": "#banner"
+ },
+ {
+  "eval": "() => { if (window.__cap) return; const s = document.createElement('style'); s.textContent = '.wrap{height:calc(100vh - 44px) !important}#__cap{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;align-items:center;gap:14px;padding:0 18px;z-index:99999;background:#111;color:#f1efe8;font:600 16px ui-monospace,SFMono-Regular,Menlo,monospace;pointer-events:none}#__cap b{color:#111;background:#e4572e;padding:2px 8px;font-weight:700}'; document.head.appendChild(s); const c = document.createElement('div'); c.id = '__cap'; document.body.appendChild(c); window.__cap = (n, t) => { c.innerHTML = ''; const b = document.createElement('b'); b.textContent = n; c.append(b, document.createTextNode(t)); }; }"
+ },
+ {
+  "eval": "() => window.__cap(\"1/10\", \"A live AutoPipeline run (synthetic demo): each stage lights up on the rail and the timeline\")"
+ },
+ {
+  "wait": 300
+ },
+ {
+  "frames": 80,
+  "every": 250
+ },
+ {
+  "wait_for": "#b-badge:text-is('Finished')"
+ },
+ {
+  "wait": 600
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 18
+ },
+ {
+  "cursor": "show"
+ },
+ {
+  "eval": "() => window.__cap(\"2/10\", \"01 Stages: choose a stage to read what it did, how long it took and what it wrote\")"
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 6
+ },
+ {
+  "point": {
+   "selector": "button.stage-pick[data-stage='trace']",
+   "n": 10
+  }
+ },
+ {
+  "tap": {
+   "selector": "button.stage-pick[data-stage='trace']",
+   "n": 6
+  }
+ },
+ {
+  "wait": 300
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 24
+ },
+ {
+  "eval": "() => window.__cap(\"3/10\", \"02 Surfaces: each traced surface with its checks and a 3D wireframe\")"
+ },
+ {
+  "point": {
+   "selector": ".spick[data-surface='t01']",
+   "n": 10
+  }
+ },
+ {
+  "tap": {
+   "selector": ".spick[data-surface='t01']",
+   "n": 6
+  }
+ },
+ {
+  "wait": 400
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 24
+ },
+ {
+  "eval": "() => window.__cap(\"4/10\", \"03 Ink and control: the map beside its reversed-depth control, same scale (stand-in model, not ink)\")"
+ },
+ {
+  "point": {
+   "selector": "#ink",
+   "n": 10
+  }
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 24
+ },
+ {
+  "eval": "() => window.__cap(\"5/10\", \"04 Log: filter by stage or text; Tool log holds each tool's own output\")"
+ },
+ {
+  "point": {
+   "selector": "#log-search",
+   "n": 10
+  }
+ },
+ {
+  "tap": {
+   "selector": "#log-search",
+   "n": 4
+  }
+ },
+ {
+  "fill": [
+   "#log-search",
+   "fake"
+  ]
+ },
+ {
+  "wait": 300
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 16
+ },
+ {
+  "point": {
+   "selector": "#tab-tool",
+   "n": 8
+  }
+ },
+ {
+  "tap": {
+   "selector": "#tab-tool",
+   "n": 6
+  }
+ },
+ {
+  "wait": 300
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 18
+ },
+ {
+  "click": "#tab-events"
+ },
+ {
+  "fill": [
+   "#log-search",
+   ""
+  ]
+ },
+ {
+  "eval": "() => window.__cap(\"6/10\", \"05 Console, Notes: notes on this run, kept on this machine outside the run folder\")"
+ },
+ {
+  "point": {
+   "selector": "#tab-con-notes",
+   "n": 10
+  }
+ },
+ {
+  "tap": {
+   "selector": "#tab-con-notes",
+   "n": 6
+  }
+ },
+ {
+  "fill": [
+   "#notes",
+   "t01 looks clean. Next: open it in VC3D and check the flatten."
+  ]
+ },
+ {
+  "press": "Tab"
+ },
+ {
+  "wait": 900
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 24
+ },
+ {
+  "eval": "() => window.__cap(\"7/10\", \"05 Console, Tools: type an AutoPipeline, kit or VC3D tool command; it runs in the background\")"
+ },
+ {
+  "point": {
+   "selector": "#tab-con-tools",
+   "n": 8
+  }
+ },
+ {
+  "tap": {
+   "selector": "#tab-con-tools",
+   "n": 6
+  }
+ },
+ {
+  "point": {
+   "selector": "#con-input",
+   "n": 8
+  }
+ },
+ {
+  "tap": {
+   "selector": "#con-input",
+   "n": 4
+  }
+ },
+ {
+  "fill": [
+   "#con-input",
+   "ap status {run}"
+  ]
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 10
+ },
+ {
+  "point": {
+   "selector": "#con-run",
+   "n": 8
+  }
+ },
+ {
+  "tap": {
+   "selector": "#con-run",
+   "n": 6
+  }
+ },
+ {
+  "eval": "() => window.__cap(\"8/10\", \"Log, Jobs: every command's state and output, live\")"
+ },
+ {
+  "wait_for": "#jobs .jobrow .chip:text-is('Succeeded')"
+ },
+ {
+  "wait": 800
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 30
+ },
+ {
+  "eval": "() => window.__cap(\"9/10\", \"Quick actions: open the chosen surface in VC3D's window, or run VC3D and checks headless\")"
+ },
+ {
+  "point": {
+   "selector": "#quick button:nth-child(1)",
+   "n": 10
+  }
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 10
+ },
+ {
+  "point": {
+   "selector": "#quick button:nth-child(3)",
+   "n": 10
+  }
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 14
+ },
+ {
+  "eval": "() => window.__cap(\"10/10\", \"05 Console, Files: the run's files and ready-to-paste resume and status commands\")"
+ },
+ {
+  "point": {
+   "selector": "#tab-con-files",
+   "n": 10
+  }
+ },
+ {
+  "tap": {
+   "selector": "#tab-con-files",
+   "n": 6
+  }
+ },
+ {
+  "wait": 300
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 24
+ },
+ {
+  "cursor": "hide"
+ },
+ {
+  "eval": "() => window.__cap(\"AP Monitor\", \"the whole run on one screen, live, in a light or dark theme\")"
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 14
+ },
+ {
+  "click": "#theme"
+ },
+ {
+  "click": "#theme"
+ },
+ {
+  "wait": 400
+ },
+ {
+  "frame": 1
+ },
+ {
+  "hold": 30
+ }
+]

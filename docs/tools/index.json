@@ -5033,6 +5033,7 @@
     "python scripts/media/hero.py",
     "python scripts/media/encode.py",
     "python scripts/media/capture_web.py",
+    "python scripts/media/record_ap_monitor.py",
     "python scripts/media/sweep.py"
    ],
    "imports": [],
@@ -5060,7 +5061,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -5102,67 +5103,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 176,
+     "end_line": 196,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 177,
-     "end_line": 180,
+     "start_line": 197,
+     "end_line": 200,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 181,
-     "end_line": 187,
+     "start_line": 201,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 188,
-     "end_line": 224,
+     "start_line": 208,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 225,
-     "end_line": 273,
+     "start_line": 245,
+     "end_line": 294,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 274,
-     "end_line": 296,
+     "start_line": 295,
+     "end_line": 317,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 297,
-     "end_line": 310,
+     "start_line": 318,
+     "end_line": 331,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 311,
-     "end_line": 320,
+     "start_line": 332,
+     "end_line": 341,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 321,
-     "end_line": 324,
+     "start_line": 342,
+     "end_line": 345,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 325,
-     "end_line": 330,
+     "start_line": 346,
+     "end_line": 351,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 331,
-     "end_line": 336,
+     "start_line": 352,
+     "end_line": 357,
      "applicable": true
     }
    ]

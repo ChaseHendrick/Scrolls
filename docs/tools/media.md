@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -27,7 +27,7 @@ Chase asked on 18 October 2026 for a hero image on every released tool, "the qua
 
 `hero.py` reads a JSON recipe and writes a graded 1920 x 640 WebP (quality 83, at most 300 KB), a 1200 x 630 social card with the title in Inter, and a sidecar JSON. A recipe's scene is either procedural (a builder in `scenes.py`, drawn by the small NumPy renderer in `scene.py`) or an existing picture. The procedural scenes are generated from formulas and a seed only, so they contain no scan pixel, no model output, no lettering and no ink: synthetic cross-sections wound as spirals with a copper thread bending through their centers for the umbilicus finder, a roll unrolling flat with its layers peeling up for Unroll, a cube cut by three slices for Scroll Lens, a sheet under a reading lens for Scroll Text Reader, and so on. The `panels` scene floats real screenshots of a tool's interface over the floor, and is always a Synthetic demo.
 
-`encode.py` turns PNG frames (or a video) into a web MP4 and a two-pass palette GIF under size limits, and records the whole chain that made the frames in the sidecar. `capture_web.py` drives headless Chromium through a list of steps and takes frames, stepping sliders, scrolling and time instead of recording the screen, so a clip is smooth whatever the machine's speed; a page that runs in real time is sampled on the wall clock, and a drawn pointer with a copper click ring shows where each interaction happens. `sweep.py` makes the frames of a synthetic scroll swept from cap to base, its winding center drifting in the scanner's fixed frame.
+`encode.py` turns PNG frames (or a video) into a web MP4 and a two-pass palette GIF under size limits, and records the whole chain that made the frames in the sidecar. `capture_web.py` drives headless Chromium through a list of steps and takes frames, stepping sliders, scrolling and time instead of recording the screen, so a clip is smooth whatever the machine's speed; a page that runs in real time is sampled on the wall clock, and a drawn pointer with a copper click ring shows where each interaction happens. `record_ap_monitor.py` films AutoPipeline's monitor on a release's synthetic demo: it holds each stage a moment so the run can be watched, serves the monitor with its console on, and has `capture_web.py` walk every panel with a caption bar (`captures/autopipeline-walkthrough.json`); the run and the console's kit home stay in a scratch folder. `sweep.py` makes the frames of a synthetic scroll swept from cap to base, its winding center drifting in the scanner's fixed frame.
 
 Every output carries one of four media labels, in its caption and its sidecar: Concept illustration, Real data render, Model output or Synthetic demo. Under any `docs/assets/` folder the public media rule applies ([`docs/media/README.md`](../media/README.md), set on Chase's delegation, 18 October 2026): Concept illustrations and Synthetic demos always, a Real data render only of a public scan that is not prize-eligible and shows no held-out labels, model output never, and every file at most 1920 px wide and 4 MB with a sidecar. Model output of any scroll and real-data pictures of prize-eligible scrolls belong in Scrolls-private's `docs/media/`. A label is only a claim, so the scripts also guard where pixels come from: `hero.py` builds an illustration or a demo for `docs/assets/` only from files already under `docs/images/` or `docs/assets/`, `encode.py` refuses an unlabeled clip there, and `capture_web.py` refuses to write its raw frames there. A picture made here is an illustration or a demo, never evidence: no hero shows lettering, fabricated ink, score badges, letter boxes or a suggested reading.
 
@@ -153,6 +153,25 @@ usage: python scripts/media/capture_web.py [-h] --out-dir OUT_DIR [--actions ACT
 
 The steps, run in order (`STEP_KEYS`): `{"goto": URL}` (retries for up to 60 s while a server starts), `{"wait": MS}`, `{"wait_for": SELECTOR}` (up to 30 s), `{"click": SELECTOR}`, `{"fill": [SELECTOR, TEXT]}`, `{"press": KEY}`, `{"eval": JS}`, `{"set": [SELECTOR, VALUE]}` (sets an input's value and fires its input and change events), `{"scroll": [X, Y]}`, `{"clip": SELECTOR or null}`, `{"shot": NAME}`, `{"frame": N}`, `{"hold": N}` (repeats the last frame), `{"frames": N, "every": MS}` (real time on the wall clock: screenshots as fast as the machine allows, then each frame is the last one taken by its time, `pick_timed`), `{"tween": {"selector": S, "from": A, "to": B, "n": N}}`, `{"step": {"js": "seek({t})", "n": N}}` (frame-stepped time, `{t}` from 0 to 1), `{"cursor": "show" or "hide"}` (a pointer drawn in the palette, `CURSOR_JS`; headless Chromium draws none), `{"point": {"selector": S, "n": N}}` (move it to S, eased), `{"tap": {"selector": S, "n": N}}` (click S and draw a copper ring growing from the pointer), `{"glide": {"selector": S, "from": A, "to": B, "n": N}}` (a tween whose pointer follows the slider's thumb) and `{"scrollto": {"selector": S, "offset": PX, "n": N}}` (scroll smoothly until S's top is PX below the window's top).
 
+### `python scripts/media/record_ap_monitor.py`
+
+```text
+usage: python scripts/media/record_ap_monitor.py [-h] --package PACKAGE --frames FRAMES [--actions ACTIONS]
+                                                 [--pace PACE] [--port PORT] [--width WIDTH] [--height HEIGHT]
+                                                 [--work WORK]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--package PACKAGE` | required | An AutoPipeline release folder (it holds `kit/`, `tests/` and `scripts/demo_synthetic.py`); its demo and its monitor are what the clip shows |
+| `--frames FRAMES` | required | Scratch folder for the frames (never under `docs/assets/`) |
+| `--actions ACTIONS` | `scripts/media/captures/autopipeline-walkthrough.json` | The `capture_web.py` steps: the live run, then the captioned walk through each panel |
+| `--pace PACE` | `1.2` | Seconds each stage waits before it starts; the demo alone runs in a few seconds |
+| `--port PORT` | `8793` | Port of the monitor on 127.0.0.1; the steps open this port |
+| `--width WIDTH` | `1512` | Viewport width |
+| `--height HEIGHT` | `904` | Viewport height: a 14 inch MacBook's 860 plus the 44 px caption bar |
+| `--work WORK` | a new temporary folder | Scratch folder for the run and the console's kit home; its path shows in the monitor's header, so give a short neutral one, such as `/tmp/apdemo` |
+
 ### `python scripts/media/sweep.py`
 
 ```text
@@ -173,6 +192,7 @@ usage: python scripts/media/sweep.py [-h] --out-dir OUT_DIR [--frames FRAMES] [-
 | Variable | Default | Meaning |
 | --- | --- | --- |
 | `CHROMIUM_PATH` | unset | `capture_web.py`: the Chromium to start when `--browser` is not given |
+| `KIT_HOME` | set by the script | `record_ap_monitor.py` points it at its scratch folder, so the console's jobs and notes never touch your own kit home |
 
 ## Python API
 
@@ -233,6 +253,7 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | `capture_web: ERRORTYPE: FIRST LINE` on stderr, exit code 1 | Playwright itself failed: a selector that never appears, a page that will not load, or a timeout (`--timeout`) | Check the selector and the page in a browser; raise `--timeout` for a slow page |
 | `step N: unknown or empty step STEP` | A step with a key outside `STEP_KEYS`, or `{}` | Use the steps listed under Commands and options |
 | `step N: every goes with frames` | `every` without `frames` | Add `"frames": N` to the step |
+| `the synthetic demo failed (exit...); the run is in` | `record_ap_monitor.py`: the package's demo did not end with every stage as expected | Run `python scripts/demo_synthetic.py` in the package and read its `DEMO FAIL` line; install the package's dependencies |
 | `clip element 'SELECTOR' has no box` | The `clip` selector matched nothing visible | Fix the selector, or clip to `null` |
 | `hold needs an earlier frame` | `hold` before any `frame` | Take a frame first |
 | `the playwright package is missing: pip install playwright (with PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 where a Chromium is installed)` | No `playwright` module | Install it as the message says; never run `playwright install` where a browser exists |
