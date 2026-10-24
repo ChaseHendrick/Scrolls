@@ -4,7 +4,9 @@ The label and guard checks run everywhere (standard library). Rendering needs nu
 and gifsicle, and capturing needs Playwright with a Chromium; each part skips when its tools are missing.
 """
 
+import contextlib
 import importlib.util
+import io
 import json
 import os
 import shutil
@@ -399,6 +401,70 @@ class CaptureTest(unittest.TestCase):
             self.assertEqual(res["frames"], 11)
             a, b = (Image.open(Path(tmp) / "g" / f"frame-0000{i}.png").convert("RGB") for i in (0, 2))
             self.assertNotEqual(a.tobytes(), b.tobytes(), "the pointer moved")
+
+
+class VC3DAgentSessionTest(unittest.TestCase):
+    """The replay of a recorded Headless VC3D for agents session: values come from the transcript, failed calls and
+    missing steps are left out, and only steps with pictures get one."""
+
+    def transcript(self, tmp):
+        png = (MEDIA.parent.parent / "docs" / "assets" / "vc3d-agent" / "vc3d-agent-app.png").read_bytes()
+        (tmp / "images").mkdir()
+        (tmp / "images" / "preview_surface-1.png").write_bytes(png)
+        seg = "/tmp/kit/work/vc3d/segments/PHerc0139/w035.tifxyz"
+        steps = [
+            {"id": "status", "tool": "status", "arguments": {}, "seconds": 0.3, "is_error": False, "images": [],
+             "structured": {"has": {"vc_render_tifxyz": True, "VC3D": False}, "display": "none needed",
+                            "cpu_limit": 4, "renderer": {"flip_normals": True}}},
+            {"id": "fetch_segment", "tool": "fetch_segment", "seconds": 1.2, "is_error": False, "images": [],
+             "arguments": {"sample": "PHerc0139", "segment": "w035"},
+             "structured": {"surface": seg, "objects": 4, "downloaded": 915721,
+                            "stats": {"grid_rows_cols": [291, 262], "valid_fraction": 0.8329}}},
+            {"id": "preview_surface", "tool": "preview", "seconds": 0.1, "is_error": False, "arguments": {"path": seg},
+             "structured": {"view": "z"}, "images": ["images/preview_surface-1.png"]},
+            {"id": "check_surface", "tool": "check_surface", "seconds": 9.0, "is_error": True, "images": [],
+             "arguments": {"surface": seg}, "structured": None},
+        ]
+        path = tmp / "transcript.json"
+        path.write_text(json.dumps({"steps": steps, "tools": ["status"]}))
+        return path
+
+    def test_scenes_come_from_the_transcript(self):
+        import vc3d_agent_session as v
+        self.assertEqual(v.short("https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/x.zarr/"),
+                         "open-data:PHerc0139/x.zarr/")
+        self.assertEqual(v.short("/tmp/kit/work/vc3d/segments/a.tifxyz"), "segments/a.tifxyz")
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(v.main([str(self.transcript(tmp)), "--out-dir", str(tmp / "page")]), 0)
+            page = (tmp / "page" / "replay.html").read_text()
+            scenes = json.loads(page.split("const S = ", 1)[1].split(";\n", 1)[0])
+            self.assertEqual([sc["tool"] for sc in scenes], ["status", "fetch_segment"])   # the failed check is out
+            self.assertIn("tools found: vc_render_tifxyz", scenes[0]["lines"][0])
+            self.assertIn("downloaded 915,721 bytes in 4 objects", scenes[1]["lines"])
+            self.assertIsNone(scenes[0]["img"])
+            self.assertTrue(scenes[1]["img"].startswith("data:image/png;base64,"))
+            acts = json.loads((tmp / "page" / "actions.json").read_text())
+            self.assertEqual(sum(1 for a in acts if "step" in a), 2)
+
+    def test_publish_writes_sidecars_outside_assets(self):
+        import vc3d_agent_session as v
+        with tempfile.TemporaryDirectory() as tmp:
+            tmp = Path(tmp)
+            shots = tmp / "shots"
+            shots.mkdir()
+            png = (MEDIA.parent.parent / "docs" / "assets" / "vc3d-agent" / "vc3d-agent-app.png").read_bytes()
+            for name, *_ in v.STILLS:
+                (shots / f"{name}.png").write_bytes(png)
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.assertEqual(v.main(["--publish", str(shots), "--assets", str(tmp / "out")]), 0)
+            for name, *_ in v.STILLS:
+                side = json.loads((tmp / "out" / f"{name}.json").read_text())
+                common.check_meta(side)
+                self.assertEqual(side["label"], "Real data render")
+                self.assertEqual(side["data"]["scan"], "PHerc0139")
+                self.assertEqual(side["outputs"][0]["width"], 854)
 
 
 if __name__ == "__main__":

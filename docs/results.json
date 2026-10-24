@@ -11519,5 +11519,263 @@
     "KN always returns exactly L letters and one of its components was trained on another Philodemus text"
    ]
   }
+ ],
+ "hopbench_checks": [
+  {
+   "date": "2026-10-24",
+   "tool": "kit hopbench",
+   "command": "python -m kit hopbench run --pred m7",
+   "claim": "Model output: the one-sheet check (kit.sheetgap) reading an organizers' public surface prediction, on planted sheet hops at real contacts between PHerc0139 hand-traced windings w023 to w040 (scan 20250728140407, 9.362 um); geometry only, never a reading",
+   "prediction": "PHerc0139/representations/predictions/surfaces/20250728140407-surface-20260413222639-surface-m7-L0-th0.2.zarr",
+   "manifest_digest": "e1fc4cac80a05995b8cb55d14534fac3580cfaf7f88b580b023b33738a332645",
+   "rule_digest": "4f5abd102a26",
+   "settings": {
+    "seed": 20261016,
+    "clean_mm": 20.0,
+    "windows_per_winding": 1,
+    "plant_mm": 6.0,
+    "sites_per_pair": 4,
+    "contact_vox": 4.0,
+    "copy_vox": 8.0,
+    "far_vox": 6.0,
+    "min_side_vox2": 1600.0,
+    "thick_quantile": 0.95,
+    "thick_cap": 10
+   },
+   "max_thick_vox": 4,
+   "plants": {
+    "planted": 136,
+    "counted": 64,
+    "band": 10,
+    "ramp": 54,
+    "gap_joined": 11,
+    "gap_share": 0.1719,
+    "gap_wilson95": [
+     0.0988,
+     0.2821
+    ],
+    "gap_joined_band": 2,
+    "gap_joined_ramp": 9,
+    "seated_joined": 26,
+    "seated_share": 0.4062
+   },
+   "clean": {
+    "gap": {
+     "median_square_mm": 3.505,
+     "max_square_mm": 5.3,
+     "windows_ge_12.5mm": 0
+    },
+    "seated": {
+     "median_square_mm": 5.015,
+     "max_square_mm": 7.97,
+     "windows_ge_12.5mm": 0
+    },
+    "truth": {
+     "median_square_mm": 5.865,
+     "max_square_mm": 13.83,
+     "windows_ge_12.5mm": 1
+    }
+   },
+   "clean_windows": 18,
+   "missing_chunks": 0,
+   "seconds": 2206,
+   "machine": "4-core Intel Xeon 2.80 GHz cloud container, CPU only; the two runs partly overlapped",
+   "source": "docs/tools/hopbench.md"
+  },
+  {
+   "date": "2026-10-24",
+   "tool": "kit hopbench",
+   "command": "python -m kit hopbench run --pred recto090",
+   "claim": "Model output: the one-sheet check (kit.sheetgap) reading an organizers' public surface prediction, on planted sheet hops at real contacts between PHerc0139 hand-traced windings w023 to w040 (scan 20250728140407, 9.362 um); geometry only, never a reading",
+   "prediction": "PHerc0139/representations/predictions/surfaces/20250728140407-surface-20250701154204-surface-recto-090.zarr",
+   "manifest_digest": "e1fc4cac80a05995b8cb55d14534fac3580cfaf7f88b580b023b33738a332645",
+   "rule_digest": "93ff3b6dafda",
+   "settings": {
+    "seed": 20261016,
+    "clean_mm": 20.0,
+    "windows_per_winding": 1,
+    "plant_mm": 6.0,
+    "sites_per_pair": 4,
+    "contact_vox": 4.0,
+    "copy_vox": 8.0,
+    "far_vox": 6.0,
+    "min_side_vox2": 1600.0,
+    "thick_quantile": 0.95,
+    "thick_cap": 10
+   },
+   "max_thick_vox": 8,
+   "plants": {
+    "planted": 136,
+    "counted": 64,
+    "band": 10,
+    "ramp": 54,
+    "gap_joined": 13,
+    "gap_share": 0.2031,
+    "gap_wilson95": [
+     0.1227,
+     0.3171
+    ],
+    "gap_joined_band": 2,
+    "gap_joined_ramp": 11,
+    "seated_joined": 43,
+    "seated_share": 0.6719
+   },
+   "clean": {
+    "gap": {
+     "median_square_mm": 3.905,
+     "max_square_mm": 6.85,
+     "windows_ge_12.5mm": 0
+    },
+    "seated": {
+     "median_square_mm": 6.355,
+     "max_square_mm": 11.13,
+     "windows_ge_12.5mm": 0
+    },
+    "truth": {
+     "median_square_mm": 5.865,
+     "max_square_mm": 13.83,
+     "windows_ge_12.5mm": 1
+    }
+   },
+   "clean_windows": 18,
+   "missing_chunks": 0,
+   "seconds": 2389,
+   "machine": "4-core Intel Xeon 2.80 GHz cloud container, CPU only; the two runs partly overlapped",
+   "source": "docs/tools/hopbench.md"
+  }
+ ],
+ "windlabel_box_checks": [
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings on 18 fresh PHerc0139 boxes of 512 voxels from the open-data m7 and lasagna grad_mag, scored against PHerc0139's published hand windings w023 to w040 under a readout fixed before any chain was grown",
+   "claim_wording": "split chains 0.9758 step accuracy on 13,969 judged steps, above the 0.95 bar; one scroll, held out in position only",
+   "verdict": "PASS",
+   "rule": "fixed before any chain was grown: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "c6d2eecbebc2",
+   "pooled": {
+    "v1": {
+     "steps": 19613,
+     "step_accuracy": 0.9223,
+     "blocks": 40,
+     "lower_bound_95": 0.908
+    },
+    "split": {
+     "steps": 13969,
+     "step_accuracy": 0.9758,
+     "blocks": 40,
+     "lower_bound_95": 0.9683,
+     "kept_share": 0.7122,
+     "skip_control": 0.0218,
+     "shift_control": 0.0645
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9229,
+     "p97_5": 0.9253
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   },
+   "dev_boxes": {
+    "boxes": 6,
+    "split_step_accuracy": 0.9415,
+    "without_umbilicus": 0.8819,
+    "note": "earlier development boxes, under the bar; the shortfall sits near z 7000 where predictions and hand windings disagree"
+   }
+  },
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-1667-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v1, on 18 PHerc1667 boxes of 512 voxels (scan 20231117161658) from m7 run with the published model and the published lasagna grad_mag, scored against PHerc1667's published hand windings w028 to w041 under a readout fixed before any box had a prediction",
+   "claim_wording": "split chains 0.9693 step accuracy on 4,362 judged steps but 68.3 % kept, under the 70 % floor",
+   "verdict": "FAIL",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v1 c6d2eecbebc2",
+   "pooled": {
+    "v1": {
+     "steps": 6389,
+     "step_accuracy": 0.956,
+     "blocks": 28,
+     "lower_bound_95": 0.9314
+    },
+    "split": {
+     "steps": 4362,
+     "step_accuracy": 0.9693,
+     "blocks": 27,
+     "lower_bound_95": 0.9508,
+     "kept_share": 0.6827,
+     "skip_control": 0.0435,
+     "shift_control": 0.0416
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9537,
+     "p97_5": 0.9564
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "FAIL"
+   }
+  },
+  {
+   "date": "2026-10-24",
+   "source": "docs/tools/windlabel-box.md",
+   "evidence": "docs/evidence/windlabel-box-1667-20261024/summary.json",
+   "claim": "Model output: kit windlabel-box relative windings, split rule v2, on 20 fresh PHerc1667 boxes of 512 voxels (scan 20231117161658) from m7 run with the published model and the published lasagna grad_mag, scored against PHerc1667's published hand windings w028 to w041 under a readout fixed before any box had a prediction",
+   "claim_wording": "split chains 0.9786 step accuracy on 5,938 judged steps, lower bound 0.9671, 75.9 % kept; the 1.0 cut was chosen after the v1 result, on spent boxes",
+   "verdict": "PASS",
+   "rule": "fixed before any box had a prediction: PASS when the split chains' pooled step accuracy is at least 0.95, its one-sided 95 % block bootstrap lower bound above 0.92, at least 70 % of the uncut chains' judged steps kept, and the accuracy above the random control's 97.5th percentile; VOID when the skip or shift control is above 0.5, or fewer than 2,000 steps or 24 blocks are judged; one run",
+   "chain_rule": "v1 0e53e0ae5016",
+   "split_rule": "v2 cd273aed7673",
+   "pooled": {
+    "v1": {
+     "steps": 7826,
+     "step_accuracy": 0.9486,
+     "blocks": 35,
+     "lower_bound_95": 0.9288
+    },
+    "split": {
+     "steps": 5938,
+     "step_accuracy": 0.9786,
+     "blocks": 35,
+     "lower_bound_95": 0.9671,
+     "kept_share": 0.7588,
+     "skip_control": 0.0165,
+     "shift_control": 0.0772
+    },
+    "random_control": {
+     "draws": 1000,
+     "seed": 0,
+     "median": 0.9499,
+     "p97_5": 0.9527
+    },
+    "bootstrap": {
+     "blocks": "box x 30 degree sector of the chain's seed",
+     "resamples": 10000,
+     "seed": 0,
+     "one_sided": 0.95
+    },
+    "void_reasons": [],
+    "verdict": "PASS"
+   }
+  }
  ]
 }

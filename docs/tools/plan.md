@@ -14,7 +14,7 @@
 | Needs | Python 3.10 or newer, standard library only; it reads the prize snapshot through [prizes](prizes.md). The commands it prints need what it does not install: villa, VC3D's tools, uv, the AWS CLI (step 1), huggingface_hub (through `uvx`), and an NVIDIA GPU with CUDA, or an Apple Silicon Mac with `--mac`. `--spiral` adds git, Python 3.14 for villa's `spiral-fitting` (installed by `uv sync`), the hf CLI for scans whose lasagna field is on Hugging Face, and this checkout's `spaces/ink-lens` with its own requirements |
 | Runs on | Any machine. `plan` took 0.11 to 0.49 s and `cost` 0.11 to 0.19 s per call (5 runs each, measured 2026-10-16, 4-core Xeon cloud container). The printed run is another matter: villa's inference on a full segment takes "on the order of an hour on a single GPU" ([tutorial5](https://scrollprize.org/tutorial5)) |
 | Network | None. The printed commands, when you run them, reach github.com, huggingface.co and the open-data bucket `s3://vesuvius-challenge-open-data` (`--spiral`: also `SharpMeow/vesuvius-center-lines` and the scan's `SharpMeow/*-lasagna` dataset) |
-| Writes | Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `volume-cache/`, `predictions/`, `work/SCROLL_SLUG/`); `--spiral` writes under `work/SCROLL_SLUG/` in the folder you run it from; see Outputs |
+| Writes | Nothing (prints only). The printed commands write under `villa/vesuvius/` (`checkpoints/`, `ink-dataset/`, `predictions/`, `work/SCROLL_SLUG/`), plus the chunks `vc_render_tifxyz` streams into VC3D's shared remote cache; `--spiral` writes under `work/SCROLL_SLUG/` in the folder you run it from; see Outputs |
 | Go-ahead | Not needed to print a plan or a price. Running its GPU steps on rented compute needs Chase's budget decision (the go-ahead rule, hard rule 8); in this repository GPU work goes to Modal through a run spec (the Modal rule, hard rule 11) |
 | Released | Public `main` since 2026-10-06 (`2daee8e`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench plan` and `scrolls-workbench cost` in the installable package since 2026-10-14 (`2582ab7`) |
 | Guide | [WORKFLOW.md](../WORKFLOW.md) (from plan to null or candidate), [mac.md](../mac.md) (the `--mac` path), [compute.md](../compute.md) (hardware and published run costs) |
@@ -173,9 +173,9 @@ chain = plan.spiral_chain("PHerc0826")               # the --spiral chain as one
 | Step | Files the printed commands write |
 | --- | --- |
 | 0. Setup | `checkpoints/ink_9um/hybrid_3d2d-seed42/step-075000.pth` and the seed-43 file |
-| 1. Control (w035) | `ink-dataset/pherc0139/w035/w035.tifxyz`, VC3D's cache `volume-cache/20250728140407.zarr`, `ink-dataset/pherc0139/w035/w035_9um.zarr`, `predictions/w035_9um.tif` |
+| 1. Control (w035) | `ink-dataset/pherc0139/w035/w035.tifxyz`, `ink-dataset/pherc0139/w035/w035_9um.zarr`, `predictions/w035_9um.tif` |
 | 1b. w045 | `ink-dataset/pherc0139/w045/w045_9um.zarr`, `predictions/w045_seed42.tif` and its reverse map; rowscore reads `predictions/w045_seed42_reverse.tif`, the name `scripts/mac-w045.sh` also expects villa's `--direction both` to write |
-| 2. Target | `work/SLUG/surface.tifxyz` (you make it in VC3D), `volume-cache/VOLUME.zarr`, `work/SLUG/surface_9um.zarr`, `work/SLUG/ink_seed42.tif` and its reverse map |
+| 2. Target | `work/SLUG/surface.tifxyz` (you make it in VC3D), `work/SLUG/surface_9um.zarr`, `work/SLUG/ink_seed42.tif` and its reverse map |
 | v8in block | `checkpoints/ink-8um-v8in/`, `work/SLUG/layers/` (you export it; [layers](layers.md) does this), `work/SLUG/v8in_forward.tif`, `work/SLUG/v8in_reverse.tif` |
 | 3. Rules | `experiments/SLUG/run.json` through `kit run init` |
 
@@ -241,7 +241,8 @@ python -m unittest tests.test_kit.PlanTest tests.test_kit.SpiralChainTest tests.
 
 ## History
 
-- 2026-10-24: `--spiral`, the large-surface starter chain for every eligible scan from public pieces, with `kit/data/spiral-inputs-2026-10-24.json`; the ink plan's renders pass the bucket URL as `--volume`, since villa now refuses a local `--volume` beside a different `--remote-url`. ([PR #184](https://github.com/ChaseHendrick/Scrolls/pull/184))
+- 2026-10-24: `--spiral`, the large-surface starter chain for every eligible scan from public pieces, with `kit/data/spiral-inputs-2026-10-24.json` ([PR #184](https://github.com/ChaseHendrick/Scrolls/pull/184)).
+- 2026-10-24: the renders pass the bucket URL as `--volume`, since villa `e2254eb` refuses a local `--volume` beside a different `--remote-url` ([PR #207](https://github.com/ChaseHendrick/Scrolls/pull/207)).
 
 - 2026-10-14: a refused scroll whose First Letters prize was awarded gets the award's date and source in the message, read from the 11 October snapshot, and survives an award entry without them; step 1b names v8in-1447 among the readers PHerc0841 is held out from (`19a1f4d`, `4053d23`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37)).
 - 2026-10-09: step 1b says PHerc0841 is possibly not held out from Hecate (`3ba683f`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37), [log](../logs/2026-10-09-pherc0841-hecate.md)).

@@ -1,8 +1,8 @@
 """Get a scroll's center line (umbilicus) into your VC3D project or spiral-fitting folder in one command.
 
 Sources, both public: the center lines dataset SharpMeow/vesuvius-center-lines on Hugging Face (every public line
-for the prize-eligible scans, each with its sha256 in index.json) and the open-data bucket's
-SCROLL/representations/umbilicus/ files. `list` shows every line kit can find; `get` downloads one, checks its
+for the prize-eligible scans and, since v2.3, 11 other public scans, each with its sha256 in index.json) and the
+open-data bucket's SCROLL/representations/umbilicus/ files. `list` shows every line kit can find; `get` downloads one, checks its
 sha256 when the index gives one, and writes it as FOLDER/umbilicus.json, the name VC3D searches for and
 spiral-fitting reads (villa main 8aa507c12: volume-cartographer/core/src/ScrollUmbilicus.cpp, spiral-fitting/
 fit_session.py; see docs/tools/umbilicus.md). When the file lacks volume_width, volume_height and volume_slices and
@@ -23,6 +23,11 @@ from . import find as _find
 from .verify import VerifyError
 
 KIND_ORDER = {"person": 0, "bucket": 1, "model": 2}
+# Within a kind, a line the dataset marks superseded_by a newer version comes after the lines that are not (since
+# v2.5: each original finder line, superseded by its coverage polish, which sat deeper in villa's traced sheet on all
+# ten scans of its frozen test, docs/evidence/2026-10-22-umbilicus-windpolish); then a source here comes first, for
+# copies of the dataset older than v2.5
+SOURCE_ORDER = {"finder-polished": 0}
 _VOL_PREFIX = re.compile(r"^(\d{14})-umbilicus")
 
 
@@ -35,7 +40,7 @@ def lines(scroll, get=_find.http_get):
                     "volume": str(f.get("volume") or f.get("scan") or "")[:14] or None, "points": f.get("points"),
                     "url": f"{_find.HUB}/datasets/{_find.CENTERLINES}/resolve/main/{f['file']}",
                     "sha256": f.get("sha256"), "credit": f.get("credit"), "licence": f.get("licence"),
-                    "usable_ends": None, "from": _find.CENTERLINES})
+                    "usable_ends": None, "superseded_by": f.get("superseded_by"), "from": _find.CENTERLINES})
     try:
         _, keys = _find.list_prefix(f"{scroll}/representations/umbilicus/", get)
     except OSError:
@@ -50,8 +55,15 @@ def lines(scroll, get=_find.http_get):
         out.append({"source": "bucket-file", "kind": "bucket", "volume": m.group(1) if m else None, "points": None,
                     "url": url, "sha256": None, "credit": f"{_find.DATA_CREDIT} (representations/umbilicus)",
                     "licence": "CC BY-NC 4.0 (Vesuvius Challenge open data terms)", "from": "open-data bucket"})
-    out.sort(key=lambda l: (KIND_ORDER.get(l["kind"], 3), str(l["source"])))
-    return out
+    return order(out)
+
+
+def order(found):
+    """Best first: person-made, then bucket, then model lines; within a kind, the newest version of a line (no
+    superseded_by) first, then SOURCE_ORDER, then by source name."""
+    return sorted(found, key=lambda l: (KIND_ORDER.get(l["kind"], 3), bool(l.get("superseded_by")),
+                                        SOURCE_ORDER.get(l["source"], 1),
+                                        str(l["source"])))
 
 
 def pick(found, source=None):

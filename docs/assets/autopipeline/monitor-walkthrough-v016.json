@@ -1,0 +1,54 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "monitor-walkthrough-v016",
+  "label": "Synthetic demo",
+  "alt": "AutoPipeline 0.1.6's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map beside its reversed control, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.6's monitor following scripts/demo_synthetic.py with each stage held 1.2 s before it starts so the run can be watched, then a captioned walk through its panels and console; stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+  "license": "Apache-2.0",
+  "release_id": "autopipeline",
+  "data": null,
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/tree/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6"
+  ],
+  "outputs": [
+    {
+      "file": "monitor-walkthrough-v016.mp4",
+      "bytes": 1096121,
+      "sha256": "f1c41dc6ce754341fbd2353a58f08754cabd6a0a9a5f0298e46a932bc6b1d784",
+      "width": 1512,
+      "height": 904,
+      "kind": "mp4",
+      "seconds": 45.25,
+      "frames": 543,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "monitor-walkthrough-v016.gif",
+      "bytes": 639465,
+      "sha256": "9a8a0acfc5f87c24c9c61544e3f5d8e96993f5642065833e6cc49aeb7013de72",
+      "width": 1512,
+      "height": 904,
+      "kind": "gif",
+      "seconds": 45.25,
+      "frames": 194,
+      "settings": {
+        "width": 1512,
+        "fps": 12,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "encode.py"
+    ],
+    "scripts_sha256": "39a68120fe546ef92d011c58d922b1631fc4cd67a0f6b71318980bb38d6ec4d9",
+    "base_commit": "f9e1a99db224f75da7162d88d70f3acd586fe316"
+  },
+  "command": "python scripts/media/encode.py FRAMES --fps 12 --gif-fps 12 --gif-width 1512 --dither none --mp4 docs/assets/autopipeline/monitor-walkthrough-v016.mp4 --gif docs/assets/autopipeline/monitor-walkthrough-v016.gif --meta scripts/media/captures/autopipeline-walkthrough.meta.json"
+}

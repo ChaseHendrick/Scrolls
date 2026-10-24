@@ -45,7 +45,7 @@ Source = "https://github.com/ChaseHendrick/Scrolls"
 "Scroll Text Reader guide" = "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/letter-reader.md"
 
 [tool.setuptools]
-packages = ["kit"]
+packages = ["kit", "kit.windlabel_box"]
 
 [tool.setuptools.package-data]
 # Everything kit reads from its own folder at run time: the prize snapshots and the letter-weights registry.

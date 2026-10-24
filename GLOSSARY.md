@@ -46,6 +46,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
 
+**chain rule (windlabel)**: The fixed test `kit windlabel-box` applies to each step of a chain of sheet crossings: the next sheet is thin, at a spacing in line with the chain's earlier steps, and the sheet's normal turns little. Version 1 has digest `0e53e0ae5016`. See [`docs/tools/windlabel-box.md`](docs/tools/windlabel-box.md).
+
 **checkpoint**: The saved weights of a trained model.
 
 **Connect your tool (panel)**: The section every one of Chase's Hugging Face Spaces carries (24 Oct 2026): the URLs of the data the page shows, with tested snippets for Python, villa's `vesuvius` package, VC3D, neuroglancer, curl, gradio_client and MCP. Written from each Space's `connect.json` by `python -m kit spaceconnect`; page [`docs/tools/spaceconnect.md`](docs/tools/spaceconnect.md).
@@ -116,6 +118,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **GPU**: A graphics processor, used here for fast model training and inference.
 
+**grad_mag**: A sheet-density channel published with lasagna's model outputs: high where papyrus sheets are, so its integral along a short line counts roughly how many sheets the line crosses. `kit windlabel-box` uses it to find steps that cross more than one sheet.
+
 **Grand Prize**: The largest Vesuvius Challenge prize of a challenge year.
 
 **GrowPatch**: A VC3D tracer that grows a surface mesh outward step by step by optimization.
@@ -144,7 +148,7 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ink detection**: Predicting where ink lies on a rendered surface from the CT data. The output is an ink map.
 
-**Ink Lens**: A tool and ZeroGPU Space (not yet deployed) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
+**Ink Lens**: A tool and ZeroGPU Space ([SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens), live since 24 Oct 2026) that runs an openly licensed 9 um ink model on one region of a VC3D segment in both depth orders over three depth windows, keeps ink above the control-set threshold, and writes the overlay and letter-candidate pins as VC3D's own files ([`docs/tools/ink-lens.md`](docs/tools/ink-lens.md)).
 
 **ink label (inklabels)**: A human-drawn mask of where ink is on a segment (`inklabels.zarr`), used for training and scoring.
 
@@ -176,7 +180,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **label smoothing**: Training with softened targets, so ink and background labels are not exactly 1 and 0.
 
+**lasagna field**: The output of villa's lasagna model (`lasagna-preprocess predict3d`) over a whole scan: OME-Zarr channels cos (a signal that repeats once per papyrus layer), grad_mag and the surface normals nx and ny, with a `SCAN.lasagna.json` manifest. villa's lasagna surface fitting and the spiral fit read it. Fields for ten scans are in the [Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) datasets. Model output.
+
 **landmark**: A point marked in two scans of one scroll, used to fit the cross-scan transform between them.
+
+**lasagna**: villa's lasagna surface fitter and the model outputs it reads, such as grad_mag; outputs are published for open-data volumes, for example PHerc0139's `20260102150214-lasagna-20260419180421-L2`.
 
 **layer**: One image in a surface volume, at a fixed depth from the traced surface. `kit layers` writes them as numbered TIFF files. In the scroll itself, "layer" also means one turn of papyrus (see winding).
 
@@ -185,6 +193,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **level (resolution level)**: One copy of a volume at a given downsampling in a multi-resolution zarr. Level 0 is full resolution; higher levels are smaller, downsampled copies.
 
 ## M
+
+**m7**: The organizers' binary surface prediction model for the open data: a voxel map of where papyrus sheet surfaces are. Several kit tools read its published outputs; it can merge sheets that touch.
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
 
@@ -199,6 +209,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **MedSAM2**: SAM 2 fine-tuned on 3D medical images and video. Its weights are licensed for research and education only, so nothing trained from it is released here.
 
 **mesh**: A connected surface made of vertices and faces. Traced segments are stored as meshes, usually in tifxyz form.
+
+**m7**: The organizers' public surface prediction for PHerc0139 scan 20250728140407 (`...-surface-m7-L0-th0.2.zarr` under `PHerc0139/representations/predictions/surfaces/`), stored as 0 or 255. `kit hopbench` uses it as its default prediction and baseline.
 
 **micro-CT**: CT at micrometer resolution. The scrolls are imaged this way, now mostly with phase-contrast synchrotron scans.
 
@@ -224,6 +236,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## O
 
+**one-sheet check (`kit.sheetgap`)**: A check that a traced surface stays on one sheet where sheets touch. At each mesh point it reads a surface prediction along the normal and passes only an isolated run no thicker than one sheet, with empty voxels on both sides; neighbors link only when their runs line up. Its blind spot is a prediction that draws two pressed sheets as one thin run ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
+
 **OCR (optical character recognition)**: A model proposing text from an image. Its output still needs independent checks and is not a verified reading.
 
 **OME-Zarr**: A zarr layout for large microscopy-style images, with several resolution levels and metadata. The challenge stores its CT volumes this way.
@@ -241,6 +255,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **PHerc.**: Short for Papyrus Herculanensis, followed by an inventory number, for example PHerc. 0139 or PHerc0139. PHerc. Paris 4 is also called Scroll 1.
 
 **pixel AUC**: See AUC.
+
+**planted hop (`kit hopbench`)**: A copy of a patch of one hand-traced winding moved partly onto its touching neighbor at a real contact, so that the patch switches sheets on purpose. Band plants step across only inside the contact zone; ramp plants slide across over 16 voxels. Used to measure how often a one-sheet check misses a switch ([`docs/tools/hopbench.md`](docs/tools/hopbench.md)).
 
 **planted defect (`kit.planted`)**: A sheet switch, lens, skip, merger, hole or bridged hole put on purpose into a synthetic tifxyz surface whose every vertex records the winding it truly sits on, so a detector, stack check or labeler can be tested against a known answer. Synthetic data only ([`docs/tools/planted.md`](docs/tools/planted.md)).
 
@@ -261,6 +277,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
 
 **recto**: The written inner side of a roll, where the fibers run horizontally.
+
+**relative windings**: Points along a line from a scroll's core, each labeled with how many windings it lies outward of the first, without saying which absolute winding that is. villa's spiral fit reads them as a `relative_windings.json` point collection; `kit windlabel-box` makes them and `kit windconsistency` checks them.
 
 **remote chunk cache (VC3D)**: The folder where VC3D keeps every chunk it streams from a remote volume, so later runs read them from disk; `kit doctor --remote` shows where it is and how much space it has ([`docs/tools/doctor.md`](docs/tools/doctor.md)).
 
@@ -307,6 +325,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Space (Hugging Face Space)**: A small web app hosted on Hugging Face.
 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
+
+**split rule (windlabel)**: The fixed rule `kit windlabel-box` uses to cut a chain: every step whose grad_mag integral, scaled by 0.765 so one sheet reads about 1, is above 0.95 is cut, so each piece claims only counts the grad_mag agrees with. Digest `c6d2eecbebc2`.
 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
@@ -387,6 +407,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **weights**: The learned numbers inside a trained model. Weights are never stored in git here; released weights are downloaded and checked by SHA-256.
 
 **winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
+
+**winding coverage**: How many times a slice's traced sheet winds around a point: the summed angle its segments subtend there, divided by a full turn, in wraps. Deep inside the roll it is high; off center it drops. `kit windcheck` computes it from villa's normal grids, and `kit axispolish` moves a center line to where it is highest (the coverage polish) ([page](docs/tools/windcheck.md)). A measurement on model-predicted sheets, not a distance to the true axis.
 
 **wrap pitch**: The radial distance from one wrap of a scroll to the next. `kit coverage` measures it on the published meshes: along a mesh row that goes more than a full turn around the center line, the radius one turn further on less the radius here ([`docs/tools/coverage.md`](docs/tools/coverage.md)).
 

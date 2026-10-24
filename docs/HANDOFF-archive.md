@@ -4,6 +4,41 @@ Sections moved out of [HANDOFF.md](HANDOFF.md) unchanged, newest first, so the h
 
 When HANDOFF.md grows long, move its oldest dated sections, unchanged, to the top of this file (below this paragraph).
 
+## Open items added 16 October 2026 (checked 01:10 ET)
+
+Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
+
+```yaml
+handoff:
+  written: 2026-10-16T01:10-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  merged_since_last_handoff:
+    - {number: 91, branch: grok/glossary, merge: ad2c4f8, topic: GLOSSARY.md, an A to Z of technical terms}
+    - {number: 92, branch: grok/perf-cli-parser, merge: dc6713b, topic: kit cli reuses one argparse parser per process}
+    - {number: 93, branch: grok/autopipeline-every-scan, merge: 0a22f72, topic: AutoPipeline on every scan}
+  open_prs:
+    - none
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, open_data_bucket_only]
+```
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Unroll v1.0 (viewer Space, [unroll-space.md](unroll-space.md)) | Released. Control panel redesign (grouped Layers, Ink Bench, View, Destroy, Scrolls), Settings saved in localStorage and settable by URL, plain language glossary, agent API (`unrollView.actions/settings/state/glossary`), Ink Bench button, CPU pick fallback for Destroy on GPUs without float targets. The overlay layer is labeled `ink_9um (9 µm)`, credited to the Vesuvius Challenge. README entries updated | Fix the audit findings below |
+| Unroll security and UX audit | Findings, highest first: HIGH stored HTML injection through the Ink Bench annotation id (the note field is escaped, the id is not); MED NaN or Infinity thresholds accepted and carried into share links; MED out-of-range alignment offsets accepted; MED malformed `?bench=` links fail silently or show raw errors; MED HUD collisions at 800x500 and 1100x700, and the readout has no backdrop. LOW: no minimum image size, wrong advice for non-image uploads, a double-escaped name, raw `atob` errors, "9.362 um" instead of µm, mixed UK and US spelling. Passed: bad uploads, zip bomb, path traversal, XSS in names and credits, resize and key spam | Escape the annotation id, reject non-finite thresholds and offsets, show share-link errors, then re-test |
+| Glossary | Merged, PR #91 (`ad2c4f8`) | None |
+| CLI speedup | Merged, PR #92 (`dc6713b`): one parser per process (about 119 ms to 13 ms per call) | None |
+| AutoPipeline on every scan | Merged, PR #93 (`0a22f72`): catalog of every scan volume in the `vesuvius-challenge-open-data` bucket (75 volumes when checked), per-scan config, priced dry-run batch (`kit run all`) and watcher (`kit run watch`). Launches nothing; volumes not in the bucket are marked blocked | Paid batch runs each need the owner's approval |
+| Unroll in the README release list | Merged, PR #94 (`590636c`): adds Unroll v1.0 to `docs/releases.json` and the README Released tools section | None |
+| Stale branches | **Done** 18 Oct: Chase turned on automatic deletion of merged head branches, and every merged branch this row listed is gone from GitHub (`git ls-remote`, 18 Oct; the list is in this file's history). Still on GitHub and kept: `release-readme/progress-2026-10-fix1`, `-fix2` and `-fix3`, and the `submission/progress-2026-10*` snapshots | Nothing open. Agents may delete a merged branch (never `submission/*`, `release-readme/*` or unmerged branches); a Claude cloud session cannot delete remote branches |
+| GPU inference speed probes (C reader) | `torch.compile` gives about 1.85x over eager fp16 per tile; max-autotune about 1.9x; TensorRT fp16, int8 and fp8 builds did not complete (missing ONNX file and `onnx_graphsurgeon`) | Fix the ONNX export before any further probe; no launch without approval |
+
+## Umbilici Space row as of 24 October 2026 (moved here when 1.8.0 shipped)
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Umbilici Space (23 Oct) | `spaces/umbilici/` and [its page](tools/umbilici.md) on branch `claude/project-thread-xrkbs0`; Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.6.1 deployed (Space commit `c72b2cb0`; center lines v2.2 per-end CT grades, colored per end): guide for every level, VC3D and villa notes cited to villa source, Data tables with CSV and JSON, per-line statistics. CT streams from the open-data bucket in the visitor's browser; nothing is rehosted. Releases entry `umbilici` added | Public since 23 Oct (Chase switched it; live recheck passed: 22 scans, PHerc0846A CT 110 of 110 heights). SharpMeow/pherc0175a-lasagna public since 08:09 UTC; live recheck at 08:15 UTC: all three lasagna dataset links resolve, none fall back to "(soon)". PR #162 merged 23 Oct 08:30 UTC; 1.5.0 and 1.6.0 merged in #163; 1.6.1 (grade coloring) in the follow-up PR. Waiting on Chase: whether lag and black flashes are gone on his Mac |
+
 ## Open items added 15 October 2026 (checked 23:20 ET)
 
 Public work only. Every PR and SHA below was checked on GitHub when written; anything not checked says **unverified**.

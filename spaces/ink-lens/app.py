@@ -61,7 +61,9 @@ def log(message):
 def _load():
     global ENGINE, ENGINE_ERROR
     try:
-        ENGINE = engine.Engine(readers=tuple(engine.READERS))
+        # On ZeroGPU the readers stay on the CPU here: this thread is outside every spaces.GPU call, so moving them to
+        # "cuda" reaches torch's low-level CUDA init, which ZeroGPU refuses. run() moves them inside the GPU call.
+        ENGINE = engine.Engine(readers=tuple(engine.READERS), place_on_cuda=not ON_ZERO_GPU)
         log(f"readers ready in {ENGINE.startup_s} s")
     except Exception as exc:  # noqa: BLE001
         ENGINE_ERROR = f"{type(exc).__name__}: {exc}"

@@ -3,10 +3,10 @@
  "spaces": [
   {"space": "SharpMeow/umbilici", "dir": "spaces/umbilici", "sdk": "static", "source": "here"},
   {"space": "SharpMeow/scroll-lens", "dir": "spaces/scroll-lens", "sdk": "gradio", "source": "here"},
-  {"space": "SharpMeow/ink-lens", "dir": "spaces/ink-lens", "sdk": "gradio", "source": "here", "deployed": false},
+  {"space": "SharpMeow/ink-lens", "dir": "spaces/ink-lens", "sdk": "gradio", "source": "here"},
   {"space": "SharpMeow/unroll", "dir": "spaces/connect/unroll", "sdk": "static", "source": "space"},
   {"space": "SharpMeow/autopipeline-ink", "dir": "spaces/connect/autopipeline-ink", "sdk": "gradio", "source": "space"},
-  {"space": "SharpMeow/segment-lens", "dir": "spaces/segment-lens", "sdk": "static", "source": "here"},
+  {"space": "SharpMeow/segment-lens", "dir": "spaces/segment-lens", "sdk": "gradio", "source": "here"},
   {"space": "SharpMeow/crackle-check", "dir": "spaces/connect/crackle-check", "sdk": "gradio", "source": "Scrolls-private"}
  ]
 }
