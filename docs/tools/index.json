@@ -336,7 +336,7 @@
    "id": "autopipeline",
    "name": "autopipeline",
    "tagline": "run villa's pipeline from a released scan to a scored ink map, unattended",
-   "summary": "AutoPipeline (AP) 0.1.5 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix5`, not on `main`.",
+   "summary": "AutoPipeline (AP) 0.1.6 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix6`, not on `main`.",
    "status": "Branch only",
    "kind": [
     "package"
@@ -353,7 +353,7 @@
    "imports": [],
    "code": [
     {
-     "path": "submissions/progress-2026-10-fix5/autopipeline/",
+     "path": "submissions/progress-2026-10-fix6/autopipeline/",
      "symbols": []
     },
     {
@@ -366,6 +366,18 @@
     },
     {
      "path": "kit/autopipe_monitor.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/apconsole.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/qareasons.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/apbackends.py",
      "symbols": []
     },
     {
@@ -393,12 +405,12 @@
      "symbols": []
     },
     {
-     "path": "submissions/progress-2026-10-fix5/release.json",
+     "path": "submissions/progress-2026-10-fix6/release.json",
      "symbols": []
     }
    ],
    "tests": [
-    "submissions/progress-2026-10-fix5/autopipeline/tests/",
+    "submissions/progress-2026-10-fix6/autopipeline/tests/",
     "test_*.py",
     "test_autopipe.py",
     "test_autopipe_monitor.py",
@@ -412,28 +424,28 @@
     "text": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run"
    },
    "checked": {
-    "date": "2026-10-18",
-    "commit": "9e50d61"
+    "date": "2026-10-24",
+    "commit": "8096b46"
    },
-   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+   "license": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
    "fields": {
     "Id": "`autopipeline`",
     "Status": "Branch only",
     "Kind": "package",
     "Area": "Pipeline and agents",
     "Run": "`scrolls-kit autopipeline` after `pip install -e .` in the package folder; inside that folder the branch's own `kit` module runs the same program (alias `autopipe`); `python scripts/demo_synthetic.py`; `scrolls-kit vc3d mcp` serves it as an MCP tool",
-    "Code": "`submissions/progress-2026-10-fix5/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix5/release.json`",
-    "Tests": "`submissions/progress-2026-10-fix5/autopipeline/tests/` on its branch: 36 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
+    "Code": "`submissions/progress-2026-10-fix6/autopipeline/` on its branch: mainly `kit/autopipe.py` (`cmd_autopipe`, `build_parser`, `DEFAULTS`), `kit/autopipe_monitor.py`, `kit/apconsole.py` (the console), `kit/qareasons.py`, `kit/apbackends.py`, `kit/vc3d_agent.py`, `kit/vc3d_cache.py`, `kit/cli.py`, `scripts/demo_synthetic.py`, `scripts/get_vc3d.py`, `scripts/vc3d/ink.py`; release record `submissions/progress-2026-10-fix6/release.json`",
+    "Tests": "`submissions/progress-2026-10-fix6/autopipeline/tests/` on its branch: 46 `test_*.py` files, among them `test_autopipe.py` (the whole chain on a synthetic scroll with stand-in VC3D tools), `test_autopipe_monitor.py`, `test_autopipe_monitor_ui.py` (the monitor page in a local Chromium), `test_demo_synthetic.py` and `test_vc3d_agent.py`, with stand-in tools in `vc3d_fakes.py`",
     "Needs": "Python 3.11 or newer (zarr 3 needs it); numpy, tifffile, zarr 3 and scipy (`pyproject.toml`, tested 2026-10-12 with numpy 2.4.6, tifffile 2026.3.3, zarr 3.1.6, scipy 1.17.1). For real runs: villa's VC3D tools (`vc_gen_umbilicus`, `vc_grow_seg_from_seed`, `vc_tifxyz_selfcross`, `vc_flatten`, `vc_render_tifxyz`), from villa's Linux x86_64 AppImage or `VC3D.app` on a Mac; for ink, villa's `vesuvius` package and torch in their own environment (`KIT_INK_PYTHON`). Optional, for the browser tests only: the `playwright` Python package and a system `chromium` or `chromium-browser`; without them those tests skip and download nothing",
-    "Runs on": "The synthetic demo: 4.7 s as it reports itself on a shared 4-core cloud container, Python 3.12, installed from the 0.1.5 wheel; 9.8 s wall (8.2 s reported) while the package's test suite ran on the same cores (measured 2026-10-18 for this page). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
+    "Runs on": "The synthetic demo: 5.5 s as it reports itself in a cloud container, Python 3.13, from the 0.1.6 package's release check (2026-10-24); the package's 1241 tests took 590 s there (27 skipped). With 0.1.5 it reported 4.7 s on a shared 4-core container (2026-10-18). A real run on PHerc0841 w00 from the released scan and published segment: 593 s, 344 s on 8 CPU cores then 249 s on one L4, on Modal (package README, 9 October 2026); the three-reader rerun took 1163 s on 8 CPU cores and one L4 (package README, 15 October 2026). GPU ink goes to Modal (the Modal rule, hard rule 11)",
     "Network": "The open-data bucket `vesuvius-challenge-open-data` over HTTPS (scan and prediction headers and chunks, normal grids, published segments and ink labels); `api.github.com` and `github.com` for `scripts/get_vc3d.py` (villa's AppImage, sha256 checked); model downloads by the MCP tool `fetch_model`. The monitor listens on `127.0.0.1` only and loads nothing from the internet. The synthetic demo needs no network",
     "Writes": "A run folder `work/autopipe/<sample>-<volume>-<digest10>/` under the kit home (the package folder, or `KIT_HOME`): `plan.json`, `state.json`, `events.jsonl`, traces, renders, ink maps, `scores.json`, `report.json` and, when ink is handed off, `modal-job.json`; `work/vc3d/` for the catalog cache and the unpacked AppImage (about 370 MB). The demo writes to a temporary folder under `/tmp` and prints its path. `monitor --snapshot FILE.html` writes one HTML file",
     "Go-ahead": "Needed for a paid batch or any cloud (Modal) launch, which costs money (the go-ahead rule, hard rule 8); not needed for the demo, `defaults`, `plan` or a local run",
-    "Released": "Public branch `submission/progress-2026-10-fix5` at `9e50d61` (committed 2026-10-18, a commit with no parent; README entry dated 2026-10-18 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). The tag `autopipeline-v0.1.5` and its GitHub release with the wheel are not made yet. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
-    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
+    "Released": "Public branch `submission/progress-2026-10-fix6` at `8096b46` (committed 2026-10-24, a commit with no parent; README entry dated 2026-10-24 in [`releases.json`](../releases.json), pinned to the top of \"Released tools\"). The tag `autopipeline-v0.1.6` and its GitHub release are not made yet; 0.1.5 is on `submission/progress-2026-10-fix5` at `9e50d61`. Earlier versions stay on their own branches, the first, 0.1.0, on `submission/progress-2026-10` since 2026-10-14; 0.1.4 is tagged `autopipeline-v0.1.4`",
+    "License": "Code: Apache License 2.0 ([LICENSE on the branch](https://github.com/ChaseHendrick/Scrolls/blob/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6/autopipeline/LICENSE)); data and model weights keep their own licenses and are not included",
     "Guide": "[`docs/autopipeline/README.md`](../autopipeline/README.md), the full reference (commands, settings, variables, stages, troubleshooting), with rules for agents in [`docs/autopipeline/AGENTS.md`](../autopipeline/AGENTS.md)",
-    "Branch": "`submission/progress-2026-10-fix5` at `9e50d61`",
-    "Checked": "2026-10-18 against commit `9e50d61`"
+    "Branch": "`submission/progress-2026-10-fix6` at `8096b46`",
+    "Checked": "2026-10-24 against commit `8096b46`"
    },
    "page": "docs/tools/autopipeline.md",
    "sections": [
@@ -476,13 +488,13 @@
     {
      "name": "History",
      "start_line": 177,
-     "end_line": 184,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 185,
-     "end_line": 192,
+     "start_line": 186,
+     "end_line": 193,
      "applicable": true
     }
    ]

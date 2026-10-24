@@ -31,9 +31,9 @@ This repository contains public tools, public-data benchmarks and releasable rep
 
 ## Released tools
 
-![AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner](docs/assets/autopipeline/monitor-demo-v015.gif)
+![AutoPipeline 0.1.6's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map beside its reversed control, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes](docs/assets/autopipeline/monitor-walkthrough-v016.gif)
 
-*Synthetic demo: AutoPipeline 0.1.5's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, captured frame by frame from a live run (the run part at about 4 times real speed) with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](docs/assets/autopipeline/monitor-demo-v015.mp4); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
+*Synthetic demo: AutoPipeline 0.1.6's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console, with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](docs/assets/autopipeline/monitor-walkthrough-v016.mp4) (45 s); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
 
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
@@ -44,19 +44,19 @@ Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and
 
 *Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
 
-Released 18 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix5`: [`submissions/progress-2026-10-fix5/` at commit `9e50d61`](https://github.com/ChaseHendrick/Scrolls/tree/9e50d61b778a7ae4c36a12acbe32117feecfa847/submissions/progress-2026-10-fix5).
+Released 24 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix6`: [`submissions/progress-2026-10-fix6/` at commit `8096b46`](https://github.com/ChaseHendrick/Scrolls/tree/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6).
 
-AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.5 makes its read-only run monitor interactive: inspect a stage and its recorded failure, filter the loaded log tail, pause or refresh the viewer, find run records, and prepare commands for review and copying. Copying never executes a command; stale views cannot retain a resume command. The synthetic install demo now fails if its fake model fails or required maps are missing. It also corrects rounded cache-repair timestamps that could cause an unnecessary render. These are software usability and correctness changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
+AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.6 puts the run monitor on one screen and adds a console for notes and for running AutoPipeline, kit and VC3D agent commands, on loopback only and off with --read-only. A rejected trace's qa record now lists each failed check with its measured value and threshold. New steps, each off unless a plan names it, add the Crackle Check gate at report, the published center lines as the scroll axis, a region crop that keeps the clean parts of a rejected trace, edge extension, trace budgets with partial results, and z-scored ink ensembles. Commands to list, swap and trace each stage's backend are new. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
 
 ```bash
-git clone --branch submission/progress-2026-10-fix5 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix5/autopipeline
+git clone --branch submission/progress-2026-10-fix6 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix6/autopipeline
 python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
 python -m pip install -e .
 python scripts/demo_synthetic.py
 ```
 
-Install, monitor controls, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/autopipeline/README.md). [Changes since 0.1.4](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix5/submissions/progress-2026-10-fix5/CHANGES.md). The scientific settings and models are unchanged; a narrow cache-repair correction avoids counting the same repair twice.
+Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/autopipeline/README.md). [Changes since 0.1.5](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix6/submissions/progress-2026-10-fix6/CHANGES.md). Plans that name no new setting run as before, except that qa.repair without a method now gets the barrier repair.
 
 ### Unroll (interactive 3D scroll viewer)
 
