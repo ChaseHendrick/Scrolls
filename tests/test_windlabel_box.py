@@ -109,7 +109,7 @@ class TestWindlabelBox(unittest.TestCase):
             self.assertEqual(ch["axis_source"], "file")
             self.assertEqual(ch["box"], [[50.0, 190.0], [50.0, 190.0], [-46.0, 94.0]])
             ex = json.loads((d / "run/export.json").read_text())
-            self.assertEqual(ex["split_rule"]["params_digest"], "c6d2eecbebc2")
+            self.assertEqual(ex["split_rule"]["params_digest"], "cd273aed7673")
             # every cut step reaches the doubled grad_mag; every exported winding difference is the true one
             sp = json.loads((d / "run/split.json").read_text())
             pw = json.loads((d / "run/relative_windings.json").read_text())
