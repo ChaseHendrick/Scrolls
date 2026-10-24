@@ -22,7 +22,7 @@ The table below is generated from the pages by `python -m kit.tooldocs index`; e
 | [starter](starter.md) | Current | `python -m kit start` | Not needed | Scrolls Starter guides newcomers through existing viewers, an offline controls exercise and first official tasks, with a real setup snapshot and an optional Scroll Text Reader command builder. |
 | [harness2](harness2.md) | Experimental | `python scripts/harness2/run.py` | Not needed | Use Harness2's recursion engine to compare bounded, local Scrolls provenance workflows on generated files, keeping the baseline, candidate, controls and adoption evidence. |
 | [autopipeline](autopipeline.md) | Branch only | `scrolls-kit autopipeline` | Needed | AutoPipeline (AP) 0.1.6 runs villa's VC3D tools and ink detection on one released scan, from its headers to checked surfaces, ink maps with reversed and shuffled controls, and scores; its code is on public branch `submission/progress-2026-10-fix6`, not on `main`. |
-| [vc3d-agent](vc3d-agent.md) | Branch only | `vc3d-agent vc3d mcp` | Not needed | Headless VC3D for agents 1.1.0 serves 46 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces, run ink models with controls and fit lasagna surfaces; its code is on public branch `submission/progress-2026-10-vc3d-agent-1-1-0`, not on `main`. |
+| [vc3d-agent](vc3d-agent.md) | Branch only | `vc3d-agent vc3d mcp` | Not needed | Headless VC3D for agents 1.1.1 serves 46 tools over MCP (stdio) and a shell command, so an agent can trace, check, render and flatten surfaces, run ink models with controls and fit lasagna surfaces; its code is on public branch `submission/progress-2026-10-vc3d-agent-1-1-1`, not on `main`. |
 
 ### Data and downloads
 
