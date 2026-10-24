@@ -1,0 +1,49 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "render-ink-memory",
+  "label": "Synthetic demo",
+  "alt": "Line chart of process memory over time while villa's render_ink.py composites and scales one 120 Mpx strip: the current code climbs to a 1.49 GB peak, the patched code peaks at 0.59 GB and finishes in about half the time.",
+  "caption": "Synthetic demo: memory of render_ink.py's compositing and 8-bit scaling step on five made-up uint8 slice TIFFs of 2,000 x 60,000 px, current code against the patch, sampled every 10 ms on Linux. No scan data, no model output.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [
+    "scripts/experiments/render-ink-memory/make.py (synthetic slices)",
+    "villa spiral-fitting/render_ink.py at 322cb08 and the patch"
+  ],
+  "outputs": [
+    {
+      "file": "render-ink-memory.png",
+      "bytes": 93324,
+      "sha256": "939c4ed8c61c471bb8efd8f8feddc99b68b86a01d6fb3623e282e92d9a12f8a8",
+      "width": 1200,
+      "height": 624,
+      "kind": "png",
+      "format": "png"
+    },
+    {
+      "file": "render-ink-memory.gif",
+      "bytes": 359941,
+      "sha256": "e90d442327f3aaac1868d3930b330f6c6d9c8445e6dad2b4065c1de22c927d54",
+      "width": 720,
+      "height": 378,
+      "kind": "gif",
+      "seconds": 5.0,
+      "frames": 60,
+      "settings": {
+        "fps": 12
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "chart.py",
+      "sample.py"
+    ],
+    "scripts_sha256": "cd2c857afe6e28da8a42fc3bdc7a98de7093faef337e8434652f1795bb16d617",
+    "base_commit": "7856faad658160a52d1779382fa815374bb06c44"
+  },
+  "command": "cd scripts/experiments/render-ink-memory && python make.py 2000 60000 && python sample.py python PATCHED/render_ink.py && python chart.py ../../../docs/assets/villa-issues"
+}
