@@ -1,0 +1,10 @@
+{
+  "label": "Synthetic demo",
+  "release_id": "autopipeline",
+  "alt": "AutoPipeline 0.1.6's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map beside its reversed control, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes.",
+  "caption": "Synthetic demo: AutoPipeline 0.1.6's monitor following scripts/demo_synthetic.py with each stage held 1.2 s before it starts so the run can be watched, then a captioned walk through its panels and console; stand-in VC3D tools and a stand-in ink model, so its maps are not ink.",
+  "license": "Apache-2.0",
+  "sources": [
+    "https://github.com/ChaseHendrick/Scrolls/tree/8096b464007af732d9835ac9fae4be49ce2354d0/submissions/progress-2026-10-fix6"
+  ]
+}
