@@ -1,4 +1,4 @@
-// Umbilici: the center lines of the prize-eligible Herculaneum scans, over live X-ray CT.
+// Umbilici: the center lines of the prize-eligible Herculaneum scans and the other public scans, over live X-ray CT.
 // Apache 2.0, Chase Hendrick. CT is read in the visitor's browser from the Vesuvius Challenge open-data bucket.
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -7,12 +7,19 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.7.0';
+const VERSION = '1.8.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
 const AMBER = new THREE.Color('#ffb347');
+// one color per maker, so two people's lines on one scan never share a color (Chase, 24 Oct 2026)
+const SRC_HEX = { bucket: '#89f0ff', drobkov: '#ff7eb6', tauil: '#b69cff', dopico: '#f2f5f7', finder: '#ffb347' };
+const SRC_COL = Object.fromEntries(Object.entries(SRC_HEX).map(([k, v]) => [k, new THREE.Color(v)]));
+const colOf = (l) => SRC_COL[l.source] || ICE;
+const hexOf = (l) => SRC_HEX[l.source] || '#89f0ff';
 const COARSE = matchMedia('(pointer: coarse)').matches;
+// the Array view's opening camera: high enough that its three rows (people, Center Finder, not on the prize page) stand apart
+const ARRAY_CAM = [-620, 760, 2300];
 const $ = (id) => document.getElementById(id);
 
 // ---------- state ----------
@@ -33,7 +40,7 @@ renderer.setSize(innerWidth, innerHeight);
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#02060a');
 const camera = new THREE.PerspectiveCamera(32, innerWidth / innerHeight, 1, 20000);
-camera.position.set(-620, 330, 2350).multiplyScalar(Math.max(1, 1.25 / camera.aspect));
+camera.position.set(...ARRAY_CAM).multiplyScalar(Math.max(1, 1.25 / camera.aspect));
 const controls = new OrbitControls(camera, canvas);
 controls.enableDamping = true;
 controls.dampingFactor = 0.08;
@@ -72,8 +79,8 @@ addEventListener('resize', () => {
   if (S.mode === 'array' && !userMoved) fitArray();
   S.dirty = true;
 });
-function fitArray() { const k = Math.max(1, 1.25 / camera.aspect); const a = controls.getAzimuthalAngle(); const r = Math.hypot(620, 2350) * k;
-  camera.position.set(Math.sin(a) * r, 330 * k, Math.cos(a) * r); camera.far = 20000; camera.updateProjectionMatrix(); }
+function fitArray() { const k = Math.max(1, 1.25 / camera.aspect); const a = controls.getAzimuthalAngle(); const r = Math.hypot(ARRAY_CAM[0], ARRAY_CAM[2]) * k;
+  camera.position.set(Math.sin(a) * r, ARRAY_CAM[1] * k, Math.cos(a) * r); camera.far = 20000; camera.updateProjectionMatrix(); }
 
 // ---------- helpers ----------
 const mm = (s, v) => v * s.voxel_um / 1000;
@@ -91,8 +98,33 @@ function lineAt(l, z) {
 function lineMean(l) { const p = linePts(l); let x = 0, y = 0; for (const q of p) { x += q[0]; y += q[1]; } return [x / p.length, y / p.length]; }
 function drift(s, l) { const [mx, my] = lineMean(l); let d = 0; for (const q of linePts(l)) d = Math.max(d, Math.hypot(q[0] - mx, q[1] - my)); return mm(s, d); }
 const isFinder = (l) => l.source === 'finder';
+// lines the visitor switched off: a whole maker (legend) or one line (scan card); kept in the URL as off=
+const OFF = { src: new Set(), line: new Set() };
+const lineKey = (s, l) => `${s.scroll}:${l.source}`;
+const shown = (s, l) => !OFF.src.has(l.source) && !OFF.line.has(lineKey(s, l));
 const hasFinder = (s) => s.lines.some(isFinder);
 function gradeOf(s) { const f = s.lines.find(isFinder); return f ? f.grade : null; }
+// traffic light for a Center Finder line: red when an end is flagged, yellow (caution) when the check could not judge
+// an end, the scan is one the check was never tuned for, or a pass rests on a CT recap; green when both ends passed
+function lightOf(l) {
+  if (!l || !l.grade) return null;
+  if (l.grade === 'FLAG') return 'bad';
+  const recap = l.ends && Object.values(l.ends).some((e) => e.recapped);
+  return l.grade === 'VOID' || l.untested || recap ? 'caution' : 'good';
+}
+const LIGHT_WORD = { good: 'both ends passed the CT end check', caution: 'caution: a CT recap, an end the check could not judge, or a scan the check was not tuned for', bad: 'an end was flagged by the CT end check' };
+const onPrize = (s) => s.first_letters || s.grand_prize;
+function numberWords(n) {
+  const ones = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'];
+  const tens = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  return n < 20 ? ones[n] : n < 100 ? tens[Math.floor(n / 10)] + (n % 10 ? '-' + ones[n % 10] : '') : String(n);
+}
+// the prize page's word for a scan: GP, FL, both in the card kicker, or none for a scan not on the page
+const prizeTag = (s) => s.grand_prize ? 'GP' : s.first_letters ? 'FL' : '';
+const prizeWords = (s) => !onPrize(s) ? 'NOT ON THE PRIZE PAGE' : [s.grand_prize && 'GRAND PRIZE', s.first_letters && 'FIRST LETTERS'].filter(Boolean).join(' · ');
+// the pyramid level of scan s that stands in for level L of a 1.2 m (about 9 µm) scan: a 2.4 µm scan reads two levels
+// coarser where its pyramid has them; every pyramid here stops at level 5, so its slices are read at level 5
+function lv(s, L) { return Math.min(s.pyramid.length - 1, L + Math.max(0, Math.round(Math.log2(8.64 / s.voxel_um)))); }
 function usable(l) {
   if (Array.isArray(l.usable)) return l.usable.length ? l.usable.join(', ') : 'none';
   const m = /usable ends: ([a-z, ]+)/.exec(l.note || ''); return m ? m[1] : null;
@@ -108,6 +140,7 @@ const GRADE_TEXT = {
   FLAG: 'the automatic CT end check flagged an end: there the line sits more than 4 mm from the center the CT shows',
   VOID: 'the end check could not judge this line',
 };
+const UNTESTED = 'the CT end check was tuned on 1.2 m (about 9 µm) scans only; on this scan its grades are untested, so no end is marked usable';
 
 // ---------- statistics (definitions: Guide, For researchers) ----------
 const RAW = (l) => `${DATASET}/resolve/main/${l.file}`;
@@ -148,7 +181,7 @@ function lineRows() {
     const t = statsOf(s, l);
     return {
       scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, source: l.source, maker: S.data.sources[l.source].label,
-      kind: l.kind, grade: l.grade || '', ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'),
+      kind: l.kind, grade: l.grade || '', ct_untested: !!l.untested, ct_end_low: endText(l, 'low'), ct_end_high: endText(l, 'high'), usable_ends: isFinder(l) ? (usable(l) || '') : '', withdrawn: l.note.includes('withdrawn'),
       ...t, licence: l.licence, sha256: l.sha256, file: RAW(l), upstream: l.upstream, note: l.note,
     };
   }));
@@ -212,9 +245,11 @@ const hitMeshes = [];
 const labels = [];
 function buildArray() {
   arrayGroup.clear(); hitMeshes.length = 0; $('labels').innerHTML = ''; labels.length = 0;
-  const people = S.data.scrolls.filter((s) => !hasFinder(s));
-  const finder = S.data.scrolls.filter(hasFinder);
-  const rows = [[people, -150], [finder, 170]];
+  const prize = S.data.scrolls.filter(onPrize);
+  const people = prize.filter((s) => !hasFinder(s));
+  const finder = prize.filter(hasFinder);
+  const other = S.data.scrolls.filter((s) => !onPrize(s));   // not on the prize page: a row behind the two prize rows
+  const rows = [[people, -150], [finder, 170], [other, -560]];
   for (const [list, rz] of rows) {
     const step = 112, x0 = -(list.length - 1) * step / 2;
     list.forEach((s, i) => {
@@ -222,8 +257,9 @@ function buildArray() {
       const H = mm(s, s.shape[0]);
       const [cx, cy] = lineMean(s.lines[0]);
       for (const l of s.lines) {
+        if (!shown(s, l)) continue;
         const pts = linePts(l).map(([x, y, z]) => [mm(s, x - cx) * S.ex, mm(s, z), mm(s, y - cy) * S.ex]);
-        g.add(tube(pts, isFinder(l) ? AMBER : ICE, 0.9, l.note.includes('withdrawn') ? 0.45 : 1));
+        g.add(tube(pts, colOf(l), 0.9, l.note.includes('withdrawn') ? 0.45 : 1));
       }
       const tint = hasFinder(s) ? AMBER : ICE;
       g.add(ring(26, 0, tint, 0.28)); g.add(ring(26, H, tint, 0.12));
@@ -236,7 +272,8 @@ function buildArray() {
       const hit = new THREE.Mesh(new THREE.CylinderGeometry(40, 40, H, 12), new THREE.MeshBasicMaterial({ visible: false }));
       hit.position.y = H / 2; hit.userData.scroll = s.scroll; g.add(hit); hitMeshes.push(hit);
       arrayGroup.add(g);
-      const el = document.createElement('div'); el.className = 'lbl' + (hasFinder(s) ? ' cf' : '');
+      const lt = lightOf(s.lines.find(isFinder));
+      const el = document.createElement('div'); el.className = 'lbl' + (hasFinder(s) ? ' cf' : '') + (lt ? ` ${lt}` : '') + (onPrize(s) ? '' : ' np');
       el.innerHTML = `<b>${s.scroll.replace('PHerc', '')}</b>${fmt(H, 0)} mm`;
       $('labels').appendChild(el); labels.push({ el, g, s });
     });
@@ -266,6 +303,7 @@ async function zmeta(s, L) {
 }
 let inflight = 0; const waiters = [];
 const MAXQ = 10;
+const MAX_PX = 640, READS = 2400; // the X-ray volume: widest plane kept, range reads per scan (see loadVolume)
 async function slot() { if (inflight < MAXQ) { inflight++; return; } await new Promise((r) => waiters.push(r)); inflight++; }
 function free() { inflight--; const w = waiters.shift(); if (w) w(); }
 async function rangeGet(url, off, len, signal) {
@@ -335,8 +373,12 @@ function disposeVol() {
 }
 async function loadVolume(s, parent) {
   disposeVol();
-  const L = 5; const m = await zmeta(s, L); const [Z, Y, X] = m.shape; const [cz, cy, cx] = m.chunks;
-  const stride = Math.max(1, Math.ceil(Z / (COARSE ? 72 : 120)));
+  const L = 5; const m = await zmeta(s, L); const [Z, Y0, X0] = m.shape; const [cz, cy, cx] = m.chunks;
+  // A 2.4 µm scan's level-5 plane is up to 1,326 px across (a 1.2 m scan's about 250): it is read whole, kept every
+  // f-th pixel, and fewer heights are read (at least 24), so one scan costs at most about READS range reads.
+  const f = Math.max(1, Math.ceil(Math.max(X0, Y0) / MAX_PX)); const X = Math.ceil(X0 / f), Y = Math.ceil(Y0 / f);
+  const per = Math.ceil(Y0 / cy) * Math.ceil(X0 / cx);
+  const stride = Math.max(1, Math.ceil(Z / Math.max(24, Math.min(COARSE ? 72 : 120, Math.floor(READS / per)))));
   const zs = []; for (let z = 0; z < Z; z += stride) zs.push(z);
   const D = zs.length; const data = new Uint8Array(X * Y * D);
   const tex = new THREE.Data3DTexture(data, X, Y, D);
@@ -346,22 +388,27 @@ async function loadVolume(s, parent) {
     blending: THREE.AdditiveBlending, uniforms: { uVol: { value: tex }, uCam: { value: new THREE.Vector3() }, uGain: { value: S.gain }, uMode: { value: 0 }, uFill: { value: 1 }, uN: { value: COARSE ? 140 : 220 } },
   });
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), mat);
-  mesh.scale.set(mm(s, X * 32), mm(s, zs[D - 1] * 32 + stride * 32), mm(s, Y * 32));
+  mesh.scale.set(mm(s, X * f * 32), mm(s, zs[D - 1] * 32 + stride * 32), mm(s, Y * f * 32));
   mesh.position.set(0, mesh.scale.y / 2, 0); mesh.renderOrder = 1;
   mesh.onBeforeRender = (r, sc, cam) => { mat.uniforms.uCam.value.copy(cam.position).applyMatrix4(new THREE.Matrix4().copy(mesh.matrixWorld).invert()); };
   parent.add(mesh);
   const abort = new AbortController();
-  vol = { s, mesh, tex, abort, loaded: 0, total: D, data, zs, X, Y, stride, done: null };
+  vol = { s, mesh, tex, abort, loaded: 0, total: D, data, zs, X, Y, f, stride, done: null };
   applyVolUniforms();
   // coarse to fine: every 4th slice first (copied into its gap), then the rest
   const order = []; for (let i = 0; i < D; i += 4) order.push(i); for (let i = 0; i < D; i++) if (i % 4) order.push(i);
   const done = new Uint8Array(D); vol.done = done; let lastUp = 0;
   const one = async (i) => {
     const z = zs[i]; const plane = X * Y; const tasks = [];
-    for (let by = 0; by * cy < Y; by++) for (let bx = 0; bx * cx < X; bx++) {
+    for (let by = 0; by * cy < Y0; by++) for (let bx = 0; bx * cx < X0; bx++) {
       tasks.push(rangeGet(`${s.zarr}/${L}/${Math.floor(z / cz)}/${by}/${bx}`, (z % cz) * cy * cx, cy * cx, abort.signal).then((b) => {
-        if (!b) return; const h = Math.min(cy, Y - by * cy), w = Math.min(cx, X - bx * cx);
-        for (let r = 0; r < h; r++) data.set(b.subarray(r * cx, r * cx + w), i * plane + (by * cy + r) * X + bx * cx);
+        if (!b) return; const h = Math.min(cy, Y0 - by * cy), w = Math.min(cx, X0 - bx * cx);
+        if (f === 1) { for (let r = 0; r < h; r++) data.set(b.subarray(r * cx, r * cx + w), i * plane + (by * cy + r) * X + bx * cx); return; }
+        // keep the pixels whose level-5 row and column are multiples of f
+        for (let r = (f - (by * cy) % f) % f; r < h; r += f) {
+          const row = i * plane + ((by * cy + r) / f) * X;
+          for (let q = (f - (bx * cx) % f) % f; q < w; q += f) data[row + (bx * cx + q) / f] = b[r * cx + q];
+        }
       }));
     }
     await Promise.all(tasks);
@@ -383,7 +430,7 @@ function applyVolUniforms() {
 }
 function setStatus() {
   const el = $('ct-status'); if (!el) return;
-  el.textContent = vol ? (vol.loaded < vol.total ? `streaming CT ${Math.round(100 * vol.loaded / vol.total)}%` : `CT level 5 (${fmt(vol.s.voxel_um * 32, 0)} µm voxels), ${vol.total} heights`) : '';
+  el.textContent = vol ? (vol.loaded < vol.total ? `streaming CT ${Math.round(100 * vol.loaded / vol.total)}%` : `CT level 5${vol.f > 1 ? `, every ${vol.f === 2 ? 'second' : vol.f === 3 ? 'third' : `${vol.f}th`} pixel` : ''} (${fmt(vol.s.voxel_um * 32 * vol.f, 0)} µm voxels), ${vol.total} heights`) : '';
 }
 
 // ---------- SCAN view ----------
@@ -392,9 +439,15 @@ let slicePlane = null, sliceTex = null;
 let lasGroup = null;
 function scanOrigin(s) { return [s.shape[2] / 2, s.shape[1] / 2]; }
 function toWorld(s, x, y, z) { const [ox, oy] = scanOrigin(s); return [mm(s, x - ox), mm(s, z), mm(s, y - oy)]; }
+const scanLines = new THREE.Group();
+function buildScanLines(s) {
+  scanLines.clear();
+  for (const l of s.lines) if (shown(s, l)) scanLines.add(tube(linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), colOf(l), 0.55, l.note.includes('withdrawn') ? 0.5 : 1));
+  S.dirty = true;
+}
 function buildScan(s) {
   disposeVol(); scanGroup.clear(); lasGroup = null;
-  for (const l of s.lines) scanGroup.add(tube(linePts(l).map(([x, y, z]) => toWorld(s, x, y, z)), isFinder(l) ? AMBER : ICE, 0.55, l.note.includes('withdrawn') ? 0.5 : 1));
+  scanGroup.add(scanLines); buildScanLines(s);
   const W = mm(s, s.shape[2]), D = mm(s, s.shape[1]), H = mm(s, s.shape[0]);
   const frame = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(W, H, D)), new THREE.LineBasicMaterial({ color: ICE, transparent: true, opacity: 0.12 }));
   frame.position.y = H / 2; scanGroup.add(frame);
@@ -493,8 +546,9 @@ function drawCT(sl, alpha = 1) {
 function drawMarks(sx, s, z, a = 0) {
   const k = sc.width / s.shape[2], c = sc.width / 2, ca = Math.cos(a), sa = Math.sin(a);
   for (const l of s.lines) {
+    if (!shown(s, l)) continue;
     const p = lineAt(l, z); if (!p) continue;
-    const u = p[0] * k - c, v = p[1] * k - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = isFinder(l) ? '#ffb347' : '#89f0ff';
+    const u = p[0] * k - c, v = p[1] * k - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = hexOf(l);
     sx.strokeStyle = col; sx.lineWidth = 1.6; sx.shadowColor = col; sx.shadowBlur = 10;
     sx.beginPath(); sx.arc(x, y, 9, 0, Math.PI * 2); sx.stroke();
     sx.beginPath(); sx.moveTo(x - 22, y); sx.lineTo(x - 12, y); sx.moveTo(x + 12, y); sx.lineTo(x + 22, y); sx.moveTo(x, y - 22); sx.lineTo(x, y - 12); sx.moveTo(x, y + 12); sx.lineTo(x, y + 22); sx.stroke();
@@ -519,12 +573,15 @@ async function drawSlice() {
       present(); $('i-status').textContent = 'model output · villa lasagna';
     } else {
       $('i-status').textContent = 'streaming…';
-      const quick = await ctSlice(s, 4, z, sig); if (job !== sliceJob) return;
+      const Lq = lv(s, 4), Lf = lv(s, 3);
+      const quick = await ctSlice(s, Lq, z, sig); if (job !== sliceJob) return;
       sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(quick); present();
-      await new Promise((r) => setTimeout(r, 220)); if (job !== sliceJob) return;
-      const fine = await ctSlice(s, 3, z, sig); if (job !== sliceJob) return;
-      sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(fine); present();
-      $('i-status').textContent = `CT level 3 · ${fmt(s.voxel_um * 8, 0)} µm px`;
+      if (Lf !== Lq) {
+        await new Promise((r) => setTimeout(r, 220)); if (job !== sliceJob) return;
+        const fine = await ctSlice(s, Lf, z, sig); if (job !== sliceJob) return;
+        sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(fine); present();
+      }
+      $('i-status').textContent = `CT level ${Lf} · ${fmt(s.voxel_um * 2 ** Lf, 0)} µm px`;
     }
   } catch (e) { if (e.name !== 'AbortError') { $('i-status').textContent = 'CT unavailable'; console.warn(e); } }
 }
@@ -542,7 +599,7 @@ function setZ(z, now = false) {
 function livePreview(s) {
   if (S.mode === 'lasagna') return;
   const z = S.z; $('i-z').textContent = `z ${Math.round(z)} · ${fmt(mm(s, z), 1)} mm`;
-  for (const L of [3, 4]) { const hit = sliceCache.get(`${s.zarr}/${L}/${Math.floor(z / 2 ** L)}`); if (hit) { sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(hit); present(); return; } }
+  for (const L of new Set([lv(s, 3), lv(s, 4)])) { const hit = sliceCache.get(`${s.zarr}/${L}/${Math.floor(z / 2 ** L)}`); if (hit) { sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); drawCT(hit); present(); return; } }
   const v = vol && vol.s === s && vol.done ? vol : null; if (!v) return;
   const i = Math.max(0, Math.min(v.zs.length - 1, Math.round(z / 32 / v.stride))); if (!v.done[i] && !v.done[i - (i % 4)]) return;
   const plane = v.X * v.Y; const sl = { data: v.data.subarray(i * plane, (i + 1) * plane), X: v.X, Y: v.Y };
@@ -551,13 +608,33 @@ function livePreview(s) {
 $('z').addEventListener('input', (e) => { if (S.sel) setZ(e.target.value / 1000 * S.sel.shape[0]); });
 sc.addEventListener('wheel', (e) => { if (!S.sel) return; e.preventDefault(); const step = S.mode === 'lasagna' ? 1280 * Math.sign(e.deltaY) : S.sel.shape[0] / 200 * Math.sign(e.deltaY); setZ(S.z - step); }, { passive: false });
 
+// ---------- showing and hiding lines ----------
+function buildLegend() {
+  const used = Object.keys(S.data.sources).filter((k) => S.data.scrolls.some((s) => s.lines.some((l) => l.source === k)));
+  $('legend').innerHTML = used.map((k) => `<button class="lg${OFF.src.has(k) ? ' off' : ''}" data-src="${k}" aria-pressed="${!OFF.src.has(k)}" title="show or hide every line by ${S.data.sources[k].label}"><i class="sw" style="background:${SRC_HEX[k]};box-shadow:0 0 6px ${SRC_HEX[k]}"></i>${k === 'finder' ? 'Center Finder (model output)' : S.data.sources[k].label}</button>`).join('');
+}
+function linesChanged() {
+  buildLegend(); buildArray(); if (S.sel) { buildScanLines(S.sel); buildCard(S.sel); drawSlice(); }
+  syncURLSoon();
+}
+// show(kind, name, on): kind 'source' (a maker, such as drobkov) or 'line' (SCROLL:SOURCE); on omitted toggles
+function showLines(kind, name, on) {
+  const set = kind === 'source' ? OFF.src : OFF.line;
+  const now = on === undefined ? set.has(name) : !!on;
+  if (now) set.delete(name); else set.add(name);
+  linesChanged();
+  return { off: [...OFF.src, ...OFF.line] };
+}
+document.addEventListener('click', (e) => { const b = e.target.closest('#legend [data-src]'); if (b) showLines('source', b.dataset.src); });
+document.addEventListener('change', (e) => { const c = e.target.closest('input[data-line]'); if (c) showLines('line', c.dataset.line, c.checked); });
+
 // ---------- UI ----------
 function railRow(s) {
   const li = document.createElement('li'); li.dataset.scroll = s.scroll;
-  const srcs = s.lines.map((l) => `<span class="src ${isFinder(l) ? 'cf' : ''}" title="${S.data.sources[l.source].label}">${S.data.sources[l.source].short}</span>`).join('');
+  const srcs = s.lines.map((l) => `<span class="src s-${l.source}" title="${S.data.sources[l.source].label}">${S.data.sources[l.source].short}</span>`).join('');
   const g = gradeOf(s);
-  const prize = s.grand_prize ? 'GP' : 'FL';
-  li.innerHTML = `<span class="nm">${s.scroll}<small>${prize}</small></span><span class="srcs">${srcs}</span><span class="grade ${g || ''}" title="${(() => { const f = s.lines.find(isFinder); return f ? endsText(f) : ''; })()}">${g || '·'}</span>`;
+  const f = s.lines.find(isFinder); const ut = !!(f && f.untested); const lt = lightOf(f);
+  li.innerHTML = `<span class="nm">${s.scroll}<small>${prizeTag(s)}</small></span><span class="srcs">${srcs}</span><span class="grade ${g || ''} ${lt ? 'lt-' + lt : ''}${ut ? ' ut' : ''}" title="${f ? endsText(f) + (ut ? `; ${UNTESTED}` : '') + (lt ? `; ${LIGHT_WORD[lt]}` : '') : ''}">${g || '·'}</span>`;
   li.addEventListener('click', () => select(s.scroll, S.mode === 'array' ? 'scan' : S.mode));
   li.addEventListener('mouseenter', () => { S.hot = s.scroll; S.dirty = true; });
   li.addEventListener('mouseleave', () => { S.hot = null; S.dirty = true; });
@@ -565,20 +642,25 @@ function railRow(s) {
 }
 function buildRail() {
   const ol = $('rail-list'); ol.innerHTML = '';
-  for (const s of S.data.scrolls) ol.appendChild(railRow(s));
+  let sep = false;
+  for (const s of S.data.scrolls) {
+    if (!onPrize(s) && !sep) { sep = true; const li = document.createElement('li'); li.className = 'sep mono'; li.textContent = 'NOT ON THE PRIZE PAGE'; ol.appendChild(li); }
+    ol.appendChild(railRow(s));
+  }
 }
 function buildCard(s) {
-  $('c-kick').textContent = `SCAN ${s.scan} · ${s.voxel_um} µm · ${s.grand_prize ? 'GRAND PRIZE · ' : ''}FIRST LETTERS`;
+  $('c-kick').textContent = `SCAN ${s.scan} · ${s.voxel_um} µm · ${prizeWords(s)}`;
   $('c-title').textContent = s.scroll;
   $('c-lines').innerHTML = s.lines.map((l, i) => {
     const src = S.data.sources[l.source]; const f = isFinder(l); const t = statsOf(s, l);
     const up = /^https?:/.test(l.upstream) ? `<a href="${l.upstream}" target="_blank" rel="noopener">upstream</a>` : '';
-    const grade = l.grade ? `<span class="grade ${l.grade}" title="${GRADE_TEXT[l.grade]}">END CHECK ${l.grade}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
+    const grade = l.grade ? `<span class="grade ${l.grade} lt-${lightOf(l)}" title="${GRADE_TEXT[l.grade]}; ${LIGHT_WORD[lightOf(l)]}">END CHECK ${l.grade}${lightOf(l) === 'caution' ? ' · CAUTION' : ''}</span>` : `<span class="dim">${l.kind === 'person' ? 'made by a person' : ''}</span>`;
     const ends = endsText(l);
-    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : (GRADE_TEXT[l.grade] || '')}. Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
+    const note = f ? `<div class="note">${ends ? `CT end check: ${endsHTML(l)}` : (GRADE_TEXT[l.grade] || '')}.${l.untested ? ` Untested: ${UNTESTED}.` : ''} Usable ends: ${usable(l) || 'see note'}. Model output: no end has been checked on CT by a person.</div>`
       : (l.note ? `<div class="note">${l.note}.</div>` : '');
     const row = (k, v) => `<tr><th>${k}</th><td>${v}</td></tr>`;
-    return `<div class="ln"><div class="who"><b class="${f ? 'cf' : 'p'}">${src.label}</b>${grade}</div>
+    const k = lineKey(s, l);
+    return `<div class="ln${shown(s, l) ? '' : ' off'}"><div class="who"><label class="show" title="show or hide this line"><input type="checkbox" data-line="${k}"${OFF.line.has(k) ? '' : ' checked'}${OFF.src.has(l.source) ? ' disabled' : ''}></label><b style="color:${hexOf(l)}">${src.label}</b>${grade}</div>
       <div class="meta">${t.points} points · z ${t.z_start} to ${t.z_end} (${fmt(t.height_mm, 0)} mm, ${fmt(t.coverage * 100, 0)}% of the scan) · strays up to ${fmt(t.stray_mm, 1)} mm from its mean · ${l.licence}</div>${note}
       <div class="links"><a href="${RAW(l)}" download>download</a><button class="lk" data-copy="${RAW(l)}" data-what="file URL copied">copy URL</button><button class="lk" data-copy="python -m kit centerline get ${s.scroll} --source ${l.source} --into YOUR_PROJECT_FOLDER" data-what="kit command copied: it writes YOUR_PROJECT_FOLDER/umbilicus.json" title="A command for the Scrolls kit that downloads this line, checks its sha256 and writes it as umbilicus.json where VC3D looks">copy kit command</button><a href="${DATASET}/blob/main/${l.file}" target="_blank" rel="noopener">view</a>${up}</div>
       <details class="full"><summary>every number</summary><table class="kv">
@@ -621,7 +703,7 @@ function setMode(m) {
   $('ctl-array').hidden = m !== 'array'; $('ctl-scan').hidden = m !== 'scan'; $('ctl-las').hidden = m !== 'lasagna';
   $('blend-wrap').hidden = m !== 'lasagna'; $('t-ori').parentElement.hidden = m !== 'lasagna';
   document.querySelectorAll('#rail li').forEach((li) => li.classList.toggle('sel', !!S.sel && li.dataset.scroll === S.sel.scroll && m !== 'array'));
-  if (m === 'array') { controls.target.set(0, 90, 0); if (prev !== 'array') { const k = Math.max(1, 1.25 / camera.aspect); camera.position.set(-620 * k, 330 * k, 2350 * k); camera.far = 20000; camera.updateProjectionMatrix(); } controls.autoRotate = false; }
+  if (m === 'array') { controls.target.set(0, 90, 0); if (prev !== 'array') { const k = Math.max(1, 1.25 / camera.aspect); camera.position.set(ARRAY_CAM[0] * k, ARRAY_CAM[1] * k, ARRAY_CAM[2] * k); camera.far = 20000; camera.updateProjectionMatrix(); } controls.autoRotate = false; }
   applyVolUniforms(); applyLasVis();
   if (m !== 'array' && S.sel) setZ(S.z ?? defaultZ(S.sel), true);
   syncURL(); S.dirty = true;
@@ -710,7 +792,7 @@ const COLS = {
     ['coverage', 'cover'], ['median_step_vox', 'step'], ['max_step_vox', 'max step'], ['off_center_mm', 'off ctr mm'], ['stray_mm', 'stray mm'], ['tilt_deg', 'tilt °'],
     ['wiggle_mm', 'wiggle mm'], ['path_over_height', 'path/ht'], ['stamped', 'stamp'], ['usable_ends', 'usable ends'], ['licence', 'licence'], ['sha256', 'sha256']],
   scans: [['scroll', 'scroll'], ['scan', 'scan'], ['voxel_um', 'µm'], ['slices', 'z'], ['height_px', 'y'], ['width_px', 'x'], ['height_mm', 'height mm'], ['width_mm', 'width mm'],
-    ['levels', 'levels'], ['grand_prize', 'GP'], ['lines', 'lines'], ['sources', 'sources'], ['grade', 'grade'], ['pair_median_mm', 'pair gap mm'], ['pair_max_mm', 'pair max mm']],
+    ['levels', 'levels'], ['grand_prize', 'GP'], ['first_letters', 'FL'], ['lines', 'lines'], ['sources', 'sources'], ['grade', 'grade'], ['pair_median_mm', 'pair gap mm'], ['pair_max_mm', 'pair max mm']],
 };
 const DEC = { height_mm: 1, coverage: 2, median_step_vox: 0, max_step_vox: 0, off_center_mm: 2, stray_mm: 2, tilt_deg: 2, wiggle_mm: 3, path_over_height: 4, width_mm: 1, voxel_um: 3, pair_median_mm: 2, pair_max_mm: 2 };
 const SHEET = { tab: 'lines', key: null, dir: 1 };
@@ -826,10 +908,12 @@ function syncURL() {
   const q = new URLSearchParams();
   if (S.mode !== 'array') { q.set('mode', S.mode); q.set('scan', S.sel.scroll); q.set('z', Math.round(S.z)); }
   if (S.ex !== 3) q.set('ex', S.ex);
+  const off = [...OFF.src, ...OFF.line]; if (off.length) q.set('off', off.join(','));
   history.replaceState(null, '', q.toString() ? `?${q}` : location.pathname);
 }
 window.umbilici = {
   version: () => VERSION,
+  show: (kind, name, on) => showLines(kind, name, on),
   scans: () => S.data.scrolls.map((s) => ({ scroll: s.scroll, scan: s.scan, volume: s.volume, voxel_um: s.voxel_um, shape_zyx: s.shape, grand_prize: s.grand_prize, first_letters: s.first_letters, sources: s.lines.map((l) => l.source), grade: gradeOf(s) })),
   lines: (name) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ ...l, points: linePts(l) })) : null; },
   at: (name, z) => { const s = S.data.scrolls.find((q) => q.scroll === name); return s ? s.lines.map((l) => ({ source: l.source, xy: lineAt(l, z) })) : null; },
@@ -878,7 +962,9 @@ function tick(now = performance.now()) {
 (async () => {
   S.data = await getJSON('data/lines.json');
   try { S.las = await getJSON('data/lasagna/meta.json'); } catch { S.las = null; document.querySelector('.chip.las').disabled = true; }
-  $('k-count').textContent = S.data.scrolls.length;
+  const nPrize = S.data.scrolls.filter(onPrize).length, nOther = S.data.scrolls.length - nPrize;
+  $('k-count').textContent = nPrize; $('k-other').innerHTML = nOther ? `<span class="sep">/</span>${nOther} OTHER PUBLIC SCANS` : '';
+  $('h-count').textContent = numberWords(S.data.scrolls.length);
   $('a-sources').innerHTML = Object.entries(S.data.sources).map(([k, v]) => {
     const l = S.data.scrolls.flatMap((s) => s.lines).find((q) => q.source === k); const n = S.data.scrolls.filter((s) => s.lines.some((q) => q.source === k)).length;
     const names = S.data.scrolls.filter((s) => s.lines.some((q) => q.source === k)).map((s) => s.scroll).join(', ');
@@ -900,6 +986,8 @@ function tick(now = performance.now()) {
   }).catch(() => {});
   const q = new URLSearchParams(location.search);
   if (q.get('ex')) { S.ex = Math.max(1, Math.min(30, +q.get('ex'))); $('ex').value = S.ex; $('ex-v').textContent = S.ex; }
+  for (const k of (q.get('off') || '').split(',').filter(Boolean)) (k.includes(':') ? OFF.line : OFF.src).add(k);
+  buildLegend();
   applySettings(false); buildRail(); buildArray();
   $('boot').remove();
   tick();

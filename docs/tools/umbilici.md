@@ -1,6 +1,6 @@
-# umbilici: view every public center line of the 22 prize scans over live X-ray CT
+# umbilici: view every public center line of the 22 prize scans and 11 other public scans over live X-ray CT
 
-A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.
+A static Hugging Face Space that draws every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.
 
 | Field | Value |
 | --- | --- |
@@ -22,13 +22,13 @@ A static Hugging Face Space that draws every public center line (umbilicus) for 
 
 ## What it does
 
-A Herculaneum scroll is a sheet of papyrus wound around a center. Its center line, the umbilicus, is where tracing tools such as VC3D and villa's lasagna begin. People have published center lines for 13 of the 22 scans on the prize page, and the other nine have lines from Chase Hendrick's Center Finder (model output). They are collected, with hashes and licences, in the dataset [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines). Umbilici shows them.
+A Herculaneum scroll is a sheet of papyrus wound around a center. Its center line, the umbilicus, is where tracing tools such as VC3D and villa's lasagna begin. People have published center lines for 13 of the 22 scans on the prize page, and the other nine have lines from Chase Hendrick's Center Finder (model output). Since dataset v2.3 (24 Oct 2026) it also holds 11 public scans that are not on the prize page: the organizers' lines for PHerc0139, PHerc0332, PHerc1451 and PHercParis4, and Center Finder lines for PHerc0343, PHerc0814, PHerc0841 (1.2 m) and PHerc1299, PHercMAN5, PHercMANB, PHercParis3 (2.4 µm, grades untested). They are collected, with hashes and licences, in the dataset [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines). Umbilici shows them.
 
-Three views. **Array**: the 22 lines side by side, heights to scale in millimetres, people's lines ice blue and the Center Finder's amber, with an optional exaggeration of side-to-side drift (default 3x, labeled on the page). **X-ray**: one scan, rendered from its level-5 CT (32x down) as a radiograph (CT summed along each ray) or a maximum intensity projection, with its lines inside and an axial slice (level 4, then level 3) on which each line's crossing is marked. **Lasagna**: PHerc0175A with a small derivative of villa's lasagna `predict3d` field from [SharpMeow/pherc0175a-lasagna](https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna): its cos channel at nine heights, an orientation picture per height, and 155,891 surface normals drawn as short needles.
+Three views. **Array**: every scan's lines side by side, heights to scale in millimetres, prize scans in the front two rows and the other public scans behind, one color per maker (Vesuvius Challenge cyan, Drobkov pink, Abd Elilah violet, Dopico white, Center Finder amber), scan names in a traffic light from the CT end check (green pass, yellow caution, red flag), with an optional exaggeration of side-to-side drift (default 3x, labeled on the page). **X-ray**: one scan, rendered from its level-5 CT (32x down) as a radiograph (CT summed along each ray) or a maximum intensity projection, with its lines inside and an axial slice (level 4, then level 3; level 5 on a 2.4 µm scan, whose level-5 plane is also thinned to at most 640 px across for the 3D view) on which each line's crossing is marked. Any maker or single line can be hidden (key under the list, or the box on a scan card; `show()`; kept in the URL as `off=`). **Lasagna**: PHerc0175A with a small derivative of villa's lasagna `predict3d` field from [SharpMeow/pherc0175a-lasagna](https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna): its cos channel at nine heights, an orientation picture per height, and 155,891 surface normals drawn as short needles.
 
-The Space stores no CT. The browser reads one z plane of each 128-voxel chunk (16 KB, uncompressed uint8 in the bucket) with an HTTP range request. Every line keeps its source, licence, upstream link and note; the nine Center Finder lines show the automatic CT end check's grade for each end (PASS, FLAG, and CT recap where an end was refit to the CT) and which ends are usable.
+The Space stores no CT. The browser reads one z plane of each 128-voxel chunk (16 KB, uncompressed uint8 in the bucket) with an HTTP range request. Every line keeps its source, licence, upstream link and note; the 16 Center Finder lines show the automatic CT end check's grade for each end (PASS, FLAG, and CT recap where an end was refit to the CT) and which ends are usable.
 
-For every level of reader: a **Guide** with five tabs (Start here for newcomers; VC3D and villa, with how each of villa's readers treats these files, cited to villa's source and tutorial, and two Python snippets that were run against the live dataset and bucket; For researchers, with every statistic defined; Data details, with frames, pyramids and encodings; Credits). A **Data** dialog holds every number as sortable tables (29 lines, 22 scans) with `lines.csv`, `scans.csv`, `points.csv` and `umbilici.json` downloads. Each scan card gives, per line, a download link and copyable URL for the raw file, the sha256, every statistic (points, z range, coverage, control-point steps, mean and offset from the grid center, stray, tilt and wiggle about a least-squares line, path length, whether the file carries VC3D's frame stamp), the pair gaps between two lines, each line's x, y, z at the current slice, the scan's OME-Zarr URL and pyramid, and a link that reopens the view.
+For every level of reader: a **Guide** with five tabs (Start here for newcomers; VC3D and villa, with how each of villa's readers treats these files, cited to villa's source and tutorial, and two Python snippets that were run against the live dataset and bucket; For researchers, with every statistic defined; Data details, with frames, pyramids and encodings; Credits). A **Data** dialog holds every number as sortable tables (40 lines, 33 scans) with `lines.csv`, `scans.csv`, `points.csv` and `umbilici.json` downloads. Each scan card gives, per line, a download link and copyable URL for the raw file, the sha256, every statistic (points, z range, coverage, control-point steps, mean and offset from the grid center, stray, tilt and wiggle about a least-squares line, path length, whether the file carries VC3D's frame stamp), the pair gaps between two lines, each line's x, y, z at the current slice, the scan's OME-Zarr URL and pyramid, and a link that reopens the view.
 
 A center line is geometry, and the lasagna field is model output. Nothing on the page is a reading of any text.
 
@@ -58,7 +58,7 @@ python3 tools/build_lines.py /tmp/center-lines data/lines.json
 python3 -m http.server 8765    # then open http://localhost:8765/?mode=scan&scan=PHerc0191&z=10400
 ```
 
-`build_lines.py` prints one line per scan (`PHerc0191 20250821151635-9.362um-1.2m-113keV-masked.zarr [18977, 8387, 8387] 6 ['drobkov', 'tauil']`, 2026-10-23). It worked when the page's Array view shows 22 scans and the X-ray view's status reads `CT level 5 (300 µm voxels), 119 heights`. Without `data/lasagna/` the Lasagna button is disabled; build it with `tools/build_lasagna.py` from a local copy of the lasagna dataset.
+`build_lines.py` prints one line per scan (`PHerc0191 20250821151635-9.362um-1.2m-113keV-masked.zarr [18977, 8387, 8387] 6 ['drobkov', 'tauil']`, 2026-10-23). It worked when the page's Array view shows 33 scans and the X-ray view's status reads `CT level 5 (300 µm voxels), 119 heights`. Without `data/lasagna/` the Lasagna button is disabled; build it with `tools/build_lasagna.py` from a local copy of the lasagna dataset.
 
 ## Checks and controls
 
@@ -67,7 +67,7 @@ python3 -m http.server 8765    # then open http://localhost:8765/?mode=scan&scan
 - **Lasagna chunks have one owner.** A chunk is taken only from the part whose crop holds its origin, so overlapping parts cannot overwrite each other (`inside()`, tested). The shipped `needles.bin`, `cos_6400.webp` and `ori_6400.webp` were rebuilt byte for byte by `tools/build_lasagna.py`'s writer from the same reduction (2026-10-23).
 - **No control for the picture itself.** The page shows lines and CT; it does not test whether a line is at the true center. The end-check grades come from the dataset, and their meaning is on the page.
 
-Claim label: Sourced fact, for the lines and their sources (copied from the dataset); Model output, for the nine Center Finder lines and the lasagna layers. Interpretation, for the statistics' meaning (each is defined on the page).
+Claim label: Sourced fact, for the lines and their sources (copied from the dataset); Model output, for the 16 Center Finder lines and the lasagna layers. Interpretation, for the statistics' meaning (each is defined on the page).
 
 ## Commands and options
 
@@ -131,8 +131,8 @@ python3 tools/build_lasagna.py DATASET_DIR OUT_DIR
 | `scrolls[].scroll`, `scan`, `volume`, `zarr` | string | Scroll id, scan id, volume name, bucket URL of the OME-Zarr |
 | `scrolls[].voxel_um` | number | Voxel size in µm, from the volume name |
 | `scrolls[].shape` | [int, int, int] | Level-0 shape, z y x |
-| `scrolls[].pyramid[]` | object | Per level: `path`, `shape`, `chunks`, `dtype`, `compressor` (all 132 levels of the 22 scans: `|u1`, 128³, none; 2026-10-23) |
-| `scrolls[].lines[].stamp` | object | The file's `voxelsize_um`, `volume`, `volume_width`, `volume_height`, `volume_slices`, when present (22 of 29) |
+| `scrolls[].pyramid[]` | object | Per level: `path`, `shape`, `chunks`, `dtype`, `compressor` (all 198 levels of the 33 scans: `|u1`, 128³, none; 2026-10-24) |
+| `scrolls[].lines[].stamp` | object | The file's `voxelsize_um`, `volume`, `volume_width`, `volume_height`, `volume_slices`, when present (33 of 40) |
 | `scrolls[].lines[].points` | [int] | Flat x, y, z triples, sorted by z, level-0 voxels |
 | `scrolls[].lines[].grade` | string or null | `PASS` or `FLAG` for a Center Finder line (FLAG when either end is; `VOID` only in builds from releases before v2.2) |
 | `scrolls[].lines[].ends` | object | Per end (`low`, `high`): `grade`, `recapped` (the end's last 10 mm is a straight fit to the CT) and `D_mm`, from the dataset index's `ct_ends` (v2.2 and later); empty for lines made by people |
@@ -183,6 +183,7 @@ Free: a static Space, and CT comes from the public bucket at the visitor's end. 
 
 ## History
 
+- 2026-10-24: 1.8.0 in this repository (`4a1c032`): lines from SharpMeow/vesuvius-center-lines v2.3 (33 scans, 40 lines; the 11 scans not on the prize page listed last and drawn in a back row); one color per maker and a show or hide control per maker and per line (`show(kind, name, on)`, `off=` in the URL), and green, yellow and red grades on the scan names, the list and the cards (Chase, 24 Oct 2026); 2.4 µm scans read at level 5 for the slice and thinned to at most 640 px across, with fewer heights, for the 3D view; `untested` grades marked; the card kicker names the prize lists a scan is on (PHerc1447 no longer reads FIRST LETTERS). Checked in headless Chromium on PHerc0191, PHerc0139, PHerc1447, PHercParis4 and PHercParis3 (PHercParis3: level 5 every third pixel, 230 µm voxels, 24 heights).
 - 2026-10-24: 1.7.0, Connect your tool tab and per-scan neuroglancer links, branched from `main` at `2ce4d50`. Deployed as Space commit `5658a903` from `8e76106` ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170)).
 - 2026-10-24: the Connect your tool tab links the Lasagna Fields Space, which gives the ten public lasagna fields with their own tested snippets ([PR #170](https://github.com/ChaseHendrick/Scrolls/pull/170) follow-up).
 - 2026-10-23: first version, private Space preview (Space commit `45a55be`); code added here in the PR for branch `claude/project-thread-xrkbs0`.

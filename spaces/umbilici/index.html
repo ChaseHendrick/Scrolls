@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Umbilici · center lines of 22 Herculaneum scrolls</title>
-<meta name="description" content="Every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans, in X-ray, with the PHerc0175A lasagna field. Data links, sources and licences included.">
-<meta property="og:title" content="Umbilici · center lines of 22 Herculaneum scrolls">
-<meta property="og:description" content="Every public center line for the 22 prize-eligible scans, streamed over live X-ray CT, plus the PHerc0175A lasagna field.">
+<title>Umbilici · center lines of 33 Herculaneum scans</title>
+<meta name="description" content="Every public center line (umbilicus) for the 22 prize-eligible Herculaneum scans and 11 other public scans, in X-ray, with the PHerc0175A lasagna field. Data links, sources and licences included.">
+<meta property="og:title" content="Umbilici · center lines of 33 Herculaneum scans">
+<meta property="og:description" content="Every public center line for the 22 prize-eligible scans and 11 others, streamed over live X-ray CT, plus the PHerc0175A lasagna field.">
 <meta property="og:image" content="https://huggingface.co/spaces/SharpMeow/umbilici/resolve/main/og.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -32,9 +32,9 @@
 <div id="labels" aria-hidden="true"></div>
 
 <header class="hud tl">
-  <div class="kicker mono dim">VESUVIUS CHALLENGE<span class="sep">/</span>OPEN DATA<span class="sep">/</span><span id="k-count">22</span> PRIZE SCANS</div>
-  <h1>The <em>center lines</em> of twenty-two scrolls</h1>
-  <p class="lede" id="lede">Every public center line (umbilicus) for the scans on the prize page, in one place, drawn over X-ray CT streamed live from the open data. <span class="amber">Amber</span> lines came from Chase Hendrick's Center Finder; <span class="ice">ice</span> lines were made by people.</p>
+  <div class="kicker mono dim">VESUVIUS CHALLENGE<span class="sep">/</span>OPEN DATA<span class="sep">/</span><span id="k-count">22</span> PRIZE SCANS<span id="k-other"></span></div>
+  <h1>The <em>center lines</em> of <span id="h-count">thirty-three</span> scans</h1>
+  <p class="lede" id="lede">Every public center line (umbilicus) for the scans on the prize page, and for other public scans, in one place, drawn over X-ray CT streamed live from the open data. Each maker has a color (key under the list; click one to hide its lines). <span class="amber">Amber</span> lines came from Chase Hendrick's Center Finder; the rest were made by people. Scan names are green when both Center Finder ends passed the automatic CT end check, yellow for caution, red when an end was flagged.</p>
   <div class="hint mono small" id="hint" hidden>
     <span>First time here?</span>
     <button id="hint-go">Start with the guide</button>
@@ -68,9 +68,7 @@
 <aside class="rail" id="rail" aria-label="Scans">
   <div class="rail-head mono"><span>SCAN</span><span>SOURCES</span><span>ENDS</span></div>
   <ol id="rail-list"></ol>
-  <div class="legend mono small">
-    <span><i class="sw ice"></i>person</span><span><i class="sw amber"></i>Center Finder (model output)</span>
-  </div>
+  <div class="legend mono small" id="legend" aria-label="Makers: click to show or hide their lines"></div>
 </aside>
 
 <section class="card" id="card" hidden>
@@ -158,19 +156,22 @@
 
   <section data-pane="basics">
     <p>The Herculaneum scrolls are rolls of papyrus that the eruption of Vesuvius in 79 AD carbonized. They are too fragile to unroll, so the <a href="https://scrollprize.org" target="_blank" rel="noopener">Vesuvius Challenge</a> scans them with X-ray CT, and people and programs trace the wound sheet in 3D to unwrap it virtually. A scroll is wound around a center. The <b>center line</b>, or <b>umbilicus</b>, follows that center from the bottom of the scan to the top. Tracing tools start from it, so a good line for every scan saves everyone time.</p>
-    <p>This page draws every public center line we know of for the <b id="g-nscan">22</b> scans on the <a href="https://scrollprize.org/prizes" target="_blank" rel="noopener">prize page</a> (the 21 First Letters volumes and PHerc1447, read 23 October 2026): <b id="g-nline">29</b> lines from <b id="g-nsrc">5</b> sources.</p>
+    <p>This page draws every public center line we know of for the 22 scans on the <a href="https://scrollprize.org/prizes" target="_blank" rel="noopener">prize page</a> (the 21 First Letters volumes and PHerc1447, read 23 October 2026) and, since 1.8.0, for 11 other public scans that are not on the prize page (listed last, under NOT ON THE PRIZE PAGE): <b id="g-nscan">33</b> scans, <b id="g-nline">40</b> lines from <b id="g-nsrc">5</b> sources.</p>
     <h3>How to look around</h3>
     <ol class="steps">
-      <li><b>Array</b> stands every scan's lines side by side at true height. Drag to orbit, scroll or pinch to zoom, hover for names. One row holds the lines made by people, the other the Center Finder's lines.</li>
+      <li><b>Array</b> stands every scan's lines side by side at true height. Drag to orbit, scroll or pinch to zoom, hover for names. The front rows hold the prize scans (lines made by people behind, the Center Finder's in front); the back row holds the scans not on the prize page.</li>
       <li><b>Click a scan</b> (in the 3D view or the list) to open its <b>X-ray</b>: a radiograph your browser builds from CT it streams from the open data, with the lines inside.</li>
       <li>The square at the bottom right is one <b>horizontal slice</b> through the scan. Drag its slider or scroll over it to move up and down. Rings mark where each line crosses that slice; a good line sits in the middle of the innermost turns.</li>
       <li><b>Lasagna</b> shows villa's sheet model on PHerc0175A: where it thinks papyrus is, and which way each sheet faces.</li>
       <li><b>Data</b> opens every number on this page as tables you can sort and download.</li>
+      <li><b>Hide a line</b>: click a maker in the key under the list to hide all of its lines, or untick one line on a scan card. The link you copy keeps what you hid.</li>
     </ol>
     <h3>Colours and grades</h3>
-    <p><span class="ice">Ice</span> lines were made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m scans nobody had traced; no person has checked their ends on CT. An automatic CT end check graded each end of each Center Finder line (release v2.2, 23 Oct 2026). It compares the end with the scroll center the CT itself shows there, estimated from the scan alone (sheet orientations in three slices, never the line), 0, 1 and 2 mm inside the end, with a 4 mm bar. A planted fake tilt is caught at all 18 ends. 14 of the 18 ends pass and 4 are flagged.</p>
+    <p>Each maker has its own color: <span style="color:#89f0ff">Vesuvius Challenge</span>, <span style="color:#ff7eb6">Alexey Drobkov</span>, <span style="color:#b69cff">Abd Elilah</span>, <span style="color:#f2f5f7">Iyan Dopico</span>, all made by people. <span class="amber">Amber</span> lines are model output from Chase Hendrick's Center Finder, made for the nine 1.2 m prize scans nobody had traced and, since 1.8.0, for seven scans not on the prize page; no person has checked their ends on CT. An automatic CT end check graded each end of each Center Finder line (release v2.2, 23 Oct 2026). It compares the end with the scroll center the CT itself shows there, estimated from the scan alone (sheet orientations in three slices, never the line), 0, 1 and 2 mm inside the end, with a 4 mm bar. A planted fake tilt is caught at all 18 ends. 14 of the 18 ends pass and 4 are flagged. The same check on the seven newer lines (24 Oct 2026) passes all 14 ends, 2 after a CT recap, but four of those scans are 2.4 µm scans the check was never tuned on, so their grades are marked untested and no end there is usable.</p>
+    <p>Scan names and grades use a traffic light: <span class="grade lt-good">green</span> when both ends passed, <span class="grade lt-caution">yellow</span> for caution (a pass that rests on a CT recap, an end the check could not judge, or an untested scan), <span class="grade lt-bad">red</span> when an end was flagged.</p>
     <ul>
       <li><span class="grade PASS">PASS</span> both ends passed.</li>
+      <li><span class="grade VOID">VOID</span> the planted tilt was not caught at an end, so the check cannot judge it (none here).</li>
       <li><span class="grade FLAG">FLAG</span> one end sits more than 4 mm from the center the CT shows there; the card names which end.</li>
       <li><span class="end"><span class="grade PASS">PASS</span><span class="rc">CT recap</span></span> marks a passing end whose last 10 mm was replaced by a straight fit to the CT at heights the check doesn't judge, so the pass says the CT supports that end, not that a separate check confirmed it.</li>
     </ul>
@@ -235,8 +236,8 @@
     <h3>CT</h3>
     <ul>
       <li>Read live from <code>vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com</code>, OME-Zarr v2, never stored on this Space. The bucket allows cross-origin range reads.</li>
-      <li>All <b id="g-nlev">132</b> pyramid levels of the 22 scans (6 each) are <b>uint8</b> in <b>128 x 128 x 128</b> chunks with <b>no compressor</b>, checked when <code>lines.json</code> was built. Level L has voxels 2<sup>L</sup> times the level-0 size. Each scan card's "CT pyramid" lists its shapes.</li>
-      <li>The page reads one axial plane of a chunk per request (16,384 bytes). Masked chunks outside the scroll are absent and read as empty. The 3D view uses level 5 with a z stride (at most 120 heights, 72 on touch screens; every fourth height first). The slice uses level 4, then level 3, with a 1st to 99.5th percentile window.</li>
+      <li>All <b id="g-nlev">198</b> pyramid levels of the 33 scans (6 each) are <b>uint8</b> in <b>128 x 128 x 128</b> chunks with <b>no compressor</b>, checked when <code>lines.json</code> was built. Level L has voxels 2<sup>L</sup> times the level-0 size. Each scan card's "CT pyramid" lists its shapes.</li>
+      <li>The page reads one axial plane of a chunk per request (16,384 bytes). Masked chunks outside the scroll are absent and read as empty. The 3D view uses level 5 with a z stride (at most 120 heights, 72 on touch screens; every fourth height first). A 2.4 µm scan's level-5 plane is up to 1,326 px across, so it keeps every second or third pixel (at most 640 across) and reads fewer heights (at least 24, about 2,400 range reads a scan). The slice uses level 4, then level 3, with a 1st to 99.5th percentile window; on a 2.4 µm scan it uses level 5 (77 µm pixels, close to a 1.2 m scan's level 3), the coarsest its pyramid has.</li>
     </ul>
     <h3>Lasagna field, PHerc0175A</h3>
     <ul>

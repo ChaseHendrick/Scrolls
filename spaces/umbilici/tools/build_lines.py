@@ -2,7 +2,8 @@
 
 Usage: python3 tools/build_lines.py DATASET_DIR OUT.json
 DATASET_DIR is a copy of SharpMeow/vesuvius-center-lines (index.json plus lines/). Only the control points, the
-public fields of index.json (with each Center Finder line's per-end CT end check, ct_ends), each file's frame
+public fields of index.json (with each Center Finder line's per-end CT end check, ct_ends, and ct_untested_scan
+as untested), each file's frame
 stamp (voxel size, volume name and grid) and its usable_ends are copied; the rest of each file's metadata is not. Scan shapes are read from the
 Vesuvius Challenge open-data bucket.
 """
@@ -38,7 +39,8 @@ def main(src, out):
         if f.get("volume"):
             vol_of[f["scan"]] = f["volume"]
     scrolls = []
-    for name, s in sorted(ix["scrolls"].items()):
+    # the prize page's scans first, then the other public scans (v2.3 and later), each group by name
+    for name, s in sorted(ix["scrolls"].items(), key=lambda kv: (not (kv[1]["first_letters"] or kv[1]["grand_prize"]), kv[0])):
         vol = vol_of[s["scan"]]
         base = f"{S3}/{name}/volumes/{vol}"
         attrs = get_json(f"{base}/.zattrs")
@@ -76,7 +78,7 @@ def main(src, out):
             lines.append({
                 "source": f["source"], "kind": f["kind"], "credit": f["credit"], "licence": f["licence"],
                 "upstream": f["upstream"], "file": f["file"], "sha256": f["sha256"], "z": f["z"],
-                "note": f.get("note", ""), "grade": grade, "ends": ends,
+                "note": f.get("note", ""), "grade": grade, "ends": ends, "untested": bool(f.get("ct_untested_scan")),
                 "usable": [k for k in ("low", "high") if use.get(k)] if isinstance(use, dict) else None,
                 "stamp": stamp, "points": flat,
             })
