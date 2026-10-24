@@ -133,6 +133,26 @@ class BuildLines(unittest.TestCase):
         self.assertEqual(line["grade"], "FLAG")
         self.assertEqual(line["ends"]["low"], {"grade": "PASS", "recapped": True, "D_mm": 1.1})
         self.assertEqual(line["usable"], ["low"])
+        self.assertFalse(line["untested"])
+
+    def test_scans_off_the_prize_page_come_last_and_untested_grades_are_marked(self):
+        # v2.3 adds public scans that are not on the prize page; they follow the prize scans, and a Center Finder
+        # line on a scan the CT end check was never tuned for (ct_untested_scan) carries untested
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            fake_dataset(root)
+            ix = json.loads((root / "index.json").read_text())
+            ix["files"][0]["scroll"] = ix["files"][1]["scroll"] = "PHerc0000"
+            ix["scrolls"]["PHerc0000"] = dict(ix["scrolls"].pop("PHerc0001"), first_letters=False, grand_prize=False)
+            ix["files"][2].update(ct_untested_scan=True, ct_ends={"low": {"grade": "PASS", "recapped": False, "D_mm": 1.0}})
+            (root / "index.json").write_text(json.dumps(ix))
+            out = root / "lines.json"
+            with mock.patch.object(build_lines, "get_json", fake_get_json), mock.patch("builtins.print"):
+                build_lines.main(root, out)
+            t = json.loads(out.read_text())
+        self.assertEqual([s["scroll"] for s in t["scrolls"]], ["PHerc0002", "PHerc0000"])
+        self.assertTrue(t["scrolls"][0]["lines"][0]["untested"])
+        self.assertEqual([l["untested"] for l in t["scrolls"][1]["lines"]], [False, False])
 
 
 @unittest.skipIf(np is None, "needs numpy")
@@ -173,7 +193,7 @@ class Page(unittest.TestCase):
         api = re.search(r"window\.umbilici = \{(.*?)\n\};", self.text("app.js"), re.S).group(1)
         names = set(re.findall(r"^\s+(\w+):", api, re.M))
         self.assertEqual(names, {"version", "scans", "lines", "at", "select", "mode", "setZ", "state", "image", "slice",
-                                 "stats", "table", "csv", "guide", "data", "settings", "bench"})
+                                 "stats", "table", "csv", "guide", "data", "settings", "bench", "show"})
         readme = self.text("README.md")
         for n in names - {"version"}:
             self.assertIn(f"`{n}(", readme, n)

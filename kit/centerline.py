@@ -1,8 +1,8 @@
 """Get a scroll's center line (umbilicus) into your VC3D project or spiral-fitting folder in one command.
 
 Sources, both public: the center lines dataset SharpMeow/vesuvius-center-lines on Hugging Face (every public line
-for the prize-eligible scans, each with its sha256 in index.json) and the open-data bucket's
-SCROLL/representations/umbilicus/ files. `list` shows every line kit can find; `get` downloads one, checks its
+for the prize-eligible scans and, since v2.3, 11 other public scans, each with its sha256 in index.json) and the
+open-data bucket's SCROLL/representations/umbilicus/ files. `list` shows every line kit can find; `get` downloads one, checks its
 sha256 when the index gives one, and writes it as FOLDER/umbilicus.json, the name VC3D searches for and
 spiral-fitting reads (villa main 8aa507c12: volume-cartographer/core/src/ScrollUmbilicus.cpp, spiral-fitting/
 fit_session.py; see docs/tools/umbilicus.md). When the file lacks volume_width, volume_height and volume_slices and
