@@ -241,7 +241,7 @@ python -m unittest tests.test_kit.PlanTest tests.test_kit.SpiralChainTest tests.
 
 ## History
 
-- 2026-10-24: `--spiral`, the large-surface starter chain for every eligible scan from public pieces, with `kit/data/spiral-inputs-2026-10-24.json`; the ink plan's renders pass the bucket URL as `--volume`, since villa now refuses a local `--volume` beside a different `--remote-url`.
+- 2026-10-24: `--spiral`, the large-surface starter chain for every eligible scan from public pieces, with `kit/data/spiral-inputs-2026-10-24.json`; the ink plan's renders pass the bucket URL as `--volume`, since villa now refuses a local `--volume` beside a different `--remote-url`. ([PR #184](https://github.com/ChaseHendrick/Scrolls/pull/184))
 
 - 2026-10-14: a refused scroll whose First Letters prize was awarded gets the award's date and source in the message, read from the 11 October snapshot, and survives an award entry without them; step 1b names v8in-1447 among the readers PHerc0841 is held out from (`19a1f4d`, `4053d23`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37)).
 - 2026-10-09: step 1b says PHerc0841 is possibly not held out from Hecate (`3ba683f`, [PR #37](https://github.com/ChaseHendrick/Scrolls/pull/37), [log](../logs/2026-10-09-pherc0841-hecate.md)).
