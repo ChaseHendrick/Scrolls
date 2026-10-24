@@ -1904,6 +1904,143 @@
    ]
   },
   {
+   "id": "dinovol-embeddings",
+   "name": "dinovol-embeddings",
+   "tagline": "precomputed dinovol features of the whole PHerc0841 scan, readable by URL",
+   "summary": "A public Hugging Face bucket holding the Vesuvius Challenge's self-supervised dinovol model run over the whole PHerc0841 9.366 um scan, so anyone can search, cluster or segment by feature similarity without a GPU.",
+   "status": "Current",
+   "kind": [
+    "data"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode=\"r\", zarr_format=2)",
+    "README.md"
+   ],
+   "imports": [],
+   "code": [],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Making the bucket public was Chase's yes (24 Oct 2026); changing its files needs his yes per change (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "d425839"
+   },
+   "license": "CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors",
+   "fields": {
+    "Id": "`dinovol-embeddings`",
+    "Status": "Current",
+    "Kind": "data",
+    "Area": "Data and downloads",
+    "Run": "`zarr.open_group(zarr.storage.FsspecStore.from_url(URL, read_only=True), mode=\"r\", zarr_format=2)` on the bucket URL below; the bucket's `README.md` has a worked example",
+    "Code": "None in this repository: the data lives in the public bucket SharpMeow/dinovol-embeddings with its README and index file. This page is the public record",
+    "Tests": "None here: before release one 24 x 48 x 48 token block from every slab was read back by URL, logged out (see Checks and controls)",
+    "Needs": "`zarr` 3 with `fsspec` and `aiohttp`; `numpy`",
+    "Runs on": "Any machine with a network. The quick start reads a 4 x 32 x 32 token block (about 2 MB) from a 4-core cloud container (2026-10-24; not timed)",
+    "Network": "`huggingface.co` (the bucket)",
+    "Writes": "Nothing; reads stream from the bucket",
+    "Go-ahead": "Not needed to use. Making the bucket public was Chase's yes (24 Oct 2026); changing its files needs his yes per change (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-24 (bucket); README \"Released tools\" entry `dinovol-embeddings`",
+    "License": "CC BY-NC 4.0, the same as the scan; model `scrollprize/dinovol_8um_ps192_102126` (its Hugging Face page states no license) and villa's dinovol code (MIT), credit to their authors",
+    "Checked": "2026-10-24 against commit `d425839`"
+   },
+   "page": "docs/tools/dinovol-embeddings.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 30,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 31,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 56,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 57,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 68,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 69,
+     "end_line": 74,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 75,
+     "end_line": 78,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 79,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 92,
+     "end_line": 100,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 101,
+     "end_line": 104,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 105,
+     "end_line": 108,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 109,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 119,
+     "end_line": 122,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 123,
+     "end_line": 126,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 127,
+     "end_line": 129,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "doctor",
    "name": "doctor",
    "tagline": "check whether this machine can run villa's First Letters workflow",
