@@ -97,7 +97,7 @@
       "id": "scrolls-kit",
       "title": "Scrolls kit",
       "released": "2026-10-24",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: eleven `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark and the Center Finder, a script folder released the same way, with its weights as a GitHub release of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: eleven `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -196,6 +196,16 @@
           "command": "scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png",
           "page": "docs/tools/letterread.md",
           "evidence": "[install, profiles and benchmarks](docs/letter-reader.md), [local OCR and session switching](docs/tools/reader-backends.md)"
+        },
+        {
+          "id": "letterclass",
+          "name": "Greek letter classifier and line reader for agents",
+          "released": "2026-10-24",
+          "version": "weights `letterclass-v1`",
+          "summary": "Names Greek capital letters in given boxes on papyrus photographs and reads lines of boxes with a Greek prose letter model that holds no Homer or verse, giving each letter's confidence and ranked alternatives, as a JSON command line and an MCP server for agents; the classifier is three ConvNeXt runs trained on Hell-Char only. In a preregistered head-to-head on the ICDAR 2023 test answers (8,479 letters, boxes given) its letter error was 0.291 against 0.340 for Hell-Char ConvNeXt-V2, every control passed, and as lines it was level with Hell-Char given the same letter model (Model output; photographs, not ink maps). Runs CC BY 4.0, letter model CC BY-SA 4.0, fetched once and sha256 checked.",
+          "command": "python scripts/letters/reader_api.py fetch",
+          "page": "docs/tools/letterclass.md",
+          "evidence": "[preregistration and result](docs/prereg/2026-10-24-letter-reader-icdar-h2h.md), [frozen score and log](docs/evidence/2026-10-24-letter-icdar-h2h/README.md)"
         },
         {
           "id": "strokenet",

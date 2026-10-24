@@ -402,6 +402,16 @@ class PageShape(unittest.TestCase):
         data = data.replace("| `the demo input is empty` | No input | Give one |\n", "").replace("`DEMO_HOME` is read", "It reads")
         self.assertEqual(self.found(data), "")
 
+    def test_a_folder_page_leaves_a_file_to_the_page_that_names_it(self):
+        folder = GOOD.replace(", `kit/cli.py` (`cmd_demo`)", ", `kit/cli.py` (`cmd_demo`), `scripts/`")
+        self.assertIn("option `--window` of scripts/tool.py", self.found(folder))
+        ctx = tooldocs.Context(self.repo.root, COMMANDS, (), "public", git=False, owned={"scripts/tool.py": "other"})
+        self.assertNotIn("scripts/tool.py", " ".join(tooldocs.check_page(self.repo.page(folder), ctx)))
+        mine = tooldocs.Context(self.repo.root, COMMANDS, (), "public", git=False, owned={"scripts/tool.py": "demo"})
+        self.assertIn("option `--window`", " ".join(tooldocs.check_page(self.repo.page(folder), mine)))
+        pages = [tooldocs.Page(Path("a.md"), GOOD.replace("`kit/demo.py`", "`kit/demo.py`, `scripts/x/`, `scripts/y.py`"))]
+        self.assertEqual(tooldocs.owned_files(pages), {"kit/demo.py": "a", "kit/cli.py": "a", "scripts/y.py": "a"})
+
     def test_script_options_and_errors(self):
         text = GOOD.replace(", `kit/cli.py` (`cmd_demo`)", ", `kit/cli.py` (`cmd_demo`), `scripts/tool.py`")
         found = self.found(text)

@@ -10193,6 +10193,57 @@
    },
    "w013_regression_letters_v2_real": "letters, boxes, confidences and control counts with letters-v2-real identical to the read before this change (122 kept against 43, 33, 27, 28)",
    "reproduce": "KIT_LETTER_WEIGHTS=letters-v2-ccby-step026000.npz python -m kit letterdemo; python -m kit letterread w013-b16.tif --weights letters-v2-ccby --letter-px 86 [--control w013-b16.tif]; python scripts/letters/demo_p1667.py --segment w013"
+  },
+  {
+   "date": "2026-10-24",
+   "source": "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md (Outcome)",
+   "prereg": "docs/prereg/2026-10-24-letter-reader-icdar-h2h.md",
+   "evidence": "docs/evidence/2026-10-24-letter-icdar-h2h/score.json",
+   "evidence_sha256": "713ee5e4f55cd61696dbc9ed917f55ec519f99178532ee846493ea9e1e53c3f1",
+   "fill_commit": "e39253010c6f48e243954ce7fc6dc1fe3ed29a30 (owner's workbench; see the note at the top of the public preregistration)",
+   "claim": "Model output: Greek letters named on public papyrus photographs (ICDAR 2023 test answers, Zenodo 13825619), expert boxes given. Not a reading of any scroll.",
+   "check": "preregistered head-to-head; 8,479 boxes, 516 lines, 28 texts; controls C1 chance, C2 tile-shuffled decoys, C6 prior alone, C7 language model alone; bootstrap over texts, 20,000 resamples",
+   "letters": {
+    "O5": 0.2907,
+    "R1": 0.3399,
+    "O2": 0.4485
+   },
+   "lines_cer": {
+    "L5": 0.2407,
+    "L-R1": 0.3202,
+    "L-R1lm": 0.2521,
+    "L-O2free": 0.5466,
+    "C7": 0.8689
+   },
+   "comparisons": {
+    "H1": {
+     "d": -0.0492,
+     "ci95": [
+      -0.0612,
+      -0.035
+     ],
+     "verdict": "ahead"
+    },
+    "H2": {
+     "d": -0.0795,
+     "ci95": [
+      -0.096,
+      -0.0611
+     ],
+     "verdict": "ahead"
+    },
+    "H2b": {
+     "d": -0.0114,
+     "ci95": [
+      -0.0246,
+      0.0033
+     ],
+     "verdict": "level"
+    }
+   },
+   "controls_pass": true,
+   "cost_usd": 3.9,
+   "weights": "docs/tools/letterclass.md (GitHub release letterclass-v1, scripts/letters/letterclass-weights.json)"
   }
  ],
  "orientation_checks": [
