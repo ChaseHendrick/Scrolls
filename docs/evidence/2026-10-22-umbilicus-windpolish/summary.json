@@ -1,0 +1,121 @@
+{
+ "prereg": "preregistered in the private workbench before the run (rule sha256 below); not published",
+ "freeze": "frozen at private commit b7c63e1, 52 of 52 files checked before the run",
+ "rule_sha256": "71d431b3459f69c3989899a3f4d09647132714119ce6cb0537109ebb9d2fb5c8",
+ "verdict": "BETTER",
+ "why": "P pooled +0.0842 wraps over V, wins 8 of 10, interval [0.0277, 0.169]",
+ "L_against_V": [
+  "WORSE",
+  "L pooled -0.3305 wraps over V, loses 10 of 10, interval [-0.6506, -0.1419]"
+ ],
+ "excluded": {},
+ "scans": 10,
+ "slices": 240,
+ "pooled_gain_wraps": {
+  "P": 0.08424999999999999,
+  "L": -0.33045,
+  "C": -5.5672,
+  "ring": -2.4005
+ },
+ "interval_95": {
+  "P": [
+   0.0277,
+   0.169
+  ],
+  "L": [
+   -0.6506,
+   -0.1419
+  ],
+  "ring": [
+   -2.9414,
+   -1.82
+  ]
+ },
+ "per_scan_median_gain_wraps": {
+  "PHerc0175A": {
+   "P": 0.124,
+   "L": -0.0789,
+   "C": -9.4811,
+   "ring": -3.4424
+  },
+  "PHerc0175B": {
+   "P": 0.0032,
+   "L": -0.3632,
+   "C": -8.6856,
+   "ring": -2.0693
+  },
+  "PHerc0306B": {
+   "P": 0.1176,
+   "L": -0.1089,
+   "C": -4.9952,
+   "ring": -3.0075
+  },
+  "PHerc0483A": {
+   "P": 0.1253,
+   "L": -1.0428,
+   "C": -7.4784,
+   "ring": -2.741
+  },
+  "PHerc0483B": {
+   "P": 0.0388,
+   "L": -0.5674,
+   "C": -7.5311,
+   "ring": -2.5337
+  },
+  "PHerc0490A": {
+   "P": 0.0751,
+   "L": -1.0732,
+   "C": -8.0121,
+   "ring": -1.7429
+  },
+  "PHerc0490B": {
+   "P": -0.0433,
+   "L": -1.6269,
+   "C": -2.3567,
+   "ring": -1.7013
+  },
+  "PHerc0814": {
+   "P": -0.0856,
+   "L": -0.2573,
+   "C": -2.755,
+   "ring": -2.636
+  },
+  "PHerc0841": {
+   "P": 0.063,
+   "L": -0.058,
+   "C": -11.5062,
+   "ring": -3.8791
+  },
+  "PHerc0846B": {
+   "P": 0.6476,
+   "L": -0.0352,
+   "C": -0.5781,
+   "ring": -1.1379
+  }
+ },
+ "median_distance_mm": {
+  "P_to_L": 1.5474,
+  "P_to_V": 1.1305,
+  "L_to_V": 1.5535
+ },
+ "selfcheck": {
+  "passes": true,
+  "windcheck": true,
+  "numpy_equal": true,
+  "numba_equal": true,
+  "numba": "0.68.0",
+  "numpy": "2.5.3",
+  "python": "3.13.16"
+ },
+ "villa_binary_sha256": "44c8bc1fefabbd409a7a70a4e5b8cc1afa30be16a59c4be04ac8189da2e6c579",
+ "villa_source": "ScrollPrize/villa e2254eb, built with g++ 14 in a Claude cloud container (Qt SFTP fetch stubbed)",
+ "label": "Measurement of model output against villa's predicted sheet traces (model output): winding coverage in wraps, not distance to the true axis or to any person's line",
+ "result_json_sha256_private": "6eb82588193a2924b6785b94eafe2a76a4f97847b0be220a290436a9feebecf8",
+ "legend": {
+  "P": "Center Finder line after the coverage polish (kit axispolish rule 1)",
+  "L": "Center Finder line before the polish",
+  "V": "villa vc_gen_umbilicus, median of 20 runs per slice",
+  "C": "scan center (control)",
+  "ring": "points on a 3 mm ring round V (control)"
+ }
+}
