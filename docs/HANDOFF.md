@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 24 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Quality-of-life batch (Chase, 23 Oct 23:14 UTC: "Add 20 quality of life improvements that the community and researchers and the team will appreciate", then "yes do all 20") | Branch `claude/project-thread-f3ehjs` from `main` `2ce4d50`: `kit tifxyz` (area, isometry, holes, folds, stretch, OBJ, preview, facing), `kit find`, `kit centerline`, `kit cite`, `kit prclock`, `kit prtext`, grouped `--help` with `help COMMAND` and did-you-mean, `fetch --dry-run` and a free-space check, three `doctor` checks (Rosetta, container CPU quota, disk speed), the how-to [`segments-without-vc3d.md`](segments-without-vc3d.md) with before and after pictures of PHerc0139 w035, and Umbilici 1.6.2's "copy kit command" button. Pages, tests (1,505 pass), MAP, docs index, GLOSSARY, CHANGELOG and the Scrolls kit release lines updated | Chase reviews and merges the draft PR. After the merge: redeploy Umbilici 1.6.2 from `main` (standing yes) and add a "Use it in VC3D" section with `kit centerline get` to the `SharpMeow/vesuvius-center-lines` card (text drafted in the thread). `kit prclock` was checked only with fixtures: the cloud container cannot reach `api.github.com`; run it once on the Mac |
+
 ## Continuation, 23 October 2026
 
 | Item | State | Next step |
