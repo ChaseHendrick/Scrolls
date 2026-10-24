@@ -1,0 +1,65 @@
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>Every number and preview on this page comes from the Segment Atlas dataset, and every mesh it measures is a tifxyz folder on the open-data bucket. Both read straight from these URLs, with no account.</p>
+<div class="scc-src" id="connect-atlas"><h3>Segment Atlas (one row per published mesh)</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · Each row has the mesh&#x27;s open-data url, its grid size, area, filled share, edge statistics and the holes, folds and stretched area that kit tifxyz check reports. lens/ holds the decimated 3D previews.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas</code></pre></div>
+<details><summary>Python (huggingface_hub)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install huggingface_hub
+from huggingface_hub import hf_hub_download, snapshot_download
+
+path = hf_hub_download(&quot;SharpMeow/vesuvius-segment-atlas&quot;, &quot;atlas.jsonl&quot;, repo_type=&quot;dataset&quot;)  # one file, cached
+folder = snapshot_download(&quot;SharpMeow/vesuvius-segment-atlas&quot;, repo_type=&quot;dataset&quot;)</code></pre></div></details>
+<details><summary>Python (datasets)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install datasets
+from datasets import load_dataset
+
+default = load_dataset(&quot;SharpMeow/vesuvius-segment-atlas&quot;, &quot;default&quot;, split=&quot;train&quot;)</code></pre></div></details>
+<details><summary>pandas<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install pandas huggingface_hub
+import pandas as pd
+
+df = pd.read_json(&quot;hf://datasets/SharpMeow/vesuvius-segment-atlas/atlas.jsonl&quot;, lines=True)</code></pre></div></details>
+<details><summary>Command line (hf)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>pip install -U huggingface_hub
+hf download SharpMeow/vesuvius-segment-atlas atlas.jsonl --repo-type dataset --local-dir vesuvius-segment-atlas</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -L -O https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas/resolve/main/atlas.jsonl</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-mesh"><h3>A measured mesh (tifxyz), example PHerc0009B 20250510172639</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · Every row of the atlas names its mesh folder in url; the table&#x27;s mesh folder link opens it. Read live from the open-data bucket, never copied here.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0009B/segments/20250510172639/mesh/20250510172639-on-20250521125136-8.64um.tifxyz</code></pre></div>
+<details><summary>Python (numpy, tifffile)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install numpy tifffile
+import io, json, urllib.request
+import numpy as np, tifffile
+
+T = &quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0009B/segments/20250510172639/mesh/20250510172639-on-20250521125136-8.64um.tifxyz&quot;
+meta = json.load(urllib.request.urlopen(T + &quot;/meta.json&quot;))  # scale, bbox, format
+get = lambda c: tifffile.imread(io.BytesIO(urllib.request.urlopen(f&quot;{T}/{c}.tif&quot;).read()))
+xyz = np.stack([get(c) for c in &quot;xyz&quot;], -1)  # xyz[i, j] = (x, y, z) in scan voxels; -1 = no surface</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-page"><h3>This page&#x27;s code and data</h3>
+<p class="scc-meta">Page code Apache 2.0; data as above · python -m kit atlas show SCROLL and python -m kit tifxyz check MESH_URL reproduce the numbers from a clone of ChaseHendrick/Scrolls.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://sharpmeow-segment-lens.static.hf.space/</code></pre></div>
+<details><summary>Links and embed<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>The whole atlas as one CSV: https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas/resolve/main/atlas.csv
+Page source: https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/segment-lens</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/segment-lens/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/segment-lens/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-24. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>

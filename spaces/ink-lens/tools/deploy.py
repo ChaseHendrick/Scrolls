@@ -29,7 +29,7 @@ SPACE = HERE.parent
 ROOT = SPACE.parents[1]
 HARDWARE = "zero-a10g"
 SPACE_FILES = ("README.md", "app.py", "engine.py", "gate.py", "inklens.py", "vc3dout.py", "volio.py", "bridge.py",
-               "samples.json", "requirements.txt", "LICENSE", "NOTICE")
+               "samples.json", "requirements.txt", "LICENSE", "NOTICE", "connect.json", "connect.html", "CONNECT.md")
 KIT_MODULES = ("__init__", "auc", "fetch", "layers", "verify")
 
 

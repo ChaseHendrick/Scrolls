@@ -191,7 +191,9 @@ class Page(unittest.TestCase):
         self.assertIn("vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com", build_lines.S3)
         self.assertIn("data/", self.text(".gitignore"))
         for name in ("index.html", "app.js"):  # volume URLs are built from lines.json at run time, never hard-coded
-            self.assertNotRegex(self.text(name), r"https://[^\s\"'`]*\.zarr", name)
+            # except the Connect your tool panel (kit/spaceconnect.py), which links one example open-data volume
+            text = re.sub(r"<!-- space-connect:start -->.*?<!-- space-connect:end -->", "", self.text(name), flags=re.S)
+            self.assertNotRegex(text, r"https://[^\s\"'`]*\.zarr", name)
 
     def test_villa_reader_claims_cite_their_source(self):
         # the guide states how VC3D and spiral-fitting read these files; each claim names the villa file it came from

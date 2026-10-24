@@ -48,6 +48,8 @@ engine with a page, an API and MCP tools, following [Scroll Lens](scroll-lens.md
 Everything Ink Lens shows is model output, not a reading. The letter strings stay in a sidecar file as hypotheses for a
 person.
 
+A Connect your tool accordion gives the sample segments' open-data URLs and snippets for Python, villa's `vesuvius` package, gradio_client, curl and MCP ([spaceconnect](spaceconnect.md), 24 Oct 2026).
+
 ## When to use it
 
 - To check a region of your own segment for ink, with a control, from VC3D or a script, in seconds of GPU time.
@@ -424,6 +426,7 @@ the live Space, and the agent bridge against a running VC3D.
 
 ## History
 
+- 2026-10-24: Connect your tool accordion, branched from `main` at `2ce4d50`.
 - 2026-10-21: rows for the positional arguments of `estimate`, `engine.py estimate` and `deploy.py`, and every refusal written whole, including `not a PNG`, `cannot read URL: ERROR` and the `demo --size` refusal (`bbecb37`).
 - 2026-10-20: merged in [#138](https://github.com/ChaseHendrick/Scrolls/pull/138) (`aee666a`); deployment held until Chase has Hugging Face PRO (his words in Released above).
 - 2026-10-20: design, preregistration and the gate (`3c2445e`); the engine, client, Space, tests and this page on
