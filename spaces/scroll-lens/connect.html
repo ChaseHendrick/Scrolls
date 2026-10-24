@@ -49,32 +49,32 @@ It accepts http, https and s3 OME-Zarr roots.</code></pre></div></details>
 curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/3/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
 </div>
 <div class="scc-src" id="connect-api"><h3>Call Scroll Lens from code or an agent</h3>
-<p class="scc-meta">Code Apache 2.0; models as listed by list_scans; scans CC BY-NC 4.0 · The Space is paused, so these calls wait until it runs again. A new point uses the caller&#x27;s ZeroGPU minutes. Model output, not a reading.</p>
+<p class="scc-meta">Code Apache 2.0; models as listed by list_scans; scans CC BY-NC 4.0 · A new point uses the caller&#x27;s ZeroGPU minutes. Model output, not a reading.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/scroll-lens</code></pre></div>
-<details><summary>Python /list_gallery<span class="scc-b warn">Space paused</span></summary>
+<details><summary>Python /list_gallery<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 from gradio_client import Client
 
 client = Client(&quot;SharpMeow/scroll-lens&quot;)
 result = client.predict(api_name=&quot;/list_gallery&quot;)</code></pre></div></details>
-<details><summary>Python /list_scans<span class="scc-b warn">Space paused</span></summary>
+<details><summary>Python /list_scans<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 from gradio_client import Client
 
 client = Client(&quot;SharpMeow/scroll-lens&quot;)
 result = client.predict(api_name=&quot;/list_scans&quot;)</code></pre></div></details>
-<details><summary>Python /random_point<span class="scc-b warn">Space paused</span></summary>
+<details><summary>Python /random_point<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 from gradio_client import Client
 
 client = Client(&quot;SharpMeow/scroll-lens&quot;)
 result = client.predict(scan=&quot;PHerc0139&quot;, seed=0, api_name=&quot;/random_point&quot;)</code></pre></div></details>
-<details><summary>curl /list_gallery<span class="scc-b warn">Space paused</span></summary>
+<details><summary>curl /list_gallery<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-scroll-lens.hf.space
 EVENT=$(curl -s -X POST $URL/gradio_api/call/list_gallery -H &#x27;Content-Type: application/json&#x27; \
   -d &#x27;{&quot;data&quot;: []}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)
 curl -sN $URL/gradio_api/call/list_gallery/$EVENT</code></pre></div></details>
-<details><summary>MCP (Claude, Cursor and other agents)<span class="scc-b warn">Space paused</span></summary>
+<details><summary>MCP (Claude, Cursor and other agents)<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>{
   &quot;mcpServers&quot;: {
     &quot;scroll-lens&quot;: {

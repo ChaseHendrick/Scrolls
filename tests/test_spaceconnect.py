@@ -81,6 +81,15 @@ class Tools(unittest.TestCase):
         self.assertIn(urllib.parse.quote(f"{ZARR['url']}/1/", safe=""), ng)
 
 
+class Probe(unittest.TestCase):
+    def test_folders_are_probed_by_their_metadata(self):
+        self.assertEqual(sc.probe_url(ZARR, ZARR["url"]), ZARR["url"] + "/.zattrs")
+        self.assertEqual(sc.probe_url(dict(ZARR, zarr_format=3), ZARR["url"] + "/"), ZARR["url"] + "/zarr.json")
+        mesh = {"kind": "tifxyz", "url": "https://x/m.tifxyz"}
+        self.assertEqual(sc.probe_url(mesh, mesh["url"]), "https://x/m.tifxyz/meta.json")
+        self.assertEqual(sc.probe_url(DATASET, DATASET["url"]), DATASET["url"])
+
+
 class Render(unittest.TestCase):
     def test_html_is_scriptless_escaped_and_badged(self):
         out = sc.render_html(spec(ZARR, dict(API, status="paused"), intro="<b>&</b>"))

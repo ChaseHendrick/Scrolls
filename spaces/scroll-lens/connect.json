@@ -30,7 +30,7 @@
    "url": "https://huggingface.co/spaces/SharpMeow/scroll-lens",
    "space": "SharpMeow/scroll-lens",
    "host": "https://sharpmeow-scroll-lens.hf.space",
-   "status": "paused",
+   "status": "running",
    "endpoints": [
     {
      "api": "/list_gallery",
@@ -49,7 +49,7 @@
     }
    ],
    "license": "Code Apache 2.0; models as listed by list_scans; scans CC BY-NC 4.0",
-   "note": "The Space is paused, so these calls wait until it runs again. A new point uses the caller's ZeroGPU minutes. Model output, not a reading."
+   "note": "A new point uses the caller's ZeroGPU minutes. Model output, not a reading."
   }
  ]
 }

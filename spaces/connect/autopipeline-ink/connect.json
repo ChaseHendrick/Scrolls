@@ -7,10 +7,10 @@
  "sources": [
   {"id": "api", "title": "Call the analysis from code", "kind": "gradio-api",
    "url": "https://huggingface.co/spaces/SharpMeow/autopipeline-ink", "space": "SharpMeow/autopipeline-ink",
-   "host": "https://sharpmeow-autopipeline-ink.hf.space", "status": "paused", "tools": ["python", "curl"],
+   "host": "https://sharpmeow-autopipeline-ink.hf.space", "status": "running", "tools": ["python", "curl"],
    "endpoints": [{"api": "/on_sample", "args": {"title": "PHerc0841 w00 (development segment)"}}],
    "license": "Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0",
-   "note": "The Space is paused, so these calls wait until it runs again."},
+   "note": "The Space has no MCP server; use gradio_client or curl."},
   {"id": "layers", "title": "The layers it reads, example PHerc0841 w00 (9.366 um surface volume)", "kind": "ome-zarr",
    "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
    "zarr_format": 2, "example": {"level": "0", "start": [0, 2800, 2900]}, "tools": ["zarr", "vesuvius", "curl"],

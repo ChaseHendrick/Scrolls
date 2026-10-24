@@ -387,6 +387,15 @@ def _live(url: str) -> str:
         return f"FAIL {e}"
 
 
+def probe_url(src: dict, url: str) -> str:
+    """The URL that answers for a source: a folder has no object of its own, so ask for its metadata file."""
+    if src["kind"] == "ome-zarr":
+        return url.rstrip("/") + "/" + (".zattrs" if src.get("zarr_format", 2) == 2 else "zarr.json")
+    if src["kind"] == "tifxyz":
+        return url.rstrip("/") + "/meta.json"
+    return url
+
+
 def check(live=False) -> list[str]:
     """Problems across every registered Space; empty when all is well."""
     probs = []
@@ -408,10 +417,11 @@ def check(live=False) -> list[str]:
             probs.append(f"{row['space']}: the page does not show the panel")
         if live:
             for s in spec.get("sources", []):
+                if s["kind"] == "gradio-api" and s.get("status", "running") != "running":
+                    continue  # a paused or undeployed Space is labeled so on its panel, not served
                 urls = [s["url"]] + [l["url"] for l in s.get("links", [])]
                 for u in urls:
-                    r = _live(u if s["kind"] != "ome-zarr" else u.rstrip("/") + "/" + (
-                        ".zattrs" if s.get("zarr_format", 2) == 2 else "zarr.json"))
+                    r = _live(probe_url(s, u))
                     if r.startswith("FAIL") or not r.startswith(("2", "3")):
                         probs.append(f"{row['space']}: {s['id']}: {u}: {r}")
     for d in sorted((ROOT / "spaces").iterdir()):

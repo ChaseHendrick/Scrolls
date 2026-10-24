@@ -18,15 +18,15 @@
 <h2>Connect your tool</h2>
 <p>The segments this page analyzes and the model it runs are public, and both read straight from these URLs in your own tool.</p>
 <div class="scc-src" id="connect-api"><h3>Call the analysis from code</h3>
-<p class="scc-meta">Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0 · The Space is paused, so these calls wait until it runs again.</p>
+<p class="scc-meta">Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0 · The Space has no MCP server; use gradio_client or curl.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/autopipeline-ink</code></pre></div>
-<details><summary>Python /on_sample<span class="scc-b warn">Space paused</span></summary>
+<details><summary>Python /on_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 from gradio_client import Client
 
 client = Client(&quot;SharpMeow/autopipeline-ink&quot;)
 result = client.predict(title=&quot;PHerc0841 w00 (development segment)&quot;, api_name=&quot;/on_sample&quot;)</code></pre></div></details>
-<details><summary>curl /on_sample<span class="scc-b warn">Space paused</span></summary>
+<details><summary>curl /on_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-autopipeline-ink.hf.space
 EVENT=$(curl -s -X POST $URL/gradio_api/call/on_sample -H &#x27;Content-Type: application/json&#x27; \
   -d &#x27;{&quot;data&quot;: [&quot;PHerc0841 w00 (development segment)&quot;]}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)

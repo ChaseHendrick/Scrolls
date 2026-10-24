@@ -60,9 +60,9 @@ curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc013
 
 `https://huggingface.co/spaces/SharpMeow/scroll-lens`
 
-License: Code Apache 2.0; models as listed by list_scans; scans CC BY-NC 4.0. The Space is paused, so these calls wait until it runs again. A new point uses the caller's ZeroGPU minutes. Model output, not a reading.
+License: Code Apache 2.0; models as listed by list_scans; scans CC BY-NC 4.0. A new point uses the caller's ZeroGPU minutes. Model output, not a reading.
 
-### Python /list_gallery (Space paused)
+### Python /list_gallery (tested 2026-10-24)
 
 ```python
 # pip install gradio_client
@@ -72,7 +72,7 @@ client = Client("SharpMeow/scroll-lens")
 result = client.predict(api_name="/list_gallery")
 ```
 
-### Python /list_scans (Space paused)
+### Python /list_scans (tested 2026-10-24)
 
 ```python
 # pip install gradio_client
@@ -82,7 +82,7 @@ client = Client("SharpMeow/scroll-lens")
 result = client.predict(api_name="/list_scans")
 ```
 
-### Python /random_point (Space paused)
+### Python /random_point (tested 2026-10-24)
 
 ```python
 # pip install gradio_client
@@ -92,7 +92,7 @@ client = Client("SharpMeow/scroll-lens")
 result = client.predict(scan="PHerc0139", seed=0, api_name="/random_point")
 ```
 
-### curl /list_gallery (Space paused)
+### curl /list_gallery (tested 2026-10-24)
 
 ```bash
 URL=https://sharpmeow-scroll-lens.hf.space
@@ -101,7 +101,7 @@ EVENT=$(curl -s -X POST $URL/gradio_api/call/list_gallery -H 'Content-Type: appl
 curl -sN $URL/gradio_api/call/list_gallery/$EVENT
 ```
 
-### MCP (Claude, Cursor and other agents) (Space paused)
+### MCP (Claude, Cursor and other agents) (tested 2026-10-24)
 
 ```json
 {

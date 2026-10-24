@@ -12,7 +12,7 @@ Writes and checks the Connect your tool panel each of Chase's Hugging Face Space
 | Code | `kit/spaceconnect.py`, `kit/cli.py` (`main`) |
 | Tests | `tests/test_spaceconnect.py` |
 | Needs | Python 3.10 or newer, standard library only. `run` needs a Python with zarr 3, fsspec, aiohttp, huggingface_hub, datasets, pandas, numpy, tifffile and gradio_client, and a second one with `vesuvius[volume-only]` (villa's package pins zarr 2) |
-| Runs on | Any CPU. `render` and `check` take well under a second; `run` took about 1 minute for 34 snippets on a 4-core cloud container (2026-10-24), most of it network |
+| Runs on | Any CPU. `render` and `check` take well under a second; `run` took a few minutes for 40 snippets on a 4-core cloud container (2026-10-24), mostly network and one Crackle Check call that runs a reader (141 s) |
 | Network | `render`, `check` and `new`: none. `check --live` fetches the first byte of every listed URL. `run` reads the open-data bucket (`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`), `huggingface.co` and the running Spaces, logged out |
 | Writes | `render`: `connect.html` and `CONNECT.md` next to each `connect.json`, and the panel between the markers of that folder's `index.html` when it has them. `new`: one `connect.json`. `run`: a temporary folder for the snippets' downloads |
 | Go-ahead | Not needed to render or check. Deploying a Space follows hard rule 8 |
@@ -119,7 +119,8 @@ usage: python -m kit spaceconnect new [-h] --space SPACE dir
 | `render(d: Path, write=True)` | list of str | ValueError on an invalid spec | Write DIR's outputs (or, with write=False, list the ones that are stale). |
 | `registry()` | list of dict | OSError | The rows of `spaces/connect/spaces.json`. |
 | `wired(d: Path, sdk: str)` | bool | Nothing | Does the page show the panel? Static pages splice it; Gradio apps read connect.html. |
-| `check(live=False)` | list of str | Nothing | Problems across every registered Space; empty when all is well. |
+| `probe_url(src: dict, url: str)` | str | KeyError on a source without kind | The URL `check --live` asks for: a folder (OME-Zarr, tifxyz) has no object of its own, so its metadata file. |
+| `check(live=False)` | list of str | Nothing | Problems across every registered Space; empty when all is well. With live, also fetches every source (paused or undeployed Gradio APIs are skipped). |
 | `runnable(spec)` | iterator of tuples | Nothing | (source id, tool id, language, code) for every snippet that can run headless, without pip lines or a whole download of a large dataset. |
 | `run_snippets(python=sys.executable, vesuvius_python=None, cwd=None)` | list of tuples | Nothing | Run every runnable snippet of every registered Space, logged out; (space, source, tool, ok, seconds, last line). |
 | `starter(space: str)` | dict | Nothing | A starter spec for `new`. |
@@ -170,7 +171,7 @@ A copy of scan data hosted on huggingface.co gives `scroll` and `scan_year`; one
 
 ## Cost and time
 
-Free. `render` and `check` run in a fraction of a second; `run` took about 1 minute for 34 snippets, including a 131 MB checkpoint download (2026-10-24, cloud container).
+Free. `render` and `check` run in a fraction of a second; `run` took a few minutes for 40 snippets, including a 131 MB checkpoint download and one Crackle Check call that runs a reader (141 s) (2026-10-24, cloud container).
 
 ## For agents
 

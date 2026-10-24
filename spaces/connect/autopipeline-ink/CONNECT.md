@@ -8,9 +8,9 @@ Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [Chas
 
 `https://huggingface.co/spaces/SharpMeow/autopipeline-ink`
 
-License: Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0. The Space is paused, so these calls wait until it runs again.
+License: Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0. The Space has no MCP server; use gradio_client or curl.
 
-### Python /on_sample (Space paused)
+### Python /on_sample (tested 2026-10-24)
 
 ```python
 # pip install gradio_client
@@ -20,7 +20,7 @@ client = Client("SharpMeow/autopipeline-ink")
 result = client.predict(title="PHerc0841 w00 (development segment)", api_name="/on_sample")
 ```
 
-### curl /on_sample (Space paused)
+### curl /on_sample (tested 2026-10-24)
 
 ```bash
 URL=https://sharpmeow-autopipeline-ink.hf.space

@@ -8334,7 +8334,7 @@
     "Code": "`kit/spaceconnect.py`, `kit/cli.py` (`main`)",
     "Tests": "`tests/test_spaceconnect.py`",
     "Needs": "Python 3.10 or newer, standard library only. `run` needs a Python with zarr 3, fsspec, aiohttp, huggingface_hub, datasets, pandas, numpy, tifffile and gradio_client, and a second one with `vesuvius[volume-only]` (villa's package pins zarr 2)",
-    "Runs on": "Any CPU. `render` and `check` take well under a second; `run` took about 1 minute for 34 snippets on a 4-core cloud container (2026-10-24), most of it network",
+    "Runs on": "Any CPU. `render` and `check` take well under a second; `run` took a few minutes for 40 snippets on a 4-core cloud container (2026-10-24), mostly network and one Crackle Check call that runs a reader (141 s)",
     "Network": "`render`, `check` and `new`: none. `check --live` fetches the first byte of every listed URL. `run` reads the open-data bucket (`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`), `huggingface.co` and the running Spaces, logged out",
     "Writes": "`render`: `connect.html` and `CONNECT.md` next to each `connect.json`, and the panel between the markers of that folder's `index.html` when it has them. `new`: one `connect.json`. `run`: a temporary folder for the snippets' downloads",
     "Go-ahead": "Not needed to render or check. Deploying a Space follows hard rule 8",
@@ -8376,61 +8376,61 @@
     {
      "name": "Python API",
      "start_line": 108,
-     "end_line": 129,
+     "end_line": 130,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 130,
-     "end_line": 145,
+     "start_line": 131,
+     "end_line": 146,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 146,
-     "end_line": 155,
+     "start_line": 147,
+     "end_line": 156,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 156,
-     "end_line": 166,
+     "start_line": 157,
+     "end_line": 167,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 167,
-     "end_line": 170,
+     "start_line": 168,
+     "end_line": 171,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 171,
-     "end_line": 174,
+     "start_line": 172,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 175,
-     "end_line": 184,
+     "start_line": 176,
+     "end_line": 185,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 185,
-     "end_line": 188,
+     "start_line": 186,
+     "end_line": 189,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 189,
-     "end_line": 192,
+     "start_line": 190,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 193,
-     "end_line": 197,
+     "start_line": 194,
+     "end_line": 198,
      "applicable": true
     }
    ]
