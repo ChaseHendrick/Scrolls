@@ -1233,67 +1233,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 192,
+     "end_line": 193,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 193,
-     "end_line": 221,
+     "start_line": 194,
+     "end_line": 222,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 222,
-     "end_line": 225,
+     "start_line": 223,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 226,
-     "end_line": 236,
+     "start_line": 227,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 237,
-     "end_line": 250,
+     "start_line": 238,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 251,
-     "end_line": 260,
+     "start_line": 252,
+     "end_line": 261,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 261,
-     "end_line": 264,
+     "start_line": 262,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 265,
-     "end_line": 274,
+     "start_line": 266,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 275,
-     "end_line": 282,
+     "start_line": 276,
+     "end_line": 283,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 283,
-     "end_line": 294,
+     "start_line": 284,
+     "end_line": 295,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 295,
-     "end_line": 301,
+     "start_line": 296,
+     "end_line": 302,
      "applicable": true
     }
    ]
@@ -14340,6 +14340,158 @@
      "name": "Related",
      "start_line": 187,
      "end_line": 190,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "windlabel-box",
+   "name": "windlabel-box",
+   "tagline": "relative windings in a box, from published predictions",
+   "summary": "`python -m kit windlabel-box` grows chains of sheet crossings around a point on a published surface prediction, cuts them where lasagna's grad_mag sees more than one sheet, and writes villa's `relative_windings.json` for a spiral fit; a VC3D plugin runs it at the focus point.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit windlabel-box",
+    "python3 plugins/run_kit.py windlabel-box",
+    "plugins/scrolls-windlabel-box.json"
+   ],
+   "imports": [
+    "from kit import windlabel_box"
+   ],
+   "code": [
+    {
+     "path": "kit/windlabel_box",
+     "symbols": []
+    },
+    {
+     "path": "kit/windlabel_box/__init__.py",
+     "symbols": [
+      "cmd_windlabel_box"
+     ]
+    },
+    {
+     "path": "plugins/scrolls-windlabel-box.json",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_windlabel_box.py",
+    "tests/test_plugins.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it: it reads published predictions and writes local files. Output from prize-eligible scrolls stays private until the prize announcement"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "81e5ead"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`windlabel-box`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit windlabel-box`, `python3 plugins/run_kit.py windlabel-box` (the VC3D plugin `plugins/scrolls-windlabel-box.json`), `from kit import windlabel_box`",
+    "Code": "`kit/windlabel_box`, `kit/windlabel_box/__init__.py` (`cmd_windlabel_box`), `plugins/scrolls-windlabel-box.json`",
+    "Tests": "`tests/test_windlabel_box.py`, `tests/test_plugins.py` (the manifest)",
+    "Needs": "Python 3.10 or newer, numpy and scipy; numcodecs for blosc-compressed zarrs such as the open-data m7; a published binary surface prediction at level 0 (such as the organizers' m7) and the same scroll's published lasagna grad_mag; the scroll's umbilicus in the prediction's level-0 voxels. The plugin needs VC3D with the Plugins menu (villa branch `vc3d-plugins`, not yet in villa main) and an attached umbilicus",
+    "Runs on": "Any CPU. Synthetic spiral (240 x 240 x 48 voxels, 30 seeds): about 1 s. PHerc0139 over HTTPS from the open-data bucket: 13 s for a 512 voxel box with 200 seeds, about 25 s with 1,000 seeds (18 boxes in 7 min 34 s; measured 2026-10-24, 4-core cloud container)",
+    "Network": "Reads the prediction, the grad_mag and a `*.lasagna.json` manifest over HTTPS when given URLs, such as `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (anonymous); nothing with local zarrs",
+    "Writes": "In `--out` (created): `chains.json`, `features.json`, `split.json`, `relative_windings.json`, `flags.json`, `export.json`. VC3D runs it in `~/.vc3d/plugin-runs/scrolls.windlabel-box/TIME/` and adds the windings as point collections",
+    "Go-ahead": "Not needed to run it: it reads published predictions and writes local files. Output from prize-eligible scrolls stays private until the prize announcement",
+    "Released": "Public `main` from the merge of its pull request (prepared 24 Oct 2026); a line of the Scrolls kit entry in the README's \"Released tools\", id `windlabel-box`",
+    "Checked": "2026-10-24 against commit `81e5ead`"
+   },
+   "page": "docs/tools/windlabel-box.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 41,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 42,
+     "end_line": 65,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 66,
+     "end_line": 77,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 78,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 112,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 120,
+     "end_line": 153,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 154,
+     "end_line": 211,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 212,
+     "end_line": 222,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 223,
+     "end_line": 226,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 227,
+     "end_line": 236,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 237,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 245,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 249,
+     "end_line": 254,
      "applicable": true
     }
    ]

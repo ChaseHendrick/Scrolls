@@ -6,6 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
+| Relative windings in a box, VC3D plugin (24 Oct) | `kit windlabel-box` ([page](tools/windlabel-box.md)) and `plugins/scrolls-windlabel-box.json` in draft PR [#190](https://github.com/ChaseHendrick/Scrolls/pull/190), released from Scrolls-private after a PASS on 18 fresh PHerc0139 boxes ([evidence](evidence/windlabel-box-20261024/README.md)) and, with split rule v2 (now the default), on 20 fresh PHerc1667 boxes ([evidence](evidence/windlabel-box-1667-20261024/README.md)); v1 missed PHerc1667's keep floor. Ran in a VC3D build; its loader drops the relative flag (fix ready). Leak review 24 Oct: clean | Merge #190; loader fix rides the VC3D PR |
 | VC3D agent 1.1.1 (24 Oct) | Media merged in #201; branch `submission/progress-2026-10-vc3d-agent-1-1-1` at `9edcbf13` (docs only: every tool's recorded call and result); entry and [page](tools/vc3d-agent.md) in this PR | Tag `vc3d-agent-v1.1.1` (not Latest) from Chase's Mac |
 | Ink Lens Space live (24 Oct) | Deployed as [SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens) (ZeroGPU, public; Chase's yes in the project thread). First start failed: readers moved to `cuda` in the loading thread, outside `spaces.GPU`; fixed in `app.py` with a test. Live recheck: `inklens.py demo 0841-w00 --score` gate `ink`, AUC 0.9147 vs 0.5954 reversed, 486 patches in about 1.3 s; `/list_samples` and `/lens_sample` answer. README entry added (`kit releases add`) | Done: redeployed from merged `main` (`ad0e179`, #181) on 24 Oct, so the Connect panel says live. Lasagna Fields got its README entry in the same PR |
 | Umbilici 1.8.0 and center lines v2.3 (24 Oct) | Done. Dataset [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines) v2.3 (commit `73979441`, Chase's yes in the project thread): 11 public scans not on the prize page, 33 scans and 40 lines, every file checked against SHA256SUMS at the new revision. Umbilici 1.8.0 merged in PR #185 (`912b8e04`) and deployed as Space commit `01ea09fd` (Chase's yes): one color per maker, green, yellow and red grades, hide a maker or one line (`off=`). Live recheck 24 Oct: app.js and lines.json byte-identical to the build (33 scans, 40 lines), lasagna meta loads, no console errors | v2.4 is live (`c67d4743`, row below). Scans with 1.2 m volumes still uncovered: PHerc0009B, PHerc0343P, PHerc0500P2 (not checked whether they are rolled scrolls) |
@@ -113,35 +114,6 @@ handoff:
 | `test_autopipe` | Resolved: the full suite passes on `main` (1,083 tests on 18 Oct) | None |
 | AutoPipeline paid batches | Dry runs only; no daily watch routine set | Each paid batch and any cloud launch needs the owner's approval |
 | Release polish (Claude, 16 Oct 10:15 UTC) | Branch `claude/polish-releases-bgc1za`: the README's Unroll entry and `docs/unroll-space.md` now match the live Space, version 1.5.0 (they said 1.1.0 and ink_9um on `w046` to `w051` only). On `main` at `27d0e96` the full test suite passes (714 tests, 43 skipped, with numpy, tifffile, zarr and scipy installed), so the AGENTS.md size and `test_autopipe` rows above no longer fail there. The workbench package is now 0.2.0 with `CHANGELOG.md`. Fresh pictures of AutoPipeline 0.1.4's monitor on the synthetic demo (a GIF of a run and three stills) are in `docs/assets/autopipeline/`, shown in the README above the release list and in `docs/autopipeline/README.md`; the package README on the release branch stays unchanged until the next AutoPipeline fix release carries them. GitHub release [`autopipeline-v0.1.4`](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.4) published 16 Oct with Chase's yes (tag at `603fe14`, not marked latest) | None: [`workbench-v0.2.0`](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.2.0) published 16 Oct with Chase's yes (tag at `f3ce065`, Latest), after the pentest fixes (#103) and the packaged Modal rates (#106) merged |
-
-## Open items added 16 October 2026 (checked 01:10 ET)
-
-Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
-
-```yaml
-handoff:
-  written: 2026-10-16T01:10-04:00
-  repo: ChaseHendrick/Scrolls
-  base: main
-  merged_since_last_handoff:
-    - {number: 91, branch: grok/glossary, merge: ad2c4f8, topic: GLOSSARY.md, an A to Z of technical terms}
-    - {number: 92, branch: grok/perf-cli-parser, merge: dc6713b, topic: kit cli reuses one argparse parser per process}
-    - {number: 93, branch: grok/autopipeline-every-scan, merge: 0a22f72, topic: AutoPipeline on every scan}
-  open_prs:
-    - none
-  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, open_data_bucket_only]
-```
-
-| Item | State | Next step |
-| --- | --- | --- |
-| Unroll v1.0 (viewer Space, [unroll-space.md](unroll-space.md)) | Released. Control panel redesign (grouped Layers, Ink Bench, View, Destroy, Scrolls), Settings saved in localStorage and settable by URL, plain language glossary, agent API (`unrollView.actions/settings/state/glossary`), Ink Bench button, CPU pick fallback for Destroy on GPUs without float targets. The overlay layer is labeled `ink_9um (9 µm)`, credited to the Vesuvius Challenge. README entries updated | Fix the audit findings below |
-| Unroll security and UX audit | Findings, highest first: HIGH stored HTML injection through the Ink Bench annotation id (the note field is escaped, the id is not); MED NaN or Infinity thresholds accepted and carried into share links; MED out-of-range alignment offsets accepted; MED malformed `?bench=` links fail silently or show raw errors; MED HUD collisions at 800x500 and 1100x700, and the readout has no backdrop. LOW: no minimum image size, wrong advice for non-image uploads, a double-escaped name, raw `atob` errors, "9.362 um" instead of µm, mixed UK and US spelling. Passed: bad uploads, zip bomb, path traversal, XSS in names and credits, resize and key spam | Escape the annotation id, reject non-finite thresholds and offsets, show share-link errors, then re-test |
-| Glossary | Merged, PR #91 (`ad2c4f8`) | None |
-| CLI speedup | Merged, PR #92 (`dc6713b`): one parser per process (about 119 ms to 13 ms per call) | None |
-| AutoPipeline on every scan | Merged, PR #93 (`0a22f72`): catalog of every scan volume in the `vesuvius-challenge-open-data` bucket (75 volumes when checked), per-scan config, priced dry-run batch (`kit run all`) and watcher (`kit run watch`). Launches nothing; volumes not in the bucket are marked blocked | Paid batch runs each need the owner's approval |
-| Unroll in the README release list | Merged, PR #94 (`590636c`): adds Unroll v1.0 to `docs/releases.json` and the README Released tools section | None |
-| Stale branches | **Done** 18 Oct: Chase turned on automatic deletion of merged head branches, and every merged branch this row listed is gone from GitHub (`git ls-remote`, 18 Oct; the list is in this file's history). Still on GitHub and kept: `release-readme/progress-2026-10-fix1`, `-fix2` and `-fix3`, and the `submission/progress-2026-10*` snapshots | Nothing open. Agents may delete a merged branch (never `submission/*`, `release-readme/*` or unmerged branches); a Claude cloud session cannot delete remote branches |
-| GPU inference speed probes (C reader) | `torch.compile` gives about 1.85x over eager fp16 per tile; max-autotune about 1.9x; TensorRT fp16, int8 and fp8 builds did not complete (missing ONNX file and `onnx_graphsurgeon`) | Fix the ONNX export before any further probe; no launch without approval |
 
 ## Still binding from older sections (moved 14 October 2026)
 
