@@ -1070,67 +1070,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 190,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 191,
-     "end_line": 219,
+     "start_line": 192,
+     "end_line": 220,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 220,
-     "end_line": 223,
+     "start_line": 221,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 224,
-     "end_line": 234,
+     "start_line": 225,
+     "end_line": 235,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 235,
-     "end_line": 248,
+     "start_line": 236,
+     "end_line": 249,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 249,
-     "end_line": 258,
+     "start_line": 250,
+     "end_line": 259,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 259,
-     "end_line": 262,
+     "start_line": 260,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 263,
-     "end_line": 272,
+     "start_line": 264,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 273,
-     "end_line": 280,
+     "start_line": 274,
+     "end_line": 281,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 281,
-     "end_line": 292,
+     "start_line": 282,
+     "end_line": 293,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 293,
-     "end_line": 299,
+     "start_line": 294,
+     "end_line": 300,
      "applicable": true
     }
    ]
@@ -3572,6 +3572,165 @@
      "name": "Related",
      "start_line": 213,
      "end_line": 221,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "hopbench",
+   "name": "hopbench",
+   "tagline": "does a surface prediction keep touching sheets apart?",
+   "summary": "`python -m kit hopbench` plants sheet hops at real contacts between PHerc0139's hand-traced windings and measures how often a one-sheet check reading a surface prediction (m7, recto-090 or yours) lets them through, and how large a window it still calls one sheet.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit hopbench refs",
+    "python -m kit hopbench run",
+    "python -m kit.sheetgap certify"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/hopbench.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/sheetrefs.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/sheetgap.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_sheetgap.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed (public data, local CPU)"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "7e51e4f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`hopbench`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit hopbench refs`, `python -m kit hopbench run`, `python -m kit.sheetgap certify`",
+    "Code": "`kit/hopbench.py`, `kit/sheetrefs.py`, `kit/sheetgap.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_sheetgap.py`",
+    "Needs": "Python 3.10 or newer; numpy, scipy, tifffile and numcodecs (`pip install numpy scipy tifffile numcodecs`); about 40 MB of disk for the references and 0.75 GB for the m7 chunk cache (0.56 GB for recto-090)",
+    "Runs on": "CPU only. Building the references took 5 minutes; one `run` took 37 minutes on m7 and 40 minutes on recto-090, each with an empty chunk cache and the two partly running at once (measured 2026-10-24, 4-core Intel Xeon 2.80 GHz cloud container, peak memory 6.0 GB)",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only: a bucket listing of `PHerc0139/segments/`, the 18 winding meshes, and the prediction's level-0 chunks. A local prediction (`--pred PATH`) reads no chunks from the network",
+    "Writes": "`work/hopbench/refs/PHerc0139-20250728140407/` (meshes, `attrs/*.npz`, `manifest.json`), `work/hopbench/cache/` (chunks), `work/hopbench/runs/PRED/hopbench.json`; all under the current folder, all ignored by git",
+    "Go-ahead": "Not needed (public data, local CPU)",
+    "Released": "Public `main` from the PR that adds it (24 October 2026); a line of the Scrolls kit entry in the README's \"Released tools\", id `hopbench`",
+    "Checked": "2026-10-24 against commit `7e51e4f`"
+   },
+   "page": "docs/tools/hopbench.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 67,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 92,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 144,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 206,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 215,
+     "end_line": 239,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 240,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 267,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 277,
+     "end_line": 288,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 289,
+     "end_line": 298,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 299,
+     "end_line": 302,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 303,
+     "end_line": 306,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 307,
+     "end_line": 313,
      "applicable": true
     }
    ]
