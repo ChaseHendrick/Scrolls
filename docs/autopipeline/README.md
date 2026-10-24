@@ -119,9 +119,9 @@ Runs and caches go to `work/` in the package folder, or under `KIT_HOME` when se
 
 The demo runs every stage on a synthetic scroll with stand-in VC3D tools, with no download and no GPU:
 
-![AutoPipeline 0.1.5's monitor following the synthetic demo from its first stage: the stages turn green until the run finishes, then a pointer opens the Ink stage, filters the log, prepares the status command, and the clip ends on the Finished banner](../assets/autopipeline/monitor-demo-v015.gif)
+![AutoPipeline 0.1.6's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map beside its reversed control, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes](../assets/autopipeline/monitor-walkthrough-v016.gif)
 
-*Synthetic demo: AutoPipeline 0.1.5's monitor following `scripts/demo_synthetic.py`, captured frame by frame from a live run (the run part at about 4 times real speed), with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](../assets/autopipeline/monitor-demo-v015.mp4) (17.6 s).*
+*Synthetic demo: AutoPipeline 0.1.6's monitor following `scripts/demo_synthetic.py`, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console, with stand-in VC3D tools and a stand-in ink model, so its maps are not ink. [MP4](../assets/autopipeline/monitor-walkthrough-v016.mp4) (45 s).*
 
 ```bash
 python scripts/demo_synthetic.py                 # prints DEMO PASS
@@ -408,7 +408,7 @@ their schema.
 A snapshot keeps stage inspection and the log filters but turns off refresh and command preparation, because its run
 path is redacted.
 
-The clip in [the quickstart](#4-quickstart) shows 0.1.5's controls: it opens the Ink stage, filters the log and prepares the status command ([MP4](../assets/autopipeline/monitor-demo-v015.mp4), captured 18 October 2026 with [`scripts/media/`](../tools/media.md)).
+The clip in [the quickstart](#4-quickstart) shows 0.1.6's monitor and console in ten captioned steps ([MP4](../assets/autopipeline/monitor-walkthrough-v016.mp4), captured 24 October 2026 with [`scripts/media/record_ap_monitor.py`](../tools/media.md)). 0.1.5's shorter clip of its controls stays in [`monitor-demo-v015.mp4`](../assets/autopipeline/monitor-demo-v015.mp4).
 
 The pictures below are AutoPipeline 0.1.4's monitor on the synthetic demo (`scripts/demo_synthetic.py --out`, then `scrolls-kit autopipeline monitor <folder>/run`), taken on 16 October 2026, before 0.1.5 added the controls above. The demo's scroll, VC3D tools and ink model are stand-ins, so its ink maps are stripes, not ink.
 
