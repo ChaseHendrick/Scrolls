@@ -70,6 +70,28 @@ Released 16 October 2026.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
 
+### Headless VC3D for agents
+
+![Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.](docs/assets/vc3d-agent/vc3d-agent-hero.webp)
+
+*Concept illustration: a scan cube and a traced surface leaving it as a copper grid, with calls and results passing along a line above. No scan data.*
+
+Released 24 October 2026 as a reviewed package on branch `submission/progress-2026-10-vc3d-agent`: [`submissions/progress-2026-10-vc3d-agent/` at commit `9c507bd`](https://github.com/ChaseHendrick/Scrolls/tree/9c507bdf538bfe3733f71a72fa46fdf1ba3d7f3c/submissions/progress-2026-10-vc3d-agent).
+
+An MCP server and shell command that let an AI agent run villa's VC3D tools with no display: find open data, trace, check, render and flatten surfaces, run ink models with their reverse-depth control, and see each result as a PNG. Version 1.0.0 serves 39 tools with JSON schemas, progress, cancellation and images over stdio, MCP protocol versions 2024-11-05 to 2025-11-25. The checks are built in: render votes on the surface normal before trusting the layer order, audit finds chunks a render would read as zeros, and target-scroll ink refuses to run without a preregistered readout rule. It is the server that shipped inside AutoPipeline, released on its own without AutoPipeline's pipeline tools. Its tests use stand-in VC3D tools; this is software, not an ink-accuracy or scroll-reading result.
+
+```bash
+git clone --branch submission/progress-2026-10-vc3d-agent --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent
+cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent
+python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
+python -m pip install -e ".[maps]"
+python -m unittest discover -s tests
+vc3d-agent vc3d tools
+claude mcp add vc3d-agent -e VC_APPIMAGE=/path/to/VC3D.AppImage -- "$PWD/.venv/bin/vc3d-agent" vc3d mcp
+```
+
+Install, MCP client setup, the 39 tools, built-in rules and limits: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent/README.md). Agent rules: [AGENTS.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent/submissions/progress-2026-10-vc3d-agent/vc3d-agent/AGENTS.md).
+
 ### Lasagna Fields (villa lasagna fields for ten scans)
 
 Released 24 October 2026.
