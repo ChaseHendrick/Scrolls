@@ -1,0 +1,76 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "vc3d-agent-hero",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.",
+  "caption": "Concept illustration: a scan cube and a traced surface leaving it as a copper grid, with calls and results passing along a line above. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": "vc3d-agent",
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "vc3d-agent-hero.webp",
+      "bytes": 63974,
+      "sha256": "65f5e33d3c23b149e77c1d92bf04ff88bc9d2d4e565f3ad6339763037209dc8f",
+      "width": 1920,
+      "height": 640,
+      "kind": "hero",
+      "format": "webp",
+      "quality": 83
+    },
+    {
+      "file": "vc3d-agent-card.jpg",
+      "bytes": 103446,
+      "sha256": "f207f2e34b211e1f55a7215b3452f7f1ce15574a2739f7b1768ee4c762ea42a4",
+      "width": 1200,
+      "height": 630,
+      "kind": "social card",
+      "format": "jpeg",
+      "quality": 88
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "hero.py",
+      "scene.py",
+      "scenes.py"
+    ],
+    "scripts_sha256": "e54e7f11976623f8bcb9cbbcddbc4fc3004d51c7e21a0e000496ebb7fa7c8358",
+    "base_commit": "7e51e4f78a951348b892dfcb653b945b78422fa5"
+  },
+  "command": "python scripts/media/hero.py scripts/media/recipes/vc3d-agent.json --out-dir docs/assets/vc3d-agent",
+  "recipe": {
+    "name": "vc3d-agent-hero",
+    "release_id": "vc3d-agent",
+    "label": "Concept illustration",
+    "alt": "Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.",
+    "caption": "Concept illustration: a scan cube and a traced surface leaving it as a copper grid, with calls and results passing along a line above. No scan data.",
+    "license": "Apache-2.0",
+    "seed": 7,
+    "scene": {
+      "kind": "procedural",
+      "name": "vc3dagent",
+      "params": {}
+    },
+    "grade": {
+      "duotone": 0.08,
+      "key": 0.42,
+      "rim": 0.08,
+      "vignette": 0.3,
+      "fade_right": 0.04,
+      "grain": 0.006
+    },
+    "card": {
+      "title": "Headless VC3D for agents",
+      "subtitle": "villa's VC3D tools as checked MCP tools an AI agent can drive with no display.",
+      "focus": [
+        0.3,
+        0.5
+      ]
+    }
+  }
+}

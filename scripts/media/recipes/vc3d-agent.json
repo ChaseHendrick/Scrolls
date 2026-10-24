@@ -1,0 +1,30 @@
+{
+  "name": "vc3d-agent-hero",
+  "release_id": "vc3d-agent",
+  "label": "Concept illustration",
+  "alt": "Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.",
+  "caption": "Concept illustration: a scan cube and a traced surface leaving it as a copper grid, with calls and results passing along a line above. No scan data.",
+  "license": "Apache-2.0",
+  "seed": 7,
+  "scene": {
+    "kind": "procedural",
+    "name": "vc3dagent",
+    "params": {}
+  },
+  "grade": {
+    "duotone": 0.08,
+    "key": 0.42,
+    "rim": 0.08,
+    "vignette": 0.3,
+    "fade_right": 0.04,
+    "grain": 0.006
+  },
+  "card": {
+    "title": "Headless VC3D for agents",
+    "subtitle": "villa's VC3D tools as checked MCP tools an AI agent can drive with no display.",
+    "focus": [
+      0.3,
+      0.5
+    ]
+  }
+}
