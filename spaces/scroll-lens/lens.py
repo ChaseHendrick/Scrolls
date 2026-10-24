@@ -40,7 +40,7 @@ import urllib.request
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-VERSION = "1.1.0"
+VERSION = "1.1.1"
 BUCKET = "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com"
 CHUNK = 128                 # every listed scan is stored as uncompressed uint8 chunks of 128^3 voxels
 SIZES = (128, 256)          # cube sides in voxels; 256 is the models' training patch, 128 fits a CPU

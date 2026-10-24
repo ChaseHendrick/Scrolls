@@ -17,7 +17,7 @@
 | Writes | Nothing (prints only) |
 | Go-ahead | Not needed: it reads public data |
 | Released | Public `main` from the change that adds it (24 Oct 2026) |
-| Checked | 2026-10-24 against commit `ad3fddc` |
+| Checked | 2026-10-24 against commit `cc03099` |
 
 ## What it does
 

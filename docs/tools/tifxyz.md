@@ -17,7 +17,7 @@
 | Writes | `--cache` (default `work/tifxyz/cache`) for bucket segments; `obj` its OUT file; `preview` its OUT file; `check --png` and `diff --png` that file; `chunks --fetch` the DEST folder (metadata and the touched chunks, keeping their keys). Nothing else |
 | Go-ahead | Not needed: it reads public data and writes local files |
 | Released | Public `main` from the change that adds it (23 Oct 2026) |
-| Checked | 2026-10-23 against commit `3376687` |
+| Checked | 2026-10-23 against commit `cc03099` |
 
 ## What it does
 

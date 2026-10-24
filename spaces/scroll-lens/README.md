@@ -57,7 +57,7 @@ in another.
 2. **Your own point**: pick a scan, type a point (level-0 voxels, z y x) or press *Surprise me*, then *Run the
    models*. A 256³ cube uses about 5 seconds of your daily ZeroGPU time (a call takes 7 to 12 s), a 128³ cube under a
    second. ZeroGPU starts a call only while about 21 s (256³) or 11 s (128³) of your quota is left. When it refuses,
-   or no GPU is free, the models run on the Space's CPU on the middle 128³ of the cube instead (about 10 seconds, one
+   or no GPU is free, the models run on the Space's CPU on the 128³ around your point instead (about 10 seconds, one
    such run at a time).
 3. **Look**: the three views are drawn in your browser, so everything answers at once. Drag a slider, or drag inside a
    view to move the crosshair: the other views follow as you move. The wheel or the arrow keys step one slice (Shift:
