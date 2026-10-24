@@ -244,7 +244,7 @@ class TestVillaPr(unittest.TestCase):
                 "were produced by this PR on the stated data.\n\n## Details\n\nTested on main.\n")
         r = villapr.prtext(good, title="Keep ink labels when VC3D saves a segment")
         self.assertTrue(r["ok"], r["problems"])
-        bad = villapr.prtext(good.replace("[x]", "[ ]").replace("![after](b.png)", "") + "—", title="Fix")
+        bad = villapr.prtext(good.replace("[x]", "[ ]").replace("![after](b.png)", "") + "\u2014", title="Fix")
         self.assertFalse(bad["ok"])
         self.assertTrue(any("not ticked" in p for p in bad["problems"]))
         self.assertTrue(any("long dash" in p for p in bad["problems"]))

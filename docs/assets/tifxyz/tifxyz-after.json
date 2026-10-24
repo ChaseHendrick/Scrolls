@@ -1,0 +1,42 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "tifxyz-after",
+  "label": "Real data render",
+  "alt": "The same PHerc0139 segment w035 shaded by kit tifxyz preview: the papyrus sheet's ripples and bends lit from one side, missing nodes dark.",
+  "caption": "Real data render: kit tifxyz preview of PHerc0139 w035, the sheet's 3D shape from its three TIFFs. Mesh geometry only, no CT, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "2.399 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w035",
+    "volume": "20260102150214"
+  },
+  "sources": [
+    "s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz"
+  ],
+  "outputs": [
+    {
+      "file": "tifxyz-after.png",
+      "bytes": 756413,
+      "sha256": "5d369173d4665937dbbd0d91df6252d6a799459ab6a0e0c385eddefd2ee11f07",
+      "width": 1020,
+      "height": 1132,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-23",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "tifxyz_stills.py"
+    ],
+    "scripts_sha256": "ba568dd6f4fe1f6784b55dceef0f470eb9e88d67497e6312e318fa99e5350e78",
+    "base_commit": "3376687358eb11659eb2c19753d2367adb06b99b"
+  },
+  "command": "python scripts/media/tifxyz_stills.py s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz --scan PHerc0139 --segment w035 --out-dir docs/assets/tifxyz"
+}

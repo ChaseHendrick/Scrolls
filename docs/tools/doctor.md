@@ -10,7 +10,7 @@
 | Area | Planning and prizes |
 | Run | `python -m kit doctor`, `from kit import doctor` |
 | Code | `kit/doctor.py`, `kit/cli.py` (`cmd_doctor`) |
-| Tests | `tests/test_kit.py` |
+| Tests | `tests/test_kit.py`, `tests/test_qol_tools.py` |
 | Needs | Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) when it is on `PATH`, and reads the environment variables `VILLA` and `VC_BIN` |
 | Runs on | Any machine. 0.34 to 0.43 s per call with no `nvidia-smi` installed (5 runs, measured 2026-10-16, 4-core Xeon cloud container). With `nvidia-smi`, add its run time, at most 20 s (the timeout) |
 | Network | None |
@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`) |
 | Guide | [mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources) |
-| Checked | 2026-10-16 against commit `29e7e8c` |
+| Checked | 2026-10-23 against commit `3376687` |
 
 ## What it does
 
@@ -95,12 +95,13 @@ Claim label: None for the report, which describes this machine and makes no clai
 ### `python -m kit doctor`
 
 ```
-usage: python -m kit doctor [-h] [--disk DISK]
+usage: python -m kit doctor [-h] [--disk DISK] [--no-speed]
 ```
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `--disk DISK` | `.` | Path whose file system's free space is checked: the current folder by default. Point it at where volumes, renders and VC3D's cache will go. A path that does not exist stops with a `FileNotFoundError` traceback and exit code 1 |
+| `--disk DISK` | `.` | Path whose file system's free space is checked: the current folder by default. Point it at where volumes, renders and VC3D's cache will go. Also where the disk speed test writes its 64 MB file. A path that does not exist stops with a `FileNotFoundError` traceback and exit code 1 |
+| `--no-speed` | off | Skip the 64 MB disk speed test (the `speed` line) |
 
 ### Environment variables
 
@@ -130,10 +131,15 @@ text, worst = doctor.format_report(results)
 | `check_tools(which=shutil.which)` | `(status, detail)` | Nothing | `pass` when `git`, `uv` and `docker` (`TOOLS`) are all found, `warn` listing the missing ones |
 | `check_villa(path)` | `(status, detail)` | Nothing | `warn` for `None`, `pass` for a folder with both subfolders, `fail` otherwise |
 | `check_vc_bin(path, apple_silicon=False)` | `(status, detail)` | Nothing | `pass` or `warn`, never `fail`; on Apple Silicon a `None` path falls back to `MAC_VC_BIN` when that folder exists |
-| `run_checks(env=None, disk_path='.')` | list of six `(name, status, detail)`: `gpu`, `memory`, `disk`, `tools`, `villa`, `vc_bin`, in that order | As `check_disk` | `env` (default `os.environ`) supplies only `VILLA` and `VC_BIN`; the GPU, memory, platform and `PATH` are always this machine's |
+| `sysctl(name, run=subprocess.run)` | str or None | Nothing | `sysctl -n NAME` on macOS (5 s timeout); None when it fails or is absent |
+| `check_rosetta(system=None, machine=None, read=sysctl, torch_info=None)` | None off macOS, else `(status, detail)` | Nothing | `fail` when this Python is an Intel build under Rosetta on an Apple Silicon Mac (`sysctl.proc_translated` is 1, or `platform.machine()` is not arm64 while `hw.optional.arm64` is 1); `warn` when torch is installed but has no usable MPS; `pass` otherwise |
+| `cpu_quota(root='/sys/fs/cgroup', proc='/proc/self/cgroup')` | float CPUs, or None when unlimited or unknown | Nothing | The smallest quota from this process's own cgroup up to the root: cgroup v2 `cpu.max`, or v1 `cpu.cfs_quota_us` over `cpu.cfs_period_us` |
+| `check_threads(visible=None, quota=None, env=None)` | `(status, detail)` | Nothing | `warn` when the quota is under 0.9 of the CPUs Python sees and `NUMBA_NUM_THREADS`, `OMP_NUM_THREADS`, `MKL_NUM_THREADS` and `OPENBLAS_NUM_THREADS` (`THREAD_VARS`) are not all set at or below it; the detail gives the export line |
+| `check_disk_speed(path, nbytes=SPEED_BYTES, clock=time.perf_counter)` | `(status, detail)` | Nothing | Writes and syncs a temporary file of `SPEED_BYTES` (64 MiB), drops it from the page cache (`posix_fadvise` on Linux, `F_NOCACHE` on macOS), reads it back and deletes it; `warn` under `MIN_READ_MBS` (200 MB/s) or when the file cannot be written |
+| `run_checks(env=None, disk_path='.', speed=True)` | list of `(name, status, detail)`: `rosetta` (macOS only), `threads` (Linux only), `speed` (unless `speed=False`), then `gpu`, `memory`, `disk`, `tools`, `villa`, `vc_bin`, in that order | As `check_disk` | `env` (default `os.environ`) supplies only `VILLA` and `VC_BIN`; the GPU, memory, platform and `PATH` are always this machine's |
 | `format_report(results)` | `(text, worst)`, `worst` one of `pass`, `warn`, `fail` | Nothing | The text the command prints, ending in `overall: WORST` |
 
-Module constants: `MIN_GPU_MB = 12 * 1024`, `MIN_DISK_GB = 25`, `MIN_RAM_GB = 16`, `TOOLS = ("git", "uv", "docker")`, `MAC_VC_BIN = Path("/Applications/VC3D.app/Contents/MacOS")`, and the status words `PASS`, `WARN`, `FAIL` (`"pass"`, `"warn"`, `"fail"`).
+Module constants: `SPEED_BYTES = 64 << 20`, `MIN_READ_MBS = 200`, `THREAD_VARS`, `MIN_GPU_MB = 12 * 1024`, `MIN_DISK_GB = 25`, `MIN_RAM_GB = 16`, `TOOLS = ("git", "uv", "docker")`, `MAC_VC_BIN = Path("/Applications/VC3D.app/Contents/MacOS")`, and the status words `PASS`, `WARN`, `FAIL` (`"pass"`, `"warn"`, `"fail"`).
 
 ## Inputs
 
@@ -152,6 +158,9 @@ Text on stdout, one line per check, `[STATUS] NAME    DETAIL` (status right-alig
 
 | Check | `pass` when | `warn` when | `fail` when |
 | --- | --- | --- | --- |
+| `rosetta` (macOS only) | Python is arm64 (and torch, when installed, sees the MPS GPU), or an Intel Mac | arm64 Python whose torch lacks MPS, or MPS not available | An Intel-build Python running under Rosetta on Apple Silicon |
+| `threads` (Linux only) | No CPU quota below the CPUs Python sees, or the four thread variables already set to fit it | A smaller quota without matching thread variables | Never |
+| `speed` | Read back at 200 MB/s or more | Slower, or the test file could not be written | Never |
 | `gpu` | The largest NVIDIA card has 12,288 MiB or more | A card below 12 GB; or no NVIDIA GPU on Apple Silicon | No NVIDIA GPU found, not on Apple Silicon |
 | `memory` | 16 GB or more after rounding | Less, or unreadable | Never |
 | `disk` | 25 GiB or more free at `--disk` | Less | Never |
@@ -178,6 +187,13 @@ GPU sizes are printed as whole GB rounded down (23,028 MiB prints as `22 GB`), a
 | `[warn] memory  could not read installed memory` | `os.sysconf` is missing (Windows) or failed | Check memory by hand |
 | `[warn] memory  N GB memory` | Under 16 GB after rounding | Small renders only; heavy CPU work goes to Modal |
 | `[warn] disk    N GB free at PATH (one tutorial segment is about 25 GB)` | Under 25 GiB free on that file system | Free space, or point `--disk` and your work folder at a bigger disk |
+| `[fail] rosetta this Python is an Intel build running under Rosetta: no MPS GPU and slow NumPy. Install an arm64 Python ...` | On an Apple Silicon Mac, this Python (often an old Anaconda or an Intel Homebrew in /usr/local) is an x86_64 build | Install an arm64 Python, make a new venv with it, reinstall packages; check `python3 -c 'import platform; print(platform.machine())'` prints arm64 |
+| `[warn] rosetta arm64 Python, but this torch has no MPS support: pip install --upgrade torch` | An old or CPU-only torch wheel | Upgrade torch in the venv |
+| `[warn] rosetta arm64 Python, torch has MPS but it is not available (macOS 12.3 or newer is needed)` | macOS older than 12.3, or a broken torch install | Update macOS, or reinstall torch |
+| `[warn] threads N CPUs visible but the CPU quota is Q: Numba, OpenMP and torch start N threads and wait on the quota. Before running: export ...` | A container whose CPU quota is smaller than the machine's CPUs (Docker `--cpus`, RunPod, a cloud job) | Paste the export line before the run, and call `torch.set_num_threads` as printed |
+| `[warn] speed   PATH: write W MB/s, read R MB/s. Under 200 MB/s: keep volume chunk caches on a local SSD ...` | `--disk` is on a network, overlay or synced file system | Point caches and work folders at a local disk, or pass `--disk` there |
+| `[warn] speed   could not write a test file under PATH: ERROR` or `disk speed test under PATH failed: ERROR` | `--disk` is read-only or full | Point `--disk` at a writable folder, or pass `--no-speed` |
+| `... (read may come from memory: this system cannot drop the file from its cache)` at the end of the speed line | The system has neither `posix_fadvise` nor `F_NOCACHE` (Windows), so the read speed can be the page cache's | Treat the read number as an upper bound |
 | `FileNotFoundError: [Errno 2] No such file or directory: 'PATH'` and a traceback, exit code 1 | `--disk` names a path that does not exist | Create the folder first, or pass an existing one |
 | `[warn] tools   missing: NAMES (uv runs villa; docker runs the VC3D image)` | `git`, `uv` or `docker` is not on `PATH` | Install the missing tool; docker matters only for the VC3D container, which villa issue #1588 reported stale |
 | `[warn] villa   VILLA not set. Clone https://github.com/ScrollPrize/villa and export VILLA=/path/to/villa` | `VILLA` is not set | Clone villa and export `VILLA` |
@@ -194,16 +210,17 @@ GPU sizes are printed as whole GB rounded down (23,028 MiB prints as `22 GB`), a
 4. `disk`: `shutil.disk_usage(--disk).free` in GiB against `MIN_DISK_GB` (25).
 5. `tools`: `shutil.which` for each name in `TOOLS`.
 6. `villa` and `vc_bin`: folder tests on `VILLA` and `VC_BIN`, with the VC3D.app fallback on Apple Silicon.
-7. `format_report` writes the lines and takes the worst status (`fail` over `warn` over `pass`); `cmd_doctor` prints it and returns 1 when the worst is `fail`, 0 otherwise.
+7. `rosetta` (macOS), `threads` (Linux) and `speed` run first: `sysctl` for Rosetta, `/proc/self/cgroup` and the cgroup files for the quota, and a 64 MiB write, `fsync`, cache drop and read for the disk.
+8. `format_report` writes the lines and takes the worst status (`fail` over `warn` over `pass`); `cmd_doctor` prints it and returns 1 when the worst is `fail`, 0 otherwise.
 
 ## Cost and time
 
-Measured 2026-10-16 in a 4-core Xeon cloud container with no `nvidia-smi`: 0.34 to 0.43 s per call over 5 runs, almost all Python start-up and the import of `kit.cli`. On a machine with `nvidia-smi`, add that program's run time; the call gives up after 20 s. It rents nothing and runs anywhere.
+With the disk speed test: 0.29 to 0.52 s per call (3 runs, `--disk /tmp`, measured 2026-10-23, 4-core Xeon cloud container, which read the test file back at 2,888 MB/s); `--no-speed` 0.14 s. The test writes 64 MiB and deletes it. Measured 2026-10-16 in a 4-core Xeon cloud container with no `nvidia-smi`: 0.34 to 0.43 s per call over 5 runs, almost all Python start-up and the import of `kit.cli`. On a machine with `nvidia-smi`, add that program's run time; the call gives up after 20 s. It rents nothing and runs anywhere.
 
 ## For agents
 
 - **Command:** `python -m kit doctor --disk WORK_DIR`. There is no JSON form; in Python, `from kit import doctor; doctor.run_checks(disk_path="WORK_DIR")` returns `(name, status, detail)` tuples.
-- **Parse:** each line `[STATUS] NAME DETAIL` (STATUS is `pass`, `warn` or `fail`; NAME is `gpu`, `memory`, `disk`, `tools`, `villa` or `vc_bin`) and the last line `overall: STATUS`.
+- **Parse:** each line `[STATUS] NAME DETAIL` (STATUS is `pass`, `warn` or `fail`; NAME is `rosetta`, `threads`, `speed`, `gpu`, `memory`, `disk`, `tools`, `villa` or `vc_bin`) and the last line `overall: STATUS`.
 - **Rerun:** Safe; it only reads the machine's state.
 - **Success:** Exit code 0 with `overall: pass` or `overall: warn`. Exit code 1 with an `overall: fail` line is a finished report; exit code 1 without that line is a crash (see Failure modes).
 - **Not a pass:** `overall: pass` does not mean CUDA, PyTorch or villa's inference work; only the control run shows that. A `gpu` pass says nothing about whether the card is free or the driver matches villa's PyTorch.
@@ -213,13 +230,14 @@ Measured 2026-10-16 in a 4-core Xeon cloud container with no `nvidia-smi`: 0.34 
 ## Tests
 
 ```bash
-python -m unittest tests.test_kit.DoctorTest -v
+python -m unittest tests.test_kit.DoctorTest tests.test_qol_tools.TestDoctor -v
 ```
 
-Six tests cover `nvidia-smi` parsing, the 12 GB threshold (fail, warn, pass), Apple Silicon reported as a warning that points to `docs/mac.md`, the memory rounding (15.6 passes, 8 warns, unreadable warns, "shared with the GPU" on a Mac), villa checkout detection, and the overall verdict. They do not cover `check_disk`, `check_tools`, `check_vc_bin`, `run_checks`, the command line or its exit codes, or a real `nvidia-smi`.
+`tests/test_qol_tools.py` (`TestDoctor`) covers the Rosetta check (off macOS, a translated Intel build, arm64 with and without MPS, an Intel Mac), the thread warning and its export line, the CPU quota read from a fake cgroup tree (a v1 quota under the process's own cgroup, an unlimited and a limited v2 `cpu.max`), and the speed check on a real temporary file (it leaves nothing behind; a fake slow clock warns). Six older tests cover `nvidia-smi` parsing, the 12 GB threshold (fail, warn, pass), Apple Silicon reported as a warning that points to `docs/mac.md`, the memory rounding (15.6 passes, 8 warns, unreadable warns, "shared with the GPU" on a Mac), villa checkout detection, and the overall verdict. They do not cover `check_disk`, `check_tools`, `check_vc_bin`, `run_checks`, the command line or its exit codes, or a real `nvidia-smi`.
 
 ## History
 
+- 2026-10-23: three checks for silent slowdowns: `rosetta` (an Intel Python on an Apple Silicon Mac), `threads` (a container CPU quota smaller than the CPUs Python sees) and `speed` (a 64 MB disk read test), with `--no-speed` (`3376687`).
 - 2026-10-14: `scrolls-workbench doctor` in the installable package (`2582ab7`, [PR #58](https://github.com/ChaseHendrick/Scrolls/pull/58)).
 - 2026-10-07: the Apple Silicon path: on a Mac the GPU check warns instead of failing, a memory check (16 GB) is added, and VC3D's tools are found inside VC3D.app (`e8f3dda`, [PR #1](https://github.com/ChaseHendrick/Scrolls/pull/1)).
 - 2026-10-06: first version: the NVIDIA GPU (12 GB), free disk (25 GB), git, uv and docker, `VILLA` and `VC_BIN` checks (`2daee8e`).

@@ -168,7 +168,7 @@ def prtext(body, kind="pr", title=None):
         problems.append("no motivation: say what you were doing on scroll data when this came up (CONTRIBUTING)")
     if re.search(r"\b(?:synthetic|toy) (?:data|example|volume|input|test)", body, re.I):
         reminders.append("villa does not accept synthetic or toy examples as the proof; show real scroll data")
-    dashes = len(re.findall("[—–]", body + (title or "")))
+    dashes = len(re.findall("[\u2014\u2013]", body + (title or "")))
     if dashes:
         problems.append(f"{dashes} long dash(es) (U+2014 or U+2013): use commas, colons or full stops")
     if title is not None:

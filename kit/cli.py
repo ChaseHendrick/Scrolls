@@ -1033,7 +1033,8 @@ def build_parser(prog="python -m kit", sub_progs=None):
     """The parser of every command; sub_progs maps a command to the program name its usage and errors show."""
     sub_progs = sub_progs or {}
     parser = KitParser(prog=prog, description=__doc__)
-    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND")
+    sub = parser.add_subparsers(dest="command", required=True, metavar="COMMAND",
+                                parser_class=argparse.ArgumentParser)
 
     p = sub.add_parser("help", help="list the commands by task, or show one command's options and worked example")
     p.add_argument("topic", nargs="?", help="a command, such as tifxyz")

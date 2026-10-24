@@ -7,8 +7,9 @@ sha256 when the index gives one, and writes it as FOLDER/umbilicus.json, the nam
 spiral-fitting reads (villa main 8aa507c12: volume-cartographer/core/src/ScrollUmbilicus.cpp, spiral-fitting/
 fit_session.py; see docs/tools/umbilicus.md). When the file lacks volume_width, volume_height and volume_slices and
 the line's volume is known, they are stamped from metadata.json's shape, so VC3D can place the points at any
-pyramid level. It refuses to overwrite an umbilicus.json or estimated_umbilicus.json already in FOLDER (VC3D
-refuses a folder with two) unless --force. The line's points are in level-0 voxels of the volume it names.
+pyramid level. It replaces an umbilicus.json already in FOLDER only with --force, and never writes beside an
+estimated_umbilicus.json (VC3D refuses a folder with both). The line's points are in level-0 voxels of the volume
+it names.
 """
 
 import argparse
@@ -104,12 +105,11 @@ def get_line(scroll, folder=None, out=None, source=None, force=False, get=_find.
         folder = Path(folder)
         if not folder.is_dir():
             raise VerifyError(f"no folder {folder}: give the folder that holds your *.volpkg.json, or a spiral fit dataset")
-        clash = [n for n in ("umbilicus.json", "estimated_umbilicus.json") if (folder / n).exists()]
-        if clash and not force:
-            raise VerifyError(f"{folder} already has {', '.join(clash)}; VC3D refuses a folder with two. Use --force "
-                              "to replace umbilicus.json")
-        if "estimated_umbilicus.json" in clash:
-            raise VerifyError(f"{folder} has estimated_umbilicus.json; move it away first (VC3D refuses two files)")
+        if (folder / "estimated_umbilicus.json").exists():
+            raise VerifyError(f"{folder} has estimated_umbilicus.json; move it away first (VC3D refuses a folder "
+                              "with both it and umbilicus.json)")
+        if (folder / "umbilicus.json").exists() and not force:
+            raise VerifyError(f"{folder} already has umbilicus.json; use --force to replace it")
         dest = folder / "umbilicus.json"
     else:
         dest = Path(out or f"{scroll}_umbilicus.json")

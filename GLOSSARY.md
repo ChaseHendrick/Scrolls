@@ -152,9 +152,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **integrity check (`kit integrity`)**: This repository's checker for Vesuvius claims: an ink score needs its reverse-depth control and a held-out status from that reader, wording must not call model output a reading, a preregistration must precede its result, citations must match arXiv. It plants faults it must catch before it reports anything. The `vesuvius-integrity` Claude skill states the same rules as instructions ([guide](docs/integrity.md)).
 
+**isometry (of a segment grid)**: How closely a tifxyz grid keeps the spacing its `meta.json` promises: every edge's 3D length over the promised step, each cell's area over the promised area, and the angle between the grid's two directions (1.0, 1.0 and 90 degrees when exact). `kit tifxyz stretch` reports them; a grid far from isometric distorts a flattened render ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
+
 ## K
 
 **Kaggle**: A data-science competition platform that has hosted Vesuvius Challenge competitions.
+
+**keep-open**: The label on a ScrollPrize/villa pull request that exempts it from villa's daily time-limit workflow, which otherwise closes a PR after 14 days without activity or 28 days open; `kit prclock` shows each PR's clock ([`docs/tools/villapr.md`](docs/tools/villapr.md)).
 
 **keV (kiloelectronvolt)**: The unit of X-ray photon energy. Scan names in the bucket give it, for example `113keV`.
 

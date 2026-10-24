@@ -8,6 +8,14 @@ To install a fixed version, name its tag:
 python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls@workbench-v0.4.1"
 ```
 
+## Unreleased
+
+- **Segments without VC3D:** `python -m kit tifxyz info|stretch|check|obj|preview|facing` reads one tifxyz segment (local or on the open-data bucket) and gives its area in cm2, how isometric its grid is, holes, folds and stretched cells with a picture, an OBJ for Blender, a shaded preview and which way it faces. How-to with pictures: [docs/segments-without-vc3d.md](docs/segments-without-vc3d.md).
+- **Find, center line, cite:** `python -m kit find SCROLL` lists a scroll's volumes, segments, bucket predictions, center lines and Hugging Face matches; `python -m kit centerline get SCROLL --into FOLDER` writes its center line as `umbilicus.json` for VC3D (sha256 checked); `python -m kit cite SCROLL` prints credit lines.
+- **villa helpers:** `python -m kit prclock USER` shows days before villa's time-limit workflow closes each open PR; `python -m kit prtext BODY.md` checks a PR or issue body against villa's templates.
+- **Help:** `python -m kit --help` groups commands by task, `python -m kit help COMMAND` shows a worked example, and a mistyped command suggests the closest names.
+- **doctor and fetch:** `doctor` checks for an Intel Python under Rosetta on Apple Silicon, a container CPU quota smaller than the thread counts, and slow disks; `fetch` checks free space first and has `--dry-run`.
+
 ## 0.4.1 (18 October 2026)
 
 - **Offline ink-map viewer:** hovering now reports the scaled disagreement encoded in the overlay, including intermediate values such as 0.71. It previously read the red color channel and displayed 1.00 wherever disagreement was nonzero. Regenerate existing HTML pages to use the fix.

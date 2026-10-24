@@ -485,6 +485,166 @@
    ]
   },
   {
+   "id": "centerline",
+   "name": "centerline",
+   "tagline": "a scroll's center line into your VC3D project in one command",
+   "summary": "`python -m kit centerline get SCROLL --into FOLDER` downloads the best public center line (umbilicus) for a scroll, checks its sha256, and writes it as `FOLDER/umbilicus.json`, the file VC3D and villa's spiral fitting look for.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit centerline list",
+    "python -m kit centerline get",
+    "python -m kit.centerline"
+   ],
+   "imports": [
+    "from kit import centerline"
+   ],
+   "code": [
+    {
+     "path": "kit/centerline.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/find.py",
+     "symbols": [
+      "centerlines",
+      "list_prefix"
+     ]
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_qol_tools.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "3376687"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`centerline`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit centerline list`, `python -m kit centerline get`, `python -m kit.centerline`, `from kit import centerline`",
+    "Code": "`kit/centerline.py`, `kit/find.py` (`centerlines`, `list_prefix`), `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_qol_tools.py`",
+    "Needs": "Python 3.10 or newer, standard library only",
+    "Runs on": "Any machine with HTTPS. `get PHerc0175A` took 0.74 s (measured 2026-10-23, cloud container)",
+    "Network": "Reads, anonymously over HTTPS: `SharpMeow/vesuvius-center-lines`'s `index.json` and one line file on `huggingface.co`, the bucket's `SCROLL/representations/umbilicus/` listing and files, and `metadata.json` when stamping the grid size",
+    "Writes": "`FOLDER/umbilicus.json` (with `--into`), or `--out` (default `SCROLL_umbilicus.json`); written to a `.part` file and renamed",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the change that adds it (23 Oct 2026)",
+    "Checked": "2026-10-23 against commit `3376687`"
+   },
+   "page": "docs/tools/centerline.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 40,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 41,
+     "end_line": 59,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 60,
+     "end_line": 68,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 69,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 103,
+     "end_line": 115,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 116,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 120,
+     "end_line": 130,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 131,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 149,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 155,
+     "end_line": 158,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 159,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 169,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 173,
+     "end_line": 176,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 177,
+     "end_line": 181,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "claimcheck",
    "name": "claimcheck",
    "tagline": "trace every README number to a pinned source",
@@ -640,6 +800,7 @@
    "area": "Releases and repository",
    "commands": [
     "python -m kit",
+    "python -m kit help",
     "scrolls-workbench",
     "scrolls-letterread",
     "scrolls-letterlines",
@@ -654,6 +815,11 @@
      "path": "kit/cli.py",
      "symbols": [
       "build_parser",
+      "KitParser",
+      "GROUPS",
+      "cmd_help",
+      "_quick_start",
+      "_unknown",
       "_parser",
       "_parse",
       "main",
@@ -692,8 +858,8 @@
     "text": "Not needed to run the entry point. A command that posts, uploads or rents compute needs Chase's yes first (the go-ahead rule, hard rule 8); its page says so"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-23",
+    "commit": "3376687"
    },
    "license": null,
    "fields": {
@@ -701,8 +867,8 @@
     "Status": "Current",
     "Kind": "kit module",
     "Area": "Releases and repository",
-    "Run": "`python -m kit`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start` (the installed package's console scripts), `from kit import cli`",
-    "Code": "`kit/cli.py` (`build_parser`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py`",
+    "Run": "`python -m kit`, `python -m kit help`, `scrolls-workbench`, `scrolls-letterread`, `scrolls-letterlines`, `scrolls-letterdemo`, `scrolls-start` (the installed package's console scripts), `from kit import cli`",
+    "Code": "`kit/cli.py` (`build_parser`, `KitParser`, `GROUPS`, `cmd_help`, `_quick_start`, `_unknown`, `_parser`, `_parse`, `main`, `_console`, `workbench_main`, `letterread_main`, `letterlines_main`, `letterdemo_main`, `start_main`, `import_advice`, `_shape`, `CONSOLE_SCRIPTS`, `READER_INSTALL`, `_PARSERS`), `kit/__main__.py`, `kit/__init__.py`",
     "Tests": "`tests/test_cli_parser_cache.py`, `tests/test_packaging.py`, `tests/test_localcost_regressions.py`, `tests/test_repo.py`, `tests/test_letterdemo.py`, `tests/test_letter_scripts.py`",
     "Needs": "Python 3.10 or newer (`requires-python` in `pyproject.toml`). The entry point and every module it imports at start are standard library only; a command that needs numpy, tifffile, zarr, Pillow or scipy imports them when it runs (see its page)",
     "Runs on": "Any machine. `python -m kit prizes --json` took 0.19 s wall (measured 2026-10-16, cloud container, Python 3.13.16); building the parser once and reusing it brought a repeated `main()` from 13 ms to 2 ms per call (commit `88fbee4`'s message; machine not recorded)",
@@ -712,7 +878,7 @@
     "Released": "Public `main` since 2026-10-06 (`2daee8e`); the console scripts since 2026-10-14 (`2582ab7`). Since 2026-10-20 the README's \"Released tools\" lists the command-line tools as one entry, Scrolls kit (`scrolls-kit` in `docs/releases.json`), with one line per tool",
     "Release id": "`scrolls-kit`",
     "Guide": "[CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it)",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-23 against commit `3376687`"
    },
    "page": "docs/tools/cli.md",
    "sections": [
@@ -731,79 +897,79 @@
     {
      "name": "Quick start",
      "start_line": 46,
-     "end_line": 64,
+     "end_line": 69,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 65,
-     "end_line": 75,
+     "start_line": 70,
+     "end_line": 80,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 76,
-     "end_line": 162,
+     "start_line": 81,
+     "end_line": 183,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 163,
-     "end_line": 186,
+     "start_line": 184,
+     "end_line": 212,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 187,
-     "end_line": 190,
+     "start_line": 213,
+     "end_line": 216,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 191,
-     "end_line": 201,
+     "start_line": 217,
+     "end_line": 227,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 202,
-     "end_line": 215,
+     "start_line": 228,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 216,
-     "end_line": 225,
+     "start_line": 242,
+     "end_line": 251,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 226,
-     "end_line": 229,
+     "start_line": 252,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 230,
-     "end_line": 239,
+     "start_line": 256,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 240,
-     "end_line": 247,
+     "start_line": 266,
+     "end_line": 273,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 248,
-     "end_line": 258,
+     "start_line": 274,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 259,
-     "end_line": 265,
+     "start_line": 286,
+     "end_line": 292,
      "applicable": true
     }
    ]
@@ -1289,15 +1455,16 @@
     }
    ],
    "tests": [
-    "tests/test_kit.py"
+    "tests/test_kit.py",
+    "tests/test_qol_tools.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-23",
+    "commit": "3376687"
    },
    "license": null,
    "fields": {
@@ -1307,7 +1474,7 @@
     "Area": "Planning and prizes",
     "Run": "`python -m kit doctor`, `from kit import doctor`",
     "Code": "`kit/doctor.py`, `kit/cli.py` (`cmd_doctor`)",
-    "Tests": "`tests/test_kit.py`",
+    "Tests": "`tests/test_kit.py`, `tests/test_qol_tools.py`",
     "Needs": "Python 3.10 or newer, standard library only. Uses `nvidia-smi` (from the NVIDIA driver) when it is on `PATH`, and reads the environment variables `VILLA` and `VC_BIN`",
     "Runs on": "Any machine. 0.34 to 0.43 s per call with no `nvidia-smi` installed (5 runs, measured 2026-10-16, 4-core Xeon cloud container). With `nvidia-smi`, add its run time, at most 20 s (the timeout)",
     "Network": "None",
@@ -1315,7 +1482,7 @@
     "Go-ahead": "Not needed",
     "Released": "Public `main` since 2026-10-06 (`2daee8e`), with the Apple Silicon path since 2026-10-07 (`e8f3dda`). Also inside the AutoPipeline release copy at `faada83`, and as `scrolls-workbench doctor` in the installable package since 2026-10-14 (`2582ab7`)",
     "Guide": "[mac.md](../mac.md) (what runs on an Apple Silicon Mac), [compute.md](../compute.md) (hardware that has worked, and the thresholds' sources)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-23 against commit `3376687`"
    },
    "page": "docs/tools/doctor.md",
    "sections": [
@@ -1346,67 +1513,67 @@
     {
      "name": "Commands and options",
      "start_line": 93,
-     "end_line": 112,
+     "end_line": 113,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 113,
-     "end_line": 137,
+     "start_line": 114,
+     "end_line": 143,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 138,
-     "end_line": 148,
+     "start_line": 144,
+     "end_line": 154,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 149,
-     "end_line": 169,
+     "start_line": 155,
+     "end_line": 178,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 170,
-     "end_line": 188,
+     "start_line": 179,
+     "end_line": 204,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 189,
-     "end_line": 198,
+     "start_line": 205,
+     "end_line": 215,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 199,
-     "end_line": 202,
+     "start_line": 216,
+     "end_line": 219,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 203,
-     "end_line": 212,
+     "start_line": 220,
+     "end_line": 229,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 213,
-     "end_line": 220,
+     "start_line": 230,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 221,
-     "end_line": 226,
+     "start_line": 238,
+     "end_line": 244,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 227,
-     "end_line": 235,
+     "start_line": 245,
+     "end_line": 253,
      "applicable": true
     }
    ]
@@ -1904,15 +2071,16 @@
     }
    ],
    "tests": [
-    "tests/test_kit.py"
+    "tests/test_kit.py",
+    "tests/test_qol_tools.py"
    ],
    "go_ahead": {
     "needed": false,
     "text": "Not needed: anonymous downloads of public data; nothing is posted or rented"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "29e7e8c"
+    "date": "2026-10-23",
+    "commit": "3376687"
    },
    "license": null,
    "fields": {
@@ -1922,7 +2090,7 @@
     "Area": "Data and downloads",
     "Run": "`python -m kit fetch`, `from kit import fetch`",
     "Code": "`kit/fetch.py`, `kit/cli.py` (`cmd_fetch`)",
-    "Tests": "`tests/test_kit.py`",
+    "Tests": "`tests/test_kit.py`, `tests/test_qol_tools.py`",
     "Needs": "Python 3.10 or newer, standard library only (urllib, concurrent.futures); outbound HTTPS to the bucket. Reading what it fetched needs zarr (the map tools)",
     "Runs on": "Any machine with network access. 33 objects (14.7 MB) took 3.9 s and 13 objects (0.12 MB) 6.8 s; a rerun with nothing to download 3.5 s (measured 2026-10-16, 4-core Xeon cloud container behind an HTTPS proxy). A whole surface volume (1.0 to 1.7 GB): Not measured",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` only (`BUCKET_URL`): S3 ListObjectsV2 listing pages and anonymous GETs of each object. urllib's default opener honors `HTTPS_PROXY`",
@@ -1930,7 +2098,7 @@
     "Go-ahead": "Not needed: anonymous downloads of public data; nothing is posted or rented",
     "Released": "Public `main` since 2026-10-07 (`912135c`); also in the AutoPipeline release copy at `faada83`, and as `scrolls-workbench fetch` in the installed package",
     "Guide": "[mac.md](../mac.md) (the w035 download in the Mac runbook)",
-    "Checked": "2026-10-16 against commit `29e7e8c`"
+    "Checked": "2026-10-23 against commit `3376687`"
    },
    "page": "docs/tools/fetch.md",
    "sections": [
@@ -1961,67 +2129,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 98,
+     "end_line": 101,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 99,
-     "end_line": 113,
+     "start_line": 102,
+     "end_line": 118,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 114,
-     "end_line": 123,
+     "start_line": 119,
+     "end_line": 128,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 124,
-     "end_line": 146,
+     "start_line": 129,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 147,
-     "end_line": 160,
+     "start_line": 158,
+     "end_line": 172,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 161,
-     "end_line": 170,
+     "start_line": 173,
+     "end_line": 182,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 171,
-     "end_line": 184,
+     "start_line": 183,
+     "end_line": 196,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 185,
-     "end_line": 194,
+     "start_line": 197,
+     "end_line": 206,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 195,
-     "end_line": 202,
+     "start_line": 207,
+     "end_line": 214,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 203,
-     "end_line": 208,
+     "start_line": 215,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 209,
-     "end_line": 219,
+     "start_line": 222,
+     "end_line": 232,
      "applicable": true
     }
    ]
@@ -2197,6 +2365,159 @@
      "name": "Related",
      "start_line": 302,
      "end_line": 311,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "find",
+   "name": "find",
+   "tagline": "everything public for one scroll, and how to credit it",
+   "summary": "`python -m kit find SCROLL` lists a scroll's volumes, segments, predictions, center lines and Hugging Face matches in one screen; `python -m kit cite SCROLL` prints the credit and licence lines to paste under a figure.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit find",
+    "python -m kit cite",
+    "python -m kit.find"
+   ],
+   "imports": [
+    "from kit import find"
+   ],
+   "code": [
+    {
+     "path": "kit/find.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_qol_tools.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "3376687"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`find`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Data and downloads",
+    "Run": "`python -m kit find`, `python -m kit cite`, `python -m kit.find`, `from kit import find`",
+    "Code": "`kit/find.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_qol_tools.py`",
+    "Needs": "Python 3.10 or newer, standard library only",
+    "Runs on": "Any machine with HTTPS. `find PHerc0139` took 2.0 s and `cite PHerc0139 --centerline` 0.7 s (measured 2026-10-23, cloud container)",
+    "Network": "Reads, anonymously over HTTPS: the open-data bucket's `metadata.json` and listings (`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`), the Hugging Face Hub search API (`huggingface.co/api/datasets`, `models`, `spaces`), and the center lines dataset's `index.json`. Posts nothing",
+    "Writes": "Nothing",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the change that adds it (23 Oct 2026)",
+    "Checked": "2026-10-23 against commit `3376687`"
+   },
+   "page": "docs/tools/find.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 82,
+     "end_line": 89,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 90,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 120,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 142,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 146,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 157,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 171,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 179,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 183,
+     "end_line": 192,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 193,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 201,
+     "end_line": 206,
      "applicable": true
     }
    ]
@@ -5033,7 +5354,8 @@
     "python scripts/media/hero.py",
     "python scripts/media/encode.py",
     "python scripts/media/capture_web.py",
-    "python scripts/media/sweep.py"
+    "python scripts/media/sweep.py",
+    "python scripts/media/tifxyz_stills.py"
    ],
    "imports": [],
    "code": [
@@ -5060,7 +5382,7 @@
     "Status": "Current",
     "Kind": "script folder",
     "Area": "Releases and repository",
-    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`",
+    "Run": "`python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`",
     "Code": "`scripts/media/`",
     "Tests": "`tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`)",
     "Needs": "Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only",
@@ -5102,67 +5424,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 176,
+     "end_line": 194,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 177,
-     "end_line": 180,
+     "start_line": 195,
+     "end_line": 198,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 181,
-     "end_line": 187,
+     "start_line": 199,
+     "end_line": 205,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 188,
-     "end_line": 224,
+     "start_line": 206,
+     "end_line": 242,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 225,
-     "end_line": 273,
+     "start_line": 243,
+     "end_line": 291,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 274,
-     "end_line": 296,
+     "start_line": 292,
+     "end_line": 314,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 297,
-     "end_line": 310,
+     "start_line": 315,
+     "end_line": 328,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 311,
-     "end_line": 320,
+     "start_line": 329,
+     "end_line": 338,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 321,
-     "end_line": 324,
+     "start_line": 339,
+     "end_line": 342,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 325,
-     "end_line": 330,
+     "start_line": 343,
+     "end_line": 348,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 331,
-     "end_line": 336,
+     "start_line": 349,
+     "end_line": 354,
      "applicable": true
     }
    ]
@@ -9273,6 +9595,163 @@
    ]
   },
   {
+   "id": "tifxyz",
+   "name": "tifxyz",
+   "tagline": "look at a tifxyz segment without building VC3D",
+   "summary": "`python -m kit tifxyz` reads a segment's x.tif, y.tif and z.tif (local or on the open-data bucket) and reports its true area in cm2, how isometric its grid is, holes, folds and over-stretched spots, and writes an OBJ or a picture.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python -m kit tifxyz info",
+    "python -m kit tifxyz stretch",
+    "python -m kit tifxyz check",
+    "python -m kit tifxyz obj",
+    "python -m kit tifxyz preview",
+    "python -m kit tifxyz facing",
+    "python -m kit.tifxyz"
+   ],
+   "imports": [
+    "from kit import tifxyz"
+   ],
+   "code": [
+    {
+     "path": "kit/tifxyz.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_tifxyz.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it reads public data and writes local files"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "3376687"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`tifxyz`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Surfaces and tracing",
+    "Run": "`python -m kit tifxyz info`, `python -m kit tifxyz stretch`, `python -m kit tifxyz check`, `python -m kit tifxyz obj`, `python -m kit tifxyz preview`, `python -m kit tifxyz facing`, `python -m kit.tifxyz`, `from kit import tifxyz`",
+    "Code": "`kit/tifxyz.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_tifxyz.py`",
+    "Needs": "Python 3.10 or newer, numpy and tifffile; scipy when installed (finds holes faster; a numpy fallback gives the same answer). No VC3D, villa or GPU",
+    "Runs on": "Any CPU. On PHerc0139 w035's 2.399 um mesh (1,132 x 1,020 nodes): `info` 1.36 s, `stretch` 1.30 s, `check` 1.05 s, `preview` 1.41 s, `facing` 0.90 s, `obj` 4.15 s (a 134 MB file); peak memory under 270 MB (measured 2026-10-23, 4-core Intel Xeon at 2.10 GHz cloud container, each a fresh process)",
+    "Network": "Only for a segment given as an `https://` or `s3://` URL: its four files from `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`, once, into `--cache`",
+    "Writes": "`--cache` (default `work/tifxyz/cache`) for bucket segments; `obj` its OUT file; `preview` its OUT file; `check --png` that file. Nothing else",
+    "Go-ahead": "Not needed: it reads public data and writes local files",
+    "Released": "Public `main` from the change that adds it (23 Oct 2026)",
+    "Checked": "2026-10-23 against commit `3376687`"
+   },
+   "page": "docs/tools/tifxyz.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 36,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 37,
+     "end_line": 52,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 53,
+     "end_line": 83,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 84,
+     "end_line": 92,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 93,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 196,
+     "end_line": 214,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 215,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 220,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 249,
+     "end_line": 265,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 266,
+     "end_line": 276,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 277,
+     "end_line": 280,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 281,
+     "end_line": 290,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 291,
+     "end_line": 294,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 295,
+     "end_line": 298,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 299,
+     "end_line": 305,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "tooldocs",
    "name": "tooldocs",
    "tagline": "check, index, show and start the tool pages",
@@ -10680,6 +11159,158 @@
      "name": "Related",
      "start_line": 247,
      "end_line": 255,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "villapr",
+   "name": "villapr",
+   "tagline": "villa PR deadlines and a template check before you post",
+   "summary": "`python -m kit prclock USER` shows how many days each of a person's open PRs on ScrollPrize/villa has before villa's time-limit workflow closes it; `python -m kit prtext BODY.md` checks a PR or issue body against villa's templates and CONTRIBUTING before it is posted.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Releases and repository",
+   "commands": [
+    "python -m kit prclock",
+    "python -m kit prtext"
+   ],
+   "imports": [
+    "from kit import villapr"
+   ],
+   "code": [
+    {
+     "path": "kit/villapr.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "build_parser"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_qol_tools.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: both only read. Posting the checked text to villa still needs its author's own go-ahead"
+   },
+   "checked": {
+    "date": "2026-10-23",
+    "commit": "3376687"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`villapr`",
+    "Status": "Current",
+    "Kind": "kit command, kit module",
+    "Area": "Releases and repository",
+    "Run": "`python -m kit prclock`, `python -m kit prtext`, `from kit import villapr`",
+    "Code": "`kit/villapr.py`, `kit/cli.py` (`build_parser`)",
+    "Tests": "`tests/test_qol_tools.py`",
+    "Needs": "Python 3.10 or newer, standard library only (`zoneinfo` for the Pacific time zone; a fixed UTC-7 is used where the time zone database is missing)",
+    "Runs on": "Any machine. `prtext` reads one local file in well under a second; `prclock` makes one GitHub search request per 100 PRs",
+    "Network": "`prclock` only: `api.github.com/search/issues`, anonymous (60 requests an hour) or with `GITHUB_TOKEN`. `prtext`: none",
+    "Writes": "Nothing",
+    "Go-ahead": "Not needed: both only read. Posting the checked text to villa still needs its author's own go-ahead",
+    "Released": "Public `main` from the change that adds it (23 Oct 2026)",
+    "Checked": "2026-10-23 against commit `3376687`"
+   },
+   "page": "docs/tools/villapr.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 29,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 30,
+     "end_line": 39,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 40,
+     "end_line": 57,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 58,
+     "end_line": 64,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 65,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 97,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 113,
+     "end_line": 116,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 117,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 128,
+     "end_line": 138,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 139,
+     "end_line": 143,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 144,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 148,
+     "end_line": 157,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 158,
+     "end_line": 161,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 162,
+     "end_line": 165,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 166,
+     "end_line": 168,
      "applicable": true
     }
    ]

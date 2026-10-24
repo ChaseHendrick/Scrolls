@@ -1,0 +1,33 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "tifxyz-check-demo",
+  "label": "Synthetic demo",
+  "alt": "A made-up wavy sheet shaded gray with kit tifxyz check's flags: a blue patch where nodes are missing inside the sheet, a red outline around a patch where the sheet folds back on itself, and an orange outline around a patch shifted sideways, where the grid edges at its border are stretched.",
+  "caption": "Synthetic demo: kit tifxyz check on a made-up sheet with a planted hole (600 nodes, blue), fold (545 nodes, red) and shifted patch whose border edges stretch (414 nodes, orange). No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "tifxyz-check-demo.png",
+      "bytes": 16301,
+      "sha256": "fb2b05f4c80cac65cf6eed4a3065e9fcc59fea9f2deeed9099dc7ed2362aa9b0",
+      "width": 1100,
+      "height": 800,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-23",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "tifxyz_stills.py"
+    ],
+    "scripts_sha256": "ba568dd6f4fe1f6784b55dceef0f470eb9e88d67497e6312e318fa99e5350e78",
+    "base_commit": "3376687358eb11659eb2c19753d2367adb06b99b"
+  },
+  "command": "python scripts/media/tifxyz_stills.py s3://vesuvius-challenge-open-data/PHerc0139/segments/20260317000000-w035_2026031718/mesh/20260317000000-on-20260102150214-2.399um.tifxyz --scan PHerc0139 --segment w035 --out-dir docs/assets/tifxyz"
+}

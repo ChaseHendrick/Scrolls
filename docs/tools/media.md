@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -167,6 +167,24 @@ usage: python scripts/media/sweep.py [-h] --out-dir OUT_DIR [--frames FRAMES] [-
 | `--width WIDTH` | `960` | Frame width in pixels |
 | `--height HEIGHT` | `540` | Frame height in pixels |
 | `--seed SEED` | `7` | Noise seed |
+
+### `python scripts/media/tifxyz_stills.py`
+
+```text
+usage: python scripts/media/tifxyz_stills.py [-h] --scan SCAN --segment NAME
+                                             [--cache CACHE] [--size SIZE]
+                                             --out-dir OUT_DIR
+                                             segment
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `segment` | required | tifxyz folder or bucket URL, as [`kit tifxyz`](tifxyz.md) takes it; a public scan off the prize lists |
+| `--scan SCAN` | required | The scroll, for the sidecar and the public media rule's check |
+| `--segment NAME` | required | The segment's short name, for the sidecar |
+| `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
+| `--size SIZE` | `1200` | Longest side in pixels (one pixel per node when the grid is smaller) |
+| `--out-dir OUT_DIR` | required | Writes `tifxyz-before.png` (x.tif as an image viewer shows it), `tifxyz-after.png` (the shaded sheet) and `tifxyz-check-demo.png` (check flags on a made-up sheet with a planted hole, fold and shifted patch), each with a sidecar |
 
 ### Environment variables
 
