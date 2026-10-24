@@ -72,7 +72,7 @@ xyz = np.stack([get(c) for c in "xyz"], -1)  # xyz[i, j] = (x, y, z) in scan vox
 
 ## This page's code and data
 
-`https://sharpmeow-segment-lens.static.hf.space/`
+`https://sharpmeow-segment-lens.hf.space/`
 
 License: Page code Apache 2.0; data as above. python -m kit atlas show SCROLL and python -m kit tifxyz check MESH_URL reproduce the numbers from a clone of ChaseHendrick/Scrolls.
 
@@ -80,5 +80,6 @@ License: Page code Apache 2.0; data as above. python -m kit atlas show SCROLL an
 
 ```text
 The whole atlas as one CSV: https://huggingface.co/datasets/SharpMeow/vesuvius-segment-atlas/resolve/main/atlas.csv
+API and MCP for agents (list_scrolls, list_segments, get_segment, segment_picture): https://sharpmeow-segment-lens.hf.space/agents/
 Page source: https://github.com/ChaseHendrick/Scrolls/tree/main/spaces/segment-lens
 ```
