@@ -2,6 +2,13 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 24 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Quality-of-life batch (Chase, 23 Oct 23:14 UTC: "Add 20 quality of life improvements that the community and researchers and the team will appreciate", then "yes do all 20") | Branch `claude/project-thread-f3ehjs` from `main` `2ce4d50`: `kit tifxyz` (area, isometry, holes, folds, stretch, OBJ, preview, facing), `kit find`, `kit centerline`, `kit cite`, `kit prclock`, `kit prtext`, grouped `--help` with `help COMMAND` and did-you-mean, `fetch --dry-run` and a free-space check, three `doctor` checks (Rosetta, container CPU quota, disk speed), the how-to [`segments-without-vc3d.md`](segments-without-vc3d.md) with before and after pictures of PHerc0139 w035, and Umbilici 1.6.2's "copy kit command" button. Pages, tests (1,505 pass), MAP, docs index, GLOSSARY, CHANGELOG and the Scrolls kit release lines updated | Chase reviews and merges the draft PR. After the merge, the Umbilici redeploy and the center lines card belong to the Center line thread: its Umbilici 1.7.0 takes the button from `main`, and it has the card text. `kit prclock` was checked only with fixtures: the cloud container cannot reach `api.github.com`; run it once on the Mac |
+| Second batch (Chase, 24 Oct 00:20 UTC: "do these", then "do them all actually"; 01:02 UTC: merge the PR) | Same branch and PR #169: `kit atlas` with `scripts/atlas/hf_atlas.py` (Segment Atlas, the public dataset SharpMeow/vesuvius-segment-atlas; first build Job 6adbfc881e112550ce7dac2f), Segment Lens source in `spaces/segment-lens/`, `kit coverage`, `kit labels`, `kit tifxyz chunks` and `diff`, `kit submitcheck`, `kit doctor --remote` and AMD/Intel checks, `kit s3relay` and `kit vc3dcache` (the false-404 fix), [`tracing-tools.md`](tracing-tools.md), [`prizes.md`](prizes.md). 1,667 tests pass | Once the atlas Job finishes: check the dataset, create the Space SharpMeow/segment-lens (Chase asked for it) and check it in a browser, then `python scripts/atlas/hf_atlas.py schedule --ref main`. The isometry standard draft for villa waits for Chase's OK on its text |
+
 ## Continuation, 23 October 2026
 
 | Item | State | Next step |
@@ -130,34 +137,6 @@ handoff:
 | Unroll in the README release list | Merged, PR #94 (`590636c`): adds Unroll v1.0 to `docs/releases.json` and the README Released tools section | None |
 | Stale branches | **Done** 18 Oct: Chase turned on automatic deletion of merged head branches, and every merged branch this row listed is gone from GitHub (`git ls-remote`, 18 Oct; the list is in this file's history). Still on GitHub and kept: `release-readme/progress-2026-10-fix1`, `-fix2` and `-fix3`, and the `submission/progress-2026-10*` snapshots | Nothing open. Agents may delete a merged branch (never `submission/*`, `release-readme/*` or unmerged branches); a Claude cloud session cannot delete remote branches |
 | GPU inference speed probes (C reader) | `torch.compile` gives about 1.85x over eager fp16 per tile; max-autotune about 1.9x; TensorRT fp16, int8 and fp8 builds did not complete (missing ONNX file and `onnx_graphsurgeon`) | Fix the ONNX export before any further probe; no launch without approval |
-
-## Open items added 15 October 2026 (checked 23:20 ET)
-
-Public work only. Every PR and SHA below was checked on GitHub when written; anything not checked says **unverified**.
-
-```yaml
-handoff:
-  written: 2026-10-15T23:30-04:00
-  repo: ChaseHendrick/Scrolls
-  base: main
-  main_head_at_writing: 303c33f
-  open_prs:
-    - {number: 85, branch: grok/vesuvius-bible, head: 9229ff8522, topic: Vesuvius Challenge reference book, state: open}
-    - {number: 87, branch: grok/unroll-link, head: 5b963dab59, topic: link to the Unroll viewer Space, state: open}
-    - {number: 88, branch: grok/autopipe-readme, head: 9983e6f3df, topic: AutoPipeline reference README and agent rules, state: open}
-  in_progress_not_pushed:
-    - vesuvius_bible_layout_redesign
-    - autopipeline_electricity_cli_and_modal_ledger_rows
-    - unroll_destroy_mode_agent_api_ink_bench
-  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, scan_images_not_in_this_repo]
-```
-
-| Item | State | Next step | Waits on | Where |
-| --- | --- | --- | --- | --- |
-| Vesuvius Challenge reference book | **Merged** 16 Oct in [PR #85](https://github.com/ChaseHendrick/Scrolls/pull/85) (merge `fafc316`), files under `docs/vesuvius-bible`, with the redrawn charts (`95ea240`); its branch `grok/vesuvius-bible` (#85) is deleted | Further layout work (the rebuilt PDF, if unfinished) starts on a new branch from `main` | Chase | PR #85 |
-| AutoPipeline reference README | PR #88 open, head `9983e6f3df` (`docs/autopipeline/README.md`, `docs/autopipeline/AGENTS.md`, `docs/README.md`). Its commit is authored as Grok Bot, not Chase, against the identity rule below; fix by a new commit only if Chase wants it rewritten (no force-push) | Review and merge | Chase | PR #88 |
-| AutoPipeline local-run and ledger tooling | In progress, not pushed: `kit run local` (wall time, CPU time and an electricity estimate, rate read from local config, never git), `kit run backfill`, and automatic one-row-per-app cloud ledger rows. `tests/test_letterlines.py` passes on `main` (13 tests); the pending letterlines change is **unverified** | Review, open a PR | agent | not yet in git |
-| Unroll viewer link | PR #87 open, head `5b963dab59` (`README.md`, `docs/unroll-space.md`). The Space ([huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll)) serves commit `f6dcaa7`: multi-scroll registry (`scrolls/index.json` with one manifest per scroll) and Open your own (load your own meshes and ink maps in the browser). In progress, not deployed: Destroy mode (tear, crush, burn, water at any unroll amount), a `window.unroll` agent API, and an Ink Bench whose scores are agreement with the published ink layer, not ground truth | Merge the three working copies, test, deploy; then update `docs/unroll-space.md` | Chase | PR #87 |
 
 ## Still binding from older sections (moved 14 October 2026)
 

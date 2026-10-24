@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/coverage_still.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -168,6 +168,35 @@ usage: python scripts/media/sweep.py [-h] --out-dir OUT_DIR [--frames FRAMES] [-
 | `--height HEIGHT` | `540` | Frame height in pixels |
 | `--seed SEED` | `7` | Noise seed |
 
+### `python scripts/media/tifxyz_stills.py`
+
+```text
+usage: python scripts/media/tifxyz_stills.py [-h] --scan SCAN --segment NAME
+                                             [--cache CACHE] [--size SIZE]
+                                             --out-dir OUT_DIR
+                                             segment
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `segment` | required | tifxyz folder or bucket URL, as [`kit tifxyz`](tifxyz.md) takes it; a public scan off the prize lists |
+| `--scan SCAN` | required | The scroll, for the sidecar and the public media rule's check |
+| `--segment NAME` | required | The segment's short name, for the sidecar |
+| `--cache CACHE` | `work/tifxyz/cache` | Where a bucket segment is kept |
+| `--size SIZE` | `1200` | Longest side in pixels (one pixel per node when the grid is smaller) |
+| `--out-dir OUT_DIR` | required | Writes `tifxyz-before.png` (x.tif as an image viewer shows it), `tifxyz-after.png` (the shaded sheet) `tifxyz-check-demo.png` (check flags on a made-up sheet with a planted hole, fold and shifted patch) and `tifxyz-diff-demo.png` (diff colors on two versions of a made-up sheet), each with a sidecar |
+
+### `python scripts/media/coverage_still.py`
+
+The still on the [coverage](coverage.md) page: `kit coverage`'s picture of one scan with a title, axis labels and a key added (needs Pillow).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `scroll` | required | The scroll; it must be on no prize list |
+| `--volume` | required | The volume whose meshes and center line are used |
+| `--out-dir` | required | Writes `NAME.png` and its sidecar |
+| `--name` | `coverage-pherc0139` | The file name without `.png` |
+
 ### Environment variables
 
 | Variable | Default | Meaning |
@@ -227,6 +256,7 @@ The sidecar (`common.write_sidecar`, schema `scrolls-media/1`):
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `SCROLL is on a prize list (...): no picture` | `coverage_still.py` on a prize-list scroll (the public media rule) | Use a scan on no prize list |
 | `actions must be a JSON list of steps` | `--actions` holds an object or a string | Wrap the steps in a list |
 | `no such page:` | The local HTML file is not there | Fix the path, or give a URL |
 | `capture_web: MESSAGE` on stderr, exit code 2 | The prefix of every `capture_web.py` refusal (a `CaptureError`, `OSError` or `ValueError`); MESSAGE is one of the rows here | Read MESSAGE and find its row |
