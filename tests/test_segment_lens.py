@@ -188,6 +188,8 @@ class TestAgentTools(unittest.TestCase):
         self.assertIn("app_file: app.py", card)
         self.assertIn("/agents/gradio_api/mcp/", card)
         self.assertEqual(re.search(r"const VERSION = '([\d.]+)'", APP).group(1), self.srv.VERSION)
+        # with SSR on, Spaces gives port 7860 to a Node server and uvicorn cannot bind (24 Oct 2026)
+        self.assertIn("ssr_mode=False", (SPACE / "app.py").read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":
