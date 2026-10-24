@@ -41,7 +41,7 @@ One file in both repositories, as with kit/routines.py. Checks 1 to 7 run wherev
 and 9 skip in public Scrolls, which has no docs/compute/freezes.json, no modal-approvals.json and no kit/budget.py.
 DEFAULT_BRANCHES lists both repositories' default branches, private first. Standard library only.
 
-History (18 Oct 2026): written in Scrolls-private, then ported to public Scrolls, where the port added three
+History (18 Oct 2026): written in the private workbench, then ported to public Scrolls, where the port added three
 changes that both copies now share: check 2 skips in a clone that holds a single branch, such as the depth-1 checkout
 of the daily GitHub workflow (.github/workflows/routines.yml), where every other branch a row names would look
 deleted; in a shallow clone, checks 1, 6 and 7 add an info line saying ages are lower bounds, because git dates every
