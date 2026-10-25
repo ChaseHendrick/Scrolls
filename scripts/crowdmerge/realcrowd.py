@@ -5,7 +5,7 @@ surface prediction, so their slips may sit at the same contacts. This script pic
 scores the merged result against the hand trace, as frozen in docs/prereg/2026-10-25-crowdmerge-real-crowd.md.
 PHerc0139 is public and on no prize list; the traces are mesh geometry only.
 
-  python scripts/crowdmerge/realcrowd.py seeds [--windings w027 w037] [--agent DIR] [--json]
+  python scripts/crowdmerge/realcrowd.py seeds [--windings w027 w037] [--agent DIR] [--prediction URL] [--json]
   python scripts/crowdmerge/realcrowd.py score TRACES [--out FILE]     # TRACES/<winding>/<k>/{x,y,z}.tif
 
 Needs numpy, scipy and tifffile, and `python -m kit hopbench refs` first.
@@ -72,10 +72,11 @@ def seeds(refs, man, names=WINDINGS):
     return out
 
 
-def seed_check(agent, xyz):
-    """Headless VC3D's seed_check (the tracer's own gate): on the m7 prediction and on papyrus in the CT."""
+def seed_check(agent, xyz, prediction=PREDICTION):
+    """Headless VC3D's seed_check (the tracer's own gate): on the prediction (m7 by default) and on papyrus in the
+    CT."""
     out = subprocess.run([sys.executable, "-m", "kit", "vc3d", "call", "seed_check",
-                          json.dumps({"volume": PREDICTION, "seed": list(xyz), "ct": CT})],
+                          json.dumps({"volume": prediction, "seed": list(xyz), "ct": CT})],
                          cwd=agent, capture_output=True, text=True)
     try:
         return json.loads(out.stdout)
@@ -83,7 +84,7 @@ def seed_check(agent, xyz):
         raise sr.BenchError(f"seed_check failed: {out.stderr[-500:]}")
 
 
-def checked(A, xyz, agent):
+def checked(A, xyz, agent, prediction=PREDICTION):
     """Move a seed along A's normal to the nearest point (whole voxels, up to SHIFT_VOX, the + side first on a tie)
     that the tracer's seed_check accepts. Returns (point, shift) or (None, None)."""
     np = _np()
@@ -91,7 +92,7 @@ def checked(A, xyz, agent):
     n = n[0] / (np.linalg.norm(n[0]) or 1.0)
     for d in sorted(range(-SHIFT_VOX, SHIFT_VOX + 1), key=lambda d: (abs(d), -d)):
         q = [int(round(float(v))) for v in np.array(xyz, float) + d * n]
-        if seed_check(agent, q).get("ok"):
+        if seed_check(agent, q, prediction).get("ok"):
             return q, d
     return None, None
 
@@ -232,6 +233,7 @@ def main(argv=None):
     a.add_argument("--windings", nargs="+", default=list(WINDINGS))
     a.add_argument("--refs", default=str(sr.DEFAULT_REFS))
     a.add_argument("--agent", help="Headless VC3D folder: move each seed to where its seed_check passes")
+    a.add_argument("--prediction", help="the surface prediction seed_check reads (default m7)")
     a.add_argument("--json", action="store_true")
     a = sub.add_parser("score", help="merge and score each winding's crowd")
     a.add_argument("traces", help="folder with one subfolder per winding, one tifxyz folder per trace in each")
@@ -247,7 +249,7 @@ def main(argv=None):
             for name, r in res.items():
                 r["checked"], r["shift_vox"], r["from_candidate"] = [], [], []
                 for i, s in enumerate(r["candidates"]):
-                    q, d = checked(R[name], s, a.agent)
+                    q, d = checked(R[name], s, a.agent, a.prediction or PREDICTION)
                     if q is not None:
                         r["checked"].append(q)
                         r["shift_vox"].append(d)

@@ -177,6 +177,7 @@ The real-crowd test of the [real-crowd preregistration](../prereg/2026-10-25-cro
 | --- | --- | --- |
 | `--windings W ...` | `w027 w037` | `seeds`: the hand-traced windings to seed |
 | `--agent DIR` | none | `seeds`: a Headless VC3D folder; each seed moves along the hand trace's normal (up to 6 voxels) to where the tracer's `seed_check` passes, drawing on 14 candidates until 7 pass ([amendment 1](../prereg/2026-10-25-crowdmerge-real-crowd-amendment-1.md)) |
+| `--prediction URL` | none | `seeds`: the surface prediction (default m7) `seed_check` reads, such as recto-090 for the mixed crowd's second half |
 | `--refs REFS` | `work/hopbench/refs/PHerc0139-20250728140407` | kit hopbench refs output |
 | `--json` | off | `seeds`: print as JSON |
 | `--out FILE` | `TRACES/realcrowd.json` | `score`: report path |

@@ -95,7 +95,9 @@ Claim label: Model output, for every surface and map the chain makes (the surfac
 
 ```
 usage: python -m kit scroll2ink run [-h] --sample SAMPLE --seed X Y Z
-                                    [--volume VOLUME] [--out OUT]
+                                    [--volume VOLUME]
+                                    [--prediction PREDICTION]
+                                    [--normal-grids NORMAL_GRIDS] [--out OUT]
                                     [--until {inputs,seed,trace,check,extend,flatten,render,ink,preview,report}]
                                     [--generations GENERATIONS]
                                     [--trace-minutes TRACE_MINUTES]
@@ -114,6 +116,8 @@ usage: python -m kit scroll2ink run [-h] --sample SAMPLE --seed X Y Z
 | `--sample SAMPLE` | required | open-data sample, such as PHerc0139 |
 | `--seed X Y Z` | required | seed point in level-0 voxels of the volume |
 | `--volume VOLUME` | none | volume id (default: the first with a surface prediction and normal grids) |
+| `--prediction PREDICTION` | none | surface prediction zarr (folder or URL) in the volume's frame, instead of the catalog's; give its --normal-grids too, or the tracer ignores it |
+| `--normal-grids NORMAL_GRIDS` | none | that prediction's normal grids (a vc_gen_normalgrids folder or URL) |
 | `--out OUT` | none | run folder (default work/scroll2ink/SAMPLE-VOLUME-X_Y_Z) |
 | `--until UNTIL` | none | stop after this stage (resume later with the same command) |
 | `--generations GENERATIONS` | `200` | tracer generations (default 200) |
@@ -182,6 +186,7 @@ Headless VC3D reads its own: `VC_APPIMAGE` or `VC_BIN` (villa's tools), `KIT_INK
 | `agent_command(given=None, env=None)` | argv list | `Scroll2InkError` when nothing is found | `--agent`, else `$SCROLL2INK_AGENT`, else `vc3d-agent` on PATH |
 | `call(agent, tool, args, log=None)` | `(exit, result dict)` | `Scroll2InkError` when the program cannot start | One `vc3d-agent vc3d call TOOL JSON`; exit 0 success, 1 a tool that ran and failed, 2 bad arguments or a refusal |
 | `pick_volume(volumes, wanted=None)` | `(volume, prediction_url, normal_grids_url)` | `Scroll2InkError` | From a `catalog volumes` result; pure |
+| `given_prediction(pred, grids, settings)` | `(prediction, normal_grids, source)` | | `--prediction` (with only `--normal-grids` as its grids) or `--normal-grids` over the catalog's pick; pure |
 | `preset_for(voxel_um)` | `"9um"`, `"2um"` or `"1um"` | | Headless VC3D's render preset for a voxel size; pure |
 | `run_dir(root, sample, volume, seed)` | `Path` | | The default run folder name |
 | `Run(folder, settings=None, runtime=None)` | a run | `Scroll2InkError` on changed settings or a folder that is not a run | `settings.json`, `state.json`, `record()`, `done()` |
@@ -257,7 +262,7 @@ It prints one line per stage, `[N/10] STAGE  STATUS in S s: DETAIL`, then the ar
 
 ## How it works
 
-1. `inputs`: Headless VC3D's `catalog volumes` lists the sample's volumes; `pick_volume` takes `--volume` or the first with a prediction whose normal grids are listed, and keeps the CT URL, the prediction, the grids and the voxel size. The sample is looked up in the dated prize snapshot. Then the umbilicus (the scroll's central axis) for the layer order: `--umbilicus`, else the catalog's for this volume, else the first other volume of the sample with a published umbilicus that `catalog transforms` links to this one; its control points go through that affine (inverted when the catalog lists it only the other way) into `umbilicus.json` in the run folder. With none, the render falls back to VC3D's usual flag and warns.
+1. `inputs`: Headless VC3D's `catalog volumes` lists the sample's volumes; `pick_volume` takes `--volume` or the first with a prediction whose normal grids are listed, and keeps the CT URL, the prediction, the grids and the voxel size; `--prediction` replaces the prediction (with only `--normal-grids` as its grids, never the catalog model's) and `--normal-grids` alone replaces the grids. The sample is looked up in the dated prize snapshot. Then the umbilicus (the scroll's central axis) for the layer order: `--umbilicus`, else the catalog's for this volume, else the first other volume of the sample with a published umbilicus that `catalog transforms` links to this one; its control points go through that affine (inverted when the catalog lists it only the other way) into `umbilicus.json` in the run folder. With none, the render falls back to VC3D's usual flag and warns.
 2. `seed`: `seed_check` with the CT and the growth-horizon triage (`horizon`, report only).
 3. `trace`: `trace` in seed mode with the normal grids, `--generations` (200), a snapshot every 10 generations, villa's time limit at `--trace-minutes` (60) and the tool's timeout 300 s later.
 4. `check`: `check_surface` on the CT, `--check-windows` windows, with the umbilicus.
@@ -307,6 +312,7 @@ What the demo's ink step reported (Model output; `ink.json`): above the threshol
 
 - 2026-10-24: First version (`28edf55`); a tracer without villa's time limit is stopped at the tool's timeout (`9bf01e2`).
 - 2026-10-25: The layer order is voted against the scroll's umbilicus, carried from another scan through the catalog transform when the scan has none of its own; the demo's first ink maps had come out reversed (`a0d1cd0`). The demo run on PHerc0139, and the replay GIF, MP4 and stills in `docs/assets/scroll2ink/`.
+- 2026-10-25: `--prediction` and `--normal-grids` trace on a surface prediction the catalog does not list, such as a binarized copy of a second model with grids made by `vc_gen_normalgrids`, for the crowd-trace merger's mixed-method crowd (`17c842b`).
 
 ## Related
 
