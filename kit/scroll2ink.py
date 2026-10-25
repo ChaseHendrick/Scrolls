@@ -275,6 +275,18 @@ def given_prediction(pred, grids, settings):
     return pred, grids, "catalog"
 
 
+def tracer_params(text):
+    """--tracer-params: a JSON object of villa tracer parameters (such as {"straight_weight": 1}), merged last into
+    the trace's parameters (pure; tested)."""
+    try:
+        p = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise Scroll2InkError(f"--tracer-params is not JSON: {exc}") from exc
+    if not isinstance(p, dict):
+        raise Scroll2InkError("--tracer-params must be a JSON object, such as '{\"straight_weight\": 1}'")
+    return p
+
+
 def find_umbilicus(run, agent, log, volumes, vol):
     """The umbilicus the layer order is voted against: --umbilicus, the catalog's for this scan, or another scan's
     of the same scroll mapped into this scan's frame (written to umbilicus.json in the run folder). Without one the
@@ -329,6 +341,8 @@ def stage_trace(run, agent, log, inp):
             "timeout": s["trace_minutes"] * 60 + TRACE_GRACE_S}
     if s.get("snap_seed"):
         args["snap_seed"] = True
+    if s.get("tracer_params"):
+        args["params"] = s["tracer_params"]
     if inp.get("normal_grids"):
         args["normal_grids"] = inp["normal_grids"]
     if inp.get("voxel_um"):
@@ -566,6 +580,8 @@ def settings_from(args):
     for k in ("prediction", "normal_grids"):
         if getattr(args, k, None):
             s[k] = getattr(args, k)
+    if getattr(args, "tracer_params", None):
+        s["tracer_params"] = tracer_params(args.tracer_params)
     return s, {k: getattr(args, k) for k in RUNTIME}
 
 
@@ -579,6 +595,8 @@ def add_arguments(p):
     r.add_argument("--prediction", help="surface prediction zarr (folder or URL) in the volume's frame, instead of "
                    "the catalog's; give its --normal-grids too, or the tracer ignores it")
     r.add_argument("--normal-grids", help="that prediction's normal grids (a vc_gen_normalgrids folder or URL)")
+    r.add_argument("--tracer-params", help="JSON object of villa tracer parameters merged last, such as loss weights "
+                   "('{\"straight_weight\": 1}')")
     r.add_argument("--out", help="run folder (default work/scroll2ink/SAMPLE-VOLUME-X_Y_Z)")
     r.add_argument("--until", choices=STAGES, help="stop after this stage (resume later with the same command)")
     r.add_argument("--generations", type=int, default=DEFAULTS["generations"], help="tracer generations (default 200)")

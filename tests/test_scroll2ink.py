@@ -241,6 +241,17 @@ class Scroll2InkTest(unittest.TestCase):
         self.assertEqual([c for c in self.calls() if c["tool"] == "check_surface"][0]["args"]["umbilicus"],
                          "my-umb.txt")
 
+    def test_given_prediction_and_tracer_params_reach_the_trace(self):
+        p = self.kit("--until", "trace", "--prediction", "/p.zarr", "--normal-grids", "/p.grids",
+                     "--tracer-params", '{"straight_weight": 1}')
+        self.assertEqual(p.returncode, 0, p.stderr)
+        tr = [c for c in self.calls() if c["tool"] == "trace"][0]["args"]
+        self.assertEqual((tr["volume"], tr["normal_grids"], tr["params"]),
+                         ("/p.zarr", "/p.grids", {"straight_weight": 1}))
+        sc = [c for c in self.calls() if c["tool"] == "seed_check"][0]["args"]
+        self.assertEqual(sc["volume"], "/p.zarr")
+        self.assertEqual(self.state()["inputs"]["prediction_from"], "given")
+
     def test_umbilicus_helpers(self):
         self.assertEqual(scroll2ink.parse_umbilicus('{"control_points": [{"x": 1, "y": 2, "z": 3, "score": 9}]}'),
                          [(1.0, 2.0, 3.0, 9)])
@@ -288,6 +299,13 @@ class Scroll2InkTest(unittest.TestCase):
         self.assertEqual((s["prediction"], s["normal_grids"]), ("q", "g"))
         s, _ = scroll2ink.settings_from(p.parse_args(["run", "--sample", "S", "--seed", "1", "2", "3"]))
         self.assertNotIn("prediction", s)   # settings.json of runs made before these options stays the same
+        self.assertNotIn("tracer_params", s)
+        s, _ = scroll2ink.settings_from(p.parse_args(["run", "--sample", "S", "--seed", "1", "2", "3",
+                                                      "--tracer-params", '{"straight_weight": 1}']))
+        self.assertEqual(s["tracer_params"], {"straight_weight": 1})
+        for bad in ("[1]", "{nope"):
+            with self.assertRaises(scroll2ink.Scroll2InkError):
+                scroll2ink.tracer_params(bad)
 
 
 if __name__ == "__main__":
