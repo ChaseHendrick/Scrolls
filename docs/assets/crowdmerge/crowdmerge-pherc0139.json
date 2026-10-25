@@ -1,0 +1,50 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "crowdmerge-pherc0139",
+  "label": "Real data render",
+  "alt": "Two stacked line charts. Top: a white line at zero offset (winding A), a gray line about 10 to 15 voxels away that meets it at one place (winding B), four blue traces along the white line and three orange traces that leave it for the gray one at different places. Bottom: a green consensus line that stays on the white line, a red line (the largest single trace) that leaves it, and a purple naive mean that sits between the two windings.",
+  "caption": "Real data render: kit crowdmerge on one planted crowd of PHerc0139 winding w023 next to w024 (published hand traces, scan 20250728140407), cross-section along one row of an 8 mm window. Mesh geometry only, no CT, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w023, w024 (hand-traced windings)",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/"
+  ],
+  "outputs": [
+    {
+      "file": "crowdmerge-pherc0139.png",
+      "bytes": 57943,
+      "sha256": "b9cc9290d9c9652669f941289fb6099fe6e1365aa19fe71b267407cc464cb042",
+      "width": 1200,
+      "height": 860,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [
+    "PHerc0139/w023",
+    "PHerc0139/w024"
+  ],
+  "made": "2026-10-25",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "crowdmerge_still.py"
+    ],
+    "scripts_sha256": "ec2dd34244fecf6c58a418fdb6a3c9b6c3ed1800ff226146864ff16d8a2912d5",
+    "base_commit": "aa7271e11343a2746b527d13f3111f2a92110c6e"
+  },
+  "command": "python scripts/media/crowdmerge_still.py --site w023 w024 25 0 --seed 2 --row-frac 0.7 --out-dir docs/assets/crowdmerge",
+  "summary": {
+    "traces": 7,
+    "vertices": 21363,
+    "grown_vertices": 1008
+  }
+}
