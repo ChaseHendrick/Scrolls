@@ -11828,5 +11828,170 @@
     "verdict": "PASS"
    }
   }
+ ],
+ "crowdmerge_bench": [
+  {
+   "date": "2026-10-25",
+   "tool": "kit crowdmerge",
+   "command": "python -m kit crowdmerge bench --split report --out work/crowdmerge/report",
+   "claim": "Model output: kit crowdmerge's consensus surfaces and slip flags on synthetic crowds planted from PHerc0139 hand-traced windings (scan 20250728140407, 9.362 um; public, not prize-eligible), 7 traces per site, 3 sliding onto the touching winding; geometry only, never a reading",
+   "prereg": "docs/prereg/2026-10-24-crowdmerge.md",
+   "amendment": "docs/prereg/2026-10-25-crowdmerge-amendment-1.md",
+   "code_commit": "f9a30ee",
+   "manifest_digest": "e1fc4cac80a05995b8cb55d14534fac3580cfaf7f88b580b023b33738a332645",
+   "report_sha256": "d28736ef2d6edbd4aed1bea6a78145116cc4e3f237127fe36ceee66f46c90000",
+   "settings": {
+    "canvas_step_vox": 5.0,
+    "dense_step_vox": 2.0,
+    "reach_vox": 40,
+    "tol_vox": 2.0,
+    "spread_bins": 1,
+    "box_cells": 9,
+    "slip_vox": 4.0,
+    "in_plane_vox": 8.0,
+    "flag_reach_vox": 64.0,
+    "grow_cells": 100,
+    "rings_per_vote": 3,
+    "passes": 2,
+    "reliability_weights": true,
+    "beyond_share": 0.6,
+    "min_support": 2
+   },
+   "bench": {
+    "seed": 20261024,
+    "window_mm": 8.0,
+    "crowd": 7,
+    "slipping": 3,
+    "sham_slipping": 5,
+    "jitter_vox": 0.5,
+    "ramp_half_vox": 8.0
+   },
+   "bars": {
+    "off_sheet_max": 0.02,
+    "off_vs_largest_max": 0.25,
+    "flag_recall_min": 0.9,
+    "flag_precision_min": 0.9,
+    "clean_off_max": 0.01,
+    "clean_false_flag_max": 0.01,
+    "sham_follow_min": 0.5
+   },
+   "report": {
+    "split": "report",
+    "windings": [
+     "w032",
+     "w033",
+     "w034",
+     "w035",
+     "w036",
+     "w037",
+     "w038",
+     "w039",
+     "w040"
+    ],
+    "seconds": 2580,
+    "tally": {
+     "sites": 36,
+     "main": {
+      "vote": 0.0096,
+      "mean": 0.1818,
+      "largest": 0.138,
+      "coverage": 0.8475,
+      "flag_recall": 0.938,
+      "flag_precision": 0.9932,
+      "false_flag_share": 0.0013,
+      "missed_outside_share": 0.381,
+      "majority_slipped_share": 0.4522
+     },
+     "clean": {
+      "vote": 0.0,
+      "mean": 0.0,
+      "largest": 0.0,
+      "coverage": 0.8954,
+      "flag_recall": null,
+      "flag_precision": 0.0,
+      "false_flag_share": 0.0,
+      "missed_outside_share": null,
+      "majority_slipped_share": null
+     },
+     "sham": {
+      "vote": 0.4421,
+      "mean": 0.4076,
+      "largest": 0.3672,
+      "coverage": 0.4693,
+      "flag_recall": 0.0029,
+      "flag_precision": 0.0068,
+      "false_flag_share": 0.1942,
+      "missed_outside_share": 0.0119,
+      "majority_slipped_share": 0.4688
+     },
+     "checks": {
+      "off_sheet": true,
+      "flags": true,
+      "clean": true,
+      "sham": true
+     },
+     "verdict": "PASS"
+    }
+   },
+   "dev_round_8": {
+    "split": "dev",
+    "windings": [
+     "w023",
+     "w024",
+     "w025",
+     "w026",
+     "w027",
+     "w028",
+     "w029",
+     "w030",
+     "w031"
+    ],
+    "seconds": 1882,
+    "tally": {
+     "sites": 36,
+     "main": {
+      "vote": 0.0132,
+      "mean": 0.2604,
+      "largest": 0.2629,
+      "coverage": 0.8399,
+      "flag_recall": 0.9391,
+      "flag_precision": 0.9888,
+      "false_flag_share": 0.0024,
+      "missed_outside_share": 0.2569,
+      "majority_slipped_share": 0.483
+     },
+     "clean": {
+      "vote": 0.0,
+      "mean": 0.0,
+      "largest": 0.0,
+      "coverage": 0.8895,
+      "flag_recall": null,
+      "flag_precision": 0.0,
+      "false_flag_share": 0.0,
+      "missed_outside_share": null,
+      "majority_slipped_share": null
+     },
+     "sham": {
+      "vote": 0.4296,
+      "mean": 0.3937,
+      "largest": 0.3175,
+      "coverage": 0.4809,
+      "flag_recall": 0.0017,
+      "flag_precision": 0.0041,
+      "false_flag_share": 0.1993,
+      "missed_outside_share": 0.0105,
+      "majority_slipped_share": 0.4729
+     },
+     "checks": {
+      "off_sheet": true,
+      "flags": true,
+      "clean": true,
+      "sham": true
+     },
+     "verdict": "PASS"
+    }
+   },
+   "not_tested": "real crowds of independent tracers, other scans, crowds where most traces slip"
+  }
  ]
 }

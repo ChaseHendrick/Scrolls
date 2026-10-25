@@ -4,6 +4,42 @@ Sections moved out of [HANDOFF.md](HANDOFF.md) unchanged, newest first, so the h
 
 When HANDOFF.md grows long, move its oldest dated sections, unchanged, to the top of this file (below this paragraph).
 
+## Open items added 16 October 2026 (checked 02:30 ET)
+
+Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.
+
+```yaml
+handoff:
+  written: 2026-10-16T02:30-04:00
+  repo: ChaseHendrick/Scrolls
+  base: main
+  merged_since_last_handoff:
+    - {number: 94, branch: grok/unroll-release, merge: 590636c, topic: Unroll in the README release list}
+    - {number: 95, branch: grok/handoff-2026-10-16, merge: cefa929, topic: handoff 01:10 ET}
+    - {number: 96, branch: grok/unroll-relicense, merge: 915f302, topic: Unroll listing Apache 2.0 and v1.0.0}
+    - {number: 97, branch: grok/readings-wording, merge: e73ca73, topic: ink-layer disclaimer wording}
+    - {number: 98, branch: grok/unroll-install-app, merge: 0d34f92, topic: Unroll Install app link}
+  open_prs:
+    - this handoff PR
+  rules: [no_force_push, do_not_touch_main_claude_or_codex_branches, log_every_cloud_run, open_data_bucket_only]
+```
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Segmentation model zoo (`kit segzoo`, `scripts/segzoo/`; Chase, 17 Oct) | Registry of twelve families with licenses, nnU-Net v2 trainers for MedNeXt, Swin UNETR, SegResNet, SegFormer and an SS2D U-Net, SAM 2 sheet follower and frozen DINO probe, each with a control; CPU tested, nothing trained on scroll data ([page](tools/segzoo.md)) | Any GPU benchmark needs a spec and Chase's budget yes (rule 11) |
+| Unroll ink-layer wording | Merged, PR #97 (`e73ca73`): "Ink layers show where models detect ink; letters visible here are candidates for expert reading." | None |
+| Unroll Install app | Merged, PR #98 (`0d34f92`): release entry links the Install app (offline app) and `docs/unroll-space.md` has an Install app section | None |
+| Unroll viewer changes since 01:10 ET (Space repo) | New scrolls from the open data bucket (PHerc0172, PHerc1447, PHerc1667, CC BY-NC 4.0); installable offline app; texture upload queue removing a 14.6 s main-thread freeze; type and spacing pass; scan labeled 9.4 µm (9.362 µm in details); glossary links; lower resolution while dragging; X-ray window and level with auto contrast; CT volume view; lighter phone mesh (`--coarsen`); starting view fitted to each roll; first-load flash and black screen fix (shader NaN, stricter service worker matching). Space version 1.4.0 | Re-test first load on real phones and desktop GPUs; artifact sweep (spike, floating square) still open |
+| Unroll audit findings (from 01:10 ET) | Not yet confirmed fixed, except the old "run by us" chip text, which no longer appears in the Space code | Escape the annotation id, reject non-finite thresholds and offsets, show share-link errors, re-test |
+| Stale branches | Merged branches listed at 01:10 ET were deleted. Still present and fully merged: `grok/autopipeline-every-scan`, `grok/handoff-2026-10-16`, `grok/perf-cli-parser`, `grok/unroll-install-app`, `grok/unroll-release`, `grok/unroll-relicense` | Chase turned on automatic deletion of merged head branches (18 Oct). Agents may delete these (never `submission/*`, `release-readme/*` or unmerged branches); a Claude cloud session cannot delete remote branches, so Chase or a session with GitHub write access does it |
+| GPU inference speed | TensorRT dropped by owner decision. `torch.compile` max-autotune fp16 is the chosen speedup (0.003755 s/tile, about 1.9x over eager) | None |
+| Scroll Lens Space (thread "Use my 5 minutes of ZeroGPU", 16 and 17 Oct) | v1.1.1 in [PR #178](https://github.com/ChaseHendrick/Scrolls/pull/178), on top of v1.1.0 (#114, #115), #117 and spaceconnect (#170): a visitor's events change one state in place, so clicks made during a run are kept and a late click answer no longer brings back the cube before; the viewer shows only the newest answer and aborts the downloads of a cube it leaves; the CPU fallback runs the 128³ around the point; a page opened narrow and then widened can still open More controls. Live on [SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) since 24 Oct, tested live (page flat and 3D, gradio_client, MCP). Gallery: 99 cubes on the Space | Merge PR #178 |
+| Quick start guide | Completed in [Start Here](start-here.md), the existing guide, with portable practice and official-tool transitions | Keep this single shareable entry point current |
+| AGENTS.md size | Resolved: AGENTS.md is under the current 20,000-byte test limit (19,717 bytes on 18 Oct) | None |
+| `test_autopipe` | Resolved: the full suite passes on `main` (1,083 tests on 18 Oct) | None |
+| AutoPipeline paid batches | Dry runs only; no daily watch routine set | Each paid batch and any cloud launch needs the owner's approval |
+| Release polish (Claude, 16 Oct 10:15 UTC) | Branch `claude/polish-releases-bgc1za`: the README's Unroll entry and `docs/unroll-space.md` now match the live Space, version 1.5.0 (they said 1.1.0 and ink_9um on `w046` to `w051` only). On `main` at `27d0e96` the full test suite passes (714 tests, 43 skipped, with numpy, tifffile, zarr and scipy installed), so the AGENTS.md size and `test_autopipe` rows above no longer fail there. The workbench package is now 0.2.0 with `CHANGELOG.md`. Fresh pictures of AutoPipeline 0.1.4's monitor on the synthetic demo (a GIF of a run and three stills) are in `docs/assets/autopipeline/`, shown in the README above the release list and in `docs/autopipeline/README.md`; the package README on the release branch stays unchanged until the next AutoPipeline fix release carries them. GitHub release [`autopipeline-v0.1.4`](https://github.com/ChaseHendrick/Scrolls/releases/tag/autopipeline-v0.1.4) published 16 Oct with Chase's yes (tag at `603fe14`, not marked latest) | None: [`workbench-v0.2.0`](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.2.0) published 16 Oct with Chase's yes (tag at `f3ce065`, Latest), after the pentest fixes (#103) and the packaged Modal rates (#106) merged |
+
 ## Open items added 16 October 2026 (checked 01:10 ET)
 
 Public work only, neutral voice. PR numbers and SHAs were checked on GitHub when written.

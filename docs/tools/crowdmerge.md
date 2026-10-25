@@ -9,22 +9,26 @@
 | Kind | kit command, kit module |
 | Area | Surfaces and tracing |
 | Run | `python -m kit crowdmerge merge`, `python -m kit crowdmerge bench`, `from kit import crowdmerge` |
-| Code | `kit/crowdmerge.py`, `kit/sheetrefs.py` (tifxyz reader, grid geometry, upsampling, references, matching), `kit/cli.py` (`cmd_crowdmerge`) |
+| Code | `kit/crowdmerge.py`, `kit/cli.py` (`build_parser`) |
 | Tests | `tests/test_crowdmerge.py` |
-| Needs | Python 3.10 or newer (checked with 3.11), numpy, scipy (`cKDTree`, `ndimage`) and tifffile (`pip install numpy scipy tifffile`). `bench` also needs the references of [hopbench](hopbench.md) (`python -m kit hopbench refs`, about 40 MB, 5 minutes, and numcodecs for that step) |
-| Runs on | CPU only. `merge` of 7 traces of an 8 mm window (about 15,000 vertices each at 4 voxels): 30 to 60 s. `bench --split dev` (36 sites, 3 crowds and 2 methods per site): RESULT_SECONDS (measured 2026-10-25, 4-core Intel Xeon 2.80 GHz cloud container, peak memory under 2 GB) |
+| Needs | Python 3.10 or newer (checked with 3.11), numpy, scipy (`cKDTree`, `ndimage`) and tifffile (`pip install numpy scipy tifffile`); `kit/sheetrefs.py` (tifxyz reader, grid geometry, upsampling, references, matching). `bench` also needs the references of [hopbench](hopbench.md) (`python -m kit hopbench refs`, about 40 MB, 5 minutes, and numcodecs for that step) |
+| Runs on | CPU only. `merge` of 7 traces of an 8 mm window (about 15,000 vertices each at 4 voxels): 30 to 60 s. `bench --split dev` (36 sites, 3 crowds and 2 methods per site): 1,882 s; `--split report`: 2,580 s (measured 2026-10-25, 4-core Intel Xeon 2.80 GHz cloud container, peak memory under 2 GB) |
 | Network | None. `bench` reads only the local references |
 | Writes | `merge`: `OUT/consensus/` (x.tif, y.tif, z.tif, meta.json), `OUT/flags/NAME.tif` per trace, `OUT/support.tif`, `OUT/offset.tif`, `OUT/crowdmerge.json`. `bench`: `work/crowdmerge/bench-SPLIT/crowdmerge-bench.json` (or `--out`) |
 | Go-ahead | Not needed: local CPU, your own traces or public data |
 | Released | Public `main` from the PR that adds it (October 2026); a line of the Scrolls kit entry in the README's "Released tools", id `crowdmerge` |
 | Guide | [Preregistration](../prereg/2026-10-24-crowdmerge.md) |
-| Checked | 2026-10-25 against commit `aa7271e` |
+| Checked | 2026-10-25 against commit `f9a30ee` |
 
 ## What it does
 
 When several people (or several automatic runs) trace the same region of a scroll, each trace is a tifxyz mesh: three 2D float images giving every grid vertex's position in voxels of one CT volume. Where two sheets of papyrus touch, a trace can slide onto the neighboring sheet without crossing any gap, and carry on there. Different traces tend to slide at different places, so where one has left the sheet, most of the others still follow it.
 
 `crowdmerge` uses that. It picks one trace as the base (by default the one with the most vertices) and puts its grid at about 5 voxel spacing. At every vertex it looks along the base's normal from -40 to +40 voxels in 1 voxel steps and asks, for every trace, whether one of its points lies within 2 voxels of that ray sample. Each trace that passes there votes for that offset. The offset with the most traces wins (ties go to the offset with more votes in the 9 x 9 box of vertices round it, then to the smaller move), and the vertex moves to the median offset of the traces that pass there. A vertex is kept only where at least 2 traces, and more than half of the traces present, agree. The surface then grows past the base's edges, a few rings at a time (each new ring is the straight-line continuation of the last two, then the same vote snaps it onto the crowd), so the result covers what the crowd covers, not only what the base covers. A second vote along the result's own normals, with the box count deciding, cleans up single vertices that picked the wrong sheet.
+
+![Two stacked line charts along one row of an 8 mm window of PHerc0139 winding w023. Top: seven planted traces, four on w023 and three that leave it for w024. Bottom: the crowdmerge consensus stays on w023, the largest single trace leaves it, the naive mean sits between the windings.](../assets/crowdmerge/crowdmerge-pherc0139.png)
+
+*Real data render: one planted crowd of PHerc0139 winding w023 next to w024 (published hand traces, scan 20250728140407; a development-split site), along one row of an 8 mm window. Up is the offset from w023 along its normal in voxels. Mesh geometry only, no CT, no ink. Vesuvius Challenge open data, CC BY-NC 4.0. Made by `python scripts/media/crowdmerge_still.py --site w023 w024 25 0 --seed 2 --row-frac 0.7 --out-dir docs/assets/crowdmerge`.*
 
 Every trace is then checked against the result. A trace vertex that lies over the consensus (within 8 voxels of it sideways) and more than 4 voxels from it along the consensus normal is flagged as a slip. The flags are a uint8 image per trace on that trace's own grid, so they open as a mask in VC3D next to the segment.
 
@@ -82,11 +86,31 @@ The bench plants slips into copies of PHerc0139's published hand-traced windings
 
 Development rounds (dev split, 36 sites; the bars apply to the report split):
 
-DEV_TABLE
+| Round | Change | Off sheet: vote / largest / mean | Flag recall | Flag precision | Verdict |
+| --- | --- | --- | --- | --- | --- |
+| 1 | first version | 5.95 % / 26.29 % / 21.89 % | 74.5 % | 89.5 % | FAIL |
+| 2 | per-vertex count decides; ray 40 voxels | 4.77 % / 26.29 % / 25.67 % | 85.2 % | 93.8 % | FAIL |
+| 3 | growth past the base | 4.79 % / 26.29 % / 25.64 % | 85.7 % | 93.8 % | FAIL |
+| 4 | 2 traces and a strict majority per vertex | 2.82 % / 26.29 % / 26.04 % | 83.8 % | 95.9 % | FAIL |
+| 5 | second pass | 2.66 % / 26.29 % / 26.04 % | 84.3 % | 96.0 % | FAIL |
+| 6 | vertices beyond the consensus judged | 2.66 % / 26.29 % / 26.04 % | 85.5 % | 95.8 % | FAIL |
+| 7 | reliability weights in the second pass | 1.32 % / 26.29 % / 26.04 % | 88.4 % | 98.0 % | FAIL (recall) |
+| 8 | the same weights beyond the consensus | 1.32 % / 26.29 % / 26.04 % | 93.9 % | 98.9 % | PASS |
+
+In every round the clean control stayed at 0 off sheet and at most 0.01 % of good vertices flagged, and the sham control followed the wrong majority (about 43 % off sheet against 47 % of the majority's points slipped). The full record is in [amendment 1](../prereg/2026-10-25-crowdmerge-amendment-1.md), which froze round 8 (`f9a30ee`) before the report split ran.
 
 Report split (run once, frozen settings):
 
-REPORT_TABLE
+| Arm or control | Bar | Result (36 sites, w032 to w040, 25 Oct 2026) |
+| --- | --- | --- |
+| Main crowd: consensus off sheet | at most 2 % and a quarter of the largest trace's | **0.96 %**; largest single trace 13.8 %; naive mean 18.2 % |
+| Main crowd: slip flags | recall and precision at least 90 % | **recall 93.8 %, precision 99.3 %**; 0.13 % of good vertices flagged |
+| Main crowd: coverage | none | 84.8 % of the window |
+| Clean control | at most 1 % off sheet and 1 % false flags | **0 % and 0 %** |
+| Sham control (wrong majority) | follows it: at least half of the majority's slipped share | **44.2 %** off sheet against 46.9 % slipped: it follows, as a vote must |
+| Verdict | | **PASS** (2,580 s on 4 cores) |
+
+What it shows (Interpretation): on planted crowds where 3 of 7 traces slide onto a touching sheet at their own places, the merged surface is off the sheet about one fourteenth as often as the largest single trace (0.96 % against 13.8 %), and the per-trace flags find about 94 % of the slipped area with under 1 % false alarms. What it does not show: real crowds were not tested (people's slips cluster where the scan is hard, so they are less independent than these), nor crowds where most traces slip, nor other scans. Missed slips are mostly where too few traces overlap to vote (38 % of the misses lie beyond the consensus).
 
 Claim label: Model output, for every number above (geometry computed by the tool on planted crowds; the hand traces are the reference); Interpretation, for what they mean for real crowds, which were not tested.
 
@@ -139,6 +163,7 @@ usage: python -m kit crowdmerge bench [-h] [--refs REFS]
 | `write(out_dir, res, base_meta=None)` | the output folder | `OSError` | writes what `merge` returned; `meta.json` scale is multiplied by the canvas upsampling |
 | `ray_hits(P, N, tree, reach, tol, workers=2, batch=400000)` | (V, 2 reach + 1) bool | nothing | whether a tree point lies within `tol` of P + o N, o = -reach..reach |
 | `choose(votes, mask, offs, box, smooth_first=False)` | (H, W) index into `offs` | nothing | the vote's tie-breaking rule |
+| `beyond(f, xyz, valid, t, dense, S, workers=2, weights=None)` | how many vertices it judged | nothing | judges, in place, a trace's vertices beyond the consensus by the traces on its own normal (weighted when weights are given) |
 | `extrapolate(X, valid, blocked)` | (X with one new ring, new mask) | nothing | straight-line continuation used for growth |
 | `sites(refs, man, names, rng, log=None)` | [(A, B, window)] | nothing | the bench's contact sites |
 | `crowd(up, ok, nA, s, ins, nB, step, rng, n=7, slipping=3, same=False)` | [(name, xyz, valid, truth offset)] or None | nothing | one synthetic crowd |
@@ -187,6 +212,7 @@ usage: python -m kit crowdmerge bench [-h] [--refs REFS]
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `crowdmerge: no traces` | `merge([])` from Python | pass at least one trace |
 | `crowdmerge: give at least two traces` | one folder given | give two or more; with two, expect their disagreements dropped |
 | `crowdmerge: trace names must be distinct` | two folders with one name | copy or link one under another name |
 | `crowdmerge: base NAME is not one of the traces` | `--base` names no input folder | use a folder name exactly as given |
@@ -228,7 +254,7 @@ CPU only; no rented compute. See Runs on for measured times. Time grows with the
 
 ## History
 
-- 2026-10-25: first version: vote, growth, second pass, per-trace flags, and the planted-slip bench with clean and sham controls.
+- 2026-10-25: first version (`f9a30ee`): vote, growth, a second reliability-weighted pass, per-trace flags, and the planted-slip bench with clean and sham controls.
 
 ## Related
 
