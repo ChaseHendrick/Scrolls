@@ -224,6 +224,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## M
 
+**maturity (stage registry)**: How far an option of a stage has been shown to work, on one scale: default (what a workflow runs when nothing is named), validated (a held-out or published benchmark with its control), experimental (runs; no passing held-out result yet), pending (in development checks, not runnable until it passes) and failed (failed a frozen test or its controls) ([stagereg](docs/tools/stagereg.md)).
+
 **m7**: The organizers' binary surface prediction model for the open data: a voxel map of where papyrus sheet surfaces are. Several kit tools read its published outputs; it can merge sheets that touch.
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
@@ -377,6 +379,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **spiral fit**: Fitting one deformed spiral to the whole rolled papyrus of a scroll.
 
 **split rule (windlabel)**: The fixed rule `kit windlabel-box` uses to cut a chain: every step whose grad_mag integral, scaled by 0.765 so one sheet reads about 1, is above 0.95 is cut, so each piece claims only counts the grad_mag agrees with. Digest `c6d2eecbebc2`.
+
+**stage registry (`kit stages`)**: The one list of every option for each stage of reading a scroll (tracer, surface model, lasagna field, flatten, render, 2.5D or 3D ink reader, letter reader and others), with origin, licence and maturity; workflows pick from it with `--use STAGE=NAME` or `KIT_STAGE_<STAGE>` instead of hard-coding a tool ([page](docs/tools/stagereg.md)).
 
 **stackcheck**: `kit stackcheck`, which checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone.
 
