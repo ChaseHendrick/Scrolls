@@ -44,6 +44,7 @@ All released tools, including the tools grouped under Scrolls kit:
 | --- | --- |
 | AutoPipeline | [Open](https://github.com/ChaseHendrick/Scrolls#autopipeline) |
 | Unroll (interactive 3D scroll viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#unroll-interactive-3d-scroll-viewer) |
+| Lasagnetta (experimental fast preview of villa's lasagna field) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagnetta-experimental-fast-preview-of-villas-lasagna-field) |
 | Lasagna Fields (villa lasagna fields for ten scans) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagna-fields-villa-lasagna-fields-for-ten-scans) |
 | Scrolls kit | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-kit) |
 | Segments without VC3D | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/tifxyz.md) |
@@ -144,6 +145,19 @@ Released 16 October 2026.
 [Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, CT tools and an agent API. Status: released. Version: 1.7.0 (the Space's `version.json` and `CHANGELOG.md`). It shows nine scrolls from the Vesuvius Challenge open data, each as its traced segments with an X-ray layer, plus the published ink detection where the open data has it; PHerc. 139 also has an ink_9um (9 µm) layer over all 37 windings. The CT tools (1.2.0 to 1.5.0) add X-ray window and level with auto contrast, a CT volume view that shows a cube of the raw scan around any point of the papyrus, the traced segments drawn into that cube, and streaming from the open data bucket. Live sheet (1.7.0) streams any public segment and a CT or 3D ink volume from the bucket and shows the volume on the sheet in 3D, sampled in the browser by the same rule as `kit sheetview`. Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
+
+### Lasagnetta (experimental fast preview of villa's lasagna field)
+
+Released 25 October 2026.
+
+An experimental student of villa's lasagna net: it writes a lasagna field preview in villa's own layout about 4 times faster than villa `predict3d` (59.6 s against 235.2 s on one region, RTX Pro 6000), from three small 3D U-Nets averaged ([weights](https://huggingface.co/SharpMeow/lasagnetta), CC BY-NC 4.0). **It failed its held-out test**: agreement with villa passed pooled (peak F1 0.855) but one scan of five sat under the 0.80 bar. So it ships with a self-check that runs villa's net on 12 spots and says to use villa when the median peak F1 is under 0.82. Model output; villa's own field stays the reference.
+
+```bash
+pip install torch numpy numcodecs huggingface_hub
+python scripts/lasagnetta/preview.py --checkpoint release --ct s3://vesuvius-challenge-open-data/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/2 --region 9472 9984 3072 3584 4096 4608 --input-level 2 --out out --name PHerc0139
+```
+
+[Tool page](docs/tools/lasagnetta.md), [source](scripts/lasagnetta/), [weights and model card](https://huggingface.co/SharpMeow/lasagnetta). The self-check (`--self-check`) needs a villa checkout (`LASAGNETTA_VILLA`). Teacher credit: villa's lasagna authors (MIT).
 
 ### Lasagna Fields (villa lasagna fields for ten scans)
 

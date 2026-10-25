@@ -214,6 +214,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Lasagna Fields**: The public collection of villa lasagna model outputs and its guide app. A lasagna field describes predicted sheet structure for surface fitting; it is not an ink map. See [Lasagna Fields](docs/tools/lasagna-fields.md).
 
+**Lasagnetta**: An experimental, faster student of villa's lasagna net that writes a preview of a lasagna field, with a self-check that falls back to villa where they disagree. It failed its held-out test, so villa's own field stays the reference. Model output. See [Lasagnetta](docs/tools/lasagnetta.md).
+
 **layer**: One image in a surface volume, at a fixed depth from the traced surface. `kit layers` writes them as numbered TIFF files. In the scroll itself, "layer" also means one turn of papyrus (see winding).
 
 **layer order**: The order of images through the depth of a surface volume. The surface normal determines which side comes first. Reversing the order supplies the reverse-depth control used alongside an ink model.

@@ -5310,6 +5310,173 @@
    ]
   },
   {
+   "id": "lasagnetta",
+   "name": "lasagnetta",
+   "tagline": "a fast, self-checked preview of villa's lasagna field",
+   "summary": "An experimental student of villa's lasagna net that writes a lasagna field preview about 4 times faster than villa `predict3d`, with a self-check that scores it against villa on a few spots and falls back to villa when they disagree.",
+   "status": "Experimental",
+   "kind": [
+    "script folder",
+    "model"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "python scripts/lasagnetta/preview.py --checkpoint release --ct CT --region Z0 Z1 Y0 Y1 X0 X1 --out DIR --name NAME [--self-check]",
+    "python scripts/lasagnetta/selfcheck.py --checkpoint release --ct CT [--exit-code]",
+    "preview.load",
+    "preview.run",
+    "selfcheck.check"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/lasagnetta/preview.py",
+     "symbols": [
+      "run",
+      "resolve"
+     ]
+    },
+    {
+     "path": "scripts/lasagnetta/selfcheck.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/lasagnetta/lasnet.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/lasagnetta/teacher.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/lasagnetta/lgcommon.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_lasagnetta.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. The weights went public on Hugging Face with Chase's yes (25 Oct 2026)"
+   },
+   "checked": {
+    "date": "2026-10-25",
+    "commit": "f989d89"
+   },
+   "license": "Code Apache-2.0. Weights CC BY-NC 4.0, like the scans. The teacher is villa's lasagna (MIT); credit to its authors",
+   "fields": {
+    "Id": "`lasagnetta`",
+    "Status": "Experimental",
+    "Kind": "script folder, model",
+    "Area": "Surfaces and tracing",
+    "Run": "`python scripts/lasagnetta/preview.py --checkpoint release --ct CT --region Z0 Z1 Y0 Y1 X0 X1 --out DIR --name NAME [--self-check]`, `python scripts/lasagnetta/selfcheck.py --checkpoint release --ct CT [--exit-code]`; in Python, `preview.load`, `preview.run`, `selfcheck.check`",
+    "Code": "`scripts/lasagnetta/preview.py` (`run`, the field writer, and `resolve`, which fetches the release), `scripts/lasagnetta/selfcheck.py` (the self-check), `scripts/lasagnetta/lasnet.py` (the student nets and the averaging recipe), `scripts/lasagnetta/teacher.py` (villa's net in process), `scripts/lasagnetta/lgcommon.py` (zarr reading and the agreement metrics). Weights: [SharpMeow/lasagnetta](https://huggingface.co/SharpMeow/lasagnetta)",
+    "Tests": "`tests/test_lasagnetta.py`",
+    "Needs": "Python 3.10 or newer, `torch` (2.x), `numpy`, `numcodecs` (blosc chunks), `huggingface_hub` (to fetch the weights and villa's checkpoint). The self-check also needs a [villa](https://github.com/ScrollPrize/villa) checkout's `lasagna/` folder and its Python dependencies (`LASAGNETTA_VILLA`)",
+    "Runs on": "A CUDA GPU (bf16) or CPU. RTX Pro 6000: a 1024 x 2048 x 2048 region of PHerc0172 in 59.6 s end to end, against 235.2 s for villa `predict3d` (25 Oct 2026). 4-core cloud CPU: a 512^3 region of PHerc0139 in 988 s at batch 1, 5.4 GB peak memory (25 Oct 2026). Self-check: about 50 s per volume on the RTX Pro 6000",
+    "Network": "`huggingface.co` (the weights with `--checkpoint release`, villa's checkpoint `scrollprize/lasagna` for the self-check) and `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` when `--ct` is an `s3://` path",
+    "Writes": "`DIR/NAME.lasagna.json`, `DIR/NAME_{cos,grad_mag,nx,ny}.ome.zarr`, `DIR/preview.json`; with `--self-check`, `DIR/selfcheck.json`; the weights in `~/.cache/lasagnetta`; `selfcheck.py --out FILE` writes FILE",
+    "Go-ahead": "Not needed to use. The weights went public on Hugging Face with Chase's yes (25 Oct 2026)",
+    "Released": "Experimental release 0.1.0 on 2026-10-25: code in public `main`, weights on Hugging Face; README \"Released tools\" entry `lasagnetta`",
+    "License": "Code Apache-2.0. Weights CC BY-NC 4.0, like the scans. The teacher is villa's lasagna (MIT); credit to its authors",
+    "Checked": "2026-10-25 against commit `f989d89`"
+   },
+   "page": "docs/tools/lasagnetta.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 60,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 61,
+     "end_line": 75,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 76,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 130,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 142,
+     "end_line": 147,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 148,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 179,
+     "end_line": 189,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 190,
+     "end_line": 197,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 198,
+     "end_line": 201,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 202,
+     "end_line": 211,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 212,
+     "end_line": 215,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 216,
+     "end_line": 219,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 220,
+     "end_line": 223,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "layers",
    "name": "layers",
    "tagline": "export a surface volume to layer TIFFs, and write the depth-shuffle control",
