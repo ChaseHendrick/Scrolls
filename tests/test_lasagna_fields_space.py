@@ -92,6 +92,28 @@ class TestBox(unittest.TestCase):
             self.assertTrue(run.startswith(vid + "-lasagna-de45f011"), run)
 
 
+@unittest.skipUnless(HAVE_NUMPY, "needs numpy")
+class TestGuidePictures(unittest.TestCase):
+    def test_guide_pictures_point_at_the_file_route(self):
+        """The guide's previews are built as assets/... in its script; inside the page they must use Gradio's file
+        route (a <base> of /gradio_api/file= turned them into /gradio_api/assets/..., which 404s)."""
+        import html
+        raw = (SPACE / "guide" / "index.html").read_text(encoding="utf-8")
+        self.assertIn("'assets/", raw)                      # the control: the guide itself uses relative paths
+        sys.path.insert(0, str(SPACE))
+        try:
+            spec = importlib.util.spec_from_file_location("lasagna_app_under_test", SPACE / "app.py")
+            app = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(app)
+        finally:
+            sys.path.remove(str(SPACE))
+        page = html.unescape(app.guide_html())
+        self.assertNotIn("<base", page)
+        self.assertNotIn("'assets/", page)
+        self.assertNotIn('"assets/', page)
+        self.assertIn("'/gradio_api/file=assets/", page)
+
+
 @unittest.skipUnless(HAVE_NUMPY and "fork" in mp.get_all_start_methods(), "needs numpy and fork")
 class TestZeroGpuWorker(unittest.TestCase):
     def test_pool_starts_inside_a_daemon_process(self):

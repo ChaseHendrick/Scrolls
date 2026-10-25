@@ -486,7 +486,7 @@ stream it names). Coordinates are level-0 (full resolution) voxels, z then y the
 
 CSS = """
 :root, .dark { --lf-accent:#c2462b; }
-.gradio-container { max-width: 1240px !important; margin: 0 auto !important; }
+.gradio-container { width: 100% !important; max-width: 1600px !important; margin: 0 auto !important; }
 .lf-head { display:flex; align-items:center; gap:14px; padding:6px 2px 2px; }
 .lf-head .layers { width:30px; height:24px; border-radius:5px; flex:none;
   background:repeating-linear-gradient(180deg,#c2462b 0 4px,#e07a3f 4px 7px,#f3e2bf 7px 10px,#4f7a3a 10px 11px,#f3e2bf 11px 12px); }
@@ -502,7 +502,7 @@ CSS = """
 .lf-howto img { border-radius:10px; border:1px solid var(--border-color-primary); max-width:min(100%, 760px); display:block; margin:8px 0; }
 #lf-dl .empty { min-height: 64px !important; height: 64px !important; }
 #lf-dl .empty .icon { height: 28px; }
-.lf-howto { max-width: 920px; }
+.lf-howto { max-width: 1000px; margin: 0 auto !important; }
 .lf-howto h3 { scroll-margin-top: 16px; margin-top: 1.6em !important; }
 .lf-howto em { color: var(--body-text-color-subdued); font-size: 13.5px; }
 .lf-toc { font-size: 14px; line-height: 1.9; padding: 10px 14px; border-radius: 10px;
@@ -511,6 +511,7 @@ CSS = """
   .lf-head h1 { font-size:24px; }
   .lf-head span { display:none; }
   .lf-guide iframe { height:calc(100vh - 120px); min-height:520px; }
+  #lf-tabs .tab-container button { padding:6px 6px !important; font-size:12.5px !important; }
 }
 """
 
@@ -546,8 +547,10 @@ def guide_html():
         return "<p>The guide is missing from this copy.</p>"
     import html
     page = GUIDE.read_text()
-    # a <base> so assets/... resolve to Gradio's file route; anchors scroll inside the frame instead of navigating
-    fix = ('<base href="/gradio_api/file=">'
+    # its pictures (assets/..., built in its script) point at Gradio's file route; a <base> cannot do it, because a
+    # base of /gradio_api/file= resolves assets/x to /gradio_api/assets/x. Anchors scroll inside the frame
+    page = page.replace("'assets/", "'/gradio_api/file=assets/").replace('"assets/', '"/gradio_api/file=assets/')
+    fix = ('<style>.wrap{max-width:1480px!important}</style>'
            '<script>document.addEventListener("click",function(e){var a=e.target.closest&&e.target.closest("a");'
            'if(!a)return;var h=a.getAttribute("href")||"";if(h.charAt(0)==="#"){e.preventDefault();'
            'var t=document.getElementById(h.slice(1));if(t)t.scrollIntoView({behavior:"smooth"});}'
