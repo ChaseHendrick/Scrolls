@@ -97,7 +97,7 @@
       "id": "scrolls-kit",
       "title": "Scrolls kit",
       "released": "2026-10-25",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: fourteen `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "summary": "Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -279,6 +279,321 @@
           "command": "python -m kit.hfpull ink_9um/labels/aligned-scrollprizeorg-21slices/pherc0139-w035 labels/w035",
           "page": "docs/tools/hfpull.md",
           "evidence": "[bench record](scripts/experiments/2026-10-25-label-pull/README.md), [tests](tests/test_hfpull.py)"
+        },
+        {
+          "id": "sheetview",
+          "name": "Volume on a sheet in Neuroglancer",
+          "released": "2026-10-24",
+          "summary": "Samples a CT or prediction volume on a tifxyz surface and writes a mesh and Neuroglancer view. The volume and surface must use the same scan coordinates. A displayed prediction is model output, not a reading.",
+          "command": "python -m kit sheetview build --help",
+          "page": "docs/tools/sheetview.md",
+          "evidence": "[source and synthetic tests](docs/tools/sheetview.md#checks-and-controls)"
+        },
+        {
+          "id": "atlas",
+          "name": "Segment Atlas",
+          "released": "2026-10-24",
+          "summary": "Measures published segment meshes with the same geometry checks and builds a searchable table.",
+          "command": "python -m kit atlas --help",
+          "page": "docs/tools/atlas.md"
+        },
+        {
+          "id": "coverage",
+          "name": "Published segment coverage",
+          "released": "2026-10-24",
+          "summary": "Shows the heights and winding angles covered by published meshes and the gaps between them.",
+          "command": "python -m kit coverage --help",
+          "page": "docs/tools/coverage.md"
+        },
+        {
+          "id": "labels",
+          "name": "Published ink labels and model exposure",
+          "released": "2026-10-24",
+          "summary": "Lists published ink label sets and the recorded training exposure of public ink models.",
+          "command": "python -m kit labels --help",
+          "page": "docs/tools/labels.md"
+        },
+        {
+          "id": "submitcheck",
+          "name": "Submission folder check",
+          "released": "2026-10-24",
+          "summary": "Checks a submission folder against published file requirements and lists the remaining checks for a person.",
+          "command": "python -m kit submitcheck --help",
+          "page": "docs/tools/submitcheck.md"
+        },
+        {
+          "id": "vc3dfix",
+          "name": "VC3D false-404 relay and cache repair",
+          "released": "2026-10-24",
+          "summary": "Runs VC3D through a relay that retries false missing-file responses and checks its empty-chunk cache. The vc3dcache command also repairs that cache.",
+          "command": "python -m kit s3relay --help",
+          "page": "docs/tools/vc3dfix.md"
+        },
+        {
+          "id": "spaceconnect",
+          "name": "Tool connection instructions",
+          "released": "2026-10-24",
+          "summary": "Writes and checks connection instructions and code examples for the public tools' hosted pages.",
+          "command": "python -m kit spaceconnect --help",
+          "page": "docs/tools/spaceconnect.md"
+        },
+        {
+          "id": "auc",
+          "name": "Controlled ink AUC scoring",
+          "released": "2026-10-07",
+          "summary": "Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control.",
+          "command": "python -m kit auc --help",
+          "page": "docs/tools/auc.md"
+        },
+        {
+          "id": "batch",
+          "name": "Scan catalog and batch plans",
+          "released": "2026-10-16",
+          "summary": "Lists released scan volumes, makes resumable batch plans and watches for new or changed inputs. It launches nothing.",
+          "command": "python -m kit run all --help",
+          "page": "docs/tools/batch.md"
+        },
+        {
+          "id": "compute",
+          "name": "Run time and energy summary",
+          "released": "2026-10-07",
+          "summary": "Summarizes machine time from run provenance records, with an optional energy estimate.",
+          "command": "python -m kit compute --help",
+          "page": "docs/tools/compute.md"
+        },
+        {
+          "id": "doctor",
+          "name": "Local setup checker",
+          "released": "2026-10-06",
+          "summary": "Checks the machine and installed tools before a pipeline run.",
+          "command": "python -m kit doctor --help",
+          "page": "docs/tools/doctor.md"
+        },
+        {
+          "id": "ensemble",
+          "name": "Ink map ensemble",
+          "released": "2026-10-07",
+          "summary": "Combines ink maps of the same surface by weighted score or pixel rank, keeping only pixels predicted by every input.",
+          "command": "python -m kit ensemble --help",
+          "page": "docs/tools/ensemble.md"
+        },
+        {
+          "id": "false404-relay",
+          "name": "False-404 test relay",
+          "released": "2026-10-12",
+          "summary": "Replays selected false missing-file responses through a local relay so cache handling can be tested.",
+          "command": "python scripts/false404/fault_relay.py --help",
+          "page": "docs/tools/false404-relay.md"
+        },
+        {
+          "id": "fetch",
+          "name": "Public bucket downloader",
+          "released": "2026-10-07",
+          "summary": "Copies files under a public data bucket prefix to a local folder and skips complete files when resuming.",
+          "command": "python -m kit fetch --help",
+          "page": "docs/tools/fetch.md"
+        },
+        {
+          "id": "gate",
+          "name": "Controlled benchmark gate",
+          "released": "2026-10-07",
+          "summary": "Checks recorded benchmark scores against the declared pass rules and required controls.",
+          "command": "python -m kit gate --help",
+          "page": "docs/tools/gate.md"
+        },
+        {
+          "id": "greeklm",
+          "name": "Greek character language model",
+          "released": "2026-10-14",
+          "summary": "Builds and scores a character language model from public Greek text for the letter reader.",
+          "command": "python -m kit greeklm --help",
+          "page": "docs/tools/greeklm.md"
+        },
+        {
+          "id": "hpscore",
+          "name": "Letter-scale ink score",
+          "released": "2026-10-07",
+          "summary": "Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls.",
+          "command": "python -m kit hpscore --help",
+          "page": "docs/tools/hpscore.md"
+        },
+        {
+          "id": "layers",
+          "name": "Layer extraction and shuffle control",
+          "released": "2026-10-07",
+          "summary": "Exports surface-volume layers as images and creates a shuffled-depth control.",
+          "command": "python -m kit layers --help",
+          "page": "docs/tools/layers.md"
+        },
+        {
+          "id": "meshaudit",
+          "name": "Mesh and cross-scan audit",
+          "released": "2026-10-07",
+          "summary": "Checks cross-scan transforms, mesh canvases and rendering depth against public catalog geometry.",
+          "command": "python -m kit meshaudit --help",
+          "page": "docs/tools/meshaudit.md"
+        },
+        {
+          "id": "overlap",
+          "name": "Surface overlap and map comparison",
+          "released": "2026-10-07",
+          "summary": "Checks whether traced surfaces cover the same sheet and compares their labels or ink maps with controls. Includes the collate command.",
+          "command": "python -m kit overlap --help",
+          "page": "docs/tools/overlap.md"
+        },
+        {
+          "id": "phantom",
+          "name": "Synthetic map controls",
+          "released": "2026-10-07",
+          "summary": "Creates known-answer synthetic inputs for checking ink-map scoring and controls.",
+          "command": "python -m kit phantom --help",
+          "page": "docs/tools/phantom.md"
+        },
+        {
+          "id": "plan",
+          "name": "Pipeline planning and cost estimates",
+          "released": "2026-10-06",
+          "summary": "Prints the official pipeline commands for a scroll without running them. The cost command adds up a run's recorded expenses.",
+          "command": "python -m kit plan --help",
+          "page": "docs/tools/plan.md"
+        },
+        {
+          "id": "prizes",
+          "name": "Public prize snapshot",
+          "released": "2026-10-06",
+          "summary": "Lists public prize requirements from a dated local snapshot.",
+          "command": "python -m kit prizes --help",
+          "page": "docs/tools/prizes.md"
+        },
+        {
+          "id": "provenance",
+          "name": "Run provenance records",
+          "released": "2026-10-07",
+          "summary": "Records run settings and file fingerprints, then checks the record and its files for changes.",
+          "command": "python -m kit provenance --help",
+          "page": "docs/tools/provenance.md"
+        },
+        {
+          "id": "rowscore",
+          "name": "Text-row pattern score",
+          "released": "2026-10-07",
+          "summary": "Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text.",
+          "command": "python -m kit rowscore --help",
+          "page": "docs/tools/rowscore.md"
+        },
+        {
+          "id": "segzoo",
+          "name": "Segmentation model comparison tools (experimental)",
+          "released": "2026-10-17",
+          "summary": "Lists segmentation model families and provides training and controlled scoring scripts. This experimental source release is not a Progress Prize release.",
+          "command": "python -m kit segzoo --help",
+          "page": "docs/tools/segzoo.md"
+        },
+        {
+          "id": "soup",
+          "name": "Checkpoint averaging",
+          "released": "2026-10-07",
+          "summary": "Averages compatible model checkpoints from one training run and refuses a mixture of different seeds.",
+          "command": "python scripts/soup.py --help",
+          "page": "docs/tools/soup.md"
+        },
+        {
+          "id": "surfacefix",
+          "name": "Bounded surface correction (experimental)",
+          "released": "2026-10-07",
+          "summary": "Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls.",
+          "command": "python -m kit surfacefix --help",
+          "page": "docs/tools/surfacefix.md"
+        },
+        {
+          "id": "v8in-run",
+          "name": "v8in ink model runner",
+          "released": "2026-10-07",
+          "summary": "Runs the released v8in ink model on layer images, including an optional reduced-precision Mac GPU mode.",
+          "command": "python scripts/v8in_run.py --help",
+          "page": "docs/tools/v8in-run.md"
+        },
+        {
+          "id": "verify",
+          "name": "Ink map agreement check",
+          "released": "2026-10-07",
+          "summary": "Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail.",
+          "command": "python -m kit verify --help",
+          "page": "docs/tools/verify.md"
+        },
+        {
+          "id": "view",
+          "name": "Offline ink map comparison viewer",
+          "released": "2026-10-07",
+          "summary": "Builds one offline HTML page to compare ink maps, their differences, labels and the mask.",
+          "command": "python -m kit view --help",
+          "page": "docs/tools/view.md"
+        },
+        {
+          "id": "volumeview",
+          "name": "Volume overlay links",
+          "released": "2026-10-17",
+          "summary": "Creates Neuroglancer overlay links from supplied volume metadata. It checks the supplied metadata without verifying remote registration.",
+          "command": "python -m kit volumeview --help",
+          "page": "docs/tools/volumeview.md",
+          "evidence": "[workbench 0.4.0 release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0)"
+        },
+        {
+          "id": "run-ledger",
+          "name": "Experiment ledger",
+          "released": "2026-10-06",
+          "summary": "Keeps a run record with a fixed readout rule, status, costs, file fingerprints and checks.",
+          "command": "python -m kit run --help",
+          "page": "docs/tools/run-ledger.md"
+        },
+        {
+          "id": "run-local",
+          "name": "Local run time and cost log",
+          "released": "2026-10-07",
+          "summary": "Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs.",
+          "command": "python -m kit run local --help",
+          "page": "docs/tools/run-local.md"
+        },
+        {
+          "id": "modal-row",
+          "name": "Modal ledger row importer",
+          "released": "2026-10-16",
+          "summary": "Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. It launches no job.",
+          "command": "python -m kit run modal-row --help",
+          "page": "docs/tools/modal-row.md"
+        },
+        {
+          "id": "releases",
+          "name": "Release list and README generator",
+          "released": "2026-10-14",
+          "summary": "Keeps the public release list, compact tool inventory and generated README section in step.",
+          "command": "python -m kit releases --help",
+          "page": "docs/tools/releases.md"
+        },
+        {
+          "id": "routines",
+          "name": "Recurring repository checks",
+          "released": "2026-10-17",
+          "summary": "Lists and runs the registered recurring repository checks and records their status locally.",
+          "command": "python -m kit routines --help",
+          "page": "docs/tools/routines.md"
+        },
+        {
+          "id": "stale",
+          "name": "Stale repository reference check",
+          "released": "2026-10-18",
+          "summary": "Checks live documentation and registries for outdated references and pending work.",
+          "command": "python -m kit stale --help",
+          "page": "docs/tools/stale.md"
+        },
+        {
+          "id": "mac-w045",
+          "name": "Mac ink inference and verification scripts",
+          "released": "2026-10-07",
+          "summary": "Runs public ink-model checks on a Mac with reverse-depth controls. Includes mac-w045, mac-verify and mac-phase0 for inference, device comparison and queued benchmark checks.",
+          "command": "bash -n scripts/mac-w045.sh scripts/mac-verify.sh scripts/mac-phase0.sh",
+          "page": "docs/tools/mac-w045.md",
+          "evidence": "[device check](docs/tools/mac-verify.md), [queued checks](docs/tools/mac-phase0.md)"
         }
       ],
       "where": "main"
@@ -350,6 +665,14 @@
         "python3 -c \"import zarr; g = zarr.open_group(zarr.storage.FsspecStore.from_url('https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr', read_only=True), mode='r', zarr_format=2); print(g['tokens_unit'].shape, g['dense'].shape)\""
       ],
       "details": "The [guide Space](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) (source `spaces/dinovol-embeddings/`) explains the features, has a click-to-search demo, tested download commands with sizes, and opens a whole-scan color volume (`-rgb.ome.zarr` beside the embeddings, 1.6 GB) in neuroglancer. The model's page states no license; villa's dinovol code is MIT. Credit: the Vesuvius Challenge for the scan, the dinovol authors for the model.",
+      "where": "main"
+    },
+    {
+      "id": "segment-lens",
+      "title": "Segment Lens (published segment geometry viewer)",
+      "released": "2026-10-24",
+      "summary": "Displays published segment meshes with geometry warnings and the Segment Atlas table, with an API and MCP server for agents. These geometry checks do not establish that a surface follows one papyrus sheet.",
+      "details": "[Tool page](docs/tools/segment-lens.md), [source](spaces/segment-lens/), and [public viewer](https://huggingface.co/spaces/SharpMeow/segment-lens).",
       "where": "main"
     }
   ]

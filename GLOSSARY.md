@@ -10,6 +10,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **affine (cross-scan affine)**: A linear transform plus a shift that maps coordinates in one scan of a scroll to coordinates in another scan of the same scroll. The catalog publishes these, fitted from landmarks; `kit meshaudit transforms` refits them.
 
+**API (application programming interface)**: A defined way for one program to request data or actions from another. A tool API lets scripts use the same operations that a person might select in an app.
+
 **AppImage**: A single-file Linux application package. villa releases VC3D as one; `kit vc3d` can run VC3D through it.
 
 **Apple Silicon**: Apple's own Mac processors (M1 and later). VC3D, rendering and flattening run natively on them; see [`docs/mac.md`](docs/mac.md).
@@ -20,7 +22,9 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Auto3DSeg**: NVIDIA's automatic 3D segmentation pipeline in MONAI (AutoRunner). It analyzes a dataset, trains SegResNet, DiNTS and Swin UNETR and ensembles them. `kit segzoo datalist` writes the datalist it reads from an nnU-Net dataset ([page](docs/tools/segzoo.md)).
 
-**AutoPipeline (AP)**: The repository's automatic pipeline from a released scan to a scored ink map, released as a package on branch `submission/progress-2026-10-fix5`, version 0.1.5 (see the README's "Released tools"). It drives VC3D's command-line tools and villa's ink detection end to end, with a rule written down before the run in place of each choice usually made by eye, and a control beside every check. See [`docs/autopipeline/README.md`](docs/autopipeline/README.md).
+**AutoPipeline (AP)**: The released package that drives villa's VC3D tools and ink detection from a scan through surface checks, rendering and controlled scoring. It records the choices for a run and keeps a control beside each check. See [AutoPipeline](docs/autopipeline/README.md) and the README's released tools list for the current version.
+
+**average precision (AP score)**: A score for ranked predictions that summarizes the share of selected pixels that are positive as the selection expands to include more positives. Ink Bench uses it to compare an ink map with its reference. Here AP means average precision; in the pipeline docs, AP can also mean AutoPipeline.
 
 ## B
 
@@ -46,6 +50,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Center Finder**: Chase Hendrick's tool in `scripts/umbilicus/` that finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets; page [`docs/tools/umbilicus.md`](docs/tools/umbilicus.md). Its lines are model output.
 
+**centroid**: The average position of the points in a shape or mask. The papyrus centroid is a simple center estimate used as a comparison for the Center Finder; it need not be the center around which the sheets wind.
+
 **chain rule (windlabel)**: The fixed test `kit windlabel-box` applies to each step of a chain of sheet crossings: the next sheet is thin, at a spacing in line with the chain's earlier steps, and the sheet's normal turns little. Version 1 has digest `0e53e0ae5016`. See [`docs/tools/windlabel-box.md`](docs/tools/windlabel-box.md).
 
 **checkpoint**: The saved weights of a trained model.
@@ -59,6 +65,12 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **control**: A deliberately wrong or scrambled input run through the same check, so that the check is shown able to fail. Examples here are the reverse-depth map, the depth-shuffled volume, a displaced map and a rotated or IAAFT copy.
 
 **control-set threshold**: Ink Lens's threshold for one region: the 99th percentile of the region's own reverse-depth ink map over its papyrus. Only stored-order ink above it is kept, and the region's status compares the share above it with the control's 1 % ([`docs/prereg/2026-10-20-ink-lens-gate.md`](docs/prereg/2026-10-20-ink-lens-gate.md)).
+
+**coordinate frame**: The origin, axis directions and units used to describe a point. Coordinates from different scans or resolution levels must be converted into the same frame before they can be compared.
+
+**CORS (cross-origin resource sharing)**: The web server permission that lets a browser page read data from another site. A data URL can work when opened directly yet fail inside Unroll if its server does not allow that page to read it.
+
+**coverage polish (`kit axispolish`)**: An adjustment of an estimated center line toward nearby points with greater winding coverage on predicted sheets. It uses geometry from the normal grids, not ink. A polished line is still model output. See [axispolish](docs/tools/axispolish.md).
 
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 
@@ -80,9 +92,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **DINOv2, DINOv3**: Self-supervised image backbones from Meta, trained without labels on very large photo collections. DINOv2 is Apache-2.0; DINOv3's weights are under the DINOv3 License and gated on Hugging Face. `scripts/segzoo/segzoo_probe.py` puts a linear head on their frozen features ([page](docs/tools/segzoo.md)).
 
+**dinovol**: The Vesuvius Challenge model family that turns small regions of a CT volume into embeddings, or lists of learned features. Those features can be compared to find regions with similar structure; similarity alone does not identify ink.
+
 **Discord**: The chat service where the Vesuvius Challenge community meets and where most announcements appear first.
 
 ## E
+
+**embedding**: A list of numbers a model assigns to an input to describe learned features. Similar lists can help locate similar-looking regions, but their meaning depends on the model and its training.
 
 **empty-chunk marker**: A `.empty` file VC3D writes in its remote chunk cache when the server answers 404 for a chunk; VC3D then reads that chunk as zeros for good. A marker for a chunk the bucket holds is a false one ([vc3d-cache](docs/tools/vc3d-cache.md)).
 
@@ -128,6 +144,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Harness2 (Harness squared)**: An optional framework for testing changes to the software around an agent while keeping model weights fixed. Scrolls uses a bounded local adapter to compare provenance workflows on generated files; it does not train an ink reader. See [the adapter guide](docs/tools/harness2.md).
 
+**Headless VC3D**: The released `vc3d-agent` package, which exposes villa tools through shell commands and an MCP server so scripts and agents can trace, check, flatten and render surfaces without a graphical display. See [the tool page](docs/tools/vc3d-agent.md).
+
+**heatmap**: An image in which each pixel holds a score. The Center Finder predicts a heatmap whose peak estimates the center of a CT slice.
+
 **held-out**: Data a model never saw in training. A test on held-out data is the only kind that supports a claim about how well a model generalizes. For example, w045 is held out from v8in but not from `ink_9um`, which trained on its 2.4 µm render. Which released reader trained on which labeled segment is tabulated in [`docs/logs/2026-10-16-reader-exposure.md`](docs/logs/2026-10-16-reader-exposure.md).
 
 **Hecate**: An ink model by Giorgio Angelotti, used in the PHerc. 343 First Letters result. Its base model is `scrollprize/ink_canonical_2um`, whose committed trainer lists all three PHerc0841 segments, so PHerc0841 is not held out from Hecate, although Hecate's own published split rule, applied to the published masks, would keep PHerc0841 validation-only ([log](docs/logs/2026-10-16-reader-exposure.md)).
@@ -135,6 +155,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **Herculaneum papyri (Herculaneum scrolls)**: Papyrus rolls from a Roman villa at Herculaneum, carbonized by Vesuvius in 79 CE.
 
 **hero (hero image)**: The wide picture at the top of a README or release entry. Here every released tool has one: 1920 x 640 pixels, WebP, at most 300 KB, in the charcoal, ivory and copper style of the root README's, with its media label in the caption. Made by `scripts/media/hero.py`; listed in [`docs/assets/README.md`](docs/assets/README.md).
+
+**hfpull**: The public bucket download helper `python -m kit.hfpull`. It downloads each distinct file once, then copies it to other paths with the same content. It downloads files; it does not upload them. See [hfpull](docs/tools/hfpull.md).
 
 **Hugging Face**: A site that hosts models, datasets and small web apps called Spaces. Several released weights and the Unroll viewer live there.
 
@@ -156,9 +178,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **ink_9um**: The Vesuvius Challenge's cross-scroll ink models for scans at about 9 µm.
 
+**Inkfilter**: The released package that combines fixed image filters to make a map from a surface volume, with a reverse-depth control and no trained model. Its output is not a reading. See [Inkfilter](docs/tools/inkfilter.md).
+
 **intercolumn**: The blank space between two columns of text.
 
 **integrity check (`kit integrity`)**: This repository's checker for Vesuvius claims: an ink score needs its reverse-depth control and a held-out status from that reader, wording must not call model output a reading, a preregistration must precede its result, citations must match arXiv. It plants faults it must catch before it reports anything. The `vesuvius-integrity` Claude skill states the same rules as instructions ([guide](docs/integrity.md)).
+
+**IoU (intersection over union)**: The area marked positive by both masks divided by the area marked positive by either mask. It measures overlap, so the masks must describe the same pixel grid.
 
 **isometry (of a segment grid)**: How closely a tifxyz grid keeps the spacing its `meta.json` promises: every edge's 3D length over the promised step, each cell's area over the promised area, and the angle between the grid's two directions (1.0, 1.0 and 90 degrees when exact). `kit tifxyz stretch` reports them; a grid far from isometric distorts a flattened render ([`docs/tools/tifxyz.md`](docs/tools/tifxyz.md)).
 
@@ -186,7 +212,11 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **lasagna**: villa's lasagna surface fitter and the model outputs it reads, such as grad_mag; outputs are published for open-data volumes, for example PHerc0139's `20260102150214-lasagna-20260419180421-L2`.
 
+**Lasagna Fields**: The public collection of villa lasagna model outputs and its guide app. A lasagna field describes predicted sheet structure for surface fitting; it is not an ink map. See [Lasagna Fields](docs/tools/lasagna-fields.md).
+
 **layer**: One image in a surface volume, at a fixed depth from the traced surface. `kit layers` writes them as numbered TIFF files. In the scroll itself, "layer" also means one turn of papyrus (see winding).
+
+**layer order**: The order of images through the depth of a surface volume. The surface normal determines which side comes first. Reversing the order supplies the reverse-depth control used alongside an ink model.
 
 **ledger (experiment ledger)**: The local record of each run in `experiments/<slug>/run.json`, with its readout-rule hash, status, wall time and cost. Modal launches have their own ledger in `docs/compute/modal-ledger.csv`.
 
@@ -197,6 +227,10 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **m7**: The organizers' binary surface prediction model for the open data: a voxel map of where papyrus sheet surfaces are. Several kit tools read its published outputs; it can merge sheets that touch.
 
 **Mamba (selective scan, SS2D)**: A sequence layer that carries a state along a sequence, with step sizes chosen from the input (the selective scan). SS2D is VMamba's 2D form: the same scan along rows and columns, both ways. U-Mamba and SS2DNet are segmentation networks built with it. `scripts/segzoo/segzoo_ss2d.py` is a pure-PyTorch version ([page](docs/tools/segzoo.md)).
+
+**maximum intensity projection (MIP)**: A flat view of a volume that keeps the brightest voxel along each viewing ray. Unroll uses it to show CT around a selected point; several depths can contribute to the image.
+
+**MCP (Model Context Protocol)**: A protocol through which an agent discovers tools, sends structured requests and receives results. Headless VC3D uses it to expose its commands to agents.
 
 **memorisation probe**: In the Greek gap restoration benchmark, an item that shows the start of a passage and asks for the next letters exactly; high accuracy would mean a model recalls the text rather than restores it.
 
@@ -252,6 +286,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **patch**: A small piece. In tracing, a patch is one traced piece of surface that can be merged with others. In ink detection, a patch is the small 3D block of a surface volume that a model reads at one time.
 
+**Pearson correlation (Pearson r)**: A measure of how closely two sets of values vary together in a straight-line relationship. Ink Bench applies it to aligned image pixels. Correlation with a model-generated reference is agreement with that reference, not proof of ink.
+
 **phase contrast**: Image contrast from the shift in phase of X-rays passing through a sample, made visible by letting the beam travel to the detector.
 
 **PHerc.**: Short for Papyrus Herculanensis, followed by an inventory number, for example PHerc. 0139 or PHerc0139. PHerc. Paris 4 is also called Scroll 1.
@@ -274,6 +310,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **public media rule**: What pictures and clips public Scrolls' Git may hold (18 October 2026, set by the agents on Chase's delegation): concept illustrations, synthetic demos, and real data renders of public scans that are not prize eligible and show no held-out labels, each at most 1920 px wide and 4 MB with a sidecar; never model output of any scroll ([`docs/media/README.md`](docs/media/README.md)).
 
+**pyramid (image pyramid)**: Copies of an image or volume at several resolutions. A viewer can read a smaller copy for an overview and finer copies for detail; the level determines the coordinate scale.
+
 ## R
 
 **Reader v2**: A community fine-tune of `ink_9um` by Domenico Russo. It is AutoPipeline's default ink reader.
@@ -287,6 +325,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **render (rendering)**: Sampling the CT volume along a traced surface, and at depths around it, to make a surface volume.
 
 **resolution (voxel size)**: The edge length of one voxel, given in micrometers, for example 9.362 µm, 2.4 µm or about 9 µm. Smaller numbers show finer detail.
+
+**resume (scroll2ink)**: Continue an interrupted run from its saved stage records. Completed stages are reused, and changed scientific settings are refused so one run folder does not mix incompatible results.
 
 **reverse-depth map**: An ink map made from the same surface volume with its layers in reverse order. It is the required control for an ink AUC: real ink signal should depend on the true depth order.
 
@@ -306,9 +346,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **scroll2ink**: `python -m kit scroll2ink`, one command from a public scan and a seed point to a grown, checked, flattened and rendered surface and its ink map with the reverse-depth control, each step a Headless VC3D tool ([`docs/tools/scroll2ink.md`](docs/tools/scroll2ink.md)).
 
-**Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the Center Finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
+**Scrolls kit**: The grouped release entry for command-line tools maintained in this repository. It links each listed tool to its command, documentation and evidence; standalone products keep their own entries. The public [release registry](docs/releases.json) identifies the group as `scrolls-kit`.
 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
+
+**Scrolls Starter**: The local browser introduction to the released tools, with a synthetic controls exercise, setup checks and a Scroll Text Reader command builder. Its portable edition opens without Python and leaves setup unchecked. See [starter](docs/tools/starter.md).
+
+**seating (of a surface)**: Whether a traced surface lies on papyrus rather than in the gap between sheets. A seating check can reject misplaced surfaces, but passing it does not by itself rule out a jump to a neighboring sheet.
 
 **seed (seed point)**: A starting point for tracing a surface. villa's tracer does not hold an explicit seed, so a trace can start on the next winding.
 
@@ -380,11 +424,13 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **uint8**: An 8-bit unsigned whole number (0 to 255), the data type of the catalog volumes.
 
+**Umbilici**: The browser app that displays public scroll center lines over CT, credits their sources and provides data links. The plural of umbilicus is umbilici; a center line is geometry, not a reading. See [Umbilici](docs/tools/umbilici.md).
+
 **umbilicus**: The central axis of a roll. In the data it is a fitted center line with one control point per height.
 
 **umbilicus.json**: The umbilicus file name VC3D searches for first, beside its project file and its segment folders (then `estimated_umbilicus.json`), and the one a spiral-fitting dataset folder must hold. Its `metadata` may state `volume_width`, `volume_height` and `volume_slices`, the voxel grid its points are in (all three or none; VC3D refuses a partial set), which VC3D uses to place the points on the volume it has open. `scripts/umbilicus/predict.py --vc3d-name` writes one with the scan's level-0 grid when available ([page](docs/tools/umbilicus.md#use-it-in-vc3d-and-spiral-fitting)).
 
-**Unroll**: A browser viewer on Hugging Face Spaces that rebuilds traced windings of PHerc. 139 ([`docs/unroll-space.md`](docs/unroll-space.md)).
+**Unroll**: The browser viewer that displays traced scroll windings in 3D and virtually unrolls them, with CT and ink layers, close-up views and Ink Bench. The displayed ink layers are model output, not readings. See [Unroll](docs/tools/unroll.md).
 
 **UV (u, v)**: The two coordinates of a point on a surface's own 2D grid, as opposed to its x, y, z position in the scan. The u axis runs along the roll.
 
@@ -410,11 +456,15 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## W
 
+**WebGL**: The browser graphics interface used to draw interactive 3D scenes with the graphics processor. Unroll uses it to display traced surfaces and CT views.
+
 **weights**: The learned numbers inside a trained model. Weights are never stored in git here; released weights are downloaded and checked by SHA-256.
 
 **winding (wrap, turn, layer, sheet)**: One turn of papyrus around the roll. The terms are used interchangeably. A winding number counts turns from the center.
 
 **winding coverage**: How many times a slice's traced sheet winds around a point: the summed angle its segments subtend there, divided by a full turn, in wraps. Deep inside the roll it is high; off center it drops. `kit windcheck` computes it from villa's normal grids, and `kit axispolish` moves a center line to where it is highest (the coverage polish) ([page](docs/tools/windcheck.md)). A measurement on model-predicted sheets, not a distance to the true axis.
+
+**window and level (CT display)**: Display controls for CT brightness and contrast. Window sets the range of values shown, and level sets its midpoint. Changing them changes the view, not the stored scan values.
 
 **wrap pitch**: The radial distance from one wrap of a scroll to the next. `kit coverage` measures it on the published meshes: along a mesh row that goes more than a full turn around the center line, the radius one turn further on less the radius here ([`docs/tools/coverage.md`](docs/tools/coverage.md)).
 

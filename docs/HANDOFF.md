@@ -6,6 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
+|Docs|#220|CI|
 | hfpull: fast public label downloads (25 Oct) | `kit.hfpull` ([page](tools/hfpull.md)), PR #218: downloads each distinct file of a `scrollprize/datasets` folder once and copies the rest; PHerc0139 w035 ink_9um labels 61.7 s to 5.0 s, identical files ([bench](../scripts/experiments/2026-10-25-label-pull/README.md)) | None; listed in Released tools (Scrolls kit) |
 | scroll2ink: scan and seed to ink map (25 Oct) | `kit scroll2ink` ([page](tools/scroll2ink.md)), draft PR from `claude/project-thread-6lx4fb`: seed check, trace, check, extend, flatten, render, ink with reverse control, in one resumable folder; layer order voted against the umbilicus. PHerc0139 demo on HF Jobs: 4.8 cm2, check ok, 0.15 USD; GIF and stills in `docs/assets/scroll2ink/` | None; listed in Released tools (Scrolls kit) on Chase's OK; no Discord post (Chase, 25 Oct) |
 

@@ -38,6 +38,80 @@ This repository contains public tools, public-data benchmarks and releasable rep
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
 Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
 
+All released tools, including the tools grouped under Scrolls kit:
+
+| Released tool | Guide |
+| --- | --- |
+| AutoPipeline | [Open](https://github.com/ChaseHendrick/Scrolls#autopipeline) |
+| Unroll (interactive 3D scroll viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#unroll-interactive-3d-scroll-viewer) |
+| Scrolls kit | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-kit) |
+| Segments without VC3D | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/tifxyz.md) |
+| Find, center line, cite and villa helpers | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/find.md) |
+| Greek gap restoration benchmark | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/greekfill.md) |
+| Planted defect generator | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/planted.md) |
+| UV overlap gate | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/uvgate.md) |
+| Relative winding consistency check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/windconsistency.md) |
+| Relative windings in a box | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/windlabel-box.md) |
+| Touching-sheets benchmark | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hopbench.md) |
+| Scroll Text Reader | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/letterread.md) |
+| Greek letter classifier and line reader for agents | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/letterclass.md) |
+| StrokeNet text-likeness score | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/strokenet.md) |
+| Segment stack check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/stackcheck.md) |
+| Scroll center (umbilicus) finder and coverage polish | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/umbilicus.md) |
+| Terminal look and mouse viewer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/termstyle.md) |
+| Research integrity checks for Vesuvius claims | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/integrity.md) |
+| Ink map self-check (neighbor-sheet test) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/sheetcheck.md) |
+| Scroll to ink in one command (experimental) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/scroll2ink.md) |
+| Fast public label downloads | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hfpull.md) |
+| Volume on a sheet in Neuroglancer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/sheetview.md) |
+| Segment Atlas | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/atlas.md) |
+| Published segment coverage | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/coverage.md) |
+| Published ink labels and model exposure | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/labels.md) |
+| Submission folder check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/submitcheck.md) |
+| VC3D false-404 relay and cache repair | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/vc3dfix.md) |
+| Tool connection instructions | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/spaceconnect.md) |
+| Controlled ink AUC scoring | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/auc.md) |
+| Scan catalog and batch plans | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/batch.md) |
+| Run time and energy summary | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/compute.md) |
+| Local setup checker | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/doctor.md) |
+| Ink map ensemble | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/ensemble.md) |
+| False-404 test relay | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/false404-relay.md) |
+| Public bucket downloader | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/fetch.md) |
+| Controlled benchmark gate | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/gate.md) |
+| Greek character language model | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/greeklm.md) |
+| Letter-scale ink score | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hpscore.md) |
+| Layer extraction and shuffle control | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/layers.md) |
+| Mesh and cross-scan audit | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/meshaudit.md) |
+| Surface overlap and map comparison | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/overlap.md) |
+| Synthetic map controls | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/phantom.md) |
+| Pipeline planning and cost estimates | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/plan.md) |
+| Public prize snapshot | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/prizes.md) |
+| Run provenance records | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/provenance.md) |
+| Text-row pattern score | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/rowscore.md) |
+| Segmentation model comparison tools (experimental) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/segzoo.md) |
+| Checkpoint averaging | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/soup.md) |
+| Bounded surface correction (experimental) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/surfacefix.md) |
+| v8in ink model runner | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/v8in-run.md) |
+| Ink map agreement check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/verify.md) |
+| Offline ink map comparison viewer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/view.md) |
+| Volume overlay links | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/volumeview.md) |
+| Experiment ledger | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/run-ledger.md) |
+| Local run time and cost log | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/run-local.md) |
+| Modal ledger row importer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/modal-row.md) |
+| Release list and README generator | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/releases.md) |
+| Recurring repository checks | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/routines.md) |
+| Stale repository reference check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/stale.md) |
+| Mac ink inference and verification scripts | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/mac-w045.md) |
+| Segment Lens (published segment geometry viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#segment-lens-published-segment-geometry-viewer) |
+| dinovol embeddings of PHerc0841 | [Open](https://github.com/ChaseHendrick/Scrolls#dinovol-embeddings-of-pherc0841) |
+| Headless VC3D for agents | [Open](https://github.com/ChaseHendrick/Scrolls#headless-vc3d-for-agents) |
+| Lasagna Fields (villa lasagna fields for ten scans) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagna-fields-villa-lasagna-fields-for-ten-scans) |
+| Ink Lens (control-checked ink on your own VC3D region) | [Open](https://github.com/ChaseHendrick/Scrolls#ink-lens-control-checked-ink-on-your-own-vc3d-region) |
+| Umbilici (center lines of 33 Herculaneum scans) | [Open](https://github.com/ChaseHendrick/Scrolls#umbilici-center-lines-of-33-herculaneum-scans) |
+| Scrolls Starter: a beginner path into the tools | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-starter-a-beginner-path-into-the-tools) |
+| Inkfilter: fixed surface-volume filters | [Open](https://github.com/ChaseHendrick/Scrolls#inkfilter-fixed-surface-volume-filters) |
+| Scroll Lens (3D DINO, ink and surface models on scan cubes) | [Open](https://github.com/ChaseHendrick/Scrolls#scroll-lens-3d-dino-ink-and-surface-models-on-scan-cubes) |
+
 ### AutoPipeline
 
 ![Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.](docs/assets/autopipeline-readme-hero.webp)
@@ -76,9 +150,9 @@ Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/
 
 *Concept illustration: the toolbox's motifs on one tray. No scan data.*
 
-Its tools were released from 14 October 2026 to 25 October 2026; each line gives its tool's date.
+Its tools were released from 6 October 2026 to 25 October 2026; each line gives its tool's date.
 
-Command-line tools that live in this repository and run from a clone of it: fourteen `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.
+Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.
 
 ```bash
 git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git
@@ -109,8 +183,55 @@ python -m pip install requests torch
 - **Ink map self-check (neighbor-sheet test)** (released 24 October 2026). Checks without labels whether an ink map reads the traced sheet: it compares the map on the sheet with the same model read one and two sheet pitches away along the mesh normals (a map that still looks the same there is smeared across sheets or follows something every sheet shares), and flags ink that follows the mask edge or lights up empty space in the CT. Takes 2D maps read at each shift, or projects a 3D prediction volume on a tifxyz mesh itself. A pass is necessary, not sufficient: a map with no ink signal passes too, so it does not replace a labeled score with its control. Run `python -m kit sheetcheck demo --png sheetcheck-demo.png`; [tool page](docs/tools/sheetcheck.md), [synthetic demo](docs/assets/sheetcheck/sheetcheck-demo.png), [tests](tests/test_sheetcheck.py).
 - **Scroll to ink in one command (experimental)** (released 25 October 2026). One command from a public scan and a seed point to an ink map: it grows a surface from the seed with VC3D, checks it for self-crossings and seating, extends it only if the extension passes the same check, flattens and renders it, and runs an ink model with the reverse-depth control, every step a Headless VC3D tool. It stops at a bad seed or a failed check, takes the layer order from the scroll's center line rather than assuming it, and resumes from one run folder, so the VC3D part and the ink part can run on different machines. Demo on PHerc0139 (in the released models' training data, so it shows the pipeline, not new ink): a 4.8 cm2 surface, check ok, about 8 minutes on Hugging Face Jobs for 0.15 USD (25 Oct 2026). Run `python -m kit scroll2ink run --sample PHerc0139 --seed 4121 3935 5477`; [tool page](docs/tools/scroll2ink.md), [replay GIF of the demo run](docs/assets/scroll2ink/scroll2ink-run.gif), [tests](tests/test_scroll2ink.py).
 - **Fast public label downloads** (released 25 October 2026). Downloads a folder of the organizers' public Hugging Face bucket scrollprize/datasets, such as an ink label store, each distinct file once, then copies it to the other paths with the same content; the label stores are mostly copies of one empty chunk and the Hub charges by request, not by byte. On the PHerc0139 w035 ink_9um label store (3,606 files) it took 5.0 s against 61.7 s for a plain download of every file, with identical files (Measurement, one run, 25 Oct 2026). Needs huggingface_hub; no token for the public bucket. Run `python -m kit.hfpull ink_9um/labels/aligned-scrollprizeorg-21slices/pherc0139-w035 labels/w035`; [tool page](docs/tools/hfpull.md), [bench record](scripts/experiments/2026-10-25-label-pull/README.md), [tests](tests/test_hfpull.py).
+- **Volume on a sheet in Neuroglancer** (released 24 October 2026). Samples a CT or prediction volume on a tifxyz surface and writes a mesh and Neuroglancer view. The volume and surface must use the same scan coordinates. A displayed prediction is model output, not a reading. Run `python -m kit sheetview build --help`; [tool page](docs/tools/sheetview.md), [source and synthetic tests](docs/tools/sheetview.md#checks-and-controls).
+- **Segment Atlas** (released 24 October 2026). Measures published segment meshes with the same geometry checks and builds a searchable table. Run `python -m kit atlas --help`; [tool page](docs/tools/atlas.md).
+- **Published segment coverage** (released 24 October 2026). Shows the heights and winding angles covered by published meshes and the gaps between them. Run `python -m kit coverage --help`; [tool page](docs/tools/coverage.md).
+- **Published ink labels and model exposure** (released 24 October 2026). Lists published ink label sets and the recorded training exposure of public ink models. Run `python -m kit labels --help`; [tool page](docs/tools/labels.md).
+- **Submission folder check** (released 24 October 2026). Checks a submission folder against published file requirements and lists the remaining checks for a person. Run `python -m kit submitcheck --help`; [tool page](docs/tools/submitcheck.md).
+- **VC3D false-404 relay and cache repair** (released 24 October 2026). Runs VC3D through a relay that retries false missing-file responses and checks its empty-chunk cache. The vc3dcache command also repairs that cache. Run `python -m kit s3relay --help`; [tool page](docs/tools/vc3dfix.md).
+- **Tool connection instructions** (released 24 October 2026). Writes and checks connection instructions and code examples for the public tools' hosted pages. Run `python -m kit spaceconnect --help`; [tool page](docs/tools/spaceconnect.md).
+- **Controlled ink AUC scoring** (released 7 October 2026). Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control. Run `python -m kit auc --help`; [tool page](docs/tools/auc.md).
+- **Scan catalog and batch plans** (released 16 October 2026). Lists released scan volumes, makes resumable batch plans and watches for new or changed inputs. It launches nothing. Run `python -m kit run all --help`; [tool page](docs/tools/batch.md).
+- **Run time and energy summary** (released 7 October 2026). Summarizes machine time from run provenance records, with an optional energy estimate. Run `python -m kit compute --help`; [tool page](docs/tools/compute.md).
+- **Local setup checker** (released 6 October 2026). Checks the machine and installed tools before a pipeline run. Run `python -m kit doctor --help`; [tool page](docs/tools/doctor.md).
+- **Ink map ensemble** (released 7 October 2026). Combines ink maps of the same surface by weighted score or pixel rank, keeping only pixels predicted by every input. Run `python -m kit ensemble --help`; [tool page](docs/tools/ensemble.md).
+- **False-404 test relay** (released 12 October 2026). Replays selected false missing-file responses through a local relay so cache handling can be tested. Run `python scripts/false404/fault_relay.py --help`; [tool page](docs/tools/false404-relay.md).
+- **Public bucket downloader** (released 7 October 2026). Copies files under a public data bucket prefix to a local folder and skips complete files when resuming. Run `python -m kit fetch --help`; [tool page](docs/tools/fetch.md).
+- **Controlled benchmark gate** (released 7 October 2026). Checks recorded benchmark scores against the declared pass rules and required controls. Run `python -m kit gate --help`; [tool page](docs/tools/gate.md).
+- **Greek character language model** (released 14 October 2026). Builds and scores a character language model from public Greek text for the letter reader. Run `python -m kit greeklm --help`; [tool page](docs/tools/greeklm.md).
+- **Letter-scale ink score** (released 7 October 2026). Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. Run `python -m kit hpscore --help`; [tool page](docs/tools/hpscore.md).
+- **Layer extraction and shuffle control** (released 7 October 2026). Exports surface-volume layers as images and creates a shuffled-depth control. Run `python -m kit layers --help`; [tool page](docs/tools/layers.md).
+- **Mesh and cross-scan audit** (released 7 October 2026). Checks cross-scan transforms, mesh canvases and rendering depth against public catalog geometry. Run `python -m kit meshaudit --help`; [tool page](docs/tools/meshaudit.md).
+- **Surface overlap and map comparison** (released 7 October 2026). Checks whether traced surfaces cover the same sheet and compares their labels or ink maps with controls. Includes the collate command. Run `python -m kit overlap --help`; [tool page](docs/tools/overlap.md).
+- **Synthetic map controls** (released 7 October 2026). Creates known-answer synthetic inputs for checking ink-map scoring and controls. Run `python -m kit phantom --help`; [tool page](docs/tools/phantom.md).
+- **Pipeline planning and cost estimates** (released 6 October 2026). Prints the official pipeline commands for a scroll without running them. The cost command adds up a run's recorded expenses. Run `python -m kit plan --help`; [tool page](docs/tools/plan.md).
+- **Public prize snapshot** (released 6 October 2026). Lists public prize requirements from a dated local snapshot. Run `python -m kit prizes --help`; [tool page](docs/tools/prizes.md).
+- **Run provenance records** (released 7 October 2026). Records run settings and file fingerprints, then checks the record and its files for changes. Run `python -m kit provenance --help`; [tool page](docs/tools/provenance.md).
+- **Text-row pattern score** (released 7 October 2026). Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text. Run `python -m kit rowscore --help`; [tool page](docs/tools/rowscore.md).
+- **Segmentation model comparison tools (experimental)** (released 17 October 2026). Lists segmentation model families and provides training and controlled scoring scripts. This experimental source release is not a Progress Prize release. Run `python -m kit segzoo --help`; [tool page](docs/tools/segzoo.md).
+- **Checkpoint averaging** (released 7 October 2026). Averages compatible model checkpoints from one training run and refuses a mixture of different seeds. Run `python scripts/soup.py --help`; [tool page](docs/tools/soup.md).
+- **Bounded surface correction (experimental)** (released 7 October 2026). Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. Run `python -m kit surfacefix --help`; [tool page](docs/tools/surfacefix.md).
+- **v8in ink model runner** (released 7 October 2026). Runs the released v8in ink model on layer images, including an optional reduced-precision Mac GPU mode. Run `python scripts/v8in_run.py --help`; [tool page](docs/tools/v8in-run.md).
+- **Ink map agreement check** (released 7 October 2026). Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. Run `python -m kit verify --help`; [tool page](docs/tools/verify.md).
+- **Offline ink map comparison viewer** (released 7 October 2026). Builds one offline HTML page to compare ink maps, their differences, labels and the mask. Run `python -m kit view --help`; [tool page](docs/tools/view.md).
+- **Volume overlay links** (released 17 October 2026). Creates Neuroglancer overlay links from supplied volume metadata. It checks the supplied metadata without verifying remote registration. Run `python -m kit volumeview --help`; [tool page](docs/tools/volumeview.md), [workbench 0.4.0 release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0).
+- **Experiment ledger** (released 6 October 2026). Keeps a run record with a fixed readout rule, status, costs, file fingerprints and checks. Run `python -m kit run --help`; [tool page](docs/tools/run-ledger.md).
+- **Local run time and cost log** (released 7 October 2026). Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. Run `python -m kit run local --help`; [tool page](docs/tools/run-local.md).
+- **Modal ledger row importer** (released 16 October 2026). Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. It launches no job. Run `python -m kit run modal-row --help`; [tool page](docs/tools/modal-row.md).
+- **Release list and README generator** (released 14 October 2026). Keeps the public release list, compact tool inventory and generated README section in step. Run `python -m kit releases --help`; [tool page](docs/tools/releases.md).
+- **Recurring repository checks** (released 17 October 2026). Lists and runs the registered recurring repository checks and records their status locally. Run `python -m kit routines --help`; [tool page](docs/tools/routines.md).
+- **Stale repository reference check** (released 18 October 2026). Checks live documentation and registries for outdated references and pending work. Run `python -m kit stale --help`; [tool page](docs/tools/stale.md).
+- **Mac ink inference and verification scripts** (released 7 October 2026). Runs public ink-model checks on a Mac with reverse-depth controls. Includes mac-w045, mac-verify and mac-phase0 for inference, device comparison and queued benchmark checks. Run `bash -n scripts/mac-w045.sh scripts/mac-verify.sh scripts/mac-phase0.sh`; [tool page](docs/tools/mac-w045.md), [device check](docs/tools/mac-verify.md), [queued checks](docs/tools/mac-phase0.md).
 
 `scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. Every `python -m kit` command: [`docs/tools/cli.md`](docs/tools/cli.md); every tool page: [`docs/tools/`](docs/tools/README.md); a picture guide to the toolbox: [`docs/workbench.md`](docs/workbench.md).
+
+### Segment Lens (published segment geometry viewer)
+
+Released 24 October 2026.
+
+Displays published segment meshes with geometry warnings and the Segment Atlas table, with an API and MCP server for agents. These geometry checks do not establish that a surface follows one papyrus sheet.
+
+[Tool page](docs/tools/segment-lens.md), [source](spaces/segment-lens/), and [public viewer](https://huggingface.co/spaces/SharpMeow/segment-lens).
 
 ### dinovol embeddings of PHerc0841
 

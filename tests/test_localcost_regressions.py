@@ -61,9 +61,11 @@ class LocalCostRegressionTest(unittest.TestCase):
         self.config.unlink()
         with self.assertRaises(localcost.CostError):
             localcost.load_config()
-        for cfg in ({'device_watts': []}, {'device_watts': {'x86-cpu': float('inf')}}, {'device': []}):
-            with self.assertRaises(localcost.CostError):
-                localcost.resolve_watts(config=cfg)
+        for cfg, device in (({'device_watts': []}, None),
+                            ({'device_watts': {'x86-cpu': float('inf')}}, 'x86-cpu'),
+                            ({'device': []}, None)):
+            with self.subTest(config=cfg), self.assertRaises(localcost.CostError):
+                localcost.resolve_watts(config=cfg, device=device)
 
     def test_subcent_estimates_are_aggregated_before_cent_rounding(self):
         items = [{'what': str(i), 'wall_s': 1200, 'watts': 30} for i in range(100)]

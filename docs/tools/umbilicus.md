@@ -10,7 +10,7 @@
 | Area | Surfaces and tracing |
 | Run | `python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py` |
 | Code | `scripts/umbilicus/` |
-| Tests | `tests/test_umbilicus.py` |
+| Tests | `tests/test_umbilicus.py`; `tests/test_centerfinder_io.py` |
 | Needs | Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py` |
 | Runs on | `predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container) |
 | Network | vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl` |
@@ -376,6 +376,8 @@ Training (`pipeline.run_job`, `refine.chain_job`): four folds by scroll (`FOLDS`
 - **Never:** Call a line a measurement or ground truth; run it on a scan outside 8 to 10 um by editing `UM_RANGE`; commit slice files, CT pictures or weights to git (scan data is CC BY-NC 4.0 and stays out of the repository); hand-edit `volume_width`, `volume_height` or `volume_slices` to another grid without converting the points.
 
 ## Tests
+
+Synthetic I/O tests check false-404 handling, bounded retries, inclusive byte ranges, grid metadata validation and empty out-of-bounds planes. Run `python3 -m unittest tests.test_centerfinder_io`.
 
 ```bash
 python -m unittest tests.test_umbilicus -v
