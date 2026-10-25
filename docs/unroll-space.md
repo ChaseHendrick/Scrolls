@@ -8,7 +8,7 @@
 
 Unroll is a static web page, hosted as a Hugging Face Space, that rebuilds 37 traced windings of PHerc. 139 in 3D with three.js and lets a visitor unroll them in the browser. It runs on the client only; no install or account is needed.
 
-**Version:** 1.5.0 (16 October 2026), from the Space's `version.json`; what changed in each version is in the Space's [CHANGELOG.md](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/CHANGELOG.md). The page shows its version in the About panel, and `window.unroll.version()` returns it.
+**Version:** 1.7.0 (24 October 2026), from the Space's `version.json`; what changed in each version is in the Space's [CHANGELOG.md](https://huggingface.co/spaces/SharpMeow/unroll/blob/main/CHANGELOG.md). The page shows its version in the About panel, and `window.unroll.version()` returns it.
 
 ## What it shows
 
@@ -32,6 +32,10 @@ Versions 1.2.0 to 1.5.0 added tools for the raw scan, documented in the Space's 
 - Labeled segments: every traced segment that passes through the cube is drawn into it and listed; click one to highlight it.
 - OME-Zarr streaming of the scan from the open data bucket (`s3://vesuvius-challenge-open-data`).
 - Lower resolution while the camera moves, for slower GPUs.
+
+## Live sheet
+
+Version 1.7.0 adds a Live sheet page ([`live.html`](https://sharpmeow-unroll.static.hf.space/live.html), linked from Open your own). It streams any public traced segment (a tifxyz folder) and a scan volume (OME-Zarr: CT, or a 3D ink prediction, raw or blosc) straight from the open data bucket, samples the volume along the sheet's normal in the browser, and shows it on the sheet in 3D. Only the segment rows inside the crop and the zarr chunks the samples touch are fetched. The rule is the one [`kit sheetview`](tools/sheetview.md) uses for Neuroglancer, and the page's values match it: the largest difference on the PHerc. 139 w045 preset (119,301 points) was 6e-6. It can save the mesh as VTK for Neuroglancer or ParaView. Its presets use PHerc. 139 only. Details, URL parameters and the agent API are in the Space's `docs/LIVE.md`.
 
 ## Using it
 
