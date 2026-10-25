@@ -96,8 +96,8 @@
     {
       "id": "scrolls-kit",
       "title": "Scrolls kit",
-      "released": "2026-10-24",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: twelve `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "released": "2026-10-25",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: thirteen `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -261,6 +261,15 @@
           "command": "python -m kit sheetcheck demo --png sheetcheck-demo.png",
           "page": "docs/tools/sheetcheck.md",
           "evidence": "[synthetic demo](docs/assets/sheetcheck/sheetcheck-demo.png), [tests](tests/test_sheetcheck.py)"
+        },
+        {
+          "id": "scroll2ink",
+          "name": "Scroll to ink in one command (experimental)",
+          "released": "2026-10-25",
+          "summary": "One command from a public scan and a seed point to an ink map: it grows a surface from the seed with VC3D, checks it for self-crossings and seating, extends it only if the extension passes the same check, flattens and renders it, and runs an ink model with the reverse-depth control, every step a Headless VC3D tool. It stops at a bad seed or a failed check, takes the layer order from the scroll's center line rather than assuming it, and resumes from one run folder, so the VC3D part and the ink part can run on different machines. Demo on PHerc0139 (in the released models' training data, so it shows the pipeline, not new ink): a 4.8 cm2 surface, check ok, about 8 minutes on Hugging Face Jobs for 0.15 USD (25 Oct 2026).",
+          "command": "python -m kit scroll2ink run --sample PHerc0139 --seed 4121 3935 5477",
+          "page": "docs/tools/scroll2ink.md",
+          "evidence": "[replay GIF of the demo run](docs/assets/scroll2ink/scroll2ink-run.gif), [tests](tests/test_scroll2ink.py)"
         }
       ],
       "where": "main"
