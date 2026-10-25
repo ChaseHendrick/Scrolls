@@ -20,6 +20,10 @@ Scrolls Starter guides newcomers through existing viewers, an offline controls e
 | Release id | `scrolls-starter` |
 | Checked | 2026-10-17 against commit `36d64e2` |
 
+![Two screenshots of Scrolls Starter floating at an angle over a dark floor: its introduction page and its practice exercise, a drawn word with noise beside a noise-only control.](../assets/starter/starter-hero.webp)
+
+*Synthetic demo: Scrolls Starter 0.4's introduction and its known-answer practice exercise (made-up pixels, no scan, no model), shown as floating panels.*
+
 ## What it does
 
 The browser tour links the official Vesuvius Challenge introduction and the existing community Unroll and Scroll Lens viewers. A small offline exercise explains known answers and negative controls. The next steps lead to official data access, VC3D and ink-detection tutorials, with a bounded first task and an expected outcome. Community tools are optional, not prerequisites for the official workflow. AutoPipeline's existing guide is available for later automation.

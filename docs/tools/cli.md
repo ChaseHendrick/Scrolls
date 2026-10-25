@@ -21,6 +21,10 @@
 | Guide | [CHANGELOG.md](../../CHANGELOG.md) (what each package version holds and how to install it) |
 | Checked | 2026-10-23 against commit `cc03099` |
 
+![Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.](../assets/workbench/workbench-hero.webp)
+
+*Concept illustration: the toolbox's motifs on one tray. No scan data.*
+
 ## What it does
 
 Every `python -m kit` command, from `prizes` to `run all`, starts here. `kit/__main__.py` calls `main()` in `kit/cli.py` and exits with what it returns. `main()` takes the command line, picks the command (and its action, for the eight commands that have actions, such as `run init` or `provenance check`), and calls that command's handler: a `cmd_` function in `kit/cli.py`, or `releases.run` in `kit/releases.py`. The handler's return value is the exit code.

@@ -2,7 +2,8 @@
 
 docs/releases.json lists this project's released tools and packages, including curated private-to-public releases,
 since the list began on 14 October 2026, and README.md's "Released tools" section, between the two marker lines below, is written
-from it, newest first:
+from it as a compact index: one table row per standalone entry (pinned first, then newest first), each name linking to its
+guide, and each grouped entry's tools in fold-out tables by area (Chase, 25 October 2026: the README was too long):
 
   python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
   python -m kit releases render           rewrite the section from the list
@@ -17,6 +18,9 @@ An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2
            "image": {"src": "docs/assets/letter-reader/reader-hero.webp",  (optional; shown under the title)
                      "alt": "What the picture shows, for screen readers.",
                      "caption": "Synthetic demo. What it is and where it came from."},
+           "line": "One short sentence for the README's table.",       (optional; else the summary's first sentence)
+           "page": "docs/tools/letterread.md",                        (optional; the README links the name to it)
+           "area": "Letters and titles",                              (optional; one of AREAS)
            "where": "main"}
 "where" is "main" for files merged here, or {"branch": B, "commit": C, "path": P} for a reviewed package that lives on
 its own branch (the Progress Prize exporter's submission/<submission_id> branches), which the section links at that
@@ -29,7 +33,9 @@ A grouped entry adds "tools": one line each for command-line tools that share on
              "summary": "One or two sentences: what it does, its result with its claim label, its main limit.",
              "command": "python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json",
              "page": "docs/tools/strokenet.md",
-             "evidence": "[model card](docs/strokenet.md)"}]                 (optional)
+             "evidence": "[model card](docs/strokenet.md)",                 (optional)
+             "line": "Scores how much an ink map looks like lines of text.",  (optional, as for an entry)
+             "area": "Scoring and controls"}]                               (optional; a tool without one is under Other)
 A grouped entry is on main, its "released" is its newest tool's date, and a tool's id is unique across entries and
 tools, so the id of an entry that became a tool still names it: find() resolves either kind, and add, pin and unpin
 refuse a tool's id with the entry to edit instead. check() fails when a tool's page is missing.
@@ -38,10 +44,16 @@ The list's optional "pinned" holds entry ids shown first, in that order, above t
 keep AutoPipeline on top, where people see it). A pin belongs to the list, not the entry, so a new version that replaces
 a pinned entry stays pinned.
 
-An entry's optional "image" is shown under its title, with its caption in italics below. The caption starts with one of
-the media labels in LABELS (Chase, 18 October 2026: every released tool gets a hero image, and each picture says what it
-is). Its src is a path under docs/assets/ on main, which also serves package entries, since the README that shows the
-picture is on main, or a full https:// URL. check() fails when a docs/assets/ picture is missing.
+The README shows each standalone entry as a table row and each tool as a row of its area's fold-out table: the name,
+linked to "page" (else to a package's folder at its commit), and "line", or the summary's first sentence when an item
+has no line. The full summary, commands, details and picture stay in the list and are what render_entry() gives, which
+the private exporter shows for review; the tool page carries the full guide.
+
+An entry's optional "image" is its hero picture: render_entry() shows it under the title, with its caption in italics
+below, and the tool page shows it too. The caption starts with one of the media labels in LABELS (Chase, 18 October 2026:
+every released tool gets a hero image, and each picture says what it is). Its src is a path under docs/assets/ on main,
+which also serves package entries, or a full https:// URL. check() fails when a docs/assets/ picture or a linked page
+is missing.
 
 The private repository's submission exporter carries an identical copy of this module and writes the entry of each
 package it releases with it, so keep the two copies the same. Standard library only.
@@ -61,8 +73,9 @@ REPO_URL = "https://github.com/ChaseHendrick/Scrolls"
 START = ("<!-- releases:start (generated from docs/releases.json by python -m kit releases render; "
          "edit that list, not this section) -->")
 END = "<!-- releases:end -->"
-INTRO = "Released tools, newest first. Each entry comes from [`docs/releases.json`](docs/releases.json)."
-FIELDS = {"id", "title", "released", "summary", "commands", "details", "image", "tools", "where"}
+INTRO = ("Every released tool, one line each; each name opens its guide. Generated from "
+         "[`docs/releases.json`](docs/releases.json).")
+FIELDS = {"id", "title", "released", "summary", "commands", "details", "image", "tools", "where", "line", "page", "area"}
 REQUIRED = ("id", "title", "released", "summary", "where")
 MONTHS = ("January", "February", "March", "April", "May", "June", "July", "August", "September", "October",
           "November", "December")
@@ -86,8 +99,15 @@ IMAGE_SRC = re.compile(r"(?:docs/assets/[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*|htt
                        r"\.(?:webp|png|jpg|jpeg|gif)")
 # Every picture says what it is (docs/assets/README.md); a caption starts with one of these.
 LABELS = ("Concept illustration", "Real data render", "Model output", "Synthetic demo")
-# A grouped entry's tools: one line each in the section.
-TOOL_FIELDS = {"id", "name", "released", "version", "summary", "command", "page", "evidence"}
+# The areas of the tool pages (docs/tools/*.md, the Area field), in the order the README shows them.
+AREAS = ("Pipeline and agents", "Viewers and apps", "Surfaces and tracing", "Ink maps and models", "Scoring and controls",
+         "Letters and titles", "Data and downloads", "Training", "Planning and prizes", "Compute and cost",
+         "Records and provenance", "Releases and repository")
+OTHER = "Other"
+STANDALONE = "Apps, packages and datasets"
+LINE_LIMIT = 160
+# A grouped entry's tools: one row each in the section.
+TOOL_FIELDS = {"id", "name", "released", "version", "summary", "command", "page", "evidence", "line", "area"}
 TOOL_REQUIRED = ("id", "name", "released", "summary", "command", "page")
 TOOL_PAGE = re.compile(r"docs/tools/[a-z0-9][a-z0-9-]*\.md")
 ID = re.compile(r"[a-z0-9][a-z0-9-]{0,62}")
@@ -152,6 +172,20 @@ def _image(entry):
         raise ReleaseListError(f"{name}: a package's links are full https:// URLs at its commit")
 
 
+def _index_fields(item, label, package=False):
+    """Check an entry's or a tool's optional line, page and area: what the README's tables show."""
+    line = _text(dict(item, id=label), "line", LINE_LIMIT, required=False)
+    if line is not None:
+        if line != line.strip() or BLOCK_OPENER.match(line):
+            raise ReleaseListError(f"{label}: line may not start or end with a space or start with a code fence or tag")
+        if package and RELATIVE_LINK.search(line):
+            raise ReleaseListError(f"{label}: a package's links are full https:// URLs at its commit")
+    if "page" in item and (not isinstance(item["page"], str) or not TOOL_PAGE.fullmatch(item["page"])):
+        raise ReleaseListError(f"{label}: page is a tool page, docs/tools/NAME.md")
+    if "area" in item and item["area"] not in AREAS:
+        raise ReleaseListError(f"{label}: area is one of the tool pages' areas: {', '.join(AREAS)}")
+
+
 def _date(name, key, value):
     try:
         if not isinstance(value, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", value):
@@ -195,8 +229,7 @@ def _tools(entry):
         if "`" in tool["command"]:
             raise ReleaseListError(f"{name}: tool {tid}: command has no backticks (it is shown as inline code)")
         _date(f"{name}: tool {tid}", "released", tool["released"])
-        if not isinstance(tool["page"], str) or not TOOL_PAGE.fullmatch(tool["page"]):
-            raise ReleaseListError(f"{name}: tool {tid}: page is a tool page, docs/tools/NAME.md")
+        _index_fields(tool, f"{name}: tool {tid}")
     newest = max(t["released"] for t in tools)
     if entry["released"] != newest:
         raise ReleaseListError(f"{name}: released is its newest tool's date, {newest}")
@@ -220,6 +253,7 @@ def validate(entry):
         if value is not None and BLOCK_OPENER.match(value):
             raise ReleaseListError(f"{entry['id']}: {key} may not start with a space, a code fence or an HTML tag")
     _date(entry["id"], "released", entry["released"])
+    _index_fields(entry, entry["id"], package=entry.get("where", "main") != "main")
     if "image" in entry:
         _image(entry)
     commands = entry.get("commands", [])
@@ -244,7 +278,8 @@ def validate(entry):
         if not isinstance(path, str) or not re.fullmatch(r"[A-Za-z0-9_.-]+(?:/[A-Za-z0-9_.-]+)*", path) \
                 or any(part in (".", "..") for part in path.split("/")):
             raise ReleaseListError(f"{entry['id']}: where.path must be a simple relative path")
-        if any(KIT_COMMAND.search(text) for text in [entry["summary"], entry.get("details") or "", *commands]):
+        if any(KIT_COMMAND.search(text) for text in [entry["summary"], entry.get("details") or "",
+                                                     entry.get("line") or "", *commands]):
             raise ReleaseListError(f"{entry['id']}: a package's commands run its own files (python scripts/...), never "
                                    "\"python -m kit\", which the README checks against this repository's kit")
         if any(RELATIVE_LINK.search(text) for text in (entry["summary"], entry.get("details") or "")):
@@ -385,13 +420,49 @@ def ordered(entries, pinned=()):
 
 
 def intro(registry):
-    """The section's first line, which says what comes first."""
-    title = {e["id"]: e["title"] for e in registry["releases"]}
-    titles = [title[i] for i in registry.get("pinned", [])]
-    if not titles:
-        return INTRO
-    names = titles[0] if len(titles) == 1 else ", ".join(titles[:-1]) + " and " + titles[-1]
-    return INTRO.replace(", newest first.", f", {names} first and the rest newest first.")
+    """The section's first line. Pinned entries show their place by coming first in the table, so it is the same for
+    every list."""
+    validate_list(registry)
+    return INTRO
+
+
+def _heading_anchor(title):
+    # GitHub heading anchors remove punctuation and replace spaces with hyphens.
+    return re.sub(r"[^\w -]", "", title.lower()).replace(" ", "-")
+
+
+def link(item, where="main"):
+    """Where an entry's or a tool's name links: its tool page, else a package's folder at its commit, else None."""
+    if item.get("page"):
+        return item["page"]
+    if isinstance(where, dict):
+        return f"{REPO_URL}/tree/{where['commit']}/{where['path']}"
+    return None
+
+
+def line(item):
+    """An entry's or a tool's one line for the README's tables: its line, else its summary's first sentence."""
+    if item.get("line"):
+        return item["line"]
+    m = re.match(r"(.+?[.!?])(?=\s+[A-Z(\[`*]|$)", item["summary"])
+    return m.group(1) if m else item["summary"]
+
+
+def _cell(text):
+    return text.replace("|", "\\|")
+
+
+def _row(name, target, text):
+    name = _cell(name)
+    return f"| {f'[{name}]({target})' if target else name} | {_cell(text)} |"
+
+
+def area_groups(tools):
+    """[(area, tools)] in AREAS order, then Other for tools without an area; tools sorted by name in each."""
+    by_area = {}
+    for tool in tools:
+        by_area.setdefault(tool.get("area", OTHER), []).append(tool)
+    return [(a, sorted(by_area[a], key=lambda t: t["name"].casefold())) for a in (*AREAS, OTHER) if a in by_area]
 
 
 def inventory(registry):
@@ -399,9 +470,11 @@ def inventory(registry):
     registry = validate_list(registry)
     items = []
     for entry in ordered(registry["releases"], registry.get("pinned", [])):
-        # GitHub heading anchors remove punctuation and replace spaces with hyphens.
-        heading = re.sub(r"[^\w -]", "", entry["title"].lower()).replace(" ", "-")
-        items.append({"id": entry["id"], "name": entry["title"], "url": f"{REPO_URL}#{heading}"})
+        if entry.get("page"):
+            url = f"{REPO_URL}/blob/main/{entry['page']}"
+        else:
+            url = f"{REPO_URL}#{_heading_anchor(entry['title'])}"
+        items.append({"id": entry["id"], "name": entry["title"], "url": url})
         for tool in entry.get("tools", []):
             items.append({"id": tool["id"], "name": tool["name"],
                           "url": f"{REPO_URL}/blob/main/{tool['page']}"})
@@ -417,15 +490,31 @@ def render_inventory(items):
     return "\n".join(lines)
 
 
+def render_group(entry):
+    """A grouped entry's part of the section: its heading and line, then one fold-out table per area."""
+    target = link(entry)
+    lines = [f"### {entry['title']}", "",
+             line(entry) + (f" [Guide]({target})." if target else "") + " Open an area to see its tools."]
+    for area, tools in area_groups(entry["tools"]):
+        lines += ["", "<details>", f"<summary><b>{area}</b> ({len(tools)})</summary>", "",
+                  "| Tool | What it does |", "| --- | --- |"]
+        lines += [_row(t["name"], t["page"], line(t)) for t in tools]
+        lines += ["", "</details>"]
+    return lines
+
+
 def render(registry):
     """The whole generated section, marker lines included."""
     registry = validate_list(registry)
     lines = [START, intro(registry)]
-    if registry["releases"]:
-        lines += ["", "All released tools, including the tools grouped under Scrolls kit:",
-                  "", render_inventory(inventory(registry))]
-    for entry in ordered(registry["releases"], registry.get("pinned", [])):
-        lines += [""] + render_entry(entry)
+    entries = ordered(registry["releases"], registry.get("pinned", []))
+    standalone = [e for e in entries if not e.get("tools")]
+    if standalone:
+        lines += ["", f"### {STANDALONE}", "", "| Tool | What it does |", "| --- | --- |"]
+        lines += [_row(e["title"], link(e, e["where"]), line(e)) for e in standalone]
+    for entry in entries:
+        if entry.get("tools"):
+            lines += [""] + render_group(entry)
     return "\n".join(lines + [END])
 
 
@@ -465,8 +554,8 @@ def check(registry_path=REGISTRY, readme_path=README):
                    and not (Path(readme_path).parent / e["image"]["src"]).is_file()]
         if missing:
             return [f"{registry_path} shows pictures that are not in the tree: {', '.join(missing)}"]
-        pages = [t["page"] for e in registry["releases"] for t in e.get("tools", [])
-                 if not (Path(readme_path).parent / t["page"]).is_file()]
+        pages = [item["page"] for e in registry["releases"] for item in (e, *e.get("tools", []))
+                 if item.get("page") and not (Path(readme_path).parent / item["page"]).is_file()]
         if pages:
             return [f"{registry_path} links tool pages that are not in the tree: {', '.join(pages)}"]
     except (OSError, ValueError) as exc:

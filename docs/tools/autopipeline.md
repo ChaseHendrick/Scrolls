@@ -22,6 +22,10 @@ AutoPipeline (AP) 0.1.9 runs villa's VC3D tools and ink detection on one release
 | Branch | `submission/progress-2026-10-fix9` at `2144cdf` |
 | Checked | 2026-10-24 against commit `24572e6` |
 
+![Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.](../assets/autopipeline-readme-hero.webp)
+
+*Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
+
 ## What it does
 
 villa's pipeline turns a CT scan into ink maps in steps: find the scroll's center line (the umbilicus), trace papyrus surfaces (segments, stored as tifxyz grids of 3D points), flatten them, render a thin slab of CT around each surface (a surface volume), and run an ink model on it. Today a person checks the output at almost every step. AutoPipeline replaces each of those choices with a rule fixed before the run, and gives every check a control that can fail. It calls villa's own tools and ink inference; it does not reimplement them.

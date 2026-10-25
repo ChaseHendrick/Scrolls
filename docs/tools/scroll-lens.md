@@ -20,6 +20,10 @@ A Hugging Face ZeroGPU Space that reads a 128³ or 256³ cube of a public 2.2 to
 | License | Apache 2.0 for the Space's code ([`spaces/scroll-lens/LICENSE`](../../spaces/scroll-lens/LICENSE), [`NOTICE`](../../spaces/scroll-lens/NOTICE)); the models (MIT) and the scans and gallery cubes (CC BY-NC 4.0) keep their own licenses |
 | Checked | 2026-10-17 against commit `e14e165` |
 
+![Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.](../assets/scroll-lens/lens-hero.webp)
+
+*Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.*
+
 ## What it does
 
 The Vesuvius Challenge released three 3D models with its PHerc. Paris 4 work (Angelotti et al. 2026, [arXiv:2606.29085](https://arxiv.org/abs/2606.29085)): `scrollprize/dinovol_v2_ps8_with_paris4_352500`, a self-supervised 3D ViT that gives each 8 × 8 × 8 voxel patch 864 numbers (an embedding); `scrollprize/ink_3d_dino_guided`, which marks ink voxels directly in the scan; and `scrollprize/surface_recto_3dunet`, which marks the written (recto) side of each sheet. Scroll Lens reads one cube of a scan from the open-data bucket, runs any of the three on it, and shows the results as layers on three slice views, or in one 3D view of the cube.

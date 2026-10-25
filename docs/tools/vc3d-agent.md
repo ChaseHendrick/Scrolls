@@ -22,6 +22,10 @@ Headless VC3D for agents 1.1.1 serves 46 tools over MCP (stdio) and a shell comm
 | Branch | `submission/progress-2026-10-vc3d-agent-1-1-1` at `9edcbf13c6b06f34cc94c0976320863378f5f18f` |
 | Checked | 2026-10-24 against commit `9edcbf13c6b06f34cc94c0976320863378f5f18f` |
 
+![Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.](../assets/vc3d-agent/vc3d-agent-hero.webp)
+
+*Concept illustration: a scan cube and a traced surface leaving it as a copper grid, with calls and results passing along a line above. No scan data.*
+
 ## What it does
 
 VC3D is villa's surface tracing and rendering software for the Herculaneum scroll scans. Its command line tools need no display, but an agent driving them by hand trips over conventions that fail silently: which way the rendered layers stack, which scan's frame a segment is in, and whether a blank render means a missing chunk. This package wraps the tools as typed tools with those checks built in, and serves them to MCP clients (Claude Code, Claude Desktop, the official MCP Python SDK, others) as newline-delimited JSON-RPC 2.0 on stdio, protocol versions 2024-11-05 to 2025-11-25, with progress, cancellation, preview images and the guides as resources. A shell route (`vc3d-agent vc3d call`) runs the same tools with JSON in and out.

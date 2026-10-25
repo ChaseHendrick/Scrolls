@@ -1,191 +1,209 @@
 # Scrolls: Vesuvius Challenge workbench
 
 [![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](#quick-start-kit)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-3776ab.svg)](#quick-start)
 [![Vesuvius Challenge](https://img.shields.io/badge/Vesuvius_Challenge-scrollprize.org-b4965a.svg)](https://scrollprize.org/)
 
 ![Concept illustration of layered carbonized papyrus unfolding into a copper surface mesh.](docs/assets/scrolls-readme-hero.webp)
 
 *Concept illustration. [Artwork notes](docs/assets/README.md).*
 
-Research notes, a run planner, and an experiment ledger for the [Vesuvius Challenge](https://scrollprize.org/): reading the carbonized Herculaneum papyri from X-ray CT scans.
+Open tools, public-data benchmarks and research notes for the [Vesuvius Challenge](https://scrollprize.org/): reading the carbonized Herculaneum papyri from X-ray CT scans. The tools plan, check, score and record runs of the official open-source pipeline, [ScrollPrize/villa](https://github.com/ScrollPrize/villa); they do not replace it.
 
 > [!IMPORTANT]
-> **This repository does not claim that any letters have been found in any scroll.**
-
-The `kit/` package plans and records runs of the official open-source pipeline ([ScrollPrize/villa](https://github.com/ScrollPrize/villa)). It does not reimplement that pipeline. Prize amounts, deadlines and eligible scrolls are a dated snapshot (checked 2026-10-11); [scrollprize.org/prizes](https://scrollprize.org/prizes) wins if they disagree.
+> **This repository does not claim that any letters have been found in any scroll.** An ink map is model output, not a reading.
 
 ## Start here
 
-**What is Workbench? [See the picture guide](docs/workbench.md)** for the toolbox, Starter, Scroll Text Reader and AutoPipeline, with real screenshots and what to open first.
-
-**New to the Vesuvius Challenge? [Start Here](docs/start-here.md)** walks from a browser tour to one small task with the official data notebook, VC3D or ink tools. You can begin without a GPU or programming experience.
-
-- **Explore:** open [Unroll](https://huggingface.co/spaces/SharpMeow/unroll), then try the official [ink and tracing exercises](https://scrollprize.org/get_started).
-- **Practice locally:** [open Scrolls Starter](docs/start-here.md#2-try-scrolls-starter-on-your-computer) for an offline synthetic exercise and guided next steps. Its optional Python install adds a real setup check.
-- **Use real tools:** [pick a first official task](docs/start-here.md#3-move-to-one-small-official-task). AutoPipeline and Scroll Text Reader are optional helpers along that path.
-
-The guide includes macOS, Linux and Windows commands, expected outputs, storage and compute checks, and troubleshooting. [Share its stable link](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/start-here.md) with someone asking where to begin. Terms are explained in the [glossary](GLOSSARY.md).
-
-This repository contains public tools, public-data benchmarks and releasable reports. Private operational plans, candidate outputs and submission material belong in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required).
+- **New to the challenge?** [Start Here](docs/start-here.md) goes from a browser tour to one small task with the official tools, for macOS, Linux and Windows. You can begin without a GPU or programming experience.
+- **Look first:** [Unroll](https://huggingface.co/spaces/SharpMeow/unroll) shows scroll scans in 3D in your browser, and the [picture guide](docs/workbench.md) shows the toolbox with real screenshots.
+- **Practice offline:** [Scrolls Starter](docs/start-here.md#2-try-scrolls-starter-on-your-computer) has a synthetic exercise and a setup check.
+- **Look up a word:** the [glossary](GLOSSARY.md).
 
 ## Released tools
 
-![AutoPipeline's monitor on the synthetic demo: a live run lights up each stage on the rail and timeline, then captioned steps show a stage's record, the traced surfaces with 3D wireframes, the stand-in ink map in a dark-to-pale copper scale beside its reversed control on the same scale, log filters and the tool log, notes, a console command running as a job with its output, the VC3D quick actions, the run's files, and the light and dark themes](docs/assets/autopipeline/monitor-walkthrough.gif)
-
-*Synthetic demo: AutoPipeline's monitor following `scripts/demo_synthetic.py` on a synthetic scroll, each stage held 1.2 s so the run can be watched, then a captioned walk through its panels and console. Stroke shapes were planted in the synthetic CT and a stand-in ink model scores them, so its maps are not ink; the reversed control shows only the synthetic papyrus. [MP4](docs/assets/autopipeline/monitor-walkthrough.mp4) (45 s); more views in [the AutoPipeline reference](docs/autopipeline/README.md#12-live-monitor).*
-
 <!-- releases:start (generated from docs/releases.json by python -m kit releases render; edit that list, not this section) -->
-Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and the rest newest first. Each entry comes from [`docs/releases.json`](docs/releases.json).
+Every released tool, one line each; each name opens its guide. Generated from [`docs/releases.json`](docs/releases.json).
 
-All released tools, including the tools grouped under Scrolls kit:
+### Apps, packages and datasets
 
-| Released tool | Guide |
+| Tool | What it does |
 | --- | --- |
-| AutoPipeline | [Open](https://github.com/ChaseHendrick/Scrolls#autopipeline) |
-| Unroll (interactive 3D scroll viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#unroll-interactive-3d-scroll-viewer) |
-| Lasagnetta (experimental fast preview of villa's lasagna field) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagnetta-experimental-fast-preview-of-villas-lasagna-field) |
-| Lasagna Fields (villa lasagna fields for ten scans) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagna-fields-villa-lasagna-fields-for-ten-scans) |
-| Scrolls kit | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-kit) |
-| Segments without VC3D | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/tifxyz.md) |
-| Find, center line, cite and villa helpers | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/find.md) |
-| Greek gap restoration benchmark | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/greekfill.md) |
-| Planted defect generator | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/planted.md) |
-| UV overlap gate | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/uvgate.md) |
-| Relative winding consistency check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/windconsistency.md) |
-| Relative windings in a box | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/windlabel-box.md) |
-| Touching-sheets benchmark | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hopbench.md) |
-| Scroll Text Reader | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/letterread.md) |
-| Greek letter classifier and line reader for agents | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/letterclass.md) |
-| StrokeNet text-likeness score | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/strokenet.md) |
-| Segment stack check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/stackcheck.md) |
-| Scroll center (umbilicus) finder and coverage polish | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/umbilicus.md) |
-| Terminal look and mouse viewer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/termstyle.md) |
-| Research integrity checks for Vesuvius claims | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/integrity.md) |
-| Ink map self-check (neighbor-sheet test) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/sheetcheck.md) |
-| Scroll to ink in one command (experimental) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/scroll2ink.md) |
-| Fast public label downloads | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hfpull.md) |
-| Swap any stage by name | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/stagereg.md) |
-| Volume on a sheet in Neuroglancer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/sheetview.md) |
-| Segment Atlas | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/atlas.md) |
-| Published segment coverage | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/coverage.md) |
-| Published ink labels and model exposure | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/labels.md) |
-| Submission folder check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/submitcheck.md) |
-| VC3D false-404 relay and cache repair | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/vc3dfix.md) |
-| Tool connection instructions | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/spaceconnect.md) |
-| Controlled ink AUC scoring | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/auc.md) |
-| Scan catalog and batch plans | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/batch.md) |
-| Run time and energy summary | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/compute.md) |
-| Local setup checker | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/doctor.md) |
-| Ink map ensemble | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/ensemble.md) |
-| False-404 test relay | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/false404-relay.md) |
-| Public bucket downloader | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/fetch.md) |
-| Controlled benchmark gate | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/gate.md) |
-| Greek character language model | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/greeklm.md) |
-| Letter-scale ink score | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/hpscore.md) |
-| Layer extraction and shuffle control | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/layers.md) |
-| Mesh and cross-scan audit | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/meshaudit.md) |
-| Surface overlap and map comparison | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/overlap.md) |
-| Synthetic map controls | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/phantom.md) |
-| Pipeline planning and cost estimates | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/plan.md) |
-| Public prize snapshot | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/prizes.md) |
-| Run provenance records | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/provenance.md) |
-| Text-row pattern score | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/rowscore.md) |
-| Segmentation model comparison tools (experimental) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/segzoo.md) |
-| Checkpoint averaging | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/soup.md) |
-| Bounded surface correction (experimental) | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/surfacefix.md) |
-| v8in ink model runner | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/v8in-run.md) |
-| Ink map agreement check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/verify.md) |
-| Offline ink map comparison viewer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/view.md) |
-| Volume overlay links | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/volumeview.md) |
-| Experiment ledger | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/run-ledger.md) |
-| Local run time and cost log | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/run-local.md) |
-| Modal ledger row importer | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/modal-row.md) |
-| Release list and README generator | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/releases.md) |
-| Recurring repository checks | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/routines.md) |
-| Stale repository reference check | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/stale.md) |
-| Mac ink inference and verification scripts | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/mac-w045.md) |
-| Segment Lens (published segment geometry viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#segment-lens-published-segment-geometry-viewer) |
-| dinovol embeddings of PHerc0841 | [Open](https://github.com/ChaseHendrick/Scrolls#dinovol-embeddings-of-pherc0841) |
-| Headless VC3D for agents | [Open](https://github.com/ChaseHendrick/Scrolls#headless-vc3d-for-agents) |
-| Ink Lens (control-checked ink on your own VC3D region) | [Open](https://github.com/ChaseHendrick/Scrolls#ink-lens-control-checked-ink-on-your-own-vc3d-region) |
-| Umbilici (center lines of 33 Herculaneum scans) | [Open](https://github.com/ChaseHendrick/Scrolls#umbilici-center-lines-of-33-herculaneum-scans) |
-| Scrolls Starter: a beginner path into the tools | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-starter-a-beginner-path-into-the-tools) |
-| Inkfilter: fixed surface-volume filters | [Open](https://github.com/ChaseHendrick/Scrolls#inkfilter-fixed-surface-volume-filters) |
-| Scroll Lens (3D DINO, ink and surface models on scan cubes) | [Open](https://github.com/ChaseHendrick/Scrolls#scroll-lens-3d-dino-ink-and-surface-models-on-scan-cubes) |
-
-### AutoPipeline
-
-![Concept illustration of a continuous papyrus surface traced in copper and flattened into a grid.](docs/assets/autopipeline-readme-hero.webp)
-
-*Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
-
-Released 25 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix9`: [`submissions/progress-2026-10-fix9/` at commit `2144cdf`](https://github.com/ChaseHendrick/Scrolls/tree/2144cdfcac4ecfc33150f7e81317e5ab33f248d6/submissions/progress-2026-10-fix9).
-
-AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.9 lets a plan swap any stage by name (`plan --use STAGE=NAME`) from a stage registry that lists every option with its maker, licence and maturity, and adds 3D ink readers to the ink stage, opt in and experimental: the organisers' Paris 4 3D model and published 3D predictions, read onto the same pixels as the 2.5D map with a moved-sheet control. Reader V3 stays the default reader; none of the 3D readers has beaten it on a held-out test. 0.1.8 made Reader V3 the default, and 0.1.7 drew ink maps in color. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
-
-```bash
-git clone --branch submission/progress-2026-10-fix9 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix9/autopipeline
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e .
-python scripts/demo_synthetic.py
-```
-
-Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix9/submissions/progress-2026-10-fix9/autopipeline/README.md). [Changes since 0.1.8](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix9/submissions/progress-2026-10-fix9/CHANGES.md). A plan's `--use ink=reader-v3,team-3d-paris4` runs a 3D reader beside the default.
-
-### Unroll (interactive 3D scroll viewer)
-
-![Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.](docs/assets/unroll/unroll-hero.webp)
-
-*Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.*
-
-Released 16 October 2026.
-
-[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, CT tools and an agent API. Status: released. Version: 1.7.0 (the Space's `version.json` and `CHANGELOG.md`). It shows nine scrolls from the Vesuvius Challenge open data, each as its traced segments with an X-ray layer, plus the published ink detection where the open data has it; PHerc. 139 also has an ink_9um (9 µm) layer over all 37 windings. The CT tools (1.2.0 to 1.5.0) add X-ray window and level with auto contrast, a CT volume view that shows a cube of the raw scan around any point of the papyrus, the traced segments drawn into that cube, and streaming from the open data bucket. Live sheet (1.7.0) streams any public segment and a CT or 3D ink volume from the bucket and shows the volume on the sheet in 3D, sampled in the browser by the same rule as `kit sheetview`. Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
-
-Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
-
-### Lasagnetta (experimental fast preview of villa's lasagna field)
-
-Released 25 October 2026.
-
-An experimental student of villa's lasagna net: it writes a lasagna field preview in villa's own layout about 4 times faster than villa `predict3d` (59.6 s against 235.2 s on one region, RTX Pro 6000), from three small 3D U-Nets averaged ([weights](https://huggingface.co/SharpMeow/lasagnetta), CC BY-NC 4.0). **It failed its held-out test**: agreement with villa passed pooled (peak F1 0.855) but one scan of five sat under the 0.80 bar. So it ships with a self-check that runs villa's net on 12 spots and says to use villa when the median peak F1 is under 0.82. Model output; villa's own field stays the reference.
-
-```bash
-pip install torch numpy numcodecs huggingface_hub
-python scripts/lasagnetta/preview.py --checkpoint release --ct s3://vesuvius-challenge-open-data/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/2 --region 9472 9984 3072 3584 4096 4608 --input-level 2 --out out --name PHerc0139
-```
-
-[Tool page](docs/tools/lasagnetta.md), [source](scripts/lasagnetta/), [weights and model card](https://huggingface.co/SharpMeow/lasagnetta). The self-check (`--self-check`) needs a villa checkout (`LASAGNETTA_VILLA`). Teacher credit: villa's lasagna authors (MIT).
-
-### Lasagna Fields (villa lasagna fields for ten scans)
-
-Released 25 October 2026.
-
-[Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) shares villa's lasagna `predict3d` output for ten whole scans that had none in the open data, one dataset each: [PHerc0175A](https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna), [PHerc0175B](https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna), [PHerc0306B](https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna), [PHerc0483A](https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna), [PHerc0483B](https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna), [PHerc0490A](https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna), [PHerc0490B](https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna), [PHerc0841](https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna), [PHerc0846A](https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna), [PHerc0846B](https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna). Each is in villa's own layout with `SHA256SUMS`; the same fields stream by URL from the public bucket SharpMeow/lasagna-fields (each card gives the URL). Made with villa's lasagna at `db3dbea2`, seams checked; raw model output. CC BY-NC 4.0, like the scans. Since 25 Oct 2026 the Space also **makes a field for any box of any public scan**: villa's own lasagna on ZeroGPU, checked against the published field (cos r 1.0 on every box tried), returned as villa's output folder from the page, API or MCP server.
-
-```bash
-hf download SharpMeow/pherc0175a-lasagna --repo-type dataset --local-dir pherc0175a-lasagna
-cd pherc0175a-lasagna && sha256sum -c SHA256SUMS
-for f in parts/*.tar; do tar -xf "$f"; done
-tar -xf PHerc0175A-lasagna-pyramid-fix.tar
-python load_example.py
-pip install gradio_client
-python -c "from gradio_client import Client; c = Client('SharpMeow/lasagna-fields', token='hf_...'); pt = c.predict(api_name='/example_points')[0]; print(c.predict(pt['volume'], pt['z'], pt['y'], pt['x'], 256, 'lasagna', api_name='/make_field')[1]['agreement'])"
-```
-
-The [Space](https://huggingface.co/spaces/SharpMeow/lasagna-fields) adds region downloads, Make a field (it uses the caller's ZeroGPU time), How-to guides and an MCP server; page: [docs/tools/lasagna-fields.md](docs/tools/lasagna-fields.md). [Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400) shows a sample with the center line. Model and code credit: villa's lasagna authors.
+| [AutoPipeline](docs/tools/autopipeline.md) | Runs villa's VC3D tools and ink detection on a released scan, from surface checks to ink maps scored with controls (package, 0.1.9). |
+| [Unroll (interactive 3D scroll viewer)](docs/tools/unroll.md) | Virtually unrolls scroll scans in 3D in your browser, with ink layers, CT tools and an Ink Bench for comparing ink models (Space). |
+| [Lasagnetta (experimental fast preview of villa's lasagna field)](docs/tools/lasagnetta.md) | Experimental fast preview of villa's lasagna field; it failed one scan of its held-out test, so it ships with a self-check against villa. |
+| [Lasagna Fields (villa lasagna fields for ten scans)](docs/tools/lasagna-fields.md) | villa's lasagna fields for ten whole scans that had none in the open data, one dataset each, with a Space to view and make them. |
+| [Segment Lens (published segment geometry viewer)](docs/tools/segment-lens.md) | Shows published segment meshes with geometry warnings and the Segment Atlas table, with an API and MCP server for agents (Space). |
+| [dinovol embeddings of PHerc0841](docs/tools/dinovol-embeddings.md) | Precomputed dinovol embeddings of the whole PHerc0841 scan, to search, cluster or segment by feature similarity without a GPU. |
+| [Headless VC3D for agents](docs/tools/vc3d-agent.md) | An MCP server and shell command that let an AI agent run villa's VC3D tools with no display, checks built in (package, 1.1.1). |
+| [Ink Lens (control-checked ink on your own VC3D region)](docs/tools/ink-lens.md) | Checks one region of your own VC3D segment for ink in seconds, keeping only ink above its own reversed-depth control (Space). |
+| [Umbilici (center lines of 33 Herculaneum scans)](docs/tools/umbilici.md) | Every public center line (umbilicus) we know of for 33 scans, 52 lines from six sources, in 3D over the CT (Space). |
+| [Scrolls Starter: a beginner path into the tools](docs/tools/starter.md) | A beginner path in your browser: a synthetic practice exercise with a control, a setup checker and a Scroll Text Reader command builder. |
+| [Inkfilter: fixed surface-volume filters](docs/tools/inkfilter.md) | Makes model-free maps from a surface-volume window, each with a reversed-depth control; not a trained reader (package). |
+| [Scroll Lens (3D DINO, ink and surface models on scan cubes)](docs/tools/scroll-lens.md) | Shows what the organizers' 3D models (dinovol, 3D ink, recto surface) see inside a cube of a public scan (Space). |
 
 ### Scrolls kit
 
-![Concept illustration of a still life on a dark tray with a copper lip: a cube with glowing slices in front, a small papyrus roll unrolling behind it, and two cut cross-sections on a copper thread.](docs/assets/workbench/workbench-hero.webp)
+Command-line tools, benchmarks and script folders that run from a clone of this repository. [Guide](docs/tools/cli.md). Open an area to see its tools.
 
-*Concept illustration: the toolbox's motifs on one tray. No scan data.*
+<details>
+<summary><b>Pipeline and agents</b> (3)</summary>
 
-Its tools were released from 6 October 2026 to 25 October 2026; each line gives its tool's date.
+| Tool | What it does |
+| --- | --- |
+| [Scan catalog and batch plans](docs/tools/batch.md) | Lists released scan volumes, makes resumable batch plans and watches for new or changed inputs. |
+| [Scroll to ink in one command (experimental)](docs/tools/scroll2ink.md) | Experimental: one command from a public scan and a seed point to an ink map with its reverse-depth control, stopping at a failed check. |
+| [Swap any stage by name](docs/tools/stagereg.md) | Lists every option for each stage of reading a scroll, with its maker, license and maturity, so a workflow can swap any stage by name. |
 
-Command-line tools, benchmarks and script folders that run from a clone of this repository. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.
+</details>
+
+<details>
+<summary><b>Viewers and apps</b> (5)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Offline ink map comparison viewer](docs/tools/view.md) | Builds one offline HTML page to compare ink maps, their differences, labels and the mask. |
+| [Terminal look and mouse viewer](docs/tools/termstyle.md) | Gives every kit command and script one styled terminal look, plain for pipes and --json, with a full-screen mouse viewer. |
+| [Tool connection instructions](docs/tools/spaceconnect.md) | Writes and checks connection instructions and code examples for the public tools' hosted pages. |
+| [Volume on a sheet in Neuroglancer](docs/tools/sheetview.md) | Samples a CT or prediction volume on a tifxyz surface and writes a mesh and Neuroglancer view. |
+| [Volume overlay links](docs/tools/volumeview.md) | Creates Neuroglancer overlay links from supplied volume metadata. |
+
+</details>
+
+<details>
+<summary><b>Surfaces and tracing</b> (13)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Bounded surface correction (experimental)](docs/tools/surfacefix.md) | Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. |
+| [Mesh and cross-scan audit](docs/tools/meshaudit.md) | Checks cross-scan transforms, mesh canvases and rendering depth against public catalog geometry. |
+| [Planted defect generator](docs/tools/planted.md) | Plants sheet switches, holes and other defects into synthetic tifxyz surfaces with a known answer, to test checkers against. |
+| [Published segment coverage](docs/tools/coverage.md) | Shows the heights and winding angles covered by published meshes and the gaps between them. |
+| [Relative winding consistency check](docs/tools/windconsistency.md) | Passes relative winding counts only when every one is an integer and all of them can hold at once. |
+| [Relative windings in a box](docs/tools/windlabel-box.md) | Grows chains of sheet crossings around a point and writes villa's relative_windings.json for a spiral fit, with a VC3D plugin. |
+| [Scroll center (umbilicus) finder and coverage polish](docs/tools/umbilicus.md) | Finds a scroll's winding center line (umbilicus) in its CT scan with two small U-Nets and writes umbilicus.json for VC3D. |
+| [Segment Atlas](docs/tools/atlas.md) | Measures published segment meshes with the same geometry checks and builds a searchable table. |
+| [Segment stack check](docs/tools/stackcheck.md) | Checks a stack of consecutive tifxyz segments against the umbilicus from geometry alone: winding order, spacing, gaps and overlaps. |
+| [Segments without VC3D](docs/tools/tifxyz.md) | Reads a tifxyz segment, local or from the open-data bucket, and reports its true area, grid, holes and folds, with numpy and tifffile only. |
+| [Surface overlap and map comparison](docs/tools/overlap.md) | Checks whether traced surfaces cover the same sheet and compares their labels or ink maps with controls. |
+| [Touching-sheets benchmark](docs/tools/hopbench.md) | Plants sheet hops at real contacts between PHerc0139's hand-traced windings and measures how often a one-sheet check misses them. |
+| [UV overlap gate](docs/tools/uvgate.md) | Checks a flattened sheet's UV triangles for any overlap, with exact arithmetic, plus coverage. |
+
+</details>
+
+<details>
+<summary><b>Ink maps and models</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Checkpoint averaging](docs/tools/soup.md) | Averages compatible model checkpoints from one training run and refuses a mixture of different seeds. |
+| [Ink map ensemble](docs/tools/ensemble.md) | Combines ink maps of the same surface by weighted score or pixel rank, keeping only pixels predicted by every input. |
+| [Mac ink inference and verification scripts](docs/tools/mac-w045.md) | Runs public ink-model checks on a Mac with reverse-depth controls. |
+| [v8in ink model runner](docs/tools/v8in-run.md) | Runs the released v8in ink model on layer images, including an optional reduced-precision Mac GPU mode. |
+
+</details>
+
+<details>
+<summary><b>Scoring and controls</b> (9)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Controlled benchmark gate](docs/tools/gate.md) | Checks recorded benchmark scores against the declared pass rules and required controls. |
+| [Controlled ink AUC scoring](docs/tools/auc.md) | Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control. |
+| [Ink map agreement check](docs/tools/verify.md) | Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. |
+| [Ink map self-check (neighbor-sheet test)](docs/tools/sheetcheck.md) | Checks without labels whether an ink map reads the traced sheet, comparing it with the same model one and two sheets away. |
+| [Letter-scale ink score](docs/tools/hpscore.md) | Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. |
+| [Research integrity checks for Vesuvius claims](docs/tools/integrity.md) | Checks a claim before it goes out: controls on the same pixels, held-out status, number sources, preregistration and wording. |
+| [StrokeNet text-likeness score](docs/tools/strokenet.md) | Scores how much a window of an ink map looks like lines of text, with rotation and IAAFT controls, using only NumPy. |
+| [Synthetic map controls](docs/tools/phantom.md) | Creates known-answer synthetic inputs for checking ink-map scoring and controls. |
+| [Text-row pattern score](docs/tools/rowscore.md) | Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text. |
+
+</details>
+
+<details>
+<summary><b>Letters and titles</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Greek character language model](docs/tools/greeklm.md) | Builds and scores a character language model from public Greek text for the letter reader. |
+| [Greek gap restoration benchmark](docs/tools/greekfill.md) | Hides letters in public Greek text and scores hosted text models against a Kneser-Ney letter model under a frozen rule. |
+| [Greek letter classifier and line reader for agents](docs/tools/letterclass.md) | Names Greek capital letters in given boxes on papyrus photographs and reads lines of boxes, as a JSON command and an MCP server. |
+| [Scroll Text Reader](docs/tools/letterread.md) | Proposes Greek capital letters with boxes and confidences on ink maps, drawn labels and photographs, on a CPU, with null and orientation controls. |
+
+</details>
+
+<details>
+<summary><b>Data and downloads</b> (7)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [False-404 test relay](docs/tools/false404-relay.md) | Replays selected false missing-file responses through a local relay so cache handling can be tested. |
+| [Fast public label downloads](docs/tools/hfpull.md) | Downloads a folder of the organizers' public Hugging Face datasets bucket fast, fetching each distinct file once. |
+| [Find, center line, cite and villa helpers](docs/tools/find.md) | Lists everything public for one scroll, fetches its best center line, prints credit lines, and checks villa PR timing and text. |
+| [Layer extraction and shuffle control](docs/tools/layers.md) | Exports surface-volume layers as images and creates a shuffled-depth control. |
+| [Public bucket downloader](docs/tools/fetch.md) | Copies files under a public data bucket prefix to a local folder and skips complete files when resuming. |
+| [Published ink labels and model exposure](docs/tools/labels.md) | Lists published ink label sets and the recorded training exposure of public ink models. |
+| [VC3D false-404 relay and cache repair](docs/tools/vc3dfix.md) | Runs VC3D through a relay that retries false missing-file responses and checks its empty-chunk cache. |
+
+</details>
+
+<details>
+<summary><b>Training</b> (1)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Segmentation model comparison tools (experimental)](docs/tools/segzoo.md) | Lists segmentation model families and provides training and controlled scoring scripts. |
+
+</details>
+
+<details>
+<summary><b>Planning and prizes</b> (4)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Local setup checker](docs/tools/doctor.md) | Checks the machine and installed tools before a pipeline run. |
+| [Pipeline planning and cost estimates](docs/tools/plan.md) | Prints the official pipeline commands for a scroll without running them. |
+| [Public prize snapshot](docs/tools/prizes.md) | Lists public prize requirements from a dated local snapshot. |
+| [Submission folder check](docs/tools/submitcheck.md) | Checks a submission folder against published file requirements and lists the remaining checks for a person. |
+
+</details>
+
+<details>
+<summary><b>Compute and cost</b> (3)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Local run time and cost log](docs/tools/run-local.md) | Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. |
+| [Modal ledger row importer](docs/tools/modal-row.md) | Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. |
+| [Run time and energy summary](docs/tools/compute.md) | Summarizes machine time from run provenance records, with an optional energy estimate. |
+
+</details>
+
+<details>
+<summary><b>Records and provenance</b> (2)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Experiment ledger](docs/tools/run-ledger.md) | Keeps a run record with a fixed readout rule, status, costs, file fingerprints and checks. |
+| [Run provenance records](docs/tools/provenance.md) | Records run settings and file fingerprints, then checks the record and its files for changes. |
+
+</details>
+
+<details>
+<summary><b>Releases and repository</b> (3)</summary>
+
+| Tool | What it does |
+| --- | --- |
+| [Recurring repository checks](docs/tools/routines.md) | Lists and runs the registered recurring repository checks and records their status locally. |
+| [Release list and README generator](docs/tools/releases.md) | Keeps the public release list, compact tool inventory and generated README section in step. |
+| [Stale repository reference check](docs/tools/stale.md) | Checks live documentation and registries for outdated references and pending work. |
+
+</details>
+<!-- releases:end -->
+
+## Quick start
+
+Python 3.10 or newer. Most `kit` commands need only the standard library; the map tools add numpy and tifffile, and the heavy pipeline (VC3D, PyTorch, ink models) comes from villa. `python -m kit doctor` says what is missing.
 
 ```bash
 git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git
@@ -193,221 +211,22 @@ cd Scrolls
 python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -e ".[all]"
-scrolls-letterdemo
-# The Center Finder also needs requests and torch
-python -m pip install requests torch
-```
-
-- **Segments without VC3D** (released 24 October 2026). Reads one tifxyz segment, local or straight from the open-data bucket, with numpy and tifffile only: its true area in cm2 (checked against the area VC3D writes into meta.json), how isometric its grid is, holes, folds and stretched cells with a picture, an OBJ for Blender, a shaded preview and which way its normals face relative to the scroll's center line. On PHerc0139 w035's 2.4 um mesh: 22.07 cm2, 1.0000 of meta.json's area, no holes or folds, 43 stretched nodes, each command under 5 s on a laptop-class CPU (measured 23 October 2026). Geometry only: a clean check does not mean the trace stays on one sheet. Run `python -m kit tifxyz check SEGMENT --png check.png`; [tool page](docs/tools/tifxyz.md), [how-to with pictures](docs/segments-without-vc3d.md).
-- **Find, center line, cite and villa helpers** (released 24 October 2026). `kit find SCROLL` lists everything public for one scroll: volumes with prize eligibility from the dated snapshot, segments per volume, the bucket's surface, lasagna and fiber predictions, center lines and public Hugging Face matches. `kit centerline get SCROLL --into FOLDER` writes the best public center line as umbilicus.json for VC3D after checking its sha256, and never overwrites one. `kit cite SCROLL` prints credit lines from metadata.json. For villa contributors, `kit prclock USER` shows the day villa's time-limit workflow would close each open PR, and `kit prtext BODY.md` checks a PR or issue body against villa's templates before posting. All read-only. Run `python -m kit find PHerc0175A`; [tool page](docs/tools/find.md), [centerline page](docs/tools/centerline.md), [villa helpers page](docs/tools/villapr.md).
-- **Greek gap restoration benchmark** (released 22 October 2026). Hides 1 to 8 letters in 190 windows of Philodemus, De Musica (public First1KGreek text) and scores hosted text models against an order-8 Kneser-Ney letter model under a frozen rule, with a memorisation probe and a cost cap; the corpus builder and the letter model come with it, and the frozen files reproduce byte for byte. In the run of 22 October 2026 the letter model restored 0.331 of hidden letters against 0.181, 0.181 and 0.118 for DeepSeek-V3-0324, Kimi-K2-Instruct-0905 and Qwen3-235B-A22B-Instruct-2507, and 0.895 of single letters against 0.447 at best (Model output; one text, one prompt, one run). Public edited text, no scroll data; a fill is not a reading. Run `python -m kit.greekfill score docs/evidence/greek-restoration-20261022 --out work/greekfill-score.json`; [tool page](docs/tools/greekfill.md), [preregistration and result](docs/prereg/2026-10-22-greek-restoration.md), [frozen files, reproduction and the text's CC BY-SA 4.0 licence](docs/evidence/greek-restoration-20261022/README.md).
-- **Planted defect generator** (released 21 October 2026). Plants sheet switches, lenses, skips, mergers, holes and bridged holes into synthetic tifxyz surfaces (an Archimedean spiral or parallel planes) and records the winding every vertex truly sits on, so a switch detector, stack check or labeler can be tested against a known answer; `check` recomputes that truth from the coordinates alone. `kit stackcheck` is tested against it: the clean stack passes, a hole is its missing sector and a switch onto the neighbouring winding is a coincident pair. Synthetic data only; a planted surface is not a trace of any scroll. Run `python -m kit.planted make OUT --family switch`; [tool page](docs/tools/planted.md), [tests](tests/test_planted.py).
-- **UV overlap gate** (released 21 October 2026). Checks a flattened sheet's UV triangles (JSON or CSV) for any positive-area overlap between two triangles, with exact rational clipping behind a NumPy spatial grid, plus summed-area coverage and, with `--mesh`, one counterclockwise piece; `scripts/bench_uvgate.py` runs the overlap check on an OBJ's texture coordinates. On the released PHerc0139 w039 flattened OBJ (193,772 triangles) it passed in a median 1.0 s of gate time, 1,666 times faster than the exact reference on an 800-face prefix with identical verdicts, and caught a planted duplicate face (measured 13 October 2026). It checks the supplied UV only, not 3D sheet identity, ink or a reading. Run `python -m kit uvgate TRIS.json --source-area AREA --mesh`; [tool page](docs/tools/uvgate.md), [guide](docs/uvgate.md), [speed and parity log](docs/logs/2026-10-13-uvgate-fast.md).
-- **Relative winding consistency check** (released 21 October 2026). Reads relative winding steps (point a to point b is k windings outward) and passes only when every count is an integer and all of them can hold at once, around every closed path across all chains, in time linear in the input, with exact integers and the standard library only. Tested on synthetic chains only; a consistent but wrong set passes, so a pass means the counts agree, not that they are right. Run `python -m kit windconsistency CHAINS.json`; [tool page](docs/tools/windconsistency.md), [guide](docs/windconsistency.md).
-- **Relative windings in a box** (released 24 October 2026). Grows chains of sheet crossings around a point on a published surface prediction, cuts every step where lasagna's grad_mag sees more than one sheet, and writes villa's relative_windings.json point collections for a spiral fit, with a VC3D plugin that runs it at the focus point. It needs the scroll's umbilicus and computes no prediction itself. Under readouts fixed beforehand it scored 0.9758 step accuracy on 13,969 judged steps of 18 fresh PHerc0139 boxes and, with its split rule v2, 0.9786 on 5,938 judged steps of 20 fresh PHerc1667 boxes, against the published hand windings (Model output, 24 October 2026); split rule v1 missed the PHerc1667 keep floor. It ran inside a VC3D build from the plugin branch, where a fix to keep the windings relative on load is pending. Run `python -m kit windlabel-box --prediction PRED --grad-mag GM --umbilicus UMB.json --point X,Y,Z --out RUN`; [tool page](docs/tools/windlabel-box.md), [PHerc0139 check](docs/evidence/windlabel-box-20261024/README.md), [PHerc1667 check](docs/evidence/windlabel-box-1667-20261024/README.md).
-- **Touching-sheets benchmark** (released 24 October 2026). Plants sheet hops at real contacts between PHerc0139's hand-traced windings w023 to w040 and measures how often a one-sheet check reading a surface prediction still joins them, and how large a window it still calls one sheet; run it on m7, recto-090 or your own prediction in m7's frame. Baselines (24 October 2026, CPU): with m7 the check joins 11 of 64 planted hops (17 %, the per-point on-sheet test 26) and keeps a median 3.5 mm square; with recto-090, 13 of 64 and 3.9 mm; neither keeps a 12.5 mm square in any of 18 clean windows. About 40 minutes on 4 CPU cores. Geometry only, never a reading. Run `python -m kit hopbench refs && python -m kit hopbench run --pred m7`; [tool page](docs/tools/hopbench.md), `hopbench_checks` in [results.json](docs/results.json).
-- **Scroll Text Reader** (weights `letters-v2-real` and `letters-v2-ccby`, released 17 October 2026). Proposes Greek capital letters, boxes and confidences on ink maps, drawn labels and papyrus photographs with NumPy on a CPU, with null and orientation controls, and has an optional local Tesseract backend for Latin, Greek, Hebrew and other installed languages. On public PHerc. 1667 ink-map groups with line positions and letter height given, free-ends character error was 0.376 for `letters-v2-real` against 0.462 for `letters-v2-ccby` (Model output; 117 letters in 84 groups; those maps may benefit from training-label exposure), and photo accuracy is untested. Its output is a hypothesis for a person to check, not a reading; `--letter-px 86` suits PHerc. 1667's 38 um grid. Run `scrolls-letterread MAP.png --weight-profile permissive --letter-px 86 --overlay MAP-letters.png`; [tool page](docs/tools/letterread.md), [install, profiles and benchmarks](docs/letter-reader.md), [local OCR and session switching](docs/tools/reader-backends.md).
-- **Greek letter classifier and line reader for agents** (weights `letterclass-v1`, released 24 October 2026). Names Greek capital letters in given boxes on papyrus photographs and reads lines of boxes with a Greek prose letter model that holds no Homer or verse, giving each letter's confidence and ranked alternatives, as a JSON command line and an MCP server for agents; the classifier is three ConvNeXt runs trained on Hell-Char only. In a preregistered head-to-head on the ICDAR 2023 test answers (8,479 letters, boxes given) its letter error was 0.291 against 0.340 for Hell-Char ConvNeXt-V2, every control passed, and as lines it was level with Hell-Char given the same letter model (Model output; photographs, not ink maps). Runs CC BY 4.0, letter model CC BY-SA 4.0, fetched once and sha256 checked. Run `python scripts/letters/reader_api.py fetch`; [tool page](docs/tools/letterclass.md), [preregistration and result](docs/prereg/2026-10-24-letter-reader-icdar-h2h.md), [frozen score and log](docs/evidence/2026-10-24-letter-icdar-h2h/README.md).
-- **StrokeNet text-likeness score** (weights `strokenet-paris4-v1`, released 14 October 2026). Scores how much a 6.1 mm window of an organizers' ink map looks like lines of text, with rotation and IAAFT controls in every result, using only NumPy. On its preregistered held-out test on six PHerc. Paris 4 tracings it passed 7 of 9 bar items and told text from the same text turned 90 degrees far better than any simple score (AUC 0.994 against 0.865); plain ink density matched it at text against blank papyrus. `--two-density` (22 October 2026) adds a score with no network: a window's ink density plus a quarter of the density around it. On its preregistered test it came out ahead of ink density inside segments on PHerc0500P2 with ink_9um (Model output; mean within-segment AUC 0.701 against 0.662, 11 segments), a scroll ink_9um reads weakly. A score is model output, not a reading. Run `python -m kit strokenet MAP.tif --pixel-mm 0.0024 --json`; [tool page](docs/tools/strokenet.md), [model card, held-out results, the tile grid pilot and the two-density score](docs/strokenet.md).
-- **Segment stack check** (released 14 October 2026). Checks a stack of consecutive tifxyz segments of one scroll against its umbilicus from geometry alone (no CT, no model): winding order, coincident or oddly spaced neighbors, missing sectors, skipped windings, turn overlaps and stack ends, with a JSON report and per-vertex masks to drop before a spiral fit or a winding count. On PHerc0139 w023 to w040 it measured, for example, that w035 covers a median 258 degrees of its turn (measured from the published segments and umbilicus, 14 October 2026). Geometry alone cannot say which segment left its sheet. Run `python -m kit stackcheck w033=SEGMENT_DIR w034=SEGMENT_DIR w035=SEGMENT_DIR --umbilicus UMBILICUS.json --out work/stackcheck/report.json --flags work/stackcheck/flags.npz`; [tool page](docs/tools/stackcheck.md), [the PHerc0139 note with the full bucket example, the numbers, a CT look and the limits](docs/logs/2026-10-14-pherc0139-segment-defects.md).
-- **Scroll center (umbilicus) finder and coverage polish** (weights `umbilicus-v1`; lines `umbilicus-lines-v1`; polish `kit axispolish` rule 1, released 24 October 2026). Finds a scroll's winding center line in its 1.2 m (about 9 um) CT scan with two small U-Nets reading level-3 slices from the open-data bucket, and writes `umbilicus.json` for VC3D and the spiral fit. Against the 13 published center lines, each scroll held out, the median distance over 3,414 slices is 0.73 mm against 3.98 mm for the centroid control (Model output, 13 Oct 2026). `kit axispolish` then moves a line to where villa's traced sheet winds most: on ten fresh scans the polished lines beat villa's vc_gen_umbilicus by +0.084 wraps of coverage, 8 of 10 scans, interval +0.028 to +0.169 (Model output, 22 Oct 2026; [evidence](docs/evidence/2026-10-22-umbilicus-windpolish/README.md)). Run `python scripts/umbilicus/predict.py PHerc0125 --first work/umbilicus/weights/umbilicus-first-all.pt --zoom work/umbilicus/weights/umbilicus-zoom-all.pt --data work/umbilicus/slices --out work/umbilicus/out --vc3d-name`; [tool page](docs/tools/umbilicus.md), [guide with the weight download and SHA-256](scripts/umbilicus/README.md), [evidence](docs/evidence/2026-10-14-umbilicus/README.md), [center lines for 11 scrolls with each end's check status (Model output, no person's check)](docs/evidence/2026-10-21-umbilicus-lines/README.md).
-- **Terminal look and mouse viewer** (released 23 October 2026). Gives every kit command, and every script in a Scrolls checkout, one styled look on a terminal: a title line, colour by line rules (headings, key: value, PASS and FAIL, USD amounts, clickable links), wrapping that keeps a line's own spacing, and a closing line with the exit code and time. Pipes, logs, --json and NO_COLOR get the program's own bytes. No install step: the first styled run adds a startup hook to that Python. kit live runs any command in a full-screen view with wheel scrolling, search and clickable links. Run `python -m kit live -- python -m kit prizes`; [tool page](docs/tools/termstyle.md).
-- **Research integrity checks for Vesuvius claims** (released 23 October 2026). Checks a claim before it is posted, put in a PR or sent with a prize form: an ink score needs its reverse-depth control on the same pixels, a held-out status from that reader (from the public exposure table), the supervision mask, a number copied from its run, and an interval for any comparison; wording must not call model output a reading or call a training surface held out; a preregistration must be committed before its result and only appended to; arXiv ids and titles must match arXiv. Every command first runs 27 planted faults it must catch. Comes with a guide and the vesuvius-integrity Claude skill, which builds on the Research-Integrity skill. A pass means the record survives these rules, not that the claim is true. Run `python -m kit integrity text DRAFT.md`; [tool page](docs/tools/integrity.md), [guide](docs/integrity.md), [tests](tests/test_integrity.py).
-- **Ink map self-check (neighbor-sheet test)** (released 24 October 2026). Checks without labels whether an ink map reads the traced sheet: it compares the map on the sheet with the same model read one and two sheet pitches away along the mesh normals (a map that still looks the same there is smeared across sheets or follows something every sheet shares), and flags ink that follows the mask edge or lights up empty space in the CT. Takes 2D maps read at each shift, or projects a 3D prediction volume on a tifxyz mesh itself. A pass is necessary, not sufficient: a map with no ink signal passes too, so it does not replace a labeled score with its control. Run `python -m kit sheetcheck demo --png sheetcheck-demo.png`; [tool page](docs/tools/sheetcheck.md), [synthetic demo](docs/assets/sheetcheck/sheetcheck-demo.png), [tests](tests/test_sheetcheck.py).
-- **Scroll to ink in one command (experimental)** (released 25 October 2026). One command from a public scan and a seed point to an ink map: it grows a surface from the seed with VC3D, checks it for self-crossings and seating, extends it only if the extension passes the same check, flattens and renders it, and runs an ink model with the reverse-depth control, every step a Headless VC3D tool. It stops at a bad seed or a failed check, takes the layer order from the scroll's center line rather than assuming it, and resumes from one run folder, so the VC3D part and the ink part can run on different machines. Demo on PHerc0139 (in the released models' training data, so it shows the pipeline, not new ink): a 4.8 cm2 surface, check ok, about 8 minutes on Hugging Face Jobs for 0.15 USD (25 Oct 2026). Run `python -m kit scroll2ink run --sample PHerc0139 --seed 4121 3935 5477`; [tool page](docs/tools/scroll2ink.md), [replay GIF of the demo run](docs/assets/scroll2ink/scroll2ink-run.gif), [tests](tests/test_scroll2ink.py).
-- **Fast public label downloads** (released 25 October 2026). Downloads a folder of the organizers' public Hugging Face bucket scrollprize/datasets, such as an ink label store, each distinct file once, then copies it to the other paths with the same content; the label stores are mostly copies of one empty chunk and the Hub charges by request, not by byte. On the PHerc0139 w035 ink_9um label store (3,606 files) it took 5.0 s against 61.7 s for a plain download of every file, with identical files (Measurement, one run, 25 Oct 2026). Needs huggingface_hub; no token for the public bucket. Run `python -m kit.hfpull ink_9um/labels/aligned-scrollprizeorg-21slices/pherc0139-w035 labels/w035`; [tool page](docs/tools/hfpull.md), [bench record](scripts/experiments/2026-10-25-label-pull/README.md), [tests](tests/test_hfpull.py).
-- **Swap any stage by name** (released 25 October 2026). One list of every option for each stage of reading a scroll (trace, surface, lasagna field, spiral fit, flatten, render, 2.5D or 3D ink reader, letter reader and others): who made it, its licence, its maturity (default, validated, experimental, pending, failed) and why. A workflow picks an option by name instead of hard-coding it; scroll2ink takes `--use ink=NAME` (or `KIT_STAGE_INK`) and records the pick in its settings. Unlicensed code or weights are only fetched from their own host at run time. Listing an option is not evidence that it works; its maturity and why say how far it is proven. Run `python -m kit stages list ink`; [tool page](docs/tools/stagereg.md), [tests](tests/test_stagereg.py).
-- **Volume on a sheet in Neuroglancer** (released 24 October 2026). Samples a CT or prediction volume on a tifxyz surface and writes a mesh and Neuroglancer view. The volume and surface must use the same scan coordinates. A displayed prediction is model output, not a reading. Run `python -m kit sheetview build --help`; [tool page](docs/tools/sheetview.md), [source and synthetic tests](docs/tools/sheetview.md#checks-and-controls).
-- **Segment Atlas** (released 24 October 2026). Measures published segment meshes with the same geometry checks and builds a searchable table. Run `python -m kit atlas --help`; [tool page](docs/tools/atlas.md).
-- **Published segment coverage** (released 24 October 2026). Shows the heights and winding angles covered by published meshes and the gaps between them. Run `python -m kit coverage --help`; [tool page](docs/tools/coverage.md).
-- **Published ink labels and model exposure** (released 24 October 2026). Lists published ink label sets and the recorded training exposure of public ink models. Run `python -m kit labels --help`; [tool page](docs/tools/labels.md).
-- **Submission folder check** (released 24 October 2026). Checks a submission folder against published file requirements and lists the remaining checks for a person. Run `python -m kit submitcheck --help`; [tool page](docs/tools/submitcheck.md).
-- **VC3D false-404 relay and cache repair** (released 24 October 2026). Runs VC3D through a relay that retries false missing-file responses and checks its empty-chunk cache. The vc3dcache command also repairs that cache. Run `python -m kit s3relay --help`; [tool page](docs/tools/vc3dfix.md).
-- **Tool connection instructions** (released 24 October 2026). Writes and checks connection instructions and code examples for the public tools' hosted pages. Run `python -m kit spaceconnect --help`; [tool page](docs/tools/spaceconnect.md).
-- **Controlled ink AUC scoring** (released 7 October 2026). Scores an ink map against labeled ink and background inside a supervision mask, alongside a reverse-depth control. Run `python -m kit auc --help`; [tool page](docs/tools/auc.md).
-- **Scan catalog and batch plans** (released 16 October 2026). Lists released scan volumes, makes resumable batch plans and watches for new or changed inputs. It launches nothing. Run `python -m kit run all --help`; [tool page](docs/tools/batch.md).
-- **Run time and energy summary** (released 7 October 2026). Summarizes machine time from run provenance records, with an optional energy estimate. Run `python -m kit compute --help`; [tool page](docs/tools/compute.md).
-- **Local setup checker** (released 6 October 2026). Checks the machine and installed tools before a pipeline run. Run `python -m kit doctor --help`; [tool page](docs/tools/doctor.md).
-- **Ink map ensemble** (released 7 October 2026). Combines ink maps of the same surface by weighted score or pixel rank, keeping only pixels predicted by every input. Run `python -m kit ensemble --help`; [tool page](docs/tools/ensemble.md).
-- **False-404 test relay** (released 12 October 2026). Replays selected false missing-file responses through a local relay so cache handling can be tested. Run `python scripts/false404/fault_relay.py --help`; [tool page](docs/tools/false404-relay.md).
-- **Public bucket downloader** (released 7 October 2026). Copies files under a public data bucket prefix to a local folder and skips complete files when resuming. Run `python -m kit fetch --help`; [tool page](docs/tools/fetch.md).
-- **Controlled benchmark gate** (released 7 October 2026). Checks recorded benchmark scores against the declared pass rules and required controls. Run `python -m kit gate --help`; [tool page](docs/tools/gate.md).
-- **Greek character language model** (released 14 October 2026). Builds and scores a character language model from public Greek text for the letter reader. Run `python -m kit greeklm --help`; [tool page](docs/tools/greeklm.md).
-- **Letter-scale ink score** (released 7 October 2026). Compares an ink map with published labels after removing broad brightness changes, with displaced-label and reverse-depth controls. Run `python -m kit hpscore --help`; [tool page](docs/tools/hpscore.md).
-- **Layer extraction and shuffle control** (released 7 October 2026). Exports surface-volume layers as images and creates a shuffled-depth control. Run `python -m kit layers --help`; [tool page](docs/tools/layers.md).
-- **Mesh and cross-scan audit** (released 7 October 2026). Checks cross-scan transforms, mesh canvases and rendering depth against public catalog geometry. Run `python -m kit meshaudit --help`; [tool page](docs/tools/meshaudit.md).
-- **Surface overlap and map comparison** (released 7 October 2026). Checks whether traced surfaces cover the same sheet and compares their labels or ink maps with controls. Includes the collate command. Run `python -m kit overlap --help`; [tool page](docs/tools/overlap.md).
-- **Synthetic map controls** (released 7 October 2026). Creates known-answer synthetic inputs for checking ink-map scoring and controls. Run `python -m kit phantom --help`; [tool page](docs/tools/phantom.md).
-- **Pipeline planning and cost estimates** (released 6 October 2026). Prints the official pipeline commands for a scroll without running them. The cost command adds up a run's recorded expenses. Run `python -m kit plan --help`; [tool page](docs/tools/plan.md).
-- **Public prize snapshot** (released 6 October 2026). Lists public prize requirements from a dated local snapshot. Run `python -m kit prizes --help`; [tool page](docs/tools/prizes.md).
-- **Run provenance records** (released 7 October 2026). Records run settings and file fingerprints, then checks the record and its files for changes. Run `python -m kit provenance --help`; [tool page](docs/tools/provenance.md).
-- **Text-row pattern score** (released 7 October 2026). Measures repeating bands in forward and reverse ink maps as a triage aid, without interpreting text. Run `python -m kit rowscore --help`; [tool page](docs/tools/rowscore.md).
-- **Segmentation model comparison tools (experimental)** (released 17 October 2026). Lists segmentation model families and provides training and controlled scoring scripts. This experimental source release is not a Progress Prize release. Run `python -m kit segzoo --help`; [tool page](docs/tools/segzoo.md).
-- **Checkpoint averaging** (released 7 October 2026). Averages compatible model checkpoints from one training run and refuses a mixture of different seeds. Run `python scripts/soup.py --help`; [tool page](docs/tools/soup.md).
-- **Bounded surface correction (experimental)** (released 7 October 2026). Suggests bounded surface shifts using agreement between maps from two traces and keeps only shifts that pass its controls. Run `python -m kit surfacefix --help`; [tool page](docs/tools/surfacefix.md).
-- **v8in ink model runner** (released 7 October 2026). Runs the released v8in ink model on layer images, including an optional reduced-precision Mac GPU mode. Run `python scripts/v8in_run.py --help`; [tool page](docs/tools/v8in-run.md).
-- **Ink map agreement check** (released 7 October 2026). Checks whether two ink maps of the same input agree while requiring a deliberately different control to fail. Run `python -m kit verify --help`; [tool page](docs/tools/verify.md).
-- **Offline ink map comparison viewer** (released 7 October 2026). Builds one offline HTML page to compare ink maps, their differences, labels and the mask. Run `python -m kit view --help`; [tool page](docs/tools/view.md).
-- **Volume overlay links** (released 17 October 2026). Creates Neuroglancer overlay links from supplied volume metadata. It checks the supplied metadata without verifying remote registration. Run `python -m kit volumeview --help`; [tool page](docs/tools/volumeview.md), [workbench 0.4.0 release](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.0).
-- **Experiment ledger** (released 6 October 2026). Keeps a run record with a fixed readout rule, status, costs, file fingerprints and checks. Run `python -m kit run --help`; [tool page](docs/tools/run-ledger.md).
-- **Local run time and cost log** (released 7 October 2026). Runs a local command and records its elapsed time and estimated electricity cost, or adds records of past runs. Run `python -m kit run local --help`; [tool page](docs/tools/run-local.md).
-- **Modal ledger row importer** (released 16 October 2026). Adds a recorded job to a cost ledger once and restricts public ledgers to rows marked generic. It launches no job. Run `python -m kit run modal-row --help`; [tool page](docs/tools/modal-row.md).
-- **Release list and README generator** (released 14 October 2026). Keeps the public release list, compact tool inventory and generated README section in step. Run `python -m kit releases --help`; [tool page](docs/tools/releases.md).
-- **Recurring repository checks** (released 17 October 2026). Lists and runs the registered recurring repository checks and records their status locally. Run `python -m kit routines --help`; [tool page](docs/tools/routines.md).
-- **Stale repository reference check** (released 18 October 2026). Checks live documentation and registries for outdated references and pending work. Run `python -m kit stale --help`; [tool page](docs/tools/stale.md).
-- **Mac ink inference and verification scripts** (released 7 October 2026). Runs public ink-model checks on a Mac with reverse-depth controls. Includes mac-w045, mac-verify and mac-phase0 for inference, device comparison and queued benchmark checks. Run `bash -n scripts/mac-w045.sh scripts/mac-verify.sh scripts/mac-phase0.sh`; [tool page](docs/tools/mac-w045.md), [device check](docs/tools/mac-verify.md), [queued checks](docs/tools/mac-phase0.md).
-
-`scrolls-letterdemo` downloads CC BY weights once and checks synthetic letters. Use a separate environment from AutoPipeline: both install `kit`. Every `python -m kit` command: [`docs/tools/cli.md`](docs/tools/cli.md); every tool page: [`docs/tools/`](docs/tools/README.md); a picture guide to the toolbox: [`docs/workbench.md`](docs/workbench.md).
-
-### Segment Lens (published segment geometry viewer)
-
-Released 24 October 2026.
-
-Displays published segment meshes with geometry warnings and the Segment Atlas table, with an API and MCP server for agents. These geometry checks do not establish that a surface follows one papyrus sheet.
-
-[Tool page](docs/tools/segment-lens.md), [source](spaces/segment-lens/), and [public viewer](https://huggingface.co/spaces/SharpMeow/segment-lens).
-
-### dinovol embeddings of PHerc0841
-
-Released 24 October 2026.
-
-Precomputed embeddings of the whole PHerc0841 9.366 um scan from the Vesuvius Challenge's self-supervised dinovol model (`scrollprize/dinovol_8um_ps192_102126`, step 640,000), so anyone can search, cluster or segment by feature similarity without a GPU. One zarr in the public bucket [SharpMeow/dinovol-embeddings](https://huggingface.co/buckets/SharpMeow/dinovol-embeddings) holds `tokens_unit` (480 numbers per 8 voxel cube), `dense` (64 per 4 voxel cube) and `ink` (32 per 4 voxel cube), int8 with a scale per vector, 539 GB; read any region by URL. Made on Hugging Face Jobs with villa's `embed_volume.py` at `4ea26d9c`; every slab read back by URL with unit-length vectors that cover exactly the scan's nonzero voxels. Raw model output, not checked by eye. CC BY-NC 4.0, like the scan. Guide and click-to-search demo: [huggingface.co/spaces/SharpMeow/dinovol-embeddings](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings).
-
-```bash
-pip install "zarr>=3" fsspec aiohttp
-python3 -c "import zarr; g = zarr.open_group(zarr.storage.FsspecStore.from_url('https://huggingface.co/buckets/SharpMeow/dinovol-embeddings/resolve/PHerc0841/20250821151531-dinovol_8um_ps192_102126.zarr', read_only=True), mode='r', zarr_format=2); print(g['tokens_unit'].shape, g['dense'].shape)"
-```
-
-The [guide Space](https://huggingface.co/spaces/SharpMeow/dinovol-embeddings) (source `spaces/dinovol-embeddings/`) explains the features, has a click-to-search demo, tested download commands with sizes, and opens a whole-scan color volume (`-rgb.ome.zarr` beside the embeddings, 1.6 GB) in neuroglancer. The model's page states no license; villa's dinovol code is MIT. Credit: the Vesuvius Challenge for the scan, the dinovol authors for the model.
-
-### Headless VC3D for agents
-
-![Concept illustration of a floating scan cube cut by slices of curved papyrus layers, with a papyrus sheet running out of it along a diagonal under a copper surface grid, and small copper beads riding a thin line above the sheet.](docs/assets/vc3d-agent/vc3d-agent-hero.webp)
-
-*Concept illustration: a scan cube and a traced surface leaving it as a copper grid, with calls and results passing along a line above. No scan data.*
-
-Released 24 October 2026 as a reviewed package on branch `submission/progress-2026-10-vc3d-agent-1-1-1`: [`submissions/progress-2026-10-vc3d-agent-1-1-1/` at commit `9edcbf1`](https://github.com/ChaseHendrick/Scrolls/tree/9edcbf13c6b06f34cc94c0976320863378f5f18f/submissions/progress-2026-10-vc3d-agent-1-1-1).
-
-An MCP server and shell command that let an AI agent run villa's VC3D tools with no display: find open data, trace, check, render and flatten surfaces, run ink models with their reverse-depth control, drive the VC3D app, and see each result as a PNG. Version 1.1.1 serves 46 tools with JSON schemas, progress, cancellation and images over stdio, MCP protocol versions 2024-11-05 to 2025-11-25, including seven lasagna tools that drive villa's lasagna surface fit headless. The checks are built in: render votes on the surface normal before trusting the layer order, audit finds chunks a render would read as zeros, check_surface says whether a surface sits on a sheet, and target-scroll ink refuses to run without a preregistered readout rule. New in 1.1.1, docs only: the README shows every tool with a real call and its result from sessions recorded on public PHerc0139 data, a captioned replay GIF and stills, setup for Claude Code, Codex and the MCP Python SDK, and the failure modes met. It is the server that shipped inside AutoPipeline, released on its own without AutoPipeline's pipeline tools. Its tests use stand-in VC3D tools; this is software, not an ink-accuracy or scroll-reading result.
-
-```bash
-git clone --branch submission/progress-2026-10-vc3d-agent-1-1-1 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-vc3d-agent
-cd scrolls-vc3d-agent/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent
-python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
-python -m pip install -e ".[maps]"
-python -m unittest discover -s tests
-vc3d-agent vc3d tools
-claude mcp add vc3d-agent -e VC_APPIMAGE=/path/to/VC3D.AppImage -- "$PWD/.venv/bin/vc3d-agent" vc3d mcp
-```
-
-Every tool with a recorded call and result, client setup and failure modes: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/README.md). The lasagna tools: [docs/lasagna-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/docs/lasagna-agents.md).
-
-### Ink Lens (control-checked ink on your own VC3D region)
-
-Released 24 October 2026.
-
-[Ink Lens](https://huggingface.co/spaces/SharpMeow/ink-lens) checks one region of your own VC3D segment for ink in seconds. It runs an openly licensed 9 um ink model (d9v2 or `ink_9um`) on the region in three depth windows, each as stored and reversed, and keeps only ink above the region's own reversed-depth control, so a region without text comes back `none`. The result is written back as VC3D's own files: an overlay over the segment canvas, a running mosaic, `ink-detections.json` records and letter-candidate pins as a VC3D point collection. It runs on a ZeroGPU Space with your own Hugging Face token, or on your machine with `--local` (CUDA, MPS or CPU, no account), and the Space is also an API and an MCP server for agents. On the public 640 px PHerc0841 w00 sample (development data) the live Space ran 486 patches in about 1.3 s and called it `ink`, AUC 0.915 as stored against 0.595 reversed (Model output, 24 October 2026). Status: released. Version: 0.1.0. Licence: Apache 2.0 for the code; d9v2 and `ink_9um` MIT; the scans CC BY-NC 4.0. An ink map is model output, not a reading.
-
-Opens at [huggingface.co/spaces/SharpMeow/ink-lens](https://huggingface.co/spaces/SharpMeow/ink-lens). Try it from a clone: `python3 spaces/ink-lens/inklens.py demo 0841-w00 --score --vc3d-out /tmp/inklens-demo` (Space mode needs `HF_TOKEN` and gradio_client; add `--local` to run here). Source: [`spaces/ink-lens/`](spaces/ink-lens/); page with every option, output and failure: [`docs/tools/ink-lens.md`](docs/tools/ink-lens.md).
-
-### Umbilici (center lines of 33 Herculaneum scans)
-
-Released 24 October 2026.
-
-[Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) shows every public center line (umbilicus) we know of for the 22 scans on the prize page and 11 other public scans, 52 lines from six sources, in 3D over X-ray CT that the browser streams from the Vesuvius Challenge open data, plus villa's lasagna field for PHerc0175A. Status: released. Version: 1.9.0. Each maker has its own color and any maker or single line can be hidden; 16 of the lines are model output from Chase Hendrick's Center Finder and 12 more are their coverage-polished versions, drawn as the newest with the originals faded as superseded, each scan named in a traffic light from its automatic CT end check (green pass, yellow caution or untested, red flag); the others were made by people and are credited to them. A guide covers the basics, how VC3D and villa's spiral fit read these files (cited to villa's source), every statistic and the data's frames and encodings; a Data view has sortable tables with CSV and JSON downloads, and each scan card copies file URLs, the OME-Zarr URL and a line's x, y, z at any slice. Licence: Apache 2.0 for the code; each line keeps its own licence, and the scans and lasagna field are CC BY-NC 4.0. A center line is geometry, not a reading.
-
-Opens at [huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici). Source: [`spaces/umbilici/`](spaces/umbilici/); page: [`docs/tools/umbilici.md`](docs/tools/umbilici.md). Lines: [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines).
-
-### Scrolls Starter: a beginner path into the tools
-
-![Two screenshots of Scrolls Starter floating at an angle over a dark floor: its introduction page and its practice exercise, a drawn word with noise beside a noise-only control.](docs/assets/starter/starter-hero.webp)
-
-*Synthetic demo: Scrolls Starter 0.4's introduction and its known-answer practice exercise (made-up pixels, no scan, no model), shown as floating panels.*
-
-Released 17 October 2026.
-
-A local browser introduction with a known-answer synthetic exercise, a control you can compare, a real setup checker and a command builder for Scroll Text Reader. The portable HTML works without installing Python; it explicitly leaves local setup unchecked. The guide connects our released tools and the official browser exercises to the official data notebook, VC3D and ink detection. It does not run models or download scans for you.
-
-Start with [the beginner guide](docs/start-here.md), download [the portable page](https://github.com/ChaseHendrick/Scrolls/releases/download/workbench-v0.4.1/Scrolls-Starter.html), or install [workbench 0.4.1](https://github.com/ChaseHendrick/Scrolls/releases/tag/workbench-v0.4.1) as the guide shows and run `.venv/bin/python -m kit start` (`scrolls-start` once that environment is active). The [tool reference](docs/tools/starter.md) covers setup checks and generated commands.
-
-### Inkfilter: fixed surface-volume filters
-
-![Concept illustration of a stack of thin papyrus layers pierced by a copper sampling column, linked to an upright panel with a banded copper response and, behind it, a dimmer panel for the reversed-depth control.](docs/assets/inkfilter/inkfilter-hero.webp)
-
-*Concept illustration: a surface volume's layers, a fixed filter down through them, its response and the reversed-depth control. Synthetic fields only, no ink.*
-
-Released 17 October 2026 as a reviewed package on branch `submission/progress-2026-10-inkfilter`: [`submissions/progress-2026-10-inkfilter/` at commit `4953f17`](https://github.com/ChaseHendrick/Scrolls/tree/4953f17851aa9b2ffd3c26c86e85ecdabd659ca6/submissions/progress-2026-10-inkfilter).
-
-Makes a model-free map from a surface-volume window and writes a reversed-depth control. On 56 confirmation windows from 28 publicly labelled segments across seven scrolls, face mix scored mean AUC 0.736 versus 0.704 for the selected alpha-compositing baseline and 0.628 for its reversed-depth control (Model output, 17 October 2026). Confirmation used different windows from the same development segments and scrolls. Alpha alone wins on three scrolls; the reverse filter wins on one. This is not a trained-reader comparison.
-
-```bash
-git clone --branch submission/progress-2026-10-inkfilter --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-inkfilter
-cd scrolls-inkfilter/submissions/progress-2026-10-inkfilter
-python3 -m venv .venv
-. .venv/bin/activate
-python -m pip install .
-python demo.py demo-output
-```
-
-Local NumPy, TIFF and Zarr input, synthetic tests, scalar score evidence and limitations: [package README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-inkfilter/submissions/progress-2026-10-inkfilter/README.md). The package needs no GPU or model weights.
-
-### Scroll Lens (3D DINO, ink and surface models on scan cubes)
-
-![Concept illustration of a floating cube cut by three glowing slices (curved papyrus layers, colored patches and a sparse speckle), with matched points inside and smaller cubes receding to the right.](docs/assets/scroll-lens/lens-hero.webp)
-
-*Concept illustration: a scan cube cut by three slices, with matched points along a sheet and a gallery of smaller cubes. No scan data.*
-
-Released 17 October 2026.
-
-[Scroll Lens](https://huggingface.co/spaces/SharpMeow/scroll-lens) shows what the Vesuvius Challenge's 3D models see inside a scroll scan. Pick one of 99 ready-made cubes or a point in one of twelve public 2.2 to 2.4 µm scans, and it runs the organizers' 3D DINO embeddings (dinovol), direct 3D ink model and recto surface model on a 128³ or 256³ cube read live from the open data. The three slice views are drawn in your browser, so sliders, dragging, zoom and layers answer at once. Click a patch to light up every patch the DINO model finds alike, the organizers' own few-click recipe; the concept carries across scans and downloads as `concept.npy`. Each cube shows how well the organizers' ink reference agrees with the ink model, beside controls that must fail. A 3D view turns the three views into one rotatable space of the cube, with the slices as moving planes and ink, surface and your matches as points. For AI agents and scripts, seven tools (an API and an MCP server) list the scans and the gallery, inspect and search cubes, and download their outputs. Status: released. Version: 1.1.1. It runs on ZeroGPU and falls back to the CPU when a visitor's GPU time runs out. License: Apache 2.0 for the code; the models are MIT; the scan data and the gallery cubes derived from it are CC BY-NC 4.0. Model output, not a reading: a cube is smaller than one letter.
-
-Opens at [huggingface.co/spaces/SharpMeow/scroll-lens](https://huggingface.co/spaces/SharpMeow/scroll-lens); MCP at `https://sharpmeow-scroll-lens.hf.space/gradio_api/mcp/`. Source and tests: [`spaces/scroll-lens/`](spaces/scroll-lens/). Guide: [`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md).
-<!-- releases:end -->
-
-## Interactive viewer
-
-[Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is a browser page on Hugging Face Spaces that rebuilds 37 traced windings of PHerc. 139 in 3D and unrolls them, with X-ray, Published ink (2.4 µm) and ink_9um (9 µm) layers, a per-winding close-up, an Ink Bench and an agent API. It is released; see its entry under [Released tools](#released-tools). Data: Vesuvius Challenge, CC BY-NC 4.0. Details and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
-
-## Quick start (kit)
-
-Python **3.10+**. The commands below are standard library only, except `verify` and `rowscore`, which read TIFFs with numpy and tifffile (villa's environment has both). Scroll Text Reader needs numpy, Pillow and tifffile, which its `reader` extra installs ([Released tools](#released-tools)). The heavy pipeline (VC3D, PyTorch, ink models) is installed from villa; `doctor` tells you what is missing.
-
-```bash
-# from the repository root
 # open prizes, deadlines and eligible scrolls, from a dated snapshot
 python -m kit prizes
-# GPU, disk, uv, docker and git, and the VILLA and VC_BIN paths
+# what this machine has and lacks for a run
 python -m kit doctor
-# control and target commands for one eligible scroll
+# the official commands for one eligible scroll, printed and never run
 python -m kit plan PHerc0826
-# an 8.64 um scan: prints the resampling note
-python -m kit plan PHerc0800 --batch 1
-# Apple Silicon: VC3D.app tools, CPU or MPS inference
-python -m kit plan PHerc0826 --mac
-python -m kit cost --gpu-hours 6.5 --rate 1.10
-python -m kit run init p0826-a --scroll PHerc0826 \
-  --question "Does ink_9um show rows on a hand-refined GrowPatch near the outer wraps?" \
-  --readout "Rows of 2-4 mm strokes in forward depth, absent in reverse, on both seeds"
-python -m kit run cost p0826-a --usd 7.15 --what "A10, 6.5 h"
-python -m kit run status p0826-a running
-python -m kit run check p0826-a
-# needs numpy and tifffile, as in the villa environment
-python -m kit verify cpu.tif mps.tif --control cpu_reverse.tif
-# mirror a public bucket prefix over HTTPS, resumable
-python -m kit fetch w035 data/w035_9um.zarr
-# w045 is unseen by v8in, but ink_9um trained on its 2.4 um render
-python -m kit fetch w045 data/w045_9um.zarr
-# the row triage score
-python -m kit rowscore f42.tif f43.tif --reverse r42.tif r43.tif --voxel-um 9.362
-# Apple Silicon: CPU against MPS on the control, one command
-bash scripts/mac-verify.sh
-python -m unittest discover -s tests -v
+# score an ink map against its labels, with the reverse-depth map as control
+python -m kit auc MAP.tif --control MAP_reverse.tif --labels L/inklabels.zarr --mask L/supervision.zarr
+# Scroll Text Reader on synthetic letters
+scrolls-letterdemo
+python -m unittest discover -s tests
 ```
 
-> [!NOTE]
-> `plan` prints commands; it never runs them. They are copied from the official [ink detection tutorial](https://scrollprize.org/tutorial5), with each eligible volume's real S3 path resolved from the public bucket. The `run` ledger writes `experiments/<slug>/run.json`, which is gitignored. It hashes your readout rule when the run is created, so a rule edited after you looked is caught by `check`. It refuses to mark a submitted candidate `published` until the prize has been announced: the prize terms forbid going public first.
+Every command is in [`docs/tools/cli.md`](docs/tools/cli.md), and every tool has a page in [`docs/tools/`](docs/tools/README.md). Install AutoPipeline in its own environment, since both install `kit`.
 
-## The open prizes (snapshot 2026-10-11)
+## Open prizes (snapshot 2026-10-11)
 
 | Prize | Money | Deadline | What wins |
 | --- | --- | --- | --- |
@@ -418,75 +237,6 @@ python -m unittest discover -s tests -v
 
 > [!IMPORTANT]
 > All prizes require open-sourcing your method (permissive license) to accept the money. Details, submission contents and the eligible-scroll lists: [`docs/prizes.md`](docs/prizes.md).
-
-## What this repo does / does not
-
-| ✅ Does | ❌ Does not |
-| --- | --- |
-| Keep a dated, tested snapshot of open prizes and eligible volumes (`kit/data/`) | Replace the live prize page |
-| Print the official control and First Letters commands per eligible scroll, with resolved S3 paths | Run VC3D, render surfaces, or run ink models itself |
-| Check a machine against thresholds from published runs (12 GB GPU, 25 GB disk) | Guarantee a run fits; streaming caches grow by gigabytes |
-| Record preregistered readout rules, costs and status transitions locally | Decide whether an image shows letters |
-| Block publishing a candidate before the prize is announced | Submit anything to the Vesuvius Challenge for you |
-| Summarize the pipeline, the state of play, and costs, with sources | Claim a reading, a title, or letters in any scroll |
-| Point to villa, community tools, and published nulls | Fork or vendor villa |
-
-## Repository layout
-
-| Path | Role |
-| --- | --- |
-| [`AGENTS.md`](AGENTS.md), [`CLAUDE.md`](CLAUDE.md), [`llms.txt`](llms.txt) | Entry points for AI agents: rules, map, commands, glossary |
-| [`kit/`](kit/) | Planner, doctor, prize snapshot, map scoring (`auc`, `rowscore`, `verify`), `layers`, `provenance`, experiment ledger; CLI `python -m kit` |
-| [`scripts/`](scripts/) | One-command Mac GPU runs: `mac-w045.sh` (labeled test), `mac-phase0.sh` (public model comparisons), `mac-verify.sh`; `false404/fault_relay.py` replays S3's false 404 for villa #2058 |
-| [`docs/results.json`](docs/results.json) | Every benchmark number with settings and source |
-| [`docs/releases.json`](docs/releases.json) | Tools released from private work since the list began on 14 October 2026; the "Released tools" section above is generated from it |
-| [`docs/plans/`](docs/plans/), [`docs/prereg/`](docs/prereg/) | Public evaluation methodology and access-required private plan pointers |
-| [`kit/data/prizes-2026-10-11.json`](kit/data/prizes-2026-10-11.json) | Current prize snapshot (checked 2026-10-11): amounts, deadlines, 13 Grand Prize and 21 First Letters volumes with S3 names. [`prizes-2026-10-06.json`](kit/data/prizes-2026-10-06.json) is the previous snapshot (22 First Letters volumes, including PHerc0343, maximum 10) |
-| [`tests/test_kit.py`](tests/test_kit.py), [`tests/test_verify.py`](tests/test_verify.py), [`tests/test_rowscore.py`](tests/test_rowscore.py) | Snapshot, planner, doctor, ledger and map-comparison tests |
-| [`docs/start-here.md`](docs/start-here.md) | Beginner paths, expected results and a bridge to official tools |
-| [`docs/prizes.md`](docs/prizes.md) | Every open prize, its submission contents, eligible scrolls |
-| [`docs/pipeline.md`](docs/pipeline.md) | Scan, unwrap, ink, papyrologist: what each stage is and where it fails |
-| [`docs/letter-reader.md`](docs/letter-reader.md), [`scripts/letters/`](scripts/letters/) | Scroll Text Reader: Greek model, local OCR backends, benchmarks, training and demo |
-| [`scripts/umbilicus/`](scripts/umbilicus/README.md) | Scroll center (umbilicus) finder: guide, released weights, held-out results, training, end-point rule and tests |
-| [`pyproject.toml`](pyproject.toml) | The installable package `scrolls-workbench`: `python -m pip install "scrolls-workbench[reader] @ git+https://github.com/ChaseHendrick/Scrolls"` gives Scroll Text Reader's commands (`scrolls-letterread`, `scrolls-letterdemo`) and every `python -m kit` command as `scrolls-workbench`; install it in its own virtual environment, apart from AutoPipeline's ([guide](docs/letter-reader.md#install)) |
-| [`docs/state-of-play.md`](docs/state-of-play.md) | What has been read, what has been tried, recent winners and published nulls |
-| [`docs/compute.md`](docs/compute.md) | Hardware, cloud costs, and what AI agents can and cannot do here |
-| [`docs/mac.md`](docs/mac.md) | Apple Silicon: what runs locally, the open MPS PRs, useful Mac contributions |
-| [`docs/engine.md`](docs/engine.md) | villa is the engine; how `kit/` sits on top of it |
-| [`docs/external.md`](docs/external.md) | ScrollPrize repositories, community tools, datasets, models |
-| [`docs/sources.md`](docs/sources.md) | Consolidated URLs |
-| [`docs/WORKFLOW.md`](docs/WORKFLOW.md) | From experiment idea to private candidate to submission |
-| [`experiments/README.md`](experiments/README.md), [`templates/experiment.json`](templates/experiment.json) | Local experiment records and their format |
-| [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md) | Rules for AI (and human) editors |
-| [`docs/QUALITY.md`](docs/QUALITY.md) | Citation / testing / honesty bar |
-| [`docs/NOVELTY.md`](docs/NOVELTY.md) | Claim labels (sourced / model output / candidate / not a reading) |
-| [`docs/TESTING.md`](docs/TESTING.md) | How to run tests; what green means |
-| [`docs/UI-UX.md`](docs/UI-UX.md) | CLI and docs presentation |
-| [`docs/HANDOFF.md`](docs/HANDOFF.md) | State for the next session |
-| [`docs/ERROR-LOG.md`](docs/ERROR-LOG.md), [`docs/logs/errors.md`](docs/logs/errors.md) | Real failures only |
-| [`docs/logs/`](docs/logs/) | Dated research notes (not claims) |
-| [`CONTRIBUTING.md`](CONTRIBUTING.md) | Contribution ground rules |
-| [`LICENSE`](LICENSE) | Apache-2.0 (permissive, so it meets the prizes' open-source condition) |
-| [`CITATION.cff`](CITATION.cff) | How to cite this repository (Apache-2.0) and, as separate references, Scroll Text Reader's Greek weights: `letters-v2-ccby` (CC BY 4.0, automatic-layout default) and `letters-v2-real` (CC BY-NC 4.0) |
-
-## Architecture (kit)
-
-| Piece | Role |
-| --- | --- |
-| `prizes.py` | Load the snapshot, normalize scroll names (`PHerc. 826` = `PHerc0826`), days to deadline |
-| `doctor.py` | `nvidia-smi` or Apple Silicon, memory, disk, tools, `VILLA` and `VC_BIN` checks with sourced thresholds |
-| `plan.py` | Official command templates filled per scroll; cost arithmetic |
-| `ledger.py` | `run.json` records, readout hash, legal status transitions, privacy gate, provenance hashes, attached checks |
-| `fetch.py` | Paged anonymous listing and resumable download of a bucket prefix |
-| `verify.py` | Compare two ink maps under a tolerance; pass only if a control map is caught (numpy, tifffile) |
-| `rowscore.py` | Text-row periodicity triage score, port of Bullo27's (numpy, tifffile; scipy optional) |
-| `letterread.py` | Scroll Text Reader's Greek backend: numpy CTC line network, layout, null, control-map and orientation controls with a status code, whole maps block-averaged while loading, turned, mirrored and tilted text, photographs (polarity by a quick read both ways, EXIF orientation), overlay, released weights (numpy; Pillow and tifffile for images, zarr optional) |
-| `greeklm.py` | Kneser-Ney letter language model for Greek in scriptio continua, shown beside the ink-only read |
-| `letterexport.py` | The letter reader's exports: a CSV of letters and PAGE XML (2019 schema, for eScriptorium), in the image file's pixels |
-| `letterlines.py` | Training lines for fine-tuning the letter reader from your own transcribed lines, and character error on lines kept apart |
-| `releases.py` | The release list and the README section written from it (`python -m kit releases`) |
-| `stackcheck.py` | Geometry checks of consecutive tifxyz segments against the umbilicus (`python -m kit stackcheck`), with per-vertex masks to drop before a winding count (numpy, tifffile, scipy) |
-| `cli.py` | `python -m kit` entry point |
 
 ## Novel findings
 
@@ -524,33 +274,22 @@ python -m unittest discover -s tests -v
 
 Follow-up tests, partial results, the adaptive-geometry experiment and the CPU speed checks are listed after finding 11 in [`docs/FINDINGS.md`](docs/FINDINGS.md#earlier-measurements-and-corrections).
 
-## Guidelines
+## Documentation
 
-- [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): cite URLs; no claimed letters; candidates stay private; tools need tests.
-- [`docs/QUALITY.md`](docs/QUALITY.md): every claim about prizes or results has a dated source.
-- [`docs/NOVELTY.md`](docs/NOVELTY.md): an ink map is model output, not a reading.
-- [`docs/TESTING.md`](docs/TESTING.md): unittest; what green does and does not mean.
-- [`CONTRIBUTING.md`](CONTRIBUTING.md): setup, checks, PR workflow, and attribution.
-- [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md): participation standards and private reporting.
-- [`SECURITY.md`](SECURITY.md): supported code and confidential vulnerability reports.
-- [`SUPPORT.md`](SUPPORT.md): where to get help.
+- [`docs/README.md`](docs/README.md): the docs index, one home per topic.
+- [`docs/MAP.md`](docs/MAP.md): the repository map, one row per module and script.
+- [`docs/engine.md`](docs/engine.md): what villa does, what `kit/` adds, and what this repository does not do.
+- [`docs/prizes.md`](docs/prizes.md), [`docs/state-of-play.md`](docs/state-of-play.md), [`docs/pipeline.md`](docs/pipeline.md): the prizes, what has been tried, and how a scan becomes text.
+- [`AGENTS.md`](AGENTS.md) and [`docs/AI-AGENTS.md`](docs/AI-AGENTS.md): rules for AI agents and for people; [`docs/QUALITY.md`](docs/QUALITY.md), [`docs/NOVELTY.md`](docs/NOVELTY.md) and [`docs/TESTING.md`](docs/TESTING.md): the bar for claims and tests.
+- [`CONTRIBUTING.md`](CONTRIBUTING.md), [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md), [`SECURITY.md`](SECURITY.md) and [`SUPPORT.md`](SUPPORT.md).
+
+Private plans, candidate outputs and submission material live in [Scrolls-private](https://github.com/ChaseHendrick/Scrolls-private) (access required).
 
 ## License
 
-Original code and documentation are licensed under [Apache-2.0](LICENSE), unless
-otherwise noted. Copyright 2026 Chase Hendrick and Scrolls contributors. This
-permissive license allows use, modification and redistribution, including
-commercial use, subject to its notice requirements and other terms, and includes
-an express contributor patent grant. See [NOTICE](NOTICE) for attribution and
-the separately licensed Contributor Covenant.
+Code and documentation: [Apache-2.0](LICENSE), copyright 2026 Chase Hendrick and Scrolls contributors; see [NOTICE](NOTICE). Cite with [`CITATION.cff`](CITATION.cff).
 
-Third-party software, datasets, labels, renders and model weights retain their
-own licenses. Scroll Text Reader's Greek weights are CC BY 4.0 for `letters-v2-ccby`
-and CC BY-NC 4.0 for `letters-v2-real`, which uses ICDAR 2023 Greek letters in its training data.
-Local OCR language packs keep their source licenses. The code license does not grant rights to those materials.
-The Center Finder's released weights (release `umbilicus-v1`) are CC BY-NC 4.0, because the CT they learned from is.
-Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser),
-before use or redistribution.
+Third-party software, data, labels, renders and model weights keep their own licenses, which the code license does not cover. Scroll Text Reader's Greek weights are CC BY 4.0 (`letters-v2-ccby`) and CC BY-NC 4.0 (`letters-v2-real`, trained with ICDAR 2023 Greek letters); the Center Finder's weights (`umbilicus-v1`) are CC BY-NC 4.0, because the CT they learned from is. Local OCR language packs keep their source licenses. Check each source's terms, including the [Vesuvius data browser](https://scrollprize.org/data_browser), before use or redistribution.
 
 > [!WARNING]
 > Do not commit scroll data, renders or ink maps to this public repository.
