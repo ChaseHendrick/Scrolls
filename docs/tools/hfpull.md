@@ -160,7 +160,7 @@ Reproduce with `python scripts/experiments/2026-10-25-label-pull/labelpull.py PR
 
 ## History
 
-- 2026-10-25: released on public `main`, with the public bucket as the default and a benchmark on the PHerc0139 w035 ink_9um label store.
+- 2026-10-25: released on public `main` (`c01d8f5`), with the public bucket as the default and a benchmark on the PHerc0139 w035 ink_9um label store.
 
 ## Related
 
