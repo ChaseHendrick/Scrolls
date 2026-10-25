@@ -1,0 +1,95 @@
+{
+ "note": "Public crops of released segments. The Space reads them anonymously from the open-data bucket when someone runs one; nothing is bundled. Crops are (y0, y1, x0, x1) on the segment's 9 um surface volume.",
+ "bucket": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com",
+ "checkpoint": {
+  "name": "readerv3",
+  "repo": "domenicor046/reader-v3",
+  "file": "reader-v3.pth",
+  "url": "https://huggingface.co/domenicor046/reader-v3/resolve/main/reader-v3.pth",
+  "sha256": "ea405417450abd8ace1b8ff79ebce3adb646c5e48ab95da46844d77efe984d8a",
+  "license": "MIT"
+ },
+ "villa_commit": "e0bbb8b40a2db58b1d71864f286eb85717e59e64",
+ "samples": [
+  {
+   "id": "0841-w00",
+   "title": "PHerc0841 w00 (development segment)",
+   "scroll": "PHerc0841",
+   "segment": "20260220213127-w00",
+   "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "surface_shape": [
+    4220,
+    4760
+   ],
+   "crop": [
+    2624,
+    3264,
+    2688,
+    3328
+   ],
+   "role": "development",
+   "note": "Reader V3 was not trained on PHerc0841, and neither were Reader v2 and ink_9um, the models it continues. Its author did benchmark PHerc0841 while choosing its recipe, so it may have been selected on these segments. This 640 px window was picked with the labels, where they mark a lot of ink, so its AUC is a development number, not a blind test."
+  },
+  {
+   "id": "0841-ag896",
+   "title": "PHerc0841 auto-grown 896 (development segment)",
+   "scroll": "PHerc0841",
+   "segment": "20260220214732-auto_grown_20260220144552896",
+   "surface_volume": "surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr",
+   "labels": "ink-labels/2.403um-volume-20260319124803/20260918",
+   "surface_shape": [
+    4640,
+    4720
+   ],
+   "crop": [
+    2496,
+    3136,
+    1600,
+    2240
+   ],
+   "role": "development",
+   "note": "Reader V3 was not trained on PHerc0841, and neither were Reader v2 and ink_9um, the models it continues. Its author did benchmark PHerc0841 while choosing its recipe, so it may have been selected on these segments. This 640 px window was picked with the labels, where they mark a lot of ink, so its AUC is a development number, not a blind test."
+  },
+  {
+   "id": "0139-w035",
+   "title": "PHerc0139 w035 (training segment, pipeline check)",
+   "scroll": "PHerc0139",
+   "segment": "20260317000000-w035_2026031718",
+   "surface_volume": "surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr",
+   "labels": "ink-labels/2.399um-volume-20260102150214/20260918",
+   "surface_shape": [
+    5820,
+    5240
+   ],
+   "crop": [
+    1920,
+    2560,
+    2304,
+    2944
+   ],
+   "role": "training",
+   "note": "Training data: ink_9um was trained on this segment, and Reader v2 and Reader V3 continue from it, so a high AUC here only shows the pipeline runs. It is not a test."
+  },
+  {
+   "id": "0139-w045",
+   "title": "PHerc0139 w045 (training surface, not held out)",
+   "scroll": "PHerc0139",
+   "segment": "20260126000000-w045_2026012619",
+   "surface_volume": "surface-volumes/9.362um-1.2m-113keV-volume-20250728140407.zarr",
+   "labels": "ink-labels/2.399um-volume-20260102150214/20260918",
+   "surface_shape": [
+    5980,
+    8240
+   ],
+   "crop": [
+    3840,
+    4480,
+    2560,
+    3200
+   ],
+   "role": "training",
+   "note": "Not held out: Reader V3 was trained on this segment and on its 2.4 um render (w029), as Reader v2 was before it, and ink_9um on that 2.4 um render. This 9 um render is a check on training data, not a test."
+  }
+ ]
+}
