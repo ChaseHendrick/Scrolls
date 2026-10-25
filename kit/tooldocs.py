@@ -10,7 +10,7 @@
                                              start docs/tools/ID.md from the template, prefilled from the code:
                                              usage lines, option tables with defaults, public functions, error
                                              messages, environment variables, tests and history
-  python -m kit.tooldocs stale               pages whose main code file changed after the page did (a report; exit 0)
+  python -m kit.tooldocs stale               pages whose Code paths changed since the page's last commit (a report; exit 0)
 
 What check enforces is listed, with the reasons, in docs/TOOL-DOCS.md ("What the checker checks"). In short:
 the page's shape (title, summary, the At a glance fields in order, the sections in order, the fixed table headers,
@@ -1928,21 +1928,58 @@ def write_index(root=ROOT):
     return len(pages)
 
 
+def _symbols_changed(root, commit, path, symbols, trees=None):
+    """True when the top-level definitions that symbols name in the Python file path differ between commit and
+    HEAD. They are compared as ast.dump, so moves, comments and blank lines do not count; a side that is missing,
+    unreadable or does not parse counts as a change. trees, a dict, caches the parsed files by (rev, path)."""
+    trees = {} if trees is None else trees
+    names = {s.split(".")[0] for s in symbols}
+    sides = []
+    for rev in (commit, "HEAD"):
+        if (rev, path) not in trees:
+            try:
+                out = _git(root, "show", f"{rev}:{path}")
+                trees[rev, path] = ast.parse(out.stdout) if out is not None and out.returncode == 0 else None
+            except (SyntaxError, ValueError):
+                trees[rev, path] = None
+        if trees[rev, path] is None:
+            return True
+        sides.append([ast.dump(n) for n in _scoped(trees[rev, path], names)])
+    return sides[0] != sides[1]
+
+
 def stale(root=ROOT):
-    """(page id, main file) where the main code file has a newer commit than the page."""
+    """(page id, changed paths) for pages whose Code paths changed after the page's last commit.
+
+    The page's last commit is `git log -1 -- PAGE`. The page is listed when `git diff --name-only PAGE_COMMIT HEAD
+    -- CODE...` names any file under any path of its Code field, and the list is those files; for a Python file
+    whose Code item names symbols, such as `kit/cli.py` (`cmd_auc`), only a change to those definitions counts.
+    Contents are compared, not commit times: code that a parallel branch committed later with the same content is
+    not reported, and code that a branch committed earlier but merged after the page is. A page git does not
+    track yet is listed with all its Code paths. Branch only pages and pages with no Code paths are skipped.
+    """
     root = Path(root)
-    out = []
+    out, trees = [], {}
     for page in load_pages(root / "docs" / "tools"):
         items = page.code_items()
         if not items or page.field("Status") == "Branch only":
             continue
-        main = items[0][0]
-        t_code = _git(root, "log", "-1", "--format=%ct", "--", main)
-        t_page = _git(root, "log", "-1", "--format=%ct", "--", page.path.relative_to(root).as_posix())
-        if not t_code or not t_page or not t_code.stdout.strip():
+        paths = [path for path, _ in items]
+        last = _git(root, "log", "-1", "--format=%H", "--", page.path.relative_to(root).as_posix())
+        if last is None or last.returncode != 0:
             continue
-        if not t_page.stdout.strip() or int(t_code.stdout) > int(t_page.stdout):
-            out.append((page.id, main))
+        commit = last.stdout.strip()
+        if not commit:
+            out.append((page.id, paths))
+            continue
+        diff = _git(root, "--literal-pathspecs", "diff", "--name-only", "-z", commit, "HEAD", "--", *paths)
+        if diff is None or diff.returncode != 0:
+            continue
+        named = {path: symbols for path, symbols in items if symbols and path.endswith(".py")}
+        changed = [name for name in diff.stdout.split("\0") if name
+                   and (name not in named or _symbols_changed(root, commit, name, named[name], trees))]
+        if changed:
+            out.append((page.id, changed))
     return out
 
 
@@ -2230,7 +2267,7 @@ def main(argv=None):
                    help="a kit command (and action) the page documents, such as 'auc' or 'run init' (repeatable)")
     p.add_argument("--code", action="append", default=[], metavar="PATH",
                    help="a file or folder of the tool, main file first (repeatable)")
-    sub.add_parser("stale", help="pages whose main code file changed after the page (a report; exit 0)")
+    sub.add_parser("stale", help="pages whose Code paths changed since the page's last commit (a report; exit 0)")
     args = parser.parse_args(argv)
 
     if args.action == "check":
@@ -2258,10 +2295,11 @@ def main(argv=None):
         return 0
     if args.action == "stale":
         rows = stale()
-        for pid, main_file in rows:
-            print(f"{pid}: {main_file} changed after docs/tools/{pid}.md; check the page against it")
+        for pid, changed in rows:
+            shown = ", ".join(changed[:5]) + (f" and {len(changed) - 5} more" if len(changed) > 5 else "")
+            print(f"{pid}: {shown} changed since docs/tools/{pid}.md was last committed; check the page against them")
         if not rows:
-            print("no page is older than its main code file")
+            print("no page's code changed since the page was last committed")
         return 0
     pages = load_pages(ROOT / "docs" / "tools")
     if args.action == "list":

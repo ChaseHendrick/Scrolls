@@ -12597,8 +12597,8 @@
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-25",
+    "commit": "2ecef16"
    },
    "license": null,
    "fields": {
@@ -12616,7 +12616,7 @@
     "Go-ahead": "Not needed",
     "Released": "Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onward)",
     "Guide": "[TOOL-DOCS.md](../TOOL-DOCS.md), the standard the pages follow",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-25 against commit `2ecef16`"
    },
    "page": "docs/tools/tooldocs.md",
    "sections": [
@@ -12671,43 +12671,43 @@
     {
      "name": "Failure modes",
      "start_line": 253,
-     "end_line": 331,
+     "end_line": 332,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 332,
-     "end_line": 344,
+     "start_line": 333,
+     "end_line": 345,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 345,
-     "end_line": 355,
+     "start_line": 346,
+     "end_line": 356,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 356,
-     "end_line": 365,
+     "start_line": 357,
+     "end_line": 366,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 366,
-     "end_line": 373,
+     "start_line": 367,
+     "end_line": 374,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 374,
-     "end_line": 382,
+     "start_line": 375,
+     "end_line": 384,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 383,
-     "end_line": 390,
+     "start_line": 385,
+     "end_line": 392,
      "applicable": true
     }
    ]

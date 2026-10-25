@@ -187,7 +187,7 @@ Agents that fan out over many tools follow these, so their work merges cleanly:
 
 ## Keeping pages current
 
-- **Change a tool, change its page** in the same change: options, defaults, outputs, errors and the Checked field. The checker fails when an option, a default, a public function or an error message no longer matches. `python -m kit.tooldocs stale` lists pages whose main code file changed after the page did.
+- **Change a tool, change its page** in the same change: options, defaults, outputs, errors and the Checked field. The checker fails when an option, a default, a public function or an error message no longer matches. `python -m kit.tooldocs stale` lists pages whose Code paths changed since the page's last commit, with the changed files.
 - **New tool, new page** in the same PR: `python -m kit.tooldocs new`, fill in every section, then `python -m kit.tooldocs index`. The check fails on a new kit module, command, action, script, skill, workflow or release without a page, so it cannot be skipped.
 - **Retire a tool** by setting Status to Retired and filling Replaced by; keep the page.
 - **Delete a tool's code** only after its page says Branch only, with the branch or commit that still holds it.
