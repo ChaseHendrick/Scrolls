@@ -6,8 +6,8 @@ Hub serves bucket files at about 40 to 60 a second whatever their size, so the r
 module lists the folder once and downloads each distinct (Xet hash, size) once in one `download_bucket_files`
 call, then copies it on disk to the other paths (25 Oct 2026: the PHerc0139 w035 ink_9um label store,
 see docs/tools/hfpull.md). Public buckets (PUBLIC) need no token; a private one needs HF_TOKEN in the
-environment. Without huggingface_hub or a token, it copies from a mounted copy of the bucket (an HF Job's
-`-v hf://buckets/OWNER/NAME:/w`) with threads instead. `python -m kit.hfpull PREFIX DEST` runs one pull under a
+environment. Without huggingface_hub or a token, it copies from a mounted copy of the bucket (a bucket volume in an
+HF Job) with threads instead. `python -m kit.hfpull PREFIX DEST` runs one pull under a
 Python that has huggingface_hub.
 
     from kit import hfpull

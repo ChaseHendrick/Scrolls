@@ -11,7 +11,7 @@
 | Run | `from kit import hfpull`, or `python -m kit.hfpull PREFIX DEST [--bucket B] [--mount M] [--exclude PAT]` under a Python that has `huggingface_hub` |
 | Code | `kit/hfpull.py` |
 | Tests | `tests/test_hfpull.py` |
-| Needs | Python 3.10 or newer. The API route needs `huggingface_hub` with `list_bucket_tree` and `download_bucket_files` (1.33.0 or newer; 2.3.0 used here). A public bucket (`PUBLIC`: `scrollprize/datasets`) needs no token; a private bucket needs `HF_TOKEN` in the environment. The mount route needs the bucket mounted as a folder, such as an HF Job's `-v hf://buckets/OWNER/NAME:/w` |
+| Needs | Python 3.10 or newer. The API route needs `huggingface_hub` with `list_bucket_tree` and `download_bucket_files` (1.33.0 or newer; 2.3.0 used here). A public bucket (`PUBLIC`: `scrollprize/datasets`) needs no token; a private bucket needs `HF_TOKEN` in the environment. The mount route needs the bucket mounted as a folder, such as a bucket volume mounted in an HF Job |
 | Runs on | Any machine with network access, or inside an HF Job. The PHerc0139 w035 ink_9um label store (3,606 files, 0.3 MB) took 5.0 s against 61.7 s for a plain download of every file (25 Oct 2026, 4-core Claude cloud container behind an HTTPS proxy, anonymous) |
 | Network | `huggingface.co` and its Xet storage: one bucket tree listing and the file downloads. None on the mount route |
 | Writes | The pulled files under `dest`, with the bucket folder's layout; duplicates and the mount route write each file through a `.part` name and rename it |
