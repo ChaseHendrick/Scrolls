@@ -222,6 +222,7 @@ Downloads are free to use: users rent nothing. A whole scan is 32 to 82 GB (abou
 
 ## History
 
+- 2026-10-25: the page uses the window's width (up to 1600 px) and the ten scan previews load again; they had 404ed since 2.0.0 (`63a2d05`).
 - 2026-10-25: Space 2.0.0 (Space commit `0640a74`), a Gradio app on ZeroGPU: Make a field for any box of any public scan with villa's own lasagna, checked against published fields; How-to guides with pictures; API, MCP server and Connect your tool panel (Chase's yes, 25 Oct 2026).
 - 2026-10-24: all ten datasets, the bucket and the guide Space public; README "Released tools" entry added (`76beeba` is the commit this page was checked against).
 
