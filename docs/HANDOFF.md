@@ -6,7 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
-| scroll2ink: scan and seed to ink map (25 Oct) | `kit scroll2ink` ([page](tools/scroll2ink.md)), draft PR from `claude/project-thread-6lx4fb`: seed check, trace, check, extend, flatten, render, ink with reverse control, in one resumable folder; layer order voted against the umbilicus. PHerc0139 demo on HF Jobs: 4.8 cm2, check ok, 0.15 USD; GIF and stills in `docs/assets/scroll2ink/` | Chase merges; a post only after his OK on the text |
+| scroll2ink: scan and seed to ink map (25 Oct) | `kit scroll2ink` ([page](tools/scroll2ink.md)), draft PR from `claude/project-thread-6lx4fb`: seed check, trace, check, extend, flatten, render, ink with reverse control, in one resumable folder; layer order voted against the umbilicus. PHerc0139 demo on HF Jobs: 4.8 cm2, check ok, 0.15 USD; GIF and stills in `docs/assets/scroll2ink/` | None; no Discord post (Chase, 25 Oct) |
 
 ## Continuation, 24 October 2026
 
