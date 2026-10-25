@@ -8727,6 +8727,7 @@
     "python -m kit releases render",
     "python -m kit releases check",
     "python -m kit releases list",
+    "python -m kit releases inventory",
     "python -m kit releases pin",
     "python -m kit releases unpin",
     "python -m kit.releases"
@@ -8751,7 +8752,8 @@
     }
    ],
    "tests": [
-    "tests/test_releases.py"
+    "tests/test_releases.py",
+    "tests/test_releases_inventory.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -8767,9 +8769,9 @@
     "Status": "Current",
     "Kind": "kit command, kit module, kit entry point",
     "Area": "Releases and repository",
-    "Run": "`python -m kit releases add`, `python -m kit releases render`, `python -m kit releases check`, `python -m kit releases list`, `python -m kit releases pin`, `python -m kit releases unpin`, `python -m kit.releases`, `from kit import releases`",
+    "Run": "`python -m kit releases add`, `python -m kit releases render`, `python -m kit releases check`, `python -m kit releases list`, `python -m kit releases inventory`, `python -m kit releases pin`, `python -m kit releases unpin`, `python -m kit.releases`, `from kit import releases`",
     "Code": "`kit/releases.py`, `docs/releases.json`, `kit/cli.py` (`build_parser`)",
-    "Tests": "`tests/test_releases.py`",
+    "Tests": "`tests/test_releases.py`, `tests/test_releases_inventory.py`",
     "Needs": "Python 3.10 or newer, standard library only. A clone of this repository (it reads `docs/releases.json` and `README.md` next to `kit/`), or `--list` and `--readme` pointing at the two files",
     "Runs on": "Any machine. `python -m kit releases check` takes about 0.5 s and `python -m kit.releases check` about 0.14 s, almost all of it Python start-up and imports (measured 2026-10-16, 4-core Xeon cloud container, on the 6-entry list)",
     "Network": "None. Links in an entry are written into the README, never fetched",
@@ -8808,67 +8810,67 @@
     {
      "name": "Commands and options",
      "start_line": 92,
-     "end_line": 163,
+     "end_line": 175,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 164,
-     "end_line": 193,
+     "start_line": 176,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 194,
-     "end_line": 242,
+     "start_line": 208,
+     "end_line": 256,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 243,
-     "end_line": 268,
+     "start_line": 257,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 269,
-     "end_line": 332,
+     "start_line": 286,
+     "end_line": 349,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 333,
-     "end_line": 361,
+     "start_line": 350,
+     "end_line": 378,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 362,
-     "end_line": 365,
+     "start_line": 379,
+     "end_line": 382,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 366,
-     "end_line": 375,
+     "start_line": 383,
+     "end_line": 392,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 376,
-     "end_line": 383,
+     "start_line": 393,
+     "end_line": 403,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 384,
-     "end_line": 394,
+     "start_line": 404,
+     "end_line": 416,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 395,
-     "end_line": 403,
+     "start_line": 417,
+     "end_line": 425,
      "applicable": true
     }
    ]
@@ -10167,7 +10169,8 @@
     }
    ],
    "tests": [
-    "tests/test_scroll2ink.py"
+    "tests/test_scroll2ink.py",
+    "tests/test_scroll2ink_failures.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -10185,7 +10188,7 @@
     "Area": "Pipeline and agents",
     "Run": "`python -m kit scroll2ink run`, `python -m kit scroll2ink status`, `from kit import scroll2ink`",
     "Code": "`kit/scroll2ink.py`, `kit/cli.py` (`cmd_scroll2ink`), `scripts/media/scroll2ink_replay.py`",
-    "Tests": "`tests/test_scroll2ink.py`",
+    "Tests": "`tests/test_scroll2ink.py`; `tests/test_scroll2ink_failures.py`",
     "Needs": "Python 3.10 or newer, standard library only, for the command itself. Every step runs in [Headless VC3D](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent) 1.1.1 (`vc3d-agent`, Python 3.11 or newer), with villa's VC3D command line tools (`VC_APPIMAGE` or `VC_BIN`) and, for the ink step, a Python with torch and villa's `vesuvius` package (`KIT_INK_PYTHON`). The extend step needs `vc_extend_edge`, which villa's releases do not ship yet (fork branch `vc3d-auto-extend`); without it the step is skipped. The replay script needs numpy",
     "Runs on": "Linux on Hugging Face Jobs, 25 October 2026: the VC3D part on `cpu-xl` and the ink part on one L4 (`l4x1`), with villa's tools from a cached build of `e0bbb8b` with its grid-cache and growth time-limit patches and `vc_extend_edge` from the fork branch `vc3d-auto-extend`. Not yet run on a Mac or with a villa release",
     "Network": "Through Headless VC3D: the open-data bucket `vesuvius-challenge-open-data` over HTTPS (catalog, CT chunks, the surface prediction and its normal grids) and Hugging Face for the ink checkpoint the first time (`fetch_model`). The command itself contacts nothing",
@@ -10271,19 +10274,19 @@
     {
      "name": "Tests",
      "start_line": 302,
-     "end_line": 305,
+     "end_line": 307,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 306,
-     "end_line": 310,
+     "start_line": 308,
+     "end_line": 312,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 311,
-     "end_line": 316,
+     "start_line": 313,
+     "end_line": 318,
      "applicable": true
     }
    ]
@@ -10811,7 +10814,8 @@
     }
    ],
    "tests": [
-    "tests/test_sheetview.py"
+    "tests/test_sheetview.py",
+    "tests/test_sheetview_boundaries.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -10829,7 +10833,7 @@
     "Area": "Viewers and apps",
     "Run": "`python -m kit sheetview build`, `python -m kit sheetview serve`",
     "Code": "`kit/sheetview.py`, `scripts/media/sheetview_media.py`, `kit/cli.py` (`cmd_sheetview`)",
-    "Tests": "`tests/test_sheetview.py`",
+    "Tests": "`tests/test_sheetview.py`; `tests/test_sheetview_boundaries.py`",
     "Needs": "Python 3.10 or newer with numpy, tifffile and zarr 3 (zarr reads v2 and v3 volumes, blosc and zstd); a web browser with WebGL 2 to view. The media script also needs the playwright package, ffmpeg and gifsicle",
     "Runs on": "Any CPU. 15 s for a 119,301 vertex PHerc0139 crop at level 1 and 55 s for a 452,608 vertex crop of a 3D ink volume at level 2 (measured 2026-10-24, 4-core cloud container, fresh chunk cache)",
     "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` for a bucket segment or volume (only the chunks the samples need, fetched once). Viewing loads the hosted Neuroglancer from `neuroglancer-demo.appspot.com`, which reads `sheet.vtk` from your own `serve` and the hidden volume layer from the bucket",
@@ -10915,19 +10919,19 @@
     {
      "name": "Tests",
      "start_line": 255,
-     "end_line": 264,
+     "end_line": 266,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 265,
-     "end_line": 268,
+     "start_line": 267,
+     "end_line": 270,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 269,
-     "end_line": 275,
+     "start_line": 271,
+     "end_line": 277,
      "applicable": true
     }
    ]
@@ -12891,7 +12895,8 @@
     }
    ],
    "tests": [
-    "tests/test_umbilicus.py"
+    "tests/test_umbilicus.py",
+    "tests/test_centerfinder_io.py"
    ],
    "go_ahead": {
     "needed": false,
@@ -12909,7 +12914,7 @@
     "Area": "Surfaces and tracing",
     "Run": "`python scripts/umbilicus/predict.py`, `python scripts/umbilicus/slices.py`, `python scripts/umbilicus/pipeline.py`, `python scripts/umbilicus/refine.py`, `python scripts/umbilicus/endcheck.py`, `python scripts/umbilicus/ctcheck.py`",
     "Code": "`scripts/umbilicus/`",
-    "Tests": "`tests/test_umbilicus.py`",
+    "Tests": "`tests/test_umbilicus.py`; `tests/test_centerfinder_io.py`",
     "Needs": "Python 3.10 or newer, numpy, scipy, requests; torch for `predict.py`, `centrenet.py`, `refine.py` and training; numcodecs only for `slices.extract` (the whole-chunk reader); matplotlib and Pillow for `ctcheck.py`. The released weights `umbilicus-first-all.pt` and `umbilicus-zoom-all.pt` (release `umbilicus-v1`) for `predict.py`",
     "Runs on": "`predict.py` runs on a CPU or an NVIDIA GPU (`--device cuda`; `mps` is untested). On 4 CPU cores the smallest published scan, PHerc1203, took about 13 minutes, 7 of them reading its slices ([guide](../../scripts/umbilicus/README.md#quick-start)). Training needs a GPU: about 162 to 253 s per first-stage job on a B300 and 46 to 76 s per zoom job on an L40S ([guide](../../scripts/umbilicus/README.md#reproduce-the-held-out-results)). `pipeline.py trim` on a synthetic 60-slice scroll took 0.6 s (measured 2026-10-16, 4-core cloud container)",
     "Network": "vesuvius-challenge-open-data.s3.amazonaws.com: HTTP range reads of level-3 planes (about 0.8 to 2.4 MB per slice, 0.25 to 0.65 GB per scroll), the scan's level-0 `.zarray` (a few hundred bytes, for the volume dimensions; not read again when the slice file holds `shape_l0`), level-5 planes and level-3 windows for `endcheck.py`, level-2 planes and level-1 and level-0 windows for `ctcheck.py`, bucket listings, and the three published umbilicus files. raw.githubusercontent.com: Alexey Drobkov's ten published lines at commit `DROBKOV_REV`, read for the 13 published scrolls (also when `predict.py` picks the scan of one of them). github.com: the weights, downloaded by hand with `curl`",
@@ -12998,19 +13003,19 @@
     {
      "name": "Tests",
      "start_line": 378,
-     "end_line": 385,
+     "end_line": 387,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 386,
-     "end_line": 394,
+     "start_line": 388,
+     "end_line": 396,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 395,
-     "end_line": 403,
+     "start_line": 397,
+     "end_line": 405,
      "applicable": true
     }
    ]

@@ -7,6 +7,7 @@ from it, newest first:
   python -m kit releases add ENTRY.json   add one entry, or replace the entry with its id, then rewrite the section
   python -m kit releases render           rewrite the section from the list
   python -m kit releases check            exit 1 when the section and the list disagree (a unit test runs this)
+  python -m kit releases inventory        print every released entry and grouped tool as a compact table
   python -m kit releases pin ID           show that entry first, above newer ones, until unpinned; unpin ID undoes it
 
 An entry: {"id": "letter-reader", "title": "Greek letter reader", "released": "2026-10-14",
@@ -90,7 +91,7 @@ TOOL_FIELDS = {"id", "name", "released", "version", "summary", "command", "page"
 TOOL_REQUIRED = ("id", "name", "released", "summary", "command", "page")
 TOOL_PAGE = re.compile(r"docs/tools/[a-z0-9][a-z0-9-]*\.md")
 ID = re.compile(r"[a-z0-9][a-z0-9-]{0,62}")
-MAX_TOOLS = 20          # raised from 12 on 24 October 2026, when the Scrolls kit entry reached 13 tools
+MAX_TOOLS = 64          # bounded room for the complete public kit inventory
 
 
 class ReleaseListError(ValueError):
@@ -393,10 +394,36 @@ def intro(registry):
     return INTRO.replace(", newest first.", f", {names} first and the rest newest first.")
 
 
+def inventory(registry):
+    """Every released entry and grouped tool, with public links and stable ids."""
+    registry = validate_list(registry)
+    items = []
+    for entry in ordered(registry["releases"], registry.get("pinned", [])):
+        # GitHub heading anchors remove punctuation and replace spaces with hyphens.
+        heading = re.sub(r"[^\w -]", "", entry["title"].lower()).replace(" ", "-")
+        items.append({"id": entry["id"], "name": entry["title"], "url": f"{REPO_URL}#{heading}"})
+        for tool in entry.get("tools", []):
+            items.append({"id": tool["id"], "name": tool["name"],
+                          "url": f"{REPO_URL}/blob/main/{tool['page']}"})
+    return items
+
+
+def render_inventory(items):
+    """A compact Markdown table of inventory items; links always name public Scrolls."""
+    lines = ["| Released tool | Guide |", "| --- | --- |"]
+    for item in items:
+        name = item["name"].replace("|", "\\|")
+        lines.append(f"| {name} | [Open]({item['url']}) |")
+    return "\n".join(lines)
+
+
 def render(registry):
     """The whole generated section, marker lines included."""
     registry = validate_list(registry)
     lines = [START, intro(registry)]
+    if registry["releases"]:
+        lines += ["", "All released tools, including the tools grouped under Scrolls kit:",
+                  "", render_inventory(inventory(registry))]
     for entry in ordered(registry["releases"], registry.get("pinned", [])):
         lines += [""] + render_entry(entry)
     return "\n".join(lines + [END])
@@ -462,6 +489,8 @@ def add_arguments(p):
     a.add_argument("entry")
     actions.add_parser("render", help="rewrite the README's releases section from the list")
     actions.add_parser("check", help="exit 1 when the README's releases section and the list disagree")
+    inv = actions.add_parser("inventory", help="print the compact released-tool inventory")
+    inv.add_argument("--json", action="store_true", help="print inventory records as JSON instead of Markdown")
     actions.add_parser("list", help="one line per release, in the section's order")
     for name, text in (("pin", "show this entry first, above newer ones"), ("unpin", "stop showing this entry first")):
         actions.add_parser(name, help=text).add_argument("id")
@@ -482,6 +511,10 @@ def run(args):
                 print(problem, file=sys.stderr)
             return 1 if problems else 0
         registry = json.loads(Path(args.registry).read_text(encoding="utf-8"))
+        if args.action == "inventory":
+            items = inventory(registry)
+            print(json.dumps(items, ensure_ascii=False, indent=2) if args.json else render_inventory(items))
+            return 0
         if args.action == "list":
             pinned = validate_list(registry).get("pinned", [])
             for e in ordered(registry["releases"], pinned):
