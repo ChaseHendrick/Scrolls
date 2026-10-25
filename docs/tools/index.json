@@ -1990,73 +1990,73 @@
     {
      "name": "Checks and controls",
      "start_line": 78,
-     "end_line": 131,
+     "end_line": 141,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 132,
-     "end_line": 185,
+     "start_line": 142,
+     "end_line": 195,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 186,
-     "end_line": 203,
+     "start_line": 196,
+     "end_line": 213,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 204,
-     "end_line": 208,
+     "start_line": 214,
+     "end_line": 218,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 209,
-     "end_line": 238,
+     "start_line": 219,
+     "end_line": 248,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 239,
-     "end_line": 256,
+     "start_line": 249,
+     "end_line": 266,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 257,
-     "end_line": 267,
+     "start_line": 267,
+     "end_line": 277,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 268,
-     "end_line": 271,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 272,
+     "start_line": 278,
      "end_line": 281,
      "applicable": true
     },
     {
-     "name": "Tests",
+     "name": "For agents",
      "start_line": 282,
-     "end_line": 285,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 292,
+     "end_line": 295,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 286,
-     "end_line": 290,
+     "start_line": 296,
+     "end_line": 301,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 291,
-     "end_line": 296,
+     "start_line": 302,
+     "end_line": 307,
      "applicable": true
     }
    ]

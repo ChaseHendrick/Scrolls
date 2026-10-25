@@ -129,6 +129,16 @@ What it shows (Interpretation): these tracer runs left the seeded sheet for abou
 
 Claim label: Model output (traces and consensus are tool output; the hand traces are the reference); Interpretation, for the last paragraph.
 
+Mixed crowd, dev look only (25 Oct 2026, not a test): with no public crowd of three or more hand traces of one sheet, the next try was a crowd from two surface predictions. recto-090 (20250701154204), the other published surface prediction of this scan, has no normal grids, so a Hugging Face CPU Job made them for each winding box with villa's `vc_gen_normalgrids` and the published m7 grids' settings (four boxes, about 0.1 USD), and `kit scroll2ink --prediction --normal-grids` traced 7 seeds per winding on it, by the same seed rule (14 Jobs, about 1.2 USD). On w027 and w037, already used by the real-crowd test, scored the same way:
+
+| Crowd (w027 and w037 pooled) | Vote off sheet | Largest trace off sheet | Crowd off sheet | Coverage vs largest | Flag recall, precision |
+| --- | --- | --- | --- | --- | --- |
+| 7 m7 runs (the real-crowd test) | 51.8 % | 46.3 % | 59.7 % | 0.74 | 35.0 %, 87.6 % |
+| 7 recto-090 runs | 54.2 % | 48.1 % | 66.6 % | 0.52 | 41.0 %, 83.5 % |
+| all 14 | 48.6 % | 46.3 % | 63.2 % | 0.64 | 51.8 %, 88.3 % |
+
+The neighbour control stayed under 5 in every case (0.75 to 2.26). What it shows (Interpretation): tracer runs on recto-090 leave the seeded sheet even more than on m7, although its prediction sits on the hand-traced sheet more often (84 to 88 % of hand-trace vertices within 3 voxels, against 73 to 75 % for m7); the slips come from the tracer as much as from the prediction, so mixing the two does not give the vote a right majority. The preregistered run on fresh windings (w024 and w034) was not made, and they stay unspent for a crowd that is mostly right. Claim label: Model output; Interpretation.
+
 ## Commands and options
 
 ### `python -m kit crowdmerge merge`
@@ -287,6 +297,7 @@ CPU only; no rented compute. See Runs on for measured times. Time grows with the
 
 - 2026-10-25: first version (`f9a30ee`): vote, growth, a second reliability-weighted pass, per-trace flags, and the planted-slip bench with clean and sham controls.
 - 2026-10-25: real-crowd test (`scripts/crowdmerge/realcrowd.py`, `94b1e42`), same frozen code: VOID, the tracer crowds mostly left the seeded sheet.
+- 2026-10-25: mixed-crowd dev look, m7 and recto-090 tracer runs on the spent windings (`0a75cf3`): no better than the largest trace, so no fresh windings were spent.
 
 ## Related
 
