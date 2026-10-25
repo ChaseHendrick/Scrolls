@@ -214,7 +214,7 @@ Settings are merged over the defaults. An unknown key is refused. `trace.params`
 | `qa` | `windows: 5`, `min_valid_fraction: 0.5`, `require_seated: all`, `max_selfcross: 0`, `windaudit: auto`, `wind_pitch: null`, `validity: true`, `published: record`, `require_data_term: true` | `require_seated`: all, any, none; `windaudit`: auto, required, off; `published`: record, gate |
 | `flatten` | `enabled: true`, `iterations: 10`, `downsample: 1`, `max_p95_stretch: 0.25`, `max_shear_deg_p95: 20`, `min_area_ratio: 0.8`, `max_area_ratio: 1.25` | The last four are the acceptance limits |
 | `render` | `preset: 9um`, `audit: true`, `format: zarr`, `max_missing: 0.05` | `preset`: 9um (28 layers), 2um (109), 1um (116), legacy (65) |
-| `ink` | `models: ["reader-v2"]`, `variants: f r s`, `where: auto` | `where`: auto, local, modal, skip. Known models: `reader-v2`, `d9v2`, `v8in`, `ink_9um-seed42`, `ink_9um-seed43` |
+| `ink` | `models: ["reader-v3"]`, `variants: f r s`, `where: auto` | `where`: auto, local, modal, skip. Known models: `reader-v3` (the default since 0.1.8), `reader-v2` (the default from 0.1.3 to 0.1.7), `d9v2`, `v8in`, `ink_9um-seed42`, `ink_9um-seed43`, the built-in `inkfilter` and `reader-v3-koine` |
 | `score` | `inner: 64` | Inner margin for scoring |
 
 ### Optional settings
@@ -537,7 +537,7 @@ Rules in short form: [`AGENTS.md`](AGENTS.md).
               "max_shear_deg_p95": 20, "min_area_ratio": 0.8, "max_area_ratio": 1.25},
   "render": {"preset": {"enum": ["9um", "2um", "1um", "legacy"]}, "audit": true, "format": "zarr",
              "max_missing": 0.05, "trim": "optional", "snap": "optional"},
-  "ink": {"models": ["reader-v2"], "variants": ["f", "r", "s"], "where": {"enum": ["auto", "local", "modal", "skip"]},
+  "ink": {"models": ["reader-v3"], "variants": ["f", "r", "s"], "where": {"enum": ["auto", "local", "modal", "skip"]},
           "layers": "optional", "ensemble": "optional", "orient": "optional"},
   "score": {"inner": 64, "transfer": "optional"},
   "external_prediction": "optional",
