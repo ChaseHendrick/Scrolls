@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lasagna Fields</title>
+<meta name="description" content="Lasagna fields from the villa lasagna model for ten Herculaneum scroll scans, free to download. Made by Chase Hendrick.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,650&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f2ea;--bg2:#efe7da;--card:#fffdf9;--ink:#23201c;--ink2:#5d554b;--ink3:#8b8174;--line:#e2d8c8;
+  --accent:#c2462b;--accent2:#e07a3f;--basil:#4f7a3a;--sauce:#a8321c;--code:#1f1d1a;--codeink:#efe6d6;--sel:#c2462b22;
+  --shadow:0 1px 2px #2a201410,0 8px 24px #2a201412;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141210;--bg2:#1b1815;--card:#1f1c18;--ink:#f1e9dc;--ink2:#c3b8a7;--ink3:#8f8576;--line:#332e28;
+  --accent:#ef7650;--accent2:#f2a15f;--basil:#8bbf6a;--sauce:#ef7650;--code:#0f0e0c;--codeink:#efe6d6;--sel:#ef765026;
+  --shadow:0 1px 2px #0006,0 8px 24px #0005;}}
+:root[data-theme="dark"]{
+  --bg:#141210;--bg2:#1b1815;--card:#1f1c18;--ink:#f1e9dc;--ink2:#c3b8a7;--ink3:#8f8576;--line:#332e28;
+  --accent:#ef7650;--accent2:#f2a15f;--basil:#8bbf6a;--sauce:#ef7650;--code:#0f0e0c;--codeink:#efe6d6;--sel:#ef765026;
+  --shadow:0 1px 2px #0006,0 8px 24px #0005;}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:650;letter-spacing:-.01em;line-height:1.15;margin:0}
+h2{font-size:clamp(26px,3.2vw,36px);margin-bottom:10px}
+h3{font-size:19px;margin-bottom:6px}
+p{margin:0 0 12px}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:13.5px}
+:not(pre)>code{overflow-wrap:anywhere;background:var(--bg2);border:1px solid var(--line);padding:1px 6px;border-radius:5px;font-size:.88em}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+nav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:22px;height:56px}
+.brand{font-family:Fraunces,serif;font-weight:650;font-size:18px;color:var(--ink);display:flex;align-items:center;gap:10px;white-space:nowrap}
+.layers{width:22px;height:18px;border-radius:4px;background:repeating-linear-gradient(180deg,var(--accent) 0 3px,var(--accent2) 3px 5px,#f3e2bf 5px 7px,var(--basil) 7px 8px,#f3e2bf 8px 9px)}
+.navlinks{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;flex:1}
+.navlinks a{color:var(--ink2);font-size:14px;white-space:nowrap}
+.tbtn{border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:8px;padding:5px 10px;cursor:pointer;font:inherit;font-size:13px}
+header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+.hero .wrap{padding-top:72px;padding-bottom:64px;position:relative;z-index:1}
+.fields{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:.55}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 52%,color-mix(in srgb,var(--bg) 80%,transparent) 66%,color-mix(in srgb,var(--bg) 30%,transparent) 84%,transparent 100%)}
+.hero .wrap{z-index:2}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--accent)}
+.hero h1{font-size:clamp(38px,6vw,68px);max-width:760px;margin:12px 0 18px}
+.lede{font-size:19px;color:var(--ink);max-width:640px}
+.by{margin-top:18px;color:var(--ink2);font-size:15px}.by b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:40px;max-width:760px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:Fraunces,serif;font-size:30px;font-weight:650;line-height:1.1}
+.stat span{font-size:13px;color:var(--ink3)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:hover{text-decoration:none;filter:brightness(1.05)}
+section{padding:72px 0;border-bottom:1px solid var(--line)}
+.sub{color:var(--ink2);max-width:720px;margin-bottom:28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:14px}
+.scan{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;cursor:pointer;text-align:left;padding:0;color:inherit;font:inherit;box-shadow:var(--shadow);transition:transform .15s,border-color .15s}
+.scan:hover{transform:translateY(-2px)}
+.scan[aria-pressed="true"]{border-color:var(--accent);outline:2px solid var(--accent);outline-offset:-1px}
+.scan .img{aspect-ratio:2/1;background:#000;display:block;width:100%;object-fit:cover}
+.scan .meta{padding:10px 12px 12px}
+.scan .name{font-weight:600}
+.scan .small{font-size:12.5px;color:var(--ink3)}
+.detail{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:22px;margin-top:22px}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);padding:18px}
+.viewer{background:#000;border-radius:10px;overflow:hidden;position:relative}
+.viewer img{display:block;width:100%;height:auto}
+.viewer .cap{position:absolute;left:10px;bottom:8px;font-size:12px;color:#e9e1d3;background:#000a;padding:2px 8px;border-radius:6px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;margin-bottom:12px}
+.seg button{border:0;background:transparent;color:var(--ink2);padding:6px 12px;cursor:pointer;font:inherit;font-size:13.5px}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff}
+dl.facts{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:0;font-size:14.5px}
+dl.facts dt{color:var(--ink3)}dl.facts dd{margin:0;word-break:break-word}
+.links{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.codebox{position:relative;margin-top:10px}
+pre{max-height:340px;background:var(--code);color:var(--codeink);border-radius:10px;padding:14px 16px;overflow:auto;margin:0;line-height:1.55}
+pre .c{color:#9a8f7e}
+.codebox pre{padding-top:34px}
+.copy{position:absolute;top:8px;right:8px;border:1px solid #ffffff22;background:#ffffff14;color:#efe6d6;border-radius:7px;padding:3px 9px;font-size:12px;cursor:pointer}
+.copy:hover{background:#ffffff26}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:18px}
+.tabs button{border:0;background:none;padding:8px 12px;color:var(--ink2);cursor:pointer;font:inherit;font-size:14px;border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.detail>*,.region>*,.panel,.codebox,.cards3>*{min-width:0}
+.region{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:22px}
+.mapbox{align-self:start;position:relative;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:12px}
+svg.map{width:100%;height:auto;display:block;cursor:crosshair;touch-action:none}
+.zbar{display:flex;align-items:center;gap:10px;margin-top:10px;font-size:13.5px;color:var(--ink2)}
+.zbar input{flex:1;accent-color:var(--accent)}
+.form{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.form label{font-size:12.5px;color:var(--ink3);display:block;margin-bottom:3px}
+.form input,.form select{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;font-size:14px}
+.result{margin-top:14px;font-size:14.5px}
+.pill{display:inline-block;background:var(--sel);color:var(--accent);border-radius:999px;padding:1px 9px;font-size:12.5px;font-weight:600;margin:2px 4px 2px 0}
+.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:var(--shadow)}
+.card .k{font-size:12px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent);font-weight:600;margin-bottom:6px}
+.steps{counter-reset:s;display:grid;gap:12px}
+.step{display:grid;grid-template-columns:44px minmax(0,1fr);gap:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px}
+.step:before{counter-increment:s;content:counter(s);display:grid;place-items:center;width:36px;height:36px;border-radius:10px;background:var(--accent);color:#fff;font-family:Fraunces,serif;font-weight:650;font-size:18px}
+table{width:100%;border-collapse:collapse;font-size:14.5px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--bg2);font-weight:600;font-size:13px;color:var(--ink2)}
+tr:last-child td{border-bottom:0}
+.tablewrap{overflow-x:auto}
+.note{border-left:3px solid var(--accent2);background:var(--card);padding:12px 16px;border-radius:0 10px 10px 0;margin:14px 0;color:var(--ink2);font-size:15px}
+footer{padding:40px 0 60px;color:var(--ink3);font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:9px;font-size:14px;opacity:0;transition:.2s;pointer-events:none;z-index:50}
+.toast.on{opacity:1;transform:translateX(-50%)}
+@media (max-width:900px){
+  .detail,.region{grid-template-columns:1fr}
+  .cards3{grid-template-columns:1fr}
+  .hero:after{background:color-mix(in srgb,var(--bg) 92%,transparent)}
+  .fields{opacity:.35}
+  .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:560px){
+  .wrap{padding:0 16px}
+  .form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  section{padding:52px 0}
+  .navlinks{display:none}
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="layers" aria-hidden="true"></span>Lasagna Fields</a>
+  <div class="navlinks">
+    <a href="#scans">Scans</a><a href="#connect">Connect your tool</a><a href="#region">Get a region</a><a href="#use">Use it</a><a href="#method">How it was made</a><a href="#format">Format</a><a href="#credit">Credit</a>
+  </div>
+  <button class="tbtn" id="theme" type="button" aria-label="Switch light or dark">Theme</button>
+</div></nav>
+
+<header class="hero" id="top">
+  <svg class="fields" id="fields" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMax slice" aria-hidden="true"></svg>
+  <div class="wrap">
+    <div class="eyebrow">Vesuvius Challenge open data, made usable</div>
+    <h1>Lasagna fields for ten Herculaneum scrolls</h1>
+    <p class="lede">The villa lasagna model, run on ten whole scroll scans that had no lasagna field in the open data. Download a scan or stream it from a URL, then use it with the lasagna surface fit or the spiral fit. Every field is checked for seams.</p>
+    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. Model and code by the authors of lasagna in ScrollPrize/villa.</p>
+    <div class="stats" id="stats"></div>
+    <div class="cta">
+      <a class="btn primary" href="#scans">Browse the scans</a>
+      <a class="btn primary" href="?tab=make">Make a field for any scan</a>
+      <a class="btn" href="#connect">Stream it by URL</a>
+      <a class="btn" href="#region">Download only a region</a>
+      <a class="btn" href="#method">How it was made</a>
+    </div>
+  </div>
+</header>
+
+<section id="scans"><div class="wrap">
+  <h2>The ten scans</h2>
+  <p class="sub">Pick a scan to see its field, its numbers and the commands to get it. Each preview is a slice of the model output: <b>cos</b> on the left, the <b>surface normals</b> as color on the right.</p>
+  <div class="grid" id="grid"></div>
+  <div class="detail">
+    <div class="panel">
+      <div class="seg" role="group" aria-label="View">
+        <button type="button" id="vxy" aria-pressed="true">Top view</button><button type="button" id="vxz" aria-pressed="false">Side view</button>
+      </div>
+      <div class="viewer"><img id="dimg" alt=""><span class="cap" id="dcap"></span></div>
+    </div>
+    <div class="panel">
+      <h3 id="dname"></h3>
+      <dl class="facts" id="dfacts"></dl>
+      <div class="links" id="dlinks"></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" aria-selected="true" data-tab="get">Whole scan</button>
+        <button role="tab" aria-selected="false" data-tab="load">Load in Python</button>
+      </div>
+      <div class="codebox"><pre id="dcode"></pre><button class="copy" data-copy="dcode" type="button">Copy</button></div>
+    </div>
+  </div>
+</div></section>
+
+
+<section id="connect"><div class="wrap">
+  <h2>Connect your tool</h2>
+  <p class="sub">Every field is also in the public bucket <a href="https://huggingface.co/buckets/SharpMeow/lasagna-fields">SharpMeow/lasagna-fields</a>, laid out like the Vesuvius Challenge open data (<code>SCAN/representations/predictions/lasagna/RUN/</code>). Any tool that reads zarr over HTTPS can open it, with no download and no account. The commands here follow the scan you picked above.</p>
+  <div class="panel">
+    <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><h3 id="cname" style="margin:0"></h3><span style="color:var(--ink3);font-size:13px">Anonymous HTTPS, CORS open, missing chunks read as empty</span></div>
+    <div class="codebox"><pre id="curl"></pre><button class="copy" data-copy="curl" type="button">Copy</button></div>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-ct="py">Python (zarr)</button>
+      <button role="tab" aria-selected="false" data-ct="ng">Neuroglancer</button>
+      <button role="tab" aria-selected="false" data-ct="villa">Local copy for lasagna</button>
+      <button role="tab" aria-selected="false" data-ct="any">Any other tool</button>
+    </div>
+    <div id="cbody"></div>
+  </div>
+</div></section>
+
+<section id="region"><div class="wrap">
+  <h2>Download only the region you need</h2>
+  <p class="sub">Click the map, or type a point in full-resolution scan voxels. The first command copies from the bucket only the chunks that cover your z range. The second downloads whole parts from the dataset: each scan was computed in boxes called parts, one tar each, and a region needs only the parts it touches plus one small tar with the joined manifest. Parts you skip read as empty.</p>
+  <div class="region">
+    <div class="mapbox">
+      <svg class="map" id="map" viewBox="0 0 400 400" role="img" aria-label="Top view of the scan's parts at the chosen height"></svg>
+      <div class="zbar"><span>z</span><input type="range" id="zr" min="0" max="1000" step="1"><span class="mono" id="zv"></span></div>
+    </div>
+    <div>
+      <div class="form">
+        <div><label for="rs">Scan</label><select id="rs"></select></div>
+        <div><label for="rz">z</label><input id="rz" type="number" min="0"></div>
+        <div><label for="ry">y</label><input id="ry" type="number" min="0"></div>
+        <div><label for="rx">x</label><input id="rx" type="number" min="0"></div>
+        <div><label for="rr">Half size (voxels)</label><input id="rr" type="number" min="1" value="512"></div>
+      </div>
+      <div class="result" id="rres"></div>
+      <div class="codebox"><pre id="rsync"></pre><button class="copy" data-copy="rsync" type="button">Copy</button></div>
+      <div class="codebox"><pre id="rcode"></pre><button class="copy" data-copy="rcode" type="button">Copy</button></div>
+      <div class="codebox"><pre id="rpy"></pre><button class="copy" data-copy="rpy" type="button">Copy</button></div>
+    </div>
+  </div>
+</div></section>
+
+<section id="use"><div class="wrap">
+  <h2>Who it is for, and how to use it</h2>
+  <p class="sub">A lasagna field is the input that the lasagna surface fit in villa reads. With it ready, nobody has to spend GPU time predicting it again.</p>
+  <div class="cards3">
+    <div class="card"><div class="k">Researchers</div><h3>Read it like any OME-Zarr</h3><p>Open the arrays with <code>zarr</code>, <code>tensorstore</code> or any OME-Zarr viewer. Coordinates are the scan's own voxels, divided by 2 for cos and by 4 for the other channels. The format table below says exactly what is stored.</p></div>
+    <div class="card"><div class="k">Teams building tools</div><h3>Point lasagna at the manifest</h3><p><code>SCAN.lasagna.json</code> is the manifest that the lasagna tools read, with relative paths to the four channels. A center line for every scan except PHerc0841 is in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p></div>
+    <div class="card"><div class="k">Everyone else, rivals included</div><h3>Same head start for all</h3><p>These fields are public so that nobody has to spend a GPU day before trying an idea on these scrolls. Use them, compare against them, and tell us if you find a problem.</p></div>
+  </div>
+  <h3 style="margin-top:34px">From download to first numbers</h3>
+  <div class="steps" style="margin-top:12px">
+    <div class="step"><div><b>Install the Hugging Face client and zarr.</b><div class="codebox"><pre id="u1">pip install -U "huggingface_hub[cli]" "zarr&lt;3" numpy</pre><button class="copy" data-copy="u1" type="button">Copy</button></div></div></div>
+    <div class="step"><div><b>Stream it (above), or download a scan or just a region, and check it.</b> <code>sha256sum -c SHA256SUMS</code> checks every file; add <code>--ignore-missing</code> after a partial download.</div></div>
+    <div class="step"><div><b>Unpack the parts, then the fix tar last.</b> The fix tar holds the joined manifest, so it must overwrite the per-part ones.</div></div>
+    <div class="step"><div><b>Load and decode.</b> Normals are stored as <code>uint8</code> as <code>v &times; 127 + 128</code>; <code>nz</code> is not stored, so take <code>sqrt(1 - nx&sup2; - ny&sup2;)</code>. Each card's <code>load_example.py</code> runs as is.</div></div>
+  </div>
+</div></section>
+
+<section id="method"><div class="wrap">
+  <h2>How it was made</h2>
+  <p class="sub">Every step ran on Hugging Face Jobs from scripts, with each part's record kept. Nothing was edited by hand.</p>
+  <div class="steps">
+    <div class="step"><div><h3>Same settings as the published fields</h3><p>The lasagna code in villa at commit <code>db3dbea2</code>, <code>lasagna-preprocess predict3d --tile-size 192</code> with default chunks and levels, and the <a href="https://huggingface.co/scrollprize/lasagna">scrollprize/lasagna</a> model <code>model_current.pt</code> at revision <code>de45f011</code>. On a test crop of PHerc0343 these settings reproduce the published lasagna field to within 2 of 255 at every voxel compared. Bigger tiles and <code>torch.compile</code> ran faster in testing but changed the output, so they were not used.</p></div></div>
+    <div class="step"><div><h3>Split into parts that never share a chunk</h3><p>Each scan was cut into boxes whose edges sit on multiples of 1,024 scan voxels, each small enough to finish in one Job. Because of that alignment, every chunk of every pyramid level is written by exactly one part, so the parts join without blending. PHerc0175A, the first scan, used an earlier layout whose coarsest level was rebuilt across tile edges; its card gives the details.</p></div></div>
+    <div class="step"><div><h3>Predict on GPUs</h3><p>One Job per part on an NVIDIA RTX PRO 6000, at the scan's native resolution with no resampling: <span id="mparts"></span> parts in all.</p></div></div>
+    <div class="step"><div><h3>Join and check</h3><p>The parts were joined into one store, with a check that no chunk appears twice. A seam check then compares the step across each part edge with the steps beside it (1.0 means no step; the limit is 1.5). Finally the card's own load snippet was run on two real parts before upload.</p></div></div>
+    <div class="step"><div><h3>One flag, checked properly</h3><p>PHerc0841 flagged one edge: cos at z 1,024 stepped 1.62 times its neighbors. A single run straight across that edge gave the same field as the joined parts, byte for byte, in all 1,084 level-1 cos chunks and all 760 level-2 chunks of the four channels there. So that step is in the scan itself, not a seam.</p></div></div>
+    <div class="step"><div><h3>Publish with checksums, and unpacked for streaming</h3><p>Each dataset carries <code>SHA256SUMS</code>, an <code>index.json</code> with every part's box and hash, the previews and the tested load example. The same parts were then unpacked into the public bucket, with the joined manifest written last, so tools can read chunks by URL.</p></div></div>
+  </div>
+</div></section>
+
+<section id="format"><div class="wrap">
+  <h2>Format</h2>
+  <p class="sub">The same layout as the lasagna fields in the open data. Replace <code>SCAN</code> with the scan's name.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>File</th><th>Read at</th><th>Scale</th><th>Stored as</th></tr></thead>
+    <tbody>
+      <tr><td><code>SCAN_cos.ome.zarr</code></td><td>Level <code>1</code></td><td>Every 2nd scan voxel</td><td>uint8; peaks on papyrus sheets and dips between them</td></tr>
+      <tr><td><code>SCAN_grad_mag.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 gradient magnitude, encoded as the manifest says (<code>grad_mag_encode_scale</code>)</td></tr>
+      <tr><td><code>SCAN_nx.ome.zarr</code>, <code>SCAN_ny.ome.zarr</code></td><td>Level <code>2</code></td><td>Every 4th scan voxel</td><td>uint8 surface normal components, <code>v &times; 127 + 128</code>; <code>nz</code> not stored</td></tr>
+      <tr><td><code>SCAN.lasagna.json</code></td><td colspan="3">The manifest: groups, their zarr paths and scale-downs, <code>base_shape_zyx</code> and the boxes computed</td></tr>
+      <tr><td>Every array</td><td colspan="3">zarr v2, chunks 64 &times; 64 &times; 64, Blosc zstd level 3, fill value 0, axes z, y, x, each with coarser levels down to 4</td></tr>
+    </tbody>
+  </table></div>
+  <div class="note"><b>Limits.</b> This is raw model output, and nobody has checked it by eye. Regions the masked scan leaves empty are absent (read as 0). The scan's ends include the mount, and the model produces values there too.</div>
+</div></section>
+
+<section id="credit"><div class="wrap">
+  <h2>Credit and terms</h2>
+  <p class="sub">The scans are <a href="https://scrollprize.org">Vesuvius Challenge</a> open data under CC BY-NC 4.0, and these derived fields are shared under the same terms. Model and code are <a href="https://github.com/ScrollPrize/villa">ScrollPrize/villa</a>'s lasagna; credit to its authors. The fields were computed and shared by Chase Hendrick.</p>
+  <h3>Cite</h3>
+  <div class="codebox"><pre id="cite">Chase Hendrick (2026). Lasagna fields for ten Herculaneum scrolls.
+Hugging Face. https://huggingface.co/spaces/SharpMeow/lasagna-fields
+Computed with ScrollPrize/villa lasagna (db3dbea2) and scrollprize/lasagna (de45f011)
+on Vesuvius Challenge open data (CC BY-NC 4.0).</pre><button class="copy" data-copy="cite" type="button">Copy</button></div>
+</div></section>
+
+<footer><div class="wrap">
+  <span>Lasagna Fields, by Chase Hendrick &middot; <a href="https://huggingface.co/SharpMeow">huggingface.co/SharpMeow</a> &middot; <a href="https://github.com/ChaseHendrick">github.com/ChaseHendrick</a></span>
+  <span>Also: <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">center lines</a> &middot; <a href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">PHerc0175A in 3D</a></span>
+</div></footer>
+<div class="toast" id="toast">Copied</div>
+
+<script id="data" type="application/json">[{"id":"PHerc0175A","repo":"SharpMeow/pherc0175a-lasagna","volume":"20250521115057-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[12748,9363,9363],"bytes":48177793405,"fix":256972800,"seam":1.26,"pz":6372,"center":true,"parts":[["000",[[1024,2048],[0,4608],[0,9363]],569692160],["001",[[1024,2048],[4608,9363],[0,4608]],496906240],["002",[[1024,2048],[4608,9363],[4608,9363]],1085020160],["003",[[2048,3072],[0,4608],[0,9363]],1038991360],["004",[[2048,3072],[4608,7168],[0,4608]],1268101120],["005",[[2048,3072],[4608,7168],[4608,9363]],1239439360],["006",[[2048,3072],[7168,9363],[0,4608]],309596160],["007",[[2048,3072],[7168,9363],[4608,9363]],333393920],["008",[[3072,4096],[0,4608],[0,9363]],1165516800],["009",[[3072,4096],[4608,7168],[0,2048]],198952960],["010",[[3072,4096],[4608,7168],[2048,4608]],1121945600],["011",[[3072,4096],[4608,7168],[4608,9363]],1206630400],["012",[[3072,4096],[7168,9363],[0,4608]],477286400],["013",[[3072,4096],[7168,9363],[4608,9363]],298577920],["014",[[4096,5120],[0,4608],[0,9363]],1303111680],["015",[[4096,5120],[4608,7168],[0,2048]],213565440],["016",[[4096,5120],[4608,7168],[2048,4608]],1113907200],["017",[[4096,5120],[4608,7168],[4608,9363]],1252628480],["018",[[4096,5120],[7168,9363],[0,4608]],409507840],["019",[[4096,5120],[7168,9363],[4608,9363]],269250560],["020",[[5120,6144],[0,4608],[0,4608]],1032652800],["021",[[5120,6144],[0,4608],[4608,9363]],387000320],["022",[[5120,6144],[4608,7168],[0,2048]],237475840],["023",[[5120,6144],[4608,7168],[2048,4608]],1103083520],["024",[[5120,6144],[4608,7168],[4608,7168]],1101475840],["025",[[5120,6144],[4608,7168],[7168,9363]],227850240],["026",[[5120,6144],[7168,9363],[0,4608]],326850560],["027",[[5120,6144],[7168,9363],[4608,9363]],253163520],["028",[[6144,7168],[0,4608],[0,4608]],1004503040],["029",[[6144,7168],[0,4608],[4608,9363]],526776320],["030",[[6144,7168],[4608,7168],[0,2048]],200007680],["031",[[6144,7168],[4608,7168],[2048,4608]],1079756800],["032",[[6144,7168],[4608,7168],[4608,7168]],1095782400],["033",[[6144,7168],[4608,7168],[7168,9363]],264478720],["034",[[6144,7168],[7168,9363],[0,4608]],280637440],["035",[[6144,7168],[7168,9363],[4608,9363]],251627520],["036",[[7168,8192],[0,4608],[0,4608]],1008650240],["037",[[7168,8192],[0,4608],[4608,9363]],652462080],["038",[[7168,8192],[4608,7168],[0,2048]],176281600],["039",[[7168,8192],[4608,7168],[2048,4608]],1071370240],["040",[[7168,8192],[4608,7168],[4608,7168]],1079173120],["041",[[7168,8192],[4608,7168],[7168,9363]],290242560],["042",[[7168,8192],[7168,9363],[0,4608]],219996160],["043",[[7168,8192],[7168,9363],[4608,9363]],244940800],["044",[[8192,9216],[0,4608],[0,4608]],1032304640],["045",[[8192,9216],[0,4608],[4608,9363]],867645440],["046",[[8192,9216],[4608,7168],[0,4608]],1188648960],["047",[[8192,9216],[4608,7168],[4608,7168]],1085102080],["048",[[8192,9216],[4608,7168],[7168,9363]],379729920],["049",[[8192,9216],[7168,9363],[0,4608]],170926080],["050",[[8192,9216],[7168,9363],[4608,9363]],239185920],["051",[[9216,10240],[0,4608],[0,4608]],1050480640],["052",[[9216,10240],[0,4608],[4608,9363]],1185935360],["053",[[9216,10240],[4608,7168],[4608,7168]],1115289600],["054",[[9216,10240],[4608,7168],[7168,9363]],585236480],["055",[[9216,10240],[4608,9363],[0,4608]],1247825920],["056",[[9216,10240],[7168,9363],[4608,9363]],255498240],["057",[[10240,11264],[0,4608],[0,4608]],1034823680],["058",[[10240,11264],[0,4608],[4608,9363]],915281920],["059",[[10240,11264],[4608,9363],[0,4608]],1213378560],["060",[[10240,11264],[4608,9363],[4608,9363]],1442519040],["00",[[0,1024],[0,9363],[0,9363]],885186560],["11",[[11264,12288],[0,9363],[0,9363]],1106769920],["12",[[12288,12748],[0,9363],[0,9363]],1427712000]],"run":"PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011"},{"id":"PHerc0175B","repo":"SharpMeow/pherc0175b-lasagna","volume":"20250521125822-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15897,9613,9613],"bytes":82186089634,"fix":10240,"seam":1.345,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,9613],[0,9613]],1514383360],["001",[[1024,2048],[0,5120],[0,9613]],1407938560],["002",[[1024,2048],[5120,9613],[0,9613]],3160821760],["003",[[2048,3072],[0,5120],[0,5120]],2000721920],["004",[[2048,3072],[0,5120],[5120,9613]],2044180480],["005",[[2048,3072],[5120,9613],[0,5120]],1640591360],["006",[[2048,3072],[5120,9613],[5120,9613]],1497559040],["007",[[3072,4096],[0,5120],[0,5120]],2237388800],["008",[[3072,4096],[0,5120],[5120,9613]],2131998720],["009",[[3072,4096],[5120,9613],[0,9613]],2935080960],["010",[[4096,5120],[0,5120],[0,5120]],2153451520],["011",[[4096,5120],[0,5120],[5120,9613]],1844142080],["012",[[4096,5120],[5120,9613],[0,9613]],2714398720],["013",[[5120,6144],[0,5120],[0,5120]],2108313600],["014",[[5120,6144],[0,5120],[5120,9613]],1906216960],["015",[[5120,6144],[5120,9613],[0,9613]],2691891200],["016",[[6144,7168],[0,5120],[0,5120]],2061670400],["017",[[6144,7168],[0,5120],[5120,9613]],1911951360],["018",[[6144,7168],[5120,9613],[0,9613]],2576302080],["019",[[7168,8192],[0,5120],[0,5120]],1851371520],["020",[[7168,8192],[0,5120],[5120,9613]],1717555200],["021",[[7168,8192],[5120,9613],[0,9613]],2700554240],["022",[[8192,9216],[0,5120],[0,5120]],1822607360],["023",[[8192,9216],[0,5120],[5120,9613]],1616537600],["024",[[8192,9216],[5120,9613],[0,5120]],1389537280],["025",[[8192,9216],[5120,9613],[5120,9613]],1553776640],["026",[[9216,10240],[0,5120],[0,5120]],1848739840],["027",[[9216,10240],[0,5120],[5120,9613]],1431142400],["028",[[9216,10240],[5120,9613],[0,5120]],1497989120],["029",[[9216,10240],[5120,9613],[5120,9613]],1644605440],["030",[[10240,11264],[0,5120],[0,5120]],1843128320],["031",[[10240,11264],[0,5120],[5120,9613]],1212149760],["032",[[10240,11264],[5120,9613],[0,5120]],1812940800],["033",[[10240,11264],[5120,9613],[5120,9613]],1621381120],["034",[[11264,12288],[0,5120],[0,9613]],2792785920],["035",[[11264,12288],[5120,9613],[0,5120]],1752053760],["036",[[11264,12288],[5120,9613],[5120,9613]],1498009600],["037",[[12288,13312],[0,5120],[0,9613]],2421299200],["038",[[12288,13312],[5120,9613],[0,9613]],2411141120],["039",[[13312,14336],[0,9613],[0,9613]],2876979200],["040",[[14336,15360],[0,9613],[0,9613]],816035840],["041",[[15360,15897],[0,9613],[0,9613]],1510348800]],"run":"PHerc0175B/representations/predictions/lasagna/20250521125822-lasagna-de45f011"},{"id":"PHerc0306B","repo":"SharpMeow/pherc0306b-lasagna","volume":"20250521133212-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15898,8849,8849],"bytes":54562104779,"fix":10240,"seam":1.123,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,8849],[0,8849]],868341760],["001",[[1024,2048],[0,8849],[0,8849]],1625139200],["002",[[2048,3072],[0,8849],[0,8849]],3220418560],["003",[[3072,4096],[0,4096],[0,8849]],1915596800],["004",[[3072,4096],[4096,8849],[0,8849]],2842306560],["005",[[4096,5120],[0,4096],[0,8849]],2505390080],["006",[[4096,5120],[4096,8849],[0,8849]],2990786560],["007",[[5120,6144],[0,4096],[0,8849]],2537093120],["008",[[5120,6144],[4096,8849],[0,8849]],2867517440],["009",[[6144,7168],[0,4096],[0,8849]],2207866880],["010",[[6144,7168],[4096,8849],[0,8849]],2478387200],["011",[[7168,8192],[0,4096],[0,8849]],1837332480],["012",[[7168,8192],[4096,8849],[0,8849]],2307379200],["013",[[8192,9216],[0,4096],[0,8849]],1822986240],["014",[[8192,9216],[4096,8849],[0,8849]],2176440320],["015",[[9216,10240],[0,4096],[0,8849]],1844285440],["016",[[9216,10240],[4096,8849],[0,8849]],2145331200],["017",[[10240,11264],[0,4096],[0,8849]],1904312320],["018",[[10240,11264],[4096,8849],[0,8849]],2072791040],["019",[[11264,12288],[0,4096],[0,8849]],1891225600],["020",[[11264,12288],[4096,8849],[0,8849]],1812705280],["021",[[12288,13312],[0,4096],[0,8849]],2163097600],["022",[[12288,13312],[4096,8849],[0,8849]],1357107200],["023",[[13312,14336],[0,8849],[0,8849]],2441410560],["024",[[14336,15360],[0,8849],[0,8849]],1459896320],["025",[[15360,15898],[0,8849],[0,8849]],1263534080]],"run":"PHerc0306B/representations/predictions/lasagna/20250521133212-lasagna-de45f011"},{"id":"PHerc0483A","repo":"SharpMeow/pherc0483a-lasagna","volume":"20250521140913-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[15898,8849,8849],"bytes":47412438501,"fix":10240,"seam":1.162,"pz":7948,"center":true,"parts":[["000",[[0,1024],[0,8849],[0,8849]],953948160],["001",[[1024,2048],[0,8849],[0,8849]],2872115200],["002",[[2048,3072],[0,4096],[0,8849]],846182400],["003",[[2048,3072],[4096,8849],[0,8849]],2758737920],["004",[[3072,4096],[0,4096],[0,8849]],1158533120],["005",[[3072,4096],[4096,8849],[0,8849]],2182359040],["006",[[4096,5120],[0,4096],[0,8849]],1438115840],["007",[[4096,5120],[4096,8849],[0,8849]],2021847040],["008",[[5120,6144],[0,4096],[0,8849]],1460674560],["009",[[5120,6144],[4096,8849],[0,8849]],1818675200],["010",[[6144,7168],[0,8849],[0,8849]],2900961280],["011",[[7168,8192],[0,8849],[0,8849]],2810716160],["012",[[8192,9216],[0,8849],[0,8849]],3019837440],["013",[[9216,10240],[0,4096],[0,8849]],1343682560],["014",[[9216,10240],[4096,8849],[0,8849]],2060544000],["015",[[10240,11264],[0,4096],[0,8849]],1397544960],["016",[[10240,11264],[4096,8849],[0,8849]],2733813760],["017",[[11264,12288],[0,4096],[0,8849]],1278771200],["018",[[11264,12288],[4096,8849],[0,4096]],1464422400],["019",[[11264,12288],[4096,8849],[4096,8849]],1550018560],["020",[[12288,13312],[0,4096],[0,8849]],1111787520],["021",[[12288,13312],[4096,8849],[0,4096]],1561292800],["022",[[12288,13312],[4096,8849],[4096,8849]],1478133760],["023",[[13312,14336],[0,8849],[0,8849]],2452049920],["024",[[14336,15360],[0,8849],[0,8849]],1035386880],["025",[[15360,15898],[0,8849],[0,8849]],1698887680]],"run":"PHerc0483A/representations/predictions/lasagna/20250521140913-lasagna-de45f011"},{"id":"PHerc0483B","repo":"SharpMeow/pherc0483b-lasagna","volume":"20251124083638-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[11880,8343,8343],"bytes":41488155053,"fix":10240,"seam":1.106,"pz":5940,"center":true,"parts":[["000",[[0,1024],[0,8343],[0,8343]],176138240],["001",[[1024,2048],[0,8343],[0,8343]],1620623360],["002",[[2048,3072],[0,4096],[0,8343]],1205012480],["003",[[2048,3072],[4096,8343],[0,8343]],2147061760],["004",[[3072,4096],[0,4096],[0,8343]],1296189440],["005",[[3072,4096],[4096,8343],[0,8343]],2460006400],["006",[[4096,5120],[0,4096],[0,8343]],1599467520],["007",[[4096,5120],[4096,8343],[0,8343]],2541731840],["008",[[5120,6144],[0,4096],[0,8343]],1956659200],["009",[[5120,6144],[4096,8343],[0,8343]],2760755200],["010",[[6144,7168],[0,4096],[0,8343]],2275471360],["011",[[6144,7168],[4096,8343],[0,8343]],2689259520],["012",[[7168,8192],[0,4096],[0,8343]],2534461440],["013",[[7168,8192],[4096,8343],[0,8343]],2701701120],["014",[[8192,9216],[0,4096],[0,8343]],2829107200],["015",[[8192,9216],[4096,8343],[0,8343]],2989660160],["016",[[9216,10240],[0,4096],[0,8343]],2140211200],["017",[[9216,10240],[4096,8343],[0,8343]],2483568640],["018",[[10240,11264],[0,8343],[0,8343]],2567260160],["019",[[11264,11880],[0,8343],[0,8343]],510801920]],"run":"PHerc0483B/representations/predictions/lasagna/20251124083638-lasagna-de45f011"},{"id":"PHerc0490A","repo":"SharpMeow/pherc0490a-lasagna","volume":"20250521151210-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[11698,9101,9101],"bytes":49710517889,"fix":10240,"seam":1.184,"pz":5848,"center":true,"parts":[["000",[[0,1024],[0,9101],[0,9101]],1930536960],["001",[[1024,2048],[0,9101],[0,9101]],1422868480],["002",[[2048,3072],[0,4096],[0,9101]],2111375360],["003",[[2048,3072],[4096,9101],[0,9101]],2413690880],["004",[[3072,4096],[0,4096],[0,9101]],2379786240],["005",[[3072,4096],[4096,9101],[0,4096]],1359073280],["006",[[3072,4096],[4096,9101],[4096,9101]],1717237760],["007",[[4096,5120],[0,4096],[0,9101]],2506946560],["008",[[4096,5120],[4096,9101],[0,9101]],2644244480],["009",[[5120,6144],[0,4096],[0,9101]],2550620160],["010",[[5120,6144],[4096,9101],[0,9101]],2524825600],["011",[[6144,7168],[0,4096],[0,9101]],2422814720],["012",[[6144,7168],[4096,9101],[0,4096]],1422325760],["013",[[6144,7168],[4096,9101],[4096,9101]],1651210240],["014",[[7168,8192],[0,4096],[0,9101]],2114242560],["015",[[7168,8192],[4096,9101],[0,4096]],1600624640],["016",[[7168,8192],[4096,9101],[4096,9101]],2081792000],["017",[[8192,9216],[0,4096],[0,9101]],1961154560],["018",[[8192,9216],[4096,9101],[0,4096]],1693204480],["019",[[8192,9216],[4096,9101],[4096,9101]],2359152640],["020",[[9216,10240],[0,4096],[0,9101]],1631877120],["021",[[9216,10240],[4096,9101],[0,4096]],1850408960],["022",[[9216,10240],[4096,9101],[4096,9101]],2133708800],["023",[[10240,11264],[0,9101],[0,9101]],1912156160],["024",[[11264,11698],[0,9101],[0,9101]],1311467520]],"run":"PHerc0490A/representations/predictions/lasagna/20250521151210-lasagna-de45f011"},{"id":"PHerc0490B","repo":"SharpMeow/pherc0490b-lasagna","volume":"20250521151215-8.640um-1.2m-116keV-masked.zarr","um":8.64,"shape":[10648,8343,8343],"bytes":32900440486,"fix":10240,"seam":1.123,"pz":5324,"center":true,"parts":[["000",[[0,1024],[0,8343],[0,8343]],2058895360],["001",[[1024,2048],[0,8343],[0,8343]],822784000],["002",[[2048,3072],[0,8343],[0,8343]],2714982400],["003",[[3072,4096],[0,4096],[0,8343]],1944125440],["004",[[3072,4096],[4096,8343],[0,8343]],2514268160],["005",[[4096,5120],[0,4096],[0,8343]],2359951360],["006",[[4096,5120],[4096,8343],[0,8343]],2827724800],["007",[[5120,6144],[0,4096],[0,8343]],2485729280],["008",[[5120,6144],[4096,8343],[0,8343]],2586828800],["009",[[6144,7168],[0,4096],[0,8343]],2359173120],["010",[[6144,7168],[4096,8343],[0,8343]],2469836800],["011",[[7168,8192],[0,4096],[0,8343]],1728665600],["012",[[7168,8192],[4096,8343],[0,8343]],2325022720],["013",[[8192,9216],[0,8343],[0,8343]],2124062720],["014",[[9216,10240],[0,8343],[0,8343]],537180160],["015",[[10240,10648],[0,8343],[0,8343]],1038735360]],"run":"PHerc0490B/representations/predictions/lasagna/20250521151215-lasagna-de45f011"},{"id":"PHerc0841","repo":"SharpMeow/pherc0841-lasagna","volume":"20250821151531-9.366um-1.2m-113keV-masked.zarr","um":9.366,"shape":[19400,7703,7703],"bytes":45944867652,"fix":10240,"seam":1.622,"pz":9700,"center":false,"parts":[["000",[[0,1024],[0,7703],[0,7703]],1157713920],["001",[[1024,2048],[0,7703],[0,7703]],1659146240],["002",[[2048,3072],[0,4096],[0,7703]],2530775040],["003",[[2048,3072],[4096,7703],[0,7703]],1158072320],["004",[[3072,4096],[0,4096],[0,7703]],2732318720],["005",[[3072,4096],[4096,7703],[0,7703]],1305569280],["006",[[4096,5120],[0,4096],[0,7703]],2477383680],["007",[[4096,5120],[4096,7703],[0,7703]],1224796160],["008",[[5120,6144],[0,7703],[0,7703]],3200819200],["009",[[6144,7168],[0,7703],[0,7703]],2484510720],["010",[[7168,8192],[0,7703],[0,7703]],2356346880],["011",[[8192,9216],[0,7703],[0,7703]],2220840960],["012",[[9216,10240],[0,7703],[0,7703]],2199930880],["013",[[10240,11264],[0,7703],[0,7703]],2256486400],["014",[[11264,12288],[0,7703],[0,7703]],2268364800],["015",[[12288,13312],[0,7703],[0,7703]],2323046400],["016",[[13312,14336],[0,7703],[0,7703]],2426265600],["017",[[14336,15360],[0,7703],[0,7703]],2492456960],["018",[[15360,16384],[0,7703],[0,7703]],2691143680],["019",[[16384,17408],[0,7703],[0,7703]],2651279360],["020",[[17408,18432],[0,7703],[0,7703]],1724067840],["021",[[18432,19400],[0,7703],[0,7703]],400711680]],"run":"PHerc0841/representations/predictions/lasagna/20250821151531-lasagna-de45f011"},{"id":"PHerc0846A","repo":"SharpMeow/pherc0846a-lasagna","volume":"20250728152254-9.362um-1.2m-113keV-masked.zarr","um":9.362,"shape":[14019,7726,7726],"bytes":32441070000,"fix":10240,"seam":1.108,"pz":7008,"center":true,"parts":[["000",[[0,1024],[0,4096],[0,7726]],2497198080],["001",[[0,1024],[4096,7726],[0,7726]],2297927680],["002",[[1024,2048],[0,7726],[0,7726]],658155520],["003",[[2048,3072],[0,7726],[0,7726]],2689873920],["004",[[3072,4096],[0,4096],[0,7726]],2094336000],["005",[[3072,4096],[4096,7726],[0,7726]],1497937920],["006",[[4096,5120],[0,4096],[0,7726]],1887641600],["007",[[4096,5120],[4096,7726],[0,7726]],1414348800],["008",[[5120,6144],[0,7726],[0,7726]],2803722240],["009",[[6144,7168],[0,7726],[0,7726]],2204078080],["010",[[7168,8192],[0,7726],[0,7726]],1953495040],["011",[[8192,9216],[0,7726],[0,7726]],1988648960],["012",[[9216,10240],[0,7726],[0,7726]],2122731520],["013",[[10240,11264],[0,7726],[0,7726]],2195148800],["014",[[11264,12288],[0,7726],[0,7726]],1854883840],["015",[[12288,13312],[0,7726],[0,7726]],1597736960],["016",[[13312,14019],[0,7726],[0,7726]],680857600]],"run":"PHerc0846A/representations/predictions/lasagna/20250728152254-lasagna-de45f011"},{"id":"PHerc0846B","repo":"SharpMeow/pherc0846b-lasagna","volume":"20250804142305-9.362um-1.2m-113keV-masked.zarr","um":9.362,"shape":[13926,7859,7859],"bytes":35033335856,"fix":10240,"seam":1.36,"pz":6964,"center":true,"parts":[["000",[[0,1024],[0,7859],[0,7859]],188262400],["001",[[1024,2048],[0,7859],[0,7859]],1207982080],["002",[[2048,3072],[0,7859],[0,7859]],1744916480],["003",[[3072,4096],[0,7859],[0,7859]],1853480960],["004",[[4096,5120],[0,7859],[0,7859]],1885081600],["005",[[5120,6144],[0,7859],[0,7859]],1954447360],["006",[[6144,7168],[0,7859],[0,7859]],2012354560],["007",[[7168,8192],[0,7859],[0,7859]],2397071360],["008",[[8192,9216],[0,4096],[0,7859]],1862440960],["009",[[8192,9216],[4096,7859],[0,7859]],1379829760],["010",[[9216,10240],[0,4096],[0,7859]],2212546560],["011",[[9216,10240],[4096,7859],[0,7859]],1635399680],["012",[[10240,11264],[0,4096],[0,7859]],2502000640],["013",[[10240,11264],[4096,7859],[0,7859]],2152806400],["014",[[11264,12288],[0,4096],[0,7859]],2383554560],["015",[[11264,12288],[4096,7859],[0,7859]],2498549760],["016",[[12288,13312],[0,4096],[0,7859]],2026168320],["017",[[12288,13312],[4096,7859],[0,7859]],2171258880],["018",[[13312,13926],[0,7859],[0,7859]],962652160]],"run":"PHerc0846B/representations/predictions/lasagna/20250804142305-lasagna-de45f011"}]</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const $=id=>document.getElementById(id);
+const fmt=n=>n.toLocaleString('en-US');
+const gb=b=>(b/1e9).toFixed(1)+' GB';
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;');
+let cur=0,view='xy',tab='get';
+
+/* theme */
+(function(){let t=null;try{t=localStorage.getItem('lf-theme')}catch(e){}
+ if(t)document.documentElement.dataset.theme=t;
+ $('theme').onclick=()=>{const dark=document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+  const n=dark?'light':'dark';document.documentElement.dataset.theme=n;try{localStorage.setItem('lf-theme',n)}catch(e){}};})();
+
+/* hero: fields of lasagna */
+(function(){const W=1600,H=900,svg=$('fields');let seed=11;const rnd=()=>(seed=(seed*16807)%2147483647)/2147483647;
+ const dark=()=>document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;
+ const f1=v=>v.toFixed(1);
+ function slice(x,y,s,d){/* front face top-left at x,y; s = scale */
+  const w=64*s,dp=30*s,h=36*s,ox=dp*.62,oy=-dp*.5,o=[];
+  const pasta=d?'#e0b860':'#f4cf73',pastaD=d?'#b88f3f':'#d9aa4f',sauce=d?'#9e2b17':'#b8351d',sauceD=d?'#7d200f':'#922814',ric=d?'#efe2c0':'#fff6dc',ricD=d?'#cdbf9c':'#eadcb6';
+  const layers=[[pasta,pastaD,.12],[sauce,sauceD,.16],[ric,ricD,.12],[pasta,pastaD,.12],[sauce,sauceD,.16],[ric,ricD,.12],[pasta,pastaD,.20]];
+  o.push('<ellipse cx="'+f1(x+w*.55+ox*.5)+'" cy="'+f1(y+h+2*s)+'" rx="'+f1(w*.62)+'" ry="'+f1(7*s)+'" fill="#000" opacity=".18"/>');
+  let yy=y;layers.forEach(([c,cd,fr],i)=>{const t=h*fr,wav=i%3===0?2.2*s:0;
+   /* side face band */
+   o.push('<path d="M'+f1(x+w)+' '+f1(yy)+' L'+f1(x+w+ox)+' '+f1(yy+oy)+' L'+f1(x+w+ox)+' '+f1(yy+oy+t)+' L'+f1(x+w)+' '+f1(yy+t)+'Z" fill="'+cd+'"/>');
+   /* front face band, pasta layers get a ruffled lower edge */
+   let pth='M'+f1(x)+' '+f1(yy)+' L'+f1(x+w)+' '+f1(yy)+' L'+f1(x+w)+' '+f1(yy+t);
+   if(wav){for(let k=12;k>=0;k--){const xx=x+w*k/12;pth+=' L'+f1(xx)+' '+f1(yy+t+(k%2?wav:-wav*.2))}}else pth+=' L'+f1(x)+' '+f1(yy+t);
+   o.push('<path d="'+pth+'Z" fill="'+c+'"/>');yy+=t});
+  /* ruffled pasta ends sticking out on the left */
+  [0,3,6].forEach(i=>{const ty=y+h*[0,.52,.82][[0,3,6].indexOf(i)];let q='M'+f1(x)+' '+f1(ty);for(let k=0;k<=4;k++)q+=' L'+f1(x-(k%2?4.5:2)*s)+' '+f1(ty+k*1.4*s);q+=' L'+f1(x)+' '+f1(ty+6*s)+'Z';o.push('<path d="'+q+'" fill="'+(d?'#e0b860':'#f4cf73')+'"/>')});
+  /* top: melted cheese with browned spots, sauce and basil */
+  const top='M'+f1(x)+' '+f1(y)+' L'+f1(x+w)+' '+f1(y)+' L'+f1(x+w+ox)+' '+f1(y+oy)+' L'+f1(x+ox)+' '+f1(y+oy)+'Z';
+  o.push('<path d="'+top+'" fill="'+(d?'#e7c66f':'#f7d77e')+'"/>');
+  for(let i=0;i<4;i++){const u=rnd(),v=rnd();o.push('<ellipse cx="'+f1(x+u*w*.85+v*ox+4*s)+'" cy="'+f1(y+v*oy+1)+'" rx="'+f1((3+rnd()*4)*s)+'" ry="'+f1((1.4+rnd()*1.6)*s)+'" fill="'+(rnd()<.5?(d?'#a8321c':'#c2462b'):(d?'#9a6a2a':'#c98a3a'))+'" opacity=".9"/>')}
+  /* cheese drips over the front edge */
+  for(let i=0;i<3;i++){const dx=x+(.15+rnd()*.7)*w,dl=(3+rnd()*5)*s;o.push('<path d="M'+f1(dx-2.5*s)+' '+f1(y)+' Q'+f1(dx-2.5*s)+' '+f1(y+dl)+' '+f1(dx)+' '+f1(y+dl)+' Q'+f1(dx+2.5*s)+' '+f1(y+dl)+' '+f1(dx+2.5*s)+' '+f1(y)+'Z" fill="'+(d?'#e7c66f':'#f7d77e')+'"/>')}
+  const bx=x+w*.55+ox*.5,by=y+oy*.5;o.push('<ellipse cx="'+f1(bx)+'" cy="'+f1(by)+'" rx="'+f1(6*s)+'" ry="'+f1(2.6*s)+'" fill="'+(d?'#5f8f45':'#3f7a2e')+'" transform="rotate(-18 '+f1(bx)+' '+f1(by)+')"/><ellipse cx="'+f1(bx+5*s)+'" cy="'+f1(by-1.5*s)+'" rx="'+f1(4.5*s)+'" ry="'+f1(2*s)+'" fill="'+(d?'#6fa252':'#4f8f3a')+'" transform="rotate(24 '+f1(bx+5*s)+' '+f1(by-1.5*s)+')"/>');
+  return o.join('')}
+ function draw(){const d=dark();seed=11;
+  let h='<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">'+(d?'<stop offset="0" stop-color="#141210"/><stop offset=".55" stop-color="#2c1d18"/><stop offset="1" stop-color="#4a2a1c"/>':'<stop offset="0" stop-color="#f7f2ea"/><stop offset=".5" stop-color="#fbe8cf"/><stop offset="1" stop-color="#f9d3a8"/>')+'</linearGradient>'+
+   '<linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">'+(d?'<stop offset="0" stop-color="#2f3b22"/><stop offset="1" stop-color="#1d2616"/>':'<stop offset="0" stop-color="#b9cf86"/><stop offset="1" stop-color="#7fa557"/>')+'</linearGradient>'+
+   '<radialGradient id="sun"><stop offset="0" stop-color="'+(d?'#ffd9a0':'#fff6dc')+'"/><stop offset="1" stop-color="#ffe2a8" stop-opacity="0"/></radialGradient></defs>';
+  const hz=420;
+  h+='<rect width="'+W+'" height="'+H+'" fill="url(#sky)"/><circle cx="1260" cy="300" r="170" fill="url(#sun)" opacity="'+(d?.5:.95)+'"/>';
+  h+='<path d="M0 '+hz+' Q400 '+(hz-25)+' 800 '+(hz-5)+' T1600 '+(hz-15)+' L1600 900 L0 900Z" fill="url(#grass)"/>';
+  /* furrows converge to a vanishing point */
+  for(let i=-12;i<=24;i++){const xb=800+i*120;h+='<line x1="'+(800+i*14)+'" y1="'+hz+'" x2="'+xb+'" y2="900" stroke="'+(d?'#3b4a2b':'#a3bd72')+'" stroke-width="2" opacity=".6"/>'}
+  const rows=[[440,.30,22],[470,.42,17],[512,.58,13],[570,.80,10],[650,1.08,8],[760,1.45,6],[890,1.9,5]];
+  rows.forEach(([y,sc,n],r)=>{const span=W*1.15,step=span/n;for(let i=0;i<n;i++){const x=-W*.05+i*step+(r%2?step*.5:0)+(rnd()-.5)*step*.15;h+=slice(x,y-36*sc,sc,d)}});
+  svg.innerHTML=h}
+ draw();matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);$('theme').addEventListener('click',()=>setTimeout(draw,0));})();
+
+/* stats */
+const totB=D.reduce((a,s)=>a+s.bytes,0),totP=D.reduce((a,s)=>a+s.parts.length,0);
+$('stats').innerHTML=[[D.length,'scans'],[Math.round(totB/1e9)+' GB','to download'],[fmt(totP),'GPU parts'],['4','channels each']]
+ .map(([b,s])=>'<div class="stat"><b>'+b+'</b><span>'+s+'</span></div>').join('');
+$('mparts').textContent=fmt(totP);
+
+/* gallery */
+$('grid').innerHTML=D.map((s,i)=>'<button class="scan" type="button" data-i="'+i+'" aria-pressed="false"><img class="img" loading="lazy" src="assets/'+s.id+'-xy.webp" alt="'+s.id+' preview"><div class="meta"><div class="name">'+s.id+'</div><div class="small">'+s.um+' µm &middot; '+gb(s.bytes)+' &middot; '+s.parts.length+' parts</div></div></button>').join('');
+$('grid').onclick=e=>{const b=e.target.closest('.scan');if(b)pick(+b.dataset.i,true)};
+
+function dl(s){const d=s.id.toLowerCase()+'-lasagna';
+ return '<span class="c"># the whole scan, '+gb(s.bytes)+'</span>\nhf download '+s.repo+' --repo-type dataset --local-dir '+d+'\ncd '+d+' && sha256sum -c SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar   <span class="c"># last: the joined manifest</span>'}
+function py(s,z,y,x){return 'import numpy as np\nimport zarr\n\ncos = zarr.open("'+s.id+'_cos.ome.zarr/1", mode="r")   <span class="c"># every 2nd scan voxel</span>\nnx = zarr.open("'+s.id+'_nx.ome.zarr/2", mode="r")     <span class="c"># every 4th scan voxel</span>\nny = zarr.open("'+s.id+'_ny.ome.zarr/2", mode="r")\n\nz, y, x = '+z+', '+y+', '+x+'   <span class="c"># full-resolution scan voxels</span>\npatch = cos[z // 2, y // 2 - 256:y // 2 + 256, x // 2 - 256:x // 2 + 256]\na = (float(nx[z // 4, y // 4, x // 4]) - 128) / 127\nb = (float(ny[z // 4, y // 4, x // 4]) - 128) / 127\nc = np.sqrt(max(0.0, 1 - a * a - b * b))           <span class="c"># nz is not stored</span>\nprint(patch.shape, round(float(patch.mean()), 1), (a, b, c))'}
+
+function pick(i,scroll){cur=i;const s=D[i];
+ document.querySelectorAll('.scan').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.i===i));
+ $('dname').textContent=s.id;
+ const mm=(s.shape[0]*s.um/1000).toFixed(1);
+ const facts=[['Scan',s.volume],['Voxel size',s.um+' µm'],['Scan size (z, y, x)',s.shape.map(fmt).join(' × ')+' voxels, '+mm+' mm tall'],['Download',gb(s.bytes)+' in '+s.parts.length+' parts'],['Seam check',s.seam<=1.5?'Worst edge '+s.seam.toFixed(2)+' (limit 1.5)':'One edge at '+s.seam.toFixed(2)+', cleared: a run across it matched byte for byte']];
+ $('dfacts').innerHTML=facts.map(([k,v])=>'<dt>'+k+'</dt><dd>'+v+'</dd>').join('');
+ $('dlinks').innerHTML='<a class="btn primary" href="https://huggingface.co/datasets/'+s.repo+'">Open dataset</a>'+(s.center?'<a class="btn" href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">Center line</a>':'')+(s.id==='PHerc0175A'?'<a class="btn" href="https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400">See in 3D</a>':'');
+ showView();showTab();showConnect();
+ $('rs').value=i;regionReset();
+ if(scroll)document.querySelector('.detail').scrollIntoView({behavior:'smooth',block:'nearest'});}
+function showView(){const s=D[cur];
+ $('vxy').setAttribute('aria-pressed',view==='xy');$('vxz').setAttribute('aria-pressed',view==='xz');
+ $('dimg').src='assets/'+s.id+(view==='xy'?'-xy-l':'-xz')+'.webp';
+ $('dimg').alt=s.id+(view==='xy'?' top view':' side view')+': cos left, normals right';
+ $('dcap').textContent=(view==='xy'?'Slice at z '+fmt(s.pz):'Cut through the middle, side on')+' · cos | normals';}
+$('vxy').onclick=()=>{view='xy';showView()};$('vxz').onclick=()=>{view='xz';showView()};
+function showTab(){document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===tab));
+ const s=D[cur],c=center(s);$('dcode').innerHTML=tab==='get'?dl(s):py(s,c[0],c[1],c[2]);}
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{tab=b.dataset.tab;showTab()});
+
+/* connect */
+const BUCKET='https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/';
+let ctab='py';
+function base(s){return BUCKET+s.run}
+function ngLink(s,z,y,x){const st={layers:[{type:'image',source:'zarr2://'+base(s)+'/'+s.id+'_cos.ome.zarr/1',name:s.id+' cos'}],position:[Math.round(z/2),Math.round(y/2),Math.round(x/2)],crossSectionScale:4,layout:'xy'};
+ return 'https://neuroglancer-demo.appspot.com/#!'+encodeURIComponent(JSON.stringify(st))}
+function showConnect(){const s=D[cur],c=center(s),b=base(s);
+ $('cname').textContent=s.id;
+ $('curl').innerHTML='<span class="c"># the run folder: manifest and four OME-Zarr channels</span>\n'+b+'/\n<span class="c"># for example</span>\ncurl -L '+b+'/'+s.id+'.lasagna.json';
+ document.querySelectorAll('[data-ct]').forEach(t=>t.setAttribute('aria-selected',t.dataset.ct===ctab));
+ let h='';
+ if(ctab==='py')h='<p style="margin-top:14px">Reads only the chunks you index, over HTTPS. Tested with zarr 3.4.1, fsspec and aiohttp.</p><div class="codebox"><pre id="cpy">pip install "zarr&gt;=3" fsspec aiohttp\n\nimport zarr\n\nbase = "'+b+'"\ncos = zarr.open_array(base + "/'+s.id+'_cos.ome.zarr/1", mode="r", zarr_format=2)   <span class="c"># every 2nd scan voxel</span>\nnx = zarr.open_array(base + "/'+s.id+'_nx.ome.zarr/2", mode="r", zarr_format=2)     <span class="c"># every 4th scan voxel</span>\n\nz, y, x = '+c[0]+', '+c[1]+', '+c[2]+'   <span class="c"># full-resolution scan voxels</span>\npatch = cos[z // 2, y // 2 - 256:y // 2 + 256, x // 2 - 256:x // 2 + 256]\nprint(patch.shape, patch.mean())</pre><button class="copy" data-copy="cpy" type="button">Copy</button></div>';
+ if(ctab==='ng')h='<p style="margin-top:14px">Opens the cos channel (level 1) in the public Neuroglancer viewer, streaming from the bucket. Its axes d0, d1, d2 are z, y, x in level-1 voxels, half the scan\'s.</p><div class="links"><a class="btn primary" target="_blank" rel="noopener" href="'+ngLink(s,c[0],c[1],c[2])+'">Open '+s.id+' in Neuroglancer</a></div><div class="codebox"><pre id="cng">zarr2://'+b+'/'+s.id+'_cos.ome.zarr/1</pre><button class="copy" data-copy="cng" type="button">Copy</button></div><p style="margin-top:10px;font-size:14px;color:var(--ink3)">Add the source above as an image layer in any Neuroglancer. Use a level folder (<code>/1</code>, <code>/2</code>), not the <code>.ome.zarr</code> root: villa writes the axis unit as "pixel", which Neuroglancer\'s OME reader rejects.</p>';
+ if(ctab==='villa')h='<p style="margin-top:14px">The lasagna fit in villa reads a local manifest. Sync the run folder (or only the rows you need, from the region tool below) and point lasagna at <code>'+s.id+'.lasagna.json</code>. Tested anonymously with the <code>hf</code> CLI.</p><div class="codebox"><pre id="cvl">pip install -U "huggingface_hub[cli]"\nhf buckets sync hf://buckets/SharpMeow/lasagna-fields/'+s.run+' '+s.id.toLowerCase()+'-lasagna\n<span class="c"># then point lasagna at '+s.id.toLowerCase()+'-lasagna/'+s.id+'.lasagna.json</span></pre><button class="copy" data-copy="cvl" type="button">Copy</button></div>'+(s.center?'<p style="margin-top:10px;font-size:14px">The fit and the spiral fit also want a center line: '+s.id+'\'s is in <a href="https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines">vesuvius-center-lines</a>.</p>':'');
+ if(ctab==='any')h='<div class="tablewrap" style="margin-top:14px"><table><tbody><tr><th>Store</th><td>zarr v2, one array per pyramid level, chunks 64 &times; 64 &times; 64, Blosc zstd, fill 0, <code>/</code> separator</td></tr><tr><th>URL</th><td><code>'+b+'/'+s.id+'_CHANNEL.ome.zarr/LEVEL/Z/Y/X</code></td></tr><tr><th>Channels</th><td>cos (levels 1 to 4), grad_mag, nx, ny (levels 2 to 4)</td></tr><tr><th>HTTP</th><td>Anonymous; a 302 to Hugging Face\'s CDN, which allows any origin and byte ranges; a missing chunk is a 404, which zarr readers treat as empty</td></tr><tr><th>Scale</th><td>Level k is every 2<sup>k</sup>th scan voxel; the OME <code>.zattrs</code> gives the same as scale transforms</td></tr></tbody></table></div>';
+ $('cbody').innerHTML=h;}
+document.querySelectorAll('[data-ct]').forEach(b=>b.onclick=()=>{ctab=b.dataset.ct;showConnect()});
+
+/* region picker */
+$('rs').innerHTML=D.map((s,i)=>'<option value="'+i+'">'+s.id+'</option>').join('');
+const R={z:0,y:0,x:0};
+function center(s){return [Math.round(s.pz/64)*64,Math.round(s.shape[1]/2),Math.round(s.shape[2]/2)]}
+function regionReset(){const s=D[+$('rs').value];[R.z,R.y,R.x]=center(s);$('zr').max=s.shape[0]-1;drawRegion()}
+function need(s,r){const lo=[R.z-r,R.y-r,R.x-r],hi=[R.z+r,R.y+r,R.x+r];
+ return s.parts.filter(p=>p[1].every((c,k)=>c[0]<hi[k]&&c[1]>lo[k]))}
+function drawRegion(){const s=D[+$('rs').value];const r=Math.max(1,+$('rr').value||512);
+ const clamp=(v,k)=>Math.max(0,Math.min(s.shape[k]-1,Math.round(v)));R.z=clamp(R.z,0);R.y=clamp(R.y,1);R.x=clamp(R.x,2);
+ $('rz').value=R.z;$('ry').value=R.y;$('rx').value=R.x;$('zr').value=R.z;$('zv').textContent=fmt(R.z);
+ const W=400,sc=W/Math.max(s.shape[1],s.shape[2]),H=Math.round(s.shape[1]*sc);
+ const m=$('map');m.setAttribute('viewBox','0 0 '+W+' '+H);
+ const nd=new Set(need(s,r).map(p=>p[0]));
+ let h='<rect x="0" y="0" width="'+(s.shape[2]*sc)+'" height="'+H+'" fill="var(--card)" stroke="var(--line)"/>';
+ const css=getComputedStyle(document.documentElement);
+ s.parts.filter(p=>p[1][0][0]<=R.z&&R.z<p[1][0][1]).forEach(p=>{const[ , y,x]=p[1];const on=nd.has(p[0]);
+  h+='<rect x="'+(x[0]*sc+1)+'" y="'+(y[0]*sc+1)+'" width="'+((x[1]-x[0])*sc-2)+'" height="'+((y[1]-y[0])*sc-2)+'" rx="4" fill="'+(on?'var(--accent)':'var(--bg2)')+'" fill-opacity="'+(on?.28:1)+'" stroke="'+(on?'var(--accent)':'var(--ink3)')+'" stroke-opacity="'+(on?1:.5)+'"/>'+
+     '<text x="'+((x[0]+x[1])/2*sc)+'" y="'+((y[0]+y[1])/2*sc+4)+'" text-anchor="middle" font-size="11" font-family="JetBrains Mono,monospace" fill="var(--ink2)">t'+p[0]+'</text>'});
+ h+='<rect x="'+((R.x-r)*sc)+'" y="'+((R.y-r)*sc)+'" width="'+(2*r*sc)+'" height="'+(2*r*sc)+'" fill="none" stroke="var(--ink)" stroke-width="1.5" stroke-dasharray="4 3"/><circle cx="'+(R.x*sc)+'" cy="'+(R.y*sc)+'" r="4" fill="var(--ink)"/>';
+ m.innerHTML=h;m.dataset.sc=sc;
+ const parts=need(s,r),bytes=parts.reduce((a,p)=>a+p[2],0)+s.fix,d=s.id.toLowerCase()+'-'+R.z+'-'+R.y+'-'+R.x;
+ $('rres').innerHTML='Your box touches <b>'+parts.length+'</b> of '+s.parts.length+' parts, <b>'+gb(bytes)+'</b> instead of '+gb(s.bytes)+'.<br>'+parts.map(p=>'<span class="pill">t'+p[0]+'</span>').join('');
+ const lo=[R.z-r,R.y-r,R.x-r].map(v=>Math.max(0,v)),hi=[R.z+r,R.y+r,R.x+r].map((v,k)=>Math.min(s.shape[k]-1,v));
+ const rows=f=>{const zs=[];for(let z=Math.floor(lo[0]/f);z<=Math.floor(hi[0]/f);z++)zs.push(z);return zs};
+ const inc=['"*.json"','"*/.z*"'];
+ [['cos',1,128],['grad_mag',2,256],['nx',2,256],['ny',2,256]].forEach(([ch,l,f])=>rows(f).forEach(z=>inc.push('"*_'+ch+'.ome.zarr/'+l+'/'+z+'/*"')));
+ $('rsync').innerHTML='<span class="c"># from the bucket: the full planes for your z range (cos level 1, the rest level 2)</span>\nhf buckets sync hf://buckets/SharpMeow/lasagna-fields/'+s.run+' '+d+' \\\n  '+inc.map(i=>'--include '+i).join(' \\\n  ');
+ const files=parts.map(p=>'parts/'+s.id+'-lasagna-t'+p[0]+'.tar').concat([s.id+'-lasagna-pyramid-fix.tar','SHA256SUMS','load_example.py']);
+ $('rcode').innerHTML='<span class="c"># or from the dataset: whole parts for z, y, x = '+R.z+', '+R.y+', '+R.x+' ± '+r+' voxels</span>\nhf download '+s.repo+' \\\n  '+files.join(' \\\n  ')+' \\\n  --repo-type dataset --local-dir '+d+'\ncd '+d+' && sha256sum -c --ignore-missing SHA256SUMS\nfor f in parts/*.tar; do tar -xf "$f"; done\ntar -xf '+s.id+'-lasagna-pyramid-fix.tar';
+ $('rpy').innerHTML=py(s,R.z,R.y,R.x);}
+$('rs').onchange=()=>{regionReset()};
+['rz','ry','rx'].forEach((id,k)=>$(id).oninput=()=>{R['zyx'[k]]=+$(id).value||0;drawRegion()});
+$('rr').oninput=drawRegion;$('zr').oninput=()=>{R.z=+$('zr').value;drawRegion()};
+function mapAt(e){const m=$('map'),b=m.getBoundingClientRect(),vb=m.viewBox.baseVal,sc=+m.dataset.sc;
+ R.x=(e.clientX-b.left)/b.width*vb.width/sc;R.y=(e.clientY-b.top)/b.height*vb.height/sc;drawRegion()}
+let drag=false;$('map').onpointerdown=e=>{drag=true;mapAt(e)};addEventListener('pointerup',()=>drag=false);$('map').onpointermove=e=>{if(drag)mapAt(e)};
+
+/* copy */
+document.addEventListener('click',e=>{const b=e.target.closest('.copy');if(!b)return;
+ const t=$(b.dataset.copy).textContent;const done=()=>{$('toast').classList.add('on');setTimeout(()=>$('toast').classList.remove('on'),1200)};
+ if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(done,()=>fallback(t,done));else fallback(t,done)});
+function fallback(t,done){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();try{document.execCommand('copy');done()}catch(e){}a.remove()}
+
+pick(0,false);
+</script>
+</body>
+</html>

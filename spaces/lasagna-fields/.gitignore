@@ -1,0 +1,4 @@
+# Model output and real-data pictures live on the Space only (docs/media/README.md): never in git
+assets/
+media/
+__pycache__/

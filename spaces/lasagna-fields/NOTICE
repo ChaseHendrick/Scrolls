@@ -1,0 +1,24 @@
+Lasagna Fields
+Copyright 2026 Chase Hendrick and Scrolls contributors
+
+The Lasagna Fields code (app.py, lasfield.py and guide/index.html) is licensed under the Apache License, Version 2.0.
+See LICENSE.
+
+Lasagna Fields copies no third-party code. When it starts, it downloads the following at pinned versions and uses them
+under their own licenses, which still apply:
+
+- villa's lasagna and vesuvius packages, https://github.com/ScrollPrize/villa at commit
+  db3dbea26185a9e09ab997bfa21a2a00477f0d56 (lasagna/ and vesuvius/src/): MIT License, Copyright (c) 2024 Vesuvius
+  Challenge.
+- The lasagna model checkpoint, https://huggingface.co/scrollprize/lasagna at revision
+  de45f01147adea9f4ad0f621b1ccd885a1f03760 (model_current.pt): MIT License, Vesuvius Challenge (scrollprize).
+
+Scan data: Lasagna Fields reads CT scans from the Vesuvius Challenge open data, licensed CC BY-NC 4.0
+(https://creativecommons.org/licenses/by-nc/4.0/). Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael
+Dal Prà, Johannes Rudolph, Paul Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald,
+David Josey, Youssef Nader, C. Seth Parker, W. Brent Seales. Vesuvius Challenge: CT Scans of Herculaneum Papyri.
+Vesuvius Challenge. https://scrollprize.org/data
+
+The fields it makes, the ten whole-scan fields its guide links (datasets SharpMeow/pherc*-lasagna and the bucket
+SharpMeow/lasagna-fields) and the pictures in assets/ and media/ are model output computed from that data, so they
+are derived data under CC BY-NC 4.0 as well.
