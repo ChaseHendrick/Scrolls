@@ -2,13 +2,13 @@
 
 The segments this page analyzes and the model it runs are public, and both read straight from these URLs in your own tool.
 
-Checked 2026-10-24. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
+Checked 2026-10-25. Generated from `connect.json` by `kit spaceconnect` in [ChaseHendrick/Scrolls](https://github.com/ChaseHendrick/Scrolls).
 
 ## Call the analysis from code
 
 `https://huggingface.co/spaces/SharpMeow/autopipeline-ink`
 
-License: Code Apache 2.0; Reader v2 MIT; scans CC BY-NC 4.0. The Space has no MCP server; use gradio_client or curl. Each call spends the caller's ZeroGPU quota, which is small when logged out: pass hf_token= to Client (or an Authorization header to curl) for your own.
+License: Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0. The Space has no MCP server; use gradio_client or curl. Each call spends the caller's ZeroGPU quota, which is small when logged out: pass hf_token= to Client (or an Authorization header to curl) for your own.
 
 ### Python /on_sample (tested 2026-10-24)
 
@@ -64,14 +64,14 @@ curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc084
 curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0841/segments/20260220213127-w00/surface-volumes/9.366um-1.2m-113keV-volume-20250821151531.zarr/0/.zarray     # one level: shape, chunks, dtype, codec
 ```
 
-## The model: Reader v2 (Domenico Russo)
+## The model: Reader V3 (Domenico Russo)
 
-`https://huggingface.co/domenicor046/reader-v2/resolve/main/reader-v2-step040000.pth`
+`https://huggingface.co/domenicor046/reader-v3/resolve/main/reader-v3.pth`
 
-License: MIT. sha256 654ec5acec2b6c4788d9cb326e2f0b8c2c730584949a934ef775db7f6ab5d3a6; a drop-in ink_9um checkpoint for villa's ink detection.
+License: MIT. sha256 ea405417450abd8ace1b8ff79ebce3adb646c5e48ab95da46844d77efe984d8a; an ink_9um-format checkpoint for villa's ink detection, with 384 px patches in its config.
 
 ### curl (tested 2026-10-24)
 
 ```bash
-curl -L -O https://huggingface.co/domenicor046/reader-v2/resolve/main/reader-v2-step040000.pth
+curl -L -O https://huggingface.co/domenicor046/reader-v3/resolve/main/reader-v3.pth
 ```

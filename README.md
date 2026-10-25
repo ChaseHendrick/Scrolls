@@ -44,19 +44,19 @@ Released tools, AutoPipeline and Unroll (interactive 3D scroll viewer) first and
 
 *Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
 
-Released 24 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix7`: [`submissions/progress-2026-10-fix7/` at commit `24572e6`](https://github.com/ChaseHendrick/Scrolls/tree/24572e6203bafa67de1611bcd31b9edebe2c078e/submissions/progress-2026-10-fix7).
+Released 25 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix8`: [`submissions/progress-2026-10-fix8/` at commit `bf807b6`](https://github.com/ChaseHendrick/Scrolls/tree/bf807b6fbde450bd8eb8b92654f529db06d19d3c/submissions/progress-2026-10-fix8).
 
-AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.7 draws ink maps in color, from dark umber for a low model score to pale papyrus for a high one, on one scale with the reversed control, cropped to the surface and enlarged smoothly, in the run monitor and the ink Space. The synthetic demo now plants pen strokes in its CT, so the forward map shows them and the reversed control does not. The pinned center lines move to dataset v2.4, which takes the Center Finder's coverage-polished line before the original. 0.1.6 put the monitor on one screen with a console and added opt-in steps (Crackle Check gate, published center lines, region crop, edge extension, trace budgets, z-scored ink ensembles). These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
+AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.8 makes Domenico Russo's Reader V3 (MIT) the default reader in place of his Reader v2, and the ink Space runs it too. Reader V3 continues Reader v2 on 384 px tiles with the same data and checkpoint format, so villa's ink detection runs it the same way, at its own patch size. It is the newest release of that reader family; no rule fixed in advance chose it and this release does not claim it reads ink better. 0.1.7 drew ink maps in color in the run monitor and the ink Space, and 0.1.6 put the monitor on one screen with a console and added opt-in steps. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
 
 ```bash
-git clone --branch submission/progress-2026-10-fix7 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix7/autopipeline
+git clone --branch submission/progress-2026-10-fix8 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix8/autopipeline
 python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
 python -m pip install -e .
 python scripts/demo_synthetic.py
 ```
 
-Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix7/submissions/progress-2026-10-fix7/autopipeline/README.md). [Changes since 0.1.6](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix7/submissions/progress-2026-10-fix7/CHANGES.md). A plan made by 0.1.6 that names umbilicus.centerlines pins the old dataset revision and is refused: make it again.
+Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix8/submissions/progress-2026-10-fix8/autopipeline/README.md). [Changes since 0.1.7](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix8/submissions/progress-2026-10-fix8/CHANGES.md). A plan that names reader-v3 now runs villa's ink detection; the koine route is reader-v3-koine.
 
 ### Unroll (interactive 3D scroll viewer)
 
