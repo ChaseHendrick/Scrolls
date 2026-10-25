@@ -97,7 +97,7 @@
       "id": "scrolls-kit",
       "title": "Scrolls kit",
       "released": "2026-10-25",
-      "summary": "Command-line tools that live in this repository and run from a clone of it: thirteen `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
+      "summary": "Command-line tools that live in this repository and run from a clone of it: fourteen `python -m kit` tools (one of them the terminal look), a planted-defect generator for tests, a Greek gap restoration benchmark, and two script folders released the same way, each with its weights as a GitHub release of this repository: the Center Finder and the Greek letter classifier. Each line gives the tool's release date, its weights where it has them, one command to start with, its tool page and its evidence; each page lists the tool's own needs. Their outputs are model output or geometry measurements for a person to check, not readings.",
       "commands": [
         "git clone --depth 1 https://github.com/ChaseHendrick/Scrolls.git",
         "cd Scrolls",
@@ -270,6 +270,15 @@
           "command": "python -m kit scroll2ink run --sample PHerc0139 --seed 4121 3935 5477",
           "page": "docs/tools/scroll2ink.md",
           "evidence": "[replay GIF of the demo run](docs/assets/scroll2ink/scroll2ink-run.gif), [tests](tests/test_scroll2ink.py)"
+        },
+        {
+          "id": "hfpull",
+          "name": "Fast public label downloads",
+          "released": "2026-10-25",
+          "summary": "Downloads a folder of the organizers' public Hugging Face bucket scrollprize/datasets, such as an ink label store, each distinct file once, then copies it to the other paths with the same content; the label stores are mostly copies of one empty chunk and the Hub charges by request, not by byte. On the PHerc0139 w035 ink_9um label store (3,606 files) it took 5.0 s against 61.7 s for a plain download of every file, with identical files (Measurement, one run, 25 Oct 2026). Needs huggingface_hub; no token for the public bucket.",
+          "command": "python -m kit.hfpull ink_9um/labels/aligned-scrollprizeorg-21slices/pherc0139-w035 labels/w035",
+          "page": "docs/tools/hfpull.md",
+          "evidence": "[bench record](scripts/experiments/2026-10-25-label-pull/README.md), [tests](tests/test_hfpull.py)"
         },
         {
           "id": "crowdmerge",

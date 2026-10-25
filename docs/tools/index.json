@@ -4036,6 +4036,151 @@
    ]
   },
   {
+   "id": "hfpull",
+   "name": "hfpull",
+   "tagline": "download a Hugging Face bucket folder fast, each distinct file once",
+   "summary": "`kit.hfpull.pull` copies a folder of the organizers' public `scrollprize/datasets` bucket, or any Hugging Face bucket you can read, to local disk, downloading each distinct file once and copying the duplicates, so the public ink label stores download many times faster.",
+   "status": "Current",
+   "kind": [
+    "kit module"
+   ],
+   "area": "Data and downloads",
+   "commands": [
+    "python -m kit.hfpull PREFIX DEST [--bucket B] [--mount M] [--exclude PAT]",
+    "huggingface_hub"
+   ],
+   "imports": [
+    "from kit import hfpull"
+   ],
+   "code": [
+    {
+     "path": "kit/hfpull.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_hfpull.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: anonymous downloads of public data, or reads of a bucket you own"
+   },
+   "checked": {
+    "date": "2026-10-25",
+    "commit": "7e60e87"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`hfpull`",
+    "Status": "Current",
+    "Kind": "kit module",
+    "Area": "Data and downloads",
+    "Run": "`from kit import hfpull`, or `python -m kit.hfpull PREFIX DEST [--bucket B] [--mount M] [--exclude PAT]` under a Python that has `huggingface_hub`",
+    "Code": "`kit/hfpull.py`",
+    "Tests": "`tests/test_hfpull.py`",
+    "Needs": "Python 3.10 or newer. The API route needs `huggingface_hub` with `list_bucket_tree` and `download_bucket_files` (1.33.0 or newer; 2.3.0 used here). A public bucket (`PUBLIC`: `scrollprize/datasets`) needs no token; a private bucket needs `HF_TOKEN` in the environment. The mount route needs the bucket mounted as a folder, such as a bucket volume mounted in an HF Job",
+    "Runs on": "Any machine with network access, or inside an HF Job. The PHerc0139 w035 ink_9um label store (3,606 files, 0.3 MB) took 5.0 s against 61.7 s for a plain download of every file (25 Oct 2026, 4-core Claude cloud container behind an HTTPS proxy, anonymous)",
+    "Network": "`huggingface.co` and its Xet storage: one bucket tree listing and the file downloads. None on the mount route",
+    "Writes": "The pulled files under `dest`, with the bucket folder's layout; duplicates and the mount route write each file through a `.part` name and rename it",
+    "Go-ahead": "Not needed: anonymous downloads of public data, or reads of a bucket you own",
+    "Released": "Public `main` from the change that adds it (25 Oct 2026)",
+    "Checked": "2026-10-25 against commit `7e60e87`"
+   },
+   "page": "docs/tools/hfpull.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 43,
+     "end_line": 61,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 62,
+     "end_line": 67,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 68,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 98,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 99,
+     "end_line": 102,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 103,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 122,
+     "end_line": 129,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 130,
+     "end_line": 134,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 135,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 147,
+     "end_line": 156,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 157,
+     "end_line": 160,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 161,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 165,
+     "end_line": 168,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "hopbench",
    "name": "hopbench",
    "tagline": "does a surface prediction keep touching sheets apart?",
