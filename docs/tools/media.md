@@ -135,7 +135,7 @@ usage: python scripts/media/encode.py [-h] [--mp4 MP4] [--gif GIF] [--meta META]
 ```text
 usage: python scripts/media/capture_web.py [-h] --out-dir OUT_DIR [--actions ACTIONS] [--width WIDTH]
                                            [--height HEIGHT] [--scale SCALE] [--scheme {dark,light}]
-                                           [--browser BROWSER] [--timeout TIMEOUT]
+                                           [--browser BROWSER] [--timeout TIMEOUT] [--webgl]
                                            page
 ```
 
@@ -150,6 +150,7 @@ usage: python scripts/media/capture_web.py [-h] --out-dir OUT_DIR [--actions ACT
 | `--scheme {dark,light}` | `dark` | `prefers-color-scheme` |
 | `--browser BROWSER` | none | Chromium executable; otherwise `CHROMIUM_PATH`, Playwright's own Chromium, then a system one |
 | `--timeout TIMEOUT` | `60000` | Per-action timeout in milliseconds |
+| `--webgl` | off | Software WebGL (SwiftShader) for 3D pages such as Neuroglancer on a machine with no GPU. With `$HTTPS_PROXY` set, remote pages go through it and 127.0.0.1 is reached directly |
 
 The steps, run in order (`STEP_KEYS`): `{"goto": URL}` (retries for up to 60 s while a server starts), `{"wait": MS}`, `{"wait_for": SELECTOR}` (up to 30 s), `{"click": SELECTOR}`, `{"fill": [SELECTOR, TEXT]}`, `{"press": KEY}`, `{"eval": JS}`, `{"set": [SELECTOR, VALUE]}` (sets an input's value and fires its input and change events), `{"scroll": [X, Y]}`, `{"clip": SELECTOR or null}`, `{"shot": NAME}`, `{"frame": N}`, `{"hold": N}` (repeats the last frame), `{"frames": N, "every": MS}` (real time on the wall clock: screenshots as fast as the machine allows, then each frame is the last one taken by its time, `pick_timed`), `{"tween": {"selector": S, "from": A, "to": B, "n": N}}`, `{"step": {"js": "seek({t})", "n": N}}` (frame-stepped time, `{t}` from 0 to 1), `{"cursor": "show" or "hide"}` (a pointer drawn in the palette, `CURSOR_JS`; headless Chromium draws none), `{"point": {"selector": S, "n": N}}` (move it to S, eased), `{"tap": {"selector": S, "n": N}}` (click S and draw a copper ring growing from the pointer), `{"glide": {"selector": S, "from": A, "to": B, "n": N}}` (a tween whose pointer follows the slider's thumb) and `{"scrollto": {"selector": S, "offset": PX, "n": N}}` (scroll smoothly until S's top is PX below the window's top).
 

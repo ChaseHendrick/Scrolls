@@ -1,0 +1,43 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "sheetview-tilt",
+  "label": "Real data render",
+  "alt": "The same sheet in Neuroglancer turned about 35 degrees and tipped, so its left edge looks longer than its right and its gentle bends show.",
+  "caption": "Real data render: kit sheetview's mesh of PHerc0139 segment w045 in the hosted Neuroglancer, the 2.399 um CT sampled onto its vertices (mean over plus or minus 4 voxels along the normal). CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "2.399 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w045 (20260126000000-w045_2026012619)",
+    "volume": "20260102150214"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260126000000-w045_2026012619/mesh/20260126000000-on-20260102150214-2.399um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "sheetview-tilt.png",
+      "bytes": 413882,
+      "sha256": "0df6fcdfffc5b7478f015e4e7510d143dd0d46dc7874d9eeec9d6e4bf564bf58",
+      "width": 1600,
+      "height": 900,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "common.py",
+      "sheetview_media.py"
+    ],
+    "scripts_sha256": "769efed98a997cc882c53a7c9b9c1b4e3d1d65d425e04d273990db9d272ef238",
+    "base_commit": "c41f1ac7b63824fc22fa111e025d89385234a9b0"
+  },
+  "command": "python scripts/media/sheetview_media.py actions SHEET/state.json --out-dir PLAN && python scripts/media/capture_web.py \"$(cat PLAN/url.txt)\" --webgl --out-dir SHOTS --actions PLAN/stills.json --width 1600 --height 900 && python scripts/media/sheetview_media.py publish SHOTS --assets docs/assets/sheetview --meta scripts/media/captures/sheetview-orbit.meta.json"
+}

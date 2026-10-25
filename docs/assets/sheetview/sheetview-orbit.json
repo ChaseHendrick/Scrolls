@@ -1,0 +1,51 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "sheetview-orbit",
+  "label": "Real data render",
+  "alt": "The hosted Neuroglancer viewer, black background, with one mesh layer named sheet: a piece of papyrus sheet about 7 by 10 mm, shaded with the CT values on its surface, gray with dark patches and fine horizontal fibers. The camera swings slowly left and right and tips a little, so the sheet's gentle bends show as it turns.",
+  "caption": "Real data render: kit sheetview turns PHerc0139 segment w045 (a 150 by 200 node crop of its tifxyz mesh) into a Neuroglancer mesh with the 2.399 um CT sampled onto each vertex (mean over plus or minus 4 voxels along the normal, level 1), shown in the hosted viewer. CT and mesh geometry, no labels, no ink. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "2.399 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "segment": "w045 (20260126000000-w045_2026012619)",
+    "volume": "20260102150214"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/segments/20260126000000-w045_2026012619/mesh/20260126000000-on-20260102150214-2.399um.tifxyz/",
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "sheetview-orbit.gif",
+      "bytes": 3236127,
+      "sha256": "6bc8961fd00503e102e576f15752d6c9095f256fbdda77a10f308d140785b240",
+      "width": 960,
+      "height": 540,
+      "kind": "gif",
+      "seconds": 4.0,
+      "frames": 40,
+      "settings": {
+        "width": 960,
+        "fps": 10,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "encode.py",
+      "sheetview_media.py"
+    ],
+    "scripts_sha256": "31db27c9f3ca8214ad0fdf0fed8562f5ffdd86cb5c4e3879b3ef275ba153d085",
+    "base_commit": "c41f1ac7b63824fc22fa111e025d89385234a9b0"
+  },
+  "command": "python -m kit sheetview build s3://vesuvius-challenge-open-data/PHerc0139/segments/20260126000000-w045_2026012619/mesh/20260126000000-on-20260102150214-2.399um.tifxyz --volume s3://vesuvius-challenge-open-data/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr --level 1 --crop 500 650 700 900 --upsample 2 --depth 4 --reduce mean --palette gray --out SHEET && python -m kit sheetview serve SHEET && python scripts/media/sheetview_media.py actions SHEET/state.json --out-dir PLAN --frames 40 && python scripts/media/capture_web.py \"$(cat PLAN/url.txt)\" --webgl --out-dir FRAMES --actions PLAN/orbit.json --width 960 --height 540 && python scripts/media/encode.py FRAMES --gif docs/assets/sheetview/sheetview-orbit.gif --fps 10 --gif-fps 10 --meta scripts/media/captures/sheetview-orbit.meta.json"
+}

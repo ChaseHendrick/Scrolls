@@ -320,6 +320,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.
 
+**single-mesh layer**: Neuroglancer's layer type `mesh` for one triangle mesh read from a file (`vtk://` ASCII VTK or `obj://`), which can carry a value per vertex that the layer's shader colors. `kit sheetview` writes one with a volume sampled onto a segment ([`docs/tools/sheetview.md`](docs/tools/sheetview.md)).
+
 **sheet switch**: A tracing error in which a mesh jumps from one turn of papyrus to another.
 
 **sidecar (media sidecar)**: The JSON file next to a picture or clip, `NAME.json`, recording its media label, alt text, caption, license, sizes and SHA-256, inputs, and the command and scripts that made it (schema `scrolls-media/1`; [`docs/tools/media.md`](docs/tools/media.md)).

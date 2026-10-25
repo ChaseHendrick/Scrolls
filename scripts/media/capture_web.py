@@ -37,7 +37,8 @@ PAGE is a URL or a local HTML file. ACTIONS.json is a list of steps, run in orde
 
 Frame-stepping gives a smooth clip whatever the renderer's speed. Encode the frames with encode.py. The out folder may
 not be under docs/assets/: raw frames carry no media label, so they stay in a scratch folder. It never downloads
-a browser: it uses --browser, $CHROMIUM_PATH, Playwright's own Chromium, or a system chromium, in that order. Needs the
+a browser: it uses --browser, $CHROMIUM_PATH, Playwright's own Chromium, or a system chromium, in that order. --webgl
+turns on software WebGL for 3D pages, and remote pages go through $HTTPS_PROXY when it is set. Needs the
 playwright Python package (pip install playwright; set PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 where a browser exists).
 """
 
@@ -304,8 +305,21 @@ def run_actions(page, rec, actions):
                 rec.frame()
 
 
+WEBGL_ARGS = ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader", "--ignore-gpu-blocklist"]
+
+
+def launch_options(webgl=False):
+    """Chromium launch options: software WebGL when asked (headless machines have no GPU), and $HTTPS_PROXY for remote
+    pages when one is set, with local servers reached directly."""
+    opts = {"args": list(WEBGL_ARGS)} if webgl else {}
+    proxy = os.environ.get("HTTPS_PROXY") or os.environ.get("https_proxy")
+    if proxy:
+        opts["proxy"] = {"server": proxy, "bypass": "127.0.0.1,localhost"}
+    return opts
+
+
 def capture(page_or_url, out_dir, actions, width=1280, height=800, scale=1.0, scheme="dark", browser=None,
-            timeout=60000):
+            timeout=60000, webgl=False):
     out = Path(out_dir)
     parts = out.resolve().parts
     if any(parts[i:i + 2] == ("docs", "assets") for i in range(len(parts) - 1)):
@@ -327,7 +341,8 @@ def capture(page_or_url, out_dir, actions, width=1280, height=800, scale=1.0, sc
         b, last_err = None, None
         for t in tries:
             try:
-                b = pw.chromium.launch(executable_path=t) if t else pw.chromium.launch()
+                opts = launch_options(webgl)
+                b = pw.chromium.launch(executable_path=t, **opts) if t else pw.chromium.launch(**opts)
                 break
             except PlaywrightError as exc:
                 last_err = exc
@@ -358,11 +373,12 @@ def main(argv=None):
     p.add_argument("--scheme", choices=("dark", "light"), default="dark", help="prefers-color-scheme (default dark)")
     p.add_argument("--browser", help="Chromium executable (default: $CHROMIUM_PATH, Playwright's, then a system one)")
     p.add_argument("--timeout", type=int, default=60000, help="per-action timeout in milliseconds (default 60000)")
+    p.add_argument("--webgl", action="store_true", help="software WebGL (SwiftShader) for 3D pages such as Neuroglancer")
     args = p.parse_args(argv)
     try:
         actions = json.loads(Path(args.actions).read_text(encoding="utf-8")) if args.actions else [{"shot": "page"}]
         result = capture(args.page, args.out_dir, actions, args.width, args.height, args.scale, args.scheme,
-                         args.browser, args.timeout)
+                         args.browser, args.timeout, args.webgl)
         print(json.dumps(result))
         return 0
     except (CaptureError, OSError, ValueError) as exc:
