@@ -1,0 +1,211 @@
+{
+ "schema": "scrolls-stages/1",
+ "about": "Options the code tables do not list, and facts they do not carry (licence, maturity and why), for kit/stagereg.py. Public: nothing private goes in this file; private-only options are in a second file that public copies do not have. Every maturity other than default or validated says why.",
+ "defaults": {
+  "autopipeline": {
+   "surface": "catalog",
+   "render": "villa"
+  },
+  "scroll2ink": {
+   "trace": "villa",
+   "flatten": "villa",
+   "render": "villa",
+   "ink": "reader-v2"
+  }
+ },
+ "options": [
+  {
+   "stage": "surface",
+   "name": "catalog",
+   "origin": "team",
+   "licence": "challenge open data (CC BY-NC 4.0)",
+   "by": "the scan's published surface prediction and normal grids from the open-data catalog (the organisers' nnU-Net surface model m7 where the catalog names it; AutoPipeline records it as resolved.prediction_model)",
+   "maturity": "default",
+   "use": {
+    "autopipeline": {
+     "settings": {}
+    },
+    "scroll2ink": {
+     "args": []
+    }
+   }
+  },
+  {
+   "stage": "surface",
+   "name": "forrest-surface",
+   "origin": "community",
+   "licence": "none stated",
+   "fetch": "runtime",
+   "by": "Forrest's surface predictions published with his volcomp volumes on dl.ash2txt.org",
+   "maturity": "experimental",
+   "why": "no held-out comparison with m7 recorded here; read from its own host at run time, never copied",
+   "reach": "https://dl.ash2txt.org/community-uploads/forrest/volcomp/"
+  },
+  {
+   "stage": "trace",
+   "name": "villa",
+   "origin": "community",
+   "licence": "GPL-3.0 (called, not copied)",
+   "by": "villa's vc_grow_seg_from_seed on the published surface prediction and normal grids",
+   "use": {
+    "scroll2ink": {
+     "args": []
+    }
+   }
+  },
+  {
+   "stage": "trace",
+   "name": "villa-neural",
+   "origin": "community",
+   "licence": "GPL-3.0 (villa; called, not copied)",
+   "by": "villa's neural tracer",
+   "maturity": "experimental",
+   "why": "no held-out comparison with villa's standard tracer recorded here",
+   "reach": "villa (ScrollPrize/villa)"
+  },
+  {
+   "stage": "flatten",
+   "name": "villa",
+   "origin": "community",
+   "licence": "GPL-3.0 (called, not copied)",
+   "by": "villa's vc_flatten (ABF++)",
+   "use": {
+    "scroll2ink": {
+     "args": []
+    }
+   }
+  },
+  {
+   "stage": "render",
+   "name": "villa",
+   "origin": "community",
+   "licence": "GPL-3.0 (called, not copied)",
+   "by": "villa's vc_render_tifxyz",
+   "maturity": "default",
+   "use": {
+    "autopipeline": {
+     "settings": {}
+    },
+    "scroll2ink": {
+     "args": []
+    }
+   }
+  },
+  {
+   "stage": "ink",
+   "name": "reader-v3",
+   "licence": "MIT (Domenico Russo)"
+  },
+  {
+   "stage": "ink",
+   "name": "reader-v2",
+   "origin": "community",
+   "licence": "MIT (Domenico Russo)",
+   "dims": "2.5d",
+   "by": "Reader v2, Domenico Russo's fine-tune of ink_9um",
+   "maturity": "validated",
+   "why": "scored on PHerc0841, held out from it, against the reverse-depth control (public docs/results.json, results)",
+   "use": {
+    "scroll2ink": {
+     "args": [
+      "--model",
+      "reader-v2"
+     ]
+    }
+   }
+  },
+  {
+   "stage": "ink",
+   "name": "ink_9um-seed42",
+   "origin": "team",
+   "licence": "MIT (scrollprize/ink_9um model card, checked 25 Oct 2026)",
+   "dims": "2.5d",
+   "by": "the organisers' 9 um ink model, seed 42 at step 75,000",
+   "maturity": "validated",
+   "why": "scored on PHerc0841, held out from it, against the reverse-depth control (public docs/results.json, results)",
+   "use": {
+    "scroll2ink": {
+     "args": [
+      "--model",
+      "ink_9um-seed42"
+     ]
+    }
+   }
+  },
+  {
+   "stage": "ink",
+   "name": "ink_9um-seed43",
+   "origin": "team",
+   "licence": "MIT (scrollprize/ink_9um model card, checked 25 Oct 2026)",
+   "dims": "2.5d",
+   "by": "the organisers' 9 um ink model, seed 43 at step 75,000",
+   "maturity": "validated",
+   "why": "scored on PHerc0841, held out from it, against the reverse-depth control (public docs/results.json, results)",
+   "use": {
+    "scroll2ink": {
+     "args": [
+      "--model",
+      "ink_9um-seed43"
+     ]
+    }
+   }
+  },
+  {
+   "stage": "ink",
+   "name": "d9v2",
+   "origin": "community",
+   "licence": "none stated on its model page (checked 25 Oct 2026); fetched from its own repo, never copied",
+   "fetch": "runtime",
+   "dims": "2.5d",
+   "by": "d9v2, TAUIL-Abd-Elilah's fine-tune of ink_9um",
+   "maturity": "validated",
+   "why": "scored on PHerc0841, held out from it, against the reverse-depth control (public docs/results.json, results)",
+   "use": {
+    "scroll2ink": {
+     "args": [
+      "--model",
+      "d9v2"
+     ]
+    }
+   }
+  },
+  {
+   "stage": "ink",
+   "name": "v8in",
+   "origin": "community",
+   "licence": "MIT (Youssef Nader)",
+   "dims": "2.5d",
+   "by": "v8in, Youssef Nader's ResNet3D-50 ink model",
+   "maturity": "validated",
+   "why": "scored on PHerc0841, held out from it, against the reverse-depth control (public docs/results.json, results)",
+   "use": {
+    "scroll2ink": {
+     "args": [
+      "--model",
+      "v8in"
+     ]
+    }
+   }
+  },
+  {
+   "stage": "lasagna",
+   "name": "villa-lasagna",
+   "origin": "community",
+   "licence": "GPL-3.0 (villa; called, not copied)",
+   "by": "villa's lasagna net (predict3d: cos, grad_mag, normals) and its surface fit (lasagna/fit.py)",
+   "maturity": "validated",
+   "why": "the community's method; its fields are what Lasagna Fields publishes",
+   "reach": "villa (ScrollPrize/villa, lasagna/)"
+  },
+  {
+   "stage": "spiral",
+   "name": "villa-spiral-fit",
+   "origin": "community",
+   "licence": "GPL-3.0 (villa; called, not copied)",
+   "by": "villa's spiral fit of the whole roll",
+   "maturity": "validated",
+   "why": "the community's method",
+   "reach": "villa (ScrollPrize/villa)"
+  }
+ ]
+}
