@@ -27,7 +27,7 @@ Maturity is one scale for every stage: `default` (what a workflow runs when noth
 
 Licences are stated per option. Code or weights with no stated licence are only read from their own host at run time (`fetch: runtime`), never copied; `check` fails a row that breaks this.
 
-Where a workflow already has a backend table (AutoPipeline's `kit/apbackends.py`, when a copy has it), the registry reads it instead of repeating it, and any extension module `kit/stagereg_ext_NAME.py` can add options and workflows. The facts no code table carries live in `kit/data/stages.json`. In this repository the workflow that picks through it is [scroll2ink](scroll2ink.md) (`--use ink=d9v2`).
+Where a workflow already has a backend table, an extension module `kit/stagereg_ext_NAME.py` reads it instead of repeating it, and can add workflows. The facts no code table carries live in `kit/data/stages.json`. In this repository the workflow that picks through it is [scroll2ink](scroll2ink.md) (`--use ink=d9v2`).
 
 ## When to use it
 
@@ -107,7 +107,7 @@ The rest of the line goes to the registry's own parser (`usage: python -m kit st
 | `add_arguments(parser)` | the parser | none | Adds `--use STAGE=NAME` |
 | `uses(values)` | `{stage: name}` | `StageError` | {stage: name} from --use STAGE=NAME values; refuses a malformed one or a stage named twice. |
 | `picks(values, workflow, env=None, stages=None)` | `{stage: option}` | `StageError` | {stage: picked option} for every stage named by --use (or the environment), checked for this workflow. |
-| `ap_settings(picked)` | AutoPipeline settings | `StageError` | AutoPipeline settings for the picked options: the backends shorthand of AutoPipeline's `kit/apbackends.py`, for copies that have it |
+| `ap_settings(picked)` | AutoPipeline settings | `StageError` | AutoPipeline settings for the picked options: AutoPipeline's backends shorthand, for copies that run AutoPipeline |
 | `check(files=FILES, folder=DATA)` | list of problems | `StageError` on a bad data file | Problems with the catalogue: every option names a known stage, a maturity on the scale, an origin and a licence |
 | `main(argv=None)` | exit code | none | The command line |
 
@@ -146,7 +146,7 @@ The data files are JSON, schema `scrolls-stages/1`: `{"schema", "about", "defaul
 
 ## How it works
 
-`catalogue()` collects rows from any backend table this copy has (AutoPipeline's `kit/apbackends.py`) and each extension's `rows()`, then lays the data files over them by `(stage, name)`. A row from a code table keeps its own description and gains the data row's facts; a data row with no `by` only annotates an option listed elsewhere. An option with no maturity is `experimental`, an off switch `validated`, and a workflow's default `default`. `pick()` resolves a name, refuses a pending option first, then one the workflow cannot run (with its `reach`), and adds a warning for any maturity other than default or validated.
+`catalogue()` collects each extension's `rows()`, then lays the data files over them by `(stage, name)`. A row from a code table keeps its own description and gains the data row's facts; a data row with no `by` only annotates an option listed elsewhere. An option with no maturity is `experimental`, an off switch `validated`, and a workflow's default `default`. `pick()` resolves a name, refuses a pending option first, then one the workflow cannot run (with its `reach`), and adds a warning for any maturity other than default or validated.
 
 ## Cost and time
 

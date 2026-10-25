@@ -52,7 +52,7 @@
    "by": "villa's lasagna predict3d outputs for ten scans, shared by the Lasagna Fields Space", "maturity": "validated",
    "why": "villa's own outputs, published unchanged",
    "reach": "https://huggingface.co/spaces/SharpMeow/lasagna-fields"},
-  {"stage": "spiralfit", "name": "villa-spiralfit", "origin": "community", "licence": "GPL-3.0 (villa; called, not copied)",
+  {"stage": "spiral", "name": "villa-spiral-fit", "origin": "community", "licence": "GPL-3.0 (villa; called, not copied)",
    "by": "villa's spiral fit of the whole roll", "maturity": "validated", "why": "the community's method",
    "reach": "villa (ScrollPrize/villa)"},
   {"stage": "letters", "name": "scroll-text-reader", "origin": "ours", "licence": "CC BY 4.0 weights (letters-v2-ccby); CC BY-NC 4.0 (letters-v2-real)",

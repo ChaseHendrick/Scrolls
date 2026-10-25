@@ -1,8 +1,7 @@
 """The stage registry: every option we know for each stage of reading a scroll (ours, public and private; the
 community's; the organisers' team models; released versions), in one list that every workflow chooses from, so a
 tracer, a surface model, an ink model (2.5D or 3D) or a letter reader can be swapped by name, never by editing a
-workflow (Chase, 25 Oct 2026: "let it switch between anything else too", "allow our workflows to do the same
-wherever and whenever needed").
+workflow (decided 25 Oct 2026: every workflow may swap any stage, wherever and whenever needed).
 
     python -m kit stages list [STAGE] [--workflow W] [--json]   every option: origin, licence, maturity, workflows
     python -m kit stages show STAGE NAME [--json]                one option in full
@@ -10,9 +9,8 @@ wherever and whenever needed").
     python -m kit stages check [--json]                          the catalogue against its rules (the tests run it)
 
 Where the options come from. A workflow that already has a backend table keeps it, and the registry reads it, so
-nothing is listed twice: AutoPipeline's (kit/apbackends.py, its ink models including the 3D ones of kit/ink3d.py),
-when this copy has them, and any extension module kit/stagereg_ext_NAME.py, whose rows() returns (rows, defaults) and
-whose WORKFLOWS names the workflows it adds. The data files add what no code table lists and the facts a table does
+nothing is listed twice: each extension module kit/stagereg_ext_NAME.py reads one (its rows() returns (rows,
+defaults), its WORKFLOWS names the workflows it adds), so a copy lists what its own workflows can run. The data files add what no code table lists and the facts a table does
 not carry (licence, maturity and its evidence): kit/data/stages.json ships in public copies; kit/data/stages-private.json
 and the extensions a copy keeps to itself are simply absent elsewhere. A row in a data file whose stage and name a
 code table also lists annotates that row, and a later file may annotate an earlier file's row.
@@ -49,7 +47,7 @@ STAGES = {
     "umbilicus": "the scroll's centre line",
     "surface": "the surface prediction a tracer follows (a 3D volume of sheet likelihood)",
     "lasagna": "the lasagna field: predicted sheet structure (cos, gradient, normals) for surface fitting",
-    "spiralfit": "one deformed spiral fitted to the whole roll",
+    "spiral": "one deformed spiral fitted to the whole roll",
     "pick": "where to look: a region or seed rule",
     "trace": "growing a surface (a tifxyz mesh) along one sheet",
     "repair": "what happens to a trace that hops onto the touching sheet",
@@ -92,43 +90,6 @@ def _data(files=FILES, folder=DATA):
         for wf, stages in (d.get("defaults") or {}).items():
             defaults.setdefault(wf, {}).update(stages)
     return rows, defaults
-
-
-def _ap_rows():
-    """AutoPipeline's backend tables (kit/apbackends.py), when this copy has them."""
-    try:
-        from . import apbackends
-    except ImportError:
-        return [], {}
-    rows, defaults = [], {}
-    for stage in apbackends.STAGES:
-        reg = stage
-        try:
-            ch = apbackends.choices(stage)
-        except Exception:  # noqa: BLE001 - a computed list that cannot load here lists nothing
-            continue
-        for name, c in ch.items():
-            origin = c.get("origin") or ("off" if c.get("kind") == "off" else None)
-            rows.append({"stage": reg, "name": name, "origin": origin, "by": c.get("by"), "kind": c.get("kind"),
-                         "licence": c.get("licence"), "needs": c.get("needs") or [], "compute": c.get("compute"),
-                         "dims": c.get("dims"), "maturity": c.get("maturity"), "why": c.get("why"),
-                         "use": {"autopipeline": {"backend": name}}, "source": "kit/apbackends.py"})
-        d = apbackends.STAGES[stage]["default"]
-        if d in ch:
-            defaults[reg] = d
-    return rows, defaults
-
-
-def _ink3d_rows():
-    """kit ink3d's 3D models, runnable alone from the command line (AutoPipeline lists them through its ink table)."""
-    try:
-        from . import ink3d
-    except ImportError:
-        return []
-    return [{"stage": "ink", "name": n, "dims": "3d", "use": {"cli": {"command": ["python", "-m", "kit", "ink3d",
-                                                                                "run", n]}},
-             "source": "kit/ink3d.py", **{k: m.get(k) for k in ("origin", "by", "licence", "why") if m.get(k)},
-             "maturity": m.get("status", "experimental")} for n, m in sorted(ink3d.models().items())]
 
 
 _EXT = []
@@ -185,11 +146,6 @@ def catalogue(refresh=False, files=FILES, folder=DATA):
     if key in _CACHE and not refresh:
         return _CACHE[key]
     rows, defaults = [], {}
-    ap, apd = _ap_rows()
-    rows += ap
-    if apd:
-        defaults["autopipeline"] = apd
-    rows += _ink3d_rows()
     ext, extd = _extension_rows()
     rows += ext
     for wf, st in extd.items():
@@ -324,7 +280,7 @@ def picks(values, workflow, env=None, stages=None):
 
 
 def ap_settings(picked):
-    """AutoPipeline settings for the picked options: {"backends": the shorthand of kit/apbackends.py, plus any plain
+    """AutoPipeline settings for the picked options: {"backends": AutoPipeline's backends shorthand, plus any plain
     settings an option stands for}, what `kit autopipeline plan --use` lays over --settings. Refuses an option
     AutoPipeline cannot run."""
     backends, settings = {}, {}
