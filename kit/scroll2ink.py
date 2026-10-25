@@ -4,14 +4,18 @@ map (with the reverse-depth control) out.
 It runs nothing of its own. Every step is a tool of Headless VC3D (the `vc3d-agent` package, 1.1.1 or newer), which
 calls villa's VC3D command line tools and villa's ink inference and checks what they return:
 
-  inputs   catalog: the scan's CT, its surface prediction and the prediction's normal grids
+  inputs   catalog: the scan's CT, its surface prediction and the prediction's normal grids, and an umbilicus for
+           the layer order (the scan's own; else another scan's of the same scroll, mapped through the catalog's
+           transform between the two)
   seed     seed_check: the seed is on the prediction and on papyrus, not air
   trace    trace: vc_grow_seg_from_seed from the seed, with the normal grids
-  check    check_surface: no self-crossings, seated on a sheet (a surface that fails stops the run)
+  check    check_surface: no self-crossings, seated on a sheet, one clear normal sign against the umbilicus (a
+           surface that fails stops the run)
   extend   extend: vc_extend_edge grows the checked surface past its edges; the extension is kept only when it
            passes check_surface too (skipped when this build has no vc_extend_edge)
   flatten  flatten: vc_flatten (ABF++)
-  render   render: vc_render_tifxyz along the flat surface, in the team's layer order
+  render   render: vc_render_tifxyz along the flat surface, in the team's layer order, its flag voted from the
+           surface's normal against the umbilicus (a grown surface need not face the way a published one does)
   ink      ink: the forward map and the reverse-depth control
   preview  preview: PNGs of the rendered layers and both maps, on one fixed scale
   report   summary.json and report.md in the run folder
@@ -32,6 +36,7 @@ import shutil
 import subprocess
 import sys
 import time
+import urllib.request
 from pathlib import Path
 
 from . import prizes
@@ -44,7 +49,8 @@ INSTALL = ("install Headless VC3D: git clone --branch submission/progress-2026-1
            "(python scripts/get_vc3d.py in that folder) or VC_BIN; or pass --agent 'CMD'")
 DEFAULTS = {"generations": 200, "trace_minutes": 60, "extend_rounds": 4, "extend_cells": 10, "check_windows": 5,
             "model": "reader-v2"}
-TRACE_GRACE_S = 300      # seconds past --trace-minutes before a tracer that ignores its time limit is stopped
+TRACE_GRACE_S = 300
+INWARD = "orientation: +N points toward the center"   # check_surface's finding for a normal facing the umbilicus      # seconds past --trace-minutes before a tracer that ignores its time limit is stopped
 # where and how fast, not what: these may differ between the parts of a split run (CPU for VC3D, a GPU for ink)
 RUNTIME = ("device", "threads")
 
@@ -115,6 +121,69 @@ def pick_volume(volumes, wanted=None):
         raise Scroll2InkError(f"volume {wanted} is not in the catalog of {volumes.get('sample')}")
     raise Scroll2InkError(f"no volume of {volumes.get('sample')} has a surface prediction with normal grids; "
                           "name one with --volume")
+
+
+def parse_umbilicus(text):
+    """Umbilicus control points [(x, y, z, score)] from the text of a villa umbilicus file: JSON with a
+    `control_points` or `points` array of objects (x, y, z) or of [z, y, x], or lines "z, y, x" (pure; tested)."""
+    text = text.strip()
+    if text[:1] in ("[", "{"):
+        data = json.loads(text)
+        if isinstance(data, dict):
+            data = data.get("control_points", data.get("points"))
+    else:
+        data = [[float(v) for v in line.split(",") if v.strip()] for line in text.splitlines()
+                if line.strip() and not line.lstrip().startswith("#")]
+    pts = []
+    for e in data or []:
+        if isinstance(e, dict) and all(k in e for k in "xyz"):
+            pts.append((float(e["x"]), float(e["y"]), float(e["z"]), e.get("score")))
+        elif isinstance(e, (list, tuple)) and len(e) >= 3:
+            pts.append((float(e[2]), float(e[1]), float(e[0]), None))
+        else:
+            raise ValueError(f"umbilicus entry {e!r} is neither [z, y, x] nor an object with x, y, z")
+    if not pts:
+        raise ValueError("umbilicus has no points")
+    return pts
+
+
+def invert_affine(m):
+    """Inverse of a 3x4 affine [[a, b, c, t], ...] acting on (x, y, z, 1) (pure; tested)."""
+    (a, b, c, tx), (d, e, f, ty), (g, h, i, tz) = m
+    det = a * (e * i - f * h) - b * (d * i - f * g) + c * (d * h - e * g)
+    if abs(det) < 1e-12:
+        raise ValueError("the transform is singular")
+    inv = [[(e * i - f * h) / det, (c * h - b * i) / det, (b * f - c * e) / det],
+           [(f * g - d * i) / det, (a * i - c * g) / det, (c * d - a * f) / det],
+           [(d * h - e * g) / det, (b * g - a * h) / det, (a * e - b * d) / det]]
+    return [row + [-(row[0] * tx + row[1] * ty + row[2] * tz)] for row in inv]
+
+
+def apply_affine(m, x, y, z):
+    return tuple(r[0] * x + r[1] * y + r[2] * z + r[3] for r in m)
+
+
+def read_text(src, timeout=60):
+    if str(src).startswith(("http://", "https://")):
+        with urllib.request.urlopen(src, timeout=timeout) as resp:
+            return resp.read().decode("utf-8")
+    return Path(src).read_text()
+
+
+def map_umbilicus(rows, transforms, target):
+    """The first other volume's umbilicus that the catalog's transforms can carry into `target`'s frame: (source
+    volume, its umbilicus URL, matrix from that volume to target), or None. A transform listed only the other way is
+    inverted (pure; tested)."""
+    for v in rows:
+        if v.get("volume") == target or not v.get("umbilicus"):
+            continue
+        for t in transforms:
+            if (t.get("from"), t.get("to")) == (v["volume"], target):
+                return v["volume"], v["umbilicus"][0]["url"], t["matrix_xyz"]
+        for t in transforms:
+            if (t.get("from"), t.get("to")) == (target, v["volume"]):
+                return v["volume"], v["umbilicus"][0]["url"], invert_affine(t["matrix_xyz"])
+    return None
 
 
 def preset_for(voxel_um):
@@ -191,7 +260,38 @@ def stage_inputs(run, agent, log):
     vol, pred, grids = pick_volume(res, s.get("volume"))
     return {"volume": vol["volume"], "long_id": vol.get("long_id"), "ct": vol["url"], "voxel_um": vol.get("voxel_um"),
             "prediction": pred, "normal_grids": grids, "license": vol.get("license"),
-            "eligible_prizes": eligible_prizes(s["sample"])}
+            "eligible_prizes": eligible_prizes(s["sample"]), **find_umbilicus(run, agent, log, res, vol)}
+
+
+def find_umbilicus(run, agent, log, volumes, vol):
+    """The umbilicus the layer order is voted against: --umbilicus, the catalog's for this scan, or another scan's
+    of the same scroll mapped into this scan's frame (written to umbilicus.json in the run folder). Without one the
+    render falls back to VC3D's usual flag and says so."""
+    s = run.settings
+    if s.get("umbilicus"):
+        return {"umbilicus": s["umbilicus"], "umbilicus_from": "given"}
+    if vol.get("umbilicus"):
+        return {"umbilicus": vol["umbilicus"][0]["url"], "umbilicus_from": "catalog"}
+    rc, tr = call(agent, "catalog", {"action": "transforms", "sample": s["sample"]}, log)
+    hit = map_umbilicus(volumes.get("volumes") or [], tr.get("transforms") or [], vol["volume"]) if rc == 0 else None
+    if not hit:
+        return {"umbilicus": None, "umbilicus_from": "none: no scan of this scroll has a published umbilicus that the "
+                                                     "catalog's transforms reach"}
+    src_vol, url, m = hit
+    try:
+        pts = parse_umbilicus(read_text(url))
+    except (OSError, ValueError) as exc:
+        return {"umbilicus": None, "umbilicus_from": f"none: {url}: {exc}"}
+    rows = []
+    for x, y, z, score in pts:
+        mx, my, mz = apply_affine(m, x, y, z)
+        rows.append({"x": round(mx, 2), "y": round(my, 2), "z": round(mz, 2), **({"score": score} if score else {})})
+    rows.sort(key=lambda r: r["z"])
+    path = run.dir / "umbilicus.json"
+    path.write_text(json.dumps({"control_points": rows, "mapped_from": {"volume": src_vol, "url": url,
+                                                                        "matrix_xyz": m}}, indent=1) + "\n")
+    return {"umbilicus": str(path), "umbilicus_from": f"{src_vol}'s published umbilicus, mapped through the catalog "
+                                                      "transform", "umbilicus_source": url}
 
 
 def stage_seed(run, agent, log, inp):
@@ -234,12 +334,20 @@ def stage_trace(run, agent, log, inp):
 
 
 def check(agent, log, surface, inp, windows, out):
-    rc, res = call(agent, "check_surface", {"surface": surface, "volume": inp["ct"], "windows": windows, "out": out},
-                   log)
+    args = {"surface": surface, "volume": inp["ct"], "windows": windows, "out": out}
+    if inp.get("umbilicus"):
+        args["umbilicus"] = inp["umbilicus"]
+    rc, res = call(agent, "check_surface", args, log)
     if rc == 2 or "error" in res:
         raise Scroll2InkError(f"check_surface: {res.get('error') or res}")
     seat = res.get("seating") or {}
-    return {"verdict": res.get("verdict"), "findings": res.get("findings") or [],
+    findings = res.get("findings") or []
+    # an inward normal is not a fault of the surface: with the umbilicus the render votes its flag from the same
+    # normal (stage_render), so only a missing or mixed sign, a crossing or an unseated window stops the run
+    notes = [f for f in findings if inp.get("umbilicus") and f.startswith(INWARD)]
+    findings = [f for f in findings if f not in notes]
+    return {"verdict": "ok" if res.get("verdict") == "look closer" and notes and not findings else res.get("verdict"),
+            "findings": findings, "notes": notes, "orientation": ((res.get("orientation") or {}).get("normal") or {}),
             "seated_windows": seat.get("seated_windows"), "seating": seat.get("verdict"),
             "selfcross": (res.get("selfcross") or {}).get("transverse")}
 
@@ -290,13 +398,15 @@ def stage_render(run, agent, log, inp, flat):
             "out": str(run.dir / "render")}
     if inp.get("voxel_um"):
         args["voxel_um"] = inp["voxel_um"]
+    if inp.get("umbilicus"):
+        args["umbilicus"] = inp["umbilicus"]
     if run.settings.get("threads"):
         args["threads"] = run.settings["threads"]
     rc, res = call(agent, "render", args, log)
     if rc != 0 or not res.get("zarr"):
         raise Scroll2InkError(f"render: {res.get('error') or res.get('log_tail', '')[-500:]}")
     return {"zarr": res["zarr"], "shape": res.get("shape"), "order": res.get("order"),
-            "warnings": res.get("warnings") or []}
+            "orientation": res.get("orientation"), "warnings": res.get("warnings") or []}
 
 
 def stage_ink(run, agent, log, inp, rnd):
@@ -419,15 +529,19 @@ def execute(run, agent, until=None, say=print, log=None):
 
 def _brief(name, out):
     if name == "inputs":
-        return f": {out['long_id']}, {out['voxel_um']} um"
-    if name in ("trace", "flatten") or (name == "extend" and out.get("area_cm2")):
+        return f": {out['long_id']}, {out['voxel_um']} um; umbilicus: {out.get('umbilicus_from')}"
+    if name == "extend" and out.get("why"):
+        return f": {out['why'][:160]}"
+    if name in ("trace", "flatten", "extend") and out.get("area_cm2") is not None:
         return f": {out.get('area_cm2')} cm2" + ("" if name != "extend" or out.get("kept", True) else " (not kept)")
     if name == "check":
         return f": {out['verdict']}, {out['seated_windows']} windows seated"
     if name == "render":
         return f": {out.get('shape')}"
     if name == "ink":
-        return f": {out['model']} on {out['device']}, forward and reverse"
+        dev = out["device"].get("reported") or out["device"].get("asked") if isinstance(out["device"], dict) else \
+            out["device"]
+        return f": {out['model']} on {dev}, forward and reverse"
     return ""
 
 
@@ -436,7 +550,7 @@ def settings_from(args):
     s = {"sample": args.sample, "seed": [float(v) for v in args.seed], "volume": args.volume}
     for k in DEFAULTS:
         s[k] = getattr(args, k)
-    s.update(snap_seed=args.snap_seed, force=args.force, experiment=args.experiment)
+    s.update(snap_seed=args.snap_seed, force=args.force, experiment=args.experiment, umbilicus=args.umbilicus)
     return s, {k: getattr(args, k) for k in RUNTIME}
 
 
@@ -461,6 +575,8 @@ def add_arguments(p):
                    help="ink model known to vc3d-agent (reader-v2, ink_9um-seed42, ink_9um-seed43, d9v2, v8in)")
     r.add_argument("--device", default="cpu", help="ink device: cpu (default), cuda or mps (may change on resume)")
     r.add_argument("--threads", type=int, help="threads for each tool (may change on resume)")
+    r.add_argument("--umbilicus", help="umbilicus file or URL in this scan's frame, for the layer order (default: "
+                   "the catalog's, else another scan's mapped through the catalog transform)")
     r.add_argument("--snap-seed", action="store_true", help="move a seed off the prediction to the nearest point on it")
     r.add_argument("--force", action="store_true", help="go on when check_surface does not say ok")
     r.add_argument("--experiment", help="preregistered experiment slug: required for ink on a prize-eligible scan")

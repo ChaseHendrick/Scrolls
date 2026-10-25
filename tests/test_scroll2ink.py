@@ -14,7 +14,7 @@ from kit import scroll2ink
 ROOT = Path(__file__).resolve().parents[1]
 
 # A stand-in for `vc3d-agent`: `vc3d call TOOL JSON` appends the call to $FAKE_LOG and answers like the real tool.
-# $FAKE_MODE changes one answer: badseed, badcheck, badextend, noextend, inkfail.
+# $FAKE_MODE changes one answer: badseed, badcheck, badextend, noextend, inkfail, inward.
 FAKE = textwrap.dedent('''
     import json, os, sys
     from pathlib import Path
@@ -31,9 +31,14 @@ FAKE = textwrap.dedent('''
         return {"path": path, "area_cm2": area}
     def out(d, rc=0):
         print(json.dumps(d)); sys.exit(rc)
+    if tool == "catalog" and a["action"] == "transforms":
+        # 222 to 111 only: the umbilicus of 111 needs the inverse; x is doubled and shifted, y and z kept
+        out({"sample": a["sample"], "transforms": [
+            {"from": "222", "to": "111", "matrix_xyz": [[2, 0, 0, 10], [0, 1, 0, 0], [0, 0, 1, 0]]}]})
     if tool == "catalog":
         out({"sample": a["sample"], "volumes": [
-            {"volume": "111", "long_id": "111-2.4um.zarr", "voxel_um": 2.4, "url": B + "111/"},
+            {"volume": "111", "long_id": "111-2.4um.zarr", "voxel_um": 2.4, "url": B + "111/",
+             "umbilicus": [{"url": os.environ["FAKE_UMB"]}]},
             {"volume": "222", "long_id": "222-9.362um.zarr", "voxel_um": 9.362, "url": B + "222/",
              "license": "CC BY-NC 4.0",
              "surface_prediction_zarr": [{"url": B + "recto.zarr/", "model": "1"}, {"url": B + "m7.zarr/", "model": "7"}],
@@ -47,6 +52,9 @@ FAKE = textwrap.dedent('''
         out({"exit": 0, "surfaces": [surf(p, 2.5)], "stop": {"reason": "generations"}, "log": "t.log"})
     if tool == "check_surface":
         bad = (mode == "badcheck") or (mode == "badextend" and "extend" in a["surface"])
+        if mode == "inward":
+            out({"verdict": "look closer", "findings": ["orientation: +N points toward the center (standard)"],
+                 "orientation": {"normal": {"vote": "inward"}}, "seating": {"verdict": "seated"}})
         out({"verdict": "look closer" if bad else "ok", "findings": ["seating: not seated"] if bad else [],
              "seating": {"verdict": "not seated" if bad else "seated", "seated_windows": "0 of 5" if bad else "5 of 5"},
              "selfcross": {"transverse": 0}})
@@ -81,7 +89,10 @@ class Scroll2InkTest(unittest.TestCase):
         self.fake = self.tmp / "fake_agent.py"
         self.fake.write_text(FAKE)
         self.log = self.tmp / "calls.jsonl"
-        self.env = {**os.environ, "FAKE_LOG": str(self.log), "FAKE_MODE": ""}
+        self.umb = self.tmp / "111-umbilicus.json"
+        self.umb.write_text(json.dumps({"control_points": [{"x": 30, "y": 5, "z": 900, "score": 100},
+                                                           {"x": 50, "y": 6, "z": 100, "score": 100}]}))
+        self.env = {**os.environ, "FAKE_LOG": str(self.log), "FAKE_MODE": "", "FAKE_UMB": str(self.umb)}
 
     def kit(self, *args, mode="", out=None):
         env = {**self.env, "FAKE_MODE": mode}
@@ -101,7 +112,7 @@ class Scroll2InkTest(unittest.TestCase):
         st = self.state()
         self.assertEqual([st[k]["status"] for k in scroll2ink.STAGES], ["done"] * 10)
         tools = [c["tool"] for c in self.calls()]
-        self.assertEqual(tools, ["catalog", "seed_check", "trace", "check_surface", "extend", "check_surface",
+        self.assertEqual(tools, ["catalog", "catalog", "seed_check", "trace", "check_surface", "extend", "check_surface",
                                  "flatten", "render", "models", "fetch_model", "ink", "preview", "preview", "preview",
                                  "preview"])
         by = {c["tool"]: c["args"] for c in self.calls()}
@@ -112,6 +123,13 @@ class Scroll2InkTest(unittest.TestCase):
         self.assertEqual(by["extend"]["normals"], "https://bucket/PHerc0139/m7.zarr/")
         self.assertTrue(by["flatten"]["surface"].endswith("extend/extended"))
         self.assertEqual(by["render"]["preset"], "9um")
+        # the other scan's umbilicus, carried into this scan's frame by the inverted transform, sorted by z
+        umb = self.tmp / "run" / "umbilicus.json"
+        self.assertEqual(by["render"]["umbilicus"], str(umb))
+        self.assertEqual(by["check_surface"]["umbilicus"], str(umb))
+        pts = json.loads(umb.read_text())["control_points"]
+        self.assertEqual([(p["x"], p["y"], p["z"]) for p in pts], [(20, 6, 100), (10, 5, 900)])
+        self.assertIn("111's published umbilicus", self.state()["inputs"]["umbilicus_from"])
         self.assertEqual(by["ink"]["variants"], ["f", "r"])
         self.assertEqual(by["ink"]["purpose"], "benchmark")
         self.assertEqual(by["ink"]["device"], "cuda")
@@ -203,6 +221,44 @@ class Scroll2InkTest(unittest.TestCase):
             scroll2ink.agent_command(None, env={"PATH": str(self.tmp)})
         self.assertIn("vc3d-agent", str(cm.exception))
         self.assertEqual(scroll2ink.agent_command(None, env={"SCROLL2INK_AGENT": "a b"}), ["a", "b"])
+
+    def test_inward_normal_goes_on_with_an_umbilicus(self):
+        # the render votes the layer order from the same normal, so an inward one is a note, not a stop
+        p = self.kit("--until", "render", mode="inward")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        ch = self.state()["check"]
+        self.assertEqual((ch["verdict"], ch["findings"]), ("ok", []))
+        self.assertTrue(ch["notes"][0].startswith(scroll2ink.INWARD))
+        self.assertEqual(ch["orientation"]["vote"], "inward")
+        self.assertIn("umbilicus", [c for c in self.calls() if c["tool"] == "render"][0]["args"])
+
+    def test_given_umbilicus_wins(self):
+        p = self.kit("--until", "check", "--umbilicus", "my-umb.txt")
+        self.assertEqual(p.returncode, 0, p.stderr)
+        self.assertEqual([c["tool"] for c in self.calls()][:2], ["catalog", "seed_check"])
+        self.assertEqual(self.state()["inputs"]["umbilicus"], "my-umb.txt")
+        self.assertEqual([c for c in self.calls() if c["tool"] == "check_surface"][0]["args"]["umbilicus"],
+                         "my-umb.txt")
+
+    def test_umbilicus_helpers(self):
+        self.assertEqual(scroll2ink.parse_umbilicus('{"control_points": [{"x": 1, "y": 2, "z": 3, "score": 9}]}'),
+                         [(1.0, 2.0, 3.0, 9)])
+        self.assertEqual(scroll2ink.parse_umbilicus("# z, y, x\n3, 2, 1\n"), [(1.0, 2.0, 3.0, None)])
+        self.assertEqual(scroll2ink.parse_umbilicus("[[3, 2, 1]]"), [(1.0, 2.0, 3.0, None)])
+        with self.assertRaises(ValueError):
+            scroll2ink.parse_umbilicus("{}")
+        m = [[0, -3, 0, 7], [2, 0, 0, -1], [0, 0, 4, 2]]
+        inv = scroll2ink.invert_affine(m)
+        back = scroll2ink.apply_affine(inv, *scroll2ink.apply_affine(m, 5, -2, 11))
+        for a, b in zip(back, (5, -2, 11)):
+            self.assertAlmostEqual(a, b)
+        with self.assertRaises(ValueError):
+            scroll2ink.invert_affine([[1, 0, 0, 0], [1, 0, 0, 0], [0, 0, 1, 0]])
+        rows = [{"volume": "A", "umbilicus": [{"url": "a.json"}]}, {"volume": "B"}]
+        direct = [{"from": "A", "to": "B", "matrix_xyz": m}]
+        self.assertEqual(scroll2ink.map_umbilicus(rows, direct, "B"), ("A", "a.json", m))
+        self.assertIsNone(scroll2ink.map_umbilicus(rows, direct, "C"))
+        self.assertIsNone(scroll2ink.map_umbilicus(rows, [], "B"))
 
     def test_pure_helpers(self):
         self.assertEqual(scroll2ink.preset_for(9.362), "9um")
