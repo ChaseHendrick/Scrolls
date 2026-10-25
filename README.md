@@ -120,19 +120,19 @@ All released tools, including the tools grouped under Scrolls kit:
 
 *Concept illustration: a papyrus surface traced in copper and flattened into a grid. No scan data.*
 
-Released 25 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix8`: [`submissions/progress-2026-10-fix8/` at commit `bf807b6`](https://github.com/ChaseHendrick/Scrolls/tree/bf807b6fbde450bd8eb8b92654f529db06d19d3c/submissions/progress-2026-10-fix8).
+Released 25 October 2026 as a reviewed package on branch `submission/progress-2026-10-fix9`: [`submissions/progress-2026-10-fix9/` at commit `2144cdf`](https://github.com/ChaseHendrick/Scrolls/tree/2144cdfcac4ecfc33150f7e81317e5ab33f248d6/submissions/progress-2026-10-fix9).
 
-AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.8 makes Domenico Russo's Reader V3 (MIT) the default reader in place of his Reader v2, and the ink Space runs it too. Reader V3 continues Reader v2 on 384 px tiles with the same data and checkpoint format, so villa's ink detection runs it the same way, at its own patch size. It is the newest release of that reader family; no rule fixed in advance chose it and this release does not claim it reads ink better. 0.1.7 drew ink maps in color in the run monitor and the ink Space, and 0.1.6 put the monitor on one screen with a console and added opt-in steps. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
+AutoPipeline drives villa's VC3D tools and ink detection from a released scan through surface checks, rendering and controlled scoring. Version 0.1.9 lets a plan swap any stage by name (`plan --use STAGE=NAME`) from a stage registry that lists every option with its maker, licence and maturity, and adds 3D ink readers to the ink stage, opt in and experimental: the organisers' Paris 4 3D model and published 3D predictions, read onto the same pixels as the 2.5D map with a moved-sheet control. Reader V3 stays the default reader; none of the 3D readers has beaten it on a held-out test. 0.1.8 made Reader V3 the default, and 0.1.7 drew ink maps in color. These are software changes, not a new ink-accuracy or scroll-reading result. The package retains its earlier evidence and limitations.
 
 ```bash
-git clone --branch submission/progress-2026-10-fix8 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
-cd scrolls-autopipeline/submissions/progress-2026-10-fix8/autopipeline
+git clone --branch submission/progress-2026-10-fix9 --depth 1 https://github.com/ChaseHendrick/Scrolls.git scrolls-autopipeline
+cd scrolls-autopipeline/submissions/progress-2026-10-fix9/autopipeline
 python3 -m venv .venv && . .venv/bin/activate   # Python 3.11 or newer
 python -m pip install -e .
 python scripts/demo_synthetic.py
 ```
 
-Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix8/submissions/progress-2026-10-fix8/autopipeline/README.md). [Changes since 0.1.7](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix8/submissions/progress-2026-10-fix8/CHANGES.md). A plan that names reader-v3 now runs villa's ink detection; the koine route is reader-v3-koine.
+Install, monitor and console, opt-in steps, synthetic demo and limitations: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix9/submissions/progress-2026-10-fix9/autopipeline/README.md). [Changes since 0.1.8](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-fix9/submissions/progress-2026-10-fix9/CHANGES.md). A plan's `--use ink=reader-v3,team-3d-paris4` runs a 3D reader beside the default.
 
 ### Unroll (interactive 3D scroll viewer)
 
