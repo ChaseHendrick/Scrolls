@@ -279,6 +279,15 @@
           "command": "python -m kit.hfpull ink_9um/labels/aligned-scrollprizeorg-21slices/pherc0139-w035 labels/w035",
           "page": "docs/tools/hfpull.md",
           "evidence": "[bench record](scripts/experiments/2026-10-25-label-pull/README.md), [tests](tests/test_hfpull.py)"
+        },
+        {
+          "id": "crowdmerge",
+          "name": "Crowd-trace merger (experimental)",
+          "released": "2026-10-25",
+          "summary": "Fuses several tifxyz traces of the same papyrus sheet into one consensus surface by a vote along the surface normal, grows it past the base trace, weighs each trace by how often it agrees, and writes a slip mask per trace for VC3D. On a preregistered bench of planted crowds from PHerc0139's hand-traced windings (7 traces per site, 3 sliding onto the touching winding; held-back windings w032 to w040), the merged surface was off the sheet on 0.96 % of its area against 13.8 % for the largest single trace and 18.2 % for a naive average, and the flags found 93.8 % of the slipped area at 99.3 % precision; a wrong majority still wins, as the sham control shows. CPU only; real crowds not yet tested. Geometry only, never a reading.",
+          "command": "python -m kit crowdmerge merge TRACE_A TRACE_B TRACE_C --out OUT",
+          "page": "docs/tools/crowdmerge.md",
+          "evidence": "`crowdmerge_bench` in [results.json](docs/results.json), [preregistration](docs/prereg/2026-10-24-crowdmerge.md)"
         }
       ],
       "where": "main"

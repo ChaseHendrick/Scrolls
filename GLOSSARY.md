@@ -62,6 +62,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **CPU**: The computer's general-purpose processor. Ink inference that runs on the CPU is much slower than on a GPU.
 
+**crowd trace, consensus surface**: Several traces of the same papyrus sheet made independently (by different people, or tracer runs from different seeds) form a crowd; the consensus surface is the one surface most of them agree on, vertex by vertex along the normal. `python -m kit crowdmerge` builds it and flags where each trace slipped off it; page [`docs/tools/crowdmerge.md`](docs/tools/crowdmerge.md).
+
 **crop**: A rectangular window cut from a map or volume. Gate A scores fixed crops of densest labeled ink, with a 64 pixel inner edge left out (`--inner 64`).
 
 **CT (computed tomography)**: Building a 3D image of an object from many X-ray projections taken at different angles.

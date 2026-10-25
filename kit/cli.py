@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,crowdmerge,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1008,7 +1008,7 @@ GROUPS = (
                                     "volumeview", "segzoo")),
     ("Segments and geometry", ("scroll2ink", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck", "uvgate",
                                "windconsistency", "axispolish",
-                               "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers")),
+                               "windlabel-box", "hopbench", "crowdmerge", "overlap", "meshaudit", "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
                                            "leaderboard")),
@@ -1128,6 +1128,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import hopbench as _hb
     _hb.build_parser(p)
     p.set_defaults(func=_hb.cmd_hopbench)
+
+    p = sub.add_parser("crowdmerge", help="fuse several traces of one sheet into one consensus surface and flag "
+                                          "each trace's slips; planted-slip bench on PHerc0139")
+    from . import crowdmerge as _cm
+    _cm.build_parser(p)
+    p.set_defaults(func=_cm.cmd_crowdmerge)
 
     p = sub.add_parser("labels", help="published ink labels per segment, with which public models trained on them")
     from . import labels as _labels

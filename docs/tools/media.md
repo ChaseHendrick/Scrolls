@@ -8,7 +8,7 @@
 | Status | Current |
 | Kind | script folder |
 | Area | Releases and repository |
-| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/vc3d_agent_session.py` |
+| Run | `python scripts/media/hero.py`, `python scripts/media/encode.py`, `python scripts/media/capture_web.py`, `python scripts/media/record_ap_monitor.py`, `python scripts/media/sweep.py`, `python scripts/media/tifxyz_stills.py`, `python scripts/media/isometry_media.py`, `python scripts/media/coverage_still.py`, `python scripts/media/crowdmerge_still.py`, `python scripts/media/vc3d_agent_session.py` |
 | Code | `scripts/media/` |
 | Tests | `tests/test_media.py`, `tests/test_repo.py` (`test_assets_are_listed_labeled_and_within_limits`) |
 | Needs | Python 3.10 or newer. `hero.py` and `sweep.py`: numpy and Pillow, and the Inter font for social cards. `encode.py`: ffmpeg (libx264) and gifsicle. `capture_web.py`: the `playwright` package and a Chromium it can start (it never downloads one). `common.py` is standard library only |
@@ -228,6 +228,19 @@ The still on the [coverage](coverage.md) page: `kit coverage`'s picture of one s
 | `--volume` | required | The volume whose meshes and center line are used |
 | `--out-dir` | required | Writes `NAME.png` and its sidecar |
 | `--name` | `coverage-pherc0139` | The file name without `.png` |
+
+### `python scripts/media/crowdmerge_still.py`
+
+The still on the [crowdmerge](crowdmerge.md) page: one planted crowd of a PHerc0139 hand-traced winding and what `kit crowdmerge` makes of it, as a cross-section along one row of an 8 mm window (needs Pillow, scipy and `python -m kit hopbench refs`).
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--site` | required | Four values: windings A and B and the window's top-left native row and column, as a bench row's `A`, `B` and `at` |
+| `--seed` | `3` | The crowd's random seed |
+| `--row-frac` | `0.5` | Which row of the window, 0 (top) to 1 (bottom) |
+| `--refs` | `work/hopbench/refs/PHerc0139-20250728140407` | The references `kit hopbench refs` built |
+| `--out-dir` | required | Writes `NAME.png` and its sidecar |
+| `--name` | `crowdmerge-pherc0139` | The file name without `.png` |
 
 ### `python scripts/media/vc3d_agent_session.py`
 

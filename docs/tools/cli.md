@@ -119,6 +119,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `cost` | none | `cmd_cost` | [plan](plan.md) | estimate run cost in USD |
 | `find` | none | `find.cmd_find` (in `kit/find.py`) | [find](find.md) | everything public for one scroll: volumes, segments, predictions, center lines and Hugging Face matches |
 | `hopbench` | `refs`, `run` | `hopbench.cmd_hopbench` (in `kit/hopbench.py`) | [hopbench](hopbench.md) | planted-hop benchmark: does a surface prediction keep touching sheets apart on PHerc0139's hand-traced windings |
+| `crowdmerge` | `merge`, `bench` | `crowdmerge.cmd_crowdmerge` (in `kit/crowdmerge.py`) | [crowdmerge](crowdmerge.md) | fuse several traces of one sheet into one consensus surface and flag each trace's slips; planted-slip bench on PHerc0139 |
 | `labels` | none | `labels.cmd_labels` (in `kit/labels.py`) | [labels](labels.md) | published ink labels per segment, with which public models trained on them |
 | `centerline` | `list`, `get` | `centerline.cmd_centerline` (in `kit/centerline.py`) | [centerline](centerline.md) | get a scroll's center line into your VC3D project as umbilicus.json |
 | `cite` | none | `find.cmd_cite` (in `kit/find.py`) | [find](find.md) | credit and licence lines for a scroll's volumes and center lines |
