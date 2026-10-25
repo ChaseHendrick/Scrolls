@@ -5,7 +5,7 @@ surface prediction, so their slips may sit at the same contacts. This script pic
 scores the merged result against the hand trace, as frozen in docs/prereg/2026-10-25-crowdmerge-real-crowd.md.
 PHerc0139 is public and on no prize list; the traces are mesh geometry only.
 
-  python scripts/crowdmerge/realcrowd.py seeds [--windings w027 w037] [--json]
+  python scripts/crowdmerge/realcrowd.py seeds [--windings w027 w037] [--agent DIR] [--json]
   python scripts/crowdmerge/realcrowd.py score TRACES [--out FILE]     # TRACES/<winding>/<k>/{x,y,z}.tif
 
 Needs numpy, scipy and tifffile, and `python -m kit hopbench refs` first.
@@ -14,6 +14,7 @@ Needs numpy, scipy and tifffile, and `python -m kit hopbench refs` first.
 import argparse
 import json
 import math
+import subprocess
 import sys
 import time
 from pathlib import Path
@@ -25,10 +26,16 @@ from kit import sheetrefs as sr  # noqa: E402
 
 WINDINGS = ("w027", "w037")
 SEEDS = 7
+CANDIDATES = 14   # with --agent: the 7 angles first, then the 7 between them, until SEEDS pass the tracer's check
 RADIUS_MM = 3.0
 ON_VOX, SLIP_VOX, OFF_VOX = 2.0, 6.0, 4.0
 COVER_VOX = 4.0
 MIN_TRACE_CM2 = 1.0
+SHIFT_VOX = 6
+PREDICTION = ("https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/representations/predictions/"
+              "surfaces/20250728140407-surface-20260413222639-surface-m7-L0-th0.2.zarr/")
+CT = ("https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/"
+      "20250728140407-9.362um-1.2m-113keV-masked.zarr/")
 BARS = {"off_vs_largest_max": 0.5, "coverage_vs_largest_min": 0.9, "flag_recall_min": 0.8,
         "flag_precision_min": 0.8, "void_slipped_share_min": 0.02, "void_traces_min": 4, "control_ratio_min": 5.0}
 
@@ -38,8 +45,9 @@ def _np():
 
 
 def seeds(refs, man, names=WINDINGS):
-    """Per winding: the centre (the middle cell of its first bench contact site) and SEEDS points on a RADIUS_MM
-    circle around it, each the nearest labelled vertex of the hand trace, in level-0 voxels (x, y, z)."""
+    """Per winding: the centre (the middle cell of its first bench contact site) and points on a RADIUS_MM circle
+    around it, each the nearest labelled vertex of the hand trace, in level-0 voxels (x, y, z): "seeds" at SEEDS
+    equal angles, "candidates" at CANDIDATES equal angles with those SEEDS first."""
     np = _np()
     R = {r.name: r for r in refs}
     out = {}
@@ -53,14 +61,39 @@ def seeds(refs, man, names=WINDINGS):
         lab = np.argwhere(A.labelled())
         cells = RADIUS_MM * 1000.0 / sr.VOXEL_UM / A.step
         pts = []
-        for k in range(SEEDS):
-            t = 2 * math.pi * k / SEEDS
+        step = CANDIDATES // SEEDS
+        for k in [k for k in range(CANDIDATES) if k % step == 0] + [k for k in range(CANDIDATES) if k % step]:
+            t = 2 * math.pi * k / CANDIDATES
             want = c + cells * np.array([math.sin(t), math.cos(t)])
             rc = lab[int(np.argmin(((lab - want) ** 2).sum(1)))]
             pts.append([int(round(float(v))) for v in A.xyz[rc[0], rc[1]]])
         out[name] = {"neighbour": st[0][1].name, "centre_cell": c.tolist(), "radius_cells": round(cells, 2),
-                     "seeds": pts}
+                     "seeds": pts[:SEEDS], "candidates": pts}
     return out
+
+
+def seed_check(agent, xyz):
+    """Headless VC3D's seed_check (the tracer's own gate): on the m7 prediction and on papyrus in the CT."""
+    out = subprocess.run([sys.executable, "-m", "kit", "vc3d", "call", "seed_check",
+                          json.dumps({"volume": PREDICTION, "seed": list(xyz), "ct": CT})],
+                         cwd=agent, capture_output=True, text=True)
+    try:
+        return json.loads(out.stdout)
+    except json.JSONDecodeError:
+        raise sr.BenchError(f"seed_check failed: {out.stderr[-500:]}")
+
+
+def checked(A, xyz, agent):
+    """Move a seed along A's normal to the nearest point (whole voxels, up to SHIFT_VOX, the + side first on a tie)
+    that the tracer's seed_check accepts. Returns (point, shift) or (None, None)."""
+    np = _np()
+    _, _, _, n = sr.match(np.array([xyz], float), A)
+    n = n[0] / (np.linalg.norm(n[0]) or 1.0)
+    for d in sorted(range(-SHIFT_VOX, SHIFT_VOX + 1), key=lambda d: (abs(d), -d)):
+        q = [int(round(float(v))) for v in np.array(xyz, float) + d * n]
+        if seed_check(agent, q).get("ok"):
+            return q, d
+    return None, None
 
 
 def _cover(A, P, valid, workers=2):
@@ -198,6 +231,7 @@ def main(argv=None):
     a = sub.add_parser("seeds", help="the preregistered seed points")
     a.add_argument("--windings", nargs="+", default=list(WINDINGS))
     a.add_argument("--refs", default=str(sr.DEFAULT_REFS))
+    a.add_argument("--agent", help="Headless VC3D folder: move each seed to where its seed_check passes")
     a.add_argument("--json", action="store_true")
     a = sub.add_parser("score", help="merge and score each winding's crowd")
     a.add_argument("traces", help="folder with one subfolder per winding, one tifxyz folder per trace in each")
@@ -208,12 +242,25 @@ def main(argv=None):
     man, refs = sr.load_refs(a.refs)
     if a.cmd == "seeds":
         res = seeds(refs, man, a.windings)
+        if a.agent:
+            R = {r.name: r for r in refs}
+            for name, r in res.items():
+                r["checked"], r["shift_vox"], r["from_candidate"] = [], [], []
+                for i, s in enumerate(r["candidates"]):
+                    q, d = checked(R[name], s, a.agent)
+                    if q is not None:
+                        r["checked"].append(q)
+                        r["shift_vox"].append(d)
+                        r["from_candidate"].append(i)
+                    if len(r["checked"]) == SEEDS:
+                        break
         if a.json:
             print(json.dumps(res, indent=1))
         else:
             for name, r in res.items():
-                for k, s in enumerate(r["seeds"]):
-                    print(name, k, *s)
+                for k, s in enumerate(r.get("checked") or r["seeds"]):
+                    if s is not None:
+                        print(name, k, *s)
         return 0
     R = {r.name: r for r in refs}
     rows = []

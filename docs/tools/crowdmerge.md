@@ -161,6 +161,7 @@ The real-crowd test of the [real-crowd preregistration](../prereg/2026-10-25-cro
 | Option | Default | Meaning |
 | --- | --- | --- |
 | `--windings W ...` | `w027 w037` | `seeds`: the hand-traced windings to seed |
+| `--agent DIR` | none | `seeds`: a Headless VC3D folder; each seed moves along the hand trace's normal (up to 6 voxels) to where the tracer's `seed_check` passes, drawing on 14 candidates until 7 pass ([amendment 1](../prereg/2026-10-25-crowdmerge-real-crowd-amendment-1.md)) |
 | `--refs REFS` | `work/hopbench/refs/PHerc0139-20250728140407` | kit hopbench refs output |
 | `--json` | off | `seeds`: print as JSON |
 | `--out FILE` | `TRACES/realcrowd.json` | `score`: report path |
@@ -232,6 +233,7 @@ The real-crowd test of the [real-crowd preregistration](../prereg/2026-10-25-cro
 | `crowdmerge: no vertex of the base is agreed by enough traces` | the traces do not overlap the base, or are in different frames | check they trace the same region in the same volume |
 | `crowdmerge: split must be dev, report or all, not ...`, `unknown method ...` | API misuse | use one of the listed values |
 | `WINDING has no contact site` | `realcrowd.py seeds` on a winding that touches no chain neighbor | pick another winding |
+| `seed_check failed: ...` | `realcrowd.py seeds --agent DIR` could not run Headless VC3D's `seed_check` in DIR, or it printed no JSON | point `--agent` at a Headless VC3D folder (v1.1.1); it needs network access to the open-data bucket |
 | `crowdmerge: no usable site` | the references are missing or empty | run `python -m kit hopbench refs` |
 | `crowdmerge: ...: no x.tif (not a tifxyz folder)` | a path is not a tifxyz folder | point at the folder holding x.tif |
 | A consensus that follows the wrong sheet | most traces present there are on that sheet | it is a vote; check with the slip flags of the traces you trust, or add independent traces |
