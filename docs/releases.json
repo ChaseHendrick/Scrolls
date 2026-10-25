@@ -676,6 +676,18 @@
       "summary": "Displays published segment meshes with geometry warnings and the Segment Atlas table, with an API and MCP server for agents. These geometry checks do not establish that a surface follows one papyrus sheet.",
       "details": "[Tool page](docs/tools/segment-lens.md), [source](spaces/segment-lens/), and [public viewer](https://huggingface.co/spaces/SharpMeow/segment-lens).",
       "where": "main"
+    },
+    {
+      "id": "lasagnetta",
+      "title": "Lasagnetta (experimental fast preview of villa's lasagna field)",
+      "released": "2026-10-25",
+      "summary": "An experimental student of villa's lasagna net: it writes a lasagna field preview in villa's own layout about 4 times faster than villa `predict3d` (59.6 s against 235.2 s on one region, RTX Pro 6000), from three small 3D U-Nets averaged ([weights](https://huggingface.co/SharpMeow/lasagnetta), CC BY-NC 4.0). **It failed its held-out test**: agreement with villa passed pooled (peak F1 0.855) but one scan of five sat under the 0.80 bar. So it ships with a self-check that runs villa's net on 12 spots and says to use villa when the median peak F1 is under 0.82. Model output; villa's own field stays the reference.",
+      "commands": [
+        "pip install torch numpy numcodecs huggingface_hub",
+        "python scripts/lasagnetta/preview.py --checkpoint release --ct s3://vesuvius-challenge-open-data/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/2 --region 9472 9984 3072 3584 4096 4608 --input-level 2 --out out --name PHerc0139"
+      ],
+      "details": "[Tool page](docs/tools/lasagnetta.md), [source](scripts/lasagnetta/), [weights and model card](https://huggingface.co/SharpMeow/lasagnetta). The self-check (`--self-check`) needs a villa checkout (`LASAGNETTA_VILLA`). Teacher credit: villa's lasagna authors (MIT).",
+      "where": "main"
     }
   ]
 }
