@@ -176,6 +176,12 @@ class CropTests(unittest.TestCase):
             self.assertFalse(out.exists())
 
     def test_base_phase_checks_crop_binding_before_gpu_or_inference(self):
+        # This archived Linux runner uses Bash 4 associative arrays. The earlier
+        # opt-in refusal tests still run on macOS Bash 3 before reaching those arrays.
+        major = subprocess.check_output(
+            ['/bin/bash', '-c', 'printf "%s" "${BASH_VERSINFO[0]}"'], text=True)
+        if int(major) < 4:
+            self.skipTest('archived Linux runner requires Bash 4 or newer for its base phase')
         module = load('protocol')
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory); out = work/'out'; (out/'crops').mkdir(parents=True)

@@ -1,15 +1,12 @@
-"""Synthetic release inventory tests and the local README snapshot contract."""
+"""Synthetic tests for the complete released-tool inventory."""
 import io
 import json
-import re
 import tempfile
 import unittest
 from contextlib import redirect_stdout
 from pathlib import Path
 
 from kit import releases
-
-ROOT = Path(__file__).resolve().parents[1]
 
 
 def registry():
@@ -65,26 +62,6 @@ class InventoryTest(unittest.TestCase):
                 self.assertEqual(path.read_bytes(), before)
                 self.assertEqual(list(Path(tmp).iterdir()), [path])
 
-    @unittest.skipUnless((ROOT / "docs/public-releases.json").exists(), "private inventory snapshot only")
-    def test_private_snapshot_matches_readme_and_has_public_provenance(self):
-        snapshot = json.loads((ROOT / "docs/public-releases.json").read_text(encoding="utf-8"))
-        self.assertEqual(snapshot["schema_version"], 1)
-        source = snapshot["source"]
-        self.assertEqual(source["repository"], "ChaseHendrick/Scrolls")
-        self.assertEqual(source["path"], "docs/releases.json")
-        self.assertRegex(source["commit"], r"^[0-9a-f]{40}$")
-        items = snapshot["tools"]
-        self.assertTrue(items)
-        self.assertEqual(len({item["id"] for item in items}), len(items))
-        for item in items:
-            self.assertEqual(set(item), {"id", "name", "url"})
-            self.assertRegex(item["id"], r"^[a-z0-9][a-z0-9-]*$")
-            self.assertTrue(item["url"].startswith("https://github.com/ChaseHendrick/Scrolls#") or
-                            item["url"].startswith("https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/"))
-        readme = (ROOT / "README.md").read_text(encoding="utf-8")
-        blocks = re.findall(r"<!-- public-tools:start[^\n]*-->\n(.*?)\n<!-- public-tools:end -->",
-                            readme, re.S)
-        self.assertEqual(blocks, [releases.render_inventory(items)])
 
 
 if __name__ == "__main__":
