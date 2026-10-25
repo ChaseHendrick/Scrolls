@@ -281,6 +281,15 @@
           "evidence": "[bench record](scripts/experiments/2026-10-25-label-pull/README.md), [tests](tests/test_hfpull.py)"
         },
         {
+          "id": "stages",
+          "name": "Swap any stage by name",
+          "released": "2026-10-25",
+          "summary": "One list of every option for each stage of reading a scroll (trace, surface, lasagna field, spiral fit, flatten, render, 2.5D or 3D ink reader, letter reader and others): who made it, its licence, its maturity (default, validated, experimental, pending, failed) and why. A workflow picks an option by name instead of hard-coding it; scroll2ink takes `--use ink=NAME` (or `KIT_STAGE_INK`) and records the pick in its settings. Unlicensed code or weights are only fetched from their own host at run time. Listing an option is not evidence that it works; its maturity and why say how far it is proven.",
+          "command": "python -m kit stages list ink",
+          "page": "docs/tools/stagereg.md",
+          "evidence": "[tests](tests/test_stagereg.py)"
+        },
+        {
           "id": "sheetview",
           "name": "Volume on a sheet in Neuroglancer",
           "released": "2026-10-24",
