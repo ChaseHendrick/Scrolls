@@ -392,7 +392,7 @@ Measured 2026-10-16 in a 4-core Xeon cloud container (`/proc/cpuinfo` reports 2.
 
 ## Tests
 
-`python3 -m unittest tests.test_releases_inventory` checks the complete compact inventory, grouped tools, deterministic links and the command output. In the private repo, it checks that the snapshot has public provenance and the README matches its recorded rows.
+`python3 -m unittest tests.test_releases_inventory` checks the complete compact inventory, grouped tools, deterministic links and the command output.
 
 
 ```bash
