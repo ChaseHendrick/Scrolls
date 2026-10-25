@@ -4,6 +4,7 @@ import argparse
 import contextlib
 import io
 import json
+import os
 import subprocess
 import tempfile
 import unittest
@@ -817,6 +818,95 @@ class IndexAndNew(unittest.TestCase):
                        {"page_id": "x", "status": "Fine"}):
             with self.assertRaises(ValueError):
                 tooldocs.new_page(root=self.repo.root, **kwargs)
+
+
+class StaleReport(unittest.TestCase):
+    """stale compares contents since the page's last commit, over every Code path, not commit times."""
+
+    PAGE = ("# {pid}: a demo tool\n\nA demo tool.\n\n| Field | Value |\n| --- | --- |\n| Id | `{pid}` |\n"
+            "| Status | Current |\n| Code | `kit/demo.py`, `kit/extra.py`, `kit/cli.py` (`cmd_demo`) |\n\n{note}\n")
+    CLI = "def cmd_demo(args):\n    return {demo}\n\n\ndef cmd_other(args):\n    return {other}\n"
+
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.root = Path(tmp.name)
+
+    def write(self, rel, text):
+        path = self.root / rel
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text, encoding="utf-8")
+
+    def git(self, *args, at=None):
+        env = dict(os.environ)
+        if at is not None:
+            env["GIT_AUTHOR_DATE"] = env["GIT_COMMITTER_DATE"] = f"@{1760000000 + at} +0000"
+        return subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@example.org", "-c",
+                               "commit.gpgsign=false", *args], cwd=self.root, env=env, capture_output=True,
+                              text=True, check=True).stdout.strip()
+
+    def commit(self, message, at):
+        self.git("add", "-A")
+        self.git("commit", "-q", "-m", message, at=at)
+        return self.git("rev-parse", "HEAD")
+
+    def merge(self, branch, at):
+        self.git("merge", "-q", "--no-ff", "--no-edit", branch, at=at)
+
+    def newer_by_time(self, code):
+        """The old rule: the code's last commit time is later than the page's."""
+        t_code = int(self.git("log", "-1", "--format=%ct", "--", code))
+        t_page = int(self.git("log", "-1", "--format=%ct", "--", "docs/tools/demo.md"))
+        return t_code > t_page
+
+    def test_two_branches(self):
+        try:
+            self.git("init", "-q")
+            self.write("kit/demo.py", "x = 1\n")
+            self.write("kit/extra.py", "y = 1\n")
+            self.write("kit/cli.py", self.CLI.format(demo=0, other=0))
+            self.write("docs/tools/demo.md", self.PAGE.format(pid="demo", note="First."))
+            base = self.commit("base", at=1000)
+            # Branch docs changes the code and the page together; branch side makes the same code change later.
+            self.git("checkout", "-q", "-b", "docs")
+            self.write("kit/demo.py", "x = 2\n")
+            self.write("docs/tools/demo.md", self.PAGE.format(pid="demo", note="Second."))
+            self.commit("code and page", at=2000)
+            self.git("checkout", "-q", "-b", "side", base)
+            self.write("kit/demo.py", "x = 2\n")
+            self.commit("same code change, later", at=3000)
+            self.merge("docs", at=4000)
+        except (OSError, subprocess.CalledProcessError):
+            self.skipTest("git is not available")
+        self.assertTrue(self.newer_by_time("kit/demo.py"), "the case must fool the commit-time rule")
+        self.assertEqual(tooldocs.stale(self.root), [])
+
+        # Branch feature changes the second Code path before the page's next commit and merges after it.
+        self.git("checkout", "-q", "-b", "feature")
+        self.write("kit/extra.py", "y = 2\n")
+        self.commit("second code path", at=4500)
+        self.git("checkout", "-q", "side")
+        self.write("docs/tools/demo.md", self.PAGE.format(pid="demo", note="Third."))
+        self.commit("page", at=5000)
+        self.merge("feature", at=6000)
+        self.assertFalse(self.newer_by_time("kit/demo.py") or self.newer_by_time("kit/extra.py"),
+                         "the case must fool the commit-time rule")
+        self.assertEqual(tooldocs.stale(self.root), [("demo", ["kit/extra.py"])])
+
+        # In kit/cli.py only the named cmd_demo counts: a change to cmd_other does not, a change to cmd_demo does.
+        self.write("kit/cli.py", "# a comment\n" + self.CLI.format(demo=0, other=1))
+        self.commit("other command", at=7000)
+        self.assertEqual(tooldocs.stale(self.root), [("demo", ["kit/extra.py"])])
+        self.write("kit/cli.py", self.CLI.format(demo=1, other=1))
+        self.commit("demo command", at=8000)
+        self.assertEqual(tooldocs.stale(self.root), [("demo", ["kit/cli.py", "kit/extra.py"])])
+
+        # A page git does not track yet is listed with all its Code paths; a Branch only page is skipped.
+        self.write("docs/tools/fresh.md", self.PAGE.format(pid="fresh", note="New."))
+        self.write("docs/tools/side.md", self.PAGE.format(pid="side", note="New.").replace(
+            "| Status | Current |", "| Status | Branch only |"))
+        self.assertEqual(tooldocs.stale(self.root), [("demo", ["kit/cli.py", "kit/extra.py"]),
+                                                     ("fresh", ["kit/demo.py", "kit/extra.py", "kit/cli.py"])])
 
 
 class CommandLine(unittest.TestCase):

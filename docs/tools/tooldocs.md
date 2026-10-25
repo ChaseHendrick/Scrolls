@@ -24,7 +24,7 @@
 
 Every tool in the repository has one page in `docs/tools/` (the tool-pages rule, hard rule 16). Pages drift: an option is added, a default changes, an error message is reworded, and the page still says the old thing. `kit.tooldocs` is the checker that catches that drift. It reads each page, checks its shape against the standard in [`docs/TOOL-DOCS.md`](../TOOL-DOCS.md), and checks what it names against the code: that every path and function exists, that every option, positional argument and default of each `python -m kit` command it runs matches the parser (and the top-level usage, the command list and each command's help on the page that runs bare `python -m kit`), that the options, positional arguments, literal defaults and pasted usage blocks of the scripts, `spaces/` apps and `python -m kit.MODULE` entry points it names match their argparse code (read without running it), that every public function, error message (whole, in the What you see column, from Python and from shell scripts) and environment variable of the code it names is on the page, and that every kit module, package, script, command, action, project skill, CI workflow and release has a page. `tests/test_tooldocs.py` runs the full check, so the tests fail when a page is missing or out of step.
 
-It also does four smaller jobs. `index` writes the generated tables of [`docs/tools/README.md`](README.md) and the machine-readable [`docs/tools/index.json`](index.json). `list` and `show` print the index, a page, one section or one field, so an agent can read only what it needs. `new` starts a page from [`templates/tool-doc.md`](../../templates/tool-doc.md) (or [`templates/tool-doc-branch.md`](../../templates/tool-doc-branch.md) for a Branch only tool), prefilled from the code. `stale` lists pages whose main code file has a newer commit than the page.
+It also does four smaller jobs. `index` writes the generated tables of [`docs/tools/README.md`](README.md) and the machine-readable [`docs/tools/index.json`](index.json). `list` and `show` print the index, a page, one section or one field, so an agent can read only what it needs. `new` starts a page from [`templates/tool-doc.md`](../../templates/tool-doc.md) (or [`templates/tool-doc-branch.md`](../../templates/tool-doc-branch.md) for a Branch only tool), prefilled from the code. `stale` lists pages whose Code paths changed after the page's last commit, and which files changed.
 
 It cannot check that the prose is true. A page that passes has the right shape and names things that exist and match the code; whether its Quick start runs, its How it works matches the method and its numbers match their sources is for a reviewer. `tool docs pass` is not a review.
 
@@ -165,7 +165,7 @@ usage: python -m kit.tooldocs stale [-h]
 
 | Option | Default | Meaning |
 | --- | --- | --- |
-| `-h`, `--help` | off | The only option. Compares, for each page, the last commit of the first path in its Code field with the last commit of the page |
+| `-h`, `--help` | off | The only option. Compares, for each page, every path in its Code field at the page's last commit with the same paths at `HEAD` |
 
 ### Environment variables
 
@@ -195,7 +195,7 @@ pages = tooldocs.load_pages(tooldocs.ROOT / "docs" / "tools")
 | `render_index(pages, current=None)` | str: the README text with a new generated block, or the default intro and block when `current` has no markers | Nothing | |
 | `render_json(pages, root, kind=None)` | str: the `index.json` text (fields under Outputs) | Nothing | |
 | `write_index(root=ROOT)` | int: the number of pages | `ValueError` when `docs/tools/README.md` exists without its marker lines | Writes both index files |
-| `stale(root=ROOT)` | list of `(page id, main file)` | Nothing | Skips Branch only pages and pages with no Code paths; a page git does not track yet is listed |
+| `stale(root=ROOT)` | list of `(page id, [changed paths])` | Nothing | Skips Branch only pages and pages with no Code paths; a page git does not track yet is listed with all its Code paths |
 | `new_page(page_id, kind='kit command', status='Current', root=ROOT, today=None, area=None, commands=(), code=(), command_parser=None)` | `Path` of the new page | `ValueError` for a bad id, status, kind or area, an existing page, a `--code` path not in the repository (unless Branch only), or a command that is not a kit command | What `new` runs |
 | `main(argv=None)` | int: the exit code | `SystemExit` from argparse on a usage error or `--help` | `if __name__ == "__main__": sys.exit(main())` |
 
@@ -242,7 +242,7 @@ pages = tooldocs.load_pages(tooldocs.ROOT / "docs" / "tools")
 
 `index` prints `wrote docs/tools/README.md and docs/tools/index.json from N pages`. The README's generated block has one `### AREA` table per area, in the order of the area words, then Other, with the columns Tool, Status, Run, Go-ahead and What it does; rows are sorted by status (Current, Experimental, Retired, Branch only) then id.
 
-`show` prints the page, `## NAME` and the section's body, or the field's value. `new` prints `wrote docs/tools/ID.md; replace every <!-- Write: ... --> with the text, then run python -m kit.tooldocs check --page ID`. `stale` prints `ID: FILE changed after docs/tools/ID.md; check the page against it` per stale page, or `no page is older than its main code file`.
+`show` prints the page, `## NAME` and the section's body, or the field's value. `new` prints `wrote docs/tools/ID.md; replace every <!-- Write: ... --> with the text, then run python -m kit.tooldocs check --page ID`. `stale` prints `ID: FILES changed since docs/tools/ID.md was last committed; check the page against them` per stale page (at most five files, then `and N more`), or `no page's code changed since the page was last committed`.
 
 | Exit code | Meaning |
 | --- | --- |
@@ -259,6 +259,7 @@ pages = tooldocs.load_pages(tooldocs.ROOT / "docs" / "tools")
 | `no page docs/tools/ID.md`, exit code 1 | `check --page` with an id that has no page | Fix the id, or start the page with `new` |
 | `cannot build kit's parser: ...` | `kit/cli.py` raised while building the parser | Run `python -m kit --help` to see the error and fix `kit/cli.py` |
 | `docs/tools/pending.json does not parse: ...` | Broken JSON in the pending list | Fix the JSON |
+| `stale` lists many pages with `kit/cli.py` | Their Code item names `build_parser`, which changes whenever any command's parser does | Check whether the page's own command changed; `stale` is a list to review, not a failure |
 | `docs/tools/README.md has no generated block; refusing to overwrite its text`, exit code 2 | `index` found a README without the two marker lines | Add the marker lines `START` and `END` of `kit/tooldocs.py` around the tables, or delete the README and run `index` again |
 | `no tool page 'ID'; close: ID, ID`, exit code 2 | `show` with an unknown id; up to five close ids follow | Use one of the close ids, or `list` |
 | `no section 'NAME'; sections: ...`, exit code 2 | `show --section` with a section the page does not have | Use one of the names listed; section names are exact, such as `For agents` |
@@ -340,7 +341,7 @@ Each line below is a problem `check` reports for a page, with CAPITALS for the p
 7. **Coverage** (full check only). `coverage_targets` lists every `kit/*.py` module except `cli.py`, `__init__.py` and `__main__.py`, every `kit/` package, every entry directly under `scripts/`, every project skill, every CI workflow, `pyproject.toml`, every `python -m kit` command (or each action of a command that has them) and every release id. A target is covered when a page names it in Code without brackets (a folder covers its files), in Run, or by id or Release id. `pending.json` excuses a target until its page exists, then must lose the entry.
 8. **Index.** `render_index` replaces only the block between `START` and `END` in `docs/tools/README.md`; `render_json` writes `index.json` with `SCHEMA_VERSION` = 1. The full check fails when either differs from what `index` would write.
 9. **New page.** `new_page` copies the template, fills Run, Code and Tests (test files that import the module, `tests_for`), the usage blocks and option tables from the parser, Python API rows from the public names and first docstring lines, the Failure modes rows from the error messages, the environment variables, and up to 12 history lines from `git log` (`history_block`), and leaves `<!-- Write: ... -->` everywhere a person must write. It drops the Python API section for a command with no public functions, and Commands and options for a library that is not runnable.
-10. **Stale.** `stale` compares `git log -1 --format=%ct` of the first Code path with that of the page, and lists the page when the code's commit is newer or the page has no commit yet.
+10. **Stale.** `stale` finds the page's last commit (`git log -1 -- PAGE`) and runs `git diff --name-only PAGE_COMMIT HEAD -- CODE...` over every path in its Code field. For a Python file whose Code item names symbols, such as `kit/cli.py` (`cmd_auc`), a change counts only when those top-level definitions differ as `ast.dump` (so moves, comments and blank lines do not count). It compares contents, not commit times: until 21 October 2026 it compared `%ct` of the first Code path with the page's, which listed pages whose code a parallel branch had committed later with the same content and missed code a branch committed earlier but merged after the page. A page with no commit yet is listed with all its Code paths. It reads `HEAD`, not uncommitted changes.
 
 ## Cost and time
 
@@ -373,6 +374,7 @@ python -m unittest tests.test_tooldocs -v
 
 ## History
 
+- 2026-10-25: `stale` compares contents instead of commit times, ported from Scrolls-private: it lists a page when any Code path changed between the page's last commit and `HEAD` (named definitions only, for a Python file with symbols) and names the changed files; a two-branch test covers both faults of the old rule.
 - 2026-10-21: the checker compares the bare `python -m kit` usage and command rows, reads shell messages, reads the argparse code of scripts, `spaces/` files and entry points without running it (positional rows, literal defaults, pasted usage blocks), checks option rows of `spaces/` files, and matches messages whole in the What you see column from 9 characters; the pages it flagged were fixed (`bbecb37`).
 - 2026-10-17: a Branch only page whose commit the checked-out branch already holds is reported, so a merged tool's page becomes Current ([PR #104](https://github.com/ChaseHendrick/Scrolls/pull/104)).
 - 2026-10-16: defaults written as the checker expects: an empty string or list is none, and a path inside the checkout is written relative to it (`63ee638`).
