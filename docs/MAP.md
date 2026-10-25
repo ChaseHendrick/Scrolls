@@ -13,6 +13,7 @@ One row per module, script folder and docs area. [AGENTS.md](../AGENTS.md) holds
 | `kit/plan.py`, `kit/data/spiral-inputs-*.json` | Prints the official First Letters commands for one scroll, or with `--spiral` a large-surface chain from public inputs (center line, lasagna field, villa's spiral fit, render, Ink Lens); never runs them ([tool page](tools/plan.md)) |
 | `kit/cli.py`, `kit/__main__.py` | The `python -m kit` entry point: every subcommand and its help text |
 | `kit/fetch.py` | Resumable anonymous download of a bucket prefix; aliases `w035`, `w045`; checks free space first (`--dry-run`, `--force`) ([page](tools/fetch.md)) |
+| `kit/hfpull.py` | Fast download of a Hugging Face bucket folder (default the public `scrollprize/datasets` ink label stores): each distinct file once, duplicates copied on disk; `python -m kit.hfpull PREFIX DEST` ([page](tools/hfpull.md)) |
 | `kit/vc3dfix.py` | `kit s3relay URL [-- COMMAND]`: VC3D through a local relay that keeps S3's false 404s out, its empty-chunk markers checked around the run (exit 4 when it may have read zeros); `kit vc3dcache URL\|--all`: check and delete false markers in VC3D's cache ([page](tools/vc3dfix.md), [how-to](vc3d-false-404.md)) |
 | `kit/s3relay.py` | The relay behind `kit s3relay`: forwards chunk requests to S3, asks again after a false 404, passes a 404 on only for `NoSuchKey` ([page](tools/s3relay.md)) |
 | `kit/s3retry.py` | The false-404 rule: a 404 is missing only with `NoSuchKey`; `open_url`, `key_state`, `refuse_remote`; used by `kit fetch` ([page](tools/s3retry.md)) |
