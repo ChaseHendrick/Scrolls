@@ -1,0 +1,62 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scroll2ink-run",
+  "label": "Real data render",
+  "alt": "A replay of one kit scroll2ink run: its stage lines appear one by one in a terminal on the left, each with its recorded time (the scan and an umbilicus for the layer order, the seed check, a 4.8 cm2 trace grown in 136 s, the check passing with 5 of 5 windows seated, an extension dropped because it failed the same check, flatten, a 28-layer render, then on a GPU the ink step with its reverse control, previews and the report), and on the right a CT slice of PHerc0139 through the seed point with a ring on the seed and the ten stages lighting up.",
+  "caption": "Real data render: a replay of kit scroll2ink on Hugging Face Jobs, 25 Oct 2026, PHerc0139 at 9.362 um (CPU part for VC3D, then an L4 GPU for ink); every line and time read from the run's logs, waits skipped. PHerc0139, volume 20250728140407 (9.362 um), CT slice z 5477, x 3737 to 4505, y 3551 to 4319; the ring is the seed. CT only: the grown surface and the ink maps are model output and stay numbers. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "scroll2ink-run.mp4",
+      "bytes": 433289,
+      "sha256": "b5af0d62c9c75aa53b1e3abd695ccdb3c9c42e9f13177eaa2349910a787a3d74",
+      "width": 1280,
+      "height": 720,
+      "kind": "mp4",
+      "seconds": 17.0,
+      "frames": 255,
+      "settings": {
+        "crf": 20
+      }
+    },
+    {
+      "file": "scroll2ink-run.gif",
+      "bytes": 1052674,
+      "sha256": "5acf9b4b0153305cdf1ca2292590cd18e5d58c7bd6a6ff7cbd652318daa26f43",
+      "width": 960,
+      "height": 540,
+      "kind": "gif",
+      "seconds": 17.0,
+      "frames": 36,
+      "settings": {
+        "width": 960,
+        "fps": 15,
+        "lossy": 40
+      }
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-25",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "encode.py",
+      "scroll2ink_replay.py"
+    ],
+    "scripts_sha256": "5c83baf2da9e67f1bf0fab16ccb7abd257f93a6d327964f4245fa54ddad753d6",
+    "base_commit": "9bf01e2c404e83cf769ddcfb44a4220364029bfd"
+  },
+  "command": "python scripts/media/scroll2ink_replay.py RUN_DIR --out-dir PAGE && python scripts/media/capture_web.py PAGE/replay.html --out-dir FRAMES --actions PAGE/actions.json --width 1280 --height 720 && python scripts/media/encode.py FRAMES --fps 15 --gif-fps 15 --gif docs/assets/scroll2ink/scroll2ink-run.gif --mp4 docs/assets/scroll2ink/scroll2ink-run.mp4 --meta scripts/media/captures/scroll2ink-run.meta.json && python scripts/media/encode.py FRAMES --fps 15 --gif-fps 15 --gif docs/assets/scroll2ink/scroll2ink-run.gif --mp4 docs/assets/scroll2ink/scroll2ink-run.mp4 --meta scripts/media/captures/scroll2ink-run.meta.json"
+}

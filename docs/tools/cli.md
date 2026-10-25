@@ -155,6 +155,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
 | `volumeview` | none | `cmd_volumeview` | [volumeview](volumeview.md) | build a local viewer link from explicit public volume metadata |
 | `segzoo` | none | `cmd_segzoo` | [segzoo](segzoo.md) | model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists |
+| `scroll2ink` | `run`, `status` | `cmd_scroll2ink` | [scroll2ink](scroll2ink.md) | one command from a public scan and a seed point to a grown, flattened, rendered surface and its ink map with the reverse control (Headless VC3D) |
 | `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls |
 | `letterlines` | `build`, `score` | `cmd_letterlines` | [letterlines](letterlines.md) | training lines for the letter reader from your own transcribed lines, and scores on lines kept apart |
 | `letterdemo` | none | `cmd_letterdemo` | [letterdemo](letterdemo.md) | offline check of the letter reader: synthetic Greek capitals and a noise image, DEMO PASS or DEMO FAIL |
