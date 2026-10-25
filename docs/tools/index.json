@@ -1233,67 +1233,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 193,
+     "end_line": 196,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 194,
-     "end_line": 222,
+     "start_line": 197,
+     "end_line": 225,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 223,
-     "end_line": 226,
+     "start_line": 226,
+     "end_line": 229,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 227,
-     "end_line": 237,
+     "start_line": 230,
+     "end_line": 240,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 238,
-     "end_line": 251,
+     "start_line": 241,
+     "end_line": 254,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 252,
-     "end_line": 261,
+     "start_line": 255,
+     "end_line": 264,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 262,
-     "end_line": 265,
+     "start_line": 265,
+     "end_line": 268,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 266,
-     "end_line": 275,
+     "start_line": 269,
+     "end_line": 278,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 276,
-     "end_line": 283,
+     "start_line": 279,
+     "end_line": 286,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 284,
-     "end_line": 295,
+     "start_line": 287,
+     "end_line": 298,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 296,
-     "end_line": 302,
+     "start_line": 299,
+     "end_line": 305,
      "applicable": true
     }
    ]
@@ -6822,67 +6822,67 @@
     {
      "name": "Commands and options",
      "start_line": 85,
-     "end_line": 248,
+     "end_line": 249,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 249,
-     "end_line": 252,
+     "start_line": 250,
+     "end_line": 253,
      "applicable": false
     },
     {
      "name": "Inputs",
-     "start_line": 253,
-     "end_line": 259,
+     "start_line": 254,
+     "end_line": 260,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 260,
-     "end_line": 296,
+     "start_line": 261,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 297,
-     "end_line": 350,
+     "start_line": 298,
+     "end_line": 351,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 351,
-     "end_line": 373,
+     "start_line": 352,
+     "end_line": 374,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 374,
-     "end_line": 389,
+     "start_line": 375,
+     "end_line": 390,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 390,
-     "end_line": 399,
+     "start_line": 391,
+     "end_line": 400,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 400,
-     "end_line": 403,
+     "start_line": 401,
+     "end_line": 404,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 404,
-     "end_line": 410,
+     "start_line": 405,
+     "end_line": 411,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 411,
-     "end_line": 416,
+     "start_line": 412,
+     "end_line": 417,
      "applicable": true
     }
    ]
@@ -9988,6 +9988,162 @@
    ]
   },
   {
+   "id": "scroll2ink",
+   "name": "scroll2ink",
+   "tagline": "from a public scan and a seed point to an ink map, in one command",
+   "summary": "`kit scroll2ink` grows a surface from one seed point with VC3D, checks it, extends, flattens and renders it, and runs an ink model with the reverse-depth control, by calling Headless VC3D's tools in order and stopping when a check fails.",
+   "status": "Experimental",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit scroll2ink run",
+    "python -m kit scroll2ink status"
+   ],
+   "imports": [
+    "from kit import scroll2ink"
+   ],
+   "code": [
+    {
+     "path": "kit/scroll2ink.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_scroll2ink"
+     ]
+    },
+    {
+     "path": "scripts/media/scroll2ink_replay.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_scroll2ink.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to run it on your own machine. Renting compute for it, or posting its pictures, needs the user's yes as usual"
+   },
+   "checked": {
+    "date": "2026-10-25",
+    "commit": "a0d1cd0"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`scroll2ink`",
+    "Status": "Experimental",
+    "Kind": "kit command, kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit scroll2ink run`, `python -m kit scroll2ink status`, `from kit import scroll2ink`",
+    "Code": "`kit/scroll2ink.py`, `kit/cli.py` (`cmd_scroll2ink`), `scripts/media/scroll2ink_replay.py`",
+    "Tests": "`tests/test_scroll2ink.py`",
+    "Needs": "Python 3.10 or newer, standard library only, for the command itself. Every step runs in [Headless VC3D](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent) 1.1.1 (`vc3d-agent`, Python 3.11 or newer), with villa's VC3D command line tools (`VC_APPIMAGE` or `VC_BIN`) and, for the ink step, a Python with torch and villa's `vesuvius` package (`KIT_INK_PYTHON`). The extend step needs `vc_extend_edge`, which villa's releases do not ship yet (fork branch `vc3d-auto-extend`); without it the step is skipped. The replay script needs numpy",
+    "Runs on": "Linux on Hugging Face Jobs, 25 October 2026: the VC3D part on `cpu-xl` and the ink part on one L4 (`l4x1`), with villa's tools from a cached build of `e0bbb8b` with its grid-cache and growth time-limit patches and `vc_extend_edge` from the fork branch `vc3d-auto-extend`. Not yet run on a Mac or with a villa release",
+    "Network": "Through Headless VC3D: the open-data bucket `vesuvius-challenge-open-data` over HTTPS (catalog, CT chunks, the surface prediction and its normal grids) and Hugging Face for the ink checkpoint the first time (`fetch_model`). The command itself contacts nothing",
+    "Writes": "One run folder, by default `work/scroll2ink/SAMPLE-VOLUME-X_Y_Z/` under the repository (or `KIT_HOME`): `settings.json`, `state.json`, `trace/`, `check-trace/`, `extend/`, `check-extend/`, `flat/`, `render/` (the surface volume, a zarr), `ink/` (maps, `ink.json`), `previews/*.png`, `summary.json`, `report.md`. Headless VC3D's own caches go under its kit home (`work/vc3d/`)",
+    "Go-ahead": "Not needed to run it on your own machine. Renting compute for it, or posting its pictures, needs the user's yes as usual",
+    "Released": "Public `main`, experimental, since 2026-10-24",
+    "Checked": "2026-10-25 against commit `a0d1cd0`"
+   },
+   "page": "docs/tools/scroll2ink.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 35,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 36,
+     "end_line": 47,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 48,
+     "end_line": 79,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 80,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 92,
+     "end_line": 175,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 176,
+     "end_line": 199,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 200,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 206,
+     "end_line": 229,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 230,
+     "end_line": 257,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 258,
+     "end_line": 270,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 271,
+     "end_line": 291,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 292,
+     "end_line": 301,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 302,
+     "end_line": 305,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 306,
+     "end_line": 310,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 311,
+     "end_line": 316,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "segment-lens",
    "name": "segment-lens",
    "tagline": "turn published segments in 3D with their holes, folds and stretched edges painted on",
@@ -10323,6 +10479,310 @@
      "name": "Related",
      "start_line": 305,
      "end_line": 310,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "sheetcheck",
+   "name": "sheetcheck",
+   "tagline": "a label-free self-check that an ink map sits on the traced sheet",
+   "summary": "Checks without labels whether an ink map reads the traced sheet: it compares the map with the same model read one and two sheets away along the mesh normals, and flags ink that follows the mask edge or lights up empty space.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit sheetcheck"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/sheetcheck.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_sheetcheck"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_sheetcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "c41f1ac"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sheetcheck`",
+    "Status": "Current",
+    "Kind": "kit command,kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit sheetcheck`",
+    "Code": "`kit/sheetcheck.py`, `kit/cli.py` (`cmd_sheetcheck`)",
+    "Tests": "`tests/test_sheetcheck.py`",
+    "Needs": "Python 3.10 or newer with numpy and tifffile (`pip install -e \".[maps]\"`); zarr for `volume` with a zarr volume. For a real check: the maps of one window read at shifts of whole sheet pitches (`maps`), or a 3D prediction volume, its tifxyz mesh and the sheet pitch (`volume`)",
+    "Runs on": "Any CPU. 4-core cloud container, 24 Oct 2026: `maps` on a 640 x 640 window with five shifts and CT, 0.5 s; `volume` projecting a 256 x 256 mesh at five shifts from an 80 x 256 x 256 volume, 1.1 s; `demo`, under 10 s",
+    "Network": "None, except `volume` with an open-data mesh URL, which `kit tifxyz` fetches once into its cache",
+    "Writes": "Nothing, except `demo --png PATH` (one PNG) and `volume --save-maps DIR` (one TIFF per shift, `k+0.tif` and so on)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026)",
+    "Checked": "2026-10-24 against commit `c41f1ac` plus this tool"
+   },
+   "page": "docs/tools/sheetcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 71,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 72,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 171,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 196,
+     "end_line": 201,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 202,
+     "end_line": 224,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 225,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 249,
+     "end_line": 260,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 261,
+     "end_line": 264,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 265,
+     "end_line": 274,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 275,
+     "end_line": 278,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 279,
+     "end_line": 282,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 283,
+     "end_line": 289,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "sheetview",
+   "name": "sheetview",
+   "tagline": "show a volume on a sheet's surface in Neuroglancer",
+   "summary": "Turn a tifxyz segment into a Neuroglancer mesh whose vertices carry a volume's value (3D ink, CT), so the volume reads as a picture on the curved sheet in the hosted viewer, with no install.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module",
+    "kit entry point"
+   ],
+   "area": "Viewers and apps",
+   "commands": [
+    "python -m kit sheetview build",
+    "python -m kit sheetview serve"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/sheetview.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/media/sheetview_media.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_sheetview"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_sheetview.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to build or view locally. Hosting a mesh where others can open it (a Space, a public bucket) is an upload and needs Chase's yes"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "c41f1ac"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sheetview`",
+    "Status": "Current",
+    "Kind": "kit command, kit module, kit entry point",
+    "Area": "Viewers and apps",
+    "Run": "`python -m kit sheetview build`, `python -m kit sheetview serve`",
+    "Code": "`kit/sheetview.py`, `scripts/media/sheetview_media.py`, `kit/cli.py` (`cmd_sheetview`)",
+    "Tests": "`tests/test_sheetview.py`",
+    "Needs": "Python 3.10 or newer with numpy, tifffile and zarr 3 (zarr reads v2 and v3 volumes, blosc and zstd); a web browser with WebGL 2 to view. The media script also needs the playwright package, ffmpeg and gifsicle",
+    "Runs on": "Any CPU. 15 s for a 119,301 vertex PHerc0139 crop at level 1 and 55 s for a 452,608 vertex crop of a 3D ink volume at level 2 (measured 2026-10-24, 4-core cloud container, fresh chunk cache)",
+    "Network": "`vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` for a bucket segment or volume (only the chunks the samples need, fetched once). Viewing loads the hosted Neuroglancer from `neuroglancer-demo.appspot.com`, which reads `sheet.vtk` from your own `serve` and the hidden volume layer from the bucket",
+    "Writes": "`OUT/sheet.vtk`, `OUT/state.json`, `OUT/link.txt`, `OUT/receipt.json` (replaced on a rerun); volume chunks under `--cache` (default `work/sheetview/cache`); the tifxyz under `--seg-cache` (default `work/tifxyz/cache`)",
+    "Go-ahead": "Not needed to build or view locally. Hosting a mesh where others can open it (a Space, a public bucket) is an upload and needs Chase's yes",
+    "Released": "Public `main` from this change, in the Scrolls kit; not a separate release",
+    "Checked": "2026-10-24 against commit `c41f1ac`"
+   },
+   "page": "docs/tools/sheetview.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 73,
+     "end_line": 80,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 81,
+     "end_line": 148,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 149,
+     "end_line": 171,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 172,
+     "end_line": 177,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 178,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 206,
+     "end_line": 229,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 230,
+     "end_line": 240,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 241,
+     "end_line": 244,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 245,
+     "end_line": 254,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 255,
+     "end_line": 264,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 265,
+     "end_line": 268,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 269,
+     "end_line": 275,
      "applicable": true
     }
    ]

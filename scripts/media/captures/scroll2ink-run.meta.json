@@ -1,0 +1,16 @@
+{
+  "label": "Real data render",
+  "alt": "A replay of one kit scroll2ink run: its stage lines appear one by one in a terminal on the left, each with its recorded time (the scan and an umbilicus for the layer order, the seed check, a 4.8 cm2 trace grown in 136 s, the check passing with 5 of 5 windows seated, an extension dropped because it failed the same check, flatten, a 28-layer render, then on a GPU the ink step with its reverse control, previews and the report), and on the right a CT slice of PHerc0139 through the seed point with a ring on the seed and the ten stages lighting up.",
+  "caption": "Real data render: a replay of kit scroll2ink on Hugging Face Jobs, 25 Oct 2026, PHerc0139 at 9.362 um (CPU part for VC3D, then an L4 GPU for ink); every line and time read from the run's logs, waits skipped. PHerc0139, volume 20250728140407 (9.362 um), CT slice z 5477, x 3737 to 4505, y 3551 to 4319; the ring is the seed. CT only: the grown surface and the ink maps are model output and stay numbers. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ]
+}

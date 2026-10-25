@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,crowdmerge,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,crowdmerge,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -895,14 +895,29 @@ def cmd_letterdemo(args):
     return letterdemo.run_cli(args)
 
 
+def cmd_sheetview(args):
+    from . import sheetview
+    return sheetview.cmd_sheetview(args)
+
+
 def cmd_volumeview(args):
     from . import volumeview
     return volumeview.run(args)
 
 
+def cmd_sheetcheck(args):
+    from . import sheetcheck   # numpy and tifffile; zarr for zarr volumes
+    return sheetcheck.cmd_sheetcheck(args)
+
+
 def cmd_segzoo(args):
     from . import segzoo   # standard library; the torch code is in scripts/segzoo/
     return segzoo.cmd_segzoo(args)
+
+
+def cmd_scroll2ink(args):
+    from . import scroll2ink   # standard library; every step is a Headless VC3D (vc3d-agent) tool
+    return scroll2ink.run_cli(args)
 
 
 # Console scripts that run one command (pyproject.toml's [project.scripts]): script name -> command.
@@ -991,10 +1006,12 @@ GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
                                     "volumeview", "segzoo")),
-    ("Segments and geometry", ("tifxyz", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "axispolish",
+    ("Segments and geometry", ("scroll2ink", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck", "uvgate",
+                               "windconsistency", "axispolish",
                                "windlabel-box", "hopbench", "crowdmerge", "overlap", "meshaudit", "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
-                                           "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
+                                           "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
+                                           "leaderboard")),
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
     ("Runs and records", ("run", "provenance", "compute", "routines")),
     ("villa pull requests and issues", ("prclock", "prtext")),
@@ -1302,6 +1319,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     tifxyz.build_parser(p)
     p.set_defaults(func=tifxyz.cmd_tifxyz)
 
+    p = sub.add_parser("sheetview", help="show a volume (3D ink, CT) on a tifxyz sheet's surface in Neuroglancer: "
+                                         "a mesh with per-vertex values and a link")
+    from . import sheetview
+    sheetview.add_arguments(p)
+    p.set_defaults(func=cmd_sheetview)
+
     p = sub.add_parser("atlas", help="Segment Atlas: area, isometry, holes and folds of every published segment")
     from . import atlas as _atlas
     _atlas.build_parser(p)
@@ -1505,11 +1528,23 @@ def build_parser(prog="python -m kit", sub_progs=None):
     volumeview.add_arguments(p)
     p.set_defaults(func=cmd_volumeview)
 
+    p = sub.add_parser("sheetcheck", help="label-free self-check of an ink map: on the traced sheet, or smeared "
+                                          "across sheets, along the mask edge or in empty space")
+    from . import sheetcheck as _sheetcheck
+    _sheetcheck.build_parser(p)
+    p.set_defaults(func=cmd_sheetcheck)
+
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
                                       "MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists")
     from . import segzoo as _segzoo
     _segzoo.build_parser(p)
     p.set_defaults(func=cmd_segzoo)
+
+    p = sub.add_parser("scroll2ink", help="one command from a public scan and a seed point to a grown, flattened, "
+                                          "rendered surface and its ink map with the reverse control (Headless VC3D)")
+    from . import scroll2ink as _scroll2ink
+    _scroll2ink.add_arguments(p)
+    p.set_defaults(func=cmd_scroll2ink)
 
     p = sub.add_parser("letterread", prog=sub_progs.get("letterread"),
                        help="Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls",

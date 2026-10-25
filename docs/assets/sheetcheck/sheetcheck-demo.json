@@ -1,0 +1,30 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "sheetcheck-demo",
+  "label": "Synthetic demo",
+  "alt": "Five rows of made-up ink maps, each shown one sheet in, on the sheet and one sheet out, with a verdict bar: the top row, where each sheet has its own strokes, has a green bar; the rows smeared across sheets, with a shared texture, with a bright band along the mask edge and with a bright diagonal crack have red bars.",
+  "caption": "Synthetic demo: kit sheetcheck demo on made-up sheets of random strokes. Only the sharp map passes; maps smeared across sheets, sharing a texture, following the mask edge or lit in a crack fail. No scan data.",
+  "license": "Apache-2.0",
+  "release_id": null,
+  "data": null,
+  "sources": [],
+  "outputs": [
+    {
+      "file": "sheetcheck-demo.png",
+      "bytes": 1145126,
+      "sha256": "b9c41b10e3ba52e84d2af39e17e9116d149f497930106e00d1fa202bf9cffa00",
+      "width": 816,
+      "height": 1312,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-24",
+  "tool": {
+    "scripts": [],
+    "scripts_sha256": null,
+    "base_commit": "b82839c437a3e5b3edacd8d01268d58af25c3d30"
+  },
+  "command": "python -m kit sheetcheck demo --png docs/assets/sheetcheck/sheetcheck-demo.png"
+}

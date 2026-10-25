@@ -226,6 +226,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## N
 
+**neighbor-sheet test (`kit sheetcheck`)**: A label-free check that an ink map reads the traced sheet: the same model is read one and two sheet pitches (wrap pitches) away along the mesh normals, and the map there must not correlate with the map on the sheet at 0.5 or more after slow shading is removed. A pass is necessary, not sufficient: a map with no ink signal passes too ([`docs/tools/sheetcheck.md`](docs/tools/sheetcheck.md)).
+
 **Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
 
 **nnU-Net**: A self-configuring U-Net framework: given a labeled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
@@ -304,6 +306,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **Scroll Lens**: A Hugging Face ZeroGPU Space that runs the organizers' 3D DINO, ink and surface models on a small cube of a public scan, with click search over the embeddings, slice views and a 3D view drawn in the browser, and agent tools (an API and MCP server) ([`docs/tools/scroll-lens.md`](docs/tools/scroll-lens.md)).
 
+**scroll2ink**: `python -m kit scroll2ink`, one command from a public scan and a seed point to a grown, checked, flattened and rendered surface and its ink map with the reverse-depth control, each step a Headless VC3D tool ([`docs/tools/scroll2ink.md`](docs/tools/scroll2ink.md)).
+
 **Scrolls kit**: The README's grouped release entry (since 20 October 2026) for the command-line tools that live in this repository: Scroll Text Reader, StrokeNet, the segment stack check and the Center Finder, one line each with its command, date, version, tool page and evidence. Its id in [`docs/releases.json`](docs/releases.json) is `scrolls-kit`; standalone products such as AutoPipeline, the Spaces, Inkfilter and Scrolls Starter keep their own entries ([releases](docs/tools/releases.md)).
 
 **Scroll Text Reader**: Formerly Greek Letter Reader. The `scrolls-letterread` tool proposes Greek letters with LineNet or words with explicitly installed local Tesseract language packs. Both routes record model provenance and controls; neither verifies a reading ([guide](docs/letter-reader.md)).
@@ -319,6 +323,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 **segmentation (tracing)**: Finding and tracing the rolled papyrus surface inside a CT volume.
 
 **SHA-256**: A hash function. A file's SHA-256 is checked to prove that downloaded weights or evidence are exactly the published ones.
+
+**single-mesh layer**: Neuroglancer's layer type `mesh` for one triangle mesh read from a file (`vtk://` ASCII VTK or `obj://`), which can carry a value per vertex that the layer's shader colors. `kit sheetview` writes one with a volume sampled onto a segment ([`docs/tools/sheetview.md`](docs/tools/sheetview.md)).
 
 **sheet switch**: A tracing error in which a mesh jumps from one turn of papyrus to another.
 

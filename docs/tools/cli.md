@@ -129,12 +129,14 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `rowscore` | none | `cmd_rowscore` | [rowscore](rowscore.md) | text-row periodicity triage score for ink maps (Bullo27's method) |
 | `auc` | none | `cmd_auc` | [auc](auc.md) | pixel AUC of an ink map against a segment's published labels |
 | `fibertensor` | `train`, `predict` | `cmd_fibertensor` | [fibertensor](fibertensor.md) | fiber-orientation (structure tensor) features and a tiny CPU ink reader |
+| `sheetcheck` | `maps`, `volume`, `demo`, `summary` | `cmd_sheetcheck` | [sheetcheck](sheetcheck.md) | label-free self-check of an ink map: on the traced sheet, or smeared across sheets, along the mask edge or in empty space |
 | `hpscore` | none | `cmd_hpscore` | [hpscore](hpscore.md) | letter-scale score: 48 um high-passed correlation with the labels (Scheirer) |
 | `overlap` | none | `cmd_overlap` | [overlap](overlap.md) | do two segments trace the same papyrus? mesh gaps and label agreement |
 | `collate` | none | `cmd_collate` | [overlap](overlap.md) | two traces of one sheet as two copies: do their ink maps agree, against a control? |
 | `atlas` | `build`, `show` | `atlas.cmd_atlas` (in `kit/atlas.py`) | [atlas](atlas.md) | Segment Atlas: area, isometry, holes and folds of every published segment |
 | `coverage` | none | `coverage.cmd_coverage` (in `kit/coverage.py`) | [coverage](coverage.md) | Winding coverage: which turns and heights a scroll's segments trace, and the gaps |
 | `tifxyz` | `info`, `stretch`, `check`, `obj`, `preview`, `facing`, `chunks`, `diff` | `tifxyz.cmd_tifxyz` (in `kit/tifxyz.py`) | [tifxyz](tifxyz.md) | look at a tifxyz segment without VC3D: area, isometry, holes and folds, OBJ, picture, which way it faces, chunks it touches, diff of two versions |
+| `sheetview` | `build`, `serve` | `cmd_sheetview` | [sheetview](sheetview.md) | show a volume (3D ink, CT) on a tifxyz sheet's surface in Neuroglancer: a mesh with per-vertex values and a link |
 | `stackcheck` | none | `cmd_stackcheck` | [stackcheck](stackcheck.md) | check consecutive tifxyz segments against the umbilicus: order, missing sectors, skipped windings, turn overlaps, stack ends (geometry only) |
 | `uvgate` | none | `cmd_uvgate` (in `kit/uvgate_cli.py`) | [uvgate](uvgate.md) | check a flattened sheet's UV triangles (JSON or CSV): no overlap, enough area, optionally one counterclockwise piece (geometry only) |
 | `windconsistency` | none | `cmd_windconsistency` (in `kit/windconsistency.py`) | [windconsistency](windconsistency.md) | check that relative winding counts (a to b is k windings) can all hold at once, around every closed path |
@@ -153,6 +155,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `strokenet` | none | `cmd_strokenet` | [strokenet](strokenet.md) | learned text-likeness score of a 2D ink map (StrokeNet), with rotation and IAAFT controls |
 | `volumeview` | none | `cmd_volumeview` | [volumeview](volumeview.md) | build a local viewer link from explicit public volume metadata |
 | `segzoo` | none | `cmd_segzoo` | [segzoo](segzoo.md) | model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists |
+| `scroll2ink` | `run`, `status` | `cmd_scroll2ink` | [scroll2ink](scroll2ink.md) | one command from a public scan and a seed point to a grown, flattened, rendered surface and its ink map with the reverse control (Headless VC3D) |
 | `letterread` | none | `cmd_letterread` | [letterread](letterread.md) | Scroll Text Reader: Greek LineNet or local OCR for installed languages, with controls |
 | `letterlines` | `build`, `score` | `cmd_letterlines` | [letterlines](letterlines.md) | training lines for the letter reader from your own transcribed lines, and scores on lines kept apart |
 | `letterdemo` | none | `cmd_letterdemo` | [letterdemo](letterdemo.md) | offline check of the letter reader: synthetic Greek capitals and a noise image, DEMO PASS or DEMO FAIL |
