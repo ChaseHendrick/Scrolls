@@ -1233,67 +1233,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 196,
+     "end_line": 197,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 197,
-     "end_line": 225,
+     "start_line": 198,
+     "end_line": 226,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 226,
-     "end_line": 229,
+     "start_line": 227,
+     "end_line": 230,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 230,
-     "end_line": 240,
+     "start_line": 231,
+     "end_line": 241,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 241,
-     "end_line": 254,
+     "start_line": 242,
+     "end_line": 255,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 255,
-     "end_line": 264,
+     "start_line": 256,
+     "end_line": 265,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 265,
-     "end_line": 268,
+     "start_line": 266,
+     "end_line": 269,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 269,
-     "end_line": 278,
+     "start_line": 270,
+     "end_line": 279,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 279,
-     "end_line": 286,
+     "start_line": 280,
+     "end_line": 287,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 287,
-     "end_line": 298,
+     "start_line": 288,
+     "end_line": 299,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 299,
-     "end_line": 305,
+     "start_line": 300,
+     "end_line": 306,
      "applicable": true
     }
    ]
@@ -10412,67 +10412,67 @@
     {
      "name": "Commands and options",
      "start_line": 92,
-     "end_line": 175,
+     "end_line": 177,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 176,
-     "end_line": 199,
+     "start_line": 178,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 200,
-     "end_line": 205,
+     "start_line": 203,
+     "end_line": 208,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 206,
-     "end_line": 229,
+     "start_line": 209,
+     "end_line": 232,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 230,
-     "end_line": 257,
+     "start_line": 233,
+     "end_line": 262,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 258,
-     "end_line": 270,
+     "start_line": 263,
+     "end_line": 275,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 271,
-     "end_line": 291,
+     "start_line": 276,
+     "end_line": 296,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 292,
-     "end_line": 301,
+     "start_line": 297,
+     "end_line": 306,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 302,
-     "end_line": 307,
-     "applicable": true
-    },
-    {
-     "name": "History",
-     "start_line": 308,
+     "start_line": 307,
      "end_line": 312,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "History",
      "start_line": 313,
      "end_line": 318,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 319,
+     "end_line": 324,
      "applicable": true
     }
    ]
@@ -11580,6 +11580,149 @@
      "name": "Related",
      "start_line": 357,
      "end_line": 365,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "stagereg",
+   "name": "stagereg",
+   "tagline": "pick any stage's option by name, in any workflow",
+   "summary": "The stage registry lists every option we know for each stage of reading a scroll (ours, the community's, the organisers' team models), with licence and maturity, and lets every workflow pick one by name.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Pipeline and agents",
+   "commands": [
+    "python -m kit stages"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/stagereg.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_stagereg.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed: it chooses, it never runs a stage"
+   },
+   "checked": {
+    "date": "2026-10-25",
+    "commit": "cac6c1f"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`stagereg`",
+    "Status": "Current",
+    "Kind": "kit command,kit module",
+    "Area": "Pipeline and agents",
+    "Run": "`python -m kit stages`",
+    "Code": "`kit/stagereg.py`",
+    "Tests": "`tests/test_stagereg.py`",
+    "Needs": "Python 3.10 or newer, standard library only; the data file `kit/data/stages.json`",
+    "Runs on": "CPU, under a second (measured 2026-10-25 in a 4-core cloud container)",
+    "Network": "None",
+    "Writes": "Nothing (prints only)",
+    "Go-ahead": "Not needed: it chooses, it never runs a stage",
+    "Released": "Public `main` from this change (25 Oct 2026)",
+    "Checked": "2026-10-25 against commit `cac6c1f`"
+   },
+   "page": "docs/tools/stagereg.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 31,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 32,
+     "end_line": 43,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 44,
+     "end_line": 60,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 61,
+     "end_line": 66,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 67,
+     "end_line": 94,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 95,
+     "end_line": 114,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 115,
+     "end_line": 118,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 119,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 129,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 147,
+     "end_line": 150,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 151,
+     "end_line": 154,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 155,
+     "end_line": 164,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 165,
+     "end_line": 168,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 169,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 173,
+     "end_line": 176,
      "applicable": true
     }
    ]

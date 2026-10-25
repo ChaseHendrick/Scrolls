@@ -114,6 +114,7 @@ Each command's `--help` line, its actions, its handler and the page that documen
 | `prizes` | none | `cmd_prizes` | [prizes](prizes.md) | open prizes from the dated snapshot |
 | `live` | none | `termview.main` (in `kit/termview.py`) | [termstyle](termstyle.md) | run a command (after --) or page piped output in a full-screen, mouse-driven view in the Scrolls look |
 | `style` | none | `termstyle.main` (in `kit/termstyle.py`) | [termstyle](termstyle.md) | the Scrolls terminal look: hook install, remove or status (style every script in a checkout), demo, pipe |
+| `stages` | none | `stagereg.main` (in `kit/stagereg.py`) | [stagereg](stagereg.md) | the stage registry: every option of every stage (ours, community, team), its licence and maturity, and what a workflow would pick (list, show, pick, check) |
 | `doctor` | none | `cmd_doctor` | [doctor](doctor.md) | check GPU, disk, tools and villa paths |
 | `plan` | none | `cmd_plan` | [plan](plan.md) | print a First Letters run plan for an eligible scroll |
 | `cost` | none | `cmd_cost` | [plan](plan.md) | estimate run cost in USD |

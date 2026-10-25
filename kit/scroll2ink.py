@@ -39,7 +39,7 @@ import time
 import urllib.request
 from pathlib import Path
 
-from . import prizes
+from . import prizes, stagereg
 
 STAGES = ("inputs", "seed", "trace", "check", "extend", "flatten", "render", "ink", "preview", "report")
 AGENT_ENV = "SCROLL2INK_AGENT"
@@ -545,6 +545,29 @@ def _brief(name, out):
     return ""
 
 
+def apply_stage_picks(args, env=None):
+    """The stage registry's picks (kit/stagereg.py) for this run: `--use STAGE=NAME` and any KIT_STAGE_<STAGE> become
+    the run's own options (the ink reader is --model), so settings.json records them like any choice. Returns
+    {stage: record} of the picks, empty when none was made; a pick that contradicts an option given outright is
+    refused."""
+    picked = stagereg.picks(getattr(args, "use", None) or [], "scroll2ink", env=env)
+    for stage, opt in picked.items():
+        words = list(opt["use"]["scroll2ink"].get("args") or [])
+        while words:
+            flag, value = words[0], words[1] if len(words) > 1 else None
+            words = words[2:]
+            dest = flag.lstrip("-").replace("-", "_")
+            if not flag.startswith("--") or value is None or not hasattr(args, dest):
+                raise Scroll2InkError(f"--use {stage}={opt['name']}: the registry's arguments {flag} do not fit "
+                                      "scroll2ink")
+            given = getattr(args, dest)
+            if given not in (None, DEFAULTS.get(dest), value):
+                raise Scroll2InkError(f"--use {stage}={opt['name']} sets {flag} {value} but {flag} {given} was "
+                                      "given: give it one way")
+            setattr(args, dest, value)
+    return {stage: stagereg.record(opt) for stage, opt in picked.items()}
+
+
 def settings_from(args):
     """The run's fixed settings (settings.json) and its runtime options (pure; tested)."""
     s = {"sample": args.sample, "seed": [float(v) for v in args.seed], "volume": args.volume}
@@ -583,6 +606,7 @@ def add_arguments(p):
     r.add_argument("--agent", help="command that runs Headless VC3D (default $SCROLL2INK_AGENT or vc3d-agent)")
     r.add_argument("--dry-run", action="store_true", help="print the run folder and settings; run nothing")
     r.add_argument("--json", action="store_true", help="print the summary as JSON")
+    stagereg.add_arguments(r)
     s = sub.add_parser("status", help="what a run folder holds, stage by stage")
     s.add_argument("dir")
     s.add_argument("--json", action="store_true")
@@ -606,7 +630,17 @@ def run_cli(args, root=None):
         return 0
     root = Path(root or os.environ.get("KIT_HOME") or Path(__file__).resolve().parents[1])
     folder = Path(args.out) if args.out else run_dir(root / "work" / "scroll2ink", args.sample, args.volume, args.seed)
+    try:
+        picks = apply_stage_picks(args)
+    except (Scroll2InkError, stagereg.StageError) as exc:
+        print(f"scroll2ink: {exc}", file=sys.stderr)
+        return 2
     settings, runtime = settings_from(args)
+    if picks:                      # only when a stage was picked, so earlier run folders still resume
+        settings["stages"] = picks
+        for rec in picks.values():
+            if rec.get("warning"):
+                print(f"scroll2ink: {rec['warning']}", file=sys.stderr)
     if args.dry_run:
         print(json.dumps({"run": str(folder), "settings": settings, "runtime": runtime, "stages": list(STAGES)},
                          indent=1))
