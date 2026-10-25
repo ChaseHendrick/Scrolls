@@ -8,9 +8,9 @@
 | Status | Current |
 | Kind | kit command, kit module, kit entry point |
 | Area | Releases and repository |
-| Run | `python -m kit releases add`, `python -m kit releases render`, `python -m kit releases check`, `python -m kit releases list`, `python -m kit releases pin`, `python -m kit releases unpin`, `python -m kit.releases`, `from kit import releases` |
+| Run | `python -m kit releases add`, `python -m kit releases render`, `python -m kit releases check`, `python -m kit releases list`, `python -m kit releases inventory`, `python -m kit releases pin`, `python -m kit releases unpin`, `python -m kit.releases`, `from kit import releases` |
 | Code | `kit/releases.py`, `docs/releases.json`, `kit/cli.py` (`build_parser`) |
-| Tests | `tests/test_releases.py` |
+| Tests | `tests/test_releases.py`, `tests/test_releases_inventory.py` |
 | Needs | Python 3.10 or newer, standard library only. A clone of this repository (it reads `docs/releases.json` and `README.md` next to `kit/`), or `--list` and `--readme` pointing at the two files |
 | Runs on | Any machine. `python -m kit releases check` takes about 0.5 s and `python -m kit.releases check` about 0.14 s, almost all of it Python start-up and imports (measured 2026-10-16, 4-core Xeon cloud container, on the 6-entry list) |
 | Network | None. Links in an entry are written into the README, never fetched |
@@ -95,7 +95,7 @@ Claim label: None. The tool checks form only; the claims inside an entry's summa
 
 ```
 usage: python -m kit releases [-h] [--list REGISTRY] [--readme README]
-                              {add,render,check,list,pin,unpin} ...
+                              {add,render,check,list,inventory,pin,unpin} ...
 ```
 
 These two options belong to `releases` itself, so they go before the action: `python -m kit releases --list L --readme R check`. After the action they are refused (`unrecognized arguments`).
@@ -141,6 +141,18 @@ usage: python -m kit releases list [-h]
 
 No options of its own. One line per entry, in the section's order: the release date, the id padded to 24 characters, the title, and `  (pinned)` for a pinned entry. Under a grouped entry, one line per tool: its date, the id indented two spaces and padded to 22 characters, its name, and `  (in ID)` naming the entry.
 
+### `python -m kit releases inventory`
+
+```
+usage: python -m kit releases inventory [-h] [--json]
+```
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--json` | off | Print the compact inventory records as JSON instead of a Markdown table |
+
+This reads the release list and writes nothing. It includes each standalone entry and each tool inside a grouped entry, in release display order. Every link points to public Scrolls. The same table appears before the detailed entries in the generated public README section.
+
 ### `python -m kit releases pin`
 
 ```
@@ -181,13 +193,15 @@ registry_text, readme_text, action = releases.updated(open("docs/releases.json")
 | `render_tool(tool)` | str: one tool's Markdown list line | Nothing; `render_entry` validates first | The line format under Inputs |
 | `render_entry(entry)` | list of str: one entry's Markdown lines | `ReleaseListError` | A `### TITLE` heading, the picture and its italic caption when the entry has an `image`, the release sentence, the summary, the commands as a `bash` block and the details |
 | `ordered(entries, pinned=())` | list: the entries in the section's order | `KeyError` for a pinned id that is not among the entries (`validate_list` prevents it) | Pinned first in pin order; then the newest `released` first; on the same day, the entry later in the list first |
+| `inventory(registry)` | list of dicts with `id`, `name`, `url` | `ReleaseListError` for an invalid registry | Includes standalone entries and grouped tools; preserves release order; links only to public Scrolls |
+| `render_inventory(items)` | str: a Markdown table | Ordinary key errors for malformed inventory records | Formats inventory records without reading or writing files |
 | `intro(registry)` | str: the section's first line | `KeyError` for a pin that is not listed | Names the pinned titles when there are pins |
 | `render(registry)` | str: the whole section, marker lines included | `ReleaseListError` | What `render` writes between the markers |
 | `apply(readme, registry)` | str: the README with its section rewritten | `ReleaseListError` when the markers are wrong or the list is invalid | Everything outside the markers is kept |
 | `updated(registry_text, readme_text, entry)` | `(new list text, new README text, "added" or "replaced")` | `ReleaseListError`; `json.JSONDecodeError` for a list text that is not JSON | Touches no file; the private exporter uses it |
 | `check(registry_path=REGISTRY, readme_path=README)` | list of str: problems, empty when the two agree | Nothing for unreadable files, bad JSON or an invalid list: each is returned as a problem | What `check` runs; it also reports an `image.src` under `docs/assets/` that is not a file next to the README |
 | `write(registry_path, readme_path, registry)` | None | `OSError`; `ReleaseListError` | Reads the README, builds both texts, then writes the list and then the README |
-| `add_arguments(p)` | None | Nothing | Adds `--list`, `--readme` and the six actions to an argparse parser; `kit/cli.py` uses it for `python -m kit releases` |
+| `add_arguments(p)` | None | Nothing | Adds `--list`, `--readme` and the actions to an argparse parser; `kit/cli.py` uses it for `python -m kit releases` |
 | `run(args)` | int: the exit code, 0, 1 or 2 | Nothing for `OSError` and `ValueError`, which it prints | The command; `kit/cli.py` sets it as the command's function |
 | `main(argv=None)` | int: the exit code | `SystemExit` with code 2 on a usage error | Builds its own parser; `python -m kit.releases` and the tests call it |
 
@@ -214,7 +228,7 @@ No other top-level key is allowed.
 | `commands` | list of str | Optional. At most 12 lines, each one non-empty line of at most 300 characters with no code fence; shown as a `bash` block |
 | `details` | str | Optional. One line of at most 500 characters, such as links to the guide |
 | `image` | object | Optional. `{"src": S, "alt": A, "caption": C}`, exactly those keys: a picture shown under the title, with the caption in italics below it. `src` is a path under `docs/assets/` (resolved from the README, so it serves package entries too: the README that shows it is on `main`) or a full `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`, with no `..` part. `alt` is one line of at most 300 characters with no square brackets, asterisks or backticks. `caption` is one line of at most 500 characters, with no asterisk and no leading or trailing space, that starts with its media label, one of `LABELS`: `Concept illustration`, `Real data render`, `Model output` or `Synthetic demo` ([media labels](../assets/README.md)). Both follow the rules for every text value below; a package's caption links are full `https://` URLs |
-| `tools` | list of objects | Optional; makes a grouped entry (since 20 October 2026). 1 to 20 tools (12 until 24 October 2026), shown after the commands as a Markdown list, one line each, in list order. The entry's `where` must be `"main"` and its `released` must be its newest tool's date; the release sentence then gives the range of the tools' dates |
+| `tools` | list of objects | Optional; makes a grouped entry (since 20 October 2026). 1 to 64 tools, shown after the commands as a Markdown list, one line each, in list order. The entry's `where` must be `"main"` and its `released` must be its newest tool's date; the release sentence then gives the range of the tools' dates |
 | `where` | `"main"`, or an object | Required. `"main"` for files merged here, or `{"branch": B, "commit": C, "path": P}` for a package on its own branch |
 
 **A tool** (each item of a grouped entry's `tools`), shown as one list line: the name in bold; in brackets the version, when given, and the release date; the summary; the word Run with the command as inline code; a link named tool page to its page; then the evidence links:
@@ -241,6 +255,9 @@ At `29e7e8c` the list holds 6 entries; the longest summary, AutoPipeline's, is 1
 **The README** (or `--readme`): it must hold exactly one line that starts with `<!-- releases:start` and exactly one line that is `<!-- releases:end -->`, in that order. Everything between and including them is generated.
 
 ## Outputs
+
+`inventory --json` prints a JSON array. Each object has `id` (stable tool or product id), `name` (display name) and `url` (public documentation link). Without `--json`, it prints the same records as a Markdown table. The inventory carries no benchmark values and does not fetch or validate its links.
+
 
 What each action prints on stdout:
 
@@ -312,7 +329,7 @@ Messages of `add`, `render`, `list`, `pin` and `unpin` start with `releases: ` (
 | `the list is {"schema_version": 1, "pinned": [ids, optional], "releases": [...]}` | The list is not an object, `schema_version` is not 1, or it has other top-level keys | Restore the list's shape |
 | `releases must be a list` | `releases` is not a list | Restore it |
 | `pinned must list ids of entries in the list, each once` | A pin names an id that is not listed, an id twice, or a non-string | Fix `pinned`, or use `pin` and `unpin` |
-| `ID: tools must be a list of 1 to 20 tools` | `tools` is not a list, is empty, or has more than 20 tools | Give 1 to 20 tool objects |
+| `ID: tools must be a list of 1 to 64 tools` | `tools` is not a list, is empty, or has more than 64 tools | Give 1 to 64 tool objects |
 | `ID: an entry with tools lists tools merged here; its where is "main"` | A grouped entry with a package `where` | Group only tools merged into `main` |
 | `ID: released is its newest tool's date, DATE` | A grouped entry's `released` differs from its newest tool's | Set it to DATE |
 | `ID: each tool is a JSON object` | A tool is a string or a list | Give an object |
@@ -354,7 +371,7 @@ Constants that matter, from `kit/releases.py`:
 | `INLINE_HTML`, `HTTPS_AUTOLINK` | `<` followed by optional space and a letter, `/`, `!` or `?` (refused in a title, summary or details), after removing `<https://...>` autolinks |
 | `LINK_TARGET`, `URL_SCHEME` | A link target, inline or in a reference definition, and the scheme, `//` or backslash that makes it refused unless it starts with `https://` |
 | `IMAGE_FIELDS`, `IMAGE_SRC`, `LABELS` | An image's three keys; its `src` pattern (a `docs/assets/` path or an `https://` URL, ending in `.webp`, `.png`, `.jpg`, `.jpeg` or `.gif`); the four media labels a caption starts with |
-| `TOOL_FIELDS`, `TOOL_REQUIRED`, `TOOL_PAGE`, `MAX_TOOLS` | A tool's eight fields and the six required ones; its page pattern (`docs/tools/NAME.md`); at most 20 tools in a grouped entry |
+| `TOOL_FIELDS`, `TOOL_REQUIRED`, `TOOL_PAGE`, `MAX_TOOLS` | A tool's eight fields and the six required ones; its page pattern (`docs/tools/NAME.md`); at most 64 tools in a grouped entry |
 | Limits | id 63 characters, title 80, summary 1,500, details 500, 12 commands of 300 characters; a tool's name 80, version 120, summary 800, command 300, evidence 400 |
 
 The write is not atomic across the two files: the list is written first, then the README. If the README write failed, `check` would report the mismatch and `render` would repair it.
@@ -375,6 +392,9 @@ Measured 2026-10-16 in a 4-core Xeon cloud container (`/proc/cpuinfo` reports 2.
 
 ## Tests
 
+`python3 -m unittest tests.test_releases_inventory` checks the complete compact inventory, grouped tools, deterministic links and the command output. In the private repo, it checks that the snapshot has public provenance and the README matches its recorded rows.
+
+
 ```bash
 python -m unittest tests.test_releases -v
 ```
@@ -382,6 +402,8 @@ python -m unittest tests.test_releases -v
 29 tests, 0.2 s (2026-10-20). They cover good and bad entries (every validation rule, including the package rules), grouped entries (good and bad tools, one line per tool, unique and resolvable tool ids, `add` and `pin` refusing a tool's id, `list` and `check` with tool pages), the list's shape and pins, rendering of `main` and package entries, the order (newest first, later entry first on a day, pins first) and the intro, `apply` keeping the text outside the markers and refusing wrong markers, `upsert` adding then replacing without changing its input, pins surviving a new version, `updated`, the command line (the clone hint without a list, check, render, add, list, pin and unpin, hand edits caught, a bad entry changing nothing, the command registered in `kit/cli.py`), and `check` on this repository's own README and list. They do not cover `add -` (stdin), which was run by hand for this page, a README write failing halfway, or whether a package's branch and commit exist. `tests/test_repo.py` separately checks every `python -m kit` command written in the README and every relative link in it.
 
 ## History
+
+- 2026-10-25: added the compact inventory API and command, with README consistency tests (`651231c` base).
 
 - 2026-10-20: grouped entries: an entry's optional `tools` lists command-line tools that share it, one line each; Scrolls kit groups Scroll Text Reader, StrokeNet, the segment stack check and the Center Finder, whose old ids still resolve (`find`), and `list` shows each tool under its entry (Chase's decision of 20 October 2026) (`ba08f7e`).
 - 2026-10-16: the letter reader's entry gives the plain character error beside the free-ends error on PHerc. 1667 maps (`2b8c445`).

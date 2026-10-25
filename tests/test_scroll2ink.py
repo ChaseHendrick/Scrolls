@@ -85,7 +85,9 @@ FAKE = textwrap.dedent('''
 
 class Scroll2InkTest(unittest.TestCase):
     def setUp(self):
-        self.tmp = Path(tempfile.mkdtemp())
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.tmp = Path(tmp.name).resolve()
         self.fake = self.tmp / "fake_agent.py"
         self.fake.write_text(FAKE)
         self.log = self.tmp / "calls.jsonl"

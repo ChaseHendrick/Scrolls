@@ -10,7 +10,7 @@ Turn a tifxyz segment into a Neuroglancer mesh whose vertices carry a volume's v
 | Area | Viewers and apps |
 | Run | `python -m kit sheetview build`, `python -m kit sheetview serve` |
 | Code | `kit/sheetview.py`, `scripts/media/sheetview_media.py`, `kit/cli.py` (`cmd_sheetview`) |
-| Tests | `tests/test_sheetview.py` |
+| Tests | `tests/test_sheetview.py`; `tests/test_sheetview_boundaries.py` |
 | Needs | Python 3.10 or newer with numpy, tifffile and zarr 3 (zarr reads v2 and v3 volumes, blosc and zstd); a web browser with WebGL 2 to view. The media script also needs the playwright package, ffmpeg and gifsicle |
 | Runs on | Any CPU. 15 s for a 119,301 vertex PHerc0139 crop at level 1 and 55 s for a 452,608 vertex crop of a 3D ink volume at level 2 (measured 2026-10-24, 4-core cloud container, fresh chunk cache) |
 | Network | `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` for a bucket segment or volume (only the chunks the samples need, fetched once). Viewing loads the hosted Neuroglancer from `neuroglancer-demo.appspot.com`, which reads `sheet.vtk` from your own `serve` and the hidden volume layer from the bucket |
@@ -253,6 +253,8 @@ Measured on 2026-10-24 in a 4-core cloud container with a fresh cache: PHerc0139
 - **Never:** publish pictures of a prize-eligible scroll or of any ink prediction (the public media rule), or call an ink picture a reading.
 
 ## Tests
+
+Synthetic sampling tests check chunk boundaries and cache eviction, missing edge samples, level factors and rejected reducer settings in the local sheet viewer helper. They do not test a deployed Space. Run `python3 -m unittest tests.test_sheetview_boundaries`.
 
 ```bash
 python -m unittest tests.test_sheetview -v

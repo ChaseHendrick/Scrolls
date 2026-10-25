@@ -10,7 +10,7 @@
 | Area | Pipeline and agents |
 | Run | `python -m kit scroll2ink run`, `python -m kit scroll2ink status`, `from kit import scroll2ink` |
 | Code | `kit/scroll2ink.py`, `kit/cli.py` (`cmd_scroll2ink`), `scripts/media/scroll2ink_replay.py` |
-| Tests | `tests/test_scroll2ink.py` |
+| Tests | `tests/test_scroll2ink.py`; `tests/test_scroll2ink_failures.py` |
 | Needs | Python 3.10 or newer, standard library only, for the command itself. Every step runs in [Headless VC3D](https://github.com/ChaseHendrick/Scrolls/tree/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent) 1.1.1 (`vc3d-agent`, Python 3.11 or newer), with villa's VC3D command line tools (`VC_APPIMAGE` or `VC_BIN`) and, for the ink step, a Python with torch and villa's `vesuvius` package (`KIT_INK_PYTHON`). The extend step needs `vc_extend_edge`, which villa's releases do not ship yet (fork branch `vc3d-auto-extend`); without it the step is skipped. The replay script needs numpy |
 | Runs on | Linux on Hugging Face Jobs, 25 October 2026: the VC3D part on `cpu-xl` and the ink part on one L4 (`l4x1`), with villa's tools from a cached build of `e0bbb8b` with its grid-cache and growth time-limit patches and `vc_extend_edge` from the fork branch `vc3d-auto-extend`. Not yet run on a Mac or with a villa release |
 | Network | Through Headless VC3D: the open-data bucket `vesuvius-challenge-open-data` over HTTPS (catalog, CT chunks, the surface prediction and its normal grids) and Hugging Face for the ink checkpoint the first time (`fetch_model`). The command itself contacts nothing |
@@ -300,6 +300,8 @@ What the demo's ink step reported (Model output; `ink.json`): above the threshol
 - **Never:** call an ink map a reading; run the ink step on a prize-eligible scan without a preregistered experiment; put its maps or surfaces in public Git (public media rule).
 
 ## Tests
+
+Synthetic failure-path tests check missing forward or reverse maps, failed model fetches, prize and geometry gates, disabled extension, failed-stage persistence and safe command-error reporting. Run `python3 -m unittest tests.test_scroll2ink_failures`.
 
 `python -m unittest tests.test_scroll2ink -v`: the whole chain against a stand-in Headless VC3D that records every call (the order of tools, the prediction with normal grids chosen over the first listed, the extension's normals, the preset, both ink variants), a split run that resumes at the ink step with a new device, a refused settings change, another scan's umbilicus carried into this scan's frame through an inverted catalog transform and passed to `check_surface` and `render`, `--umbilicus` winning over the catalog, a bad seed stopping before the trace, a failed check stopping before the render, a failed extension dropped for the trace, a build without `vc_extend_edge`, a failed ink run recorded, the prize-eligible refusal, `status`, `--dry-run`, and the pure helpers. They do not run VC3D or an ink model; the demo run below does.
 
