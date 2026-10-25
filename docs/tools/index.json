@@ -1233,67 +1233,67 @@
     {
      "name": "Commands and options",
      "start_line": 81,
-     "end_line": 194,
+     "end_line": 195,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 195,
-     "end_line": 223,
+     "start_line": 196,
+     "end_line": 224,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 224,
-     "end_line": 227,
+     "start_line": 225,
+     "end_line": 228,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 228,
-     "end_line": 238,
+     "start_line": 229,
+     "end_line": 239,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 239,
-     "end_line": 252,
+     "start_line": 240,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 253,
-     "end_line": 262,
+     "start_line": 254,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 263,
-     "end_line": 266,
+     "start_line": 264,
+     "end_line": 267,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 267,
-     "end_line": 276,
+     "start_line": 268,
+     "end_line": 277,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 277,
-     "end_line": 284,
+     "start_line": 278,
+     "end_line": 285,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 285,
-     "end_line": 296,
+     "start_line": 286,
+     "end_line": 297,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 297,
-     "end_line": 303,
+     "start_line": 298,
+     "end_line": 304,
      "applicable": true
     }
    ]
@@ -10323,6 +10323,155 @@
      "name": "Related",
      "start_line": 305,
      "end_line": 310,
+     "applicable": true
+    }
+   ]
+  },
+  {
+   "id": "sheetcheck",
+   "name": "sheetcheck",
+   "tagline": "a label-free self-check that an ink map sits on the traced sheet",
+   "summary": "Checks without labels whether an ink map reads the traced sheet: it compares the map with the same model read one and two sheets away along the mesh normals, and flags ink that follows the mask edge or lights up empty space.",
+   "status": "Current",
+   "kind": [
+    "kit command",
+    "kit module"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python -m kit sheetcheck"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "kit/sheetcheck.py",
+     "symbols": []
+    },
+    {
+     "path": "kit/cli.py",
+     "symbols": [
+      "cmd_sheetcheck"
+     ]
+    }
+   ],
+   "tests": [
+    "tests/test_sheetcheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed"
+   },
+   "checked": {
+    "date": "2026-10-24",
+    "commit": "c41f1ac"
+   },
+   "license": null,
+   "fields": {
+    "Id": "`sheetcheck`",
+    "Status": "Current",
+    "Kind": "kit command,kit module",
+    "Area": "Scoring and controls",
+    "Run": "`python -m kit sheetcheck`",
+    "Code": "`kit/sheetcheck.py`, `kit/cli.py` (`cmd_sheetcheck`)",
+    "Tests": "`tests/test_sheetcheck.py`",
+    "Needs": "Python 3.10 or newer with numpy and tifffile (`pip install -e \".[maps]\"`); zarr for `volume` with a zarr volume. For a real check: the maps of one window read at shifts of whole sheet pitches (`maps`), or a 3D prediction volume, its tifxyz mesh and the sheet pitch (`volume`)",
+    "Runs on": "Any CPU. 4-core cloud container, 24 Oct 2026: `maps` on a 640 x 640 window with five shifts and CT, 0.5 s; `volume` projecting a 256 x 256 mesh at five shifts from an 80 x 256 x 256 volume, 1.1 s; `demo`, under 10 s",
+    "Network": "None, except `volume` with an open-data mesh URL, which `kit tifxyz` fetches once into its cache",
+    "Writes": "Nothing, except `demo --png PATH` (one PNG) and `volume --save-maps DIR` (one TIFF per shift, `k+0.tif` and so on)",
+    "Go-ahead": "Not needed",
+    "Released": "Public `main` from the change that adds it (24 Oct 2026)",
+    "Checked": "2026-10-24 against commit `c41f1ac` plus this tool"
+   },
+   "page": "docs/tools/sheetcheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 22,
+     "end_line": 33,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 34,
+     "end_line": 45,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 46,
+     "end_line": 71,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 72,
+     "end_line": 81,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 82,
+     "end_line": 170,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 171,
+     "end_line": 195,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 196,
+     "end_line": 201,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 202,
+     "end_line": 224,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 225,
+     "end_line": 248,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 249,
+     "end_line": 260,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 261,
+     "end_line": 264,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 265,
+     "end_line": 274,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 275,
+     "end_line": 278,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 279,
+     "end_line": 282,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 283,
+     "end_line": 289,
      "applicable": true
     }
    ]

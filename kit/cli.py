@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -905,6 +905,11 @@ def cmd_volumeview(args):
     return volumeview.run(args)
 
 
+def cmd_sheetcheck(args):
+    from . import sheetcheck   # numpy and tifffile; zarr for zarr volumes
+    return sheetcheck.cmd_sheetcheck(args)
+
+
 def cmd_segzoo(args):
     from . import segzoo   # standard library; the torch code is in scripts/segzoo/
     return segzoo.cmd_segzoo(args)
@@ -999,7 +1004,8 @@ GROUPS = (
     ("Segments and geometry", ("tifxyz", "sheetview", "atlas", "coverage", "stackcheck", "uvgate", "windconsistency", "axispolish",
                                "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
-                                           "strokenet", "fibertensor", "phantom", "shuffle", "gate", "leaderboard")),
+                                           "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
+                                           "leaderboard")),
     ("Letters and text", ("letterread", "letterlines", "letterdemo", "greeklm")),
     ("Runs and records", ("run", "provenance", "compute", "routines")),
     ("villa pull requests and issues", ("prclock", "prtext")),
@@ -1509,6 +1515,12 @@ def build_parser(prog="python -m kit", sub_progs=None):
     from . import volumeview
     volumeview.add_arguments(p)
     p.set_defaults(func=cmd_volumeview)
+
+    p = sub.add_parser("sheetcheck", help="label-free self-check of an ink map: on the traced sheet, or smeared "
+                                          "across sheets, along the mask edge or in empty space")
+    from . import sheetcheck as _sheetcheck
+    _sheetcheck.build_parser(p)
+    p.set_defaults(func=cmd_sheetcheck)
 
     p = sub.add_parser("segzoo", help="model zoo: nnU-Net, MedNeXt, Swin UNETR, Auto3DSeg, SegFormer, DINOv3, "
                                       "MedSAM2 and Mamba families, their licenses and fit; Auto3DSeg datalists")

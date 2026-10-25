@@ -224,6 +224,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 ## N
 
+**neighbor-sheet test (`kit sheetcheck`)**: A label-free check that an ink map reads the traced sheet: the same model is read one and two sheet pitches (wrap pitches) away along the mesh normals, and the map there must not correlate with the map on the sheet at 0.5 or more after slow shading is removed. A pass is necessary, not sufficient: a map with no ink signal passes too ([`docs/tools/sheetcheck.md`](docs/tools/sheetcheck.md)).
+
 **Neuroglancer**: An external browser viewer for multidimensional image volumes. `kit volumeview` creates a local viewer link from explicitly declared public grid metadata; it does not verify the remote volume or its registration.
 
 **nnU-Net**: A self-configuring U-Net framework: given a labeled dataset it picks the patch size, network depth, augmentation and training schedule itself. ResEnc M, L and XL are its residual-encoder presets. The community's surface model m7 is an nnU-Net ResEnc L.
