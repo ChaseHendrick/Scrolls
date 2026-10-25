@@ -270,5 +270,6 @@ The media under `docs/assets/sheetview/` were made with `scripts/media/sheetview
 
 - [tifxyz](tifxyz.md): reads the segment and fetches only the chunks it touches.
 - [volumeview](volumeview.md): Neuroglancer links for volumes alone.
+- [Unroll Live sheet](../unroll-space.md#live-sheet): the same rule in the browser, with no install, on the Unroll Space (1.7.0).
 - [Official Data Browser](https://scrollprize.org/data_browser): the organizers' own viewer.
 - [Neuroglancer](https://github.com/google/neuroglancer): the viewer this targets.
