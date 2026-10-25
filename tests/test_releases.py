@@ -153,17 +153,16 @@ class RenderTest(unittest.TestCase):
                                                       entry(id="b"), entry(id="mid", released="2026-10-01")]}
         self.assertEqual([e["id"] for e in r.ordered(registry["releases"])], ["b", "a", "mid", "old"])
 
-    def test_pinned_entries_come_first_and_the_intro_says_so(self):
+    def test_pinned_entries_come_first_in_the_table(self):
         releases = [entry(id="old", title="Old", released="2026-09-01"), entry(id="a", title="A"),
                     entry(id="b", title="B"), entry(id="mid", title="Mid", released="2026-10-01")]
         self.assertEqual([e["id"] for e in r.ordered(releases, ["old"])], ["old", "b", "a", "mid"])
         self.assertEqual([e["id"] for e in r.ordered(releases, ["mid", "a"])], ["mid", "a", "b", "old"])
         lines = r.render({"schema_version": 1, "pinned": ["old"], "releases": releases}).split("\n")
-        self.assertEqual(lines[1], "Released tools, Old first and the rest newest first. "
-                                   "Each entry comes from [`docs/releases.json`](docs/releases.json).")
-        self.assertEqual([x for x in lines if x.startswith("### ")], ["### Old", "### B", "### A", "### Mid"])
-        two = r.intro({"schema_version": 1, "pinned": ["mid", "a"], "releases": releases})
-        self.assertTrue(two.startswith("Released tools, Mid and A first and the rest newest first."))
+        self.assertEqual(lines[1], r.INTRO)
+        self.assertEqual([x.split(" | ")[0] for x in lines if x.startswith("| ") and "---" not in x],
+                         ["| Tool", "| Old", "| B", "| A", "| Mid"])
+        self.assertEqual(r.intro({"schema_version": 1, "pinned": ["mid", "a"], "releases": releases}), r.INTRO)
 
     def test_render_is_wrapped_in_the_markers(self):
         block = r.render({"schema_version": 1, "releases": [entry()]})
@@ -179,7 +178,7 @@ class ApplyTest(unittest.TestCase):
         self.assertTrue(out.startswith("# Title\n\nIntro.\n\n## Released tools\n\n" + r.START + "\n"))
         self.assertTrue(out.endswith(r.END + "\n\n## After\n\nKept.\n"))
         self.assertNotIn("old text", out)
-        self.assertIn("### Demo tool", out)
+        self.assertIn("| Demo tool | Does one thing on public data (Model output). |", out)
         self.assertEqual(r.apply(out, registry), out)
 
     def test_apply_needs_one_pair_of_markers_in_order(self):
@@ -279,6 +278,69 @@ class GroupTest(unittest.TestCase):
             r.upsert({"schema_version": 1, "releases": [entry(id="demo-cmd")]}, group())
 
 
+class IndexTest(unittest.TestCase):
+    """The README's compact index (Chase, 25 October 2026): one row per item, its name linked to its guide, kit tools
+    in fold-out tables by area."""
+
+    def test_line_page_and_area_are_checked(self):
+        r.validate(entry(line="Does one thing.", page="docs/tools/demo.md", area="Viewers and apps"))
+        r.validate(group(tool(line="Scores one thing.", area="Scoring and controls")))
+        bad = [entry(line=""), entry(line=" Leading space."), entry(line="a" * (r.LINE_LIMIT + 1)),
+               entry(line="Two\nlines."), entry(line="A " + chr(0x2014) + " dash."), entry(line="<b>bold</b>"),
+               entry(page="docs/demo.md"), entry(page="docs/tools/../x.md"), entry(area="Misc"),
+               entry(where=PACKAGE, line="See [guide](docs/a.md)."), entry(where=PACKAGE, line="Run python -m kit prizes."),
+               group(tool(area="Misc")), group(tool(line="```bash"))]
+        for e in bad:
+            with self.subTest(e=e), self.assertRaises(r.ReleaseListError):
+                r.validate(e)
+
+    def test_line_falls_back_to_the_summary_first_sentence(self):
+        self.assertEqual(r.line(entry()), "Does one thing on public data (Model output).")
+        self.assertEqual(r.line(entry(line="Short.")), "Short.")
+        self.assertEqual(r.line(entry(summary="No full stop")), "No full stop")
+        self.assertEqual(r.line(tool(summary="Reads v1.2 files. Then more.")), "Reads v1.2 files.")
+
+    def test_names_link_to_the_page_or_the_package(self):
+        self.assertEqual(r.link(entry(page="docs/tools/demo.md")), "docs/tools/demo.md")
+        self.assertEqual(r.link(entry(), "main"), None)
+        self.assertEqual(r.link(entry(), PACKAGE), "https://github.com/ChaseHendrick/Scrolls/tree/"
+                                                    "faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/submissions/progress-2026-10")
+        text = r.render({"schema_version": 1, "releases": [
+            entry(page="docs/tools/demo.md", line="One | two."), entry(id="pkg", title="Pkg", where=PACKAGE, details=None)]})
+        self.assertIn("| [Demo tool](docs/tools/demo.md) | One \\| two. |", text)
+        self.assertIn("| [Pkg](https://github.com/ChaseHendrick/Scrolls/tree/faada83287d39bbd4c7fd88c7ab0e75f3f1ff284/"
+                      "submissions/progress-2026-10) |", text)
+        self.assertNotIn("```", text, "commands stay on the tool page")
+        self.assertNotIn("Released 14 October", text)
+
+    def test_group_tools_fold_out_by_area_in_order(self):
+        g = group(tool(id="b", name="beta", area="Scoring and controls"), tool(id="a", name="Alpha", area="Scoring and controls"),
+                  tool(id="z", name="Zed", area="Pipeline and agents"), tool(id="o", name="Odd"),
+                  page="docs/tools/cli.md", line="Tools that run from a clone.")
+        lines = r.render({"schema_version": 1, "releases": [g, entry()]}).split("\n")
+        self.assertEqual([x for x in lines if x.startswith("<summary>")],
+                         ["<summary><b>Pipeline and agents</b> (1)</summary>",
+                          "<summary><b>Scoring and controls</b> (2)</summary>", "<summary><b>Other</b> (1)</summary>"])
+        rows = [x.split(" | ")[0] for x in lines if x.startswith("| [")]
+        self.assertEqual(rows, ["| [Zed](docs/tools/demo.md)", "| [Alpha](docs/tools/demo.md)",
+                                "| [beta](docs/tools/demo.md)", "| [Odd](docs/tools/demo.md)"])
+        self.assertIn("Tools that run from a clone. [Guide](docs/tools/cli.md). Open an area to see its tools.", lines)
+        self.assertLess(lines.index("### " + r.STANDALONE), lines.index("### Demo kit"))
+        self.assertEqual(lines.count("<details>"), lines.count("</details>"))
+        self.assertEqual(r.area_groups([]), [])
+
+    def test_check_needs_an_entry_page(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            registry = {"schema_version": 1, "releases": [entry(page="docs/tools/demo.md")]}
+            (root / "releases.json").write_text(r.dumps(registry))
+            (root / "README.md").write_text(r.apply(README, registry))
+            self.assertIn("docs/tools/demo.md", " ".join(r.check(root / "releases.json", root / "README.md")))
+            (root / "docs" / "tools").mkdir(parents=True)
+            (root / "docs" / "tools" / "demo.md").write_text("# demo\n")
+            self.assertEqual(r.check(root / "releases.json", root / "README.md"), [])
+
+
 class CommandTest(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
@@ -312,11 +374,12 @@ class CommandTest(unittest.TestCase):
         code, out, _ = self.call("add", str(f))
         self.assertEqual((code, json.loads(out)["action"]), (0, "added"))
         self.assertEqual(self.call("check")[0], 0)
-        self.assertIn("### Demo tool", self.readme.read_text())
+        self.assertIn("| Demo tool |", self.readme.read_text())
         f.write_text(json.dumps(entry(title="Renamed")))
         code, out, _ = self.call("add", str(f))
         self.assertEqual((code, json.loads(out)["action"]), (0, "replaced"))
-        self.assertIn("### Renamed", self.readme.read_text())
+        self.assertIn("| Renamed |", self.readme.read_text())
+        self.assertNotIn("| Demo tool |", self.readme.read_text())
         self.assertIn("demo-tool", self.call("list")[1])
 
     def test_pin_and_unpin(self):
@@ -327,8 +390,7 @@ class CommandTest(unittest.TestCase):
             self.call("add", str(f))
         self.assertEqual(self.call("pin", "first")[0], 0)
         text = self.readme.read_text()
-        self.assertIn("First first and the rest newest first.", text)
-        self.assertLess(text.index("### First"), text.index("### Demo tool"))
+        self.assertLess(text.index("| First |"), text.index("| Demo tool |"))
         self.assertEqual(self.call("check")[0], 0)
         self.assertEqual(self.call("list")[1].split("\n")[0], "2026-10-01  first                    First  (pinned)")
         before = (self.registry.read_text(), self.readme.read_text())
@@ -338,7 +400,7 @@ class CommandTest(unittest.TestCase):
         self.assertEqual(self.call("unpin", "first")[0], 0)
         text = self.readme.read_text()
         self.assertIn(r.INTRO, text)
-        self.assertLess(text.index("### Demo tool"), text.index("### First"))
+        self.assertLess(text.index("| Demo tool |"), text.index("| First |"))
         self.assertNotIn("pinned", self.registry.read_text())
 
     def test_hand_edits_are_caught(self):
@@ -356,7 +418,7 @@ class CommandTest(unittest.TestCase):
         f = self.dir / "entry.json"
         f.write_text(json.dumps(entry(image=IMAGE)))
         self.assertEqual(self.call("add", str(f))[0], 0)
-        self.assertIn("![Concept illustration of a copper thread", self.readme.read_text())
+        self.assertNotIn("![", self.readme.read_text(), "the README's table shows no pictures; the tool page does")
         code, _, err = self.call("check")
         self.assertEqual(code, 1)
         self.assertIn("docs/assets/demo/demo-hero.webp", err)
@@ -412,6 +474,22 @@ class RepositoryTest(unittest.TestCase):
         if not (ROOT / "docs" / "releases.json").is_file():
             self.skipTest("this repository keeps no release list")
         self.assertEqual(r.check(ROOT / "docs" / "releases.json", ROOT / "README.md"), [])
+
+    def test_every_item_has_a_page_a_short_line_and_its_pages_area(self):
+        # The README's index stays short and every name opens a guide (Chase, 25 October 2026); an item's area is
+        # the Area field of its tool page, so the README and docs/tools/README.md group tools the same way.
+        if not (ROOT / "docs" / "releases.json").is_file():
+            self.skipTest("this repository keeps no release list")
+        registry = json.loads((ROOT / "docs" / "releases.json").read_text(encoding="utf-8"))
+        items = [item for e in registry["releases"] for item in (e, *e.get("tools", []))]
+        self.assertTrue(items)
+        for item in items:
+            with self.subTest(item=item["id"]):
+                self.assertIn("page", item)
+                self.assertIn("area", item)
+                page = (ROOT / item["page"]).read_text(encoding="utf-8")
+                self.assertIn(f"\n| Area | {item['area']} |\n", page)
+                self.assertLessEqual(len(r.line(item)), r.LINE_LIMIT)
 
 
 if __name__ == "__main__":

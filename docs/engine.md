@@ -30,6 +30,22 @@ Small, standard-library helpers for the parts villa does not cover:
 | `verify` | CPU vs MPS (or any two runs) map agreement, valid only when a control map is caught |
 | `rowscore` | Text-row periodicity triage score for ink maps (port of Bullo27's), forward vs reverse |
 
+## What this repository does and does not do
+
+Moved here from the README on 25 October 2026, when the README became a short index.
+
+| Does | Does not |
+| --- | --- |
+| Keep a dated, tested snapshot of open prizes and eligible volumes (`kit/data/`) | Replace the live prize page |
+| Print the official control and First Letters commands per eligible scroll, with resolved S3 paths | Run VC3D, render surfaces, or run ink models itself |
+| Check a machine against thresholds from published runs (12 GB GPU, 25 GB disk) | Guarantee a run fits; streaming caches grow by gigabytes |
+| Record preregistered readout rules, costs and status transitions locally | Decide whether an image shows letters |
+| Block publishing a candidate before the prize is announced | Submit anything to the Vesuvius Challenge for you |
+| Summarize the pipeline, the state of play, and costs, with sources | Claim a reading, a title, or letters in any scroll |
+| Point to villa, community tools, and published nulls | Fork or vendor villa |
+
+`plan` prints commands; it never runs them. They are copied from the official [ink detection tutorial](https://scrollprize.org/tutorial5), with each eligible volume's real S3 path resolved from the public bucket. The `run` ledger writes `experiments/<slug>/run.json`, which is gitignored. It hashes your readout rule when the run is created, so a rule edited after you looked is caught by `check`. It refuses to mark a submitted candidate `published` until the prize has been announced: the prize terms forbid going public first.
+
 ## Where to grow it
 
 Add to `kit/` only what is specific to running and recording experiments. Anything that would help other participants (a QA check, a renderer fix, a better tracer) belongs upstream as a villa pull request, where it can win a Progress Prize and actually get used. Keep a link to the PR here.

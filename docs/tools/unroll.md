@@ -21,6 +21,10 @@ Unroll 1.5.0 is a static web app, a Hugging Face Space, that rebuilds traced scr
 | Guide | [`docs/unroll-space.md`](../unroll-space.md) |
 | Checked | 2026-10-16 against commit `7be3185` |
 
+![Concept illustration of a papyrus roll unrolling flat along a diagonal, with a copper grid layer and a fine layer of ivory points peeling up from the flat sheet.](../assets/unroll/unroll-hero.webp)
+
+*Concept illustration: a roll unrolls flat and its layers lift apart, as Unroll stacks X-ray, surface and ink layers. No scan data.*
+
 ## What it does
 
 A Herculaneum scroll cannot be opened, so it is scanned with X-rays (CT), and people trace its sheet turn by turn as segments: curved surfaces stored as tifxyz grids of 3D points. Unroll puts those traced surfaces back together in 3D in a web page and lets a visitor unroll them, outermost winding first, with a timeline. On PHerc0139 it shows 37 traced windings (`w023` to `w059`) from the public 9.362 um meshes, decimated to 579,450 vertices; a scroll picker opens eight more scrolls of the open data (PHerc. 814, 9B, 343P, 841, 800, 172, 1447 and 1667). Because each traced winding runs a little past one full turn, about a tenth of the unrolled strip repeats its neighbor's surface.

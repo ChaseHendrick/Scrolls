@@ -34,11 +34,19 @@ class InventoryTest(unittest.TestCase):
              "url": "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/sampler.md"}])
         self.assertEqual(json.dumps(original, sort_keys=True), before)
 
-    def test_table_escapes_pipes_and_full_readme_contains_inventory(self):
+    def test_table_escapes_pipes_and_readme_names_every_item(self):
         table = releases.render_inventory(releases.inventory(registry()))
         self.assertIn("| Sample \\| inspect | [Open](https://github.com/", table)
-        self.assertIn(table, releases.render(registry()))
         self.assertEqual(len(table.splitlines()), 5)
+        readme = releases.render(registry())
+        for item in releases.inventory(registry()):
+            self.assertIn(item["name"].replace("|", "\\|"), readme)
+
+    def test_an_entry_with_a_page_links_to_it(self):
+        listed = registry()
+        listed["releases"][1]["page"] = "docs/tools/pipeline.md"
+        self.assertEqual(releases.inventory(listed)[0]["url"],
+                         "https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/pipeline.md")
 
     def test_invalid_registry_is_rejected_before_render(self):
         broken = registry()

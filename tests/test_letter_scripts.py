@@ -134,7 +134,7 @@ class GuideCommandsTest(unittest.TestCase):
         hand = text[:start] + text[end:]
         lines = [line for m in SHELL_BLOCK.finditer(hand) if m.group(1) in ("bash", "sh", "shell", "console")
                  for line in m.group(2).splitlines()]
-        self.assertGreater(len(lines), 20)
+        self.assertGreater(len(lines), 10)   # the short README of 25 October 2026 has one 16-line block
         self.assertEqual([line.strip() for line in lines if unsafe_comment(line)], [],
                          "a comment line in a shell block may hold letters, digits, spaces and .,:/+%- only")
         self.assertEqual([line for line in lines if trailing_comment(line)], [],

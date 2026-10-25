@@ -22,6 +22,10 @@ Inkfilter 0.1.0 makes a map from a local surface-volume window using fixed opera
 | Branch | `submission/progress-2026-10-inkfilter` at `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6` |
 | Checked | 2026-10-17 against commit `4953f17851aa9b2ffd3c26c86e85ecdabd659ca6` |
 
+![Concept illustration of a stack of thin papyrus layers pierced by a copper sampling column, linked to an upright panel with a banded copper response and, behind it, a dimmer panel for the reversed-depth control.](../assets/inkfilter/inkfilter-hero.webp)
+
+*Concept illustration: a surface volume's layers, a fixed filter down through them, its response and the reversed-depth control. Synthetic fields only, no ink.*
+
 ## What it does
 
 A surface volume is a stack rendered along a mesh's normal, with depth followed by the two flattened surface axes. Inkfilter combines front-to-back alpha compositing, the papyrus-to-air edge step and fine texture. It normalizes these components, averages them, subtracts a broad background and smooths the result. No label or trained weight is read at run time.
