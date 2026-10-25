@@ -258,9 +258,21 @@ def stage_inputs(run, agent, log):
     if rc != 0:
         raise Scroll2InkError(f"catalog: {res.get('error') or res}")
     vol, pred, grids = pick_volume(res, s.get("volume"))
+    pred, grids, source = given_prediction(pred, grids, s)
     return {"volume": vol["volume"], "long_id": vol.get("long_id"), "ct": vol["url"], "voxel_um": vol.get("voxel_um"),
-            "prediction": pred, "normal_grids": grids, "license": vol.get("license"),
+            "prediction": pred, "normal_grids": grids, "prediction_from": source, "license": vol.get("license"),
             "eligible_prizes": eligible_prizes(s["sample"]), **find_umbilicus(run, agent, log, res, vol)}
+
+
+def given_prediction(pred, grids, settings):
+    """(prediction, normal grids, source): --prediction replaces the catalog's surface prediction, and then only
+    --normal-grids goes with it, since the catalog's grids belong to its own model; --normal-grids alone replaces
+    the catalog's grids (pure; tested)."""
+    if settings.get("prediction"):
+        return settings["prediction"], settings.get("normal_grids"), "given"
+    if settings.get("normal_grids"):
+        return pred, settings["normal_grids"], "catalog, normal grids given"
+    return pred, grids, "catalog"
 
 
 def find_umbilicus(run, agent, log, volumes, vol):
@@ -551,6 +563,9 @@ def settings_from(args):
     for k in DEFAULTS:
         s[k] = getattr(args, k)
     s.update(snap_seed=args.snap_seed, force=args.force, experiment=args.experiment, umbilicus=args.umbilicus)
+    for k in ("prediction", "normal_grids"):
+        if getattr(args, k, None):
+            s[k] = getattr(args, k)
     return s, {k: getattr(args, k) for k in RUNTIME}
 
 
@@ -561,6 +576,9 @@ def add_arguments(p):
     r.add_argument("--seed", required=True, nargs=3, type=float, metavar=("X", "Y", "Z"),
                    help="seed point in level-0 voxels of the volume")
     r.add_argument("--volume", help="volume id (default: the first with a surface prediction and normal grids)")
+    r.add_argument("--prediction", help="surface prediction zarr (folder or URL) in the volume's frame, instead of "
+                   "the catalog's; give its --normal-grids too, or the tracer ignores it")
+    r.add_argument("--normal-grids", help="that prediction's normal grids (a vc_gen_normalgrids folder or URL)")
     r.add_argument("--out", help="run folder (default work/scroll2ink/SAMPLE-VOLUME-X_Y_Z)")
     r.add_argument("--until", choices=STAGES, help="stop after this stage (resume later with the same command)")
     r.add_argument("--generations", type=int, default=DEFAULTS["generations"], help="tracer generations (default 200)")

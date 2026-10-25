@@ -1,5 +1,6 @@
 """kit.scroll2ink: the stage chain against a stand-in Headless VC3D that records every call."""
 
+import argparse
 import json
 import os
 import subprocess
@@ -272,6 +273,21 @@ class Scroll2InkTest(unittest.TestCase):
         self.assertEqual((pred, grids), ("p", None))
         with self.assertRaises(scroll2ink.Scroll2InkError):
             scroll2ink.pick_volume(vols, "9")
+
+    def test_given_prediction(self):
+        g = scroll2ink.given_prediction
+        self.assertEqual(g("p", "pg", {}), ("p", "pg", "catalog"))
+        # a prediction of its own never takes the catalog model's grids
+        self.assertEqual(g("p", "pg", {"prediction": "q"}), ("q", None, "given"))
+        self.assertEqual(g("p", "pg", {"prediction": "q", "normal_grids": "qg"}), ("q", "qg", "given"))
+        self.assertEqual(g("p", "pg", {"normal_grids": "qg"}), ("p", "qg", "catalog, normal grids given"))
+        p = argparse.ArgumentParser()
+        scroll2ink.add_arguments(p)
+        a = p.parse_args(["run", "--sample", "S", "--seed", "1", "2", "3", "--prediction", "q", "--normal-grids", "g"])
+        s, _ = scroll2ink.settings_from(a)
+        self.assertEqual((s["prediction"], s["normal_grids"]), ("q", "g"))
+        s, _ = scroll2ink.settings_from(p.parse_args(["run", "--sample", "S", "--seed", "1", "2", "3"]))
+        self.assertNotIn("prediction", s)   # settings.json of runs made before these options stays the same
 
 
 if __name__ == "__main__":
