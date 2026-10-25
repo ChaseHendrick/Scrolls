@@ -97,7 +97,9 @@ Claim label: Model output, for every surface and map the chain makes (the surfac
 usage: python -m kit scroll2ink run [-h] --sample SAMPLE --seed X Y Z
                                     [--volume VOLUME]
                                     [--prediction PREDICTION]
-                                    [--normal-grids NORMAL_GRIDS] [--out OUT]
+                                    [--normal-grids NORMAL_GRIDS]
+                                    [--tracer-params TRACER_PARAMS]
+                                    [--out OUT]
                                     [--until {inputs,seed,trace,check,extend,flatten,render,ink,preview,report}]
                                     [--generations GENERATIONS]
                                     [--trace-minutes TRACE_MINUTES]
@@ -118,6 +120,7 @@ usage: python -m kit scroll2ink run [-h] --sample SAMPLE --seed X Y Z
 | `--volume VOLUME` | none | volume id (default: the first with a surface prediction and normal grids) |
 | `--prediction PREDICTION` | none | surface prediction zarr (folder or URL) in the volume's frame, instead of the catalog's; give its --normal-grids too, or the tracer ignores it |
 | `--normal-grids NORMAL_GRIDS` | none | that prediction's normal grids (a vc_gen_normalgrids folder or URL) |
+| `--tracer-params TRACER_PARAMS` | none | JSON object of villa tracer parameters merged last, such as loss weights ('{"straight_weight": 1}') |
 | `--out OUT` | none | run folder (default work/scroll2ink/SAMPLE-VOLUME-X_Y_Z) |
 | `--until UNTIL` | none | stop after this stage (resume later with the same command) |
 | `--generations GENERATIONS` | `200` | tracer generations (default 200) |
@@ -187,6 +190,7 @@ Headless VC3D reads its own: `VC_APPIMAGE` or `VC_BIN` (villa's tools), `KIT_INK
 | `call(agent, tool, args, log=None)` | `(exit, result dict)` | `Scroll2InkError` when the program cannot start | One `vc3d-agent vc3d call TOOL JSON`; exit 0 success, 1 a tool that ran and failed, 2 bad arguments or a refusal |
 | `pick_volume(volumes, wanted=None)` | `(volume, prediction_url, normal_grids_url)` | `Scroll2InkError` | From a `catalog volumes` result; pure |
 | `given_prediction(pred, grids, settings)` | `(prediction, normal_grids, source)` | | `--prediction` (with only `--normal-grids` as its grids) or `--normal-grids` over the catalog's pick; pure |
+| `tracer_params(text)` | dict | `Scroll2InkError` when it is not a JSON object | `--tracer-params`, passed to the trace tool's `params`; pure |
 | `preset_for(voxel_um)` | `"9um"`, `"2um"` or `"1um"` | | Headless VC3D's render preset for a voxel size; pure |
 | `run_dir(root, sample, volume, seed)` | `Path` | | The default run folder name |
 | `Run(folder, settings=None, runtime=None)` | a run | `Scroll2InkError` on changed settings or a folder that is not a run | `settings.json`, `state.json`, `record()`, `done()` |
@@ -242,6 +246,7 @@ It prints one line per stage, `[N/10] STAGE  STATUS in S s: DETAIL`, then the ar
 | `volume...is not in the catalog of...` | A `--volume` the catalog does not list | Use an id from `vc3d-agent vc3d call catalog '{"action": "volumes", "sample": "S"}'` |
 | `volume...has no surface prediction in the catalog` | That volume has no prediction to trace on | Use another volume |
 | `seed_check:...` | The check could not read the prediction or the CT (a missing package such as numcodecs, or the network) | Fix what the message names |
+| `--tracer-params is not JSON: ...` or `--tracer-params must be a JSON object, such as '{"straight_weight": 1}'` | The option's text is not a JSON object | Quote it for the shell and give an object of villa tracer parameters |
 | `the seed is not on the surface prediction or not on papyrus (nearest point on it:...,...voxels away; CT says...). Move it, or pass --snap-seed` | The seed is off the predicted surface, or on air | Move it to the nearest point printed, or pass `--snap-seed` |
 | `trace:...(log...)` | The tracer wrote no surface (no seed found, an area under its minimum, or a crash) | Read the log it names; try another seed |
 | `check_surface:...` | The check could not run (a missing tool or file) | Fix what the message names |
@@ -313,6 +318,7 @@ What the demo's ink step reported (Model output; `ink.json`): above the threshol
 - 2026-10-24: First version (`28edf55`); a tracer without villa's time limit is stopped at the tool's timeout (`9bf01e2`).
 - 2026-10-25: The layer order is voted against the scroll's umbilicus, carried from another scan through the catalog transform when the scan has none of its own; the demo's first ink maps had come out reversed (`a0d1cd0`). The demo run on PHerc0139, and the replay GIF, MP4 and stills in `docs/assets/scroll2ink/`.
 - 2026-10-25: `--prediction` and `--normal-grids` trace on a surface prediction the catalog does not list, such as a binarized copy of a second model with grids made by `vc_gen_normalgrids`, for the crowd-trace merger's mixed-method crowd (`17c842b`).
+- 2026-10-25: `--tracer-params` passes villa tracer parameters (loss weights and the like) to the trace, for a sweep of what keeps traces on their sheet (`920083a`).
 
 ## Related
 
