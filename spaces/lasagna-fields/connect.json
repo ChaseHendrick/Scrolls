@@ -1,0 +1,32 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/lasagna-fields",
+ "title": "Lasagna Fields",
+ "checked": "2026-10-25",
+ "intro": "The ten whole-scan fields read straight from the public bucket by URL, logged out, with no download step; the scans they came from are open data. The page is also an API and an MCP server that makes a field for any box of any public scan.",
+ "sources": [
+  {"id": "field", "title": "A whole-scan field: PHerc0175A cos, level 1 (every 2nd scan voxel)", "kind": "ome-zarr",
+   "url": "https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr",
+   "zarr_format": 2, "example": {"level": "1", "start": [3186, 2900, 2200]},
+   "license": "CC BY-NC 4.0 (derived from Vesuvius Challenge open data)",
+   "note": "Model output (villa lasagna at db3dbea2, scrollprize/lasagna at de45f011). grad_mag, nx and ny sit beside it, from level 2; PHerc0175A.lasagna.json in the same folder is villa's manifest. The other nine scans: replace the scan and run folder as listed on the Ten whole scans tab."},
+  {"id": "ct", "title": "X-ray CT that field came from, PHerc0175A 8.640 um", "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr",
+   "zarr_format": 2, "example": {"level": "2", "start": [1593, 1170, 1170]},
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Read live from the open-data bucket, never copied here. The field's level 1 is the scan's level 1 grid.",
+   "browse": "https://scrollprize.org/data_browser/PHerc0175A"},
+  {"id": "api", "title": "Make a field for any box, from code or an agent", "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/lasagna-fields",
+   "space": "SharpMeow/lasagna-fields",
+   "host": "https://sharpmeow-lasagna-fields.hf.space",
+   "status": "running",
+   "endpoints": [
+    {"api": "/list_models", "args": {}},
+    {"api": "/example_points", "args": {}},
+    {"api": "/plan_field", "args": {"volume": "20260930100252", "z": 39424, "y": 10752, "x": 13824, "size": 256, "model": "lasagna"}}
+   ],
+   "license": "Code Apache 2.0; villa lasagna and its checkpoint MIT; scans and fields CC BY-NC 4.0",
+   "note": "make_field (same arguments as plan_field) runs villa's lasagna on ZeroGPU and uses the caller's ZeroGPU time, so pass a Hugging Face token. Model output, not a reading."}
+ ]
+}

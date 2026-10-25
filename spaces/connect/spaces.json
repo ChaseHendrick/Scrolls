@@ -8,6 +8,7 @@
   {"space": "SharpMeow/autopipeline-ink", "dir": "spaces/connect/autopipeline-ink", "sdk": "gradio", "source": "space"},
   {"space": "SharpMeow/segment-lens", "dir": "spaces/segment-lens", "sdk": "gradio", "source": "here"},
   {"space": "SharpMeow/crackle-check", "dir": "spaces/connect/crackle-check", "sdk": "gradio", "source": "Scrolls-private"},
-  {"space": "SharpMeow/dinovol-embeddings", "dir": "spaces/dinovol-embeddings", "sdk": "static", "source": "here"}
+  {"space": "SharpMeow/dinovol-embeddings", "dir": "spaces/dinovol-embeddings", "sdk": "static", "source": "here"},
+  {"space": "SharpMeow/lasagna-fields", "dir": "spaces/lasagna-fields", "sdk": "gradio", "source": "here"}
  ]
 }

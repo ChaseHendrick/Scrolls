@@ -5154,8 +5154,8 @@
   {
    "id": "lasagna-fields",
    "name": "lasagna-fields",
-   "tagline": "villa's lasagna field for ten whole scans, ready to download or stream",
-   "summary": "Ten public Hugging Face datasets, a public bucket and a guide Space holding villa's lasagna `predict3d` output for ten whole scans that had no lasagna field in the open data, so lasagna's fit and the spiral fit can start without a GPU run.",
+   "tagline": "villa's lasagna field for ten whole scans, and for any box of any public scan on demand",
+   "summary": "villa's lasagna field for ten whole scans that had none, as public datasets and a bucket, and a Space that runs villa's own lasagna on ZeroGPU for any box of any public scan, checked against a published field, from its page, API or MCP server.",
    "status": "Current",
    "kind": [
     "data",
@@ -5163,16 +5163,35 @@
    ],
    "area": "Data and downloads",
    "commands": [
+    "Client(\"SharpMeow/lasagna-fields\").predict(..., api_name=\"/make_field\")",
+    "https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/",
     "hf download SharpMeow/SCAN-lasagna --repo-type dataset",
     "zarr.open_array(URL)",
     "python load_example.py"
    ],
    "imports": [],
-   "code": [],
-   "tests": [],
+   "code": [
+    {
+     "path": "spaces/lasagna-fields/app.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/lasagna-fields/lasfield.py",
+     "symbols": [
+      "main"
+     ]
+    },
+    {
+     "path": "spaces/lasagna-fields/guide/index.html",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_lasagna_fields_space.py"
+   ],
    "go_ahead": {
     "needed": false,
-    "text": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); changing their cards or files needs his yes per change, except redeploys under the standing yes (rule 8)"
+    "text": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); turning the Space into the Make a field app was his yes on 25 Oct 2026; other changes to their cards or files need his yes per change, except redeploys under the standing yes (rule 8)"
    },
    "checked": {
     "date": "2026-10-24",
@@ -5184,15 +5203,15 @@
     "Status": "Current",
     "Kind": "data, app",
     "Area": "Data and downloads",
-    "Run": "[huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the guide page), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset",
-    "Code": "None in this repository: the data lives on Hugging Face (ten datasets SharpMeow/SCAN-lasagna, the bucket and the Space, both named SharpMeow/lasagna-fields); each dataset carries its own load_example.py, index.json and SHA256SUMS. This page is the public record",
-    "Tests": "None here: the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards)",
-    "Needs": "`huggingface_hub[cli]` for downloads; `zarr` and `numpy` to read; for streaming, `zarr` 3 with `fsspec`, `aiohttp` and `requests`. villa's lasagna tools read the manifest as is",
-    "Runs on": "Any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole scan is 32 to 82 GB to download",
-    "Network": "`huggingface.co` (datasets, bucket, Space)",
-    "Writes": "Downloads write where you point `--local-dir`; streaming writes nothing",
-    "Go-ahead": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); changing their cards or files needs his yes per change, except redeploys under the standing yes (rule 8)",
-    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); README \"Released tools\" entry `lasagna-fields`",
+    "Run": "[huggingface.co/spaces/SharpMeow/lasagna-fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) (the page: Ten whole scans, Make a field, How-to guides, Agents and API), `Client(\"SharpMeow/lasagna-fields\").predict(..., api_name=\"/make_field\")` or the MCP server `https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/` (a box), `hf download SharpMeow/SCAN-lasagna --repo-type dataset` (a whole scan), `zarr.open_array(URL)` on the bucket (stream), `python load_example.py` in a downloaded dataset",
+    "Code": "`spaces/lasagna-fields/app.py` (the page, API and MCP tools), `spaces/lasagna-fields/lasfield.py` (`main`; the box, villa's run, the check, pictures and the download), `spaces/lasagna-fields/guide/index.html` (the Ten whole scans guide). The data lives on Hugging Face (ten datasets SharpMeow/SCAN-lasagna and the bucket SharpMeow/lasagna-fields); each dataset carries its own load_example.py, index.json and SHA256SUMS",
+    "Tests": "`tests/test_lasagna_fields_space.py` (the box, villa's crop, the ZeroGPU worker fix, `lasfield.py selftest`); the data is checked by sha256sum -c SHA256SUMS in each dataset, and each dataset's load_example.py was run on the real parts before upload (dataset cards)",
+    "Needs": "A browser for the page. `gradio_client` to call it from Python, any MCP client for agents, and a Hugging Face token for a field (it uses the caller's ZeroGPU time). `huggingface_hub[cli]` for downloads; `zarr` and `numpy` to read; for streaming, `zarr` 3 with `fsspec`, `aiohttp` and `requests`. villa's lasagna tools read the manifest and the downloaded box as is",
+    "Runs on": "Make a field: the Space's ZeroGPU slice (A10G class); a 256 box took 21 to 27 s on 25 Oct 2026, a 512 box 60 s. Downloads and streaming: any machine with a network. Streaming one 256 x 256 patch of cos at level 1 from the bucket worked from a 4-core cloud container (2026-10-24; not timed). A whole scan is 32 to 82 GB to download",
+    "Network": "`huggingface.co` and `sharpmeow-lasagna-fields.hf.space` (datasets, bucket, Space); the Space itself reads `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com`",
+    "Writes": "Downloads write where you point `--local-dir`; streaming writes nothing; a made field comes back as one zip (gradio_client saves it in its temp folder)",
+    "Go-ahead": "Not needed to use. Making the datasets and Space public was Chase's yes (24 Oct 2026); turning the Space into the Make a field app was his yes on 25 Oct 2026; other changes to their cards or files need his yes per change, except redeploys under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-24 (datasets, bucket and Space); Make a field since 2026-10-25 (Space 2.0.0); README \"Released tools\" entry `lasagna-fields`",
     "License": "CC BY-NC 4.0, the same as the scans they derive from; model and code are ScrollPrize/villa's lasagna, credit to its authors",
     "Checked": "2026-10-24 against commit `76beeba`"
    },
@@ -5201,91 +5220,91 @@
     {
      "name": "What it does",
      "start_line": 23,
-     "end_line": 30,
+     "end_line": 38,
      "applicable": true
     },
     {
      "name": "When to use it",
-     "start_line": 31,
-     "end_line": 41,
+     "start_line": 39,
+     "end_line": 50,
      "applicable": true
     },
     {
      "name": "Quick start",
-     "start_line": 42,
-     "end_line": 72,
+     "start_line": 51,
+     "end_line": 98,
      "applicable": true
     },
     {
      "name": "Checks and controls",
-     "start_line": 73,
-     "end_line": 80,
-     "applicable": true
-    },
-    {
-     "name": "Commands and options",
-     "start_line": 81,
-     "end_line": 90,
-     "applicable": true
-    },
-    {
-     "name": "Python API",
-     "start_line": 91,
-     "end_line": 96,
-     "applicable": true
-    },
-    {
-     "name": "Inputs",
-     "start_line": 97,
-     "end_line": 100,
-     "applicable": true
-    },
-    {
-     "name": "Outputs",
-     "start_line": 101,
+     "start_line": 99,
      "end_line": 119,
      "applicable": true
     },
     {
-     "name": "Failure modes",
+     "name": "Commands and options",
      "start_line": 120,
-     "end_line": 128,
+     "end_line": 141,
      "applicable": true
     },
     {
-     "name": "How it works",
-     "start_line": 129,
-     "end_line": 132,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 133,
-     "end_line": 136,
-     "applicable": true
-    },
-    {
-     "name": "For agents",
-     "start_line": 137,
-     "end_line": 146,
-     "applicable": true
-    },
-    {
-     "name": "Tests",
-     "start_line": 147,
+     "name": "Python API",
+     "start_line": 142,
      "end_line": 150,
      "applicable": true
     },
     {
-     "name": "History",
+     "name": "Inputs",
      "start_line": 151,
      "end_line": 154,
      "applicable": true
     },
     {
-     "name": "Related",
+     "name": "Outputs",
      "start_line": 155,
-     "end_line": 158,
+     "end_line": 182,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 183,
+     "end_line": 196,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 197,
+     "end_line": 200,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 201,
+     "end_line": 206,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 207,
+     "end_line": 218,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 219,
+     "end_line": 222,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 223,
+     "end_line": 227,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 228,
+     "end_line": 231,
      "applicable": true
     }
    ]

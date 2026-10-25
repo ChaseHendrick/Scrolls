@@ -1,0 +1,119 @@
+<section class="scc" id="connect" aria-label="Connect your tool"><style>.scc{--a:var(--scc-accent,#4ea8de);color:inherit;font:inherit;line-height:1.5;max-width:60rem}
+.scc h2{font-size:1.15em;margin:.2em 0 .3em}.scc h3{font-size:1em;margin:0 0 .2em}
+.scc p{margin:.3em 0}.scc a{color:var(--a)}
+.scc .scc-src{border:1px solid color-mix(in srgb,currentColor 18%,transparent);border-radius:10px;padding:.7em .9em;margin:.7em 0;background:color-mix(in srgb,currentColor 4%,transparent)}
+.scc .scc-meta{font-size:.85em;opacity:.8}
+.scc details{border-top:1px solid color-mix(in srgb,currentColor 12%,transparent);padding:.35em 0}
+.scc summary{cursor:pointer;font-weight:600;list-style-position:inside}
+.scc .scc-b{font-weight:400;font-size:.75em;padding:.05em .5em;border-radius:99px;margin-left:.5em;border:1px solid currentColor;opacity:.75;white-space:nowrap}
+.scc .scc-b.ok{color:#3fb37f}.scc .scc-b.src{color:var(--a)}.scc .scc-b.warn{color:#e0a030}
+.scc .scc-code{position:relative;margin:.4em 0 .2em}
+.scc pre{margin:0;padding:.7em .8em;border-radius:8px;overflow:auto;font-size:.82em;background:color-mix(in srgb,currentColor 9%,transparent);white-space:pre}
+.scc code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.scc button.scc-copy{all:unset;box-sizing:border-box;position:absolute;top:.35em;right:.35em;font-size:.75em;line-height:1.4;padding:.1em .6em;border-radius:6px;border:1px solid color-mix(in srgb,currentColor 30%,transparent);background:color-mix(in srgb,currentColor 8%,transparent);color:inherit;cursor:pointer}
+.scc button.scc-copy:hover{border-color:var(--a)}
+.scc .scc-url{position:relative}.scc .scc-url pre{padding-right:4.5em;white-space:pre-wrap;word-break:break-all}
+.scc .scc-go{display:inline-block;margin:.3em 0;padding:.25em .8em;border-radius:6px;border:1px solid var(--a);text-decoration:none}
+.scc footer{font-size:.8em;opacity:.75;margin-top:.6em}</style>
+<h2>Connect your tool</h2>
+<p>The ten whole-scan fields read straight from the public bucket by URL, logged out, with no download step; the scans they came from are open data. The page is also an API and an MCP server that makes a field for any box of any public scan.</p>
+<div class="scc-src" id="connect-field"><h3>A whole-scan field: PHerc0175A cos, level 1 (every 2nd scan voxel)</h3>
+<p class="scc-meta">CC BY-NC 4.0 (derived from Vesuvius Challenge open data) · Model output (villa lasagna at db3dbea2, scrollprize/lasagna at de45f011). grad_mag, nx and ny sit beside it, from level 2; PHerc0175A.lasagna.json in the same folder is villa&#x27;s manifest. The other nine scans: replace the scan and run folder as listed on the Ten whole scans tab.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;1&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[3186:3250, 2900:2964, 2200:2264]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr/1&quot;)  # one pyramid level
+block = v[3186:3250, 2900:2964, 2200:2264]</code></pre></div></details>
+<details><summary>VC3D<span class="scc-b src">from villa&#x27;s source</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>In VC3D (villa&#x27;s volume-cartographer), open or create a project, then
+File &gt; Attach Remote Zarr... and paste:
+
+https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr
+
+It accepts http, https and s3 OME-Zarr roots.</code></pre></div></details>
+<details><summary>neuroglancer<span class="scc-b ok">tested 2026-10-24</span></summary>
+<a class="scc-go" href="https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fhuggingface.co%2Fbuckets%2FSharpMeow%2Flasagna-fields%2Fresolve%2FPHerc0175A%2Frepresentations%2Fpredictions%2Flasagna%2F20250521115057-lasagna-de45f011%2FPHerc0175A_cos.ome.zarr%2F%22%2C%22name%22%3A%22A%20whole-scan%20field%3A%20PHerc0175A%20cos%2C%20level%201%20%28every%202nd%20scan%20voxel%29%22%7D%5D%2C%22layout%22%3A%224panel%22%7D" target="_blank" rel="noopener">Open in neuroglancer</a>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fhuggingface.co%2Fbuckets%2FSharpMeow%2Flasagna-fields%2Fresolve%2FPHerc0175A%2Frepresentations%2Fpredictions%2Flasagna%2F20250521115057-lasagna-de45f011%2FPHerc0175A_cos.ome.zarr%2F%22%2C%22name%22%3A%22A%20whole-scan%20field%3A%20PHerc0175A%20cos%2C%20level%201%20%28every%202nd%20scan%20voxel%29%22%7D%5D%2C%22layout%22%3A%224panel%22%7D</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr/.zattrs            # OME multiscales metadata
+curl -s https://huggingface.co/buckets/SharpMeow/lasagna-fields/resolve/PHerc0175A/representations/predictions/lasagna/20250521115057-lasagna-de45f011/PHerc0175A_cos.ome.zarr/1/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-ct"><h3>X-ray CT that field came from, PHerc0175A 8.640 um</h3>
+<p class="scc-meta">CC BY-NC 4.0 (Vesuvius Challenge open data) · Read live from the open-data bucket, never copied here. The field&#x27;s level 1 is the scan&#x27;s level 1 grid. · <a href="https://scrollprize.org/data_browser/PHerc0175A" target="_blank" rel="noopener">browse</a></p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr</code></pre></div>
+<details><summary>Python (zarr)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;zarr&gt;=3&quot; fsspec aiohttp
+import zarr
+
+root = zarr.open_group(&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr&quot;, mode=&quot;r&quot;)  # OME-Zarr, zarr v2
+a = root[&quot;2&quot;]  # level 0 is full resolution; level L is 2**L times coarser
+print(a.shape, a.dtype, a.chunks)
+block = a[1593:1657, 1170:1234, 1170:1234]  # (z, y, x); reads only the chunks it touches</code></pre></div></details>
+<details><summary>villa&#x27;s vesuvius package<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install &quot;vesuvius[volume-only]&quot;
+from vesuvius import Volume
+
+v = Volume(type=&quot;zarr&quot;, path=&quot;https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr/2&quot;)  # one pyramid level
+block = v[1593:1657, 1170:1234, 1170:1234]</code></pre></div></details>
+<details><summary>VC3D<span class="scc-b src">from villa&#x27;s source</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>In VC3D (villa&#x27;s volume-cartographer), open or create a project, then
+File &gt; Attach Remote Zarr... and paste:
+
+https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr
+
+It accepts http, https and s3 OME-Zarr roots.</code></pre></div></details>
+<details><summary>neuroglancer<span class="scc-b ok">tested 2026-10-24</span></summary>
+<a class="scc-go" href="https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0175A%2Fvolumes%2F20250521115057-8.640um-1.2m-116keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20that%20field%20came%20from%2C%20PHerc0175A%208.640%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D" target="_blank" rel="noopener">Open in neuroglancer</a>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://neuroglancer-demo.appspot.com/#!%7B%22layers%22%3A%5B%7B%22type%22%3A%22image%22%2C%22source%22%3A%22zarr%3A%2F%2Fhttps%3A%2F%2Fvesuvius-challenge-open-data.s3.us-east-1.amazonaws.com%2FPHerc0175A%2Fvolumes%2F20250521115057-8.640um-1.2m-116keV-masked.zarr%2F%22%2C%22name%22%3A%22X-ray%20CT%20that%20field%20came%20from%2C%20PHerc0175A%208.640%20um%22%7D%5D%2C%22layout%22%3A%224panel%22%7D</code></pre></div></details>
+<details><summary>curl<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr/.zattrs            # OME multiscales metadata
+curl -s https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0175A/volumes/20250521115057-8.640um-1.2m-116keV-masked.zarr/2/.zarray     # one level: shape, chunks, dtype, codec</code></pre></div></details>
+</div>
+<div class="scc-src" id="connect-api"><h3>Make a field for any box, from code or an agent</h3>
+<p class="scc-meta">Code Apache 2.0; villa lasagna and its checkpoint MIT; scans and fields CC BY-NC 4.0 · make_field (same arguments as plan_field) runs villa&#x27;s lasagna on ZeroGPU and uses the caller&#x27;s ZeroGPU time, so pass a Hugging Face token. Model output, not a reading.</p>
+<div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/lasagna-fields</code></pre></div>
+<details><summary>Python /list_models<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/lasagna-fields&quot;)
+result = client.predict(api_name=&quot;/list_models&quot;)</code></pre></div></details>
+<details><summary>Python /example_points<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/lasagna-fields&quot;)
+result = client.predict(api_name=&quot;/example_points&quot;)</code></pre></div></details>
+<details><summary>Python /plan_field<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
+from gradio_client import Client
+
+client = Client(&quot;SharpMeow/lasagna-fields&quot;)
+result = client.predict(volume=&quot;20260930100252&quot;, z=39424, y=10752, x=13824, size=256, model=&quot;lasagna&quot;, api_name=&quot;/plan_field&quot;)</code></pre></div></details>
+<details><summary>curl /list_models<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-lasagna-fields.hf.space
+EVENT=$(curl -s -X POST $URL/gradio_api/call/list_models -H &#x27;Content-Type: application/json&#x27; \
+  -d &#x27;{&quot;data&quot;: []}&#x27; | python3 -c &#x27;import json,sys; print(json.load(sys.stdin)[&quot;event_id&quot;])&#x27;)
+curl -sN $URL/gradio_api/call/list_models/$EVENT</code></pre></div></details>
+<details><summary>MCP (Claude, Cursor and other agents)<span class="scc-b ok">tested 2026-10-24</span></summary>
+<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>{
+  &quot;mcpServers&quot;: {
+    &quot;lasagna-fields&quot;: {
+      &quot;url&quot;: &quot;https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/sse&quot;
+    }
+  }
+}
+
+Tool list: https://sharpmeow-lasagna-fields.hf.space/gradio_api/mcp/schema</code></pre></div></details>
+</div>
+<footer>Machine-readable: <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields/blob/main/connect.json" target="_blank" rel="noopener">connect.json</a> and <a href="https://huggingface.co/spaces/SharpMeow/lasagna-fields/blob/main/CONNECT.md" target="_blank" rel="noopener">CONNECT.md</a>. Checked 2026-10-25. "Tested" means the snippet ran against this public data on that date. Scan data keeps its own license (the Vesuvius Challenge open data is CC BY-NC 4.0).</footer></section>

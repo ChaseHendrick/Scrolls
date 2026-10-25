@@ -44,6 +44,7 @@ All released tools, including the tools grouped under Scrolls kit:
 | --- | --- |
 | AutoPipeline | [Open](https://github.com/ChaseHendrick/Scrolls#autopipeline) |
 | Unroll (interactive 3D scroll viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#unroll-interactive-3d-scroll-viewer) |
+| Lasagna Fields (villa lasagna fields for ten scans) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagna-fields-villa-lasagna-fields-for-ten-scans) |
 | Scrolls kit | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-kit) |
 | Segments without VC3D | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/tifxyz.md) |
 | Find, center line, cite and villa helpers | [Open](https://github.com/ChaseHendrick/Scrolls/blob/main/docs/tools/find.md) |
@@ -105,7 +106,6 @@ All released tools, including the tools grouped under Scrolls kit:
 | Segment Lens (published segment geometry viewer) | [Open](https://github.com/ChaseHendrick/Scrolls#segment-lens-published-segment-geometry-viewer) |
 | dinovol embeddings of PHerc0841 | [Open](https://github.com/ChaseHendrick/Scrolls#dinovol-embeddings-of-pherc0841) |
 | Headless VC3D for agents | [Open](https://github.com/ChaseHendrick/Scrolls#headless-vc3d-for-agents) |
-| Lasagna Fields (villa lasagna fields for ten scans) | [Open](https://github.com/ChaseHendrick/Scrolls#lasagna-fields-villa-lasagna-fields-for-ten-scans) |
 | Ink Lens (control-checked ink on your own VC3D region) | [Open](https://github.com/ChaseHendrick/Scrolls#ink-lens-control-checked-ink-on-your-own-vc3d-region) |
 | Umbilici (center lines of 33 Herculaneum scans) | [Open](https://github.com/ChaseHendrick/Scrolls#umbilici-center-lines-of-33-herculaneum-scans) |
 | Scrolls Starter: a beginner path into the tools | [Open](https://github.com/ChaseHendrick/Scrolls#scrolls-starter-a-beginner-path-into-the-tools) |
@@ -143,6 +143,24 @@ Released 16 October 2026.
 [Unroll](https://huggingface.co/spaces/SharpMeow/unroll) is an interactive 3D viewer that virtually unrolls Herculaneum scroll scans with ink layers, an Ink Bench for comparing ink models, CT tools and an agent API. Status: released. Version: 1.7.0 (the Space's `version.json` and `CHANGELOG.md`). It shows nine scrolls from the Vesuvius Challenge open data, each as its traced segments with an X-ray layer, plus the published ink detection where the open data has it; PHerc. 139 also has an ink_9um (9 µm) layer over all 37 windings. The CT tools (1.2.0 to 1.5.0) add X-ray window and level with auto contrast, a CT volume view that shows a cube of the raw scan around any point of the papyrus, the traced segments drawn into that cube, and streaming from the open data bucket. Live sheet (1.7.0) streams any public segment and a CT or 3D ink volume from the bucket and shows the volume on the sheet in 3D, sampled in the browser by the same rule as `kit sheetview`. Licence: Apache 2.0 for all code; the scan data and everything derived from it are CC BY-NC 4.0. It runs in the browser with no install or account, and it can also be installed as an app that works offline. Ink layers show where models detect ink; letters visible here are candidates for expert reading.
 
 Opens at [huggingface.co/spaces/SharpMeow/unroll](https://huggingface.co/spaces/SharpMeow/unroll). Install app: open [sharpmeow-unroll.static.hf.space](https://sharpmeow-unroll.static.hf.space/) and press Install app in the View panel or Settings (or use the browser's install icon); the page and the default scroll then work offline. Layers, controls and credits: [`docs/unroll-space.md`](docs/unroll-space.md).
+
+### Lasagna Fields (villa lasagna fields for ten scans)
+
+Released 25 October 2026.
+
+[Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) shares villa's lasagna `predict3d` output for ten whole scans that had none in the open data, one dataset each: [PHerc0175A](https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna), [PHerc0175B](https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna), [PHerc0306B](https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna), [PHerc0483A](https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna), [PHerc0483B](https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna), [PHerc0490A](https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna), [PHerc0490B](https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna), [PHerc0841](https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna), [PHerc0846A](https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna), [PHerc0846B](https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna). Each is in villa's own layout with `SHA256SUMS`; the same fields stream by URL from the public bucket SharpMeow/lasagna-fields (each card gives the URL). Made with villa's lasagna at `db3dbea2`, seams checked; raw model output. CC BY-NC 4.0, like the scans. Since 25 Oct 2026 the Space also **makes a field for any box of any public scan**: villa's own lasagna on ZeroGPU, checked against the published field (cos r 1.0 on every box tried), returned as villa's output folder from the page, API or MCP server.
+
+```bash
+hf download SharpMeow/pherc0175a-lasagna --repo-type dataset --local-dir pherc0175a-lasagna
+cd pherc0175a-lasagna && sha256sum -c SHA256SUMS
+for f in parts/*.tar; do tar -xf "$f"; done
+tar -xf PHerc0175A-lasagna-pyramid-fix.tar
+python load_example.py
+pip install gradio_client
+python -c "from gradio_client import Client; c = Client('SharpMeow/lasagna-fields', token='hf_...'); pt = c.predict(api_name='/example_points')[0]; print(c.predict(pt['volume'], pt['z'], pt['y'], pt['x'], 256, 'lasagna', api_name='/make_field')[1]['agreement'])"
+```
+
+The [Space](https://huggingface.co/spaces/SharpMeow/lasagna-fields) adds region downloads, Make a field (it uses the caller's ZeroGPU time), How-to guides and an MCP server; page: [docs/tools/lasagna-fields.md](docs/tools/lasagna-fields.md). [Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400) shows a sample with the center line. Model and code credit: villa's lasagna authors.
 
 ### Scrolls kit
 
@@ -267,22 +285,6 @@ claude mcp add vc3d-agent -e VC_APPIMAGE=/path/to/VC3D.AppImage -- "$PWD/.venv/b
 ```
 
 Every tool with a recorded call and result, client setup and failure modes: [README](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/README.md). The lasagna tools: [docs/lasagna-agents.md](https://github.com/ChaseHendrick/Scrolls/blob/submission/progress-2026-10-vc3d-agent-1-1-1/submissions/progress-2026-10-vc3d-agent-1-1-1/vc3d-agent/docs/lasagna-agents.md).
-
-### Lasagna Fields (villa lasagna fields for ten scans)
-
-Released 24 October 2026.
-
-[Lasagna Fields](https://huggingface.co/spaces/SharpMeow/lasagna-fields) shares villa's lasagna `predict3d` output for ten whole scans that had none in the open data, one dataset each: [PHerc0175A](https://huggingface.co/datasets/SharpMeow/pherc0175a-lasagna), [PHerc0175B](https://huggingface.co/datasets/SharpMeow/pherc0175b-lasagna), [PHerc0306B](https://huggingface.co/datasets/SharpMeow/pherc0306b-lasagna), [PHerc0483A](https://huggingface.co/datasets/SharpMeow/pherc0483a-lasagna), [PHerc0483B](https://huggingface.co/datasets/SharpMeow/pherc0483b-lasagna), [PHerc0490A](https://huggingface.co/datasets/SharpMeow/pherc0490a-lasagna), [PHerc0490B](https://huggingface.co/datasets/SharpMeow/pherc0490b-lasagna), [PHerc0841](https://huggingface.co/datasets/SharpMeow/pherc0841-lasagna), [PHerc0846A](https://huggingface.co/datasets/SharpMeow/pherc0846a-lasagna), [PHerc0846B](https://huggingface.co/datasets/SharpMeow/pherc0846b-lasagna). A lasagna field is what villa's lasagna surface fitting and the spiral fit read, so having it ready saves each person a GPU run. Each dataset is in villa's own layout (a `SCAN.lasagna.json` manifest with cos, grad_mag, nx and ny OME-Zarr channels) with `SHA256SUMS`; the same fields stream by URL from the public bucket SharpMeow/lasagna-fields (each card gives the URL). Made on Hugging Face Jobs with villa's lasagna at `db3dbea2`, seams checked. Raw model output, not checked by eye. CC BY-NC 4.0, like the scans.
-
-```bash
-hf download SharpMeow/pherc0175a-lasagna --repo-type dataset --local-dir pherc0175a-lasagna
-cd pherc0175a-lasagna && sha256sum -c SHA256SUMS
-for f in parts/*.tar; do tar -xf "$f"; done
-tar -xf PHerc0175A-lasagna-pyramid-fix.tar
-python load_example.py
-```
-
-Each dataset card says how to download, stream and load it. The [Space](https://huggingface.co/spaces/SharpMeow/lasagna-fields) adds region downloads, a Neuroglancer link and the methods; the Lasagna tab of [Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici?mode=lasagna&scan=PHerc0175A&z=6400) shows a sample with the center line. For another scan, swap the scan id in the commands. Model and code credit: villa's lasagna authors.
 
 ### Ink Lens (control-checked ink on your own VC3D region)
 
