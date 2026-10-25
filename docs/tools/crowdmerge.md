@@ -110,9 +110,24 @@ Report split (run once, frozen settings):
 | Sham control (wrong majority) | follows it: at least half of the majority's slipped share | **44.2 %** off sheet against 46.9 % slipped: it follows, as a vote must |
 | Verdict | | **PASS** (2,580 s on 4 cores) |
 
-What it shows (Interpretation): on planted crowds where 3 of 7 traces slide onto a touching sheet at their own places, the merged surface is off the sheet about one fourteenth as often as the largest single trace (0.96 % against 13.8 %), and the per-trace flags find about 94 % of the slipped area with under 1 % false alarms. What it does not show: real crowds were not tested (people's slips cluster where the scan is hard, so they are less independent than these), nor crowds where most traces slip, nor other scans. Missed slips are mostly where too few traces overlap to vote (38 % of the misses lie beyond the consensus).
+What it shows (Interpretation): on planted crowds where 3 of 7 traces slide onto a touching sheet at their own places, the merged surface is off the sheet about one fourteenth as often as the largest single trace (0.96 % against 13.8 %), and the per-trace flags find about 94 % of the slipped area with under 1 % false alarms. What it does not show: crowds of people's hand traces (whose slips may cluster where the scan is hard), other scans; a real crowd of tracer runs is below. Missed slips are mostly where too few traces overlap to vote (38 % of the misses lie beyond the consensus).
 
-Claim label: Model output, for every number above (geometry computed by the tool on planted crowds; the hand traces are the reference); Interpretation, for what they mean for real crowds, which were not tested.
+Claim label: Model output, for every number above (geometry computed by the tool on planted crowds; the hand traces are the reference); Interpretation, for what they mean for real crowds.
+
+Real crowd (run once, 25 Oct 2026, [preregistration](../prereg/2026-10-25-crowdmerge-real-crowd.md), [amendment 1](../prereg/2026-10-25-crowdmerge-real-crowd-amendment-1.md)): 7 VC3D tracer runs (`vc_grow_seg_from_seed` on the m7 surface prediction, 60 generations, `kit scroll2ink --until trace` on Hugging Face Jobs, 0.85 USD in all) from seeds 3 mm around a contact on each of w027 and w037, merged with the frozen settings and scored against the hand traces.
+
+| Measure | Bar | w027 and w037 pooled |
+| --- | --- | --- |
+| Off sheet (more than 4 voxels from the seeded winding) | vote at most half the largest trace's | vote **51.8 %**; largest trace 46.3 %; naive mean 56.4 %; best single trace 39.6 % and 41.9 % (picked with the truth) |
+| Coverage of the hand trace | vote at least 0.9 times the largest trace's | **0.74** |
+| Slip flags | recall and precision at least 80 % | recall **35.0 %**, precision 87.6 % |
+| The crowd itself | at least 2 % slipped, or VOID | 49.8 % of the traces' points more than 6 voxels off the seeded winding; every trace grew to about 4.8 cm² |
+| Neighbour control | consensus on A at least 5 times its points on either neighbour, or VOID | **1.05** (w027) and **1.50** (w037) |
+| Verdict | | **VOID** (neighbour control) |
+
+What it shows (Interpretation): these tracer runs left the seeded sheet for about half their area, each at its own places but mostly the same neighbors, so at many vertices the wrong sheet had the majority. A vote follows the majority, as the sham control on planted crowds already showed, so the merged surface was no better than the largest single trace. The preregistration voids the run because the consensus lay on the neighbors about as often as on the seeded sheet; the descriptive numbers above do not favor the vote either. The tool is for crowds that are mostly right, such as several people's hand traces; it does not rescue a crowd of one tracer that mostly slips.
+
+Claim label: Model output (traces and consensus are tool output; the hand traces are the reference); Interpretation, for the last paragraph.
 
 ## Commands and options
 
@@ -265,11 +280,12 @@ CPU only; no rented compute. See Runs on for measured times. Time grows with the
 
 ## Tests
 
-`python -m unittest tests.test_crowdmerge -v` (about 10 s): on two synthetic parallel sheets 12 voxels apart, a minority slip is pulled back onto the sheet and flagged even when the base is the slipped trace; a wrong majority wins (the sham); a lone trace is kept unchanged; the consensus grows past a half-width base and a lone trace beyond the base is not enough to grow; the naive mean lands between the sheets; the ray, tie-break and straight-line continuation rules; the crowd generator's truth; the tally's PASS and VOID verdicts; the command line writes and reads tifxyz. They do not cover real scans or real crowds.
+`python -m unittest tests.test_crowdmerge -v` (about 10 s): on two synthetic parallel sheets 12 voxels apart, a minority slip is pulled back onto the sheet and flagged even when the base is the slipped trace; a wrong majority wins (the sham); a lone trace is kept unchanged; the consensus grows past a half-width base and a lone trace beyond the base is not enough to grow; the naive mean lands between the sheets; the ray, tie-break and straight-line continuation rules; the crowd generator's truth; the tally's PASS and VOID verdicts; the command line writes and reads tifxyz; the real-crowd tally's PASS, FAIL and VOID verdicts. They do not cover real scans or real crowds.
 
 ## History
 
 - 2026-10-25: first version (`f9a30ee`): vote, growth, a second reliability-weighted pass, per-trace flags, and the planted-slip bench with clean and sham controls.
+- 2026-10-25: real-crowd test (`scripts/crowdmerge/realcrowd.py`, `94b1e42`), same frozen code: VOID, the tracer crowds mostly left the seeded sheet.
 
 ## Related
 

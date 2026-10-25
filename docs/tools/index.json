@@ -1990,73 +1990,73 @@
     {
      "name": "Checks and controls",
      "start_line": 78,
-     "end_line": 116,
+     "end_line": 131,
      "applicable": true
     },
     {
      "name": "Commands and options",
-     "start_line": 117,
-     "end_line": 169,
+     "start_line": 132,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 170,
-     "end_line": 187,
+     "start_line": 185,
+     "end_line": 202,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 188,
-     "end_line": 192,
+     "start_line": 203,
+     "end_line": 207,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 193,
-     "end_line": 222,
+     "start_line": 208,
+     "end_line": 237,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 223,
-     "end_line": 240,
-     "applicable": true
-    },
-    {
-     "name": "How it works",
-     "start_line": 241,
-     "end_line": 251,
-     "applicable": true
-    },
-    {
-     "name": "Cost and time",
-     "start_line": 252,
+     "start_line": 238,
      "end_line": 255,
      "applicable": true
     },
     {
-     "name": "For agents",
+     "name": "How it works",
      "start_line": 256,
-     "end_line": 265,
+     "end_line": 266,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 267,
+     "end_line": 270,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 271,
+     "end_line": 280,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 266,
-     "end_line": 269,
+     "start_line": 281,
+     "end_line": 284,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 270,
-     "end_line": 273,
+     "start_line": 285,
+     "end_line": 289,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 274,
-     "end_line": 279,
+     "start_line": 290,
+     "end_line": 295,
      "applicable": true
     }
    ]

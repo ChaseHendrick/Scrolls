@@ -11992,6 +11992,137 @@
     }
    },
    "not_tested": "real crowds of independent tracers, other scans, crowds where most traces slip"
+  },
+  {
+   "date": "2026-10-25",
+   "tool": "kit crowdmerge (real crowd)",
+   "command": "python scripts/crowdmerge/realcrowd.py score TRACES",
+   "claim": "Model output: kit crowdmerge on two crowds of 7 VC3D tracer runs (vc_grow_seg_from_seed, villa e0bbb8b with grid-cache and time-limit patches, m7 surface prediction 20260413222639, 60 generations, kit scroll2ink --until trace on HF Jobs) seeded on PHerc0139 hand-traced windings w027 and w037 (scan 20250728140407, 9.362 um; public, not prize-eligible), scored against the hand traces; geometry only, never a reading",
+   "prereg": "docs/prereg/2026-10-25-crowdmerge-real-crowd.md",
+   "amendment": "docs/prereg/2026-10-25-crowdmerge-real-crowd-amendment-1.md",
+   "code_commit": "f9a30ee",
+   "report_sha256": "065f69f8ca050932e95b83872e4c51cad281767a30ed5c31eeadd743d8f1896e",
+   "bars": {
+    "off_vs_largest_max": 0.5,
+    "coverage_vs_largest_min": 0.9,
+    "flag_recall_min": 0.8,
+    "flag_precision_min": 0.8,
+    "void_slipped_share_min": 0.02,
+    "void_traces_min": 4,
+    "control_ratio_min": 5.0
+   },
+   "tally": {
+    "vote_off": 0.5175,
+    "mean_off": 0.5636,
+    "largest_off": 0.4631,
+    "crowd_off": 0.5971,
+    "crowd_slipped_share": 0.4979,
+    "best_trace_off": {
+     "w027": 0.396,
+     "w037": 0.4186
+    },
+    "coverage_vs_largest": 0.7375,
+    "flag_recall": 0.35,
+    "flag_precision": 0.876,
+    "missed_outside_share": 0.2225,
+    "control_ratio": {
+     "w027": 1.0543,
+     "w037": 1.4976
+    },
+    "checks": {
+     "off_vs_largest": false,
+     "coverage_vs_largest": false,
+     "flag_recall": false,
+     "flag_precision": true
+    },
+    "void": [
+     "w027: neighbour control ratio 1.0543 under 5.0",
+     "w037: neighbour control ratio 1.4976 under 5.0"
+    ],
+    "verdict": "VOID"
+   },
+   "per_winding": {
+    "w027": {
+     "traces": {
+      "0": {
+       "off_share": 0.4535,
+       "area_cm2": 4.82
+      },
+      "1": {
+       "off_share": 0.5092,
+       "area_cm2": 4.816
+      },
+      "2": {
+       "off_share": 0.5788,
+       "area_cm2": 4.82
+      },
+      "3": {
+       "off_share": 0.396,
+       "area_cm2": 4.828
+      },
+      "4": {
+       "off_share": 0.4293,
+       "area_cm2": 4.823
+      },
+      "5": {
+       "off_share": 0.9542,
+       "area_cm2": 4.825
+      },
+      "6": {
+       "off_share": 0.5525,
+       "area_cm2": 4.816
+      }
+     },
+     "vote_off_share": 0.4893,
+     "largest": "0",
+     "consensus_on_A": 172264,
+     "consensus_on_neighbours": {
+      "w026": 120134,
+      "w028": 163392
+     }
+    },
+    "w037": {
+     "traces": {
+      "0": {
+       "off_share": 0.474,
+       "area_cm2": 4.8
+      },
+      "1": {
+       "off_share": 0.889,
+       "area_cm2": 4.818
+      },
+      "2": {
+       "off_share": 0.682,
+       "area_cm2": 4.83
+      },
+      "3": {
+       "off_share": 0.7543,
+       "area_cm2": 4.821
+      },
+      "4": {
+       "off_share": 0.559,
+       "area_cm2": 4.816
+      },
+      "5": {
+       "off_share": 0.4186,
+       "area_cm2": 4.802
+      },
+      "6": {
+       "off_share": 0.6915,
+       "area_cm2": 4.81
+      }
+     },
+     "vote_off_share": 0.5508,
+     "largest": "0",
+     "consensus_on_A": 128483,
+     "consensus_on_neighbours": {
+      "w036": 85790,
+      "w038": 39415
+     }
+    }
+   },
+   "cost_usd": 0.85,
+   "note": "VOID by the preregistered neighbour control: about half of each crowd lay more than 6 voxels off the seeded winding, so the consensus sat on the neighbours about as often as on A. The descriptive numbers do not favor the vote either (51.8% off sheet against 46.3% for the largest trace)."
   }
  ]
 }
