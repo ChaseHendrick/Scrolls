@@ -107,6 +107,7 @@ usage: python -m kit scroll2ink run [-h] --sample SAMPLE --seed X Y Z
                                     [--umbilicus UMBILICUS] [--snap-seed]
                                     [--force] [--experiment EXPERIMENT]
                                     [--agent AGENT] [--dry-run] [--json]
+                                    [--use STAGE=NAME]
 ```
 
 | Option | Default | Meaning |
@@ -131,6 +132,7 @@ usage: python -m kit scroll2ink run [-h] --sample SAMPLE --seed X Y Z
 | `--agent AGENT` | none | command that runs Headless VC3D (default $SCROLL2INK_AGENT or vc3d-agent) |
 | `--dry-run` | off | print the run folder and settings; run nothing |
 | `--json` | off | print the summary as JSON |
+| `--use STAGE=NAME` | none | Pick a stage's option from the stage registry ([stagereg](stagereg.md)), repeatable; `--use ink=v8in` sets `--model v8in`. `KIT_STAGE_<STAGE>` in the environment counts too. The pick goes into `settings.json` under `stages` with its maturity; one that contradicts an option given outright, or one scroll2ink cannot run, is refused (exit 2) |
 
 The stages, in order: `inputs`, `seed`, `trace`, `check`, `extend`, `flatten`, `render`, `ink`, `preview`, `report`. `--threads` is passed to every tool except the tracer, which keeps Headless VC3D's default of at most 4 (it does not scale past a few). A tracer built without villa's time limit is stopped by the tool's timeout, `--trace-minutes` plus 300 s, and keeps its last snapshot (one every 10 generations).
 
@@ -194,6 +196,7 @@ Headless VC3D reads its own: `VC_APPIMAGE` or `VC_BIN` (villa's tools), `KIT_INK
 | `check(agent, log, surface, inp, windows, out)` | `{"verdict", "findings", "seated_windows", "seating", "selfcross"}` | `Scroll2InkError` | `check_surface` on the scan's CT |
 | `summary(run)`, `report_md(sm)` | dict, Markdown text | | What `summary.json` and `report.md` hold |
 | `execute(run, agent, until=None, say=print, log=None)` | the summary dict | `Scroll2InkError` at the first failed stage (recorded as failed) | Every stage not yet done, up to and including `until` |
+| `apply_stage_picks(args, env=None)` | `{stage: record}` | `Scroll2InkError`, `stagereg.StageError` | Lays the stage registry's picks (`--use`, `KIT_STAGE_*`) over the parsed arguments; empty when none, so settings stay as before |
 | `settings_from(args)` | `(settings, runtime)` | | The fixed settings and the runtime options of parsed arguments; pure |
 | `add_arguments(p)`, `run_cli(args, root=None)` | | | The command line |
 
@@ -232,6 +235,8 @@ It prints one line per stage, `[N/10] STAGE  STATUS in S s: DETAIL`, then the ar
 | What you see | Why | What to do |
 | --- | --- | --- |
 | `usage: ...` then `error: ...` on stderr, exit code 2 | A missing or wrong argument | Check the command against Commands and options |
+| `scroll2ink: --use STAGE=NAME sets --model A but --model B was given: give it one way` | A stage picked both ways, differently | Drop one |
+| `scroll2ink: --use STAGE=NAME: the registry's arguments FLAG do not fit scroll2ink` | The registry's row for the option names an argument scroll2ink does not have | Fix the row in `kit/data/stages.json` |
 | `Headless VC3D (vc3d-agent) not found:...` | No `--agent`, no `$SCROLL2INK_AGENT` and no `vc3d-agent` on PATH | Install it as the message says, or pass `--agent` |
 | `no volume of...has a surface prediction with normal grids; name one with --volume` | The catalog lists no prediction with normal grids for this sample | Pass `--volume` for a volume with a prediction; the trace then runs without grids, which `trace` warns makes it read only the prediction |
 | `volume...is not in the catalog of...` | A `--volume` the catalog does not list | Use an id from `vc3d-agent vc3d call catalog '{"action": "volumes", "sample": "S"}'` |
@@ -309,6 +314,7 @@ Synthetic failure-path tests check missing forward or reverse maps, failed model
 
 - 2026-10-24: First version (`28edf55`); a tracer without villa's time limit is stopped at the tool's timeout (`9bf01e2`).
 - 2026-10-25: The layer order is voted against the scroll's umbilicus, carried from another scan through the catalog transform when the scan has none of its own; the demo's first ink maps had come out reversed (`a0d1cd0`). The demo run on PHerc0139, and the replay GIF, MP4 and stills in `docs/assets/scroll2ink/`.
+- 2026-10-25: `--use STAGE=NAME` and `KIT_STAGE_<STAGE>` pick the ink reader (and any later stage option) from the stage registry ([stagereg](stagereg.md)); a run with no pick keeps its settings as before.
 
 ## Related
 

@@ -1,4 +1,4 @@
-"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink}.
+"""Command line: python -m kit {start,help,prizes,submitcheck,live,style,stages,doctor,plan,cost,find,labels,centerline,cite,fetch,s3relay,vc3dcache,prclock,prtext,verify,rowscore,auc,hpscore,overlap,collate,stackcheck,tifxyz,sheetview,atlas,coverage,uvgate,windconsistency,axispolish,windlabel-box,hopbench,meshaudit,ensemble,fibertensor,sheetcheck,gate,layers,shuffle,provenance,compute,run,surfacefix,phantom,view,strokenet,letterread,letterlines,letterdemo,greeklm,releases,spaceconnect,leaderboard,routines,stale,integrity,volumeview,segzoo,scroll2ink}.
 
 An installed package (pyproject.toml) has the same commands as console scripts: scrolls-workbench (every command;
 gate, releases and leaderboard read the repository's docs/ and README.md, so they need a clone), and scrolls-letterread,
@@ -1006,8 +1006,8 @@ GROUPS = (
     ("Start and set up", ("start", "doctor", "prizes", "submitcheck", "plan", "cost", "help", "live", "style")),
     ("Find and fetch public data", ("find", "labels", "centerline", "cite", "fetch", "s3relay", "vc3dcache",
                                     "volumeview", "segzoo")),
-    ("Segments and geometry", ("scroll2ink", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck", "uvgate",
-                               "windconsistency", "axispolish",
+    ("Segments and geometry", ("scroll2ink", "stages", "tifxyz", "sheetview", "atlas", "coverage", "stackcheck",
+                               "uvgate", "windconsistency", "axispolish",
                                "windlabel-box", "hopbench", "overlap", "meshaudit", "surfacefix", "layers")),
     ("Ink maps: score, compare, control", ("auc", "verify", "hpscore", "rowscore", "collate", "ensemble", "view",
                                            "strokenet", "fibertensor", "sheetcheck", "phantom", "shuffle", "gate",
@@ -1076,6 +1076,11 @@ def build_parser(prog="python -m kit", sub_progs=None):
                                     "view in the Scrolls look")
     p.add_argument("cmd", nargs=argparse.REMAINDER, help="the command to run, after --")
     p.set_defaults(func=lambda a: __import__("kit.termview", fromlist=["x"]).main(a.cmd))
+
+    p = sub.add_parser("stages", help="the stage registry: every option of every stage (ours, community, team), its "
+                                      "licence and maturity, and what a workflow would pick (list, show, pick, check)")
+    p.add_argument("cmd", nargs=argparse.REMAINDER)
+    p.set_defaults(func=lambda a: __import__("kit.stagereg", fromlist=["x"]).main(a.cmd))
 
     p = sub.add_parser("style", help="the Scrolls terminal look: hook install, remove or status (style every "
                                      "script in a checkout), demo, pipe")
@@ -1790,6 +1795,8 @@ def main(argv=None, prog="python -m kit", sub_progs=None):
         return __import__("kit.termview", fromlist=["x"]).main(argv[1:])
     if argv[:1] == ["style"]:
         return __import__("kit.termstyle", fromlist=["x"]).main(argv[1:])
+    if argv[:1] == ["stages"]:
+        return __import__("kit.stagereg", fromlist=["x"]).main(argv[1:])
     parser = _parser(prog, sub_progs)
     if argv and not argv[0].startswith("-"):
         sub = next(a for a in parser._actions if isinstance(a, argparse._SubParsersAction))
