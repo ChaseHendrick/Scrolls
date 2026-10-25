@@ -215,7 +215,7 @@ Measured on 25 Oct 2026: on an RTX Pro 6000, 59.6 s for 4.3 G voxels end to end 
 
 ## History
 
-- 2026-10-25: experimental release 0.1.0: the code, the self-check and the weights on Hugging Face, after the third held-out test failed on PHercMAN5 (Chase chose to release it as a preview with a self-check).
+- 2026-10-25: experimental release 0.1.0 (`94a0e27`): the code, the self-check and the weights on Hugging Face, after the third held-out test failed on PHercMAN5 (Chase chose to release it as a preview with a self-check).
 
 ## Related
 
