@@ -168,7 +168,7 @@ Under a second; it reads one JSON file.
 
 ## History
 
-- 2026-10-25: first version, with scroll2ink's `--use`.
+- 2026-10-25: first version, with scroll2ink's `--use` (`fb2170a`).
 
 ## Related
 
