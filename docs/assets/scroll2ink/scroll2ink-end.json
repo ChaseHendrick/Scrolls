@@ -1,0 +1,42 @@
+{
+  "schema": "scrolls-media/1",
+  "name": "scroll2ink-end",
+  "label": "Real data render",
+  "alt": "A still of the kit scroll2ink replay, the run's last lines: the ink step on a GPU with its reverse control, the previews and the report, with every stage lit; on the right a CT slice of the scan through the seed point with a ring on the seed.",
+  "caption": "Real data render: a still of the replay of kit scroll2ink on Hugging Face Jobs, 25 Oct 2026, PHerc0139 at 9.362 um (CPU part for VC3D, then an L4 GPU for ink); every line and time read from the run's logs, waits skipped. PHerc0139, volume 20250728140407 (9.362 um), CT slice z 5477, x 3737 to 4505, y 3551 to 4319; the ring is the seed. CT only: the grown surface and the ink maps are model output and stay numbers. Vesuvius Challenge open data, CC BY-NC 4.0.",
+  "license": "CC BY-NC 4.0",
+  "release_id": null,
+  "data": {
+    "scan": "PHerc0139",
+    "voxel_size": "9.362 um",
+    "labels": "none",
+    "credit": "Vesuvius Challenge open data, CC BY-NC 4.0",
+    "volume": "20250728140407"
+  },
+  "sources": [
+    "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0139/volumes/20250728140407-9.362um-1.2m-113keV-masked.zarr/"
+  ],
+  "outputs": [
+    {
+      "file": "scroll2ink-end.png",
+      "bytes": 370922,
+      "sha256": "7166f9ddfc2e0176dd5108e13ac9a987008807ba022ca5f6deff00e929dbe5b5",
+      "width": 1280,
+      "height": 720,
+      "kind": "still",
+      "format": "png"
+    }
+  ],
+  "inputs": [],
+  "made": "2026-10-25",
+  "tool": {
+    "scripts": [
+      "capture_web.py",
+      "common.py",
+      "scroll2ink_replay.py"
+    ],
+    "scripts_sha256": "5b1ba75a487741d4be891e9f04f9a43bcaec2b1a11b83d15459af741f50c2159",
+    "base_commit": "9bf01e2c404e83cf769ddcfb44a4220364029bfd"
+  },
+  "command": "python scripts/media/scroll2ink_replay.py RUN_DIR --out-dir PAGE && python scripts/media/capture_web.py PAGE/replay.html --out-dir SHOTS --actions PAGE/stills.json --width 1280 --height 720 && python scripts/media/scroll2ink_replay.py --publish SHOTS --assets docs/assets/scroll2ink --meta scripts/media/captures/scroll2ink-run.meta.json"
+}

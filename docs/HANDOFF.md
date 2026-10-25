@@ -2,6 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
+## Continuation, 25 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| scroll2ink: scan and seed to ink map (25 Oct) | `kit scroll2ink` ([page](tools/scroll2ink.md)), draft PR from `claude/project-thread-6lx4fb`: seed check, trace, check, extend, flatten, render, ink with reverse control, in one resumable folder; layer order voted against the umbilicus. PHerc0139 demo on HF Jobs: 4.8 cm2, check ok, 0.15 USD; GIF and stills in `docs/assets/scroll2ink/` | None; listed in Released tools (Scrolls kit) on Chase's OK; no Discord post (Chase, 25 Oct) |
+
 ## Continuation, 24 October 2026
 
 | Item | State | Next step |
