@@ -182,6 +182,27 @@ class CrowdMergeTest(unittest.TestCase):
             self.assertEqual(int((tifffile.imread(str(out / "flags" / "t0.tif")) == 2).sum() > 0), 1)
             self.assertTrue((out / "crowdmerge.json").is_file())
 
+    def test_real_crowd_tally(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location(
+            "realcrowd", Path(__file__).resolve().parents[1] / "scripts" / "crowdmerge" / "realcrowd.py")
+        rc = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(rc)
+        tr = {f"t{i}": {"off": 30, "matched": 100, "slipped": 20, "cover": 100, "area_cm2": 2.0} for i in range(5)}
+        flags = {"tp": 90, "fp": 5, "fn": 10, "fn_outside": 4, "on": 400, "on_flagged": 5, "slipped": 100}
+        row = {"winding": "w001", "traces": tr, "grown_traces": 5, "largest": "t0",
+               "vote": {"off": 5, "matched": 100, "cover": 95, "flags": flags, "on_A": 95,
+                        "on_neighbours": {"w002": 4}},
+               "mean": {"off": 25, "matched": 100, "cover": 100}}
+        self.assertEqual(rc.tally([row])["verdict"], "PASS")
+        row["vote"]["off"] = 20  # more than half the largest trace's
+        self.assertEqual(rc.tally([row])["verdict"], "FAIL")
+        row["grown_traces"] = 3
+        self.assertEqual(rc.tally([row])["verdict"], "VOID")
+        row["grown_traces"] = 5
+        row["vote"]["on_neighbours"] = {"w002": 40}  # the scoring cannot tell the sheets apart
+        self.assertEqual(rc.tally([row])["verdict"], "VOID")
+
 
 if __name__ == "__main__":
     unittest.main()

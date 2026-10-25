@@ -1916,7 +1916,8 @@
    "area": "Surfaces and tracing",
    "commands": [
     "python -m kit crowdmerge merge",
-    "python -m kit crowdmerge bench"
+    "python -m kit crowdmerge bench",
+    "python scripts/crowdmerge/realcrowd.py seeds|score"
    ],
    "imports": [
     "from kit import crowdmerge"
@@ -1931,6 +1932,10 @@
      "symbols": [
       "build_parser"
      ]
+    },
+    {
+     "path": "scripts/crowdmerge/realcrowd.py",
+     "symbols": []
     }
    ],
    "tests": [
@@ -1950,8 +1955,8 @@
     "Status": "Experimental",
     "Kind": "kit command, kit module",
     "Area": "Surfaces and tracing",
-    "Run": "`python -m kit crowdmerge merge`, `python -m kit crowdmerge bench`, `from kit import crowdmerge`",
-    "Code": "`kit/crowdmerge.py`, `kit/cli.py` (`build_parser`)",
+    "Run": "`python -m kit crowdmerge merge`, `python -m kit crowdmerge bench`, `from kit import crowdmerge`; the real-crowd test: `python scripts/crowdmerge/realcrowd.py seeds|score`",
+    "Code": "`kit/crowdmerge.py`, `kit/cli.py` (`build_parser`), `scripts/crowdmerge/realcrowd.py`",
     "Tests": "`tests/test_crowdmerge.py`",
     "Needs": "Python 3.10 or newer (checked with 3.11), numpy, scipy (`cKDTree`, `ndimage`) and tifffile (`pip install numpy scipy tifffile`); `kit/sheetrefs.py` (tifxyz reader, grid geometry, upsampling, references, matching). `bench` also needs the references of [hopbench](hopbench.md) (`python -m kit hopbench refs`, about 40 MB, 5 minutes, and numcodecs for that step)",
     "Runs on": "CPU only. `merge` of 7 traces of an 8 mm window (about 15,000 vertices each at 4 voxels): 30 to 60 s. `bench --split dev` (36 sites, 3 crowds and 2 methods per site): 1,882 s; `--split report`: 2,580 s (measured 2026-10-25, 4-core Intel Xeon 2.80 GHz cloud container, peak memory under 2 GB)",
@@ -1959,7 +1964,7 @@
     "Writes": "`merge`: `OUT/consensus/` (x.tif, y.tif, z.tif, meta.json), `OUT/flags/NAME.tif` per trace, `OUT/support.tif`, `OUT/offset.tif`, `OUT/crowdmerge.json`. `bench`: `work/crowdmerge/bench-SPLIT/crowdmerge-bench.json` (or `--out`)",
     "Go-ahead": "Not needed: local CPU, your own traces or public data",
     "Released": "Public `main` from the PR that adds it (October 2026); a line of the Scrolls kit entry in the README's \"Released tools\", id `crowdmerge`",
-    "Guide": "[Preregistration](../prereg/2026-10-24-crowdmerge.md)",
+    "Guide": "[Preregistration](../prereg/2026-10-24-crowdmerge.md); [real-crowd test](../prereg/2026-10-25-crowdmerge-real-crowd.md)",
     "Checked": "2026-10-25 against commit `f9a30ee`"
    },
    "page": "docs/tools/crowdmerge.md",
@@ -1991,67 +1996,67 @@
     {
      "name": "Commands and options",
      "start_line": 117,
-     "end_line": 156,
+     "end_line": 168,
      "applicable": true
     },
     {
      "name": "Python API",
-     "start_line": 157,
-     "end_line": 174,
+     "start_line": 169,
+     "end_line": 186,
      "applicable": true
     },
     {
      "name": "Inputs",
-     "start_line": 175,
-     "end_line": 179,
+     "start_line": 187,
+     "end_line": 191,
      "applicable": true
     },
     {
      "name": "Outputs",
-     "start_line": 180,
-     "end_line": 209,
+     "start_line": 192,
+     "end_line": 221,
      "applicable": true
     },
     {
      "name": "Failure modes",
-     "start_line": 210,
-     "end_line": 225,
+     "start_line": 222,
+     "end_line": 238,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 226,
-     "end_line": 236,
+     "start_line": 239,
+     "end_line": 249,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 237,
-     "end_line": 240,
+     "start_line": 250,
+     "end_line": 253,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 241,
-     "end_line": 250,
+     "start_line": 254,
+     "end_line": 263,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 251,
-     "end_line": 254,
+     "start_line": 264,
+     "end_line": 267,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 255,
-     "end_line": 258,
+     "start_line": 268,
+     "end_line": 271,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 259,
-     "end_line": 264,
+     "start_line": 272,
+     "end_line": 277,
      "applicable": true
     }
    ]

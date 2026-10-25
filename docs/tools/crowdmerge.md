@@ -8,8 +8,8 @@
 | Status | Experimental |
 | Kind | kit command, kit module |
 | Area | Surfaces and tracing |
-| Run | `python -m kit crowdmerge merge`, `python -m kit crowdmerge bench`, `from kit import crowdmerge` |
-| Code | `kit/crowdmerge.py`, `kit/cli.py` (`build_parser`) |
+| Run | `python -m kit crowdmerge merge`, `python -m kit crowdmerge bench`, `from kit import crowdmerge`; the real-crowd test: `python scripts/crowdmerge/realcrowd.py seeds\|score` |
+| Code | `kit/crowdmerge.py`, `kit/cli.py` (`build_parser`), `scripts/crowdmerge/realcrowd.py` |
 | Tests | `tests/test_crowdmerge.py` |
 | Needs | Python 3.10 or newer (checked with 3.11), numpy, scipy (`cKDTree`, `ndimage`) and tifffile (`pip install numpy scipy tifffile`); `kit/sheetrefs.py` (tifxyz reader, grid geometry, upsampling, references, matching). `bench` also needs the references of [hopbench](hopbench.md) (`python -m kit hopbench refs`, about 40 MB, 5 minutes, and numcodecs for that step) |
 | Runs on | CPU only. `merge` of 7 traces of an 8 mm window (about 15,000 vertices each at 4 voxels): 30 to 60 s. `bench --split dev` (36 sites, 3 crowds and 2 methods per site): 1,882 s; `--split report`: 2,580 s (measured 2026-10-25, 4-core Intel Xeon 2.80 GHz cloud container, peak memory under 2 GB) |
@@ -17,7 +17,7 @@
 | Writes | `merge`: `OUT/consensus/` (x.tif, y.tif, z.tif, meta.json), `OUT/flags/NAME.tif` per trace, `OUT/support.tif`, `OUT/offset.tif`, `OUT/crowdmerge.json`. `bench`: `work/crowdmerge/bench-SPLIT/crowdmerge-bench.json` (or `--out`) |
 | Go-ahead | Not needed: local CPU, your own traces or public data |
 | Released | Public `main` from the PR that adds it (October 2026); a line of the Scrolls kit entry in the README's "Released tools", id `crowdmerge` |
-| Guide | [Preregistration](../prereg/2026-10-24-crowdmerge.md) |
+| Guide | [Preregistration](../prereg/2026-10-24-crowdmerge.md); [real-crowd test](../prereg/2026-10-25-crowdmerge-real-crowd.md) |
 | Checked | 2026-10-25 against commit `f9a30ee` |
 
 ## What it does
@@ -154,6 +154,18 @@ usage: python -m kit crowdmerge bench [-h] [--refs REFS]
 | `--workers WORKERS` | `2` | threads for the KD-tree queries |
 | `--json` | off | print the tally as JSON |
 
+### `python scripts/crowdmerge/realcrowd.py`
+
+The real-crowd test of the [real-crowd preregistration](../prereg/2026-10-25-crowdmerge-real-crowd.md): `seeds` prints its fixed seed points (7 per winding on a 3 mm circle around the winding's first bench contact site); `score TRACES` merges each winding's crowd (`TRACES/<winding>/<trace>/` tifxyz folders, for example VC3D tracer runs from those seeds) and scores it against the hand trace, writing `TRACES/realcrowd.json`.
+
+| Option | Default | Meaning |
+| --- | --- | --- |
+| `--windings W ...` | `w027 w037` | `seeds`: the hand-traced windings to seed |
+| `--refs REFS` | `work/hopbench/refs/PHerc0139-20250728140407` | kit hopbench refs output |
+| `--json` | off | `seeds`: print as JSON |
+| `--out FILE` | `TRACES/realcrowd.json` | `score`: report path |
+| `--workers N` | `2` | `score`: threads for the KD-tree queries |
+
 ## Python API
 
 | Function | Returns | Raises | Notes |
@@ -219,6 +231,7 @@ usage: python -m kit crowdmerge bench [-h] [--refs REFS]
 | `crowdmerge: base NAME has no vertex with a normal` | the base is empty or one row wide | pick another base |
 | `crowdmerge: no vertex of the base is agreed by enough traces` | the traces do not overlap the base, or are in different frames | check they trace the same region in the same volume |
 | `crowdmerge: split must be dev, report or all, not ...`, `unknown method ...` | API misuse | use one of the listed values |
+| `WINDING has no contact site` | `realcrowd.py seeds` on a winding that touches no chain neighbor | pick another winding |
 | `crowdmerge: no usable site` | the references are missing or empty | run `python -m kit hopbench refs` |
 | `crowdmerge: ...: no x.tif (not a tifxyz folder)` | a path is not a tifxyz folder | point at the folder holding x.tif |
 | A consensus that follows the wrong sheet | most traces present there are on that sheet | it is a vote; check with the slip flags of the traces you trust, or add independent traces |
