@@ -18,7 +18,7 @@
 | Go-ahead | Not needed |
 | Released | Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onward) |
 | Guide | [TOOL-DOCS.md](../TOOL-DOCS.md), the standard the pages follow |
-| Checked | 2026-10-16 against commit `63ee638` |
+| Checked | 2026-10-25 against commit `2ecef16` |
 
 ## What it does
 
@@ -374,7 +374,7 @@ python -m unittest tests.test_tooldocs -v
 
 ## History
 
-- 2026-10-25: `stale` compares contents instead of commit times, ported from Scrolls-private: it lists a page when any Code path changed between the page's last commit and `HEAD` (named definitions only, for a Python file with symbols) and names the changed files; a two-branch test covers both faults of the old rule.
+- 2026-10-25: `stale` compares contents instead of commit times, ported from Scrolls-private: it lists a page when any Code path changed between the page's last commit and `HEAD` (named definitions only, for a Python file with symbols) and names the changed files; a two-branch test covers both faults of the old rule (`2ecef16`).
 - 2026-10-21: the checker compares the bare `python -m kit` usage and command rows, reads shell messages, reads the argparse code of scripts, `spaces/` files and entry points without running it (positional rows, literal defaults, pasted usage blocks), checks option rows of `spaces/` files, and matches messages whole in the What you see column from 9 characters; the pages it flagged were fixed (`bbecb37`).
 - 2026-10-17: a Branch only page whose commit the checked-out branch already holds is reported, so a merged tool's page becomes Current ([PR #104](https://github.com/ChaseHendrick/Scrolls/pull/104)).
 - 2026-10-16: defaults written as the checker expects: an empty string or list is none, and a path inside the checkout is written relative to it (`63ee638`).

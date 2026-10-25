@@ -12597,8 +12597,8 @@
     "text": "Not needed"
    },
    "checked": {
-    "date": "2026-10-16",
-    "commit": "63ee638"
+    "date": "2026-10-25",
+    "commit": "2ecef16"
    },
    "license": null,
    "fields": {
@@ -12616,7 +12616,7 @@
     "Go-ahead": "Not needed",
     "Released": "Not yet on public `main`: on the branch `claude/tool-docs-k5afs7` since 2026-10-16 (`1d07cb3` onward)",
     "Guide": "[TOOL-DOCS.md](../TOOL-DOCS.md), the standard the pages follow",
-    "Checked": "2026-10-16 against commit `63ee638`"
+    "Checked": "2026-10-25 against commit `2ecef16`"
    },
    "page": "docs/tools/tooldocs.md",
    "sections": [
