@@ -1,0 +1,14 @@
+# Fiber Checker on a free CPU Hugging Face Space (Gradio 6.28.0 and Python 3.12 come from the README card). The free
+# judge is a small network that runs on the CPU, so torch is the CPU build. anthropic is only for visitors who choose
+# the Claude judge with their own key.
+--extra-index-url https://download.pytorch.org/whl/cpu
+torch==2.14.1
+numpy==2.5.3
+scipy==1.18.1
+tifffile==2026.10.15
+imagecodecs==2026.10.10
+numcodecs==0.17.1
+pillow==12.3.0
+anthropic==2.3.0
+mcp==1.30.0
+pydantic>=2.11.10,<=2.12.5

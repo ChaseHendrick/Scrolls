@@ -1,0 +1,21 @@
+Fiber Checker
+Copyright 2026 Chase Hendrick and Scrolls contributors
+
+The Fiber Checker code (app.py, fibercat.py, tools/, and fibercheck.py and fcmodel.py from scripts/fibercheck/ in
+https://github.com/ChaseHendrick/Scrolls) is licensed under the Apache License, Version 2.0. See LICENSE.
+
+The free judge's weights (weights/fibercheck-local.pt, SHA-256
+e43c25b322816f9f821a154a472eb51e0af86baa194ca5d65094083e8c4b35d7) were trained by Chase Hendrick on renders of
+Vesuvius Challenge open data and on Claude's answers about them; they are released with this Space under the Apache
+License, Version 2.0. Anthropic's Claude is called only with a visitor's own API key, under that visitor's own terms
+with Anthropic.
+
+Scan data: Fiber Checker reads CT scans and segment meshes from the Vesuvius Challenge open data, licensed CC BY-NC 4.0
+(https://creativecommons.org/licenses/by-nc/4.0/). Giorgio Angelotti, Stephen Parsons, Sean Johnson, Elian Rafael
+Dal Prà, Johannes Rudolph, Paul Tafforeau, Alessandro Mirone, Paul Henderson, Hendrik Schilling, Forrest McDonald,
+David Josey, Youssef Nader, C. Seth Parker, W. Brent Seales. Vesuvius Challenge: CT Scans of Herculaneum Papyri.
+Vesuvius Challenge. https://scrollprize.org/data
+
+The game's pictures (assets/game.npz) are renders of that data along open-data meshes of public scrolls on no prize
+list, and the fiber maps the Space makes are model output computed from it, so both are derived data under
+CC BY-NC 4.0 as well.
