@@ -36,7 +36,7 @@ question with your own Anthropic key, in both orders. Every run also checks the 
 scrambled copies of its own patches and says if the judge did not beat them.
 
 It does not tell which sheet a trace is on. Each patch is rendered at the brightest depth within 5 voxels of the
-trace (the tested rule), and sheets lie close together, so a trace a few voxels off, or on the neighbouring sheet, can
+trace (the tested rule), and sheets lie close together, so a trace a few voxels off, or on the neighboring sheet, can
 still show fibers. A clear map says fibers show on and near the surface. Its output is model output about texture,
 never a reading of text.
 
@@ -48,7 +48,7 @@ never a reading of text.
 
 Do not use it:
 
-- To tell whether a trace stays on one sheet: see [sheetcheck](sheetcheck.md) for the neighbour-sheet check.
+- To tell whether a trace stays on one sheet: see [sheetcheck](sheetcheck.md) for the neighbor-sheet check.
 - To score ink: see [auc](auc.md).
 
 ## Quick start
@@ -182,7 +182,7 @@ frozen-format manifest. `cv` and `train` need the training sets, which are not p
 | --- | --- |
 | `fiber.json` | the record: options, `summary`, `jump_hints`, every patch |
 | `fiber.tif` | float32, the mesh's own grid (same shape as `x.tif`): each scored vertex holds its patch's evidence, NaN elsewhere |
-| `fiber_map.png` | the map in colour: yellow clear, purple weak, grey no sign, slate not scored, black no surface |
+| `fiber_map.png` | the map in color: yellow clear, purple weak, grey no sign, slate not scored, black no surface |
 | `report.html` | one page: the summary, the map, the six clearest and six weakest patches, the method in the prize's words |
 | `tiles/` | those twelve renders as PNG |
 
@@ -248,7 +248,7 @@ key, capped by `--max-usd`.
 ## Tests
 
 `python -m unittest tests.test_fibercheck`: upsampling, normals, auto upsampling, the zarr reader on a local array,
-phase scramble moments, map colours, jump hints, fiber direction and the frozen prompt (skipped where the frozen
+phase scramble moments, map colors, jump hints, fiber direction and the frozen prompt (skipped where the frozen
 procedure is absent). Not covered: the network reads and the judges themselves, which the Space's live check covers.
 
 ## History
@@ -257,6 +257,6 @@ procedure is absent). Not covered: the network reads and the judges themselves, 
 
 ## Related
 
-- [sheetcheck](sheetcheck.md): the neighbour-sheet check, which fibercheck does not do.
+- [sheetcheck](sheetcheck.md): the neighbor-sheet check, which fibercheck does not do.
 - [lasagna-fields](lasagna-fields.md): the Space whose look this one follows.
 - `spaces/fiber-checker/`: the Space's source, connect panel and deploy script.

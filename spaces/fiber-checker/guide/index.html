@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fiber Checker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,650&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f1e7;--card:#fffdf8;--ink:#2a2118;--ink2:#5e5144;--ink3:#857767;--line:#e3d7c3;--accent:#9a5b1f;--accent2:#6b3b16;--shadow:0 1px 2px rgba(60,40,20,.06),0 6px 20px rgba(60,40,20,.06)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14120f;--card:#1f1c18;--ink:#f1e9dc;--ink2:#c9bba8;--ink3:#9c8f7e;--line:#332e28;--accent:#d89a52;--accent2:#e8b273;--shadow:0 1px 2px rgba(0,0,0,.3)}}
+:root[data-theme="dark"]{--bg:#14120f;--card:#1f1c18;--ink:#f1e9dc;--ink2:#c9bba8;--ink3:#9c8f7e;--line:#332e28;--accent:#d89a52;--accent2:#e8b273;--shadow:0 1px 2px rgba(0,0,0,.3)}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 Inter,system-ui,sans-serif}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+h1,h2,h3{font-family:Fraunces,Georgia,serif;font-weight:650;letter-spacing:-.01em;line-height:1.15}
+h2{font-size:clamp(28px,3.4vw,38px);margin:0 0 10px}
+h3{font-size:20px;margin:0 0 6px}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+nav{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:18px;height:52px}
+.brand{font-family:Fraunces,serif;font-weight:650;font-size:18px;color:var(--ink);white-space:nowrap}
+.navlinks{display:flex;gap:18px;overflow-x:auto;scrollbar-width:none;flex:1}
+.navlinks a{color:var(--ink2);font-size:14px;white-space:nowrap}
+header.hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line);min-height:560px}
+.hero .photos{position:absolute;top:0;right:0;bottom:0;width:62%;background:url('assets/hero.webp') center/cover no-repeat;filter:sepia(.35) saturate(1.1)}
+.hero:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--bg) 0,var(--bg) 40%,color-mix(in srgb,var(--bg) 82%,transparent) 54%,color-mix(in srgb,var(--bg) 25%,transparent) 76%,transparent 100%)}
+.hero .wrap{position:relative;z-index:2;padding-top:72px;padding-bottom:64px}
+.eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;font-weight:600;color:var(--accent)}
+.hero h1{font-size:clamp(36px,5.6vw,64px);max-width:700px;margin:12px 0 18px}
+.lede{font-size:19px;max-width:600px;margin:0}
+.by{margin-top:18px;color:var(--ink2);font-size:15px}.by b{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:36px;max-width:720px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow)}
+.stat b{display:block;font-family:Fraunces,serif;font-size:28px;font-weight:650;line-height:1.1}
+.stat span{font-size:13px;color:var(--ink3)}
+.cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:28px}
+.btn{display:inline-flex;align-items:center;gap:8px;border-radius:10px;padding:10px 16px;font-weight:600;font-size:15px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn:hover{text-decoration:none;filter:brightness(1.05)}
+section{padding:72px 0;border-bottom:1px solid var(--line)}
+.sub{color:var(--ink2);max-width:760px;margin:0 0 28px;font-size:17px}
+.pairs{display:grid;gap:22px}
+.pair{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;box-shadow:var(--shadow)}
+.pair figure{margin:0}
+.pair img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;display:block}
+figcaption{font-size:13px;color:var(--ink3);margin-top:6px;line-height:1.4}
+figcaption b{color:var(--ink);font-weight:600}
+.tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:2px 8px;border-radius:99px;margin-bottom:4px}
+.yes{background:#e3f1e7;color:#1f6b45}.no{background:#f5e3df;color:#9a2e20}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .yes{background:#1d3427;color:#7fd8a6}:root:not([data-theme="light"]) .no{background:#3a221d;color:#ff9e8f}}
+.pairsrc{grid-column:1/-1;font-size:12.5px;color:var(--ink3);margin:0}
+.mapgrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px;align-items:start}
+.mapbox{background:#18181c;border-radius:16px;padding:14px;text-align:center;box-shadow:var(--shadow)}
+.mapbox img{max-width:100%;max-height:560px;image-rendering:pixelated}
+.legend{font-size:13px;color:var(--ink3);margin-top:10px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin:0 4px -1px 10px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}
+.tiles img{width:100%;border-radius:10px;display:block}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+.card p{margin:0;color:var(--ink2);font-size:15px}
+.card .k{font-size:26px;margin-bottom:6px}
+.shot{width:100%;border-radius:14px;border:1px solid var(--line);box-shadow:var(--shadow);display:block}
+table{border-collapse:collapse;width:100%;font-size:15px;background:var(--card);border-radius:14px;overflow:hidden;box-shadow:var(--shadow)}
+th,td{text-align:left;padding:10px 14px;border-bottom:1px solid var(--line)}
+th{font-weight:600;color:var(--ink2);font-size:13px;text-transform:uppercase;letter-spacing:.05em}
+td.n{font-variant-numeric:tabular-nums;font-weight:600}
+.note{font-size:14px;color:var(--ink3);margin-top:14px;max-width:820px}
+.limits li{margin-bottom:8px}
+footer{padding:36px 0 48px;color:var(--ink3);font-size:14px;text-align:center}
+@media (max-width:860px){
+ .hero .photos{width:100%;opacity:.35}
+ .hero:after{background:color-mix(in srgb,var(--bg) 70%,transparent)}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .pair{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .mapgrid{grid-template-columns:1fr}
+ .cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (max-width:520px){
+ .wrap{padding:0 16px}
+ header.hero{min-height:0}
+ .hero .wrap{padding-top:40px;padding-bottom:40px}
+ .lede{font-size:17px}
+ .cards{grid-template-columns:1fr}
+ section{padding:48px 0}
+ th,td{padding:8px 10px;font-size:14px}
+}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <span class="brand">Fiber Checker</span>
+  <div class="navlinks">
+    <a href="#see">What it sees</a><a href="#map">A fiber map</a><a href="#who">Who it is for</a>
+    <a href="#tested">How it was tested</a><a href="#limits">Limits</a><a href="?tab=check">Check a segment</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="photos" role="img" aria-label="A mosaic of CT renders along traced surfaces of public scrolls, each showing papyrus fibers"></div>
+  <div class="wrap">
+    <div class="eyebrow">Vesuvius Challenge open data · free, no key</div>
+    <h1>Are papyrus fibers visible on your traced surface?</h1>
+    <p class="lede">Pick any traced segment of the open data, or upload your own mesh. Fiber Checker renders the CT along the surface patch by patch and tells you where long, thin papyrus strands show, with a check of itself on every run.</p>
+    <p class="by">Made and shared by <b>Chase Hendrick</b>, October 2026. Scans and meshes: Vesuvius Challenge open data.</p>
+    <div class="stats">
+      <div class="stat"><b>1.00</b><span>sheet vs the gap beside it, on two scrolls it never saw</span></div>
+      <div class="stat"><b>92 to 98%</b><span>sheet vs a tile shuffle (pixel measure 53 to 57%)</span></div>
+      <div class="stat"><b>0 USD</b><span>the free judge runs on this page's CPU</span></div>
+      <div class="stat"><b>~80 s</b><span>for a 60-patch check of a segment</span></div>
+    </div>
+    <div class="cta">
+      <a class="btn primary" href="?tab=check">Check a segment</a>
+      <a class="btn primary" href="?tab=game">Play Fiber or not?</a>
+      <a class="btn" href="#see">What the judge sees</a>
+      <a class="btn" href="?tab=howto">How-to guides</a>
+      <a class="btn" href="?tab=agents">For agents and code</a>
+    </div>
+  </div>
+</header>
+
+<section id="see"><div class="wrap">
+  <h2>What the judge sees</h2>
+  <p class="sub">Each patch is the CT rendered on the traced surface. The judge has to prefer it over copies that keep its brightness and texture but lose the strands. On a surface that sits on papyrus, it does, by a wide margin.</p>
+  <div class="pairs" id="pairs"></div>
+</div></section>
+
+<section id="map"><div class="wrap">
+  <h2>A fiber map</h2>
+  <p class="sub">The result of a check: every patch colored by its fiber evidence, on the segment's own mesh grid, so it lines up with the trace. Below the map, the clearest patches the judge saw.</p>
+  <div class="mapgrid">
+    <div>
+      <div class="mapbox"><img src="assets/map.png" alt="A fiber map of PHerc0139 segment w030"></div>
+      <div class="legend"><i style="background:#fde725"></i>clear fibers<i style="background:#21918c"></i>some<i style="background:#440154"></i>weak<i style="background:#6e6e6e"></i>no sign<i style="background:#343640"></i>not scored</div>
+    </div>
+    <div>
+      <h3 id="mapnums">PHerc0139, segment w030</h3>
+      <p class="sub" style="margin-bottom:8px" id="mapline">A public scroll on no prize list, the 2.4 um scan of 2 January 2026 at level 2. This winding was one the free judge trained on, so it shows the output, not evidence of how well it works.</p>
+      <div class="tiles">
+        <img src="assets/tile-0.webp" alt="clearest patch 1"><img src="assets/tile-1.webp" alt="clearest patch 2"><img src="assets/tile-2.webp" alt="clearest patch 3">
+        <img src="assets/tile-3.webp" alt="clearest patch 4"><img src="assets/tile-4.webp" alt="clearest patch 5"><img src="assets/tile-5.webp" alt="clearest patch 6">
+      </div>
+      <p class="note">Model output about texture, never a reading of text.</p>
+    </div>
+  </div>
+</div></section>
+
+<section id="page"><div class="wrap">
+  <h2>The page</h2>
+  <p class="sub">Choose a scroll, a segment and a scan, press Check fibers, and the map, the numbers, the clearest and weakest patches and a download appear beside it. The download holds <code>fiber.json</code>, <code>fiber.tif</code>, the map and a one-page report.</p>
+  <img class="shot" src="assets/ui.webp" alt="The Check a segment tab with a finished check">
+</div></section>
+
+<section id="who"><div class="wrap">
+  <h2>Who it is for</h2>
+  <p class="sub">One check, read four ways.</p>
+  <div class="cards">
+    <div class="card"><div class="k">🌱</div><h3>Beginners</h3><p>See what papyrus fibers look like in CT, play Fiber or not? against the model, and check an example in two minutes.</p></div>
+    <div class="card"><div class="k">🏆</div><h3>Prize entrants</h3><p>The Progress Prize asks you to show fibers on your output surface. Attach the one-page report, and say which judge you used.</p></div>
+    <div class="card"><div class="k">🔬</div><h3>Researchers</h3><p>Preregistered, tested once on held-out scrolls against built controls, with the failed first round on record. Compare two tracers patch by patch.</p></div>
+    <div class="card"><div class="k">🧭</div><h3>Tracers and tool builders</h3><p>Upload a tifxyz, read <code>fiber.tif</code> on your own mesh grid, or call the API or MCP server from a script or an agent.</p></div>
+  </div>
+</div></section>
+
+<section id="tested"><div class="wrap">
+  <h2>How it was tested</h2>
+  <p class="sub">The free judge is a small network trained on Claude's answers about renders of four public scrolls. Its test was written down before any test image existed, then run once on two scrolls it never saw.</p>
+  <table>
+    <thead><tr><th>Pair the judge had to get right</th><th>PHerc0500P2</th><th>PHerc0343P</th><th>Pixel measure</th></tr></thead>
+    <tbody>
+      <tr><td>Sheet vs the gap beside it</td><td class="n">1.00</td><td class="n">1.00</td><td class="n">0.79, 0.76</td></tr>
+      <tr><td>Sheet vs a 14-pixel tile shuffle, a size never trained on</td><td class="n">0.98</td><td class="n">0.92</td><td class="n">0.53, 0.57</td></tr>
+      <tr><td>Sheet vs 3 voxels off</td><td class="n">0.87</td><td class="n">0.68</td><td class="n"></td></tr>
+    </tbody>
+  </table>
+  <p class="note">120 and 62 patches; the pixel measure is structure-tensor coherence. A first round failed (it preferred tile-shuffled renders, because it rewarded the edges a shuffle adds) and stays on record; the second added shuffles of other sizes to training. All of it is model output.</p>
+</div></section>
+
+<section id="limits"><div class="wrap">
+  <h2>Limits</h2>
+  <ul class="limits">
+    <li><b>It does not tell which sheet.</b> Each patch is rendered at the brightest depth within 5 voxels of the trace, and sheets lie close together, so a trace on the neighboring sheet can still show fibers.</li>
+    <li><b>Tested setting:</b> open-data meshes on 2.2 to 2.4 um scans at level 2. Other scans still run, and the page says so.</li>
+    <li><b>Untested hints:</b> jump hints, fiber direction and best depth are ideas until a test of their own passes.</li>
+    <li><b>Built controls, not real faulty traces,</b> were what it was tested against.</li>
+  </ul>
+</div></section>
+
+<footer><div class="wrap">Fiber Checker · code and weights Apache 2.0 · scans and meshes: <a href="https://scrollprize.org/data">Vesuvius Challenge open data</a>, CC BY-NC 4.0, read live and never copied · model output, not a reading</div></footer>
+
+<script>
+const PAIRS=[0,1,2].map(n=>({n}));
+const KIND=[["on","yes","On the traced surface","the CT as it is: strands run across the patch"],
+            ["scramble","no","Scrambled","same brightness and texture, strands gone"],
+            ["shuffle","no","Tile shuffled","cut into 14-pixel tiles, turned and shuffled"],
+            ["off","no","Off the surface","the CT 5 voxels from the trace"]];
+const SRC=["PHerc0139","PHerc0500P2","PHerc0343P"];
+document.getElementById('pairs').innerHTML=PAIRS.map(p=>'<div class="pair">'+KIND.map(k=>'<figure><img loading="lazy" src="assets/pair-'+p.n+'-'+k[0]+'.webp" alt="'+k[2]+'"><figcaption><span class="tag '+k[1]+'">'+(k[1]==='yes'?'fibers':'control')+'</span><br><b>'+k[2]+'</b>: '+k[3]+'</figcaption></figure>').join('')+'<p class="pairsrc" data-n="'+p.n+'"></p></div>').join('');
+fetch('assets/media.json').then(r=>r.json()).then(m=>{document.querySelectorAll('.pairsrc').forEach(el=>{const s=m.pictures['pair-'+el.dataset.n+'-*.webp'];if(s)el.textContent='From '+s+'. Public scroll on no prize list.'})}).catch(()=>{});
+</script>
+</body>
+</html>
