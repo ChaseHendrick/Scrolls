@@ -2836,6 +2836,163 @@
    ]
   },
   {
+   "id": "fibercheck",
+   "name": "fibercheck",
+   "tagline": "are papyrus fibers visible on a traced surface?",
+   "summary": "A per-patch fiber map of a tifxyz segment, judged by a small free model (no key) or by Claude with your own key, with a self-check on every run; also the Fiber Checker Space.",
+   "status": "Current",
+   "kind": [
+    "script folder",
+    "app",
+    "model"
+   ],
+   "area": "Scoring and controls",
+   "commands": [
+    "python3 scripts/fibercheck/fibercheck.py score",
+    "python3 scripts/fibercheck/fibercheck.py compare",
+    "python3 scripts/fibercheck/fcmodel.py judge",
+    "spaces/fiber-checker/app.py"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "scripts/fibercheck/fibercheck.py",
+     "symbols": []
+    },
+    {
+     "path": "scripts/fibercheck/fcmodel.py",
+     "symbols": []
+    },
+    {
+     "path": "spaces/fiber-checker/app.py",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_fibercheck.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed for the free judge; `--judge claude` spends on your own Anthropic key, up to `--max-usd`"
+   },
+   "checked": {
+    "date": "2026-10-26",
+    "commit": "2cbb856"
+   },
+   "license": "Code and weights Apache 2.0; scans and meshes it reads CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "fields": {
+    "Id": "`fibercheck`",
+    "Status": "Current",
+    "Kind": "script folder,app,model",
+    "Area": "Scoring and controls",
+    "Run": "`python3 scripts/fibercheck/fibercheck.py score`, `python3 scripts/fibercheck/fibercheck.py compare`, `python3 scripts/fibercheck/fcmodel.py judge`, the Space [SharpMeow/fiber-checker](https://huggingface.co/spaces/SharpMeow/fiber-checker) (`spaces/fiber-checker/app.py`)",
+    "Code": "`scripts/fibercheck/fibercheck.py`, `scripts/fibercheck/fcmodel.py`, `spaces/fiber-checker/app.py`",
+    "Tests": "`tests/test_fibercheck.py`",
+    "Needs": "Python 3.10 or later; numpy, scipy, tifffile, imagecodecs, numcodecs, pillow, torch (CPU is enough); anthropic only for `--judge claude`; the weights `fibercheck-local.pt` (SHA-256 `e43c25b3...`, a file of the Space)",
+    "Runs on": "CPU: 60 patches of an open-data segment in about 80 s on the free Space CPU and about 2.5 minutes from a cold cache in a cloud container (measured 2026-10-26)",
+    "Network": "The CT's OME-zarr when `--ct` is an https URL (the Vesuvius Challenge open-data bucket); api.anthropic.com for `--judge claude`",
+    "Writes": "`--out`: `fiber.json`, `fiber_map.png`, `fiber.tif`, `report.html`, `tiles/`; CT chunks in `--cache` (default `~/.cache/fibercheck`)",
+    "Go-ahead": "Not needed for the free judge; `--judge claude` spends on your own Anthropic key, up to `--max-usd`",
+    "Release id": "`fiber-checker`",
+    "License": "Code and weights Apache 2.0; scans and meshes it reads CC BY-NC 4.0 (Vesuvius Challenge open data)",
+    "Released": "Public `main` and the Space SharpMeow/fiber-checker since 2026-10-26",
+    "Checked": "2026-10-26 against commit `2cbb856`"
+   },
+   "page": "docs/tools/fibercheck.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 24,
+     "end_line": 42,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 43,
+     "end_line": 53,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 54,
+     "end_line": 76,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 77,
+     "end_line": 99,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 100,
+     "end_line": 163,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 164,
+     "end_line": 172,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 173,
+     "end_line": 178,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 179,
+     "end_line": 205,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 206,
+     "end_line": 220,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 221,
+     "end_line": 231,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 232,
+     "end_line": 237,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 238,
+     "end_line": 247,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 248,
+     "end_line": 253,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 254,
+     "end_line": 257,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 258,
+     "end_line": 262,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "fibertensor",
    "name": "fibertensor",
    "tagline": "a retired CPU ink reader built on fiber-orientation features",

@@ -1,0 +1,4 @@
+# Real-data pictures and the weights live on the Space only (docs/media/README.md, hard rule 6): never in git
+assets/
+weights/
+__pycache__/

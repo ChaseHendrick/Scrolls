@@ -1,0 +1,31 @@
+{
+ "schema": "space-connect/1",
+ "space": "SharpMeow/fiber-checker",
+ "title": "Fiber Checker",
+ "checked": "2026-10-26",
+ "intro": "The Space reads open-data meshes and CT by URL and keeps none of it; here are the same sources for your own tools, and the page's API and MCP server, which checks any segment with the free judge.",
+ "sources": [
+  {"id": "mesh", "title": "A traced segment's mesh: PHerc0500P2 z_dbg_gen_00440 on the 2.215 um scan", "kind": "tifxyz",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0500P2/segments/20250611171318-z_dbg_gen_00440_inp_hr/mesh/20250611171318-on-20250526151718-2.215um.tifxyz/",
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "x.tif, y.tif and z.tif in the scan's level-0 voxels. fiber.tif from a check has the same grid, so it lines up vertex for vertex."},
+  {"id": "ct", "title": "The CT that mesh is on, PHerc0500P2 2.215 um", "kind": "ome-zarr",
+   "url": "https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/PHerc0500P2/volumes/20250526151718-2.215um-0.4m-111keV-masked.zarr",
+   "zarr_format": 2, "example": {"level": "2", "start": [1500, 2000, 3000]},
+   "license": "CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "note": "Read live from the open-data bucket, never copied here. The free judge reads level 2 of the 2.2 to 2.4 um scans (about 9 um).",
+   "browse": "https://scrollprize.org/data_browser/PHerc0500P2"},
+  {"id": "api", "title": "Check any segment, from code or an agent", "kind": "gradio-api",
+   "url": "https://huggingface.co/spaces/SharpMeow/fiber-checker",
+   "space": "SharpMeow/fiber-checker",
+   "host": "https://sharpmeow-fiber-checker.hf.space",
+   "status": "running",
+   "endpoints": [
+    {"api": "/list_scrolls", "args": {}},
+    {"api": "/example_segments", "args": {}},
+    {"api": "/list_segments", "args": {"sample": "PHerc0343P"}}
+   ],
+   "license": "Code and weights Apache 2.0; scans and meshes CC BY-NC 4.0",
+   "note": "check_segment (sample, segment, volume, patches) runs the free judge on the Space's CPU, about two minutes for 60 patches. Model output, not a reading."}
+ ]
+}

@@ -54,6 +54,7 @@ STAGES = {
     "snap": "moving a mesh onto the sheet before render",
     "flatten": "flattening the surface before render",
     "render": "sampling the CT along the surface's normals into a layer stack",
+    "fibers": "whether papyrus fibers show on a traced surface, patch by patch (a check on the trace, before ink)",
     "ink": "the ink reader: 2.5D (reads the render's layers) or 3D (reads the scan around the mesh)",
     "ensemble": "combining several ink readers' maps",
     "check": "controls on an ink map",
