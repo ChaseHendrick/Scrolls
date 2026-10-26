@@ -4,14 +4,17 @@ import tempfile
 import unittest
 from pathlib import Path
 
-import numpy as np
-
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts" / "fibercheck"))
 
-import fibercheck as FC  # noqa: E402
+try:
+    import numpy as np
+    import fibercheck as FC
+except ImportError:          # the checker needs numpy; CI without it skips these tests
+    np = FC = None
 
 
+@unittest.skipIf(np is None, "needs numpy")
 class FibercheckTest(unittest.TestCase):
     def test_upsample_hits_vertices_and_midpoints(self):
         a = np.arange(2 * 2 * 3, dtype=float).reshape(2, 2, 3)
