@@ -62,6 +62,16 @@
   {"stage": "letters", "name": "tesseract", "origin": "community", "licence": "Apache-2.0 (Tesseract and its language packs)",
    "by": "local Tesseract language packs through kit's reader backends (kit/reader_backends.py)",
    "maturity": "experimental", "why": "general OCR packs, not trained on ink maps of Greek scroll letters",
-   "use": {"cli": {"command": ["python", "-m", "kit", "letterread", "--backend", "tesseract"]}}}
+   "use": {"cli": {"command": ["python", "-m", "kit", "letterread", "--backend", "tesseract"]}}},
+  {"stage": "fibers", "name": "fibercheck-local", "origin": "ours", "licence": "Apache-2.0 (code and weights)",
+   "by": "fibercheck's free local judge (a small CNN on the CPU, no key): per-patch fiber evidence against a phase-scrambled copy, with a self-check against noise, blur and scramble",
+   "maturity": "validated",
+   "why": "passed its preregistered held-out test on PHerc0500P2 and PHerc0343P, above the pixel measure on the gap and tile-shuffle controls (docs/tools/fibercheck.md)",
+   "reach": "python3 scripts/fibercheck/fibercheck.py score --judge local, or https://huggingface.co/spaces/SharpMeow/fiber-checker"},
+  {"stage": "fibers", "name": "fibercheck-claude", "origin": "ours", "licence": "Apache-2.0 (code); Claude through the user's own Anthropic key",
+   "by": "the same check with Claude as the judge, asked in both orders, capped by --max-usd",
+   "maturity": "experimental",
+   "why": "Claude's fiber answers were valid on four public scrolls under the frozen fiber controls, but this checker form has no held-out run of its own recorded here",
+   "reach": "python3 scripts/fibercheck/fibercheck.py score --judge claude (ANTHROPIC_API_KEY), or the Space with your own key"}
  ]
 }

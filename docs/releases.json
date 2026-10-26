@@ -813,6 +813,22 @@
       ],
       "details": "[Tool page](docs/tools/lasagnetta.md), [source](scripts/lasagnetta/), [weights and model card](https://huggingface.co/SharpMeow/lasagnetta). The self-check (`--self-check`) needs a villa checkout (`LASAGNETTA_VILLA`). Teacher credit: villa's lasagna authors (MIT).",
       "where": "main"
+    },
+    {
+      "id": "fiber-checker",
+      "title": "Fiber Checker (are papyrus fibers visible on a traced surface?)",
+      "line": "A free per-patch fiber map of any traced segment or your own tifxyz, with a self-check on every run, as a Space and a command line tool.",
+      "area": "Scoring and controls",
+      "page": "docs/tools/fibercheck.md",
+      "released": "2026-10-26",
+      "summary": "[Fiber Checker](https://huggingface.co/spaces/SharpMeow/fiber-checker) renders the CT along a traced segment patch by patch and gives each patch a fiber evidence (near 1 where papyrus fibers show, near 0.5 where none do), the measure the Progress Prize asks for. The default judge is a small free model on the CPU; it passed a preregistered held-out test on PHerc0500P2 and PHerc0343P, telling the sheet from the gap beside it on every patch and from a tile shuffle on 92 to 98% (pixel measure 0.53 to 0.79). Claude with your own key is a second opinion. It does not tell which sheet a trace is on. Model output, not a reading.",
+      "commands": [
+        "pip install gradio_client",
+        "python -c \"from gradio_client import Client; c = Client('SharpMeow/fiber-checker'); ex = c.predict(api_name='/example_segments')[0]; print(c.predict(ex['sample'], ex['segment'], ex['volume'], 60, api_name='/check_segment')[1]['summary'])\"",
+        "python3 scripts/fibercheck/fibercheck.py score SEGMENT.tifxyz --ct CT_ZARR_URL --level 2 --weights fibercheck-local.pt --out out"
+      ],
+      "details": "The [Space](https://huggingface.co/spaces/SharpMeow/fiber-checker) adds your own mesh upload, a one-page report for prize entries, a Fiber or not? game against the free judge, Compare, guides and an MCP server; `fiber.tif` sits on the segment's own mesh grid. Page: [docs/tools/fibercheck.md](docs/tools/fibercheck.md). Code and weights Apache 2.0; scans and meshes are the Vesuvius Challenge open data (CC BY-NC 4.0), read live, never copied.",
+      "where": "main"
     }
   ]
 }

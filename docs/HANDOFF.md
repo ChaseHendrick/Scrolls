@@ -2,7 +2,12 @@
 
 **This file is the one handoff for this repository.** Every agent (Claude, Codex, Grok, ChatGPT or any other) reads it first and updates it before stopping: change the open-items table when you start or finish something, link longer notes from their row, and merge the handoff change into `main` at once rather than leaving it on a work branch. Private work has its own single handoff in Scrolls-private's `docs/HANDOFF.md`; nothing private goes here. Read [AGENTS.md](../AGENTS.md), [the workflow](WORKFLOW.md) and the current Git/PR state before continuing. Use plain sentences and preserve historical evidence bytes and hashes. Older dated sections are in [HANDOFF-archive.md](HANDOFF-archive.md), newest first; when this file grows long, move its oldest dated sections there, unchanged (`tests/test_repo.py` fails past 40 KB).
 
-## Continuation, 25 October 2026
+## Continuation, 26 October 2026
+
+| Item | State | Next step |
+| --- | --- | --- |
+| Fiber Checker: free fiber map of traced segments (26 Oct) | Space [SharpMeow/fiber-checker](https://huggingface.co/spaces/SharpMeow/fiber-checker) (free CPU, Chase's yes on 26 Oct) and `scripts/fibercheck/` ([page](tools/fibercheck.md)): per-patch fiber evidence of any open-data segment or an uploaded tifxyz, free local judge by default (preregistered held-out pass on PHerc0500P2 and PHerc0343P), Claude with the visitor's own key optional; map, report, game, compare, API and MCP, Connect panel. Live 26 Oct: 60 patches in 83 s, self-check passed. Weights and game pictures on the Space only. Registered as stage `fibers` | Merge the PR. Untested hints (jumps, direction, best depth) need their own tests; a VC3D overlay of `fiber.tif` is not yet checked |
+
 
 | Item | State | Next step |
 | --- | --- | --- |

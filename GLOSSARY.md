@@ -112,6 +112,8 @@ Status labels used across the repository (Sourced fact, Community report, Model 
 
 **fiber (fibre)**: A strand of the papyrus plant, visible in CT. Fibers run horizontally on the recto.
 
+**fiber evidence**: Fiber Checker's per-patch score, from 0.5 to 1: how strongly its judge prefers the CT rendered along a traced surface over a copy with the same texture but its strands scrambled. Near 1 where fibers show, near 0.5 where none do. Model output ([page](docs/tools/fibercheck.md)).
+
 **fine-tune**: A model made by further training an existing model on new data.
 
 **First Letters prize**: A Vesuvius Challenge prize for the first letters found in a given scroll. Current eligible scrolls are listed by `python -m kit prizes`.
