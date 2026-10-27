@@ -6,7 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
-| Lasagnetta 0.1.1: faster writer (27 Oct) | `scripts/lasagnetta/preview.py` streams the write, pools on the GPU and overlaps copies and reads; new `--tile`, `--pyramid`, `--no-stream`. Same weights and recipe. RTX Pro 6000, PHerc0800 1024 x 2048 x 2048: 44.9 s against villa `predict3d` 234.2 s (5.2x; 0.1.0 58.2 s, 4.0x), 35.2 s with `--tile 320 576 576` (6.6x); cos and grad_mag byte for byte as 0.1.0 ([page](tools/lasagnetta.md)). Tool page, README entry and model card rewritten | Publish the GitHub release `lasagnetta-v0.1.1` (not Latest) from merged `main` and update the Hugging Face model card text |
+| Lasagnetta 0.1.1: faster writer, released (27 Oct) | `scripts/lasagnetta/preview.py` streams the write, pools on the GPU and overlaps copies and reads; new `--tile`, `--pyramid`, `--no-stream`. Same weights and recipe. RTX Pro 6000, PHerc0800 1024 x 2048 x 2048: 44.9 s against villa `predict3d` 234.2 s (5.2x; 0.1.0 58.2 s, 4.0x), 35.2 s with `--tile 320 576 576` (6.6x); cos and grad_mag byte for byte as 0.1.0 ([page](tools/lasagnetta.md)). Tool page, README entry and model card rewritten | Done 27 Oct: merged in #236; GitHub release [`lasagnetta-v0.1.1`](https://github.com/ChaseHendrick/Scrolls/releases/tag/lasagnetta-v0.1.1) (not Latest, target `fd8f7dd`) and the [model card](https://huggingface.co/SharpMeow/lasagnetta) are live, rechecked live |
 
 ## Continuation, 26 October 2026
 
