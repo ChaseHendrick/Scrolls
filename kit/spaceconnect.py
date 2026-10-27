@@ -185,7 +185,7 @@ def _tools(src):
         space, host = src["space"], src["host"].rstrip("/")
         gpu = bool(src.get("zerogpu"))
         client = (f"import os\nfrom gradio_client import Client\n\n"
-                  f"client = Client({_q(space)}, hf_token=os.environ.get(\"HF_TOKEN\"))  # your token: your own ZeroGPU quota"
+                  f"client = Client({_q(space)}, token=os.environ.get(\"HF_TOKEN\"))  # your token: your own ZeroGPU quota"
                   if gpu else f"from gradio_client import Client\n\nclient = Client({_q(space)})")
         for ep in src["endpoints"]:
             args = ep.get("args", {})
