@@ -713,12 +713,12 @@
     },
     {
       "id": "umbilici",
-      "title": "Umbilici (center lines of 33 Herculaneum scans)",
-      "line": "Every public center line (umbilicus) we know of for 33 scans, 52 lines from six sources, in 3D over the CT (Space).",
+      "title": "Umbilici (center lines of 35 Herculaneum scans)",
+      "line": "Every public center line (umbilicus) we know of for 35 scans, 57 lines from six sources, in 3D over the CT (Space).",
       "area": "Viewers and apps",
       "page": "docs/tools/umbilici.md",
-      "released": "2026-10-24",
-      "summary": "[Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) shows every public center line (umbilicus) we know of for the 22 scans on the prize page and 11 other public scans, 52 lines from six sources, in 3D over X-ray CT that the browser streams from the Vesuvius Challenge open data, plus villa's lasagna field for PHerc0175A. Status: released. Version: 1.9.0. Each maker has its own color and any maker or single line can be hidden; 16 of the lines are model output from Chase Hendrick's Center Finder and 12 more are their coverage-polished versions, drawn as the newest with the originals faded as superseded, each scan named in a traffic light from its automatic CT end check (green pass, yellow caution or untested, red flag); the others were made by people and are credited to them. A guide covers the basics, how VC3D and villa's spiral fit read these files (cited to villa's source), every statistic and the data's frames and encodings; a Data view has sortable tables with CSV and JSON downloads, and each scan card copies file URLs, the OME-Zarr URL and a line's x, y, z at any slice. Licence: Apache 2.0 for the code; each line keeps its own licence, and the scans and lasagna field are CC BY-NC 4.0. A center line is geometry, not a reading.",
+      "released": "2026-10-27",
+      "summary": "[Umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) shows every public center line (umbilicus) we know of for the 22 scans on the prize page and 13 other public scans, 57 lines from six sources, in 3D over X-ray CT that the browser streams from the Vesuvius Challenge open data, plus villa's lasagna field for PHerc0175A. Status: released. Version: 1.10.0, with lines from center lines v2.6.1. Each maker has its own color and any maker or single line can be hidden; 18 of the lines are model output from Chase Hendrick's Center Finder and 15 more are their coverage-polished versions, drawn as the newest with the originals faded as superseded, each scan named in a traffic light from its automatic CT end check (green pass, yellow caution or untested, red flag); the others were made by people and are credited to them. A guide covers the basics, how VC3D and villa's spiral fit read these files (cited to villa's source), every statistic and the data's frames and encodings; a Data view has sortable tables with CSV and JSON downloads, and each scan card copies file URLs, the OME-Zarr URL and a line's x, y, z at any slice. One scan, PHerc0172, is stored compressed in the open data, so its line is drawn without CT. Licence: Apache 2.0 for the code; each line keeps its own licence, and the scans and lasagna field are CC BY-NC 4.0. A center line is geometry, not a reading.",
       "details": "Opens at [huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici). Source: [`spaces/umbilici/`](spaces/umbilici/); page: [`docs/tools/umbilici.md`](docs/tools/umbilici.md). Lines: [SharpMeow/vesuvius-center-lines](https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines).",
       "where": "main"
     },
@@ -886,6 +886,21 @@
         "python load_example.py"
       ],
       "details": "Viewer: [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels), with a Connect your tool panel; source [`spaces/snapped-labels/`](spaces/snapped-labels/); page: [docs/tools/snapped-labels.md](docs/tools/snapped-labels.md). Credit: the people who traced the published labels, and the Vesuvius Challenge open data.",
+      "where": "main"
+    },
+    {
+      "id": "crackle-check",
+      "title": "Crackle Check (is there ink crackle in this patch?)",
+      "line": "Asks one ink model whether a small patch of a segment shows ink crackle, with the reversed layer order as its control (Space, API and MCP).",
+      "area": "Ink maps and models",
+      "page": "docs/tools/crackle-check.md",
+      "released": "2026-10-27",
+      "summary": "[Crackle Check](https://huggingface.co/spaces/SharpMeow/crackle-check) answers one question about a small region of a traced segment: is there ink-like crackle here? Give it a stack of 17 to 65 surface layers, or name a released segment and a spot and it reads the layers from the Vesuvius Challenge open data itself. An openly licensed ink model (Reader V3 by default, or d9v2, or both) reads the layers in your order and again reversed as the control, and the Space answers Yes, Maybe or No signal found by a fixed, preregistered rule: Yes when at least 3 times as many papyrus pixels pass the control's 99th percentile as the control itself. The kept signal is drawn in amber on a before and after slider, and every number is in the result. On the public PHerc0841 w00 example it answers Yes at 18.2 times the control. Status: released. Version: 0.4.0. It runs on ZeroGPU; the examples answer from saved maps and need no GPU. Every endpoint (`/check`, `/check_example`, `/check_segment`, `/list_volumes`, `/list_readers`) is also an MCP tool, and a VC3D plugin checks a region of the active segment. Limits: tested on a few public PHerc0841 crops only; No signal found is not proof of no ink. Licence: Apache 2.0 for the code, MIT readers, scans CC BY-NC 4.0. Model output, not a reading.",
+      "commands": [
+        "pip install gradio_client",
+        "python -c \"from gradio_client import Client; c = Client('SharpMeow/crackle-check'); print(c.predict('0841-w00', 'readerv3', api_name='/check_example')[1]['answer'])\""
+      ],
+      "details": "Opens at [huggingface.co/spaces/SharpMeow/crackle-check](https://huggingface.co/spaces/SharpMeow/crackle-check). Page: [`docs/tools/crackle-check.md`](docs/tools/crackle-check.md); Connect your tool: [`spaces/connect/crackle-check/CONNECT.md`](spaces/connect/crackle-check/CONNECT.md).",
       "where": "main"
     }
   ]

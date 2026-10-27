@@ -7,7 +7,7 @@ import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 
-const VERSION = '1.9.0';
+const VERSION = '1.10.0';
 const DATASET = 'https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines';
 const LASAGNA_SCROLL = 'PHerc0175A';
 const ICE = new THREE.Color('#89f0ff');
@@ -301,6 +301,10 @@ function placeLabels() {
 
 // ---------- CT streaming from the open-data bucket ----------
 const zarrMeta = new Map();
+// The page reads one axial plane of a chunk per request, which only works on uncompressed chunks. A scan stored with a
+// compressor (PHerc0172's 7.91 µm scan, Blosc zstd, from center lines v2.6) keeps its lines but gets no CT here.
+const streamable = (s) => !s.pyramid.some((p) => p.compressor);
+const NO_CT = (s) => `no CT here: this scan's chunks are ${s.pyramid.find((p) => p.compressor)?.compressor || 'compressed'}-compressed and the page reads only uncompressed ones`;
 async function zmeta(s, L) {
   const k = `${s.zarr}/${L}`; if (!zarrMeta.has(k)) zarrMeta.set(k, getJSON(`${k}/.zarray`)); return zarrMeta.get(k);
 }
@@ -433,7 +437,7 @@ function applyVolUniforms() {
 }
 function setStatus() {
   const el = $('ct-status'); if (!el) return;
-  el.textContent = vol ? (vol.loaded < vol.total ? `streaming CT ${Math.round(100 * vol.loaded / vol.total)}%` : `CT level 5${vol.f > 1 ? `, every ${vol.f === 2 ? 'second' : vol.f === 3 ? 'third' : `${vol.f}th`} pixel` : ''} (${fmt(vol.s.voxel_um * 32 * vol.f, 0)} µm voxels), ${vol.total} heights`) : '';
+  el.textContent = vol ? (vol.loaded < vol.total ? `streaming CT ${Math.round(100 * vol.loaded / vol.total)}%` : `CT level 5${vol.f > 1 ? `, every ${vol.f === 2 ? 'second' : vol.f === 3 ? 'third' : `${vol.f}th`} pixel` : ''} (${fmt(vol.s.voxel_um * 32 * vol.f, 0)} µm voxels), ${vol.total} heights`) : S.sel && !streamable(S.sel) ? NO_CT(S.sel) : '';
 }
 
 // ---------- SCAN view ----------
@@ -461,7 +465,8 @@ function buildScan(s) {
   const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(W, D)), new THREE.LineBasicMaterial({ color: ICE, transparent: true, opacity: 0.5, toneMapped: false }));
   slicePlane.add(edge);
   if (s.scroll === LASAGNA_SCROLL && S.las) buildLasagna(s);
-  loadVolume(s, scanGroup);
+  if (streamable(s)) loadVolume(s, scanGroup);
+  setStatus();
 }
 
 // ---------- LASAGNA layers (PHerc0175A) ----------
@@ -547,11 +552,12 @@ function drawCT(sl, alpha = 1) {
   sx.globalAlpha = alpha; sx.drawImage(tmp, 0, 0, sc.width, sc.height); sx.globalAlpha = 1;
 }
 function drawMarks(sx, s, z, a = 0) {
-  const k = sc.width / s.shape[2], c = sc.width / 2, ca = Math.cos(a), sa = Math.sin(a);
+  // the slice fills the square inset whatever the scan's x and y extent, so x and y scale apart (PHerc0172 is not square)
+  const kx = sc.width / s.shape[2], ky = sc.height / s.shape[1], c = sc.width / 2, ca = Math.cos(a), sa = Math.sin(a);
   for (const l of s.lines) {
     if (!shown(s, l)) continue;
     const p = lineAt(l, z); if (!p) continue;
-    const u = p[0] * k - c, v = p[1] * k - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = hexOf(l);
+    const u = p[0] * kx - c, v = p[1] * ky - c; const x = c + u * ca - v * sa, y = c + u * sa + v * ca; const col = hexOf(l);
     sx.strokeStyle = col; sx.lineWidth = 1.6; sx.shadowColor = col; sx.shadowBlur = 10;
     sx.beginPath(); sx.arc(x, y, 9, 0, Math.PI * 2); sx.stroke();
     sx.beginPath(); sx.moveTo(x - 22, y); sx.lineTo(x - 12, y); sx.moveTo(x + 12, y); sx.lineTo(x + 22, y); sx.moveTo(x, y - 22); sx.lineTo(x, y - 12); sx.moveTo(x, y + 12); sx.lineTo(x, y + 22); sx.stroke();
@@ -574,6 +580,9 @@ async function drawSlice() {
       if (ctOn) { $('i-status').textContent = 'streaming CT…'; const sl = await ctSlice(s, 3, z, sig); if (job !== sliceJob) return; drawCT(sl, 1); }
       if (im) { sx.globalCompositeOperation = ctOn ? 'screen' : 'source-over'; sx.globalAlpha = S.blend / 100; if (!S.ori) sx.filter = 'sepia(1) saturate(2.2) hue-rotate(-12deg) brightness(1.05)'; sx.drawImage(im, 0, 0, sc.width, sc.height); sx.filter = 'none'; sx.globalAlpha = 1; sx.globalCompositeOperation = 'source-over'; }
       present(); $('i-status').textContent = 'model output · villa lasagna';
+    } else if (!streamable(s)) {
+      sx.fillStyle = '#000'; sx.fillRect(0, 0, sc.width, sc.height); present();
+      $('i-status').textContent = `no CT: ${s.pyramid.find((p) => p.compressor).compressor}-compressed scan`;
     } else {
       $('i-status').textContent = 'streaming…';
       const Lq = lv(s, 4), Lf = lv(s, 3);
@@ -686,7 +695,7 @@ function buildCard(s) {
   }).join('');
   $('c-pair').innerHTML = pairsOf(s).map((q) => `<div class="ln meta">${S.data.sources[q.a].short} and ${S.data.sources[q.b].short} sit a median <b>${fmt(q.median_mm, 2)} mm</b> apart (min ${fmt(q.min_mm, 2)}, max ${fmt(q.max_mm, 2)}) over the ${fmt(q.overlap_mm, 0)} mm where both exist.</div>`).join('');
   $('c-pyr').innerHTML = `<table class="kv"><tr><th>level</th><td>shape z, y, x</td><td>voxel</td></tr>${s.pyramid.map((p, i) => `<tr><th>${p.path}</th><td>${p.shape.join(' x ')}</td><td>${fmt(s.voxel_um * 2 ** i, i ? 1 : 3)} µm</td></tr>`).join('')}</table>
-    <div class="dim">every level ${s.pyramid[0].dtype === '|u1' ? 'uint8' : s.pyramid[0].dtype}, chunks ${s.pyramid[0].chunks.join(' x ')}, ${s.pyramid[0].compressor || 'no compressor'}</div>`;
+    <div class="dim">every level ${s.pyramid[0].dtype === '|u1' ? 'uint8' : s.pyramid[0].dtype}, chunks ${s.pyramid[0].chunks.join(' x ')}, ${s.pyramid[0].compressor || 'no compressor'}</div>${streamable(s) ? '' : `<div class="note">This page reads one plane of an uncompressed chunk at a time, so it shows no CT for this scan; its line is drawn in the scan's frame. zarr, VC3D and the neuroglancer link read the compressed chunks.</div>`}`;
   $('c-vol').innerHTML = `CT <a href="${s.zarr}/.zattrs" target="_blank" rel="noopener">${s.volume}</a> · Vesuvius Challenge open data, CC BY-NC 4.0`;
 }
 function hereRows(s, z) { return s.lines.map((l) => { const p = lineAt(l, z); return p ? { source: l.source, x: p[0], y: p[1], z } : null; }).filter(Boolean); }
@@ -776,7 +785,18 @@ y = np.array([p["y"] for p in pts], float)
 
 Z = ${z}                      # a height in level-0 voxels
 print(np.interp(Z, z, x), np.interp(Z, z, y))   # holds the end values outside the line, like VC3D`;
-  $('g-py2').textContent = `VOL = "${s.zarr}"
+  $('g-py2').textContent = !streamable(s) ? `# pip install numcodecs
+from numcodecs import Blosc
+
+VOL = "${s.zarr}"
+L = 3                         # pyramid level: voxels are 2**L times level 0
+meta = json.load(urllib.request.urlopen(f"{VOL}/{L}/.zarray"))   # uint8, 128^3 chunks, Blosc: read whole chunks
+cz, cy, cx = meta["chunks"]
+X, Y = np.interp(Z, z, x), np.interp(Z, z, y)
+zl, yl, xl = int(Z) >> L, int(Y) >> L, int(X) >> L
+raw = urllib.request.urlopen(f"{VOL}/{L}/{zl // cz}/{yl // cy}/{xl // cx}").read()
+chunk = np.frombuffer(Blosc().decode(raw), np.uint8).reshape(cz, cy, cx)
+print(chunk[zl % cz, yl % cy, xl % cx])` : `VOL = "${s.zarr}"
 L = 3                         # pyramid level: voxels are 2**L times level 0
 meta = json.load(urllib.request.urlopen(f"{VOL}/{L}/.zarray"))   # uint8, 128^3 chunks, no compressor
 cz, cy, cx = meta["chunks"]
@@ -815,7 +835,7 @@ function renderSheet() {
   const rows = SHEET.tab === 'lines' ? lineRows() : scanRows(); const cols = COLS[SHEET.tab];
   if (SHEET.key) rows.sort((a, b) => { const u = a[SHEET.key], v = b[SHEET.key]; return (u > v ? 1 : u < v ? -1 : 0) * SHEET.dir; });
   $('tbl').innerHTML = `<thead><tr>${cols.map(([k, h]) => `<th data-k="${k}" class="${SHEET.key === k ? (SHEET.dir > 0 ? 'up' : 'dn') : ''}">${h}</th>`).join('')}</tr></thead>
-    <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source.startsWith('finder') ? 'cf' : ''}${r.withdrawn || r.superseded ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
+    <tbody>${rows.map((r) => `<tr data-scroll="${r.scroll}" class="${r.source?.startsWith('finder') ? 'cf' : ''}${r.withdrawn || r.superseded ? ' wd' : ''}">${cols.map(([k]) => `<td>${cellHTML(k, r[k])}</td>`).join('')}</tr>`).join('')}</tbody>`;
   $('sheet-note').textContent = `${rows.length} ${SHEET.tab}. Click a column to sort, a row to open its scan. Definitions: Guide, For researchers. Downloads hold every column and the full notes.`;
 }
 function openSheet(tab = 'lines') { SHEET.tab = tab; tabs($('sheet'), tab); renderSheet(); if (!$('sheet').open) $('sheet').showModal(); }

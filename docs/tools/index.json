@@ -1932,6 +1932,152 @@
    ]
   },
   {
+   "id": "crackle-check",
+   "name": "crackle-check",
+   "tagline": "ask whether a small patch of a segment shows ink crackle, with a reversed-layer control",
+   "summary": "A public Gradio Space that runs an open ink model on a small stack of surface layers in your order and again reversed as the control, and answers Yes, Maybe or No signal found, with the kept signal shown in amber, in the browser, from code or as an MCP tool.",
+   "status": "Current",
+   "kind": [
+    "app",
+    "agent tool"
+   ],
+   "area": "Ink maps and models",
+   "commands": [
+    "Client(\"SharpMeow/crackle-check\")",
+    "https://sharpmeow-crackle-check.hf.space/gradio_api/call/ENDPOINT",
+    "https://sharpmeow-crackle-check.hf.space/gradio_api/mcp/sse"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/connect/crackle-check/",
+     "symbols": []
+    }
+   ],
+   "tests": [
+    "tests/test_spaceconnect.py"
+   ],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use it. Changing or redeploying the Space follows hard rule 8"
+   },
+   "checked": {
+    "date": "2026-10-27",
+    "commit": "45836d9"
+   },
+   "license": "Code Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/crackle-check/blob/main/LICENSE), with NOTICE); the readers MIT; the scans CC BY-NC 4.0 (Vesuvius Challenge open data)",
+   "fields": {
+    "Id": "`crackle-check`",
+    "Status": "Current",
+    "Kind": "app, agent tool",
+    "Area": "Ink maps and models",
+    "Run": "[huggingface.co/spaces/SharpMeow/crackle-check](https://huggingface.co/spaces/SharpMeow/crackle-check) (the page); from code with gradio_client (`Client(\"SharpMeow/crackle-check\")`), the Gradio call API at `https://sharpmeow-crackle-check.hf.space/gradio_api/call/ENDPOINT`, or MCP at `https://sharpmeow-crackle-check.hf.space/gradio_api/mcp/sse`",
+    "Code": "Not in this repository: the Space's own files, [huggingface.co/spaces/SharpMeow/crackle-check/tree/main](https://huggingface.co/spaces/SharpMeow/crackle-check/tree/main) (the app, the two readers' inference, the control rule and the VC3D plugin), read at Space commit 2a7d5d50. This repository holds its Connect your tool panel, `spaces/connect/crackle-check/` ([spaceconnect](spaceconnect.md))",
+    "Tests": "None in this repository for the Space itself. `tests/test_spaceconnect.py` checks its Connect your tool panel; `python -m kit spaceconnect run` calls its endpoints live",
+    "Needs": "A browser, or Python with `gradio_client`, or any HTTP client, or an MCP client. A new region runs on ZeroGPU: pass your own Hugging Face token (`Client(..., token=...)`) to spend your own quota. The examples need no GPU",
+    "Runs on": "The Space, Gradio 6.28 on ZeroGPU. The PHerc0841 w00 example answered in 0.44 s from the call API (saved maps, measured 2026-10-27, cloud container); a `/check_segment` call that read a region from the open data and ran a reader took 141 s end to end (`kit spaceconnect run`, 2026-10-24)",
+    "Network": "The caller: `huggingface.co` and `sharpmeow-crackle-check.hf.space`. The Space: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` for From a segment, and the readers' pinned weights",
+    "Writes": "Nothing on the caller's machine but the files you download (the overlay PNG, the four-panel PNG, the maps `.npz`). The Space keeps no upload",
+    "Go-ahead": "Not needed to use it. Changing or redeploying the Space follows hard rule 8",
+    "Released": "Space [`SharpMeow/crackle-check`](https://huggingface.co/spaces/SharpMeow/crackle-check), public since 2026-10-23, version 0.4.0 (the `tool` field of every result, read 2026-10-27); README \"Released tools\" entry `crackle-check` since 2026-10-27",
+    "License": "Code Apache 2.0 ([LICENSE](https://huggingface.co/spaces/SharpMeow/crackle-check/blob/main/LICENSE), with NOTICE); the readers MIT; the scans CC BY-NC 4.0 (Vesuvius Challenge open data)",
+    "Checked": "2026-10-27 against commit `45836d9`"
+   },
+   "page": "docs/tools/crackle-check.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 63,
+     "end_line": 72,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 73,
+     "end_line": 86,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 87,
+     "end_line": 90,
+     "applicable": false
+    },
+    {
+     "name": "Inputs",
+     "start_line": 91,
+     "end_line": 96,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 97,
+     "end_line": 112,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 113,
+     "end_line": 121,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 122,
+     "end_line": 128,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 129,
+     "end_line": 132,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 133,
+     "end_line": 142,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 143,
+     "end_line": 146,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 147,
+     "end_line": 151,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 152,
+     "end_line": 156,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "cropscan",
    "name": "cropscan",
    "tagline": "pixel AUC of one ink map on every window of a grid",
@@ -13848,8 +13994,8 @@
   {
    "id": "umbilici",
    "name": "umbilici",
-   "tagline": "view every public center line of the 22 prize scans and 11 other public scans over live X-ray CT",
-   "summary": "A static Hugging Face Space that draws every public center line (umbilicus), newest version bright, for the 22 prize-eligible scans and, since 1.8.0, 11 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
+   "tagline": "view every public center line of the 22 prize scans and 13 other public scans over live X-ray CT",
+   "summary": "A static Hugging Face Space that draws every public center line (umbilicus), newest version bright, for the 22 prize-eligible scans and 13 other public scans in 3D, over CT that the visitor's browser streams from the open-data bucket, with villa's lasagna field for PHerc0175A.",
    "status": "Current",
    "kind": [
     "app",
@@ -13906,8 +14052,8 @@
     "text": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds"
    },
    "checked": {
-    "date": "2026-10-24",
-    "commit": "44f547c"
+    "date": "2026-10-27",
+    "commit": "45836d9"
    },
    "license": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
    "fields": {
@@ -13917,15 +14063,15 @@
     "Area": "Viewers and apps",
     "Run": "[huggingface.co/spaces/SharpMeow/umbilici](https://huggingface.co/spaces/SharpMeow/umbilici) (the page), `python3 spaces/umbilici/tools/build_lines.py DATASET_DIR OUT.json`, `python3 spaces/umbilici/tools/build_lasagna.py DATASET_DIR OUT_DIR`, `python3 -m http.server` in `spaces/umbilici/` (the page locally, after the two builds)",
     "Code": "`spaces/umbilici/app.js` (the page), `spaces/umbilici/index.html`, `spaces/umbilici/style.css`, `spaces/umbilici/tools/build_lines.py`, `spaces/umbilici/tools/build_lasagna.py`, `spaces/umbilici/README.md` (the Space card), `spaces/umbilici/NOTICE`, `spaces/umbilici/LICENSE`",
-    "Tests": "`tests/test_umbilici.py`, 11 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
+    "Tests": "`tests/test_umbilici.py`, 15 tests, standard library (2 more need numpy, numcodecs and Pillow and skip without them)",
     "Needs": "In the browser: WebGL 2 (3D textures), ES modules and import maps, three.js 0.160.0 from cdn.jsdelivr.net. `build_lines.py`: Python 3.10 or newer, standard library. `build_lasagna.py`: numpy, numcodecs (Blosc), Pillow",
     "Runs on": "The visitor's browser. A whole-scan radiograph of PHerc0191 (119 heights, about 1,070 range reads of 16 KB) loaded in under 25 s in headless, software-rendered Chromium on a 4-core cloud container (2026-10-23); a GPU and a home connection are faster. `build_lasagna.py` read the 64 PHerc0175A parts (about 48 GB) in about 4 minutes with three downloads at once, about 12 s per part (cloud container, 2026-10-23)",
     "Network": "The visitor's browser: `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT chunks by HTTP range request; the bucket allows any origin and the Range header), `cdn.jsdelivr.net` (three.js), `fonts.googleapis.com` and `fonts.gstatic.com` (fonts), the Space itself. `build_lines.py`: the same bucket (each scan's `.zattrs` and the `.zarray` of all six levels). `build_lasagna.py`: none (reads a local copy)",
     "Writes": "The page: nothing on any server (the URL bar holds the view; downloads are made in the browser; two `localStorage` keys: `umbilici.seen` hides the first-visit hint, `umbilici.settings` keeps the viewer settings). `build_lines.py`: `OUT.json`. `build_lasagna.py`: `OUT_DIR/cos_Z.webp` and `ori_Z.webp` for nine heights, `needles.bin`, `meta.json`",
     "Go-ahead": "Needed to make the Space public: Chase's yes, given 2026-10-23. Later redeploys from merged `main` with public data fall under the standing yes (rule 8). Not needed to use the page or run the builds",
-    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.9.0 (Space commit `97e602a7`, deployed 2026-10-24 from `main` at `2b5c820` with lines from dataset revision `1b866db0`, v2.5, on Chase's yes; 1.8.0 was Space commit `01ea09fd`), public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
+    "Released": "Space [`SharpMeow/umbilici`](https://huggingface.co/spaces/SharpMeow/umbilici) 1.10.0, with lines from dataset revision `51603382` (v2.6.1), deployed from merged `main` under the standing yes for approved Spaces (rule 8); 1.9.0 was Space commit `97e602a7` (from `2b5c820`, lines from `1b866db0`, v2.5), 1.8.0 Space commit `01ea09fd`. Public since 2026-10-23 (Chase switched it public); README \"Released tools\" entry `umbilici`",
     "License": "Apache 2.0 for the page and tools ([`spaces/umbilici/LICENSE`](../../spaces/umbilici/LICENSE), [`NOTICE`](../../spaces/umbilici/NOTICE)); each line keeps its own licence (MIT, CC BY 4.0, CC BY-NC 4.0), the lasagna derivative and the scans are CC BY-NC 4.0",
-    "Checked": "2026-10-24 against commit `44f547c`"
+    "Checked": "2026-10-27 against commit `45836d9`"
    },
    "page": "docs/tools/umbilici.md",
    "sections": [
@@ -13980,43 +14126,43 @@
     {
      "name": "Failure modes",
      "start_line": 148,
-     "end_line": 156,
+     "end_line": 157,
      "applicable": true
     },
     {
      "name": "How it works",
-     "start_line": 157,
-     "end_line": 165,
+     "start_line": 158,
+     "end_line": 166,
      "applicable": true
     },
     {
      "name": "Cost and time",
-     "start_line": 166,
-     "end_line": 169,
+     "start_line": 167,
+     "end_line": 170,
      "applicable": true
     },
     {
      "name": "For agents",
-     "start_line": 170,
-     "end_line": 179,
+     "start_line": 171,
+     "end_line": 180,
      "applicable": true
     },
     {
      "name": "Tests",
-     "start_line": 180,
-     "end_line": 183,
+     "start_line": 181,
+     "end_line": 184,
      "applicable": true
     },
     {
      "name": "History",
-     "start_line": 184,
-     "end_line": 201,
+     "start_line": 185,
+     "end_line": 203,
      "applicable": true
     },
     {
      "name": "Related",
-     "start_line": 202,
-     "end_line": 206,
+     "start_line": 204,
+     "end_line": 208,
      "applicable": true
     }
    ]

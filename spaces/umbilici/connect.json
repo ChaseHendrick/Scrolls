@@ -5,7 +5,7 @@
  "checked": "2026-10-24",
  "intro": "Every center line, CT scan and lasagna field on this page reads straight from these URLs, with no account and no download step. Each scan card also has its own OME-Zarr URL and an Open in neuroglancer link.",
  "sources": [
-  {"id": "lines", "title": "Center lines (all 29, every scan)", "kind": "hf-dataset",
+  {"id": "lines", "title": "Center lines (every line, every scan)", "kind": "hf-dataset",
    "url": "https://huggingface.co/datasets/SharpMeow/vesuvius-center-lines",
    "repo": "SharpMeow/vesuvius-center-lines", "file": "index.json", "configs": ["lines", "points"], "table": "tables/points.jsonl",
    "license": "CC BY-NC 4.0 bundle; each file keeps its own license (MIT, CC BY 4.0 or CC BY-NC 4.0, listed in index.json)",
