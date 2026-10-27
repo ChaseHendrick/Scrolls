@@ -11471,6 +11471,162 @@
    ]
   },
   {
+   "id": "snapped-labels",
+   "name": "snapped-labels",
+   "tagline": "published surface labels moved onto the papyrus, as a dataset and a CT viewer",
+   "summary": "A Hugging Face dataset of the published surface labels of PHerc0139, PHerc0814, PHerc0841 and PHerc0172 with every vertex moved along its normal onto the recto face in the CT, and a static Space that draws them over live open-data CT.",
+   "status": "Current",
+   "kind": [
+    "data",
+    "app"
+   ],
+   "area": "Surfaces and tracing",
+   "commands": [
+    "hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset",
+    "load_example.py",
+    "window.snappedLabels"
+   ],
+   "imports": [],
+   "code": [
+    {
+     "path": "spaces/snapped-labels/index.html",
+     "symbols": []
+    },
+    {
+     "path": "spaces/snapped-labels/app.js",
+     "symbols": []
+    },
+    {
+     "path": "spaces/snapped-labels/style.css",
+     "symbols": []
+    },
+    {
+     "path": "spaces/snapped-labels/connect.json",
+     "symbols": []
+    }
+   ],
+   "tests": [],
+   "go_ahead": {
+    "needed": false,
+    "text": "Not needed to use. Releasing the dataset and the Space was Chase's yes (27 Oct 2026); the Space redeploys from merged `main` under the standing yes (rule 8)"
+   },
+   "checked": {
+    "date": "2026-10-27",
+    "commit": "ff82a63"
+   },
+   "license": "Data CC BY-NC 4.0, like the open data it comes from; page code Apache 2.0",
+   "fields": {
+    "Id": "`snapped-labels`",
+    "Status": "Current",
+    "Kind": "data,app",
+    "Area": "Surfaces and tracing",
+    "Run": "[huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) (viewer); `hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset`; the dataset's `load_example.py`; in the page, `window.snappedLabels`",
+    "Code": "`spaces/snapped-labels/index.html`, `spaces/snapped-labels/app.js`, `spaces/snapped-labels/style.css`, `spaces/snapped-labels/connect.json`",
+    "Tests": "None for the page here: `python -m kit spaceconnect check` (run by the tests) checks its Connect panel; the page was checked in headless Chromium on the release output before upload (see Checks and controls)",
+    "Needs": "A browser for the Space. For the data: Python 3.9+, `huggingface_hub`, `numpy`, `tifffile` and `imagecodecs`",
+    "Runs on": "Any browser; a segment's cross sections are at most about 8 MB, and each CT view reads up to 16 uncompressed 128 voxel chunks",
+    "Network": "`huggingface.co` (the dataset), `vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com` (CT and the published meshes, read live)",
+    "Writes": "Nothing; `hf download` writes the folder you name",
+    "Go-ahead": "Not needed to use. Releasing the dataset and the Space was Chase's yes (27 Oct 2026); the Space redeploys from merged `main` under the standing yes (rule 8)",
+    "Released": "Public on Hugging Face since 2026-10-27 (dataset and Space); README \"Released tools\" entry `snapped-labels`",
+    "License": "Data CC BY-NC 4.0, like the open data it comes from; page code Apache 2.0",
+    "Checked": "2026-10-27 against commit `ff82a63`"
+   },
+   "page": "docs/tools/snapped-labels.md",
+   "sections": [
+    {
+     "name": "What it does",
+     "start_line": 23,
+     "end_line": 32,
+     "applicable": true
+    },
+    {
+     "name": "When to use it",
+     "start_line": 33,
+     "end_line": 44,
+     "applicable": true
+    },
+    {
+     "name": "Quick start",
+     "start_line": 45,
+     "end_line": 54,
+     "applicable": true
+    },
+    {
+     "name": "Checks and controls",
+     "start_line": 55,
+     "end_line": 62,
+     "applicable": true
+    },
+    {
+     "name": "Commands and options",
+     "start_line": 63,
+     "end_line": 79,
+     "applicable": true
+    },
+    {
+     "name": "Python API",
+     "start_line": 80,
+     "end_line": 87,
+     "applicable": true
+    },
+    {
+     "name": "Inputs",
+     "start_line": 88,
+     "end_line": 91,
+     "applicable": true
+    },
+    {
+     "name": "Outputs",
+     "start_line": 92,
+     "end_line": 111,
+     "applicable": true
+    },
+    {
+     "name": "Failure modes",
+     "start_line": 112,
+     "end_line": 119,
+     "applicable": true
+    },
+    {
+     "name": "How it works",
+     "start_line": 120,
+     "end_line": 123,
+     "applicable": true
+    },
+    {
+     "name": "Cost and time",
+     "start_line": 124,
+     "end_line": 127,
+     "applicable": true
+    },
+    {
+     "name": "For agents",
+     "start_line": 128,
+     "end_line": 137,
+     "applicable": true
+    },
+    {
+     "name": "Tests",
+     "start_line": 138,
+     "end_line": 141,
+     "applicable": true
+    },
+    {
+     "name": "History",
+     "start_line": 142,
+     "end_line": 145,
+     "applicable": true
+    },
+    {
+     "name": "Related",
+     "start_line": 146,
+     "end_line": 150,
+     "applicable": true
+    }
+   ]
+  },
+  {
    "id": "soup",
    "name": "soup",
    "tagline": "average the weights of several checkpoints of one training run",

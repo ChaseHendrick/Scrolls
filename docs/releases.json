@@ -838,6 +838,22 @@
       ],
       "details": "The [Space](https://huggingface.co/spaces/SharpMeow/fiber-checker) adds your own mesh upload, a one-page report for prize entries, a Fiber or not? game against the free judge, Compare, guides and an MCP server; `fiber.tif` sits on the segment's own mesh grid. Page: [docs/tools/fibercheck.md](docs/tools/fibercheck.md). Code and weights Apache 2.0; scans and meshes are the Vesuvius Challenge open data (CC BY-NC 4.0), read live, never copied.",
       "where": "main"
+    },
+    {
+      "id": "snapped-labels",
+      "title": "Snapped Labels (published surface labels moved onto the papyrus)",
+      "line": "Every published surface label of PHerc0139, PHerc0814, PHerc0841 and PHerc0172, moved onto the papyrus recto face, as tifxyz meshes with a viewer on live CT.",
+      "area": "Surfaces and tracing",
+      "page": "docs/tools/snapped-labels.md",
+      "released": "2026-10-27",
+      "summary": "[SharpMeow/vesuvius-snapped-labels](https://huggingface.co/datasets/SharpMeow/vesuvius-snapped-labels) holds 108 published surface labels of PHerc0139, PHerc0814, PHerc0841 and PHerc0172 (32.9 million vertices) with each vertex moved along its normal onto the papyrus recto face in the CT, as tifxyz meshes on the same grid and voxel frame as their sources, so they drop into VC3D or villa as they are. On fresh test sites scored against an independent 1.129 µm scan, **91.2% of snapped PHerc0139 vertices sit within one voxel of the face, against 23.7% for the published labels** (PHerc0814: 71.0% against 24.2%), and a 3D surface model trained on snapped labels placed the surface 0.61 voxels closer on a scroll neither saw. Each segment has a per-vertex abstain, confidence and release mask, a `release.json` with source URLs and sha256, and `SHA256SUMS` covers everything. The [Snapped Labels](https://huggingface.co/spaces/SharpMeow/snapped-labels) Space draws the published and snapped lines over open-data CT for any segment and plane. CC BY-NC 4.0, like the open data.",
+      "commands": [
+        "hf download SharpMeow/vesuvius-snapped-labels --repo-type dataset --local-dir snapped-labels",
+        "cd snapped-labels && sha256sum -c SHA256SUMS",
+        "python load_example.py"
+      ],
+      "details": "Viewer: [huggingface.co/spaces/SharpMeow/snapped-labels](https://huggingface.co/spaces/SharpMeow/snapped-labels), with a Connect your tool panel; source [`spaces/snapped-labels/`](spaces/snapped-labels/); page: [docs/tools/snapped-labels.md](docs/tools/snapped-labels.md). Credit: the people who traced the published labels, and the Vesuvius Challenge open data.",
+      "where": "main"
     }
   ]
 }
