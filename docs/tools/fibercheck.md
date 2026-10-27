@@ -254,9 +254,10 @@ procedure is absent). Not covered: the network reads and the judges themselves, 
 ## History
 
 - 2026-10-26: Fiber Checker: free fiber map of traced segments, Space and command line tool (`2cbb856`).
+- 2026-10-27: the Space gains a Welcome tab (hero mosaic, the judge's pairs, an example map), GIFs and stills in its How-to guides, a side-by-side Compare table, and tab links that work on phones.
 
 ## Related
 
 - [sheetcheck](sheetcheck.md): the neighbor-sheet check, which fibercheck does not do.
 - [lasagna-fields](lasagna-fields.md): the Space whose look this one follows.
-- `spaces/fiber-checker/`: the Space's source, connect panel and deploy script.
+- `spaces/fiber-checker/`: the Space's source, connect panel and deploy script. Its pictures stay on the Space, never in git: `tools/build_game.py` (the game), `tools/record_howto.js` (frames of the How-to guides, with Playwright) and `tools/build_media.py --run DIR --shot PNG --frames DIR` (the welcome page's pictures and the guides' GIFs).
