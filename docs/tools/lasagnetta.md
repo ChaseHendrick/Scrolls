@@ -236,7 +236,7 @@ The streaming writer hides almost all of the write; what is left is the three st
 ## History
 
 - 2026-10-25: release 0.1.0 (`94a0e27`): the code, the self-check and the weights on Hugging Face.
-- 2026-10-27: release 0.1.1: a streaming field writer, GPU pyramid, overlapped copies and reads, and `--tile`, `--pyramid` and `--no-stream`; the same weights and recipe. 5.2x faster than villa `predict3d` end to end, 6.6x with `--tile 320 576 576` (0.1.0: 4.0x).
+- 2026-10-27: release 0.1.1 ([#236](https://github.com/ChaseHendrick/Scrolls/pull/236)): a streaming field writer, GPU pyramid, overlapped copies and reads, and `--tile`, `--pyramid` and `--no-stream`; the same weights and recipe. 5.2x faster than villa `predict3d` end to end, 6.6x with `--tile 320 576 576` (0.1.0: 4.0x).
 
 ## Related
 
