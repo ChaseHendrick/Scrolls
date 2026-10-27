@@ -141,7 +141,7 @@ The snap ran on Hugging Face CPU Jobs on 27 Oct 2026, under 9 USD in caps; stitc
 
 ## History
 
-- 2026-10-27: dataset and Space released.
+- 2026-10-27: dataset and Space released, page added (`bd34a59`).
 
 ## Related
 
