@@ -193,7 +193,7 @@ They cover one row per finished Job, running and missing Jobs left out, a rerun 
 
 ## History
 
-- 2026-10-27: first version: Hugging Face Jobs from the billing API into a cost ledger, one row per Job, the public ledger only behind `--public-generic`.
+- 2026-10-27: first version: Hugging Face Jobs from the billing API into a cost ledger, one row per Job, the public ledger only behind `--public-generic` (`717a0a7`).
 
 ## Related
 
