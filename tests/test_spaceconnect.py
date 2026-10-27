@@ -76,7 +76,7 @@ class Tools(unittest.TestCase):
 
     def test_zerogpu_snippets_pass_the_callers_token(self):
         code = dict((t[0], t[3]) for t in sc._tools(dict(API, zerogpu=True)))
-        self.assertIn('Client("A/c", hf_token=os.environ.get("HF_TOKEN"))', code["python"])
+        self.assertIn('Client("A/c", token=os.environ.get("HF_TOKEN"))', code["python"])
         self.assertEqual(code["curl"].count('${HF_TOKEN:+-H "Authorization: Bearer $HF_TOKEN"}'), 2)
         cfg = json.loads(code["mcp"].split("\n\n")[0])
         self.assertEqual(cfg["mcpServers"]["c"], {"url": "https://a-c.hf.space/gradio_api/mcp/sse",

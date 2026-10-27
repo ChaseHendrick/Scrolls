@@ -8,7 +8,7 @@ Checked 2026-10-27. Generated from `connect.json` by `kit spaceconnect` in [Chas
 
 `https://huggingface.co/spaces/SharpMeow/autopipeline-ink`
 
-License: Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0. Every tool is an API endpoint and an MCP tool: ink_sample (a public sample crop; a JSON record with both AUCs, and a PNG preview), ink_upload (your own surface volume by URL; JSON only) and list_samples. Each GPU call spends the caller's ZeroGPU quota, which is small when logged out: pass your own Hugging Face token (hf_token= in Python, an Authorization: Bearer header in curl and MCP). Model output, not a reading.
+License: Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0. Every tool is an API endpoint and an MCP tool: ink_sample (a public sample crop; a JSON record with both AUCs, and a PNG preview), ink_upload (your own surface volume by URL; JSON only) and list_samples. Each GPU call spends the caller's ZeroGPU quota, which is small when logged out: pass your own Hugging Face token (token= in gradio_client 2, an Authorization: Bearer header in curl and MCP). MCP clients see the tools with the Space's prefix: autopipeline_ink_ink_sample, autopipeline_ink_ink_upload and autopipeline_ink_list_samples. Model output, not a reading.
 
 ### Python /ink_sample (tested 2026-10-24)
 
@@ -17,7 +17,7 @@ License: Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0. Every tool is an AP
 import os
 from gradio_client import Client
 
-client = Client("SharpMeow/autopipeline-ink", hf_token=os.environ.get("HF_TOKEN"))  # your token: your own ZeroGPU quota
+client = Client("SharpMeow/autopipeline-ink", token=os.environ.get("HF_TOKEN"))  # your token: your own ZeroGPU quota
 result = client.predict(sample="0841-w00", size=640, api_name="/ink_sample")
 ```
 
@@ -28,7 +28,7 @@ result = client.predict(sample="0841-w00", size=640, api_name="/ink_sample")
 import os
 from gradio_client import Client
 
-client = Client("SharpMeow/autopipeline-ink", hf_token=os.environ.get("HF_TOKEN"))  # your token: your own ZeroGPU quota
+client = Client("SharpMeow/autopipeline-ink", token=os.environ.get("HF_TOKEN"))  # your token: your own ZeroGPU quota
 result = client.predict(api_name="/list_samples")
 ```
 

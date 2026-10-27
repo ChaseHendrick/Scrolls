@@ -18,21 +18,21 @@
 <h2>Connect your tool</h2>
 <p>The segments this page analyzes and the model it runs are public, and both read straight from these URLs in your own tool.</p>
 <div class="scc-src" id="connect-api"><h3>Call the analysis from code or an agent (API and MCP)</h3>
-<p class="scc-meta">Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0 · Every tool is an API endpoint and an MCP tool: ink_sample (a public sample crop; a JSON record with both AUCs, and a PNG preview), ink_upload (your own surface volume by URL; JSON only) and list_samples. Each GPU call spends the caller&#x27;s ZeroGPU quota, which is small when logged out: pass your own Hugging Face token (hf_token= in Python, an Authorization: Bearer header in curl and MCP). Model output, not a reading.</p>
+<p class="scc-meta">Code Apache 2.0; Reader V3 MIT; scans CC BY-NC 4.0 · Every tool is an API endpoint and an MCP tool: ink_sample (a public sample crop; a JSON record with both AUCs, and a PNG preview), ink_upload (your own surface volume by URL; JSON only) and list_samples. Each GPU call spends the caller&#x27;s ZeroGPU quota, which is small when logged out: pass your own Hugging Face token (token= in gradio_client 2, an Authorization: Bearer header in curl and MCP). MCP clients see the tools with the Space&#x27;s prefix: autopipeline_ink_ink_sample, autopipeline_ink_ink_upload and autopipeline_ink_list_samples. Model output, not a reading.</p>
 <div class="scc-url"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>https://huggingface.co/spaces/SharpMeow/autopipeline-ink</code></pre></div>
 <details><summary>Python /ink_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 import os
 from gradio_client import Client
 
-client = Client(&quot;SharpMeow/autopipeline-ink&quot;, hf_token=os.environ.get(&quot;HF_TOKEN&quot;))  # your token: your own ZeroGPU quota
+client = Client(&quot;SharpMeow/autopipeline-ink&quot;, token=os.environ.get(&quot;HF_TOKEN&quot;))  # your token: your own ZeroGPU quota
 result = client.predict(sample=&quot;0841-w00&quot;, size=640, api_name=&quot;/ink_sample&quot;)</code></pre></div></details>
 <details><summary>Python /list_samples<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
 import os
 from gradio_client import Client
 
-client = Client(&quot;SharpMeow/autopipeline-ink&quot;, hf_token=os.environ.get(&quot;HF_TOKEN&quot;))  # your token: your own ZeroGPU quota
+client = Client(&quot;SharpMeow/autopipeline-ink&quot;, token=os.environ.get(&quot;HF_TOKEN&quot;))  # your token: your own ZeroGPU quota
 result = client.predict(api_name=&quot;/list_samples&quot;)</code></pre></div></details>
 <details><summary>curl /ink_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># HF_TOKEN, when set, is your own token: the call spends your ZeroGPU quota
