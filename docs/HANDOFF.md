@@ -6,6 +6,7 @@
 
 | Item | State | Next step |
 | --- | --- | --- |
+| Hugging Face Jobs ledger importer (27 Oct) | `kit run hf-rows` ([page](tools/hf-rows.md)): finished HF Jobs into `docs/compute/hf-jobs-costs.csv` from Hugging Face's own bill, one row per Job, public ledger behind `--public-generic`; tried on real Jobs in a scratch ledger (503 rows, rerun adds none). The public ledger starts empty | Record generic public-data Jobs with it after each batch |
 | Lasagnetta 0.1.1: faster writer, released (27 Oct) | `scripts/lasagnetta/preview.py` streams the write, pools on the GPU and overlaps copies and reads; new `--tile`, `--pyramid`, `--no-stream`. Same weights and recipe. RTX Pro 6000, PHerc0800 1024 x 2048 x 2048: 44.9 s against villa `predict3d` 234.2 s (5.2x; 0.1.0 58.2 s, 4.0x), 35.2 s with `--tile 320 576 576` (6.6x); cos and grad_mag byte for byte as 0.1.0 ([page](tools/lasagnetta.md)). Tool page, README entry and model card rewritten | Done 27 Oct: merged in #236; GitHub release [`lasagnetta-v0.1.1`](https://github.com/ChaseHendrick/Scrolls/releases/tag/lasagnetta-v0.1.1) (not Latest, target `fd8f7dd`) and the [model card](https://huggingface.co/SharpMeow/lasagnetta) are live, rechecked live |
 
 ## Continuation, 26 October 2026

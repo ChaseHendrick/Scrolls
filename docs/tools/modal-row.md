@@ -172,6 +172,7 @@ The ledger gains one CSV line in the header's column order, with the key at the 
 | `LEDGER: the row names WORDS work, which the public ledger never carries` | The purpose or notes contain one of title, target, prereg, held out, held-out, heldout, experiment, candidate | If the run is private, write it to the private ledger. If the word is incidental, reword the purpose or notes |
 | `LEDGER has no column NAMES` | The row has columns the ledger's header lacks (after a public row drops `lane_branch` and `app_id`) | Remove or rename those keys |
 | `cannot read backfill FILE: ...` | Comes from `run backfill`, which shares `cmd_run`; not from this action | See [run-local](run-local.md) |
+| `give --job ID or --label KEY=VALUE (no Jobs matched)` | Comes from `run hf-rows`, which shares `cmd_run`; not from this action | See [hf-rows](hf-rows.md) |
 
 ## How it works
 

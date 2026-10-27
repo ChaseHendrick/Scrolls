@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from datetime import date
 
-from . import autobatch, scancatalog, localcost, modalledger, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard, spaceconnect
+from . import autobatch, scancatalog, localcost, modalledger, hfrows, meshaudit, auc, compute, ensemble, fibertensor, gate, hpscore, doctor, fetch, layers, overlap, provenance, ledger, plan, prizes, rowscore, verify, surfacefix, phantom, viewer, releases, leaderboard, spaceconnect
 
 
 def cmd_prizes(args):
@@ -532,10 +532,28 @@ def cmd_run(args):
                                        generic=spec.get("generic") is True)
             print(f"{args.ledger}: {'row added' if wrote else 'already holds this row; nothing written'} "
                   f"({modalledger.KEY_MARK}{spec['key']})")
+        elif args.action == "hf-rows":
+            ids = list(args.job)
+            tok = hfrows.token_from(args.token_env)
+            for label in args.label:
+                ids += hfrows.labelled_ids(label, tok)
+            if not ids:
+                raise hfrows.HFRowsError("give --job ID or --label KEY=VALUE (no Jobs matched)")
+            rep = hfrows.add(args.ledger, ids, args.purpose, tok, public=args.public_generic, dry_run=args.dry_run)
+            if args.json:
+                print(json.dumps(rep, indent=1))
+            else:
+                verb = "would add" if args.dry_run else "added"
+                print(f"{args.ledger}: {verb} {len(rep['added'])} row(s) costing {rep['usd']:.4f} USD; "
+                      f"{len(rep['already'])} already there")
+                for i in rep["running"]:
+                    print(f"  {i}: still running, left out until its bill is final; run this again later")
+                for i in rep["missing"]:
+                    print(f"  {i}: not in the current billing period's bill (older, or never billed)")
         elif args.action == "list":
             for record in ledger.list_runs(root):
                 print(f"{record['slug']:<28} {record['scroll']:<12} {record['status']:<10} ${ledger.total_cost(record):.2f}")
-    except (ledger.LedgerError, localcost.CostError, modalledger.LedgerRowError, OSError) as exc:
+    except (ledger.LedgerError, localcost.CostError, modalledger.LedgerRowError, hfrows.HFRowsError, OSError) as exc:
         print(exc, file=sys.stderr)
         return 2
     return 0
@@ -1743,6 +1761,19 @@ def build_parser(prog="python -m kit", sub_progs=None):
     a.add_argument("--public-generic", action="store_true",
                    help="write the public ledger: refused unless the row is marked generic and names no title, "
                         "target, preregistered or held-out work")
+    a = actions.add_parser("hf-rows", help="add Hugging Face Jobs to a cost ledger CSV from Hugging Face's own bill, "
+                                           "one row per Job, once (kit/hfrows.py)")
+    a.add_argument("--job", action="append", default=[], metavar="ID", help="a Job id; repeatable")
+    a.add_argument("--label", action="append", default=[], metavar="KEY=VALUE",
+                   help="every Job in your namespace with this label; repeatable")
+    a.add_argument("--purpose", required=True, help="what the Jobs were for, written in each row")
+    a.add_argument("--ledger", default="docs/compute/hf-jobs-costs.csv", help="ledger CSV (default %(default)s)")
+    a.add_argument("--public-generic", action="store_true",
+                   help="write the public ledger: the Jobs are generic work on public data and the purpose names no "
+                        "title, target, preregistered or held-out work")
+    a.add_argument("--token-env", default="HF_TOKEN", help="environment variable holding the token (default HF_TOKEN)")
+    a.add_argument("--dry-run", action="store_true", help="show what would be added; write nothing")
+    a.add_argument("--json", action="store_true")
     a = actions.add_parser("all", help="AutoPipeline over every released scan: catalog, per-scan config, priced plan, "
                                         "resumable queue (kit/autobatch.py); launches nothing")
     a.add_argument("--state", default=str(autobatch.STATE), help="batch folder (default work/autobatch, git-ignored)")
