@@ -99,12 +99,6 @@
     {
      "api": "/list_models",
      "args": {}
-    },
-    {
-     "api": "/gallery",
-     "args": {
-      "sample_id": "0841-w00"
-     }
     }
    ],
    "license": "Code Apache 2.0; models MIT (each credited in list_models); scans CC BY-NC 4.0",

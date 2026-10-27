@@ -47,6 +47,7 @@ ENGINE, ENGINE_ERROR = None, None
 READY = threading.Event()
 CPU_SLOT = threading.Semaphore(1)
 GALLERY = HERE / "gallery"
+HAS_GALLERY = (GALLERY / "index.json").is_file()   # the gallery tab and endpoint appear once one is published
 COMPARE_MAX_SIDE = 512     # 9.6 um grid pixels: a 2048 px square of the 2.4 um scan, 109 layers (about 460 MB)
 COMPARE_LOADED = {}
 COMPARE_LOCK = threading.Lock()
@@ -170,7 +171,8 @@ def _models_arg(models):
         raise LensError(f"unknown models {bad}; list_models names them")
     live = [n for n in names if zoo.get(n)["family"] != "ct3d"]
     if not live:
-        raise LensError("the scan-space 3D models run only in the precomputed gallery (gallery endpoint)")
+        raise LensError("the scan-space 3D models need minutes of GPU per sample and do not run live; "
+                        "tools/gallery_job.py runs them on a GPU")
     return live
 
 
@@ -444,8 +446,7 @@ result["gate"]["status"]    # ink | weak | none | too_small | unreadable
 ```
 Compare models: `c.predict("0841-w00", "ink_9um-s42,reader-v3,hecate-9.6", 384, "2.4", "0", "1",
 api_name="/compare_sample")` returns the record, every map and a mosaic; `/compare_region` takes your own .npz,
-`/list_models` names every model with its training exposure, `/gallery` gives the precomputed whole-crop comparison
-with the scan-space 3D models.
+`/list_models` names every model with its training exposure.
 Also `/lens_sample`, `/list_samples`, `/estimate`; every endpoint is an MCP tool at `/gradio_api/mcp/sse`."""
 
 COMPARE_INTRO = """Every released ink model on **the same pixels, scored against the same labels**. Each sample is read
@@ -523,7 +524,7 @@ def build_demo():
             run_c.click(page_compare, [c_sid, c_models, c_size, c_scan, c_centres, c_steps],
                         [c_md, c_res, c_maps, c_img], api_visibility="private", concurrency_id="gpu",
                         concurrency_limit=2)
-        with gr.Tab("Gallery: every model, 3D included"):
+        with gr.Tab("Gallery: every model, 3D included", visible=HAS_GALLERY):
             gr.Markdown(GALLERY_INTRO)
             g_sid = gr.Dropdown(samples, value=samples[0][1], label="Sample")
             g_btn = gr.Button("Show")
@@ -578,8 +579,8 @@ def build_demo():
                  [a_json, a_maps, a_img], "gpu"),
                 (btns[5], compare_region, [a_file, a_models, a_scan, a_centres, a_steps], [a_json, a_maps, a_img],
                  "gpu"),
-                (btns[6], list_models, [], a_info, None),
-                (btns[7], gallery, [a_sid], [a_json, a_img], None)):
+                (btns[6], list_models, [], a_info, None)) + (
+                ((btns[7], gallery, [a_sid], [a_json, a_img], None),) if HAS_GALLERY else ()):
             btn.click(guard(fn), ins, o, api_name=fn.__name__, api_description=fn.__doc__.split("\n\n")[0],
                       concurrency_id=conc, concurrency_limit=2 if conc else 8)
         gr.HTML('<footer style="opacity:.7;font-size:.85em">Built by Chase Hendrick · models by the Vesuvius Challenge, '

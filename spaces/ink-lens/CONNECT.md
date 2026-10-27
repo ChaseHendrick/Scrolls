@@ -158,16 +158,6 @@ client = Client("SharpMeow/ink-lens")
 result = client.predict(api_name="/list_models")
 ```
 
-### Python /gallery (tested 2026-10-24)
-
-```python
-# pip install gradio_client
-from gradio_client import Client
-
-client = Client("SharpMeow/ink-lens")
-result = client.predict(sample_id="0841-w00", api_name="/gallery")
-```
-
 ### curl /lens_sample (tested 2026-10-24)
 
 ```bash

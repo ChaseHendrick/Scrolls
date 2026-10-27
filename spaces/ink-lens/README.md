@@ -59,7 +59,8 @@ also runs Hecate and canonical here:
 - the **z-score ensemble** of the chosen models (ink-sdk's recipe after Erwin Nieuwlaar's), scored against the
   ensemble of their controls;
 - **AUC with a 95 % block-bootstrap interval** (1 mm blocks) for each map, its control and their gap;
-- ink-sdk's **label-free orientation check** (mesh and CT) in the gallery, which says which face layer 0 is on;
+- ink-sdk's **label-free orientation check** (mesh and CT) in `tools/gallery_job.py`, which says which face layer 0
+  is on;
 - Hecate's **3D volume** as a depth profile over labelled ink and background;
 - **checkpoint pins**: every file downloaded by URL, refused unless its SHA-256 matches, pins checked against
   ink-sdk's profiles in the tests;
@@ -80,9 +81,9 @@ runs; only rows marked no are a test of generalisation.
 | [Paris 4 3D, 4.8 um](https://huggingface.co/scrollprize/ink_paris4_3d_4.8um_gambiarra) | Vesuvius Challenge | CT around the sheet | 2.4 in, 4.8 out | MIT | no | no |
 | [DINO-guided 3D](https://huggingface.co/scrollprize/ink_3d_dino_guided) | Vesuvius Challenge | CT around the sheet | 2.4 | MIT | yes | yes |
 
-Sources for each entry are in `list_models` (and `zoo.py`). The two scan-space 3D models need minutes of GPU per
-sample, so they are in the **gallery**: every model on each sample's whole 640 px crop, computed on a Hugging Face Job
-(`tools/gallery_job.py`). The live **Compare models** tab runs any of the other nine on up to 512 px of the grid.
+Sources for each entry are in `list_models` (and `zoo.py`). The live **Compare models** tab runs any of the nine
+surface-volume models on up to 512 px of the grid. The two scan-space 3D models need minutes of GPU per sample, so
+they do not run live: `tools/gallery_job.py` runs them, and every other model on whole crops, on a GPU.
 
 ## One model, gated
 
@@ -157,7 +158,6 @@ Every endpoint is an API endpoint and an MCP tool (`/gradio_api/mcp/sse`; give t
 | `compare_sample` | several models on a public sample: record (AUC, control, gap, interval, liveness, exposure, ensemble, stability), every map as `.npz`, a mosaic | yes |
 | `compare_region` | the same on your own `.npz` region (2.4 um or 9.4 um), without labels | yes |
 | `list_models` | every model: family, scale, depth, license, pinned weights, control, training exposure with sources | no |
-| `gallery` | the precomputed whole-crop comparison of every model, the 3D ones included | no |
 
 ```python
 from gradio_client import Client, handle_file

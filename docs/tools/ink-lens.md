@@ -409,13 +409,13 @@ In a cloud session with `HF_TOKEN` set, the same commands work; `deploy.py` stil
 | `cannot read URL: ERROR` | A sample, label or mesh file could not be fetched from the open-data bucket after three tries (network down, or a proxy refused) | Check the connection and retry; a missing file (HTTP 404) does not raise this, it is reported where the file is used |
 | `choose at least one model (list_models names them)` (`choose at least one model`) | No model was chosen | Pick models; `list_models` names them |
 | `unknown models [...]; list_models names them` | A name is not in the zoo | Use a name from `list_models` or `zoo.py list` |
-| `the scan-space 3D models run only in the precomputed gallery (gallery endpoint)` | Only `ct3d` models were chosen for a live comparison | Use the `gallery` endpoint, or add other models |
+| `the scan-space 3D models need minutes of GPU per sample and do not run live; tools/gallery_job.py runs them on a GPU` | Only `ct3d` models were chosen for a live comparison | Choose surface-volume models, or run `tools/gallery_job.py ct3d` on a GPU |
 | `give one to five values` | Too many or no window centres or steps | One to five whole numbers |
 | `'TEXT': give whole numbers separated by spaces` | Centres or steps are not whole numbers | Give whole numbers |
 | `scan is 2.4 (the about 2.4 um scan) or native (about 9.4 um)` | Unknown scan | `2.4` or `native` |
 | `a region is uint8, layers x rows x columns` | The uploaded volume is not a 3D uint8 array | Convert with `volio.to_uint8`, layers first |
 | `a region is 128 to 512 px a side on the 9.6 um grid (512 to 2048 px of this scan)` | The compared region is too small or too large | Resize it; a 2.4 um region is 4 times the grid size |
-| `the gallery has not been published yet` | The Space has no `gallery/index.json` | Use Compare models, or wait for the gallery |
+| `the gallery has not been published yet` | The Space has no `gallery/index.json` (the Gallery tab and the `gallery` endpoint are hidden until one is published) | Use Compare models |
 | `no gallery for ID` | The sample is not in the gallery | `list_models` lists the gallery's samples |
 | `PATH holds no gallery index.json` | `INKLENS_GALLERY` names a folder `assemble` did not write | Point it at `assemble --out` |
 | `NAME reads T um (within W); a S um source neither matches nor pools to it by ink-sdk's scale rule, and Ink Lens does not stretch` | The model cannot read this scan at its scale | Use the 2.4 um scan, or a 9 um model on the 9.4 um scan |

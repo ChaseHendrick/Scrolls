@@ -112,12 +112,6 @@ from gradio_client import Client
 
 client = Client(&quot;SharpMeow/ink-lens&quot;)
 result = client.predict(api_name=&quot;/list_models&quot;)</code></pre></div></details>
-<details><summary>Python /gallery<span class="scc-b ok">tested 2026-10-24</span></summary>
-<div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code># pip install gradio_client
-from gradio_client import Client
-
-client = Client(&quot;SharpMeow/ink-lens&quot;)
-result = client.predict(sample_id=&quot;0841-w00&quot;, api_name=&quot;/gallery&quot;)</code></pre></div></details>
 <details><summary>curl /lens_sample<span class="scc-b ok">tested 2026-10-24</span></summary>
 <div class="scc-code"><button type="button" class="scc-copy" data-testid="connect-copy" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.querySelector('code').innerText).then(()=>{this.textContent='Copied';setTimeout(()=>this.textContent='Copy',1200)})">Copy</button><pre><code>URL=https://sharpmeow-ink-lens.hf.space
 EVENT=$(curl -s -X POST $URL/gradio_api/call/lens_sample -H &#x27;Content-Type: application/json&#x27; \
