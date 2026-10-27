@@ -135,6 +135,51 @@ class NetTest(unittest.TestCase):
         self.assertEqual((rec["spots_drawn"], rec["spots_scored"]), (1, 1))
         self.assertIn(rec["decision"], ("student", "villa"))
 
+    def _field(self, P, d, stream, tile=128):
+        """A field over a small synthetic CT with a random s16 student, streaming or not; {file: bytes}."""
+        rng = np.random.default_rng(3)
+        vol = rng.integers(1, 255, (256, 256, 256), dtype=np.uint8)
+        vol[192:, 192:, 192:] = 0                                     # an empty corner: skipped tiles stay fill
+        meta = {"shape": [256] * 3, "chunks": [128] * 3, "dtype": "|u1", "compressor": None, "fill_value": 0}
+        get = lambda k: np.ascontiguousarray(vol[k[0] * 128:(k[0] + 1) * 128, k[1] * 128:(k[1] + 1) * 128,
+                                                  k[2] * 128:(k[2] + 1) * 128]).tobytes()
+        torch.manual_seed(0)
+        region = ((0, 256), (0, 256), (128, 256))
+        w = P.FieldWriter(d, "T", region, 0, [256] * 3, levels=3)
+        res, tiles = P.run(self.M.build("s16").eval(), meta, get, region, torch.device("cpu"), 2, log=lambda *_: None,
+                           cos_blur=(0.5, 0.5, 0.5), cos_offset=0.04, tile=tile, on_rows=w.rows if stream else None)
+        w.finish(res)
+        self.assertEqual(res["cos"].shape, (128, 128, 64))
+        return tiles, {str(f.relative_to(d)): f.read_bytes() for f in Path(d).rglob("*") if f.is_file()}
+
+    def test_preview_streaming_writes_the_same_bytes(self):
+        P = importlib.import_module("preview")
+        with tempfile.TemporaryDirectory() as a, tempfile.TemporaryDirectory() as b:
+            ta, fa = self._field(P, a, stream=True)
+            tb, fb = self._field(P, b, stream=False)
+        self.assertEqual(ta, tb)
+        self.assertEqual(fa, fb)
+        self.assertTrue(any(k.startswith("T_cos.ome.zarr/2/") for k in fa))        # a coarser level was written
+
+    def test_preview_tile_sizes(self):
+        P = importlib.import_module("preview")
+        with tempfile.TemporaryDirectory() as d:
+            tiles, _ = self._field(P, d, stream=True, tile=(128, 160, 160))
+            with self.assertRaises(SystemExit):
+                self._field(P, d, stream=True, tile=100)
+        self.assertGreater(tiles, 0)
+
+    def test_gpu_pyramid_matches_numpy(self):
+        P = importlib.import_module("preview")
+        rng = np.random.default_rng(4)
+        a = rng.integers(0, 256, (16, 12, 8), dtype=np.uint8)
+        self.assertTrue(np.array_equal(P.pool2_torch(torch.from_numpy(a), "scalar").numpy(), P.pool2(a, "scalar")))
+        n = rng.normal(size=(3, 16, 12, 8))
+        n[2] = np.abs(n[2]) + 0.5
+        nxny = np.stack(C.encode_normal(n / np.linalg.norm(n, axis=0)))
+        got = P.pool2_torch(torch.from_numpy(nxny), "normal").numpy().astype(int)
+        self.assertLessEqual(np.abs(got - P.pool2(nxny, "normal").astype(int)).max(), 1)
+
 
 if __name__ == "__main__":
     unittest.main()

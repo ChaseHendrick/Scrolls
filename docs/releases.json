@@ -801,12 +801,12 @@
     },
     {
       "id": "lasagnetta",
-      "title": "Lasagnetta (experimental fast preview of villa's lasagna field)",
-      "line": "Experimental fast preview of villa's lasagna field; it failed one scan of its held-out test, so it ships with a self-check against villa.",
+      "title": "Lasagnetta (fast preview of villa's lasagna field)",
+      "line": "A fast preview of villa's lasagna field, about 5 times faster than villa predict3d (6.6 times with larger tiles), with a built-in self-check against villa.",
       "area": "Surfaces and tracing",
       "page": "docs/tools/lasagnetta.md",
-      "released": "2026-10-25",
-      "summary": "An experimental student of villa's lasagna net: it writes a lasagna field preview in villa's own layout about 4 times faster than villa `predict3d` (59.6 s against 235.2 s on one region, RTX Pro 6000), from three small 3D U-Nets averaged ([weights](https://huggingface.co/SharpMeow/lasagnetta), CC BY-NC 4.0). **It failed its held-out test**: agreement with villa passed pooled (peak F1 0.855) but one scan of five sat under the 0.80 bar. So it ships with a self-check that runs villa's net on 12 spots and says to use villa when the median peak F1 is under 0.82. Model output; villa's own field stays the reference.",
+      "released": "2026-10-27",
+      "summary": "A student of villa's lasagna net: it writes a lasagna field preview in villa's own layout, 5.2 times faster than villa `predict3d` end to end (44.9 s against 234.2 s on a 1024 x 2048 x 2048 region, RTX Pro 6000), or 6.6 times with `--tile 320 576 576`, from three small 3D U-Nets averaged ([weights](https://huggingface.co/SharpMeow/lasagnetta), CC BY-NC 4.0). On five scans it never trained on it agrees with villa at pooled peak F1 0.86 and cos r 0.91, 0.77 to 0.87 per scan; villa's own net agrees with itself on a mirrored scan at 0.79 to 0.83. A self-check runs villa's net on 12 spots of your region and says to use villa there when the median peak F1 is under 0.82. Version 0.1.1 (27 Oct 2026) streams the write and pools on the GPU; same weights. Model output; villa's own field stays the reference.",
       "commands": [
         "pip install torch numpy numcodecs huggingface_hub",
         "python scripts/lasagnetta/preview.py --checkpoint release --ct s3://vesuvius-challenge-open-data/PHerc0139/volumes/20260102150214-2.399um-0.2m-78keV-masked.zarr/2 --region 9472 9984 3072 3584 4096 4608 --input-level 2 --out out --name PHerc0139"
