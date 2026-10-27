@@ -76,7 +76,7 @@ def cmd_flat(a):
     import compare
     import inklens
     import zoo
-    _smoke(a, None, 128)
+    _smoke(a, ["ink_9um-s42", "hecate-9.6"], 128)     # one model of each runner, so a cpu-basic smoke fits 10 min
     if inklens.find_kit() is None:      # labels and the mesh come through this repository's kit/
         raise SystemExit("run from a Scrolls checkout: label scoring needs its kit/")
     out = Path(a.out)

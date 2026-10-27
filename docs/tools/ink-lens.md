@@ -213,7 +213,7 @@ gallery_job.py assemble --flat DIR [--ct3d DIR] --out GALLERY [--draws N]
 | `--draws` | 300 | `flat`, `assemble`: bootstrap draws for the centre window's interval |
 | `--no-orient` | off | `flat`: skip ink-sdk's label-free orientation check |
 | `--size` | the whole 640 px crop | `flat`, `ct3d`: a square this many 9.6 um px around the crop's centre |
-| `--smoke` | off | `flat`, `ct3d`: one sample, one window, no interval, a 128 px square (`ct3d`: 32 px and the gambiarra model only), a CPU check of the whole path |
+| `--smoke` | off | `flat`, `ct3d`: one sample, one window, no interval, a 128 px square with `ink_9um-s42` and `hecate-9.6`, one model per runner (`ct3d`: 32 px and the gambiarra model only), a CPU check of the whole path that fits a 10 min cpu-basic Job; `--models` overrides |
 | `--ap` | required | `ct3d`: AutoPipeline's folder (holding `kit/ink3d.py`) in a public Scrolls checkout |
 | `--flat` | required | `assemble`: the `flat` output |
 | `--ct3d` | none | `assemble`: the `ct3d` output |
