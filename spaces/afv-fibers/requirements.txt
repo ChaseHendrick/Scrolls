@@ -1,0 +1,7 @@
+# AFV Fibers on a free CPU Hugging Face Space (Gradio 6.28.0 and Python 3.12 come from the README card). It runs no
+# model: numpy and sqlite3 read the published .afv files, pillow draws the CT pictures, plotly the 3D view.
+numpy==2.5.3
+pillow==12.3.0
+plotly==6.4.0
+mcp==1.30.0
+pydantic>=2.11.10,<=2.12.5

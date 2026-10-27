@@ -854,6 +854,23 @@
       ],
       "details": "The [Space](https://huggingface.co/spaces/SharpMeow/ink-atlas) reads the dataset at run time and holds code only. Every surface's meta.json links its mesh (ketchupbyheinz's vesuvius-scroll-survey) and its CT, and records each model's liveness, its published training exposure and the face check of every model pair. Page: [docs/tools/ink-atlas.md](docs/tools/ink-atlas.md). Page code Apache 2.0; the data is CC BY-NC 4.0; every model MIT.",
       "where": "main"
+    },
+    {
+      "id": "afv-fibers",
+      "title": "AFV Fibers (papyrus fibre curves for six whole scans)",
+      "line": "Papyrus fibre curves from Qual's AFV V2 for six whole scans, as .afv files VC3D opens, with a Space to explore any box and a fibre-set catalog.",
+      "area": "Data and downloads",
+      "page": "docs/tools/afv-fibers.md",
+      "released": "2026-10-27",
+      "summary": "[AFV Fibers](https://huggingface.co/spaces/SharpMeow/afv-fibers) shares 23.2 million papyrus fibre curves, 3.8 million of them 1 mm or longer, from Qual's AFV V2 fibre model and AVF_SPLINE_GENERATOR run over six whole scans he had not done, one dataset each: [PHerc0009B](https://huggingface.co/datasets/SharpMeow/pherc0009b-afv-fibers), [PHerc0139](https://huggingface.co/datasets/SharpMeow/pherc0139-afv-fibers), [PHerc0332](https://huggingface.co/datasets/SharpMeow/pherc0332-afv-fibers) (Scroll 3), [PHerc0814](https://huggingface.co/datasets/SharpMeow/pherc0814-afv-fibers), [PHerc0841](https://huggingface.co/datasets/SharpMeow/pherc0841-afv-fibers), [PHerc1667](https://huggingface.co/datasets/SharpMeow/pherc1667-afv-fibers) (Scroll 4). Each holds the whole-scan `.afv`, a 1 mm and longer set, small per-cell tiles for reading one box, previews and `load_example.py`; every file is in level-0 voxels and passed villa's own `import_afv.py` reader. On a test cube of Qual's published V2 set this pipeline matches his fibres to 98% within one voxel. The Space draws any box over the live CT, gives it as its own `.afv`, lists every public fibre set (Qual's, the open-data fibre fields, the annotators' fibres) by link, and is an API and MCP server. Model output, not a reading.",
+      "commands": [
+        "hf download SharpMeow/pherc0139-afv-fibers PHerc0139_afv_v2_1mm.afv load_example.py --repo-type dataset --local-dir pherc0139-afv-fibers",
+        "cd pherc0139-afv-fibers && python3 load_example.py PHerc0139_afv_v2_1mm.afv",
+        "pip install gradio_client",
+        "python -c \"from gradio_client import Client; c = Client('SharpMeow/afv-fibers'); print(c.predict('PHerc0139', 8746, 2496, 5312, 64, api_name='/fibres_box')['counts'])\""
+      ],
+      "details": "Open a set in VC3D with villa's `vc_object_store/scripts/import_afv.py`, then attach the store from File, Object Store. The [Space](https://huggingface.co/spaces/SharpMeow/afv-fibers) adds a picture guide, How-to guides and a Connect your tool panel; page: [docs/tools/afv-fibers.md](docs/tools/afv-fibers.md). Model, spline generator and `.afv` format: Qual, Apache 2.0. Scans: Vesuvius Challenge open data, CC BY-NC 4.0; the fibre files are derived from them under the same terms.",
+      "where": "main"
     }
   ]
 }

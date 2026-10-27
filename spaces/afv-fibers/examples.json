@@ -1,0 +1,44 @@
+[
+ {
+  "label": "PHerc0139, dense wraps at mid-height",
+  "scan": "PHerc0139",
+  "z": 8746,
+  "y": 2496,
+  "x": 5312
+ },
+ {
+  "label": "PHerc0814, dense wraps at mid-height",
+  "scan": "PHerc0814",
+  "z": 9324,
+  "y": 2748,
+  "x": 4630
+ },
+ {
+  "label": "PHerc0841, dense wraps at mid-height",
+  "scan": "PHerc0841",
+  "z": 7038,
+  "y": 3284,
+  "x": 5132
+ },
+ {
+  "label": "PHerc0009B, dense wraps at mid-height",
+  "scan": "PHerc0009B",
+  "z": 3533,
+  "y": 4531,
+  "x": 5164
+ },
+ {
+  "label": "PHerc0332 (Scroll 3), dense wraps at mid-height",
+  "scan": "PHerc0332",
+  "z": 20784,
+  "y": 8912,
+  "x": 11668
+ },
+ {
+  "label": "PHerc1667 (Scroll 4), dense wraps at mid-height",
+  "scan": "PHerc1667",
+  "z": 20212,
+  "y": 6212,
+  "x": 6068
+ }
+]
