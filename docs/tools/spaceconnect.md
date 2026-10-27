@@ -139,7 +139,7 @@ usage: python -m kit spaceconnect new [-h] --space SPACE dir
 | `file` | `format` (json, csv, image or bytes) | python, curl |
 | `tifxyz` | none | python |
 | `s3-prefix` | `prefix` (the folder; `url` is the bucket root) | python |
-| `gradio-api` | `space`, `host`, `status` (running, paused or not-deployed), `endpoints` [{`api`, `args`}] | python, curl, mcp |
+| `gradio-api` | `space`, `host`, `status` (running, paused or not-deployed), `endpoints` [{`api`, `args`}], optional `zerogpu` (true: the Python, curl and MCP snippets pass the caller's own Hugging Face token, so a call spends the caller's ZeroGPU quota) | python, curl, mcp |
 | `page-api` | `links` [{`label`, `url`}], optional `embed` | links |
 
 A copy of scan data hosted on huggingface.co gives `scroll` and `scan_year`; one of Scrolls 1 to 4 scanned before 2025 is refused. `spaces/connect/spaces.json` lists every Space: `space`, `dir` (where its `connect.json` is), `sdk` (static or gradio) and `source` (here, the Space's own repository, or Scrolls-private, which copies the rendered files).
