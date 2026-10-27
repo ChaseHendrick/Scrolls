@@ -63,9 +63,22 @@ def _load_maps(path):
 
 # ---------------------------------------------------------------- flat: 2.5D, Hecate, canonical
 
+def _smoke(a, models, size):
+    """--smoke: one sample, a small square, one window, no interval, so a CPU run checks the whole path."""
+    if a.smoke:
+        a.size, a.samples = a.size or size, a.samples or ["0841-w00"]
+        a.models = a.models or models
+        if hasattr(a, "centres"):
+            a.centres, a.steps, a.draws = [0], [1], 0
+
+
 def cmd_flat(a):
     import compare
+    import inklens
     import zoo
+    _smoke(a, None, 128)
+    if inklens.find_kit() is None:      # labels and the mesh come through this repository's kit/
+        raise SystemExit("run from a Scrolls checkout: label scoring needs its kit/")
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     names = a.models or [n for n in zoo.models() if zoo.get(n)["family"] != "ct3d"]
@@ -84,7 +97,12 @@ def cmd_flat(a):
             if not these:
                 continue
             t0 = time.time()
-            vol, lab, vinfo = compare.sample_inputs(s, scan)
+            try:
+                vol, lab, vinfo = compare.sample_inputs(s, scan, size=a.size)
+            except Exception as exc:  # noqa: BLE001  (one sample failing never stops the others)
+                print(f"  {s['id']} {scan}: {type(exc).__name__}: {exc}", flush=True)
+                progress(i, n, f"{s['id']} {scan} failed")
+                continue
             res, maps, vols = compare.run(vol, scan, these, labels=lab, centres=a.centres, steps=a.steps,
                                           loaded=loaded, device=a.device, output_3d=(scan == "2.4"),
                                           draws=a.draws, sample=dict(info, box=vinfo["box"], grid=vinfo["grid"]))
@@ -174,6 +192,7 @@ def cmd_ct3d(a):
     sys.path.insert(0, str(ap))
     os.environ.setdefault("KIT_INK_PYTHON", sys.executable)
     from kit import ink3d
+    _smoke(a, ["gambiarra-3d"], 32)
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)
     names = a.models or [n for n in zoo.models() if zoo.get(n)["family"] == "ct3d"]
@@ -186,14 +205,18 @@ def cmd_ct3d(a):
         ct = f"https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/{sc['ct']}"
         render = f"https://vesuvius-challenge-open-data.s3.us-east-1.amazonaws.com/{s['scroll']}/segments/" \
                  f"{s['segment']}/{sc['surface_volume']}"
+        box = sc["crop"]
+        if a.size:      # a smaller square around the crop's centre (smoke runs)
+            cy, cx, h = (box[0] + box[1]) // 2, (box[2] + box[3]) // 2, a.size // 2
+            box = [cy - h, cy - h + a.size, cx - h, cx - h + a.size]
         for name in names:
             i += 1
             t0 = time.time()
             dest = out / s["id"] / name
-            rec = {"model": name, "sample": s["id"], "box": sc["crop"]}
+            rec = {"model": name, "sample": s["id"], "box": box}
             saved = (ink3d.canvas, ink3d.points)
             try:
-                crop_canvas(ink3d, sc["crop"], sc["level0_shape"])
+                crop_canvas(ink3d, box, sc["level0_shape"])
                 ink3d.register(name, _ct3d_spec(name, weights[name]))
                 r = ink3d.run(name, str(mesh), render, ct, float(sc["um_per_px"]), dest, device=a.device)
                 f = tifffile.imread(dest / "ink_f.tif")
@@ -222,7 +245,9 @@ def _png(path, rgb):
 def cmd_assemble(a):
     import numpy as np
     import compare
+    import inklens
     import zoo
+    inklens.find_kit()
     flat, ct3d, out = Path(a.flat), Path(a.ct3d) if a.ct3d else None, Path(a.out)
     (out / "maps").mkdir(parents=True, exist_ok=True)
     index = {"tool": f"Ink Lens gallery {compare.VERSION}", "grid_um": compare.GRID_UM, "samples": {},
@@ -270,7 +295,7 @@ def cmd_assemble(a):
         order = [n for n in res["models"] if (n, "c+0_s1", "forward") in maps]
         for (n, k, o), m in maps.items():
             if k == "c+0_s1" or n == "stability":
-                img = compare.to_rgb(m, "absolute")
+                img = compare.to_rgb(m, "stretched" if n == "ensemble" else "absolute")
                 _png(out / "maps" / f"{sid}__{n}__{k}__{o}.png", img)
         cols = sorted({(k, o) for (n, k, o) in maps if n in res["models"] and k.startswith("c")},
                       key=lambda t: (t[1] != "forward", int(t[0].split("_s")[1]), int(t[0][1:].split("_")[0])))
@@ -297,12 +322,16 @@ def parser():
     f.add_argument("--device", default=None)
     f.add_argument("--draws", type=int, default=300)
     f.add_argument("--no-orient", action="store_true", help="skip ink-sdk's depth-orientation check")
+    f.add_argument("--size", type=int, help="a square this many 9.6 um px around the crop's centre (smoke runs)")
+    f.add_argument("--smoke", action="store_true", help="one sample, 128 px, one window: a CPU check of the path")
     c = sub.add_parser("ct3d")
     c.add_argument("--out", required=True)
     c.add_argument("--ap", required=True, help="AutoPipeline's folder (holding kit/ink3d.py) in a public checkout")
     c.add_argument("--samples", nargs="*")
     c.add_argument("--models", nargs="*")
     c.add_argument("--device", default="cuda")
+    c.add_argument("--size", type=int, help="a square this many 9.6 um px around the crop's centre (smoke runs)")
+    c.add_argument("--smoke", action="store_true", help="one sample, 32 px, the gambiarra model: a CPU check")
     s = sub.add_parser("assemble")
     s.add_argument("--flat", required=True)
     s.add_argument("--ct3d")

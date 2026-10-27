@@ -195,8 +195,8 @@ map on the 9.6 um grid and Hecate's 3D volumes; the Space's `compare_sample` and
 ```text
 zoo.py list [--json]          zoo.py show MODEL
 gallery_job.py flat --out DIR [--samples ID ...] [--models NAME ...] [--centres C ...] [--steps S ...]
-                   [--device cuda] [--draws N] [--no-orient]
-gallery_job.py ct3d --out DIR --ap ROOT [--samples ID ...] [--models NAME ...] [--device cuda]
+                   [--device cuda] [--draws N] [--no-orient] [--size PX] [--smoke]
+gallery_job.py ct3d --out DIR --ap ROOT [--samples ID ...] [--models NAME ...] [--device cuda] [--size PX] [--smoke]
 gallery_job.py assemble --flat DIR [--ct3d DIR] --out GALLERY [--draws N]
 ```
 
@@ -212,6 +212,8 @@ gallery_job.py assemble --flat DIR [--ct3d DIR] --out GALLERY [--draws N]
 | `--device` | `flat`: CUDA if present; `ct3d`: `cuda` | Torch device |
 | `--draws` | 300 | `flat`, `assemble`: bootstrap draws for the centre window's interval |
 | `--no-orient` | off | `flat`: skip ink-sdk's label-free orientation check |
+| `--size` | the whole 640 px crop | `flat`, `ct3d`: a square this many 9.6 um px around the crop's centre |
+| `--smoke` | off | `flat`, `ct3d`: one sample, one window, no interval, a 128 px square (`ct3d`: 32 px and the gambiarra model only), a CPU check of the whole path |
 | `--ap` | required | `ct3d`: AutoPipeline's folder (holding `kit/ink3d.py`) in a public Scrolls checkout |
 | `--flat` | required | `assemble`: the `flat` output |
 | `--ct3d` | none | `assemble`: the `ct3d` output |
